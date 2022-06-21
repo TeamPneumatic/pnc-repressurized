@@ -20,6 +20,7 @@ package me.desht.pneumaticcraft.common.progwidgets;
 import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.core.ModProgWidgets;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
@@ -87,7 +88,7 @@ public class ProgWidgetLiquidFilter extends ProgWidget {
     @Override
     public void writeToNBT(CompoundTag tag) {
         super.writeToNBT(tag);
-        if (fluid != Fluids.EMPTY) tag.putString("fluid", fluid.getRegistryName().toString());
+        if (fluid != Fluids.EMPTY) tag.putString("fluid", PneumaticCraftUtils.getRegistryName(fluid).orElseThrow().toString());
     }
 
     @Override

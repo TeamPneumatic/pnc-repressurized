@@ -1,17 +1,17 @@
 {
   "type": "minecraft:crafting_shaped",
-  "pattern": [
-    "I I",
-    "I I",
-    "I I"
-  ],
   "key": {
     "I": {
       "tag": "forge:ingots/compressed_iron"
     }
   },
+  "pattern": [
+    "I I",
+    "I I",
+    "I I"
+  ],
   "result": {
-    "item": "pneumaticcraft:elevator_frame",
-    "count": 4
+    "count": 4,
+    "item": "pneumaticcraft:elevator_frame"
   }
 }

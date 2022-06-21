@@ -40,8 +40,6 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
@@ -85,7 +83,7 @@ public class RemoteEditorScreen extends RemoteScreen {
             if (RemoteItem.hasSameSecuritySettings(remote, invSearchGui.getSearchStack())) {
                 remoteLayout = new RemoteLayout(invSearchGui.getSearchStack(), leftPos, topPos);
             } else {
-                ClientUtils.getClientPlayer().displayClientMessage(new TextComponent("pneumaticcraft.gui.remote.differentSecuritySettings"), false);
+                ClientUtils.getClientPlayer().displayClientMessage(Component.literal("pneumaticcraft.gui.remote.differentSecuritySettings"), false);
             }
         }
 
@@ -104,12 +102,12 @@ public class RemoteEditorScreen extends RemoteScreen {
             addRenderableWidget(actionWidget.getWidget());
         }
 
-        addRenderableWidget(new WidgetButtonExtended(leftPos - 24, topPos, 20, 20, TextComponent.EMPTY, b -> doImport())
+        addRenderableWidget(new WidgetButtonExtended(leftPos - 24, topPos, 20, 20, Component.empty(), b -> doImport())
                 .setTooltipText(xlate("pneumaticcraft.gui.remote.button.importRemoteButton"))
                 .setRenderStacks(new ItemStack(ModItems.REMOTE.get()))
         );
 
-        addRenderableWidget(new WidgetButtonExtended(leftPos - 24, topPos + 22, 20, 20, TextComponent.EMPTY, b -> doPastebin())
+        addRenderableWidget(new WidgetButtonExtended(leftPos - 24, topPos + 22, 20, 20, Component.empty(), b -> doPastebin())
                 .setTooltipText(xlate("pneumaticcraft.gui.remote.button.pastebinButton"))
                 .setRenderedIcon(Textures.GUI_PASTEBIN_ICON_LOCATION)
         );
@@ -125,7 +123,7 @@ public class RemoteEditorScreen extends RemoteScreen {
     }
 
     private void doImport() {
-        ClientUtils.openContainerGui(ModMenuTypes.INVENTORY_SEARCHER.get(), new TranslatableComponent("pneumaticcraft.gui.amadron.addTrade.invSearch"));
+        ClientUtils.openContainerGui(ModMenuTypes.INVENTORY_SEARCHER.get(), Component.translatable("pneumaticcraft.gui.amadron.addTrade.invSearch"));
         if (minecraft.screen instanceof InventorySearcherScreen) {
             invSearchGui = (InventorySearcherScreen) minecraft.screen;
             invSearchGui.setStackPredicate(s -> s.getItem() == ModItems.REMOTE.get());

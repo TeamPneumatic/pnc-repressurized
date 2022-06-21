@@ -36,7 +36,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
@@ -66,7 +65,7 @@ public class AmadronScreen extends AbstractPneumaticCraftContainerScreen<Amadron
     private int problemTimer = 0;
 
     public AmadronScreen(AmadronMenu container, Inventory inv, @SuppressWarnings("unused") Component displayString) {
-        super(container, inv, new TextComponent(""));
+        super(container, inv, Component.literal(""));
         imageWidth = 176;
         imageHeight = 202;
     }
@@ -107,7 +106,7 @@ public class AmadronScreen extends AbstractPneumaticCraftContainerScreen<Amadron
                 ));
         customTradesTab.addSubWidget(addTradeButton);
 
-        addRenderableWidget(pageLabel = new WidgetLabel(leftPos + 158, topPos + 49, new TextComponent("")));
+        addRenderableWidget(pageLabel = new WidgetLabel(leftPos + 158, topPos + 49, Component.literal("")));
         pageLabel.setScale(0.5f);
         pageLabel.setColor(0xFFE0E0E0);
 
@@ -182,15 +181,15 @@ public class AmadronScreen extends AbstractPneumaticCraftContainerScreen<Amadron
         ImmutableList.Builder<Component> builder = ImmutableList.builder();
         builder.add(xlate("pneumaticcraft.gui.amadron.button.order.tooltip"));
         if (!menu.isBasketEmpty()) {
-            builder.add(TextComponent.EMPTY);
+            builder.add(Component.empty());
             builder.add(xlate("pneumaticcraft.gui.amadron.basket").withStyle(ChatFormatting.AQUA, ChatFormatting.UNDERLINE));
             for (AmadronRecipe offer : AmadronOfferManager.getInstance().getActiveOffers()) {
                 int nOrders = menu.getShoppingBasketUnits(offer.getId());
                 if (nOrders > 0) {
                     String in = (offer.getInput().getAmount() * nOrders) + " x " + offer.getInput().getName();
                     String out = (offer.getOutput().getAmount() * nOrders) + " x " + offer.getOutput().getName();
-                    builder.add(new TextComponent(Symbols.BULLET + " " + ChatFormatting.YELLOW + out));
-                    builder.add(new TextComponent(ChatFormatting.GOLD + "   for " + ChatFormatting.YELLOW + in));
+                    builder.add(Component.literal(Symbols.BULLET + " " + ChatFormatting.YELLOW + out));
+                    builder.add(Component.literal(ChatFormatting.GOLD + "   for " + ChatFormatting.YELLOW + in));
                 }
             }
         }
@@ -214,7 +213,7 @@ public class AmadronScreen extends AbstractPneumaticCraftContainerScreen<Amadron
         updateVisibleOffers();
 
         int nPages = ((menu.activeOffers.size() - 1) / OFFERS_PER_PAGE) + 1;
-        pageLabel.setMessage(new TextComponent((page + 1) + "/" + nPages));
+        pageLabel.setMessage(Component.literal((page + 1) + "/" + nPages));
     }
 
     private void updateVisibleOffers() {

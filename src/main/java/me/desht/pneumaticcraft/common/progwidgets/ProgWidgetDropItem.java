@@ -24,7 +24,6 @@ import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.item.DyeColor;
@@ -104,9 +103,9 @@ public class ProgWidgetDropItem extends ProgWidgetInventoryBase implements IItem
     public void getTooltip(List<Component> curTooltip) {
         super.getTooltip(curTooltip);
         if (pickupDelay) {
-            curTooltip.add(new TranslatableComponent("pneumaticcraft.gui.progWidget.drop.hasPickupDelay"));
+            curTooltip.add(Component.translatable("pneumaticcraft.gui.progWidget.drop.hasPickupDelay"));
         } else {
-            curTooltip.add(new TranslatableComponent("pneumaticcraft.gui.progWidget.drop.noPickupDelay"));
+            curTooltip.add(Component.translatable("pneumaticcraft.gui.progWidget.drop.noPickupDelay"));
         }
     }
 

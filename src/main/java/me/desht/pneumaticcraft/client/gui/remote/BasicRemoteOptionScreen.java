@@ -26,8 +26,6 @@ import me.desht.pneumaticcraft.client.gui.widget.*;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableHelper;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.Arrays;
@@ -49,7 +47,7 @@ public class BasicRemoteOptionScreen<A extends ActionWidget<?>> extends Abstract
     private boolean playerGlobalEnableVar;
 
     public BasicRemoteOptionScreen(A actionWidget, RemoteEditorScreen guiRemote) {
-        super(new TranslatableComponent("pneumaticcraft.gui.remote.tray." + actionWidget.getId() + ".name"));
+        super(Component.translatable("pneumaticcraft.gui.remote.tray." + actionWidget.getId() + ".name"));
 
         this.actionWidget = actionWidget;
         this.guiRemote = guiRemote;
@@ -93,9 +91,9 @@ public class BasicRemoteOptionScreen<A extends ActionWidget<?>> extends Abstract
         }
 
         addLabel(xlate("pneumaticcraft.gui.remote.enableValue"), guiLeft + 10, guiTop + 175);
-        addLabel(new TextComponent("X:"), guiLeft + 10, guiTop + 186);
-        addLabel(new TextComponent("Y:"), guiLeft + 67, guiTop + 186);
-        addLabel(new TextComponent("Z:"), guiLeft + 124, guiTop + 186);
+        addLabel(Component.literal("X:"), guiLeft + 10, guiTop + 186);
+        addLabel(Component.literal("Y:"), guiLeft + 67, guiTop + 186);
+        addLabel(Component.literal("Z:"), guiLeft + 124, guiTop + 186);
 
         enableField = new WidgetComboBox(font, guiLeft + 23, guiTop + 160, 147, 10);
         enableField.setElements(GlobalVariableHelper.extractVarnames(guiRemote.getMenu().variables, playerGlobalEnableVar));
@@ -144,12 +142,12 @@ public class BasicRemoteOptionScreen<A extends ActionWidget<?>> extends Abstract
         actionWidget.setEnableVariable(GlobalVariableHelper.getPrefixedVar(enableField.getValue(), playerGlobalEnableVar));
         actionWidget.setEnablingValue(xValueField.getIntValue(), yValueField.getIntValue(), zValueField.getIntValue());
         if (actionWidget instanceof IActionWidgetLabeled) {
-            ((IActionWidgetLabeled) actionWidget).setText(new TextComponent(labelField.getValue()));
+            ((IActionWidgetLabeled) actionWidget).setText(Component.literal(labelField.getValue()));
             if (tooltipField.getValue().isEmpty()) {
                 ((IActionWidgetLabeled) actionWidget).setTooltip(Collections.emptyList());
             } else {
                 List<Component> l = Arrays.stream(tooltipField.getValue().split(TOOLTIP_DELIMITER))
-                        .map(TextComponent::new)
+                        .map(Component::literal)
                         .collect(Collectors.toList());
                 ((IActionWidgetLabeled) actionWidget).setTooltip(l);
             }
@@ -157,7 +155,7 @@ public class BasicRemoteOptionScreen<A extends ActionWidget<?>> extends Abstract
     }
     private void togglePlayerGlobalEnable() {
         playerGlobalEnableVar = !playerGlobalEnableVar;
-        enableVarTypeButton.setMessage(new TextComponent(GlobalVariableHelper.getVarPrefix(playerGlobalEnableVar)));
+        enableVarTypeButton.setMessage(Component.literal(GlobalVariableHelper.getVarPrefix(playerGlobalEnableVar)));
         enableField.setElements(GlobalVariableHelper.extractVarnames(guiRemote.getMenu().variables, playerGlobalEnableVar));
     }
 

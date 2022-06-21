@@ -30,7 +30,7 @@ import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetCoordinate;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
@@ -63,7 +63,7 @@ public class ProgWidgetCoordinateScreen extends ProgWidgetAreaShowScreen<ProgWid
                         progWidget.isUsingVariable())
                 .build(this::addRenderableWidget);
 
-        gpsButton = new WidgetButtonExtended(guiLeft + 100, guiTop + 20, 20, 20, TextComponent.EMPTY, b -> openGPSSearcher());
+        gpsButton = new WidgetButtonExtended(guiLeft + 100, guiTop + 20, 20, 20, Component.empty(), b -> openGPSSearcher());
         gpsButton.setRenderStacks(new ItemStack(ModItems.GPS_TOOL.get()));
         gpsButton.setTooltipText(xlate("pneumaticcraft.gui.progWidget.coordinate.selectFromGPS"));
         gpsButton.active = !progWidget.isUsingVariable();
@@ -97,7 +97,7 @@ public class ProgWidgetCoordinateScreen extends ProgWidgetAreaShowScreen<ProgWid
     }
 
     private void openGPSSearcher() {
-        ClientUtils.openContainerGui(ModMenuTypes.INVENTORY_SEARCHER.get(), new TextComponent("Inventory Searcher (GPS)"));
+        ClientUtils.openContainerGui(ModMenuTypes.INVENTORY_SEARCHER.get(), Component.literal("Inventory Searcher (GPS)"));
         if (minecraft.screen instanceof InventorySearcherScreen) {
             invSearchGui = (InventorySearcherScreen) minecraft.screen;
             invSearchGui.setStackPredicate(itemStack -> itemStack.getItem() instanceof IPositionProvider);

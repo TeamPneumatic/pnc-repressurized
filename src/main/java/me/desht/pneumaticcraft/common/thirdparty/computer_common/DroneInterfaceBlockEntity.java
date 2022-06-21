@@ -182,12 +182,12 @@ public class DroneInterfaceBlockEntity extends AbstractTickingBlockEntity
                 requireNoArgs(args);
                 List<String> actions = new ArrayList<>();
                 DroneEntity drone = ModEntityTypes.DRONE.get().create(nonNullLevel());
-                for (ProgWidgetType<?> type : ModProgWidgets.PROG_WIDGETS.get().getValues()) {
-                    IProgWidget widget = IProgWidget.create(type);
+                ModProgWidgets.PROG_WIDGETS.get().getEntries().forEach(entry -> {
+                    IProgWidget widget = IProgWidget.create(entry.getValue());
                     if (widget.canBeRunByComputers(drone, getWidget())) {
-                        actions.add(type.getRegistryName().toString());
+                        actions.add(entry.getKey().location().toString());
                     }
-                }
+                });
                 return new Object[]{getStringTable(actions)};
             }
         });
@@ -608,7 +608,14 @@ public class DroneInterfaceBlockEntity extends AbstractTickingBlockEntity
             @Override
             public Object[] call(Object[] args) {
                 requireNoArgs(args);
-                return curAction != null ? new Object[]{ curAction.getType().getRegistryName().toString() } : null;
+                if (curAction != null) {
+                    return new Object[] {
+                            PneumaticCraftUtils.getRegistryName(ModProgWidgets.PROG_WIDGETS.get(), curAction.getType())
+                                    .map(ResourceLocation::toString)
+                                    .orElse("?")
+                    };
+                }
+                return null;
             }
         });
 
@@ -749,7 +756,7 @@ public class DroneInterfaceBlockEntity extends AbstractTickingBlockEntity
 
     @Override
     public String getPeripheralType() {
-        return "droneInterface";
+        return "drone_interface";
     }
 
     @Override

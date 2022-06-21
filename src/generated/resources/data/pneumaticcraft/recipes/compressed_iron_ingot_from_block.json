@@ -6,7 +6,7 @@
     }
   ],
   "result": {
-    "item": "pneumaticcraft:ingot_iron_compressed",
-    "count": 9
+    "count": 9,
+    "item": "pneumaticcraft:ingot_iron_compressed"
   }
 }

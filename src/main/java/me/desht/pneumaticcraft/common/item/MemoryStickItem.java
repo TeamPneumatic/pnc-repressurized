@@ -32,7 +32,6 @@ import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -136,11 +135,11 @@ public class MemoryStickItem extends Item implements ColorHandlers.ITintableItem
                     FluidStack fluidStack = handler.getFluidInTank(0);
                     int amount = fluidStack.getAmount();
                     int levels = EnchantmentUtils.getLevelForExperience(amount / ratio);
-                    tooltip.add(new TranslatableComponent("pneumaticcraft.gui.tooltip.memory_stick.xp_stored", amount / ratio, levels).withStyle(ChatFormatting.GREEN));
+                    tooltip.add(Component.translatable("pneumaticcraft.gui.tooltip.memory_stick.xp_stored", amount / ratio, levels).withStyle(ChatFormatting.GREEN));
                 }
             });
             boolean absorb = shouldAbsorbXPOrbs(stack);
-            tooltip.add(new TranslatableComponent("pneumaticcraft.message.memory_stick.absorb." + absorb).withStyle(ChatFormatting.YELLOW));
+            tooltip.add(Component.translatable("pneumaticcraft.message.memory_stick.absorb." + absorb).withStyle(ChatFormatting.YELLOW));
         }
     }
 
@@ -211,7 +210,7 @@ public class MemoryStickItem extends Item implements ColorHandlers.ITintableItem
         if (stack.getItem() instanceof MemoryStickItem) {
             boolean absorb = shouldAbsorbXPOrbs(stack);
             setAbsorbXPOrbs(stack, !absorb);
-            player.displayClientMessage(new TranslatableComponent("pneumaticcraft.message.memory_stick.absorb." + !absorb).withStyle(ChatFormatting.YELLOW), true);
+            player.displayClientMessage(Component.translatable("pneumaticcraft.message.memory_stick.absorb." + !absorb).withStyle(ChatFormatting.YELLOW), true);
             player.getCommandSenderWorld().playSound(null, player.blockPosition(), SoundEvents.NOTE_BLOCK_CHIME, SoundSource.PLAYERS, 1f, absorb ? 1.5f : 2f);
         }
     }

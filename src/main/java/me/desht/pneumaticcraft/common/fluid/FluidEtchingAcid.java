@@ -20,32 +20,28 @@ package me.desht.pneumaticcraft.common.fluid;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModFluids;
 import me.desht.pneumaticcraft.common.core.ModItems;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.material.MaterialColor;
-import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.ForgeFlowingFluid;
 
 public abstract class FluidEtchingAcid {
-    private static final FluidAttributes.Builder ATTRS = FluidAttributes.builder(
-            new ResourceLocation("minecraft:block/water_still"),
-            new ResourceLocation("minecraft:block/water_flow")
-    ).color(MaterialColor.EMERALD.col | 0xFF000000);
+    public static final PNCFluidRenderProps RENDER_PROPS = new PNCFluidRenderProps
+            ("minecraft:block/water_still", "minecraft:block/water_flow", MaterialColor.EMERALD.col | 0xFF000000);
 
-    private static final ForgeFlowingFluid.Properties PROPS =
-            new ForgeFlowingFluid.Properties(ModFluids.ETCHING_ACID, ModFluids.ETCHING_ACID_FLOWING, ATTRS)
-                    .block(ModBlocks.ETCHING_ACID)
-                    .bucket(ModItems.ETCHING_ACID_BUCKET);
+    private static ForgeFlowingFluid.Properties props() {
+        return new ForgeFlowingFluid.Properties(
+                ModFluids.ETCHING_ACID_FLUID_TYPE, ModFluids.ETCHING_ACID, ModFluids.ETCHING_ACID_FLOWING
+        ).block(ModBlocks.ETCHING_ACID).bucket(ModItems.ETCHING_ACID_BUCKET);
+    }
 
     public static class Source extends ForgeFlowingFluid.Source {
         public Source() {
-            super(PROPS);
+            super(props());
         }
-
     }
 
     public static class Flowing extends ForgeFlowingFluid.Flowing {
         public Flowing() {
-            super(PROPS);
+            super(props());
         }
     }
 }

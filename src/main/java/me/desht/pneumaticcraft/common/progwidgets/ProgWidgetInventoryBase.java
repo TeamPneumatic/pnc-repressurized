@@ -26,7 +26,6 @@ import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -92,7 +91,7 @@ public abstract class ProgWidgetInventoryBase extends ProgWidgetAreaItemBase imp
     public void getTooltip(List<Component> curTooltip) {
         super.getTooltip(curTooltip);
         if (isUsingSides()) curTooltip.add(xlate("pneumaticcraft.gui.progWidget.inventory.accessingSides"));
-        curTooltip.add(new TextComponent(Symbols.TRIANGLE_RIGHT + " ").append(getExtraStringInfo().get(0)));
+        curTooltip.add(Component.literal(Symbols.TRIANGLE_RIGHT + " ").append(getExtraStringInfo().get(0)));
         if (useCount) curTooltip.add(xlate("pneumaticcraft.gui.progWidget.inventory.usingCount", count));
     }
 
@@ -120,7 +119,7 @@ public abstract class ProgWidgetInventoryBase extends ProgWidgetAreaItemBase imp
                     .filter(side -> accessingSides[side.get3DDataValue()])
                     .map(ClientUtils::translateDirection)
                     .collect(Collectors.toList());
-            return Collections.singletonList(new TextComponent(Strings.join(l, ", ")));
+            return Collections.singletonList(Component.literal(Strings.join(l, ", ")));
         }
     }
 

@@ -38,12 +38,13 @@ import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
+import net.minecraftforge.client.IFluidTypeRenderProperties;
+import net.minecraftforge.client.RenderProperties;
 import net.minecraftforge.client.model.data.EmptyModelData;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidTank;
@@ -102,7 +103,8 @@ public class GuiUtils {
         }
 
         Fluid fluid = fluidStack.getFluid();
-        ResourceLocation fluidStill = fluid.getAttributes().getStillTexture(fluidStack);
+        IFluidTypeRenderProperties renderProps = RenderProperties.get(fluid);
+        ResourceLocation fluidStill = renderProps.getStillTexture(fluidStack);
         if (fluidStill == null) fluidStill = MissingTextureAtlasSprite.getLocation();
         TextureAtlasSprite fluidStillSprite = Minecraft.getInstance().getTextureAtlas(TextureAtlas.LOCATION_BLOCKS).apply(fluidStill);
 
@@ -124,8 +126,8 @@ public class GuiUtils {
         final int yRemainder = scaledAmount - yTileCount * TEX_HEIGHT;
 
         int yStart = bounds.getY() + bounds.getHeight();
-        if (fluid.getAttributes().getDensity() < 0) yStart -= (bounds.getHeight() - scaledAmount);
-        int[] cols = RenderUtils.decomposeColor(fluid.getAttributes().getColor(fluidStack));
+        if (fluid.getFluidType().getDensity() < 0) yStart -= (bounds.getHeight() - scaledAmount);
+        int[] cols = RenderUtils.decomposeColor(renderProps.getColorTint(fluidStack));
 
         for (int xTile = 0; xTile <= xTileCount; xTile++) {
             for (int yTile = 0; yTile <= yTileCount; yTile++) {
@@ -258,7 +260,7 @@ public class GuiUtils {
 
     public static List<Component> xlateAndSplit(String key, Object... params) {
         return Arrays.stream(StringUtils.splitByWholeSeparator(I18n.get(key, params), TRANSLATION_LINE_BREAK))
-                .map(TextComponent::new)
+                .map(Component::literal)
                 .collect(Collectors.toList());
     }
 

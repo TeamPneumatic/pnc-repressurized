@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.common.loot;
 
 import com.google.gson.JsonObject;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -22,9 +23,8 @@ public class PNCDungeonLootModifier extends LootModifier {
         super(conditions);
     }
 
-    @NotNull
     @Override
-    protected List<ItemStack> doApply(List<ItemStack> generatedLoot, LootContext context) {
+    protected @NotNull ObjectArrayList<ItemStack> doApply(ObjectArrayList<ItemStack> generatedLoot, LootContext context) {
         if (ConfigHelper.common().general.enableDungeonLoot.get()) {
             generatedLoot.addAll(CustomPools.roll(context));
         }

@@ -1,21 +1,21 @@
 {
   "type": "minecraft:crafting_shaped",
-  "pattern": [
-    " T ",
-    "CUC",
-    " T "
-  ],
   "key": {
-    "T": {
-      "item": "pneumaticcraft:transistor"
-    },
     "C": {
       "item": "pneumaticcraft:capacitor"
+    },
+    "T": {
+      "item": "pneumaticcraft:transistor"
     },
     "U": {
       "item": "pneumaticcraft:unassembled_pcb"
     }
   },
+  "pattern": [
+    " T ",
+    "CUC",
+    " T "
+  ],
   "result": {
     "item": "pneumaticcraft:printed_circuit_board"
   }

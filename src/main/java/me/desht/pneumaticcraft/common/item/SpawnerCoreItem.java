@@ -24,6 +24,7 @@ import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.TintColor;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.nbt.CompoundTag;
@@ -31,6 +32,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
+import net.minecraft.util.RandomSource;
 import net.minecraft.util.random.Weight;
 import net.minecraft.util.random.WeightedEntry;
 import net.minecraft.util.random.WeightedRandom;
@@ -49,7 +51,6 @@ import net.minecraftforge.registries.ForgeRegistries;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
-import java.util.concurrent.ThreadLocalRandom;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
@@ -100,12 +101,13 @@ public class SpawnerCoreItem extends Item implements ColorHandlers.ITintableItem
         if (stats != null) {
             Level world = context.getLevel();
             EntityType<?> type = stats.pickEntity(false);
-            if (type != null && type.getRegistryName() != null) {
+            if (type == null) return false;
+            return PneumaticCraftUtils.getRegistryName(ForgeRegistries.ENTITIES, type).map(regName -> {
                 Vec3 vec = context.getClickLocation();
                 if (world.noCollision(type.getAABB(vec.x(), vec.y(), vec.z()))) {
                     ServerLevel serverworld = (ServerLevel)world;
                     CompoundTag nbt = new CompoundTag();
-                    nbt.putString("id", type.getRegistryName().toString());
+                    nbt.putString("id", regName.toString());
                     Entity entity = EntityType.loadEntityRecursive(nbt, world, (e1) -> {
                         e1.moveTo(vec.x(), vec.y(), vec.z(), e1.getYRot(), e1.getXRot());
                         return e1;
@@ -119,7 +121,8 @@ public class SpawnerCoreItem extends Item implements ColorHandlers.ITintableItem
                         }
                     }
                 }
-            }
+                return false;
+            }).orElse(false);
         }
         return false;
     }
@@ -171,15 +174,13 @@ public class SpawnerCoreItem extends Item implements ColorHandlers.ITintableItem
                     if (tag != null) tag.remove(NBT_SPAWNER_CORE);
                 } else {
                     CompoundTag subTag = stack.getOrCreateTagElement(NBT_SPAWNER_CORE);
-                    entityCounts.forEach((type, amount) -> {
-                        if (type.getRegistryName() != null) {
-                            if (amount > 0) {
-                                subTag.putInt(type.getRegistryName().toString(), amount);
-                            } else {
-                                subTag.remove(type.getRegistryName().toString());
-                            }
+                    entityCounts.forEach((type, amount) -> PneumaticCraftUtils.getRegistryName(ForgeRegistries.ENTITIES, type).ifPresent(regName -> {
+                        if (amount > 0) {
+                            subTag.putInt(regName.toString(), amount);
+                        } else {
+                            subTag.remove(regName.toString());
                         }
-                    });
+                    }));
                 }
             } else {
                 throw new IllegalArgumentException("item is not a spawner core!");
@@ -220,7 +221,7 @@ public class SpawnerCoreItem extends Item implements ColorHandlers.ITintableItem
             List<WeightedEntity> weightedEntities = new ArrayList<>();
             entityCounts.forEach((type, amount) -> weightedEntities.add(new WeightedEntity(type, amount)));
             if (includeUnused) weightedEntities.add(new WeightedEntity(null, unused));
-            return WeightedRandom.getRandomItem(ThreadLocalRandom.current(), weightedEntities)
+            return WeightedRandom.getRandomItem(RandomSource.createNewThreadLocalInstance(), weightedEntities)
                     .map(WeightedEntity::type)
                     .orElse(null);
         }

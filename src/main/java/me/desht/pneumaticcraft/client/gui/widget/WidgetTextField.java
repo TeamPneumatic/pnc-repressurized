@@ -21,7 +21,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
@@ -33,7 +32,7 @@ public class WidgetTextField extends EditBox implements ITooltipProvider {
     private boolean passwordBox;
 
     public WidgetTextField(Font fontRenderer, int x, int y, int width, int height) {
-        super(fontRenderer, x, y, width, height, TextComponent.EMPTY);
+        super(fontRenderer, x, y, width, height, Component.empty());
     }
 
     public WidgetTextField setAsPasswordBox() {

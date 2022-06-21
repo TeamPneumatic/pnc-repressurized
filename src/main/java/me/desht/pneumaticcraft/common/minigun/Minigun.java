@@ -34,6 +34,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.Mth;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.TamableAnimal;
@@ -50,8 +51,6 @@ import net.minecraftforge.common.util.LazyOptional;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Random;
-import java.util.concurrent.ThreadLocalRandom;
 
 public abstract class Minigun {
     public static final float MAX_GUN_SPEED = 0.4f;
@@ -63,7 +62,7 @@ public abstract class Minigun {
     private float minigunSpeed;
     private int minigunTriggerTimeOut;
     //    private int minigunSoundCounter = -1;
-    private final Random rand = ThreadLocalRandom.current();
+    private final RandomSource rand = RandomSource.createNewThreadLocalInstance();
     private float minigunRotation, oldMinigunRotation;
     public float minigunYaw, oldMinigunYaw;
     public float minigunPitch, oldMinigunPitch;

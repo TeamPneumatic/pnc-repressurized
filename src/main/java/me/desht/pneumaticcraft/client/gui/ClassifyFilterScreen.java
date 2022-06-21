@@ -12,7 +12,6 @@ import me.desht.pneumaticcraft.common.network.PacketSyncClassifyFilter;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 
@@ -48,7 +47,7 @@ public class ClassifyFilterScreen extends AbstractPneumaticCraftScreen {
         int y = guiTop + 20;
 
         for (FilterCondition cond : FilterCondition.values()) {
-            WidgetCheckBox cb = addRenderableWidget(new WidgetCheckBox(x + 20, y + 5, 20, TextComponent.EMPTY, b -> toggleCondition(cond))
+            WidgetCheckBox cb = addRenderableWidget(new WidgetCheckBox(x + 20, y + 5, 20, Component.empty(), b -> toggleCondition(cond))
                     .setTooltipKey(cond.getTranslationKey())
                     .setChecked(conditions.contains(cond))
             );

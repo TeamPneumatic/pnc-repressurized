@@ -41,8 +41,6 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.GlobalPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
@@ -147,7 +145,7 @@ public class AmadronAddTradeScreen extends AbstractPneumaticCraftContainerScreen
         addRenderableWidget(amountFields[slot]);
 
         addRenderableWidget(new WidgetLabel(leftPos + 65 + xOffset, topPos + 145,
-                new TextComponent(fluidFilters[slot].getFluid() != Fluids.EMPTY ? "mB" : "") , 0xFFFFFFFF));
+                Component.literal(fluidFilters[slot].getFluid() != Fluids.EMPTY ? "mB" : "") , 0xFFFFFFFF));
         GlobalPos p = getPosition(slot);
         if (p != null && GlobalPosHelper.isSameWorld(p, ClientUtils.getClientLevel())) {
             BlockState state = ClientUtils.getClientLevel().getBlockState(p.pos());
@@ -155,10 +153,10 @@ public class AmadronAddTradeScreen extends AbstractPneumaticCraftContainerScreen
             addRenderableWidget(new WidgetLabel(leftPos + 32 + xOffset, topPos + 118,
                     name, 0xFFFFFFFF)).setScale(0.5f);
             addRenderableWidget(new WidgetLabel(leftPos + 32 + xOffset, topPos + 124,
-                    new TextComponent(" @ " + posToString(p.pos())), 0xFFFFFFFF)).setScale(0.5f);
+                    Component.literal(" @ " + posToString(p.pos())), 0xFFFFFFFF)).setScale(0.5f);
         }
         if (positions[slot] == null) {
-            addRenderableWidget(new WidgetLabel(leftPos + 32 + xOffset, topPos + 130, new TextComponent("[Default]"), 0xFFC0C0C0)).setScale(0.5f);
+            addRenderableWidget(new WidgetLabel(leftPos + 32 + xOffset, topPos + 130, Component.literal("[Default]"), 0xFFC0C0C0)).setScale(0.5f);
         }
     }
 
@@ -221,7 +219,7 @@ public class AmadronAddTradeScreen extends AbstractPneumaticCraftContainerScreen
     private void openItemSearchGui(int slot) {
         openingSubGUI = true;
         ClientUtils.openContainerGui(ModMenuTypes.ITEM_SEARCHER.get(),
-                new TranslatableComponent("pneumaticcraft.gui.amadron.addTrade.itemSearch"));
+                Component.translatable("pneumaticcraft.gui.amadron.addTrade.itemSearch"));
         if (minecraft.screen instanceof ItemSearcherScreen scr) {
             settingSlot = slot;
             searchGui = scr;
@@ -232,7 +230,7 @@ public class AmadronAddTradeScreen extends AbstractPneumaticCraftContainerScreen
     private void openInventorySearchGui(int slot) {
         openingSubGUI = true;
         ClientUtils.openContainerGui(ModMenuTypes.INVENTORY_SEARCHER.get(),
-                new TranslatableComponent("pneumaticcraft.gui.amadron.addTrade.invSearch"));
+                Component.translatable("pneumaticcraft.gui.amadron.addTrade.invSearch"));
         if (minecraft.screen instanceof InventorySearcherScreen scr) {
             settingSlot = slot;
             invSearchGui = scr;
@@ -251,7 +249,7 @@ public class AmadronAddTradeScreen extends AbstractPneumaticCraftContainerScreen
     private void openGPSGui(int slot) {
         openingSubGUI = true;
         ClientUtils.openContainerGui(ModMenuTypes.INVENTORY_SEARCHER.get(),
-                new TranslatableComponent("pneumaticcraft.gui.amadron.addTrade.gpsSearch"));
+                Component.translatable("pneumaticcraft.gui.amadron.addTrade.gpsSearch"));
         if (minecraft.screen instanceof InventorySearcherScreen scr) {
             gpsSearchGui = scr;
             gpsSearchGui.setStackPredicate(itemStack -> itemStack.getItem() instanceof IPositionProvider);
@@ -272,7 +270,7 @@ public class AmadronAddTradeScreen extends AbstractPneumaticCraftContainerScreen
                 resources[slot] = AmadronTradeResource.of(new FluidStack(fluidFilters[slot].getFluid(), amountFields[slot].getIntValue()));
             }
         }
-        String id = ClientUtils.getClientPlayer().getName().getContents().toLowerCase() + "_" + (System.currentTimeMillis() / 1000);
+        String id = ClientUtils.getClientPlayer().getName().getString().toLowerCase() + "_" + (System.currentTimeMillis() / 1000);
         AmadronPlayerOffer trade = new AmadronPlayerOffer(RL(id), resources[OUTPUT_SLOT], resources[INPUT_SLOT], ClientUtils.getClientPlayer())
                 .setProvidingPosition(getPosition(INPUT_SLOT))
                 .setReturningPosition(getPosition(OUTPUT_SLOT));

@@ -1,30 +1,30 @@
 {
   "type": "minecraft:crafting_shaped",
+  "key": {
+    "C": {
+      "item": "pneumaticcraft:printed_circuit_board"
+    },
+    "D": {
+      "item": "pneumaticcraft:drone"
+    },
+    "I": {
+      "tag": "forge:ingots/compressed_iron"
+    },
+    "N": {
+      "item": "pneumaticcraft:network_registry"
+    },
+    "P": {
+      "item": "pneumaticcraft:advanced_pressure_tube"
+    },
+    "R": {
+      "item": "pneumaticcraft:remote"
+    }
+  },
   "pattern": [
     "IRI",
     "CDP",
     "INI"
   ],
-  "key": {
-    "I": {
-      "tag": "forge:ingots/compressed_iron"
-    },
-    "R": {
-      "item": "pneumaticcraft:remote"
-    },
-    "C": {
-      "item": "pneumaticcraft:printed_circuit_board"
-    },
-    "P": {
-      "item": "pneumaticcraft:advanced_pressure_tube"
-    },
-    "D": {
-      "item": "pneumaticcraft:drone"
-    },
-    "N": {
-      "item": "pneumaticcraft:network_registry"
-    }
-  },
   "result": {
     "item": "pneumaticcraft:programmable_controller"
   }

@@ -35,7 +35,7 @@ import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.client.resources.language.I18n;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 
@@ -66,19 +66,19 @@ public class PressureGaugeModuleScreen extends AbstractTubeModuleScreen<Abstract
         int xStart = (width - xSize) / 2;
         int yStart = (height - ySize) / 2;
 
-        addLabel(new TextComponent("lower"), guiLeft + 15, guiTop + 33);
-        addLabel(new TextComponent("bar"), guiLeft + 50, guiTop + 44);
-        addLabel(new TextComponent("higher"), guiLeft + 140, guiTop + 33);
+        addLabel(Component.literal("lower"), guiLeft + 15, guiTop + 33);
+        addLabel(Component.literal("bar"), guiLeft + 50, guiTop + 44);
+        addLabel(Component.literal("higher"), guiLeft + 140, guiTop + 33);
 
         addLabel(title, width / 2 - font.width(title) / 2, guiTop + 5);
 
         lowerBoundField = new EditBox(font, xStart + 15, yStart + 43, 30, 10,
-                new TextComponent(PneumaticCraftUtils.roundNumberTo(module.lowerBound, 1)));
+                Component.literal(PneumaticCraftUtils.roundNumberTo(module.lowerBound, 1)));
         lowerBoundField.setResponder(s -> updateBoundFromTextfield(0));
         addRenderableWidget(lowerBoundField);
 
         higherBoundField = new EditBox(font, xStart + 140, yStart + 43, 30, 10,
-                new TextComponent(PneumaticCraftUtils.roundNumberTo(module.higherBound, 1)));
+                Component.literal(PneumaticCraftUtils.roundNumberTo(module.higherBound, 1)));
         higherBoundField.setResponder(s -> updateBoundFromTextfield(1));
         addRenderableWidget(higherBoundField);
 

@@ -24,6 +24,7 @@ import me.desht.pneumaticcraft.api.item.IUpgradeItem;
 import me.desht.pneumaticcraft.api.item.PNCUpgrade;
 import me.desht.pneumaticcraft.api.lib.NBTKeys;
 import me.desht.pneumaticcraft.api.misc.Symbols;
+import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.util.upgrade.ApplicableUpgradesDB;
 import me.desht.pneumaticcraft.common.util.upgrade.UpgradeCache;
 import net.minecraft.ChatFormatting;
@@ -125,7 +126,7 @@ public class UpgradableItemUtils {
         if (stack.getTag() != null) {
             validateUpgradeCache(stack);
             CompoundTag subTag = Objects.requireNonNull(stack.getTag()).getCompound(NBT_UPGRADE_CACHE_TAG);
-            String key = PneumaticCraftUtils.modDefaultedString(Objects.requireNonNull(upgrade.getRegistryName()));
+            String key = PneumaticCraftUtils.modDefaultedString(PneumaticCraftUtils.getRegistryName(ModUpgrades.UPGRADES.get(), upgrade).orElseThrow());
             return subTag.getInt(key);
         }
         return 0;
@@ -145,7 +146,7 @@ public class UpgradableItemUtils {
             validateUpgradeCache(stack);
             CompoundTag subTag = stack.getTag().getCompound(NBT_UPGRADE_CACHE_TAG);
             for (PNCUpgrade upgrade : upgradeList) {
-                String key = PneumaticCraftUtils.modDefaultedString(Objects.requireNonNull(upgrade.getRegistryName()));
+                String key = PneumaticCraftUtils.modDefaultedString(PneumaticCraftUtils.getRegistryName(ModUpgrades.UPGRADES.get(), upgrade).orElseThrow());
                 builder.add(subTag.getInt(key));
             }
         }

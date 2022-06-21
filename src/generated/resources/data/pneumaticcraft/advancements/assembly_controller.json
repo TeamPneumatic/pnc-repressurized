@@ -1,27 +1,7 @@
 {
   "parent": "pneumaticcraft:printed_circuit_board",
-  "display": {
-    "icon": {
-      "item": "pneumaticcraft:assembly_controller"
-    },
-    "title": {
-      "translate": "pneumaticcraft.advancement.assembly_controller"
-    },
-    "description": {
-      "translate": "pneumaticcraft.advancement.assembly_controller.desc"
-    },
-    "frame": "goal",
-    "show_toast": true,
-    "announce_to_chat": true,
-    "hidden": false,
-    "background": "pneumaticcraft:textures/gui/advancement_bg.png"
-  },
-  "rewards": {
-    "experience": 30
-  },
   "criteria": {
     "0": {
-      "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
           {
@@ -30,12 +10,32 @@
             ]
           }
         ]
-      }
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "announce_to_chat": true,
+    "background": "pneumaticcraft:textures/gui/advancement_bg.png",
+    "description": {
+      "translate": "pneumaticcraft.advancement.assembly_controller.desc"
+    },
+    "frame": "goal",
+    "hidden": false,
+    "icon": {
+      "item": "pneumaticcraft:assembly_controller"
+    },
+    "show_toast": true,
+    "title": {
+      "translate": "pneumaticcraft.advancement.assembly_controller"
     }
   },
   "requirements": [
     [
       "0"
     ]
-  ]
+  ],
+  "rewards": {
+    "experience": 30
+  }
 }

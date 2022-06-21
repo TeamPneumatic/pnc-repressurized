@@ -19,7 +19,6 @@ package me.desht.pneumaticcraft.common.progwidgets;
 
 import me.desht.pneumaticcraft.common.util.EntityFilter;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 
@@ -46,10 +45,10 @@ class EntityFilterPair<T extends IProgWidget & IEntityProvider> {
     public static <T extends IProgWidget & IEntityProvider> void addErrors(T widget, List<Component> errors) {
         EntityFilterPair<T> filter = new EntityFilterPair<>(widget);
         if (!filter.errorWhite.isEmpty()) {
-            errors.add(new TextComponent("Invalid whitelist filter: " + filter.errorWhite));
+            errors.add(Component.literal("Invalid whitelist filter: " + filter.errorWhite));
         }
         if (!filter.errorBlack.isEmpty()) {
-            errors.add(new TextComponent("Invalid blacklist filter: " + filter.errorBlack));
+            errors.add(Component.literal("Invalid blacklist filter: " + filter.errorBlack));
         }
     }
 

@@ -31,8 +31,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
@@ -118,7 +116,7 @@ public class CamoApplicatorItem extends PressurizableItem {
                     if (newCamo != null && !player.isCreative()) {
                         ItemStack camoStack = CamouflageableBlockEntity.getStackForState(newCamo);
                         if (!PneumaticCraftUtils.consumeInventoryItem(player.getInventory(), camoStack)) {
-                            player.displayClientMessage(new TranslatableComponent("pneumaticcraft.message.camo.notEnoughBlocks")
+                            player.displayClientMessage(Component.translatable("pneumaticcraft.message.camo.notEnoughBlocks")
                                     .append(camoStack.getHoverName())
                                     .withStyle(ChatFormatting.RED), true);
                             NetworkHandler.sendToAllTracking(new PacketPlaySound(ModSounds.MINIGUN_STOP.get(), SoundSource.PLAYERS,
@@ -173,7 +171,7 @@ public class CamoApplicatorItem extends PressurizableItem {
         if (state != null) {
             return new ItemStack(state.getBlock().asItem()).getHoverName();
         }
-        return new TextComponent("<?>");
+        return Component.literal("<?>");
     }
 
 }

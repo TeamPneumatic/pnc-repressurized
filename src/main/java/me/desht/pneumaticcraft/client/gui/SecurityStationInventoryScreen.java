@@ -25,6 +25,7 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetRangeToggleButton;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTextField;
 import me.desht.pneumaticcraft.client.render.HackSimulationRenderer;
+import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.block.entity.SecurityStationBlockEntity;
@@ -40,7 +41,6 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
@@ -49,7 +49,6 @@ import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
@@ -146,7 +145,7 @@ public class SecurityStationInventoryScreen extends AbstractPneumaticCraftContai
         if (te.getRebootTime() > 0) {
             rebootButtonString = te.getRebootTime() % 100 < 20 ?
                     xlate("pneumaticcraft.gui.securityStation.rebooting") :
-                    new TextComponent(PneumaticCraftUtils.convertTicksToMinutesAndSeconds(te.getRebootTime(), false));
+                    Component.literal(PneumaticCraftUtils.convertTicksToMinutesAndSeconds(te.getRebootTime(), false));
         } else {
             rebootButtonString = xlate("pneumaticcraft.gui.securityStation.reboot").withStyle(ChatFormatting.RED);
         }
@@ -194,30 +193,30 @@ public class SecurityStationInventoryScreen extends AbstractPneumaticCraftContai
         List<Component> text = new ArrayList<>();
         text.add(xlate("pneumaticcraft.gui.tab.status.securityStation.protection").withStyle(ChatFormatting.WHITE));
         if (te.getRebootTime() > 0) {
-            text.add(new TextComponent("  ").append(xlate("pneumaticcraft.gui.securityStation.rebooting")).withStyle(ChatFormatting.DARK_RED));
+            text.add(Component.literal("  ").append(xlate("pneumaticcraft.gui.securityStation.rebooting")).withStyle(ChatFormatting.DARK_RED));
         } else if (te.isHacked()) {
-            text.add(new TextComponent("  ").append(xlate("pneumaticcraft.gui.tab.status.securityStation.hackedBy")).withStyle(ChatFormatting.DARK_RED));
+            text.add(Component.literal("  ").append(xlate("pneumaticcraft.gui.tab.status.securityStation.hackedBy")).withStyle(ChatFormatting.DARK_RED));
             for (GameProfile hacker : te.hackedUsers) {
-                text.add(new TextComponent("  ").append(Symbols.bullet()).append(hacker.getName()).withStyle(ChatFormatting.RED));
+                text.add(Component.literal("  ").append(Symbols.bullet()).append(hacker.getName()).withStyle(ChatFormatting.RED));
             }
         } else {
-            text.add(new TextComponent("  ").append(xlate("pneumaticcraft.gui.tab.status.securityStation.secure")).withStyle(ChatFormatting.GREEN));
+            text.add(Component.literal("  ").append(xlate("pneumaticcraft.gui.tab.status.securityStation.secure")).withStyle(ChatFormatting.GREEN));
         }
         text.add(xlate("pneumaticcraft.gui.tab.status.securityStation.securityLevel").withStyle(ChatFormatting.WHITE));
-        text.add(new TextComponent("  ").append(new TextComponent("L" + te.getSecurityLevel())).withStyle(ChatFormatting.BLACK));
+        text.add(Component.literal("  ").append(Component.literal("L" + te.getSecurityLevel())).withStyle(ChatFormatting.BLACK));
         text.add(xlate("pneumaticcraft.gui.tab.status.securityStation.detectChance").withStyle(ChatFormatting.WHITE));
-        text.add(new TextComponent("  ").append(new TextComponent(te.getDetectionChance() + "%")).withStyle(ChatFormatting.BLACK));
+        text.add(Component.literal("  ").append(Component.literal(te.getDetectionChance() + "%")).withStyle(ChatFormatting.BLACK));
         text.add(xlate("pneumaticcraft.gui.tab.status.securityStation.securityRange").withStyle(ChatFormatting.WHITE));
-        text.add(new TextComponent("  ").append(new TextComponent((te.getRange() * 2 + 1) + "m²")).withStyle(ChatFormatting.BLACK));
+        text.add(Component.literal("  ").append(Component.literal((te.getRange() * 2 + 1) + "m²")).withStyle(ChatFormatting.BLACK));
         return text;
     }
 
     private List<Component> getAccessText() {
         List<Component> textList = new ArrayList<>();
-        textList.add(TextComponent.EMPTY);
-        textList.add(TextComponent.EMPTY);
+        textList.add(Component.empty());
+        textList.add(Component.empty());
         boolean first = true;
-        List<String> names = te.sharedUsers.stream().map(GameProfile::getName).sorted().collect(Collectors.toList());
+        List<String> names = te.sharedUsers.stream().map(GameProfile::getName).sorted().toList();
         for (String name : names) {
             String str = first ? name + " \u2654" : name;
             textList.add(Symbols.bullet().append(str).withStyle(first ? ChatFormatting.YELLOW : ChatFormatting.WHITE));
@@ -234,9 +233,9 @@ public class SecurityStationInventoryScreen extends AbstractPneumaticCraftContai
         }
         sharedUserList = new ArrayList<>();
         int n = 0;
-        List<String> names = te.sharedUsers.stream().map(GameProfile::getName).sorted().collect(Collectors.toList());
+        List<String> names = te.sharedUsers.stream().map(GameProfile::getName).sorted().toList();
         for (String name : names) {
-            WidgetButtonExtended button = new WidgetButtonExtended(24, 30 + n * (font.lineHeight + 1), font.width(name), 8, TextComponent.EMPTY, b -> {})
+            WidgetButtonExtended button = new WidgetButtonExtended(24, 30 + n * (font.lineHeight + 1), font.width(name), 8, Component.empty(), b -> {})
                     .setVisible(false)
                     .setInvisibleHoverColor(0x80FF0000)
                     .withTag("remove:" + name);
@@ -244,7 +243,7 @@ public class SecurityStationInventoryScreen extends AbstractPneumaticCraftContai
             button.setVisible(false);
             accessStat.addSubWidget(button);
             sharedUserList.add(button);
-            button.visible = !name.equals(minecraft.player.getGameProfile().getName());
+            button.visible = !name.equals(ClientUtils.getClientPlayer().getGameProfile().getName());
             n++;
         }
     }

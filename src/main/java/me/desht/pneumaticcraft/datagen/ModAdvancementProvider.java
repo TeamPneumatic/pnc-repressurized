@@ -30,14 +30,15 @@ import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.FrameType;
 import net.minecraft.advancements.critereon.*;
+import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataProvider;
-import net.minecraft.data.HashCache;
 import net.minecraft.data.advancements.AdvancementProvider;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraftforge.common.data.ExistingFileHelper;
 import org.apache.commons.lang3.Validate;
 
 import java.io.IOException;
@@ -55,13 +56,13 @@ public class ModAdvancementProvider extends AdvancementProvider {
     private static final Gson GSON = (new GsonBuilder()).setPrettyPrinting().create();
     private final DataGenerator generator;
 
-    public ModAdvancementProvider(DataGenerator generatorIn) {
-        super(generatorIn);
+    public ModAdvancementProvider(DataGenerator generatorIn, ExistingFileHelper existingFileHelper) {
+        super(generatorIn, existingFileHelper);
         this.generator = generatorIn;
     }
 
     @Override
-    public void run(HashCache cache) {
+    public void run(CachedOutput cache) {
         Path path = this.generator.getOutputFolder();
         Set<ResourceLocation> set = Sets.newHashSet();
         Consumer<Advancement> consumer = (advancement) -> {
@@ -70,7 +71,7 @@ public class ModAdvancementProvider extends AdvancementProvider {
             } else {
                 Path path1 = getPath(path, advancement);
                 try {
-                    DataProvider.save(GSON, cache, advancement.deconstruct().serializeToJson(), path1);
+                    DataProvider.saveStable(cache, advancement.deconstruct().serializeToJson(), path1);
                 } catch (IOException e) {
                     Log.error("Couldn't save advancement {}", path1, e);
                 }

@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.api.item;
 
 import com.google.common.collect.ImmutableMap;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
@@ -127,6 +128,21 @@ public interface IUpgradeRegistry {
      * @return an immutable map of (upgrade->count)
      */
     Map<PNCUpgrade,Integer> getAllUpgrades(ItemStack stack);
+
+    /**
+     * Get the registry name for the corresponding item for this upgrade, given a tier. Do not use this before the
+     * upgrade itself has been registered!
+     * <p>
+     * The default naming strategy is to take the upgrade's registry name and simply append "_upgrade" to it (along with
+     * the tier number if it's a multitier upgrade). You can override this strategy by extending this class and
+     * overriding this method if you need to.
+     *
+     * @param upgrade the upgrade in question
+     * @param tier tier of the upgrade (ignored if the upgrade has only one tier)
+     * @return an item registry name
+     * @throws NullPointerException if called before the upgrade is registered
+     */
+    ResourceLocation getItemRegistryName(PNCUpgrade upgrade, int tier);
 
     /**
      * Helper class to collect a list of upgrades for adding to an object via one of the {@code addApplicableUpgrades()}

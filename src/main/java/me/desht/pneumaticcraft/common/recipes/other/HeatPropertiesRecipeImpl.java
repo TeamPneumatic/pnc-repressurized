@@ -20,7 +20,6 @@ package me.desht.pneumaticcraft.common.recipes.other;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
-import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import me.desht.pneumaticcraft.api.crafting.recipe.HeatPropertiesRecipe;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
@@ -29,8 +28,10 @@ import me.desht.pneumaticcraft.common.core.ModRecipeSerializers;
 import me.desht.pneumaticcraft.common.core.ModRecipeTypes;
 import me.desht.pneumaticcraft.common.heat.HeatExchangerLogicConstant;
 import me.desht.pneumaticcraft.common.network.PacketUtil;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.commands.arguments.blocks.BlockStateParser;
+import net.minecraft.core.Registry;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
@@ -44,11 +45,9 @@ import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.ForgeRegistryEntry;
 
 import javax.annotation.Nullable;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class HeatPropertiesRecipeImpl extends HeatPropertiesRecipe {
     private final Block block;
@@ -94,15 +93,15 @@ public class HeatPropertiesRecipeImpl extends HeatPropertiesRecipe {
         if (!predicates.isEmpty()) {
             List<String> l = predicates.entrySet().stream()
                     .map(e -> e.getKey() + "=" + e.getValue())
-                    .collect(Collectors.toList());
-            BlockStateParser parser;
+                    .toList();
             try {
-                String str = block.getRegistryName().toString() + "[" + String.join(",", l) + "]";
-                parser = (new BlockStateParser(new StringReader(str), false)).parse(false);
+                String regName = PneumaticCraftUtils.getRegistryName(block).orElseThrow().toString();
+                String str = regName + "[" + String.join(",", l) + "]";
+                BlockStateParser.BlockResult res = BlockStateParser.parseForBlock(Registry.BLOCK, str, false);
+                return res.blockState();
             } catch (CommandSyntaxException e) {
                 return block.defaultBlockState();
             }
-            return parser.getState();
         } else {
             return block.defaultBlockState();
         }
@@ -160,7 +159,7 @@ public class HeatPropertiesRecipeImpl extends HeatPropertiesRecipe {
 
     @Override
     public void write(FriendlyByteBuf buffer) {
-        buffer.writeRegistryId(block);
+        buffer.writeRegistryId(ForgeRegistries.BLOCKS, block);
         PacketUtil.writeNullableBlockState(buffer, transformHot);
         PacketUtil.writeNullableBlockState(buffer, transformCold);
         PacketUtil.writeNullableBlockState(buffer, transformHotFlowing);
@@ -213,7 +212,7 @@ public class HeatPropertiesRecipeImpl extends HeatPropertiesRecipe {
         return descriptionKey;
     }
 
-    public static class Serializer<T extends HeatPropertiesRecipe> extends ForgeRegistryEntry<RecipeSerializer<?>> implements RecipeSerializer<T> {
+    public static class Serializer<T extends HeatPropertiesRecipe> implements RecipeSerializer<T> {
         private final IFactory<T> factory;
 
         public Serializer(IFactory<T> factory) {
@@ -283,7 +282,7 @@ public class HeatPropertiesRecipeImpl extends HeatPropertiesRecipe {
                 if (fluid == Fluids.EMPTY) {
                     throw new JsonSyntaxException(block + ": Non-fluid definitions must have a 'temperature' field!");
                 } else {
-                    temperature = fluid.getAttributes().getTemperature();
+                    temperature = fluid.getFluidType().getTemperature();
                 }
             }
 
@@ -299,7 +298,7 @@ public class HeatPropertiesRecipeImpl extends HeatPropertiesRecipe {
             if (json.has("statePredicate")) {
                 json.getAsJsonObject("statePredicate").entrySet().forEach(entry -> {
                     if (block.getStateDefinition().getProperty(entry.getKey()) == null) {
-                        throw new JsonSyntaxException("unknown blockstate property " + entry.getKey() + " for block" + block.getRegistryName());
+                        throw new JsonSyntaxException("unknown blockstate property " + entry.getKey() + " for block" + block);
                     }
                     predicates.put(entry.getKey(), entry.getValue().getAsString());
                 });
@@ -316,7 +315,7 @@ public class HeatPropertiesRecipeImpl extends HeatPropertiesRecipe {
         @Nullable
         @Override
         public T fromNetwork(ResourceLocation recipeId, FriendlyByteBuf buffer) {
-            Block block = buffer.readRegistryId();
+            Block block = buffer.readRegistryIdSafe(Block.class);
             BlockState transformHot = PacketUtil.readNullableBlockState(buffer);
             BlockState transformCold = PacketUtil.readNullableBlockState(buffer);
             BlockState transformHotFlowing = PacketUtil.readNullableBlockState(buffer);
@@ -350,8 +349,7 @@ public class HeatPropertiesRecipeImpl extends HeatPropertiesRecipe {
 
         private BlockState parseBlockState(String str) {
             try {
-                BlockStateParser parser = (new BlockStateParser(new StringReader(str), false)).parse(false);
-                return parser.getState();
+                return BlockStateParser.parseForBlock(Registry.BLOCK, str, false).blockState();
             } catch (CommandSyntaxException e) {
                 throw new JsonSyntaxException(String.format("invalid blockstate [%s] - %s", str, e.getMessage()));
             }
@@ -369,10 +367,10 @@ public class HeatPropertiesRecipeImpl extends HeatPropertiesRecipe {
                     //noinspection ConstantConditions
                     return ForgeRegistries.FLUIDS.getValue(fluidId).defaultFluidState().createLegacyBlock();
                 } else {
-                    throw new JsonSyntaxException(String.format("unknown fluid '%s' for field '%s' in block '%s'", fluidId, field, b.getRegistryName()));
+                    throw new JsonSyntaxException(String.format("unknown fluid '%s' for field '%s' in block '%s'", fluidId, field, b));
                 }
             } else {
-                throw new JsonSyntaxException(String.format("block %s must have either a 'block' or 'fluid' section!", b.getRegistryName()));
+                throw new JsonSyntaxException(String.format("block %s must have either a 'block' or 'fluid' section!", b));
             }
         }
 

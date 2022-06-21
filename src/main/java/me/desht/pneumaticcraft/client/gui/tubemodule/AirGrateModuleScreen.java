@@ -33,7 +33,6 @@ import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import org.lwjgl.glfw.GLFW;
@@ -63,7 +62,7 @@ public class AirGrateModuleScreen extends AbstractTubeModuleScreen<AirGrateModul
                 .setColor(0xC0C0C0);
         helpLabel.visible = this.module.isUpgraded();
 
-        WidgetButtonExtended advPCB = new WidgetButtonExtended(this.guiLeft + 10, this.guiTop + 21, 20, 20, TextComponent.EMPTY)
+        WidgetButtonExtended advPCB = new WidgetButtonExtended(this.guiLeft + 10, this.guiTop + 21, 20, 20, Component.empty())
                 .setRenderStacks(new ItemStack(ModItems.MODULE_EXPANSION_CARD.get()))
                 .setTooltipKey("pneumaticcraft.gui.redstoneModule.addAdvancedPCB").setVisible(false);
         advPCB.visible = !module.isUpgraded();
@@ -82,7 +81,7 @@ public class AirGrateModuleScreen extends AbstractTubeModuleScreen<AirGrateModul
         setFocused(textfield);
         addRenderableWidget(textfield);
 
-        warningButton = new WidgetButtonExtended(guiLeft + tx, guiTop + 30, 20, 20, TextComponent.EMPTY)
+        warningButton = new WidgetButtonExtended(guiLeft + tx, guiTop + 30, 20, 20, Component.empty())
                 .setVisible(false)
                 .setRenderedIcon(Textures.GUI_PROBLEMS_TEXTURE);
         addRenderableWidget(warningButton);
@@ -97,18 +96,18 @@ public class AirGrateModuleScreen extends AbstractTubeModuleScreen<AirGrateModul
     }
 
     private Component getRangeButtonText() {
-        return new TextComponent((this.module.isShowRange() ? ChatFormatting.AQUA : ChatFormatting.DARK_GRAY) + "R");
+        return Component.literal((this.module.isShowRange() ? ChatFormatting.AQUA : ChatFormatting.DARK_GRAY) + "R");
     }
 
     private boolean validateEntityFilter(String filter) {
         try {
             new EntityFilter(filter);  // syntax check
             warningButton.visible = false;
-            warningButton.setTooltipText(TextComponent.EMPTY);
+            warningButton.setTooltipText(Component.empty());
             return true;
         } catch (IllegalArgumentException e) {
             warningButton.visible = true;
-            warningButton.setTooltipText(new TextComponent(e.getMessage()).withStyle(ChatFormatting.GOLD));
+            warningButton.setTooltipText(Component.literal(e.getMessage()).withStyle(ChatFormatting.GOLD));
             return false;
         }
     }

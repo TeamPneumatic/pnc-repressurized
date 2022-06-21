@@ -1,10 +1,5 @@
 {
   "type": "minecraft:crafting_shaped",
-  "pattern": [
-    "CEC",
-    "EXE",
-    "CEC"
-  ],
   "key": {
     "C": {
       "tag": "forge:dyes/purple"
@@ -16,8 +11,13 @@
       "tag": "forge:chests/wooden"
     }
   },
+  "pattern": [
+    "CEC",
+    "EXE",
+    "CEC"
+  ],
   "result": {
-    "item": "pneumaticcraft:network_node",
-    "count": 16
+    "count": 16,
+    "item": "pneumaticcraft:network_node"
   }
 }

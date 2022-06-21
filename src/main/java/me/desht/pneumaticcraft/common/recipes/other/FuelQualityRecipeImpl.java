@@ -29,7 +29,6 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.material.Fluid;
-import net.minecraftforge.registries.ForgeRegistryEntry;
 import org.apache.commons.lang3.Validate;
 
 import javax.annotation.Nullable;
@@ -86,7 +85,7 @@ public class FuelQualityRecipeImpl extends FuelQualityRecipe {
         return ModRecipeTypes.FUEL_QUALITY.get();
     }
 
-    public static class Serializer<T extends FuelQualityRecipe> extends ForgeRegistryEntry<RecipeSerializer<?>> implements RecipeSerializer<T> {
+    public static class Serializer<T extends FuelQualityRecipe> implements RecipeSerializer<T> {
         private final IFactory<T> factory;
 
         public Serializer(IFactory<T> factory) {

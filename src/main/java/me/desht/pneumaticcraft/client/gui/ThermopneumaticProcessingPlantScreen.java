@@ -33,7 +33,6 @@ import me.desht.pneumaticcraft.common.inventory.ThermopneumaticProcessingPlantMe
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
@@ -70,7 +69,7 @@ public class ThermopneumaticProcessingPlantScreen extends
         tempWidget = new WidgetTemperature(leftPos + 105, topPos + 25, TemperatureRange.of(273, 673), 273, 50);
         addRenderableWidget(tempWidget);
 
-        dumpButton = new WidgetButtonExtended(leftPos + 14, topPos + 86, 14, 14, TextComponent.EMPTY)
+        dumpButton = new WidgetButtonExtended(leftPos + 14, topPos + 86, 14, 14, Component.empty())
                 .withTag("dump");
         addRenderableWidget(dumpButton);
 
@@ -90,10 +89,10 @@ public class ThermopneumaticProcessingPlantScreen extends
         tempWidget.autoScaleForTemperature();
 
         if (hasShiftDown()) {
-            dumpButton.setMessage(new TextComponent("X").withStyle(ChatFormatting.RED));
+            dumpButton.setMessage(Component.literal("X").withStyle(ChatFormatting.RED));
             dumpButton.setTooltipKey("pneumaticcraft.gui.thermopneumatic.dumpInput");
         } else {
-            dumpButton.setMessage(new TextComponent(Symbols.TRIANGLE_RIGHT).withStyle(ChatFormatting.DARK_AQUA));
+            dumpButton.setMessage(Component.literal(Symbols.TRIANGLE_RIGHT).withStyle(ChatFormatting.DARK_AQUA));
             dumpButton.setTooltipKey("pneumaticcraft.gui.thermopneumatic.moveInput");
         }
     }

@@ -29,30 +29,34 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.ShapelessRecipe;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.registries.ObjectHolder;
+import net.minecraftforge.registries.ForgeRegistries;
 
 public class OneProbeCrafting extends ShapelessRecipe {
-    @ObjectHolder("theoneprobe:probe")
-    public static final Item ONE_PROBE = null;
+    private static Item theOneProbe = null;
 
     private static final String ONE_PROBE_TAG = "theoneprobe";
 
     public OneProbeCrafting(ResourceLocation idIn) {
         super(idIn, "", makeOutputStack(),
-                NonNullList.of(Ingredient.EMPTY, Ingredient.of(ModItems.PNEUMATIC_HELMET.get()), Ingredient.of(ONE_PROBE)));
+                NonNullList.of(Ingredient.EMPTY, Ingredient.of(ModItems.PNEUMATIC_HELMET.get()), Ingredient.of(probe())));
+    }
+
+    private static Item probe() {
+        if (theOneProbe == null) {
+            theOneProbe = ForgeRegistries.ITEMS.getValue(new ResourceLocation("theoneprobe:probe"));
+        }
+        return theOneProbe;
     }
 
     @Override
     public boolean matches(CraftingContainer inv, Level worldIn) {
-        if (ONE_PROBE == null) return false;
-
         boolean probeFound = false, helmetFound = false;
         for (int i = 0; i < inv.getContainerSize(); i++) {
             Item item = inv.getItem(i).getItem();
             if (item == ModItems.PNEUMATIC_HELMET.get()) {
                 if (helmetFound || isOneProbeEnabled(inv.getItem(i))) return false;
                 helmetFound = true;
-            } else if (item == ONE_PROBE) {
+            } else if (item == probe()) {
                 if (probeFound) return false;
                 probeFound = true;
             } else if (item != Items.AIR) {

@@ -33,19 +33,22 @@ import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.BlockModel;
 import net.minecraft.client.renderer.block.model.ItemOverrides;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
-import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.*;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.GsonHelper;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.client.IFluidTypeRenderProperties;
+import net.minecraftforge.client.RenderProperties;
 import net.minecraftforge.client.model.IModelConfiguration;
 import net.minecraftforge.client.model.IModelLoader;
 import net.minecraftforge.client.model.PerspectiveMapWrapper;
@@ -73,16 +76,17 @@ public class FluidItemModel implements IDynamicBakedModel {
 
     @Nonnull
     @Override
-    public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, @Nonnull Random rand, @Nonnull IModelData extraData) {
+    public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, @Nonnull RandomSource rand, @Nonnull IModelData extraData) {
         List<BakedQuad> res = new ArrayList<>(bakedBaseModel.getQuads(state, side, rand, extraData));
 
         for (TankRenderInfo info : tanksToRender) {
             IFluidTank tank = info.getTank();
             if (tank.getFluid().isEmpty()) continue;
             Fluid fluid = tank.getFluid().getFluid();
-            ResourceLocation texture = fluid.getAttributes().getStillTexture(tank.getFluid());
-            TextureAtlasSprite still = Minecraft.getInstance().getTextureAtlas(TextureAtlas.LOCATION_BLOCKS).apply(texture);
-            int color = fluid.getAttributes().getColor(tank.getFluid());
+            IFluidTypeRenderProperties renderProps = RenderProperties.get(fluid);
+            ResourceLocation texture = renderProps.getStillTexture(tank.getFluid());
+            TextureAtlasSprite still = Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(texture);
+            int color = renderProps.getColorTint(tank.getFluid());
             float[] cols = new float[]{(color >> 24 & 0xFF) / 255F, (color >> 16 & 0xFF) / 255F, (color >> 8 & 0xFF) / 255F, (color & 0xFF) / 255F};
             AABB bounds = getRenderBounds(tank, info.getBounds());
             float bx1 = (float) (bounds.minX * 16);
@@ -125,7 +129,7 @@ public class FluidItemModel implements IDynamicBakedModel {
 
         double tankHeight = tankBounds.maxY - tankBounds.minY;
         double y1 = tankBounds.minY, y2 = (tankBounds.minY + (tankHeight * percent));
-        if (tank.getFluid().getFluid().getAttributes().getDensity() < 0) {
+        if (tank.getFluid().getFluid().getFluidType().isLighterThanAir()) {
             double yOff = tankBounds.maxY - y2;  // lighter than air fluids move to the top of the tank
             y1 += yOff; y2 += yOff;
         }

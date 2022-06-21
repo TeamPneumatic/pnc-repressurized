@@ -1,10 +1,5 @@
 {
   "type": "minecraft:crafting_shaped",
-  "pattern": [
-    "CEC",
-    "EXE",
-    "CEC"
-  ],
   "key": {
     "C": {
       "tag": "forge:dyes/cyan"
@@ -16,6 +11,11 @@
       "tag": "forge:chests/wooden"
     }
   },
+  "pattern": [
+    "CEC",
+    "EXE",
+    "CEC"
+  ],
   "result": {
     "item": "pneumaticcraft:network_io_port"
   }

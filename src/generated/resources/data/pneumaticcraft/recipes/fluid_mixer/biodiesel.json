@@ -1,18 +1,18 @@
 {
   "type": "pneumaticcraft:fluid_mixer",
+  "fluid_output": {
+    "amount": 50,
+    "fluid": "pneumaticcraft:biodiesel"
+  },
   "input1": {
     "type": "pneumaticcraft:fluid",
-    "tag": "forge:plantoil",
-    "amount": 25
+    "amount": 25,
+    "tag": "forge:plantoil"
   },
   "input2": {
     "type": "pneumaticcraft:fluid",
-    "tag": "forge:ethanol",
-    "amount": 25
-  },
-  "fluid_output": {
-    "fluid": "pneumaticcraft:biodiesel",
-    "amount": 50
+    "amount": 25,
+    "tag": "forge:ethanol"
   },
   "item_output": {
     "item": "pneumaticcraft:glycerol"

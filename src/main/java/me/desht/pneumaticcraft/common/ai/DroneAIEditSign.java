@@ -21,7 +21,7 @@ import me.desht.pneumaticcraft.common.block.entity.AphorismTileBlockEntity;
 import me.desht.pneumaticcraft.common.progwidgets.ISignEditWidget;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetAreaItemBase;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.SignBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -37,7 +37,7 @@ public class DroneAIEditSign extends DroneAIBlockInteraction<ProgWidgetAreaItemB
         if (te instanceof SignBlockEntity sign) {
             String[] lines = ((ISignEditWidget) progWidget).getLines();
             for (int i = 0; i < 4; i++) {
-                sign.setMessage(i, new TextComponent(i < lines.length ? lines[i] : ""));
+                sign.setMessage(i, Component.literal(i < lines.length ? lines[i] : ""));
             }
             BlockState state = drone.world().getBlockState(pos);
             drone.world().sendBlockUpdated(pos, state, state, 3);

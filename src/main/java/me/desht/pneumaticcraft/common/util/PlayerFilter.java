@@ -22,7 +22,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import me.desht.pneumaticcraft.api.misc.IPlayerMatcher;
-import me.desht.pneumaticcraft.common.amadron.BiomeMatcher;
 import me.desht.pneumaticcraft.common.amadron.DimensionMatcher;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
@@ -103,7 +102,7 @@ public class PlayerFilter implements Predicate<Player> {
 
     public static void registerDefaultMatchers() {
         registerMatcher("dimensions", new DimensionMatcher.Factory());
-        registerMatcher("biome_categories", new BiomeMatcher.Factory());
+//        registerMatcher("biome_categories", new BiomeMatcher.Factory());
     }
 
     public static void registerMatcher(String id, IPlayerMatcher.MatcherFactory<?> matcher) {

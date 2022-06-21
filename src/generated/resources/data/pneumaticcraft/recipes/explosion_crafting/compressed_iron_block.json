@@ -3,10 +3,10 @@
   "input": {
     "tag": "forge:storage_blocks/iron"
   },
+  "loss_rate": 20,
   "results": [
     {
       "item": "pneumaticcraft:compressed_iron_block"
     }
-  ],
-  "loss_rate": 20
+  ]
 }

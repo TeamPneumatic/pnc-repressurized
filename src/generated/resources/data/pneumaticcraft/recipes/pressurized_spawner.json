@@ -1,21 +1,21 @@
 {
   "type": "minecraft:crafting_shaped",
+  "key": {
+    "E": {
+      "item": "pneumaticcraft:empty_spawner"
+    },
+    "I": {
+      "tag": "forge:ingots/compressed_iron"
+    },
+    "T": {
+      "item": "pneumaticcraft:advanced_pressure_tube"
+    }
+  },
   "pattern": [
     "ITI",
     "TET",
     "ITI"
   ],
-  "key": {
-    "T": {
-      "item": "pneumaticcraft:advanced_pressure_tube"
-    },
-    "I": {
-      "tag": "forge:ingots/compressed_iron"
-    },
-    "E": {
-      "item": "pneumaticcraft:empty_spawner"
-    }
-  },
   "result": {
     "item": "pneumaticcraft:pressurized_spawner"
   }

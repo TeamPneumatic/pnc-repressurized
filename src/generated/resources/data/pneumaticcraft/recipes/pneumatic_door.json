@@ -1,15 +1,15 @@
 {
   "type": "minecraft:crafting_shaped",
-  "pattern": [
-    "II",
-    "II",
-    "II"
-  ],
   "key": {
     "I": {
       "tag": "forge:ingots/compressed_iron"
     }
   },
+  "pattern": [
+    "II",
+    "II",
+    "II"
+  ],
   "result": {
     "item": "pneumaticcraft:pneumatic_door"
   }

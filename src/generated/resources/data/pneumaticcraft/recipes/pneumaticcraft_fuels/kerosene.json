@@ -1,10 +1,10 @@
 {
   "type": "pneumaticcraft:fuel_quality",
+  "air_per_bucket": 1100000,
+  "burn_rate": 1.0,
   "fluid": {
     "type": "pneumaticcraft:fluid",
-    "tag": "forge:kerosene",
-    "amount": 1000
-  },
-  "air_per_bucket": 1100000,
-  "burn_rate": 1.0
+    "amount": 1000,
+    "tag": "forge:kerosene"
+  }
 }

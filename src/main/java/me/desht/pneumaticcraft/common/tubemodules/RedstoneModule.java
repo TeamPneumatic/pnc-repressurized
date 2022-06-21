@@ -30,7 +30,6 @@ import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
@@ -266,7 +265,7 @@ public class RedstoneModule extends AbstractTubeModule implements INetworkedModu
     }
 
     private void addAdvancedInfo(List<Component> curInfo) {
-        MutableComponent s = new TranslatableComponent("pneumaticcraft.waila.redstoneModule.op", PneumaticCraftUtils.xlate(operation.getTranslationKey()));
+        MutableComponent s = Component.translatable("pneumaticcraft.waila.redstoneModule.op", PneumaticCraftUtils.xlate(operation.getTranslationKey()));
         if (operation.useOtherColor) {
             s = s.append(" (").append(PneumaticCraftUtils.dyeColorDesc(otherColor)).append(")");
         }

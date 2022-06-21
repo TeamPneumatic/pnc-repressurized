@@ -17,45 +17,25 @@
 
 package me.desht.pneumaticcraft.common.thirdparty.immersiveengineering;
 
-import me.desht.pneumaticcraft.api.harvesting.HarvestHandler;
 import me.desht.pneumaticcraft.common.block.entity.IHeatExchangingTE;
-import me.desht.pneumaticcraft.common.harvesting.HarvestHandlerCactusLike;
+import me.desht.pneumaticcraft.common.core.ModHarvestHandlers;
 import me.desht.pneumaticcraft.common.thirdparty.IThirdParty;
-import me.desht.pneumaticcraft.lib.Log;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
-import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.RegistryObject;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 public class ImmersiveEngineering implements IThirdParty {
-    private static final ResourceLocation HEMP_BLOCK = new ResourceLocation("immersiveengineering:hemp");
+    @SuppressWarnings("unused")
+    public static final RegistryObject<HempHarvestHandler> HEMP_HARVEST = ModHarvestHandlers.register("ie_hemp", HempHarvestHandler::new);
 
     @Override
     public void preInit() {
         MinecraftForge.EVENT_BUS.register(ElectricAttackHandler.class);
         MinecraftForge.EVENT_BUS.register(ExternalHeatCapListener.class);
-        FMLJavaModLoadingContext.get().getModEventBus().register(HarvestListener.class);
-    }
-
-    public static class HarvestListener {
-        @SubscribeEvent
-        public static void registerHarvestHandler(RegistryEvent.Register<HarvestHandler> event) {
-            final Block hempBlock = ForgeRegistries.BLOCKS.getValue(HEMP_BLOCK);
-            if (hempBlock != null && hempBlock != Blocks.AIR) {
-                event.getRegistry().register(new HarvestHandlerCactusLike(state -> state.getBlock() == hempBlock)
-                        .setRegistryName(RL("ie_hemp")));
-            } else {
-                Log.error("block 'immersiveengineering:hemp' did not get registered? PneumaticCraft drone harvesting won't work!");
-            }
-        }
     }
 
     public static class ExternalHeatCapListener {

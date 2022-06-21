@@ -189,7 +189,7 @@ public class PneumaticValues {
 
     public static final int RANGE_UPGRADE_HELMET_RANGE_INCREASE = 5;
     public static final int NORMAL_TANK_CAPACITY = 16000;
-    public static final int PLASTIC_MIXER_MELTING_TEMP = 150 + 273;//150 C
+    public static final int MOLTEN_PLASTIC_TEMPERATURE = 150 + 273;//150 C
     public static final int DRONE_TANK_SIZE = 16000;
 
     public static final int MAGNET_AIR_USAGE = 20; // mL per stack pulled

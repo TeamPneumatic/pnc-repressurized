@@ -25,7 +25,6 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraftforge.network.NetworkEvent;
 import net.minecraftforge.registries.ForgeRegistries;
 
-import java.util.Objects;
 import java.util.function.Supplier;
 
 /**
@@ -54,7 +53,8 @@ public class PacketPlaySound extends LocationDoublePacket {
 
     public PacketPlaySound(FriendlyByteBuf buffer) {
         super(buffer);
-        soundEvent = ForgeRegistries.SOUND_EVENTS.getValue(buffer.readResourceLocation());
+//        soundEvent = ForgeRegistries.SOUND_EVENTS.getValue(buffer.readResourceLocation());
+        soundEvent = buffer.readRegistryIdSafe(SoundEvent.class);
         category = SoundSource.values()[buffer.readInt()];
         volume = buffer.readFloat();
         pitch = buffer.readFloat();
@@ -64,7 +64,8 @@ public class PacketPlaySound extends LocationDoublePacket {
     @Override
     public void toBytes(FriendlyByteBuf buffer) {
         super.toBytes(buffer);
-        buffer.writeResourceLocation(Objects.requireNonNull(soundEvent.getRegistryName()));
+        buffer.writeRegistryId(ForgeRegistries.SOUND_EVENTS, soundEvent);
+//        buffer.writeResourceLocation(Objects.requireNonNull(soundEvent.getRegistryName()));
         buffer.writeInt(category.ordinal());
         buffer.writeFloat(volume);
         buffer.writeFloat(pitch);

@@ -25,7 +25,6 @@ import me.desht.pneumaticcraft.common.inventory.UniversalSensorMenu;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -64,7 +63,7 @@ public class WorldGlobalVariableSensor implements IPollSensorSetting {
 
     @Override
     public void getAdditionalInfo(List<Component> info) {
-        info.add(new TextComponent("Variable Name"));
+        info.add(Component.literal("Variable Name"));
     }
 
     @Override

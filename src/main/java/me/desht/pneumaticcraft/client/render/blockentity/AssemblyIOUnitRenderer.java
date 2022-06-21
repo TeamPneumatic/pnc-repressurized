@@ -203,9 +203,8 @@ public class AssemblyIOUnitRenderer extends AbstractBlockEntityModelRenderer<Ass
 
     private Pair<IAssemblyRenderOverriding, Float> getClawTranslation(float clawProgress, ItemStack heldStack) {
         float clawTrans;
-        IAssemblyRenderOverriding renderOverride = null;
+        IAssemblyRenderOverriding renderOverride = ClientRegistryImpl.getInstance().getRenderOverride(heldStack.getItem());
         if (!heldStack.isEmpty()) {
-            renderOverride = ClientRegistryImpl.renderOverrides.get(heldStack.getItem().getRegistryName());
             if (renderOverride != null) {
                 clawTrans = renderOverride.getIOUnitClawShift(heldStack);
             } else {

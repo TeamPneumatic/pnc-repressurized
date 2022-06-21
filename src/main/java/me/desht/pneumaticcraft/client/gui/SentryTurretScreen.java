@@ -30,7 +30,6 @@ import me.desht.pneumaticcraft.common.util.EntityFilter;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import org.lwjgl.glfw.GLFW;
@@ -60,7 +59,7 @@ public class SentryTurretScreen extends AbstractPneumaticCraftContainerScreen<Se
         entityFilter.setFocus(true);
         setFocused(entityFilter);
 
-        addRenderableWidget(errorButton = new WidgetButtonExtended(leftPos + 155, topPos + 52, 16, 16, TextComponent.EMPTY));
+        addRenderableWidget(errorButton = new WidgetButtonExtended(leftPos + 155, topPos + 52, 16, 16, Component.empty()));
         errorButton.setRenderedIcon(Textures.GUI_PROBLEMS_TEXTURE).setVisible(false);
         errorButton.visible = false;
     }
@@ -86,7 +85,7 @@ public class SentryTurretScreen extends AbstractPneumaticCraftContainerScreen<Se
             sendDelayed(5);
         } catch (IllegalArgumentException e) {
             errorButton.visible = true;
-            errorButton.setTooltipText(new TextComponent(e.getMessage()));
+            errorButton.setTooltipText(Component.literal(e.getMessage()));
         }
     }
 

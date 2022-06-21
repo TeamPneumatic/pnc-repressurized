@@ -27,7 +27,6 @@ import net.minecraft.world.level.Level;
 import net.minecraftforge.network.NetworkEvent;
 import net.minecraftforge.registries.ForgeRegistries;
 
-import java.util.Objects;
 import java.util.function.Supplier;
 
 /**
@@ -50,7 +49,7 @@ public class PacketSpawnParticleTrail extends LocationDoublePacket {
 
     public PacketSpawnParticleTrail(FriendlyByteBuf buffer) {
         super(buffer);
-        ParticleType<?> type = ForgeRegistries.PARTICLE_TYPES.getValue(buffer.readResourceLocation());
+        ParticleType<?> type = buffer.readRegistryIdSafe(ParticleType.class);
         assert type != null;
         x2 = buffer.readDouble();
         y2 = buffer.readDouble();
@@ -61,7 +60,7 @@ public class PacketSpawnParticleTrail extends LocationDoublePacket {
     @Override
     public void toBytes(FriendlyByteBuf buffer) {
         super.toBytes(buffer);
-        buffer.writeResourceLocation(Objects.requireNonNull(particle.getType().getRegistryName()));
+        buffer.writeRegistryId(ForgeRegistries.PARTICLE_TYPES, particle.getType());
         buffer.writeDouble(x2);
         buffer.writeDouble(y2);
         buffer.writeDouble(z2);

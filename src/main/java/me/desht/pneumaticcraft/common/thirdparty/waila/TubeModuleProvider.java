@@ -17,26 +17,31 @@
 
 package me.desht.pneumaticcraft.common.thirdparty.waila;
 
-import mcp.mobius.waila.api.BlockAccessor;
-import mcp.mobius.waila.api.IComponentProvider;
-import mcp.mobius.waila.api.IServerDataProvider;
-import mcp.mobius.waila.api.ITooltip;
-import mcp.mobius.waila.api.config.IPluginConfig;
 import me.desht.pneumaticcraft.common.block.PressureTubeBlock;
 import me.desht.pneumaticcraft.common.block.entity.PressureTubeBlockEntity;
 import me.desht.pneumaticcraft.common.tubemodules.AbstractTubeModule;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import snownee.jade.api.BlockAccessor;
+import snownee.jade.api.IBlockComponentProvider;
+import snownee.jade.api.IServerDataProvider;
+import snownee.jade.api.ITooltip;
+import snownee.jade.api.config.IPluginConfig;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
+
 public class TubeModuleProvider {
-    public static class Data implements IServerDataProvider<BlockEntity> {
+    public static final ResourceLocation ID = RL("tube_module");
+
+    public static class DataProvider implements IServerDataProvider<BlockEntity> {
         @Override
         public void appendServerData(CompoundTag compoundTag, ServerPlayer serverPlayer, Level level, BlockEntity blockEntity, boolean b) {
             if (blockEntity instanceof PressureTubeBlockEntity) {
@@ -47,9 +52,14 @@ public class TubeModuleProvider {
                 }
             }
         }
+
+        @Override
+        public ResourceLocation getUid() {
+            return ID;
+        }
     }
 
-    public static class Component implements IComponentProvider {
+    public static class ComponentProvider implements IBlockComponentProvider {
         @Override
         public void appendTooltip(ITooltip iTooltip, BlockAccessor blockAccessor, IPluginConfig iPluginConfig) {
             PressureTubeBlockEntity tube = (PressureTubeBlockEntity) blockAccessor.getBlockEntity();
@@ -64,6 +74,11 @@ public class TubeModuleProvider {
                     l.forEach(iTooltip::add);
                 }
             }
+        }
+
+        @Override
+        public ResourceLocation getUid() {
+            return ID;
         }
     }
 }

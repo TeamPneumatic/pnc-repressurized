@@ -1,52 +1,52 @@
 {
   "parent": "pneumaticcraft:root",
+  "criteria": {
+    "0": {
+      "conditions": {
+        "items": [
+          {
+            "count": {
+              "min": 1
+            },
+            "items": [
+              "pneumaticcraft:logistics_frame_passive_provider"
+            ]
+          },
+          {
+            "count": {
+              "min": 1
+            },
+            "items": [
+              "pneumaticcraft:logistics_frame_requester"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
   "display": {
-    "icon": {
-      "item": "pneumaticcraft:logistics_frame_passive_provider"
-    },
-    "title": {
-      "translate": "pneumaticcraft.advancement.logistics_frame"
-    },
+    "announce_to_chat": true,
+    "background": "pneumaticcraft:textures/gui/advancement_bg.png",
     "description": {
       "translate": "pneumaticcraft.advancement.logistics_frame.desc"
     },
     "frame": "task",
-    "show_toast": true,
-    "announce_to_chat": true,
     "hidden": false,
-    "background": "pneumaticcraft:textures/gui/advancement_bg.png"
-  },
-  "rewards": {
-    "experience": 20
-  },
-  "criteria": {
-    "0": {
-      "trigger": "minecraft:inventory_changed",
-      "conditions": {
-        "items": [
-          {
-            "items": [
-              "pneumaticcraft:logistics_frame_passive_provider"
-            ],
-            "count": {
-              "min": 1
-            }
-          },
-          {
-            "items": [
-              "pneumaticcraft:logistics_frame_requester"
-            ],
-            "count": {
-              "min": 1
-            }
-          }
-        ]
-      }
+    "icon": {
+      "item": "pneumaticcraft:logistics_frame_passive_provider"
+    },
+    "show_toast": true,
+    "title": {
+      "translate": "pneumaticcraft.advancement.logistics_frame"
     }
   },
   "requirements": [
     [
       "0"
     ]
-  ]
+  ],
+  "rewards": {
+    "experience": 20
+  }
 }

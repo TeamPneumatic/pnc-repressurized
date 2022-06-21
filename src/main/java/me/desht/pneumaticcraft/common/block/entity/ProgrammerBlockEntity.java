@@ -36,7 +36,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.MenuProvider;
@@ -279,7 +279,7 @@ public class ProgrammerBlockEntity extends AbstractTickingBlockEntity implements
     public void setText(int textFieldID, String text) {
         ItemStack stack = inventory.getStackInSlot(PROGRAM_SLOT).copy();
         if (textFieldID == 0 && !stack.isEmpty()) {
-            stack.setHoverName(new TextComponent(text));
+            stack.setHoverName(Component.literal(text));
             inventory.setStackInSlot(PROGRAM_SLOT, stack);
         }
     }

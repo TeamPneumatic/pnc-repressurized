@@ -55,7 +55,6 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -351,7 +350,7 @@ public class ProgrammableControllerBlockEntity extends AbstractAirHandlingBlockE
     public UUID getOwnerUUID() {
         if (ownerID == null) {
             ownerID = UUID.randomUUID();
-            ownerName = new TextComponent("[Programmable Controller]");
+            ownerName = Component.literal("[Programmable Controller]");
             Log.warning(String.format("Programmable controller with owner '%s' has no UUID! Substituting a random UUID (%s).", ownerName, ownerID));
         }
         return ownerID;
@@ -454,7 +453,7 @@ public class ProgrammableControllerBlockEntity extends AbstractAirHandlingBlockE
         tank.readFromNBT(tag.getCompound("tank"));
 
         ownerID = tag.contains("ownerID") ? UUID.fromString(tag.getString("ownerID")) : FALLBACK_UUID;
-        ownerName = tag.contains("ownerName") ? new TextComponent(tag.getString("ownerName")) : new TextComponent(FALLBACK_NAME);
+        ownerName = Component.literal(tag.contains("ownerName") ? tag.getString("ownerName") : FALLBACK_NAME);
         ownerNameClient = ownerName.getString();
 
         droneItemHandler.setUseableSlots(getUpgrades(ModUpgrades.INVENTORY.get()) + 1);
@@ -661,7 +660,9 @@ public class ProgrammableControllerBlockEntity extends AbstractAirHandlingBlockE
 
     @Override
     public boolean isProgramApplicable(ProgWidgetType<?> widgetType) {
-        return !BLACKLISTED_WIDGETS.contains(widgetType.getRegistryName());
+        return PneumaticCraftUtils.getRegistryName(ModProgWidgets.PROG_WIDGETS.get(), widgetType)
+                .map(regName -> !BLACKLISTED_WIDGETS.contains(regName))
+                .orElseThrow();
     }
 
     @Override

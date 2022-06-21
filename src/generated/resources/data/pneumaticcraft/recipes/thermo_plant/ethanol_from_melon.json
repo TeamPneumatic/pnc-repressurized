@@ -1,21 +1,21 @@
 {
   "type": "pneumaticcraft:thermo_plant",
+  "exothermic": true,
+  "fluid_input": {
+    "type": "pneumaticcraft:fluid",
+    "amount": 100,
+    "tag": "pneumaticcraft:yeast_culture"
+  },
+  "fluid_output": {
+    "amount": 10,
+    "fluid": "pneumaticcraft:ethanol"
+  },
   "item_input": {
     "item": "minecraft:melon_slice"
   },
-  "fluid_input": {
-    "type": "pneumaticcraft:fluid",
-    "tag": "pneumaticcraft:yeast_culture",
-    "amount": 100
-  },
-  "fluid_output": {
-    "fluid": "pneumaticcraft:ethanol",
-    "amount": 10
-  },
-  "temperature": {
-    "min_temp": 303,
-    "max_temp": 333
-  },
   "speed": 0.4,
-  "exothermic": true
+  "temperature": {
+    "max_temp": 333,
+    "min_temp": 303
+  }
 }

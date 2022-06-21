@@ -20,19 +20,21 @@ package me.desht.pneumaticcraft.datagen.recipe;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.world.item.ItemStack;
 
 import javax.annotation.Nonnull;
+import java.util.Objects;
 
 class SerializerHelper {
     static JsonElement serializeOneItemStack(@Nonnull ItemStack stack) {
         JsonObject json = new JsonObject();
-        json.addProperty("item", stack.getItem().getRegistryName().toString());
+        json.addProperty("item", PneumaticCraftUtils.getRegistryName(stack.getItem()).orElseThrow().toString());
         if (stack.getCount() > 1) {
             json.addProperty("count", stack.getCount());
         }
         if (stack.hasTag()) {
-            json.addProperty("nbt", stack.getTag().toString());
+            json.addProperty("nbt", Objects.requireNonNull(stack.getTag()).toString());
         }
         return json;
     }

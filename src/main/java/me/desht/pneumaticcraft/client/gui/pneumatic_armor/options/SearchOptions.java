@@ -29,7 +29,7 @@ import me.desht.pneumaticcraft.common.item.PneumaticArmorItem;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdateSearchItem;
 import net.minecraft.client.Minecraft;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -65,7 +65,7 @@ public class SearchOptions extends IOptionPage.SimpleOptionPage<SearchClientHand
     }
 
     private void openSearchGui() {
-        ClientUtils.openContainerGui(ModMenuTypes.ITEM_SEARCHER.get(), new TextComponent("Search"));
+        ClientUtils.openContainerGui(ModMenuTypes.ITEM_SEARCHER.get(), Component.literal("Search"));
         if (Minecraft.getInstance().screen instanceof ItemSearcherScreen) {
             searchGui = (ItemSearcherScreen) Minecraft.getInstance().screen;
             if (!player.getItemBySlot(EquipmentSlot.HEAD).isEmpty()) {

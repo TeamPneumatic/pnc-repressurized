@@ -1,30 +1,30 @@
 {
   "type": "minecraft:crafting_shaped",
+  "key": {
+    "B": {
+      "tag": "forge:storage_blocks/compressed_iron"
+    },
+    "C": {
+      "item": "pneumaticcraft:pneumatic_cylinder"
+    },
+    "D": {
+      "tag": "forge:gems/diamond"
+    },
+    "I": {
+      "tag": "forge:ingots/compressed_iron"
+    },
+    "P": {
+      "item": "pneumaticcraft:plastic"
+    },
+    "T": {
+      "item": "pneumaticcraft:pressure_tube"
+    }
+  },
   "pattern": [
     "PBP",
     "ITI",
     "DCD"
   ],
-  "key": {
-    "I": {
-      "tag": "forge:ingots/compressed_iron"
-    },
-    "B": {
-      "tag": "forge:storage_blocks/compressed_iron"
-    },
-    "T": {
-      "item": "pneumaticcraft:pressure_tube"
-    },
-    "C": {
-      "item": "pneumaticcraft:pneumatic_cylinder"
-    },
-    "P": {
-      "item": "pneumaticcraft:plastic"
-    },
-    "D": {
-      "tag": "forge:gems/diamond"
-    }
-  },
   "result": {
     "item": "pneumaticcraft:jackhammer"
   }

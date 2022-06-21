@@ -19,12 +19,11 @@ package me.desht.pneumaticcraft.api.client.assembly_machine;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.registries.IForgeRegistryEntry;
 
 /**
  * Provides methods to customize how items are rendered when held by Assembly machines.  You can create an instance
  * of this class and register it via
- * {@link me.desht.pneumaticcraft.api.client.IClientRegistry#registerRenderOverride(IForgeRegistryEntry, IAssemblyRenderOverriding)}
+ * {@link me.desht.pneumaticcraft.api.client.IClientRegistry#registerRenderOverride(net.minecraft.world.level.ItemLike, IAssemblyRenderOverriding)}
  */
 public interface IAssemblyRenderOverriding {
     /**
@@ -42,7 +41,7 @@ public interface IAssemblyRenderOverriding {
     boolean applyRenderChangeIOUnit(PoseStack matrixStack, ItemStack renderedStack);
 
     /**
-     * See {@link #applyRenderChangeIOUnit(MatrixStack, ItemStack)}, but for the Assembly Platform.
+     * See {@link #applyRenderChangeIOUnit(PoseStack, ItemStack)}, but for the Assembly Platform.
      *
      * @param matrixStack the matrix; only apply transformations to this, <strong>never directly via OpenGL</strong>
      * @param renderedStack itemStack that is being rendered

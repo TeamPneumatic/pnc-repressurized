@@ -36,7 +36,7 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.EquipmentSlot;
 import org.lwjgl.glfw.GLFW;
 
@@ -54,7 +54,7 @@ public class EntityTrackOptions extends IOptionPage.SimpleOptionPage<EntityTrack
     public void populateGui(IGuiScreen gui) {
         gui.addWidget(PneumaticHelmetRegistry.getInstance().makeStatMoveButton(30, 128, getClientUpgradeHandler()));
 
-        textField = new EditBox(gui.getFontRenderer(), 35, 60, 140, 10, TextComponent.EMPTY);
+        textField = new EditBox(gui.getFontRenderer(), 35, 60, 140, 10, Component.empty());
         if (Minecraft.getInstance().player != null) {
             textField.setValue(PneumaticArmorItem.getEntityFilter(Minecraft.getInstance().player.getItemBySlot(EquipmentSlot.HEAD)));
         }
@@ -66,7 +66,7 @@ public class EntityTrackOptions extends IOptionPage.SimpleOptionPage<EntityTrack
         gui.addWidget(textField);
         gui.setFocusedWidget(textField);
 
-        warningButton = new WidgetButtonExtended(175, 57, 20, 20, TextComponent.EMPTY);
+        warningButton = new WidgetButtonExtended(175, 57, 20, 20, Component.empty());
         warningButton.setVisible(false);
         warningButton.visible = false;
         warningButton.setRenderedIcon(Textures.GUI_PROBLEMS_TEXTURE);
@@ -88,12 +88,12 @@ public class EntityTrackOptions extends IOptionPage.SimpleOptionPage<EntityTrack
     private boolean validateEntityFilter(String filter) {
         try {
             warningButton.visible = false;
-            warningButton.setTooltipText(TextComponent.EMPTY);
+            warningButton.setTooltipText(Component.empty());
             new EntityFilter(filter);  // syntax check
             return true;
         } catch (Exception e) {
             warningButton.visible = true;
-            warningButton.setTooltipText(new TextComponent(e.getMessage()).withStyle(ChatFormatting.GOLD));
+            warningButton.setTooltipText(Component.literal(e.getMessage()).withStyle(ChatFormatting.GOLD));
             return false;
         }
     }

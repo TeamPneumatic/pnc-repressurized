@@ -1,27 +1,7 @@
 {
   "parent": "pneumaticcraft:tp_plant",
-  "display": {
-    "icon": {
-      "item": "pneumaticcraft:yeast_culture_bucket"
-    },
-    "title": {
-      "translate": "pneumaticcraft.advancement.yeast_culture"
-    },
-    "description": {
-      "translate": "pneumaticcraft.advancement.yeast_culture.desc"
-    },
-    "frame": "task",
-    "show_toast": true,
-    "announce_to_chat": true,
-    "hidden": false,
-    "background": "pneumaticcraft:textures/gui/advancement_bg.png"
-  },
-  "rewards": {
-    "experience": 10
-  },
   "criteria": {
     "0": {
-      "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
           {
@@ -30,12 +10,32 @@
             ]
           }
         ]
-      }
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "announce_to_chat": true,
+    "background": "pneumaticcraft:textures/gui/advancement_bg.png",
+    "description": {
+      "translate": "pneumaticcraft.advancement.yeast_culture.desc"
+    },
+    "frame": "task",
+    "hidden": false,
+    "icon": {
+      "item": "pneumaticcraft:yeast_culture_bucket"
+    },
+    "show_toast": true,
+    "title": {
+      "translate": "pneumaticcraft.advancement.yeast_culture"
     }
   },
   "requirements": [
     [
       "0"
     ]
-  ]
+  ],
+  "rewards": {
+    "experience": 10
+  }
 }

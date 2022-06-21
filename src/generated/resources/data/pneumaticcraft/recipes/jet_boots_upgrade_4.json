@@ -1,30 +1,30 @@
 {
   "type": "minecraft:crafting_shaped",
+  "key": {
+    "M": {
+      "item": "minecraft:phantom_membrane"
+    },
+    "N": {
+      "item": "minecraft:nether_star"
+    },
+    "P": {
+      "type": "forge:nbt",
+      "count": 1,
+      "item": "minecraft:potion",
+      "nbt": "{Potion:\"minecraft:long_slow_falling\"}"
+    },
+    "U": {
+      "item": "pneumaticcraft:jet_boots_upgrade_3"
+    },
+    "V": {
+      "item": "pneumaticcraft:vortex_cannon"
+    }
+  },
   "pattern": [
     "MNM",
     "VUV",
     "P P"
   ],
-  "key": {
-    "N": {
-      "item": "minecraft:nether_star"
-    },
-    "M": {
-      "item": "minecraft:phantom_membrane"
-    },
-    "V": {
-      "item": "pneumaticcraft:vortex_cannon"
-    },
-    "P": {
-      "type": "forge:nbt",
-      "item": "minecraft:potion",
-      "count": 1,
-      "nbt": "{Potion:\"minecraft:long_slow_falling\"}"
-    },
-    "U": {
-      "item": "pneumaticcraft:jet_boots_upgrade_3"
-    }
-  },
   "result": {
     "item": "pneumaticcraft:jet_boots_upgrade_4"
   }

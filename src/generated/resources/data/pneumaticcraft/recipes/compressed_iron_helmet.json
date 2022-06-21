@@ -1,9 +1,5 @@
 {
   "type": "minecraft:crafting_shaped",
-  "pattern": [
-    "III",
-    "ILI"
-  ],
   "key": {
     "I": {
       "tag": "forge:ingots/compressed_iron"
@@ -12,6 +8,10 @@
       "item": "minecraft:leather_helmet"
     }
   },
+  "pattern": [
+    "III",
+    "ILI"
+  ],
   "result": {
     "item": "pneumaticcraft:compressed_iron_helmet"
   }

@@ -40,7 +40,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -141,7 +141,7 @@ public enum AreaRenderManager {
                 matrixStack.translate(targetVec.x(), targetVec.y(), targetVec.z());
                 matrixStack.scale(textSize, textSize, textSize);
                 RenderUtils.rotateToPlayerFacing(matrixStack);
-                RenderUtils.renderString3d(new TextComponent(PneumaticCraftUtils.posToString(pos)), 0, 0, 0xFFFFFFFF, matrixStack, buffer, true, true);
+                RenderUtils.renderString3d(Component.literal(PneumaticCraftUtils.posToString(pos)), 0, 0, 0xFFFFFFFF, matrixStack, buffer, true, true);
                 matrixStack.popPose();
             }
         }

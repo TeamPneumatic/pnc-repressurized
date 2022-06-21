@@ -4,17 +4,12 @@
     {
       "conditions": [
         {
-          "modid": "mekanism",
-          "type": "forge:mod_loaded"
+          "type": "forge:mod_loaded",
+          "modid": "mekanism"
         }
       ],
       "recipe": {
         "type": "minecraft:crafting_shaped",
-        "pattern": [
-          "LIL",
-          "IRI",
-          "LIL"
-        ],
         "key": {
           "I": {
             "tag": "forge:ingots/compressed_iron"
@@ -22,10 +17,13 @@
           "L": {
             "tag": "pneumaticcraft:upgrade_components"
           },
-          "R": {
-            "item": "mekanism:module_radiation_shielding_unit"
-          }
+          "R": []
         },
+        "pattern": [
+          "LIL",
+          "IRI",
+          "LIL"
+        ],
         "result": {
           "item": "pneumaticcraft:radiation_shielding_upgrade"
         }

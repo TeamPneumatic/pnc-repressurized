@@ -21,10 +21,10 @@ import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.block.IPneumaticWrenchable;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.InventoryTrackEvent;
 import me.desht.pneumaticcraft.api.crafting.ingredient.FluidIngredient;
+import me.desht.pneumaticcraft.api.data.PneumaticCraftTags;
 import me.desht.pneumaticcraft.api.drone.DroneConstructingEvent;
 import me.desht.pneumaticcraft.api.item.IPositionProvider;
 import me.desht.pneumaticcraft.api.lib.Names;
-import me.desht.pneumaticcraft.common.PneumaticCraftTags;
 import me.desht.pneumaticcraft.common.advancements.AdvancementTriggers;
 import me.desht.pneumaticcraft.common.ai.DroneClaimManager;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
@@ -44,7 +44,6 @@ import me.desht.pneumaticcraft.common.recipes.machine.ExplosionCraftingRecipeImp
 import me.desht.pneumaticcraft.common.thirdparty.ModdedWrenchUtils;
 import me.desht.pneumaticcraft.common.tubemodules.ModuleNetworkManager;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -105,17 +104,18 @@ public class MiscEventHandler {
         ItemStack containerStack = event.getItemStack();
         if (containerStack.hasContainerItem()) {
             FluidUtil.getFluidContained(containerStack).ifPresent(fluidStack -> {
-                ResourceLocation name = fluidStack.getFluid().getRegistryName();
-                if (name != null && Names.MOD_ID.equals(name.getNamespace())) {
-                    int value = PneumaticRegistry.getInstance().getFuelRegistry().getFuelValue(null, fluidStack.getFluid());
-                    if (value > 0) {
-                        int amountTaken = amountTaken(fluidStack.getAmount(), containerStack);
-                        double mult = Math.min(amountTaken, fluidStack.getAmount()) / 1000d;
-                        event.setBurnTime((int) (value * mult * ConfigHelper.common().general.fuelBucketEfficiency.get()));
-                    } else {
-                        event.setBurnTime(-1);
+                PneumaticCraftUtils.getRegistryName(fluidStack.getFluid()).ifPresent(regName -> {
+                    if (Names.MOD_ID.equals(regName.getNamespace())) {
+                        int value = PneumaticRegistry.getInstance().getFuelRegistry().getFuelValue(null, fluidStack.getFluid());
+                        if (value > 0) {
+                            int amountTaken = amountTaken(fluidStack.getAmount(), containerStack);
+                            double mult = Math.min(amountTaken, fluidStack.getAmount()) / 1000d;
+                            event.setBurnTime((int) (value * mult * ConfigHelper.common().general.fuelBucketEfficiency.get()));
+                        } else {
+                            event.setBurnTime(-1);
+                        }
                     }
-                }
+                });
             });
         }
     }

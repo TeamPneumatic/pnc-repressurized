@@ -29,7 +29,6 @@ import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
@@ -76,7 +75,7 @@ public class ProgWidgetConditionScreen<T extends ProgWidgetCondition> extends Pr
         if (requiresNumber()) {
             for (ICondition.Operator op : ICondition.Operator.values()) {
                 radioButton = new WidgetRadioButton(guiLeft + baseX, guiTop + baseY + op.ordinal() * 12, 0xFF404040,
-                        new TextComponent(op.toString()), b -> progWidget.setOperator(op));
+                        Component.literal(op.toString()), b -> progWidget.setOperator(op));
                 builder.addRadioButton(radioButton, progWidget.getOperator() == op);
             }
             builder.build(this::addRenderableWidget);

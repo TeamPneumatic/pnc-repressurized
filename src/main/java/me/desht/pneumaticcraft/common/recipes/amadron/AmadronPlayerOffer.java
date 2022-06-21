@@ -36,7 +36,6 @@ import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.core.GlobalPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.GsonHelper;
@@ -114,7 +113,7 @@ public class AmadronPlayerOffer extends AmadronOffer {
 
     @Override
     public Component getVendorName() {
-        return new TextComponent(offeringPlayerName);
+        return Component.literal(offeringPlayerName);
     }
 
     public UUID getPlayerId() {

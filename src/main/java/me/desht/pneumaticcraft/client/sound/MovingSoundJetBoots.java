@@ -24,6 +24,7 @@ import me.desht.pneumaticcraft.common.particle.AirParticleData;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.JetBootsStateTracker;
 import net.minecraft.client.resources.sounds.AbstractTickableSoundInstance;
+import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
@@ -38,7 +39,7 @@ public class MovingSoundJetBoots extends AbstractTickableSoundInstance {
     private int endTimer = Integer.MAX_VALUE;
 
     public MovingSoundJetBoots(Player player) {
-        super(ModSounds.LEAKING_GAS_LOW.get(), SoundSource.NEUTRAL);
+        super(ModSounds.LEAKING_GAS_LOW.get(), SoundSource.NEUTRAL, SoundInstance.createUnseededRandom());
 
         this.player = player;
         this.looping = true;

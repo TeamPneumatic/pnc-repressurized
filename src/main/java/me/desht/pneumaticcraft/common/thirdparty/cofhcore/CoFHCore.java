@@ -24,7 +24,6 @@ import me.desht.pneumaticcraft.api.pressure.IPressurizableItem;
 import me.desht.pneumaticcraft.common.thirdparty.IThirdParty;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
@@ -35,8 +34,6 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.List;
-
-import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 public class CoFHCore implements IThirdParty {
     static Enchantment holdingEnchantment = null;
@@ -91,7 +88,7 @@ public class CoFHCore implements IThirdParty {
         public void addInfo(ItemStack stack, List<Component> text) {
             int nHolding = EnchantmentHelper.getItemEnchantmentLevel(holdingEnchantment, stack);
             if (nHolding > 0) {
-                text.add(new TextComponent(Symbols.TRIANGLE_RIGHT + " ").append(holdingEnchantment.getFullname(nHolding)));
+                text.add(Component.literal(Symbols.TRIANGLE_RIGHT + " ").append(holdingEnchantment.getFullname(nHolding)));
             }
         }
     }
@@ -101,7 +98,7 @@ public class CoFHCore implements IThirdParty {
         public static void attachCap(AttachCapabilitiesEvent<ItemStack> event) {
             // allow any pressurizable items to take the CoFH holding enchantment
             if (event.getObject().getItem() instanceof IPressurizableItem) {
-                event.addCapability(RL("cofh_enchantable"), new HoldingEnchantableProvider());
+//                event.addCapability(RL("cofh_enchantable"), new HoldingEnchantableProvider());
             }
         }
     }

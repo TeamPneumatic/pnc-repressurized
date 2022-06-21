@@ -40,7 +40,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
@@ -129,7 +128,7 @@ public class MicromissileScreen extends AbstractPneumaticCraftScreen {
         int buttonX = guiLeft + (xSize - buttonWidth) / 2;
         addRenderableWidget(new WidgetButtonExtended(buttonX, guiTop + 160, buttonWidth, 20, saveLabel, b -> sendSettingsToServer(true)));
 
-        modeButton = new WidgetButtonExtended(guiLeft + 123, guiTop + 20, 52, 20, TextComponent.EMPTY, b -> modeSwitch())
+        modeButton = new WidgetButtonExtended(guiLeft + 123, guiTop + 20, 52, 20, Component.empty(), b -> modeSwitch())
                 .setTooltipKey("pneumaticcraft.gui.micromissile.modeTooltip");
         addRenderableWidget(modeButton);
 
@@ -278,12 +277,12 @@ public class MicromissileScreen extends AbstractPneumaticCraftScreen {
     private boolean validateEntityFilter(String filter) {
         try {
             warningButton.visible = false;
-            warningButton.setTooltipText(TextComponent.EMPTY);
+            warningButton.setTooltipText(Component.empty());
             new EntityFilter(filter);  // syntax check
             return true;
         } catch (Exception e) {
             warningButton.visible = true;
-            warningButton.setTooltipText(new TextComponent(e.getMessage()).withStyle(ChatFormatting.GOLD));
+            warningButton.setTooltipText(Component.literal(e.getMessage()).withStyle(ChatFormatting.GOLD));
             return false;
         }
     }

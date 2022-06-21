@@ -31,7 +31,6 @@ import me.desht.pneumaticcraft.common.inventory.LiquidHopperMenu;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
@@ -60,13 +59,13 @@ public class LiquidHopperScreen extends AbstractPneumaticCraftContainerScreen<Li
         WidgetAnimatedStat optionStat = addAnimatedStat(xlate("pneumaticcraft.gui.tab.gasLift.mode"), new ItemStack(Blocks.LEVER), 0xFFFFCC00, false);
         optionStat.setMinimumExpandedDimensions(50, 43);
 
-        WidgetButtonExtended button = new WidgetButtonExtended(20, 20, 20, 20, TextComponent.EMPTY).withTag("empty");
+        WidgetButtonExtended button = new WidgetButtonExtended(20, 20, 20, 20, Component.empty()).withTag("empty");
         button.setRenderStacks(new ItemStack(Items.BUCKET));
         button.setTooltipText(xlate("pneumaticcraft.gui.tab.liquidHopper.mode.empty"));
         optionStat.addSubWidget(button);
         modeButtons[0] = button;
 
-        button = new WidgetButtonExtended(45, 20, 20, 20, TextComponent.EMPTY).withTag("leave");
+        button = new WidgetButtonExtended(45, 20, 20, 20, Component.empty()).withTag("leave");
         button.setRenderStacks(new ItemStack(Items.WATER_BUCKET));
         button.setTooltipText(xlate("pneumaticcraft.gui.tab.liquidHopper.mode.leaveLiquid"));
         optionStat.addSubWidget(button);

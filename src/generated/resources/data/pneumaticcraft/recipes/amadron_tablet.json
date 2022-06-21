@@ -1,21 +1,21 @@
 {
   "type": "pneumaticcraft:crafting_shaped_pressurizable",
+  "key": {
+    "C": {
+      "item": "pneumaticcraft:air_canister"
+    },
+    "G": {
+      "item": "pneumaticcraft:gps_tool"
+    },
+    "P": {
+      "tag": "pneumaticcraft:plastic_sheets"
+    }
+  },
   "pattern": [
     "PPP",
     "PGP",
     "PCP"
   ],
-  "key": {
-    "P": {
-      "tag": "pneumaticcraft:plastic_sheets"
-    },
-    "G": {
-      "item": "pneumaticcraft:gps_tool"
-    },
-    "C": {
-      "item": "pneumaticcraft:air_canister"
-    }
-  },
   "result": {
     "item": "pneumaticcraft:amadron_tablet"
   }

@@ -26,7 +26,6 @@ import me.desht.pneumaticcraft.common.tubemodules.AbstractRedstoneReceivingModul
 import me.desht.pneumaticcraft.common.tubemodules.AbstractTubeModule;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import org.lwjgl.glfw.GLFW;
 
@@ -86,7 +85,7 @@ public class SimplePressureGaugeModuleScreen extends AbstractTubeModuleScreen<Ab
         module.lowerBound = temp;
 
         updateThreshold();
-        moreOrLessButton.setMessage(new TextComponent(module.lowerBound < module.higherBound ? ">" : "<"));
+        moreOrLessButton.setMessage(Component.literal(module.lowerBound < module.higherBound ? ">" : "<"));
         moreOrLessButton.setTooltipText(xlate(module.lowerBound < module.higherBound ?
                 "pneumaticcraft.gui.tubeModule.simpleConfig.higherThan" :
                 "pneumaticcraft.gui.tubeModule.simpleConfig.lowerThan")

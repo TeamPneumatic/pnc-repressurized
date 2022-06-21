@@ -40,8 +40,6 @@ import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.core.GlobalPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.TickTask;
 import net.minecraft.server.level.ServerPlayer;
@@ -171,7 +169,7 @@ public class AmadronMenu extends AbstractPneumaticCraftMenu<AbstractPneumaticCra
                 if (h.getPressure() > 0) {
                     return true;
                 } else {
-                    player.displayClientMessage(new TranslatableComponent("pneumaticcraft.gui.tab.problems.notEnoughPressure"), false);
+                    player.displayClientMessage(Component.translatable("pneumaticcraft.gui.tab.problems.notEnoughPressure"), false);
                     return false;
                 }
             }).orElse(false);
@@ -273,7 +271,7 @@ public class AmadronMenu extends AbstractPneumaticCraftMenu<AbstractPneumaticCra
         NetworkHooks.openGui(player, new MenuProvider() {
             @Override
             public Component getDisplayName() {
-                return TextComponent.EMPTY;
+                return Component.empty();
             }
 
             @Override

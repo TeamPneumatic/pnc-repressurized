@@ -62,7 +62,7 @@ public class ModBlocks {
     }
 
     private static Block.Properties fluidProps() {
-        return Block.Properties.of(Material.WATER).noCollission().strength(100f).noDrops();
+        return Block.Properties.of(Material.WATER).noCollission().strength(100f).noLootTable();
     }
 
     public static final RegistryObject<PressureTubeBlock> PRESSURE_TUBE = register("pressure_tube",

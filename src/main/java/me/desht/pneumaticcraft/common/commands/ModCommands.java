@@ -34,19 +34,25 @@ import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableHelper;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
 import net.minecraft.ChatFormatting;
+import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.commands.arguments.coordinates.BlockPosArgument;
 import net.minecraft.commands.arguments.item.ItemArgument;
 import net.minecraft.commands.arguments.item.ItemInput;
-import net.minecraft.commands.synchronization.ArgumentTypes;
-import net.minecraft.commands.synchronization.EmptyArgumentSerializer;
+import net.minecraft.commands.synchronization.ArgumentTypeInfo;
+import net.minecraft.commands.synchronization.ArgumentTypeInfos;
+import net.minecraft.commands.synchronization.SingletonArgumentInfo;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.GlobalPos;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.core.Registry;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraftforge.registries.DeferredRegister;
+import net.minecraftforge.registries.RegistryObject;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
@@ -54,6 +60,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 import static net.minecraft.commands.Commands.argument;
 import static net.minecraft.commands.Commands.literal;
@@ -61,7 +68,13 @@ import static net.minecraft.commands.arguments.EntityArgument.getPlayer;
 import static net.minecraft.commands.arguments.coordinates.BlockPosArgument.getLoadedBlockPos;
 
 public class ModCommands {
-    public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
+    public static final DeferredRegister<ArgumentTypeInfo<?, ?>> COMMAND_ARGUMENT_TYPES = DeferredRegister.create(Registry.COMMAND_ARGUMENT_TYPE_REGISTRY, Names.MOD_ID);
+    private static final RegistryObject<SingletonArgumentInfo<ModCommands.VarnameType>> VARNAME_COMMAND_ARGUMENT_TYPE
+            = COMMAND_ARGUMENT_TYPES.register("varname",
+            () -> ArgumentTypeInfos.registerByClass(ModCommands.VarnameType.class, SingletonArgumentInfo.contextFree(VarnameType::new)));
+    private static final ResourceLocation UNKNOWN_ITEM = RL("unknown");
+
+    public static void register(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext buildContext) {
         dispatcher.register(literal("pncr")
                 .then(literal("dump_nbt")
                         .requires(cs -> cs.hasPermission(2))
@@ -78,7 +91,7 @@ public class ModCommands {
                                         .then(argument("pos", BlockPosArgument.blockPos())
                                                 .executes(c -> setGlobalVar(c, StringArgumentType.getString(c,"varname"), Either.left(BlockPosArgument.getLoadedBlockPos(c, "pos"))))
                                         )
-                                        .then(argument("item", ItemArgument.item())
+                                        .then(argument("item", ItemArgument.item(buildContext))
                                                 .executes(c -> setGlobalVar(c, StringArgumentType.getString(c,"varname"), Either.right(ItemArgument.getItem(c, "item"))))
                                         )
                                 )
@@ -113,13 +126,13 @@ public class ModCommands {
         if (source.getEntity() instanceof Player) {
             ItemStack held = ((Player) source.getEntity()).getMainHandItem();
             if (held.getTag() == null) {
-                source.sendFailure(new TextComponent("No NBT"));
+                source.sendFailure(Component.literal("No NBT"));
                 return 0;
             } else if (held.getTag().isEmpty()) {
-                source.sendFailure(new TextComponent("Empty NBT"));
+                source.sendFailure(Component.literal("Empty NBT"));
                 return 0;
             }
-            source.sendSuccess(new TextComponent(held.getTag().toString()), false);
+            source.sendSuccess(Component.literal(held.getTag().toString()), false);
             return 1;
         }
         return 0;
@@ -153,13 +166,13 @@ public class ModCommands {
         Player playerEntity = source.getEntity() instanceof Player ? (Player) source.getEntity() : null;
         UUID id = playerEntity == null ? null : playerEntity.getUUID();
         Collection<String> varNames = GlobalVariableManager.getInstance().getAllActiveVariableNames(playerEntity);
-        source.sendSuccess(new TextComponent(varNames.size() + " vars").withStyle(ChatFormatting.GREEN, ChatFormatting.UNDERLINE), false);
+        source.sendSuccess(Component.literal(varNames.size() + " vars").withStyle(ChatFormatting.GREEN, ChatFormatting.UNDERLINE), false);
         varNames.stream().sorted().forEach(var -> {
             BlockPos pos = GlobalVariableHelper.getPos(id, var);
             ItemStack stack = GlobalVariableHelper.getStack(id, var);
             String val = PneumaticCraftUtils.posToString(pos);
-            if (!stack.isEmpty()) val += " / " + stack.getItem().getRegistryName();
-            source.sendSuccess(new TextComponent(var).append(" = [").append(val).append("]"), false);
+            if (!stack.isEmpty()) val += " / " + PneumaticCraftUtils.getRegistryName(stack.getItem()).orElse(UNKNOWN_ITEM);
+            source.sendSuccess(Component.literal(var).append(" = [").append(val).append("]"), false);
         });
         return 1;
     }
@@ -174,7 +187,7 @@ public class ModCommands {
         BlockPos pos = GlobalVariableHelper.getPos(id, varName);
         ItemStack stack = GlobalVariableHelper.getStack(id, varName);
         String val = PneumaticCraftUtils.posToString(pos);
-        if (!stack.isEmpty()) val += " / " + stack.getItem().getRegistryName();
+        if (!stack.isEmpty()) val += " / " + PneumaticCraftUtils.getRegistryName(stack.getItem()).orElse(UNKNOWN_ITEM);
         if (pos == null && stack.isEmpty()) {
             source.sendFailure(xlate("pneumaticcraft.command.globalVariable.missing", varName));
         } else {
@@ -201,10 +214,10 @@ public class ModCommands {
             }).ifRight(item -> {
                 ItemStack stack = new ItemStack(item.getItem());
                 GlobalVariableHelper.setStack(id, v, stack);
-                source.sendSuccess(xlate("pneumaticcraft.command.globalVariable.output", v, stack.getItem().getRegistryName()), true);
+                source.sendSuccess(xlate("pneumaticcraft.command.globalVariable.output", v, PneumaticCraftUtils.getRegistryName(stack.getItem()).orElse(UNKNOWN_ITEM)), true);
             });
         } catch (CommandSyntaxException e) {
-            source.sendFailure(new TextComponent("Player-globals require player context!"));
+            source.sendFailure(Component.literal("Player-globals require player context!"));
         }
 
         return 1;
@@ -235,14 +248,9 @@ public class ModCommands {
                 source.sendSuccess(xlate("pneumaticcraft.command.globalVariable.delete", varName), true);
             }
         } catch (CommandSyntaxException e) {
-            source.sendFailure(new TextComponent("Player-globals require player context!"));
+            source.sendFailure(Component.literal("Player-globals require player context!"));
         }
         return 1;
-    }
-
-    public static void postInit() {
-        ArgumentTypes.register(Names.MOD_ID + ":varname_type", ModCommands.VarnameType.class,
-                new EmptyArgumentSerializer<>(ModCommands.VarnameType::new));
     }
 
     private static class VarnameType implements ArgumentType<String> {

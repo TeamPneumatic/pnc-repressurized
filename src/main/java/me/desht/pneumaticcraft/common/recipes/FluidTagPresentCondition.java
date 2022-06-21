@@ -31,10 +31,10 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 public class FluidTagPresentCondition implements ICondition {
     private static final ResourceLocation NAME = RL("fluid_tag_present");
 
-    private final ResourceLocation tagName;
+    private final TagKey<Fluid> tagKey;
 
     public FluidTagPresentCondition(ResourceLocation tagName) {
-        this.tagName = tagName;
+        this.tagKey = TagKey.create(Registry.FLUID_REGISTRY, tagName);;
     }
 
     public FluidTagPresentCondition(String tagName) {
@@ -48,13 +48,7 @@ public class FluidTagPresentCondition implements ICondition {
 
     @Override
     public boolean test(IContext context) {
-        TagKey<Fluid> tagKey = TagKey.create(Registry.FLUID_REGISTRY, tagName);
-        return !context.getTag(tagKey).getValues().isEmpty();
-    }
-
-    @Override
-    public boolean test() {
-        return test(IContext.EMPTY);
+        return !context.getTag(tagKey).isEmpty();
     }
 
     public static class Serializer implements IConditionSerializer<FluidTagPresentCondition> {
@@ -62,7 +56,7 @@ public class FluidTagPresentCondition implements ICondition {
 
         @Override
         public void write(JsonObject json, FluidTagPresentCondition value) {
-            json.addProperty("tag", value.tagName.toString());
+            json.addProperty("tag", value.tagKey.location().toString());
         }
 
         @Override

@@ -29,7 +29,6 @@ import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraftforge.energy.CapabilityEnergy;
@@ -51,7 +50,7 @@ public class FluxCompressorScreen extends AbstractPneumaticCraftContainerScreen<
     public void init() {
         super.init();
 
-        inputStat = addAnimatedStat(new TextComponent("Input"), Textures.GUI_BUILDCRAFT_ENERGY, 0xFF555555, false);
+        inputStat = addAnimatedStat(Component.literal("Input"), Textures.GUI_BUILDCRAFT_ENERGY, 0xFF555555, false);
         te.getCapability(CapabilityEnergy.ENERGY).ifPresent(storage -> addRenderableWidget(new WidgetEnergy(leftPos + 20, topPos + 20, storage)));
         addRenderableWidget(tempWidget = new WidgetTemperature(leftPos + 97, topPos + 20, TemperatureRange.of(223, 673), 273, 50)
                 .setOperatingRange(TemperatureRange.of(323, 625)).setShowOperatingRange(false));
@@ -80,11 +79,11 @@ public class FluxCompressorScreen extends AbstractPneumaticCraftContainerScreen<
     private List<Component> getOutputStat() {
         List<Component> textList = new ArrayList<>();
         textList.add(xlate("pneumaticcraft.gui.tab.status.fluxCompressor.maxEnergyUsage").withStyle(ChatFormatting.GRAY));
-        textList.add(new TextComponent(te.getInfoEnergyPerTick() + " FE/t").withStyle(ChatFormatting.BLACK));
+        textList.add(Component.literal(te.getInfoEnergyPerTick() + " FE/t").withStyle(ChatFormatting.BLACK));
         textList.add(xlate("pneumaticcraft.gui.tab.status.fluxCompressor.maxInputRate").withStyle(ChatFormatting.GRAY));
-        textList.add(new TextComponent(te.getInfoEnergyPerTick() * 2 + " FE/t").withStyle(ChatFormatting.BLACK));
+        textList.add(Component.literal(te.getInfoEnergyPerTick() * 2 + " FE/t").withStyle(ChatFormatting.BLACK));
         textList.add(xlate("pneumaticcraft.gui.tab.status.fluxCompressor.storedEnergy").withStyle(ChatFormatting.GRAY));
-        textList.add(new TextComponent(te.getInfoEnergyStored() + " FE").withStyle(ChatFormatting.BLACK));
+        textList.add(Component.literal(te.getInfoEnergyStored() + " FE").withStyle(ChatFormatting.BLACK));
         return textList;
     }
 

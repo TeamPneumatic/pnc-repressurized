@@ -30,7 +30,6 @@ import net.minecraft.core.Direction.Axis;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.DyeColor;
 
@@ -243,7 +242,7 @@ public class ProgWidgetCoordinateOperator extends ProgWidget implements IVariabl
                 .filter(axisOptions::shouldCheck)
                 .map(axis -> axis.getName().toUpperCase())
                 .collect(Collectors.toList());
-        return !l.isEmpty() && l.size() < 3 ? Optional.of(new TextComponent(String.join("/", l))) : Optional.empty();
+        return !l.isEmpty() && l.size() < 3 ? Optional.of(Component.literal(String.join("/", l))) : Optional.empty();
     }
 
     @Override

@@ -26,6 +26,7 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.minecraft.world.level.ItemLike;
 import net.minecraftforge.common.crafting.IIngredientSerializer;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -61,7 +62,8 @@ public class NoNBTIngredient extends Ingredient {
     public JsonElement toJson() {
         JsonObject json = new JsonObject();
         json.addProperty("type", Serializer.ID.toString());
-        json.addProperty("item", this.stack.getItem().getRegistryName().toString());
+        ResourceLocation rl = ForgeRegistries.ITEMS.getKey(stack.getItem());
+        json.addProperty("item", rl == null ? "" : rl.toString());
         json.addProperty("count", this.stack.getCount());
         return json;
     }

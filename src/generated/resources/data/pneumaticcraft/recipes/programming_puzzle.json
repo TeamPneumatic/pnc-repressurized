@@ -1,20 +1,20 @@
 {
   "type": "minecraft:crafting_shaped",
+  "key": {
+    "C": {
+      "item": "pneumaticcraft:printed_circuit_board"
+    },
+    "P": {
+      "tag": "pneumaticcraft:plastic_sheets"
+    }
+  },
   "pattern": [
     "PPP",
     "PCP",
     "PPP"
   ],
-  "key": {
-    "P": {
-      "tag": "pneumaticcraft:plastic_sheets"
-    },
-    "C": {
-      "item": "pneumaticcraft:printed_circuit_board"
-    }
-  },
   "result": {
-    "item": "pneumaticcraft:programming_puzzle",
-    "count": 8
+    "count": 8,
+    "item": "pneumaticcraft:programming_puzzle"
   }
 }

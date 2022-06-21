@@ -25,7 +25,6 @@ import me.desht.pneumaticcraft.common.block.entity.KeroseneLampBlockEntity;
 import me.desht.pneumaticcraft.common.inventory.KeroseneLampMenu;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraftforge.client.gui.widget.ForgeSlider;
@@ -48,10 +47,10 @@ public class KeroseneLampScreen extends AbstractPneumaticCraftContainerScreen<Ke
         super.init();
 
         addRenderableWidget(new WidgetTank(leftPos + 152, topPos + 15, te.getTank()));
-        addRenderableWidget(rangeLabel = new WidgetLabel(leftPos + 8, topPos + 50, TextComponent.EMPTY));
+        addRenderableWidget(rangeLabel = new WidgetLabel(leftPos + 8, topPos + 50, Component.empty()));
 
         addRenderableWidget(slider = new PNCForgeSlider(leftPos + 7, topPos + 30, 118, 16,
-                xlate("pneumaticcraft.gui.keroseneLamp.maxRange").append(" "), TextComponent.EMPTY,
+                xlate("pneumaticcraft.gui.keroseneLamp.maxRange").append(" "), Component.empty(),
                 1, KeroseneLampBlockEntity.MAX_RANGE, te.getTargetRange(), true,
                 (slider) -> sendDelayed(5)));
     }

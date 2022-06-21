@@ -3,14 +3,14 @@
   "id": "pneumaticcraft:amadron/assembly_program_drill",
   "input": {
     "type": "ITEM",
-    "id": "minecraft:emerald",
-    "amount": 8
+    "amount": 8,
+    "id": "minecraft:emerald"
   },
+  "level": 0,
   "output": {
     "type": "ITEM",
-    "id": "pneumaticcraft:assembly_program_drill",
-    "amount": 1
+    "amount": 1,
+    "id": "pneumaticcraft:assembly_program_drill"
   },
-  "static": true,
-  "level": 0
+  "static": true
 }

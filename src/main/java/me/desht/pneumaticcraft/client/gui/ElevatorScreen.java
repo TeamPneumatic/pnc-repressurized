@@ -32,7 +32,6 @@ import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
@@ -71,7 +70,7 @@ public class ElevatorScreen extends AbstractPneumaticCraftContainerScreen<Elevat
 
         floorNameStat.addSubWidget(floorNameField);
         floorNameStat.addSubWidget(noFloorsLabel = new WidgetLabel(5, 20, xlate("pneumaticcraft.gui.tab.info.elevator.noCallers")).setColor(0xFFFFFFFF));
-        floorNameStat.addSubWidget(floorNumberLabel = new WidgetLabel(65, 40, TextComponent.EMPTY)
+        floorNameStat.addSubWidget(floorNumberLabel = new WidgetLabel(65, 40, Component.empty())
                 .setAlignment(WidgetLabel.Alignment.CENTRE).setColor(0xFFFFFFFF));
         floorNameStat.addSubWidget(cycleDown = new WidgetButtonExtended(5, 35, 20, 20, ARROW_LEFT, button -> cycleFloor(-1)));
         floorNameStat.addSubWidget(cycleUp = new WidgetButtonExtended(105, 35, 20, 20, ARROW_RIGHT, button -> cycleFloor(1)));

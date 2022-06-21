@@ -1,23 +1,23 @@
 {
   "type": "minecraft:crafting_shaped",
+  "key": {
+    "G": {
+      "type": "forge:nbt",
+      "count": 1,
+      "item": "pneumaticcraft:small_tank"
+    },
+    "S": {
+      "item": "pneumaticcraft:reinforced_stone_slab"
+    },
+    "T": {
+      "item": "pneumaticcraft:pressure_tube"
+    }
+  },
   "pattern": [
     " T ",
     "TGT",
     "SSS"
   ],
-  "key": {
-    "T": {
-      "item": "pneumaticcraft:pressure_tube"
-    },
-    "G": {
-      "type": "forge:nbt",
-      "item": "pneumaticcraft:small_tank",
-      "count": 1
-    },
-    "S": {
-      "item": "pneumaticcraft:reinforced_stone_slab"
-    }
-  },
   "result": {
     "item": "pneumaticcraft:gas_lift"
   }

@@ -25,15 +25,11 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.TagKey;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.Block;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import org.apache.commons.lang3.tuple.Pair;
 
-import javax.annotation.Nonnull;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
@@ -88,61 +84,6 @@ public interface IPneumaticHelmetRegistry {
     default void addHUDMessage(Component title) {
         addHUDMessage(title, Collections.emptyList(), 50, DEFAULT_MESSAGE_BGCOLOR);
     }
-
-    /**
-     * Register a "foreign" entity with your hackable. This should be used for entities you didn't create, i.e.
-     * vanilla or from a different mod.  For your own entities, just have your entity implement {@link IHackableEntity}
-     *
-     * @param entityClazz entity class; subclasses of this entity will also be affected
-     * @param iHackable the hack to register
-     * @deprecated use {@link me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorRegistry#addHackable(Class, Supplier)}
-     */
-    @Deprecated(forRemoval = true)
-    void addHackable(Class<? extends Entity> entityClazz, Supplier<? extends IHackableEntity> iHackable);
-
-    /**
-     * Register a "foreign" block with your hackable. This should be used for blocks you didn't create, i.e.
-     * vanilla or from a different mod.  For your own blocks, just have your block implement {@link IHackableBlock}
-     *
-     * @param block the block class; subclasses of this block will also be affected
-     * @param iHackable the hack to register
-     * @deprecated use {@link me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorRegistry#addHackable(Block, Supplier)}
-     */
-    @Deprecated(forRemoval = true)
-    void addHackable(@Nonnull Block block, @Nonnull Supplier<? extends IHackableBlock> iHackable);
-
-    /**
-     * Register a block tag with your hackable. By default, the vanilla doors, buttons & trapdoors block tags are
-     * registered, meaning any block added to any of those tags (e.g. modded doors) will also be considered hackable.
-     *
-     * @param blockTag the block tag to register
-     * @param iHackable the hack to register
-     * @deprecated use {@link me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorRegistry#addHackable(TagKey, Supplier)}
-     */
-    @Deprecated(forRemoval = true)
-    void addHackable(@Nonnull TagKey<Block> blockTag, @Nonnull Supplier<? extends IHackableBlock> iHackable);
-
-    /**
-     * Get a list of all current successful hacks on a given entity. This is used for example in Enderman hacking, so
-     * the user can only hack an enderman once (more times wouldn't have any effect). This is mostly used for display
-     * purposes.
-     *
-     * @param entity the entity to check
-     * @return empty list if no hacks.
-     * @deprecated use {@link me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorRegistry#getCurrentEntityHacks(Entity)}
-     */
-    @Deprecated(forRemoval = true)
-    List<IHackableEntity> getCurrentEntityHacks(Entity entity);
-
-    /**
-     * Register a common (client and server) handler for a Pneumatic Armor upgrade.  This must be called from a
-     * {@link FMLCommonSetupEvent} handler
-     * (it is not necessary to use {@link net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent#enqueueWork(Runnable)}).
-     * @param handler the handler to register
-     * @deprecated use {@link me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorRegistry#registerUpgradeHandler(IArmorUpgradeHandler)}
-     */
-    @Deprecated(forRemoval = true)
-    void registerUpgradeHandler(IArmorUpgradeHandler<?> handler);
 
     /**
      * Registers the client handler for a Pneumatic Armor upgrade. This must be called from a {@link FMLClientSetupEvent}

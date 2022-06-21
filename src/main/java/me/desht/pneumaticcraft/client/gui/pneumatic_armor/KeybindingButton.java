@@ -25,7 +25,6 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraftforge.client.settings.KeyModifier;
 import org.lwjgl.glfw.GLFW;
@@ -67,7 +66,7 @@ public class KeybindingButton extends WidgetButtonExtended implements IKeybindin
         bindingMode = newMode;
         if (bindingMode) {
             setMessage(xlate("pneumaticcraft.gui.setKeybind").withStyle(ChatFormatting.YELLOW));
-            setTooltipText(TextComponent.EMPTY);
+            setTooltipText(Component.empty());
         } else {
             setMessage(origButtonText);
             addTooltip();

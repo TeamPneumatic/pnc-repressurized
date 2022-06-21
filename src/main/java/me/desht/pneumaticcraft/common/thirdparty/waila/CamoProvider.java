@@ -17,18 +17,22 @@
 
 package me.desht.pneumaticcraft.common.thirdparty.waila;
 
-import mcp.mobius.waila.api.BlockAccessor;
-import mcp.mobius.waila.api.IComponentProvider;
-import mcp.mobius.waila.api.ITooltip;
-import mcp.mobius.waila.api.config.IPluginConfig;
 import me.desht.pneumaticcraft.common.block.entity.CamouflageableBlockEntity;
 import me.desht.pneumaticcraft.common.item.CamoApplicatorItem;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import snownee.jade.api.BlockAccessor;
+import snownee.jade.api.IBlockComponentProvider;
+import snownee.jade.api.ITooltip;
+import snownee.jade.api.config.IPluginConfig;
 
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class CamoProvider {
-    public static class Component implements IComponentProvider {
+    public static class ComponentProvider implements IBlockComponentProvider {
+        private static final ResourceLocation ID = RL("camo");
+
         @Override
         public void appendTooltip(ITooltip iTooltip, BlockAccessor blockAccessor, IPluginConfig iPluginConfig) {
             BlockEntity te = blockAccessor.getBlockEntity();
@@ -36,6 +40,11 @@ public class CamoProvider {
                 net.minecraft.network.chat.Component str = CamoApplicatorItem.getCamoStateDisplayName(camo.getCamouflage());
                 iTooltip.add(xlate("pneumaticcraft.waila.camo", str));
             }
+        }
+
+        @Override
+        public ResourceLocation getUid() {
+            return ID;
         }
     }
 }

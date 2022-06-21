@@ -29,7 +29,6 @@ import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.item.DyeColor;
@@ -106,7 +105,7 @@ public class ProgWidgetEmitRedstone extends ProgWidget implements IRedstoneEmiss
                     .filter(side -> accessingSides[side.get3DDataValue()])
                     .map(ClientUtils::translateDirection)
                     .collect(Collectors.toList());
-            return Collections.singletonList(new TextComponent(Strings.join(l, ", ")));
+            return Collections.singletonList(Component.literal(Strings.join(l, ", ")));
         }
     }
 

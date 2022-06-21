@@ -31,9 +31,6 @@ public enum FuelRegistry implements IFuelRegistry {
 
     private static final FuelRecord MISSING_FUEL_ENTRY = new FuelRecord(0, 1f);
 
-    // values which have been registered in code (could be accessed from off-thread via API)
-//    private final Map<Tag<Fluid>, FuelRecord> fuelTags = new ConcurrentHashMap<>();
-
     private final Map<Fluid, FuelRecord> cachedFuels = new HashMap<>();  // cleared on a /reload
     private final Map<Fluid, FuelRecord> hotFluids = new HashMap<>();
 
@@ -60,21 +57,12 @@ public enum FuelRegistry implements IFuelRegistry {
     public Collection<Fluid> registeredFuels(Level world) {
         Set<Fluid> res = new HashSet<>(hotFluids.keySet());
 
-        // recipes, from datapacks
         for (FuelQualityRecipe recipe : ModRecipeTypes.getRecipes(world, ModRecipeTypes.FUEL_QUALITY)) {
             res.addAll(recipe.getFuel().getFluidStacks().stream()
                     .map(FluidStack::getFluid)
                     .filter(f -> f.isSource(f.defaultFluidState()))
                     .toList());
         }
-
-        // fluids tags added by code
-//        fuelTags.forEach((tag, entry) -> {
-//            if (entry.mLperBucket > 0) {
-//                List<Fluid> l = tag.getValues().stream().filter(f -> f.isSource(f.defaultFluidState())).toList();
-//                res.addAll(l);
-//            }
-//        });
 
         return res;
     }
@@ -95,13 +83,6 @@ public enum FuelRegistry implements IFuelRegistry {
                 return new FuelRecord(recipe.getAirPerBucket(), recipe.getBurnRate());
             }
         }
-
-        // fluid tags registered in code
-//        for (Map.Entry<Tag<Fluid>, FuelRecord> entry : fuelTags.entrySet()) {
-//            if (entry.getKey().getValues().contains(fluid)) {
-//                return entry.getValue();
-//            }
-//        }
 
         return MISSING_FUEL_ENTRY;
     }

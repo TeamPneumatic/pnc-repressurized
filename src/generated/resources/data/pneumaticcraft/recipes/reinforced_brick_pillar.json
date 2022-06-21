@@ -1,17 +1,17 @@
 {
   "type": "minecraft:crafting_shaped",
-  "pattern": [
-    "B",
-    "B",
-    "B"
-  ],
   "key": {
     "B": {
       "item": "pneumaticcraft:reinforced_bricks"
     }
   },
+  "pattern": [
+    "B",
+    "B",
+    "B"
+  ],
   "result": {
-    "item": "pneumaticcraft:reinforced_brick_pillar",
-    "count": 3
+    "count": 3,
+    "item": "pneumaticcraft:reinforced_brick_pillar"
   }
 }

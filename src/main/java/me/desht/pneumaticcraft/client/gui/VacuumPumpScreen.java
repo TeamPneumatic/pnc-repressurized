@@ -31,7 +31,6 @@ import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 
@@ -96,7 +95,7 @@ public class VacuumPumpScreen extends AbstractPneumaticCraftContainerScreen<Vacu
         pressureStatText.add(xlate("pneumaticcraft.gui.tooltip.baseVolume",
                 String.format("%,d", PneumaticValues.VOLUME_VACUUM_PUMP)));
         if (volume > inputAirHandler.getBaseVolume()) {
-            pressureStatText.add(new TextComponent(Symbols.TRIANGLE_RIGHT + " " + upgrades + " x ")
+            pressureStatText.add(Component.literal(Symbols.TRIANGLE_RIGHT + " " + upgrades + " x ")
                     .append(ModUpgrades.VOLUME.get().getItemStack().getHoverName())
             );
             pressureStatText.add(xlate("pneumaticcraft.gui.tooltip.effectiveVolume", String.format("%,d",volume)));

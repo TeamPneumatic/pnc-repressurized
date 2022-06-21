@@ -20,6 +20,7 @@ package me.desht.pneumaticcraft.client.sound;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import net.minecraft.client.resources.sounds.AbstractTickableSoundInstance;
+import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.player.Player;
 
@@ -32,7 +33,7 @@ public class MovingSoundJackhammer extends AbstractTickableSoundInstance {
     private static final Map<UUID, Long> timers = new HashMap<>();
 
     public MovingSoundJackhammer(Player player) {
-        super(ModSounds.JACKHAMMER_LOOP.get(), SoundSource.PLAYERS);
+        super(ModSounds.JACKHAMMER_LOOP.get(), SoundSource.PLAYERS, SoundInstance.createUnseededRandom());
         this.player = player;
         x = player.getX();
         y = player.getY();

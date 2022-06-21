@@ -36,7 +36,6 @@ import me.desht.pneumaticcraft.common.semiblock.ISpecificRequester;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.ClickType;
@@ -96,26 +95,26 @@ public class AbstractLogisticsScreen<L extends AbstractLogisticsFrameEntity> ext
 
         invisible.setTooltipKey("pneumaticcraft.gui.logistics_frame.invisible.tooltip");
 
-        addRenderableWidget(itemWhitelist = new WidgetButtonExtended(leftPos + 5, topPos + 16, 12, 12, TextComponent.EMPTY, b -> {
+        addRenderableWidget(itemWhitelist = new WidgetButtonExtended(leftPos + 5, topPos + 16, 12, 12, Component.empty(), b -> {
             logistics.setItemWhiteList(!logistics.isItemWhiteList());
             updateLabels();
             syncToServer();
         }).setVisible(false).setInvisibleHoverColor(0x80808080));
         itemWhitelist.visible = logistics.supportsBlacklisting();
-        addRenderableWidget(fluidWhitelist = new WidgetButtonExtended(leftPos + 5, topPos + 88, 12, 12, TextComponent.EMPTY, b -> {
+        addRenderableWidget(fluidWhitelist = new WidgetButtonExtended(leftPos + 5, topPos + 88, 12, 12, Component.empty(), b -> {
             logistics.setFluidWhiteList(!logistics.isFluidWhiteList());
             updateLabels();
             syncToServer();
         }).setVisible(false).setInvisibleHoverColor(0x80808080));
         fluidWhitelist.visible = logistics.supportsBlacklisting();
         int xOff = logistics.supportsBlacklisting() ? 13 : 0;
-        addRenderableWidget(itemLabel = new WidgetLabel(leftPos + 5 + xOff, topPos + 18, TextComponent.EMPTY) {
+        addRenderableWidget(itemLabel = new WidgetLabel(leftPos + 5 + xOff, topPos + 18, Component.empty()) {
             @Override
             public void onClick(double mouseX, double mouseY) {
                 if (itemWhitelist.visible) itemWhitelist.onClick(mouseX, mouseY);
             }
         });
-        addRenderableWidget(fluidLabel = new WidgetLabel(leftPos + 5 + xOff, topPos + 90, TextComponent.EMPTY) {
+        addRenderableWidget(fluidLabel = new WidgetLabel(leftPos + 5 + xOff, topPos + 90, Component.empty()) {
             @Override
             public void onClick(double mouseX, double mouseY) {
                 if (fluidWhitelist.visible) fluidWhitelist.onClick(mouseX, mouseY);
@@ -284,7 +283,7 @@ public class AbstractLogisticsScreen<L extends AbstractLogisticsFrameEntity> ext
                 && !slot.hasItem()
                 && (clickedButton == 0 || clickedButton == 1)) {
             editingSlot = slot.getSlotIndex();
-            ClientUtils.openContainerGui(ModMenuTypes.ITEM_SEARCHER.get(), new TextComponent("Searcher"));
+            ClientUtils.openContainerGui(ModMenuTypes.ITEM_SEARCHER.get(), Component.literal("Searcher"));
             if (minecraft.screen instanceof ItemSearcherScreen) {
                 itemSearchGui = (ItemSearcherScreen) minecraft.screen;
             }

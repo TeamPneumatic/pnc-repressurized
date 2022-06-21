@@ -27,7 +27,6 @@ import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.client.gui.widget.ExtendedButton;
@@ -64,7 +63,7 @@ public class WidgetButtonExtended extends ExtendedButton implements ITaggedWidge
     }
 
     public WidgetButtonExtended(int startX, int startY, int xSize, int ySize, String buttonText, OnPress pressable) {
-        super(startX, startY, xSize, ySize, new TextComponent(buttonText), pressable);
+        super(startX, startY, xSize, ySize, Component.literal(buttonText), pressable);
     }
 
     public WidgetButtonExtended(int startX, int startY, int xSize, int ySize, String buttonText) {
@@ -72,7 +71,7 @@ public class WidgetButtonExtended extends ExtendedButton implements ITaggedWidge
     }
 
     public WidgetButtonExtended(int startX, int startY, int xSize, int ySize) {
-        this(startX, startY, xSize, ySize, TextComponent.EMPTY, b -> {});
+        this(startX, startY, xSize, ySize, Component.empty(), b -> {});
     }
 
     /**

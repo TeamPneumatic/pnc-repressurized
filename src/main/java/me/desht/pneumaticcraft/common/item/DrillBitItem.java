@@ -21,7 +21,6 @@ import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.item.JackHammerItem.DigMode;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -50,11 +49,11 @@ public class DrillBitItem extends Item {
         super.appendHoverText(stack, worldIn, tooltip, flagIn);
 
         tooltip.add(xlate("pneumaticcraft.gui.tooltip.item.drillBit.tier").withStyle(ChatFormatting.YELLOW)
-                .append(new TextComponent(getType().tier.toString()).withStyle(ChatFormatting.GOLD)));
+                .append(Component.literal(getType().tier.toString()).withStyle(ChatFormatting.GOLD)));
         tooltip.add(xlate("pneumaticcraft.gui.tooltip.item.drillBit.blocks").withStyle(ChatFormatting.YELLOW)
-                .append(new TextComponent(Integer.toString(getType().getBestDigType().getBlocksDug())).withStyle(ChatFormatting.GOLD)));
+                .append(Component.literal(Integer.toString(getType().getBestDigType().getBlocksDug())).withStyle(ChatFormatting.GOLD)));
         tooltip.add(xlate("pneumaticcraft.gui.tooltip.item.drillBit.speed").withStyle(ChatFormatting.YELLOW)
-                .append(new TextComponent(Integer.toString(getType().baseEfficiency)).withStyle(ChatFormatting.GOLD)));
+                .append(Component.literal(Integer.toString(getType().baseEfficiency)).withStyle(ChatFormatting.GOLD)));
     }
 
     public enum DrillBitType {

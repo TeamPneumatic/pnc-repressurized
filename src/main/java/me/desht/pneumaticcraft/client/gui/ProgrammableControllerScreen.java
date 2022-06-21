@@ -31,7 +31,6 @@ import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
@@ -74,7 +73,7 @@ public class ProgrammableControllerScreen extends AbstractPneumaticCraftContaine
         List<Component> exc = ProgrammableControllerBlockEntity.BLACKLISTED_WIDGETS.stream()
                 .map(s -> Symbols.BULLET + " " + I18n.get("programmingPuzzle." + s.getNamespace() + "." + s.getPath() + ".name"))
                 .sorted()
-                .map(TextComponent::new)
+                .map(Component::literal)
                 .collect(Collectors.toList());
         addAnimatedStat(xlate("pneumaticcraft.gui.tab.info.programmable_controller.excluded"),
                 new ItemStack(ModItems.DRONE.get()), 0xFFFF5050, true).setText(exc);

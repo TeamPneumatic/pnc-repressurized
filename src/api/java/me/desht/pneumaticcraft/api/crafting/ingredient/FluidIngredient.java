@@ -279,7 +279,8 @@ public class FluidIngredient extends Ingredient {
         } else if (fluidId != null) {
             json.addProperty("fluid", fluidId.toString());
         } else if (!fluids.isEmpty()) {
-            json.addProperty("fluid", Objects.requireNonNull(fluids.get(0).getRegistryName()).toString());
+            ResourceLocation rl = ForgeRegistries.FLUIDS.getKey(fluids.get(0));
+            if (rl != null)  json.addProperty("fluid", rl.toString());
         } else {
             throw new IllegalStateException("ingredient has no ID, tag or fluid!");
         }
@@ -315,7 +316,7 @@ public class FluidIngredient extends Ingredient {
             int amount = buffer.readVarInt();
             Set<Fluid> fluids = new HashSet<>();
             for (int i = 0; i < nFluids; i++) {
-                fluids.add(buffer.readRegistryId());
+                fluids.add(buffer.readRegistryIdSafe(Fluid.class));
             }
             if (buffer.readBoolean()) {
                 return FluidIngredient.of(amount, buffer.readNbt(), buffer.readBoolean(), fluids.toArray(new Fluid[0]));
@@ -364,7 +365,7 @@ public class FluidIngredient extends Ingredient {
         public void write(FriendlyByteBuf buffer, FluidIngredient ingredient) {
             buffer.writeVarInt(ingredient.getFluidList().size());
             buffer.writeVarInt(ingredient.getAmount());
-            ingredient.getFluidList().forEach(buffer::writeRegistryId);
+            ingredient.getFluidList().forEach(fluid -> buffer.writeRegistryId(ForgeRegistries.FLUIDS, fluid));
             if (ingredient.nbt != null) {
                 buffer.writeBoolean(true);
                 buffer.writeNbt(ingredient.nbt);

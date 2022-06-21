@@ -1,23 +1,23 @@
 {
   "type": "minecraft:crafting_shaped",
-  "pattern": [
-    "PPP",
-    "PDP",
-    "PCP"
-  ],
   "key": {
-    "P": {
-      "item": "minecraft:stick"
-    },
     "C": {
       "item": "pneumaticcraft:logistics_core"
     },
     "D": {
       "tag": "forge:dyes/green"
+    },
+    "P": {
+      "item": "minecraft:stick"
     }
   },
+  "pattern": [
+    "PPP",
+    "PDP",
+    "PCP"
+  ],
   "result": {
-    "item": "pneumaticcraft:logistics_frame_default_storage",
-    "count": 8
+    "count": 8,
+    "item": "pneumaticcraft:logistics_frame_default_storage"
   }
 }

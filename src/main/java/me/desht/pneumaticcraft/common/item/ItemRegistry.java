@@ -21,7 +21,6 @@ import me.desht.pneumaticcraft.api.item.*;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerItem;
 import me.desht.pneumaticcraft.common.capabilities.AirHandlerItemStack;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import me.desht.pneumaticcraft.common.util.upgrade.ApplicableUpgradesDB;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
@@ -33,7 +32,6 @@ import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.function.Supplier;
 
 public enum ItemRegistry implements IItemRegistry {
     INSTANCE;
@@ -51,23 +49,6 @@ public enum ItemRegistry implements IItemRegistry {
     public void registerInventoryItem(@Nonnull IInventoryItem handler) {
         Validate.notNull(handler);
         inventoryItems.add(handler);
-    }
-
-    @Override
-    public void registerUpgradeAcceptor(@Nonnull IUpgradeAcceptor upgradeAcceptor) {
-        // will disappear in 1.19
-    }
-
-    @Override
-    public Item makeUpgradeItem(Supplier<PNCUpgrade> upgrade, int tier) {
-        // will disappear in 1.19
-        return getUpgradeRegistry().makeUpgradeItem(upgrade, tier);
-    }
-
-    @Override
-    public void addTooltip(PNCUpgrade upgrade, List<Component> tooltip) {
-        // will disappear in 1.19
-        getUpgradeRegistry().addUpgradeTooltip(upgrade, tooltip);
     }
 
     @Override
@@ -94,11 +75,6 @@ public enum ItemRegistry implements IItemRegistry {
     @Override
     public IAirHandlerItem.Provider makeItemAirHandlerProvider(ItemStack stack, float maxPressure) {
         return new AirHandlerItemStack(stack, maxPressure);
-    }
-
-    @Override
-    public IUpgradeRegistry getUpgradeRegistry() {
-        return ApplicableUpgradesDB.getInstance();
     }
 
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")

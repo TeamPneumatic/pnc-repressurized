@@ -31,7 +31,6 @@ import me.desht.pneumaticcraft.client.render.pneumatic_armor.entity_tracker.Enti
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.BlockTrackerClientHandler;
 import me.desht.pneumaticcraft.common.config.subconfig.ArmorHUDLayout;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
-import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
@@ -40,10 +39,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.TagKey;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.Block;
 import org.apache.commons.lang3.Validate;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -73,31 +69,6 @@ public enum PneumaticHelmetRegistry implements IPneumaticHelmetRegistry {
     @Override
     public void addHUDMessage(Component title, List<Component> message, int duration, int backColor) {
         HUDHandler.getInstance().addMessage(title, message, duration, backColor);
-    }
-
-    @Override
-    public void addHackable(Class<? extends Entity> entityClazz, Supplier<? extends IHackableEntity> iHackable) {
-        CommonArmorRegistry.getInstance().addHackable(entityClazz, iHackable);
-    }
-
-    @Override
-    public void addHackable(Block block, Supplier<? extends IHackableBlock> iHackable) {
-        CommonArmorRegistry.getInstance().addHackable(block, iHackable);
-    }
-
-    @Override
-    public void addHackable(TagKey<Block> blockTag, Supplier<? extends IHackableBlock> iHackable) {
-        CommonArmorRegistry.getInstance().addHackable(blockTag, iHackable);
-    }
-
-    @Override
-    public List<IHackableEntity> getCurrentEntityHacks(Entity entity) {
-        return CommonArmorRegistry.getInstance().getCurrentEntityHacks(entity);
-    }
-
-    @Override
-    public void registerUpgradeHandler(IArmorUpgradeHandler<?> handler) {
-        CommonArmorRegistry.getInstance().registerUpgradeHandler(handler);
     }
 
     @Override

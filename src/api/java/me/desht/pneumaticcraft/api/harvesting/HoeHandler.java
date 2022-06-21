@@ -20,7 +20,6 @@ package me.desht.pneumaticcraft.api.harvesting;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.HoeItem;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.registries.ForgeRegistryEntry;
 
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -32,7 +31,7 @@ import java.util.function.Predicate;
  * <p>
  * Hoe handlers are Forge registry objects and should be registered as such.
  */
-public class HoeHandler extends ForgeRegistryEntry<HoeHandler> implements Predicate<ItemStack> {
+public class HoeHandler implements Predicate<ItemStack> {
     private final Predicate<ItemStack> matchItem;
     private final BiConsumer<ItemStack, Player> useDurability;
 

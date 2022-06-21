@@ -12,7 +12,7 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.Container;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
@@ -84,7 +84,7 @@ public class ClassifyFilterItem extends Item implements IFilteringItem {
         return level.getRecipeManager().getRecipeFor(type, c, level).isPresent();
     }
 
-    public static TranslatableComponent xlateMatch(boolean matchAll) {
+    public static MutableComponent xlateMatch(boolean matchAll) {
         return xlate(matchAll ? "pneumaticcraft.gui.tooltip.filter.matchAll" : "pneumaticcraft.gui.tooltip.filter.matchAny");
     }
 

@@ -50,7 +50,6 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.FormattedCharSink;
@@ -131,7 +130,7 @@ public class WidgetAnimatedStat extends AbstractWidget implements IGuiAnimatedSt
     }
 
     public WidgetAnimatedStat(Screen gui, int backgroundColor) {
-        this(gui, TextComponent.EMPTY, 0, 0, backgroundColor, null, false);
+        this(gui, Component.empty(), 0, 0, backgroundColor, null, false);
     }
 
     public WidgetAnimatedStat(Screen gui, int backgroundColor, ItemStack icon) {
@@ -564,7 +563,7 @@ public class WidgetAnimatedStat extends AbstractWidget implements IGuiAnimatedSt
             // text title
             String title = getMessage().getString();
             if (!title.isEmpty()) {
-                RenderUtils.renderString3d(new TextComponent(title).withStyle(ChatFormatting.UNDERLINE),
+                RenderUtils.renderString3d(Component.literal(title).withStyle(ChatFormatting.UNDERLINE),
                         renderBaseX + (leftSided ? -renderWidth + 2 : 18), renderEffectiveY + 2,
                         titleColor, matrixStack, buffer, false, true);
             }

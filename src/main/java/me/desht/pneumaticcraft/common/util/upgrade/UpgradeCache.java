@@ -86,9 +86,11 @@ public class UpgradeCache {
         for (int i = 0; i < handler.getSlots(); i++) {
             ItemStack stack = handler.getStackInSlot(i);
             if (stack.getItem() instanceof IUpgradeItem upgradeItem) {
-                String key = PneumaticCraftUtils.modDefaultedString(upgradeItem.getUpgradeType().getRegistryName());
-                int count = upgradeItem.getUpgradeTier() * stack.getCount();
-                tag.put(key, IntTag.valueOf(count));
+                PneumaticCraftUtils.getRegistryName(ModUpgrades.UPGRADES.get(), upgradeItem.getUpgradeType()).ifPresent(regName -> {
+                    String key = PneumaticCraftUtils.modDefaultedString(regName);
+                    int count = upgradeItem.getUpgradeTier() * stack.getCount();
+                    tag.put(key, IntTag.valueOf(count));
+                });
             }
         }
         return tag;

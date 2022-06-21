@@ -273,7 +273,7 @@ public class EntityFilter implements Predicate<Entity> {
                     name = "minecraft:" + name;
                 }
                 ItemStack stack = mainHand ? ((LivingEntity) entity).getMainHandItem() : ((LivingEntity) entity).getOffhandItem();
-                return stack.getItem().getRegistryName() != null && stack.getItem().getRegistryName().toString().equals(name);
+                return PneumaticCraftUtils.getRegistryName(stack.getItem()).orElseThrow().toString().equals(name);
             }
             return false;
         }

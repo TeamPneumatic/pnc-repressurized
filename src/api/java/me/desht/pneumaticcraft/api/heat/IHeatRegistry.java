@@ -18,7 +18,6 @@
 package me.desht.pneumaticcraft.api.heat;
 
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.level.block.Block;
 
 import java.util.function.Supplier;
 
@@ -33,21 +32,6 @@ public interface IHeatRegistry {
      * @return a heat exchanger logic
      */
     IHeatExchangerLogic makeHeatExchangerLogic();
-
-    /**
-     * Register a block as a simple heat exchanger (temperature and thermal resistance only; no blockstate transitions).
-     * Don't call this directly; subscribe to {@link HeatRegistrationEvent} or, preferably, use datapacks.
-     *<p>
-     * Note: the preferred way (and the only way if you want blockstate transitions) to do this is with datapack recipes.
-     * See {@code data/pneumaticcraft/recipes/block_heat_properties/*.json}
-     *
-     * @param block the block
-     * @param temperature the block's temperature
-     * @param thermalResistance the thermal resistance, i.e. how quickly heat will be transferred
-     * @deprecated removing in 1.19; this should be done by datapack
-     */
-    @Deprecated(forRemoval = true)
-    void registerBlockExchanger(Block block, double temperature, double thermalResistance);
 
     /**
      * Register a heat behaviour instance. This can be called from a {@link net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent}

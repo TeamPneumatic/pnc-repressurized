@@ -1,52 +1,52 @@
 {
   "parent": "pneumaticcraft:oil_bucket",
+  "criteria": {
+    "0": {
+      "conditions": {
+        "items": [
+          {
+            "count": {
+              "min": 1
+            },
+            "items": [
+              "pneumaticcraft:refinery"
+            ]
+          },
+          {
+            "count": {
+              "min": 2
+            },
+            "items": [
+              "pneumaticcraft:refinery_output"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
   "display": {
-    "icon": {
-      "item": "pneumaticcraft:refinery"
-    },
-    "title": {
-      "translate": "pneumaticcraft.advancement.refinery"
-    },
+    "announce_to_chat": true,
+    "background": "pneumaticcraft:textures/gui/advancement_bg.png",
     "description": {
       "translate": "pneumaticcraft.advancement.refinery.desc"
     },
     "frame": "goal",
-    "show_toast": true,
-    "announce_to_chat": true,
     "hidden": false,
-    "background": "pneumaticcraft:textures/gui/advancement_bg.png"
-  },
-  "rewards": {
-    "experience": 20
-  },
-  "criteria": {
-    "0": {
-      "trigger": "minecraft:inventory_changed",
-      "conditions": {
-        "items": [
-          {
-            "items": [
-              "pneumaticcraft:refinery"
-            ],
-            "count": {
-              "min": 1
-            }
-          },
-          {
-            "items": [
-              "pneumaticcraft:refinery_output"
-            ],
-            "count": {
-              "min": 2
-            }
-          }
-        ]
-      }
+    "icon": {
+      "item": "pneumaticcraft:refinery"
+    },
+    "show_toast": true,
+    "title": {
+      "translate": "pneumaticcraft.advancement.refinery"
     }
   },
   "requirements": [
     [
       "0"
     ]
-  ]
+  ],
+  "rewards": {
+    "experience": 20
+  }
 }

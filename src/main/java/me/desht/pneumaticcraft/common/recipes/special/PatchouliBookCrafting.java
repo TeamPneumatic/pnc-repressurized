@@ -28,15 +28,12 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.ShapelessRecipe;
-import net.minecraftforge.registries.ObjectHolder;
+import net.minecraftforge.registries.ForgeRegistries;
 
 public class PatchouliBookCrafting extends ShapelessRecipe {
-    @SuppressWarnings("FieldMayBeFinal")
-    @ObjectHolder("patchouli:guide_book")
-    public static Item GUIDE_BOOK = null;
-
     private static final String NBT_KEY = "patchouli:book";
     private static final String NBT_VAL = "pneumaticcraft:book";
+    private static Item guide_book;
 
     public PatchouliBookCrafting(ResourceLocation idIn) {
         super(idIn, "", makeGuideBook(),
@@ -44,9 +41,15 @@ public class PatchouliBookCrafting extends ShapelessRecipe {
         );
     }
 
+    private static Item guide_book() {
+        if (guide_book == null) {
+            guide_book = ForgeRegistries.ITEMS.getValue(new ResourceLocation("patchouli:guide_book"));
+        }
+        return guide_book;
+    }
+
     private static ItemStack makeGuideBook() {
-        if (GUIDE_BOOK == null) return ItemStack.EMPTY;
-        ItemStack book = new ItemStack(GUIDE_BOOK);
+        ItemStack book = new ItemStack(guide_book());
         CompoundTag tag = book.getOrCreateTag();
         tag.putString(NBT_KEY, NBT_VAL);
         return book;

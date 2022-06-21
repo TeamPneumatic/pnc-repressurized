@@ -97,7 +97,7 @@ public abstract class AbstractFluidTankBlockEntity extends AbstractTickingBlockE
 
         FluidStack stack = getTank().getFluid();
         if (!stack.isEmpty()) {
-            Direction dir = stack.getFluid().getAttributes().getDensity() < 0 ? Direction.UP : Direction.DOWN;
+            Direction dir = stack.getFluid().getFluidType().isLighterThanAir() ? Direction.UP : Direction.DOWN;
             if (getBlockState().getValue(AbstractPneumaticCraftBlock.connectionProperty(dir))) {
                 BlockState other = nonNullLevel().getBlockState(worldPosition.relative(dir));
                 if (other.getBlock() instanceof FluidTankBlock && other.getValue(AbstractPneumaticCraftBlock.connectionProperty(dir.getOpposite()))) {

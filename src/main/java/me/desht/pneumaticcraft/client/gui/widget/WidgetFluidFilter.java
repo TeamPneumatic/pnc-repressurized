@@ -25,7 +25,6 @@ import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 
@@ -45,7 +44,7 @@ public class WidgetFluidFilter extends AbstractWidget implements ITooltipProvide
     }
 
     WidgetFluidFilter(int x, int y, FluidStack fluidStack, Consumer<WidgetFluidFilter> pressable) {
-        super(x, y, 16, 16, TextComponent.EMPTY);
+        super(x, y, 16, 16, Component.empty());
         this.pressable = pressable;
         this.fluidStack = fluidStack;
     }
@@ -61,7 +60,7 @@ public class WidgetFluidFilter extends AbstractWidget implements ITooltipProvide
     public void addTooltip(double mouseX, double mouseY, List<Component> curTip, boolean shiftPressed) {
         if (!fluidStack.isEmpty()) {
             curTip.add(new FluidStack(fluidStack, 1).getDisplayName());
-            curTip.add(new TextComponent(ModNameCache.getModName(fluidStack.getFluid()))
+            curTip.add(Component.literal(ModNameCache.getModName(fluidStack.getFluid()))
                     .withStyle(ChatFormatting.BLUE, ChatFormatting.ITALIC));
         }
     }

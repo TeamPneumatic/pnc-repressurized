@@ -39,7 +39,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.ItemStack;
@@ -63,10 +62,9 @@ public class TooltipEventHandler {
 
         ItemStack stack = event.getItemStack();
 
-
         if (stack.getItem() instanceof BucketItem) {
             handleFluidContainerTooltip(event);
-        } else if (stack.getItem().getRegistryName().getNamespace().equals(Names.MOD_ID)) {
+        } else if (PneumaticCraftUtils.getRegistryName(stack.getItem()).orElseThrow().getNamespace().equals(Names.MOD_ID)) {
             addStandardTooltip(stack, event.getToolTip(), event.getFlags());
         }
         if (stack.getItem() instanceof IProgrammable) {
@@ -127,16 +125,18 @@ public class TooltipEventHandler {
             for (Map.Entry<ResourceLocation, Integer> entry : widgetMap.entrySet()) {
                 ChatFormatting[] prefix = new ChatFormatting[0];
                 ProgWidgetType<?> widgetType = ModProgWidgets.PROG_WIDGETS.get().getValue(entry.getKey());
-                Screen curScreen = Minecraft.getInstance().screen;
-                if (curScreen instanceof IGuiDrone) {
-                    if (!((IGuiDrone) curScreen).getDrone().isProgramApplicable(widgetType)) {
-                        prefix = new ChatFormatting[]{ ChatFormatting.RED, ChatFormatting.ITALIC };
-                        hasInvalidPrograms = true;
+                if (widgetType != null) {
+                    Screen curScreen = Minecraft.getInstance().screen;
+                    if (curScreen instanceof IGuiDrone) {
+                        if (!((IGuiDrone) curScreen).getDrone().isProgramApplicable(widgetType)) {
+                            prefix = new ChatFormatting[]{ChatFormatting.RED, ChatFormatting.ITALIC};
+                            hasInvalidPrograms = true;
+                        }
                     }
+                    addedEntries.add(Component.literal(Symbols.BULLET + " " + entry.getValue() + " x ")
+                            .append(xlate(widgetType.getTranslationKey()))
+                            .withStyle(prefix));
                 }
-                addedEntries.add(new TextComponent(Symbols.BULLET + " " + entry.getValue() + " x ")
-                        .append(xlate(widgetType.getTranslationKey()))
-                        .withStyle(prefix));
             }
             if (hasInvalidPrograms) {
                 event.getToolTip().add(xlate("pneumaticcraft.gui.tooltip.programmable.invalidPieces").withStyle(ChatFormatting.RED));

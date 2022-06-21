@@ -27,7 +27,6 @@ import me.desht.pneumaticcraft.common.inventory.PressureChamberValveMenu;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
@@ -50,8 +49,8 @@ public class PressureChamberScreen extends AbstractPneumaticCraftContainerScreen
         addAnimatedStat(xlate("pneumaticcraft.gui.tab.status"), new ItemStack(ModBlocks.PRESSURE_CHAMBER_WALL.get()), 0xFFFFAA00, false)
                 .setText(ImmutableList.of(
                         xlate("pneumaticcraft.gui.tab.pressureChamber.chamberSize").withStyle(ChatFormatting.WHITE),
-                        new TextComponent( sOut + "x" + sOut + "x" + sOut + " (outside)").withStyle(ChatFormatting.BLACK),
-                        new TextComponent( sIn + "x" + sIn + "x" + sIn + " (inside)").withStyle(ChatFormatting.BLACK)
+                        Component.literal( sOut + "x" + sOut + "x" + sOut + " (outside)").withStyle(ChatFormatting.BLACK),
+                        Component.literal( sIn + "x" + sIn + "x" + sIn + " (inside)").withStyle(ChatFormatting.BLACK)
                 ));
     }
 

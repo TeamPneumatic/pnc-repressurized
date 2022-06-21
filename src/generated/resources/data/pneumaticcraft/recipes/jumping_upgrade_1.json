@@ -1,27 +1,27 @@
 {
   "type": "minecraft:crafting_shaped",
-  "pattern": [
-    "LCL",
-    "VTV",
-    "LPL"
-  ],
   "key": {
+    "C": {
+      "item": "pneumaticcraft:pneumatic_cylinder"
+    },
     "L": {
       "tag": "pneumaticcraft:upgrade_components"
     },
     "P": {
       "item": "minecraft:piston"
     },
-    "V": {
-      "item": "pneumaticcraft:vortex_cannon"
-    },
     "T": {
       "item": "pneumaticcraft:pressure_tube"
     },
-    "C": {
-      "item": "pneumaticcraft:pneumatic_cylinder"
+    "V": {
+      "item": "pneumaticcraft:vortex_cannon"
     }
   },
+  "pattern": [
+    "LCL",
+    "VTV",
+    "LPL"
+  ],
   "result": {
     "item": "pneumaticcraft:jumping_upgrade_1"
   }

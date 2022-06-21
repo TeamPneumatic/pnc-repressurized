@@ -1,18 +1,18 @@
 {
   "type": "pneumaticcraft:thermo_plant",
-  "item_input": {
-    "item": "pneumaticcraft:spawner_core_shell"
-  },
+  "air_use_multiplier": 3.0,
+  "exothermic": false,
   "fluid_input": {
     "type": "pneumaticcraft:fluid",
-    "tag": "forge:experience",
-    "amount": 4000
+    "amount": 4000,
+    "tag": "forge:experience"
+  },
+  "item_input": {
+    "item": "pneumaticcraft:spawner_core_shell"
   },
   "item_output": {
     "item": "pneumaticcraft:spawner_core"
   },
   "pressure": 3.0,
-  "speed": 0.5,
-  "air_use_multiplier": 3.0,
-  "exothermic": false
+  "speed": 0.5
 }

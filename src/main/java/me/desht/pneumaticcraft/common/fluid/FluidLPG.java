@@ -20,35 +20,26 @@ package me.desht.pneumaticcraft.common.fluid;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModFluids;
 import me.desht.pneumaticcraft.common.core.ModItems;
-import net.minecraft.world.level.LevelReader;
-import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.ForgeFlowingFluid;
 
-import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
-
 public abstract class FluidLPG {
-    private static final FluidAttributes.Builder ATTRS = FluidAttributes.builder(
-            RL("block/fluid/generic_fuel_still"), RL("block/fluid/generic_fuel_flow")
-    ).viscosity(250).color(0xD0ECD71C);
+    public static final PNCFluidRenderProps RENDER_PROPS = PNCFluidRenderProps.genericFuel(0xD0ECD71C);
 
-    private static final ForgeFlowingFluid.Properties PROPS =
-            new ForgeFlowingFluid.Properties(ModFluids.LPG, ModFluids.LPG_FLOWING, ATTRS)
-                    .block(ModBlocks.LPG).bucket(ModItems.LPG_BUCKET);
+    private static ForgeFlowingFluid.Properties props() {
+        return new ForgeFlowingFluid.Properties(
+                ModFluids.LPG_FLUID_TYPE, ModFluids.LPG, ModFluids.LPG_FLOWING
+        ).block(ModBlocks.LPG).bucket(ModItems.LPG_BUCKET).tickRate(2);
+    }
 
     public static class Source extends ForgeFlowingFluid.Source {
         public Source() {
-            super(PROPS);
-        }
-
-        @Override
-        public int getTickDelay(LevelReader world) {
-            return 2;
+            super(props());
         }
     }
 
     public static class Flowing extends ForgeFlowingFluid.Flowing {
         public Flowing() {
-            super(PROPS);
+            super(props());
         }
     }
 }

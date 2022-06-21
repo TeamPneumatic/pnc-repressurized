@@ -1,23 +1,23 @@
 {
   "type": "minecraft:crafting_shaped",
+  "key": {
+    "C": {
+      "item": "pneumaticcraft:printed_circuit_board"
+    },
+    "P": {
+      "tag": "pneumaticcraft:plastic_sheets"
+    },
+    "R": {
+      "tag": "forge:dusts/redstone"
+    }
+  },
   "pattern": [
     "RPR",
     "PCP",
     "RPR"
   ],
-  "key": {
-    "R": {
-      "tag": "forge:dusts/redstone"
-    },
-    "P": {
-      "tag": "pneumaticcraft:plastic_sheets"
-    },
-    "C": {
-      "item": "pneumaticcraft:printed_circuit_board"
-    }
-  },
   "result": {
-    "item": "pneumaticcraft:module_expansion_card",
-    "count": 4
+    "count": 4,
+    "item": "pneumaticcraft:module_expansion_card"
   }
 }

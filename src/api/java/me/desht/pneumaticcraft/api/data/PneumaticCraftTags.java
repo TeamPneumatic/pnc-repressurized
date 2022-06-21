@@ -15,7 +15,7 @@
  *     along with pnc-repressurized.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.desht.pneumaticcraft.common;
+package me.desht.pneumaticcraft.api.data;
 
 import me.desht.pneumaticcraft.api.lib.Names;
 import net.minecraft.core.Registry;
@@ -23,8 +23,9 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.levelgen.feature.ConfiguredStructureFeature;
+import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.registries.ForgeRegistries;
 
@@ -152,14 +153,27 @@ public class PneumaticCraftTags {
         }
     }
 
-    public static class ConfiguredStructures extends PneumaticCraftTags {
-        public static final TagKey<ConfiguredStructureFeature<?,?>> NO_OIL_LAKES = modTag("no_oil_lakes");
+    public static class Biomes extends PneumaticCraftTags {
+        public static final TagKey<Biome> OIL_LAKES_SURFACE = modTag("has_surface_oil_lakes");
+        public static final TagKey<Biome> OIL_LAKES_UNDERGROUND = modTag("has_underground_oil_lakes");
 
-        static TagKey<ConfiguredStructureFeature<?,?>> tag(String modid, String name) {
-            return TagKey.create(Registry.CONFIGURED_STRUCTURE_FEATURE_REGISTRY, new ResourceLocation(modid, name));
+        static TagKey<Biome> tag(String modid, String name) {
+            return TagKey.create(Registry.BIOME_REGISTRY, new ResourceLocation(modid, name));
         }
 
-        static TagKey<ConfiguredStructureFeature<?,?>> modTag(String name) {
+        static TagKey<Biome> modTag(String name) {
+            return tag(Names.MOD_ID, name);
+        }
+    }
+
+    public static class ConfiguredStructures extends PneumaticCraftTags {
+        public static final TagKey<Structure> NO_OIL_LAKES = modTag("no_oil_lakes");
+
+        static TagKey<Structure> tag(String modid, String name) {
+            return TagKey.create(Registry.STRUCTURE_REGISTRY, new ResourceLocation(modid, name));
+        }
+
+        static TagKey<Structure> modTag(String name) {
             return tag(Names.MOD_ID, name);
         }
     }

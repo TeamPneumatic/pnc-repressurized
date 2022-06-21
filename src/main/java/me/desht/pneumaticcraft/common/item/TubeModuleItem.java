@@ -24,7 +24,6 @@ import me.desht.pneumaticcraft.common.tubemodules.AbstractTubeModule;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -60,7 +59,7 @@ public class TubeModuleItem extends Item {
         super.appendHoverText(stack, world, tooltip, flag);
 
         AbstractTubeModule module = createModule(Direction.UP,null);
-        tooltip.add(new TextComponent("In line: " + (module.isInline() ? "Yes" : "No")).withStyle(ChatFormatting.DARK_AQUA));
+        tooltip.add(Component.literal("In line: " + (module.isInline() ? "Yes" : "No")).withStyle(ChatFormatting.DARK_AQUA));
     }
 
     @Override

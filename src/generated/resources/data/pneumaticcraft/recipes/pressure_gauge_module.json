@@ -1,9 +1,5 @@
 {
   "type": "minecraft:crafting_shaped",
-  "pattern": [
-    " G ",
-    "RTR"
-  ],
   "key": {
     "G": {
       "item": "pneumaticcraft:pressure_gauge"
@@ -15,6 +11,10 @@
       "item": "pneumaticcraft:pressure_tube"
     }
   },
+  "pattern": [
+    " G ",
+    "RTR"
+  ],
   "result": {
     "item": "pneumaticcraft:pressure_gauge_module"
   }

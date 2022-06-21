@@ -17,7 +17,6 @@
 
 package me.desht.pneumaticcraft.common.thirdparty.waila;
 
-import mcp.mobius.waila.api.*;
 import me.desht.pneumaticcraft.common.block.AbstractPneumaticCraftBlock;
 import me.desht.pneumaticcraft.common.block.PressureTubeBlock;
 import me.desht.pneumaticcraft.common.block.entity.AbstractPneumaticCraftBlockEntity;
@@ -26,30 +25,33 @@ import me.desht.pneumaticcraft.common.entity.semiblock.AbstractSemiblockEntity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import snownee.jade.api.IWailaClientRegistration;
+import snownee.jade.api.IWailaCommonRegistration;
+import snownee.jade.api.IWailaPlugin;
+import snownee.jade.api.WailaPlugin;
 
-@SuppressWarnings("UnstableApiUsage")
 @WailaPlugin
 public class WailaRegistration implements IWailaPlugin {
     @Override
     public void register(IWailaCommonRegistration iRegistrar) {
-        iRegistrar.registerBlockDataProvider(new PneumaticProvider.Data(), AbstractPneumaticCraftBlockEntity.class);
-        iRegistrar.registerBlockDataProvider(new SemiblockProvider.Data(), BlockEntity.class);
-        iRegistrar.registerBlockDataProvider(new RedstoneControlProvider.Data(), AbstractPneumaticCraftBlockEntity.class);
-        iRegistrar.registerBlockDataProvider(new TubeModuleProvider.Data(), PressureTubeBlockEntity.class);
-        iRegistrar.registerEntityDataProvider(new EntityProvider.Data(), LivingEntity.class);
-        iRegistrar.registerEntityDataProvider(new EntityProvider.Data(), AbstractSemiblockEntity.class);
+        iRegistrar.registerBlockDataProvider(new PneumaticProvider.DataProvider(), AbstractPneumaticCraftBlockEntity.class);
+        iRegistrar.registerBlockDataProvider(new SemiblockProvider.DataProvider(), BlockEntity.class);
+        iRegistrar.registerBlockDataProvider(new RedstoneControlProvider.DataProvider(), AbstractPneumaticCraftBlockEntity.class);
+        iRegistrar.registerBlockDataProvider(new TubeModuleProvider.DataProvider(), PressureTubeBlockEntity.class);
+
+        iRegistrar.registerEntityDataProvider(new EntityProvider.DataProvider(), LivingEntity.class);
+        iRegistrar.registerEntityDataProvider(new EntityProvider.DataProvider(), AbstractSemiblockEntity.class);
     }
 
     @Override
     public void registerClient(IWailaClientRegistration iRegistrar) {
-        iRegistrar.registerComponentProvider(new PneumaticProvider.Component(), TooltipPosition.BODY, Block.class);
-        iRegistrar.registerComponentProvider(new SemiblockProvider.Component(), TooltipPosition.BODY, Block.class);
-        iRegistrar.registerComponentProvider(new RedstoneControlProvider.Component(), TooltipPosition.BODY, AbstractPneumaticCraftBlock.class);
-        iRegistrar.registerComponentProvider(new TubeModuleProvider.Component(), TooltipPosition.BODY, PressureTubeBlock.class);
-        iRegistrar.registerComponentProvider(new EntityProvider.Component(), TooltipPosition.BODY, LivingEntity.class);
-//        iRegistrar.registerComponentProvider(new EntityProvider.Component(), TooltipPosition.HEAD, EntitySemiblockBase.class);
-        iRegistrar.registerComponentProvider(new EntityProvider.Component(), TooltipPosition.BODY, AbstractSemiblockEntity.class);
-//        iRegistrar.registerComponentProvider(new EntityProvider.Component(), TooltipPosition.TAIL, EntitySemiblockBase.class);
-        iRegistrar.registerComponentProvider(new CamoProvider.Component(), TooltipPosition.BODY, AbstractPneumaticCraftBlock.class);
+        iRegistrar.registerBlockComponent(new PneumaticProvider.ComponentProvider(), Block.class);
+        iRegistrar.registerBlockComponent(new SemiblockProvider.ComponentProvider(), Block.class);
+        iRegistrar.registerBlockComponent(new RedstoneControlProvider.ComponentProvider(), AbstractPneumaticCraftBlock.class);
+        iRegistrar.registerBlockComponent(new TubeModuleProvider.ComponentProvider(), PressureTubeBlock.class);
+        iRegistrar.registerBlockComponent(new CamoProvider.ComponentProvider(), AbstractPneumaticCraftBlock.class);
+
+        iRegistrar.registerEntityComponent(new EntityProvider.ComponentProvider(), LivingEntity.class);
+        iRegistrar.registerEntityComponent(new EntityProvider.ComponentProvider(), AbstractSemiblockEntity.class);
     }
 }

@@ -1,14 +1,6 @@
 {
   "type": "minecraft:crafting_shaped",
-  "pattern": [
-    " T ",
-    "GIG",
-    "IPI"
-  ],
   "key": {
-    "T": {
-      "item": "pneumaticcraft:advanced_pressure_tube"
-    },
     "G": {
       "item": "pneumaticcraft:compressed_iron_gear"
     },
@@ -17,8 +9,16 @@
     },
     "P": {
       "item": "pneumaticcraft:printed_circuit_board"
+    },
+    "T": {
+      "item": "pneumaticcraft:advanced_pressure_tube"
     }
   },
+  "pattern": [
+    " T ",
+    "GIG",
+    "IPI"
+  ],
   "result": {
     "item": "pneumaticcraft:pneumatic_dynamo"
   }

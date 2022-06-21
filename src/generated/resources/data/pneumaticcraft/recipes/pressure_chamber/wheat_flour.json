@@ -8,8 +8,8 @@
   "pressure": 1.5,
   "results": [
     {
-      "item": "pneumaticcraft:wheat_flour",
-      "count": 3
+      "count": 3,
+      "item": "pneumaticcraft:wheat_flour"
     }
   ]
 }

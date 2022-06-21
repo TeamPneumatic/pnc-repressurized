@@ -1,27 +1,27 @@
 {
   "type": "minecraft:crafting_shaped",
-  "pattern": [
-    "DBD",
-    "TPT",
-    "G G"
-  ],
   "key": {
+    "B": {
+      "tag": "forge:glass_panes/black"
+    },
     "D": {
       "tag": "forge:dyes/gray"
     },
     "G": {
       "tag": "pneumaticcraft:plastic_sheets"
     },
-    "B": {
-      "tag": "forge:glass_panes/black"
+    "P": {
+      "item": "pneumaticcraft:printed_circuit_board"
     },
     "T": {
       "item": "pneumaticcraft:turbine_rotor"
-    },
-    "P": {
-      "item": "pneumaticcraft:printed_circuit_board"
     }
   },
+  "pattern": [
+    "DBD",
+    "TPT",
+    "G G"
+  ],
   "result": {
     "item": "pneumaticcraft:security_station"
   }

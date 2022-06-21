@@ -33,7 +33,6 @@ import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
@@ -49,8 +48,8 @@ public class ChargingStationScreen extends AbstractPneumaticCraftContainerScreen
     private WidgetButtonExtended upgradeOnlyButton;
     private float renderAirProgress;
 
-    private static final Component UPGRADE_ONLY_ON = new TextComponent("\u2b06").withStyle(ChatFormatting.AQUA);
-    private static final Component UPGRADE_ONLY_OFF = new TextComponent("\u2b06").withStyle(ChatFormatting.GRAY);
+    private static final Component UPGRADE_ONLY_ON = Component.literal("\u2b06").withStyle(ChatFormatting.AQUA);
+    private static final Component UPGRADE_ONLY_OFF = Component.literal("\u2b06").withStyle(ChatFormatting.GRAY);
 
     public ChargingStationScreen(ChargingStationMenu container, Inventory inv, Component displayString) {
         super(container, inv, displayString);
@@ -62,7 +61,7 @@ public class ChargingStationScreen extends AbstractPneumaticCraftContainerScreen
     public void init() {
         super.init();
 
-        guiSelectButton = new WidgetButtonExtended(leftPos + 90, topPos + 22, 18, 19, TextComponent.EMPTY).withTag("open_upgrades");
+        guiSelectButton = new WidgetButtonExtended(leftPos + 90, topPos + 22, 18, 19, Component.empty()).withTag("open_upgrades");
         guiSelectButton.setRenderedIcon(Textures.GUI_UPGRADES_LOCATION);
         guiSelectButton.visible = false;
         addRenderableWidget(guiSelectButton);
@@ -140,7 +139,7 @@ public class ChargingStationScreen extends AbstractPneumaticCraftContainerScreen
         ItemStack chargeStack  = te.getPrimaryInventory().getStackInSlot(ChargingStationBlockEntity.CHARGE_INVENTORY_INDEX);
         if (!chargeStack.isEmpty() && !chargeStack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).isPresent()) {
             // shouldn't ever happen - I can't be bothered to add a translation
-            textList.add(new TextComponent(ChatFormatting.RED + "Non-pneumatic item in the charge slot!?"));
+            textList.add(Component.literal(ChatFormatting.RED + "Non-pneumatic item in the charge slot!?"));
         }
     }
 

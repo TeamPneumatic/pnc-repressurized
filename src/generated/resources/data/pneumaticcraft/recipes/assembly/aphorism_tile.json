@@ -3,9 +3,9 @@
   "input": {
     "tag": "forge:storage_blocks/quartz"
   },
+  "program": "laser",
   "result": {
-    "item": "pneumaticcraft:aphorism_tile",
-    "count": 4
-  },
-  "program": "laser"
+    "count": 4,
+    "item": "pneumaticcraft:aphorism_tile"
+  }
 }

@@ -51,11 +51,7 @@ import me.desht.pneumaticcraft.common.util.PlayerFilter;
 import me.desht.pneumaticcraft.common.util.Reflections;
 import me.desht.pneumaticcraft.common.util.upgrade.UpgradesDBSetup;
 import me.desht.pneumaticcraft.common.villages.VillageStructures;
-import me.desht.pneumaticcraft.common.worldgen.WorldGenListener;
-import me.desht.pneumaticcraft.datagen.*;
 import me.desht.pneumaticcraft.lib.Log;
-import net.minecraft.data.DataGenerator;
-import net.minecraft.data.tags.BlockTagsProvider;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
@@ -63,15 +59,12 @@ import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.server.ServerStartedEvent;
 import net.minecraftforge.event.server.ServerStoppingEvent;
-import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLConstructModEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.forge.event.lifecycle.GatherDataEvent;
 
 @Mod(Names.MOD_ID)
 public class PneumaticCraftRepressurized {
@@ -107,13 +100,14 @@ public class PneumaticCraftRepressurized {
         forgeBus.register(HackTickHandler.instance());
         forgeBus.addListener(VillageStructures::addMechanicHouse);
 
-        forgeBus.addListener(EventPriority.HIGH, WorldGenListener::onBiomeLoading);
+//        forgeBus.addListener(EventPriority.HIGH, WorldGenListener::onBiomeLoading);
     }
 
     private void registerAllDeferredRegistryObjects(IEventBus modBus) {
         ModBlocks.BLOCKS.register(modBus);
         ModItems.ITEMS.register(modBus);
         ModFluids.FLUIDS.register(modBus);
+        ModFluids.FLUID_TYPES.register(modBus);
         ModSounds.SOUNDS.register(modBus);
         ModBlockEntities.BLOCK_ENTITIES.register(modBus);
         ModEntityTypes.ENTITY_TYPES.register(modBus);
@@ -121,12 +115,14 @@ public class PneumaticCraftRepressurized {
         ModParticleTypes.PARTICLES.register(modBus);
         ModRecipeSerializers.RECIPE_SERIALIZERS.register(modBus);
         ModRecipeTypes.RECIPE_TYPES.register(modBus);
-        ModWorldGen.FEATURES.register(modBus);
-        ModWorldGen.CONFIGURED_FEATURES.register(modBus);
-        ModWorldGen.PLACED_FEATURES.register(modBus);
+//        ModWorldGen.FEATURES.register(modBus);
+//        ModWorldGen.CONFIGURED_FEATURES.register(modBus);
+//        ModWorldGen.PLACED_FEATURES.register(modBus);
         ModVillagers.POI.register(modBus);
         ModVillagers.PROFESSIONS.register(modBus);
         ModLootModifiers.LOOT_MODIFIER.register(modBus);
+        ModCommands.COMMAND_ARGUMENT_TYPES.register(modBus);
+        ModLootFunctions.LOOT_FUNCTIONS.register(modBus);
 
         // custom registries
         ModHarvestHandlers.HARVEST_HANDLERS_DEFERRED.register(modBus);
@@ -158,7 +154,6 @@ public class PneumaticCraftRepressurized {
             AdvancementTriggers.registerTriggers();
             DroneDispenseBehavior.registerDrones();
             ThirdPartyManager.instance().postInit();
-            ModCommands.postInit();
         });
     }
 
@@ -176,7 +171,7 @@ public class PneumaticCraftRepressurized {
     }
 
     private void registerCommands(RegisterCommandsEvent event) {
-        ModCommands.register(event.getDispatcher());
+        ModCommands.register(event.getDispatcher(), event.getBuildContext());
     }
 
     private void serverStarted(ServerStartedEvent event) {
@@ -190,23 +185,4 @@ public class PneumaticCraftRepressurized {
         AuxConfigHandler.clearPerWorldConfigs();
     }
 
-    @Mod.EventBusSubscriber(modid = Names.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
-    public static class DataGenerators {
-        @SubscribeEvent
-        public static void gatherData(GatherDataEvent event) {
-            DataGenerator generator = event.getGenerator();
-            if (event.includeServer()) {
-                generator.addProvider(new ModRecipeProvider(generator));
-                generator.addProvider(new ModLootTablesProvider(generator));
-                BlockTagsProvider blockTagsProvider = new ModBlockTagsProvider(generator, event.getExistingFileHelper());
-                generator.addProvider(blockTagsProvider);
-                generator.addProvider(new ModItemTagsProvider(generator, blockTagsProvider, event.getExistingFileHelper()));
-                generator.addProvider(new ModFluidTagsProvider(generator, event.getExistingFileHelper()));
-                generator.addProvider(new ModEntityTypeTagsProvider(generator, event.getExistingFileHelper()));
-                generator.addProvider(new ModAdvancementProvider(generator));
-                generator.addProvider(new ModGLMProvider(generator));
-//                generator.addProvider(new ModConfiguredStructureFeatureTagsProvider(generator, event.getExistingFileHelper()));
-            }
-        }
-    }
 }

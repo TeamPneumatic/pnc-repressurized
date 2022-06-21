@@ -6,8 +6,8 @@
     },
     {
       "type": "pneumaticcraft:stacked_item",
-      "tag": "forge:dusts/redstone",
-      "count": 2
+      "count": 2,
+      "tag": "forge:dusts/redstone"
     }
   ],
   "pressure": 1.0,

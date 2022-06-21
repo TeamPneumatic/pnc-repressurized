@@ -23,7 +23,6 @@ import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
-import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fluids.FluidStack;
 
 import java.util.Optional;
@@ -43,18 +42,18 @@ public interface IDroneRegistry {
      */
     void addPathfindableBlock(Block block, IPathfindHandler handler);
 
-    /**
-     * This will add a custom puzzle piece that has only an Area whitelist/blacklist parameter (similar to a GoTo piece).
-     * It will do the specified behaviour. This can be used, for example, to create energy import/export widgets for a
-     * custom energy type (i.e. other than Forge Energy).
-     * <p>This <strong>must</strong> be called
-     * from a registry event handler for {@link net.minecraftforge.event.RegistryEvent.Register} to ensure registration
-     * is done at the right time - do not call it directly from elsewhere.
-     *
-     * @param event the Forge registry event
-     * @param interactor the custom interactor object
-     */
-    void registerCustomBlockInteractor(RegistryEvent.Register<ProgWidgetType<?>> event, ICustomBlockInteract interactor);
+//    /**
+//     * This will add a custom puzzle piece that has only an Area whitelist/blacklist parameter (similar to a GoTo piece).
+//     * It will do the specified behaviour. This can be used, for example, to create energy import/export widgets for a
+//     * custom energy type (i.e. other than Forge Energy).
+//     * <p>This <strong>must</strong> be called
+//     * from a registry event handler for {@link net.minecraftforge.event.RegistryEvent.Register} to ensure registration
+//     * is done at the right time - do not call it directly from elsewhere.
+//     *
+//     * @param event the Forge registry event
+//     * @param interactor the custom interactor object
+//     */
+//    void registerCustomBlockInteractor(RegistryEvent.Register<ProgWidgetType<?>> event, ICustomBlockInteract interactor);
 
     /**
      * Will spawn in a Drone a distance away from the given coordinate. When there is an inventory at the given block

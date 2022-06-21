@@ -17,6 +17,7 @@
 
 package me.desht.pneumaticcraft.datagen.recipe;
 
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.advancements.CriterionTriggerInstance;
 import net.minecraft.advancements.critereon.EntityPredicate;
 import net.minecraft.advancements.critereon.InventoryChangeTrigger;
@@ -40,12 +41,12 @@ public class Criteria {
     }
 
     public static RecipeCriterion has(ItemLike provider) {
-        return RecipeCriterion.of(provider.asItem().getRegistryName().getPath(), hasItem(provider.asItem()));
+        return RecipeCriterion.of(PneumaticCraftUtils.getRegistryName(provider.asItem()).orElseThrow().getPath(), hasItem(provider.asItem()));
     }
 
     public static RecipeCriterion has(Ingredient ingredient) {
         Item item = ingredient.getItems()[0].getItem();
-        return RecipeCriterion.of(item.getRegistryName().getPath(), hasItem(item));
+        return RecipeCriterion.of(PneumaticCraftUtils.getRegistryName(item).orElseThrow().getPath(), hasItem(item));
     }
 
     public static class RecipeCriterion {

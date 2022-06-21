@@ -1,33 +1,33 @@
 {
   "parent": "pneumaticcraft:programming_puzzle",
+  "criteria": {
+    "0": {
+      "conditions": {},
+      "trigger": "pneumaticcraft:program_drone"
+    }
+  },
   "display": {
-    "icon": {
-      "item": "pneumaticcraft:drone"
-    },
-    "title": {
-      "translate": "pneumaticcraft.advancement.program_drone"
-    },
+    "announce_to_chat": true,
+    "background": "pneumaticcraft:textures/gui/advancement_bg.png",
     "description": {
       "translate": "pneumaticcraft.advancement.program_drone.desc"
     },
     "frame": "challenge",
-    "show_toast": true,
-    "announce_to_chat": true,
     "hidden": false,
-    "background": "pneumaticcraft:textures/gui/advancement_bg.png"
-  },
-  "rewards": {
-    "experience": 50
-  },
-  "criteria": {
-    "0": {
-      "trigger": "pneumaticcraft:program_drone",
-      "conditions": {}
+    "icon": {
+      "item": "pneumaticcraft:drone"
+    },
+    "show_toast": true,
+    "title": {
+      "translate": "pneumaticcraft.advancement.program_drone"
     }
   },
   "requirements": [
     [
       "0"
     ]
-  ]
+  ],
+  "rewards": {
+    "experience": 50
+  }
 }

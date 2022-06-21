@@ -36,6 +36,7 @@ import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.entity.npc.VillagerTrades;
 import net.minecraft.world.entity.player.Player;
@@ -336,7 +337,7 @@ public enum AmadronOfferManager {
         // this only needs to be done once, on first load
         if (villagerTrades.isEmpty()) {
             Set<VillagerProfession> validSet = new HashSet<>();
-            Random rand = ThreadLocalRandom.current();
+            RandomSource rand = RandomSource.createNewThreadLocalInstance();
             VillagerTrades.TRADES.forEach((profession, tradeMap) -> tradeMap.forEach((level, trades) -> {
                 IntStream.range(0, trades.length).forEach(i -> {
                     MerchantOffer offer = getOfferForNullVillager(trades[i], rand);
@@ -358,7 +359,7 @@ public enum AmadronOfferManager {
         }
     }
 
-    private MerchantOffer getOfferForNullVillager(VillagerTrades.ItemListing trade, Random rand) {
+    private MerchantOffer getOfferForNullVillager(VillagerTrades.ItemListing trade, RandomSource rand) {
         try {
             // shouldn't really pass null here, but creating a fake villager can cause worldgen-related server lockups
             // https://github.com/TeamPneumatic/pnc-repressurized/issues/899

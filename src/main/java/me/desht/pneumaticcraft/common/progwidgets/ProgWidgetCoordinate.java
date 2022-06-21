@@ -30,7 +30,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
@@ -206,9 +205,9 @@ public class ProgWidgetCoordinate extends ProgWidget implements IVariableWidget 
         super.getTooltip(curTooltip);
 
         if (useVariable) {
-            curTooltip.add(new TextComponent("XYZ: var '" + variable + "'"));
+            curTooltip.add(Component.literal("XYZ: var '" + variable + "'"));
         } else {
-            curTooltip.add(new TextComponent(PneumaticCraftUtils.posToString(coord)));
+            curTooltip.add(Component.literal(PneumaticCraftUtils.posToString(coord)));
         }
     }
 
@@ -216,7 +215,7 @@ public class ProgWidgetCoordinate extends ProgWidget implements IVariableWidget 
     public List<Component> getExtraStringInfo() {
         return useVariable ?
                 Collections.singletonList(varAsTextComponent(variable)) :
-                Collections.singletonList(new TextComponent(PneumaticCraftUtils.posToString(coord)));
+                Collections.singletonList(Component.literal(PneumaticCraftUtils.posToString(coord)));
     }
 
     @Override

@@ -26,13 +26,13 @@ import me.desht.pneumaticcraft.api.semiblock.ISemiBlock;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
 import me.desht.pneumaticcraft.common.block.PressureTubeBlock;
 import me.desht.pneumaticcraft.common.block.entity.CamouflageableBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.IInfoForwarder;
 import me.desht.pneumaticcraft.common.block.entity.IRedstoneControl;
 import me.desht.pneumaticcraft.common.block.entity.PressureTubeBlockEntity;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.common.heat.TemperatureData;
 import me.desht.pneumaticcraft.common.item.CamoApplicatorItem;
-import me.desht.pneumaticcraft.common.thirdparty.waila.IInfoForwarder;
 import me.desht.pneumaticcraft.common.tubemodules.AbstractTubeModule;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -40,7 +40,6 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -120,8 +119,8 @@ public class TOPInfoProvider {
             probeInfo.horizontal()
                     .element(new ElementPressure(pneumaticMachine, airHandler))
                     .vertical()
-                    .text(TextComponent.EMPTY)
-                    .text(new TextComponent(" " + Symbols.ARROW_LEFT_SHORT + " " + pressure + " bar"));
+                    .text(Component.empty())
+                    .text(Component.literal(" " + Symbols.ARROW_LEFT_SHORT + " " + pressure + " bar"));
         }
     }
 
@@ -160,7 +159,7 @@ public class TOPInfoProvider {
                 FluidStack fluidStack = handler.getFluidInTank(i);
                 Component fluidDesc = fluidStack.isEmpty() ?
                         xlate("pneumaticcraft.gui.misc.empty") :
-                        new TextComponent(fluidStack.getAmount() + "mB ").append(xlate(fluidStack.getTranslationKey()));
+                        Component.literal(fluidStack.getAmount() + "mB ").append(xlate(fluidStack.getTranslationKey()));
                 probeInfo.text(xlate("pneumaticcraft.waila.tank", i + 1, fluidDesc.copy().withStyle(ChatFormatting.AQUA)));
             }
         }

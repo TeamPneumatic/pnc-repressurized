@@ -1,21 +1,21 @@
 {
   "type": "minecraft:crafting_shaped",
-  "pattern": [
-    "LXL",
-    "XCX",
-    "LXL"
-  ],
   "key": {
+    "C": {
+      "item": "pneumaticcraft:air_canister"
+    },
     "L": {
       "tag": "pneumaticcraft:upgrade_components"
     },
     "X": {
       "tag": "forge:ingots/compressed_iron"
-    },
-    "C": {
-      "item": "pneumaticcraft:air_canister"
     }
   },
+  "pattern": [
+    "LXL",
+    "XCX",
+    "LXL"
+  ],
   "result": {
     "item": "pneumaticcraft:volume_upgrade"
   }

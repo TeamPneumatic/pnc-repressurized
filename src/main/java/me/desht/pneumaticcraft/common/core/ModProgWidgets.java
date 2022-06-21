@@ -34,7 +34,7 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 public class ModProgWidgets {
     public static final DeferredRegister<ProgWidgetType<?>> PROG_WIDGETS_DEFERRED = DeferredRegister.create(RL("prog_widgets"), Names.MOD_ID);
     public static final Supplier<IForgeRegistry<ProgWidgetType<?>>> PROG_WIDGETS = PROG_WIDGETS_DEFERRED
-            .makeRegistry(ProgWidgetType.CLASS_GENERIC, () -> new RegistryBuilder<ProgWidgetType<?>>().disableSaving().disableSync());
+            .makeRegistry(() -> new RegistryBuilder<ProgWidgetType<?>>().disableSaving().disableSync());
 
     public static final RegistryObject<ProgWidgetType<ProgWidgetComment>> COMMENT
             = register("comment", ProgWidgetComment::new);

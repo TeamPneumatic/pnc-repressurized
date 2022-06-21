@@ -42,7 +42,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Widget;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ItemStack;
@@ -74,7 +74,7 @@ public class ArmorMainScreen extends AbstractPneumaticCraftScreen implements IGu
     private final UpgradeOption nullOptionsPage = new UpgradeOption(new NullOptions(this), RL("null"), new ItemStack(Items.BARRIER));
 
     private ArmorMainScreen() {
-        super(new TextComponent("Main Screen"));
+        super(Component.literal("Main Screen"));
     }
 
     public static ArmorMainScreen getInstance() {

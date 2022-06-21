@@ -31,7 +31,6 @@ import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
@@ -44,8 +43,8 @@ import java.util.List;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class OmnidirectionalHopperScreen extends AbstractPneumaticCraftContainerScreen<OmnidirectionalHopperMenu,OmnidirectionalHopperBlockEntity> {
-    private static final Component ARROW_NO_RR = new TextComponent(Symbols.ARROW_RIGHT);
-    private static final Component ARROW_RR = new TextComponent(Symbols.CIRCULAR_ARROW).withStyle(ChatFormatting.GREEN);
+    private static final Component ARROW_NO_RR = Component.literal(Symbols.ARROW_RIGHT);
+    private static final Component ARROW_RR = Component.literal(Symbols.CIRCULAR_ARROW).withStyle(ChatFormatting.GREEN);
 
     private WidgetAnimatedStat statusStat;
     private final WidgetButtonExtended[] modeButtons = new WidgetButtonExtended[2];
@@ -63,19 +62,19 @@ public class OmnidirectionalHopperScreen extends AbstractPneumaticCraftContainer
         WidgetAnimatedStat optionStat = addAnimatedStat(xlate("pneumaticcraft.gui.tab.gasLift.mode"), new ItemStack(Blocks.LEVER), 0xFFFFCC00, false);
         optionStat.setMinimumExpandedDimensions(50, 43);
 
-        WidgetButtonExtended button = new WidgetButtonExtended(5, 20, 20, 20, TextComponent.EMPTY).withTag("empty");
+        WidgetButtonExtended button = new WidgetButtonExtended(5, 20, 20, 20, Component.empty()).withTag("empty");
         button.setRenderStacks(new ItemStack(Items.BUCKET));
         button.setTooltipText(xlate("pneumaticcraft.gui.tab.omnidirectionalHopper.mode.empty"));
         optionStat.addSubWidget(button);
         modeButtons[0] = button;
 
-        button = new WidgetButtonExtended(30, 20, 20, 20, TextComponent.EMPTY).withTag("leave");
+        button = new WidgetButtonExtended(30, 20, 20, 20, Component.empty()).withTag("leave");
         button.setRenderStacks(new ItemStack(Items.WATER_BUCKET));
         button.setTooltipText(xlate("pneumaticcraft.gui.tab.omnidirectionalHopper.mode.leaveItem"));
         optionStat.addSubWidget(button);
         modeButtons[1] = button;
 
-        addRenderableWidget(rrButton = new WidgetButtonExtended(leftPos + 143, topPos + 55, 14, 14, TextComponent.EMPTY).withTag("rr"));
+        addRenderableWidget(rrButton = new WidgetButtonExtended(leftPos + 143, topPos + 55, 14, 14, Component.empty()).withTag("rr"));
     }
 
     @Override

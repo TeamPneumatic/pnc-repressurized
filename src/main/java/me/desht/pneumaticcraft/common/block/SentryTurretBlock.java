@@ -26,7 +26,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -77,7 +76,7 @@ public class SentryTurretBlock extends AbstractPneumaticCraftBlock implements Pn
     public void addExtraInformation(ItemStack stack, BlockGetter world, List<Component> curInfo, TooltipFlag flag) {
         CompoundTag tag = stack.getTagElement(NBTKeys.BLOCK_ENTITY_TAG);
         if (tag != null && tag.contains(SentryTurretBlockEntity.NBT_ENTITY_FILTER, Tag.TAG_STRING)) {
-            curInfo.add(new TranslatableComponent("pneumaticcraft.gui.entityFilter")
+            curInfo.add(Component.translatable("pneumaticcraft.gui.entityFilter")
                     .append(": " + tag.getString(SentryTurretBlockEntity.NBT_ENTITY_FILTER)).withStyle(ChatFormatting.YELLOW));
         }
     }

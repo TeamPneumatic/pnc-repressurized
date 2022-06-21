@@ -24,10 +24,12 @@ import me.desht.pneumaticcraft.api.item.IUpgradeRegistry;
 import me.desht.pneumaticcraft.api.item.PNCUpgrade;
 import me.desht.pneumaticcraft.api.misc.Symbols;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
+import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.item.UpgradeItem;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
@@ -36,7 +38,6 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraftforge.registries.ForgeRegistryEntry;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -135,6 +136,14 @@ public enum ApplicableUpgradesDB implements IUpgradeRegistry {
         return UpgradableItemUtils.getUpgrades(stack);
     }
 
+    @Override
+    public ResourceLocation getItemRegistryName(PNCUpgrade upgrade, int tier) {
+        ResourceLocation id = ModUpgrades.UPGRADES.get().getKey(upgrade);
+        String registryName = Objects.requireNonNull(id) + "_upgrade";
+        if (upgrade.getMaxTier() > 1) registryName += "_" + tier;
+        return new ResourceLocation(registryName);
+    }
+
     public Collection<Item> getItemsWhichAccept(PNCUpgrade upgrade) {
         return ACCEPTED_UPGRADES.getOrDefault(upgrade, Collections.emptySet());
     }
@@ -151,7 +160,7 @@ public enum ApplicableUpgradesDB implements IUpgradeRegistry {
         return ITEMS.row(item);
     }
 
-    private <T extends ForgeRegistryEntry<?>> void addUpgrades(Table<T,PNCUpgrade,Integer> table, T entry, IUpgradeRegistry.Builder builder) {
+    private <T> void addUpgrades(Table<T,PNCUpgrade,Integer> table, T entry, IUpgradeRegistry.Builder builder) {
         builder.getUpgrades().forEach((upgrade, max) -> {
             table.put(entry, upgrade, max);
             if (entry instanceof Item item) {

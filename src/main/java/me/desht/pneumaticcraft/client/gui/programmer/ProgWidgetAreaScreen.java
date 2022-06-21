@@ -37,7 +37,7 @@ import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import org.apache.commons.lang3.tuple.ImmutablePair;
@@ -73,11 +73,11 @@ public class ProgWidgetAreaScreen extends ProgWidgetAreaShowScreen<ProgWidgetAre
         boolean advancedMode = ConfigHelper.client().general.programmerDifficulty.get() == IProgWidget.WidgetDifficulty.ADVANCED;
 
         // GPS buttons
-        WidgetButtonExtended gpsButton1 = new WidgetButtonExtended(guiLeft + (advancedMode ? 6 : 55), guiTop + 30, 20, 20, TextComponent.EMPTY, b -> openInvSearchGUI(0))
+        WidgetButtonExtended gpsButton1 = new WidgetButtonExtended(guiLeft + (advancedMode ? 6 : 55), guiTop + 30, 20, 20, Component.empty(), b -> openInvSearchGUI(0))
                 .setRenderStacks(new ItemStack(ModItems.GPS_TOOL.get()))
                 .setTooltipText(xlate("pneumaticcraft.gui.progWidget.area.selectGPS1"));
         addRenderableWidget(gpsButton1);
-        WidgetButtonExtended gpsButton2 = new WidgetButtonExtended(guiLeft + (advancedMode ? 133 : 182), guiTop + 30, 20, 20, TextComponent.EMPTY, b -> openInvSearchGUI(1))
+        WidgetButtonExtended gpsButton2 = new WidgetButtonExtended(guiLeft + (advancedMode ? 133 : 182), guiTop + 30, 20, 20, Component.empty(), b -> openInvSearchGUI(1))
                 .setRenderStacks(new ItemStack(ModItems.GPS_TOOL.get()))
                 .setTooltipText(xlate("pneumaticcraft.gui.progWidget.area.selectGPS2"));
         addRenderableWidget(gpsButton2);
@@ -121,9 +121,9 @@ public class ProgWidgetAreaScreen extends ProgWidgetAreaShowScreen<ProgWidgetAre
 
         // blockpos labels
         String l1 = "P1: " + ChatFormatting.DARK_BLUE + formatPos(progWidget.getPos(0).orElse(PneumaticCraftUtils.invalidPos()));
-        addLabel(new TextComponent(l1), guiLeft + 8, guiTop + 20);
+        addLabel(Component.literal(l1), guiLeft + 8, guiTop + 20);
         String l2 = "P2: " + ChatFormatting.DARK_BLUE + formatPos(progWidget.getPos(1).orElse(PneumaticCraftUtils.invalidPos()));
-        addLabel(new TextComponent(l2), guiLeft + 133, guiTop + 20);
+        addLabel(Component.literal(l2), guiLeft + 133, guiTop + 20);
     }
 
     private String formatPos(BlockPos pos) {
@@ -133,7 +133,7 @@ public class ProgWidgetAreaScreen extends ProgWidgetAreaShowScreen<ProgWidgetAre
     private void openInvSearchGUI(int which) {
         ItemStack gpsStack = new ItemStack(ModItems.GPS_TOOL.get());
         GPSToolItem.setGPSLocation(ClientUtils.getClientPlayer().getUUID(), gpsStack, progWidget.getPos(which).orElse(BlockPos.ZERO));
-        ClientUtils.openContainerGui(ModMenuTypes.INVENTORY_SEARCHER.get(), new TextComponent("Inventory Searcher (GPS)"));
+        ClientUtils.openContainerGui(ModMenuTypes.INVENTORY_SEARCHER.get(), Component.literal("Inventory Searcher (GPS)"));
         if (minecraft.screen instanceof InventorySearcherScreen) {
             invSearchGui = (InventorySearcherScreen) minecraft.screen;
             invSearchGui.setStackPredicate(itemStack -> itemStack.getItem() instanceof IPositionProvider);

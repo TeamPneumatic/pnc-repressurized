@@ -1,20 +1,20 @@
 {
   "type": "minecraft:crafting_shaped",
-  "pattern": [
-    " R ",
-    "TDT"
-  ],
   "key": {
+    "D": {
+      "item": "minecraft:repeater"
+    },
     "R": {
       "tag": "forge:dusts/redstone"
     },
     "T": {
       "item": "pneumaticcraft:pressure_tube"
-    },
-    "D": {
-      "item": "minecraft:repeater"
     }
   },
+  "pattern": [
+    " R ",
+    "TDT"
+  ],
   "result": {
     "item": "pneumaticcraft:redstone_module"
   }

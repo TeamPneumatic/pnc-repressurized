@@ -24,6 +24,7 @@ import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.heat.BlockHeatProperties;
 import me.desht.pneumaticcraft.common.thirdparty.ModNameCache;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.forge.ForgeTypes;
@@ -39,7 +40,7 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag.Default;
 import net.minecraft.world.level.block.Block;
@@ -149,11 +150,11 @@ public class JEIBlockHeatPropertiesCategory extends AbstractPNCCategory<HeatProp
         int h = fontRenderer.lineHeight;
 
         Component desc = recipe.getDescriptionKey().isEmpty() ?
-                TextComponent.EMPTY :
-                new TextComponent(" (" + I18n.get(recipe.getDescriptionKey()) + ")");
+                Component.empty() :
+                Component.literal(" (" + I18n.get(recipe.getDescriptionKey()) + ")");
         fontRenderer.draw(matrixStack, recipe.getInputDisplayName().copy().append(desc), 0, 0, 0x4040a0);
 
-        Component temp = xlate("pneumaticcraft.waila.temperature").append(new TextComponent((recipe.getTemperature() - 273) + "°C"));
+        Component temp = xlate("pneumaticcraft.waila.temperature").append(Component.literal((recipe.getTemperature() - 273) + "°C"));
         fontRenderer.draw(matrixStack, temp, 0, h * 2, 0x404040);
 
         String res = NumberFormat.getNumberInstance(Locale.getDefault()).format(recipe.getThermalResistance());
@@ -246,9 +247,10 @@ public class JEIBlockHeatPropertiesCategory extends AbstractPNCCategory<HeatProp
         list.add(stack.getHoverName());
         stack.getItem().appendHoverText(stack, ClientUtils.getClientLevel(), list, ClientUtils.hasShiftDown() ? Default.ADVANCED : Default.NORMAL);
         if (Minecraft.getInstance().options.advancedItemTooltips) {
-            list.add(new TextComponent(stack.getItem().getRegistryName().toString()).withStyle(ChatFormatting.DARK_GRAY));
+            String regName = PneumaticCraftUtils.getRegistryName(stack.getItem()).map(ResourceLocation::toString).orElse("?");
+            list.add(Component.literal(regName).withStyle(ChatFormatting.DARK_GRAY));
         }
-        list.add(new TextComponent(ModNameCache.getModName(stack.getItem())).withStyle(ChatFormatting.BLUE, ChatFormatting.ITALIC));
+        list.add(Component.literal(ModNameCache.getModName(stack.getItem())).withStyle(ChatFormatting.BLUE, ChatFormatting.ITALIC));
     }
 
     private void renderBlock(BlockState state, PoseStack matrixStack, int x, int y) {
@@ -257,7 +259,7 @@ public class JEIBlockHeatPropertiesCategory extends AbstractPNCCategory<HeatProp
             if (state.getBlock() == Blocks.AIR) {
                 air.draw(matrixStack, x - 8, y - 2);
             } else {
-                float rot = Minecraft.getInstance().level.getGameTime() % 360;
+                float rot = ClientUtils.getClientLevel().getGameTime() % 360;
                 GuiUtils.renderBlockInGui(matrixStack, state, x, y, 100, rot, 15f);
             }
         }

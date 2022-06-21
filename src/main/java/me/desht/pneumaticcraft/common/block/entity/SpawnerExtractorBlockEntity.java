@@ -35,6 +35,7 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.effect.MobEffect;
@@ -65,7 +66,6 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Random;
 import java.util.function.Function;
 
 public class SpawnerExtractorBlockEntity extends AbstractAirHandlingBlockEntity implements IMinWorkingPressure, MenuProvider {
@@ -215,7 +215,7 @@ public class SpawnerExtractorBlockEntity extends AbstractAirHandlingBlockEntity 
         return true;
     }
 
-    private List<MobEffect> getRandomEffects(Random rand) {
+    private List<MobEffect> getRandomEffects(RandomSource rand) {
         List<MobEffect> l = new ArrayList<>();
         int n = rand.nextInt(100);
         if (n > 50) l.add(MobEffects.FIRE_RESISTANCE);

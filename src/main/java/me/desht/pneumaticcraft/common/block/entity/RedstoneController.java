@@ -24,7 +24,6 @@ import me.desht.pneumaticcraft.common.network.GuiSynced;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
@@ -145,7 +144,7 @@ public class RedstoneController<T extends BlockEntity & IRedstoneControl<T>> {
 
     public Component getRedstoneTabTitle() {
         T te = teRef.get();
-        return te != null ? te.getRedstoneTabTitle() : TextComponent.EMPTY;
+        return te != null ? te.getRedstoneTabTitle() : Component.empty();
     }
 
     public Component getDescription() {
@@ -153,7 +152,7 @@ public class RedstoneController<T extends BlockEntity & IRedstoneControl<T>> {
         if (te != null) {
             return te.getRedstoneTabTitle().append(": ").append(xlate(modes.get(currentMode).getTranslationKey()).withStyle(ChatFormatting.YELLOW));
         } else {
-            return TextComponent.EMPTY;
+            return Component.empty();
         }
     }
 

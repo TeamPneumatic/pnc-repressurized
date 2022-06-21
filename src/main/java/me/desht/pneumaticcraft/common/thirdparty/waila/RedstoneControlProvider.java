@@ -17,37 +17,47 @@
 
 package me.desht.pneumaticcraft.common.thirdparty.waila;
 
-import mcp.mobius.waila.api.BlockAccessor;
-import mcp.mobius.waila.api.IComponentProvider;
-import mcp.mobius.waila.api.IServerDataProvider;
-import mcp.mobius.waila.api.ITooltip;
-import mcp.mobius.waila.api.config.IPluginConfig;
 import me.desht.pneumaticcraft.common.block.entity.IRedstoneControl;
 import me.desht.pneumaticcraft.common.block.entity.RedstoneController;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import snownee.jade.api.BlockAccessor;
+import snownee.jade.api.IBlockComponentProvider;
+import snownee.jade.api.IServerDataProvider;
+import snownee.jade.api.ITooltip;
+import snownee.jade.api.config.IPluginConfig;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
+
 public class RedstoneControlProvider {
-    public static class Data implements IServerDataProvider<BlockEntity> {
+    public static final ResourceLocation ID = RL("redstone");
+
+    public static class DataProvider implements IServerDataProvider<BlockEntity> {
         @Override
         public void appendServerData(CompoundTag compoundTag, ServerPlayer serverPlayer, Level level, BlockEntity blockEntity, boolean b) {
             if (blockEntity instanceof IRedstoneControl rc) {
                 compoundTag.putInt("redstoneMode", rc.getRedstoneMode());
             }
         }
+
+        @Override
+        public ResourceLocation getUid() {
+            return ID;
+        }
     }
 
-    public static class Component implements IComponentProvider {
+    public static class ComponentProvider implements IBlockComponentProvider {
         @Override
         public void appendTooltip(ITooltip iTooltip, BlockAccessor blockAccessor, IPluginConfig iPluginConfig) {
             CompoundTag tag = blockAccessor.getServerData();
             // This is used so that we can split values later easier and have them all in the same layout.
-            Map<Component, Component> values = new HashMap<>();
+            Map<ComponentProvider, ComponentProvider> values = new HashMap<>();
 
             if (tag.contains("redstoneMode")) {
                 BlockEntity te = blockAccessor.getBlockEntity();
@@ -56,6 +66,11 @@ public class RedstoneControlProvider {
                     iTooltip.add(rsController.getDescription());
                 }
             }
+        }
+
+        @Override
+        public ResourceLocation getUid() {
+            return ID;
         }
     }
 }

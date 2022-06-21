@@ -19,15 +19,47 @@ package me.desht.pneumaticcraft.common.core;
 
 import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.common.fluid.*;
+import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.world.level.material.Fluid;
+import net.minecraftforge.client.IFluidTypeRenderProperties;
+import net.minecraftforge.fluids.FluidType;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class ModFluids {
     public static final DeferredRegister<Fluid> FLUIDS = DeferredRegister.create(ForgeRegistries.FLUIDS, Names.MOD_ID);
+    public static final DeferredRegister<FluidType> FLUID_TYPES = DeferredRegister.create(ForgeRegistries.Keys.FLUID_TYPES, Names.MOD_ID);
+
+    public static final RegistryObject<FluidType> OIL_FLUID_TYPE = registerFluidType("oil",
+            standardProps(800, 20000), FluidOil.RENDER_PROPS);
+    public static final RegistryObject<FluidType> BIODIESEL_FLUID_TYPE = registerFluidType("biodiesel",
+            standardProps(880, 4000), FluidBiodiesel.RENDER_PROPS);
+    public static final RegistryObject<FluidType> DIESEL_FLUID_TYPE = registerFluidType("diesel",
+            standardProps(880, 4000), FluidDiesel.RENDER_PROPS);
+    public static final RegistryObject<FluidType> ETCHING_ACID_FLUID_TYPE = registerFluidType("etching_acid",
+            standardProps(1500, 2000), FluidEtchingAcid.RENDER_PROPS);
+    public static final RegistryObject<FluidType> ETHANOL_FLUID_TYPE = registerFluidType("ethanol",
+            standardProps(789, 1200), FluidEthanol.RENDER_PROPS);
+    public static final RegistryObject<FluidType> GASOLINE_FLUID_TYPE = registerFluidType("gasoline",
+            standardProps(750, 500), FluidGasoline.RENDER_PROPS);
+    public static final RegistryObject<FluidType> KEROSENE_FLUID_TYPE = registerFluidType("kerosene",
+            standardProps(790, 2700), FluidKerosene.RENDER_PROPS);
+    public static final RegistryObject<FluidType> LPG_FLUID_TYPE = registerFluidType("lpg",
+            standardProps(550, 200), FluidLPG.RENDER_PROPS);
+    public static final RegistryObject<FluidType> LUBRICANT_FLUID_TYPE = registerFluidType("lubricant",
+            standardProps(800, 900), FluidLubricant.RENDER_PROPS);
+    public static final RegistryObject<FluidType> MEMORY_ESSENCE_FLUID_TYPE = registerFluidType("memory_essence",
+            standardProps(250, 250), FluidMemoryEssence.RENDER_PROPS);
+    public static final RegistryObject<FluidType> PLASTIC_FLUID_TYPE = registerFluidType("plastic",
+            standardProps(2000, 500).temperature(PneumaticValues.MOLTEN_PLASTIC_TEMPERATURE), FluidPlastic.RENDER_PROPS);
+    public static final RegistryObject<FluidType> VEGETABLE_OIL_FLUID_TYPE = registerFluidType("vegetable_oil",
+            standardProps(900, 1500), FluidVegetableOil.RENDER_PROPS);
+    public static final RegistryObject<FluidType> YEAST_CULTURE_FLUID_TYPE = registerFluidType("yeast_culture",
+            standardProps(800, 5000), FluidYeastCulture.RENDER_PROPS);
 
     public static final RegistryObject<Fluid> OIL = register("oil", FluidOil.Source::new);
     public static final RegistryObject<Fluid> OIL_FLOWING = register("oil_flowing", FluidOil.Flowing::new);
@@ -70,5 +102,18 @@ public class ModFluids {
 
     private static <T extends Fluid> RegistryObject<T> register(String name, final Supplier<T> sup) {
         return FLUIDS.register(name, sup);
+    }
+
+    private static RegistryObject<FluidType> registerFluidType(String name, FluidType.Properties props, IFluidTypeRenderProperties renderProps) {
+        return FLUID_TYPES.register(name, () -> new FluidType(props) {
+            @Override
+            public void initializeClient(Consumer<IFluidTypeRenderProperties> consumer) {
+                consumer.accept(renderProps);
+            }
+        });
+    }
+
+    private static FluidType.Properties standardProps(int density, int viscosity) {
+        return FluidType.Properties.create().density(density).viscosity(viscosity);
     }
 }

@@ -26,7 +26,6 @@ import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.goal.Goal;
 
@@ -86,14 +85,14 @@ public class ProgWidgetBlockRightClick extends ProgWidgetPlace implements IBlock
     public void getTooltip(List<Component> curTooltip) {
         super.getTooltip(curTooltip);
 
-        curTooltip.add(new TranslatableComponent("pneumaticcraft.gui.progWidget.blockRightClick.clickSide")
+        curTooltip.add(Component.translatable("pneumaticcraft.gui.progWidget.blockRightClick.clickSide")
                 .append(": " + ClientUtils.translateDirection(clickSide)));
         if (sneaking) {
-            curTooltip.add(new TranslatableComponent("pneumaticcraft.gui.progWidget.blockRightClick.sneaking"));
+            curTooltip.add(Component.translatable("pneumaticcraft.gui.progWidget.blockRightClick.sneaking"));
         }
-        curTooltip.add(new TranslatableComponent("pneumaticcraft.gui.progWidget.blockRightClick.operation")
+        curTooltip.add(Component.translatable("pneumaticcraft.gui.progWidget.blockRightClick.operation")
                 .append(": ")
-                .append(new TranslatableComponent(clickType.getTranslationKey())));
+                .append(Component.translatable(clickType.getTranslationKey())));
     }
 
     @Override

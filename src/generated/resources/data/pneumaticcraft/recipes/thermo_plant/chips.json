@@ -1,19 +1,19 @@
 {
   "type": "pneumaticcraft:thermo_plant",
+  "exothermic": false,
+  "fluid_input": {
+    "type": "pneumaticcraft:fluid",
+    "amount": 100,
+    "tag": "forge:plantoil"
+  },
   "item_input": {
     "tag": "forge:crops/potato"
   },
-  "fluid_input": {
-    "type": "pneumaticcraft:fluid",
-    "tag": "forge:plantoil",
-    "amount": 100
-  },
   "item_output": {
-    "item": "pneumaticcraft:chips",
-    "count": 4
+    "count": 4,
+    "item": "pneumaticcraft:chips"
   },
   "temperature": {
     "min_temp": 423
-  },
-  "exothermic": false
+  }
 }

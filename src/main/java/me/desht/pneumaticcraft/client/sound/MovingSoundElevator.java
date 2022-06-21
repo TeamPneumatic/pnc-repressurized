@@ -21,13 +21,14 @@ import me.desht.pneumaticcraft.common.block.entity.ElevatorBaseBlockEntity;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import net.minecraft.client.resources.sounds.AbstractTickableSoundInstance;
+import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.sounds.SoundSource;
 
 public class MovingSoundElevator extends AbstractTickableSoundInstance {
     private final ElevatorBaseBlockEntity te;
 
     MovingSoundElevator(ElevatorBaseBlockEntity te) {
-        super(ModSounds.ELEVATOR_RISING.get(), SoundSource.BLOCKS);
+        super(ModSounds.ELEVATOR_RISING.get(), SoundSource.BLOCKS, SoundInstance.createUnseededRandom());
         this.te = te;
         x = te.getBlockPos().getX();
         y = te.getBlockPos().getY() + te.extension;

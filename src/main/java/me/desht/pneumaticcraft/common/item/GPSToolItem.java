@@ -32,8 +32,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -62,7 +60,7 @@ public class GPSToolItem extends Item implements IPositionProvider, IGPSToolSync
         if (ctx.getPlayer() == null) return InteractionResult.PASS;
         setGPSLocation(ctx.getPlayer().getUUID(), ctx.getPlayer().getItemInHand(ctx.getHand()), pos);
         if (!ctx.getLevel().isClientSide)
-            ctx.getPlayer().displayClientMessage(new TranslatableComponent("pneumaticcraft.message.gps_tool.targetSet" ,pos.getX(), pos.getY(), pos.getZ()).withStyle(ChatFormatting.GREEN), false);
+            ctx.getPlayer().displayClientMessage(Component.translatable("pneumaticcraft.message.gps_tool.targetSet" ,pos.getX(), pos.getY(), pos.getZ()).withStyle(ChatFormatting.GREEN), false);
         ctx.getPlayer().playSound(ModSounds.CHIRP.get(), 1.0f, 1.5f);
         return InteractionResult.SUCCESS; // we don't want to use the item.
     }
@@ -83,12 +81,12 @@ public class GPSToolItem extends Item implements IPositionProvider, IGPSToolSync
         if (worldIn != null) {
             ClientUtils.addGuiContextSensitiveTooltip(stack, infoList);
             getGPSLocation(ClientUtils.getClientPlayer().getUUID(), stack).ifPresent(pos -> {
-                Component translated = new TranslatableComponent(worldIn.getBlockState(pos).getBlock().getDescriptionId());
+                Component translated = Component.translatable(worldIn.getBlockState(pos).getBlock().getDescriptionId());
                 MutableComponent blockName = worldIn.isLoaded(pos) ?
-                        new TextComponent(" (").append(translated).append(")") :
-                        TextComponent.EMPTY.plainCopy();
+                        Component.literal(" (").append(translated).append(")") :
+                        Component.empty().plainCopy();
                 String str = String.format("[%d, %d, %d]", pos.getX(), pos.getY(), pos.getZ());
-                infoList.add(new TextComponent(str).withStyle(ChatFormatting.YELLOW).append(blockName.withStyle(ChatFormatting.GREEN)));
+                infoList.add(Component.literal(str).withStyle(ChatFormatting.YELLOW).append(blockName.withStyle(ChatFormatting.GREEN)));
             });
             String varName = getVariable(stack);
             if (!varName.isEmpty()) {

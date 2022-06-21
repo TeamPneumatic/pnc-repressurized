@@ -17,11 +17,6 @@
 
 package me.desht.pneumaticcraft.common.thirdparty.waila;
 
-import mcp.mobius.waila.api.EntityAccessor;
-import mcp.mobius.waila.api.IEntityComponentProvider;
-import mcp.mobius.waila.api.IServerDataProvider;
-import mcp.mobius.waila.api.ITooltip;
-import mcp.mobius.waila.api.config.IPluginConfig;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.semiblock.ISemiBlock;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
@@ -29,15 +24,26 @@ import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+import snownee.jade.api.EntityAccessor;
+import snownee.jade.api.IEntityComponentProvider;
+import snownee.jade.api.IServerDataProvider;
+import snownee.jade.api.ITooltip;
+import snownee.jade.api.config.IPluginConfig;
+
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class EntityProvider {
+    private static final ResourceLocation ID = RL("entity");
 
-    public static class Data implements IServerDataProvider<Entity> {
+    public static class DataProvider implements IServerDataProvider<Entity> {
+
+
         @Override
         public void appendServerData(CompoundTag compoundTag, ServerPlayer serverPlayer, Level level, Entity entity, boolean b) {
             entity.getCapability(PNCCapabilities.AIR_HANDLER_CAPABILITY)
@@ -48,14 +54,19 @@ public class EntityProvider {
                 s.serializeNBT(compoundTag);
             }
         }
+
+        @Override
+        public ResourceLocation getUid() {
+            return ID;
+        }
     }
 
-    public static class Component implements IEntityComponentProvider {
+    public static class ComponentProvider implements IEntityComponentProvider {
         @Override
         public void appendTooltip(ITooltip iTooltip, EntityAccessor entityAccessor, IPluginConfig iPluginConfig) {
             if (entityAccessor.getServerData().contains("Pressure")) {
                 float pressure = entityAccessor.getServerData().getFloat("Pressure");
-                iTooltip.add(new TranslatableComponent("pneumaticcraft.gui.tooltip.pressure", PneumaticCraftUtils.roundNumberTo(pressure, 1)));
+                iTooltip.add(xlate("pneumaticcraft.gui.tooltip.pressure", PneumaticCraftUtils.roundNumberTo(pressure, 1)));
             }
             if (entityAccessor.getServerData().contains("Temperature")) {
                 iTooltip.add(HeatUtil.formatHeatString(entityAccessor.getServerData().getInt("Temperature")));
@@ -66,6 +77,11 @@ public class EntityProvider {
                 BlockState state = entityAccessor.getLevel().getBlockState(pos);
                 iTooltip.add(state.getBlock().getName().withStyle(ChatFormatting.YELLOW));
             }
+        }
+
+        @Override
+        public ResourceLocation getUid() {
+            return ID;
         }
     }
 }

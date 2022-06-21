@@ -37,6 +37,7 @@ import net.minecraft.world.level.block.LiquidBlockContainer;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.*;
+import net.minecraftforge.common.SoundActions;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.FluidActionResult;
 import net.minecraftforge.fluids.FluidStack;
@@ -51,7 +52,7 @@ import net.minecraftforge.items.wrapper.PlayerInvWrapper;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import static net.minecraftforge.fluids.FluidAttributes.BUCKET_VOLUME;
+import static net.minecraftforge.fluids.FluidType.BUCKET_VOLUME;
 
 public class FluidUtils {
     /**
@@ -306,13 +307,13 @@ public class FluidUtils {
     }
 
     private static void playEmptySound(Level world, BlockPos pos, Fluid fluid) {
-        SoundEvent soundevent = fluid.getAttributes().getEmptySound();
+        SoundEvent soundevent = fluid.getFluidType().getSound(SoundActions.BUCKET_EMPTY);
         if(soundevent == null) soundevent = fluid.is(FluidTags.LAVA) ? SoundEvents.BUCKET_EMPTY_LAVA : SoundEvents.BUCKET_EMPTY;
         world.playSound(null, pos, soundevent, SoundSource.BLOCKS, 1.0F, 1.0F);
     }
 
     private static void playFillSound(Level world, BlockPos pos, Fluid fluid) {
-        SoundEvent soundEvent = fluid.getAttributes().getFillSound();
+        SoundEvent soundEvent = fluid.getFluidType().getSound(SoundActions.BUCKET_FILL);
         if (soundEvent == null) soundEvent = fluid.is(FluidTags.LAVA) ? SoundEvents.BUCKET_FILL_LAVA : SoundEvents.BUCKET_FILL;
         world.playSound(null, pos, soundEvent, SoundSource.BLOCKS, 1.0F, 1.0F);
     }
@@ -406,8 +407,10 @@ public class FluidUtils {
 
                     if (doDrain && player != null)
                     {
-                        SoundEvent soundevent = transfer.getFluid().getAttributes().getEmptySound(transfer);
-                        player.level.playSound(null, player.getX(), player.getY() + 0.5, player.getZ(), soundevent, SoundSource.BLOCKS, 1.0F, 1.0F);
+                        SoundEvent soundevent = transfer.getFluid().getFluidType().getSound(SoundActions.BUCKET_EMPTY);
+                        if (soundevent != null) {
+                            player.level.playSound(null, player.getX(), player.getY() + 0.5, player.getZ(), soundevent, SoundSource.BLOCKS, 1.0F, 1.0F);
+                        }
                     }
 
                     ItemStack resultContainer = containerFluidHandler.getContainer();

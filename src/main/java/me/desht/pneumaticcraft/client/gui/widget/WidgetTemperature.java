@@ -28,7 +28,6 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.util.Mth;
 
 import javax.annotation.Nonnull;
@@ -47,7 +46,7 @@ public class WidgetTemperature extends AbstractWidget implements ITooltipProvide
     private boolean showOperatingRange = true;
 
     public WidgetTemperature(int xIn, int yIn, TemperatureRange totalRange, int initialTemp, int tickInterval) {
-        super(xIn, yIn, 13, 50, TextComponent.EMPTY);
+        super(xIn, yIn, 13, 50, Component.empty());
         this.totalRange = totalRange;
         this.temperature = initialTemp;
         this.tickInterval = tickInterval;

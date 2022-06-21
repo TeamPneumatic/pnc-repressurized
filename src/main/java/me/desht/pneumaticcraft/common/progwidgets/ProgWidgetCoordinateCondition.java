@@ -29,7 +29,6 @@ import net.minecraft.core.Direction.Axis;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.Arrays;
@@ -125,13 +124,13 @@ public class ProgWidgetCoordinateCondition extends ProgWidgetConditionBase {
     @Override
     public void getTooltip(List<Component> curTooltip) {
         super.getTooltip(curTooltip);
-        curTooltip.add(new TextComponent("Condition: \"" + getCondition() + "\""));
+        curTooltip.add(Component.literal("Condition: \"" + getCondition() + "\""));
     }
 
     @Override
     public List<Component> getExtraStringInfo() {
         String condition = getCondition();
-        return condition.isEmpty() ? Collections.emptyList() : Collections.singletonList(new TextComponent(condition));
+        return condition.isEmpty() ? Collections.emptyList() : Collections.singletonList(Component.literal(condition));
     }
 
     public String getCondition() {

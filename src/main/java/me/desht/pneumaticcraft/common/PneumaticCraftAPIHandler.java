@@ -21,14 +21,12 @@ import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.client.IClientRegistry;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IPneumaticHelmetRegistry;
 import me.desht.pneumaticcraft.api.crafting.IPneumaticRecipeRegistry;
-import me.desht.pneumaticcraft.api.crafting.ingredient.FluidIngredient;
 import me.desht.pneumaticcraft.api.drone.IDroneRegistry;
 import me.desht.pneumaticcraft.api.fuel.IFuelRegistry;
 import me.desht.pneumaticcraft.api.heat.IHeatRegistry;
 import me.desht.pneumaticcraft.api.item.IItemRegistry;
 import me.desht.pneumaticcraft.api.item.IUpgradeRegistry;
 import me.desht.pneumaticcraft.api.misc.IMiscHelpers;
-import me.desht.pneumaticcraft.api.misc.IPlayerMatcher;
 import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorRegistry;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachineFactory;
 import me.desht.pneumaticcraft.api.universal_sensor.ISensorRegistry;
@@ -44,13 +42,6 @@ import me.desht.pneumaticcraft.common.recipes.PneumaticRecipeRegistry;
 import me.desht.pneumaticcraft.common.sensor.SensorHandler;
 import me.desht.pneumaticcraft.common.thirdparty.ModdedWrenchUtils;
 import me.desht.pneumaticcraft.common.util.upgrade.ApplicableUpgradesDB;
-import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.Level;
-import net.minecraftforge.items.IItemHandler;
 
 public class PneumaticCraftAPIHandler implements PneumaticRegistry.IPneumaticCraftInterface {
     private final static PneumaticCraftAPIHandler INSTANCE = new PneumaticCraftAPIHandler();
@@ -124,35 +115,4 @@ public class PneumaticCraftAPIHandler implements PneumaticRegistry.IPneumaticCra
         return MiscAPIHandler.getInstance();
     }
 
-    // ----------- misc stuff, to go in 1.19 ----------------------
-
-    @Override
-    public int getProtectingSecurityStations(Player player, BlockPos pos) {
-        return getMiscHelpers().getProtectingSecurityStations(player, pos);
-    }
-
-    @Override
-    public void registerXPFluid(FluidIngredient tag, int liquidToPointRatio) {
-        getMiscHelpers().registerXPFluid(tag, liquidToPointRatio);
-    }
-
-    @Override
-    public void syncGlobalVariable(ServerPlayer player, String varName) {
-        getMiscHelpers().syncGlobalVariable(player, varName);
-    }
-
-    @Override
-    public void registerPlayerMatcher(ResourceLocation id, IPlayerMatcher.MatcherFactory<?> factory) {
-        getMiscHelpers().registerPlayerMatcher(id, factory);
-    }
-
-    @Override
-    public IItemHandler deserializeSmartChest(CompoundTag tag) {
-        return getMiscHelpers().deserializeSmartChest(tag);
-    }
-
-    @Override
-    public void forceClientShapeRecalculation(Level world, BlockPos pos) {
-        getMiscHelpers().forceClientShapeRecalculation(world, pos);
-    }
 }

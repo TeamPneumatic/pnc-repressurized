@@ -32,7 +32,6 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.DyeColor;
@@ -121,7 +120,7 @@ public class ProgWidgetItemFilter extends ProgWidget implements IVariableWidget 
                     .append(": ").append(filter.getHoverName()));
             if (filter.getItem() == ModItems.TAG_FILTER.get()) {
                 curTooltip.addAll(TagFilterItem.getConfiguredTagList(filter).stream()
-                        .map(s -> Symbols.bullet().append(new TextComponent(s.location().toString()).withStyle(ChatFormatting.YELLOW)))
+                        .map(s -> Symbols.bullet().append(Component.literal(s.location().toString()).withStyle(ChatFormatting.YELLOW)))
                         .toList());
             }
         }

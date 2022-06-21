@@ -1,24 +1,24 @@
 {
   "type": "minecraft:crafting_shaped",
+  "key": {
+    "G": {
+      "item": "pneumaticcraft:pressure_chamber_glass"
+    },
+    "L": {
+      "tag": "pneumaticcraft:upgrade_components"
+    },
+    "N": {
+      "type": "forge:nbt",
+      "count": 1,
+      "item": "minecraft:potion",
+      "nbt": "{Potion:\"minecraft:long_night_vision\"}"
+    }
+  },
   "pattern": [
     "LNL",
     "GNG",
     "LNL"
   ],
-  "key": {
-    "L": {
-      "tag": "pneumaticcraft:upgrade_components"
-    },
-    "G": {
-      "item": "pneumaticcraft:pressure_chamber_glass"
-    },
-    "N": {
-      "type": "forge:nbt",
-      "item": "minecraft:potion",
-      "count": 1,
-      "nbt": "{Potion:\"minecraft:long_night_vision\"}"
-    }
-  },
   "result": {
     "item": "pneumaticcraft:night_vision_upgrade"
   }

@@ -30,8 +30,7 @@ import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
@@ -95,7 +94,7 @@ public class LiquidCompressorScreen extends AbstractPneumaticCraftContainerScree
 
     private Pair<Integer,List<Component>> getAllFuels() {
         List<Component> text = new ArrayList<>();
-        TranslatableComponent header = xlate("pneumaticcraft.gui.liquidCompressor.fuelsHeader");
+        MutableComponent header = xlate("pneumaticcraft.gui.liquidCompressor.fuelsHeader");
         text.add(header.withStyle(ChatFormatting.UNDERLINE, ChatFormatting.AQUA));
         int maxWidth = font.width(header);
 
@@ -113,16 +112,16 @@ public class LiquidCompressorScreen extends AbstractPneumaticCraftContainerScree
                 .collect(Collectors.toMap(fluid -> new FluidStack(fluid, 1).getDisplayName().getString(), fluid -> 1, Integer::sum));
 
         int dotWidth = font.width(".");
-        Component prevLine = TextComponent.EMPTY;
+        Component prevLine = Component.empty();
         for (Fluid fluid : fluids) {
             String value = String.format("%4d", fuelRegistry.getFuelValue(world, fluid) / 1000);
             int nSpc = (32 - font.width(value)) / dotWidth;
             value = value + StringUtils.repeat('.', nSpc);
             String fluidName = new FluidStack(fluid, 1).getDisplayName().getString();
             float mul = fuelRegistry.getBurnRateMultiplier(world, fluid);
-            TextComponent line = mul == 1 ?
-                    new TextComponent(value + "| " + StringUtils.abbreviate(fluidName, 25)) :
-                    new TextComponent(value + "| " + StringUtils.abbreviate(fluidName, 20)
+            Component line = mul == 1 ?
+                    Component.literal(value + "| " + StringUtils.abbreviate(fluidName, 25)) :
+                    Component.literal(value + "| " + StringUtils.abbreviate(fluidName, 20)
                             + " (x" + PneumaticCraftUtils.roundNumberTo(mul, 2) + ")");
             if (!line.equals(prevLine)) {
                 maxWidth = Math.max(maxWidth, font.width(line));
@@ -130,7 +129,7 @@ public class LiquidCompressorScreen extends AbstractPneumaticCraftContainerScree
             }
             prevLine = line;
             if (counted.getOrDefault(fluidName, 0) > 1) {
-                Component line2 = new TextComponent("       " + ModNameCache.getModName(fluid)).withStyle(ChatFormatting.GOLD);
+                Component line2 = Component.literal("       " + ModNameCache.getModName(fluid)).withStyle(ChatFormatting.GOLD);
                 text.add(line2);
                 maxWidth = Math.max(maxWidth, font.width(line2));
             }

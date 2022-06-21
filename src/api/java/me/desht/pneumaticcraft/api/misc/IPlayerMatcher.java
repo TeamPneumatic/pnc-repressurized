@@ -21,7 +21,6 @@ import com.google.gson.JsonElement;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 
@@ -65,17 +64,17 @@ public interface IPlayerMatcher extends Predicate<Player> {
      * @param itemList a list of items that this matcher matches against
      */
     default void standardTooltip(Player player, List<Component> tooltip, Component header, List<Component> itemList) {
-        Component avail = new TextComponent(" ")
+        Component avail = Component.literal(" ")
             .append(test(player) ?
-                    new TextComponent(Symbols.TICK_MARK).withStyle(ChatFormatting.GREEN) :
-                    new TextComponent(Symbols.X_MARK).withStyle(ChatFormatting.RED)
+                    Component.literal(Symbols.TICK_MARK).withStyle(ChatFormatting.GREEN) :
+                    Component.literal(Symbols.X_MARK).withStyle(ChatFormatting.RED)
             );
-        tooltip.add(new TextComponent(Symbols.TRIANGLE_RIGHT + " ")
+        tooltip.add(Component.literal(Symbols.TRIANGLE_RIGHT + " ")
                 .append(header)
                 .withStyle(ChatFormatting.GRAY)
                 .append(avail)
         );
-        itemList.forEach(item -> tooltip.add(new TextComponent("  ")
+        itemList.forEach(item -> tooltip.add(Component.literal("  ")
                 .append(Symbols.bullet())
                 .append(item)
                 .withStyle(ChatFormatting.GRAY)

@@ -1,21 +1,21 @@
 {
   "type": "minecraft:crafting_shaped",
-  "pattern": [
-    "LXL",
-    "XCX",
-    "LXL"
-  ],
   "key": {
+    "C": {
+      "item": "minecraft:golden_carrot"
+    },
     "L": {
       "tag": "pneumaticcraft:upgrade_components"
     },
     "X": {
       "item": "minecraft:ender_eye"
-    },
-    "C": {
-      "item": "minecraft:golden_carrot"
     }
   },
+  "pattern": [
+    "LXL",
+    "XCX",
+    "LXL"
+  ],
   "result": {
     "item": "pneumaticcraft:search_upgrade"
   }

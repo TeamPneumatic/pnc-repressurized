@@ -3,8 +3,8 @@
   "inputs": [
     {
       "type": "pneumaticcraft:stacked_item",
-      "tag": "forge:nuggets/gold",
-      "count": 3
+      "count": 3,
+      "tag": "forge:nuggets/gold"
     },
     {
       "tag": "forge:dusts/redstone"

@@ -77,8 +77,7 @@ import net.minecraft.nbt.NbtUtils;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ServerboundPlayerActionPacket;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -170,16 +169,16 @@ public class DroneEntity extends AbstractDroneEntity implements
     private static final EntityDataAccessor<ItemStack> HELD_ITEM = SynchedEntityData.defineId(DroneEntity.class, EntityDataSerializers.ITEM_STACK);
     private static final EntityDataAccessor<Integer> TARGET_ID = SynchedEntityData.defineId(DroneEntity.class, EntityDataSerializers.INT);
 
-    private static final TextComponent DEF_DRONE_NAME = new TextComponent("Drone");
+    private static final MutableComponent DEF_DRONE_NAME = Component.literal("Drone");
 
     public static final String NBT_DRONE_COLOR = "color";
 
     private static final HashMap<Component, Integer> LASER_COLOR_MAP = new HashMap<>();
     static {
-        LASER_COLOR_MAP.put(new TextComponent("aureylian"), 0xff69b4);
-        LASER_COLOR_MAP.put(new TextComponent("loneztar"), 0x00a0a0);
-        LASER_COLOR_MAP.put(new TextComponent("jadedcat"), 0xa020f0);
-        LASER_COLOR_MAP.put(new TextComponent("desht"), 0xff6000);
+        LASER_COLOR_MAP.put(Component.literal("aureylian"), 0xff69b4);
+        LASER_COLOR_MAP.put(Component.literal("loneztar"), 0x00a0a0);
+        LASER_COLOR_MAP.put(Component.literal("jadedcat"), 0xa020f0);
+        LASER_COLOR_MAP.put(Component.literal("desht"), 0xff6000);
     }
 
     private final EntityDroneItemHandler droneItemHandler = new EntityDroneItemHandler(this);
@@ -881,10 +880,10 @@ public class DroneEntity extends AbstractDroneEntity implements
 
         if (!level.isClientSide && getDugBlock() != null) {
             // stop any in-progress digging - 3rd & 4th parameters are unimportant here
-            getFakePlayer().gameMode.handleBlockBreakAction(getDugBlock(), ServerboundPlayerActionPacket.Action.ABORT_DESTROY_BLOCK, Direction.UP, 0);
+            getFakePlayer().gameMode.handleBlockBreakAction(getDugBlock(), ServerboundPlayerActionPacket.Action.ABORT_DESTROY_BLOCK, Direction.UP, 0, 0);
         }
 
-        setCustomName(new TextComponent(""));  // keep other mods (like CoFH Core) quiet about death message broadcasts
+        setCustomName(Component.literal(""));  // keep other mods (like CoFH Core) quiet about death message broadcasts
 
         MinecraftForge.EVENT_BUS.unregister(this);
     }
@@ -895,8 +894,8 @@ public class DroneEntity extends AbstractDroneEntity implements
             int y = (int) Math.floor(getY());
             int z = (int) Math.floor(getZ());
             Component msg = hasCustomName() ?
-                    new TranslatableComponent("pneumaticcraft.death.drone.named", Objects.requireNonNull(getCustomName()).getString(), x, y, z) :
-                    new TranslatableComponent("pneumaticcraft.death.drone", x, y, z);
+                    Component.translatable("pneumaticcraft.death.drone.named", Objects.requireNonNull(getCustomName()).getString(), x, y, z) :
+                    Component.translatable("pneumaticcraft.death.drone", x, y, z);
             msg = msg.plainCopy().append(" - ").append(damageSource.getLocalizedDeathMessage(this));
             owner.displayClientMessage(msg, false);
         }
@@ -904,7 +903,9 @@ public class DroneEntity extends AbstractDroneEntity implements
 
     private Item getDroneItem() {
         // return the item which has the same name as our entity type
-        return ForgeRegistries.ITEMS.getValue(getType().getRegistryName());
+        return PneumaticCraftUtils.getRegistryName(ForgeRegistries.ENTITIES, getType())
+                .map(ForgeRegistries.ITEMS::getValue)
+                .orElseThrow();
     }
 
     @Override
@@ -994,7 +995,8 @@ public class DroneEntity extends AbstractDroneEntity implements
 
         if (!stackEnchants.isEmpty()) {
             CompoundTag eTag = new CompoundTag();
-            stackEnchants.forEach((ench, lvl) -> eTag.putInt(ench.getRegistryName().toString(), lvl));
+            stackEnchants.forEach((ench, lvl) ->
+                    PneumaticCraftUtils.getRegistryName(ForgeRegistries.ENCHANTMENTS, ench).ifPresent(regName -> eTag.putInt(regName.toString(), lvl)));
             tag.put("stackEnchants", eTag);
         }
 
@@ -1039,7 +1041,7 @@ public class DroneEntity extends AbstractDroneEntity implements
 
         energy.setCapacity(100000 + 100000 * getUpgrades(ModUpgrades.VOLUME.get()));
 
-        if (tag.contains("owner")) ownerName = new TextComponent(tag.getString("owner"));
+        if (tag.contains("owner")) ownerName = Component.literal(tag.getString("owner"));
         if (tag.contains("ownerUUID_M")) ownerUUID = new UUID(tag.getLong("ownerUUID_M"), tag.getLong("ownerUUID_L"));
 
         if (tag.contains("stackEnchants", Tag.TAG_COMPOUND)) {
@@ -1493,7 +1495,7 @@ public class DroneEntity extends AbstractDroneEntity implements
 
     @Override
     public boolean canMoveIntoFluid(Fluid fluid) {
-        if (fluid.getAttributes().getTemperature() > 373) {
+        if (fluid.getFluidType().getTemperature() > 373) {
             return false;
         } else {
             return canBreatheUnderwater();

@@ -31,7 +31,7 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 public class ModHoeHandlers {
     public static final DeferredRegister<HoeHandler> HOE_HANDLERS_DEFERRED = DeferredRegister.create(RL("hoe_handlers"), Names.MOD_ID);
     public static final Supplier<IForgeRegistry<HoeHandler>> HOE_HANDLERS = HOE_HANDLERS_DEFERRED
-            .makeRegistry(HoeHandler.class, () -> new RegistryBuilder<HoeHandler>().disableSaving().disableSync());
+            .makeRegistry(() -> new RegistryBuilder<HoeHandler>().disableSaving().disableSync());
 
     public static final RegistryObject<HoeHandler> DEFAULT = HOE_HANDLERS_DEFERRED.register("default_hoe_handler", HoeHandler.DefaultHoeHandler::new);
 }

@@ -28,7 +28,6 @@ import me.desht.pneumaticcraft.common.inventory.AirCannonMenu;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
@@ -68,7 +67,7 @@ public class AirCannonScreen extends AbstractPneumaticCraftContainerScreen<AirCa
         strengthTab.addSubWidget(new WidgetButtonExtended(60, 16, 20, 20, "+").withTag("+"));
         strengthTab.addSubWidget(new WidgetButtonExtended(82, 16, 20, 20, "++").withTag("++"));
 
-        addLabel(new TextComponent("GPS"),  leftPos + 50, topPos + 20);
+        addLabel(Component.literal("GPS"),  leftPos + 50, topPos + 20);
     }
 
     @Override

@@ -25,6 +25,7 @@ import com.google.gson.JsonSyntaxException;
 import me.desht.pneumaticcraft.api.crafting.TemperatureRange;
 import me.desht.pneumaticcraft.api.crafting.ingredient.FluidIngredient;
 import me.desht.pneumaticcraft.api.crafting.recipe.RefineryRecipe;
+import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModRecipeSerializers;
 import me.desht.pneumaticcraft.common.core.ModRecipeTypes;
@@ -36,7 +37,6 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.registries.ForgeRegistryEntry;
 import org.apache.commons.lang3.Validate;
 
 import javax.annotation.Nullable;
@@ -93,7 +93,7 @@ public class RefineryRecipeImpl extends RefineryRecipe {
 
 	@Override
 	public String getGroup() {
-		return ModBlocks.REFINERY.get().getRegistryName().getPath();
+		return Names.MOD_ID + ":refinery";
 	}
 
 	@Override
@@ -101,7 +101,7 @@ public class RefineryRecipeImpl extends RefineryRecipe {
 		return new ItemStack(ModBlocks.REFINERY.get());
 	}
 
-	public static class Serializer<T extends RefineryRecipe> extends ForgeRegistryEntry<RecipeSerializer<?>> implements RecipeSerializer<T> {
+	public static class Serializer<T extends RefineryRecipe> implements RecipeSerializer<T> {
 		private final IFactory<T> factory;
 
 		public Serializer(IFactory<T> factory) {

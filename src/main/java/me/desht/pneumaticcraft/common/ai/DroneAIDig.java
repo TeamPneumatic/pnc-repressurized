@@ -123,8 +123,8 @@ public class DroneAIDig<W extends ProgWidgetAreaItemBase & IToolUser> extends Dr
                 MinecraftForge.EVENT_BUS.post(event);
                 if (!event.isCanceled()) {
                     int limit = drone.world().getMaxBuildHeight();
-                    manager.handleBlockBreakAction(pos, ServerboundPlayerActionPacket.Action.START_DESTROY_BLOCK, Direction.DOWN, limit);
-                    manager.handleBlockBreakAction(pos, ServerboundPlayerActionPacket.Action.STOP_DESTROY_BLOCK, Direction.DOWN, limit);
+                    manager.handleBlockBreakAction(pos, ServerboundPlayerActionPacket.Action.START_DESTROY_BLOCK, Direction.DOWN, limit, 0);
+                    manager.handleBlockBreakAction(pos, ServerboundPlayerActionPacket.Action.STOP_DESTROY_BLOCK, Direction.DOWN, limit, 1);
                     drone.setDugBlock(pos);
                     return true;
                 }

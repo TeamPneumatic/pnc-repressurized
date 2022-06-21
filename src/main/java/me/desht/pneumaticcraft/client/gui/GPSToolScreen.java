@@ -30,7 +30,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
@@ -90,13 +89,13 @@ public class GPSToolScreen extends AbstractPneumaticCraftScreen {
         for (int i = 0; i < 3; i++) {
             final int idx = i;
             addRenderableWidget(new Button(xMiddle - 49 - TEXTFIELD_WIDTH / 2, yMiddle - 20 + i * 22, 22, 20,
-                    new TextComponent("-10"), b -> updateTextField(idx, -10)));
+                    Component.literal("-10"), b -> updateTextField(idx, -10)));
             addRenderableWidget(new Button(xMiddle - 25 - TEXTFIELD_WIDTH / 2, yMiddle - 20 + i * 22, 22, 20,
-                    new TextComponent("-1"), b -> updateTextField(idx, -1)));
+                    Component.literal("-1"), b -> updateTextField(idx, -1)));
             addRenderableWidget(new Button(xMiddle + 3 + TEXTFIELD_WIDTH / 2, yMiddle - 20 + i * 22, 22, 20,
-                    new TextComponent("+1"), b -> updateTextField(idx, 1)));
+                    Component.literal("+1"), b -> updateTextField(idx, 1)));
             addRenderableWidget(new Button(xMiddle + 27 + TEXTFIELD_WIDTH / 2, yMiddle - 20 + i * 22, 22, 20,
-                    new TextComponent("+10"), b -> updateTextField(idx, 10)));
+                    Component.literal("+10"), b -> updateTextField(idx, 10)));
         }
 
         if (variableField != null) oldVarName = variableField.getValue();
@@ -116,7 +115,7 @@ public class GPSToolScreen extends AbstractPneumaticCraftScreen {
 
     protected void toggleVarType() {
         playerGlobal = !playerGlobal;
-        varTypeButton.setMessage(new TextComponent(GlobalVariableHelper.getVarPrefix(playerGlobal)));
+        varTypeButton.setMessage(Component.literal(GlobalVariableHelper.getVarPrefix(playerGlobal)));
     }
 
     private void updateTextField(int idx, int amount) {

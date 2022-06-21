@@ -35,7 +35,6 @@ import mezz.jei.api.recipe.RecipeIngredientRole;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
 
@@ -108,7 +107,7 @@ public class JEIFluidMixerCategory extends AbstractPNCCategory<FluidMixerRecipe>
         if (recipe.getRequiredPressure() > 0 && mouseX >= 117 && mouseY >= 15 && mouseX <= 157 && mouseY <= 55) {
             res.add(xlate("pneumaticcraft.gui.tooltip.pressure", recipe.getRequiredPressure()));
         } else if (mouseX >= 45 && mouseY >= 20 && mouseX <= 89 && mouseY <= 50) {
-            res.add(new TextComponent((recipe.getProcessingTime()) / 20f + "s"));
+            res.add(Component.literal((recipe.getProcessingTime()) / 20f + "s"));
             res.add(xlate("pneumaticcraft.gui.jei.tooltip.processingTime").withStyle(ChatFormatting.GRAY, ChatFormatting.ITALIC));
         }
         return res;

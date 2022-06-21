@@ -43,8 +43,6 @@ import me.desht.pneumaticcraft.common.network.PacketHackingEntityStart;
 import me.desht.pneumaticcraft.common.network.PacketUpdateDebuggingDrone;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
@@ -173,19 +171,19 @@ public class RenderEntityTarget {
             for (IEntityTrackEntry tracker : trackEntries) {
                 tracker.addInfo(entity, textList, isLookingAtTarget);
             }
-            textList.add(new TextComponent(String.format("Dist: %.1fm", distToEntity)));
+            textList.add(Component.literal(String.format("Dist: %.1fm", distToEntity)));
             stat.setText(textList);
             // a bit of growing or shrinking to keep the stat on screen and/or of legible size
             float mul = getStatSizeMultiplier(distToEntity);
             matrixStack.scale(mul, mul, mul);
             stat.renderStat(matrixStack, buffer, partialTicks);
         } else if (ticksExisted > 50) {
-            RenderUtils.renderString3d(new TranslatableComponent("pneumaticcraft.entityTracker.info.acquiring"), 0, 0, 0xFF7F7F7F, matrixStack, buffer, false, true);
-            RenderUtils.renderString3d(new TextComponent((int)targetAcquireProgress + "%"), 37, 24, 0xFF002F00, matrixStack, buffer, false, true);
+            RenderUtils.renderString3d(Component.translatable("pneumaticcraft.entityTracker.info.acquiring"), 0, 0, 0xFF7F7F7F, matrixStack, buffer, false, true);
+            RenderUtils.renderString3d(Component.literal((int)targetAcquireProgress + "%"), 37, 24, 0xFF002F00, matrixStack, buffer, false, true);
         } else if (ticksExisted < -30) {
             stat.closeStat();
             stat.renderStat(matrixStack, buffer, partialTicks);
-            RenderUtils.renderString3d(new TranslatableComponent("pneumaticcraft.blockTracker.info.lostTarget"), 0, 0, 0xFF7F7F7F, matrixStack, buffer, false, true);
+            RenderUtils.renderString3d(Component.translatable("pneumaticcraft.blockTracker.info.lostTarget"), 0, 0, 0xFF7F7F7F, matrixStack, buffer, false, true);
         }
 
         matrixStack.popPose();

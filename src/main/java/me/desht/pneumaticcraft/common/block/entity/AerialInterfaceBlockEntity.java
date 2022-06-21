@@ -34,11 +34,12 @@ import me.desht.pneumaticcraft.common.thirdparty.curios.CuriosUtils;
 import me.desht.pneumaticcraft.common.util.EnchantmentUtils;
 import me.desht.pneumaticcraft.common.util.GlobalTileEntityCacheManager;
 import me.desht.pneumaticcraft.common.util.ITranslatableEnum;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -336,7 +337,7 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
 
         tag.putString("playerUUID", playerUUID.toString());
         tag.putString("feedMode", feedMode.toString());
-        tag.putString("curXpFluid", curXpFluid.getRegistryName().toString());
+        tag.putString("curXpFluid", PneumaticCraftUtils.getRegistryName(curXpFluid).orElseThrow().toString());
         energyStorage.writeToNBT(tag);
     }
 
@@ -572,7 +573,7 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
                             player.drop(remainingItem, false);
                         }
                     }
-                    player.displayClientMessage(new TranslatableComponent("pneumaticcraft.gui.aerial_interface.fedItem", copy.getHoverName()), true);
+                    player.displayClientMessage(Component.translatable("pneumaticcraft.gui.aerial_interface.fedItem", copy.getHoverName()), true);
                     if (stack.getCount() == startValue) break;
                 }
                 return remainingItem.getCount() > 0 ? remainingItem : ItemStack.EMPTY;

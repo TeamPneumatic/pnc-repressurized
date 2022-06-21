@@ -172,7 +172,9 @@ public abstract class AbstractUpgradeManagerScreen extends AbstractPneumaticCraf
 
     void addUpgradeTabs(Item item, String... what) {
         boolean leftSided = true;
-        for (PNCUpgrade upgrade : ModUpgrades.UPGRADES.get().getValues()) {
+
+        for (var entry : ModUpgrades.UPGRADES.get().getEntries()) {
+            PNCUpgrade upgrade = entry.getValue();
             if (upgrade.isDependencyLoaded()) {
                 int max = ApplicableUpgradesDB.getInstance().getMaxUpgrades(item, upgrade);
                 if (max > 0) {
@@ -180,7 +182,7 @@ public abstract class AbstractUpgradeManagerScreen extends AbstractPneumaticCraf
                     List<Component> text = new ArrayList<>();
                     text.add(xlate("pneumaticcraft.gui.tab.upgrades.max", max).withStyle(ChatFormatting.GRAY));
                     for (String w : what) {
-                        String name = PneumaticCraftUtils.modDefaultedString(upgrade.getRegistryName()).replace(':', '.');
+                        String name = PneumaticCraftUtils.modDefaultedString(entry.getKey().location()).replace(':', '.');
                         String key = "pneumaticcraft.gui.tab.info.item." + w + "." + name + "Upgrade";
                         if (I18n.exists(key)) {
                             text.addAll(GuiUtils.xlateAndSplit(key));

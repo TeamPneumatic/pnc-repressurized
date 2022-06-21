@@ -22,6 +22,7 @@ import com.google.gson.JsonSyntaxException;
 import me.desht.pneumaticcraft.api.crafting.TemperatureRange;
 import me.desht.pneumaticcraft.api.crafting.ingredient.FluidIngredient;
 import me.desht.pneumaticcraft.api.crafting.recipe.ThermoPlantRecipe;
+import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModRecipeSerializers;
 import me.desht.pneumaticcraft.common.core.ModRecipeTypes;
@@ -35,7 +36,6 @@ import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.registries.ForgeRegistryEntry;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -146,7 +146,7 @@ public class ThermoPlantRecipeImpl extends ThermoPlantRecipe {
 
     @Override
     public String getGroup() {
-        return ModBlocks.THERMOPNEUMATIC_PROCESSING_PLANT.get().getRegistryName().getPath();
+        return Names.MOD_ID + ":thermo_plant";
     }
 
     @Override
@@ -154,7 +154,7 @@ public class ThermoPlantRecipeImpl extends ThermoPlantRecipe {
         return new ItemStack(ModBlocks.THERMOPNEUMATIC_PROCESSING_PLANT.get());
     }
 
-    public static class Serializer<T extends ThermoPlantRecipe> extends ForgeRegistryEntry<RecipeSerializer<?>> implements RecipeSerializer<T> {
+    public static class Serializer<T extends ThermoPlantRecipe> implements RecipeSerializer<T> {
         private final IFactory<T> factory;
 
         public Serializer(IFactory<T> factory) {

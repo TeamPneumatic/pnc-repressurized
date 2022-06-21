@@ -36,7 +36,6 @@ import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.JetBootsHandler;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
 
@@ -110,12 +109,12 @@ public class JetBootsOptions extends AbstractSliderOptions<JetBootsClientHandler
 
     @Override
     protected Component getPrefix() {
-        return new TextComponent("Power: ");
+        return Component.literal("Power: ");
     }
 
     @Override
     protected Component getSuffix() {
-        return new TextComponent("%");
+        return Component.literal("%");
     }
 
     @Override

@@ -1,33 +1,33 @@
 {
   "type": "minecraft:crafting_shaped",
-  "pattern": [
-    "GCP",
-    "FRT",
-    "GQP"
-  ],
   "key": {
-    "G": {
-      "tag": "forge:dusts/redstone"
-    },
     "C": {
       "item": "pneumaticcraft:compressed_iron_gear"
+    },
+    "F": {
+      "tag": "forge:storage_blocks/redstone"
+    },
+    "G": {
+      "tag": "forge:dusts/redstone"
     },
     "P": {
       "item": "pneumaticcraft:printed_circuit_board"
     },
-    "F": {
-      "tag": "forge:storage_blocks/redstone"
+    "Q": {
+      "item": "minecraft:blast_furnace"
     },
     "R": {
       "item": "pneumaticcraft:turbine_rotor"
     },
     "T": {
       "item": "pneumaticcraft:advanced_pressure_tube"
-    },
-    "Q": {
-      "item": "minecraft:blast_furnace"
     }
   },
+  "pattern": [
+    "GCP",
+    "FRT",
+    "GQP"
+  ],
   "result": {
     "item": "pneumaticcraft:flux_compressor"
   }

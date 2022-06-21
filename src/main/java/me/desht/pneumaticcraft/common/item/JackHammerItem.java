@@ -19,10 +19,10 @@ package me.desht.pneumaticcraft.common.item;
 
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
+import me.desht.pneumaticcraft.api.data.PneumaticCraftTags;
 import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.client.ColorHandlers;
 import me.desht.pneumaticcraft.client.sound.MovingSounds;
-import me.desht.pneumaticcraft.common.PneumaticCraftTags;
 import me.desht.pneumaticcraft.common.block.entity.ChargingStationBlockEntity;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModItems;
@@ -245,7 +245,7 @@ public class JackHammerItem extends PressurizableItem
         if (level instanceof ServerLevel serverLevel) {
             Block.getDrops(state, serverLevel, pos, null, player, stack)
                     .forEach((stackToSpawn) -> Block.popResource(level, pos0, stackToSpawn));
-            state.spawnAfterBreak(serverLevel, pos, stack);
+            state.spawnAfterBreak(serverLevel, pos, stack, true);
         }
     }
 

@@ -1,20 +1,20 @@
 {
   "type": "minecraft:crafting_shaped",
+  "key": {
+    "D": {
+      "tag": "forge:dyes/yellow"
+    },
+    "P": {
+      "tag": "pneumaticcraft:plastic_sheets"
+    }
+  },
   "pattern": [
     "PPP",
     "PDP",
     "PPP"
   ],
-  "key": {
-    "P": {
-      "tag": "pneumaticcraft:plastic_sheets"
-    },
-    "D": {
-      "tag": "forge:dyes/yellow"
-    }
-  },
   "result": {
-    "item": "pneumaticcraft:plastic_brick_yellow",
-    "count": 8
+    "count": 8,
+    "item": "pneumaticcraft:plastic_brick_yellow"
   }
 }

@@ -17,20 +17,20 @@
 
 package me.desht.pneumaticcraft.common.util;
 
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.npc.VillagerTrades;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.trading.MerchantOffer;
 
-import java.util.Random;
 import java.util.function.Function;
 
 public class RandomTradeBuilder
 {
-    private Function<Random, ItemStack> price;
-    private Function<Random, ItemStack> price2;
-    private Function<Random, ItemStack> forSale;
+    private Function<RandomSource, ItemStack> price;
+    private Function<RandomSource, ItemStack> price2;
+    private Function<RandomSource, ItemStack> forSale;
 
     private final int maxTrades;
     private final int xp;
@@ -46,7 +46,7 @@ public class RandomTradeBuilder
         this.priceMult = priceMult;
     }
 
-    public RandomTradeBuilder setPrice(Function<Random, ItemStack> price)
+    public RandomTradeBuilder setPrice(Function<RandomSource, ItemStack> price)
     {
         this.price = price;
         return this;
@@ -57,7 +57,7 @@ public class RandomTradeBuilder
         return this.setPrice(RandomTradeBuilder.createFunction(item, min, max));
     }
 
-    public RandomTradeBuilder setPrice2(Function<Random, ItemStack> price2)
+    public RandomTradeBuilder setPrice2(Function<RandomSource, ItemStack> price2)
     {
         this.price2 = price2;
         return this;
@@ -68,7 +68,7 @@ public class RandomTradeBuilder
         return this.setPrice2(RandomTradeBuilder.createFunction(item, min, max));
     }
 
-    public RandomTradeBuilder setForSale(Function<Random, ItemStack> forSale)
+    public RandomTradeBuilder setForSale(Function<RandomSource, ItemStack> forSale)
     {
         this.forSale = forSale;
         return this;
@@ -121,7 +121,7 @@ public class RandomTradeBuilder
         return (entity, random) -> !this.canBuild() ? null : new MerchantOffer(this.price.apply(random), this.price2.apply(random), this.forSale.apply(random), this.maxTrades, this.xp, this.priceMult);
     }
 
-    public static Function<Random, ItemStack> createFunction(Item item, int min, int max)
+    public static Function<RandomSource, ItemStack> createFunction(Item item, int min, int max)
     {
         return (random) -> new ItemStack(item, random.nextInt(max - min) + min);
     }

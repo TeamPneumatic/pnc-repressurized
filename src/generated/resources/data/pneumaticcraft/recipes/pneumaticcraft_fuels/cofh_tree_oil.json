@@ -4,19 +4,19 @@
     {
       "conditions": [
         {
-          "modid": "thermal",
-          "type": "forge:mod_loaded"
+          "type": "forge:mod_loaded",
+          "modid": "thermal"
         }
       ],
       "recipe": {
         "type": "pneumaticcraft:fuel_quality",
+        "air_per_bucket": 400000,
+        "burn_rate": 1.0,
         "fluid": {
           "type": "pneumaticcraft:fluid",
-          "fluid": "thermal:tree_oil",
-          "amount": 1000
-        },
-        "air_per_bucket": 400000,
-        "burn_rate": 1.0
+          "amount": 1000,
+          "fluid": "thermal:tree_oil"
+        }
       }
     }
   ]

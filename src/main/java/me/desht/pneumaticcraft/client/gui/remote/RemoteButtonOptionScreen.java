@@ -23,7 +23,6 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetLabel;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTextFieldNumber;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
@@ -41,9 +40,9 @@ public class RemoteButtonOptionScreen extends RemoteVariableOptionScreen<ActionW
         super.init();
 
         addLabel(xlate("pneumaticcraft.gui.remote.button.settingValue"), guiLeft + 10, guiTop + 95);
-        addLabel(new TextComponent("X:"), guiLeft + 10, guiTop + 106);
-        addLabel(new TextComponent("Y:"), guiLeft + 67, guiTop + 106);
-        addLabel(new TextComponent("Z:"), guiLeft + 124, guiTop + 106);
+        addLabel(Component.literal("X:"), guiLeft + 10, guiTop + 106);
+        addLabel(Component.literal("Y:"), guiLeft + 67, guiTop + 106);
+        addLabel(Component.literal("Z:"), guiLeft + 124, guiTop + 106);
         WidgetLabel lw = addLabel(xlate("pneumaticcraft.gui.remote.button.width"), guiLeft + 10, guiTop + 123);
         WidgetLabel lh = addLabel(xlate("pneumaticcraft.gui.remote.button.height"), guiLeft + 10, guiTop + 136);
         int xOff = guiLeft + 13 + Math.max(lw.getWidth(), lh.getWidth());

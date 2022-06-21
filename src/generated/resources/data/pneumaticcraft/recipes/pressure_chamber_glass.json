@@ -1,20 +1,20 @@
 {
   "type": "minecraft:crafting_shaped",
+  "key": {
+    "G": {
+      "tag": "forge:glass"
+    },
+    "I": {
+      "item": "pneumaticcraft:reinforced_bricks"
+    }
+  },
   "pattern": [
     "III",
     "IGI",
     "III"
   ],
-  "key": {
-    "I": {
-      "item": "pneumaticcraft:reinforced_bricks"
-    },
-    "G": {
-      "tag": "forge:glass"
-    }
-  },
   "result": {
-    "item": "pneumaticcraft:pressure_chamber_glass",
-    "count": 16
+    "count": 16,
+    "item": "pneumaticcraft:pressure_chamber_glass"
   }
 }

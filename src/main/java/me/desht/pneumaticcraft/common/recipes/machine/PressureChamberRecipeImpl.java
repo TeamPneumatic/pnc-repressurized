@@ -37,7 +37,6 @@ import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
-import net.minecraftforge.registries.ForgeRegistryEntry;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -115,7 +114,7 @@ public class PressureChamberRecipeImpl extends PressureChamberRecipe {
 
     @Override
     public String getGroup() {
-        return ModBlocks.PRESSURE_CHAMBER_WALL.get().getRegistryName().getPath();
+        return "pneumaticcraft:pressure_chamber";
     }
 
     @Override
@@ -157,10 +156,7 @@ public class PressureChamberRecipeImpl extends PressureChamberRecipe {
         outputs.forEach(buffer::writeItem);
     }
 
-    public static class Serializer<T extends PressureChamberRecipe>
-            extends ForgeRegistryEntry<RecipeSerializer<?>>
-            implements RecipeSerializer<T> {
-
+    public static class Serializer<T extends PressureChamberRecipe> implements RecipeSerializer<T> {
         private final IFactory<T> factory;
 
         public Serializer(IFactory<T> factory) {

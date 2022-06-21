@@ -28,7 +28,6 @@ import me.desht.pneumaticcraft.common.util.RayTraceUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.Entity;
@@ -146,7 +145,7 @@ public class MicromissilesItem extends Item {
         super.appendHoverText(stack, worldIn, curInfo, extraInfo);
 
         curInfo.add(xlate("pneumaticcraft.gui.micromissile.remaining")
-                .append(new TextComponent(Integer.toString(stack.getMaxDamage() - stack.getDamageValue())).withStyle(ChatFormatting.AQUA))
+                .append(Component.literal(Integer.toString(stack.getMaxDamage() - stack.getDamageValue())).withStyle(ChatFormatting.AQUA))
         );
         if (stack.hasTag()) {
             FireMode mode = getFireMode(stack);

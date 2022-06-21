@@ -31,7 +31,7 @@ import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.ItemStack;
@@ -57,7 +57,7 @@ public class AmadroneEntity extends DroneEntity {
     public AmadroneEntity(EntityType<? extends DroneEntity> type, Level world) {
         super(type, world, null);
 
-        setCustomName(new TranslatableComponent("pneumaticcraft.drone.amadronDeliveryDrone"));
+        setCustomName(Component.translatable("pneumaticcraft.drone.amadronDeliveryDrone"));
     }
 
     public static AmadroneEntity makeAmadrone(Level world, BlockPos pos) {
@@ -130,7 +130,7 @@ public class AmadroneEntity extends DroneEntity {
     }
 
     @Override
-    protected boolean shouldDropExperience() {
+    public boolean shouldDropExperience() {
         return false;
     }
 

@@ -46,7 +46,6 @@ import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
@@ -213,7 +212,7 @@ public class MinigunItem extends PressurizableItem implements
             }
             if (player.level.isClientSide) {
                 player.playSound(SoundEvents.COMPARATOR_CLICK, 1f, 1f);
-                player.displayClientMessage(new TranslatableComponent("pneumaticcraft.message.minigun.outOfAmmo"), true);
+                player.displayClientMessage(Component.translatable("pneumaticcraft.message.minigun.outOfAmmo"), true);
             }
             return InteractionResultHolder.fail(stack);
         }
@@ -237,7 +236,7 @@ public class MinigunItem extends PressurizableItem implements
         } else {
             if (player.level.isClientSide) {
                 player.playSound(SoundEvents.COMPARATOR_CLICK, 1f, 1f);
-                player.displayClientMessage(new TranslatableComponent("pneumaticcraft.message.minigun.outOfAmmo"), true);
+                player.displayClientMessage(Component.translatable("pneumaticcraft.message.minigun.outOfAmmo"), true);
             }
             player.releaseUsingItem();
         }

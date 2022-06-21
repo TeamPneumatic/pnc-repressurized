@@ -7,11 +7,12 @@ import me.desht.pneumaticcraft.api.crafting.ingredient.FluidIngredient;
 import me.desht.pneumaticcraft.api.crafting.ingredient.NoNBTIngredient;
 import me.desht.pneumaticcraft.api.crafting.ingredient.StackedIngredient;
 import me.desht.pneumaticcraft.api.crafting.recipe.AssemblyRecipe.AssemblyProgramType;
+import me.desht.pneumaticcraft.api.data.PneumaticCraftTags;
 import me.desht.pneumaticcraft.api.item.PNCUpgrade;
-import me.desht.pneumaticcraft.common.PneumaticCraftTags;
 import me.desht.pneumaticcraft.common.core.*;
 import me.desht.pneumaticcraft.common.recipes.FluidTagPresentCondition;
 import me.desht.pneumaticcraft.common.util.PlayerFilter;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.datagen.recipe.*;
 import me.desht.pneumaticcraft.lib.ModIds;
 import net.minecraft.data.DataGenerator;
@@ -38,7 +39,6 @@ import net.minecraftforge.common.crafting.conditions.ICondition;
 import net.minecraftforge.common.crafting.conditions.ModLoadedCondition;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.IForgeRegistryEntry;
 
 import javax.annotation.Nullable;
 import java.util.Arrays;
@@ -192,7 +192,7 @@ public class ModRecipeProvider extends RecipeProvider {
         shaped(ModItems.BANDAGE.get(), ModItems.GLYCEROL.get(),
                 " G /GCG/ G ",
                 'G', ModItems.GLYCEROL.get(),
-                'C', ItemTags.CARPETS
+                'C', ItemTags.WOOL_CARPETS
         ).save(consumer);
 
         shaped(ModItems.CANNON_BARREL.get(), ModItems.COMPRESSED_IRON_INGOT.get(),
@@ -1588,11 +1588,11 @@ public class ModRecipeProvider extends RecipeProvider {
                 FluidIngredient.of(1000, new ResourceLocation("thermal:tree_oil")), 400_000, 1.0f);
     }
 
-    private <T extends ItemLike & IForgeRegistryEntry<?>> ShapelessRecipeBuilder shapeless(T result, T required, Object... ingredients) {
+    private <T extends ItemLike> ShapelessRecipeBuilder shapeless(T result, T required, Object... ingredients) {
         return shapeless(result, 1, required, ingredients);
     }
 
-    private <T extends ItemLike & IForgeRegistryEntry<?>> ShapelessRecipeBuilder shapeless(T result, int count, T required, Object... ingredients) {
+    private <T extends ItemLike> ShapelessRecipeBuilder shapeless(T result, int count, T required, Object... ingredients) {
         ShapelessRecipeBuilder b = ShapelessRecipeBuilder.shapeless(result, count);
         for (Object v : ingredients) {
             if (v instanceof TagKey<?>) {
@@ -1611,7 +1611,7 @@ public class ModRecipeProvider extends RecipeProvider {
     }
 
     private void buildLogisticsFrameSelfCraft(Item frame, Consumer<FinishedRecipe> consumer) {
-        shapeless(frame, frame, frame).save(consumer, frame.getRegistryName().toString() + "_self");
+        shapeless(frame, frame, frame).save(consumer, PneumaticCraftUtils.getRegistryName(frame).orElseThrow() + "_self");
     }
 
     private ShapedRecipeBuilder logisticsFrame(Item result, TagKey<Item> dye) {
@@ -1630,7 +1630,7 @@ public class ModRecipeProvider extends RecipeProvider {
         return shaped(result, count, ModItems.CAPACITOR.get(), "CEC/EXE/CEC", 'C', dyeCorner, 'E', edge, 'X', Tags.Items.CHESTS_WOODEN);
     }
 
-    private <T extends ItemLike & IForgeRegistryEntry<?>> ShapedPressurizableRecipeBuilder pneumaticTool(T result, Object dye) {
+    private <T extends ItemLike> ShapedPressurizableRecipeBuilder pneumaticTool(T result, Object dye) {
         return shapedPressure(result, ModItems.COMPRESSED_IRON_INGOT.get(),
                 "IDI/C  /ILI",
                 'I', PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON,
@@ -1640,7 +1640,7 @@ public class ModRecipeProvider extends RecipeProvider {
         );
     }
 
-    private <T extends ItemLike & IForgeRegistryEntry<?>, U extends ShapedRecipeBuilder> U genericShaped(U builder, T result, T required, String pattern, Object... keys) {
+    private <T extends ItemLike, U extends ShapedRecipeBuilder> U genericShaped(U builder, T result, T required, String pattern, Object... keys) {
         Arrays.stream(pattern.split("/")).forEach(builder::pattern);
         for (int i = 0; i < keys.length; i += 2) {
             Object v = keys[i + 1];
@@ -1659,19 +1659,19 @@ public class ModRecipeProvider extends RecipeProvider {
         return builder;
     }
 
-    private <T extends ItemLike & IForgeRegistryEntry<?>> ShapedPressurizableRecipeBuilder shapedPressure(T result, T required, String pattern, Object... keys) {
+    private <T extends ItemLike> ShapedPressurizableRecipeBuilder shapedPressure(T result, T required, String pattern, Object... keys) {
         return genericShaped(ShapedPressurizableRecipeBuilder.shapedRecipe(result), result, required, pattern, keys);
     }
 
-    private <T extends ItemLike & IForgeRegistryEntry<?>> ShapedNoMirrorRecipeBuilder shapedNoMirror(T result, T required, int count, String pattern, Object... keys) {
+    private <T extends ItemLike> ShapedNoMirrorRecipeBuilder shapedNoMirror(T result, T required, int count, String pattern, Object... keys) {
         return genericShaped(ShapedNoMirrorRecipeBuilder.shapedRecipe(result, count), result, required, pattern, keys);
     }
 
-    private <T extends ItemLike & IForgeRegistryEntry<?>> ShapedRecipeBuilder shaped(T result, int count, T required, String pattern, Object... keys) {
+    private <T extends ItemLike> ShapedRecipeBuilder shaped(T result, int count, T required, String pattern, Object... keys) {
         return genericShaped(ShapedRecipeBuilder.shaped(result, count), result, required, pattern, keys);
     }
 
-    private <T extends ItemLike & IForgeRegistryEntry<?>> ShapedRecipeBuilder shaped(T result, T required, String pattern, Object... keys) {
+    private <T extends ItemLike> ShapedRecipeBuilder shaped(T result, T required, String pattern, Object... keys) {
         return shaped(result, 1, required, pattern, keys);
     }
 
@@ -1791,16 +1791,9 @@ public class ModRecipeProvider extends RecipeProvider {
         return RL(s).toString();
     }
 
-    private ResourceLocation safeId(ResourceLocation id) {
-        return new ResourceLocation(id.getNamespace(), safeName(id));
-    }
-
-    private String safeName(IForgeRegistryEntry<?>  i) {
-        return safeName(i.getRegistryName());
-    }
-
-    private String safeName(ResourceLocation registryName) {
-        return registryName.getPath().replace('/', '_');
+    private <T extends ItemLike> String safeName(T required) {
+        ResourceLocation key = ForgeRegistries.ITEMS.getKey(required.asItem());
+        return key == null ? "" : key.getPath().replace('/', '_');
     }
 
     @Override

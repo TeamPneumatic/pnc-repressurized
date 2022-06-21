@@ -15,16 +15,15 @@
  *     along with pnc-repressurized.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.desht.pneumaticcraft.common.thirdparty.waila;
+package me.desht.pneumaticcraft.common.block.entity;
 
 import net.minecraft.world.level.block.entity.BlockEntity;
 
 import javax.annotation.Nullable;
 
 /**
- * A TileEntity implementing this interface will forward an info display mod (Waila/TOP) to a different TileEntity
+ * A Block Entity implementing this interface will forward an info display mod (e.g. Waila/TOP) to another Block Entity
  * @author Maarten
- *
  */
 public interface IInfoForwarder {
     @Nullable BlockEntity getInfoBlockEntity();

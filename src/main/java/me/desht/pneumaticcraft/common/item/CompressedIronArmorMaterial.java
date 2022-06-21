@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.common.item;
 
-import me.desht.pneumaticcraft.common.PneumaticCraftTags;
+import me.desht.pneumaticcraft.api.data.PneumaticCraftTags;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;

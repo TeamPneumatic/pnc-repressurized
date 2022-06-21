@@ -19,6 +19,7 @@ package me.desht.pneumaticcraft.client.gui.upgrademanager;
 
 import me.desht.pneumaticcraft.common.inventory.ChargingStationUpgradeManagerMenu;
 import me.desht.pneumaticcraft.common.item.DroneItem;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.network.chat.Component;
@@ -42,7 +43,8 @@ public class DroneUpgradeScreen extends AbstractUpgradeManagerScreen {
 
         addAnimatedStat(xlate("pneumaticcraft.gui.tab.info"), Textures.GUI_INFO_LOCATION, 0xFF8888FF, true)
                 .setText(xlate("pneumaticcraft.gui.tab.info.item.drone"));
-        addUpgradeTabs(itemStack.getItem(), itemStack.getItem().getRegistryName().getPath(), "drone");
+        String regName = PneumaticCraftUtils.getRegistryName(itemStack.getItem()).orElseThrow().getPath();
+        addUpgradeTabs(itemStack.getItem(), regName, "drone");
     }
 
     @Override

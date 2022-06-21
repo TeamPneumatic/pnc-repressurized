@@ -9,6 +9,7 @@ import me.desht.pneumaticcraft.common.util.VoxelShapeUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -27,7 +28,6 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 import javax.annotation.Nullable;
-import java.util.Random;
 import java.util.function.ToIntFunction;
 import java.util.stream.Stream;
 
@@ -94,7 +94,7 @@ public class WallLampBlock extends AbstractPneumaticCraftBlock implements ColorH
     }
 
     @Override
-    public void tick(BlockState state, ServerLevel worldIn, BlockPos pos, Random rand) {
+    public void tick(BlockState state, ServerLevel worldIn, BlockPos pos, RandomSource rand) {
         if (state.getValue(LIT) && !shouldLight(worldIn, pos)) {
             worldIn.setBlock(pos, state.cycle(LIT), Block.UPDATE_CLIENTS);
         }

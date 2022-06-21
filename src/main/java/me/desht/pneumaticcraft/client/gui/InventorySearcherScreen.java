@@ -32,7 +32,6 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.Slot;
@@ -65,7 +64,7 @@ public class InventorySearcherScreen extends AbstractContainerScreen<InventorySe
     protected void init() {
         super.init();
 
-        addRenderableWidget(label = new WidgetLabel(leftPos + 105, topPos + 28, TextComponent.EMPTY, 0xFF404080));
+        addRenderableWidget(label = new WidgetLabel(leftPos + 105, topPos + 28, Component.empty(), 0xFF404080));
     }
 
     @Override
@@ -116,9 +115,9 @@ public class InventorySearcherScreen extends AbstractContainerScreen<InventorySe
         super.containerTick();
 
         if (inventory.getStackInSlot(0).getItem() instanceof IPositionProvider) {
-            label.setMessage(new TextComponent(PneumaticCraftUtils.posToString(getBlockPos())));
+            label.setMessage(Component.literal(PneumaticCraftUtils.posToString(getBlockPos())));
         } else {
-            label.setMessage(TextComponent.EMPTY);
+            label.setMessage(Component.empty());
         }
     }
 

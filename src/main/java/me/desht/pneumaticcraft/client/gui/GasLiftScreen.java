@@ -29,7 +29,6 @@ import me.desht.pneumaticcraft.common.inventory.GasLiftMenu;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
@@ -57,19 +56,19 @@ public class GasLiftScreen extends AbstractPneumaticCraftContainerScreen<GasLift
         WidgetAnimatedStat optionStat = addAnimatedStat(xlate("pneumaticcraft.gui.tab.gasLift.mode"), new ItemStack(ModBlocks.PRESSURE_TUBE.get()), 0xFFFFCC00, false);
         optionStat.setMinimumExpandedDimensions(60, 45);
 
-        WidgetButtonExtended button = new WidgetButtonExtended(5, 20, 20, 20, TextComponent.EMPTY).withTag(PumpMode.PUMP_EMPTY.toString());
+        WidgetButtonExtended button = new WidgetButtonExtended(5, 20, 20, 20, Component.empty()).withTag(PumpMode.PUMP_EMPTY.toString());
         button.setRenderStacks(new ItemStack(Items.BUCKET));
         button.setTooltipText(xlate("pneumaticcraft.gui.tab.gasLift.mode.pumpEmpty"));
         optionStat.addSubWidget(button);
         modeButtons[0] = button;
 
-        button = new WidgetButtonExtended(30, 20, 20, 20, TextComponent.EMPTY).withTag(PumpMode.PUMP_LEAVE_FLUID.toString());
+        button = new WidgetButtonExtended(30, 20, 20, 20, Component.empty()).withTag(PumpMode.PUMP_LEAVE_FLUID.toString());
         button.setRenderStacks(new ItemStack(Items.WATER_BUCKET));
         button.setTooltipText(xlate("pneumaticcraft.gui.tab.gasLift.mode.pumpLeave"));
         optionStat.addSubWidget(button);
         modeButtons[1] = button;
 
-        button = new WidgetButtonExtended(55, 20, 20, 20, TextComponent.EMPTY).withTag(PumpMode.RETRACT.toString());
+        button = new WidgetButtonExtended(55, 20, 20, 20, Component.empty()).withTag(PumpMode.RETRACT.toString());
         button.setRenderStacks(new ItemStack(ModBlocks.DRILL_PIPE.get()));
         button.setTooltipText(xlate("pneumaticcraft.gui.tab.gasLift.mode.drawIn"));
         optionStat.addSubWidget(button);
@@ -100,7 +99,7 @@ public class GasLiftScreen extends AbstractPneumaticCraftContainerScreen<GasLift
         textList.add(xlate("pneumaticcraft.gui.tab.status.gasLift.action"));
         textList.add(xlate(te.status.getTranslationKey(), te.getTank().getFluid().getDisplayName().getString()).withStyle(ChatFormatting.BLACK));
         textList.add(xlate("pneumaticcraft.gui.tab.status.gasLift.currentDepth"));
-        textList.add(new TextComponent(te.currentDepth + " meter(s)").withStyle(ChatFormatting.BLACK));
+        textList.add(Component.literal(te.currentDepth + " meter(s)").withStyle(ChatFormatting.BLACK));
         return textList;
     }
 

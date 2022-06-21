@@ -2,9 +2,12 @@
   "type": "minecraft:block",
   "pools": [
     {
-      "name": "thermopneumatic_processing_plant",
-      "rolls": 1.0,
       "bonus_rolls": 0.0,
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
+      ],
       "entries": [
         {
           "type": "minecraft:item",
@@ -20,11 +23,8 @@
           "name": "pneumaticcraft:thermopneumatic_processing_plant"
         }
       ],
-      "conditions": [
-        {
-          "condition": "minecraft:survives_explosion"
-        }
-      ]
+      "name": "thermopneumatic_processing_plant",
+      "rolls": 1.0
     }
   ]
 }

@@ -1,6 +1,6 @@
 {
-  "replace": false,
   "entries": [
     "pneumaticcraft:dungeon_loot"
-  ]
+  ],
+  "replace": false
 }

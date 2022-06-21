@@ -1,24 +1,7 @@
 {
   "parent": "pneumaticcraft:root",
-  "display": {
-    "icon": {
-      "item": "pneumaticcraft:pressure_tube"
-    },
-    "title": {
-      "translate": "pneumaticcraft.advancement.pressure_tube"
-    },
-    "description": {
-      "translate": "pneumaticcraft.advancement.pressure_tube.desc"
-    },
-    "frame": "task",
-    "show_toast": true,
-    "announce_to_chat": true,
-    "hidden": false,
-    "background": "pneumaticcraft:textures/gui/advancement_bg.png"
-  },
   "criteria": {
     "0": {
-      "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
           {
@@ -27,7 +10,24 @@
             ]
           }
         ]
-      }
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "announce_to_chat": true,
+    "background": "pneumaticcraft:textures/gui/advancement_bg.png",
+    "description": {
+      "translate": "pneumaticcraft.advancement.pressure_tube.desc"
+    },
+    "frame": "task",
+    "hidden": false,
+    "icon": {
+      "item": "pneumaticcraft:pressure_tube"
+    },
+    "show_toast": true,
+    "title": {
+      "translate": "pneumaticcraft.advancement.pressure_tube"
     }
   },
   "requirements": [

@@ -26,7 +26,7 @@ import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.Coo
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 
 import java.util.Collections;
@@ -52,25 +52,25 @@ public class CoordinateTrackerOptions extends IOptionPage.SimpleOptionPage<Coord
                 xlate("pneumaticcraft.armor.gui.coordinateTracker.selectTarget"), b -> selectTarget()));
         gui.addWidget(new WidgetButtonExtended(30, 62, 150, 20,
                 xlate("pneumaticcraft.armor.gui.coordinateTracker.navigateToSurface"), b -> navigateToSurface()));
-        pathEnabled = new WidgetButtonExtended(30, 128, 150, 20, TextComponent.EMPTY,
+        pathEnabled = new WidgetButtonExtended(30, 128, 150, 20, Component.empty(),
                 b -> {
                     coordHandler.pathEnabled = !coordHandler.pathEnabled;
                     updateButtonTexts();
                     coordHandler.saveToConfig();
                 });
-        wirePath = new WidgetButtonExtended(30, 150, 150, 20, TextComponent.EMPTY,
+        wirePath = new WidgetButtonExtended(30, 150, 150, 20, Component.empty(),
                 b -> {
                     coordHandler.wirePath = !coordHandler.wirePath;
                     updateButtonTexts();
                     coordHandler.saveToConfig();
                 });
-        xRayEnabled = new WidgetButtonExtended(30, 172, 150, 20, TextComponent.EMPTY,
+        xRayEnabled = new WidgetButtonExtended(30, 172, 150, 20, Component.empty(),
                 b -> {
                     coordHandler.xRayEnabled = !coordHandler.xRayEnabled;
                     updateButtonTexts();
                     coordHandler.saveToConfig();
                 });
-        pathUpdateRate = new WidgetButtonExtended(30, 194, 150, 20, TextComponent.EMPTY,
+        pathUpdateRate = new WidgetButtonExtended(30, 194, 150, 20, Component.empty(),
                 b -> {
                     coordHandler.pathUpdateSetting = coordHandler.pathUpdateSetting.cycle();
                     updateButtonTexts();

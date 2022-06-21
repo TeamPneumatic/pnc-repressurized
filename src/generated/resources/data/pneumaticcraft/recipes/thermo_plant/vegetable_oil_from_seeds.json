@@ -1,13 +1,13 @@
 {
   "type": "pneumaticcraft:thermo_plant",
+  "exothermic": false,
+  "fluid_output": {
+    "amount": 50,
+    "fluid": "pneumaticcraft:vegetable_oil"
+  },
   "item_input": {
     "tag": "forge:seeds"
   },
-  "fluid_output": {
-    "fluid": "pneumaticcraft:vegetable_oil",
-    "amount": 50
-  },
   "pressure": 2.0,
-  "speed": 0.5,
-  "exothermic": false
+  "speed": 0.5
 }

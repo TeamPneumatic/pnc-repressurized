@@ -20,36 +20,34 @@ package me.desht.pneumaticcraft.common.fluid;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModFluids;
 import me.desht.pneumaticcraft.common.core.ModItems;
-import net.minecraft.world.level.LevelReader;
-import net.minecraftforge.fluids.FluidAttributes;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.material.FluidState;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.fluids.ForgeFlowingFluid;
 
-import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
-
 public abstract class FluidOil {
-    private static final FluidAttributes.Builder ATTRS = FluidAttributes.builder(
-            RL("block/fluid/oil_still"), RL("block/fluid/oil_flow")
-    ).density(800).viscosity(10000).temperature(300);
+    public static final PNCFluidRenderProps RENDER_PROPS = new PNCFluidRenderProps("oil_still", "oil_flow");
 
-    private static final ForgeFlowingFluid.Properties PROPS =
-            new ForgeFlowingFluid.Properties(ModFluids.OIL, ModFluids.OIL_FLOWING, ATTRS)
-                    .block(ModBlocks.OIL).bucket(ModItems.OIL_BUCKET);
+    private static ForgeFlowingFluid.Properties props() {
+        return new ForgeFlowingFluid.Properties(
+                ModFluids.OIL_FLUID_TYPE, ModFluids.OIL, ModFluids.OIL_FLOWING
+        ).block(ModBlocks.OIL).bucket(ModItems.OIL_BUCKET).tickRate(20);
+    }
 
     public static class Source extends ForgeFlowingFluid.Source {
         public Source() {
-            super(PROPS);
+            super(props());
         }
 
         @Override
-        public int getTickDelay(LevelReader world) {
-            return 20;
+        public boolean move(FluidState state, LivingEntity entity, Vec3 movementVector, double gravity) {
+            return super.move(state, entity, movementVector, gravity);
         }
-
     }
 
     public static class Flowing extends ForgeFlowingFluid.Flowing {
         public Flowing() {
-            super(PROPS);
+            super(props());
         }
     }
 }

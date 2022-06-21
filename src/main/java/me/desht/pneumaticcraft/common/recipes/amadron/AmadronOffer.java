@@ -29,14 +29,12 @@ import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
-import net.minecraftforge.registries.ForgeRegistryEntry;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -168,7 +166,7 @@ public class AmadronOffer extends AmadronRecipe {
      * @return a description string
      */
     public Component getDescription() {
-        return new TextComponent(String.format("[%s -> %s]", input, output));
+        return Component.literal(String.format("[%s -> %s]", input, output));
     }
 
     @Override
@@ -222,7 +220,7 @@ public class AmadronOffer extends AmadronRecipe {
         return whitelist.isReal() || blacklist.isReal();
     }
 
-    public static class Serializer<T extends AmadronRecipe> extends ForgeRegistryEntry<RecipeSerializer<?>> implements RecipeSerializer<T> {
+    public static class Serializer<T extends AmadronRecipe> implements RecipeSerializer<T> {
         private final IFactory<T> factory;
 
         public Serializer(IFactory<T> factory) {

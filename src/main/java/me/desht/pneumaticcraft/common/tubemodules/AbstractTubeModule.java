@@ -21,18 +21,20 @@ import me.desht.pneumaticcraft.client.gui.tubemodule.AbstractTubeModuleScreen;
 import me.desht.pneumaticcraft.common.block.PressureTubeBlock;
 import me.desht.pneumaticcraft.common.block.entity.PressureTubeBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModItems;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -55,6 +57,7 @@ public abstract class AbstractTubeModule {
     protected boolean upgraded;
     public float lowerBound = 4.9F, higherBound = 0;
     public boolean advancedConfig;
+    private ResourceLocation regName;
 
     public AbstractTubeModule(Direction dir, PressureTubeBlockEntity pressureTube) {
         this.dir = dir;
@@ -171,7 +174,10 @@ public abstract class AbstractTubeModule {
     }
 
     public final ResourceLocation getType() {
-        return getItem().getRegistryName();
+        if (regName == null) {
+            regName = PneumaticCraftUtils.getRegistryName(getItem()).orElseThrow();
+        }
+        return regName;
     }
 
     public int getRedstoneLevel() {
@@ -179,7 +185,9 @@ public abstract class AbstractTubeModule {
     }
 
     public void updateNeighbors() {
-        pressureTube.getLevel().updateNeighborsAt(pressureTube.getBlockPos(), pressureTube.getLevel().getBlockState(pressureTube.getBlockPos()).getBlock());
+        Level level = pressureTube.nonNullLevel();
+        BlockPos pos = pressureTube.getBlockPos();
+        level.updateNeighborsAt(pos, level.getBlockState(pos).getBlock());
     }
 
     public boolean isInline() {
@@ -198,8 +206,8 @@ public abstract class AbstractTubeModule {
         if (this instanceof INetworkedModule) {
             int colorChannel = ((INetworkedModule) this).getColorChannel();
             String key = "color.minecraft." + DyeColor.byId(colorChannel);
-            curInfo.add(new TranslatableComponent("pneumaticcraft.waila.logisticsModule.channel").append(" ")
-                    .append(new TranslatableComponent(key).withStyle(ChatFormatting.YELLOW)));
+            curInfo.add(Component.translatable("pneumaticcraft.waila.logisticsModule.channel").append(" ")
+                    .append(Component.translatable(key).withStyle(ChatFormatting.YELLOW)));
         }
     }
 

@@ -18,13 +18,17 @@
 package me.desht.pneumaticcraft.common.thirdparty.mekanism;
 
 import me.desht.pneumaticcraft.api.harvesting.HoeHandler;
-import net.minecraft.resources.ResourceLocation;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import net.minecraft.world.item.ItemStack;
 
 public class PaxelHandler extends HoeHandler {
     public PaxelHandler() {
-        super(stack -> {
-            ResourceLocation rl = stack.getItem().getRegistryName();
-            return rl != null && rl.getNamespace().equals("mekanismtools") && rl.getPath().endsWith("_paxel");
-        }, (stack, player) -> stack.hurtAndBreak(1, player, p -> { }));
+        super(PaxelHandler::isMekanismPaxel, (stack, player) -> stack.hurtAndBreak(1, player, p -> { }));
+    }
+
+    private static boolean isMekanismPaxel(ItemStack stack) {
+        return PneumaticCraftUtils.getRegistryName(stack.getItem())
+                .map(rl -> rl.getNamespace().equals("mekanismtools") && rl.getPath().endsWith("_paxel"))
+                .orElse(false);
     }
 }

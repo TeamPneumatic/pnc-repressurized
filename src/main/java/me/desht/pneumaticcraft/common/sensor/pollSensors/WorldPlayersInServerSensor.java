@@ -23,7 +23,6 @@ import me.desht.pneumaticcraft.api.universal_sensor.IPollSensorSetting;
 import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.players.PlayerList;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -69,6 +68,6 @@ public class WorldPlayersInServerSensor implements IPollSensorSetting {
 
     @Override
     public void getAdditionalInfo(List<Component> info) {
-        info.add(new TextComponent("Player Name"));
+        info.add(Component.literal("Player Name"));
     }
 }

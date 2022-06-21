@@ -26,7 +26,6 @@ import me.desht.pneumaticcraft.common.thirdparty.curios.Curios;
 import me.desht.pneumaticcraft.common.thirdparty.gamestages.Gamestages;
 import me.desht.pneumaticcraft.common.thirdparty.immersiveengineering.ImmersiveEngineering;
 import me.desht.pneumaticcraft.common.thirdparty.mekanism.Mekanism;
-import me.desht.pneumaticcraft.common.thirdparty.patchouli.Patchouli;
 import me.desht.pneumaticcraft.common.thirdparty.theoneprobe.TheOneProbe;
 import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.ModIds;
@@ -63,7 +62,7 @@ public enum ThirdPartyManager {
             thirdPartyClasses.put(ModIds.TOP, TheOneProbe::new);
             thirdPartyClasses.put(ModIds.CURIOS, Curios::new);
             thirdPartyClasses.put(ModIds.BOTANIA, Botania::new);
-            thirdPartyClasses.put(ModIds.PATCHOULI, Patchouli::new);
+//            thirdPartyClasses.put(ModIds.PATCHOULI, Patchouli::new);
             thirdPartyClasses.put(ModIds.JEI, () -> IMPLICIT_INIT);
             thirdPartyClasses.put(ModIds.IMMERSIVE_ENGINEERING, ImmersiveEngineering::new);
             thirdPartyClasses.put(ModIds.MEKANISM, Mekanism::new);

@@ -1,24 +1,24 @@
 {
   "type": "minecraft:crafting_shaped",
-  "pattern": [
-    " T ",
-    "WRW",
-    "TPT"
-  ],
   "key": {
+    "P": {
+      "item": "pneumaticcraft:pressure_tube"
+    },
+    "R": {
+      "item": "pneumaticcraft:turbine_rotor"
+    },
     "T": {
       "item": "pneumaticcraft:small_tank"
     },
     "W": {
       "item": "pneumaticcraft:reinforced_brick_wall"
-    },
-    "R": {
-      "item": "pneumaticcraft:turbine_rotor"
-    },
-    "P": {
-      "item": "pneumaticcraft:pressure_tube"
     }
   },
+  "pattern": [
+    " T ",
+    "WRW",
+    "TPT"
+  ],
   "result": {
     "item": "pneumaticcraft:fluid_mixer"
   }

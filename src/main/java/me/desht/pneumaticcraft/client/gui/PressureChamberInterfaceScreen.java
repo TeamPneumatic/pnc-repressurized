@@ -28,7 +28,6 @@ import me.desht.pneumaticcraft.common.inventory.PressureChamberInterfaceMenu;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Inventory;
@@ -57,7 +56,7 @@ public class PressureChamberInterfaceScreen extends AbstractPneumaticCraftContai
 
         statusStat = addAnimatedStat(xlate("pneumaticcraft.gui.pressureChamberInterface.status"), new ItemStack(ModBlocks.PRESSURE_CHAMBER_INTERFACE.get()), 0xFFFFAA00, false);
 
-        exportAnyButton = addRenderableWidget(new WidgetButtonExtended(leftPos + 100, topPos + 32, 60, 20, TextComponent.EMPTY)
+        exportAnyButton = addRenderableWidget(new WidgetButtonExtended(leftPos + 100, topPos + 32, 60, 20, Component.empty())
                 .withTag("export_mode"));
         exportTypeLabel = addRenderableWidget(new WidgetLabel(leftPos + 100, topPos + 20, xlate("pneumaticcraft.gui.pressureChamberInterface.exportLabel")));
 

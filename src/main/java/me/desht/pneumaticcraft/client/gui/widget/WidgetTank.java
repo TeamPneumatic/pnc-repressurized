@@ -26,7 +26,6 @@ import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraftforge.fluids.FluidStack;
@@ -48,7 +47,7 @@ public class WidgetTank extends AbstractWidget implements ITooltipProvider {
     private final IFluidTank tank;
 
     public WidgetTank(int x, int y, IFluidTank tank) {
-        super(x, y, 16, 64, TextComponent.EMPTY);
+        super(x, y, 16, 64, Component.empty());
         this.tank = tank;
     }
 
@@ -57,12 +56,12 @@ public class WidgetTank extends AbstractWidget implements ITooltipProvider {
     }
 
     public WidgetTank(int x, int y, int width, int height, FluidStack stack) {
-        super(x, y, width, height, TextComponent.EMPTY);
+        super(x, y, width, height, Component.empty());
         this.tank = makeTank(stack, stack.getAmount());
     }
 
     public WidgetTank(int x, int y, int width, int height, FluidStack stack, int capacity) {
-        super(x, y, width, height, TextComponent.EMPTY);
+        super(x, y, width, height, Component.empty());
         this.tank = makeTank(stack, capacity);
     }
 
@@ -91,12 +90,12 @@ public class WidgetTank extends AbstractWidget implements ITooltipProvider {
         String amt = NumberFormat.getNumberInstance(Locale.getDefault()).format(tank.getFluidAmount());
         String capacity = NumberFormat.getNumberInstance(Locale.getDefault()).format(tank.getCapacity());
 
-        curTip.add(new TextComponent(amt + " / " + capacity + " mB"));
+        curTip.add(Component.literal(amt + " / " + capacity + " mB"));
         if (fluid == Fluids.EMPTY || tank.getCapacity() == 0 || tank.getFluidAmount() == 0) {
             curTip.add(xlate("pneumaticcraft.gui.misc.empty").withStyle(ChatFormatting.GRAY));
         } else {
             curTip.add(new FluidStack(fluid, tank.getFluidAmount()).getDisplayName().copy().withStyle(ChatFormatting.GRAY));
-            curTip.add(new TextComponent(ModNameCache.getModName(fluid)).withStyle(ChatFormatting.BLUE, ChatFormatting.ITALIC));
+            curTip.add(Component.literal(ModNameCache.getModName(fluid)).withStyle(ChatFormatting.BLUE, ChatFormatting.ITALIC));
         }
     }
 

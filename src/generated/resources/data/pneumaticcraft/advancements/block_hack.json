@@ -1,33 +1,33 @@
 {
   "parent": "pneumaticcraft:pneumatic_armor",
+  "criteria": {
+    "0": {
+      "conditions": {},
+      "trigger": "pneumaticcraft:block_hack"
+    }
+  },
   "display": {
-    "icon": {
-      "item": "pneumaticcraft:block_tracker_upgrade"
-    },
-    "title": {
-      "translate": "pneumaticcraft.advancement.block_hack"
-    },
+    "announce_to_chat": true,
+    "background": "pneumaticcraft:textures/gui/advancement_bg.png",
     "description": {
       "translate": "pneumaticcraft.advancement.block_hack.desc"
     },
     "frame": "task",
-    "show_toast": true,
-    "announce_to_chat": true,
     "hidden": false,
-    "background": "pneumaticcraft:textures/gui/advancement_bg.png"
-  },
-  "rewards": {
-    "experience": 10
-  },
-  "criteria": {
-    "0": {
-      "trigger": "pneumaticcraft:block_hack",
-      "conditions": {}
+    "icon": {
+      "item": "pneumaticcraft:block_tracker_upgrade"
+    },
+    "show_toast": true,
+    "title": {
+      "translate": "pneumaticcraft.advancement.block_hack"
     }
   },
   "requirements": [
     [
       "0"
     ]
-  ]
+  ],
+  "rewards": {
+    "experience": 10
+  }
 }

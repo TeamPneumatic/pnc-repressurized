@@ -21,7 +21,6 @@ import me.desht.pneumaticcraft.common.item.PneumaticArmorItem;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -37,29 +36,30 @@ import java.util.function.Supplier;
  * Sent by client to update the searched item (Pneumatic Helmet search upgrade)
  */
 public class PacketUpdateSearchItem {
-    private final ResourceLocation itemId;
+    private final Item item;
 
     public PacketUpdateSearchItem(Item item) {
-        itemId = item.getRegistryName();
+        this.item = item;
     }
 
     public PacketUpdateSearchItem(FriendlyByteBuf buffer) {
-        itemId = buffer.readResourceLocation();
+        item = buffer.readRegistryIdSafe(Item.class);
     }
 
     public void toBytes(FriendlyByteBuf buffer) {
-        buffer.writeResourceLocation(itemId);
+        buffer.writeRegistryId(ForgeRegistries.ITEMS, item);
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
             Player player = ctx.get().getSender();
-            CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
-            if (handler.upgradeUsable(CommonUpgradeHandlers.searchHandler, true)) {
-                ItemStack helmetStack = player.getItemBySlot(EquipmentSlot.HEAD);
-                Item searchedItem = ForgeRegistries.ITEMS.getValue(itemId);
-                if (searchedItem != null && searchedItem != Items.AIR) {
-                    PneumaticArmorItem.setSearchedItem(helmetStack, searchedItem);
+            if (player != null && item != null && item != Items.AIR) {
+                CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
+                if (handler.upgradeUsable(CommonUpgradeHandlers.searchHandler, true)) {
+                    ItemStack helmetStack = player.getItemBySlot(EquipmentSlot.HEAD);
+                    if (helmetStack.getItem() instanceof PneumaticArmorItem) {  // should be, but let's be paranoid...
+                        PneumaticArmorItem.setSearchedItem(helmetStack, item);
+                    }
                 }
             }
         });

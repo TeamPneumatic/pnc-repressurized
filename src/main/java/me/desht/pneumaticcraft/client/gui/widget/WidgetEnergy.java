@@ -24,7 +24,6 @@ import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraftforge.energy.IEnergyStorage;
 
 import java.util.List;
@@ -35,7 +34,7 @@ public class WidgetEnergy extends AbstractWidget implements ITooltipProvider {
     private final IEnergyStorage storage;
 
     public WidgetEnergy(int x, int y, IEnergyStorage storage) {
-        super(x, y, 16, DEFAULT_SCALE, TextComponent.EMPTY);
+        super(x, y, 16, DEFAULT_SCALE, Component.empty());
         this.storage = storage;
     }
 
@@ -50,7 +49,7 @@ public class WidgetEnergy extends AbstractWidget implements ITooltipProvider {
 
     @Override
     public void addTooltip(double mouseX, double mouseY, List<Component> list, boolean shiftPressed){
-        list.add(new TextComponent(storage.getEnergyStored() + " / " + storage.getMaxEnergyStored() + " FE"));
+        list.add(Component.literal(storage.getEnergyStored() + " / " + storage.getMaxEnergyStored() + " FE"));
     }
 
     private int getScaled(){

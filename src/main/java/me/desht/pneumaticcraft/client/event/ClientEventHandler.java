@@ -103,13 +103,13 @@ public class ClientEventHandler {
     public static void adjustFOVEvent(FOVModifierEvent event) {
         float modifier = 1.0f;
         for (EquipmentSlot slot : EquipmentSlot.values()) {
-            ItemStack stack = event.getEntity().getItemBySlot(slot);
+            ItemStack stack = event.getPlayer().getItemBySlot(slot);
             if (stack.getItem() instanceof IFOVModifierItem fovModifier) {
-                modifier *= fovModifier.getFOVModifier(stack, event.getEntity(), slot);
+                modifier *= fovModifier.getFOVModifier(stack, event.getPlayer(), slot);
             }
         }
 
-        event.setNewfov(event.getNewfov() * modifier);
+        event.setNewFov(event.getNewFov() * modifier);
     }
 
     @SubscribeEvent
@@ -170,7 +170,7 @@ public class ClientEventHandler {
             if (!toDraw.isEmpty()) {
                 event.getPoseStack().pushPose();
                 event.getPoseStack().translate(0, 0, 500);
-                toDraw.forEach(d -> d.renderAfterEverythingElse(event.getPoseStack(), event.getMouseX(), event.getMouseY(), event.getPartialTicks()));
+                toDraw.forEach(d -> d.renderAfterEverythingElse(event.getPoseStack(), event.getMouseX(), event.getMouseY(), event.getPartialTick()));
                 event.getPoseStack().popPose();
             }
         }

@@ -39,7 +39,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
@@ -50,8 +49,8 @@ public class PastebinScreen extends AbstractPneumaticCraftScreen {
     private WidgetCheckBox prettyCB;
     private final CompoundTag pastingNBT;
     private final Screen parentScreen;
-    private Component statusMessage = TextComponent.EMPTY;
-    private Component lastMessage = TextComponent.EMPTY;
+    private Component statusMessage = Component.empty();
+    private Component lastMessage = Component.empty();
     private int messageTimer;
     private EnumState state = EnumState.NONE;
     CompoundTag outputTag;
@@ -62,7 +61,7 @@ public class PastebinScreen extends AbstractPneumaticCraftScreen {
     }
 
     PastebinScreen(Screen parentScreen, CompoundTag tag) {
-        super(new TextComponent("Pastebin"));
+        super(Component.literal("Pastebin"));
         xSize = 183;
         ySize = 202;
         this.pastingNBT = tag;
@@ -109,11 +108,11 @@ public class PastebinScreen extends AbstractPneumaticCraftScreen {
         WidgetButtonExtended getButton = new WidgetButtonExtended(guiLeft + 31, guiTop + 167, 120, 20, xlate("pneumaticcraft.gui.pastebin.button.get"), b -> getFromPastebin());
         addRenderableWidget(getButton);
 
-        WidgetButtonExtended putInClipBoard = new WidgetButtonExtended(guiLeft + 8, guiTop + 78, 20, 20, TextComponent.EMPTY, b -> putToClipboard());
+        WidgetButtonExtended putInClipBoard = new WidgetButtonExtended(guiLeft + 8, guiTop + 78, 20, 20, Component.empty(), b -> putToClipboard());
         putInClipBoard.setRenderedIcon(Textures.GUI_COPY_ICON_LOCATION);
         putInClipBoard.setTooltipText(xlate("pneumaticcraft.gui.pastebin.button.copyToClipboard"));
         addRenderableWidget(putInClipBoard);
-        WidgetButtonExtended retrieveFromClipboard = new WidgetButtonExtended(guiLeft + 8, guiTop + 167, 20, 20, TextComponent.EMPTY, b -> getFromClipboard());
+        WidgetButtonExtended retrieveFromClipboard = new WidgetButtonExtended(guiLeft + 8, guiTop + 167, 20, 20, Component.empty(), b -> getFromClipboard());
         retrieveFromClipboard.setRenderedIcon(Textures.GUI_PASTE_ICON_LOCATION);
         retrieveFromClipboard.setTooltipText(xlate("pneumaticcraft.gui.pastebin.button.loadFromClipboard"));
         addRenderableWidget(retrieveFromClipboard);
@@ -177,7 +176,7 @@ public class PastebinScreen extends AbstractPneumaticCraftScreen {
             init(minecraft, this.width, this.height);
         }
         if (state != EnumState.NONE && PastebinHandler.isDone()) {
-            statusMessage = TextComponent.EMPTY;
+            statusMessage = Component.empty();
             String pastebinText;
             switch (state) {
                 case GETTING:
@@ -190,7 +189,7 @@ public class PastebinScreen extends AbstractPneumaticCraftScreen {
                     break;
                 case PUTTING:
                     if (PastebinHandler.getException() != null) {
-                        statusMessage = new TextComponent(PastebinHandler.getException().getMessage());
+                        statusMessage = Component.literal(PastebinHandler.getException().getMessage());
                     } else {
                         pastebinText = PastebinHandler.getHandler().getLink;
                         if (pastebinText == null) pastebinText = "<ERROR>";
@@ -198,7 +197,7 @@ public class PastebinScreen extends AbstractPneumaticCraftScreen {
                             pastebinBox.setValue(pastebinText);
                             setTempMessage(xlate("pneumaticcraft.gui.pastebin.uploadedToPastebin"));
                         } else {
-                            statusMessage = new TextComponent(pastebinText);
+                            statusMessage = Component.literal(pastebinText);
                         }
                     }
                     break;
@@ -211,7 +210,7 @@ public class PastebinScreen extends AbstractPneumaticCraftScreen {
             state = EnumState.NONE;
         }
         if (messageTimer > 0 && --messageTimer <= 0) {
-            lastMessage = TextComponent.EMPTY;
+            lastMessage = Component.empty();
         }
     }
 
@@ -268,9 +267,9 @@ public class PastebinScreen extends AbstractPneumaticCraftScreen {
 
         super.render(matrixStack, x, y, partialTicks);
 
-        if (statusMessage != TextComponent.EMPTY) {
+        if (statusMessage != Component.empty()) {
             drawString(matrixStack, font, statusMessage, guiLeft + 5, guiTop + 5, 0xFFFFFF00);
-        } else if (lastMessage != TextComponent.EMPTY) {
+        } else if (lastMessage != Component.empty()) {
             drawString(matrixStack, font, lastMessage, guiLeft + 5, guiTop + 5, 0xFF00FF00);
         }
     }

@@ -29,7 +29,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.GlobalPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -148,7 +147,7 @@ public class RemoteItem extends Item {
             if (te instanceof SecurityStationBlockEntity) {
                 boolean canAccess = ((SecurityStationBlockEntity) te).doesAllowPlayer(player);
                 if (!canAccess) {
-                    player.displayClientMessage(new TranslatableComponent("pneumaticcraft.gui.remote.noEditRights", gPos).withStyle(ChatFormatting.RED), false);
+                    player.displayClientMessage(Component.translatable("pneumaticcraft.gui.remote.noEditRights", gPos).withStyle(ChatFormatting.RED), false);
                 }
                 return canAccess;
             }

@@ -37,7 +37,6 @@ import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -64,7 +63,7 @@ public class ArmorColoringScreen extends AbstractPneumaticCraftScreen {
     private static SelectorType selectorType = SelectorType.PRIMARY;
 
     public ArmorColoringScreen() {
-        super(new TextComponent("Colors"));
+        super(Component.literal("Colors"));
 
         Player player = ClientUtils.getClientPlayer();
         for (EquipmentSlot slot : ArmorUpgradeRegistry.ARMOR_SLOTS) {
@@ -93,7 +92,7 @@ public class ArmorColoringScreen extends AbstractPneumaticCraftScreen {
         }
         selectorButtons.forEach(this::addRenderableWidget);
         for (SelectorType type : SelectorType.values()) {
-            addRenderableWidget(new WidgetLabel(87 + type.xOffset, 30, new TextComponent(type.label), 0xFFFFFFFF).setAlignment(WidgetLabel.Alignment.CENTRE));
+            addRenderableWidget(new WidgetLabel(87 + type.xOffset, 30, Component.literal(type.label), 0xFFFFFFFF).setAlignment(WidgetLabel.Alignment.CENTRE));
         }
 
         rgbSliders.clear();
@@ -242,7 +241,7 @@ public class ArmorColoringScreen extends AbstractPneumaticCraftScreen {
         private final ColorComponent color;
 
         public RGBSlider(ArmorColoringScreen gui, ColorComponent color, int xPos, int yPos, int width, int height, double currentVal) {
-            super(xPos, yPos, width, height, new TextComponent(color.prefix), TextComponent.EMPTY, 0, 255, currentVal, true, null);
+            super(xPos, yPos, width, height, Component.literal(color.prefix), Component.empty(), 0, 255, currentVal, true, null);
             this.gui = gui;
             this.color = color;
         }

@@ -36,7 +36,7 @@ import net.minecraft.SharedConstants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -79,7 +79,7 @@ public class AphorismTileScreen extends Screen {
         minecraft.keyboardHandler.setSendRepeatsToGui(true);
 
         int yPos = (height - PANEL_HEIGHT) / 2;
-        addRenderableWidget(new PNCForgeSlider(5, yPos, 90, 16,  new TextComponent("Margin: "), TextComponent.EMPTY,
+        addRenderableWidget(new PNCForgeSlider(5, yPos, 90, 16,  Component.literal("Margin: "), Component.empty(),
                 0, 9, tile.getMarginSize(), true, slider -> tile.setMarginSize(slider.getValueInt())));
 
         WidgetCheckBox cb;
@@ -101,7 +101,8 @@ public class AphorismTileScreen extends Screen {
 
         panelWidth = Math.max(100, Math.max(cb.getWidth(), Math.max(rsButton.getWidth(), itemButton.getWidth()))) + 5;
         if (itemSearchGui != null && !itemSearchGui.getSearchStack().isEmpty()) {
-            String text = "{item:" + itemSearchGui.getSearchStack().getItem().getRegistryName().toString() + "}";
+            ResourceLocation regName = PneumaticCraftUtils.getRegistryName(itemSearchGui.getSearchStack().getItem()).orElseThrow();
+            String text = "{item:" + regName + "}";
             textLines[cursorY] = text;
             cursorX = text.length();
             tile.setTextLines(textLines);
@@ -110,7 +111,7 @@ public class AphorismTileScreen extends Screen {
     }
 
     private void openItemSelector() {
-        ClientUtils.openContainerGui(ModMenuTypes.ITEM_SEARCHER.get(), new TextComponent("Searcher"));
+        ClientUtils.openContainerGui(ModMenuTypes.ITEM_SEARCHER.get(), Component.literal("Searcher"));
         if (minecraft.screen instanceof ItemSearcherScreen scr) {
             itemSearchGui = scr;
         }

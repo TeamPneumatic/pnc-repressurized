@@ -48,7 +48,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.TickTask;
@@ -192,7 +191,7 @@ public class SecurityStationBlockEntity extends AbstractTickingBlockEntity imple
                 if (hasValidNetwork()) {
                     initiateHacking(player);
                 } else {
-                    player.displayClientMessage(new TranslatableComponent("pneumaticcraft.message.securityStation.outOfOrder"), false);
+                    player.displayClientMessage(Component.translatable("pneumaticcraft.message.securityStation.outOfOrder"), false);
                 }
             } else if (tag.startsWith("remove:")) {
                 String name = tag.split(":", 2)[1];

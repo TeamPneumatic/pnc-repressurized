@@ -3,14 +3,14 @@
   "id": "pneumaticcraft:amadron/gasoline_to_emerald",
   "input": {
     "type": "FLUID",
-    "id": "pneumaticcraft:gasoline",
-    "amount": 2000
+    "amount": 2000,
+    "id": "pneumaticcraft:gasoline"
   },
+  "level": 0,
   "output": {
     "type": "ITEM",
-    "id": "minecraft:emerald",
-    "amount": 1
+    "amount": 1,
+    "id": "minecraft:emerald"
   },
-  "static": true,
-  "level": 0
+  "static": true
 }

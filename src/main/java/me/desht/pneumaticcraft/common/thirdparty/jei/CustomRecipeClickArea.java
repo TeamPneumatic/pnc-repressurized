@@ -30,8 +30,6 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
 
@@ -73,25 +71,25 @@ public class CustomRecipeClickArea {
                 Collection<FluidStack> fluids = gui.getTargetFluids();
                 ImmutableList.Builder<Component> builder = ImmutableList.builder();
                 if (!items.isEmpty() || !fluids.isEmpty()) {
-                    builder.add(new TextComponent("Current Recipe:").withStyle(ChatFormatting.GRAY));
+                    builder.add(Component.literal("Current Recipe:").withStyle(ChatFormatting.GRAY));
                     for (ItemStack stack : items) {
                         if (!stack.isEmpty()) {
-                            builder.add(new TextComponent(Symbols.ARROW_RIGHT + " ").append(stack.getHoverName())
+                            builder.add(Component.literal(Symbols.ARROW_RIGHT + " ").append(stack.getHoverName())
                                     .withStyle(ChatFormatting.YELLOW));
                         }
                     }
                     for (FluidStack stack : fluids) {
                         if (!stack.isEmpty()) {
-                            builder.add(new TextComponent(Symbols.ARROW_RIGHT + " ").append(stack.getDisplayName())
+                            builder.add(Component.literal(Symbols.ARROW_RIGHT + " ").append(stack.getDisplayName())
                                     .withStyle(ChatFormatting.AQUA));
                         }
                     }
                     if (Minecraft.getInstance().options.advancedItemTooltips) {
-                        builder.add(new TextComponent(gui.te.getCurrentRecipeIdSynced()).withStyle(ChatFormatting.DARK_GRAY));
+                        builder.add(Component.literal(gui.te.getCurrentRecipeIdSynced()).withStyle(ChatFormatting.DARK_GRAY));
                     }
-                    builder.add(TextComponent.EMPTY);
+                    builder.add(Component.empty());
                 }
-                builder.add(new TranslatableComponent("jei.tooltip.show.recipes"));
+                builder.add(Component.translatable("jei.tooltip.show.recipes"));
                 return builder.build();
             }
         };

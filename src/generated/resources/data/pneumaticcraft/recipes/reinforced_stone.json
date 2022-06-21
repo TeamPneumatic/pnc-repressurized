@@ -1,10 +1,5 @@
 {
   "type": "minecraft:crafting_shaped",
-  "pattern": [
-    "BBB",
-    "BIB",
-    "BBB"
-  ],
   "key": {
     "B": {
       "item": "minecraft:stone"
@@ -13,8 +8,13 @@
       "tag": "forge:ingots/compressed_iron"
     }
   },
+  "pattern": [
+    "BBB",
+    "BIB",
+    "BBB"
+  ],
   "result": {
-    "item": "pneumaticcraft:reinforced_stone",
-    "count": 8
+    "count": 8,
+    "item": "pneumaticcraft:reinforced_stone"
   }
 }

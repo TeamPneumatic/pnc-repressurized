@@ -1,26 +1,26 @@
 {
   "type": "minecraft:crafting_shaped",
+  "key": {
+    "D": {
+      "tag": "forge:dyes/gray"
+    },
+    "G": {
+      "item": "minecraft:glowstone"
+    },
+    "I": {
+      "tag": "forge:ingots/compressed_iron"
+    },
+    "R": {
+      "tag": "forge:dusts/redstone"
+    }
+  },
   "pattern": [
     " R ",
     "IGI",
     " D "
   ],
-  "key": {
-    "I": {
-      "tag": "forge:ingots/compressed_iron"
-    },
-    "G": {
-      "item": "minecraft:glowstone"
-    },
-    "R": {
-      "tag": "forge:dusts/redstone"
-    },
-    "D": {
-      "tag": "forge:dyes/gray"
-    }
-  },
   "result": {
-    "item": "pneumaticcraft:wall_lamp_gray",
-    "count": 4
+    "count": 4,
+    "item": "pneumaticcraft:wall_lamp_gray"
   }
 }

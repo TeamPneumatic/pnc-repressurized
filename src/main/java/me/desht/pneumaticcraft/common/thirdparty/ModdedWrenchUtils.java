@@ -17,9 +17,10 @@
 
 package me.desht.pneumaticcraft.common.thirdparty;
 
+import me.desht.pneumaticcraft.api.data.PneumaticCraftTags;
 import me.desht.pneumaticcraft.api.wrench.IWrenchRegistry;
-import me.desht.pneumaticcraft.common.PneumaticCraftTags;
 import me.desht.pneumaticcraft.common.item.PneumaticWrenchItem;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.Item;
@@ -72,7 +73,7 @@ public enum ModdedWrenchUtils implements IWrenchRegistry {
     @Override
     public boolean isModdedWrench(@Nonnull ItemStack stack) {
         return !(stack.getItem() instanceof PneumaticWrenchItem) &&
-                (stack.is(PneumaticCraftTags.Items.WRENCHES) || wrenches.contains(stack.getItem().getRegistryName()));
+                (stack.is(PneumaticCraftTags.Items.WRENCHES) || wrenches.contains(PneumaticCraftUtils.getRegistryName(stack.getItem()).orElseThrow()));
     }
 
     @Override
@@ -82,7 +83,7 @@ public enum ModdedWrenchUtils implements IWrenchRegistry {
 
     @Override
     public void registerWrench(Item wrench) {
-        wrenches.add(wrench.getRegistryName());
+        wrenches.add(PneumaticCraftUtils.getRegistryName(wrench).orElseThrow());
     }
 
     @Override
@@ -100,7 +101,7 @@ public enum ModdedWrenchUtils implements IWrenchRegistry {
      *         CONSUME then the Pneumatic Wrench sound effect will also not be played
      */
     public InteractionResult onWrenchedPre(UseOnContext ctx, BlockState state) {
-        return modBehavioursPre.getOrDefault(state.getBlock().getRegistryName().getNamespace(), NO_OP_PRE).apply(ctx, state);
+        return modBehavioursPre.getOrDefault(getModId(state), NO_OP_PRE).apply(ctx, state);
     }
 
     /**
@@ -110,6 +111,10 @@ public enum ModdedWrenchUtils implements IWrenchRegistry {
      * @param state the block being wrenched
      */
     public void onWrenchedPost(UseOnContext ctx, BlockState state) {
-        modBehavioursPost.getOrDefault(state.getBlock().getRegistryName().getNamespace(), NO_OP_POST).accept(ctx, state);
+        modBehavioursPost.getOrDefault(getModId(state), NO_OP_POST).accept(ctx, state);
+    }
+
+    private static String getModId(BlockState state) {
+        return PneumaticCraftUtils.getRegistryName(state.getBlock()).orElseThrow().getNamespace();
     }
 }

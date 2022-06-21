@@ -31,7 +31,6 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.protocol.game.ClientboundSetCarriedItemPacket;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -81,7 +80,7 @@ public class GPSAreaToolItem extends Item implements IPositionProvider, IGPSTool
     public static void setGPSPosAndNotify(Player player, ItemStack stack, BlockPos pos, int index) {
         setGPSLocation(player, stack, pos, null, index, true);
         if (player instanceof ServerPlayer sp) {
-            player.displayClientMessage(new TextComponent(ChatFormatting.AQUA + String.format("[%s] ", stack.getDisplayName().getString()))
+            player.displayClientMessage(Component.literal(ChatFormatting.AQUA + String.format("[%s] ", stack.getDisplayName().getString()))
                     .append(getMessageText(player.level, pos, index)), false);
             sp.connection.send(new ClientboundSetCarriedItemPacket(player.getInventory().selected));
         }
@@ -94,10 +93,10 @@ public class GPSAreaToolItem extends Item implements IPositionProvider, IGPSTool
     private static Component getMessageText(Level worldIn, BlockPos pos, int index) {
         Component translated = PneumaticCraftUtils.getBlockNameAt(worldIn, pos);
         MutableComponent blockName = worldIn.isLoaded(pos) ?
-                new TextComponent(" (").append(translated).append(")") :
-                TextComponent.EMPTY.plainCopy();
+                Component.literal(" (").append(translated).append(")") :
+                Component.empty().plainCopy();
         String str = String.format("P%d%s: [%d, %d, %d]", index + 1, ChatFormatting.YELLOW, pos.getX(), pos.getY(), pos.getZ());
-        return new TextComponent(str).withStyle(index == 0 ? ChatFormatting.RED : ChatFormatting.GREEN).append(blockName.withStyle(ChatFormatting.GREEN));
+        return Component.literal(str).withStyle(index == 0 ? ChatFormatting.RED : ChatFormatting.GREEN).append(blockName.withStyle(ChatFormatting.GREEN));
     }
 
     @OnlyIn(Dist.CLIENT)

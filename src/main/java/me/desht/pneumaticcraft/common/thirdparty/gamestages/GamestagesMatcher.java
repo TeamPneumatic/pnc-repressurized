@@ -27,7 +27,6 @@ import me.desht.pneumaticcraft.api.misc.IPlayerMatcher;
 import net.darkhax.gamestages.GameStageHelper;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.entity.player.Player;
 import org.apache.commons.lang3.Validate;
@@ -73,7 +72,7 @@ public class GamestagesMatcher implements IPlayerMatcher {
                     .append(" (")
                     .append(xlate("pneumaticcraft.gui.misc." + (matchAll ? "all" : "any")))
                     .append(")");
-            List<Component> items = stages.stream().map(TextComponent::new).collect(Collectors.toList());
+            List<Component> items = stages.stream().map(Component::literal).collect(Collectors.toList());
             standardTooltip(player, tooltip, header, items);
         }
     }

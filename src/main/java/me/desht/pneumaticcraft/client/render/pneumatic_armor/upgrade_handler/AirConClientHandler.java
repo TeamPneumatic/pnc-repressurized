@@ -29,7 +29,7 @@ import me.desht.pneumaticcraft.client.render.pneumatic_armor.PneumaticHelmetRegi
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
 import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.AirConHandler;
 import net.minecraft.ChatFormatting;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
 
@@ -68,7 +68,7 @@ public class AirConClientHandler extends IArmorUpgradeClientHandler.SimpleToggle
                     + Strings.repeat("|", Math.abs(ac))
                     + ChatFormatting.DARK_GRAY
                     + Strings.repeat("|", MAX_AC - Math.abs(ac));
-            acStat.setTitle(new TextComponent("A/C: " + bar).withStyle(ChatFormatting.YELLOW));
+            acStat.setTitle(Component.literal("A/C: " + bar).withStyle(ChatFormatting.YELLOW));
             acStat.setBackgroundColor(ac < 0 ? 0x300080FF : (ac == 0 ? 0x3000AA00 : 0x30FFD000));
         }
     }
@@ -76,7 +76,7 @@ public class AirConClientHandler extends IArmorUpgradeClientHandler.SimpleToggle
     @Override
     public IGuiAnimatedStat getAnimatedStat() {
         if (acStat == null) {
-            acStat = PneumaticHelmetRegistry.getInstance().makeHUDStatPanel(TextComponent.EMPTY, ItemStack.EMPTY, this);
+            acStat = PneumaticHelmetRegistry.getInstance().makeHUDStatPanel(Component.empty(), ItemStack.EMPTY, this);
             acStat.setMinimumContractedDimensions(0, 0);
         }
         return acStat;

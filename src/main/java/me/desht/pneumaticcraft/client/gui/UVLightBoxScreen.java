@@ -28,7 +28,6 @@ import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.level.block.state.BlockState;
@@ -51,7 +50,7 @@ public class UVLightBoxScreen extends AbstractPneumaticCraftContainerScreen<UVLi
         super.init();
 
         addRenderableWidget(slider = new PNCForgeSlider(leftPos + 10, topPos + 45, 95, 16,
-                xlate("pneumaticcraft.gui.uv_light_box.threshold").append(" "), new TextComponent("%"),
+                xlate("pneumaticcraft.gui.uv_light_box.threshold").append(" "), Component.literal("%"),
                 1, 100, te.getThreshold(), true, slider -> sendDelayed(5)));
     }
 

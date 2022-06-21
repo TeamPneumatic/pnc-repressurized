@@ -40,8 +40,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
@@ -93,7 +91,7 @@ public class UniversalSensorScreen extends AbstractPneumaticCraftContainerScreen
         int xStart = (width - imageWidth) / 2;
         int yStart = (height - imageHeight) / 2;
 
-        sensorInfoStat = addAnimatedStat(new TextComponent("Sensor Info"), new ItemStack(ModBlocks.UNIVERSAL_SENSOR.get()), 0xFFFFAA00, false);
+        sensorInfoStat = addAnimatedStat(Component.literal("Sensor Info"), new ItemStack(ModBlocks.UNIVERSAL_SENSOR.get()), 0xFFFFAA00, false);
         sensorInfoStat.setForegroundColor(0xFF000000);
 
         textField = new WidgetTextField(font, xStart + 70, yStart + 58, 98, 10);
@@ -154,7 +152,7 @@ public class UniversalSensorScreen extends AbstractPneumaticCraftContainerScreen
             if (ClientUtils.isKeyDown(GLFW.GLFW_KEY_F1)) {
                 GuiUtils.showPopupHelpScreen(matrixStack, this, font, GuiUtils.xlateAndSplit("pneumaticcraft.gui.entityFilter.helpText"));
             } else if (!sensor.getHelpPromptText().isEmpty()) {
-                Component str = new TranslatableComponent(sensor.getHelpPromptText());
+                Component str = Component.translatable(sensor.getHelpPromptText());
                 font.draw(matrixStack, str, (imageWidth - font.width(str)) / 2f, imageHeight + 5, 0xFFFF00);
             }
         }
@@ -319,7 +317,7 @@ public class UniversalSensorScreen extends AbstractPneumaticCraftContainerScreen
         ISensorSetting sensor = SensorHandler.getInstance().getSensorFromPath(te.getSensorSetting());
         if (sensor != null) {
             String[] folders = te.getSensorSetting().split("/");
-            text.add(new TextComponent(folders[folders.length - 1]).withStyle(ChatFormatting.WHITE));
+            text.add(Component.literal(folders[folders.length - 1]).withStyle(ChatFormatting.WHITE));
             text.addAll(GuiUtils.xlateAndSplit(sensor.getDescription().get(0)));
         } else {
             text.add(xlate("pneumaticcraft.gui.misc.none").withStyle(ChatFormatting.BLACK));

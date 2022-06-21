@@ -22,10 +22,10 @@ import me.desht.pneumaticcraft.api.lib.NBTKeys;
 import me.desht.pneumaticcraft.api.semiblock.IDirectionalSemiblock;
 import me.desht.pneumaticcraft.api.semiblock.ISemiBlock;
 import me.desht.pneumaticcraft.api.semiblock.SemiblockEvent;
-import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.block.entity.IGUIButtonSensitive;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.semiblock.SemiblockTracker;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.BlockPos;
@@ -190,12 +190,12 @@ public abstract class AbstractSemiblockEntity extends Entity implements ISemiBlo
         }
     }
 
-    @Override
-    public float getBrightness() {
-        // cheat a bit here - semiblocks on solid blocks will render unlit otherwise
-        // instead we use the brightness at the top of the world (hoping there isn't a block there...)
-        return level.isClientSide ? ClientUtils.getBrightnessAtWorldHeight() : super.getBrightness();
-    }
+//    @Override
+//    public float getBrightness() {
+//        // cheat a bit here - semiblocks on solid blocks will render unlit otherwise
+//        // instead we use the brightness at the top of the world (hoping there isn't a block there...)
+//        return level.isClientSide ? ClientUtils.getBrightnessAtWorldHeight() : super.getBrightness();
+//    }
 
     /**
      * Get the blockstate at the semiblock's position
@@ -283,7 +283,7 @@ public abstract class AbstractSemiblockEntity extends Entity implements ISemiBlo
 
     @Override
     public ResourceLocation getSemiblockId() {
-        return getType().getRegistryName();
+        return PneumaticCraftUtils.getRegistryName(ForgeRegistries.ENTITIES, getType()).orElseThrow();
     }
 
     @Override

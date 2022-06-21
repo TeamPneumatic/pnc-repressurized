@@ -1,8 +1,8 @@
 {
   "type": "minecraft:stonecutting",
+  "count": 2,
   "ingredient": {
     "item": "pneumaticcraft:compressed_bricks"
   },
-  "result": "pneumaticcraft:compressed_brick_slab",
-  "count": 2
+  "result": "pneumaticcraft:compressed_brick_slab"
 }

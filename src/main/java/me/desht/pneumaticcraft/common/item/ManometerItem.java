@@ -32,7 +32,6 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
@@ -151,7 +150,7 @@ public class ManometerItem extends PressurizableItem {
                                             if (progress != 0) {
                                                 String key = "pneumaticcraft.waila.temperature" + (progress < 0 ? "Gain" : "Loss");
                                                 int pct = progress < 0 ? (int) (progress * -100) : (int) (progress * 100);
-                                                curInfo.add(new TranslatableComponent(key, pct));
+                                                curInfo.add(Component.translatable(key, pct));
                                             }
                                         }
                                 )

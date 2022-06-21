@@ -32,8 +32,8 @@ import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetItemFilter;
 import me.desht.pneumaticcraft.common.thirdparty.ModNameCache;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
 import net.minecraft.client.Minecraft;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -79,9 +79,9 @@ public class ProgWidgetItemFilterScreen extends AbstractProgWidgetScreen<ProgWid
 
         // buttons to open item & inv search when in item filter mode
         addRenderableWidget(itemLabel = new WidgetLabel(guiLeft + 8, guiTop + 55, xlate("pneumaticcraft.gui.progWidget.itemFilter.itemLabel").append(":")));
-        addRenderableWidget(itemSearchButton = new WidgetButtonExtended(guiLeft + itemLabel.getWidth() + 35, guiTop + 50, 20, 20, TextComponent.EMPTY,
+        addRenderableWidget(itemSearchButton = new WidgetButtonExtended(guiLeft + itemLabel.getWidth() + 35, guiTop + 50, 20, 20, Component.empty(),
                 b -> openSearcher()).setRenderStacks(new ItemStack(Items.COMPASS)).setTooltipKey("pneumaticcraft.gui.misc.searchItem"));
-        addRenderableWidget(invSearchButton = new WidgetButtonExtended(itemSearchButton.x + 25, guiTop + 50, 20, 20, TextComponent.EMPTY,
+        addRenderableWidget(invSearchButton = new WidgetButtonExtended(itemSearchButton.x + 25, guiTop + 50, 20, 20, Component.empty(),
                 b -> openInventorySearcher()).setRenderStacks(new ItemStack(Items.CHEST)).setTooltipKey("pneumaticcraft.gui.misc.searchInventory"));
 
         // variable dropdown when in variable filter mode
@@ -120,7 +120,7 @@ public class ProgWidgetItemFilterScreen extends AbstractProgWidgetScreen<ProgWid
     }
 
     private void openSearcher() {
-        ClientUtils.openContainerGui(ModMenuTypes.ITEM_SEARCHER.get(), new TextComponent("Search"));
+        ClientUtils.openContainerGui(ModMenuTypes.ITEM_SEARCHER.get(), Component.literal("Search"));
         if (minecraft.screen instanceof ItemSearcherScreen) {
             itemSearchGui = (ItemSearcherScreen) minecraft.screen;
             itemSearchGui.setSearchStack(progWidget.getFilter());
@@ -128,7 +128,7 @@ public class ProgWidgetItemFilterScreen extends AbstractProgWidgetScreen<ProgWid
     }
 
     private void openInventorySearcher() {
-        ClientUtils.openContainerGui(ModMenuTypes.INVENTORY_SEARCHER.get(), new TextComponent("Search"));
+        ClientUtils.openContainerGui(ModMenuTypes.INVENTORY_SEARCHER.get(), Component.literal("Search"));
         if (minecraft.screen instanceof InventorySearcherScreen) {
             invSearchGui = (InventorySearcherScreen) minecraft.screen;
             invSearchGui.setSearchStack(progWidget.getFilter());
@@ -158,7 +158,7 @@ public class ProgWidgetItemFilterScreen extends AbstractProgWidgetScreen<ProgWid
         checkBoxUseDurability.active = varRad.isChecked() || filter.getMaxDamage() > 0 && !checkBoxUseModSimilarity.checked;
         checkBoxUseNBT.active = varRad.isChecked() || !filter.isEmpty() && !checkBoxUseModSimilarity.checked && !checkBoxMatchBlock.checked;
         checkBoxUseModSimilarity.active = varRad.isChecked() || !filter.isEmpty() && !checkBoxMatchBlock.checked;
-        TranslatableComponent msg = xlate("pneumaticcraft.gui.logistics_frame.matchModId");
+        MutableComponent msg = xlate("pneumaticcraft.gui.logistics_frame.matchModId");
         String modName = StringUtils.abbreviate(ModNameCache.getModName(filter.getItem()), 22);
         checkBoxUseModSimilarity.setMessage(filter.isEmpty() ? msg : msg.append(" (" + modName + ")"));
         checkBoxMatchBlock.active = varRad.isChecked() || filter.getItem() instanceof BlockItem && !checkBoxUseNBT.checked && !checkBoxUseModSimilarity.checked;

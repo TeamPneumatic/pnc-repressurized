@@ -33,7 +33,7 @@ import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
@@ -77,7 +77,7 @@ public class AerialInterfaceScreen extends AbstractPneumaticCraftContainerScreen
                 WidgetAnimatedStat xpStat = addAnimatedStat(xlate("pneumaticcraft.gui.tab.info.aerialInterface.liquidXp.info.title"),
                         new ItemStack(Items.EXPERIENCE_BOTTLE), 0xFF55FF55, false);
                 xpStat.setText(getLiquidXPText()).setForegroundColor(0xFF000000);
-                xpButton = new WidgetButtonExtended(20, 15, 20, 20, TextComponent.EMPTY, b -> {
+                xpButton = new WidgetButtonExtended(20, 15, 20, 20, Component.empty(), b -> {
                     te.curXPFluidIndex++;
                     if (te.curXPFluidIndex >= availableXp.size()) {
                         te.curXPFluidIndex = -1;
@@ -145,10 +145,10 @@ public class AerialInterfaceScreen extends AbstractPneumaticCraftContainerScreen
         if (fluid != Fluids.EMPTY) {
             FluidStack fluidStack = new FluidStack(fluid, 1000);
             xpButton.setRenderStacks(FluidUtil.getFilledBucket(fluidStack));
-            String modName = ModNameCache.getModName(fluid.getRegistryName().getNamespace());
+            String modName = ModNameCache.getModName(fluid);
             xpButton.setTooltipText(ImmutableList.of(
                     fluidStack.getDisplayName(),
-                    new TextComponent(modName).withStyle(ChatFormatting.ITALIC, ChatFormatting.BLUE))
+                    Component.literal(modName).withStyle(ChatFormatting.ITALIC, ChatFormatting.BLUE))
             );
         } else {
             xpButton.setRenderStacks(new ItemStack(Items.BUCKET));
@@ -158,15 +158,15 @@ public class AerialInterfaceScreen extends AbstractPneumaticCraftContainerScreen
 
     private List<Component> getLiquidXPText() {
         List<Component> liquidXpText = new ArrayList<>(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.info.aerialInterface.liquidXp.info"));
-        liquidXpText.add(TextComponent.EMPTY);
+        liquidXpText.add(Component.empty());
         List<Fluid> availableXp = XPFluidManager.getInstance().getAvailableLiquidXPs();
         if (availableXp.isEmpty()) {
             liquidXpText.add(xlate("pneumaticcraft.gui.misc.none").withStyle(ChatFormatting.BLACK, ChatFormatting.ITALIC));
         } else {
-            for (Fluid f : availableXp) {
-                FluidStack stack = new FluidStack(f, 1000);
-                String modName = ModNameCache.getModName(f.getRegistryName().getNamespace());
-                TextComponent modNameText = new TextComponent(" (" + modName + ")");
+            for (Fluid fluid : availableXp) {
+                FluidStack stack = new FluidStack(fluid, 1000);
+                String modName = ModNameCache.getModName(fluid);
+                MutableComponent modNameText = Component.literal(" (" + modName + ")");
                 liquidXpText.add(Symbols.bullet().withStyle(ChatFormatting.BLACK)
                         .append(stack.getDisplayName().copy().withStyle(ChatFormatting.BLACK))
                         .append(modNameText.withStyle(ChatFormatting.DARK_BLUE))

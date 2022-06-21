@@ -20,9 +20,11 @@ package me.desht.pneumaticcraft.common.semiblock;
 import me.desht.pneumaticcraft.api.semiblock.IDirectionalSemiblock;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.entity.semiblock.AbstractSemiblockEntity;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -58,7 +60,8 @@ public class SemiblockItem extends Item {
      * @return the semiblock entity, not added to the world
      */
     public AbstractSemiblockEntity createEntity(Level world, ItemStack stack, Player player, BlockPos pos) {
-        EntityType<?> type = ForgeRegistries.ENTITIES.getValue(getRegistryName());
+        ResourceLocation regName = PneumaticCraftUtils.getRegistryName(this).orElseThrow();
+        EntityType<?> type = ForgeRegistries.ENTITIES.getValue(regName);
         if (type != null) {
             Entity e = type.create(world);
             if (e != null) {
@@ -102,7 +105,7 @@ public class SemiblockItem extends Item {
                 itemstack.shrink(1);
             }
         } else {
-            Log.warning("can't get entity for semiblock item " + getRegistryName());
+            Log.warning("can't get entity for semiblock item: " + this);
         }
         return InteractionResult.SUCCESS;
     }

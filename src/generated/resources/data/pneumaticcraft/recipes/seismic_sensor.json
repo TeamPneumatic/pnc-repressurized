@@ -1,13 +1,8 @@
 {
   "type": "minecraft:crafting_shaped",
-  "pattern": [
-    " T ",
-    "GRG",
-    "GCG"
-  ],
   "key": {
-    "T": {
-      "item": "minecraft:redstone_torch"
+    "C": {
+      "item": "minecraft:note_block"
     },
     "G": {
       "tag": "forge:glass"
@@ -15,10 +10,15 @@
     "R": {
       "item": "minecraft:repeater"
     },
-    "C": {
-      "item": "minecraft:note_block"
+    "T": {
+      "item": "minecraft:redstone_torch"
     }
   },
+  "pattern": [
+    " T ",
+    "GRG",
+    "GCG"
+  ],
   "result": {
     "item": "pneumaticcraft:seismic_sensor"
   }

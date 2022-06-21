@@ -1,18 +1,18 @@
 {
   "type": "minecraft:crafting_shaped",
+  "key": {
+    "R": {
+      "item": "pneumaticcraft:turbine_rotor"
+    },
+    "S": {
+      "item": "minecraft:hopper"
+    }
+  },
   "pattern": [
     " R ",
     "RSR",
     " R "
   ],
-  "key": {
-    "S": {
-      "item": "minecraft:hopper"
-    },
-    "R": {
-      "item": "pneumaticcraft:turbine_rotor"
-    }
-  },
   "result": {
     "item": "pneumaticcraft:collector_drone"
   }

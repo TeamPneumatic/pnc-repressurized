@@ -1,10 +1,5 @@
 {
   "type": "minecraft:crafting_shaped",
-  "pattern": [
-    "GRG",
-    "TRT",
-    "SSS"
-  ],
   "key": {
     "G": {
       "item": "pneumaticcraft:pressure_gauge"
@@ -12,13 +7,18 @@
     "R": {
       "item": "pneumaticcraft:turbine_rotor"
     },
-    "T": {
-      "item": "pneumaticcraft:pressure_tube"
-    },
     "S": {
       "item": "pneumaticcraft:reinforced_stone_slab"
+    },
+    "T": {
+      "item": "pneumaticcraft:pressure_tube"
     }
   },
+  "pattern": [
+    "GRG",
+    "TRT",
+    "SSS"
+  ],
   "result": {
     "item": "pneumaticcraft:vacuum_pump"
   }

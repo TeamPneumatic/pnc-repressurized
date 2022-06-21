@@ -6,18 +6,18 @@
     },
     {
       "type": "pneumaticcraft:stacked_item",
-      "item": "minecraft:rotten_flesh",
-      "count": 2
+      "count": 2,
+      "item": "minecraft:rotten_flesh"
     },
     {
       "type": "pneumaticcraft:stacked_item",
-      "item": "minecraft:spider_eye",
-      "count": 2
+      "count": 2,
+      "item": "minecraft:spider_eye"
     },
     {
       "type": "pneumaticcraft:stacked_item",
-      "tag": "forge:gunpowder",
-      "count": 2
+      "count": 2,
+      "tag": "forge:gunpowder"
     }
   ],
   "pressure": 1.0,

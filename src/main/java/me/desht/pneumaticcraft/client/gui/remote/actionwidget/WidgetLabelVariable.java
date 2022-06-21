@@ -23,7 +23,6 @@ import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.variables.TextVariableParser;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 
 public class WidgetLabelVariable extends WidgetLabel {
     private final TextVariableParser parser;
@@ -38,7 +37,7 @@ public class WidgetLabelVariable extends WidgetLabel {
     @Override
     public void renderButton(PoseStack matrixStack, int mouseX, int mouseY, float partialTick) {
         Component oldText = getMessage();
-        setMessage(new TextComponent(parser.parse()));
+        setMessage(Component.literal(parser.parse()));
         super.renderButton(matrixStack, mouseX, mouseY, partialTick);
         setMessage(oldText);
     }

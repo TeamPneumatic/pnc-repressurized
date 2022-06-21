@@ -1,26 +1,26 @@
 {
   "type": "minecraft:crafting_shaped",
-  "pattern": [
-    "PMP",
-    "DTD",
-    "PMP"
-  ],
   "key": {
+    "D": {
+      "tag": "forge:gems/diamond"
+    },
     "M": {
       "type": "forge:nbt",
-      "item": "pneumaticcraft:medium_tank",
-      "count": 1
+      "count": 1,
+      "item": "pneumaticcraft:medium_tank"
     },
     "P": {
       "tag": "pneumaticcraft:plastic_sheets"
-    },
-    "D": {
-      "tag": "forge:gems/diamond"
     },
     "T": {
       "item": "pneumaticcraft:advanced_pressure_tube"
     }
   },
+  "pattern": [
+    "PMP",
+    "DTD",
+    "PMP"
+  ],
   "result": {
     "item": "pneumaticcraft:large_tank"
   }

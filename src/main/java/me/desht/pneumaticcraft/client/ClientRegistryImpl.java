@@ -26,16 +26,18 @@ import me.desht.pneumaticcraft.client.render.pressure_gauge.PressureGaugeRendere
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.registries.IForgeRegistryEntry;
+import net.minecraft.world.level.ItemLike;
 
 import javax.annotation.Nonnull;
-import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class ClientRegistryImpl implements IClientRegistry {
 
     private static final ClientRegistryImpl INSTANCE = new ClientRegistryImpl();
-    public static final HashMap<ResourceLocation, IAssemblyRenderOverriding> renderOverrides = new HashMap<>();
+    private static final Map<Item, IAssemblyRenderOverriding> renderOverrides = new ConcurrentHashMap<>();
 
     private ClientRegistryImpl() {}
 
@@ -64,7 +66,11 @@ public class ClientRegistryImpl implements IClientRegistry {
     }
 
     @Override
-    public void registerRenderOverride(@Nonnull IForgeRegistryEntry<?> entry, @Nonnull IAssemblyRenderOverriding renderOverride) {
-        renderOverrides.put(entry.getRegistryName(), renderOverride);
+    public void registerRenderOverride(@Nonnull ItemLike entry, @Nonnull IAssemblyRenderOverriding renderOverride) {
+        renderOverrides.put(entry.asItem(), renderOverride);
+    }
+
+    public IAssemblyRenderOverriding getRenderOverride(ItemLike entry) {
+        return renderOverrides.get(entry.asItem());
     }
 }

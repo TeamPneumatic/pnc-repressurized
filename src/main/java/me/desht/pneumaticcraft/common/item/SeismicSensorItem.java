@@ -17,12 +17,12 @@
 
 package me.desht.pneumaticcraft.common.item;
 
-import me.desht.pneumaticcraft.common.PneumaticCraftTags;
+import me.desht.pneumaticcraft.api.data.PneumaticCraftTags;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionResult;
@@ -57,9 +57,9 @@ public class SeismicSensorItem extends Item {
                 if (fluid != null) {
                     Set<BlockPos> fluidPositions = findLake(world, searchPos.immutable(), fluid);
                     int count = Math.max(1, fluidPositions.size() / 10 * 10);
-                    player.displayClientMessage(new TranslatableComponent(
+                    player.displayClientMessage(Component.translatable(
                             "pneumaticcraft.message.seismicSensor.foundOilDetails",
-                            new TranslatableComponent(fluid.getAttributes().getTranslationKey()),
+                            Component.translatable(fluid.getFluidType().getDescriptionId()),
                             ChatFormatting.GREEN.toString() + (ctx.getClickedPos().getY() - searchPos.getY()),
                             ChatFormatting.GREEN.toString() + count),
                             false);
@@ -67,7 +67,7 @@ public class SeismicSensorItem extends Item {
                     return InteractionResult.SUCCESS;
                 }
             }
-            player.displayClientMessage(new TranslatableComponent("pneumaticcraft.message.seismicSensor.noOilFound"), false);
+            player.displayClientMessage(Component.translatable("pneumaticcraft.message.seismicSensor.noOilFound"), false);
         }
         return InteractionResult.SUCCESS; // we don't want to use the item.
     }

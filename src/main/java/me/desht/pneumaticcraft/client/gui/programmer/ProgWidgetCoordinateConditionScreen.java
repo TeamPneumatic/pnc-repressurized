@@ -24,7 +24,7 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetRadioButton;
 import me.desht.pneumaticcraft.common.progwidgets.ICondition.Operator;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetCoordinateCondition;
 import net.minecraft.core.Direction;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.Component;
 
 public class ProgWidgetCoordinateConditionScreen extends AbstractProgWidgetScreen<ProgWidgetCoordinateCondition> {
 
@@ -38,7 +38,7 @@ public class ProgWidgetCoordinateConditionScreen extends AbstractProgWidgetScree
 
         for (Direction.Axis axis : Direction.Axis.values()) {
             WidgetCheckBox checkBox = new WidgetCheckBox(guiLeft + 10, guiTop + 30 + axis.ordinal() * 12, 0xFF404040,
-                    new TextComponent(axis.getName()), b -> progWidget.getAxisOptions().setCheck(axis, b.checked));
+                    Component.literal(axis.getName()), b -> progWidget.getAxisOptions().setCheck(axis, b.checked));
             addRenderableWidget(checkBox);
             checkBox.setChecked(progWidget.getAxisOptions().shouldCheck(axis));
         }
@@ -46,7 +46,7 @@ public class ProgWidgetCoordinateConditionScreen extends AbstractProgWidgetScree
         WidgetRadioButton.Builder<WidgetRadioButton> builder = WidgetRadioButton.Builder.create();
         for (Operator op : Operator.values()) {
             builder.addRadioButton(new WidgetRadioButton(guiLeft + 80, guiTop + 30 + op.ordinal() * 12, 0xFF404040,
-                            new TextComponent(op.toString()), b -> progWidget.setOperator(op)),
+                            Component.literal(op.toString()), b -> progWidget.setOperator(op)),
                     progWidget.getOperator() == op);
         }
         builder.build(this::addRenderableWidget);

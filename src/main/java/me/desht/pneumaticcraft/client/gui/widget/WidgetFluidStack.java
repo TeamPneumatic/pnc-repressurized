@@ -24,7 +24,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraftforge.fluids.FluidStack;
 
 import java.util.List;
@@ -98,7 +97,7 @@ public class WidgetFluidStack extends WidgetFluidFilter {
         if (!fluidStack.isEmpty()) {
             curTip.add(new FluidStack(fluidStack, 1).getDisplayName());
             curTip.add(xlate("pneumaticcraft.message.misc.fluidmB", fluidStack.getAmount()).withStyle(ChatFormatting.GRAY));
-            curTip.add(new TextComponent(ModNameCache.getModName(fluidStack.getFluid()))
+            curTip.add(Component.literal(ModNameCache.getModName(fluidStack.getFluid()))
                     .withStyle(ChatFormatting.BLUE,  ChatFormatting.ITALIC));
         }
     }

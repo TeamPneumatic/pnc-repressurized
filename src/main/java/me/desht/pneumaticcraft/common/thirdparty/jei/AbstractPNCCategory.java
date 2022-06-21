@@ -25,7 +25,6 @@ import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 
 import java.util.Collections;
 import java.util.List;
@@ -64,15 +63,15 @@ public abstract class AbstractPNCCategory<T> implements IRecipeCategory<T> {
         return type;
     }
 
-    @Override
-    public ResourceLocation getUid() {
-        return type.getUid();
-    }
-
-    @Override
-    public Class<? extends T> getRecipeClass() {
-        return type.getRecipeClass();
-    }
+//    @Override
+//    public ResourceLocation getUid() {
+//        return type.getUid();
+//    }
+//
+//    @Override
+//    public Class<? extends T> getRecipeClass() {
+//        return type.getRecipeClass();
+//    }
 
     static IGuiHelper guiHelper() {
         return JEIPlugin.jeiHelpers.getGuiHelper();

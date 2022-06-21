@@ -18,9 +18,9 @@
 package me.desht.pneumaticcraft.common.event;
 
 import me.desht.pneumaticcraft.api.PNCCapabilities;
+import me.desht.pneumaticcraft.api.data.PneumaticCraftTags;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
-import me.desht.pneumaticcraft.common.PneumaticCraftTags;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.core.ModUpgrades;
@@ -37,7 +37,7 @@ import me.desht.pneumaticcraft.common.pneumatic_armor.JetBootsStateTracker.JetBo
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -316,7 +316,7 @@ public class PneumaticArmorHandler {
         Map<String, Integer> map = targetWarnings.get(player.getUUID());
         if (map != null) {
             map.forEach((name, count) -> {
-                TranslatableComponent msg = xlate("pneumaticcraft.armor.message.targetWarning", name);
+                MutableComponent msg = xlate("pneumaticcraft.armor.message.targetWarning", name);
                 if (count > 1) msg.append(" (x" + count + ")");
                 NetworkHandler.sendToPlayer(new PacketSendArmorHUDMessage(msg, 60, 0x70FF4000), player);
             });
@@ -326,7 +326,6 @@ public class PneumaticArmorHandler {
 
     @SubscribeEvent
     public void onArmorRepair(AnvilUpdateEvent event) {
-
         if (event.getLeft().getItem() instanceof PneumaticArmorItem
                 && new ItemStack(event.getLeft().getItem()).is(PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON))
         {

@@ -6,15 +6,15 @@
     },
     {
       "type": "pneumaticcraft:stacked_item",
-      "tag": "forge:dyes/green",
-      "count": 4
+      "count": 4,
+      "tag": "forge:dyes/green"
     }
   ],
   "pressure": 1.0,
   "results": [
     {
-      "item": "minecraft:slime_ball",
-      "count": 4
+      "count": 4,
+      "item": "minecraft:slime_ball"
     },
     {
       "item": "minecraft:bucket"

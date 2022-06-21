@@ -39,7 +39,6 @@ import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.player.Inventory;
@@ -163,7 +162,7 @@ public class SecurityStationHackingScreen extends AbstractPneumaticCraftContaine
                 ImmutableList.Builder<Component> builder = ImmutableList.builder();
                 builder.add(xlate("pneumaticcraft.message.securityStation.hackFailed.1").withStyle(ChatFormatting.RED));
                 if (!te.getSimulationController().isJustTesting()) {
-                    builder.add(TextComponent.EMPTY);
+                    builder.add(Component.empty());
                     builder.add(xlate("pneumaticcraft.message.securityStation.hackFailed.2").withStyle(ChatFormatting.RED));
                 }
                 GuiUtils.showPopupHelpScreen(matrixStack, this, font, builder.build());
@@ -171,7 +170,7 @@ public class SecurityStationHackingScreen extends AbstractPneumaticCraftContaine
                 ImmutableList.Builder<Component> builder = ImmutableList.builder();
                 builder.add(xlate("pneumaticcraft.message.securityStation.hackSucceeded.1").withStyle(ChatFormatting.GREEN));
                 if (!te.getSimulationController().isJustTesting()) {
-                    builder.add(TextComponent.EMPTY);
+                    builder.add(Component.empty());
                     builder.add(xlate("pneumaticcraft.message.securityStation.hackSucceeded.2").withStyle(ChatFormatting.GREEN));
                 }
                 GuiUtils.showPopupHelpScreen(matrixStack, this, font, builder.build());
@@ -244,9 +243,9 @@ public class SecurityStationHackingScreen extends AbstractPneumaticCraftContaine
     private List<Component> getStatusText() {
         List<Component> text = new ArrayList<>();
         text.add(xlate("pneumaticcraft.gui.tab.status.securityStation.securityLevel").withStyle(ChatFormatting.WHITE));
-        text.add(new TextComponent("L" + te.getSecurityLevel()).withStyle(ChatFormatting.BLACK));
+        text.add(Component.literal("L" + te.getSecurityLevel()).withStyle(ChatFormatting.BLACK));
         text.add(xlate("pneumaticcraft.gui.tab.status.securityStation.securityRange").withStyle(ChatFormatting.WHITE));
-        text.add(new TextComponent((te.getRange() * 2 + 1) + "m²").withStyle(ChatFormatting.BLACK));
+        text.add(Component.literal((te.getRange() * 2 + 1) + "m²").withStyle(ChatFormatting.BLACK));
         return text;
     }
 

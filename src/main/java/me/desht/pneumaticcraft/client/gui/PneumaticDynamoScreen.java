@@ -28,7 +28,6 @@ import me.desht.pneumaticcraft.common.inventory.PneumaticDynamoMenu;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraftforge.energy.CapabilityEnergy;
@@ -49,7 +48,7 @@ public class PneumaticDynamoScreen extends AbstractPneumaticCraftContainerScreen
     @Override
     public void init() {
         super.init();
-        inputStat = addAnimatedStat(new TextComponent("Output"), Textures.GUI_BUILDCRAFT_ENERGY, 0xFF555555, false);
+        inputStat = addAnimatedStat(Component.literal("Output"), Textures.GUI_BUILDCRAFT_ENERGY, 0xFF555555, false);
 
         te.getCapability(CapabilityEnergy.ENERGY).ifPresent(storage -> addRenderableWidget(new WidgetEnergy(leftPos + 20, topPos + 20, storage)));
         addRenderableWidget(tempWidget = new WidgetTemperature(leftPos + 97, topPos + 20, TemperatureRange.of(273, 673), 273, 50)
@@ -73,11 +72,11 @@ public class PneumaticDynamoScreen extends AbstractPneumaticCraftContainerScreen
     private List<Component> getOutputStat() {
         List<Component> textList = new ArrayList<>();
         textList.add(xlate("pneumaticcraft.gui.tab.status.pneumaticDynamo.maxEnergyProduction").withStyle(ChatFormatting.GRAY));
-        textList.add(new TextComponent(te.getRFRate() + " FE/t").withStyle(ChatFormatting.BLACK));
+        textList.add(Component.literal(te.getRFRate() + " FE/t").withStyle(ChatFormatting.BLACK));
         textList.add(xlate("pneumaticcraft.gui.tab.status.pneumaticDynamo.maxOutputRate").withStyle(ChatFormatting.GRAY));
-        textList.add(new TextComponent(te.getRFRate() * 2 + " FE/t").withStyle(ChatFormatting.BLACK));
+        textList.add(Component.literal(te.getRFRate() * 2 + " FE/t").withStyle(ChatFormatting.BLACK));
         textList.add(xlate("pneumaticcraft.gui.tab.status.fluxCompressor.storedEnergy").withStyle(ChatFormatting.GRAY));
-        textList.add(new TextComponent(te.getInfoEnergyStored() + " FE").withStyle(ChatFormatting.BLACK));
+        textList.add(Component.literal(te.getInfoEnergyStored() + " FE").withStyle(ChatFormatting.BLACK));
         return textList;
     }
 

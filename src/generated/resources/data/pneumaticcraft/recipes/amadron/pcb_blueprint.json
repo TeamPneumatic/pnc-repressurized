@@ -3,14 +3,14 @@
   "id": "pneumaticcraft:amadron/pcb_blueprint",
   "input": {
     "type": "ITEM",
-    "id": "minecraft:emerald",
-    "amount": 8
+    "amount": 8,
+    "id": "minecraft:emerald"
   },
+  "level": 0,
   "output": {
     "type": "ITEM",
-    "id": "pneumaticcraft:pcb_blueprint",
-    "amount": 1
+    "amount": 1,
+    "id": "pneumaticcraft:pcb_blueprint"
   },
-  "static": true,
-  "level": 0
+  "static": true
 }

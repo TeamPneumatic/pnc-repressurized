@@ -27,24 +27,26 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
-import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.phys.AABB;
+import net.minecraftforge.client.IFluidTypeRenderProperties;
+import net.minecraftforge.client.RenderProperties;
 import net.minecraftforge.fluids.IFluidTank;
 
 import java.util.Collection;
 
 public abstract class AbstractFluidTER<T extends AbstractPneumaticCraftBlockEntity> implements BlockEntityRenderer<T> {
-    AbstractFluidTER(BlockEntityRendererProvider.Context ctx) {
+    AbstractFluidTER(@SuppressWarnings("unused") BlockEntityRendererProvider.Context ctx) {
     }
 
     @Override
     public void render(T te, float partialTicks, PoseStack matrixStack, MultiBufferSource buffer, int combinedLightIn, int combinedOverlayIn) {
         if (te.nonNullLevel().isLoaded(te.getBlockPos())) {
-            VertexConsumer builder = buffer.getBuffer(RenderType.entityTranslucentCull(TextureAtlas.LOCATION_BLOCKS));
+            VertexConsumer builder = buffer.getBuffer(RenderType.entityTranslucentCull(InventoryMenu.BLOCK_ATLAS));
 
             Matrix4f posMat = matrixStack.last().pose();
             for (TankRenderInfo tankRenderInfo : getTanksToRender(te)) {
@@ -58,10 +60,10 @@ public abstract class AbstractFluidTER<T extends AbstractPneumaticCraftBlockEnti
         if (tank.getFluidAmount() == 0) return;
 
         Fluid fluid = tank.getFluid().getFluid();
-        ResourceLocation texture = fluid.getAttributes().getStillTexture(tank.getFluid());
-        //noinspection deprecation
-        TextureAtlasSprite still = Minecraft.getInstance().getTextureAtlas(TextureAtlas.LOCATION_BLOCKS).apply(texture);
-        int[] cols = RenderUtils.decomposeColor(fluid.getAttributes().getColor(tank.getFluid()));
+        IFluidTypeRenderProperties renderProps = RenderProperties.get(fluid);
+        ResourceLocation texture = renderProps.getStillTexture(tank.getFluid());
+        TextureAtlasSprite still = Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(texture);
+        int[] cols = RenderUtils.decomposeColor(renderProps.getColorTint(tank.getFluid()));
 
         AABB bounds = getRenderBounds(tank, tankRenderInfo.getBounds());
         float x1 = (float) bounds.minX;
@@ -149,7 +151,7 @@ public abstract class AbstractFluidTER<T extends AbstractPneumaticCraftBlockEnti
 
         double tankHeight = tankBounds.maxY - tankBounds.minY;
         double y1 = tankBounds.minY, y2 = (tankBounds.minY + (tankHeight * percent));
-        if (tank.getFluid().getFluid().getAttributes().isLighterThanAir()) {
+        if (tank.getFluid().getFluid().getFluidType().isLighterThanAir()) {
             double yOff = tankBounds.maxY - y2;  // lighter than air fluids move to the top of the tank
             y1 += yOff; y2 += yOff;
         }

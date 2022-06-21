@@ -4,8 +4,8 @@
     {
       "conditions": [
         {
-          "modid": "theoneprobe",
-          "type": "forge:mod_loaded"
+          "type": "forge:mod_loaded",
+          "modid": "theoneprobe"
         }
       ],
       "recipe": {

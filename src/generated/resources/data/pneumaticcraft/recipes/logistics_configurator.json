@@ -1,24 +1,24 @@
 {
   "type": "pneumaticcraft:crafting_shaped_pressurizable",
-  "pattern": [
-    "IDI",
-    "C  ",
-    "ILI"
-  ],
   "key": {
-    "I": {
-      "tag": "forge:ingots/compressed_iron"
+    "C": {
+      "item": "pneumaticcraft:air_canister"
     },
     "D": {
       "tag": "forge:dyes/red"
     },
-    "C": {
-      "item": "pneumaticcraft:air_canister"
+    "I": {
+      "tag": "forge:ingots/compressed_iron"
     },
     "L": {
       "item": "minecraft:lever"
     }
   },
+  "pattern": [
+    "IDI",
+    "C  ",
+    "ILI"
+  ],
   "result": {
     "item": "pneumaticcraft:logistics_configurator"
   }

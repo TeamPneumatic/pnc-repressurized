@@ -15,7 +15,7 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 public class ModUpgrades {
     public static final DeferredRegister<PNCUpgrade> UPGRADES_DEFERRED = DeferredRegister.create(RL("upgrades"), Names.MOD_ID);
     public static final Supplier<IForgeRegistry<PNCUpgrade>> UPGRADES = UPGRADES_DEFERRED
-            .makeRegistry(PNCUpgrade.class, () -> new RegistryBuilder<PNCUpgrade>().disableSaving().disableSync());
+            .makeRegistry(() -> new RegistryBuilder<PNCUpgrade>().disableSaving().disableSync());
 
     public static final RegistryObject<PNCUpgrade> VOLUME = register(BuiltinUpgrade.VOLUME);
     public static final RegistryObject<PNCUpgrade> DISPENSER = register(BuiltinUpgrade.DISPENSER);

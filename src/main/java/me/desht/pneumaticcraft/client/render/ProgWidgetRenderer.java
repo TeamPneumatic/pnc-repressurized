@@ -32,7 +32,6 @@ import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.item.ItemStack;
 import org.apache.commons.lang3.tuple.Pair;
@@ -47,8 +46,8 @@ import static me.desht.pneumaticcraft.client.util.RenderUtils.FULL_BRIGHT;
 import static me.desht.pneumaticcraft.client.util.RenderUtils.renderWithTypeAndFinish;
 
 public class ProgWidgetRenderer {
-    private static final Map<ResourceLocation, Consumer<IProgWidget>> ITEM_RENDERERS = new HashMap<>();
-    private static final Map<ResourceLocation, BiConsumer<PoseStack, IProgWidget>> EXTRA_RENDERERS = new HashMap<>();
+    private static final Map<ProgWidgetType<?>, Consumer<IProgWidget>> ITEM_RENDERERS = new HashMap<>();
+    private static final Map<ProgWidgetType<?>, BiConsumer<PoseStack, IProgWidget>> EXTRA_RENDERERS = new HashMap<>();
 
     /**
      * Render a progwidget into a GUI.  Do not use for in-world rendering
@@ -102,19 +101,19 @@ public class ProgWidgetRenderer {
     }
 
     public static void doExtraRendering2d(PoseStack matrixStack, IProgWidget widget) {
-        EXTRA_RENDERERS.getOrDefault(widget.getTypeID(), ProgWidgetRenderer::renderGenericExtras).accept(matrixStack, widget);
+        EXTRA_RENDERERS.getOrDefault(widget.getType(), ProgWidgetRenderer::renderGenericExtras).accept(matrixStack, widget);
     }
 
     public static void doItemRendering2d(IProgWidget widget) {
-        ITEM_RENDERERS.getOrDefault(widget.getTypeID(), w -> {}).accept(widget);
+        ITEM_RENDERERS.getOrDefault(widget.getType(), w -> {}).accept(widget);
     }
 
     public static <P extends IProgWidget> void registerExtraRenderer(ProgWidgetType<P> type, BiConsumer<PoseStack, P> consumer) {
-        EXTRA_RENDERERS.put(type.getRegistryName(), (BiConsumer<PoseStack, IProgWidget>) consumer);
+        EXTRA_RENDERERS.put(type, (BiConsumer<PoseStack, IProgWidget>) consumer);
     }
 
     public static <P extends IProgWidget> void registerItemRenderer(ProgWidgetType<P> type, Consumer<P> consumer) {
-        ITEM_RENDERERS.put(type.getRegistryName(), (Consumer<IProgWidget>) consumer);
+        ITEM_RENDERERS.put(type, (Consumer<IProgWidget>) consumer);
     }
 
     /**

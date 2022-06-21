@@ -23,19 +23,14 @@ import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.LazyOptional;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 class IEHeatHandler {
-    public static class Impl implements ExternalHeaterHandler.IExternalHeatable {
-        private final BlockEntity blockEntity;
-
-        public Impl(BlockEntity blockEntity) {
-            this.blockEntity = blockEntity;
-        }
-
+    public record Impl(BlockEntity blockEntity) implements ExternalHeaterHandler.IExternalHeatable {
         @Override
         public int doHeatTick(int energyAvailable, boolean redstone) {
             return blockEntity.getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY).map(handler -> {
@@ -50,7 +45,7 @@ class IEHeatHandler {
         }
     }
 
-    public static class Provider implements net.minecraftforge.common.capabilities.ICapabilityProvider {
+    public static class Provider implements ICapabilityProvider {
         private final Impl impl;
         private final LazyOptional<ExternalHeaterHandler.IExternalHeatable> lazy;
 

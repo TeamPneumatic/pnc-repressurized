@@ -25,7 +25,7 @@ import me.desht.pneumaticcraft.client.render.ModRenderTypes;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 
 import java.util.ArrayList;
@@ -182,7 +182,7 @@ public class PressureGaugeRenderer3D {
                 matrixStack.pushPose();
                 matrixStack.translate(xPos + scaler.x() - 1.5, yPos + scaler.y() - 1.5, 0);
                 matrixStack.scale(0.5f, 0.5f, 1f);
-                RenderUtils.renderString3d(new TextComponent(Integer.toString(scaler.pressure())), 0, 0, fgColor, matrixStack, buffer, false, false);
+                RenderUtils.renderString3d(Component.literal(Integer.toString(scaler.pressure())), 0, 0, fgColor, matrixStack, buffer, false, false);
                 matrixStack.popPose();
             }
         }

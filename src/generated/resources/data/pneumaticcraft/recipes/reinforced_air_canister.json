@@ -1,21 +1,21 @@
 {
   "type": "minecraft:crafting_shaped",
-  "pattern": [
-    " T ",
-    "ICI",
-    "III"
-  ],
   "key": {
-    "T": {
-      "item": "pneumaticcraft:advanced_pressure_tube"
-    },
     "C": {
       "item": "pneumaticcraft:air_canister"
     },
     "I": {
       "tag": "forge:ingots/compressed_iron"
+    },
+    "T": {
+      "item": "pneumaticcraft:advanced_pressure_tube"
     }
   },
+  "pattern": [
+    " T ",
+    "ICI",
+    "III"
+  ],
   "result": {
     "item": "pneumaticcraft:reinforced_air_canister"
   }

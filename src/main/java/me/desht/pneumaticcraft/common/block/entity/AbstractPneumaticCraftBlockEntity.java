@@ -44,7 +44,6 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Nameable;
 import net.minecraft.world.entity.player.Player;
@@ -66,6 +65,7 @@ import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -105,12 +105,12 @@ public abstract class AbstractPneumaticCraftBlockEntity extends BlockEntity
     }
 
     private String getBlockTranslationKey() {
-        return "block.pneumaticcraft." + getType().getRegistryName().getPath();
+        return "block.pneumaticcraft." + ForgeRegistries.BLOCK_ENTITIES.getResourceKey(getType()).map(rk -> rk.location().getPath()).orElse("unknown");
     }
 
     @Override
     public Component getName() {
-        return customName == null ? new TranslatableComponent(getBlockTranslationKey()) : customName;
+        return customName == null ? Component.translatable(getBlockTranslationKey()) : customName;
     }
 
     @Nullable
@@ -499,7 +499,7 @@ public abstract class AbstractPneumaticCraftBlockEntity extends BlockEntity
 
     @Override
     public String getPeripheralType() {
-        return getType().getRegistryName().toString();
+        return ForgeRegistries.BLOCK_ENTITIES.getResourceKey(getType()).map(rk -> rk.location().toString()).orElse("unknown");
     }
 
     public abstract IItemHandler getPrimaryInventory();

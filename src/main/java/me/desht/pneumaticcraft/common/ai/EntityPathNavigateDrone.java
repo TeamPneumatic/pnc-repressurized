@@ -30,6 +30,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.navigation.FlyingPathNavigation;
@@ -43,7 +44,6 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 import javax.annotation.Nullable;
-import java.util.Random;
 
 public class EntityPathNavigateDrone extends FlyingPathNavigation implements IPathNavigator {
     private final DroneEntity droneEntity;
@@ -169,7 +169,7 @@ public class EntityPathNavigateDrone extends FlyingPathNavigation implements IPa
             }
 
             if (teleportCounter < TELEPORT_TICKS - 40) {
-                Random rand = droneEntity.getRandom();
+                RandomSource rand = droneEntity.getRandom();
                 float f = (rand.nextFloat() - 0.5F) * 0.02F * teleportCounter;
                 float f1 = (rand.nextFloat() - 0.5F) * 0.02F * teleportCounter;
                 float f2 = (rand.nextFloat() - 0.5F) * 0.02F * teleportCounter;

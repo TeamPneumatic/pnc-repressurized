@@ -22,8 +22,8 @@ import com.mojang.datafixers.util.Pair;
 import me.desht.pneumaticcraft.common.block.PneumaticCraftEntityBlock;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.loot.CustomDungeonLootProvider;
+import me.desht.pneumaticcraft.common.loot.LootFunc;
 import me.desht.pneumaticcraft.common.loot.MechanicVillagerChestLootProvider;
-import me.desht.pneumaticcraft.common.loot.ModLootFunctions;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.loot.BlockLoot;
 import net.minecraft.data.loot.LootTableProvider;
@@ -75,8 +75,8 @@ public class ModLootTablesProvider extends LootTableProvider {
         protected void addTables() {
             for (RegistryObject<Block> ro: ModBlocks.BLOCKS.getEntries()) {
                 Block b = ro.get();
-                if (b instanceof PneumaticCraftEntityBlock && ForgeRegistries.ITEMS.containsKey(b.getRegistryName())) {
-                    addStandardSerializedDrop(b);
+                if (b instanceof PneumaticCraftEntityBlock && ForgeRegistries.ITEMS.containsKey(ro.getId())) {
+                    addStandardSerializedDrop(b, ro.getId());
                 } else if (b instanceof SlabBlock) {
                     add(b, BlockLoot::createSlabItemTable);
                 } else if (b.asItem() != Items.AIR) {
@@ -89,21 +89,21 @@ public class ModLootTablesProvider extends LootTableProvider {
         protected Iterable<Block> getKnownBlocks() {
             List<Block> l = new ArrayList<>();
             for (RegistryObject<Block> ro: ModBlocks.BLOCKS.getEntries()) {
-                if (ForgeRegistries.ITEMS.containsKey(ro.get().getRegistryName())) {
+                if (ForgeRegistries.ITEMS.containsKey(ro.getId())) {
                     l.add(ro.get());
                 }
             }
             return l;
         }
 
-        private void addStandardSerializedDrop(Block block) {
+        private void addStandardSerializedDrop(Block block, ResourceLocation blockId) {
             LootPool.Builder builder = LootPool.lootPool()
-                    .name(block.getRegistryName().getPath())
+                    .name(blockId.getPath())
                     .when(ExplosionCondition.survivesExplosion())
                     .setRolls(ConstantValue.exactly(1))
                     .add(LootItem.lootTableItem(block)
                             .apply(CopyNameFunction.copyName(CopyNameFunction.NameSource.BLOCK_ENTITY))
-                            .apply(ModLootFunctions.BlockEntitySerializerFunction.builder()));
+                            .apply(LootFunc.BlockEntitySerializerFunction.builder()));
             add(block, LootTable.lootTable().withPool(builder));
         }
 

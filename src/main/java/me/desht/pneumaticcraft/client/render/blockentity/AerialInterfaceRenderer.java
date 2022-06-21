@@ -18,7 +18,7 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.resources.DefaultPlayerSkin;
 import net.minecraft.client.resources.SkinManager;
 import net.minecraft.core.Direction;
-import net.minecraft.world.entity.player.Player;
+import net.minecraft.core.UUIDUtil;
 
 import java.util.Map;
 
@@ -41,7 +41,7 @@ public class AerialInterfaceRenderer implements BlockEntityRenderer<AerialInterf
             Map<Type, MinecraftProfileTexture> map = skinManager.getInsecureSkinInformation(gameProfile);
             RenderType renderType = map.containsKey(Type.SKIN) ?
                     RenderType.entityTranslucent(skinManager.registerTexture(map.get(Type.SKIN), Type.SKIN)) :
-                    RenderType.entityCutoutNoCull(DefaultPlayerSkin.getDefaultSkin(Player.createPlayerUUID(gameProfile)));
+                    RenderType.entityCutoutNoCull(DefaultPlayerSkin.getDefaultSkin(UUIDUtil.getOrCreatePlayerUUID(gameProfile)));
             matrixStackIn.pushPose();
             matrixStackIn.translate(0.5 + dir.getStepX() * 0.25, 0.5D + (0.25 + EXTRUSION), 0.5 + dir.getStepZ() * 0.25);
             matrixStackIn.scale(-1.0F, -1.0F, 1.0F);

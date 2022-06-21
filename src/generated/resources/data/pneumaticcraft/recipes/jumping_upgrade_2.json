@@ -1,23 +1,23 @@
 {
   "type": "minecraft:crafting_shaped",
-  "pattern": [
-    "PCP",
-    "SUS"
-  ],
   "key": {
-    "U": {
-      "item": "pneumaticcraft:jumping_upgrade_1"
-    },
-    "S": {
-      "item": "minecraft:slime_block"
+    "C": {
+      "item": "pneumaticcraft:pneumatic_cylinder"
     },
     "P": {
       "item": "minecraft:piston"
     },
-    "C": {
-      "item": "pneumaticcraft:pneumatic_cylinder"
+    "S": {
+      "item": "minecraft:slime_block"
+    },
+    "U": {
+      "item": "pneumaticcraft:jumping_upgrade_1"
     }
   },
+  "pattern": [
+    "PCP",
+    "SUS"
+  ],
   "result": {
     "item": "pneumaticcraft:jumping_upgrade_2"
   }

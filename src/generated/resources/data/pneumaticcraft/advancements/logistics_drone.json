@@ -1,33 +1,33 @@
 {
   "parent": "pneumaticcraft:logistics_configurator",
+  "criteria": {
+    "0": {
+      "conditions": {},
+      "trigger": "pneumaticcraft:logistics_drone_deployed"
+    }
+  },
   "display": {
-    "icon": {
-      "item": "pneumaticcraft:logistics_drone"
-    },
-    "title": {
-      "translate": "pneumaticcraft.advancement.logistics_drone"
-    },
+    "announce_to_chat": true,
+    "background": "pneumaticcraft:textures/gui/advancement_bg.png",
     "description": {
       "translate": "pneumaticcraft.advancement.logistics_drone.desc"
     },
     "frame": "goal",
-    "show_toast": true,
-    "announce_to_chat": true,
     "hidden": false,
-    "background": "pneumaticcraft:textures/gui/advancement_bg.png"
-  },
-  "rewards": {
-    "experience": 10
-  },
-  "criteria": {
-    "0": {
-      "trigger": "pneumaticcraft:logistics_drone_deployed",
-      "conditions": {}
+    "icon": {
+      "item": "pneumaticcraft:logistics_drone"
+    },
+    "show_toast": true,
+    "title": {
+      "translate": "pneumaticcraft.advancement.logistics_drone"
     }
   },
   "requirements": [
     [
       "0"
     ]
-  ]
+  ],
+  "rewards": {
+    "experience": 10
+  }
 }

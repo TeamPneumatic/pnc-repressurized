@@ -26,7 +26,6 @@ import me.desht.pneumaticcraft.common.network.PacketProgrammerUpdate;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 
@@ -37,7 +36,7 @@ public abstract class AbstractProgWidgetScreen<P extends IProgWidget> extends Ab
     protected final ProgrammerScreen guiProgrammer;
 
     AbstractProgWidgetScreen(P progWidget, ProgrammerScreen guiProgrammer) {
-        super(new TranslatableComponent(progWidget.getTranslationKey()));
+        super(Component.translatable(progWidget.getTranslationKey()));
 
         this.progWidget = progWidget;
         this.guiProgrammer = guiProgrammer;

@@ -20,7 +20,7 @@ package me.desht.pneumaticcraft.client.gui.widget;
 import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.client.renderer.Rect2i;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.DyeColor;
 
 import java.util.function.Consumer;
@@ -37,7 +37,7 @@ public class WidgetColorSelector extends WidgetButtonExtended implements IDrawAf
     }
 
     public WidgetColorSelector(int xIn, int yIn, Consumer<WidgetColorSelector> callback) {
-        super(xIn, yIn, 16, 16, TextComponent.EMPTY);
+        super(xIn, yIn, 16, 16, Component.empty());
 
         mainArea = new Rect2i(xIn, yIn, width, height);
         expandedArea = new Rect2i(xIn, yIn + height, width * 4, height * 4);

@@ -19,6 +19,7 @@ package me.desht.pneumaticcraft.common.recipes;
 
 import com.google.gson.*;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.nbt.TagParser;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
@@ -56,7 +57,7 @@ public class ModCraftingHelper {
 
     public static JsonObject fluidStackToJson(FluidStack f) {
         JsonObject json = new JsonObject();
-        json.addProperty("fluid", f.getFluid().getRegistryName().toString());
+        json.addProperty("fluid", PneumaticCraftUtils.getRegistryName(f.getFluid()).orElseThrow().toString());
         json.addProperty("amount", f.getAmount());
         if (f.hasTag()) {
             json.addProperty("nbt", f.getTag().toString());

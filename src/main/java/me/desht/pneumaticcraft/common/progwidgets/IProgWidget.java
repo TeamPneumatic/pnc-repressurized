@@ -139,6 +139,7 @@ public interface IProgWidget extends IProgWidgetBase {
 
     ResourceLocation getTypeID();
 
+    @Override
     default String getTranslationKey() {
         String s = getTypeID().toString().replace(':', '.');
         return "programmingPuzzle." + s + ".name";

@@ -24,14 +24,12 @@ import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.api.heat.IHeatRegistry;
 import me.desht.pneumaticcraft.api.semiblock.ISemiBlock;
 import me.desht.pneumaticcraft.common.heat.behaviour.HeatBehaviourManager;
-import me.desht.pneumaticcraft.common.recipes.other.HeatPropertiesRecipeImpl;
 import me.desht.pneumaticcraft.common.semiblock.SemiblockTracker;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.common.util.LazyOptional;
 
@@ -75,11 +73,6 @@ public enum HeatExchangerManager implements IHeatRegistry {
             HeatPropertiesRecipe entry = BlockHeatProperties.getInstance().getCustomHeatEntry(world, world.getBlockState(pos));
             return entry != null ? LazyOptional.of(entry::getLogic) : LazyOptional.empty();
         }
-    }
-
-    @Override
-    public void registerBlockExchanger(Block block, double temperature, double thermalResistance) {
-        BlockHeatProperties.getInstance().register(block, new HeatPropertiesRecipeImpl(block.getRegistryName(), block, (int) temperature, thermalResistance));
     }
 
     @Override

@@ -1,19 +1,19 @@
 {
   "type": "minecraft:crafting_shaped",
+  "key": {
+    "H": {
+      "item": "minecraft:hopper"
+    },
+    "T": {
+      "type": "forge:nbt",
+      "count": 1,
+      "item": "pneumaticcraft:small_tank"
+    }
+  },
   "pattern": [
     "T",
     "H"
   ],
-  "key": {
-    "T": {
-      "type": "forge:nbt",
-      "item": "pneumaticcraft:small_tank",
-      "count": 1
-    },
-    "H": {
-      "item": "minecraft:hopper"
-    }
-  },
   "result": {
     "item": "pneumaticcraft:liquid_hopper"
   }

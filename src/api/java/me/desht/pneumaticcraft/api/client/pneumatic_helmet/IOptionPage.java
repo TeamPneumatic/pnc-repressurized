@@ -21,8 +21,8 @@ import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorUpgradeHandler;
 import net.minecraft.client.KeyMapping;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 
 import java.util.Optional;
 
@@ -171,7 +171,7 @@ public interface IOptionPage {
 
         public SimpleOptionPage(IGuiScreen screen, T clientUpgradeHandler) {
             this.screen = screen;
-            this.name = new TranslatableComponent(IArmorUpgradeHandler.getStringKey(clientUpgradeHandler.getID()));
+            this.name = Component.translatable(IArmorUpgradeHandler.getStringKey(clientUpgradeHandler.getID()));
             this.clientUpgradeHandler = clientUpgradeHandler;
         }
 

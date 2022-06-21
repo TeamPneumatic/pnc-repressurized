@@ -1,17 +1,17 @@
 {
   "type": "minecraft:crafting_shaped",
-  "pattern": [
-    "T",
-    "T",
-    "T"
-  ],
   "key": {
     "T": {
       "item": "pneumaticcraft:pressure_tube"
     }
   },
+  "pattern": [
+    "T",
+    "T",
+    "T"
+  ],
   "result": {
-    "item": "pneumaticcraft:drill_pipe",
-    "count": 3
+    "count": 3,
+    "item": "pneumaticcraft:drill_pipe"
   }
 }

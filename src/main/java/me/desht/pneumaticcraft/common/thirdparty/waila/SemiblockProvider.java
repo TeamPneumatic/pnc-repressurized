@@ -17,11 +17,6 @@
 
 package me.desht.pneumaticcraft.common.thirdparty.waila;
 
-import mcp.mobius.waila.api.BlockAccessor;
-import mcp.mobius.waila.api.IComponentProvider;
-import mcp.mobius.waila.api.IServerDataProvider;
-import mcp.mobius.waila.api.ITooltip;
-import mcp.mobius.waila.api.config.IPluginConfig;
 import me.desht.pneumaticcraft.api.semiblock.IDirectionalSemiblock;
 import me.desht.pneumaticcraft.api.semiblock.ISemiBlock;
 import me.desht.pneumaticcraft.common.entity.semiblock.AbstractSemiblockEntity;
@@ -29,16 +24,25 @@ import me.desht.pneumaticcraft.common.semiblock.SemiblockTracker;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import snownee.jade.api.BlockAccessor;
+import snownee.jade.api.IBlockComponentProvider;
+import snownee.jade.api.IServerDataProvider;
+import snownee.jade.api.ITooltip;
+import snownee.jade.api.config.IPluginConfig;
+
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 public class SemiblockProvider {
+    public static final ResourceLocation ID = RL("semiblock");
 
-    public static class Data implements IServerDataProvider<BlockEntity> {
+    public static class DataProvider implements IServerDataProvider<BlockEntity> {
         @Override
         public void appendServerData(CompoundTag compoundTag, ServerPlayer serverPlayer, Level level, BlockEntity blockEntity, boolean b) {
             CompoundTag tag = new CompoundTag();
@@ -51,9 +55,14 @@ public class SemiblockProvider {
                     });
             compoundTag.put("semiBlocks", tag);
         }
+
+        @Override
+        public ResourceLocation getUid() {
+            return ID;
+        }
     }
 
-    public static class Component implements IComponentProvider {
+    public static class ComponentProvider implements IBlockComponentProvider {
         @Override
         public void appendTooltip(ITooltip iTooltip, BlockAccessor blockAccessor, IPluginConfig iPluginConfig) {
             CompoundTag tag = blockAccessor.getServerData().getCompound("semiBlocks");
@@ -64,7 +73,7 @@ public class SemiblockProvider {
                     ISemiBlock entity = ISemiBlock.byTrackingId(blockAccessor.getLevel(), entityId);
                     if (entity instanceof AbstractSemiblockEntity) {
                         if (!(entity instanceof IDirectionalSemiblock) || ((IDirectionalSemiblock) entity).getSide() == blockAccessor.getSide()) {
-                            MutableComponent title = new TextComponent("[")
+                            MutableComponent title = Component.literal("[")
                                     .append(entity.getDisplayName()).append("]").withStyle(ChatFormatting.YELLOW);
                             iTooltip.add(title);
                             entity.addTooltip(iTooltip::add, blockAccessor.getPlayer(), tag.getCompound(name), blockAccessor.getPlayer().isShiftKeyDown());
@@ -73,6 +82,11 @@ public class SemiblockProvider {
                 } catch (NumberFormatException ignored) {
                 }
             }
+        }
+
+        @Override
+        public ResourceLocation getUid() {
+            return ID;
         }
     }
 }

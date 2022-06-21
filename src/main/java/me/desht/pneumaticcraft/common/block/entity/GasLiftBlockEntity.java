@@ -44,8 +44,8 @@ import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.FluidType;
 import net.minecraftforge.fluids.IFluidTank;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
@@ -219,7 +219,7 @@ public class GasLiftBlockEntity extends AbstractAirHandlingBlockEntity implement
         if (fluidState.getType() == Fluids.EMPTY) {
             return false;
         }
-        FluidStack fluidStack = new FluidStack(fluidState.getType(), FluidAttributes.BUCKET_VOLUME);
+        FluidStack fluidStack = new FluidStack(fluidState.getType(), FluidType.BUCKET_VOLUME);
 
         if (tank.fill(fluidStack, FluidAction.SIMULATE) == fluidStack.getAmount()) {
             if (pumpingLake.isEmpty()) {
@@ -236,7 +236,7 @@ public class GasLiftBlockEntity extends AbstractAirHandlingBlockEntity implement
             if (curPos != null) {
                 // if pumpingLake isn't empty, we *must* have found a source block
                 FluidStack taken = FluidUtils.tryPickupFluid(fluidCap, level, curPos, false, FluidAction.EXECUTE);
-                if (taken.getAmount() == FluidAttributes.BUCKET_VOLUME) {
+                if (taken.getAmount() == FluidType.BUCKET_VOLUME) {
                     addAir(-100);
                     status = Status.PUMPING;
                 }

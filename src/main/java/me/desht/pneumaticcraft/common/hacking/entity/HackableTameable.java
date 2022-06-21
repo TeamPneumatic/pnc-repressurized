@@ -18,8 +18,10 @@
 package me.desht.pneumaticcraft.common.hacking.entity;
 
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableEntity;
+import net.minecraft.core.Registry;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.CatVariantTags;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.TamableAnimal;
 import net.minecraft.world.entity.animal.Cat;
@@ -75,8 +77,11 @@ public class HackableTameable implements IHackableEntity {
             // TODO: code smell
             // Would be better to have a HackableCat subclass, but HackableHandler.getHackableForEntity() isn't
             // set up to prioritise getting a cat over a generic tameable.
-            if (entity instanceof Cat) {
-                ((Cat) entity).setCatType(-1);  // < 0 means "use a random type"
+            if (entity instanceof Cat cat) {
+                // TODO no forge registry for cat variants at this time
+                Registry.CAT_VARIANT.getTag(CatVariantTags.DEFAULT_SPAWNS)
+                        .flatMap((variants) -> variants.getRandomElement(cat.getLevel().getRandom()))
+                        .ifPresent((variant) -> cat.setCatVariant(variant.value()));
             }
         }
     }

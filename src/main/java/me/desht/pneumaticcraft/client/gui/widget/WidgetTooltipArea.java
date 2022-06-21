@@ -21,7 +21,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 
 import java.util.Collections;
 import java.util.List;
@@ -30,7 +29,7 @@ public class WidgetTooltipArea extends AbstractWidget implements ITooltipProvide
     public final Component[] tooltip;
 
     public WidgetTooltipArea(int x, int y, int width, int height, Component... tooltip) {
-        super(x, y, width, height, TextComponent.EMPTY);
+        super(x, y, width, height, Component.empty());
         this.tooltip = tooltip;
     }
 

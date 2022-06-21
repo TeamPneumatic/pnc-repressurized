@@ -1,27 +1,27 @@
 {
   "type": "minecraft:crafting_shaped",
+  "key": {
+    "B": {
+      "item": "pneumaticcraft:printed_circuit_board"
+    },
+    "G": {
+      "tag": "forge:glass_panes/black"
+    },
+    "P": {
+      "tag": "pneumaticcraft:plastic_sheets"
+    },
+    "R": {
+      "tag": "forge:dyes/red"
+    },
+    "T": {
+      "item": "pneumaticcraft:turbine_rotor"
+    }
+  },
   "pattern": [
     "RGR",
     "TBT",
     "P P"
   ],
-  "key": {
-    "R": {
-      "tag": "forge:dyes/red"
-    },
-    "G": {
-      "tag": "forge:glass_panes/black"
-    },
-    "T": {
-      "item": "pneumaticcraft:turbine_rotor"
-    },
-    "B": {
-      "item": "pneumaticcraft:printed_circuit_board"
-    },
-    "P": {
-      "tag": "pneumaticcraft:plastic_sheets"
-    }
-  },
   "result": {
     "item": "pneumaticcraft:programmer"
   }

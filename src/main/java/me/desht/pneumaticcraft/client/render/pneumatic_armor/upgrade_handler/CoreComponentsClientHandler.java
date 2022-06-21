@@ -44,7 +44,6 @@ import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ItemStack;
@@ -60,7 +59,7 @@ import static me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler.
 public class CoreComponentsClientHandler extends IArmorUpgradeClientHandler.AbstractHandler<CoreComponentsHandler> {
     private static final int MAX_BARS = 40;
     private static final String[] BAR_STR_CACHE = new String[MAX_BARS + 1];
-    private static final Component NO_ARMOR = new TextComponent("-").withStyle(ChatFormatting.DARK_GRAY);
+    private static final Component NO_ARMOR = Component.literal("-").withStyle(ChatFormatting.DARK_GRAY);
 
     private static final StatPanelLayout DEF_STAT_LAYOUT = new StatPanelLayout(0.995f, 0.005f, true);
     private static final StatPanelLayout DEFAULT_MESSAGE_LAYOUT = new StatPanelLayout(0.005f, 0.15f, false);
@@ -137,11 +136,11 @@ public class CoreComponentsClientHandler extends IArmorUpgradeClientHandler.Abst
             return NO_ARMOR;
         float pressure = handler.getArmorPressure(slot);
         if (pressure <= LOW_PRESSURE && ClientUtils.getClientLevel().getGameTime() % 20 < 5) {
-            return TextComponent.EMPTY;  // blinking pressure warning
+            return Component.empty();  // blinking pressure warning
         } else if (showPressureNumerically) {
-            return new TextComponent(String.format("%4.1f", Math.max(0f, pressure))).withStyle(getColourForPressure(pressure));
+            return Component.literal(String.format("%4.1f", Math.max(0f, pressure))).withStyle(getColourForPressure(pressure));
         } else {
-            return new TextComponent(getBarStr(pressure));
+            return Component.literal(getBarStr(pressure));
         }
     }
 
@@ -182,12 +181,12 @@ public class CoreComponentsClientHandler extends IArmorUpgradeClientHandler.Abst
     public IGuiAnimatedStat getAnimatedStat() {
         if (powerStat == null) {
             forceUpdatePressureStat = true;
-            powerStat = PneumaticRegistry.getInstance().getHelmetRegistry().makeHUDStatPanel(TextComponent.EMPTY, ItemStack.EMPTY, this);
+            powerStat = PneumaticRegistry.getInstance().getHelmetRegistry().makeHUDStatPanel(Component.empty(), ItemStack.EMPTY, this);
             powerStat.setLineSpacing(14);
             powerStat.setSubwidgetRenderOffsets(-18, 0);  // ensure armor icons are rendered in the right place
             pressureButtons.clear();
             for (EquipmentSlot slot : ArmorUpgradeRegistry.ARMOR_SLOTS) {
-                WidgetButtonExtended pressureButton = new WidgetButtonExtended(0, 5 + (3 - slot.getIndex()) * 14, 18, 18, TextComponent.EMPTY) ;
+                WidgetButtonExtended pressureButton = new WidgetButtonExtended(0, 5 + (3 - slot.getIndex()) * 14, 18, 18, Component.empty()) ;
                 ItemStack stack = ArmorMainScreen.ARMOR_STACKS[slot.getIndex()];
                 pressureButton.setVisible(false);
                 pressureButton.setRenderStacks(stack);
@@ -230,7 +229,7 @@ public class CoreComponentsClientHandler extends IArmorUpgradeClientHandler.Abst
     public IGuiAnimatedStat getTestMessageStat() {
         if (testMessageStat == null) {
             StatPanelLayout messageLayout = ArmorHUDLayout.INSTANCE.getLayoutFor(CoreComponentsHandler.getMessageID(), CoreComponentsClientHandler.getDefaultMessageLayout());
-            testMessageStat = new WidgetAnimatedStat(null, new TextComponent("Test Message: keep in mind that messages can be long!"),
+            testMessageStat = new WidgetAnimatedStat(null, Component.literal("Test Message: keep in mind that messages can be long!"),
                     WidgetAnimatedStat.StatIcon.NONE, HUDHandler.getInstance().getStatOverlayColor(), null, messageLayout);
             testMessageStat.openStat();
         }

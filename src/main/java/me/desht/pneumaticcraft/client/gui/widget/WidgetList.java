@@ -24,7 +24,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.util.Mth;
 import org.lwjgl.opengl.GL11;
 
@@ -51,7 +50,7 @@ public class WidgetList<T> extends AbstractWidget implements ITooltipProvider {
     }
 
     public WidgetList(int xIn, int yIn, int width, int height, @Nonnull Consumer<WidgetList<T>> pressable) {
-        super(xIn, yIn, width, height, TextComponent.EMPTY);
+        super(xIn, yIn, width, height, Component.empty());
 
         this.pressable = pressable;
     }
@@ -138,22 +137,22 @@ public class WidgetList<T> extends AbstractWidget implements ITooltipProvider {
 
     private void drawList(PoseStack matrixStack) {
         Minecraft mc = Minecraft.getInstance();
-        int sf = mc.options.guiScale;
-        int h = mc.font.lineHeight;
-        int lines = height / h;
+        int scale = mc.options.guiScale().get();
+        int lineHeight = mc.font.lineHeight;
+        int lines = height / lineHeight;
 
         matrixStack.pushPose();
         GL11.glEnable(GL11.GL_SCISSOR_TEST);
-        GL11.glScissor(x * sf, (y + height) * sf, width * sf, height * sf);
+        GL11.glScissor(x * scale, (y + height) * scale, width * scale, height * scale);
         if (inverseSelected && selected >= 0) {
             RenderSystem.disableTexture();
-            fill(matrixStack, x, y + h * selected, x + width, y + h * (selected + 1), 0xFF000000 | selectedBg);
+            fill(matrixStack, x, y + lineHeight * selected, x + width, y + lineHeight * (selected + 1), 0xFF000000 | selectedBg);
             RenderSystem.enableTexture();
         }
         matrixStack.translate(x, y, 0);
         matrixStack.scale(0.75f, 1f, 1f);
         for (int i = 0; i < items.size() && i < lines; i++) {
-            mc.font.draw(matrixStack, items.get(i).toString(), 0, i * h, i == selected ? selectedFg : fgColor);
+            mc.font.draw(matrixStack, items.get(i).toString(), 0, i * lineHeight, i == selected ? selectedFg : fgColor);
         }
         GL11.glDisable(GL11.GL_SCISSOR_TEST);
         matrixStack.popPose();
@@ -181,7 +180,7 @@ public class WidgetList<T> extends AbstractWidget implements ITooltipProvider {
         if (idx >= 0 && idx < items.size()) {
             String s = items.get(idx).toString();
             if (toolTipType == ToolTipType.ALWAYS || Minecraft.getInstance().font.width(s) * 3 / 4 > width) {
-                curTip.add(new TextComponent(s));
+                curTip.add(Component.literal(s));
             }
         }
     }

@@ -21,7 +21,6 @@ import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IBlockTrackEntry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -62,7 +61,7 @@ public class BlockTrackEntryEnergy implements IBlockTrackEntry {
             // FIXME: getting capabilities client-side is not a reliable way to do this
             // Need a more formal framework for sync'ing server-side data to the client
             te.getCapability(CapabilityEnergy.ENERGY, face)
-                    .ifPresent(storage -> infoList.add(new TextComponent(storage.getEnergyStored() + " / " + storage.getMaxEnergyStored() + " RF")));
+                    .ifPresent(storage -> infoList.add(Component.literal(storage.getEnergyStored() + " / " + storage.getMaxEnergyStored() + " RF")));
         } catch (Throwable e) {
             TrackerBlacklistManager.addEnergyTEToBlacklist(te, e);
         }

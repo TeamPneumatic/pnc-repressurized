@@ -26,11 +26,14 @@ import me.desht.pneumaticcraft.api.misc.Symbols;
 import me.desht.pneumaticcraft.client.gui.programmer.ProgWidgetGuiManager;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetVerticalScrollbar;
 import me.desht.pneumaticcraft.client.render.ProgWidgetRenderer;
+import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
+import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.common.progwidgets.IJump;
 import me.desht.pneumaticcraft.common.progwidgets.ILabel;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -39,7 +42,6 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.phys.Vec3;
 import org.lwjgl.opengl.GL11;
 
@@ -102,7 +104,7 @@ public class ProgrammerWidgetAreaRenderer {
         if (!msgList.isEmpty()) {
             tooltip.add(xlate(key).withStyle(color, ChatFormatting.UNDERLINE));
             for (Component msg : msgList) {
-                tooltip.add(new TextComponent(Symbols.TRIANGLE_RIGHT + " ").append(msg).withStyle(color));
+                tooltip.add(Component.literal(Symbols.TRIANGLE_RIGHT + " ").append(msg).withStyle(color));
             }
         }
     }
@@ -154,12 +156,13 @@ public class ProgrammerWidgetAreaRenderer {
         }
         ThirdPartyManager.instance().getDocsProvider().addTooltip(tooltip, false);
         if (Minecraft.getInstance().options.advancedItemTooltips) {
-            tooltip.add(new TextComponent(widget.getType().getRegistryName().toString()).withStyle(ChatFormatting.DARK_GRAY));
+            PneumaticCraftUtils.getRegistryName(ModProgWidgets.PROG_WIDGETS.get(), widget.getType())
+                            .ifPresent(regName -> tooltip.add(Component.literal(regName.toString()).withStyle(ChatFormatting.DARK_GRAY)));
         }
     }
 
     public void tick() {
-        if ((Minecraft.getInstance().level.getGameTime() & 0xf) == 0 || widgetErrors.size() != progWidgets.size() || widgetWarnings.size() != progWidgets.size()) {
+        if ((ClientUtils.getClientLevel().getGameTime() & 0xf) == 0 || widgetErrors.size() != progWidgets.size() || widgetWarnings.size() != progWidgets.size()) {
             widgetErrors.clear();
             widgetWarnings.clear();
             totalErrors = totalWarnings = 0;

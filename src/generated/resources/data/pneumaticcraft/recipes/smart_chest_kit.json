@@ -1,19 +1,19 @@
 {
   "type": "minecraft:crafting_shaped",
-  "pattern": [
-    " C",
-    "S "
-  ],
   "key": {
     "C": {
       "type": "pneumaticcraft:no_nbt",
-      "item": "pneumaticcraft:smart_chest",
-      "count": 1
+      "count": 1,
+      "item": "pneumaticcraft:smart_chest"
     },
     "S": {
       "item": "minecraft:stick"
     }
   },
+  "pattern": [
+    " C",
+    "S "
+  ],
   "result": {
     "item": "pneumaticcraft:smart_chest_kit"
   }

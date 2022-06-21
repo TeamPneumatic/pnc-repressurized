@@ -20,6 +20,7 @@ package me.desht.pneumaticcraft.common.core;
 import me.desht.pneumaticcraft.api.harvesting.HarvestHandler;
 import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.common.harvesting.*;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.*;
@@ -34,7 +35,7 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 public class ModHarvestHandlers {
     public static final DeferredRegister<HarvestHandler> HARVEST_HANDLERS_DEFERRED = DeferredRegister.create(RL("harvest_handlers"), Names.MOD_ID);
     public static final Supplier<IForgeRegistry<HarvestHandler>> HARVEST_HANDLERS = HARVEST_HANDLERS_DEFERRED
-            .makeRegistry(HarvestHandler.class, () -> new RegistryBuilder<HarvestHandler>().disableSaving().disableSync());
+            .makeRegistry(() -> new RegistryBuilder<HarvestHandler>().disableSaving().disableSync());
 
     public static final RegistryObject<HarvestHandler> CROPS = register("crops", HarvestHandlerCrops::new);
     public static final RegistryObject<HarvestHandler> NETHER_WART = register("nether_wart", () -> new HarvestHandlerCropLike(state ->
@@ -53,7 +54,7 @@ public class ModHarvestHandlers {
     public static final RegistryObject<HarvestHandler> LEAVES = register("leaves", HarvestHandlerLeaves::new);
     public static final RegistryObject<HarvestHandler> TREES = register("trees", HarvestHandlerTree::new);
 
-    private static <T extends HarvestHandler> RegistryObject<T> register(String name, final Supplier<T> sup) {
+    public static <T extends HarvestHandler> RegistryObject<T> register(String name, final Supplier<T> sup) {
         return HARVEST_HANDLERS_DEFERRED.register(name, sup);
     }
 
@@ -78,10 +79,10 @@ public class ModHarvestHandlers {
          * @return a block for the new part
          */
         public Block convert(Block in, TreePart to) {
-            ResourceLocation rl0 = in.getRegistryName();
-            if (rl0 == null) return Blocks.AIR;
-            ResourceLocation rl = new ResourceLocation(rl0.getNamespace(), pattern.matcher(rl0.getPath()).replaceAll(to.suffix));
-            return ForgeRegistries.BLOCKS.getValue(rl);
+            return PneumaticCraftUtils.getRegistryName(in).map(rlIn -> {
+                ResourceLocation rlOut = new ResourceLocation(rlIn.getNamespace(), pattern.matcher(rlIn.getPath()).replaceAll(to.suffix));
+                return ForgeRegistries.BLOCKS.getValue(rlOut);
+            }).orElse(Blocks.AIR);
         }
     }
 }

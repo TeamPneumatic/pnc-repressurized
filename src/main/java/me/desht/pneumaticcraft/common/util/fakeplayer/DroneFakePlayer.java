@@ -65,7 +65,7 @@ public class DroneFakePlayer extends FakePlayer {
     }
 
     @Override
-    protected void equipEventAndSound(ItemStack stack) {
+    protected void playEquipSound(ItemStack stack) {
         // nothing
     }
 

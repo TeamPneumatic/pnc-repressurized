@@ -21,24 +21,22 @@ import me.desht.pneumaticcraft.api.crafting.ingredient.FluidIngredient;
 import me.desht.pneumaticcraft.api.crafting.ingredient.NoNBTIngredient;
 import me.desht.pneumaticcraft.api.crafting.ingredient.StackedIngredient;
 import me.desht.pneumaticcraft.api.lib.Names;
-import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraftforge.common.crafting.CraftingHelper;
-import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.RegisterEvent;
 
 @Mod.EventBusSubscriber(modid = Names.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class RecipeRegistrationEventListener {
     @SubscribeEvent
-    public static void onRegister(RegistryEvent.Register<RecipeSerializer<?>> event) {
-        // register our custom ingredient types
+    public static void onRegister(RegisterEvent event) {
+        if (event.getRegistryKey().equals(ForgeRegistries.Keys.RECIPE_SERIALIZERS)) {
+            CraftingHelper.register(FluidTagPresentCondition.Serializer.INSTANCE);
 
-//        PneumaticCraftRecipeType.registerRecipeTypes();
-
-        CraftingHelper.register(FluidTagPresentCondition.Serializer.INSTANCE);
-
-        CraftingHelper.register(StackedIngredient.Serializer.ID, StackedIngredient.Serializer.INSTANCE);
-        CraftingHelper.register(FluidIngredient.Serializer.ID, FluidIngredient.Serializer.INSTANCE);
-        CraftingHelper.register(NoNBTIngredient.Serializer.ID, NoNBTIngredient.Serializer.INSTANCE);
+            CraftingHelper.register(StackedIngredient.Serializer.ID, StackedIngredient.Serializer.INSTANCE);
+            CraftingHelper.register(FluidIngredient.Serializer.ID, FluidIngredient.Serializer.INSTANCE);
+            CraftingHelper.register(NoNBTIngredient.Serializer.ID, NoNBTIngredient.Serializer.INSTANCE);
+        }
     }
 }

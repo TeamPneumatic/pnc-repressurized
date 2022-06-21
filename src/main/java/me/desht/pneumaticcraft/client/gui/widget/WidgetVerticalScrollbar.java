@@ -27,7 +27,7 @@ import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import org.apache.commons.lang3.Validate;
 
@@ -40,7 +40,7 @@ public class WidgetVerticalScrollbar extends AbstractWidget implements ICanRende
     private boolean dragging;
 
     public WidgetVerticalScrollbar(int x, int y, int height) {
-        super(x, y, 14, height, TextComponent.EMPTY);
+        super(x, y, 14, height, Component.empty());
     }
 
     public WidgetVerticalScrollbar setStates(int states) {

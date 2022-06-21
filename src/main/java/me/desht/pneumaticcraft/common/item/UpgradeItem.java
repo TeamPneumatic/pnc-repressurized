@@ -28,7 +28,6 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -118,10 +117,10 @@ public class UpgradeItem extends Item implements IUpgradeItem {
         ItemStack stack = player.getItemInHand(hand);
         if (facing == null) {
             stack.setTag(null);
-            player.displayClientMessage(new TranslatableComponent("pneumaticcraft.message.dispenser.direction", "*"), true);
+            player.displayClientMessage(Component.translatable("pneumaticcraft.message.dispenser.direction", "*"), true);
         } else {
             NBTUtils.setString(stack, NBT_DIRECTION, facing.getSerializedName());
-            player.displayClientMessage(new TranslatableComponent("pneumaticcraft.message.dispenser.direction", facing.getSerializedName()), true);
+            player.displayClientMessage(Component.translatable("pneumaticcraft.message.dispenser.direction", facing.getSerializedName()), true);
         }
     }
 
@@ -136,7 +135,7 @@ public class UpgradeItem extends Item implements IUpgradeItem {
 
     @Override
     public void fillItemCategory(CreativeModeTab group, NonNullList<ItemStack> items) {
-        if (this.allowdedIn(group)) {
+        if (this.allowedIn(group)) {
             if (upgrade.get().isDependencyLoaded()) {
                 items.add(new ItemStack(this));
             }

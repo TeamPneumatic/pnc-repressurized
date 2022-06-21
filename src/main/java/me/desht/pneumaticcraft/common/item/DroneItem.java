@@ -31,7 +31,6 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.MenuProvider;
@@ -101,7 +100,7 @@ public class DroneItem extends PressurizableItem
             fluidTank.readFromNBT(stack.getTag().getCompound("Tank"));
             FluidStack fluidStack = fluidTank.getFluid();
             if (!fluidStack.isEmpty()) {
-                tooltip.add(new TranslatableComponent("pneumaticcraft.gui.tooltip.fluid")
+                tooltip.add(Component.translatable("pneumaticcraft.gui.tooltip.fluid")
                         .append(fluidStack.getAmount() + "mB ")
                         .append(fluidStack.getDisplayName()).withStyle(ChatFormatting.GRAY)
                 );

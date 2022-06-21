@@ -22,6 +22,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModRecipeSerializers;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
@@ -150,10 +151,9 @@ public class PressureDisenchantingRecipe extends PressureChamberRecipeImpl {
     }
 
     private boolean blacklisted(ItemStack stack) {
-        if (stack.getItem().getRegistryName() != null) {
-            String name = stack.getItem().getRegistryName().toString();
-            return ConfigHelper.common().machines.disenchantingBlacklist.get().stream().anyMatch(name::startsWith);
-        }
-        return false;
+        List<String> blackList = ConfigHelper.common().machines.disenchantingBlacklist.get();
+        return PneumaticCraftUtils.getRegistryName(stack.getItem())
+                .map(name -> blackList.stream().anyMatch(element -> element.startsWith(name.toString())))
+                .orElse(false);
     }
 }

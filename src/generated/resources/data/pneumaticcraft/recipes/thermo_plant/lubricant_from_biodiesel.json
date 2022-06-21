@@ -1,19 +1,19 @@
 {
   "type": "pneumaticcraft:thermo_plant",
+  "exothermic": false,
+  "fluid_input": {
+    "type": "pneumaticcraft:fluid",
+    "amount": 1000,
+    "tag": "forge:biodiesel"
+  },
+  "fluid_output": {
+    "amount": 1000,
+    "fluid": "pneumaticcraft:lubricant"
+  },
   "item_input": {
     "tag": "forge:dusts/redstone"
   },
-  "fluid_input": {
-    "type": "pneumaticcraft:fluid",
-    "tag": "forge:biodiesel",
-    "amount": 1000
-  },
-  "fluid_output": {
-    "fluid": "pneumaticcraft:lubricant",
-    "amount": 1000
-  },
   "temperature": {
     "min_temp": 373
-  },
-  "exothermic": false
+  }
 }

@@ -25,7 +25,7 @@ import me.desht.pneumaticcraft.common.inventory.AmadronAddTradeMenu;
 import me.desht.pneumaticcraft.common.item.AmadronTabletItem;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronPlayerOffer;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraftforge.network.NetworkEvent;
@@ -84,7 +84,7 @@ public class PacketAmadronTradeAddCustom extends PacketAbstractAmadronTrade {
     private void handleClientSide(AmadronPlayerOffer offer) {
         if (ConfigHelper.common().amadron.notifyOfTradeAddition.get()) {
             ClientUtils.getClientPlayer().displayClientMessage(
-                    new TranslatableComponent("pneumaticcraft.message.amadron.playerAddedTrade",
+                    Component.translatable("pneumaticcraft.message.amadron.playerAddedTrade",
                             offer.getVendorName(),
                             offer.getOutput().toString(),
                             offer.getInput().toString()

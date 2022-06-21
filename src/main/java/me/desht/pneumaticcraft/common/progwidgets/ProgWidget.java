@@ -27,8 +27,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.goal.Goal;
 import org.apache.commons.lang3.tuple.ImmutablePair;
@@ -39,8 +38,8 @@ import java.util.*;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public abstract class ProgWidget implements IProgWidget {
-    static final TranslatableComponent ALL_TEXT = xlate("pneumaticcraft.gui.misc.all");
-    static final TranslatableComponent NONE_TEXT = xlate("pneumaticcraft.gui.misc.none");
+    static final MutableComponent ALL_TEXT = xlate("pneumaticcraft.gui.misc.all");
+    static final MutableComponent NONE_TEXT = xlate("pneumaticcraft.gui.misc.none");
 
     private final ProgWidgetType<?> type;
     private int x, y;
@@ -62,14 +61,14 @@ public abstract class ProgWidget implements IProgWidget {
 
     @Override
     public ResourceLocation getTypeID() {
-        return getType().getRegistryName();
+        return ModProgWidgets.PROG_WIDGETS.get().getKey(getType());
     }
 
     @Override
     public void getTooltip(List<Component> curTooltip) {
         curTooltip.add(xlate(getTranslationKey()).withStyle(ChatFormatting.DARK_AQUA, ChatFormatting.UNDERLINE));
         if (freeToUse()) {
-            curTooltip.add(new TranslatableComponent("pneumaticcraft.gui.progWidget.comment.tooltip.freeToUse"));
+            curTooltip.add(Component.translatable("pneumaticcraft.gui.progWidget.comment.tooltip.freeToUse"));
         }
     }
 
@@ -319,6 +318,6 @@ public abstract class ProgWidget implements IProgWidget {
     }
 
     Component varAsTextComponent(String var) {
-        return var.isEmpty() ? TextComponent.EMPTY : new TextComponent("\"" + var + "\"");
+        return var.isEmpty() ? Component.empty() : Component.literal("\"" + var + "\"");
     }
 }

@@ -22,11 +22,13 @@ import me.desht.pneumaticcraft.api.item.PNCUpgrade;
 import me.desht.pneumaticcraft.api.misc.RangedInt;
 import me.desht.pneumaticcraft.api.universal_sensor.*;
 import me.desht.pneumaticcraft.common.block.entity.UniversalSensorBlockEntity;
+import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.sensor.eventSensors.BlockInteractSensor;
 import me.desht.pneumaticcraft.common.sensor.eventSensors.PlayerAttackSensor;
 import me.desht.pneumaticcraft.common.sensor.eventSensors.PlayerItemPickupSensor;
 import me.desht.pneumaticcraft.common.sensor.pollSensors.*;
 import me.desht.pneumaticcraft.common.sensor.pollSensors.entity.EntityInRangeSensor;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -130,7 +132,6 @@ public class SensorHandler implements ISensorRegistry {
                 } else {
                     if (!directories.contains(folders[0])) directories.add(folders[0]);
                 }
-
             }
         }
         String[] directoryArray = directories.toArray(new String[0]);
@@ -145,7 +146,9 @@ public class SensorHandler implements ISensorRegistry {
 
         StringBuilder ret = new StringBuilder();
         for (int i = 0; i < upgrades.size(); i++) {
-            ret.append(upgrades.get(i).getRegistryName()).append(i < upgrades.size() - 1 ? "_" : "/");
+            String suffix = i < upgrades.size() - 1 ? "_" : "/";
+            PneumaticCraftUtils.getRegistryName(ModUpgrades.UPGRADES.get(), upgrades.get(i))
+                    .ifPresent(regName -> ret.append(regName).append(suffix));
         }
 
         return ret.toString();

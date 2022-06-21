@@ -27,7 +27,6 @@ import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.*;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.registries.ForgeRegistryEntry;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
@@ -123,7 +122,7 @@ public class HeatFrameCoolingRecipeImpl extends HeatFrameCoolingRecipe {
         return maxThresholdTemp;
     }
 
-    public static class Serializer<T extends HeatFrameCoolingRecipe> extends ForgeRegistryEntry<RecipeSerializer<?>> implements RecipeSerializer<T> {
+    public static class Serializer<T extends HeatFrameCoolingRecipe> implements RecipeSerializer<T> {
         private final IFactory<T> factory;
 
         public Serializer(IFactory<T> factory) {

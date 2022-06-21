@@ -17,18 +17,11 @@
 
 package me.desht.pneumaticcraft.api.item;
 
-import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerItem;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.level.Level;
 
 import javax.annotation.Nonnull;
-import java.util.List;
-import java.util.function.Supplier;
 
 /**
  * Get an instance of this with {@link me.desht.pneumaticcraft.api.PneumaticRegistry.IPneumaticCraftInterface#getItemRegistry()}
@@ -41,44 +34,6 @@ public interface IItemRegistry {
      * @param handler instance of any class that implements {@link IInventoryItem}
      */
     void registerInventoryItem(IInventoryItem handler);
-
-    /**
-     * Register an item or block as being able to accept PneumaticCraft upgrades. This is safe to call in your own
-     * mod's init thread.
-     *
-     * @param upgradeAcceptor the upgrade acceptor
-     * @deprecated no longer required and is now a no-op; superceded by {@link IUpgradeRegistry}
-     */
-    @Deprecated(forRemoval = true)
-    void registerUpgradeAcceptor(IUpgradeAcceptor upgradeAcceptor);
-
-    /**
-     * Convenience method to create an Item implementing the {@link IUpgradeItem} interface, which can be used as a
-     * PneumaticCraft upgrade. This item has the default PneumaticCraft tooltip behaviour in that
-     * {@link #addTooltip(PNCUpgrade, List)} is called when Shift is held while hovering over the item.
-     * <p>
-     * You can use this method when registering upgrade items as an alternative to creating an Item which implements
-     * {@code IUpgrad£eItem} yourself.
-     *
-     * @param upgrade a supplier for the upgrade object, which will not yet be registered
-     * @param tier upgrade tier of this item
-     * @return an item
-     * @deprecated superceded by {@link IUpgradeRegistry#makeUpgradeItem(Supplier, int)}
-     */
-    @Deprecated(forRemoval = true)
-    Item makeUpgradeItem(Supplier<PNCUpgrade> upgrade, int tier);
-
-    /**
-     * Can be used for custom upgrade items to handle tooltips. This will work for implementors registered via
-     * {@link IItemRegistry#registerUpgradeAcceptor(IUpgradeAcceptor)}. This is intended to be called from
-     * {@link net.minecraft.world.item.Item#appendHoverText(ItemStack, Level, List, TooltipFlag)} method to display
-     * which machines and/or items accept it.
-     *  @param upgrade the upgrade item
-     * @param tooltip the tooltip string list to append to
-     * @deprecated superceded by {@link IUpgradeRegistry#addUpgradeTooltip(PNCUpgrade, List)}
-     */
-    @Deprecated(forRemoval = true)
-    void addTooltip(PNCUpgrade upgrade, List<Component> tooltip);
 
     /**
      * Register a magnet suppressor; an object which can prevent the Magnet Upgrade from pulling in (usually item)
@@ -145,13 +100,4 @@ public interface IItemRegistry {
      */
     IAirHandlerItem.Provider makeItemAirHandlerProvider(ItemStack stack, float maxPressure);
 
-    /**
-     * Get the upgrade registry handler, which can be used to register custom upgrades with block entities, entities
-     * and items.
-     *
-     * @return the upgrade registry
-     * @deprecated use {@link PneumaticRegistry.IPneumaticCraftInterface#getUpgradeRegistry()}
-     */
-    @Deprecated(forRemoval = true)
-    IUpgradeRegistry getUpgradeRegistry();
 }

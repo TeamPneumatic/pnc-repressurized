@@ -23,7 +23,7 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonSyntaxException;
 import net.minecraft.core.Registry;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.GsonHelper;
@@ -34,6 +34,7 @@ import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.common.crafting.IIngredientSerializer;
 import net.minecraftforge.items.ItemHandlerHelper;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -133,13 +134,7 @@ public class StackedIngredient extends Ingredient {
         }
     }
 
-    public static class StackedItemList implements Value {
-        private final ItemStack itemStack;
-
-        public StackedItemList(ItemStack itemStack) {
-            this.itemStack = itemStack;
-        }
-
+    public record StackedItemList(ItemStack itemStack) implements Value {
         @Override
         public Collection<ItemStack> getItems() {
             return Collections.singletonList(itemStack);
@@ -149,7 +144,8 @@ public class StackedIngredient extends Ingredient {
         public JsonObject serialize() {
             JsonObject json = new JsonObject();
             json.addProperty("type", Serializer.ID.toString());
-            json.addProperty("item", itemStack.getItem().getRegistryName().toString());
+            ResourceLocation rl = ForgeRegistries.ITEMS.getKey(itemStack.getItem());
+            json.addProperty("item", rl == null ? "" : rl.toString());
             json.addProperty("count", itemStack.getCount());
             return json;
         }
@@ -171,7 +167,7 @@ public class StackedIngredient extends Ingredient {
             Registry.ITEM.getTagOrEmpty(tagKey).forEach(h -> list.add(new ItemStack(h.value(), count)));
 
             if (list.size() == 0 && !net.minecraftforge.common.ForgeConfig.SERVER.treatEmptyTagsAsAir.get()) {
-                list.add(new ItemStack(Blocks.BARRIER).setHoverName(new TextComponent("Empty Tag: " + tagKey.location())));
+                list.add(new ItemStack(Blocks.BARRIER).setHoverName(Component.literal("Empty Tag: " + tagKey.location())));
             }
             return list;
         }

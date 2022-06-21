@@ -22,7 +22,7 @@ import me.desht.pneumaticcraft.client.gui.remote.actionwidget.ActionWidgetVariab
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetComboBox;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableHelper;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.Component;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
@@ -65,6 +65,6 @@ public class RemoteVariableOptionScreen<A extends ActionWidgetVariable<?>> exten
     private void togglePlayerGlobal() {
         playerGlobal = !playerGlobal;
         variableField.setElements(GlobalVariableHelper.extractVarnames(guiRemote.getMenu().variables, playerGlobal));
-        varTypeButton.setMessage(new TextComponent(GlobalVariableHelper.getVarPrefix(playerGlobal)));
+        varTypeButton.setMessage(Component.literal(GlobalVariableHelper.getVarPrefix(playerGlobal)));
     }
 }

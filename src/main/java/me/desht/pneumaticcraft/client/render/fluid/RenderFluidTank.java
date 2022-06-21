@@ -80,10 +80,10 @@ public class RenderFluidTank extends AbstractFluidTER<AbstractFluidTankBlockEnti
             return switch (face) {
                 case UP -> up
                         || getTank().getFluid().getAmount() < getTank().getCapacity()
-                        && !getTank().getFluid().getFluid().getAttributes().isLighterThanAir();
+                        && !getTank().getFluid().getFluid().getFluidType().isLighterThanAir();
                 case DOWN -> down
                         || getTank().getFluid().getAmount() < getTank().getCapacity()
-                        && getTank().getFluid().getFluid().getAttributes().isLighterThanAir();
+                        && getTank().getFluid().getFluid().getFluidType().isLighterThanAir();
                 default -> true;
             };
         }

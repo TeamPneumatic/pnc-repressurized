@@ -19,7 +19,6 @@ package me.desht.pneumaticcraft.api;
 
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
 
@@ -57,8 +56,8 @@ public class DamageSourcePneumaticCraft extends DamageSource {
         String s = PneumaticRegistry.MOD_ID + ".death.attack." + msgId + messageNumber;
         String s1 = s + ".player";
         return killer != null && I18n.exists(s1) ?
-                new TranslatableComponent(s1, dyingEntity.getDisplayName(), killer.getDisplayName()) :
-                new TranslatableComponent(s, dyingEntity.getDisplayName());
+                Component.translatable(s1, dyingEntity.getDisplayName(), killer.getDisplayName()) :
+                Component.translatable(s, dyingEntity.getDisplayName());
     }
 
     public static class DamageSourceDroneOverload extends DamageSourcePneumaticCraft {
@@ -76,7 +75,7 @@ public class DamageSourcePneumaticCraft extends DamageSource {
 
         @Override
         public Component getLocalizedDeathMessage(LivingEntity dyingEntity) {
-            return new TranslatableComponent("pneumaticcraft.death.drone.overload." + msgKey, params);
+            return Component.translatable("pneumaticcraft.death.drone.overload." + msgKey, params);
         }
     }
 }

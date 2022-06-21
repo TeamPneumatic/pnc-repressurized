@@ -23,7 +23,7 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.registries.IForgeRegistryEntry;
+import net.minecraft.world.level.ItemLike;
 
 import javax.annotation.Nonnull;
 
@@ -75,8 +75,8 @@ public interface IClientRegistry {
     /**
      * Register some custom item rendering behaviour for an item when held in an Assembly machine.
      *
-     * @param entry a Forge registry entry, which should be an item
+     * @param entry an item or block
      * @param renderOverride customized rendering behaviour for that item
      */
-    void registerRenderOverride(@Nonnull IForgeRegistryEntry<?> entry, @Nonnull IAssemblyRenderOverriding renderOverride);
+    void registerRenderOverride(@Nonnull ItemLike entry, @Nonnull IAssemblyRenderOverriding renderOverride);
 }

@@ -21,7 +21,6 @@ import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IGuiScreen;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.JumpBoostClientHandler;
 import me.desht.pneumaticcraft.common.item.PneumaticArmorItem;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 
 public class JumpBoostOptions extends AbstractSliderOptions<JumpBoostClientHandler> {
     public JumpBoostOptions(IGuiScreen screen, JumpBoostClientHandler handler) {
@@ -35,11 +34,11 @@ public class JumpBoostOptions extends AbstractSliderOptions<JumpBoostClientHandl
 
     @Override
     protected Component getPrefix() {
-        return new TextComponent("Boost: ");
+        return Component.literal("Boost: ");
     }
 
     @Override
     protected Component getSuffix() {
-        return new TextComponent("%");
+        return Component.literal("%");
     }
 }

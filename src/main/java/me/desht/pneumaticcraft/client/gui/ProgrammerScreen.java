@@ -59,7 +59,6 @@ import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Inventory;
@@ -201,7 +200,7 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
 
         undoButton = new WidgetButtonExtended(leftPos - 24, topPos + 2, 20, 20, "").withTag("undo");
         redoButton = new WidgetButtonExtended(leftPos - 24, topPos + 23, 20, 20, "").withTag("redo");
-        WidgetButtonExtended clearAllButton = new WidgetButtonExtended(leftPos - 24, topPos + 65, 20, 20, TextComponent.EMPTY, b -> clear());
+        WidgetButtonExtended clearAllButton = new WidgetButtonExtended(leftPos - 24, topPos + 65, 20, 20, Component.empty(), b -> clear());
         convertToRelativeButton = new WidgetButtonExtended(leftPos - 24, topPos + 86, 20, 20, "R", b -> convertToRelative());
         rotateCoordsButton = new WidgetButtonExtended(leftPos - 24, topPos + 107, 20, 20, "90", b -> rotateCoords90())
                 .setTooltipText(GuiUtils.xlateAndSplit("pneumaticcraft.gui.programmer.button.rotate90button.tooltip"));
@@ -335,7 +334,7 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
     private void updateDroneName() {
         ItemStack stack = te.getItemInProgrammingSlot();
         if (stack != ItemStack.EMPTY && !stack.getHoverName().getContents().equals(nameField.getValue())) {
-            stack.setHoverName(new TextComponent(nameField.getValue()));
+            stack.setHoverName(Component.literal(nameField.getValue()));
             sendDelayed(5);
         }
     }
@@ -352,8 +351,8 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
         updateVisibleProgWidgets();
     }
 
-    private static final Component TDR = new TextComponent(Symbols.TRIANGLE_DOWN_RIGHT);
-    private static final Component TUL = new TextComponent(Symbols.TRIANGLE_UP_LEFT);
+    private static final Component TDR = Component.literal(Symbols.TRIANGLE_DOWN_RIGHT);
+    private static final Component TUL = Component.literal(Symbols.TRIANGLE_UP_LEFT);
 
     private void toggleShowWidgets() {
         showingAllWidgets = !showingAllWidgets;
@@ -439,7 +438,8 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
                 widget.getTooltip(tooltip);
                 ThirdPartyManager.instance().getDocsProvider().addTooltip(tooltip, showingAllWidgets);
                 if (Minecraft.getInstance().options.advancedItemTooltips) {
-                    tooltip.add(new TextComponent(widget.getType().getRegistryName().toString()).withStyle(ChatFormatting.DARK_GRAY));
+                    ResourceLocation id = ModProgWidgets.PROG_WIDGETS.get().getKey(widget.getType());
+                    if (id != null) tooltip.add(Component.literal(id.toString()).withStyle(ChatFormatting.DARK_GRAY));
                 }
                 if (!tooltip.isEmpty()) {
                     renderComponentTooltip(matrixStack, tooltip, x - leftPos, y - topPos, font);
@@ -854,7 +854,7 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
 
         if (!programmedItem.isEmpty()) {
             int required = te.getRequiredPuzzleCount();
-            if (required != 0) exportButtonTooltip.add(TextComponent.EMPTY);
+            if (required != 0) exportButtonTooltip.add(Component.empty());
             int effectiveRequired = ClientUtils.getClientPlayer().isCreative() ? 0 : required;
             int available = te.availablePuzzlePieces + countPlayerPuzzlePieces();
             exportButton.active = exportButton.active && effectiveRequired <= available;
@@ -868,7 +868,7 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
                         .withStyle(ChatFormatting.GREEN));
             }
             if (required != 0 && ClientUtils.getClientPlayer().isCreative()) {
-                exportButtonTooltip.add(new TextComponent("(Creative mode)").withStyle(ChatFormatting.LIGHT_PURPLE));
+                exportButtonTooltip.add(Component.literal("(Creative mode)").withStyle(ChatFormatting.LIGHT_PURPLE));
             }
             if (effectiveRequired > available) {
                 exportButtonTooltip.add(xlate("pneumaticcraft.gui.tooltip.programmable.notEnoughPieces")

@@ -3,10 +3,10 @@
   "input": {
     "tag": "forge:crops/wheat"
   },
+  "loss_rate": 50,
   "results": [
     {
       "item": "pneumaticcraft:wheat_flour"
     }
-  ],
-  "loss_rate": 50
+  ]
 }

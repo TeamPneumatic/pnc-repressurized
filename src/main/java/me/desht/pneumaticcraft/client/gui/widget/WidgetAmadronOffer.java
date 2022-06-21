@@ -33,7 +33,6 @@ import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -53,7 +52,7 @@ public class WidgetAmadronOffer extends AbstractWidget implements ITooltipProvid
     private boolean renderBackground = true;
 
     public WidgetAmadronOffer(int x, int y, AmadronRecipe offer) {
-        super(x, y, 73, 35, TextComponent.EMPTY);
+        super(x, y, 73, 35, Component.empty());
         this.offer = offer;
 
         offer.getInput().accept(
@@ -67,8 +66,8 @@ public class WidgetAmadronOffer extends AbstractWidget implements ITooltipProvid
 
         if (offer.isRemovableBy(Minecraft.getInstance().player)) {
             List<Component> l = new ArrayList<>(GuiUtils.xlateAndSplit("pneumaticcraft.gui.amadron.amadronWidget.sneakRightClickToRemove"));
-            l.add(TextComponent.EMPTY);
-            subWidgets.add(new WidgetButtonExtended(x + 57, y + 1, 11, 11, new TextComponent(ChatFormatting.RED + "x"),
+            l.add(Component.empty());
+            subWidgets.add(new WidgetButtonExtended(x + 57, y + 1, 11, 11, Component.literal(ChatFormatting.RED + "x"),
                     b -> NetworkHandler.sendToServer(new PacketGuiButton("remove:" + offer.getId())))
                     .setTooltipText(l));
         }
@@ -160,19 +159,19 @@ public class WidgetAmadronOffer extends AbstractWidget implements ITooltipProvid
                 offer.getVendorName().copy().withStyle(ChatFormatting.WHITE))
                 .withStyle(ChatFormatting.YELLOW));
         curTip.add(xlate("pneumaticcraft.gui.amadron.amadronWidget.selling",
-                new TextComponent(offer.getOutput().toString()).withStyle(ChatFormatting.WHITE))
+                Component.literal(offer.getOutput().toString()).withStyle(ChatFormatting.WHITE))
                 .withStyle(ChatFormatting.YELLOW));
         curTip.add(xlate("pneumaticcraft.gui.amadron.amadronWidget.buying",
-                new TextComponent(offer.getInput().toString()).withStyle(ChatFormatting.WHITE))
+                Component.literal(offer.getInput().toString()).withStyle(ChatFormatting.WHITE))
                 .withStyle(ChatFormatting.YELLOW));
         if (shoppingAmount >= 0) {
             if (offer.getStock() >= 0) {
                 curTip.add(xlate("pneumaticcraft.gui.amadron.amadronWidget.stock",
-                        new TextComponent(Integer.toString(offer.getStock())).withStyle(ChatFormatting.WHITE))
+                        Component.literal(Integer.toString(offer.getStock())).withStyle(ChatFormatting.WHITE))
                         .withStyle(ChatFormatting.AQUA));
             }
             curTip.add(xlate("pneumaticcraft.gui.amadron.amadronWidget.inBasket",
-                    new TextComponent(Integer.toString(shoppingAmount)).withStyle(ChatFormatting.WHITE))
+                    Component.literal(Integer.toString(shoppingAmount)).withStyle(ChatFormatting.WHITE))
                     .withStyle(ChatFormatting.AQUA));
         }
         if (!offer.isUsableByPlayer(ClientUtils.getClientPlayer())) {
@@ -180,7 +179,7 @@ public class WidgetAmadronOffer extends AbstractWidget implements ITooltipProvid
         }
         offer.addAvailabilityData(ClientUtils.getClientPlayer(), curTip);
         if (Minecraft.getInstance().options.advancedItemTooltips) {
-            curTip.add(new TextComponent(offer.getId().toString()).withStyle(ChatFormatting.DARK_GRAY));
+            curTip.add(Component.literal(offer.getId().toString()).withStyle(ChatFormatting.DARK_GRAY));
         }
     }
 

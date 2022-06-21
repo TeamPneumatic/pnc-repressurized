@@ -30,7 +30,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
 
@@ -111,7 +110,7 @@ public class GPSAreaToolScreen extends GPSToolScreen {
     @Override
     protected void toggleVarType() {
         playerGlobals[index] = !playerGlobals[index];
-        varTypeButton.setMessage(new TextComponent(GlobalVariableHelper.getVarPrefix(playerGlobals[index])));
+        varTypeButton.setMessage(Component.literal(GlobalVariableHelper.getVarPrefix(playerGlobals[index])));
     }
 
     private void toggleP1P2(Button b) {
@@ -127,12 +126,12 @@ public class GPSAreaToolScreen extends GPSToolScreen {
             textFields[1].setValue(p1p2Pos[index].getY());
             textFields[2].setValue(p1p2Pos[index].getZ());
             variableField.setValue(vars[index]);
-            varTypeButton.setMessage(new TextComponent(GlobalVariableHelper.getVarPrefix(playerGlobals[index])));
+            varTypeButton.setMessage(Component.literal(GlobalVariableHelper.getVarPrefix(playerGlobals[index])));
         }
     }
 
     private Component getToggleLabel() {
         ChatFormatting color = index == 0 ? ChatFormatting.RED : ChatFormatting.GREEN;
-        return new TextComponent("P" + (index + 1)).withStyle(color);
+        return Component.literal("P" + (index + 1)).withStyle(color);
     }
 }

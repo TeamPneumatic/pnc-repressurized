@@ -1,26 +1,26 @@
 {
   "type": "minecraft:crafting_shaped",
-  "pattern": [
-    "PSP",
-    "ITI",
-    "PSP"
-  ],
   "key": {
+    "I": {
+      "tag": "forge:ingots/gold"
+    },
     "P": {
       "tag": "pneumaticcraft:plastic_sheets"
     },
     "S": {
       "type": "forge:nbt",
-      "item": "pneumaticcraft:small_tank",
-      "count": 1
-    },
-    "I": {
-      "tag": "forge:ingots/gold"
+      "count": 1,
+      "item": "pneumaticcraft:small_tank"
     },
     "T": {
       "item": "pneumaticcraft:pressure_tube"
     }
   },
+  "pattern": [
+    "PSP",
+    "ITI",
+    "PSP"
+  ],
   "result": {
     "item": "pneumaticcraft:medium_tank"
   }

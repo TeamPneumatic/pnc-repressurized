@@ -19,6 +19,7 @@ package me.desht.pneumaticcraft.datagen.recipe;
 
 import com.google.gson.JsonObject;
 import me.desht.pneumaticcraft.api.crafting.PneumaticCraftRecipeTypes;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.LiquidBlock;
@@ -75,7 +76,7 @@ public class HeatPropertiesRecipeBuilder extends PneumaticCraftRecipeBuilder<Hea
 
         @Override
         public void serializeRecipeData(JsonObject json) {
-            json.addProperty("block", block.getRegistryName().toString());
+            json.addProperty("block", PneumaticCraftUtils.getRegistryName(block).orElseThrow().toString());
             json.addProperty("temperature", temperature);
             json.addProperty("thermalResistance", thermalResistance);
             if (!predicates.isEmpty()) {
@@ -93,8 +94,8 @@ public class HeatPropertiesRecipeBuilder extends PneumaticCraftRecipeBuilder<Hea
         private void maybeAddBlockstateProp(JsonObject json, String key, BlockState state) {
             if (state != null) {
                 JsonObject obj = new JsonObject();
-                if (state.getBlock() instanceof LiquidBlock) {
-                    obj.addProperty("fluid", ((LiquidBlock) state.getBlock()).getFluid().getRegistryName().toString());
+                if (state.getBlock() instanceof LiquidBlock liq) {
+                    obj.addProperty("fluid", PneumaticCraftUtils.getRegistryName(liq.getFluid()).orElseThrow().toString());
                 } else {
                     obj.addProperty("block", state.toString());
                 }

@@ -18,9 +18,12 @@
 package me.desht.pneumaticcraft.common.thirdparty;
 
 import com.google.common.collect.Maps;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.forgespi.language.IModInfo;
-import net.minecraftforge.registries.IForgeRegistryEntry;
 
 import java.util.Map;
 
@@ -40,8 +43,20 @@ public class ModNameCache {
         id2name.put("minecraft", "Minecraft");
     }
 
-    public static String getModName(IForgeRegistryEntry<?> entry) {
-        return getModName(entry.getRegistryName().getNamespace());
+//    public static String getModName(IForgeRegistryEntry<?> entry) {
+//        return getModName(entry.getRegistryName().getNamespace());
+//    }
+
+    public static String getModName(Fluid fluid) {
+        return getModName(PneumaticCraftUtils.getRegistryName(fluid).orElseThrow().getNamespace());
+    }
+
+    public static String getModName(Item item) {
+        return getModName(PneumaticCraftUtils.getRegistryName(item).orElseThrow().getNamespace());
+    }
+
+    public static String getModName(Block block) {
+        return getModName(PneumaticCraftUtils.getRegistryName(block).orElseThrow().getNamespace());
     }
 
     public static String getModName(String modId) {

@@ -1,9 +1,9 @@
 {
   "type": "minecraft:smelting",
+  "cookingtime": 100,
+  "experience": 0.0,
   "ingredient": {
     "tag": "pneumaticcraft:smooth_plastic_bricks"
   },
-  "result": "pneumaticcraft:plastic",
-  "experience": 0.0,
-  "cookingtime": 100
+  "result": "pneumaticcraft:plastic"
 }

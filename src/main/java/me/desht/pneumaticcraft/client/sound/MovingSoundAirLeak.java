@@ -21,6 +21,7 @@ import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import net.minecraft.client.resources.sounds.AbstractTickableSoundInstance;
+import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.core.Direction;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
@@ -32,7 +33,7 @@ public class MovingSoundAirLeak extends AbstractTickableSoundInstance {
     private float targetPitch;
 
     MovingSoundAirLeak(BlockEntity te, Direction dir) {
-        super(ModSounds.LEAKING_GAS.get(), SoundSource.BLOCKS);
+        super(ModSounds.LEAKING_GAS.get(), SoundSource.BLOCKS, SoundInstance.createUnseededRandom());
         this.te = te;
         this.dir = dir;
         this.x = te.getBlockPos().getX();

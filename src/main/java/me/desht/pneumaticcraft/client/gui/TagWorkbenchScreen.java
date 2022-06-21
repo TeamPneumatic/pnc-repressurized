@@ -30,7 +30,6 @@ import me.desht.pneumaticcraft.common.network.PacketGuiButton;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.core.Registry;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.player.Inventory;
@@ -71,7 +70,7 @@ public class TagWorkbenchScreen extends AbstractPneumaticCraftContainerScreen<Ta
     public void init() {
         super.init();
 
-        addRenderableWidget(writeButton = new WidgetButtonExtended(leftPos + 162, topPos + 16, 20, 20, TextComponent.EMPTY, b -> writeTags())
+        addRenderableWidget(writeButton = new WidgetButtonExtended(leftPos + 162, topPos + 16, 20, 20, Component.empty(), b -> writeTags())
                 .setRenderStacks(new ItemStack(Items.WRITABLE_BOOK))
                 .setTooltipText(xlate("pneumaticcraft.gui.tooltip.tag_workbench.write_button")));
         addRenderableWidget(addButton = new WidgetButtonExtended(leftPos + 108, topPos + 90, 13, 13, Symbols.TRIANGLE_RIGHT,

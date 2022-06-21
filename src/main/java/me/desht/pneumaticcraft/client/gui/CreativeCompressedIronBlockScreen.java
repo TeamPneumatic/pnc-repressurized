@@ -25,7 +25,6 @@ import me.desht.pneumaticcraft.common.block.entity.CreativeCompressedIronBlockBl
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.common.inventory.CreativeCompressedIronBlockMenu;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 
@@ -115,6 +114,6 @@ public class CreativeCompressedIronBlockScreen extends AbstractPneumaticCraftCon
     }
 
     private void setText(WidgetButtonExtended b, String txt1, String txt2) {
-        b.setMessage(ClientUtils.hasShiftDown() ? new TextComponent(txt1) : new TextComponent(txt2));
+        b.setMessage(Component.literal(ClientUtils.hasShiftDown() ? txt1 : txt2));
     }
 }

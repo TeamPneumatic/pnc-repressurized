@@ -1,24 +1,24 @@
 {
   "type": "minecraft:crafting_shaped",
+  "key": {
+    "C": {
+      "item": "pneumaticcraft:advanced_air_compressor"
+    },
+    "L": {
+      "tag": "pneumaticcraft:upgrade_components"
+    },
+    "T": {
+      "item": "pneumaticcraft:advanced_pressure_tube"
+    },
+    "V": {
+      "item": "pneumaticcraft:vortex_cannon"
+    }
+  },
   "pattern": [
     "LTL",
     "VCV",
     "LTL"
   ],
-  "key": {
-    "L": {
-      "tag": "pneumaticcraft:upgrade_components"
-    },
-    "V": {
-      "item": "pneumaticcraft:vortex_cannon"
-    },
-    "C": {
-      "item": "pneumaticcraft:advanced_air_compressor"
-    },
-    "T": {
-      "item": "pneumaticcraft:advanced_pressure_tube"
-    }
-  },
   "result": {
     "item": "pneumaticcraft:jet_boots_upgrade_1"
   }

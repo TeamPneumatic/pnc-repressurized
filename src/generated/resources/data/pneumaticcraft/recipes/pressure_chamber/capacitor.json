@@ -3,8 +3,8 @@
   "inputs": [
     {
       "type": "pneumaticcraft:stacked_item",
-      "tag": "forge:nuggets/gold",
-      "count": 2
+      "count": 2,
+      "tag": "forge:nuggets/gold"
     },
     {
       "tag": "forge:slimeballs"

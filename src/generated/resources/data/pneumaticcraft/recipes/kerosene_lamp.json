@@ -1,23 +1,23 @@
 {
   "type": "minecraft:crafting_shaped",
+  "key": {
+    "B": {
+      "type": "forge:nbt",
+      "count": 1,
+      "item": "pneumaticcraft:small_tank"
+    },
+    "G": {
+      "tag": "forge:glass_panes"
+    },
+    "I": {
+      "tag": "forge:ingots/compressed_iron"
+    }
+  },
   "pattern": [
     " I ",
     "G G",
     "IBI"
   ],
-  "key": {
-    "I": {
-      "tag": "forge:ingots/compressed_iron"
-    },
-    "G": {
-      "tag": "forge:glass_panes"
-    },
-    "B": {
-      "type": "forge:nbt",
-      "item": "pneumaticcraft:small_tank",
-      "count": 1
-    }
-  },
   "result": {
     "item": "pneumaticcraft:kerosene_lamp"
   }

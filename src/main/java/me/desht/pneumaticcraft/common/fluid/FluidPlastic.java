@@ -23,37 +23,27 @@ import me.desht.pneumaticcraft.common.core.ModFluids;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.item.ICustomTooltipName;
 import me.desht.pneumaticcraft.common.item.PneumaticCraftBucketItem;
-import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.material.FluidState;
-import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.ForgeFlowingFluid;
 
-import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
-
 public abstract class FluidPlastic {
-    private static final FluidAttributes.Builder ATTRS = FluidAttributes.builder(
-            RL("block/fluid/plastic_still"), RL("block/fluid/plastic_flow")
-    ).temperature(PneumaticValues.PLASTIC_MIXER_MELTING_TEMP);
+    public static final PNCFluidRenderProps RENDER_PROPS = new PNCFluidRenderProps("plastic_still", "plastic_flow");
 
-    private static final ForgeFlowingFluid.Properties PROPS =
-            new ForgeFlowingFluid.Properties(ModFluids.PLASTIC, ModFluids.PLASTIC_FLOWING, ATTRS)
-                    .block(ModBlocks.PLASTIC).bucket(ModItems.PLASTIC_BUCKET);
+    private static ForgeFlowingFluid.Properties props() {
+        return new ForgeFlowingFluid.Properties(
+                ModFluids.PLASTIC_FLUID_TYPE, ModFluids.PLASTIC, ModFluids.PLASTIC_FLOWING
+        ).block(ModBlocks.PLASTIC).bucket(ModItems.PLASTIC_BUCKET).tickRate(10);
+    }
 
     public static class Source extends ForgeFlowingFluid.Source {
         public Source() {
-            super(PROPS);
-        }
-
-        @Override
-        public int getTickDelay(LevelReader world) {
-            return 10;
+            super(props());
         }
 
         @Override
@@ -69,7 +59,7 @@ public abstract class FluidPlastic {
 
     public static class Flowing extends ForgeFlowingFluid.Flowing {
         public Flowing() {
-            super(PROPS);
+            super(props());
         }
     }
 

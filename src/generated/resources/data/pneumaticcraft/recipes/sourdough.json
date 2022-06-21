@@ -1,22 +1,22 @@
 {
   "type": "minecraft:crafting_shaped",
-  "pattern": [
-    "FFF",
-    "FYF",
-    "FFF"
-  ],
   "key": {
     "F": {
       "tag": "forge:dusts/flour"
     },
     "Y": {
       "type": "pneumaticcraft:fluid",
-      "fluid": "pneumaticcraft:yeast_culture",
-      "amount": 1000
+      "amount": 1000,
+      "fluid": "pneumaticcraft:yeast_culture"
     }
   },
+  "pattern": [
+    "FFF",
+    "FYF",
+    "FFF"
+  ],
   "result": {
-    "item": "pneumaticcraft:sourdough",
-    "count": 8
+    "count": 8,
+    "item": "pneumaticcraft:sourdough"
   }
 }

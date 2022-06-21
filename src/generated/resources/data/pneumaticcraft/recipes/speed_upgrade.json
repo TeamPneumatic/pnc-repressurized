@@ -1,23 +1,23 @@
 {
   "type": "minecraft:crafting_shaped",
-  "pattern": [
-    "LXL",
-    "XCX",
-    "LXL"
-  ],
   "key": {
+    "C": {
+      "type": "pneumaticcraft:fluid",
+      "amount": 1000,
+      "tag": "forge:lubricant"
+    },
     "L": {
       "tag": "pneumaticcraft:upgrade_components"
     },
     "X": {
       "item": "minecraft:sugar"
-    },
-    "C": {
-      "type": "pneumaticcraft:fluid",
-      "tag": "forge:lubricant",
-      "amount": 1000
     }
   },
+  "pattern": [
+    "LXL",
+    "XCX",
+    "LXL"
+  ],
   "result": {
     "item": "pneumaticcraft:speed_upgrade"
   }

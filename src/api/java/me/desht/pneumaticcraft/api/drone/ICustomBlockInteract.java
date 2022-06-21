@@ -20,10 +20,10 @@ package me.desht.pneumaticcraft.api.drone;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.DyeColor;
-import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.registries.RegisterEvent;
 
 /**
- * Implement this and register it with {@link IDroneRegistry#registerCustomBlockInteractor(RegistryEvent.Register, ICustomBlockInteract)}.
+ * Implement this and register it with {@link IDroneRegistry#registerCustomBlockInteractor(RegisterEvent, ICustomBlockInteract)}.
  * This will add a puzzle piece that has only an Area white- and blacklist parameter (similar to a Goto piece).
  * This could be used to create custom energy import/export widgets, for example.
  */

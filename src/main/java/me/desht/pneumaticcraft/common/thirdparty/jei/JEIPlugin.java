@@ -50,7 +50,7 @@ import mezz.jei.api.runtime.IRecipesGui;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.client.resources.language.I18n;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -153,7 +153,7 @@ public class JEIPlugin implements IModPlugin {
         String k = ICustomTooltipName.getTranslationKey(stack, false);
         if (I18n.exists(k)) {
             for (String s : StringUtils.splitByWholeSeparator(I18n.get(k), GuiUtils.TRANSLATION_LINE_BREAK)) {
-                registry.addIngredientInfo(stack, VanillaTypes.ITEM_STACK, new TextComponent(s));
+                registry.addIngredientInfo(stack, VanillaTypes.ITEM_STACK, Component.literal(s));
             }
         }
     }

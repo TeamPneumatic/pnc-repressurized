@@ -25,7 +25,6 @@ import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.BaseSpawner;
@@ -69,7 +68,7 @@ public class BlockTrackEntryMobSpawner implements IBlockTrackEntry {
             if (e == null) {
                 // seems to happen with enderman spawners, possibly related to EndermanEntity#readAdditional() doing a bad world cast
                 // certainly spams a lot a vanilla-related errors
-                infoList.add(new TextComponent("<ERROR> Missing entity?"));
+                infoList.add(Component.literal("<ERROR> Missing entity?"));
                 return;
             }
             infoList.add(xlate("pneumaticcraft.blockTracker.info.spawner.type", e.getName().getString()));

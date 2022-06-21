@@ -24,7 +24,6 @@ import me.desht.pneumaticcraft.api.universal_sensor.IPollSensorSetting;
 import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
@@ -78,6 +77,6 @@ public class WorldTicktimeSensor implements IPollSensorSetting {
 
     @Override
     public void getAdditionalInfo(List<Component> info) {
-        info.add(new TextComponent("Tick Resolution"));
+        info.add(Component.literal("Tick Resolution"));
     }
 }

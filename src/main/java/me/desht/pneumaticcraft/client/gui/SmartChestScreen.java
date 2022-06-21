@@ -43,7 +43,6 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Mth;
@@ -126,10 +125,10 @@ public class SmartChestScreen extends AbstractPneumaticCraftContainerScreen<Smar
         if (te.getUpgrades(ModUpgrades.MAGNET.get()) > 0) {
             showRangeButton.setVisible(true);
             if (AreaRenderManager.getInstance().isShowing(te)) {
-                showRangeButton.setMessage(new TextComponent("R").withStyle(ChatFormatting.AQUA));
+                showRangeButton.setMessage(Component.literal("R").withStyle(ChatFormatting.AQUA));
                 showRangeButton.setTooltipText(xlate("pneumaticcraft.gui.programmer.button.stopShowingArea"));
             } else {
-                showRangeButton.setMessage(new TextComponent("R").withStyle(ChatFormatting.GRAY));
+                showRangeButton.setMessage(Component.literal("R").withStyle(ChatFormatting.GRAY));
                 showRangeButton.setTooltipText(xlate("pneumaticcraft.gui.programmer.button.showArea"));
             }
         } else {
@@ -151,7 +150,7 @@ public class SmartChestScreen extends AbstractPneumaticCraftContainerScreen<Smar
     }
 
     private WidgetButtonExtended makePushPullButton(RelativeFace face, int x, int y) {
-        WidgetButtonExtended button = new WidgetButtonExtended(x, y, 20, 20, TextComponent.EMPTY, b -> {
+        WidgetButtonExtended button = new WidgetButtonExtended(x, y, 20, 20, Component.empty(), b -> {
             te.cycleMode(face, Screen.hasShiftDown());
             setupPushPullButton((WidgetButtonExtended) b, face);
         }).withTag("push_pull:" + face.toString());
@@ -167,7 +166,7 @@ public class SmartChestScreen extends AbstractPneumaticCraftContainerScreen<Smar
             case PULL -> button.setRenderStacks(new ItemStack(Blocks.STICKY_PISTON));
         }
         button.setTooltipText(ImmutableList.of(
-                new TextComponent(face.toString()).withStyle(ChatFormatting.YELLOW),
+                Component.literal(face.toString()).withStyle(ChatFormatting.YELLOW),
                 xlate(mode.getTranslationKey()))
         );
     }

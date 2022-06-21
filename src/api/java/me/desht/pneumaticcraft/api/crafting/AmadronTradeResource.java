@@ -202,15 +202,16 @@ public class AmadronTradeResource {
         JsonObject res = new JsonObject();
         resource.ifLeft(item -> {
             res.addProperty("type", Type.ITEM.name());
-            ResourceLocation name = item.getItem().getRegistryName();
-            res.addProperty("id", name == null ? "" : name.toString());
+            ResourceLocation id = ForgeRegistries.ITEMS.getKey(item.getItem());
+            res.addProperty("id", id == null ? "" : id.toString());
             res.addProperty("amount", item.getCount());
             if (item.hasTag()) {
                 res.addProperty("nbt", Objects.requireNonNull(item.getTag()).toString()); //NBTToJsonConverter.getObject(item.getTag()));
             }
         }).ifRight(fluid -> {
             res.addProperty("type", Type.FLUID.name());
-            res.addProperty("id", fluid.getFluid().getRegistryName().toString());
+            ResourceLocation id = ForgeRegistries.FLUIDS.getKey(fluid.getFluid());
+            res.addProperty("id", id == null ? "" : id.toString());
             res.addProperty("amount", fluid.getAmount());
         });
         return res;
@@ -236,8 +237,8 @@ public class AmadronTradeResource {
 
     public ResourceLocation getId() {
         return resource.map(
-                itemStack -> itemStack.getItem().getRegistryName(),
-                fluidStack -> fluidStack.getFluid().getRegistryName()
+                itemStack -> ForgeRegistries.ITEMS.getKey(itemStack.getItem()),
+                fluidStack -> ForgeRegistries.FLUIDS.getKey(fluidStack.getFluid())
         );
     }
 

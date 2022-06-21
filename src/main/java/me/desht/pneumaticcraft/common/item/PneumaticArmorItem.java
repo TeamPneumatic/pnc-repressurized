@@ -266,7 +266,7 @@ public class PneumaticArmorItem extends ArmorItem implements
 
     public static void setSearchedItem(ItemStack helmetStack, Item searchedItem) {
         if (helmetStack.getItem() instanceof PneumaticArmorItem) {
-            NBTUtils.setString(helmetStack, NBT_SEARCH_ITEM, searchedItem.getRegistryName().toString());
+            NBTUtils.setString(helmetStack, NBT_SEARCH_ITEM, PneumaticCraftUtils.getRegistryName(searchedItem).orElseThrow().toString());
         }
     }
 

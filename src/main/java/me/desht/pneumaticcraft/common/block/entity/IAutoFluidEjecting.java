@@ -26,7 +26,7 @@ import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler.FluidAction;
 
-import static net.minecraftforge.fluids.FluidAttributes.BUCKET_VOLUME;
+import static net.minecraftforge.fluids.FluidType.BUCKET_VOLUME;
 
 interface IAutoFluidEjecting {
     default void autoExportFluid(AbstractPneumaticCraftBlockEntity te) {

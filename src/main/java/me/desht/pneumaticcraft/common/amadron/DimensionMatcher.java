@@ -24,7 +24,6 @@ import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import me.desht.pneumaticcraft.api.misc.IPlayerMatcher;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 
@@ -57,7 +56,7 @@ public class DimensionMatcher implements IPlayerMatcher {
     @Override
     public void addDescription(Player player, List<Component> tooltip) {
         if (!dimensionIds.isEmpty()) {
-            List<Component> items = dimensionIds.stream().map(id -> new TextComponent(id.toString())).collect(Collectors.toList());
+            List<Component> items = dimensionIds.stream().map(id -> Component.literal(id.toString())).collect(Collectors.toList());
             standardTooltip(player, tooltip, xlate("pneumaticcraft.playerFilter.dimensions"), items);
         }
     }

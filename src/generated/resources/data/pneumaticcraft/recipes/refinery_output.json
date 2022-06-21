@@ -1,21 +1,21 @@
 {
   "type": "minecraft:crafting_shaped",
+  "key": {
+    "D": {
+      "tag": "forge:gems/diamond"
+    },
+    "G": {
+      "tag": "forge:glass"
+    },
+    "S": {
+      "item": "pneumaticcraft:reinforced_stone_slab"
+    }
+  },
   "pattern": [
     "SSS",
     "GDG",
     "SSS"
   ],
-  "key": {
-    "S": {
-      "item": "pneumaticcraft:reinforced_stone_slab"
-    },
-    "G": {
-      "tag": "forge:glass"
-    },
-    "D": {
-      "tag": "forge:gems/diamond"
-    }
-  },
   "result": {
     "item": "pneumaticcraft:refinery_output"
   }

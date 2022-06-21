@@ -21,6 +21,7 @@ import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableEntity;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.Mob;
@@ -29,7 +30,6 @@ import net.minecraft.world.item.ItemStack;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Random;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
@@ -80,7 +80,7 @@ public class HackableMobDisarm implements IHackableEntity {
         return false;
     }
 
-    private boolean doDisarm(Mob entity, EquipmentSlot slot, Random rand) {
+    private boolean doDisarm(Mob entity, EquipmentSlot slot, RandomSource rand) {
         if (entity.getItemBySlot(slot).isEmpty()) return false;
 
         float[] dropChances = slot.getType() == EquipmentSlot.Type.ARMOR ? entity.armorDropChances : entity.handDropChances;

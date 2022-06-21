@@ -59,7 +59,7 @@ public class MinigunItemRenderer extends BlockEntityWithoutLevelRenderer {
                     matrixStack.mulPose(Vector3f.XP.rotationDegrees(0));
                     matrixStack.mulPose(Vector3f.YP.rotationDegrees(0));
                     matrixStack.mulPose(Vector3f.ZP.rotationDegrees(180));
-                    if (mc.options.mainHand == HumanoidArm.RIGHT) {
+                    if (mc.options.mainHand().get() == HumanoidArm.RIGHT) {
                         matrixStack.translate(-1, -1.7, 0.1);
                     } else {
                         matrixStack.translate(0, 0, 0);

@@ -90,7 +90,7 @@ public class TextVariableParser {
 
     private static String stackToStr(ItemStack stack, boolean id) {
         if (stack.isEmpty()) return "";
-        return id ? stack.getItem().getRegistryName().toString() : stack.getDisplayName().getString();
+        return id ? PneumaticCraftUtils.getRegistryName(stack.getItem()).orElseThrow().toString() : stack.getDisplayName().getString();
     }
 
     @FunctionalInterface

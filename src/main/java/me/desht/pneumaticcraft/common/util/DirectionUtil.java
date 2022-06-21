@@ -18,7 +18,6 @@
 package me.desht.pneumaticcraft.common.util;
 
 import net.minecraft.core.Direction;
-import net.minecraft.core.Direction.*;
 
 import static net.minecraft.core.Direction.*;
 

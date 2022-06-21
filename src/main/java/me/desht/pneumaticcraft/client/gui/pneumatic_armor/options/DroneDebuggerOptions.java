@@ -44,7 +44,6 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -95,7 +94,7 @@ public class DroneDebuggerOptions extends IOptionPage.SimpleOptionPage<DroneDebu
                 b -> programmerUnit.gotoPiece(selectedDrone.getActiveWidget()));
         gui.addWidget(showActive);
 
-        followCheckbox = new WidgetCheckBox(30, 176, 0xFFFFFFFF, new TextComponent(" ").append(xlate("pneumaticcraft.gui.progWidget.debug.followActive")));
+        followCheckbox = new WidgetCheckBox(30, 176, 0xFFFFFFFF, Component.literal(" ").append(xlate("pneumaticcraft.gui.progWidget.debug.followActive")));
         followCheckbox.x = 180 - followCheckbox.getWidth();
         gui.addWidget(followCheckbox);
 
@@ -234,7 +233,7 @@ public class DroneDebuggerOptions extends IOptionPage.SimpleOptionPage<DroneDebu
                 tooltip.add((xlate("pneumaticcraft.gui.progWidget.debug.lastMessage",
                                 PneumaticCraftUtils.convertTicksToMinutesAndSeconds(elapsed, true))).withStyle(ChatFormatting.AQUA)
                 );
-                tooltip.add(new TextComponent("  \"")
+                tooltip.add(Component.literal("  \"")
                         .append(xlate(entry.getMessage()))
                         .append("\"  ")
                         .withStyle(ChatFormatting.AQUA, ChatFormatting.ITALIC));
@@ -245,11 +244,11 @@ public class DroneDebuggerOptions extends IOptionPage.SimpleOptionPage<DroneDebu
             }
             if (widget instanceof IAreaProvider) {
                 if (widgetId == areaShowWidgetId) {
-                    tooltip.add(new TextComponent("Right-Click: ")
+                    tooltip.add(Component.literal("Right-Click: ")
                             .append(xlate("pneumaticcraft.gui.programmer.button.stopShowingArea"))
                             .withStyle(ChatFormatting.GREEN));
                 } else {
-                    tooltip.add(new TextComponent("Right-Click: ")
+                    tooltip.add(Component.literal("Right-Click: ")
                             .append(xlate("pneumaticcraft.gui.programmer.button.showArea"))
                             .withStyle(ChatFormatting.GREEN));
                 }

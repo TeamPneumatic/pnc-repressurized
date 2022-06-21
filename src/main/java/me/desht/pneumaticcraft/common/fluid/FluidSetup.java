@@ -36,9 +36,10 @@ public class FluidSetup {
 
         // register hot fluids as (very inefficient) fuels
         for (Fluid fluid : ForgeRegistries.FLUIDS.getValues()) {
-            if (fluid.getAttributes().getTemperature() >= ConfigHelper.common().general.minFluidFuelTemperature.get() && fluid.isSource(fluid.defaultFluidState())) {
+            int temperature = fluid.getFluidType().getTemperature();
+            if (temperature >= ConfigHelper.common().general.minFluidFuelTemperature.get() && fluid.isSource(fluid.defaultFluidState())) {
                 // non-API usage... register an explicit fluid rather than a tag
-                FuelRegistry.getInstance().registerHotFluid(fluid, (fluid.getAttributes().getTemperature() - 300) * 40, 0.25f);
+                FuelRegistry.getInstance().registerHotFluid(fluid, (temperature - 300) * 40, 0.25f);
             }
         }
 

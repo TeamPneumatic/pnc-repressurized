@@ -1,10 +1,5 @@
 {
   "type": "minecraft:crafting_shaped",
-  "pattern": [
-    "BBB",
-    "BRB",
-    "BBB"
-  ],
   "key": {
     "B": {
       "item": "pneumaticcraft:reinforced_brick_tile"
@@ -13,8 +8,13 @@
       "tag": "forge:dusts/redstone"
     }
   },
+  "pattern": [
+    "BBB",
+    "BRB",
+    "BBB"
+  ],
   "result": {
-    "item": "pneumaticcraft:logistics_core",
-    "count": 2
+    "count": 2,
+    "item": "pneumaticcraft:logistics_core"
   }
 }

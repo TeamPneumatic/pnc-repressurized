@@ -19,7 +19,6 @@ package me.desht.pneumaticcraft.common.block.entity;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 
 /**
  * Represents a block entity which has a range manager and the concept of a range area of effect.
@@ -33,7 +32,7 @@ public interface IRangedTE {
      * @return a text component
      */
     default Component rangeText() {
-        return new TextComponent("R").withStyle(getRangeManager().shouldShowRange() ? ChatFormatting.AQUA : ChatFormatting.GRAY);
+        return Component.literal("R").withStyle(getRangeManager().shouldShowRange() ? ChatFormatting.AQUA : ChatFormatting.GRAY);
     }
 
     default int getRange() {

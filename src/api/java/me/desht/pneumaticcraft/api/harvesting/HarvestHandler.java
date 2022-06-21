@@ -26,19 +26,17 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.registries.ForgeRegistryEntry;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
 /**
- * Defines a generic harvest handler.  Register new harvest handlers via Forge registry events:
- * {@link net.minecraftforge.event.RegistryEvent.Register}
+ * Defines a generic harvest handler.  Register new harvest handlers via the standard Forge deferred register system.
  *
  * @author MineMaarten, desht
  */
-public abstract class HarvestHandler extends ForgeRegistryEntry<HarvestHandler> {
+public abstract class HarvestHandler {
 
     /**
      * Should actually harvest the block. Usually this is just a matter of breaking the block, but you can override this for custom behavior.
@@ -85,7 +83,7 @@ public abstract class HarvestHandler extends ForgeRegistryEntry<HarvestHandler> 
     
     /**
      * Should add the items the connected item filters in the Harvest puzzle piece in the Programmer can use to determine if a block should be harvested.
-     * Called after {@link HarvestHandler#canHarvest(World, IBlockReader, BlockPos, BlockState, IDrone)}, when that method returns true
+     * Called after {@link HarvestHandler#canHarvest(Level, BlockGetter, BlockPos, BlockState, IDrone)}, when that method returns true
      * @param world the world
      * @param chunkCache Use preferably methods from this cache as it's generally quicker than accessing via 'world'. 
      * The cache has access to the chunks that are accessed by the Drone current program, so as long as only the y pos is varied of the

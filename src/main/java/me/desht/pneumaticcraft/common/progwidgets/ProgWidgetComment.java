@@ -21,7 +21,6 @@ import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.DyeColor;
 
@@ -75,7 +74,7 @@ public class ProgWidgetComment extends ProgWidgetText {
 
     @Override
     public List<Component> getExtraStringInfo() {
-        return Collections.singletonList(new TextComponent(string));
+        return Collections.singletonList(Component.literal(string));
     }
 
     @Override

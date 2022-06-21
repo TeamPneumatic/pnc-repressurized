@@ -31,8 +31,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
@@ -125,7 +123,7 @@ public class AphorismTileBlock extends AbstractPneumaticCraftBlock implements Co
                 ListTag l = subTag.getList(AphorismTileBlockEntity.NBT_TEXT_LINES, Tag.TAG_STRING);
                 if (!l.isEmpty()) {
                     curInfo.add(xlate("gui.tooltip.block.pneumaticcraft.aphorism_tile.text").withStyle(ChatFormatting.YELLOW));
-                    l.forEach(el -> curInfo.add(new TextComponent("  " + el.getAsString()).withStyle(ChatFormatting.ITALIC)));
+                    l.forEach(el -> curInfo.add(Component.literal("  " + el.getAsString()).withStyle(ChatFormatting.ITALIC)));
                 }
                 curInfo.add(xlate("gui.tooltip.block.pneumaticcraft.aphorism_tile.reset").withStyle(ChatFormatting.DARK_GREEN));
             }
@@ -199,10 +197,10 @@ public class AphorismTileBlock extends AbstractPneumaticCraftBlock implements Co
     }
 
     private void sendEditorMessage(Player player) {
-        Component msg = new TextComponent(ChatFormatting.WHITE.toString())
-                .append(new TranslatableComponent("pneumaticcraft.gui.aphorismTileEditor"))
-                .append(new TextComponent(": "))
-                .append(new TranslatableComponent("pneumaticcraft.gui.holdF1forHelp"));
+        Component msg = Component.literal(ChatFormatting.WHITE.toString())
+                .append(Component.translatable("pneumaticcraft.gui.aphorismTileEditor"))
+                .append(Component.literal(": "))
+                .append(Component.translatable("pneumaticcraft.gui.holdF1forHelp"));
         player.displayClientMessage(msg, true);
     }
 

@@ -1967,5 +1967,13 @@
    "programmingPuzzle.pneumaticcraft.text.name" : "Text",
    "programmingPuzzle.pneumaticcraft.void_item.name" : "Void Item",
    "programmingPuzzle.pneumaticcraft.void_liquid.name" : "Void Fluid",
-   "programmingPuzzle.pneumaticcraft.wait.name" : "Wait"
+   "programmingPuzzle.pneumaticcraft.wait.name" : "Wait",
+   "config.jade.plugin_pneumaticcraft.entity" : "entity",
+   "config.jade.plugin_pneumaticcraft.semiblock" : "semiblock",
+   "config.jade.plugin_immersiveengineering.hemp" : "hemp",
+   "config.jade.plugin_immersiveengineering.multiblock_icon" : "multiblock_icon",
+   "config.jade.plugin_pneumaticcraft.tube_module" : "tube_module",
+   "config.jade.plugin_pneumaticcraft.redstone" : "redstone",
+   "config.jade.plugin_pneumaticcraft.camo" : "camo",
+   "config.jade.plugin_pneumaticcraft.pneumatic" : "pneumatic"
 }

@@ -84,7 +84,7 @@ public class PressurizableItem extends Item implements IPressurizableItem, Vanis
     @Override
     public void fillItemCategory(CreativeModeTab group, NonNullList<ItemStack> items) {
         // too early to use a capability here :(
-        if (this.allowdedIn(group)) {
+        if (this.allowedIn(group)) {
             items.add(new ItemStack(this));
 
             ItemStack stack = new ItemStack(this);

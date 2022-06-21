@@ -1,17 +1,17 @@
 {
   "type": "minecraft:crafting_shaped",
-  "pattern": [
-    "B  ",
-    "BB ",
-    "BBB"
-  ],
   "key": {
     "B": {
       "item": "pneumaticcraft:compressed_bricks"
     }
   },
+  "pattern": [
+    "B  ",
+    "BB ",
+    "BBB"
+  ],
   "result": {
-    "item": "pneumaticcraft:compressed_brick_stairs",
-    "count": 4
+    "count": 4,
+    "item": "pneumaticcraft:compressed_brick_stairs"
   }
 }

@@ -19,8 +19,8 @@ package me.desht.pneumaticcraft.common.block.entity;
 
 import com.google.common.collect.ImmutableList;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
+import me.desht.pneumaticcraft.api.data.PneumaticCraftTags;
 import me.desht.pneumaticcraft.api.pressure.PressureTier;
-import me.desht.pneumaticcraft.common.PneumaticCraftTags;
 import me.desht.pneumaticcraft.common.block.ElectrostaticCompressorBlock;
 import me.desht.pneumaticcraft.common.block.entity.RedstoneController.EmittingRedstoneMode;
 import me.desht.pneumaticcraft.common.block.entity.RedstoneController.RedstoneMode;
@@ -37,6 +37,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.EntitySelector;
 import net.minecraft.world.entity.EntityType;
@@ -120,7 +121,7 @@ public class ElectrostaticCompressorBlockEntity extends AbstractAirHandlingBlock
 
     private void maybeLightningStrike() {
         Level level = nonNullLevel();
-        Random rnd = level.random;
+        RandomSource rnd = level.random;
         if (rnd.nextInt(getStrikeChance()) == 0) {
             int dist = rnd.nextInt(6);
             float angle = rnd.nextFloat() * (float)Math.PI * 2;

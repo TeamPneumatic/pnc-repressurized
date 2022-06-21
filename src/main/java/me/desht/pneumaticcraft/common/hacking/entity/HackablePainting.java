@@ -21,8 +21,8 @@ import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableEntity;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.decoration.Motive;
 import net.minecraft.world.entity.decoration.Painting;
+import net.minecraft.world.entity.decoration.PaintingVariant;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.registries.ForgeRegistries;
 
@@ -63,14 +63,16 @@ public class HackablePainting implements IHackableEntity {
 
     @Override
     public void onHackFinished(Entity entity, Player player) {
-        Motive art = ((Painting) entity).motive;
-        List<Motive> candidate = new ArrayList<>();
-        for (Motive a : ForgeRegistries.PAINTING_TYPES.getValues()) {
+        PaintingVariant art = ((Painting) entity).getVariant().value();
+        List<PaintingVariant> candidate = new ArrayList<>();
+        for (PaintingVariant a : ForgeRegistries.PAINTING_VARIANTS.getValues()) {
             if (a.getHeight() == art.getHeight() && a.getWidth() == art.getWidth()) {
                 candidate.add(a);
             }
         }
-        ((Painting) entity).motive = candidate.get(entity.level.random.nextInt(candidate.size()));
+
+        // FIXME painting variants
+//        ((Painting) entity).setv = candidate.get(entity.level.random.nextInt(candidate.size()));
     }
 
     @Override

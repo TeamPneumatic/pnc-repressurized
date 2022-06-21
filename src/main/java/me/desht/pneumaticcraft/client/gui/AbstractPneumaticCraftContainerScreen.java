@@ -62,13 +62,13 @@ import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.client.renderer.texture.Tickable;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fml.ModList;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nonnull;
 import java.util.*;
@@ -193,7 +193,7 @@ public abstract class AbstractPneumaticCraftContainerScreen<C extends AbstractPn
     }
 
     private WidgetButtonExtended createRedstoneModeButton(int x, int idx, RedstoneController.RedstoneMode<?> mode) {
-        WidgetButtonExtended b = new WidgetButtonExtended(x, 24, 20, 20, TextComponent.EMPTY).withTag("redstone:" + idx);
+        WidgetButtonExtended b = new WidgetButtonExtended(x, 24, 20, 20, Component.empty()).withTag("redstone:" + idx);
         mode.getTexture().ifLeft(b::setRenderStacks).ifRight(b::setRenderedIcon);
         b.setTooltipKey(mode.getTranslationKey());
         return b;
@@ -201,13 +201,14 @@ public abstract class AbstractPneumaticCraftContainerScreen<C extends AbstractPn
 
     protected void addJeiFilterInfoTab() {
         if (ModList.get().isLoaded(ModIds.JEI)) {
-            addAnimatedStat(new TextComponent("JEI"), Textures.GUI_JEI_LOGO, 0xFFCEEDCE, true)
+            addAnimatedStat(Component.literal("JEI"), Textures.GUI_JEI_LOGO, 0xFFCEEDCE, true)
                     .setText(xlate("pneumaticcraft.gui.jei.filterDrag").withStyle(ChatFormatting.DARK_GRAY));
         }
     }
 
     protected String upgradeCategory() {
-        return PneumaticCraftUtils.modDefaultedString(Objects.requireNonNull(te.getType().getRegistryName()));
+        ResourceLocation regName = PneumaticCraftUtils.getRegistryName(ForgeRegistries.BLOCK_ENTITIES, te.getType()).orElseThrow();
+        return PneumaticCraftUtils.modDefaultedString(regName);
     }
 
     private void addUpgradeTab() {
@@ -219,10 +220,11 @@ public abstract class AbstractPneumaticCraftContainerScreen<C extends AbstractPn
                         int max = ApplicableUpgradesDB.getInstance().getMaxUpgrades(te, upgrade);
                         text.add(upgrade.getItemStack().getHoverName().copy().withStyle(ChatFormatting.WHITE, ChatFormatting.UNDERLINE));
                         text.add(xlate("pneumaticcraft.gui.tab.upgrades.max", max).withStyle(ChatFormatting.GRAY));
-                        String upgradeName = PneumaticCraftUtils.modDefaultedString(upgrade.getRegistryName());
+                        ResourceLocation regName = PneumaticCraftUtils.getRegistryName(ModUpgrades.UPGRADES.get(), upgrade).orElseThrow();
+                        String upgradeName = PneumaticCraftUtils.modDefaultedString(regName);
                         String k = "pneumaticcraft.gui.tab.upgrades." + upgradeCategory() + "." + upgradeName;
                         text.addAll(I18n.exists(k) ? GuiUtils.xlateAndSplit(k) : GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.upgrades.generic." + upgradeName));
-                        text.add(TextComponent.EMPTY);
+                        text.add(Component.empty());
                     }
                 });
         if (!text.isEmpty()) {
@@ -270,7 +272,7 @@ public abstract class AbstractPneumaticCraftContainerScreen<C extends AbstractPn
             button.setRenderedIcon(Textures.GUI_X_BUTTON);
         }
         button.setTooltipText(ImmutableList.of(
-                new TextComponent(relativeFace.toString()).withStyle(ChatFormatting.YELLOW),
+                Component.literal(relativeFace.toString()).withStyle(ChatFormatting.YELLOW),
                 sc.getFaceLabel(relativeFace)
         ));
     }
@@ -280,7 +282,7 @@ public abstract class AbstractPneumaticCraftContainerScreen<C extends AbstractPn
         stat.setForegroundColor(0xFF000000);
         stat.setText(info);
         if (!ThirdPartyManager.instance().getDocsProvider().isInstalled()) {
-            stat.appendText(Arrays.asList(TextComponent.EMPTY, xlate("pneumaticcraft.gui.tab.info.installDocsProvider")));
+            stat.appendText(Arrays.asList(Component.empty(), xlate("pneumaticcraft.gui.tab.info.installDocsProvider")));
         }
     }
 
@@ -383,7 +385,7 @@ public abstract class AbstractPneumaticCraftContainerScreen<C extends AbstractPn
         }
         if (shouldParseVariablesInTooltips()) {
             for (int i = 0; i < tooltip.size(); i++) {
-                tooltip.set(i, new TextComponent(new TextVariableParser(tooltip.get(i).getString(), ClientUtils.getClientPlayer().getUUID()).parse()));
+                tooltip.set(i, Component.literal(new TextVariableParser(tooltip.get(i).getString(), ClientUtils.getClientPlayer().getUUID()).parse()));
             }
         }
 
@@ -480,7 +482,7 @@ public abstract class AbstractPneumaticCraftContainerScreen<C extends AbstractPn
         text.add(xlate("pneumaticcraft.gui.tooltip.air", String.format("%,d", Math.round(curPressure * volume))));
         text.add(xlate("pneumaticcraft.gui.tooltip.baseVolume", String.format("%,d", baseVolume)));
         if (volume > baseVolume) {
-            text.add(new TextComponent(Symbols.TRIANGLE_RIGHT + " " + upgrades + " x ")
+            text.add(Component.literal(Symbols.TRIANGLE_RIGHT + " " + upgrades + " x ")
                     .append(ModUpgrades.VOLUME.get().getItemStack().getHoverName())
             );
             addExtraVolumeModifierInfo(text);
@@ -607,7 +609,7 @@ public abstract class AbstractPneumaticCraftContainerScreen<C extends AbstractPn
         private final RelativeFace relativeFace;
 
         public SideConfiguratorButton(int startX, int startY, RelativeFace relativeFace, OnPress pressable) {
-            super(startX, startY, 20, 20, TextComponent.EMPTY, pressable);
+            super(startX, startY, 20, 20, Component.empty(), pressable);
             this.relativeFace = relativeFace;
         }
     }

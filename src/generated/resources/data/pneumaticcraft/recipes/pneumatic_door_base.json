@@ -1,10 +1,5 @@
 {
   "type": "minecraft:crafting_shaped",
-  "pattern": [
-    " CI",
-    "IIT",
-    "III"
-  ],
   "key": {
     "C": {
       "item": "pneumaticcraft:pneumatic_cylinder"
@@ -16,6 +11,11 @@
       "item": "pneumaticcraft:pressure_tube"
     }
   },
+  "pattern": [
+    " CI",
+    "IIT",
+    "III"
+  ],
   "result": {
     "item": "pneumaticcraft:pneumatic_door_base"
   }

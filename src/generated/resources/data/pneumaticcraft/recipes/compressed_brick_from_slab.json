@@ -1,14 +1,14 @@
 {
   "type": "minecraft:crafting_shaped",
-  "pattern": [
-    "B",
-    "B"
-  ],
   "key": {
     "B": {
       "item": "pneumaticcraft:compressed_brick_slab"
     }
   },
+  "pattern": [
+    "B",
+    "B"
+  ],
   "result": {
     "item": "pneumaticcraft:compressed_bricks"
   }

@@ -19,11 +19,11 @@ package me.desht.pneumaticcraft.common.thirdparty.theoneprobe;
 
 import mcjty.theoneprobe.api.*;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
+import me.desht.pneumaticcraft.api.data.PneumaticCraftTags;
 import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.api.misc.IPneumaticCraftProbeable;
 import me.desht.pneumaticcraft.api.semiblock.IDirectionalSemiblock;
 import me.desht.pneumaticcraft.api.semiblock.ISemiBlock;
-import me.desht.pneumaticcraft.common.PneumaticCraftTags;
 import me.desht.pneumaticcraft.common.semiblock.SemiblockTracker;
 import me.desht.pneumaticcraft.common.thirdparty.ModNameCache;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -32,8 +32,6 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -92,9 +90,9 @@ public class TOPInit implements Function<ITheOneProbe, Void> {
                         IProbeInfo h = probeInfo.horizontal();
                         h.item(new ItemStack(state.getBlock()));
                         IProbeInfo v = h.vertical();
-                        Component text = new TranslatableComponent(state.getBlock().getDescriptionId());
+                        Component text = Component.translatable(state.getBlock().getDescriptionId());
                         v.text(text.copy().withStyle(ChatFormatting.YELLOW));
-                        v.text(new TextComponent(ChatFormatting.BLUE.toString() + ChatFormatting.ITALIC + ModNameCache.getModName(state.getBlock())));
+                        v.text(Component.literal(ChatFormatting.BLUE.toString() + ChatFormatting.ITALIC + ModNameCache.getModName(state.getBlock())));
                     }
                 }
                 entity.getCapability(PNCCapabilities.AIR_HANDLER_CAPABILITY).ifPresent(h -> {

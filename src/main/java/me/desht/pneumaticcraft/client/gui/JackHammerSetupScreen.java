@@ -31,7 +31,6 @@ import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketGuiButton;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
@@ -61,13 +60,13 @@ public class JackHammerSetupScreen extends AbstractPneumaticCraftContainerScreen
 
         if (digMode != null) {
             addRenderableWidget(selectorButton = new WidgetButtonExtended(leftPos + 127, topPos + 67, 20, 20,
-                    TextComponent.EMPTY, b -> toggleShowChoices()))
+                    Component.empty(), b -> toggleShowChoices()))
                     .setRenderedIcon(digMode.getGuiIcon());
 
             int xBase = 147 - 20 * DigMode.values().length;
             for (DigMode dm : DigMode.values()) {
                 WidgetButtonExtended button = new WidgetButtonExtended(leftPos + xBase, topPos + 47, 20, 20,
-                        TextComponent.EMPTY, b -> selectDigMode(dm))
+                        Component.empty(), b -> selectDigMode(dm))
                         .setRenderedIcon(dm.getGuiIcon())
                         .withTag("digmode:" + dm);
                 xBase += 20;

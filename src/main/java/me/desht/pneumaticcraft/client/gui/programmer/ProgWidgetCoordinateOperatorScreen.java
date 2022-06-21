@@ -24,7 +24,7 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetRadioButton;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetCoordinateOperator;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetCoordinateOperator.EnumOperator;
 import net.minecraft.core.Direction;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.Component;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
@@ -55,7 +55,7 @@ public class ProgWidgetCoordinateOperatorScreen extends ProgWidgetAreaShowScreen
 
         for (Direction.Axis axis : Direction.Axis.values()) {
             WidgetCheckBox checkBox = new WidgetCheckBox(guiLeft + 100, guiTop + 42 + axis.ordinal() * 12, 0xFF404040,
-                    new TextComponent(axis.getName()), b -> progWidget.getAxisOptions().setCheck(axis, b.checked));
+                    Component.literal(axis.getName()), b -> progWidget.getAxisOptions().setCheck(axis, b.checked));
             addRenderableWidget(checkBox);
             checkBox.setChecked(progWidget.getAxisOptions().shouldCheck(axis));
         }

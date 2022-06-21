@@ -1,8 +1,8 @@
 {
   "type": "minecraft:stonecutting",
+  "count": 2,
   "ingredient": {
     "item": "pneumaticcraft:reinforced_stone"
   },
-  "result": "pneumaticcraft:reinforced_stone_slab",
-  "count": 2
+  "result": "pneumaticcraft:reinforced_stone_slab"
 }

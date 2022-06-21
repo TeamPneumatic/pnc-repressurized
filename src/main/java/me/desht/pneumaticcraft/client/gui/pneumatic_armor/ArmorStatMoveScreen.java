@@ -35,7 +35,6 @@ import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
 
@@ -66,7 +65,7 @@ public class ArmorStatMoveScreen extends AbstractPneumaticCraftScreen {
     }
 
     public ArmorStatMoveScreen(IArmorUpgradeClientHandler<?> renderHandler, ResourceLocation statID, @Nonnull IGuiAnimatedStat movedStat) {
-        super(new TextComponent("Move Gui"));
+        super(Component.literal("Move Gui"));
 
         this.movedStat = movedStat;
         this.renderHandler = renderHandler;
@@ -109,7 +108,7 @@ public class ArmorStatMoveScreen extends AbstractPneumaticCraftScreen {
         addRenderableWidget(snapToGrid);
 
         gridSlider = new PNCForgeSlider(snapToGrid.x, snapToGrid.y + 12, snapToGrid.getWidth(), 10,
-                TextComponent.EMPTY, TextComponent.EMPTY, 1, 12, gridSize, true, null);
+                Component.empty(), Component.empty(), 1, 12, gridSize, true, null);
         addRenderableWidget(gridSlider);
     }
 
@@ -208,9 +207,9 @@ public class ArmorStatMoveScreen extends AbstractPneumaticCraftScreen {
 
         if (helpText.isEmpty()) {
             helpText.add(xlate(IArmorUpgradeHandler.getStringKey(renderHandler.getID())).withStyle(ChatFormatting.GREEN, ChatFormatting.UNDERLINE));
-            helpText.add(TextComponent.EMPTY);
+            helpText.add(Component.empty());
             helpText.add(xlate("pneumaticcraft.armor.moveStat.move"));
-            helpText.add(new TextComponent("<REPLACEME>"));
+            helpText.add(Component.literal("<REPLACEME>"));
         }
         helpText.set(3, xlate("pneumaticcraft.armor.moveStat.expand" + (movedStat.isLeftSided() ? "Left" : "Right")));
     }

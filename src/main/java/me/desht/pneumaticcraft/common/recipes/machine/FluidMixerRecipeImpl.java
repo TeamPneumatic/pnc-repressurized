@@ -32,7 +32,6 @@ import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.registries.ForgeRegistryEntry;
 
 import javax.annotation.Nullable;
 
@@ -110,7 +109,7 @@ public class FluidMixerRecipeImpl extends FluidMixerRecipe {
         return ModRecipeTypes.FLUID_MIXER.get();
     }
 
-    public static class Serializer<T extends FluidMixerRecipe> extends ForgeRegistryEntry<RecipeSerializer<?>> implements RecipeSerializer<T> {
+    public static class Serializer<T extends FluidMixerRecipe> implements RecipeSerializer<T> {
         private final IFactory<T> factory;
 
         public Serializer(FluidMixerRecipeImpl.Serializer.IFactory<T> factory) {

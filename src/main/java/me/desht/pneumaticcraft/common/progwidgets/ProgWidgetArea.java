@@ -36,7 +36,6 @@ import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.DyeColor;
@@ -121,17 +120,17 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
         List<Component> res = new ArrayList<>();
 
         if (varNames[0].isEmpty() && varNames[1].isEmpty() && PneumaticCraftUtils.isValidPos(pos[0]) && pos[0].equals(pos[1])) {
-            res.add(new TextComponent(PneumaticCraftUtils.posToString(pos[0])));
+            res.add(Component.literal(PneumaticCraftUtils.posToString(pos[0])));
         } else {
             if (!varNames[0].isEmpty()) {
-                res.add(new TextComponent("\"" + varNames[0] + "\""));
+                res.add(Component.literal("\"" + varNames[0] + "\""));
             } else if (PneumaticCraftUtils.isValidPos(pos[0])) {
-                res.add(new TextComponent(PneumaticCraftUtils.posToString(pos[0])));
+                res.add(Component.literal(PneumaticCraftUtils.posToString(pos[0])));
             }
             if (!varNames[1].isEmpty() && !varNames[1].equals(varNames[0])) {
-                res.add(new TextComponent("\"" + varNames[1] + "\""));
+                res.add(Component.literal("\"" + varNames[1] + "\""));
             } else if (PneumaticCraftUtils.isValidPos(pos[1]) && !pos[1].equals(pos[0])) {
-                res.add(new TextComponent(PneumaticCraftUtils.posToString(pos[1])));
+                res.add(Component.literal(PneumaticCraftUtils.posToString(pos[1])));
             }
             if (res.size() == 2) {
                 MutableComponent c = xlate(type.getTranslationKey()).append("/");
@@ -149,9 +148,9 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
         super.getTooltip(curTooltip);
 
         if (!varNames[0].isEmpty() && varNames[0].equals(varNames[1])) {
-            curTooltip.add(new TextComponent(String.format("Var \"%s\"", varNames[0])).withStyle(ChatFormatting.YELLOW));
+            curTooltip.add(Component.literal(String.format("Var \"%s\"", varNames[0])).withStyle(ChatFormatting.YELLOW));
         } else if (PneumaticCraftUtils.isValidPos(pos[0]) && pos[0].equals(pos[1])) {
-            curTooltip.add(new TextComponent("P1: ").append(new TextComponent(PneumaticCraftUtils.posToString(pos[0])).withStyle(ChatFormatting.YELLOW)));
+            curTooltip.add(Component.literal("P1: ").append(Component.literal(PneumaticCraftUtils.posToString(pos[0])).withStyle(ChatFormatting.YELLOW)));
         } else {
             int n = curTooltip.size();
             for (int i = 0; i < 2; i++) {
@@ -159,7 +158,7 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
                         pos[i] == null ? null : PneumaticCraftUtils.posToString(pos[i]) :
                         String.format("Var \"%s\"", varNames[i]);
                 if (text != null) {
-                    curTooltip.add(new TextComponent("P" + (i + 1) + ": ").append(new TextComponent(text).withStyle(ChatFormatting.YELLOW)));
+                    curTooltip.add(Component.literal("P" + (i + 1) + ": ").append(Component.literal(text).withStyle(ChatFormatting.YELLOW)));
                 }
             }
             if (curTooltip.size() - n == 2) {
@@ -174,7 +173,7 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
         List<AreaTypeWidget> widgets = new ArrayList<>();
         type.addUIWidgets(widgets);
         for (AreaTypeWidget widget : widgets) {
-            curTooltip.add(xlate(widget.title).append(" ").append(new TextComponent(widget.getCurValue()).withStyle(ChatFormatting.YELLOW)));
+            curTooltip.add(xlate(widget.title).append(" ").append(Component.literal(widget.getCurValue()).withStyle(ChatFormatting.YELLOW)));
         }
     }
 

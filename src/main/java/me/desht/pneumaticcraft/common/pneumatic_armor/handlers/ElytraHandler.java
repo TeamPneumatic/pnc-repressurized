@@ -63,7 +63,7 @@ public class ElytraHandler extends BaseArmorUpgradeHandler<IArmorExtensionData> 
                 CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
                 if (handler.upgradeUsable(CommonUpgradeHandlers.elytraHandler, true)) {
                     handler.addAir(EquipmentSlot.CHEST, -10);  // 1 air/tick while gliding
-                    entity.gameEvent(GameEvent.ELYTRA_FREE_FALL);
+                    entity.gameEvent(GameEvent.ELYTRA_GLIDE);
                     return true;
                 } else {
                     return false;

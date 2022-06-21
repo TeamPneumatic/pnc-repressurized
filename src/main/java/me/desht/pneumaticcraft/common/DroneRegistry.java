@@ -17,8 +17,9 @@
 
 package me.desht.pneumaticcraft.common;
 
-import me.desht.pneumaticcraft.api.drone.*;
-import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetCustomBlockInteract;
+import me.desht.pneumaticcraft.api.drone.IDrone;
+import me.desht.pneumaticcraft.api.drone.IDroneRegistry;
+import me.desht.pneumaticcraft.api.drone.IPathfindHandler;
 import me.desht.pneumaticcraft.common.util.ProgrammedDroneUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.GlobalPos;
@@ -28,7 +29,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fluids.FluidStack;
 import org.apache.commons.lang3.Validate;
 
@@ -51,12 +51,16 @@ public enum DroneRegistry implements IDroneRegistry {
         pathfindableBlocks.put(block, handler);
     }
 
-    @Override
-    public void registerCustomBlockInteractor(RegistryEvent.Register<ProgWidgetType<?>> event, ICustomBlockInteract interactor) {
-        ProgWidgetType<?> type = ProgWidgetType.createType(() ->
-                new ProgWidgetCustomBlockInteract().setInteractor(interactor)).setRegistryName(interactor.getID());
-        event.getRegistry().register(type);
-    }
+//    @Override
+//    public void registerCustomBlockInteractor(RegisterEvent event, ICustomBlockInteract interactor) {
+//        if (event.getRegistryKey().equals(ModProgWidgets.PROG_WIDGETS.get().getRegistryKey())) {
+//            ProgWidgetType<?> type = ProgWidgetType.createType(() -> new ProgWidgetCustomBlockInteract().setInteractor(interactor));
+//            event.register(ModProgWidgets.PROG_WIDGETS.get(), interactor.getID(), () -> type);
+//        }
+//        ProgWidgetType<?> type = ProgWidgetType.createType(() ->
+//                new ProgWidgetCustomBlockInteract().setInteractor(interactor)).setRegistryName(interactor.getID());
+//        event.getRegistry().register(type);
+//    }
 
     @Override
     public PathfinderMob deliverItemsAmazonStyle(GlobalPos globalPos, ItemStack... deliveredStacks) {

@@ -17,8 +17,8 @@
 
 package me.desht.pneumaticcraft.api.misc;
 
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.TextComponent;
 
 /**
  * A small collection of handy Unicode symbols
@@ -42,6 +42,6 @@ public class Symbols {
     public static final String X_MARK = "\u2717";
 
     public static MutableComponent bullet() {
-        return new TextComponent(BULLET + " ");
+        return Component.literal(BULLET + " ");
     }
 }

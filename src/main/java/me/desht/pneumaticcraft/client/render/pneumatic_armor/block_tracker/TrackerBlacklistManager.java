@@ -20,17 +20,17 @@ package me.desht.pneumaticcraft.client.render.pneumatic_armor.block_tracker;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.resources.ResourceLocation;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 
-import java.util.Objects;
 import java.util.Set;
 
 public class TrackerBlacklistManager {
-    private static final Set<ResourceLocation> ENERGY_BLACKLIST = Sets.newHashSet();
-    private static final Set<ResourceLocation> INVENTORY_BLACKLIST = Sets.newHashSet();
-    private static final Set<ResourceLocation> FLUID_BLACKLIST = Sets.newHashSet();
+    private static final Set<BlockEntityType<?>> ENERGY_BLACKLIST = Sets.newHashSet();
+    private static final Set<BlockEntityType<?>> INVENTORY_BLACKLIST = Sets.newHashSet();
+    private static final Set<BlockEntityType<?>> FLUID_BLACKLIST = Sets.newHashSet();
 
     public static void addEnergyTEToBlacklist(BlockEntity te, Throwable e) {
         addEntry(ENERGY_BLACKLIST, te, e);
@@ -44,31 +44,27 @@ public class TrackerBlacklistManager {
         addEntry(FLUID_BLACKLIST, te, e);
     }
 
-    private static void addEntry(Set<ResourceLocation> blacklist, BlockEntity te, Throwable e) {
-        if (!blacklist.contains(keyFor(te))) {
+    private static void addEntry(Set<BlockEntityType<?>> blacklist, BlockEntity te, Throwable e) {
+        if (!blacklist.contains(te.getType())) {
             e.printStackTrace();
-            String title = Objects.requireNonNull(Objects.requireNonNull(te.getLevel()).getBlockState(te.getBlockPos()).getBlock().getRegistryName()).toString();
+            String title = PneumaticCraftUtils.getRegistryName(te.getBlockState().getBlock()).orElseThrow().toString();
             HUDHandler.getInstance().addMessage(
-                    new TextComponent("Block tracking failed for " + title + "!"),
-                    ImmutableList.of(new TextComponent("A stacktrace can be found in the log.")),
+                    Component.literal("Block tracking failed for " + title + "!"),
+                    ImmutableList.of(Component.literal("A stacktrace can be found in the log.")),
                     80, 0xFFFF0000);
-            blacklist.add(keyFor(te));
+            blacklist.add(te.getType());
         }
     }
 
     static boolean isEnergyBlacklisted(BlockEntity te) {
-        return ENERGY_BLACKLIST.contains(keyFor(te));
+        return ENERGY_BLACKLIST.contains(te.getType());
     }
 
     static boolean isInventoryBlacklisted(BlockEntity te) {
-        return INVENTORY_BLACKLIST.contains(keyFor(te));
+        return INVENTORY_BLACKLIST.contains(te.getType());
     }
 
     static boolean isFluidBlacklisted(BlockEntity te) {
-        return FLUID_BLACKLIST.contains(keyFor(te));
-    }
-
-    private static ResourceLocation keyFor(BlockEntity te) {
-        return te.getType().getRegistryName();
+        return FLUID_BLACKLIST.contains(te.getType());
     }
 }

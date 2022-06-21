@@ -1,24 +1,7 @@
 {
   "parent": "pneumaticcraft:assembly_controller",
-  "display": {
-    "icon": {
-      "item": "pneumaticcraft:aphorism_tile"
-    },
-    "title": {
-      "translate": "pneumaticcraft.advancement.aphorism_tile"
-    },
-    "description": {
-      "translate": "pneumaticcraft.advancement.aphorism_tile.desc"
-    },
-    "frame": "task",
-    "show_toast": true,
-    "announce_to_chat": true,
-    "hidden": false,
-    "background": "pneumaticcraft:textures/gui/advancement_bg.png"
-  },
   "criteria": {
     "0": {
-      "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
           {
@@ -27,7 +10,24 @@
             ]
           }
         ]
-      }
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "announce_to_chat": true,
+    "background": "pneumaticcraft:textures/gui/advancement_bg.png",
+    "description": {
+      "translate": "pneumaticcraft.advancement.aphorism_tile.desc"
+    },
+    "frame": "task",
+    "hidden": false,
+    "icon": {
+      "item": "pneumaticcraft:aphorism_tile"
+    },
+    "show_toast": true,
+    "title": {
+      "translate": "pneumaticcraft.advancement.aphorism_tile"
     }
   },
   "requirements": [

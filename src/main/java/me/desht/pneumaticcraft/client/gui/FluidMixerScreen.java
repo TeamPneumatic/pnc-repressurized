@@ -30,7 +30,6 @@ import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
@@ -59,7 +58,7 @@ public class FluidMixerScreen extends AbstractPneumaticCraftContainerScreen<Flui
         addRenderableWidget(new WidgetTank(leftPos + 99, topPos + 19, te.getOutputTank()));
 
         for (int i = 0; i < 2; i++) {
-            dumpButtons[i] = new WidgetButtonExtended(leftPos + 14 + i * 20, topPos + 86, 14, 14, TextComponent.EMPTY)
+            dumpButtons[i] = new WidgetButtonExtended(leftPos + 14 + i * 20, topPos + 86, 14, 14, Component.empty())
                     .withTag("dump" + (i + 1));
             addRenderableWidget(dumpButtons[i]);
         }
@@ -93,7 +92,7 @@ public class FluidMixerScreen extends AbstractPneumaticCraftContainerScreen<Flui
 
         for (int i = 0; i < 2; i++) {
             String k = hasShiftDown() ? "dumpInput" : "moveInput";
-            dumpButtons[i].setMessage(hasShiftDown() ? new TextComponent("X").withStyle(ChatFormatting.RED) : new TextComponent(Symbols.TRIANGLE_RIGHT).withStyle(ChatFormatting.DARK_AQUA));
+            dumpButtons[i].setMessage(hasShiftDown() ? Component.literal("X").withStyle(ChatFormatting.RED) : Component.literal(Symbols.TRIANGLE_RIGHT).withStyle(ChatFormatting.DARK_AQUA));
             dumpButtons[i].setTooltipKey("pneumaticcraft.gui.thermopneumatic." + k);
         }
     }

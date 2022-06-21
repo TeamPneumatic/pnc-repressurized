@@ -38,15 +38,18 @@ import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.client.gui.ProgrammerScreen;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.block.entity.ProgrammerBlockEntity;
+import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.inventory.ProgrammerMenu;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketProgrammerUpdate;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetCrafting;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetItemFilter;
+import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.recipe.RecipeIngredientRole;
+import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.transfer.IRecipeTransferError;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
@@ -54,10 +57,10 @@ import mezz.jei.api.runtime.IRecipesGui;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingRecipe;
-import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.minecraftforge.client.event.ScreenOpenEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -65,7 +68,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
-public class ProgrammerTransferHandler implements IRecipeTransferHandler<ProgrammerMenu, Recipe> {
+public class ProgrammerTransferHandler implements IRecipeTransferHandler<ProgrammerMenu, CraftingRecipe> {
     private static ProgrammerScreen programmerScreen = null;
 
     private final IRecipeTransferHandlerHelper transferHelper;
@@ -80,14 +83,19 @@ public class ProgrammerTransferHandler implements IRecipeTransferHandler<Program
     }
 
     @Override
-    public Class<Recipe> getRecipeClass() {
-        return Recipe.class;
+    public Optional<MenuType<ProgrammerMenu>> getMenuType() {
+        return Optional.of(ModMenuTypes.PROGRAMMER.get());
     }
 
     @Override
-    public @Nullable IRecipeTransferError transferRecipe(ProgrammerMenu container, Recipe recipe, IRecipeSlotsView recipeSlots, Player player, boolean maxTransfer, boolean doTransfer) {
+    public RecipeType<CraftingRecipe> getRecipeType() {
+        return RecipeTypes.CRAFTING;
+    }
+
+    @Override
+    public @Nullable IRecipeTransferError transferRecipe(ProgrammerMenu container, CraftingRecipe recipe, IRecipeSlotsView recipeSlots, Player player, boolean maxTransfer, boolean doTransfer) {
         if (programmerScreen != null) {
-            IProgWidget craftingWidget = recipe instanceof CraftingRecipe ? findSuitableCraftingWidget(programmerScreen) : null;
+            IProgWidget craftingWidget = findSuitableCraftingWidget(programmerScreen);
 
             List<ProgWidgetItemFilter> params = makeFilterWidgets(craftingWidget, recipe, recipeSlots, craftingWidget == null && !maxTransfer);
             if (params.isEmpty()) return transferHelper.createInternalError();

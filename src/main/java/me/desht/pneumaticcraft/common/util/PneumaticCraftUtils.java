@@ -30,8 +30,7 @@ import net.minecraft.core.*;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.TagKey;
@@ -51,6 +50,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.ForgeMod;
 import net.minecraftforge.common.util.BlockSnapshot;
@@ -61,6 +61,8 @@ import net.minecraftforge.fluids.capability.IFluidHandler.FluidAction;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
+import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.server.ServerLifecycleHooks;
 import org.apache.commons.lang3.math.NumberUtils;
 
@@ -144,7 +146,7 @@ public class PneumaticCraftUtils {
     }
 
     public static List<? extends Component> asStringComponent(List<String> l) {
-        return l.stream().map(TextComponent::new).toList();
+        return l.stream().map(Component::literal).toList();
     }
 
     /**
@@ -279,7 +281,7 @@ public class PneumaticCraftUtils {
     }
 
     private static void addText(List<Component> l, String s) {
-        l.add(new TextComponent(s));
+        l.add(Component.literal(s));
     }
 
     /**
@@ -339,8 +341,8 @@ public class PneumaticCraftUtils {
         if (filterStack.isEmpty() || stack.isEmpty()) return false;
 
         if (checkModSimilarity) {
-            String mod1 = filterStack.getItem().getRegistryName().getNamespace();
-            String mod2 = stack.getItem().getRegistryName().getNamespace();
+            String mod1 = getRegistryName(filterStack.getItem()).map(ResourceLocation::getNamespace).orElse("");
+            String mod2 = getRegistryName(stack.getItem()).map(ResourceLocation::getNamespace).orElse("");
             return mod1.equals(mod2);
         }
 
@@ -522,12 +524,12 @@ public class PneumaticCraftUtils {
      * @param s the translation key
      * @return the translated string (if called server-side, a string which The One Probe will handle client-side)
      */
-    public static TranslatableComponent xlate(String s, Object... args) {
-        return new TranslatableComponent(s, args);
+    public static MutableComponent xlate(String s, Object... args) {
+        return Component.translatable(s, args);
     }
 
-    public static Component dyeColorDesc(int c) {
-        return new TranslatableComponent("color.minecraft." + DyeColor.byId(c).getName())
+    public static MutableComponent dyeColorDesc(int c) {
+        return Component.translatable("color.minecraft." + DyeColor.byId(c).getName())
                 .withStyle(ChatFormatting.BOLD);
     }
 
@@ -668,7 +670,7 @@ public class PneumaticCraftUtils {
      * @return the block name, empty if the given position isn't currently loaded
      */
     public static Component getBlockNameAt(Level level, BlockPos pos) {
-        return level.isLoaded(pos) ? new TranslatableComponent(level.getBlockState(pos).getBlock().getDescriptionId()) : TextComponent.EMPTY.plainCopy();
+        return level.isLoaded(pos) ? xlate(level.getBlockState(pos).getBlock().getDescriptionId()) : Component.empty().plainCopy();
     }
 
     public static CompoundTag copyNBTWithout(@Nonnull CompoundTag nbt, @Nonnull String skip) {
@@ -690,5 +692,21 @@ public class PneumaticCraftUtils {
         return Registry.ITEM.getHolderOrThrow(Registry.ITEM.getResourceKey(item).orElseThrow())
                 .tags()
                 .collect(Collectors.toSet());
+    }
+
+    public static Optional<ResourceLocation> getRegistryName(Item item) {
+        return getRegistryName(ForgeRegistries.ITEMS, item);
+    }
+
+    public static Optional<ResourceLocation> getRegistryName(Block block) {
+        return getRegistryName(ForgeRegistries.BLOCKS, block);
+    }
+
+    public static Optional<ResourceLocation> getRegistryName(Fluid fluid) {
+        return getRegistryName(ForgeRegistries.FLUIDS, fluid);
+    }
+
+    public static <T> Optional<ResourceLocation> getRegistryName(IForgeRegistry<T> registry, T object) {
+        return Optional.ofNullable(registry.getKey(object));
     }
 }

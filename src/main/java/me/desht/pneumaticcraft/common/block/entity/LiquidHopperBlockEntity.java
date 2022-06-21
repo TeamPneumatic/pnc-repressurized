@@ -141,7 +141,7 @@ public class LiquidHopperBlockEntity extends AbstractHopperBlockEntity<LiquidHop
 
         // try to pour fluid into the world
         if (ConfigHelper.common().machines.liquidHopperDispenser.get() && getUpgrades(ModUpgrades.DISPENSER.get()) > 0
-                && tank.getFluidAmount() >= leaveMaterialCount + FluidAttributes.BUCKET_VOLUME) {
+                && tank.getFluidAmount() >= leaveMaterialCount + FluidType.BUCKET_VOLUME) {
             return FluidUtils.tryPourOutFluid(outputCap, nonNullLevel(), getBlockPos().relative(dir), false, false, FluidAction.EXECUTE);
         }
 
@@ -180,7 +180,7 @@ public class LiquidHopperBlockEntity extends AbstractHopperBlockEntity<LiquidHop
         for (Entity e : cachedInputEntities) {
             if (e.isAlive() && e instanceof ItemEntity entity) {
                 // special case: buckets can only drain 1000 mB at a time
-                int max = entity.getItem().getItem() instanceof BucketItem ? FluidAttributes.BUCKET_VOLUME : maxItems * 100;
+                int max = entity.getItem().getItem() instanceof BucketItem ? FluidType.BUCKET_VOLUME : maxItems * 100;
                 FluidActionResult res = FluidUtil.tryEmptyContainer(entity.getItem(), tank, max, null, true);
                 if (res.success) {
                     entity.setItem(res.result);

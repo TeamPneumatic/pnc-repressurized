@@ -26,6 +26,7 @@ import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.Ent
 import me.desht.pneumaticcraft.common.entity.drone.DroneEntity;
 import me.desht.pneumaticcraft.common.inventory.AbstractPneumaticCraftMenu;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
@@ -43,8 +44,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
@@ -197,15 +197,15 @@ public class ClientUtils {
         return mw.getGuiScaledWidth() > 700 && mw.getGuiScaledHeight() > 512;
     }
 
-    public static float getBrightnessAtWorldHeight() {
-        Player player = getClientPlayer();
-        BlockPos pos = new BlockPos.MutableBlockPos(player.getX(), getClientLevel().getMaxBuildHeight(), player.getZ());
-        if (player.level.isLoaded(pos)) {
-            return player.level.dimensionType().brightness(player.level.getMaxLocalRawBrightness(pos));
-        } else {
-            return 0.0F;
-        }
-    }
+//    public static float getBrightnessAtWorldHeight() {
+//        Player player = getClientPlayer();
+//        BlockPos pos = new BlockPos.MutableBlockPos(player.getX(), getClientLevel().getMaxBuildHeight(), player.getZ());
+//        if (player.level.isLoaded(pos)) {
+//            return player.level.dimensionType().brightness(player.level.getMaxLocalRawBrightness(pos));
+//        } else {
+//            return 0.0F;
+//        }
+//    }
 
     public static int getLightAt(BlockPos pos) {
         return LevelRenderer.getLightColor(getClientLevel(), pos);
@@ -244,7 +244,7 @@ public class ClientUtils {
     }
 
     public static Component translateDirectionComponent(Direction d) {
-        return new TranslatableComponent("pneumaticcraft.gui.tooltip.direction." + d.toString());
+        return Component.translatable("pneumaticcraft.gui.tooltip.direction." + d.toString());
     }
 
     /**
@@ -260,7 +260,7 @@ public class ClientUtils {
             if (keyBinding.getKey().getType() == InputConstants.Type.KEYSYM
                     && keyBinding.getKey().getValue() >= GLFW.GLFW_KEY_KP_0
                     && keyBinding.getKey().getValue() <= GLFW.GLFW_KEY_KP_EQUAL) {
-                return new TextComponent("KP_").append(s);
+                return Component.literal("KP_").append(s);
             } else {
                 return s;
             }
@@ -280,7 +280,8 @@ public class ClientUtils {
             String subKey = screen.getClass().getSimpleName().toLowerCase(Locale.ROOT);
             Item item = stack.getItem();
             String base = item instanceof BlockItem ? "gui.tooltip.block" : "gui.tooltip.item";
-            String k = String.join(".", base, item.getRegistryName().getNamespace(), item.getRegistryName().getPath(), subKey);
+            ResourceLocation regName = PneumaticCraftUtils.getRegistryName(item).orElseThrow();
+            String k = String.join(".", base, regName.getNamespace(), regName.getPath(), subKey);
             if (I18n.exists(k)) {
                 tooltip.addAll(GuiUtils.xlateAndSplit(k).stream().map(s -> s.copy().withStyle(ChatFormatting.GRAY)).toList());
             }
@@ -293,7 +294,7 @@ public class ClientUtils {
      * @return the squared render distance, in blocks
      */
     public static int getRenderDistanceThresholdSq() {
-        int d = Minecraft.getInstance().options.renderDistance * 16;
+        int d = Minecraft.getInstance().options.renderDistance().get() * 16;
         return d * d;
     }
 
