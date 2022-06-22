@@ -21,6 +21,7 @@ import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModFluids;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.fluids.ForgeFlowingFluid;
@@ -41,7 +42,28 @@ public abstract class FluidOil {
 
         @Override
         public boolean move(FluidState state, LivingEntity entity, Vec3 movementVector, double gravity) {
-            return super.move(state, entity, movementVector, gravity);
+            // based on lava movement
+            double y = entity.getY();
+            boolean falling = entity.getDeltaMovement().y <= 0.0D;
+            entity.moveRelative(0.02F, movementVector);
+            entity.move(MoverType.SELF, entity.getDeltaMovement());
+            if (entity.getFluidTypeHeight(getFluidType()) <= entity.getFluidJumpThreshold()) {
+                entity.setDeltaMovement(entity.getDeltaMovement().multiply(0.5D, 0.8D, 0.5D));
+                Vec3 fallingMovement = entity.getFluidFallingAdjustedMovement(gravity, falling, entity.getDeltaMovement());
+                entity.setDeltaMovement(fallingMovement);
+            } else {
+                entity.setDeltaMovement(entity.getDeltaMovement().scale(0.5D));
+            }
+
+            if (!entity.isNoGravity()) {
+                entity.setDeltaMovement(entity.getDeltaMovement().add(0.0D, -gravity / 4.0D, 0.0D));
+            }
+
+            Vec3 delta = entity.getDeltaMovement();
+            if (entity.horizontalCollision && entity.isFree(delta.x, delta.y + (double)0.6F - entity.getY() + y, delta.z)) {
+                entity.setDeltaMovement(delta.x, 0.3D, delta.z);
+            }
+            return true;
         }
     }
 
