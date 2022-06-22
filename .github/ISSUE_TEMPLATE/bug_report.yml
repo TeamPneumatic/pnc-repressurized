@@ -50,7 +50,9 @@ body:
   - type: input
     id: mod_version
     attributes:
-      label: You can find the mod version by looking in your instance's `mods/` folder, or by clicking the **Mods** button in the main Minecraft menu
+      label: "Which version of PneumaticCraft: Repressurized are you using?"
+      description: |
+        You can find the mod version by looking in your instance's `mods/` folder, or by clicking the **Mods** button in the main Minecraft menu.
     validations:
       required: true
   - type: input
