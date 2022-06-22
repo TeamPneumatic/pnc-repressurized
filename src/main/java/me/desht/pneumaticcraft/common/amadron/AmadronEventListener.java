@@ -49,31 +49,30 @@ public class AmadronEventListener {
 
     @SubscribeEvent
     public void onDroneSuicide(DroneSuicideEvent event) {
-        if (event.drone instanceof AmadroneEntity) {
-            AmadroneEntity drone = (AmadroneEntity) event.drone;
-            AmadronRecipe offer = AmadronOfferManager.getInstance().getOffer(drone.getHandlingOffer());
+        if (event.drone instanceof AmadroneEntity amadrone) {
+            AmadronRecipe offer = AmadronOfferManager.getInstance().getOffer(amadrone.getHandlingOffer());
             if (offer != null) {
                 offer.getInput().accept(
                         itemStack -> {
-                            int requiredCount = offer.getInput().getAmount() * drone.getOfferTimes();
-                            for (int i = 0; i < drone.getInv().getSlots(); i++) {
-                                requiredCount -= drone.getInv().getStackInSlot(i).getCount();
+                            int requiredCount = offer.getInput().getAmount() * amadrone.getOfferTimes();
+                            for (int i = 0; i < amadrone.getInv().getSlots(); i++) {
+                                requiredCount -= amadrone.getInv().getStackInSlot(i).getCount();
                             }
                             if (requiredCount <= 0) {
-                                for (int i = 0; i < drone.getInv().getSlots(); i++) {
-                                    drone.getInv().setStackInSlot(i, ItemStack.EMPTY);
+                                for (int i = 0; i < amadrone.getInv().getSlots(); i++) {
+                                    amadrone.getInv().setStackInSlot(i, ItemStack.EMPTY);
                                 }
                                 MinecraftForge.EVENT_BUS.post(new AmadronRetrievalEvent(event.drone));
                             } else {
-                                onAmadronFailure(drone, offer);
+                                onAmadronFailure(amadrone, offer);
                             }
                         },
                         fluidStack -> {
-                            int requiredCount = offer.getInput().getAmount() * drone.getOfferTimes();
-                            if (drone.getFluidTank().getFluidAmount() >= requiredCount) {
+                            int requiredCount = offer.getInput().getAmount() * amadrone.getOfferTimes();
+                            if (amadrone.getFluidTank().getFluidAmount() >= requiredCount) {
                                 MinecraftForge.EVENT_BUS.post(new AmadronRetrievalEvent(event.drone));
                             } else {
-                                onAmadronFailure(drone, offer);
+                                onAmadronFailure(amadrone, offer);
                             }
                         }
                 );

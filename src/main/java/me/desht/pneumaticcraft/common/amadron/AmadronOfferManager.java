@@ -121,12 +121,7 @@ public enum AmadronOfferManager {
     }
 
     public boolean hasSimilarPlayerOffer(AmadronPlayerOffer offer) {
-        for (AmadronPlayerOffer existing : getPlayerOffers().values()) {
-            if (existing.equivalentTo(offer)) {
-                return true;
-            }
-        }
-        return false;
+        return getPlayerOffers().values().stream().anyMatch(existing -> existing.equivalentTo(offer));
     }
 
     private Map<ResourceLocation, AmadronPlayerOffer> getPlayerOffers() {

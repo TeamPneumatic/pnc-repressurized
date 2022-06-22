@@ -17,63 +17,84 @@
 
 package me.desht.pneumaticcraft.common.amadron;
 
-// TODO 1.19 rewrite using biome tags
-public class BiomeMatcher /*implements IPlayerMatcher*/ {
-//    private final Set<Biome.BiomeCategory> categories;
-//
-//    public BiomeMatcher(Set<Biome.BiomeCategory> categories) {
-//        this.categories = ImmutableSet.copyOf(categories);
-//    }
-//
-//    @Override
-//    public void toBytes(FriendlyByteBuf buffer) {
-//        buffer.writeVarInt(categories.size());
-//        categories.forEach(buffer::writeEnum);
-//    }
-//
-//    @Override
-//    public JsonElement toJson() {
-//        JsonArray cats = new JsonArray();
-//        categories.forEach(cat -> cats.add(cat.name()));
-//        return cats;
-//    }
-//
-//    @Override
-//    public void addDescription(Player player, List<Component> tooltip) {
-//        if (!categories.isEmpty()) {
-//            List<Component> items = categories.stream().map(cat -> Component.literal(cat.getName())).collect(Collectors.toList());
-//            standardTooltip(player, tooltip, xlate("pneumaticcraft.playerFilter.biomes"), items);
-//        }
-//    }
-//
-//    @Override
-//    public boolean test(Player playerEntity) {
-//        return categories.isEmpty() || categories.contains(playerEntity.level.getBiome(playerEntity.blockPosition()).value().getBiomeCategory());
-//    }
-//
-//    public static class Factory implements MatcherFactory<BiomeMatcher> {
-//        @Override
-//        public BiomeMatcher fromJson(JsonElement json) {
-//            Set<Biome.BiomeCategory> categories = EnumSet.noneOf(Biome.BiomeCategory.class);
-//            json.getAsJsonArray().forEach(element -> {
-//                Biome.BiomeCategory cat = Biome.BiomeCategory.byName(element.getAsString());
-//                //noinspection ConstantConditions
-//                if (cat == null) {  // yes, the category can be null here... shut up Intellij
-//                    throw new JsonSyntaxException("unknown biome category: " + element.getAsString());
-//                }
-//                categories.add(cat);
-//            });
-//            return new BiomeMatcher(categories);
-//        }
-//
-//        @Override
-//        public BiomeMatcher fromBytes(FriendlyByteBuf buffer) {
-//            Set<Biome.BiomeCategory> categories = EnumSet.noneOf(Biome.BiomeCategory.class);
-//            int nCats = buffer.readVarInt();
-//            for (int i = 0; i < nCats; i++) {
-//                categories.add(buffer.readEnum(Biome.BiomeCategory.class));
-//            }
-//            return new BiomeMatcher(categories);
-//        }
-//    }
+import com.google.common.collect.ImmutableSet;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import me.desht.pneumaticcraft.api.misc.IPlayerMatcher;
+import me.desht.pneumaticcraft.lib.Log;
+import net.minecraft.ResourceLocationException;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.biome.Biome;
+import net.minecraftforge.registries.ForgeRegistries;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
+
+public class BiomeMatcher implements IPlayerMatcher {
+    private final Set<TagKey<Biome>> tags;
+
+    public BiomeMatcher(Set<TagKey<Biome>> tags) {
+        this.tags = ImmutableSet.copyOf(tags);
+    }
+
+    @Override
+    public void toBytes(FriendlyByteBuf buffer) {
+        buffer.writeVarInt(tags.size());
+        tags.forEach(key -> buffer.writeResourceLocation(key.location()));
+    }
+
+    @Override
+    public JsonElement toJson() {
+        JsonArray tags = new JsonArray();
+        this.tags.forEach(tag -> tags.add(tag.location().toString()));
+        return tags;
+    }
+
+    @Override
+    public void addDescription(Player player, List<Component> tooltip) {
+        if (!tags.isEmpty()) {
+            List<Component> items = tags.stream().map(tag -> Component.literal(tag.location().toString())).collect(Collectors.toList());
+            standardTooltip(player, tooltip, xlate("pneumaticcraft.playerFilter.biomes"), items);
+        }
+    }
+
+    @Override
+    public boolean test(Player playerEntity) {
+        return tags.isEmpty() || playerEntity.level.getBiome(playerEntity.blockPosition()).tags().anyMatch(tags::contains);
+    }
+
+    public static class Factory implements MatcherFactory<BiomeMatcher> {
+        @Override
+        public BiomeMatcher fromJson(JsonElement json) {
+            Set<TagKey<Biome>> tags = new HashSet<>();
+            json.getAsJsonArray().forEach(element -> {
+                try {
+                    TagKey<Biome> cat = TagKey.create(ForgeRegistries.BIOMES.getRegistryKey(), new ResourceLocation(element.getAsString()));
+                    tags.add(cat);
+                } catch (ResourceLocationException e) {
+                    Log.error("invalid biome tag resource location: %s", element);
+                }
+            });
+            return new BiomeMatcher(tags);
+        }
+
+        @Override
+        public BiomeMatcher fromBytes(FriendlyByteBuf buffer) {
+            Set<TagKey<Biome>> tags = new HashSet<>();
+            int nTags = buffer.readVarInt();
+            for (int i = 0; i < nTags; i++) {
+                ResourceLocation rl = buffer.readResourceLocation();
+                tags.add(TagKey.create(ForgeRegistries.BIOMES.getRegistryKey(), rl));
+            }
+            return new BiomeMatcher(tags);
+        }
+    }
 }

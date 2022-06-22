@@ -19,55 +19,32 @@ package me.desht.pneumaticcraft.common.util;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.mojang.serialization.JsonOps;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.GlobalPos;
-import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtUtils;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.util.GsonHelper;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.server.ServerLifecycleHooks;
 
 public class GlobalPosHelper {
-    // TODO 1.19 use GlobalPos.CODEC & DynamicOps for NBT & Json serialization
-
-    public static CompoundTag toNBT(GlobalPos globalPos) {
-        CompoundTag tag = new CompoundTag();
-        tag.put("pos", net.minecraft.nbt.NbtUtils.writeBlockPos(globalPos.pos()));
-        tag.putString("dim", globalPos.dimension().location().toString());
-        return tag;
+    public static Tag toNBT(GlobalPos globalPos) {
+        return GlobalPos.CODEC.encodeStart(NbtOps.INSTANCE, globalPos).result().orElseThrow();
     }
 
     public static GlobalPos fromNBT(CompoundTag tag) {
-        ResourceKey<Level> worldKey = ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(tag.getString("dim")));
-        return GlobalPos.of(worldKey, NbtUtils.readBlockPos(tag.getCompound("pos")));
+        return GlobalPos.CODEC.parse(NbtOps.INSTANCE, tag).result().orElseThrow();
     }
 
     public static JsonElement toJson(GlobalPos pos) {
-        JsonObject posObj = new JsonObject();
-        posObj.addProperty("x", pos.pos().getX());
-        posObj.addProperty("y", pos.pos().getY());
-        posObj.addProperty("z", pos.pos().getZ());
-
-        JsonObject obj = new JsonObject();
-        obj.addProperty("dimension", pos.dimension().location().toString());
-        obj.add("pos", posObj);
-        return obj;
+        return GlobalPos.CODEC.encodeStart(JsonOps.INSTANCE, pos).result().orElseThrow();
     }
 
     public static GlobalPos fromJson(JsonObject json) {
-        ResourceKey<Level> worldKey = ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(GsonHelper.getAsString(json, "dimension")));
-        JsonObject posObj = json.get("pos").getAsJsonObject();
-        BlockPos pos = new BlockPos(
-                GsonHelper.getAsInt(posObj, "x"),
-                GsonHelper.getAsInt(posObj, "y"),
-                GsonHelper.getAsInt(posObj, "z")
-        );
-        return GlobalPos.of(worldKey, pos);
+        return GlobalPos.CODEC.parse(JsonOps.INSTANCE, json).result().orElseThrow();
     }
 
     public static ServerLevel getWorldForGlobalPos(GlobalPos pos) {
