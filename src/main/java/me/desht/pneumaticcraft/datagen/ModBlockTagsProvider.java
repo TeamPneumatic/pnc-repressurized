@@ -42,7 +42,6 @@ public class ModBlockTagsProvider extends BlockTagsProvider {
 
     @Override
     public void addTags() {
-
         createAndAppend(PneumaticCraftTags.Blocks.REINFORCED_STONE, Tags.Blocks.STONE,
                 ModBlocks.REINFORCED_STONE);
         createAndAppend(PneumaticCraftTags.Blocks.REINFORCED_STONE_BRICKS, BlockTags.STONE_BRICKS,

@@ -60,6 +60,7 @@ public class DataGenerators {
         generator.addProvider(event.includeServer(), new ModEntityTypeTagsProvider(generator, existingFileHelper));
         generator.addProvider(event.includeServer(), new ModAdvancementProvider(generator, existingFileHelper));
         generator.addProvider(event.includeServer(), new ModGLMProvider(generator));
+        generator.addProvider(event.includeServer(), new ModPoiTypeTagsProvider(generator, existingFileHelper));
 //                generator.addProvider(new ModConfiguredStructureFeatureTagsProvider(generator, event.getExistingFileHelper()));
 
         oilLakeDatagen(event, generator, existingFileHelper, registryOps);
