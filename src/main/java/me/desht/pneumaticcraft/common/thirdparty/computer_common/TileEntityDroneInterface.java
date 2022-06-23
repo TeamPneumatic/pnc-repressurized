@@ -17,6 +17,7 @@
 
 package me.desht.pneumaticcraft.common.thirdparty.computer_common;
 
+import com.google.common.collect.ImmutableMap;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
@@ -195,6 +196,15 @@ public class TileEntityDroneInterface extends TileEntity implements ITickableTil
                 requireNoArgs(args);
                 EntityDrone d = validateAndGetDrone();
                 return new Double[]{d.getX(), d.getY(), d.getZ()};
+            }
+        });
+
+        registry.registerLuaMethod(new LuaMethod("getDronePositionVec") {
+            @Override
+            public Object[] call(Object[] args) {
+                requireNoArgs(args);
+                EntityDrone d = validateAndGetDrone();
+                return new Object[]{ImmutableMap.of("x", d.getX(), "y", d.getY(), "z", d.getZ())};
             }
         });
 
