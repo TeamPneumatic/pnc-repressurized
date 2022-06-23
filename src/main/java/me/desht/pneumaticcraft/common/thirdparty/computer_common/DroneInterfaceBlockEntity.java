@@ -201,6 +201,15 @@ public class DroneInterfaceBlockEntity extends AbstractTickingBlockEntity
             }
         });
 
+        registry.registerLuaMethod(new LuaMethod("getDronePositionVec") {
+            @Override
+            public Object[] call(Object[] args) {
+                requireNoArgs(args);
+                DroneEntity d = validateAndGetDrone();
+                return new Object[]{Map.of("x", d.getX(), "y", d.getY(), "z", d.getZ())};
+            }
+        });
+
         registry.registerLuaMethod(new LuaMethod("setBlockOrder") {
             @Override
             public Object[] call(Object[] args) {
