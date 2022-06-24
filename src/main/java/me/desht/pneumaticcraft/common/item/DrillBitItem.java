@@ -23,12 +23,11 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.function.Supplier;
 
-import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class DrillBitItem extends Item {
@@ -57,20 +56,22 @@ public class DrillBitItem extends Item {
     }
 
     public enum DrillBitType {
-        NONE("none", Tiers.WOOD, 0x00000000, 1, 0),
-        IRON("iron", Tiers.IRON, 0xFFd8d8d8, 6, 1),
-        COMPRESSED_IRON("compressed_iron", Tiers.IRON, 0xFF4d4846, 7, 2),
-        DIAMOND("diamond", Tiers.DIAMOND, 0xFF4aedd9, 8, 3),
-        NETHERITE("netherite", Tiers.NETHERITE, 0xFF31292a, 9, 4);
+        NONE("none", null, Tiers.WOOD, 0x00000000, 1, 0),
+        IRON("iron", ModItems.IRON_DRILL_BIT, Tiers.IRON, 0xFFd8d8d8, 6, 1),
+        COMPRESSED_IRON("compressed_iron", ModItems.COMPRESSED_IRON_DRILL_BIT, Tiers.IRON, 0xFF4d4846, 7, 2),
+        DIAMOND("diamond", ModItems.DIAMOND_DRILL_BIT, Tiers.DIAMOND, 0xFF4aedd9, 8, 3),
+        NETHERITE("netherite", ModItems.NETHERITE_DRILL_BIT, Tiers.NETHERITE, 0xFF31292a, 9, 4);
 
         private final String name;
+        private final Supplier<? extends DrillBitItem> itemSupplier;
         private final Tier tier;
         private final int tint;
         private final int baseEfficiency;
         private final int bitQuality;
 
-        DrillBitType(String name, Tier tier, int tint, int baseEfficiency, int bitQuality) {
+        DrillBitType(String name, Supplier<? extends DrillBitItem> itemSupplier, Tier tier, int tint, int baseEfficiency, int bitQuality) {
             this.name = name;
+            this.itemSupplier = itemSupplier;
             this.tier = tier;
             this.tint = tint;
             this.baseEfficiency = baseEfficiency;
@@ -99,7 +100,7 @@ public class DrillBitItem extends Item {
         }
 
         public ItemStack asItemStack() {
-            return this == NONE ? ItemStack.EMPTY : new ItemStack(ForgeRegistries.ITEMS.getValue(RL(getRegistryName())));
+            return this == NONE ? ItemStack.EMPTY : new ItemStack(itemSupplier.get());
         }
 
         public DigMode getBestDigType() {

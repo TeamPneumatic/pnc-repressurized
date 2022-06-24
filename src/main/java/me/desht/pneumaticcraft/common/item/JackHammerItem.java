@@ -498,8 +498,8 @@ public class JackHammerItem extends PressurizableItem
 
         public void save() {
             ItemStack bitStack = getStackInSlot(0);
-            if (bitStack.getItem() instanceof DrillBitItem) {
-                NBTUtils.setString(jackhammerStack, NBT_DRILL_BIT, ((DrillBitItem) bitStack.getItem()).getType().toString());
+            if (bitStack.getItem() instanceof DrillBitItem bit) {
+                NBTUtils.setString(jackhammerStack, NBT_DRILL_BIT, bit.getType().toString());
             } else {
                 NBTUtils.setString(jackhammerStack, NBT_DRILL_BIT, DrillBitType.NONE.toString());
             }

@@ -23,10 +23,10 @@ import net.minecraft.world.entity.player.Player;
 public interface IShiftScrollable {
     /**
      * Called both client- and server-side when a player shift-scrolls the mouse wheel, while holding an item
-     * (in main hand) which implements this interface.
-     *  @param player player doing the shift-scrolling
+     * which implements this interface.
+     * @param player player doing the shift-scrolling
      * @param forward true if the mouse wheel was rotated up, false if rotated down
-     * @param hand
+     * @param hand hand in which the item is held
      */
     void onShiftScrolled(Player player, boolean forward, InteractionHand hand);
 }

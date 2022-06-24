@@ -135,10 +135,8 @@ public class UpgradeItem extends Item implements IUpgradeItem {
 
     @Override
     public void fillItemCategory(CreativeModeTab group, NonNullList<ItemStack> items) {
-        if (this.allowedIn(group)) {
-            if (upgrade.get().isDependencyLoaded()) {
-                items.add(new ItemStack(this));
-            }
+        if (this.allowedIn(group) && getUpgradeType().isDependencyLoaded()) {
+            items.add(new ItemStack(this));
         }
     }
 }
