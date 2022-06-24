@@ -32,12 +32,12 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
-import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -182,14 +182,20 @@ public class OmnidirectionalHopperBlockEntity extends AbstractHopperBlockEntity<
         Direction dir = inputDir.getOpposite();
         int remaining = maxItems;
         for (Entity e : cachedInputEntities) {
-            if (!e.isAlive()) continue;
-            final int r = remaining;
-            boolean playerArmor = e instanceof Player && dir.getAxis().isHorizontal();
-            int imported = e.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, dir).map(h -> importFromInventory(h, r, playerArmor)).orElse(0);
-            remaining -= imported;
-            if (remaining <= 0) return maxItems - remaining;
+            if (validForExtraction(e)) {
+                final int r = remaining;
+                boolean playerArmor = e instanceof Player && dir.getAxis().isHorizontal();
+                int imported = e.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, dir).map(h -> importFromInventory(h, r, playerArmor)).orElse(0);
+                remaining -= imported;
+                if (remaining <= 0) return maxItems - remaining;
+            }
         }
         return 0;
+    }
+
+    private boolean validForExtraction(Entity e) {
+        // https://github.com/EnigmaticaModpacks/Enigmatica6/issues/5028
+        return e.isAlive() && !(e instanceof Villager);
     }
 
     private int importFromInventory(IItemHandler inv, int maxItems, boolean playerArmor) {
@@ -197,7 +203,7 @@ public class OmnidirectionalHopperBlockEntity extends AbstractHopperBlockEntity<
         for (int i = 0; i < inv.getSlots(); i++) {
             if (inv.getStackInSlot(i).isEmpty()) continue;
             ItemStack toExtract = inv.extractItem(i, remaining, true);
-            if (playerArmor && EnchantmentHelper.getItemEnchantmentLevel(Enchantments.BINDING_CURSE, toExtract) > 0) {
+            if (playerArmor && EnchantmentHelper.hasBindingCurse(toExtract)) {
                 continue;
             }
             ItemStack excess = ItemHandlerHelper.insertItemStacked(itemHandler, toExtract, false);
