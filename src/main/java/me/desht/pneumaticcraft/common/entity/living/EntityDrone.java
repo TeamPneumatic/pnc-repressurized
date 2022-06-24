@@ -977,6 +977,7 @@ public class EntityDrone extends EntityDroneBase implements
         tag.putInt("color", getDroneColor());
         tag.putBoolean("standby", standby);
         tag.put("variables", aiManager.writeToNBT(new CompoundNBT()));
+        tag.put("deployPos", NBTUtil.writeBlockPos(deployPos));
 
         ItemStackHandler tmpHandler = new ItemStackHandler(droneItemHandler.getSlots());
         PneumaticCraftUtils.copyItemHandler(droneItemHandler, tmpHandler, droneItemHandler.getSlots());
@@ -1026,6 +1027,7 @@ public class EntityDrone extends EntityDroneBase implements
         upgradeInventory.deserializeNBT(tag.getCompound(UpgradableItemUtils.NBT_UPGRADE_TAG));
         upgradeCache.invalidate();
         getAirHandler().deserializeNBT(tag.getCompound("airHandler"));
+        deployPos = NBTUtil.readBlockPos(tag.getCompound("deployPos"));
 
         ItemStackHandler tmpInv = new ItemStackHandler();
         tmpInv.deserializeNBT(tag.getCompound("Inventory"));
