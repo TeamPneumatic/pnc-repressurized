@@ -29,9 +29,9 @@ import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.ItemEntity;
+import net.minecraft.entity.merchant.villager.VillagerEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -183,14 +183,21 @@ public class TileEntityOmnidirectionalHopper extends TileEntityAbstractHopper<Ti
         Direction dir = inputDir.getOpposite();
         int remaining = maxItems;
         for (Entity e : cachedInputEntities) {
-            if (!e.isAlive()) continue;
-            final int r = remaining;
-            boolean playerArmor = e instanceof PlayerEntity && dir.getAxis().isHorizontal();
-            int imported = e.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, dir).map(h -> importFromInventory(h, r, playerArmor)).orElse(0);
-            remaining -= imported;
-            if (remaining <= 0) return maxItems - remaining;
+            if (validForExtraction(e)) {
+                final int r = remaining;
+                boolean playerArmor = e instanceof PlayerEntity && dir.getAxis().isHorizontal();
+                int imported = e.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, dir)
+                        .map(h -> importFromInventory(h, r, playerArmor)).orElse(0);
+                remaining -= imported;
+                if (remaining <= 0) return maxItems - remaining;
+            }
         }
         return 0;
+    }
+
+    private boolean validForExtraction(Entity e) {
+        // https://github.com/EnigmaticaModpacks/Enigmatica6/issues/5028
+        return e.isAlive() && !(e instanceof VillagerEntity);
     }
 
     private int importFromInventory(IItemHandler inv, int maxItems, boolean playerArmor) {
@@ -198,7 +205,7 @@ public class TileEntityOmnidirectionalHopper extends TileEntityAbstractHopper<Ti
         for (int i = 0; i < inv.getSlots(); i++) {
             if (inv.getStackInSlot(i).isEmpty()) continue;
             ItemStack toExtract = inv.extractItem(i, remaining, true);
-            if (playerArmor && EnchantmentHelper.getItemEnchantmentLevel(Enchantments.BINDING_CURSE, toExtract) > 0) {
+            if (playerArmor && EnchantmentHelper.hasBindingCurse(toExtract)) {
                 continue;
             }
             ItemStack excess = ItemHandlerHelper.insertItemStacked(itemHandler, toExtract, false);
