@@ -18,7 +18,6 @@
 package me.desht.pneumaticcraft.common.entity.drone;
 
 import com.mojang.authlib.GameProfile;
-import me.desht.pneumaticcraft.api.DamageSourcePneumaticCraft.DamageSourceDroneOverload;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.block.IPneumaticWrenchable;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableEntity;
@@ -34,6 +33,7 @@ import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.api.tileentity.IManoMeasurable;
 import me.desht.pneumaticcraft.client.util.ProgressingLine;
 import me.desht.pneumaticcraft.common.DroneRegistry;
+import me.desht.pneumaticcraft.common.PNCDamageSource;
 import me.desht.pneumaticcraft.common.ai.*;
 import me.desht.pneumaticcraft.common.ai.DroneAIManager.WrappedGoal;
 import me.desht.pneumaticcraft.common.block.entity.PneumaticEnergyStorage;
@@ -813,7 +813,7 @@ public class DroneEntity extends AbstractDroneEntity implements
     @Override
     public boolean onWrenched(Level world, Player player, BlockPos pos, Direction side, InteractionHand hand) {
         if (shouldDropAsItem()) {
-            hurt(new DamageSourceDroneOverload("wrenched"), 2000.0F);
+            hurt(new PNCDamageSource.DamageSourceDroneOverload("wrenched"), 2000.0F);
             return true;
         } else {
             return false;
@@ -883,7 +883,7 @@ public class DroneEntity extends AbstractDroneEntity implements
             getFakePlayer().gameMode.handleBlockBreakAction(getDugBlock(), ServerboundPlayerActionPacket.Action.ABORT_DESTROY_BLOCK, Direction.UP, 0, 0);
         }
 
-        setCustomName(Component.literal(""));  // keep other mods (like CoFH Core) quiet about death message broadcasts
+        setCustomName(Component.empty());  // keep other mods (like CoFH Core) quiet about death message broadcasts
 
         MinecraftForge.EVENT_BUS.unregister(this);
     }
@@ -1421,7 +1421,7 @@ public class DroneEntity extends AbstractDroneEntity implements
 
     @Override
     public void overload(String msgKey, Object... params) {
-        hurt(new DamageSourceDroneOverload(msgKey, params), 2000.0F);
+        hurt(new PNCDamageSource.DamageSourceDroneOverload(msgKey, params), 2000.0F);
     }
 
     @Override

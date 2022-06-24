@@ -19,8 +19,8 @@ package me.desht.pneumaticcraft.common.block.entity;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.authlib.GameProfile;
-import me.desht.pneumaticcraft.api.DamageSourcePneumaticCraft;
 import me.desht.pneumaticcraft.api.lib.Names;
+import me.desht.pneumaticcraft.common.PNCDamageSource;
 import me.desht.pneumaticcraft.common.block.entity.RedstoneController.EmittingRedstoneMode;
 import me.desht.pneumaticcraft.common.block.entity.RedstoneController.RedstoneMode;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
@@ -479,7 +479,7 @@ public class SecurityStationBlockEntity extends AbstractTickingBlockEntity imple
     }
 
     public void retaliate(Player hacker) {
-        hacker.hurt(DamageSourcePneumaticCraft.SECURITY_STATION, hacker.getMaxHealth() - 0.5f);
+        hacker.hurt(PNCDamageSource.SECURITY_STATION, hacker.getMaxHealth() - 0.5f);
         hacker.addEffect(new MobEffectInstance(MobEffects.CONFUSION, 100));
         hacker.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 200));
         hacker.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 300, 3));

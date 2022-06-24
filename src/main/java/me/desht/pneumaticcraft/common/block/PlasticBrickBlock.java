@@ -17,8 +17,8 @@
 
 package me.desht.pneumaticcraft.common.block;
 
-import me.desht.pneumaticcraft.api.DamageSourcePneumaticCraft;
 import me.desht.pneumaticcraft.client.ColorHandlers;
+import me.desht.pneumaticcraft.common.PNCDamageSource;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.item.ICustomTooltipName;
@@ -151,7 +151,7 @@ public class PlasticBrickBlock extends Block implements ColorHandlers.ITintableB
         if (hurtsToStepOn() && entityIn instanceof LivingEntity livingEntity) {
             ItemStack stack = livingEntity.getItemBySlot(EquipmentSlot.FEET);
             if (stack.isEmpty()) {
-                entityIn.hurt(DamageSourcePneumaticCraft.PLASTIC_BLOCK, 3);
+                entityIn.hurt(PNCDamageSource.PLASTIC_BLOCK, 3);
                 livingEntity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 40, 1));
             }
         }

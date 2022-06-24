@@ -26,6 +26,7 @@ import me.desht.pneumaticcraft.api.fuel.IFuelRegistry;
 import me.desht.pneumaticcraft.api.heat.IHeatRegistry;
 import me.desht.pneumaticcraft.api.item.IItemRegistry;
 import me.desht.pneumaticcraft.api.item.IUpgradeRegistry;
+import me.desht.pneumaticcraft.api.misc.DamageSources;
 import me.desht.pneumaticcraft.api.misc.IMiscHelpers;
 import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorRegistry;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachineFactory;
@@ -115,4 +116,8 @@ public class PneumaticCraftAPIHandler implements PneumaticRegistry.IPneumaticCra
         return MiscAPIHandler.getInstance();
     }
 
+    @Override
+    public DamageSources getDamageSources() {
+        return PNCDamageSource.DamageSourcesImpl.INSTANCE;
+    }
 }

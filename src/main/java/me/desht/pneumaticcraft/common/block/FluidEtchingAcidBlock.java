@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.common.block;
 
-import me.desht.pneumaticcraft.api.DamageSourcePneumaticCraft;
+import me.desht.pneumaticcraft.common.PNCDamageSource;
 import me.desht.pneumaticcraft.common.core.ModFluids;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
@@ -36,7 +36,7 @@ public class FluidEtchingAcidBlock extends LiquidBlock {
     @Override
     public void entityInside(BlockState state, Level worldIn, BlockPos pos, Entity entity) {
         if (entity instanceof LivingEntity && entity.tickCount % 10 == 0) {
-            entity.hurt(DamageSourcePneumaticCraft.ETCHING_ACID, 1);
+            entity.hurt(PNCDamageSource.ETCHING_ACID, 1);
         }
     }
 }
