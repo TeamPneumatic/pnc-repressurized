@@ -17,6 +17,7 @@
 
 package me.desht.pneumaticcraft.common.block.entity;
 
+import me.desht.pneumaticcraft.common.PneumaticCraftTags;
 import me.desht.pneumaticcraft.common.block.OmnidirectionalHopperBlock;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
@@ -32,7 +33,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -182,7 +182,7 @@ public class OmnidirectionalHopperBlockEntity extends AbstractHopperBlockEntity<
         Direction dir = inputDir.getOpposite();
         int remaining = maxItems;
         for (Entity e : cachedInputEntities) {
-            if (validForExtraction(e)) {
+            if (e.isAlive() && !e.getType().is(PneumaticCraftTags.EntityTypes.OMNIHOPPER_BLACKLISTED)) {
                 final int r = remaining;
                 boolean playerArmor = e instanceof Player && dir.getAxis().isHorizontal();
                 int imported = e.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, dir).map(h -> importFromInventory(h, r, playerArmor)).orElse(0);
@@ -191,11 +191,6 @@ public class OmnidirectionalHopperBlockEntity extends AbstractHopperBlockEntity<
             }
         }
         return 0;
-    }
-
-    private boolean validForExtraction(Entity e) {
-        // https://github.com/EnigmaticaModpacks/Enigmatica6/issues/5028
-        return e.isAlive() && !(e instanceof Villager);
     }
 
     private int importFromInventory(IItemHandler inv, int maxItems, boolean playerArmor) {
