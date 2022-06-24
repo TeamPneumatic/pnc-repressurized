@@ -59,16 +59,6 @@ public interface IBaseSensor {
     }
 
     /**
-     * If a textbox is to be displayed (see {@link #needsTextBox()}), is this textbox for an entity filter?
-     * @return true if this is an entity filter, false otherwise
-     * @deprecated don't override this; use {@link #getHelpText()}
-     */
-    @Deprecated
-    default boolean isEntityFilter() {
-        return false;
-    }
-
-    /**
      * If this sensor should have a popup help panel, return a translation key here for the help text which should be
      * shown when F1 is held down.  The translated text can include line breaks; use the sequence {@code {br}} for that.
      * @return help text translation key, or the empty string for no help text

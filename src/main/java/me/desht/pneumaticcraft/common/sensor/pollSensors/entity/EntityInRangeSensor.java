@@ -37,11 +37,6 @@ public class EntityInRangeSensor extends EntityPollSensor {
     }
 
     @Override
-    public boolean isEntityFilter() {
-        return true;
-    }
-
-    @Override
     public String getHelpText() {
         return "pneumaticcraft.gui.entityFilter.helpText";
     }

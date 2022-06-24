@@ -58,16 +58,6 @@ public interface IPneumaticHelmetRegistry {
     void registerBlockTrackEntry(ResourceLocation id, Supplier<? extends IBlockTrackEntry> entry);
 
     /**
-     * Register a block tracker for the Pneumatic Helmet
-     * @param entry the block tracker
-     * @deprecated use {@link #registerBlockTrackEntry(ResourceLocation, Supplier)}
-     */
-    @Deprecated(forRemoval = true)
-    default void registerBlockTrackEntry(IBlockTrackEntry entry) {
-        registerBlockTrackEntry(entry.getEntryID(), () -> entry);
-    }
-
-    /**
      * Add a message for display in the Pneumatic Helmet HUD display
      * @param title the message title
      * @param message the message text (can be empty if the title suffices for a one-line message)

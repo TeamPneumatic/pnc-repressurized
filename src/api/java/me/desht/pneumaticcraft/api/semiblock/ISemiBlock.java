@@ -147,17 +147,6 @@ public interface ISemiBlock extends ICapabilityProvider {
     int getTrackingId();
 
     /**
-     * Called when a player causes a semiblock to be removed, either by sneak-right-clicking with a Logistics
-     * Configurator, or by repeatedly hitting the semiblock entity.
-     * @param player player who is removing the semiblock
-     * @deprecated no longer called, use {@link #killedByEntity(Entity)} instead
-     */
-    @Deprecated
-    default void removeSemiblock(Player player) {
-        killedByEntity(player);
-    }
-
-    /**
      * Called when an entity has caused this semiblock to be removed; usually, but necessarily, a player wrenching or
      * hitting it.
      *
