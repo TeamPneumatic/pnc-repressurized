@@ -12,6 +12,18 @@ Changes are in reverse chronological order; newest changes at the top.
 * PNC:R 2.15.1 and later *require* Forge 36.2.0 or later, **and** Patchouli 1.16.4-50 or later.
 * If Mekanism is installed, PNC:R 2.15.1 and later *require* Mekanism 10.1.x or later.
 
+## 2.15.11-?? (unreleased)
+
+### Updates
+* Added new `getDronePositionVec()` Lua method to the Drone Interface
+  * Returns drone's position as a vector, easier to extract individual x/y/z values (e.g. `x = getDronePositionVec().x`)
+  * Existing `getDronePosition()` method is unchanged, for backwards compatibility
+
+### Fixes
+* Blacklisted Villagers from Omnihopper (Entity Tracker) inventory extraction
+  * Behaviour can be buggy and is a bit of an exploit in any case (free items when villagers restock)
+* Fixed Drones forgetting the value of their $deploy_pos variable after world restart
+
 ## 2.15.10-329 (16 Jun 2022)
 
 ### Fixes
