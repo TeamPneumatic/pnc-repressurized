@@ -26,7 +26,10 @@ import me.desht.pneumaticcraft.common.XPFluidManager;
 import me.desht.pneumaticcraft.common.core.ModFluids;
 import me.desht.pneumaticcraft.common.item.ItemRegistry;
 import net.minecraft.ChatFormatting;
-import net.minecraft.core.*;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.NonNullList;
+import net.minecraft.core.Vec3i;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
@@ -235,8 +238,8 @@ public class PneumaticCraftUtils {
      * @param textList string list to add information to
      * @param originalStacks array of item stacks to sort & combine
      */
-    public static List<Component> summariseItemStacks(List<Component> textList, ItemStack[] originalStacks) {
-        return summariseItemStacks(textList, originalStacks, Symbols.bullet().getString());
+    public static List<Component> summariseItemStacks(List<Component> textList, List<ItemStack> originalStacks) {
+        return summariseItemStacks(textList, originalStacks, Symbols.bullet());
     }
 
     /**
@@ -248,22 +251,22 @@ public class PneumaticCraftUtils {
      * @param originalStacks array of item stacks to sort & combine
      * @param prefix prefix string to prepend to each line of output
      */
-    public static List<Component> summariseItemStacks(List<Component> textList, ItemStack[] originalStacks, String prefix) {
-        ItemStack[] stacks = Arrays.copyOf(originalStacks, originalStacks.length);
-
-        Arrays.sort(stacks, (o1, o2) -> o1.getHoverName().getString().compareToIgnoreCase(o2.getHoverName().getString()));
+    public static List<Component> summariseItemStacks(List<Component> textList, List<ItemStack> originalStacks, MutableComponent prefix) {
+        List<ItemStack> sortedStacks = originalStacks.stream()
+                .sorted((o1, o2) -> o1.getHoverName().getString().compareToIgnoreCase(o2.getHoverName().getString()))
+                .toList();
 
         int itemCount = 0;
         ItemStack prevItemStack = ItemStack.EMPTY;
         List<ItemStack> prevInventoryItems = null;
-        for (ItemStack stack : stacks) {
+        for (ItemStack stack : sortedStacks) {
             if (!stack.isEmpty()) {
                 if (!stack.sameItem(prevItemStack) || prevInventoryItems != null && prevInventoryItems.size() > 0) {
                     if (!prevItemStack.isEmpty()) {
-                        addText(textList, prefix  + PneumaticCraftUtils.convertAmountToString(itemCount) + " x " + prevItemStack.getHoverName().getString());
+                        textList.add(prefix.copy().append(PneumaticCraftUtils.convertAmountToString(itemCount) + " x " + prevItemStack.getHoverName().getString()));
                     }
                     if (prevInventoryItems != null) {
-                        summariseItemStacks(textList, prevInventoryItems.toArray(new ItemStack[0]), prefix + Symbols.ARROW_DOWN_RIGHT + " ");
+                        summariseItemStacks(textList, prevInventoryItems, prefix.copy().append(Symbols.ARROW_DOWN_RIGHT + " "));
                     }
                     prevItemStack = stack;
                     itemCount = stack.getCount();
@@ -274,8 +277,8 @@ public class PneumaticCraftUtils {
             }
         }
         if (itemCount > 0 && !prevItemStack.isEmpty()) {
-            addText(textList,prefix + PneumaticCraftUtils.convertAmountToString(itemCount) + " x " + prevItemStack.getHoverName().getString());
-            summariseItemStacks(textList, prevInventoryItems.toArray(new ItemStack[0]), prefix + Symbols.ARROW_DOWN_RIGHT + " ");
+            textList.add(prefix.copy().append(PneumaticCraftUtils.convertAmountToString(itemCount) + " x " + prevItemStack.getHoverName().getString()));
+            summariseItemStacks(textList, prevInventoryItems, prefix.copy().append(Symbols.ARROW_DOWN_RIGHT + " "));
         }
         return textList;
     }
@@ -688,10 +691,7 @@ public class PneumaticCraftUtils {
     }
 
     public static Set<TagKey<Item>> itemTags(Item item) {
-        //noinspection deprecation
-        return Registry.ITEM.getHolderOrThrow(Registry.ITEM.getResourceKey(item).orElseThrow())
-                .tags()
-                .collect(Collectors.toSet());
+        return ForgeRegistries.ITEMS.getHolder(item).orElseThrow().tags().collect(Collectors.toSet());
     }
 
     public static Optional<ResourceLocation> getRegistryName(Item item) {

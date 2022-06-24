@@ -30,15 +30,11 @@ public class EntityTrackEntryPlayer implements IEntityTrackEntry {
 
     private static void addInventory(String key, List<Component> curInfo, NonNullList<ItemStack> stacks) {
         curInfo.add(xlate(key).withStyle(ChatFormatting.GRAY));
-        List<Component> l = PneumaticCraftUtils.summariseItemStacks(new ArrayList<>(), asItemStackArray(stacks));
+        List<Component> l = PneumaticCraftUtils.summariseItemStacks(new ArrayList<>(), stacks);
         if (l.isEmpty()) {
             curInfo.add(xlate("pneumaticcraft.gui.misc.no_items"));
         } else {
             curInfo.addAll(l);
         }
-    }
-
-    private static ItemStack[] asItemStackArray(NonNullList<ItemStack> stacks) {
-        return stacks.stream().filter(stack -> !stack.isEmpty()).toArray(ItemStack[]::new);
     }
 }

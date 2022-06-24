@@ -86,19 +86,17 @@ public class BlockTrackEntryInventory implements IBlockTrackEntry {
     public void addInformation(Level world, BlockPos pos, BlockEntity te, Direction face, List<Component> infoList) {
         try {
             IOHelper.getInventoryForTE(te, face).ifPresent(inventory -> {
-                boolean empty = true;
-                ItemStack[] inventoryStacks = new ItemStack[inventory.getSlots()];
+                List<ItemStack> inventoryStacks = new ArrayList<>(inventory.getSlots());
                 for (int i = 0; i < inventory.getSlots(); i++) {
                     ItemStack iStack = inventory.getStackInSlot(i);
                     if (!iStack.isEmpty()) {
-                        empty = false;
+                        inventoryStacks.add(iStack);
                     }
-                    inventoryStacks[i] = iStack;
                 }
-                if (empty) {
+                if (inventoryStacks.isEmpty()) {
                     infoList.add(xlate("pneumaticcraft.gui.misc.empty").withStyle(ChatFormatting.ITALIC));
                 } else {
-                    infoList.addAll(PneumaticCraftUtils.summariseItemStacks(new ArrayList<>(), inventoryStacks));
+                    PneumaticCraftUtils.summariseItemStacks(infoList, inventoryStacks);
                 }
             });
         } catch (Throwable e) {

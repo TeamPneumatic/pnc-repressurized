@@ -42,6 +42,7 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.network.NetworkHooks;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static me.desht.pneumaticcraft.api.misc.Symbols.bullet;
@@ -99,17 +100,17 @@ public abstract class AbstractLogisticsFrameItem extends SemiblockItem {
 
                 ItemStackHandler handler = new ItemStackHandler();
                 handler.deserializeNBT(tag.getCompound(AbstractLogisticsFrameEntity.NBT_ITEM_FILTERS));
-                ItemStack[] stacks = new ItemStack[handler.getSlots()];
+                List<ItemStack> stacks = new ArrayList<>();
                 for (int i = 0; i < handler.getSlots(); i++) {
-                    stacks[i] = handler.getStackInSlot(i);
+                    if (!handler.getStackInSlot(i).isEmpty()) stacks.add(handler.getStackInSlot(i));
                 }
-                int l = curInfo.size();
-                PneumaticCraftUtils.summariseItemStacks(curInfo, stacks, ChatFormatting.GOLD + Symbols.BULLET + " ");
-                if (curInfo.size() == l) {
+                int tooltipSize = curInfo.size();
+                PneumaticCraftUtils.summariseItemStacks(curInfo, stacks, Component.literal(Symbols.BULLET + " ").withStyle(ChatFormatting.GOLD));
+                if (curInfo.size() == tooltipSize) {
                     curInfo.add(bullet().withStyle(ChatFormatting.GOLD)
                             .append(xlate("pneumaticcraft.gui.misc.no_items").withStyle(ChatFormatting.GOLD, ChatFormatting.ITALIC)));
                 }
-                l = curInfo.size();
+                tooltipSize = curInfo.size();
 
                 whitelist = tag.getBoolean(AbstractLogisticsFrameEntity.NBT_FLUID_WHITELIST);
                 curInfo.add(xlate("pneumaticcraft.gui.logistics_frame." + (whitelist ? "fluidWhitelist" : "fluidBlacklist"))
@@ -123,7 +124,10 @@ public abstract class AbstractLogisticsFrameItem extends SemiblockItem {
                         curInfo.add(bullet().append(fluid.getAmount() + "mB ").append(fluid.getDisplayName()).withStyle(ChatFormatting.GOLD));
                     }
                 }
-                if (curInfo.size() == l) curInfo.add(bullet().withStyle(ChatFormatting.GOLD).append(xlate("pneumaticcraft.gui.misc.no_fluids").withStyle(ChatFormatting.GOLD, ChatFormatting.ITALIC)));
+                if (curInfo.size() == tooltipSize) {
+                    curInfo.add(bullet().withStyle(ChatFormatting.GOLD)
+                            .append(xlate("pneumaticcraft.gui.misc.no_fluids").withStyle(ChatFormatting.GOLD, ChatFormatting.ITALIC)));
+                }
             } else {
                 curInfo.add(xlate("pneumaticcraft.gui.logistics_frame.hasFilters"));
             }

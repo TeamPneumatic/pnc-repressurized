@@ -119,11 +119,7 @@ public class JackHammerItem extends PressurizableItem
 
     public DrillBitType getDrillBit(ItemStack stack) {
         DrillBitHandler handler = new DrillBitHandler(stack);
-        ItemStack bitStack = handler.getStackInSlot(0);
-        if (bitStack.getItem() instanceof DrillBitItem) {
-            return ((DrillBitItem) bitStack.getItem()).getType();
-        }
-        return DrillBitType.NONE;
+        return handler.getStackInSlot(0).getItem() instanceof DrillBitItem bit ? bit.getType() : DrillBitType.NONE;
     }
 
     @Override
@@ -142,8 +138,8 @@ public class JackHammerItem extends PressurizableItem
     public InteractionResultHolder<ItemStack> use(Level worldIn, Player playerIn, InteractionHand handIn) {
         ItemStack stack = playerIn.getItemInHand(handIn);
         if (!playerIn.isCrouching() || stack.getCount() != 1) return InteractionResultHolder.pass(stack);
-        if (!worldIn.isClientSide) {
-            NetworkHooks.openGui((ServerPlayer) playerIn, new MenuProvider() {
+        if (playerIn instanceof ServerPlayer sp) {
+            NetworkHooks.openGui(sp, new MenuProvider() {
                 @Override
                 public Component getDisplayName() {
                     return stack.getHoverName();
@@ -160,7 +156,7 @@ public class JackHammerItem extends PressurizableItem
 
     @Override
     public boolean mineBlock(ItemStack stack, Level worldIn, BlockState state, BlockPos pos, LivingEntity entityLiving) {
-        if (entityLiving instanceof Player && ((Player) entityLiving).isCreative()) return true;
+        if (entityLiving instanceof Player p && p.isCreative()) return true;
         int speed = UpgradableItemUtils.getUpgradeCount(stack, ModUpgrades.SPEED.get());
         stack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).orElseThrow(RuntimeException::new)
                 .addAir(-PneumaticValues.USAGE_JACKHAMMER * speed);

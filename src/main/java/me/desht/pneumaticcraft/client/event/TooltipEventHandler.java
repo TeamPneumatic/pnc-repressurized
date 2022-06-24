@@ -75,7 +75,7 @@ public class TooltipEventHandler {
     private static void addStandardTooltip(ItemStack stack, List<Component> curInfo, TooltipFlag flagIn) {
         addPressureTooltip(stack, curInfo);
 
-        UpgradableItemUtils.addUpgradeInformation(stack, curInfo, TooltipFlag.Default.NORMAL);
+        UpgradableItemUtils.addUpgradeInformation(stack, curInfo, flagIn);
 
         if (stack.getItem() instanceof IInventoryItem item) {
             List<ItemStack> stacks = new ArrayList<>();
@@ -83,7 +83,7 @@ public class TooltipEventHandler {
             if (item.getInventoryHeader() != null && !stacks.isEmpty()) {
                 curInfo.add(item.getInventoryHeader());
             }
-            PneumaticCraftUtils.summariseItemStacks(curInfo, stacks.toArray(new ItemStack[0]), item.getTooltipPrefix(stack));
+            PneumaticCraftUtils.summariseItemStacks(curInfo, stacks, Component.literal(item.getTooltipPrefix(stack)));
         }
 
         String key = ICustomTooltipName.getTranslationKey(stack, true);

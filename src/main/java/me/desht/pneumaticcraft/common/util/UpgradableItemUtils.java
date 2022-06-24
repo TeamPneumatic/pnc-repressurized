@@ -67,9 +67,9 @@ public class UpgradableItemUtils {
             }
         } else {
             textList.add(xlate("pneumaticcraft.gui.tooltip.upgrades.not_empty").withStyle(ChatFormatting.GREEN));
-            List<ItemStack> l = new ArrayList<>();
-            upgrades.forEach((upgrade, count) -> l.add(upgrade.getItemStack(count)));
-            PneumaticCraftUtils.summariseItemStacks(textList, l.toArray(new ItemStack[0]), ChatFormatting.DARK_GREEN + Symbols.BULLET + " ");
+            List<ItemStack> stacks = new ArrayList<>();
+            upgrades.forEach((upgrade, count) -> stacks.add(upgrade.getItemStack(count)));
+            PneumaticCraftUtils.summariseItemStacks(textList, stacks, Component.literal(Symbols.BULLET + " ").withStyle(ChatFormatting.DARK_GREEN));
         }
     }
 
@@ -170,7 +170,7 @@ public class UpgradableItemUtils {
 
     private static CompoundTag getSerializedUpgrades(ItemStack stack) {
         if (stack.getTag() == null) return new CompoundTag();
-        if (Objects.requireNonNull(stack.getTag()).contains(NBTKeys.BLOCK_ENTITY_TAG)) {
+        if (stack.getTag().contains(NBTKeys.BLOCK_ENTITY_TAG)) {
             return Objects.requireNonNull(stack.getTagElement(NBTKeys.BLOCK_ENTITY_TAG)).getCompound(NBT_UPGRADE_TAG);
         } else {
             return stack.getTag().getCompound(NBT_UPGRADE_TAG);
