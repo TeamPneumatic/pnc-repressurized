@@ -151,7 +151,7 @@ public class WidgetAnimatedStat extends AbstractWidget implements IGuiAnimatedSt
 
     public WidgetAnimatedStat(Screen gui, Component title, StatIcon icon, int backGroundColor,
                               IGuiAnimatedStat statAbove, StatPanelLayout layout) {
-        this(gui, title, 0, 0, backGroundColor, statAbove, layout.isLeftSided());
+        this(gui, title, 0, 0, backGroundColor, statAbove, layout.expandsLeft());
         Window mw = Minecraft.getInstance().getWindow();
         int x = layout.x() == -1 ? mw.getGuiScaledWidth() - 2 : (int) (mw.getGuiScaledWidth() * layout.x());
         setBaseX(x);

@@ -37,14 +37,15 @@ public interface IGuiAnimatedStat extends ITickableWidget, GuiEventListener {
     /**
      * Check which direction this expands to when opened.
      *
-     * @return true if the stat expands to the left, false otherwise
+     * @return true if the stat expands to the left (the right edge of the state is anchored to the X position),
+     *         false if the stat expands to the right
      */
     boolean isLeftSided();
 
     /**
      * Set the direction this stat will expand in when opened.
      *
-     * @param leftSided true if the stat should expand to the left, false otherwise
+     * @param leftSided true if the stat should expand to the left, false if the stat should expand to the right
      */
     void setLeftSided(boolean leftSided);
 

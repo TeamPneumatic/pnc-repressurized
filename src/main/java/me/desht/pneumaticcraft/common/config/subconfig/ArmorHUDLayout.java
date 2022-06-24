@@ -18,13 +18,15 @@
 package me.desht.pneumaticcraft.common.config.subconfig;
 
 import com.google.gson.JsonObject;
+import com.mojang.serialization.JsonOps;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.StatPanelLayout;
-import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.*;
 import me.desht.pneumaticcraft.lib.Log;
+import net.minecraft.ResourceLocationException;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 public class ArmorHUDLayout extends AuxConfigJson {
     public static final ArmorHUDLayout INSTANCE = new ArmorHUDLayout();
@@ -40,7 +42,7 @@ public class ArmorHUDLayout extends AuxConfigJson {
     protected void writeToJson(JsonObject json) {
         json.addProperty("Description", "Stores the layout of Pneumatic Armor HUD elements");
         JsonObject sub = new JsonObject();
-        layouts.forEach((id, layout) -> sub.add(id.toString(), layout.toJson()));
+        layouts.forEach((id, layout) -> sub.add(id.toString(), StatPanelLayout.CODEC.encodeStart(JsonOps.INSTANCE, layout).result().orElseThrow()));
         json.add(HUD_LAYOUT, sub);
     }
 
@@ -49,35 +51,19 @@ public class ArmorHUDLayout extends AuxConfigJson {
         // note: dedicated server will have neither old "stats" or new "layouts" data
         // this information is only saved client-side
 
-        if (json.has("stats")) {
-            // TODO remove in 1.19
-            loadLegacy(json.getAsJsonObject("stats"));
-        } else if (json.has(HUD_LAYOUT)) {
+        if (json.has(HUD_LAYOUT)) {
             JsonObject sub = json.getAsJsonObject(HUD_LAYOUT);
             sub.entrySet().forEach(entry -> {
                 try {
                     ResourceLocation id = new ResourceLocation(entry.getKey());
-                    layouts.put(id, StatPanelLayout.fromJson(entry.getValue().getAsJsonObject()));
-                } catch (IllegalArgumentException e) {
+                    layouts.put(id, StatPanelLayout.CODEC.parse(JsonOps.INSTANCE, entry.getValue().getAsJsonObject()).result().orElseThrow());
+                } catch (ResourceLocationException e) {
                     Log.error("invalid stat panel key (not a resource location) %s in %s!", entry.getKey(), getConfigFilename());
-                } catch (IllegalStateException | NullPointerException e) {
+                } catch (NoSuchElementException e) {
                     Log.error("invalid json for key %s in %s!", entry.getKey(), getConfigFilename());
                 }
             });
         }
-    }
-
-    private void loadLegacy(JsonObject json) {
-        maybeAddLegacy(json, CoreComponentsHandler.ID, "power");
-        maybeAddLegacy(json, CoreComponentsHandler.getMessageID(), "message");
-        maybeAddLegacy(json, BlockTrackerHandler.ID, "blockTracker");
-        maybeAddLegacy(json, EntityTrackerHandler.ID, "entityTracker");
-        maybeAddLegacy(json, SearchHandler.ID, "itemSearch");
-        maybeAddLegacy(json, AirConHandler.ID, "airCon");
-        maybeAddLegacy(json, JetBootsHandler.ID, "jetBoots");
-    }
-    private void maybeAddLegacy(JsonObject json, ResourceLocation id, String fieldName) {
-        if (json.has(fieldName)) layouts.put(id, StatPanelLayout.fromJson(json.get(fieldName).getAsJsonObject()));
     }
 
     @Override
