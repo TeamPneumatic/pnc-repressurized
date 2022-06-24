@@ -36,7 +36,6 @@ public class CommonConfig {
         public ForgeConfigSpec.ConfigValue<List<String>> oilWorldGenBlacklist;
         public ForgeConfigSpec.ConfigValue<List<String>> oilWorldGenCategoryBlacklist;
         public ForgeConfigSpec.ConfigValue<List<String>> oilWorldGenDimensionBlacklist;
-        public ForgeConfigSpec.ConfigValue<List<String>> vacuumTrapBlacklist;
         public ForgeConfigSpec.IntValue minFluidFuelTemperature;
         public ForgeConfigSpec.BooleanValue useUpDyesWhenColoring;
         public ForgeConfigSpec.BooleanValue dronesRenderHeldItem;
@@ -257,10 +256,6 @@ public class CommonConfig {
                 .comment("Show particle trail indicating the currently-debugged drone's planned path")
                 .translation("pneumaticcraft.config.common.general.drone_debugger_path_particles")
                 .define("drone_debugger_path_particles", true);
-        general.vacuumTrapBlacklist = builder
-                .comment("Blacklisted entity type ID's or tags (use '#' prefix), which the Vacuum Trap will not try to absorb. Note that players, tamed entities, boss entities, and PneumaticCraft drones may never be absorbed, regardless of config settings.")
-                .translation("pneumaticcraft.config.common.general.vacuum_trap_blacklist")
-                .define("vacuum_trap_blacklist", Lists.newArrayList());
         general.bandageCooldown = builder
                 .worldRestart()
                 .comment("Cooldown, in ticks, between subsequent uses of Bandages. Set to 0 to disable cooldowns entirely.")

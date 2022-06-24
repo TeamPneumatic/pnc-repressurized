@@ -18,6 +18,7 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
+import me.desht.pneumaticcraft.common.PneumaticCraftTags;
 import me.desht.pneumaticcraft.common.block.BlockOmnidirectionalHopper;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
@@ -31,7 +32,6 @@ import net.minecraft.block.BlockState;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.ItemEntity;
-import net.minecraft.entity.merchant.villager.VillagerEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -197,7 +197,7 @@ public class TileEntityOmnidirectionalHopper extends TileEntityAbstractHopper<Ti
 
     private boolean validForExtraction(Entity e) {
         // https://github.com/EnigmaticaModpacks/Enigmatica6/issues/5028
-        return e.isAlive() && !(e instanceof VillagerEntity);
+        return e.isAlive() && !e.getType().is(PneumaticCraftTags.EntityTypes.OMNIHOPPER_BLACKLISTED);
     }
 
     private int importFromInventory(IItemHandler inv, int maxItems, boolean playerArmor) {

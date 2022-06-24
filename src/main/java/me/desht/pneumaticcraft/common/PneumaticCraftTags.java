@@ -19,12 +19,10 @@ package me.desht.pneumaticcraft.common;
 
 import me.desht.pneumaticcraft.api.lib.Names;
 import net.minecraft.block.Block;
+import net.minecraft.entity.EntityType;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.item.Item;
-import net.minecraft.tags.BlockTags;
-import net.minecraft.tags.FluidTags;
-import net.minecraft.tags.ITag;
-import net.minecraft.tags.ItemTags;
+import net.minecraft.tags.*;
 import net.minecraft.util.ResourceLocation;
 
 public class PneumaticCraftTags {
@@ -135,6 +133,18 @@ public class PneumaticCraftTags {
         }
     }
 
+    public static class EntityTypes extends PneumaticCraftTags {
+        public static final ITag.INamedTag<EntityType<?>> VACUUM_TRAP_BLACKLISTED = modTag("vacuum_trap_blacklisted");
+        public static final ITag.INamedTag<EntityType<?>> OMNIHOPPER_BLACKLISTED = modTag("omnihopper_blacklisted");
+
+        static ITag.INamedTag<EntityType<?>> tag(String modid, String name) {
+            return EntityTypeTags.bind(new ResourceLocation(modid, name).toString());
+        }
+
+        static ITag.INamedTag<EntityType<?>> modTag(String name) {
+            return tag(Names.MOD_ID, name);
+        }
+    }
 //    static <T extends Tag<?>> T tag(Function<ResourceLocation, T> creator, String modid, String name) {
 //        return creator.apply(new ResourceLocation(modid, name));
 //    }

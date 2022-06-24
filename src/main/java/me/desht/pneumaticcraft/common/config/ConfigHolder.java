@@ -19,7 +19,6 @@ package me.desht.pneumaticcraft.common.config;
 
 import me.desht.pneumaticcraft.client.pneumatic_armor.ArmorUpgradeClientRegistry;
 import me.desht.pneumaticcraft.common.item.ItemSeismicSensor;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityVacuumTrap;
 import me.desht.pneumaticcraft.common.worldgen.ModWorldGen;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.fml.ModLoadingContext;
@@ -62,7 +61,6 @@ public class ConfigHolder {
     }
 
     static void refreshCommon() {
-        TileEntityVacuumTrap.clearBlacklistCache();
         ModWorldGen.clearBlacklistCache();
         ItemSeismicSensor.clearCachedFluids();
     }
