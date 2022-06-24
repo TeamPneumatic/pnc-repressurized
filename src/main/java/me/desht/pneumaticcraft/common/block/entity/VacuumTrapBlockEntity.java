@@ -42,7 +42,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.MenuProvider;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.TamableAnimal;
@@ -173,8 +172,8 @@ public class VacuumTrapBlockEntity extends AbstractAirHandlingBlockEntity implem
     private boolean isApplicable(LivingEntity e) {
         return e.canChangeDimensions()
                 && !(e instanceof DroneEntity)
-                && !(e instanceof TamableAnimal && ((TamableAnimal) e).isTame())
-                && !isEntityBlacklisted(e.getType());
+                && !(e instanceof TamableAnimal t && t.isTame())
+                && !e.getType().is(PneumaticCraftTags.EntityTypes.VACUUM_TRAP_BLACKLISTED);
     }
 
     @Nonnull
@@ -268,10 +267,6 @@ public class VacuumTrapBlockEntity extends AbstractAirHandlingBlockEntity implem
     @Override
     public AABB getRenderBoundingBox() {
         return rangeManager.shouldShowRange() ? rangeManager.getExtents() : super.getRenderBoundingBox();
-    }
-
-    private static boolean isEntityBlacklisted(EntityType<?> type) {
-        return type.is(PneumaticCraftTags.EntityTypes.VACUUM_TRAP_BLACKLISTED);
     }
 
     public enum Problems implements ITranslatableEnum {

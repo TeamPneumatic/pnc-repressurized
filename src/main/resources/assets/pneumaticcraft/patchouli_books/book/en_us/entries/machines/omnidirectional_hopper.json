@@ -17,7 +17,12 @@
       "type": "text",
       "title": "Dispenser Upgrade",
       "flag": "pneumaticcraft:omniHopperDispenser",
-      "text": "If a $(l:base_concepts/upgrades#dispenser)Dispenser Upgrade/$ is inserted into the $(item)Omnidirectional Hopper/$, it will automatically eject items into the world at the $(6)output/$ side (if there's no inventory there).$(p)This can be used as a greatly improved $(item)Dropper/$: faster, more accurate, and better $(#f00)redstone control/$."
+      "text": "If a $(l:base_concepts/upgrades#dispenser)Dispenser Upgrade/$ is installed, the hopper will automatically eject items into the world at the $(6)output/$ side (if there's no inventory there).$(p)This can be used as a greatly improved $(item)Dropper/$: faster, more accurate, and better $(#f00)redstone control/$."
+    },
+    {
+      "type": "text",
+      "title": "Entity Tracker Upgrade",
+      "text": "If an $(l:base_concepts/upgrades#entity_tracker)Entity Tracker Upgrade/$ is installed, the hopper will be able to extract items from entities in front of its $(9)input/$ side. Entities can be blacklisted from such extraction by adding them to the $(thing)pneumaticcraft:omnihopper_blacklisted/$ entity type tag; Villagers are blacklisted by default since they can become an infinite source of items."
     },
     {
       "type": "crafting",
