@@ -220,8 +220,7 @@ public class PressureTubeBlockEntity extends AbstractAirHandlingBlockEntity impl
         super.onLoad();
 
         if (!nonNullLevel().isClientSide) {
-            neighbourDirections.clear();
-            airHandler.getConnectedAirHandlers(this).forEach(connection -> neighbourDirections.add(connection.getDirection()));
+            discoverConnectedNeighbors();
         }
     }
 
@@ -248,7 +247,11 @@ public class PressureTubeBlockEntity extends AbstractAirHandlingBlockEntity impl
     }
 
     public void setSideClosed(Direction side, boolean closed) {
-        sidesClosed[side.get3DDataValue()] = closed;
+        if (sidesClosed[side.get3DDataValue()] != closed) {
+            sidesClosed[side.get3DDataValue()] = closed;
+            initializeHullAirHandlers();
+            discoverConnectedNeighbors();
+        }
     }
 
     public Stream<AbstractTubeModule> tubeModules() {
@@ -310,6 +313,10 @@ public class PressureTubeBlockEntity extends AbstractAirHandlingBlockEntity impl
 
         tubeModules().forEach(AbstractTubeModule::onNeighborBlockUpdate);
 
+        discoverConnectedNeighbors();
+    }
+
+    private void discoverConnectedNeighbors() {
         neighbourDirections.clear();
         airHandler.getConnectedAirHandlers(this).forEach(connection -> neighbourDirections.add(connection.getDirection()));
     }
