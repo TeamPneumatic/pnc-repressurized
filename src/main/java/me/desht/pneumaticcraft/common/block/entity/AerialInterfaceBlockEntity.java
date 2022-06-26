@@ -58,13 +58,11 @@ import net.minecraft.world.level.block.entity.SkullBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
-import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
@@ -73,6 +71,7 @@ import net.minecraftforge.items.wrapper.PlayerArmorInvWrapper;
 import net.minecraftforge.items.wrapper.PlayerMainInvWrapper;
 import net.minecraftforge.items.wrapper.PlayerOffhandInvWrapper;
 import net.minecraftforge.registries.ForgeRegistries;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -299,22 +298,22 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
         return player != null && player.isAlive() ? Optional.of(player) : Optional.empty();
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-        if (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
-            if (dispenserUpgradeInserted) {
-                return playerFoodCap.cast();
-            } else {
-                return itemHandlerSideConfigurator.getHandler(side).cast();
-            }
-        } else if (cap == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY && dispenserUpgradeInserted && curXpFluid != Fluids.EMPTY) {
-            return playerExpCap.cast();
-        } else if (cap == CapabilityEnergy.ENERGY) {
-            return energyCap.cast();
-        } else {
-            return super.getCapability(cap, side);
-        }
+    protected LazyOptional<IItemHandler> getInventoryCap(Direction side) {
+        return dispenserUpgradeInserted ? playerFoodCap : itemHandlerSideConfigurator.getHandler(side);
+    }
+
+    @NotNull
+    @Override
+    public LazyOptional<IFluidHandler> getFluidCap(Direction side) {
+        return dispenserUpgradeInserted && curXpFluid != Fluids.EMPTY ? playerExpCap : super.getFluidCap(side);
+    }
+
+    @NotNull
+    @Override
+    protected LazyOptional<IEnergyStorage> getEnergyCap(Direction side) {
+        return energyCap;
     }
 
     @Override

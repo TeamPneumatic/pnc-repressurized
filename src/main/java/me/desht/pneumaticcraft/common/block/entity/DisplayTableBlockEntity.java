@@ -20,6 +20,7 @@ package me.desht.pneumaticcraft.common.block.entity;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -49,7 +50,7 @@ public class DisplayTableBlockEntity extends AbstractPneumaticCraftBlockEntity i
 
     @Nonnull
     @Override
-    protected LazyOptional<IItemHandler> getInventoryCap() {
+    protected LazyOptional<IItemHandler> getInventoryCap(Direction side) {
         return invCap;
     }
 

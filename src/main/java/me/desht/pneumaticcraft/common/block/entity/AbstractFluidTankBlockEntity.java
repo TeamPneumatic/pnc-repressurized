@@ -40,15 +40,14 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.fluids.IFluidTank;
-import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -118,15 +117,6 @@ public abstract class AbstractFluidTankBlockEntity extends AbstractTickingBlockE
         }
     }
 
-    @Nonnull
-    @Override
-    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-        if (cap == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY) {
-            return CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY.orEmpty(cap, fluidCap);
-        }
-        return super.getCapability(cap, side);
-    }
-
     @Override
     public IItemHandler getPrimaryInventory() {
         return inventory;
@@ -134,8 +124,14 @@ public abstract class AbstractFluidTankBlockEntity extends AbstractTickingBlockE
 
     @Nonnull
     @Override
-    protected LazyOptional<IItemHandler> getInventoryCap() {
+    protected LazyOptional<IItemHandler> getInventoryCap(Direction side) {
         return inventoryCap;
+    }
+
+    @NotNull
+    @Override
+    public LazyOptional<IFluidHandler> getFluidCap(Direction side) {
+        return fluidCap;
     }
 
     @Nonnull

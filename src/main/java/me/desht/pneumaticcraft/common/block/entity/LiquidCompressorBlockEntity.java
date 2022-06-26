@@ -40,15 +40,14 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.fluids.IFluidTank;
-import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -207,18 +206,14 @@ public class LiquidCompressorBlockEntity extends AbstractAirHandlingBlockEntity 
 
     @Nonnull
     @Override
-    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, Direction facing) {
-        if (cap == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY) {
-            return fluidCap.cast();
-        } else {
-            return super.getCapability(cap, facing);
-        }
+    protected LazyOptional<IItemHandler> getInventoryCap(Direction side) {
+        return inventoryCap;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    protected LazyOptional<IItemHandler> getInventoryCap() {
-        return inventoryCap;
+    public LazyOptional<IFluidHandler> getFluidCap(Direction side) {
+        return fluidCap;
     }
 
     @Nonnull

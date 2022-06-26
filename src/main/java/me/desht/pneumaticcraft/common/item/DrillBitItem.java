@@ -56,20 +56,21 @@ public class DrillBitItem extends Item {
     }
 
     public enum DrillBitType {
+        // double supplier is necessary since registry objects will still be null at time of enum init
         NONE("none", null, Tiers.WOOD, 0x00000000, 1, 0),
-        IRON("iron", ModItems.IRON_DRILL_BIT, Tiers.IRON, 0xFFd8d8d8, 6, 1),
-        COMPRESSED_IRON("compressed_iron", ModItems.COMPRESSED_IRON_DRILL_BIT, Tiers.IRON, 0xFF4d4846, 7, 2),
-        DIAMOND("diamond", ModItems.DIAMOND_DRILL_BIT, Tiers.DIAMOND, 0xFF4aedd9, 8, 3),
-        NETHERITE("netherite", ModItems.NETHERITE_DRILL_BIT, Tiers.NETHERITE, 0xFF31292a, 9, 4);
+        IRON("iron", () -> ModItems.IRON_DRILL_BIT, Tiers.IRON, 0xFFd8d8d8, 6, 1),
+        COMPRESSED_IRON("compressed_iron", () -> ModItems.COMPRESSED_IRON_DRILL_BIT, Tiers.IRON, 0xFF4d4846, 7, 2),
+        DIAMOND("diamond", () -> ModItems.DIAMOND_DRILL_BIT, Tiers.DIAMOND, 0xFF4aedd9, 8, 3),
+        NETHERITE("netherite", () -> ModItems.NETHERITE_DRILL_BIT, Tiers.NETHERITE, 0xFF31292a, 9, 4);
 
         private final String name;
-        private final Supplier<? extends DrillBitItem> itemSupplier;
+        private final Supplier<Supplier<? extends DrillBitItem>> itemSupplier;
         private final Tier tier;
         private final int tint;
         private final int baseEfficiency;
         private final int bitQuality;
 
-        DrillBitType(String name, Supplier<? extends DrillBitItem> itemSupplier, Tier tier, int tint, int baseEfficiency, int bitQuality) {
+        DrillBitType(String name, Supplier<Supplier<? extends DrillBitItem>> itemSupplier, Tier tier, int tint, int baseEfficiency, int bitQuality) {
             this.name = name;
             this.itemSupplier = itemSupplier;
             this.tier = tier;
@@ -100,7 +101,7 @@ public class DrillBitItem extends Item {
         }
 
         public ItemStack asItemStack() {
-            return this == NONE ? ItemStack.EMPTY : new ItemStack(itemSupplier.get());
+            return itemSupplier == null ? ItemStack.EMPTY : new ItemStack(itemSupplier.get().get());
         }
 
         public DigMode getBestDigType() {

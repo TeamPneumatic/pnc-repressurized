@@ -201,7 +201,7 @@ public class AirCompressorBlockEntity extends AbstractAirHandlingBlockEntity imp
 
     @Nonnull
     @Override
-    protected LazyOptional<IItemHandler> getInventoryCap() {
+    protected LazyOptional<IItemHandler> getInventoryCap(Direction side) {
         return inventory;
     }
 

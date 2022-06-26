@@ -71,7 +71,7 @@ public class OmnidirectionalHopperBlockEntity extends AbstractHopperBlockEntity<
     }
 
     @Override
-    protected LazyOptional<IItemHandler> getInventoryCap() {
+    protected LazyOptional<IItemHandler> getInventoryCap(Direction side) {
         return invCap;
     }
 

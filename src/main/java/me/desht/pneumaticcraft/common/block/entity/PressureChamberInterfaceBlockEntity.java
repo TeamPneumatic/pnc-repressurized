@@ -333,7 +333,7 @@ public class PressureChamberInterfaceBlockEntity extends PressureChamberWallBloc
     }
 
     @Override
-    protected LazyOptional<IItemHandler> getInventoryCap() {
+    protected LazyOptional<IItemHandler> getInventoryCap(Direction side) {
         return invCap;
     }
 

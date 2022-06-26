@@ -59,6 +59,8 @@ import net.minecraftforge.client.model.data.IModelData;
 import net.minecraftforge.client.model.data.ModelDataMap;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.energy.CapabilityEnergy;
+import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
@@ -222,8 +224,9 @@ public abstract class AbstractPneumaticCraftBlockEntity extends BlockEntity
     public void setRemoved() {
         super.setRemoved();
 
-        if (getInventoryCap().isPresent()) getInventoryCap().invalidate();
+        if (getInventoryCap(null).isPresent()) getInventoryCap(null).invalidate();
         if (getHeatCap(null).isPresent()) getHeatCap(null).invalidate();
+        if (getFluidCap(null).isPresent()) getFluidCap(null).invalidate();
     }
 
     @Override
@@ -513,22 +516,34 @@ public abstract class AbstractPneumaticCraftBlockEntity extends BlockEntity
     @Override
     public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
         if (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
-            return getInventoryCap().cast();
+            return getInventoryCap(side).cast();
         } else if (cap == PNCCapabilities.HEAT_EXCHANGER_CAPABILITY) {
             return getHeatCap(side).cast();
+        } else if (cap == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY) {
+            return getFluidCap(side).cast();
+        } else if (cap == CapabilityEnergy.ENERGY) {
+            return getEnergyCap(side).cast();
         }
         return super.getCapability(cap, side);
     }
 
     @Nonnull
-    protected LazyOptional<IItemHandler> getInventoryCap() {
-        // for internal use only!
+    protected LazyOptional<IEnergyStorage> getEnergyCap(Direction side) {
+        return LazyOptional.empty();
+    }
+
+    @Nonnull
+    protected LazyOptional<IItemHandler> getInventoryCap(Direction side) {
         return LazyOptional.empty();
     }
 
     @Nonnull
     public LazyOptional<IHeatExchangerLogic> getHeatCap(Direction side) {
-        // for internal use only!
+        return LazyOptional.empty();
+    }
+
+    @Nonnull
+    public LazyOptional<IFluidHandler> getFluidCap(Direction side) {
         return LazyOptional.empty();
     }
 

@@ -262,7 +262,7 @@ public class UVLightBoxBlockEntity extends AbstractAirHandlingBlockEntity implem
     }
 
     @Override
-    protected LazyOptional<IItemHandler> getInventoryCap() {
+    protected LazyOptional<IItemHandler> getInventoryCap(Direction side) {
         return invCap;
     }
 

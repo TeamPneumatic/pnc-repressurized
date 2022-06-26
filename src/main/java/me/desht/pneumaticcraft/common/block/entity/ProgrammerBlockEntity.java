@@ -266,7 +266,7 @@ public class ProgrammerBlockEntity extends AbstractTickingBlockEntity implements
     }
 
     @Override
-    protected LazyOptional<IItemHandler> getInventoryCap() {
+    protected LazyOptional<IItemHandler> getInventoryCap(Direction side) {
         return invCap;
     }
 

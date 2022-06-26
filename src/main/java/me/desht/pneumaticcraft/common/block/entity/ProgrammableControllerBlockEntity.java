@@ -78,19 +78,17 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.common.world.ForgeChunkManager;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fluids.IFluidTank;
-import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
 import net.minecraftforge.items.*;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 
@@ -382,11 +380,6 @@ public class ProgrammableControllerBlockEntity extends AbstractAirHandlingBlockE
         return inventory;
     }
 
-    @Override
-    protected LazyOptional<IItemHandler> getInventoryCap() {
-        return invCap;
-    }
-
     public void setOwner(Player ownerID) {
         this.ownerID = ownerID.getUUID();
         this.ownerName = ownerID.getName();
@@ -506,18 +499,21 @@ public class ProgrammableControllerBlockEntity extends AbstractAirHandlingBlockE
         tag.putBoolean("chunkload_work_3x3", chunkloadWorkingChunk3x3);
     }
 
-    @Nonnull
     @Override
-    public <T> LazyOptional<T> getCapability(Capability<T> cap, @Nullable Direction side) {
-        if (cap == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY) {
-            return CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY.orEmpty(cap, tankCap);
-        } else if (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
-            return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.orEmpty(cap, itemHandlerSideConfigurator.getHandler(side));
-        } else if (cap == CapabilityEnergy.ENERGY) {
-            return CapabilityEnergy.ENERGY.orEmpty(cap, energyCap);
-        } else {
-            return super.getCapability(cap, side);
-        }
+    protected LazyOptional<IItemHandler> getInventoryCap(Direction side) {
+        return itemHandlerSideConfigurator.getHandler(side);
+    }
+
+    @NotNull
+    @Override
+    public LazyOptional<IFluidHandler> getFluidCap(Direction side) {
+        return tankCap;
+    }
+
+    @NotNull
+    @Override
+    protected LazyOptional<IEnergyStorage> getEnergyCap(Direction side) {
+        return energyCap;
     }
 
     @Override

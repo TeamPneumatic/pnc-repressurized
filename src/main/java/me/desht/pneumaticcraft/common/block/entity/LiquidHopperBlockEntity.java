@@ -43,13 +43,13 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.phys.AABB;
-import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.*;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler.FluidAction;
 import net.minecraftforge.items.IItemHandler;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -229,25 +229,21 @@ public class LiquidHopperBlockEntity extends AbstractHopperBlockEntity<LiquidHop
         return null;
     }
 
-    @Nonnull
     @Override
-    public <T> LazyOptional<T> getCapability(Capability<T> capability, @Nullable Direction facing) {
-        if (capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY) {
-            if (facing == inputDir) {
-                return inputCap.cast();
-            } else if (facing == getRotation()) {
-                return outputCap.cast();
-            } else {
-                return tankCap.cast();
-            }
-        } else {
-            return super.getCapability(capability, facing);
-        }
+    protected LazyOptional<IItemHandler> getInventoryCap(Direction side) {
+        return LazyOptional.empty();
     }
 
+    @NotNull
     @Override
-    protected LazyOptional<IItemHandler> getInventoryCap() {
-        return LazyOptional.empty();
+    public LazyOptional<IFluidHandler> getFluidCap(Direction side) {
+        if (side == inputDir) {
+            return inputCap;
+        } else if (side == getRotation()) {
+            return outputCap;
+        } else {
+            return tankCap;
+        }
     }
 
     @Nonnull

@@ -500,7 +500,7 @@ public class UniversalSensorBlockEntity extends AbstractAirHandlingBlockEntity i
 
     @Nonnull
     @Override
-    protected LazyOptional<IItemHandler> getInventoryCap() {
+    protected LazyOptional<IItemHandler> getInventoryCap(Direction side) {
         return inventoryCap;
     }
 

@@ -37,13 +37,11 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.items.IItemHandler;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class FluxCompressorBlockEntity extends AbstractAirHandlingBlockEntity
@@ -115,16 +113,6 @@ public class FluxCompressorBlockEntity extends AbstractAirHandlingBlockEntity
         return rsController;
     }
 
-    @Nonnull
-    @Override
-    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-        if (cap == CapabilityEnergy.ENERGY && side != getRotation().getOpposite()) {
-            return energyCap.cast();
-        } else {
-            return super.getCapability(cap, side);
-        }
-    }
-
     @Override
     public void saveAdditional(CompoundTag tag){
         super.saveAdditional(tag);
@@ -151,6 +139,12 @@ public class FluxCompressorBlockEntity extends AbstractAirHandlingBlockEntity
     @Override
     public LazyOptional<IHeatExchangerLogic> getHeatCap(Direction side) {
         return heatCap;
+    }
+
+    @NotNull
+    @Override
+    protected LazyOptional<IEnergyStorage> getEnergyCap(Direction side) {
+        return energyCap;
     }
 
     public int getInfoEnergyPerTick() {

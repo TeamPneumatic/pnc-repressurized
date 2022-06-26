@@ -286,7 +286,7 @@ public class SmartChestBlockEntity extends AbstractTickingBlockEntity
 
     @Nonnull
     @Override
-    protected LazyOptional<IItemHandler> getInventoryCap() {
+    protected LazyOptional<IItemHandler> getInventoryCap(Direction side) {
         return inventoryCap;
     }
 

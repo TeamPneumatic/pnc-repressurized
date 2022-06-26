@@ -35,13 +35,12 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidTank;
-import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.items.IItemHandler;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -138,14 +137,10 @@ public class RefineryOutputBlockEntity extends AbstractTickingBlockEntity implem
         return outputTank;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public <T> LazyOptional<T> getCapability(Capability<T> cap, @Nullable Direction side) {
-        if (cap == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY) {
-            return side == Direction.DOWN ? fluidCap.cast() : fluidCapWrapped.cast();
-        } else {
-            return super.getCapability(cap, side);
-        }
+    public LazyOptional<IFluidHandler> getFluidCap(Direction side) {
+        return side == Direction.DOWN ? fluidCap : fluidCapWrapped;
     }
 
     @Override

@@ -42,14 +42,12 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidTank;
-import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -164,12 +162,6 @@ public class EtchingTankBlockEntity extends AbstractTickingBlockEntity
         return itemHandler;
     }
 
-    @Nonnull
-    @Override
-    protected LazyOptional<IItemHandler> getInventoryCap() {
-        return itemCap;
-    }
-
     public OutputItemHandler getOutputHandler() {
         return outputHandler;
     }
@@ -182,28 +174,27 @@ public class EtchingTankBlockEntity extends AbstractTickingBlockEntity
         return acidTank;
     }
 
+    @Nonnull
+    @Override
+    protected LazyOptional<IItemHandler> getInventoryCap(Direction side) {
+        if (side == null) {
+            return itemCap;
+        } else if (side.getAxis() == Direction.Axis.Y) {
+            return endCap;
+        } else {
+            return sideCap;
+        }
+    }
+
     @Override
     public LazyOptional<IHeatExchangerLogic> getHeatCap(Direction side) {
         return heatCap;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-        if (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
-            if (side == null) {
-                return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.orEmpty(cap, itemCap);
-            } else if (side.getAxis() == Direction.Axis.Y) {
-                return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.orEmpty(cap, endCap);
-            } else {
-                return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.orEmpty(cap, sideCap);
-            }
-        } else if (cap == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY) {
-            return CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY.orEmpty(cap, fluidCap);
-        } /*else if (cap == PNCCapabilities.HEAT_EXCHANGER_CAPABILITY) {
-            return PNCCapabilities.HEAT_EXCHANGER_CAPABILITY.orEmpty(cap, heatCap);
-        }*/
-        return super.getCapability(cap, side);
+    public LazyOptional<IFluidHandler> getFluidCap(Direction side) {
+        return fluidCap;
     }
 
     @Override

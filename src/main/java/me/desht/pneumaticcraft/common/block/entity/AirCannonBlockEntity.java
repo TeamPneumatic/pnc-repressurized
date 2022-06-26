@@ -726,7 +726,7 @@ public class AirCannonBlockEntity extends AbstractAirHandlingBlockEntity
     }
 
     @Override
-    protected LazyOptional<IItemHandler> getInventoryCap() {
+    protected LazyOptional<IItemHandler> getInventoryCap(Direction side) {
         return inventory;
     }
 

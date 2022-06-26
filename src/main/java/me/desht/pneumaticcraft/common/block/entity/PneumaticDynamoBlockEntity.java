@@ -38,13 +38,12 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.items.IItemHandler;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class PneumaticDynamoBlockEntity extends AbstractAirHandlingBlockEntity implements
@@ -158,12 +157,10 @@ public class PneumaticDynamoBlockEntity extends AbstractAirHandlingBlockEntity i
         return energy.getEnergyStored();
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public <T> LazyOptional<T> getCapability(Capability<T> capability, @Nullable Direction facing) {
-        return capability == CapabilityEnergy.ENERGY && (facing == getRotation() || facing == null) ?
-                energyCap.cast() :
-                super.getCapability(capability, facing);
+    protected LazyOptional<IEnergyStorage> getEnergyCap(Direction side) {
+        return side == getRotation() || side == null ? energyCap : super.getEnergyCap(side);
     }
 
     @Override
