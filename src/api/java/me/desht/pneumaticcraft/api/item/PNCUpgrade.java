@@ -134,7 +134,14 @@ public class PNCUpgrade extends ForgeRegistryEntry<PNCUpgrade> {
      */
     public final ItemStack getItemStack(int count) {
         Item item = getItem();
-        return item == null ? ItemStack.EMPTY : new ItemStack(item, count);
+        if (item == null) return ItemStack.EMPTY;
+        // FIXME 1.19 this doesn't handle the possibility of multiple tiered upgrades (which don't currently exist in PNC but might one day)
+        if (maxTier == 1) {
+            return new ItemStack(item, count);
+        } else {
+            // interpreting count as the tier and assuming not more than one tiered upgrade allowed (true today but not necessarily forever...)
+            return new ItemStack(getItem(count));
+        }
     }
 
     /**
