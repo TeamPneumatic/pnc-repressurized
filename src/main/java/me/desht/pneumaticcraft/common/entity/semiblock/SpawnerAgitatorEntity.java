@@ -17,11 +17,14 @@
 
 package me.desht.pneumaticcraft.common.entity.semiblock;
 
+import me.desht.pneumaticcraft.common.semiblock.SemiblockTracker;
+import me.desht.pneumaticcraft.mixin.accessors.BaseSpawnerAccess;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.BaseSpawner;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.SpawnerBlockEntity;
 
 public class SpawnerAgitatorEntity extends AbstractSemiblockEntity {
@@ -40,12 +43,8 @@ public class SpawnerAgitatorEntity extends AbstractSemiblockEntity {
 
         if (!level.isClientSide) {
             BaseSpawner spawner = getSpawner();
-            if (spawner != null) {
-                // just altering the range when added isn't enough - needs to be kept updated each tick
-                spawner.requiredPlayerRange = Integer.MAX_VALUE;
-                if (tickCount == 1) {
-                    setSpawnPersistentEntities(spawner, true);
-                }
+            if (spawner != null && tickCount == 1) {
+                setSpawnPersistentEntities(spawner, true);
             }
         }
     }
@@ -55,7 +54,6 @@ public class SpawnerAgitatorEntity extends AbstractSemiblockEntity {
         if (!level.isClientSide && removingSemiblock) {
             BaseSpawner spawner = getSpawner();
             if (spawner != null) {
-                spawner.requiredPlayerRange = 16;
                 setSpawnPersistentEntities(spawner, false);
             }
         }
@@ -66,6 +64,11 @@ public class SpawnerAgitatorEntity extends AbstractSemiblockEntity {
     }
 
     private void setSpawnPersistentEntities(BaseSpawner spawner, boolean persistent) {
-        spawner.nextSpawnData.getEntityToSpawn().putBoolean("PersistenceRequired", persistent);
+        ((BaseSpawnerAccess) spawner).getNextSpawnData().getEntityToSpawn().putBoolean("PersistenceRequired", persistent);
+    }
+
+    public static boolean isAgitated(BaseSpawner spawner) {
+        BlockEntity be = spawner.getSpawnerBlockEntity();
+        return be != null && SemiblockTracker.getInstance().getSemiblock(be.getLevel(), be.getBlockPos()) instanceof SpawnerAgitatorEntity;
     }
 }

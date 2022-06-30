@@ -18,15 +18,15 @@
 package me.desht.pneumaticcraft.common.hacking.block;
 
 import me.desht.pneumaticcraft.api.pneumatic_armor.hacking.IHackableBlock;
+import me.desht.pneumaticcraft.mixin.accessors.BaseSpawnerAccess;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.BaseSpawner;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.SpawnerBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
@@ -49,7 +49,7 @@ public class HackableMobSpawner implements IHackableBlock {
     }
 
     public static boolean isHacked(BlockGetter world, BlockPos pos) {
-        return world.getBlockEntity(pos) instanceof SpawnerBlockEntity spawner && spawner.getSpawner().requiredPlayerRange == 0;
+        return world.getBlockEntity(pos) instanceof SpawnerBlockEntity sbe && ((BaseSpawnerAccess)sbe.getSpawner()).getRequiredPlayerRange() == 0;
     }
 
     @Override
@@ -70,23 +70,21 @@ public class HackableMobSpawner implements IHackableBlock {
     @Override
     public void onHackComplete(Level world, BlockPos pos, Player player) {
         if (!world.isClientSide) {
-            BlockEntity te = world.getBlockEntity(pos);
-            if (te != null) {
-                CompoundTag tag = te.saveWithFullMetadata();
-                tag.putShort("RequiredPlayerRange", (short) 0);
-                te.load(tag);
+            if (world.getBlockEntity(pos) instanceof SpawnerBlockEntity sbe) {
+                ((BaseSpawnerAccess) sbe.getSpawner()).setRequiredPlayerRange(0);
                 BlockState state = world.getBlockState(pos);
-                world.sendBlockUpdated(pos, state, state, 3);
+                world.sendBlockUpdated(pos, state, state, Block.UPDATE_ALL);
             }
         }
-
     }
 
     @Override
     public boolean afterHackTick(BlockGetter world, BlockPos pos) {
-        BaseSpawner spawner = ((SpawnerBlockEntity) world.getBlockEntity(pos)).getSpawner();
-        spawner.oSpin = spawner.spin;
-        spawner.spawnDelay = 10;
+        if (world.getBlockEntity(pos) instanceof SpawnerBlockEntity sbe) {
+            BaseSpawner spawner = sbe.getSpawner();
+            ((BaseSpawnerAccess)spawner).setOSpin(((BaseSpawnerAccess)spawner).getSpin());
+            ((BaseSpawnerAccess)spawner).setSpawnDelay(10);
+        }
         return false;
     }
 }
