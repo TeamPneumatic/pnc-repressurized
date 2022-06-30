@@ -150,7 +150,7 @@ public class LiquidCompressorScreen extends AbstractPneumaticCraftContainerScree
 
         if (te.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY).isPresent()) {
             te.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY).ifPresent(fluidHandler -> {
-                if (!te.isProducing && fluidHandler.getFluidInTank(0).isEmpty()) {
+                if (!te.isActive() && fluidHandler.getFluidInTank(0).isEmpty()) {
                     curInfo.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.liquidCompressor.noFuel"));
                 }
             });

@@ -26,6 +26,7 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
@@ -75,6 +76,15 @@ public class LiquidCompressorBlock extends AbstractPneumaticCraftBlock implement
 
     public LiquidCompressorBlock() {
         super(ModBlocks.defaultProps().noOcclusion());
+
+        registerDefaultState(getStateDefinition().any().setValue(AirCompressorBlock.ON, false));
+    }
+
+    @Override
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
+        super.createBlockStateDefinition(builder);
+
+        builder.add(AirCompressorBlock.ON);
     }
 
     @Override

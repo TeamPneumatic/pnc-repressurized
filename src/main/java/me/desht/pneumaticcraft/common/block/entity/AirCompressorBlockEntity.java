@@ -22,7 +22,6 @@ import me.desht.pneumaticcraft.common.block.AirCompressorBlock;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.inventory.AirCompressorMenu;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
-import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.BlockPos;
@@ -62,8 +61,6 @@ public class AirCompressorBlockEntity extends AbstractAirHandlingBlockEntity imp
     private int maxBurnTime; // in here the total burn time of the current burning item is stored.
     @GuiSynced
     public final RedstoneController<AirCompressorBlockEntity> rsController = new RedstoneController<>(this);
-    @DescSynced
-    private boolean isActive;
     @GuiSynced
     public int curFuelUsage;
     @GuiSynced
@@ -85,13 +82,16 @@ public class AirCompressorBlockEntity extends AbstractAirHandlingBlockEntity imp
     }
 
     public boolean isActive() {
-        return isActive;
+        return getBlockState().hasProperty(AirCompressorBlock.ON) && getBlockState().getValue(AirCompressorBlock.ON);
     }
 
     @Override
     public void tickClient() {
         super.tickClient();
-        if (isActive) spawnBurningParticle();
+
+        if (isActive()) {
+            spawnBurningParticle();
+        }
     }
 
     @Override
@@ -123,12 +123,11 @@ public class AirCompressorBlockEntity extends AbstractAirHandlingBlockEntity imp
                 addHeatForAir(toAdd);
             }
         }
-        boolean wasActive = isActive;
-        isActive = burnTime > curFuelUsage;
-        if (wasActive != isActive) {
+        boolean newIsActive = burnTime > curFuelUsage;
+        if (isActive() != newIsActive) {
             BlockState state = getBlockState();
             if (state.hasProperty(AirCompressorBlock.ON)) {
-                nonNullLevel().setBlockAndUpdate(getBlockPos(), state.setValue(AirCompressorBlock.ON, isActive));
+                nonNullLevel().setBlockAndUpdate(getBlockPos(), state.setValue(AirCompressorBlock.ON, newIsActive));
             }
         }
         airHandler.setSideLeaking(hasNoConnectedAirHandlers() ? getRotation() : null);
