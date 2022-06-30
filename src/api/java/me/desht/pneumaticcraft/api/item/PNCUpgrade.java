@@ -116,7 +116,9 @@ public class PNCUpgrade {
      */
     public final ItemStack getItemStack(int count) {
         Item item = getItem();
-        return item == null ? ItemStack.EMPTY : new ItemStack(item, count);
+        if (item == null) return ItemStack.EMPTY;
+        // interpreting count as the tier and assuming not more than one tiered upgrade allowed (true today but not necessarily forever...)
+        return maxTier == 1 ? new ItemStack(item, count) : new ItemStack(getItem(count));
     }
 
     /**
