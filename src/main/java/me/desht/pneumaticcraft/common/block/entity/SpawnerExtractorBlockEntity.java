@@ -27,6 +27,7 @@ import me.desht.pneumaticcraft.common.inventory.SpawnerExtractorMenu;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
+import me.desht.pneumaticcraft.mixin.accessors.BaseSpawnerAccess;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -163,7 +164,7 @@ public class SpawnerExtractorBlockEntity extends AbstractAirHandlingBlockEntity 
         int spawnRange = 4;
         int maxNearbyEntities = 16;
 
-        CompoundTag nbt = spawner.nextSpawnData.getEntityToSpawn();
+        CompoundTag nbt = ((BaseSpawnerAccess) spawner).getNextSpawnData().getEntityToSpawn();
         Optional<EntityType<?>> optional = EntityType.by(nbt);
         if (optional.isEmpty()) {
             return false;
@@ -264,7 +265,7 @@ public class SpawnerExtractorBlockEntity extends AbstractAirHandlingBlockEntity 
 
     public Entity getCachedEntity(SpawnerBlockEntity spawner) {
         if (this.cachedEntity == null) {
-            this.cachedEntity = EntityType.loadEntityRecursive(spawner.getSpawner().nextSpawnData.getEntityToSpawn(), this.nonNullLevel(), Function.identity());
+            this.cachedEntity = EntityType.loadEntityRecursive(((BaseSpawnerAccess)spawner.getSpawner()).getNextSpawnData().getEntityToSpawn(), this.nonNullLevel(), Function.identity());
         }
         return this.cachedEntity;
     }

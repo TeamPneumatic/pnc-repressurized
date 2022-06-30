@@ -8,6 +8,7 @@ buildscript {
 		classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
 		classpath 'org.parchmentmc:librarian:1.+'
 		classpath "org.jfrog.buildinfo:build-info-extractor-gradle:4+"
+		classpath 'org.spongepowered:mixingradle:0.7.+'
 	}
 }
 
@@ -23,6 +24,7 @@ plugins {
 apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'org.parchmentmc.librarian.forgegradle'
 apply plugin: "com.jfrog.artifactory"
+apply plugin: "org.spongepowered.mixin"
 
 //adds the build number to the end of the version string if on a build server
 String build_number = System.getenv().BUILD_NUMBER
@@ -103,6 +105,9 @@ dependencies {
 			name   : 'forge',
 			version: "${project.mc_version}-${project.forge_version}"
 	])
+
+	annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
+
 	testImplementation "org.junit.jupiter:junit-jupiter-api:5.7.2"
 	testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.7.2"
 
@@ -186,6 +191,22 @@ minecraft {
 			}
 		}
 	}
+}
+
+mixin {
+    // Refmaps for each SourceSet
+    add sourceSets.main, 'mixins.pneumaticcraft.refmap.json'
+
+    // Configs to add to runs and jars
+    config 'mixins.pneumaticcraft.json'
+
+    // Specify options for dev run configs
+    debug.verbose = true
+    debug.export = true
+    dumpTargetOnFailure = true
+
+    // Options for the Annotation Processor
+    quiet
 }
 
 def replaceResources = tasks.register("replaceResources", Copy) {

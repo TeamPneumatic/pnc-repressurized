@@ -22,6 +22,7 @@ import me.desht.pneumaticcraft.common.entity.semiblock.SpawnerAgitatorEntity;
 import me.desht.pneumaticcraft.common.hacking.block.HackableMobSpawner;
 import me.desht.pneumaticcraft.common.semiblock.SemiblockTracker;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.mixin.accessors.BaseSpawnerAccess;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
@@ -75,7 +76,7 @@ public class BlockTrackEntryMobSpawner implements IBlockTrackEntry {
             infoList.add(xlate("pneumaticcraft.blockTracker.info.spawner.type", e.getName().getString()));
             if (isNearPlayer(spawner, world, pos) || hasAgitator(world, pos)) {
                 infoList.add(xlate("pneumaticcraft.blockTracker.info.spawner.time",
-                        PneumaticCraftUtils.convertTicksToMinutesAndSeconds(spawner.spawnDelay, false)));
+                        PneumaticCraftUtils.convertTicksToMinutesAndSeconds(((BaseSpawnerAccess)spawner).getSpawnDelay(), false)));
             } else if (HackableMobSpawner.isHacked(world, pos)) {
                 infoList.add(xlate("pneumaticcraft.blockTracker.info.spawner.hacked"));
             } else {
@@ -85,7 +86,7 @@ public class BlockTrackEntryMobSpawner implements IBlockTrackEntry {
     }
 
     private boolean isNearPlayer(BaseSpawner spawner, Level pLevel, BlockPos pPos) {
-        return pLevel.hasNearbyAlivePlayer(pPos.getX() + 0.5D, pPos.getY() + 0.5D, pPos.getZ() + 0.5D, spawner.requiredPlayerRange);
+        return pLevel.hasNearbyAlivePlayer(pPos.getX() + 0.5D, pPos.getY() + 0.5D, pPos.getZ() + 0.5D, ((BaseSpawnerAccess)spawner).getRequiredPlayerRange());
     }
 
     private boolean hasAgitator(Level world, BlockPos pos) {
