@@ -9,6 +9,25 @@ Changes are in reverse chronological order; newest changes at the top.
 * PNC:R 3.2.3 and later *require* Forge 40.1.20 or later
 * PNC:R 3.2.0 and later *require* Forge 40.1.0 or later and JEI 9.7.0 or later
 
+## 3.3.1-?? (unreleased)
+
+### Updates
+* Added new `getDronePositionVec()` Lua method to the Drone Interface
+  * Returns drone's position as a vector, easier to extract individual x/y/z values (e.g. `x = getDronePositionVec().x`)
+  * Existing `getDronePosition()` method is unchanged, for backwards compatibility
+
+### Fixes
+* Fixed Patchouli book breaking if certain recipes are removed/altered
+* Liquid Compressor (and Advanced Liquid Compressor) now have a boolean blockstate property "on" to indicate if they're running
+  * Intended to make it easier for mods like AdPother to check their status
+* Fixed Spawner Agitator not working (even when chunkloaded) if there are no players in the dimension it's in
+* Fixed a misleading item tooltip for tiered upgrades (Jet Boots Tier 5 showed up as "5 x Jet Boots Tier 1")
+* Fixed a visual bug which sometimes occured when wrenching tubes (tubes appearing connected but leaking or vice versa)
+* Villagers are now blacklisted from being extracted by the Omnidirectional Hopper & Entity Tracker Upgrade
+  * This was done because a) it's a bit exploitable and b) can lead to buggy behaviour with villager trades 
+  * Other entities can also be blacklisted by adding them to the `pneumaticcraft:omnihopper_blacklisted` entity type tag
+* Fixed `$deploy_pos` special Drone variable not persisting properly across world restarts
+
 ## 3.3.0-99 (18 Jun 2022)
 
 ### New
