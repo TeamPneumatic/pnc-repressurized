@@ -20,6 +20,7 @@ package me.desht.pneumaticcraft.common.block.entity;
 import com.google.common.collect.ImmutableMap;
 import me.desht.pneumaticcraft.api.pressure.PressureTier;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
+import me.desht.pneumaticcraft.common.block.AirCompressorBlock;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.fluid.FuelRegistry;
 import me.desht.pneumaticcraft.common.inventory.LiquidCompressorMenu;
@@ -85,9 +86,6 @@ public class LiquidCompressorBlockEntity extends AbstractAirHandlingBlockEntity 
     @GuiSynced
     public float airPerTick;
     private float airBuffer;
-    @DescSynced
-    @GuiSynced
-    public boolean isProducing;
 
     public LiquidCompressorBlockEntity(BlockPos pos, BlockState state) {
         this(ModBlockEntities.LIQUID_COMPRESSOR.get(), pos, state,PressureTier.TIER_ONE, 5000);
@@ -101,6 +99,10 @@ public class LiquidCompressorBlockEntity extends AbstractAirHandlingBlockEntity 
         return tank;
     }
 
+    public boolean isActive() {
+        return getBlockState().hasProperty(AirCompressorBlock.ON) && getBlockState().getValue(AirCompressorBlock.ON);
+    }
+
     @Override
     public void tickCommonPre() {
         super.tickCommonPre();
@@ -112,7 +114,7 @@ public class LiquidCompressorBlockEntity extends AbstractAirHandlingBlockEntity 
     public void tickClient() {
         super.tickClient();
 
-        if (isProducing && nonNullLevel().random.nextInt(5) == 0) {
+        if (isActive() && nonNullLevel().random.nextInt(5) == 0) {
             ClientUtils.emitParticles(getLevel(), getBlockPos(), ParticleTypes.SMOKE);
         }
     }
@@ -123,7 +125,7 @@ public class LiquidCompressorBlockEntity extends AbstractAirHandlingBlockEntity 
 
         processFluidItem(INPUT_SLOT, OUTPUT_SLOT);
 
-        isProducing = false;
+        boolean newIsActive = false;
 
         airPerTick = getBaseProduction() * burnMultiplier * this.getSpeedMultiplierFromUpgrades() * (getHeatEfficiency() / 100f);
 
@@ -139,7 +141,7 @@ public class LiquidCompressorBlockEntity extends AbstractAirHandlingBlockEntity 
                 }
             }
             if (internalFuelBuffer >= usageRate) {
-                isProducing = true;
+                newIsActive = true;
                 internalFuelBuffer -= usageRate;
 
                 airBuffer += airPerTick;
@@ -149,6 +151,13 @@ public class LiquidCompressorBlockEntity extends AbstractAirHandlingBlockEntity 
                     airBuffer -= toAdd;
                     addHeatForAir(toAdd);
                 }
+            }
+        }
+
+        if (newIsActive != isActive()) {
+            BlockState state = getBlockState();
+            if (state.hasProperty(AirCompressorBlock.ON)) {
+                nonNullLevel().setBlockAndUpdate(getBlockPos(), state.setValue(AirCompressorBlock.ON, newIsActive));
             }
         }
     }
