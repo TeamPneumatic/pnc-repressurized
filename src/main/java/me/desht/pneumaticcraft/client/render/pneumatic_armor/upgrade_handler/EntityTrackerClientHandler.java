@@ -24,7 +24,7 @@ import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorHandler;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.options.EntityTrackOptions;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetKeybindCheckBox;
 import me.desht.pneumaticcraft.client.pneumatic_armor.ArmorUpgradeClientRegistry;
-import me.desht.pneumaticcraft.client.render.pneumatic_armor.PneumaticHelmetRegistry;
+import me.desht.pneumaticcraft.client.render.pneumatic_armor.ClientArmorRegistry;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.entity_tracker.RenderEntityTarget;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.ai.StringFilterEntitySelector;
@@ -166,7 +166,7 @@ public class EntityTrackerClientHandler extends IArmorUpgradeClientHandler.Abstr
     public IGuiAnimatedStat getAnimatedStat() {
         if (entityTrackInfo == null) {
             ItemStack icon = ModUpgrades.ENTITY_TRACKER.get().getItemStack();
-            entityTrackInfo = PneumaticHelmetRegistry.getInstance().makeHUDStatPanel(xlate("pneumaticcraft.entityTracker.info.trackedEntities"), icon, this);
+            entityTrackInfo = ClientArmorRegistry.getInstance().makeHUDStatPanel(xlate("pneumaticcraft.entityTracker.info.trackedEntities"), icon, this);
             entityTrackInfo.setMinimumContractedDimensions(0, 0);
             entityTrackInfo.setAutoLineWrap(false);
         }

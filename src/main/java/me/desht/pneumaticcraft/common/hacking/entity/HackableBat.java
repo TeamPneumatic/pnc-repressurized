@@ -17,10 +17,9 @@
 
 package me.desht.pneumaticcraft.common.hacking.entity;
 
-import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableEntity;
+import me.desht.pneumaticcraft.api.pneumatic_armor.hacking.IHackableEntity;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.ambient.Bat;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Explosion;
@@ -30,7 +29,7 @@ import java.util.List;
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class HackableBat implements IHackableEntity {
+public class HackableBat implements IHackableEntity<Bat> {
     private static final ResourceLocation ID = RL("bat");
 
     @Override
@@ -39,36 +38,30 @@ public class HackableBat implements IHackableEntity {
     }
 
     @Override
-    public boolean canHack(Entity entity, Player player) {
-        return entity.getClass() == Bat.class;
+    public Class<Bat> getHackableClass() {
+        return Bat.class;
     }
 
     @Override
-    public void addHackInfo(Entity entity, List<Component> curInfo, Player player) {
+    public void addHackInfo(Bat entity, List<Component> curInfo, Player player) {
         curInfo.add(xlate("pneumaticcraft.armor.hacking.result.kill"));
     }
 
     @Override
-    public void addPostHackInfo(Entity entity, List<Component> curInfo, Player player) {
+    public void addPostHackInfo(Bat entity, List<Component> curInfo, Player player) {
         curInfo.add(xlate("pneumaticcraft.armor.hacking.finished.killed"));
     }
 
     @Override
-    public int getHackTime(Entity entity, Player player) {
+    public int getHackTime(Bat entity, Player player) {
         return 60;
     }
 
     @Override
-    public void onHackFinished(Entity entity, Player player) {
+    public void onHackFinished(Bat entity, Player player) {
         if (!entity.level.isClientSide) {
             entity.discard();
             entity.level.explode(null, entity.getX(), entity.getY(), entity.getZ(), 0, Explosion.BlockInteraction.NONE);
         }
     }
-
-    @Override
-    public boolean afterHackTick(Entity entity) {
-        return false;
-    }
-
 }

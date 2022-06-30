@@ -17,23 +17,23 @@
 
 package me.desht.pneumaticcraft.common.hacking.entity;
 
-import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableEntity;
-import me.desht.pneumaticcraft.common.util.Reflections;
-import net.minecraft.network.chat.Component;
+import me.desht.pneumaticcraft.api.lib.Names;
+import me.desht.pneumaticcraft.api.pneumatic_armor.hacking.AbstractPersistentEntityHack;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.ai.goal.GoalSelector;
 import net.minecraft.world.entity.monster.Ghast;
-import net.minecraft.world.entity.player.Player;
-
-import java.util.List;
+import net.minecraft.world.entity.projectile.Fireball;
+import net.minecraftforge.event.entity.EntityJoinWorldEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
-import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class HackableGhast implements IHackableEntity {
-
+public class HackableGhast extends AbstractPersistentEntityHack<Ghast> {
     private static final ResourceLocation ID = RL("ghast");
+
+    public HackableGhast() {
+        super(StockHackTypes.DISARM);
+    }
 
     @Override
     public ResourceLocation getHackableId() {
@@ -41,37 +41,18 @@ public class HackableGhast implements IHackableEntity {
     }
 
     @Override
-    public boolean canHack(Entity entity, Player player) {
-        return Reflections.ghast_aiFireballAttack != null;
+    public Class<Ghast> getHackableClass() {
+        return Ghast.class;
     }
 
-    @Override
-    public void addHackInfo(Entity entity, List<Component> curInfo, Player player) {
-        curInfo.add(xlate("pneumaticcraft.armor.hacking.result.disarm"));
+    @Mod.EventBusSubscriber(modid = Names.MOD_ID)
+    public static class Listener {
+        @SubscribeEvent
+        public static void onFireball(EntityJoinWorldEvent event) {
+            if (event.getEntity() instanceof Fireball f && f.getOwner() instanceof Ghast ghast
+                    && hasPersistentHack(ghast, HackableGhast.class)) {
+                event.setCanceled(true);
+            }
+        }
     }
-
-    @Override
-    public void addPostHackInfo(Entity entity, List<Component> curInfo, Player player) {
-        curInfo.add(xlate("pneumaticcraft.armor.hacking.finished.disarmed"));
-    }
-
-    @Override
-    public int getHackTime(Entity entity, Player player) {
-        return 60;
-    }
-
-    @Override
-    public void onHackFinished(Entity entity, Player player) {
-        GoalSelector tasks = ((Ghast) entity).goalSelector;
-
-        tasks.getRunningGoals()
-                .filter(goal -> Reflections.ghast_aiFireballAttack.isAssignableFrom(goal.getClass()))
-                .forEach(tasks::removeGoal);
-    }
-
-    @Override
-    public boolean afterHackTick(Entity entity) {
-        return false;
-    }
-
 }

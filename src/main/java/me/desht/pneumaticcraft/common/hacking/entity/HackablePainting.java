@@ -17,14 +17,14 @@
 
 package me.desht.pneumaticcraft.common.hacking.entity;
 
-import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableEntity;
+import me.desht.pneumaticcraft.api.pneumatic_armor.hacking.IHackableEntity;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.decoration.Painting;
 import net.minecraft.world.entity.decoration.PaintingVariant;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.registries.ForgeRegistries;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +32,7 @@ import java.util.List;
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class HackablePainting implements IHackableEntity {
+public class HackablePainting implements IHackableEntity<Painting> {
 
     private static final ResourceLocation ID = RL("painting");
 
@@ -41,29 +41,30 @@ public class HackablePainting implements IHackableEntity {
         return ID;
     }
 
+    @NotNull
     @Override
-    public boolean canHack(Entity entity, Player player) {
-        return true;
+    public Class<Painting> getHackableClass() {
+        return Painting.class;
     }
 
     @Override
-    public void addHackInfo(Entity entity, List<Component> curInfo, Player player) {
+    public void addHackInfo(Painting entity, List<Component> curInfo, Player player) {
         curInfo.add(xlate("Hack to change artwork"));
     }
 
     @Override
-    public void addPostHackInfo(Entity entity, List<Component> curInfo, Player player) {
+    public void addPostHackInfo(Painting entity, List<Component> curInfo, Player player) {
         curInfo.add(xlate("Artwork changed!"));
     }
 
     @Override
-    public int getHackTime(Entity entity, Player player) {
+    public int getHackTime(Painting entity, Player player) {
         return 40;
     }
 
     @Override
-    public void onHackFinished(Entity entity, Player player) {
-        PaintingVariant art = ((Painting) entity).getVariant().value();
+    public void onHackFinished(Painting entity, Player player) {
+        PaintingVariant art = entity.getVariant().value();
         List<PaintingVariant> candidate = new ArrayList<>();
         for (PaintingVariant a : ForgeRegistries.PAINTING_VARIANTS.getValues()) {
             if (a.getHeight() == art.getHeight() && a.getWidth() == art.getWidth()) {
@@ -73,10 +74,5 @@ public class HackablePainting implements IHackableEntity {
 
         // FIXME painting variants
 //        ((Painting) entity).setv = candidate.get(entity.level.random.nextInt(candidate.size()));
-    }
-
-    @Override
-    public boolean afterHackTick(Entity entity) {
-        return false;
     }
 }

@@ -15,13 +15,12 @@
  *     along with pnc-repressurized API.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.desht.pneumaticcraft.api.hacking;
+package me.desht.pneumaticcraft.api.pneumatic_armor.hacking;
 
-import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableEntity;
 import net.minecraft.world.entity.Entity;
 import net.minecraftforge.common.capabilities.CapabilityToken;
 
-import java.util.List;
+import java.util.Collection;
 
 /**
  * Manages the list of "hacks" on an entity. Hacks are added via the Pneumatic Helmet
@@ -40,12 +39,17 @@ public interface IHacking {
      * Add a new hack to the entity's list of hacks.
      * @param hackable a hack
      */
-    void addHackable(IHackableEntity hackable);
+    void addHackable(IHackableEntity<?> hackable);
 
     /**
-     * Get a list of the hacks currently on the entity.
+     * Get the hacks currently on the entity.
      *
      * @return a list of hacks
      */
-    List<IHackableEntity> getCurrentHacks();
+    Collection<IHackableEntity<?>> getCurrentHacks();
+
+    /**
+     * Clear the entity's list of hacks.
+     */
+    void clear();
 }

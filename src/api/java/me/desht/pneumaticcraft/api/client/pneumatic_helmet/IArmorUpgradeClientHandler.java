@@ -42,7 +42,7 @@ import java.util.function.Consumer;
  * configuration GUI page, reading/writing client-side configuration, and handling keybinds. It's recommended to extend
  * {@link AbstractHandler} or {@link SimpleToggleableHandler} rather than implement this interface directly.
  * <p>
- * Register an instance of this via {@link IPneumaticHelmetRegistry#registerRenderHandler(IArmorUpgradeHandler, IArmorUpgradeClientHandler)}.
+ * Register an instance of this via {@link IClientArmorRegistry#registerRenderHandler(IArmorUpgradeHandler, IArmorUpgradeClientHandler)}.
  * You will need a corresponding {@link IArmorUpgradeHandler} object; there is a 1-1 relationship.
  */
 public interface IArmorUpgradeClientHandler<T extends IArmorUpgradeHandler<?>> {
@@ -103,7 +103,7 @@ public interface IArmorUpgradeClientHandler<T extends IArmorUpgradeHandler<?>> {
      * You can return a {@link IGuiAnimatedStat} here, which the HUD Handler will pick up and render. It also
      * automatically opens and closes the stat window as necessary.
      * <p>
-     * {@link IPneumaticHelmetRegistry#makeHUDStatPanel(Component, ItemStack, IArmorUpgradeClientHandler)} is a useful
+     * {@link IClientArmorRegistry#makeHUDStatPanel(Component, ItemStack, IArmorUpgradeClientHandler)} is a useful
      * method for creating a panel.
      * <p>
      * The recommended way to handle this is to have a
@@ -189,7 +189,7 @@ public interface IArmorUpgradeClientHandler<T extends IArmorUpgradeHandler<?>> {
      * key binding can be registered for them.
      * <p>
      * The ID's returned here are the same as those passed to
-     * {@link IPneumaticHelmetRegistry#makeKeybindingCheckBox(ResourceLocation, int, int, int, Consumer)}.
+     * {@link IClientArmorRegistry#makeKeybindingCheckBox(ResourceLocation, int, int, int, Consumer)}.
      *
      * @return a collection of ID's
      */

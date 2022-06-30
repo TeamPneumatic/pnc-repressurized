@@ -29,8 +29,6 @@ import me.desht.pneumaticcraft.common.advancements.AdvancementTriggers;
 import me.desht.pneumaticcraft.common.ai.DroneClaimManager;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import me.desht.pneumaticcraft.common.block.entity.ProgrammerBlockEntity;
-import me.desht.pneumaticcraft.common.block.entity.RefineryControllerBlockEntity;
-import me.desht.pneumaticcraft.common.capabilities.CapabilityHacking;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.entity.drone.DroneEntity;
 import me.desht.pneumaticcraft.common.item.PneumaticArmorItem;
@@ -56,18 +54,14 @@ import net.minecraft.world.entity.vehicle.AbstractMinecart;
 import net.minecraft.world.entity.vehicle.Boat;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.HitResult;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.ServerChatEvent;
 import net.minecraftforge.event.TagsUpdatedEvent;
 import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.entity.EntityEvent.EntityConstructing;
+import net.minecraftforge.event.entity.EntityEvent;
 import net.minecraftforge.event.entity.EntityMountEvent;
 import net.minecraftforge.event.entity.living.LivingEquipmentChangeEvent;
 import net.minecraftforge.event.entity.player.FillBucketEvent;
@@ -82,8 +76,6 @@ import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.server.ServerLifecycleHooks;
 
 import java.util.Iterator;
-
-import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 public class MiscEventHandler {
     @SubscribeEvent
@@ -157,29 +149,20 @@ public class MiscEventHandler {
     }
 
     @SubscribeEvent
-    public void onEntityConstruction(EntityConstructing event) {
+    public void onEntityConstruction(EntityEvent.EntityConstructing event) {
         if (event.getEntity() instanceof IDroneBase d) {
             MinecraftForge.EVENT_BUS.post(new DroneConstructingEvent(d));
         }
     }
 
     @SubscribeEvent
-    public void onEntityConstruction(AttachCapabilitiesEvent<Entity> event) {
-        event.addCapability(RL("hacking"), new CapabilityHacking.Provider());
-    }
-
-    @SubscribeEvent
     public void onFillBucket(FillBucketEvent event) {
-        HitResult rtr = event.getTarget();
-        if (rtr != null && rtr.getType() == HitResult.Type.BLOCK) {
-            BlockHitResult brtr = (BlockHitResult) rtr;
-            Block b = event.getWorld().getBlockState(brtr.getBlockPos()).getBlock();
-            if (b instanceof LiquidBlock) {
-                Fluid fluid = ((LiquidBlock) b).getFluid();
-                if (RefineryControllerBlockEntity.isInputFluidValid(event.getWorld(), fluid, 4) && event.getPlayer() instanceof ServerPlayer) {
-                    AdvancementTriggers.OIL_BUCKET.trigger((ServerPlayer) event.getPlayer());
-                }
-            }
+        if (event.getTarget() instanceof BlockHitResult brtr
+                && event.getWorld().getBlockState(brtr.getBlockPos()).getBlock() instanceof LiquidBlock l
+                && l.getFluid().is(PneumaticCraftTags.Fluids.CRUDE_OIL)
+                && event.getPlayer() instanceof ServerPlayer sp)
+        {
+            AdvancementTriggers.OIL_BUCKET.trigger(sp);
         }
     }
 

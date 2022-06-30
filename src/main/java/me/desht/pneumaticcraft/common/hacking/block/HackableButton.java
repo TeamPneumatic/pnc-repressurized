@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.common.hacking.block;
 
-import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableBlock;
+import me.desht.pneumaticcraft.api.pneumatic_armor.hacking.IHackableBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -33,14 +33,11 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class HackableButton implements IHackableBlock {
-    @Override
-    public ResourceLocation getHackableId() {
-        return RL("button");
-    }
+    private static final ResourceLocation ID = RL("button");
 
     @Override
-    public boolean canHack(BlockGetter world, BlockPos pos, Player player) {
-        return world instanceof Level;
+    public ResourceLocation getHackableId() {
+        return ID;
     }
 
     @Override

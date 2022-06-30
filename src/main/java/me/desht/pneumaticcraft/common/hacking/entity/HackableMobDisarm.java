@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.common.hacking.entity;
 
-import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableEntity;
+import me.desht.pneumaticcraft.api.pneumatic_armor.hacking.IHackableEntity;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -27,6 +27,7 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.List;
@@ -34,8 +35,7 @@ import java.util.List;
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class HackableMobDisarm implements IHackableEntity {
-
+public class HackableMobDisarm implements IHackableEntity<Mob> {
     private static final ResourceLocation ID = RL("mob_disarm");
 
     @Override
@@ -43,41 +43,42 @@ public class HackableMobDisarm implements IHackableEntity {
         return ID;
     }
 
+    @NotNull
+    @Override
+    public Class<Mob> getHackableClass() {
+        return Mob.class;
+    }
+
     @Override
     public boolean canHack(Entity entity, Player player) {
-        return entity instanceof Mob mob
+        return entity instanceof Mob mob && IHackableEntity.super.canHack(entity, player)
                 && Arrays.stream(EquipmentSlot.values()).anyMatch(slot -> !mob.getItemBySlot(slot).isEmpty());
     }
 
     @Override
-    public void addHackInfo(Entity entity, List<Component> curInfo, Player player) {
+    public void addHackInfo(Mob entity, List<Component> curInfo, Player player) {
         curInfo.add(xlate("pneumaticcraft.armor.hacking.result.disarm"));
     }
 
     @Override
-    public void addPostHackInfo(Entity entity, List<Component> curInfo, Player player) {
+    public void addPostHackInfo(Mob entity, List<Component> curInfo, Player player) {
         curInfo.add(xlate("pneumaticcraft.armor.hacking.finished.disarmed"));
     }
 
     @Override
-    public int getHackTime(Entity entity, Player player) {
+    public int getHackTime(Mob entity, Player player) {
         return 60;
     }
 
     @Override
-    public void onHackFinished(Entity entity, Player player) {
+    public void onHackFinished(Mob entity, Player player) {
         if (!entity.level.isClientSide) {
             for (EquipmentSlot slot : EquipmentSlot.values()) {
-                if (doDisarm((Mob) entity, slot, player.getRandom())) {
+                if (doDisarm(entity, slot, player.getRandom())) {
                     return;
                 }
             }
         }
-    }
-
-    @Override
-    public boolean afterHackTick(Entity entity) {
-        return false;
     }
 
     private boolean doDisarm(Mob entity, EquipmentSlot slot, RandomSource rand) {

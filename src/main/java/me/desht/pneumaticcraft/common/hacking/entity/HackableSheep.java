@@ -17,13 +17,13 @@
 
 package me.desht.pneumaticcraft.common.hacking.entity;
 
-import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableEntity;
+import me.desht.pneumaticcraft.api.pneumatic_armor.hacking.IHackableEntity;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.animal.Sheep;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.DyeColor;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -31,8 +31,7 @@ import java.util.List;
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class HackableSheep implements IHackableEntity {
-
+public class HackableSheep implements IHackableEntity<Sheep> {
     private static final ResourceLocation ID = RL("sheep");
 
     @Nullable
@@ -41,36 +40,30 @@ public class HackableSheep implements IHackableEntity {
         return ID;
     }
 
+    @NotNull
     @Override
-    public boolean canHack(Entity entity, Player player) {
-        return true;
+    public Class<Sheep> getHackableClass() {
+        return Sheep.class;
     }
 
     @Override
-    public void addHackInfo(Entity entity, List<Component> curInfo, Player player) {
+    public void addHackInfo(Sheep entity, List<Component> curInfo, Player player) {
         curInfo.add(xlate("pneumaticcraft.armor.hacking.result.changeColor"));
     }
 
     @Override
-    public void addPostHackInfo(Entity entity, List<Component> curInfo, Player player) {
+    public void addPostHackInfo(Sheep entity, List<Component> curInfo, Player player) {
         curInfo.add(xlate("pneumaticcraft.armor.hacking.finished.changeColor"));
     }
 
     @Override
-    public int getHackTime(Entity entity, Player player) {
+    public int getHackTime(Sheep entity, Player player) {
         return 60;
     }
 
     @Override
-    public void onHackFinished(Entity entity, Player player) {
-        if (entity instanceof Sheep) {
-            DyeColor newColor = DyeColor.byId(player.getRandom().nextInt(DyeColor.values().length));
-            ((Sheep) entity).setColor(newColor);
-        }
-    }
-
-    @Override
-    public boolean afterHackTick(Entity entity) {
-        return false;
+    public void onHackFinished(Sheep entity, Player player) {
+        DyeColor newColor = DyeColor.byId(player.getRandom().nextInt(DyeColor.values().length));
+        entity.setColor(newColor);
     }
 }

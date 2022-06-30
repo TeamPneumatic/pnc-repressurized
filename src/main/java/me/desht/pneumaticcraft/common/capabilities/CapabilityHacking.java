@@ -17,8 +17,8 @@
 
 package me.desht.pneumaticcraft.common.capabilities;
 
-import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableEntity;
-import me.desht.pneumaticcraft.api.hacking.IHacking;
+import me.desht.pneumaticcraft.api.pneumatic_armor.hacking.IHackableEntity;
+import me.desht.pneumaticcraft.api.pneumatic_armor.hacking.IHacking;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorRegistry;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.core.Direction;
@@ -32,28 +32,37 @@ import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.common.util.LazyOptional;
 
 import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import static me.desht.pneumaticcraft.api.PNCCapabilities.HACKING_CAPABILITY;
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 public class CapabilityHacking {
+    public static final ResourceLocation ID = RL("hacking");
+
     private static class DefaultImpl implements IHacking {
-        private final List<IHackableEntity> hackables = new ArrayList<>();
+        private final Map<ResourceLocation, IHackableEntity<? extends Entity>> hacks = new HashMap<>();
 
         @Override
         public void tick(Entity entity) {
-            hackables.removeIf(hackable -> !hackable.afterHackTick(entity));
+            hacks.values().removeIf(hackable -> !hackable._afterHackTick(entity));
         }
 
         @Override
-        public void addHackable(IHackableEntity hackable) {
-            hackables.add(hackable);
+        public void addHackable(IHackableEntity<?> hackable) {
+            hacks.put(hackable.getHackableId(), hackable);
         }
 
         @Override
-        public List<IHackableEntity> getCurrentHacks() {
-            return hackables;
+        public Collection<IHackableEntity<?>> getCurrentHacks() {
+            return hacks.values();
+        }
+
+        @Override
+        public void clear() {
+            hacks.clear();
         }
     }
 
@@ -72,12 +81,10 @@ public class CapabilityHacking {
             CompoundTag compound = new CompoundTag();
             if (!impl.getCurrentHacks().isEmpty()) {
                 ListTag tagList = new ListTag();
-                for (IHackableEntity hackableEntity : impl.getCurrentHacks()) {
-                    if (hackableEntity.getHackableId() != null) {
-                        CompoundTag tag = new CompoundTag();
-                        tag.putString("id", hackableEntity.getHackableId().toString());
-                        tagList.add(tagList.size(), tag);
-                    }
+                for (IHackableEntity<?> hackableEntity : impl.getCurrentHacks()) {
+                    CompoundTag tag = new CompoundTag();
+                    tag.putString("id", hackableEntity.getHackableId().toString());
+                    tagList.add(tagList.size(), tag);
                 }
                 compound.put("hackables", tagList);
             }
@@ -86,16 +93,14 @@ public class CapabilityHacking {
 
         @Override
         public void deserializeNBT(CompoundTag nbt) {
-            impl.getCurrentHacks().clear();
+            impl.clear();
             ListTag tagList = nbt.getList("hackables", Tag.TAG_COMPOUND);
             for (int i = 0; i < tagList.size(); i++) {
                 ResourceLocation hackableId = new ResourceLocation(tagList.getCompound(i).getString("id"));
-                IHackableEntity hackable = CommonArmorRegistry.getInstance().getHackableForId(hackableId);
-                if (hackable != null) {
-                    impl.getCurrentHacks().add(hackable);
-                } else {
-                    Log.warning("hackable \"" + hackableId + "\" not found when constructing from NBT. Was it deleted?");
-                }
+                CommonArmorRegistry.getInstance().getHackableEntityForId(hackableId).ifPresentOrElse(
+                        impl::addHackable,
+                        () -> Log.error("entity-hackable '%s' not found when deserializing IHacking capability?", hackableId)
+                );
             }
         }
     }

@@ -60,7 +60,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static me.desht.pneumaticcraft.api.client.pneumatic_helmet.IPneumaticHelmetRegistry.DEFAULT_MESSAGE_BGCOLOR;
+import static me.desht.pneumaticcraft.api.client.pneumatic_helmet.IClientArmorRegistry.DEFAULT_MESSAGE_BGCOLOR;
 import static me.desht.pneumaticcraft.common.item.PneumaticArmorItem.isPneumaticArmorPiece;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 

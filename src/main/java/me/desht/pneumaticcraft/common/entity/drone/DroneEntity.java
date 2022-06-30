@@ -20,13 +20,13 @@ package me.desht.pneumaticcraft.common.entity.drone;
 import com.mojang.authlib.GameProfile;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.block.IPneumaticWrenchable;
-import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableEntity;
 import me.desht.pneumaticcraft.api.drone.IDrone;
 import me.desht.pneumaticcraft.api.drone.IPathNavigator;
 import me.desht.pneumaticcraft.api.drone.IPathfindHandler;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.api.item.PNCUpgrade;
 import me.desht.pneumaticcraft.api.lib.NBTKeys;
+import me.desht.pneumaticcraft.api.pneumatic_armor.hacking.IHackableEntity;
 import me.desht.pneumaticcraft.api.pressure.PressureHelper;
 import me.desht.pneumaticcraft.api.semiblock.SemiblockEvent;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
@@ -140,6 +140,7 @@ import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.network.NetworkHooks;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.commons.lang3.Validate;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -150,7 +151,7 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class DroneEntity extends AbstractDroneEntity implements
         IManoMeasurable, IPneumaticWrenchable, IEntityAdditionalSpawnData,
-        IHackableEntity, IDroneBase, FlyingAnimal, IUpgradeHolder {
+        IHackableEntity<DroneEntity>, IDroneBase, FlyingAnimal, IUpgradeHolder {
 
     private static final float LASER_EXTEND_SPEED = 0.05F;
 
@@ -1220,15 +1221,23 @@ public class DroneEntity extends AbstractDroneEntity implements
         return RL("drone");
     }
 
+    @NotNull
+    @Override
+    public Class<DroneEntity> getHackableClass() {
+        return DroneEntity.class;
+    }
+
     @Override
     public boolean canHack(Entity entity, Player player) {
+        if (!IHackableEntity.super.canHack(entity, player)) return false;
+
         CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
         return handler.upgradeUsable(CommonUpgradeHandlers.hackHandler, false)
                 && handler.getUpgradeCount(EquipmentSlot.HEAD, ModUpgrades.ENTITY_TRACKER.get()) >= 1;
     }
 
     @Override
-    public void addHackInfo(Entity entity, List<Component> curInfo, Player player) {
+    public void addHackInfo(DroneEntity entity, List<Component> curInfo, Player player) {
         if (ownerUUID.equals(player.getUUID())) {
             if (isGoingToOwner()) {
                 curInfo.add(xlate("pneumaticcraft.armor.hacking.result.resumeTasks"));
@@ -1241,7 +1250,7 @@ public class DroneEntity extends AbstractDroneEntity implements
     }
 
     @Override
-    public void addPostHackInfo(Entity entity, List<Component> curInfo, Player player) {
+    public void addPostHackInfo(DroneEntity entity, List<Component> curInfo, Player player) {
         if (ownerUUID.equals(player.getUUID())) {
             if (isGoingToOwner()) {
                 curInfo.add(xlate("pneumaticcraft.armor.hacking.finished.calledBack"));
@@ -1254,12 +1263,12 @@ public class DroneEntity extends AbstractDroneEntity implements
     }
 
     @Override
-    public int getHackTime(Entity entity, Player player) {
+    public int getHackTime(DroneEntity entity, Player player) {
         return ownerUUID.equals(player.getUUID()) ? 20 : 100;
     }
 
     @Override
-    public void onHackFinished(Entity entity, Player player) {
+    public void onHackFinished(DroneEntity entity, Player player) {
         if (!level.isClientSide && player.getUUID().equals(ownerUUID)) {
             setGoingToOwner(gotoOwnerAI == null); //toggle the state
         } else {
@@ -1268,7 +1277,7 @@ public class DroneEntity extends AbstractDroneEntity implements
     }
 
     @Override
-    public boolean afterHackTick(Entity entity) {
+    public boolean afterHackTick(DroneEntity entity) {
         return false;
     }
 

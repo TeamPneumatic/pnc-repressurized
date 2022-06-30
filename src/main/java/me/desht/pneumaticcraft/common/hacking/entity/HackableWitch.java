@@ -17,20 +17,19 @@
 
 package me.desht.pneumaticcraft.common.hacking.entity;
 
-import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableEntity;
+import me.desht.pneumaticcraft.api.pneumatic_armor.hacking.IHackableEntity;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.monster.Witch;
 import net.minecraft.world.entity.player.Player;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class HackableWitch implements IHackableEntity {
-
+public class HackableWitch implements IHackableEntity<Witch> {
     private static final ResourceLocation ID = RL("witch");
 
     @Override
@@ -38,38 +37,36 @@ public class HackableWitch implements IHackableEntity {
         return ID;
     }
 
+    @NotNull
     @Override
-    public boolean canHack(Entity entity, Player player) {
-        return true;
+    public Class<Witch> getHackableClass() {
+        return Witch.class;
     }
 
     @Override
-    public void addHackInfo(Entity entity, List<Component> curInfo, Player player) {
+    public void addHackInfo(Witch entity, List<Component> curInfo, Player player) {
         curInfo.add(xlate("pneumaticcraft.armor.hacking.result.disarm"));
     }
 
     @Override
-    public void addPostHackInfo(Entity entity, List<Component> curInfo, Player player) {
+    public void addPostHackInfo(Witch entity, List<Component> curInfo, Player player) {
         curInfo.add(xlate("pneumaticcraft.armor.hacking.finished.disarmed"));
     }
 
     @Override
-    public int getHackTime(Entity entity, Player player) {
+    public int getHackTime(Witch entity, Player player) {
         return 60;
     }
 
     @Override
-    public void onHackFinished(Entity entity, Player player) {
+    public void onHackFinished(Witch entity, Player player) {
+        // nothing here, see afterHackTick logic
     }
 
     @Override
-    public boolean afterHackTick(Entity entity) {
-        if (entity.isAlive()) {
-            ((Witch) entity).usingTime = 20;
-            ((Witch) entity).setUsingItem(true);
-            return true;
-        } else {
-            return false;
-        }
+    public boolean afterHackTick(Witch entity) {
+        entity.usingTime = 20;
+        entity.setUsingItem(true);
+        return true;
     }
 }

@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.api;
 
 import me.desht.pneumaticcraft.api.client.IClientRegistry;
-import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IPneumaticHelmetRegistry;
+import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IClientArmorRegistry;
 import me.desht.pneumaticcraft.api.crafting.IPneumaticRecipeRegistry;
 import me.desht.pneumaticcraft.api.drone.IDroneRegistry;
 import me.desht.pneumaticcraft.api.fuel.IFuelRegistry;
@@ -81,7 +81,7 @@ public final class PneumaticRegistry {
 
         IAirHandlerMachineFactory getAirHandlerMachineFactory();
 
-        IPneumaticHelmetRegistry getHelmetRegistry();
+        IClientArmorRegistry getClientArmorRegistry();
 
         ICommonArmorRegistry getCommonArmorRegistry();
 

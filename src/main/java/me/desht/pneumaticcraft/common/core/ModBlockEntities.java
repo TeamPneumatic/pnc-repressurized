@@ -28,7 +28,6 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 
 import java.util.Arrays;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 public class ModBlockEntities {
@@ -165,9 +164,8 @@ public class ModBlockEntities {
 
     @SafeVarargs
     public static <T extends BlockEntity> RegistryObject<BlockEntityType<T>> register(String name, BlockEntityType.BlockEntitySupplier<T> supplier, RegistryObject<? extends Block>... blocks) {
-        Set<Block> blockSet = Arrays.stream(blocks).map(RegistryObject::get).collect(Collectors.toSet());
         //noinspection ConstantConditions
-        return BLOCK_ENTITIES.register(name, () -> new BlockEntityType<>(supplier, blockSet, null));
+        return BLOCK_ENTITIES.register(name, () -> new BlockEntityType<>(supplier, Arrays.stream(blocks).map(RegistryObject::get).collect(Collectors.toSet()), null));
     }
 
 }

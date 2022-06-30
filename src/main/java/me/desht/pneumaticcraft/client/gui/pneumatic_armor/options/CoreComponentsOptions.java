@@ -25,7 +25,7 @@ import me.desht.pneumaticcraft.client.gui.pneumatic_armor.ArmorColoringScreen;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.ArmorStatMoveScreen;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetCheckBox;
-import me.desht.pneumaticcraft.client.render.pneumatic_armor.PneumaticHelmetRegistry;
+import me.desht.pneumaticcraft.client.render.pneumatic_armor.ClientArmorRegistry;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.CoreComponentsClientHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.CoreComponentsHandler;
 import net.minecraft.client.Minecraft;
@@ -43,7 +43,7 @@ public class CoreComponentsOptions extends IOptionPage.SimpleOptionPage<CoreComp
 
     @Override
     public void populateGui(IGuiScreen gui) {
-        gui.addWidget(PneumaticHelmetRegistry.getInstance().makeStatMoveButton(30, 128, getClientUpgradeHandler()));
+        gui.addWidget(ClientArmorRegistry.getInstance().makeStatMoveButton(30, 128, getClientUpgradeHandler()));
 
         gui.addWidget(new WidgetButtonExtended(30, 150, 150, 20,
                 xlate("pneumaticcraft.armor.gui.misc.moveMessageScreen"), b -> {
@@ -58,7 +58,7 @@ public class CoreComponentsOptions extends IOptionPage.SimpleOptionPage<CoreComp
             getClientUpgradeHandler().saveToConfig();
         }).setChecked(getClientUpgradeHandler().shouldShowPressureNumerically()));
 
-        changeKeybindingButton = PneumaticHelmetRegistry.getInstance().makeKeybindingButton(172, KeyHandler.getInstance().keybindOpenOptions);
+        changeKeybindingButton = ClientArmorRegistry.getInstance().makeKeybindingButton(172, KeyHandler.getInstance().keybindOpenOptions);
         gui.addWidget(changeKeybindingButton.asWidget());
     }
 

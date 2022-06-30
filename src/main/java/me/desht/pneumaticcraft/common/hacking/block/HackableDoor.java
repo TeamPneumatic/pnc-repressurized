@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.common.hacking.block;
 
-import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableBlock;
+import me.desht.pneumaticcraft.api.pneumatic_armor.hacking.IHackableBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -35,14 +35,16 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class HackableDoor implements IHackableBlock {
+    private static final ResourceLocation ID = RL("door");
+
     @Override
     public ResourceLocation getHackableId() {
-        return RL("door");
+        return ID;
     }
 
     @Override
-    public boolean canHack(BlockGetter world, BlockPos pos, Player player) {
-        return world.getBlockState(pos).hasProperty(getOpenProperty());
+    public boolean canHack(BlockGetter level, BlockPos pos, BlockState state, Player player) {
+        return level.getBlockState(pos).hasProperty(getOpenProperty());
     }
 
     @Override

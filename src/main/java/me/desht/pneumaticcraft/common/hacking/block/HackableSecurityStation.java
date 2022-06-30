@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.common.hacking.block;
 
-import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableBlock;
+import me.desht.pneumaticcraft.api.pneumatic_armor.hacking.IHackableBlock;
 import me.desht.pneumaticcraft.common.block.entity.SecurityStationBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -26,7 +26,6 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.List;
@@ -35,15 +34,16 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class HackableSecurityStation implements IHackableBlock {
+    private static final ResourceLocation ID = RL("security_station");
+
     @Override
     public ResourceLocation getHackableId() {
-        return RL("security_station");
+        return ID;
     }
 
     @Override
-    public boolean canHack(BlockGetter world, BlockPos pos, Player player) {
-        BlockEntity te = world.getBlockEntity(pos);
-        return te instanceof SecurityStationBlockEntity && !((SecurityStationBlockEntity) te).doesAllowPlayer(player);
+    public boolean canHack(BlockGetter level, BlockPos pos, BlockState state, Player player) {
+        return level.getBlockEntity(pos) instanceof SecurityStationBlockEntity ss && !ss.doesAllowPlayer(player);
     }
 
     @Override

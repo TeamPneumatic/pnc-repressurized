@@ -19,7 +19,7 @@ package me.desht.pneumaticcraft.common;
 
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.client.IClientRegistry;
-import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IPneumaticHelmetRegistry;
+import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IClientArmorRegistry;
 import me.desht.pneumaticcraft.api.crafting.IPneumaticRecipeRegistry;
 import me.desht.pneumaticcraft.api.drone.IDroneRegistry;
 import me.desht.pneumaticcraft.api.fuel.IFuelRegistry;
@@ -33,7 +33,7 @@ import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachineFactory;
 import me.desht.pneumaticcraft.api.universal_sensor.ISensorRegistry;
 import me.desht.pneumaticcraft.api.wrench.IWrenchRegistry;
 import me.desht.pneumaticcraft.client.ClientRegistryImpl;
-import me.desht.pneumaticcraft.client.render.pneumatic_armor.PneumaticHelmetRegistry;
+import me.desht.pneumaticcraft.client.render.pneumatic_armor.ClientArmorRegistry;
 import me.desht.pneumaticcraft.common.fluid.FuelRegistry;
 import me.desht.pneumaticcraft.common.heat.HeatExchangerManager;
 import me.desht.pneumaticcraft.common.item.ItemRegistry;
@@ -62,8 +62,8 @@ public class PneumaticCraftAPIHandler implements PneumaticRegistry.IPneumaticCra
     }
 
     @Override
-    public IPneumaticHelmetRegistry getHelmetRegistry() {
-        return PneumaticHelmetRegistry.getInstance();
+    public IClientArmorRegistry getClientArmorRegistry() {
+        return ClientArmorRegistry.getInstance();
     }
 
     @Override

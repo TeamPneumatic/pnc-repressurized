@@ -30,7 +30,7 @@ import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorHandler;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.options.BlockTrackOptions;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetKeybindCheckBox;
 import me.desht.pneumaticcraft.client.pneumatic_armor.ArmorUpgradeClientRegistry;
-import me.desht.pneumaticcraft.client.render.pneumatic_armor.PneumaticHelmetRegistry;
+import me.desht.pneumaticcraft.client.render.pneumatic_armor.ClientArmorRegistry;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.block_tracker.BlockTrackHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.block_tracker.RenderBlockTarget;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
@@ -344,7 +344,7 @@ public class BlockTrackerClientHandler extends IArmorUpgradeClientHandler.Abstra
     public IGuiAnimatedStat getAnimatedStat() {
         if (blockTrackInfo == null) {
             ItemStack icon = ModUpgrades.BLOCK_TRACKER.get().getItemStack();
-            blockTrackInfo = PneumaticHelmetRegistry.getInstance().makeHUDStatPanel(xlate("pneumaticcraft.blockTracker.info.trackedBlocks"), icon, this);
+            blockTrackInfo = ClientArmorRegistry.getInstance().makeHUDStatPanel(xlate("pneumaticcraft.blockTracker.info.trackedBlocks"), icon, this);
             blockTrackInfo.setMinimumContractedDimensions(0, 0);
             blockTrackInfo.setAutoLineWrap(false);
         }

@@ -639,7 +639,7 @@
   "pneumaticcraft.armor.hacking.finished.resetTrades": "Сброшено сделок",
   "pneumaticcraft.armor.hacking.finished.resumedTasks": "Возобновлено задач",
   "pneumaticcraft.armor.hacking.finished.silenced": "Заглушено",
-  "pneumaticcraft.armor.hacking.finished.stopTeleporting": "Предотвращено телепортов",
+  "pneumaticcraft.armor.hacking.finished.stoppedTeleport": "Предотвращено телепортов",
   "pneumaticcraft.armor.hacking.finished.tamed": "Приручено",
   "pneumaticcraft.armor.hacking.hacking": "Взломано(%d%%)...",
   "pneumaticcraft.armor.hacking.pressToHack": "Нажато [%s] для взлома",

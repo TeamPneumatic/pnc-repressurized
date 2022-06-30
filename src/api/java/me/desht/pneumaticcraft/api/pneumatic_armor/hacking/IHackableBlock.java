@@ -15,8 +15,9 @@
  *     along with pnc-repressurized API.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.desht.pneumaticcraft.api.client.pneumatic_helmet;
+package me.desht.pneumaticcraft.api.pneumatic_armor.hacking;
 
+import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorRegistry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
@@ -31,6 +32,7 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 
+import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -39,39 +41,43 @@ import java.util.function.Supplier;
  * Use this interface to specify any hackable block. When it's your block, you can simply implement this interface in
  * your block's class. If you don't have access to the class (vanilla blocks or blocks from other mods), you can
  * implement this interface in a separate class and register it using
- * {@link IPneumaticHelmetRegistry#addHackable(Block, Supplier)} . With the former way there will be one
+ * {@link ICommonArmorRegistry#addHackable(Block, Supplier)} . With the former way there will be one
  * instance only per type. In the latter, there will be an IHackableBlock instance for every block.
  */
 public interface IHackableBlock {
     /**
      * Get a unique id to represent this hackable. Used in NBT saving to be able to trigger the afterHackTime
-     * after a server restart.  Null is a valid return: afterHackTick will not be triggered at all in that case.
+     * after a server restart.
      * <p>
      * The returned ResourceLocation should be in the namespace of the mod which adds the hack (which is not necessarily
      * the mod that adds the hackable block).
-     * <p>
-     * CURRENTLY THIS ISN'T IMPLEMENTED.
      *
      * @return a unique ID for this hack type
      */
+    @Nonnull
     ResourceLocation getHackableId();
 
     /**
-     * Returning true will allow the player to hack this block. This can be used to only allow hacking under certain
-     * conditions.
+     * Can this block actually be hacked? This will normally return true, since the object is registered with the
+     * block, but this can be overridden to filter hackability by the actual blockstate (e.g Jukeboxes can only be
+     * hacked when they contain a music disc), or by some property of the player.
+     * <p>
+     * Note that this can be called on both server and client.
      *
-     * @param world the world
+     * @param level the world
      * @param pos the block pos
-     * @param player the player observing the block
+     * @param state the blockstate at the given blockpos
+     * @param player the player potentially hacking the block
      */
-    default boolean canHack(BlockGetter world, BlockPos pos, Player player) {
+    default boolean canHack(BlockGetter level, BlockPos pos, BlockState state, Player player) {
         return true;
     }
 
     /**
-     * Add info that is displayed on the tracker tooltip here. Text like "Hack to explode" can be added.
-     * This method is only called when {@link #canHack(BlockGetter, BlockPos, Player)} has returned true.
-     * Keep this message short; one short sentence is enough.
+     * Add info that is displayed on the block tracker panel, describing what the hack would do to the block.
+     * This is only called when {@link #canHack(BlockGetter, BlockPos, BlockState, Player)} has returned true.
+     * Keep this message short; one short phrase is enough.
+     *
      * @param world the world
      * @param pos the block pos of the to-be-hacked block
      * @param curInfo text component list to add info to
@@ -80,9 +86,9 @@ public interface IHackableBlock {
     void addInfo(BlockGetter world, BlockPos pos, List<Component> curInfo, Player player);
 
     /**
-     * Add info to be displayed on the HUD after hacking is complete, as long as
-     * {@link #afterHackTick(BlockGetter, BlockPos)} continues to returning true, e.g. "Spawner Disabled".
-     * Keep this message short; one short sentence or even a couple of words is enough.
+     * Add info that is displayed on the block tracker panel, describing what the hack has done to the block. This
+     * is displayed for a second or so after the hack completes. Keep this message short; one short phrase is enough.
+     *
      * @param world the world
      * @param pos the block pos of the hacked block
      * @param curInfo text component list to add info to
@@ -111,11 +117,8 @@ public interface IHackableBlock {
     void onHackComplete(Level world, BlockPos pos, Player player);
 
     /**
-     * Called every tick after the hacking finished (on both server and client side). Returning true will keep this
-     * going (for mob spawners, to keep them neutralized), or false to stop ticking for one-shot hacks (e.g. door/lever
-     * hacking).
-     * <p>
-     * CURRENTLY THIS METHOD WILL STOP GETTING INVOKED AFTER A SERVER RESTART!
+     * Called every tick after the hack completed. Return false for one-shot hacks, or true to keep this hack ticking.
+     * Most hacks are fine as one-shot hacks.
      *
      * @param world the world
      * @param pos the block pos
@@ -126,9 +129,10 @@ public interface IHackableBlock {
     }
 
     /**
-     * Fake up a ray trace result for a targeted block. This is intended to be passed into
-     * {@link BlockState#use(Level, Player, InteractionHand, BlockHitResult)}, which needs a non-null
-     * ray trace result to get the block's position.
+     * Convenience method to fake up a ray trace result for a targeted block. This is intended to be passed into
+     * {@link BlockState#use(Level, Player, InteractionHand, BlockHitResult)} (often called by
+     * {@link #onHackComplete(Level, BlockPos, Player)}), which needs a non-null ray trace result to know exactly
+     * where the player is looking.
      *
      * @param player player doing the hacking
      * @param targetPos position of the to-be-hacked block

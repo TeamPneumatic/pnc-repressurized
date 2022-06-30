@@ -49,10 +49,10 @@ import java.util.function.Supplier;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public enum PneumaticHelmetRegistry implements IPneumaticHelmetRegistry {
+public enum ClientArmorRegistry implements IClientArmorRegistry {
     INSTANCE;
 
-    public static PneumaticHelmetRegistry getInstance() {
+    public static ClientArmorRegistry getInstance() {
         return INSTANCE;
     }
 

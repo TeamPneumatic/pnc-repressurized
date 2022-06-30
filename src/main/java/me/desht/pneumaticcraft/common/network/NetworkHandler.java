@@ -211,6 +211,8 @@ public class NetworkHandler {
 				PacketMinigunStop::toBytes, PacketMinigunStop::new, PacketMinigunStop::handle, PLAY_TO_CLIENT);
 		registerMessage(PacketSyncClassifyFilter.class,
 				PacketSyncClassifyFilter::toBytes, PacketSyncClassifyFilter::new, PacketSyncClassifyFilter::handle, PLAY_TO_SERVER);
+		registerMessage(PacketSyncEntityHacks.class,
+				PacketSyncEntityHacks::toBytes, PacketSyncEntityHacks::new, PacketSyncEntityHacks::handle, PLAY_TO_CLIENT);
     }
 
 	public static <MSG> void registerMessage(Class<MSG> messageType, BiConsumer<MSG, FriendlyByteBuf> encoder, Function<FriendlyByteBuf, MSG> decoder, BiConsumer<MSG, Supplier<NetworkEvent.Context>> messageConsumer) {

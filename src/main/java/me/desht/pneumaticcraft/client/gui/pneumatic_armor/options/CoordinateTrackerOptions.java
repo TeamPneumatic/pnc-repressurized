@@ -31,7 +31,7 @@ import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 
 import java.util.Collections;
 
-import static me.desht.pneumaticcraft.api.client.pneumatic_helmet.IPneumaticHelmetRegistry.DEFAULT_MESSAGE_BGCOLOR;
+import static me.desht.pneumaticcraft.api.client.pneumatic_helmet.IClientArmorRegistry.DEFAULT_MESSAGE_BGCOLOR;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class CoordinateTrackerOptions extends IOptionPage.SimpleOptionPage<CoordTrackClientHandler> {

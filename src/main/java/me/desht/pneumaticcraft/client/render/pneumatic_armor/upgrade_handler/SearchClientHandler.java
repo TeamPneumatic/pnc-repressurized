@@ -28,7 +28,7 @@ import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorHandler;
 import me.desht.pneumaticcraft.client.KeyHandler;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.options.SearchOptions;
 import me.desht.pneumaticcraft.client.render.ModRenderTypes;
-import me.desht.pneumaticcraft.client.render.pneumatic_armor.PneumaticHelmetRegistry;
+import me.desht.pneumaticcraft.client.render.pneumatic_armor.ClientArmorRegistry;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.RenderSearchItemBlock;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.core.ModUpgrades;
@@ -230,7 +230,7 @@ public class SearchClientHandler extends IArmorUpgradeClientHandler.AbstractHand
     public IGuiAnimatedStat getAnimatedStat() {
         if (searchInfo == null) {
             ItemStack icon = ModUpgrades.SEARCH.get().getItemStack();
-            searchInfo = PneumaticHelmetRegistry.getInstance().makeHUDStatPanel(xlate("pneumaticcraft.armor.gui.search.searchingFor"), icon, this);
+            searchInfo = ClientArmorRegistry.getInstance().makeHUDStatPanel(xlate("pneumaticcraft.armor.gui.search.searchingFor"), icon, this);
             searchInfo.setMinimumContractedDimensions(0, 0);
         }
         return searchInfo;

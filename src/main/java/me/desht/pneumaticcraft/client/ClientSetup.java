@@ -42,7 +42,6 @@ import me.desht.pneumaticcraft.client.render.tube_module.*;
 import me.desht.pneumaticcraft.client.sound.MovingSoundJackhammer;
 import me.desht.pneumaticcraft.common.block.AbstractCamouflageBlock;
 import me.desht.pneumaticcraft.common.core.*;
-import me.desht.pneumaticcraft.common.event.HackTickHandler;
 import me.desht.pneumaticcraft.common.item.DrillBitItem;
 import me.desht.pneumaticcraft.common.item.JackHammerItem;
 import me.desht.pneumaticcraft.common.item.MicromissilesItem;
@@ -89,7 +88,7 @@ public class ClientSetup {
 
     static void init(FMLClientSetupEvent event) {
         MinecraftForge.EVENT_BUS.register(HUDHandler.getInstance());
-        MinecraftForge.EVENT_BUS.register(HackTickHandler.instance());
+//        MinecraftForge.EVENT_BUS.register(HackEventListener.getInstance());
         MinecraftForge.EVENT_BUS.register(AreaRenderManager.getInstance());
         MinecraftForge.EVENT_BUS.register(KeyHandler.getInstance());
 

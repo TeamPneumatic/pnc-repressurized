@@ -17,23 +17,17 @@
 
 package me.desht.pneumaticcraft.common.hacking.entity;
 
-import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableEntity;
 import net.minecraft.core.Registry;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.CatVariantTags;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.TamableAnimal;
 import net.minecraft.world.entity.animal.Cat;
 import net.minecraft.world.entity.player.Player;
-
-import java.util.List;
+import org.jetbrains.annotations.NotNull;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
-import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class HackableTameable implements IHackableEntity {
-
+public class HackableTameable extends AbstractTameableHack<TamableAnimal> {
     private static final ResourceLocation ID = RL("tameable");
 
     @Override
@@ -41,38 +35,23 @@ public class HackableTameable implements IHackableEntity {
         return ID;
     }
 
+    @NotNull
     @Override
-    public boolean canHack(Entity entity, Player player) {
-        return entity instanceof TamableAnimal t && t.getOwner() != player;
+    public Class<TamableAnimal> getHackableClass() {
+        return TamableAnimal.class;
     }
 
     @Override
-    public void addHackInfo(Entity entity, List<Component> curInfo, Player player) {
-        curInfo.add(xlate("pneumaticcraft.armor.hacking.result.tame"));
-    }
-
-    @Override
-    public void addPostHackInfo(Entity entity, List<Component> curInfo, Player player) {
-        curInfo.add(xlate("pneumaticcraft.armor.hacking.finished.tamed"));
-    }
-
-    @Override
-    public int getHackTime(Entity entity, Player player) {
-        return 60;
-    }
-
-    @Override
-    public void onHackFinished(Entity entity, Player player) {
+    public void onHackFinished(TamableAnimal entity, Player player) {
         if (entity.level.isClientSide) {
             entity.handleEntityEvent((byte) 7);
         } else {
-            TamableAnimal tameable = (TamableAnimal) entity;
-            tameable.getNavigation().stop();
-            tameable.setTarget(null);
-            tameable.setHealth(20.0F);
-            tameable.setOwnerUUID(player.getUUID());
-            tameable.level.broadcastEntityEvent(entity, (byte) 7);
-            tameable.setTame(true);
+            entity.getNavigation().stop();
+            entity.setTarget(null);
+            entity.setHealth(20.0F);
+            entity.setOwnerUUID(player.getUUID());
+            entity.level.broadcastEntityEvent(entity, (byte) 7);
+            entity.setTame(true);
 
             // TODO: code smell
             // Would be better to have a HackableCat subclass, but HackableHandler.getHackableForEntity() isn't
@@ -85,10 +64,4 @@ public class HackableTameable implements IHackableEntity {
             }
         }
     }
-
-    @Override
-    public boolean afterHackTick(Entity entity) {
-        return false;
-    }
-
 }

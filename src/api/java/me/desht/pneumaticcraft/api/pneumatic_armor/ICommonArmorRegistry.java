@@ -17,8 +17,8 @@
 
 package me.desht.pneumaticcraft.api.pneumatic_armor;
 
-import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableBlock;
-import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableEntity;
+import me.desht.pneumaticcraft.api.pneumatic_armor.hacking.IHackableBlock;
+import me.desht.pneumaticcraft.api.pneumatic_armor.hacking.IHackableEntity;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -26,7 +26,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 
 import javax.annotation.Nonnull;
-import java.util.List;
+import java.util.Collection;
 import java.util.function.Supplier;
 
 /**
@@ -64,7 +64,7 @@ public interface ICommonArmorRegistry {
      * @param entityClazz entity class; subclasses of this entity will also be affected
      * @param iHackable the hack to register
      */
-    void addHackable(@Nonnull Class<? extends Entity> entityClazz, @Nonnull Supplier<? extends IHackableEntity> iHackable);
+    void addHackable(@Nonnull Class<? extends Entity> entityClazz, @Nonnull Supplier<? extends IHackableEntity<?>> iHackable);
 
     /**
      * Register a "foreign" block with your hackable. This should be used for blocks you didn't create, i.e.
@@ -99,6 +99,6 @@ public interface ICommonArmorRegistry {
      * @return a list of hacks currently on the entity, or an empty list if no hacks
      */
     @Nonnull
-    List<IHackableEntity> getCurrentEntityHacks(@Nonnull Entity entity);
+    Collection<IHackableEntity<?>> getCurrentEntityHacks(@Nonnull Entity entity);
 
 }

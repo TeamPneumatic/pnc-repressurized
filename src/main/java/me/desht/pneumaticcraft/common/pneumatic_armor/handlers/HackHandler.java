@@ -17,16 +17,16 @@
 
 package me.desht.pneumaticcraft.common.pneumatic_armor.handlers;
 
-import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableBlock;
-import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableEntity;
 import me.desht.pneumaticcraft.api.item.PNCUpgrade;
 import me.desht.pneumaticcraft.api.pneumatic_armor.BaseArmorUpgradeHandler;
 import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorExtensionData;
 import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorHandler;
+import me.desht.pneumaticcraft.api.pneumatic_armor.hacking.IHackableBlock;
+import me.desht.pneumaticcraft.api.pneumatic_armor.hacking.IHackableEntity;
 import me.desht.pneumaticcraft.common.advancements.AdvancementTriggers;
 import me.desht.pneumaticcraft.common.core.ModUpgrades;
-import me.desht.pneumaticcraft.common.event.HackTickHandler;
 import me.desht.pneumaticcraft.common.hacking.HackManager;
+import me.desht.pneumaticcraft.common.hacking.HackTickTracker;
 import me.desht.pneumaticcraft.common.hacking.WorldAndCoord;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketHackingBlockFinish;
@@ -95,9 +95,14 @@ public class HackHandler extends BaseArmorUpgradeHandler<HackHandler.HackData> {
             IHackableBlock hackableBlock = HackManager.getHackableForBlock(hackedBlockPos.world, hackedBlockPos.pos, player);
             if (hackableBlock != null) {
                 BlockGetter world = hackedBlockPos.world;
-                if (++hackTime >= hackableBlock.getHackTime(world, hackedBlockPos.pos, player)) {
+                int requiredTime = hackableBlock.getHackTime(world, hackedBlockPos.pos, player);
+                if (requiredTime <= 0) {
+                    setHackedBlockPos(null);
+                    return;
+                }
+                if (++this.hackTime >= requiredTime) {
                     hackableBlock.onHackComplete(player.level, hackedBlockPos.pos, player);
-                    HackTickHandler.instance().trackBlock(player.level, hackedBlockPos.pos, hackableBlock);
+                    HackTickTracker.getInstance(player.level).trackBlock(hackedBlockPos.pos, hackableBlock);
                     NetworkHandler.sendToAllTracking(new PacketHackingBlockFinish(hackedBlockPos), player.level, player.blockPosition());
                     setHackedBlockPos(null);
                     AdvancementTriggers.BLOCK_HACK.trigger(player);
@@ -108,12 +113,17 @@ public class HackHandler extends BaseArmorUpgradeHandler<HackHandler.HackData> {
         }
 
         private void tickEntityHack(ServerPlayer player) {
-            IHackableEntity hackableEntity = HackManager.getHackableForEntity(hackedEntity, player);
+            IHackableEntity<?> hackableEntity = HackManager.getHackableForEntity(hackedEntity, player);
             if (hackableEntity != null) {
-                if (++hackTime >= hackableEntity.getHackTime(hackedEntity, player)) {
+                int requiredTime = hackableEntity._getHackTime(hackedEntity, player);
+                if (requiredTime <= 0) {
+                    setHackedEntity(null);
+                    return;
+                }
+                if (++hackTime >= requiredTime) {
                     if (hackedEntity.isAlive()) {
-                        hackableEntity.onHackFinished(hackedEntity, player);
-                        HackTickHandler.instance().trackEntity(hackedEntity, hackableEntity);
+                        hackableEntity._onHackFinished(hackedEntity, player);
+                        HackTickTracker.getInstance(player.level).trackEntity(hackedEntity, hackableEntity);
                         NetworkHandler.sendToAllTracking(new PacketHackingEntityFinish(hackedEntity), hackedEntity);
                         AdvancementTriggers.ENTITY_HACK.trigger(player);
                     }

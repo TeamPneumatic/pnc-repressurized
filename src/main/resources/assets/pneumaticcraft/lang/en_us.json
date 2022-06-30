@@ -670,7 +670,7 @@
    "pneumaticcraft.armor.hacking.finished.resetTrades" : "Trades reset",
    "pneumaticcraft.armor.hacking.finished.resumedTasks" : "Resumed tasks",
    "pneumaticcraft.armor.hacking.finished.silenced" : "Silenced",
-   "pneumaticcraft.armor.hacking.finished.stopTeleporting" : "Preventing teleports",
+   "pneumaticcraft.armor.hacking.finished.stoppedTeleport" : "Preventing teleports",
    "pneumaticcraft.armor.hacking.finished.tamed" : "Tamed",
    "pneumaticcraft.armor.hacking.finished.triggered" : "Triggered",
    "pneumaticcraft.armor.hacking.hacking" : "Hacking (%d%%)...",

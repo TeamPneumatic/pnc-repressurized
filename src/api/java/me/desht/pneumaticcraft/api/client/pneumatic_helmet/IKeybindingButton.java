@@ -23,7 +23,7 @@ import net.minecraft.client.gui.components.AbstractWidget;
 
 /**
  * Represents a button in a options screen which can be used to rebind a key.  Don't implement this; use
- * {@link IPneumaticHelmetRegistry#makeKeybindingButton(int, KeyMapping)} to get an instance of a keybinding
+ * {@link IClientArmorRegistry#makeKeybindingButton(int, KeyMapping)} to get an instance of a keybinding
  * button widget.
  * <p>
  * See also {@link IOptionPage#getKeybindingButton()}, which should be overridden to return this button instance

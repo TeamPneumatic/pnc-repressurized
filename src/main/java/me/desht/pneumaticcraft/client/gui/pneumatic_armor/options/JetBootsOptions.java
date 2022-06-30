@@ -19,13 +19,13 @@ package me.desht.pneumaticcraft.client.gui.pneumatic_armor.options;
 
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.ICheckboxWidget;
+import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IClientArmorRegistry;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IGuiScreen;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IKeybindingButton;
-import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IPneumaticHelmetRegistry;
 import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorUpgradeHandler;
 import me.desht.pneumaticcraft.client.KeyHandler;
+import me.desht.pneumaticcraft.client.render.pneumatic_armor.ClientArmorRegistry;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
-import me.desht.pneumaticcraft.client.render.pneumatic_armor.PneumaticHelmetRegistry;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.JetBootsClientHandler;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.core.ModUpgrades;
@@ -54,7 +54,7 @@ public class JetBootsOptions extends AbstractSliderOptions<JetBootsClientHandler
     public void populateGui(IGuiScreen gui) {
         super.populateGui(gui);
 
-        IPneumaticHelmetRegistry registry = PneumaticRegistry.getInstance().getHelmetRegistry();
+        IClientArmorRegistry registry = PneumaticRegistry.getInstance().getClientArmorRegistry();
         ResourceLocation ownerID = getClientUpgradeHandler().getID();
         checkBoxBuilderMode = registry.makeKeybindingCheckBox(JetBootsClientHandler.MODULE_BUILDER_MODE, 5, 45, 0xFFFFFFFF,
                 b -> setFlag(PneumaticArmorItem.NBT_BUILDER_MODE, JetBootsHandler.BUILDER_MODE_LEVEL, b))
@@ -72,7 +72,7 @@ public class JetBootsOptions extends AbstractSliderOptions<JetBootsClientHandler
         changeKeybindingButton = registry.makeKeybindingButton(135, KeyHandler.getInstance().keybindJetBoots);
         gui.addWidget(changeKeybindingButton.asWidget());
 
-        gui.addWidget(PneumaticHelmetRegistry.getInstance().makeStatMoveButton(30, 157, getClientUpgradeHandler()));
+        gui.addWidget(ClientArmorRegistry.getInstance().makeStatMoveButton(30, 157, getClientUpgradeHandler()));
     }
 
     @Override

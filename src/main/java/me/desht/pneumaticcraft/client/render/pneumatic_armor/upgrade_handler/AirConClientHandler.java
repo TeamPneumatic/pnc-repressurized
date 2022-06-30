@@ -25,7 +25,7 @@ import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.StatPanelLayout;
 import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorHandler;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.options.AirConditionerOptions;
-import me.desht.pneumaticcraft.client.render.pneumatic_armor.PneumaticHelmetRegistry;
+import me.desht.pneumaticcraft.client.render.pneumatic_armor.ClientArmorRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
 import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.AirConHandler;
 import net.minecraft.ChatFormatting;
@@ -76,7 +76,7 @@ public class AirConClientHandler extends IArmorUpgradeClientHandler.SimpleToggle
     @Override
     public IGuiAnimatedStat getAnimatedStat() {
         if (acStat == null) {
-            acStat = PneumaticHelmetRegistry.getInstance().makeHUDStatPanel(Component.empty(), ItemStack.EMPTY, this);
+            acStat = ClientArmorRegistry.getInstance().makeHUDStatPanel(Component.empty(), ItemStack.EMPTY, this);
             acStat.setMinimumContractedDimensions(0, 0);
         }
         return acStat;

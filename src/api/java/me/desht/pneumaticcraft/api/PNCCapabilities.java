@@ -17,8 +17,8 @@
 
 package me.desht.pneumaticcraft.api;
 
-import me.desht.pneumaticcraft.api.hacking.IHacking;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
+import me.desht.pneumaticcraft.api.pneumatic_armor.hacking.IHacking;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerItem;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;

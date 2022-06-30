@@ -36,10 +36,10 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 /**
- * Retrieve an instance of this via {@link me.desht.pneumaticcraft.api.PneumaticRegistry.IPneumaticCraftInterface#getHelmetRegistry()}
+ * Retrieve an instance of this via {@link me.desht.pneumaticcraft.api.PneumaticRegistry.IPneumaticCraftInterface#getClientArmorRegistry()}
  * <p>Note: despite the name of this interface, it is for used for all armor pieces. The name is historical.
  */
-public interface IPneumaticHelmetRegistry {
+public interface IClientArmorRegistry {
     int DEFAULT_MESSAGE_BGCOLOR = 0x7000AA00;
 
     /**

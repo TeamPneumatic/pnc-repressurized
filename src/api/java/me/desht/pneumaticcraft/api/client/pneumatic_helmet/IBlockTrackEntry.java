@@ -36,7 +36,7 @@ import java.util.List;
 import java.util.function.Supplier;
 
 /**
- * Implement this interface and register it with {@link IPneumaticHelmetRegistry#registerBlockTrackEntry(Supplier)}.
+ * Implement this interface and register it with {@link IClientArmorRegistry#registerBlockTrackEntry(Supplier)}.
  * Your implementation must provide a no-parameter constructor.
  * <p>
  * These trackers are singleton objects, so any instance data is in effect shared amongst all block positions for which

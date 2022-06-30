@@ -17,11 +17,11 @@
 
 package me.desht.pneumaticcraft.common.network;
 
-import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableEntity;
+import me.desht.pneumaticcraft.api.pneumatic_armor.hacking.IHackableEntity;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.core.ModSounds;
-import me.desht.pneumaticcraft.common.event.HackTickHandler;
 import me.desht.pneumaticcraft.common.hacking.HackManager;
+import me.desht.pneumaticcraft.common.hacking.HackTickTracker;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
 import net.minecraft.network.FriendlyByteBuf;
@@ -55,10 +55,10 @@ public class PacketHackingEntityFinish {
             Player player = ClientUtils.getClientPlayer();
             Entity entity = player.level.getEntity(entityId);
             if (entity != null) {
-                IHackableEntity hackableEntity = HackManager.getHackableForEntity(entity, player);
+                IHackableEntity<?> hackableEntity = HackManager.getHackableForEntity(entity, player);
                 if (hackableEntity != null) {
-                    hackableEntity.onHackFinished(entity, player);
-                    HackTickHandler.instance().trackEntity(entity, hackableEntity);
+                    hackableEntity._onHackFinished(entity, player);
+                    HackTickTracker.getInstance(entity.level).trackEntity(entity, hackableEntity);
                     CommonArmorHandler.getHandlerForPlayer(player).getExtensionData(CommonUpgradeHandlers.hackHandler).setHackedEntity(null);
                     player.playSound(ModSounds.HELMET_HACK_FINISH.get(), 1.0F, 1.0F);
                 }

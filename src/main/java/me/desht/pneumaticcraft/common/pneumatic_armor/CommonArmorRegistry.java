@@ -20,35 +20,33 @@ package me.desht.pneumaticcraft.common.pneumatic_armor;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
-import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableBlock;
-import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableEntity;
-import me.desht.pneumaticcraft.api.hacking.IHacking;
 import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorUpgradeHandler;
 import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorHandler;
 import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorRegistry;
-import net.minecraft.core.Registry;
+import me.desht.pneumaticcraft.api.pneumatic_armor.hacking.IHackableBlock;
+import me.desht.pneumaticcraft.api.pneumatic_armor.hacking.IHackableEntity;
+import me.desht.pneumaticcraft.api.pneumatic_armor.hacking.IHacking;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.Block;
+import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.commons.lang3.Validate;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 
 public enum CommonArmorRegistry implements ICommonArmorRegistry {
     INSTANCE;
 
-    public final Map<Class<? extends Entity>, Supplier<? extends IHackableEntity>> hackableEntities = new ConcurrentHashMap<>();
-    public final Map<ResourceLocation, Supplier<? extends IHackableEntity>> idToEntityHackables = new ConcurrentHashMap<>();
+    public final Map<Class<? extends Entity>, Supplier<? extends IHackableEntity<?>>> hackableEntities = new ConcurrentHashMap<>();
+    public final Map<ResourceLocation, Supplier<? extends IHackableEntity<?>>> idToEntityHackables = new ConcurrentHashMap<>();
     // cached list of entity-type -> list of hacks applicable to this entity type
     // - the first of these hacks for which IHackableEntity#canHack() returns true will be the hack that is used
-    private final Multimap<EntityType<?>, IHackableEntity> hackablesByType = ArrayListMultimap.create();
+    private final Multimap<EntityType<?>, IHackableEntity<?>> hackablesByType = ArrayListMultimap.create();
 
     private final Map<Block, Supplier<? extends IHackableBlock>> hackableBlocks = new ConcurrentHashMap<>();
     // blocks known from tags are stored separately; they could change during the game if tags are reloaded
@@ -72,12 +70,13 @@ public enum CommonArmorRegistry implements ICommonArmorRegistry {
     }
 
     @Override
-    public void addHackable(Class<? extends Entity> entityClazz, Supplier<? extends IHackableEntity> iHackable) {
+    public void addHackable(Class<? extends Entity> entityClazz, Supplier<? extends IHackableEntity<?>> iHackable) {
         Validate.isTrue(!(iHackable instanceof Entity),
                 "Entities that already implement IHackableEntity do not need to be registered as hackable!");
 
-        IHackableEntity hackableEntity = iHackable.get();
-        if (hackableEntity.getHackableId() != null) idToEntityHackables.put(hackableEntity.getHackableId(), iHackable);
+        IHackableEntity<?> hackableEntity = iHackable.get();
+        hackableEntity.getHackableId();
+        idToEntityHackables.put(hackableEntity.getHackableId(), iHackable);
         hackableEntities.put(entityClazz, iHackable);
     }
 
@@ -87,7 +86,8 @@ public enum CommonArmorRegistry implements ICommonArmorRegistry {
                 "Blocks that already implement IHackableBlock do not need to be registered as hackable!");
 
         IHackableBlock hackableBlock = iHackable.get();
-        if (hackableBlock.getHackableId() != null) idToBlockHackables.put(hackableBlock.getHackableId(), iHackable);
+        hackableBlock.getHackableId();
+        idToBlockHackables.put(hackableBlock.getHackableId(), iHackable);
         hackableBlocks.put(block, iHackable);
     }
 
@@ -101,7 +101,7 @@ public enum CommonArmorRegistry implements ICommonArmorRegistry {
     }
 
     @Override
-    public List<IHackableEntity> getCurrentEntityHacks(Entity entity) {
+    public Collection<IHackableEntity<?>> getCurrentEntityHacks(Entity entity) {
         return entity.getCapability(PNCCapabilities.HACKING_CAPABILITY).map(IHacking::getCurrentHacks).orElse(Collections.emptyList());
     }
 
@@ -113,7 +113,9 @@ public enum CommonArmorRegistry implements ICommonArmorRegistry {
     public void resolveBlockTags() {
         hackableTaggedBlocks.clear();
 
-        pendingBlockTags.forEach((tagKey, hackable) -> Registry.BLOCK.getTagOrEmpty(tagKey).forEach(h -> hackableTaggedBlocks.put(h.value(), hackable)));
+        pendingBlockTags.forEach((tagKey, hackable) -> Objects.requireNonNull(ForgeRegistries.BLOCKS.tags())
+                .getTag(tagKey)
+                .forEach(block -> hackableTaggedBlocks.put(block, hackable)));
     }
 
     public IHackableBlock getHackable(Block block) {
@@ -123,7 +125,7 @@ public enum CommonArmorRegistry implements ICommonArmorRegistry {
         return sup == null ? null : sup.get();
     }
 
-    public IHackableEntity getHackable(Entity entity, Player player) {
+    public IHackableEntity<?> getHackable(Entity entity, Player player) {
         if (!hackablesByType.containsKey(entity.getType())) {
             for (var entry : hackableEntities.entrySet()) {
                 if (entry.getKey().isAssignableFrom(entity.getClass())) {
@@ -138,8 +140,13 @@ public enum CommonArmorRegistry implements ICommonArmorRegistry {
                 .orElse(null);
     }
 
-    public IHackableEntity getHackableForId(ResourceLocation id) {
-        Supplier<? extends IHackableEntity> sup = idToEntityHackables.get(id);
-        return sup == null ? null : sup.get();
+    public Optional<IHackableEntity<?>> getHackableEntityForId(ResourceLocation id) {
+        Supplier<? extends IHackableEntity<?>> sup = idToEntityHackables.get(id);
+        return sup == null ? Optional.empty() : Optional.ofNullable(sup.get());
+    }
+
+    public Optional<IHackableBlock> getHackableBlockForId(ResourceLocation id) {
+        Supplier<? extends IHackableBlock> sup = idToBlockHackables.get(id);
+        return sup == null ? Optional.empty() : Optional.ofNullable(sup.get());
     }
 }

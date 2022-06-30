@@ -20,8 +20,8 @@ package me.desht.pneumaticcraft.client.gui.pneumatic_armor.options;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.*;
 import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorUpgradeHandler;
+import me.desht.pneumaticcraft.client.render.pneumatic_armor.ClientArmorRegistry;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
-import me.desht.pneumaticcraft.client.render.pneumatic_armor.PneumaticHelmetRegistry;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.block_tracker.BlockTrackHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.BlockTrackerClientHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
@@ -36,13 +36,13 @@ public class BlockTrackOptions extends IOptionPage.SimpleOptionPage<BlockTracker
 
     @Override
     public void populateGui(IGuiScreen gui) {
-        gui.addWidget(PneumaticHelmetRegistry.getInstance().makeStatMoveButton(30, settingsYposition() + 12, getClientUpgradeHandler()));
+        gui.addWidget(ClientArmorRegistry.getInstance().makeStatMoveButton(30, settingsYposition() + 12, getClientUpgradeHandler()));
 
         ResourceLocation blockTrackerID = CommonUpgradeHandlers.blockTrackerHandler.getID();
 
         List<IBlockTrackEntry> entries = BlockTrackHandler.getInstance().getEntries();
         ResourceLocation owningId = getClientUpgradeHandler().getID();
-        IPneumaticHelmetRegistry registry = PneumaticRegistry.getInstance().getHelmetRegistry();
+        IClientArmorRegistry registry = PneumaticRegistry.getInstance().getClientArmorRegistry();
         for (int i = 0; i < entries.size(); i++) {
             ICheckboxWidget checkBox = registry.makeKeybindingCheckBox(
                     entries.get(i).getEntryID(), 5, 38 + i * 12, 0xFFFFFFFF, cb -> {

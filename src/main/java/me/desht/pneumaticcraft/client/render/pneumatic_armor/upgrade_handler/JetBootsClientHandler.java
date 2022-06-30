@@ -28,7 +28,7 @@ import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorUpgradeHandler;
 import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorHandler;
 import me.desht.pneumaticcraft.client.KeyHandler;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.options.JetBootsOptions;
-import me.desht.pneumaticcraft.client.render.pneumatic_armor.PneumaticHelmetRegistry;
+import me.desht.pneumaticcraft.client.render.pneumatic_armor.ClientArmorRegistry;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModUpgrades;
@@ -189,7 +189,7 @@ public class JetBootsClientHandler extends IArmorUpgradeClientHandler.SimpleTogg
             CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer();
             int n = Math.max(1, handler.getUpgradeCount(EquipmentSlot.FEET, ModUpgrades.JET_BOOTS.get()));
             ItemStack stack = new ItemStack(ModUpgrades.JET_BOOTS.get().getItem(n));
-            jbStat = PneumaticHelmetRegistry.getInstance().makeHUDStatPanel(xlate(IArmorUpgradeHandler.getStringKey(getID())), stack, this);
+            jbStat = ClientArmorRegistry.getInstance().makeHUDStatPanel(xlate(IArmorUpgradeHandler.getStringKey(getID())), stack, this);
             jbStat.setMinimumContractedDimensions(0, 0);
             jbStat.setMinimumExpandedDimensions(120, 42);
         }

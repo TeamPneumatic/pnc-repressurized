@@ -130,7 +130,7 @@ public class ArmorMainScreen extends AbstractPneumaticCraftScreen implements IGu
         }
         pageNumber = Math.min(pageNumber, upgradeOptions.size() - 1);
         if (pageNumber < 0 && !upgradeOptions.isEmpty()) pageNumber = 0;
-        ICheckboxWidget checkBox = PneumaticRegistry.getInstance().getHelmetRegistry()
+        ICheckboxWidget checkBox = PneumaticRegistry.getInstance().getClientArmorRegistry()
                 .makeKeybindingCheckBox(getCurrentOptionsPage().upgradeID, 40, 25, 0xFFFFFFFF, null);
         if (getCurrentOptionsPage().page.isToggleable()) {
             addRenderableWidget(checkBox.asWidget());

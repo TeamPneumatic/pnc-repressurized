@@ -25,7 +25,7 @@ import net.minecraft.world.entity.Entity;
 import java.util.List;
 
 /**
- * Implement this class and register it with {@link IPneumaticHelmetRegistry#registerEntityTrackEntry(java.util.function.Supplier)}.
+ * Implement this class and register it with {@link IClientArmorRegistry#registerEntityTrackEntry(java.util.function.Supplier)}.
  * Your implementation must provide a no-parameter constructor.
  * <p>
  * An instance of this tracker is created for each entity for which the tracker is applicable.

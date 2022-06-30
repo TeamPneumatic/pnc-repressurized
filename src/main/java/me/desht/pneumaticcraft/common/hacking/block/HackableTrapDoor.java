@@ -24,9 +24,11 @@ import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 public class HackableTrapDoor extends HackableDoor {
+    private static final ResourceLocation ID = RL("trapdoor");
+
     @Override
     public ResourceLocation getHackableId() {
-        return RL("trapdoor");
+        return ID;
     }
 
     @Override

@@ -181,7 +181,7 @@ public class CoreComponentsClientHandler extends IArmorUpgradeClientHandler.Abst
     public IGuiAnimatedStat getAnimatedStat() {
         if (powerStat == null) {
             forceUpdatePressureStat = true;
-            powerStat = PneumaticRegistry.getInstance().getHelmetRegistry().makeHUDStatPanel(Component.empty(), ItemStack.EMPTY, this);
+            powerStat = PneumaticRegistry.getInstance().getClientArmorRegistry().makeHUDStatPanel(Component.empty(), ItemStack.EMPTY, this);
             powerStat.setLineSpacing(14);
             powerStat.setSubwidgetRenderOffsets(-18, 0);  // ensure armor icons are rendered in the right place
             pressureButtons.clear();

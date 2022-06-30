@@ -21,7 +21,7 @@ import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IGuiScreen;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IKeybindingButton;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
 import me.desht.pneumaticcraft.client.KeyHandler;
-import me.desht.pneumaticcraft.client.render.pneumatic_armor.PneumaticHelmetRegistry;
+import me.desht.pneumaticcraft.client.render.pneumatic_armor.ClientArmorRegistry;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.HackClientHandler;
 
 import java.util.Optional;
@@ -35,7 +35,7 @@ public class HackOptions extends IOptionPage.SimpleOptionPage<HackClientHandler>
 
     @Override
     public void populateGui(IGuiScreen gui) {
-        changeKeybindingButton = PneumaticHelmetRegistry.getInstance().makeKeybindingButton(128, KeyHandler.getInstance().keybindHack);
+        changeKeybindingButton = ClientArmorRegistry.getInstance().makeKeybindingButton(128, KeyHandler.getInstance().keybindHack);
         gui.addWidget(changeKeybindingButton.asWidget());
     }
 

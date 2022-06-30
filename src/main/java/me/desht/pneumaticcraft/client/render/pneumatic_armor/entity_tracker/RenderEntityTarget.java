@@ -22,7 +22,7 @@ import com.mojang.math.Matrix3f;
 import com.mojang.math.Vector3f;
 import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IEntityTrackEntry;
-import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableEntity;
+import me.desht.pneumaticcraft.api.pneumatic_armor.hacking.IHackableEntity;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.options.DroneDebuggerOptions;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat.StatIcon;
@@ -118,8 +118,7 @@ public class RenderEntityTarget {
         isLookingAtTarget = isPlayerLookingAtTarget();
 
         if (hackTime > 0) {
-            IHackableEntity hackableEntity = HackManager.getHackableForEntity(entity, ClientUtils.getClientPlayer());
-            if (hackableEntity != null) {
+            if (HackManager.getHackableForEntity(entity, ClientUtils.getClientPlayer()) != null) {
                 hackTime++;
             } else {
                 hackTime = 0;
@@ -213,13 +212,14 @@ public class RenderEntityTarget {
         double d0 = vec31.length();
         vec31 = vec31.normalize();
         double d1 = vec3.dot(vec31);
-        return d1 > 1.0D - 0.050D / d0;
+        return d1 > 1.0D - 0.025D / d0;
     }
 
     public void hack() {
         if (isInitialized() && isPlayerLookingAtTarget()) {
-            IHackableEntity hackable = HackManager.getHackableForEntity(entity, ClientUtils.getClientPlayer());
-            if (hackable != null && (hackTime == 0 || hackTime > hackable.getHackTime(entity, ClientUtils.getClientPlayer())))
+            Player player = ClientUtils.getClientPlayer();
+            IHackableEntity<?> hackable = HackManager.getHackableForEntity(entity, player);
+            if (hackable != null && (hackTime == 0 || hackTime > hackable._getHackTime(entity, player)))
                 NetworkHandler.sendToServer(new PacketHackingEntityStart(entity));
         }
     }

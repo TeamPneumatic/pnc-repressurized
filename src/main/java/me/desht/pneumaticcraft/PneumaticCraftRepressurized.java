@@ -18,10 +18,10 @@
 package me.desht.pneumaticcraft;
 
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
-import me.desht.pneumaticcraft.api.hacking.IHacking;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.api.item.IUpgradeItem;
 import me.desht.pneumaticcraft.api.lib.Names;
+import me.desht.pneumaticcraft.api.pneumatic_armor.hacking.IHacking;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerItem;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
@@ -35,8 +35,12 @@ import me.desht.pneumaticcraft.common.config.ConfigHolder;
 import me.desht.pneumaticcraft.common.config.subconfig.AuxConfigHandler;
 import me.desht.pneumaticcraft.common.core.*;
 import me.desht.pneumaticcraft.common.dispenser.DroneDispenseBehavior;
-import me.desht.pneumaticcraft.common.event.*;
+import me.desht.pneumaticcraft.common.event.DroneSpecialVariableHandler;
+import me.desht.pneumaticcraft.common.event.MiscEventHandler;
+import me.desht.pneumaticcraft.common.event.PneumaticArmorHandler;
+import me.desht.pneumaticcraft.common.event.UniversalSensorHandler;
 import me.desht.pneumaticcraft.common.fluid.FluidSetup;
+import me.desht.pneumaticcraft.common.hacking.HackEventListener;
 import me.desht.pneumaticcraft.common.hacking.HackManager;
 import me.desht.pneumaticcraft.common.heat.behaviour.HeatBehaviourManager;
 import me.desht.pneumaticcraft.common.item.GPSAreaToolItem;
@@ -97,7 +101,7 @@ public class PneumaticCraftRepressurized {
         forgeBus.register(new UniversalSensorHandler());
         forgeBus.register(new DroneSpecialVariableHandler());
         forgeBus.register(GPSAreaToolItem.EventHandler.class);
-        forgeBus.register(HackTickHandler.instance());
+        forgeBus.register(HackEventListener.getInstance());
         forgeBus.addListener(VillageStructures::addMechanicHouse);
     }
 
