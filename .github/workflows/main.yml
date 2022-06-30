@@ -40,7 +40,7 @@ jobs:
       - name: Remove any generated assets/data
         run: rm -rf ./src/generated
       - name: Generate assets
-        run: ./gradlew runData --no-daemon --max-workers 1 || test -f ./src/generated/resources/.cache/cache
+        run: ./gradlew runData --no-daemon --max-workers 1 || test -d ./src/generated/resources/.cache
       - name: Validate assets
         run: test -d ./src/generated -a -f ./src/generated/resources/.cache/cache
       - name: Build with Gradle
