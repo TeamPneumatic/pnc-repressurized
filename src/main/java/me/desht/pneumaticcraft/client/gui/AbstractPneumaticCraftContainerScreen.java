@@ -331,18 +331,18 @@ public abstract class AbstractPneumaticCraftContainerScreen<C extends AbstractPn
     @Override
     protected void renderLabels(PoseStack matrixStack, int x, int y) {
         if (getInvNameOffset() != null) {
-            font.draw(matrixStack, title.getVisualOrderText(), imageWidth / 2f - font.width(title) / 2f + getInvNameOffset().x(), 5 + getInvNameOffset().y(), getTitleColor());
+            font.draw(matrixStack, title, imageWidth / 2f - font.width(title) / 2f + getInvNameOffset().x(), 5 + getInvNameOffset().y(), getTitleColor());
         }
 
         if (getInvTextOffset() != null) {
-            font.draw(matrixStack, I18n.get("container.inventory"), 8 + getInvTextOffset().x(), imageHeight - 94 + getInvTextOffset().y(), 0x404040);
+            font.draw(matrixStack, xlate("container.inventory"), 8 + getInvTextOffset().x(), imageHeight - 94 + getInvTextOffset().y(), 0x404040);
         }
 
         if (pressureStat != null) {
             PointXY gaugeLocation = getGaugeLocation();
             if (gaugeLocation != null) {
                 AbstractAirHandlingBlockEntity pneu = (AbstractAirHandlingBlockEntity) te;
-                float minWorking = te instanceof IMinWorkingPressure ? ((IMinWorkingPressure) te).getMinWorkingPressure() : -Float.MAX_VALUE;
+                float minWorking = te instanceof IMinWorkingPressure min ? min.getMinWorkingPressure() : -Float.MAX_VALUE;
                 PressureGaugeRenderer2D.drawPressureGauge(matrixStack, font, -1, pneu.getCriticalPressure(), pneu.getDangerPressure(), minWorking, pneu.getPressure(), gaugeLocation.x() - leftPos, gaugeLocation.y() - topPos);
             }
         }

@@ -204,7 +204,10 @@ public class EntityFilter implements Predicate<Entity> {
         HOLDING_OFFHAND((item) -> ForgeRegistries.ITEMS.containsKey(new ResourceLocation(item)),
                 "any valid item registry name, e.g. 'minecraft:cobblestone'",
                 (entity, val) -> isHeldItem(entity, val, false)
-        );
+        ),
+        MOD((str) -> true,
+                "any mod name, e.g. 'minecraft' or 'pneumaticcraft'",
+                Modifier::testMod);
 
         private final Set<String> validationSet;
         private final Predicate<String> validationPredicate;
@@ -234,12 +237,17 @@ public class EntityFilter implements Predicate<Entity> {
         private static boolean testBreedable(Entity entity, String val) {
             return entity instanceof Animal a &&
                     (a.getAge() == 0 ? val.equalsIgnoreCase("yes") : val.equalsIgnoreCase("no")
-            );
+                    );
         }
 
         private static boolean testAge(Entity entity, String val) {
             return entity instanceof AgeableMob a && a.getAge() >= 0 ?
                     val.equalsIgnoreCase("adult") : val.equalsIgnoreCase("baby");
+        }
+
+        private static boolean testMod(Entity entity, String modName) {
+            ResourceLocation rl = ForgeRegistries.ENTITIES.getKey(entity.getType());
+            return rl != null && rl.getNamespace().toLowerCase(Locale.ROOT).equals(modName.toLowerCase(Locale.ROOT));
         }
 
         boolean isValid(String s) {
