@@ -47,7 +47,6 @@ import org.apache.commons.lang3.Validate;
 import java.util.*;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class EntityFilter implements Predicate<Entity> {
@@ -236,8 +235,7 @@ public class EntityFilter implements Predicate<Entity> {
 
         private static boolean testBreedable(Entity entity, String val) {
             return entity instanceof Animal a &&
-                    (a.getAge() == 0 ? val.equalsIgnoreCase("yes") : val.equalsIgnoreCase("no")
-                    );
+                    (a.getAge() == 0 ? val.equalsIgnoreCase("yes") : val.equalsIgnoreCase("no"));
         }
 
         private static boolean testAge(Entity entity, String val) {
@@ -246,8 +244,8 @@ public class EntityFilter implements Predicate<Entity> {
         }
 
         private static boolean testMod(Entity entity, String modName) {
-            ResourceLocation rl = ForgeRegistries.ENTITIES.getKey(entity.getType());
-            return rl != null && rl.getNamespace().toLowerCase(Locale.ROOT).equals(modName.toLowerCase(Locale.ROOT));
+            ResourceLocation rl = PneumaticCraftUtils.getRegistryName(entity).orElseThrow();
+            return rl.getNamespace().toLowerCase(Locale.ROOT).equals(modName.toLowerCase(Locale.ROOT));
         }
 
         boolean isValid(String s) {
@@ -264,23 +262,23 @@ public class EntityFilter implements Predicate<Entity> {
         }
 
         private static boolean hasColor(Entity entity, String val) {
-            if (entity instanceof Sheep) {
-                return ((Sheep) entity).getColor().getName().equalsIgnoreCase(val);
-            } else if (entity instanceof Wolf) {
-                return ((Wolf) entity).getCollarColor().getName().equalsIgnoreCase(val);
-            } else if (entity instanceof Cat) {
-                return ((Cat) entity).getCollarColor().getName().equalsIgnoreCase(val);
+            if (entity instanceof Sheep s) {
+                return s.getColor().getName().equalsIgnoreCase(val);
+            } else if (entity instanceof Wolf w) {
+                return w.getCollarColor().getName().equalsIgnoreCase(val);
+            } else if (entity instanceof Cat c) {
+                return c.getCollarColor().getName().equalsIgnoreCase(val);
             } else {
                 return false;
             }
         }
 
         private static boolean isHeldItem(Entity entity, String name, boolean mainHand) {
-            if (entity instanceof LivingEntity) {
+            if (entity instanceof LivingEntity l) {
                 if (!name.contains(":")) {
                     name = "minecraft:" + name;
                 }
-                ItemStack stack = mainHand ? ((LivingEntity) entity).getMainHandItem() : ((LivingEntity) entity).getOffhandItem();
+                ItemStack stack = mainHand ? l.getMainHandItem() : l.getOffhandItem();
                 return PneumaticCraftUtils.getRegistryName(stack.getItem()).orElseThrow().toString().equals(name);
             }
             return false;
@@ -291,6 +289,7 @@ public class EntityFilter implements Predicate<Entity> {
         private final Pattern regex;
         private final Predicate<Entity> entityPredicate;
         private final List<ModifierEntry> modifiers = new ArrayList<>();
+        private final boolean matchCustomName;
 
         private EntityMatcher(String element) {
             String[] splits = ELEMENT_SUBDIVIDER.split(element);
@@ -307,10 +306,17 @@ public class EntityFilter implements Predicate<Entity> {
                 entityPredicate = ENTITY_PREDICATES.get(sub);
                 Validate.isTrue(entityPredicate != null, "Unknown entity type specifier: @" + sub);
                 regex = null;
+                matchCustomName = false;
+            } else if (splits[0].startsWith("\"") && splits[0].endsWith("\"") || splits[0].startsWith("'") && splits[0].endsWith("'")) {
+                // match an entity with a custom name
+                entityPredicate = null;
+                regex = Pattern.compile(wildcardToRegex(splits[0].substring(1, splits[0].length() - 1)));
+                matchCustomName = true;
             } else {
-                // wildcard match on entity name
+                // wildcard match on entity type name
                 entityPredicate = null;
                 regex = Pattern.compile(wildcardToRegex(splits[0]), Pattern.CASE_INSENSITIVE);
+                matchCustomName = false;
             }
 
             for (int i = 1; i < splits.length; i++) {
@@ -324,7 +330,7 @@ public class EntityFilter implements Predicate<Entity> {
                 Modifier modifier;
                 try {
                     modifier = Modifier.valueOf(parts[0].toUpperCase(Locale.ROOT));
-                } catch (Exception e) {
+                } catch (IllegalArgumentException e) {
                     throw new IllegalArgumentException("Unknown modifier: " + parts[0]);
                 }
                 if (!modifier.isValid(parts[1])) {
@@ -341,8 +347,9 @@ public class EntityFilter implements Predicate<Entity> {
             if (entityPredicate != null) {
                 ok = entityPredicate.test(entity);
             } else if (regex != null) {
-                Matcher m = regex.matcher(entity.getName().getString());
-                ok = m.matches();
+                ok = matchCustomName ?
+                        entity.getCustomName() != null && regex.matcher(entity.getCustomName().getString()).matches() :
+                        regex.matcher(PneumaticCraftUtils.getRegistryName(entity).orElseThrow().toString()).matches();
             }
             // modifiers test is a match-all (e.g. "sheep(sheared=false,color=black)" matches sheep which are unsheared AND black)
             return ok && modifiers.stream().allMatch(modifierEntry -> modifierEntry.test(entity));

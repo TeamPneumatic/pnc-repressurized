@@ -119,7 +119,7 @@ public abstract class AmadronRecipe extends PneumaticCraftRecipe {
      * whitelisted/blacklisted in data packs with the "whitelist" and "blacklist" fields in the Amadron recipe JSON.
      * This could be used, for example, to only allow selling snow in a desert biome, or only purchasing ender pearls
      * in the End.  Default filters are "dimensions" and "biome_categories", but others can be added via
-     * {@link me.desht.pneumaticcraft.api.PneumaticRegistry.IPneumaticCraftInterface#registerPlayerMatcher(ResourceLocation, IPlayerMatcher.MatcherFactory)}
+     * {@link me.desht.pneumaticcraft.api.misc.IMiscHelpers#registerPlayerMatcher(ResourceLocation, IPlayerMatcher.MatcherFactory)}.
      *
      * @param player the player to check
      * @return true if the offer is available to the player at the time of use, false otherwise

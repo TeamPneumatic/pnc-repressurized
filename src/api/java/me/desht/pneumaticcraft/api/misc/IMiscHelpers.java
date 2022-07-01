@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.api.misc;
 
+import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.crafting.ingredient.FluidIngredient;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -13,7 +14,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.items.IItemHandler;
 
 /**
- * A collection of miscellaneous helper methods which don't fit elsewhere.
+ * A collection of miscellaneous helper methods which don't fit elsewhere. Get an instance of this with
+ * {@link PneumaticRegistry.IPneumaticCraftInterface#getMiscHelpers()}.
  */
 public interface IMiscHelpers {
     /**

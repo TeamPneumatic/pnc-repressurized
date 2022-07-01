@@ -37,6 +37,7 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.TagKey;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
@@ -704,6 +705,10 @@ public class PneumaticCraftUtils {
 
     public static Optional<ResourceLocation> getRegistryName(Fluid fluid) {
         return getRegistryName(ForgeRegistries.FLUIDS, fluid);
+    }
+
+    public static Optional<ResourceLocation> getRegistryName(Entity entity) {
+        return getRegistryName(ForgeRegistries.ENTITIES, entity.getType());
     }
 
     public static <T> Optional<ResourceLocation> getRegistryName(IForgeRegistry<T> registry, T object) {
