@@ -105,6 +105,9 @@ dependencies {
 			name   : 'forge',
 			version: "${project.mc_version}-${project.forge_version}"
 	])
+
+	annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
+
 	testImplementation "org.junit.jupiter:junit-jupiter-api:5.7.2"
 	testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.7.2"
 
