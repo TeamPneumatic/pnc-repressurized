@@ -213,6 +213,8 @@ public class NetworkHandler {
 				PacketSyncClassifyFilter::toBytes, PacketSyncClassifyFilter::new, PacketSyncClassifyFilter::handle, PLAY_TO_SERVER);
 		registerMessage(PacketSyncEntityHacks.class,
 				PacketSyncEntityHacks::toBytes, PacketSyncEntityHacks::new, PacketSyncEntityHacks::handle, PLAY_TO_CLIENT);
+		registerMessage(PacketTeleportCommand.class,
+				PacketTeleportCommand::toBytes, PacketTeleportCommand::new, PacketTeleportCommand::handle, PLAY_TO_SERVER);
     }
 
 	public static <MSG> void registerMessage(Class<MSG> messageType, BiConsumer<MSG, FriendlyByteBuf> encoder, Function<FriendlyByteBuf, MSG> decoder, BiConsumer<MSG, Supplier<NetworkEvent.Context>> messageConsumer) {

@@ -46,7 +46,7 @@ public class GPSAreaToolScreen extends GPSToolScreen {
     private int index;
 
     private GPSAreaToolScreen(ItemStack stack, InteractionHand hand, int index) {
-        super(stack.getDisplayName(), hand,
+        super(stack.getHoverName(), hand,
                 GPSAreaToolItem.getGPSLocation(Minecraft.getInstance().player, stack, index).orElse(ClientUtils.getClientPlayer().blockPosition()),
                 GPSAreaToolItem.getVariable(Minecraft.getInstance().player, stack, index));
 
@@ -127,6 +127,10 @@ public class GPSAreaToolScreen extends GPSToolScreen {
             textFields[2].setValue(p1p2Pos[index].getZ());
             variableField.setValue(vars[index]);
             varTypeButton.setMessage(Component.literal(GlobalVariableHelper.getVarPrefix(playerGlobals[index])));
+            if (teleportButton != null) {
+                BlockPos pos = getBlockPos();
+                teleportButton.setTooltipText(Component.literal(String.format("/tp %d %d %d", pos.getX(), pos.getY(), pos.getZ())).withStyle(ChatFormatting.YELLOW));
+            }
         }
     }
 

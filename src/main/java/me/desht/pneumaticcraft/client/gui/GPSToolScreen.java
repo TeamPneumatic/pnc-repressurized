@@ -25,7 +25,9 @@ import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.item.GPSToolItem;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketChangeGPSToolCoordinate;
+import me.desht.pneumaticcraft.common.network.PacketTeleportCommand;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableHelper;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.core.BlockPos;
@@ -42,6 +44,7 @@ public class GPSToolScreen extends AbstractPneumaticCraftScreen {
     protected final WidgetTextFieldNumber[] textFields = new WidgetTextFieldNumber[3];
     protected WidgetTextField variableField;
     protected WidgetButtonExtended varTypeButton;
+    protected WidgetButtonExtended teleportButton;
     protected final InteractionHand hand;
     private final BlockPos oldGPSLoc;
     private String oldVarName;
@@ -110,7 +113,20 @@ public class GPSToolScreen extends AbstractPneumaticCraftScreen {
                 .setTooltipKey("pneumaticcraft.gui.remote.varType.tooltip");
         addRenderableWidget(varTypeButton);
 
+        if (ClientUtils.getClientPlayer().hasPermissions(2)) {
+            BlockPos pos = getBlockPos();
+            teleportButton = new WidgetButtonExtended(xMiddle - 50, variableField.y + variableField.getHeight() + 5, 100, 20, xlate("pneumaticcraft.gui.gps_tool.teleport"), p -> {
+                NetworkHandler.sendToServer(new PacketTeleportCommand(getBlockPos()));
+                if (!ClientUtils.hasShiftDown()) onClose();
+            }).setTooltipText(Component.literal(String.format("/tp %d %d %d", pos.getX(), pos.getY(), pos.getZ())).withStyle(ChatFormatting.YELLOW));
+            addRenderableWidget(teleportButton);
+        }
+
         addLabel(xlate("pneumaticcraft.gui.progWidget.coordinate.variable").append(":"), variableField.x, variableField.y - font.lineHeight - 2).setColor(0xFFFFFF);
+    }
+
+    protected BlockPos getBlockPos() {
+        return new BlockPos(textFields[0].getIntValue(), textFields[1].getIntValue(), textFields[2].getIntValue());
     }
 
     protected void toggleVarType() {
@@ -143,9 +159,8 @@ public class GPSToolScreen extends AbstractPneumaticCraftScreen {
     }
 
     protected void syncToServer() {
-        BlockPos newPos = new BlockPos(textFields[0].getIntValue(), textFields[1].getIntValue(), textFields[2].getIntValue());
         String varName = GlobalVariableHelper.getPrefixedVar(variableField.getValue(), playerGlobal);
-        NetworkHandler.sendToServer(new PacketChangeGPSToolCoordinate(newPos, hand, varName, getIndex()));
+        NetworkHandler.sendToServer(new PacketChangeGPSToolCoordinate(getBlockPos(), hand, varName, getIndex()));
     }
 
     protected int getIndex() {
