@@ -36,13 +36,7 @@ public class CommonConfig {
         public ForgeConfigSpec.DoubleValue bandageHealthRestored;
     }
     public static class Worldgen {
-        public ForgeConfigSpec.IntValue undergroundOilLakeFrequency;
-        public ForgeConfigSpec.IntValue surfaceOilLakeFrequency;
-        public ForgeConfigSpec.ConfigValue<List<String>> oilWorldGenWhitelist;
-        public ForgeConfigSpec.ConfigValue<List<String>> oilWorldGenCategoryWhitelist;
         public ForgeConfigSpec.ConfigValue<List<String>> oilWorldGenDimensionWhitelist;
-        public ForgeConfigSpec.ConfigValue<List<String>> oilWorldGenBlacklist;
-        public ForgeConfigSpec.ConfigValue<List<String>> oilWorldGenCategoryBlacklist;
         public ForgeConfigSpec.ConfigValue<List<String>> oilWorldGenDimensionBlacklist;
     }
     public static class Machines {
@@ -226,46 +220,16 @@ public class CommonConfig {
         builder.pop();
 
         builder.push("Worldgen");
-        worldgen.undergroundOilLakeFrequency = builder
+        worldgen.oilWorldGenDimensionWhitelist = builder
                 .worldRestart()
-                .comment("Average frequency in chunks for underground oil lakes; higher values mean rarer lakes. Use one of the blacklist settings to disable lakes entirely. See also 'surface_oil_generation_chance'.")
-                .translation("pneumaticcraft.config.common.general.undergroundOilLakeFrequency")
-                .defineInRange("underground_oil_lake_frequency", 6, 1, Integer.MAX_VALUE);
-        worldgen.surfaceOilLakeFrequency = builder
-                .worldRestart()
-                .comment("Average frequency in chunks for surface oil lakes; higher values mean rarer lakes. Use one of the blacklist settings to disable lakes entirely. See also 'underground_oil_generation_chance'.")
-                .translation("pneumaticcraft.config.common.general.surfaceOilLakeFrequency")
-                .defineInRange("surface_oil_lake_frequency", 25, 1, Integer.MAX_VALUE);
-        worldgen.oilWorldGenBlacklist = builder
-                .worldRestart()
-                .comment("Oil worldgen blacklist by biome: add biome IDs to this list if you don't want oil lake worldgen to happen there.  This works in conjunction with 'oil_world_gen_category_blacklist' - if a biome matches either, then no oil lakes will generate there. You can wildcard this; e.g 'modid:*' blacklists ALL biomes of namespace 'modid'.")
-                .translation("pneumaticcraft.config.common.general.oil_world_gen_blacklist")
-                .define("oil_world_gen_blacklist", Lists.newArrayList("minecraft:soul_sand_valley", "minecraft:crimson_forest", "minecraft:warped_forest", "minecraft:nether_wastes", "minecraft:the_void", "minecraft:the_end", "minecraft:small_end_islands", "minecraft:end_midlands", "minecraft:end_highlands", "minecraft:end_barrens"));
-        worldgen.oilWorldGenCategoryBlacklist = builder
-                .worldRestart()
-                .comment("Oil worldgen blacklist by biome category: add biome categories to this list if you don't want oil lake worldgen to happen there. See https://minecraft.fandom.com/wiki/Biome/JSON_format for a list of valid categories.  This works in conjunction with 'oil_world_gen_blacklist' - if a biome matches either, then no oil lakes will generate there.")
-                .translation("pneumaticcraft.config.common.general.oil_world_gen_category_blacklist")
-                .define("oil_world_gen_category_blacklist", Lists.newArrayList("none"));
+                .comment("Oil worldgen whitelist by dimension ID: add dimension ID's to this list if you want oil lake worldgen to happen ONLY in those dimensions. You can wildcard the path; e.g 'modid:*' whitelists ALL dimensions of namespace 'modid'. If this is empty, it is ignored, and 'oil_world_gen_dimension_blacklist' will be checked instead.")
+                .translation("pneumaticcraft.config.common.general.oil_world_gen_dimension_whitelist")
+                .define("oil_world_gen_dimension_whitelist", Lists.newArrayList());
         worldgen.oilWorldGenDimensionBlacklist = builder
                 .worldRestart()
                 .comment("Oil worldgen blacklist by dimension ID: add dimension ID's to this list if you don't want oil lake worldgen to happen there. You can wildcard this; e.g 'modid:*' blacklists ALL dimensions of namespace 'modid'.")
                 .translation("pneumaticcraft.config.common.general.oil_world_gen_dimension_blacklist")
                 .define("oil_world_gen_dimension_blacklist", Lists.newArrayList());
-        worldgen.oilWorldGenWhitelist = builder
-                .worldRestart()
-                .comment("Oil worldgen whitelist by biome: add biome IDs to this list if you want oil lake worldgen to happen ONLY in those biomes. An empty list means no whitelisting is done, and only the blacklist settings are checked. This works in conjunction with 'oil_world_gen_category_whitelist' - if it is non-empty it must also match, or no oil lakes will generate there. You can wildcard this; e.g 'modid:*' whitelists ALL biomes of namespace 'modid'.")
-                .translation("pneumaticcraft.config.common.general.oil_world_gen_whitelist")
-                .define("oil_world_gen_whitelist", Lists.newArrayList());
-        worldgen.oilWorldGenCategoryWhitelist = builder
-                .worldRestart()
-                .comment("Oil worldgen whitelist by biome category: add biome categories to this list if you want oil lake worldgen to happen ONLY in those biome categories. See https://minecraft.fandom.com/wiki/Biome/JSON_format for a list of valid categories. This works in conjunction with 'oil_world_gen_whitelist' - if that is non-empty then it must also match, or no oil lakes will generate.")
-                .translation("pneumaticcraft.config.common.general.oil_world_gen_category_whitelist")
-                .define("oil_world_gen_category_whitelist", Lists.newArrayList());
-        worldgen.oilWorldGenDimensionWhitelist = builder
-                .worldRestart()
-                .comment("Oil worldgen whitelist by dimension ID: add dimension ID's to this list if you want oil lake worldgen to happen ONLY in those dimensions. You can wildcard the path; e.g 'modid:*' whitelists ALL dimensions of namespace 'modid'. If this is empty, it is ignored, and the corresponding blacklist will be checked instead.")
-                .translation("pneumaticcraft.config.common.general.oil_world_gen_dimension_whitelist")
-                .define("oil_world_gen_dimension_whitelist", Lists.newArrayList());
         builder.pop();
 
         builder.push("Machine Properties");

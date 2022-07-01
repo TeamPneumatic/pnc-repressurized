@@ -5,7 +5,8 @@
   "refmap": "mixins.pneumaticcraft.refmap.json",
   "mixins": [
     "coremods.BaseSpawnerMixin",
-    "accessors.BaseSpawnerAccess"
+    "accessors.BaseSpawnerAccess",
+    "accessors.WorldGenRegionAccess"
   ],
   "minVersion": "0.8"
 }

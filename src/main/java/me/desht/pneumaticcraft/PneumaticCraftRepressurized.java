@@ -122,6 +122,7 @@ public class PneumaticCraftRepressurized {
         ModLootModifiers.LOOT_MODIFIER.register(modBus);
         ModCommands.COMMAND_ARGUMENT_TYPES.register(modBus);
         ModLootFunctions.LOOT_FUNCTIONS.register(modBus);
+        ModPlacementModifierTypes.PLACEMENT_MODIFIERS.register(modBus);
 
         // custom registries
         ModHarvestHandlers.HARVEST_HANDLERS_DEFERRED.register(modBus);

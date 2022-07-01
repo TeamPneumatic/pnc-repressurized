@@ -22,6 +22,6 @@ public class ModPoiTypeTagsProvider extends PoiTypeTagsProvider {
 
     @Override
     public String getName() {
-        return "PneumaticCraft POI Types";
+        return "PneumaticCraft POI Type Tags";
     }
 }

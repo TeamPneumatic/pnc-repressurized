@@ -159,7 +159,7 @@ public class PneumaticCraftTags {
         public static final TagKey<Biome> OIL_LAKES_UNDERGROUND = modTag("has_underground_oil_lakes");
 
         static TagKey<Biome> tag(String modid, String name) {
-            return TagKey.create(Registry.BIOME_REGISTRY, new ResourceLocation(modid, name));
+            return TagKey.create(ForgeRegistries.BIOMES.getRegistryKey(), new ResourceLocation(modid, name));
         }
 
         static TagKey<Biome> modTag(String name) {
@@ -167,7 +167,7 @@ public class PneumaticCraftTags {
         }
     }
 
-    public static class ConfiguredStructures extends PneumaticCraftTags {
+    public static class Structures extends PneumaticCraftTags {
         public static final TagKey<Structure> NO_OIL_LAKES = modTag("no_oil_lakes");
 
         static TagKey<Structure> tag(String modid, String name) {

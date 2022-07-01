@@ -6,6 +6,7 @@ import com.mojang.serialization.JsonOps;
 import me.desht.pneumaticcraft.api.data.PneumaticCraftTags;
 import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
+import me.desht.pneumaticcraft.common.worldgen.OilLakeFilter;
 import net.minecraft.core.*;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.tags.BlockTagsProvider;
@@ -61,7 +62,7 @@ public class DataGenerators {
         generator.addProvider(event.includeServer(), new ModAdvancementProvider(generator, existingFileHelper));
         generator.addProvider(event.includeServer(), new ModGLMProvider(generator));
         generator.addProvider(event.includeServer(), new ModPoiTypeTagsProvider(generator, existingFileHelper));
-//                generator.addProvider(new ModConfiguredStructureFeatureTagsProvider(generator, event.getExistingFileHelper()));
+        generator.addProvider(event.includeServer(), new ModStructureTagsProvider(generator, event.getExistingFileHelper()));
 
         oilLakeDatagen(event, generator, existingFileHelper, registryOps);
     }
@@ -88,7 +89,8 @@ public class DataGenerators {
                 RarityFilter.onAverageOnceEvery(25),
                 InSquarePlacement.spread(),
                 PlacementUtils.HEIGHTMAP_WORLD_SURFACE,
-                BiomeFilter.biome())
+                BiomeFilter.biome(),
+                OilLakeFilter.oilLakeFilter())
         );
         PlacedFeature oilLakeUnderground = new PlacedFeature(oilLakeHolder, ImmutableList.of(
                 RarityFilter.onAverageOnceEvery(6),
@@ -100,7 +102,8 @@ public class DataGenerators {
                         ), 32
                 ),
                 SurfaceRelativeThresholdFilter.of(Heightmap.Types.OCEAN_FLOOR_WG, Integer.MIN_VALUE, -5),
-                BiomeFilter.biome())
+                BiomeFilter.biome(),
+                OilLakeFilter.oilLakeFilter())
         );
         generator.addProvider(event.includeServer(), JsonCodecProvider.forDatapackRegistry(
                 generator, existingFileHelper, Names.MOD_ID, registryOps, Registry.PLACED_FEATURE_REGISTRY, Map.of(

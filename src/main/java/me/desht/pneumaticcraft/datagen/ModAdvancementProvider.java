@@ -80,6 +80,11 @@ public class ModAdvancementProvider extends AdvancementProvider {
         this.register(consumer);
     }
 
+    @Override
+    public String getName() {
+        return "PneumaticCraft Advancements";
+    }
+
     private static Path getPath(Path pathIn, Advancement advancementIn) {
         return pathIn.resolve("data/" + advancementIn.getId().getNamespace() + "/advancements/" + advancementIn.getId().getPath() + ".json");
     }

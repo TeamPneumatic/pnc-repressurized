@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.common.config;
 
 import me.desht.pneumaticcraft.client.pneumatic_armor.ArmorUpgradeClientRegistry;
-import me.desht.pneumaticcraft.common.worldgen.WorldGenFiltering;
+import me.desht.pneumaticcraft.common.worldgen.OilLakeFilter;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.config.ModConfig;
@@ -61,6 +61,6 @@ public class ConfigHolder {
     }
 
     static void refreshCommon() {
-        WorldGenFiltering.clearMatcherCaches();
+        OilLakeFilter.DimensionFilter.clearMatcherCaches();
     }
 }

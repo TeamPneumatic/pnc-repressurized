@@ -51,6 +51,10 @@ jobs:
         id: mod_version
         run: |
           echo "::set-output name=version::$(grep ^mod_version_ ./gradle.properties | cut -d= -f2 | tr '\012' '.' | sed -e 's/\.$//')"
+      - name: Get the Minecraft version
+        id: mc_version
+        run: |
+          echo "::set-output name=version::$(grep ^mc_version ./gradle.properties | cut -d= -f2)"
       - uses: actions/upload-artifact@v2
         with:
           name: pncr-dist-${{ github.ref_name }}-${{ steps.mod_version.outputs.version}}-${{ github.run_number }}
@@ -62,4 +66,4 @@ jobs:
         if:
           env.DISCORD_WEBHOOK != null
         with:
-          args: 'Build complete for project {{ EVENT_PAYLOAD.repository.full_name }}: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}.'
+          args: 'Build complete for project {{ EVENT_PAYLOAD.repository.full_name }} (Minecraft ${{ steps.mc_version.outputs.version}}): ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}.'

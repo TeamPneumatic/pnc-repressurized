@@ -77,7 +77,8 @@ public interface IUpgradeRegistry {
      * scroll if larger than 12 lines.
      * <p>
      * This is automatically used by custom upgrades created via {@link #makeUpgradeItem(Supplier, int)}. You can also
-     * call this yourself for custom upgrades that you create (i.e. items which implement {@link IUpgradeItem}).
+     * call this yourself <strong>on the client only</strong> for custom upgrades that you create (i.e. items which
+     * implement {@link IUpgradeItem}).
      *
      * @param upgrade the upgrade
      * @param infoList the tooltip to append to
