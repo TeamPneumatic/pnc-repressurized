@@ -169,9 +169,16 @@ public class GuiUtils {
     public static Rect2i showPopupHelpScreen(PoseStack matrixStack, Screen screen, Font fontRenderer, List<Component> helpText) {
         List<FormattedCharSequence> l = GuiUtils.wrapTextComponentList(helpText, screen.width / 2, fontRenderer);
         int lineSpacing = fontRenderer.lineHeight + 1;
-        int boxHeight = Math.min(screen.height, l.size() * lineSpacing);
+        int boxHeight = l.size() * lineSpacing;
         int maxLines = boxHeight / lineSpacing;
         int boxWidth = l.stream().max(Comparator.comparingInt(fontRenderer::width)).map(fontRenderer::width).orElse(0);
+
+        float fontScale = 1f;
+        while (boxHeight > screen.height - 5) {
+            boxHeight /= 2;
+            boxWidth /= 2;
+            fontScale /= 2;
+        }
 
         int x, y;
         if (screen instanceof AbstractContainerScreen a) {
@@ -183,12 +190,14 @@ public class GuiUtils {
         }
         Rect2i bounds = new Rect2i(x, y, boxWidth, boxHeight);
         matrixStack.pushPose();
-        matrixStack.translate(0, 0, 400);
-        drawPanel(matrixStack, x, y, boxHeight, boxWidth);
+        matrixStack.translate(x, y, 400);
+        drawPanel(matrixStack, 0, 0, boxHeight, boxWidth);
 
+        int dy = 0;
+        matrixStack.scale(fontScale, fontScale, fontScale);
         for (FormattedCharSequence line : l) {
-            fontRenderer.draw(matrixStack, line, x, y, 0xFFE0E0E0);
-            y += lineSpacing;
+            fontRenderer.draw(matrixStack, line, 0, dy, 0xFFE0E0E0);
+            dy += lineSpacing;
             if (maxLines-- == 0) break;
         }
         matrixStack.popPose();
