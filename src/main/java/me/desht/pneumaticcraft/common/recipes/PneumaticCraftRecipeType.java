@@ -49,12 +49,21 @@ import java.util.concurrent.Executor;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
+
 public class PneumaticCraftRecipeType<T extends PneumaticCraftRecipe> implements RecipeType<T> {
     private static CacheReloadListener cacheReloadListener;
 
     private final Map<ResourceLocation, T> cachedRecipes = new HashMap<>();
+    private final String typeName;
 
-    public PneumaticCraftRecipeType() {
+    public PneumaticCraftRecipeType(String name) {
+        this.typeName = "PneumaticCraftRecipeType[" + RL(name) + "]";
+    }
+
+    @Override
+    public String toString() {
+        return typeName;
     }
 
     public Map<ResourceLocation, T> getRecipes(Level world) {

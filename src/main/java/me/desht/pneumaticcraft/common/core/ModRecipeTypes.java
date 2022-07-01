@@ -4,17 +4,18 @@ import me.desht.pneumaticcraft.api.crafting.PneumaticCraftRecipeTypes;
 import me.desht.pneumaticcraft.api.crafting.recipe.*;
 import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
-import net.minecraft.core.Registry;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.registries.DeferredRegister;
+import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 
 import java.util.Collection;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class ModRecipeTypes {
-    public static final DeferredRegister<RecipeType<?>> RECIPE_TYPES = DeferredRegister.create(Registry.RECIPE_TYPE_REGISTRY, Names.MOD_ID);
+    public static final DeferredRegister<RecipeType<?>> RECIPE_TYPES = DeferredRegister.create(ForgeRegistries.RECIPE_TYPES, Names.MOD_ID);
 
     public static final RegistryObject<PneumaticCraftRecipeType<AmadronRecipe>> AMADRON
             = register(PneumaticCraftRecipeTypes.AMADRON_OFFERS, PneumaticCraftRecipeType::new);
@@ -41,8 +42,8 @@ public class ModRecipeTypes {
     public static final RegistryObject<PneumaticCraftRecipeType<ThermoPlantRecipe>> THERMO_PLANT
             = register(PneumaticCraftRecipeTypes.THERMO_PLANT, PneumaticCraftRecipeType::new);
 
-    private static <T extends PneumaticCraftRecipeType<?>> RegistryObject<T> register(String name, Supplier<T> sup) {
-        return RECIPE_TYPES.register(name, sup);
+    private static <T extends PneumaticCraftRecipeType<?>> RegistryObject<T> register(String name, Function<String, T> factory) {
+        return RECIPE_TYPES.register(name, () -> factory.apply(name));
     }
 
     public static <T extends PneumaticCraftRecipe> Collection<T> getRecipes(Level world, Supplier<PneumaticCraftRecipeType<T>> sup) {
