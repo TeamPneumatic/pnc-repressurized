@@ -164,9 +164,9 @@ public class StackedIngredient extends Ingredient {
         public Collection<ItemStack> getItems() {
             List<ItemStack> list = Lists.newArrayList();
 
-            Registry.ITEM.getTagOrEmpty(tagKey).forEach(h -> list.add(new ItemStack(h.value(), count)));
+            Objects.requireNonNull(ForgeRegistries.ITEMS.tags()).getTag(tagKey).forEach(item -> list.add(new ItemStack(item, count)));
 
-            if (list.size() == 0 && !net.minecraftforge.common.ForgeConfig.SERVER.treatEmptyTagsAsAir.get()) {
+            if (list.isEmpty()) {
                 list.add(new ItemStack(Blocks.BARRIER).setHoverName(Component.literal("Empty Tag: " + tagKey.location())));
             }
             return list;

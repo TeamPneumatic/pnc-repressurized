@@ -349,7 +349,7 @@ public class EntityFilter implements Predicate<Entity> {
             } else if (regex != null) {
                 ok = matchCustomName ?
                         entity.getCustomName() != null && regex.matcher(entity.getCustomName().getString()).matches() :
-                        regex.matcher(PneumaticCraftUtils.getRegistryName(entity).orElseThrow().toString()).matches();
+                        regex.matcher(PneumaticCraftUtils.getRegistryName(entity).orElseThrow().getPath()).matches();
             }
             // modifiers test is a match-all (e.g. "sheep(sheared=false,color=black)" matches sheep which are unsheared AND black)
             return ok && modifiers.stream().allMatch(modifierEntry -> modifierEntry.test(entity));
