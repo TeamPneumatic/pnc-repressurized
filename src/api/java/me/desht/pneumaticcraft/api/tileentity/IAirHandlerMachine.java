@@ -20,11 +20,11 @@ package me.desht.pneumaticcraft.api.tileentity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.common.util.INBTSerializable;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -38,7 +38,7 @@ import java.util.function.Predicate;
  * Don't implement this class yourself!  Use one of the methods in {@link IAirHandlerMachineFactory} to obtain
  * a suitable implementation for your block entity.
  */
-public interface IAirHandlerMachine extends IAirHandler, IManoMeasurable {
+public interface IAirHandlerMachine extends IAirHandler, IManoMeasurable, INBTSerializable<CompoundTag> {
     /**
      * Get the "danger" pressure level.  If air is added to the handler and the pressure level is above the danger
      * level, there is a chance of explosion, which increases as the pressure increases.
@@ -115,10 +115,6 @@ public interface IAirHandlerMachine extends IAirHandler, IManoMeasurable {
      * @return a list of all connected air handlers
      */
     List<IAirHandlerMachine.Connection> getConnectedAirHandlers(BlockEntity ownerTE);
-
-    Tag serializeNBT();
-
-    void deserializeNBT(CompoundTag compound);
 
     /**
      * Set the connected faces of this air handler. This should be called on the first server tick, and when
