@@ -37,7 +37,7 @@ import me.desht.pneumaticcraft.common.item.NetworkComponentItem.NetworkComponent
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketPlaySound;
-import me.desht.pneumaticcraft.common.util.GlobalTileEntityCacheManager;
+import me.desht.pneumaticcraft.common.util.GlobalBlockEntityCacheManager;
 import me.desht.pneumaticcraft.common.util.ITranslatableEnum;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.BlockEntityConstants;
@@ -91,8 +91,7 @@ import static me.desht.pneumaticcraft.common.hacking.secstation.HackSimulation.G
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class SecurityStationBlockEntity extends AbstractTickingBlockEntity implements
-        IRedstoneControl<SecurityStationBlockEntity>, MenuProvider, IRangedTE
-{
+        IRedstoneControl<SecurityStationBlockEntity>, MenuProvider, IRangedTE {
     private static final List<RedstoneMode<SecurityStationBlockEntity>> REDSTONE_MODES = ImmutableList.of(
             new EmittingRedstoneMode<>("standard.never", new ItemStack(Items.GUNPOWDER), te -> false),
             new EmittingRedstoneMode<>("securityStation.hacked", ModUpgrades.SECURITY.get().getItemStack(), SecurityStationBlockEntity::isHacked),
@@ -121,15 +120,15 @@ public class SecurityStationBlockEntity extends AbstractTickingBlockEntity imple
     }
 
     @Override
-    public void setRemoved(){
+    public void setRemoved() {
         super.setRemoved();
-        GlobalTileEntityCacheManager.getInstance().securityStations.remove(this);
+        GlobalBlockEntityCacheManager.getInstance(getLevel()).getSecurityStations().remove(this);
     }
 
     @Override
-    public void clearRemoved(){
+    public void clearRemoved() {
         super.clearRemoved();
-        GlobalTileEntityCacheManager.getInstance().securityStations.add(this);
+        GlobalBlockEntityCacheManager.getInstance(getLevel()).getSecurityStations().add(this);
     }
 
     @Override
@@ -421,7 +420,7 @@ public class SecurityStationBlockEntity extends AbstractTickingBlockEntity imple
     /**
      * Check if the given slots are connected in the network. For this to be true both slots need to have a network component stored as well.
      *
-     * @param firstSlot slot 1
+     * @param firstSlot  slot 1
      * @param secondSlot slot 2
      * @return true if the slots are connected
      */
@@ -560,7 +559,7 @@ public class SecurityStationBlockEntity extends AbstractTickingBlockEntity imple
 
     public int getDetectionChance() {
         double n = 1.0 - Math.pow(0.7, getUpgrades(ModUpgrades.ENTITY_TRACKER.get()) + 1);
-        return Mth.clamp((int)(n * 100), 0, 100);
+        return Mth.clamp((int) (n * 100), 0, 100);
     }
 
     public int getSecurityLevel() {
@@ -585,8 +584,8 @@ public class SecurityStationBlockEntity extends AbstractTickingBlockEntity imple
     /**
      * Get the number of security stations protecting the given blockpos from the given player.
      *
-     * @param player the player who is trying to do something with the blockpos in question
-     * @param pos the blockpos whose protection is being checked
+     * @param player                   the player who is trying to do something with the blockpos in question
+     * @param pos                      the blockpos whose protection is being checked
      * @param isPlacingSecurityStation true when trying to place a security station, false otherwise
      * @return the number of security stations which currently prevent access by the player
      */
@@ -599,8 +598,8 @@ public class SecurityStationBlockEntity extends AbstractTickingBlockEntity imple
     /**
      * Check if any security station is preventing the given player from interacting with the given blockpos.
      *
-     * @param player the player who is trying to do something with the blockpos in question
-     * @param pos the blockpos whose protection is being checked
+     * @param player                   the player who is trying to do something with the blockpos in question
+     * @param pos                      the blockpos whose protection is being checked
      * @param isPlacingSecurityStation true when trying to place a security station, false otherwise
      * @return the number of security stations which currently prevent access by the player
      */
@@ -609,9 +608,9 @@ public class SecurityStationBlockEntity extends AbstractTickingBlockEntity imple
                 .anyMatch(teSS -> !teSS.doesAllowPlayer(player));
     }
 
-    static Stream<SecurityStationBlockEntity> getSecurityStations(final Level world, final BlockPos pos, final boolean isPlacingSecurityStation) {
-        return GlobalTileEntityCacheManager.getInstance().securityStations.stream()
-                .filter(station -> isValidAndInRange(world, pos, isPlacingSecurityStation, station));
+    static Stream<SecurityStationBlockEntity> getSecurityStations(final Level level, final BlockPos pos, final boolean isPlacingSecurityStation) {
+        return GlobalBlockEntityCacheManager.getInstance(level).getSecurityStations().stream()
+                .filter(station -> isValidAndInRange(level, pos, isPlacingSecurityStation, station));
     }
 
     private static boolean isValidAndInRange(Level world, BlockPos pos, boolean isPlacingSecurityStation, SecurityStationBlockEntity teSS) {

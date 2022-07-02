@@ -23,7 +23,7 @@ import me.desht.pneumaticcraft.common.block.entity.SecurityStationBlockEntity;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.entity.drone.DroneEntity;
-import me.desht.pneumaticcraft.common.util.GlobalTileEntityCacheManager;
+import me.desht.pneumaticcraft.common.util.GlobalBlockEntityCacheManager;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.ai.goal.Goal;
@@ -56,7 +56,7 @@ public class DroneGoToChargingStation extends Goal {
             if (h.getPressure() < PneumaticValues.DRONE_LOW_PRESSURE && h.getPressure() > 0.001f) {
                 int maxDistSq = ConfigHelper.common().drones.maxDroneChargingStationSearchRange.get()
                         * ConfigHelper.common().drones.maxDroneChargingStationSearchRange.get();
-                for (ChargingStationBlockEntity station : GlobalTileEntityCacheManager.getInstance().chargingStations) {
+                for (ChargingStationBlockEntity station : GlobalBlockEntityCacheManager.getInstance(drone.getLevel()).getChargingStations()) {
                     Level level = drone.getLevel();
                     BlockPos chargingPos = station.getBlockPos();
                     if (station.getLevel() == level && level.isLoaded(chargingPos) && drone.distanceToSqr(Vec3.atCenterOf(chargingPos)) <= maxDistSq) {

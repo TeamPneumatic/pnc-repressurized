@@ -32,7 +32,7 @@ import me.desht.pneumaticcraft.common.network.PacketPlaySound;
 import me.desht.pneumaticcraft.common.thirdparty.curios.Curios;
 import me.desht.pneumaticcraft.common.thirdparty.curios.CuriosUtils;
 import me.desht.pneumaticcraft.common.util.EnchantmentUtils;
-import me.desht.pneumaticcraft.common.util.GlobalTileEntityCacheManager;
+import me.desht.pneumaticcraft.common.util.GlobalBlockEntityCacheManager;
 import me.desht.pneumaticcraft.common.util.ITranslatableEnum;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
@@ -175,14 +175,14 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
     public void clearRemoved() {
         super.clearRemoved();
 
-        GlobalTileEntityCacheManager.getInstance().aerialInterfaces.add(this);
+        GlobalBlockEntityCacheManager.getInstance(getLevel()).getAerialInterfaces().add(this);
     }
 
     @Override
     public void setRemoved() {
         super.setRemoved();
 
-        GlobalTileEntityCacheManager.getInstance().aerialInterfaces.remove(this);
+        GlobalBlockEntityCacheManager.getInstance(getLevel()).getAerialInterfaces().remove(this);
 
         itemHandlerSideConfigurator.invalidateCaps();
         playerExpCap.invalidate();

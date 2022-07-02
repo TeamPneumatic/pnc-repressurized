@@ -39,7 +39,7 @@ import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
 import me.desht.pneumaticcraft.common.thirdparty.computer_common.ComputerEventManager;
 import me.desht.pneumaticcraft.common.thirdparty.computer_common.LuaMethod;
 import me.desht.pneumaticcraft.common.thirdparty.computer_common.LuaMethodRegistry;
-import me.desht.pneumaticcraft.common.util.GlobalTileEntityCacheManager;
+import me.desht.pneumaticcraft.common.util.GlobalBlockEntityCacheManager;
 import me.desht.pneumaticcraft.common.util.ITranslatableEnum;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.BlockPos;
@@ -522,13 +522,13 @@ public class UniversalSensorBlockEntity extends AbstractAirHandlingBlockEntity i
     @Override
     public void setRemoved(){
         super.setRemoved();
-        GlobalTileEntityCacheManager.getInstance().universalSensors.remove(this);
+        GlobalBlockEntityCacheManager.getInstance(getLevel()).getUniversalSensors().remove(this);
     }
 
     @Override
     public void clearRemoved(){
         super.clearRemoved();
-        GlobalTileEntityCacheManager.getInstance().universalSensors.add(this);
+        GlobalBlockEntityCacheManager.getInstance(getLevel()).getUniversalSensors().add(this);
     }
 
     @Nullable

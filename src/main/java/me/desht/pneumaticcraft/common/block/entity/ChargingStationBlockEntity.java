@@ -33,7 +33,7 @@ import me.desht.pneumaticcraft.common.inventory.handler.ChargeableItemHandler;
 import me.desht.pneumaticcraft.common.item.IChargeableContainerProvider;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
-import me.desht.pneumaticcraft.common.util.GlobalTileEntityCacheManager;
+import me.desht.pneumaticcraft.common.util.GlobalBlockEntityCacheManager;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
@@ -328,13 +328,13 @@ public class ChargingStationBlockEntity extends AbstractAirHandlingBlockEntity i
     @Override
     public void setRemoved(){
         super.setRemoved();
-        GlobalTileEntityCacheManager.getInstance().chargingStations.remove(this);
+        GlobalBlockEntityCacheManager.getInstance(getLevel()).getChargingStations().remove(this);
     }
 
     @Override
     public void clearRemoved(){
         super.clearRemoved();
-        GlobalTileEntityCacheManager.getInstance().chargingStations.add(this);
+        GlobalBlockEntityCacheManager.getInstance(getLevel()).getChargingStations().add(this);
     }
 
     @Nullable
