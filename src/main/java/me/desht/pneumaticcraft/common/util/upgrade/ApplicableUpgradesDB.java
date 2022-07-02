@@ -27,6 +27,7 @@ import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.item.UpgradeItem;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
+import me.desht.pneumaticcraft.mixin.accessors.BlockEntityTypeAccess;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -166,7 +167,7 @@ public enum ApplicableUpgradesDB implements IUpgradeRegistry {
             if (entry instanceof Item item) {
                 addAccepted(upgrade, item);
             } else if (entry instanceof BlockEntityType<?> beType) {
-                beType.validBlocks.stream() // access transform
+                ((BlockEntityTypeAccess) beType).getValidBlocks().stream() // access transform
                         .map(Block::asItem)
                         .filter(item -> item != Items.AIR)
                         .forEach(item -> addAccepted(upgrade, item));

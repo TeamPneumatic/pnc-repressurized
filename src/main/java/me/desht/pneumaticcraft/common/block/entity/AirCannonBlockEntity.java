@@ -38,6 +38,8 @@ import me.desht.pneumaticcraft.common.util.ItemLaunching;
 import me.desht.pneumaticcraft.lib.BlockEntityConstants;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
+import me.desht.pneumaticcraft.mixin.accessors.ItemEntityAccess;
+import me.desht.pneumaticcraft.mixin.accessors.ServerPlayerAccess;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -614,8 +616,7 @@ public class AirCannonBlockEntity extends AbstractAirHandlingBlockEntity
                 if (serverPlayer.connection.getConnection().isConnected()) {
                     // This is a nasty hack to get around "player moved wrongly!" messages, which can be caused if player movement
                     // triggers a player teleport (e.g. player moves onto pressure plate, triggers air cannon with an entity tracker).
-                    // todo 1.14 reflection
-                    serverPlayer.isChangingDimension = true;
+                    ((ServerPlayerAccess) serverPlayer).setIsChangingDimension(true);
                     serverPlayer.teleportTo(getBlockPos().getX() + 0.5D, getBlockPos().getY() + 1.8D, getBlockPos().getZ() + 0.5D);
                 }
             }
@@ -635,7 +636,7 @@ public class AirCannonBlockEntity extends AbstractAirHandlingBlockEntity
                 getUpgrades(ModUpgrades.DISPENSER.get()) > 0, false);
         if (e instanceof ItemEntity itemEntity) {
             // 1200 ticks left to live = 60s
-            itemEntity.age = 4800; //setAgeToCreativeDespawnTime();
+            ((ItemEntityAccess) itemEntity).setAge(4800);
             // + 30s per item life upgrade, to a max of 5 mins
             itemEntity.lifespan += Math.min(getUpgrades(ModUpgrades.ITEM_LIFE.get()) * 600, 4800);
         }

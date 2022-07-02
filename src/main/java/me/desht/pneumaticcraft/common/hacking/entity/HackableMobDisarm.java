@@ -18,6 +18,7 @@
 package me.desht.pneumaticcraft.common.hacking.entity;
 
 import me.desht.pneumaticcraft.api.pneumatic_armor.hacking.IHackableEntity;
+import me.desht.pneumaticcraft.mixin.accessors.MobAccess;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -84,7 +85,8 @@ public class HackableMobDisarm implements IHackableEntity<Mob> {
     private boolean doDisarm(Mob entity, EquipmentSlot slot, RandomSource rand) {
         if (entity.getItemBySlot(slot).isEmpty()) return false;
 
-        float[] dropChances = slot.getType() == EquipmentSlot.Type.ARMOR ? entity.armorDropChances : entity.handDropChances;
+        MobAccess access = (MobAccess)entity;
+        float[] dropChances = slot.getType() == EquipmentSlot.Type.ARMOR ? access.getArmorDropChances() : access.getHandDropChances();
         int slotIdx = slot.getIndex();
         boolean noDamage = dropChances[slotIdx] > 1f;
         ItemStack stack = entity.getItemBySlot(slot);

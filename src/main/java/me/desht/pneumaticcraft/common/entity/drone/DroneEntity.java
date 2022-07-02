@@ -65,6 +65,7 @@ import me.desht.pneumaticcraft.common.util.upgrade.IUpgradeHolder;
 import me.desht.pneumaticcraft.common.util.upgrade.UpgradeCache;
 import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
+import me.desht.pneumaticcraft.mixin.accessors.EntityAccess;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -1379,7 +1380,7 @@ public class DroneEntity extends AbstractDroneEntity implements
                 y++;
             }
             // minecarts have their own tick() which doesn't decrement rideCooldown
-            if (e instanceof AbstractMinecart) e.boardingCooldown = 0;
+            if (e instanceof AbstractMinecart) ((EntityAccess) e).setBoardingCooldown(0);
         }
         if (y != e.getY()) e.setPos(e.getX(), y, e.getZ());
     }

@@ -5,7 +5,18 @@
   "refmap": "mixins.pneumaticcraft.refmap.json",
   "mixins": [
     "coremods.BaseSpawnerMixin",
+    "accessors.AbstractFurnaceBlockEntityAccess",
     "accessors.BaseSpawnerAccess",
+    "accessors.BlockEntityTypeAccess",
+    "accessors.EntityAccess",
+    "accessors.ItemEntityAccess",
+    "accessors.MinecartItemAccess",
+    "accessors.MobAccess",
+    "accessors.ServerPlayerAccess",
+    "accessors.ServerPlayerGameModeAccess",
+    "accessors.ShulkerAccess",
+    "accessors.StructureTemplatePoolAccess",
+    "accessors.WitchAccess",
     "accessors.WorldGenRegionAccess"
   ],
   "minVersion": "0.8"

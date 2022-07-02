@@ -20,6 +20,7 @@ package me.desht.pneumaticcraft.common.ai;
 import me.desht.pneumaticcraft.common.progwidgets.IToolUser;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetAreaItemBase;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.mixin.accessors.ServerPlayerGameModeAccess;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.protocol.game.ServerboundPlayerActionPacket;
@@ -110,7 +111,8 @@ public class DroneAIDig<W extends ProgWidgetAreaItemBase & IToolUser> extends Dr
     @Override
     protected boolean doBlockInteraction(BlockPos pos, double squareDistToBlock) {
         ServerPlayerGameMode manager = drone.getFakePlayer().gameMode;
-        if (!manager.isDestroyingBlock || !manager.hasDelayedDestroy) { //is not destroying and is not acknowledged.
+        ServerPlayerGameModeAccess access = (ServerPlayerGameModeAccess) manager;
+        if (!access.isDestroyingBlock() || !access.hasDelayedDestroy()) { //is not destroying and is not acknowledged.
             BlockState blockState = worldCache.getBlockState(pos);
             if (!ignoreBlock(blockState) && isBlockValidForFilter(worldCache, pos, drone, progWidget)) {
                 if (blockState.getDestroySpeed(drone.world(), pos) < 0) {

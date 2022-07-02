@@ -23,6 +23,7 @@ import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSetEntityMotion;
 import me.desht.pneumaticcraft.common.network.PacketSpawnParticle;
 import me.desht.pneumaticcraft.common.particle.AirParticleData;
+import me.desht.pneumaticcraft.mixin.accessors.MinecartItemAccess;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
@@ -120,7 +121,7 @@ public class ItemLaunching {
                 }
                 return e;
             } else if (item instanceof MinecartItem) {
-                return Minecart.createMinecart(world, 0, 0, 0, ((MinecartItem) item).type);
+                return Minecart.createMinecart(world, 0, 0, 0, ((MinecartItemAccess) item).getType());
             }  else if (item instanceof BoatItem) {
                 return new Boat(world, 0, 0, 0);
             } else if (item == Items.FIREWORK_ROCKET) {

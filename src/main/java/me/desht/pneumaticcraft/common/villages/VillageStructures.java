@@ -20,6 +20,7 @@ package me.desht.pneumaticcraft.common.villages;
 import com.mojang.datafixers.util.Pair;
 import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
+import me.desht.pneumaticcraft.mixin.accessors.StructureTemplatePoolAccess;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
@@ -53,21 +54,23 @@ public class VillageStructures {
                 SinglePoolElement.legacy(nbtPieceRL, emptyProcessor).apply(projection) :
                 SinglePoolElement.single(nbtPieceRL, emptyProcessor).apply(projection);
 
+        StructureTemplatePoolAccess access = (StructureTemplatePoolAccess) pool;
+
         // AccessTransformer to make JigsawPattern's templates field public for us to see.
         // public net.minecraft.world.gen.feature.jigsaw.JigsawPattern templates #templates
         // Weight is handled by how many times the entry appears in this list.
         // We do not need to worry about immutability as this field is created using Lists.newArrayList(); which makes a mutable list.
         for (int i = 0; i < weight; i++) {
-            pool.templates.add(piece);
+            access.getTemplates().add(piece);
         }
 
         // AccessTransformer to make JigsawPattern's rawTemplates field public for us to see.
         // net.minecraft.world.gen.feature.jigsaw.JigsawPattern rawTemplates #rawTemplates
         // This list of pairs of pieces and weights is not used by vanilla by default but another mod may need it for efficiency.
         // So lets add to this list for completeness. We need to make a copy of the array as it can be an immutable list.
-        List<Pair<StructurePoolElement, Integer>> listOfPieceEntries = new ArrayList<>(pool.rawTemplates);
+        List<Pair<StructurePoolElement, Integer>> listOfPieceEntries = new ArrayList<>(access.getRawTemplates());
         listOfPieceEntries.add(new Pair<>(piece, weight));
-        pool.rawTemplates = listOfPieceEntries;
+        access.setRawTemplates(listOfPieceEntries);
     }
 
     public static void addMechanicHouse(final ServerAboutToStartEvent event) {

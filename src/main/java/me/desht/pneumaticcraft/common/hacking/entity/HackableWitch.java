@@ -18,6 +18,7 @@
 package me.desht.pneumaticcraft.common.hacking.entity;
 
 import me.desht.pneumaticcraft.api.pneumatic_armor.hacking.IHackableEntity;
+import me.desht.pneumaticcraft.mixin.accessors.WitchAccess;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.monster.Witch;
@@ -65,7 +66,7 @@ public class HackableWitch implements IHackableEntity<Witch> {
 
     @Override
     public boolean afterHackTick(Witch entity) {
-        entity.usingTime = 20;
+        ((WitchAccess)entity).setUsingTime(20);
         entity.setUsingItem(true);
         return true;
     }
