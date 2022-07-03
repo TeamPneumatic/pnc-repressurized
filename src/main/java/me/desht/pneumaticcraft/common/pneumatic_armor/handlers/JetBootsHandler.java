@@ -106,7 +106,7 @@ public class JetBootsHandler extends BaseArmorUpgradeHandler<JetBootsHandler.Jet
                     // jetboots firing - move in direction of looking
                     Vec3 lookVec = player.getLookAngle().scale(0.3 * jetbootsCount);
                     jbLocal.updateAccel(lookVec);
-                    lookVec = jbLocal.getEffectiveMotion(lookVec);
+                    lookVec = jbLocal.getEffectiveMotion(lookVec, player.isFallFlying());
                     player.setDeltaMovement(lookVec.x, player.isOnGround() ? 0 : lookVec.y, lookVec.z);
                     jetbootsAirUsage = jbLocal.calcAirUsage(jetbootsCount);
                 }
@@ -278,9 +278,9 @@ public class JetBootsHandler extends BaseArmorUpgradeHandler<JetBootsHandler.Jet
             flightAccel = Mth.clamp(flightAccel + (float)lookVec.y / div, 0.8F, 4.2F);
         }
 
-        public Vec3 getEffectiveMotion(Vec3 lookVec) {
+        public Vec3 getEffectiveMotion(Vec3 lookVec, boolean gliding) {
             lookVec = lookVec.scale(flightAccel * jetBootsPower);
-            if (jetBootsActiveTicks < 20 && jetBootsActiveTicks > 0) {
+            if (!gliding && jetBootsActiveTicks < 20 && jetBootsActiveTicks > 0) {
                 // simulate lower performance in first 20 ticks due to spin-up time
                 lookVec = lookVec.scale(jetBootsActiveTicks * 0.05);
             }
