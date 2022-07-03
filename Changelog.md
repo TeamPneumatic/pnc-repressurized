@@ -27,6 +27,7 @@ Changes are in reverse chronological order; newest changes at the top.
   * This was done because a) it's a bit exploitable and b) can lead to buggy behaviour with villager trades 
   * Other entities can also be blacklisted by adding them to the `pneumaticcraft:omnihopper_blacklisted` entity type tag
 * Fixed `$deploy_pos` special Drone variable not persisting properly across world restarts
+* Jet Boots: when already Elytra-gliding, transition to powered Jet Boots flight is now smoother (doesn't cause a brief stall in velocity anymore)
 
 ## 3.3.0-99 (18 Jun 2022)
 
