@@ -67,6 +67,11 @@ public class MicromissileDefaults extends AuxConfigJson {
         return "MicromissileDefaults";
     }
 
+    @Override
+    public Sidedness getSidedness() {
+        return Sidedness.SERVER;
+    }
+
     public void setDefaults(Player player, Entry record) {
         record.playerName = player.getName().getString();
         defaults.put(player.getUUID(), record);

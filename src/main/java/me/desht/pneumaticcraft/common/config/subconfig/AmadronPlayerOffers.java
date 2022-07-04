@@ -76,7 +76,7 @@ public class AmadronPlayerOffers extends AuxConfigJson {
         for (JsonElement element : array) {
             try {
                 AmadronPlayerOffer offer = AmadronPlayerOffer.fromJson((JsonObject) element);
-                playerOffers.put(offer.getId(), offer);
+                if (offer != null) playerOffers.put(offer.getId(), offer);
             } catch (CommandSyntaxException e) {
                 e.printStackTrace();
             }
@@ -88,5 +88,10 @@ public class AmadronPlayerOffers extends AuxConfigJson {
     @Override
     public boolean useWorldSpecificDir() {
         return true;
+    }
+
+    @Override
+    public Sidedness getSidedness() {
+        return Sidedness.SERVER;
     }
 }

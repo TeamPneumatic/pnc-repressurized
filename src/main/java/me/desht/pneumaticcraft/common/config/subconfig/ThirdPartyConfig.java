@@ -58,6 +58,11 @@ public class ThirdPartyConfig extends AuxConfigJson {
         }
     }
 
+    @Override
+    public Sidedness getSidedness() {
+        return Sidedness.BOTH;
+    }
+
     public static void setupDefaults(Set<String> modids) {
         for (String modid : modids) {
             MODS.putIfAbsent(modid, true);

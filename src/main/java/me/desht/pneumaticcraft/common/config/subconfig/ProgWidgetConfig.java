@@ -76,4 +76,9 @@ public class ProgWidgetConfig extends AuxConfigJson {
             blacklistedPieces.add(new ResourceLocation(element.getAsString()));
         }
     }
+
+    @Override
+    public Sidedness getSidedness() {
+        return Sidedness.BOTH;
+    }
 }

@@ -80,4 +80,9 @@ public class ArmorFeatureStatus extends AuxConfigJson {
     public boolean isUpgradeEnabled(ResourceLocation upgradeID) {
         return activeUpgrades.contains(upgradeID);
     }
+
+    @Override
+    public Sidedness getSidedness() {
+        return Sidedness.CLIENT;
+    }
 }

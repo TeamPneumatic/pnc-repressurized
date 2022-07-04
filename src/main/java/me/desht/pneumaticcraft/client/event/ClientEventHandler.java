@@ -35,6 +35,7 @@ import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.config.subconfig.AuxConfigHandler;
+import me.desht.pneumaticcraft.common.config.subconfig.IAuxConfig;
 import me.desht.pneumaticcraft.common.item.IShiftScrollable;
 import me.desht.pneumaticcraft.common.item.PneumaticArmorItem;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
@@ -196,7 +197,7 @@ public class ClientEventHandler {
 
     @SubscribeEvent
     public static void onClientConnect(ClientPlayerNetworkEvent.LoggedInEvent event) {
-        AuxConfigHandler.postInit();
+        AuxConfigHandler.postInit(IAuxConfig.Sidedness.CLIENT);
         ArmorMainScreen.initHelmetCoreComponents();
     }
 }

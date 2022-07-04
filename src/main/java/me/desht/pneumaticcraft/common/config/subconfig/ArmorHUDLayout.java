@@ -71,6 +71,11 @@ public class ArmorHUDLayout extends AuxConfigJson {
         return "PneumaticArmorHUDLayout";
     }
 
+    @Override
+    public Sidedness getSidedness() {
+        return Sidedness.CLIENT;
+    }
+
     public void updateLayout(ResourceLocation id, float x, float y, boolean leftSided) {
         layouts.put(id, new StatPanelLayout(x, y, leftSided));
         tryWriteToFile();

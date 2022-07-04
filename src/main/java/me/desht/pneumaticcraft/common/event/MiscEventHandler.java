@@ -197,18 +197,19 @@ public class MiscEventHandler {
 
     @SubscribeEvent
     public void quetziMoo(ServerChatEvent event) {
-        if (event.getUsername().equals("Quetzz") && event.getMessage().equals("m00")) {
-            for (int i = 0; i < 4; i++)
-                NetworkHandler.sendToPlayer(new PacketPlaySound(SoundEvents.COW_AMBIENT, SoundSource.NEUTRAL, event.getPlayer().getX(), event.getPlayer().getY(), event.getPlayer().getZ(), 1, 1, true), event.getPlayer());
+        String username = event.getUsername();
+        ServerPlayer player = event.getPlayer();
+        if (player != null && username != null && username.equals("Quetzz") && event.getMessage().equals("m00")) {
+            for (int i = 0; i < 4; i++) {
+                NetworkHandler.sendToPlayer(new PacketPlaySound(SoundEvents.COW_AMBIENT, SoundSource.NEUTRAL, player.getX(), player.getY(), player.getZ(), 1, 1, true), player);
+            }
         }
     }
 
     @SubscribeEvent
     public void onWorldLoad(WorldEvent.Load event) {
-        if (event.getWorld() instanceof Level world) {
-            if (!world.isClientSide) {
-                ModuleNetworkManager.getInstance(world).invalidateCache();
-            }
+        if (event.getWorld() instanceof Level world && !world.isClientSide) {
+            ModuleNetworkManager.getInstance(world).invalidateCache();
         }
     }
 

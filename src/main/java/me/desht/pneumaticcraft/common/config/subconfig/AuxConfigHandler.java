@@ -58,11 +58,12 @@ public class AuxConfigHandler {
         }
     }
 
-    public static void postInit() {
+    public static void postInit(IAuxConfig.Sidedness sidedness) {
         File defaultConfigDir = new File(FMLPaths.CONFIGDIR.get().toFile(), Names.MOD_ID);
         for (IAuxConfig subConfig : EXTERNAL_CONFIGS) {
+            if (!subConfig.getSidedness().matches(sidedness)) continue;
             // world-specific configs are server only
-            if (subConfig.useWorldSpecificDir() && ServerLifecycleHooks.getCurrentServer() == null) continue;
+            if (subConfig.useWorldSpecificDir() && sidedness != IAuxConfig.Sidedness.SERVER) continue;
             File subFolder = subConfig.useWorldSpecificDir() ? getWorldSpecificDir() : defaultConfigDir;
             if (subFolder.exists() || subFolder.mkdirs()) {
                 File subFile = new File(subFolder, subConfig.getConfigFilename() + ".cfg");

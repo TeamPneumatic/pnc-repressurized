@@ -33,6 +33,7 @@ import me.desht.pneumaticcraft.common.amadron.AmadronOfferManager;
 import me.desht.pneumaticcraft.common.commands.ModCommands;
 import me.desht.pneumaticcraft.common.config.ConfigHolder;
 import me.desht.pneumaticcraft.common.config.subconfig.AuxConfigHandler;
+import me.desht.pneumaticcraft.common.config.subconfig.IAuxConfig;
 import me.desht.pneumaticcraft.common.core.*;
 import me.desht.pneumaticcraft.common.dispenser.DroneDispenseBehavior;
 import me.desht.pneumaticcraft.common.event.DroneSpecialVariableHandler;
@@ -175,7 +176,7 @@ public class PneumaticCraftRepressurized {
     }
 
     private void serverStarted(ServerStartedEvent event) {
-        AuxConfigHandler.postInit();
+        AuxConfigHandler.postInit(IAuxConfig.Sidedness.SERVER);
     }
 
     private void serverStopping(ServerStoppingEvent event) {
