@@ -64,6 +64,11 @@ public class ComponentFluid implements ICustomComponent {
         fluidStacks = lookup.apply(this.fluid).asStreamOrSingleton()
                 .map((x) -> x.as(FluidStack.class))
                 .collect(Collectors.toList());
-        scaleParsed = Integer.parseInt(lookup.apply(scale).asString());
+        String scaleStr = lookup.apply(scale).asString();
+        try {
+            scaleParsed = Integer.parseInt(scaleStr);
+        } catch (NumberFormatException e) {
+            scaleParsed = 0;
+        }
     }
 }
