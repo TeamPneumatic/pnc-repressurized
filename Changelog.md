@@ -9,7 +9,7 @@ Changes are in reverse chronological order; newest changes at the top.
 * PNC:R 3.2.3 and later *require* Forge 40.1.20 or later
 * PNC:R 3.2.0 and later *require* Forge 40.1.0 or later and JEI 9.7.0 or later
 
-## 3.3.1-?? (unreleased)
+## 3.3.1-110 (4 July 2022)
 
 ### Updates
 * Added new `getDronePositionVec()` Lua method to the Drone Interface
