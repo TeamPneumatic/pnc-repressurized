@@ -58,7 +58,6 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.model.data.EmptyModelData;
-import org.lwjgl.glfw.GLFW;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -254,17 +253,8 @@ public class ClientUtils {
      * @return a human-friendly string representation
      */
     public static Component translateKeyBind(KeyMapping keyBinding) {
-        return keyBinding.getKeyModifier().getCombinedName(keyBinding.getKey(), () -> {
-            Component s = keyBinding.getKey().getDisplayName();
-            // small kludge to clearly distinguish keypad from non-keypad keys
-            if (keyBinding.getKey().getType() == InputConstants.Type.KEYSYM
-                    && keyBinding.getKey().getValue() >= GLFW.GLFW_KEY_KP_0
-                    && keyBinding.getKey().getValue() <= GLFW.GLFW_KEY_KP_EQUAL) {
-                return Component.literal("KP_").append(s);
-            } else {
-                return s;
-            }
-        }).copy().withStyle(ChatFormatting.YELLOW);
+        return keyBinding.getKeyModifier().getCombinedName(keyBinding.getKey(), () -> keyBinding.getKey().getDisplayName())
+                .copy().withStyle(ChatFormatting.YELLOW);
     }
 
     /**
