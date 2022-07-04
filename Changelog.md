@@ -20,8 +20,9 @@ Changes are in reverse chronological order; newest changes at the top.
   * Existing `getDronePosition()` method is unchanged, for backwards compatibility
 
 ### Fixes
-* Blacklisted Villagers from Omnihopper (Entity Tracker) inventory extraction
-  * Behaviour can be buggy and is a bit of an exploit in any case (free items when villagers restock)
+* Villagers are now blacklisted from being extracted by the Omnidirectional Hopper & Entity Tracker Upgrade
+  * This was done because a) it's a bit exploitable and b) can lead to buggy behaviour with villager trades
+  * Other entities can also be blacklisted by adding them to the `pneumaticcraft:omnihopper_blacklisted` entity type tag
 * Fixed Drones forgetting the value of their $deploy_pos variable after world restart
 
 ## 2.15.10-329 (16 Jun 2022)
