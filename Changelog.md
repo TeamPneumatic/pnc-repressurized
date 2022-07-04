@@ -4,10 +4,55 @@ This is an overview of significant new features and fixes by release.  See https
 
 Changes are in reverse chronological order; newest changes at the top.
 
+# Minecraft 1.19
+
+## 4.0.0-?? (unreleased)
+
+PneumaticCraft: Repressurized 4.0.0 for Minecraft 1.19 is based on the 3.3.1 release for 1.18.2 with a few small changes.
+
+## Updates
+
+* Oil Lake generation is now even more data-driven, in line with Forge and Minecraft for 1.19
+  * All generation and filtering other than by dimension is now done in JSON files
+  * See https://github.com/TeamPneumatic/pnc-repressurized/wiki/Worldgen-1.19 for more information
+* Entity Filters (used in many places including Drone programming, Sentry Turrets and Micromissiles) have a couple of improvements:
+  * Filtering an entity with a custom name (including player names) is now done by quoting the name
+    * E.g. filtering on `"Creeper"` will match a player or other entity named "Creeper" (e.g. with a Nametag), but not actual Creepers
+    * Filtering on `Creeper` will match actual Creepers, but no longer a player or other entity named "Creeper" 
+  * It is now possible to filter on entities only from a certain mod with the `(mod=<modname>)` modifier
+    * E.g. filtering on `@mob(mod=minecraft)` will match hostile mobs only from vanilla and not any other mod
+* GPS and Area GPS Tools now have a "Teleport" button, only usable by op-level players
+  * Warning: no safety checks are done for the destination position! Creative or Spectator mode recommended if you're unsure of the destination
+  * No cross-dimension teleporting (GPS Tools are not dimension-aware)
+* Amadron player matching now uses Biome tags rather than Biome Dictionary names
+  * Biome Dictionary no longer exists in Forge for MC 1.19; Biome Tags are the vanilla replacement
+  * See https://github.com/TeamPneumatic/pnc-repressurized/wiki/Amadron-and-Datapacks#player-filtering for more information
+
 # Minecraft 1.18.2
 
 * PNC:R 3.2.3 and later *require* Forge 40.1.20 or later
 * PNC:R 3.2.0 and later *require* Forge 40.1.0 or later and JEI 9.7.0 or later
+
+
+## 3.3.1-110 (4 July 2022)
+
+### Updates
+* Added new `getDronePositionVec()` Lua method to the Drone Interface
+  * Returns drone's position as a vector, easier to extract individual x/y/z values (e.g. `x = getDronePositionVec().x`)
+  * Existing `getDronePosition()` method is unchanged, for backwards compatibility
+
+### Fixes
+* Fixed Patchouli book breaking if certain recipes are removed/altered
+* Liquid Compressor (and Advanced Liquid Compressor) now have a boolean blockstate property "on" to indicate if they're running
+  * Intended to make it easier for mods like AdPother to check their status
+* Fixed Spawner Agitator not working (even when chunkloaded) if there are no players in the dimension it's in
+* Fixed a misleading item tooltip for tiered upgrades (Jet Boots Tier 5 showed up as "5 x Jet Boots Tier 1")
+* Fixed a visual bug which sometimes occured when wrenching tubes (tubes appearing connected but leaking or vice versa)
+* Villagers are now blacklisted from being extracted by the Omnidirectional Hopper & Entity Tracker Upgrade
+  * This was done because a) it's a bit exploitable and b) can lead to buggy behaviour with villager trades
+  * Other entities can also be blacklisted by adding them to the `pneumaticcraft:omnihopper_blacklisted` entity type tag
+* Fixed `$deploy_pos` special Drone variable not persisting properly across world restarts
+* Jet Boots: when already Elytra-gliding, transition to powered Jet Boots flight is now smoother (doesn't cause a brief stall in velocity anymore)
 
 ## 3.3.0-99 (18 Jun 2022)
 
