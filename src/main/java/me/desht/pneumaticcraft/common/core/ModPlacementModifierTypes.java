@@ -10,5 +10,5 @@ import net.minecraftforge.registries.RegistryObject;
 public class ModPlacementModifierTypes {
     public static DeferredRegister<PlacementModifierType<?>> PLACEMENT_MODIFIERS = DeferredRegister.create(Registry.PLACEMENT_MODIFIER_REGISTRY, Names.MOD_ID);
 
-    public static RegistryObject<PlacementModifierType<OilLakeFilter>> OIL_LAKE_FILTER = PLACEMENT_MODIFIERS.register("oil_lake", () -> () -> OilLakeFilter.CODEC);
+    public static RegistryObject<PlacementModifierType<OilLakeFilter>> OIL_LAKE_FILTER = PLACEMENT_MODIFIERS.register("oil_lake_filter", () -> () -> OilLakeFilter.CODEC);
 }

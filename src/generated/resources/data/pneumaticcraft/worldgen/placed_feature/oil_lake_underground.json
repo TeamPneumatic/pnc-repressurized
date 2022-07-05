@@ -54,7 +54,7 @@
       "type": "minecraft:biome"
     },
     {
-      "type": "pneumaticcraft:oil_lake"
+      "type": "pneumaticcraft:oil_lake_filter"
     }
   ]
 }
