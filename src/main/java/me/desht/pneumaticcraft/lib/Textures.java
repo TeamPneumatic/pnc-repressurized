@@ -14,8 +14,6 @@ public class Textures {
     private static final String RENDER_LOCATION = ICON_LOCATION + "textures/render/";
     private static final String PROG_WIDGET_LOCATION = ICON_LOCATION + "textures/progwidgets/";
 
-    public static final String PRESSURE_GLASS_LOCATION = ICON_LOCATION + "block/pressure_chamber/windows/";
-
     public static final String ARMOR_PNEUMATIC = ARMOR_LOCATION + "pneumatic";
     public static final String ARMOR_COMPRESSED_IRON = ARMOR_LOCATION + "compressed_iron";
 
@@ -33,7 +31,6 @@ public class Textures {
     public static final ResourceLocation MODEL_ASSEMBLY_CONTROLLER = modelTexture("assembly_controller.png");
     public static final ResourceLocation MODEL_UNIVERSAL_SENSOR = modelTexture("universal_sensor.png");
     public static final ResourceLocation MODEL_DRONE_MINIGUN = modelTexture("drone_minigun.png");
-    public static final ResourceLocation MODEL_HEAT_FRAME = modelTexture("heat_frame.png");
     public static final ResourceLocation MODEL_LOGISTICS_FRAME_ACTIVE_PROVIDER = modelTexture("logistics_frame_active_provider.png");
     public static final ResourceLocation MODEL_LOGISTICS_FRAME_PASSIVE_PROVIDER = modelTexture("logistics_frame_passive_provider.png");
     public static final ResourceLocation MODEL_LOGISTICS_FRAME_DEFAULT_STORAGE = modelTexture("logistics_frame_default_storage.png");
@@ -137,7 +134,6 @@ public class Textures {
     public static final ResourceLocation GUI_VACUUM_PUMP = guiTexture("gui_vacuum_pump.png");
     public static final ResourceLocation GUI_ITEM_SEARCHER = guiTexture("gui_item_searcher.png");
     public static final ResourceLocation GUI_ASSEMBLY_CONTROLLER = guiTexture("gui_assembly_controller.png");
-    public static final ResourceLocation GUI_LASER_DANGER = guiTexture("gui_laser_danger.png");
     public static final ResourceLocation GUI_UV_LIGHT_BOX = guiTexture("gui_uv_light_box.png");
     public static final ResourceLocation GUI_UV_LIGHT_BOX_ON = guiTexture("gui_uv_light_box_on.png");
     public static final ResourceLocation GUI_SECURITY_STATION = guiTexture("gui_security_station.png");

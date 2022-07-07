@@ -15,13 +15,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.AABB;
 
 public class RenderHeatFrame extends RenderSemiblockBase<HeatFrameEntity> {
-    private static final ResourceLocation[] TEXTURES = new ResourceLocation[TemperatureCategory.values().length];
-    static {
-        for (TemperatureCategory tc : TemperatureCategory.values()) {
-            TEXTURES[tc.getIndex()] = tc.getTextureName("heat_frame");
-        }
-    }
-
     private final ModelHeatFrame model;
 
     public RenderHeatFrame(EntityRendererProvider.Context ctx) {
@@ -49,7 +42,6 @@ public class RenderHeatFrame extends RenderSemiblockBase<HeatFrameEntity> {
 
     @Override
     public ResourceLocation getTextureLocation(HeatFrameEntity heatFrameEntity) {
-        TemperatureCategory tc = TemperatureCategory.forTemperature(heatFrameEntity.getSyncedTemperature());
-        return TEXTURES[tc.getIndex()];
+        return TemperatureCategory.forTemperature(heatFrameEntity.getSyncedTemperature()).getTextureLocation();
     }
 }
