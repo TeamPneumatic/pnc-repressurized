@@ -87,6 +87,8 @@ public class MovingSounds {
                         posToTickableSound.put(pos, sound);
                         return sound;
                     }
+                } else {
+                    return null;
                 }
                 break;
             case JACKHAMMER:
