@@ -86,6 +86,8 @@ public class MovingSounds {
                         sound = new MovingSoundAirLeak(te, (Direction) extraData[0]);
                         posToTickableSound.put(pos, sound);
                         return sound;
+                    } else {
+                        return null;
                     }
                 }
                 break;
