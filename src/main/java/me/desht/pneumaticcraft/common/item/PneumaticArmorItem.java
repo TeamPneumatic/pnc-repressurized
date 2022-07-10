@@ -200,11 +200,6 @@ public class PneumaticArmorItem extends ArmorItem implements
     }
 
     @Override
-    public boolean isValidRepairItem(ItemStack par1ItemStack, ItemStack par2ItemStack) {
-        return false;
-    }
-
-    @Override
     public boolean isFoil(ItemStack stack) {
         return ConfigHelper.client().armor.showEnchantGlint.get() && super.isFoil(stack);
     }
