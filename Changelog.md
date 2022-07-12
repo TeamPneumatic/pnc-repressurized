@@ -24,6 +24,8 @@ Changes are in reverse chronological order; newest changes at the top.
   * This was done because a) it's a bit exploitable and b) can lead to buggy behaviour with villager trades
   * Other entities can also be blacklisted by adding them to the `pneumaticcraft:omnihopper_blacklisted` entity type tag
 * Fixed Drones forgetting the value of their $deploy_pos variable after world restart
+* Fixed Pressure Chambers behaving weirdly if constructed or deconstructed by Modular Routers Extruder Modules
+  * Probably also applies to other automated block placing/breaking systems
 
 ## 2.15.10-329 (16 Jun 2022)
 

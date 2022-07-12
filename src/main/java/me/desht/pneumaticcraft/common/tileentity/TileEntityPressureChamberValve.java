@@ -459,7 +459,7 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase
                     if (te instanceof TileEntityPressureChamberWall) {
                         // Clear the base TE's, so that the walls can be used in a new MultiBlock
                         TileEntityPressureChamberWall teWall = (TileEntityPressureChamberWall) te;
-                        teWall.setCore(null);
+                        teWall.setPrimaryValve(null);
                     }
                 }
             }
@@ -576,7 +576,7 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase
                         // this is a wall or interface; ensure it doesn't belong to another pressure chamber
                         TileEntity te = world.getBlockEntity(mPos);
                         if (te instanceof TileEntityPressureChamberWall) {
-                            TileEntity teV = ((TileEntityPressureChamberWall) te).getCore();
+                            TileEntity teV = ((TileEntityPressureChamberWall) te).getPrimaryValve();
                             if (teV != null && (rebuildPos == null || !rebuildPos.equals(teV.getBlockPos()))) return false;
                         }
                     }
@@ -610,7 +610,7 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase
                     TileEntity te = world.getBlockEntity(new BlockPos(x + baseX, y + baseY, z + baseZ));
                     if (te instanceof TileEntityPressureChamberWall) {
                         TileEntityPressureChamberWall teWall = (TileEntityPressureChamberWall) te;
-                        teWall.setCore(primaryValve);  // this also forces re-rendering with the formed texture
+                        teWall.setPrimaryValve(primaryValve);  // this also forces re-rendering with the formed texture
                         if (world.getBlockState(te.getBlockPos()).getBlock() instanceof BlockPressureChamberGlass) {
                             primaryValve.hasGlass = true;
                         }

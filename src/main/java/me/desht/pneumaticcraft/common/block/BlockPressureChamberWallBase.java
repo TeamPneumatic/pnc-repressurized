@@ -36,7 +36,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.network.NetworkHooks;
 
 public abstract class BlockPressureChamberWallBase extends BlockPneumaticCraft implements IBlockPressureChamber {
-    public static final EnumProperty<BlockPressureChamberWall.EnumWallState> WALL_STATE = EnumProperty.create("wall_state", BlockPressureChamberWall.EnumWallState.class);
+    public static final EnumProperty<BlockPressureChamberWall.WallState> WALL_STATE = EnumProperty.create("wall_state", BlockPressureChamberWall.WallState.class);
 
     BlockPressureChamberWallBase(Properties props) {
         super(props);
@@ -58,13 +58,13 @@ public abstract class BlockPressureChamberWallBase extends BlockPneumaticCraft i
     @Override
     public ActionResultType use(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult brtr) {
         if (world.isClientSide) {
-            return !state.hasProperty(WALL_STATE) || state.getValue(WALL_STATE) == BlockPressureChamberWall.EnumWallState.NONE ?
+            return !state.hasProperty(WALL_STATE) || state.getValue(WALL_STATE) == BlockPressureChamberWall.WallState.NONE ?
                     ActionResultType.PASS : ActionResultType.SUCCESS;
         }
 
         // forward activation to the pressure chamber valve, which will open the GUI
         return PneumaticCraftUtils.getTileEntityAt(world, pos, TileEntityPressureChamberWall.class).map(te -> {
-            TileEntityPressureChamberValve valve = te.getCore();
+            TileEntityPressureChamberValve valve = te.getPrimaryValve();
             if (valve != null) {
                 NetworkHooks.openGui((ServerPlayerEntity) player, valve, valve.getBlockPos());
                 return ActionResultType.CONSUME;

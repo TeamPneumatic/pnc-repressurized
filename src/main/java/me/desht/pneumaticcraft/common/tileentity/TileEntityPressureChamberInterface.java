@@ -124,7 +124,7 @@ public class TileEntityPressureChamberInterface extends TileEntityPressureChambe
         boolean wasOpeningO = isOpeningOutput;
         oldInputProgress = inputProgress;
         oldOutputProgress = outputProgress;
-        TileEntityPressureChamberValve core = getCore();
+        TileEntityPressureChamberValve core = getPrimaryValve();
 
         if (!getLevel().isClientSide) {
             doorSpeed = getSpeedMultiplierFromUpgrades();
@@ -243,7 +243,7 @@ public class TileEntityPressureChamberInterface extends TileEntityPressureChambe
     private void outputInChamber() {
         // place items from the interface block into the pressure chamber
         // all items in the interface will be moved at once, but the pressure chamber must have enough pressure to do so
-        TileEntityPressureChamberValve valve = getCore();
+        TileEntityPressureChamberValve valve = getPrimaryValve();
         if (valve != null) {
             ItemStack inputStack = inventory.getStackInSlot(0);
             IAirHandlerMachine valveAirHandler = valve.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY)
