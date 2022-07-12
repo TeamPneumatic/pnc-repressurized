@@ -196,11 +196,6 @@ public class ItemPneumaticArmor extends ArmorItem implements
     }
 
     @Override
-    public boolean isValidRepairItem(ItemStack par1ItemStack, ItemStack par2ItemStack) {
-        return false;
-    }
-
-    @Override
     public Map<EnumUpgrade,Integer> getApplicableUpgrades() {
         return ApplicableUpgradesDB.getInstance().getApplicableUpgrades(this);
     }
