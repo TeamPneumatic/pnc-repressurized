@@ -26,6 +26,8 @@ Changes are in reverse chronological order; newest changes at the top.
 * Fixed Drones forgetting the value of their $deploy_pos variable after world restart
 * Fixed Pressure Chambers behaving weirdly if constructed or deconstructed by Modular Routers Extruder Modules
   * Probably also applies to other automated block placing/breaking systems
+* Jet Boots: when already Elytra-gliding, transition to powered Jet Boots flight is now smoother (doesn't cause a brief stall in velocity anymore)
+* Fixed Patchouli book breaking if certain recipes are removed/altered
 
 ## 2.15.10-329 (16 Jun 2022)
 
