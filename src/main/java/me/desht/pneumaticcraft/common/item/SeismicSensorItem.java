@@ -22,9 +22,7 @@ import me.desht.pneumaticcraft.common.core.ModItems;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -33,10 +31,9 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
 
-import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
+
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class SeismicSensorItem extends Item {
     private static final int MAX_SEARCH = 500;
@@ -47,32 +44,48 @@ public class SeismicSensorItem extends Item {
 
     @Override
     public InteractionResult useOn(UseOnContext ctx) {
-        Level world = ctx.getLevel();
+        Level level = ctx.getLevel();
         Player player = ctx.getPlayer();
-        if (!world.isClientSide && player != null) {
+        if (level.isClientSide && player != null) {
             BlockPos.MutableBlockPos searchPos = ctx.getClickedPos().mutable();
-            while (searchPos.getY() > world.getMinBuildHeight()) {
-                searchPos.move(Direction.DOWN);
-                Fluid fluid = findFluid(world, searchPos);
-                if (fluid != null) {
-                    Set<BlockPos> fluidPositions = findLake(world, searchPos.immutable(), fluid);
-                    int count = Math.max(1, fluidPositions.size() / 10 * 10);
-                    player.displayClientMessage(new TranslatableComponent(
-                            "pneumaticcraft.message.seismicSensor.foundOilDetails",
-                            new TranslatableComponent(fluid.getAttributes().getTranslationKey()),
-                            ChatFormatting.GREEN.toString() + (ctx.getClickedPos().getY() - searchPos.getY()),
-                            ChatFormatting.GREEN.toString() + count),
-                            false);
-                    world.playSound(null, ctx.getClickedPos(), SoundEvents.NOTE_BLOCK_CHIME, SoundSource.PLAYERS, 1f, 1f);
-                    return InteractionResult.SUCCESS;
-                }
-            }
-            player.displayClientMessage(new TranslatableComponent("pneumaticcraft.message.seismicSensor.noOilFound"), false);
+            findFluid(level, searchPos).ifPresentOrElse(result -> {
+                int topOff = ctx.getClickedPos().getY() - result.top().getY();
+                int bottomOff = ctx.getClickedPos().getY() - result.bottom().getY();
+                String depthStr = topOff == bottomOff ? Integer.toString(topOff) : topOff + "-" + bottomOff;
+                player.displayClientMessage(xlate(
+                                "pneumaticcraft.message.seismicSensor.foundOilDetails",
+                                xlate(result.fluid().getAttributes().getTranslationKey()),
+                                ChatFormatting.GREEN + depthStr,
+                                ChatFormatting.GREEN.toString() + result.lakeSize()),
+                        false);
+                player.playSound(SoundEvents.NOTE_BLOCK_CHIME, 1f, 1f);
+            }, () -> {
+                player.displayClientMessage(xlate("pneumaticcraft.message.seismicSensor.noOilFound"), false);
+            });
         }
         return InteractionResult.SUCCESS; // we don't want to use the item.
     }
 
-    private Fluid findFluid(Level world, BlockPos pos) {
+    private Optional<FluidSearchResult> findFluid(Level level, BlockPos origin) {
+        BlockPos.MutableBlockPos searchPos = origin.mutable();
+        while (searchPos.getY() > level.getMinBuildHeight()) {
+            searchPos.move(Direction.DOWN);
+            Fluid fluid = getFluidOfInterest(level, searchPos);
+            if (fluid != null) {
+                BlockPos top = searchPos.immutable();
+                do {
+                    searchPos.move(Direction.DOWN);
+                } while (searchPos.getY() > level.getMinBuildHeight() && getFluidOfInterest(level, searchPos) == fluid);
+                BlockPos bottom = searchPos.above().immutable();
+                Set<BlockPos> fluidPositions = findLake(level, top, fluid);
+                int lakeSize = Math.max(1, fluidPositions.size() / 10 * 10);
+                return Optional.of(new FluidSearchResult(fluid, top, bottom, lakeSize));
+            }
+        }
+        return Optional.empty();
+    }
+
+    private Fluid getFluidOfInterest(Level world, BlockPos pos) {
         FluidState state = world.getFluidState(pos);
         return state.getType().is(PneumaticCraftTags.Fluids.SEISMIC) ? state.getType() : null;
     }
@@ -94,5 +107,8 @@ public class SeismicSensorItem extends Item {
             }
         }
         return fluidPositions;
+    }
+
+    record FluidSearchResult(Fluid fluid, BlockPos top, BlockPos bottom, int lakeSize) {
     }
 }
