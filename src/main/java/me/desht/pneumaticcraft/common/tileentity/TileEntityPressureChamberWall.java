@@ -155,10 +155,10 @@ public class TileEntityPressureChamberWall extends TileEntityBase implements IMa
     @Override
     public CompoundNBT save(CompoundNBT tag) {
         super.save(tag);
-        if (teValve == null || teValve.isRemoved()) {
+        if (valvePos == null) {
             tag.putBoolean("noValve", true);
         } else {
-            tag.put("valvePos", NBTUtil.writeBlockPos(teValve.getBlockPos()));
+            tag.put("valvePos", NBTUtil.writeBlockPos(valvePos));
         }
         return tag;
     }
