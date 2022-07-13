@@ -124,7 +124,9 @@ public class TransferGadgetEntity extends AbstractSemiblockEntity implements IDi
     @Override
     public boolean canPlace(Direction facing) {
         BlockEntity te = getCachedTileEntity();
-        return te != null && te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, facing).isPresent();
+        return te != null &&
+                (te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, facing).isPresent()
+                        || te.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, facing).isPresent());
     }
 
     @Override
