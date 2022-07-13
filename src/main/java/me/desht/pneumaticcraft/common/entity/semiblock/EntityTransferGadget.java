@@ -120,7 +120,9 @@ public class EntityTransferGadget extends EntitySemiblockBase implements IDirect
     @Override
     public boolean canPlace(Direction facing) {
         TileEntity te = getCachedTileEntity();
-        return te != null && te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, facing).isPresent();
+        return te != null &&
+                (te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, facing).isPresent()
+                        || te.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, facing).isPresent());
     }
 
     @Override
