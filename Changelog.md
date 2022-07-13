@@ -28,6 +28,9 @@ Changes are in reverse chronological order; newest changes at the top.
   * Probably also applies to other automated block placing/breaking systems
 * Jet Boots: when already Elytra-gliding, transition to powered Jet Boots flight is now smoother (doesn't cause a brief stall in velocity anymore)
 * Fixed Patchouli book breaking if certain recipes are removed/altered
+* Fixed Pneumatic Armor not being repairable in an Anvil (with Compressed Iron Ingots)
+  * Also added a page in the Patchouli book overview listing the ways to repair Pneumatic Armor
+* Fixed potential client crash when teleporting into an area with currently-leaking tubes or machines
 
 ## 2.15.10-329 (16 Jun 2022)
 

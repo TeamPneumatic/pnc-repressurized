@@ -62,10 +62,11 @@ public class TileEntityPressureChamberWall extends TileEntityBase implements IMa
         return teValve;
     }
 
-    void setPrimaryValve(TileEntityPressureChamberValve newCore) {
-        if (teValve != newCore && !getLevel().isClientSide) {
-            teValve = newCore;
-            valvePos = teValve == null ? null : teValve.getBlockPos();
+    void setPrimaryValve(TileEntityPressureChamberValve newValve) {
+        boolean valveChanging = teValve != newValve || newValve == null && valvePos != null || newValve != null && valvePos == null;
+        valvePos = newValve == null ? null : newValve.getBlockPos();
+        if (valveChanging && !getLevel().isClientSide) {
+            teValve = newValve;
             // defer updating the blockstate since this can get called during placement, and updating the blockstate
             // then can cause the TE to change, losing the reference to the valve TE
             // https://github.com/TeamPneumatic/pnc-repressurized/issues/1049
@@ -154,10 +155,10 @@ public class TileEntityPressureChamberWall extends TileEntityBase implements IMa
     @Override
     public CompoundNBT save(CompoundNBT tag) {
         super.save(tag);
-        if (valvePos == null) {
+        if (teValve == null || teValve.isRemoved()) {
             tag.putBoolean("noValve", true);
         } else {
-            tag.put("valvePos", NBTUtil.writeBlockPos(valvePos));
+            tag.put("valvePos", NBTUtil.writeBlockPos(teValve.getBlockPos()));
         }
         return tag;
     }
