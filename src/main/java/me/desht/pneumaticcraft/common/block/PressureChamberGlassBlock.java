@@ -17,17 +17,14 @@
 
 package me.desht.pneumaticcraft.common.block;
 
-import me.desht.pneumaticcraft.common.block.entity.PressureChamberWallBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.FluidState;
-import org.jetbrains.annotations.Nullable;
 
-public class PressureChamberGlassBlock extends AbstractPressureWallBlock implements PneumaticCraftEntityBlock {
+public class PressureChamberGlassBlock extends AbstractPressureWallBlock {
     public PressureChamberGlassBlock() {
         super(IBlockPressureChamber.pressureChamberBlockProps().noOcclusion());
     }
@@ -50,11 +47,5 @@ public class PressureChamberGlassBlock extends AbstractPressureWallBlock impleme
     @Override
     public boolean propagatesSkylightDown(BlockState p_200123_1_, BlockGetter p_200123_2_, BlockPos p_200123_3_) {
         return true;
-    }
-
-    @Nullable
-    @Override
-    public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
-        return new PressureChamberWallBlockEntity(pPos, pState);
     }
 }

@@ -60,10 +60,11 @@ public class PressureChamberWallBlockEntity extends AbstractTickingBlockEntity i
         return teValve;
     }
 
-    void setPrimaryValve(PressureChamberValveBlockEntity newCore) {
-        if (teValve != newCore && !nonNullLevel().isClientSide) {
-            teValve = newCore;
-            valvePos = teValve == null ? null : teValve.getBlockPos();
+    void setPrimaryValve(PressureChamberValveBlockEntity newValve) {
+        boolean valveChanging = teValve != newValve || newValve == null && valvePos != null || newValve != null && valvePos == null;
+        valvePos = newValve == null ? null : newValve.getBlockPos();
+        if (valveChanging && !nonNullLevel().isClientSide) {
+            teValve = newValve;
             // defer updating the blockstate since this can get called during placement, and updating the blockstate
             // then can cause the TE to change, losing the reference to the valve TE
             // https://github.com/TeamPneumatic/pnc-repressurized/issues/1049
