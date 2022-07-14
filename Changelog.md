@@ -12,7 +12,7 @@ Changes are in reverse chronological order; newest changes at the top.
 * PNC:R 2.15.1 and later *require* Forge 36.2.0 or later, **and** Patchouli 1.16.4-50 or later.
 * If Mekanism is installed, PNC:R 2.15.1 and later *require* Mekanism 10.1.x or later.
 
-## 2.15.11-?? (unreleased)
+## 2.15.11-334 (14 Jul 2022)
 
 ### Updates
 * Added new `getDronePositionVec()` Lua method to the Drone Interface
@@ -23,7 +23,7 @@ Changes are in reverse chronological order; newest changes at the top.
 * Villagers are now blacklisted from being extracted by the Omnidirectional Hopper & Entity Tracker Upgrade
   * This was done because a) it's a bit exploitable and b) can lead to buggy behaviour with villager trades
   * Other entities can also be blacklisted by adding them to the `pneumaticcraft:omnihopper_blacklisted` entity type tag
-* Fixed Drones forgetting the value of their $deploy_pos variable after world restart
+* Fixed Drones forgetting the value of their `$deploy_pos` variable after world restart
 * Fixed Pressure Chambers behaving weirdly if constructed or deconstructed by Modular Routers Extruder Modules
   * Probably also applies to other automated block placing/breaking systems
 * Jet Boots: when already Elytra-gliding, transition to powered Jet Boots flight is now smoother (doesn't cause a brief stall in velocity anymore)
@@ -31,6 +31,7 @@ Changes are in reverse chronological order; newest changes at the top.
 * Fixed Pneumatic Armor not being repairable in an Anvil (with Compressed Iron Ingots)
   * Also added a page in the Patchouli book overview listing the ways to repair Pneumatic Armor
 * Fixed potential client crash when teleporting into an area with currently-leaking tubes or machines
+* Fixed Transfer Gadgets not being placeable on blocks which offer only a fluid handler capability, e.g. Refineries
 
 ## 2.15.10-329 (16 Jun 2022)
 
