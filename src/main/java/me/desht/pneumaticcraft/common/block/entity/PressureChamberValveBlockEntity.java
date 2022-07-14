@@ -465,7 +465,7 @@ public class PressureChamberValveBlockEntity extends AbstractAirHandlingBlockEnt
                     BlockEntity te = nonNullLevel().getBlockEntity(new BlockPos(x + multiBlockX, y + multiBlockY, z + multiBlockZ));
                     if (te instanceof PressureChamberWallBlockEntity teWall) {
                         // Clear the base BE's, so that the walls can be used in a new MultiBlock
-                        teWall.setCore(null);
+                        teWall.setPrimaryValve(null);
                     }
                 }
             }
@@ -582,7 +582,7 @@ public class PressureChamberValveBlockEntity extends AbstractAirHandlingBlockEnt
                         // this is a wall or interface; ensure it doesn't belong to another pressure chamber
                         BlockEntity te = world.getBlockEntity(mPos);
                         if (te instanceof PressureChamberWallBlockEntity) {
-                            BlockEntity teV = ((PressureChamberWallBlockEntity) te).getCore();
+                            BlockEntity teV = ((PressureChamberWallBlockEntity) te).getPrimaryValve();
                             if (teV != null && (rebuildPos == null || !rebuildPos.equals(teV.getBlockPos()))) return false;
                         }
                     }
@@ -615,7 +615,7 @@ public class PressureChamberValveBlockEntity extends AbstractAirHandlingBlockEnt
                 for (int z = 0; z < size; z++) {
                     BlockEntity te = world.getBlockEntity(new BlockPos(x + baseX, y + baseY, z + baseZ));
                     if (te instanceof PressureChamberWallBlockEntity teWall) {
-                        teWall.setCore(primaryValve);  // this also forces re-rendering with the formed texture
+                        teWall.setPrimaryValve(primaryValve);  // this also forces re-rendering with the formed texture
                         if (world.getBlockState(te.getBlockPos()).getBlock() instanceof PressureChamberGlassBlock) {
                             primaryValve.hasGlass = true;
                         }

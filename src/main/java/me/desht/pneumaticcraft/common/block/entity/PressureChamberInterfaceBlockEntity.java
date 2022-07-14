@@ -123,7 +123,7 @@ public class PressureChamberInterfaceBlockEntity extends PressureChamberWallBloc
         boolean wasOpeningO = isOpeningOutput;
         oldInputProgress = inputProgress;
         oldOutputProgress = outputProgress;
-        PressureChamberValveBlockEntity core = getCore();
+        PressureChamberValveBlockEntity core = getPrimaryValve();
 
         if (!nonNullLevel().isClientSide) {
             doorSpeed = getSpeedMultiplierFromUpgrades();
@@ -242,7 +242,7 @@ public class PressureChamberInterfaceBlockEntity extends PressureChamberWallBloc
     private void outputInChamber() {
         // place items from the interface block into the pressure chamber
         // all items in the interface will be moved at once, but the pressure chamber must have enough pressure to do so
-        PressureChamberValveBlockEntity valve = getCore();
+        PressureChamberValveBlockEntity valve = getPrimaryValve();
         if (valve != null) {
             ItemStack inputStack = inventory.getStackInSlot(0);
             IAirHandlerMachine valveAirHandler = valve.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY)
