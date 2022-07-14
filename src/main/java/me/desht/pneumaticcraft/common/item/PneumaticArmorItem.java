@@ -389,7 +389,7 @@ public class PneumaticArmorItem extends ArmorItem implements
     public boolean makesPiglinsNeutral(ItemStack stack, LivingEntity wearer) {
         if (wearer instanceof Player player && stack.getItem() instanceof PneumaticArmorItem armor) {
             return CommonArmorHandler.getHandlerForPlayer(player)
-                    .getUpgradeCount(armor.getSlot(), ModUpgrades.FLIPPERS.get()) > 0;
+                    .getUpgradeCount(armor.getSlot(), ModUpgrades.GILDED.get()) > 0;
         }
         return false;
     }
