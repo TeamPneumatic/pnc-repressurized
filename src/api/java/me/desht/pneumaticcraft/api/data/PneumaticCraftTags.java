@@ -146,7 +146,7 @@ public class PneumaticCraftTags {
         public static final TagKey<EntityType<?>> OMNIHOPPER_BLACKLISTED = modTag("omnihopper_blacklisted");
 
         static TagKey<EntityType<?>> tag(String modid, String name) {
-            return Objects.requireNonNull(ForgeRegistries.ENTITIES.tags()).createTagKey(new ResourceLocation(modid, name));
+            return Objects.requireNonNull(ForgeRegistries.ENTITY_TYPES.tags()).createTagKey(new ResourceLocation(modid, name));
         }
 
         static TagKey<EntityType<?>> modTag(String name) {

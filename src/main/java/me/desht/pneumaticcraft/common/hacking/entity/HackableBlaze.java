@@ -23,7 +23,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.monster.Blaze;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.SmallFireball;
-import net.minecraftforge.event.entity.EntityJoinWorldEvent;
+import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
@@ -56,7 +56,7 @@ public class HackableBlaze extends AbstractPersistentEntityHack<Blaze> {
     @Mod.EventBusSubscriber(modid = Names.MOD_ID)
     public static class Listener {
         @SubscribeEvent
-        public static void onFireball(EntityJoinWorldEvent event) {
+        public static void onFireball(EntityJoinLevelEvent event) {
             if (event.getEntity() instanceof SmallFireball f && f.getOwner() instanceof Blaze blaze
                     && hasPersistentHack(blaze, HackableBlaze.class)) {
                 event.setCanceled(true);

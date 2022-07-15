@@ -6,6 +6,7 @@
 		"1": "pneumaticcraft:model/fluid_tank",
 		"particle": "pneumaticcraft:block/generic/plain_base"
 	},
+	"render_type": "cutout_mipped",
 	"elements": [
 		{
 			"from": [2, 1, 0],

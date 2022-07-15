@@ -255,7 +255,7 @@ public class ModCommands {
 
     private static class VarnameType implements ArgumentType<String> {
         @Override
-        public String parse(StringReader reader) throws CommandSyntaxException {
+        public String parse(StringReader reader) {
             int start = reader.getCursor();
             if (reader.peek() == '#' || reader.peek() == '%') reader.skip();
             while (reader.canRead() && (StringUtils.isAlphanumeric(String.valueOf(reader.peek())) || reader.peek() == '_')) {

@@ -6,6 +6,7 @@
 		"0": "pneumaticcraft:model/gas_lift",
 		"particle": "pneumaticcraft:model/gas_lift"
 	},
+	"render_type": "cutout_mipped",
 	"elements": [
 		{
 			"from": [0, 0, 0],

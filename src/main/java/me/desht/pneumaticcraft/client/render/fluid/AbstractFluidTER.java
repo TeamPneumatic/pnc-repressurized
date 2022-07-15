@@ -33,8 +33,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.phys.AABB;
-import net.minecraftforge.client.IFluidTypeRenderProperties;
-import net.minecraftforge.client.RenderProperties;
+import net.minecraftforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.minecraftforge.fluids.IFluidTank;
 
 import java.util.Collection;
@@ -60,10 +59,10 @@ public abstract class AbstractFluidTER<T extends AbstractPneumaticCraftBlockEnti
         if (tank.getFluidAmount() == 0) return;
 
         Fluid fluid = tank.getFluid().getFluid();
-        IFluidTypeRenderProperties renderProps = RenderProperties.get(fluid);
+        IClientFluidTypeExtensions renderProps = IClientFluidTypeExtensions.of(fluid);
         ResourceLocation texture = renderProps.getStillTexture(tank.getFluid());
         TextureAtlasSprite still = Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(texture);
-        int[] cols = RenderUtils.decomposeColor(renderProps.getColorTint(tank.getFluid()));
+        int[] cols = RenderUtils.decomposeColor(renderProps.getTintColor(tank.getFluid()));
 
         AABB bounds = getRenderBounds(tank, tankRenderInfo.getBounds());
         float x1 = (float) bounds.minX;

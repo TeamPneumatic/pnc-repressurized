@@ -17,7 +17,7 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.client.IItemRenderProperties;
+import net.minecraftforge.client.extensions.common.IClientItemExtensions;
 import net.minecraftforge.common.util.NonNullLazy;
 
 import java.util.Objects;
@@ -71,7 +71,7 @@ public class MinigunItemRenderer extends BlockEntityWithoutLevelRenderer {
         }
     }
 
-    public static class RenderProperties implements IItemRenderProperties {
+    public static class RenderProperties implements IClientItemExtensions {
         static final NonNullLazy<BlockEntityWithoutLevelRenderer> renderer = NonNullLazy.of(() ->
                 new MinigunItemRenderer(
                         Minecraft.getInstance().getBlockEntityRenderDispatcher(),
@@ -80,7 +80,7 @@ public class MinigunItemRenderer extends BlockEntityWithoutLevelRenderer {
         );
 
         @Override
-        public BlockEntityWithoutLevelRenderer getItemStackRenderer() {
+        public BlockEntityWithoutLevelRenderer getCustomRenderer() {
             return renderer.get();
         }
     }

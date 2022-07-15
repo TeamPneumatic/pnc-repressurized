@@ -21,7 +21,7 @@ import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.common.fluid.*;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.world.level.material.Fluid;
-import net.minecraftforge.client.IFluidTypeRenderProperties;
+import net.minecraftforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.minecraftforge.fluids.FluidType;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -104,10 +104,10 @@ public class ModFluids {
         return FLUIDS.register(name, sup);
     }
 
-    private static RegistryObject<FluidType> registerFluidType(String name, FluidType.Properties props, IFluidTypeRenderProperties renderProps) {
+    private static RegistryObject<FluidType> registerFluidType(String name, FluidType.Properties props, IClientFluidTypeExtensions renderProps) {
         return FLUID_TYPES.register(name, () -> new FluidType(props) {
             @Override
-            public void initializeClient(Consumer<IFluidTypeRenderProperties> consumer) {
+            public void initializeClient(Consumer<IClientFluidTypeExtensions> consumer) {
                 consumer.accept(renderProps);
             }
         });

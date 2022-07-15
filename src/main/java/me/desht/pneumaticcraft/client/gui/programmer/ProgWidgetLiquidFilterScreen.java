@@ -32,7 +32,6 @@ import net.minecraftforge.registries.ForgeRegistries;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class ProgWidgetLiquidFilterScreen extends AbstractProgWidgetScreen<ProgWidgetLiquidFilter> {
 
@@ -95,7 +94,7 @@ public class ProgWidgetLiquidFilterScreen extends AbstractProgWidgetScreen<ProgW
         List<Fluid> fluids = ForgeRegistries.FLUIDS.getValues().stream()
                 .filter(fluid -> matchSearch(searchField.getValue(), fluid))
                 .sorted(Comparator.comparing(f -> new FluidStack(f, 1).getDisplayName().getString()))
-                .collect(Collectors.toList());
+                .toList();
 
         scrollbar.setStates(Math.max(0, (fluids.size() - GRID_WIDTH * GRID_HEIGHT + GRID_WIDTH - 1) / GRID_WIDTH));
 

@@ -47,7 +47,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.InputEvent;
-import net.minecraftforge.client.settings.KeyBindingMap;
+import net.minecraftforge.client.settings.KeyMappingLookup;
 import net.minecraftforge.client.settings.KeyModifier;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -278,12 +278,12 @@ public class WidgetKeybindCheckBox extends WidgetCheckBox implements ITooltipPro
         // maps keybind ID (description) to keybind widget
         private static final Map<String, WidgetKeybindCheckBox> desc2checkbox = new HashMap<>();
         // thanks forge for caching these
-        private static final KeyBindingMap KEY_BINDING_MAP = new KeyBindingMap();
+        private static final KeyMappingLookup KEY_BINDING_MAP = new KeyMappingLookup();
 
         @SubscribeEvent
-        public static void onKeyPress(InputEvent.KeyInputEvent event) {
+        public static void onKeyPress(InputEvent.Key event) {
             if (Minecraft.getInstance().screen == null && event.getAction() == GLFW.GLFW_PRESS) {
-                KeyMapping binding = KEY_BINDING_MAP.lookupActive(InputConstants.Type.KEYSYM.getOrCreate(event.getKey()));
+                KeyMapping binding = KEY_BINDING_MAP.get(InputConstants.Type.KEYSYM.getOrCreate(event.getKey()));
                 if (binding != null) {
                     getBoundWidget(binding.getName()).ifPresent(w -> w.handleClick(0, 0, 0));
                 }
@@ -291,9 +291,9 @@ public class WidgetKeybindCheckBox extends WidgetCheckBox implements ITooltipPro
         }
 
         @SubscribeEvent
-        public static void onMouseClick(InputEvent.MouseInputEvent event) {
+        public static void onMouseClick(InputEvent.MouseButton event) {
             if (Minecraft.getInstance().screen == null && event.getAction() == GLFW.GLFW_PRESS) {
-                KeyMapping binding = KEY_BINDING_MAP.lookupActive(InputConstants.Type.MOUSE.getOrCreate(event.getButton()));
+                KeyMapping binding = KEY_BINDING_MAP.get(InputConstants.Type.MOUSE.getOrCreate(event.getButton()));
                 if (binding != null) {
                     getBoundWidget(binding.getName()).ifPresent(w -> w.handleClick(0, 0, 0));
                 }

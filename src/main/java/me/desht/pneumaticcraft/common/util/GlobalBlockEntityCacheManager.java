@@ -24,7 +24,7 @@ import me.desht.pneumaticcraft.common.block.entity.SecurityStationBlockEntity;
 import me.desht.pneumaticcraft.common.block.entity.UniversalSensorBlockEntity;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.event.world.WorldEvent;
+import net.minecraftforge.event.level.LevelEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
@@ -63,8 +63,8 @@ public class GlobalBlockEntityCacheManager {
     }
 
     @SubscribeEvent
-    public static void onWorldUnloaded(WorldEvent.Unload event) {
-        getInstance(event.getWorld()).removeFromWorld(event.getWorld());
+    public static void onWorldUnloaded(LevelEvent.Unload event) {
+        getInstance(event.getLevel()).removeFromWorld(event.getLevel());
     }
 
     public GlobalTileEntityCache<UniversalSensorBlockEntity> getUniversalSensors() {

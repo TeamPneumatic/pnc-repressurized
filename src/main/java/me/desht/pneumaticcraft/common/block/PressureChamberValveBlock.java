@@ -79,12 +79,12 @@ public class PressureChamberValveBlock extends AbstractPneumaticCraftBlock imple
         if (!world.isClientSide) {
             return world.getBlockEntity(pos, ModBlockEntities.PRESSURE_CHAMBER_VALVE.get()).map(te -> {
                 if (te.multiBlockSize > 0) {
-                    NetworkHooks.openGui((ServerPlayer) player, te, pos);
+                    NetworkHooks.openScreen((ServerPlayer) player, te, pos);
                 } else if (te.accessoryValves.size() > 0) {
                     // when this isn't the core valve, track down the core valve
                     for (PressureChamberValveBlockEntity valve : te.accessoryValves) {
                         if (valve.multiBlockSize > 0) {
-                            NetworkHooks.openGui((ServerPlayer) player, valve, valve.getBlockPos());
+                            NetworkHooks.openScreen((ServerPlayer) player, valve, valve.getBlockPos());
                             break;
                         }
                     }

@@ -36,7 +36,6 @@ public class ActionWidgetDropdown extends ActionWidgetVariable<WidgetComboBox> {
 
     private int x, y, width, height;
     private String dropDownElements = "";
-    private String selectedElement = "";
     private boolean sorted;
 
     public ActionWidgetDropdown() {
@@ -125,7 +124,7 @@ public class ActionWidgetDropdown extends ActionWidgetVariable<WidgetComboBox> {
     private void updateWidget() {
         String[] elements = getDropdownElements();
         int idx = GlobalVariableHelper.getInt(ClientUtils.getClientPlayer().getUUID(), getVariableName());
-        selectedElement = elements[Mth.clamp(idx, 0, elements.length - 1)];
+        String selectedElement = elements[Mth.clamp(idx, 0, elements.length - 1)];
 
         if (widget != null) {
             widget.x = x;

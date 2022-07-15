@@ -24,6 +24,7 @@ import me.desht.pneumaticcraft.common.block.entity.CamouflageableBlockEntity;
 import me.desht.pneumaticcraft.common.block.entity.IHeatTinted;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
+import me.desht.pneumaticcraft.common.item.PneumaticCraftBucketItem;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
@@ -33,7 +34,8 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.ColorHandlerEvent;
+import net.minecraftforge.client.event.RegisterColorHandlersEvent;
+import net.minecraftforge.client.model.DynamicFluidContainerModel;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.RegistryObject;
@@ -43,28 +45,30 @@ import javax.annotation.Nullable;
 @Mod.EventBusSubscriber(modid = Names.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public class ColorHandlers {
     @SubscribeEvent
-    public static void registerItemColorHandlers(ColorHandlerEvent.Item event) {
+    public static void registerItemColorHandlers(RegisterColorHandlersEvent.Item event) {
         for (RegistryObject<Item> item : ModItems.ITEMS.getEntries()) {
-            if (item.get() instanceof ITintableItem) {
-                event.getItemColors().register(((ITintableItem) item.get())::getTintColor, item.get());
-            } else if (item.get() instanceof BlockItem) {
-                Block b = ((BlockItem)item.get()).getBlock();
+            if (item.get() instanceof ITintableItem tintable) {
+                event.register(tintable::getTintColor, item.get());
+            } else if (item.get() instanceof BlockItem bi) {
+                Block b = bi.getBlock();
                 if (b instanceof ITintableBlock) {
-                    event.getItemColors().register((stack, index) -> event.getBlockColors().getColor(b.defaultBlockState(), null, null, index), item.get());
+                    event.register((stack, index) -> event.getBlockColors().getColor(b.defaultBlockState(), null, null, index), item.get());
                 }
+            } else if (item.get() instanceof PneumaticCraftBucketItem) {
+                event.register(new DynamicFluidContainerModel.Colors(), item.get());
             }
         }
     }
 
     @SubscribeEvent
-    public static void registerBlockColorHandlers(ColorHandlerEvent.Block event) {
+    public static void registerBlockColorHandlers(RegisterColorHandlersEvent.Block event) {
         for (RegistryObject<Block> block : ModBlocks.BLOCKS.getEntries()) {
-            if (block.get() instanceof ITintableBlock) {
-                event.getBlockColors().register(((ITintableBlock) block.get())::getTintColor, block.get());
+            if (block.get() instanceof ITintableBlock tintable) {
+                event.register(tintable::getTintColor, block.get());
             } else if (block.get() instanceof AbstractCamouflageBlock) {
-                event.getBlockColors().register((state, blockAccess, pos, tintIndex) -> {
-                    if (blockAccess != null && pos != null) {
-                        BlockEntity te = blockAccess.getBlockEntity(pos);
+                event.register((state, level, pos, tintIndex) -> {
+                    if (level != null && pos != null) {
+                        BlockEntity te = level.getBlockEntity(pos);
                         if (te instanceof CamouflageableBlockEntity camo && camo.getCamouflage() != null) {
                             return event.getBlockColors().getColor(camo.getCamouflage(), te.getLevel(), pos, tintIndex);
                         }

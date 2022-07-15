@@ -34,7 +34,7 @@ public class FluidTagPresentCondition implements ICondition {
     private final TagKey<Fluid> tagKey;
 
     public FluidTagPresentCondition(ResourceLocation tagName) {
-        this.tagKey = TagKey.create(Registry.FLUID_REGISTRY, tagName);;
+        this.tagKey = TagKey.create(Registry.FLUID_REGISTRY, tagName);
     }
 
     public FluidTagPresentCondition(String tagName) {

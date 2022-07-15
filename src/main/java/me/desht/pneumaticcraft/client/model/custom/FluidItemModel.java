@@ -18,26 +18,21 @@
 package me.desht.pneumaticcraft.client.model.custom;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexFormatElement;
 import com.mojang.datafixers.util.Pair;
-import com.mojang.math.Transformation;
 import me.desht.pneumaticcraft.client.render.fluid.TankRenderInfo;
 import me.desht.pneumaticcraft.common.item.IFluidRendered;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.BlockModel;
 import net.minecraft.client.renderer.block.model.ItemOverrides;
-import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.*;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.LivingEntity;
@@ -47,15 +42,13 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.client.IFluidTypeRenderProperties;
-import net.minecraftforge.client.RenderProperties;
-import net.minecraftforge.client.model.IModelConfiguration;
-import net.minecraftforge.client.model.IModelLoader;
-import net.minecraftforge.client.model.PerspectiveMapWrapper;
-import net.minecraftforge.client.model.data.IDynamicBakedModel;
-import net.minecraftforge.client.model.data.IModelData;
-import net.minecraftforge.client.model.geometry.IModelGeometry;
-import net.minecraftforge.client.model.pipeline.BakedQuadBuilder;
+import net.minecraftforge.client.extensions.common.IClientFluidTypeExtensions;
+import net.minecraftforge.client.model.IDynamicBakedModel;
+import net.minecraftforge.client.model.data.ModelData;
+import net.minecraftforge.client.model.geometry.IGeometryBakingContext;
+import net.minecraftforge.client.model.geometry.IGeometryLoader;
+import net.minecraftforge.client.model.geometry.IUnbakedGeometry;
+import net.minecraftforge.client.model.pipeline.QuadBakingVertexConsumer;
 import net.minecraftforge.fluids.IFluidTank;
 
 import javax.annotation.Nonnull;
@@ -65,28 +58,28 @@ import java.util.function.Function;
 
 public class FluidItemModel implements IDynamicBakedModel {
     private final BakedModel bakedBaseModel;
-    private final ImmutableMap<ItemTransforms.TransformType, Transformation> transformMap;
+//    private final ImmutableMap<ItemTransforms.TransformType, Transformation> transformMap;
     private final ItemOverrides overrideList = new FluidOverridesList(this);
     private List<TankRenderInfo> tanksToRender = Collections.emptyList();
 
-    private FluidItemModel(BakedModel bakedBaseModel, ImmutableMap<ItemTransforms.TransformType, Transformation> transformMap) {
+    private FluidItemModel(BakedModel bakedBaseModel/*, ImmutableMap<ItemTransforms.TransformType, Transformation> transformMap*/) {
         this.bakedBaseModel = bakedBaseModel;
-        this.transformMap = transformMap;
+//        this.transformMap = transformMap;
     }
 
     @Nonnull
     @Override
-    public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, @Nonnull RandomSource rand, @Nonnull IModelData extraData) {
-        List<BakedQuad> res = new ArrayList<>(bakedBaseModel.getQuads(state, side, rand, extraData));
+    public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, @Nonnull RandomSource rand, @Nonnull ModelData extraData, RenderType renderType) {
+        List<BakedQuad> res = new ArrayList<>(bakedBaseModel.getQuads(state, side, rand, extraData, renderType));
 
         for (TankRenderInfo info : tanksToRender) {
             IFluidTank tank = info.getTank();
             if (tank.getFluid().isEmpty()) continue;
             Fluid fluid = tank.getFluid().getFluid();
-            IFluidTypeRenderProperties renderProps = RenderProperties.get(fluid);
+            IClientFluidTypeExtensions renderProps = IClientFluidTypeExtensions.of(fluid);
             ResourceLocation texture = renderProps.getStillTexture(tank.getFluid());
             TextureAtlasSprite still = Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(texture);
-            int color = renderProps.getColorTint(tank.getFluid());
+            int color = renderProps.getTintColor(tank.getFluid());
             float[] cols = new float[]{(color >> 24 & 0xFF) / 255F, (color >> 16 & 0xFF) / 255F, (color >> 8 & 0xFF) / 255F, (color & 0xFF) / 255F};
             AABB bounds = getRenderBounds(tank, info.getBounds());
             float bx1 = (float) (bounds.minX * 16);
@@ -137,44 +130,27 @@ public class FluidItemModel implements IDynamicBakedModel {
     }
 
     private BakedQuad createQuad(List<Vec3> vecs, float[] cols, TextureAtlasSprite sprite, Direction face, float u1, float u2, float v1, float v2) {
-        BakedQuadBuilder builder = new BakedQuadBuilder(sprite);
+        BakedQuad[] quad = new BakedQuad[1];
+        QuadBakingVertexConsumer quadBaker = new QuadBakingVertexConsumer(q -> quad[0] = q);
         Vec3 normal = Vec3.atLowerCornerOf(face.getNormal());
-        putVertex(builder, normal, vecs.get(0).x, vecs.get(0).y, vecs.get(0).z, u1, v1, sprite, cols);
-        putVertex(builder, normal, vecs.get(1).x, vecs.get(1).y, vecs.get(1).z, u1, v2, sprite, cols);
-        putVertex(builder, normal, vecs.get(2).x, vecs.get(2).y, vecs.get(2).z, u2, v2, sprite, cols);
-        putVertex(builder, normal, vecs.get(3).x, vecs.get(3).y, vecs.get(3).z, u2, v1, sprite, cols);
-        builder.setQuadOrientation(face);
-        return builder.build();
+
+        putVertex(quadBaker, normal, vecs.get(0).x, vecs.get(0).y, vecs.get(0).z, u1, v1, sprite, cols, face);
+        putVertex(quadBaker, normal, vecs.get(1).x, vecs.get(1).y, vecs.get(1).z, u1, v2, sprite, cols, face);
+        putVertex(quadBaker, normal, vecs.get(2).x, vecs.get(2).y, vecs.get(2).z, u2, v2, sprite, cols, face);
+        putVertex(quadBaker, normal, vecs.get(3).x, vecs.get(3).y, vecs.get(3).z, u2, v1, sprite, cols, face);
+
+        return quad[0];
     }
 
-    private void putVertex(BakedQuadBuilder builder, Vec3 normal,
-                           double x, double y, double z, float u, float v, TextureAtlasSprite sprite, float[] col) {
-        ImmutableList<VertexFormatElement> elements = builder.getVertexFormat().getElements().asList();
-        for (int e = 0; e < elements.size(); e++) {
-            switch (elements.get(e).getUsage()) {
-                case POSITION:
-                    builder.put(e, (float)x, (float)y, (float)z);
-                    break;
-                case COLOR:
-                    builder.put(e, col[1], col[2], col[3], col[0]);
-                    break;
-                case UV:
-                    if (elements.get(e).getIndex() == 0) {
-                        float iu = sprite.getU(u);
-                        float iv = sprite.getV(v);
-                        builder.put(e, iu, iv);
-                    } else {
-                        builder.put(e);
-                    }
-                    break;
-                case NORMAL:
-                    builder.put(e, (float) normal.x, (float) normal.y, (float) normal.z);
-                    break;
-                default:
-                    builder.put(e);
-                    break;
-            }
-        }
+    private void putVertex(QuadBakingVertexConsumer quadBaker, Vec3 normal,
+                           double x, double y, double z, float u, float v, TextureAtlasSprite sprite, float[] cols, Direction face) {
+        quadBaker.vertex(x, y, z);
+        quadBaker.normal((float) normal.x, (float) normal.y, (float) normal.z);
+        quadBaker.color(cols[1], cols[2], cols[3], cols[0]);
+        quadBaker.uv(u, v);
+        quadBaker.setSprite(sprite);
+        quadBaker.setDirection(face);
+        quadBaker.endVertex();
     }
 
     @Override
@@ -198,7 +174,7 @@ public class FluidItemModel implements IDynamicBakedModel {
     }
 
     @Override
-    public TextureAtlasSprite getParticleIcon(@Nonnull IModelData data) {
+    public TextureAtlasSprite getParticleIcon(@Nonnull ModelData data) {
         return bakedBaseModel.getParticleIcon(data);
     }
 
@@ -212,17 +188,17 @@ public class FluidItemModel implements IDynamicBakedModel {
         return overrideList;
     }
 
-    @Override
-    public boolean doesHandlePerspectives() {
-        return true;
-    }
+//    @Override
+//    public boolean doesHandlePerspectives() {
+//        return true;
+//    }
+//
+//    @Override
+//    public BakedModel handlePerspective(ItemTransforms.TransformType cameraTransformType, PoseStack mat) {
+//        return PerspectiveMapWrapper.handlePerspective(this, transformMap, cameraTransformType, mat);
+//    }
 
-    @Override
-    public BakedModel handlePerspective(ItemTransforms.TransformType cameraTransformType, PoseStack mat) {
-        return PerspectiveMapWrapper.handlePerspective(this, transformMap, cameraTransformType, mat);
-    }
-
-    public static class Geometry implements IModelGeometry<Geometry> {
+    public static class Geometry implements IUnbakedGeometry<Geometry> {
         private final BlockModel baseModel;
 
         Geometry(BlockModel baseModel) {
@@ -230,25 +206,21 @@ public class FluidItemModel implements IDynamicBakedModel {
         }
 
         @Override
-        public BakedModel bake(IModelConfiguration owner, ModelBakery bakery, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelTransform, ItemOverrides overrides, ResourceLocation modelLocation) {
-            return new FluidItemModel(baseModel.bake(bakery, baseModel.parent, spriteGetter, modelTransform, modelLocation, true), PerspectiveMapWrapper.getTransforms(baseModel.getTransforms()));
+        public BakedModel bake(IGeometryBakingContext owner, ModelBakery bakery, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelTransform, ItemOverrides overrides, ResourceLocation modelLocation) {
+            return new FluidItemModel(baseModel.bake(bakery, baseModel.parent, spriteGetter, modelTransform, modelLocation, true)/*, PerspectiveMapWrapper.getTransforms(baseModel.getTransforms())*/);
         }
 
         @Override
-        public Collection<Material> getTextures(IModelConfiguration owner, Function<ResourceLocation, UnbakedModel> modelGetter, Set<Pair<String, String>> missingTextureErrors) {
+        public Collection<Material> getMaterials(IGeometryBakingContext owner, Function<ResourceLocation, UnbakedModel> modelGetter, Set<Pair<String, String>> missingTextureErrors) {
             return baseModel.getMaterials(modelGetter, missingTextureErrors);
         }
     }
 
-    public enum Loader implements IModelLoader<Geometry> {
+    public enum Loader implements IGeometryLoader<Geometry> {
         INSTANCE;
 
         @Override
-        public void onResourceManagerReload(ResourceManager resourceManager) {
-        }
-
-        @Override
-        public Geometry read(JsonDeserializationContext deserializationContext, JsonObject modelContents) {
+        public Geometry read(JsonObject modelContents, JsonDeserializationContext deserializationContext) {
             BlockModel baseModel = deserializationContext.deserialize(GsonHelper.getAsJsonObject(modelContents, "base_model"), BlockModel.class);
             return new FluidItemModel.Geometry(baseModel);
         }

@@ -64,7 +64,7 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.client.IItemRenderProperties;
+import net.minecraftforge.client.extensions.common.IClientItemExtensions;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -91,7 +91,7 @@ public class MinigunItem extends PressurizableItem implements
     }
 
     @Override
-    public void initializeClient(Consumer<IItemRenderProperties> consumer) {
+    public void initializeClient(Consumer<IClientItemExtensions> consumer) {
         consumer.accept(new MinigunItemRenderer.RenderProperties());
     }
 
@@ -190,7 +190,7 @@ public class MinigunItem extends PressurizableItem implements
         ItemStack stack = player.getItemInHand(handIn);
         if (player.isShiftKeyDown()) {
             if (!world.isClientSide && stack.getCount() == 1) {
-                NetworkHooks.openGui((ServerPlayer) player, new MenuProvider() {
+                NetworkHooks.openScreen((ServerPlayer) player, new MenuProvider() {
                     @Override
                     public Component getDisplayName() {
                         return stack.getHoverName();
@@ -317,7 +317,7 @@ public class MinigunItem extends PressurizableItem implements
     public static class Listener {
         @SubscribeEvent
         public static void onLivingAttack(LivingAttackEvent event) {
-            if (event.getEntityLiving() instanceof Player player
+            if (event.getEntity() instanceof Player player
                     && event.getSource() instanceof EntityDamageSource d && d.isThorns()) {
                 // don't take thorns damage when attacking with minigun (it applies direct damage, but it's effectively ranged...)
                 ItemStack stack = player.getMainHandItem();

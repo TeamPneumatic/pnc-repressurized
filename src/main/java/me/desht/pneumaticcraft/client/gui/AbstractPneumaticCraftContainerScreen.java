@@ -207,7 +207,7 @@ public abstract class AbstractPneumaticCraftContainerScreen<C extends AbstractPn
     }
 
     protected String upgradeCategory() {
-        ResourceLocation regName = PneumaticCraftUtils.getRegistryName(ForgeRegistries.BLOCK_ENTITIES, te.getType()).orElseThrow();
+        ResourceLocation regName = PneumaticCraftUtils.getRegistryName(ForgeRegistries.BLOCK_ENTITY_TYPES, te.getType()).orElseThrow();
         return PneumaticCraftUtils.modDefaultedString(regName);
     }
 

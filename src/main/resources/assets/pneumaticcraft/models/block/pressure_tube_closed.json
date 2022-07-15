@@ -3,6 +3,7 @@
 	"textures": {
 		"pipeplug": "pneumaticcraft:model/tube_closed"
 	},
+	"render_type": "solid",
 	"elements": [
 		{
 			"from": [7, 9.997, 7],

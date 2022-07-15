@@ -59,7 +59,7 @@ import net.minecraftforge.event.AnvilUpdateEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.living.*;
 import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.event.world.BlockEvent;
+import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 import java.util.*;
@@ -82,14 +82,14 @@ public class PneumaticArmorHandler {
         // LivingSetAttackTargetEvent gets continuously fired even if the mob was already targeting the same target
         // so we need to track locally what is targeting whom, and only warn the player if the mob is newly
         // targeting them - otherwise, massive spam.
-        int mobId = event.getEntityLiving().getId();
+        int mobId = event.getEntity().getId();
         if (event.getTarget() instanceof ServerPlayer player) {
             if (isPneumaticArmorPiece(player, EquipmentSlot.HEAD)) {
                 if (!targetingTracker.containsKey(mobId) || targetingTracker.get(mobId) != event.getTarget().getId()) {
                     CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
                     if (handler.upgradeUsable(CommonUpgradeHandlers.entityTrackerHandler, true)) {
                         Map<String, Integer> map = targetWarnings.computeIfAbsent(player.getUUID(), k -> new HashMap<>());
-                        map.merge(event.getEntityLiving().getName().getString(), 1, Integer::sum);
+                        map.merge(event.getEntity().getName().getString(), 1, Integer::sum);
                     }
                 }
             }
@@ -101,7 +101,7 @@ public class PneumaticArmorHandler {
 
     @SubscribeEvent
     public void onEntityDeath(LivingDeathEvent event) {
-        targetingTracker.remove(event.getEntityLiving().getId());
+        targetingTracker.remove(event.getEntity().getId());
     }
 
     @SubscribeEvent
@@ -171,7 +171,7 @@ public class PneumaticArmorHandler {
 
     @SubscribeEvent
     public void onLivingAttack(LivingAttackEvent event) {
-        if (event.getEntityLiving() instanceof Player player) {
+        if (event.getEntity() instanceof Player player) {
             if (isPneumaticArmorPiece(player, EquipmentSlot.CHEST) && event.getSource().isFire() && !(player.isCreative() || player.isSpectator())) {
                 // security upgrade in chestplate protects from fire
                 CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
@@ -215,7 +215,7 @@ public class PneumaticArmorHandler {
      */
     @SubscribeEvent
     public void onPlayerJump(LivingEvent.LivingJumpEvent event) {
-        if (event.getEntityLiving() instanceof Player player) {
+        if (event.getEntity() instanceof Player player) {
             ItemStack stack = player.getItemBySlot(EquipmentSlot.LEGS);
             if (!(stack.getItem() instanceof PneumaticArmorItem)) {
                 return;
@@ -246,10 +246,10 @@ public class PneumaticArmorHandler {
      */
     @SubscribeEvent
     public void breakSpeedCheck(PlayerEvent.BreakSpeed event) {
-        Player player = event.getPlayer();
+        Player player = event.getEntity();
         int max = PneumaticValues.PNEUMATIC_JET_BOOTS_MAX_UPGRADES;
         if (isPneumaticArmorPiece(player, EquipmentSlot.FEET) && !player.isOnGround()) {
-            CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(event.getPlayer());
+            CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(event.getEntity());
             JetBootsState jbState = JetBootsStateTracker.getTracker(player).getJetBootsState(player);
             if (jbState.isEnabled() && jbState.isBuilderMode()) {
                 int n = (max + 1) - handler.getUpgradeCount(EquipmentSlot.FEET, ModUpgrades.JET_BOOTS.get(), max);
@@ -343,12 +343,12 @@ public class PneumaticArmorHandler {
     @SubscribeEvent
     public void onPlayerTrack(PlayerEvent.StartTracking event) {
         // keep other players up to date with the state of each player's jetboots activity
-        if (event.getPlayer() instanceof ServerPlayer && event.getTarget() instanceof ServerPlayer trackedPlayer) {
+        if (event.getEntity() instanceof ServerPlayer && event.getTarget() instanceof ServerPlayer trackedPlayer) {
             if (trackedPlayer.getItemBySlot(EquipmentSlot.FEET).getItem() == ModItems.PNEUMATIC_BOOTS.get()) {
                 CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(trackedPlayer);
                 if (handler.getUpgradeCount(EquipmentSlot.FEET, ModUpgrades.JET_BOOTS.get()) > 0) {
                     JetBootsState state = JetBootsStateTracker.getServerTracker().getJetBootsState(trackedPlayer);
-                    NetworkHandler.sendToPlayer(new PacketJetBootsStateSync(trackedPlayer, state), (ServerPlayer) event.getPlayer());
+                    NetworkHandler.sendToPlayer(new PacketJetBootsStateSync(trackedPlayer, state), (ServerPlayer) event.getEntity());
                 }
             }
         }

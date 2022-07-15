@@ -54,9 +54,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.client.model.ModelDataManager;
-import net.minecraftforge.client.model.data.IModelData;
-import net.minecraftforge.client.model.data.ModelDataMap;
+import net.minecraftforge.client.model.data.ModelData;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.CapabilityEnergy;
@@ -107,7 +105,7 @@ public abstract class AbstractPneumaticCraftBlockEntity extends BlockEntity
     }
 
     private String getBlockTranslationKey() {
-        return "block.pneumaticcraft." + ForgeRegistries.BLOCK_ENTITIES.getResourceKey(getType()).map(rk -> rk.location().getPath()).orElse("unknown");
+        return "block.pneumaticcraft." + ForgeRegistries.BLOCK_ENTITY_TYPES.getResourceKey(getType()).map(rk -> rk.location().getPath()).orElse("unknown");
     }
 
     @Override
@@ -362,12 +360,12 @@ public abstract class AbstractPneumaticCraftBlockEntity extends BlockEntity
 
     @Nonnull
     @Override
-    public IModelData getModelData() {
+    public ModelData getModelData() {
         if (this instanceof CamouflageableBlockEntity c) {
-            return new ModelDataMap.Builder()
-                    .withInitial(AbstractCamouflageBlock.BLOCK_ACCESS, level)
-                    .withInitial(AbstractCamouflageBlock.BLOCK_POS, worldPosition)
-                    .withInitial(AbstractCamouflageBlock.CAMO_STATE, c.getCamouflage())
+            return ModelData.builder()
+                    .with(AbstractCamouflageBlock.BLOCK_ACCESS, level)
+                    .with(AbstractCamouflageBlock.BLOCK_POS, worldPosition)
+                    .with(AbstractCamouflageBlock.CAMO_STATE, c.getCamouflage())
                     .build();
         } else {
             return super.getModelData();
@@ -502,7 +500,7 @@ public abstract class AbstractPneumaticCraftBlockEntity extends BlockEntity
 
     @Override
     public String getPeripheralType() {
-        return ForgeRegistries.BLOCK_ENTITIES.getResourceKey(getType()).map(rk -> rk.location().toString()).orElse("unknown");
+        return ForgeRegistries.BLOCK_ENTITY_TYPES.getResourceKey(getType()).map(rk -> rk.location().toString()).orElse("unknown");
     }
 
     public abstract IItemHandler getPrimaryInventory();
@@ -637,8 +635,9 @@ public abstract class AbstractPneumaticCraftBlockEntity extends BlockEntity
     public void requestModelDataUpdate() {
         // it is possible for the BE's client world to be a fake one, e.g. Create schematicannon previews
         // https://github.com/TeamPneumatic/pnc-repressurized/issues/812
+        // TODO: 1.19 client refactor may make this workaround unnecessary - confirm
         if (level != null && level.isClientSide && level == ClientUtils.getClientLevel()) {
-            ModelDataManager.requestModelDataRefresh(this);
+            level.getModelDataManager().requestRefresh(this);
         }
     }
 

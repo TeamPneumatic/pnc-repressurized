@@ -193,8 +193,8 @@ public class MicromissilesItem extends Item {
         @SubscribeEvent
         public static void onMissilesRepair(AnvilRepairEvent event) {
             // allow repeated repairing without XP costs spiralling
-            if (event.getItemResult().getItem() instanceof MicromissilesItem && event.getItemResult().hasTag()) {
-                event.getItemResult().setRepairCost(0);
+            if (event.getOutput().getItem() instanceof MicromissilesItem && event.getOutput().hasTag()) {
+                event.getOutput().setRepairCost(0);
             }
         }
     }

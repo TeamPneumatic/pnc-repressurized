@@ -23,6 +23,7 @@ import me.desht.pneumaticcraft.api.item.PNCUpgrade;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
+import org.jetbrains.annotations.ApiStatus;
 
 import javax.annotation.Nonnull;
 import java.util.function.Supplier;
@@ -51,6 +52,7 @@ public interface IArmorUpgradeHandler<T extends IArmorExtensionData> {
      *
      * @return the internal numeric index for this upgrade
      */
+    @ApiStatus.Internal
     int getIndex();
 
     /**
@@ -58,6 +60,7 @@ public interface IArmorUpgradeHandler<T extends IArmorExtensionData> {
      *
      * @param index the internal numeric index for this upgrade
      */
+    @ApiStatus.Internal
     void setIndex(int index);
 
     /**

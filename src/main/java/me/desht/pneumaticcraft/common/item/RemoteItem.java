@@ -115,10 +115,10 @@ public class RemoteItem extends Item {
     private void openGui(ServerPlayer player, ItemStack remote, InteractionHand hand) {
         if (player.isCrouching()) {
             if (isAllowedToEdit(player, remote)) {
-                NetworkHooks.openGui(player, new RemoteEditorContainerProvider(remote, hand), buf -> toBytes(buf, player, hand, true));
+                NetworkHooks.openScreen(player, new RemoteEditorContainerProvider(remote, hand), buf -> toBytes(buf, player, hand, true));
             }
         } else {
-            NetworkHooks.openGui(player, new RemoteContainerProvider(remote, hand), buf -> toBytes(buf, player, hand, false));
+            NetworkHooks.openScreen(player, new RemoteContainerProvider(remote, hand), buf -> toBytes(buf, player, hand, false));
         }
     }
 

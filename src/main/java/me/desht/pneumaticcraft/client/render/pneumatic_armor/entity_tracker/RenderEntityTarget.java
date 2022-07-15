@@ -251,7 +251,7 @@ public class RenderEntityTarget {
         return hackTime;
     }
 
-    public boolean scroll(InputEvent.MouseScrollEvent event) {
+    public boolean scroll(InputEvent.MouseScrollingEvent event) {
         if (isInitialized() && isPlayerLookingAtTarget()) {
             return stat.mouseScrolled(event.getMouseX(), event.getMouseY(), event.getScrollDelta());
         }

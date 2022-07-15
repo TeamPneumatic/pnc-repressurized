@@ -18,7 +18,6 @@
 package me.desht.pneumaticcraft.common.recipes.amadron;
 
 import com.google.gson.JsonObject;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import me.desht.pneumaticcraft.api.crafting.AmadronTradeResource;
 import me.desht.pneumaticcraft.api.crafting.recipe.AmadronRecipe;
 import me.desht.pneumaticcraft.common.DroneRegistry;
@@ -250,7 +249,7 @@ public class AmadronPlayerOffer extends AmadronOffer {
         return json;
     }
 
-    public static AmadronPlayerOffer fromJson(JsonObject json) throws CommandSyntaxException {
+    public static AmadronPlayerOffer fromJson(JsonObject json) {
         ResourceLocation id = new ResourceLocation(GsonHelper.getAsString(json, "id"));
         AmadronRecipe recipe = ModRecipeSerializers.AMADRON_OFFERS.get().fromJson(id, json);
         if (recipe instanceof AmadronOffer offer) {

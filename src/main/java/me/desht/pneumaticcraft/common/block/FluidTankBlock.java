@@ -197,14 +197,14 @@ public class FluidTankBlock extends AbstractPneumaticCraftBlock
         }
 
         @Override
-        public boolean hasContainerItem(ItemStack stack) {
+        public boolean hasCraftingRemainingItem(ItemStack stack) {
             // the tank is a container item if it's being used in fluid crafting
             // but an empty tank used in crafting is not a container item
             return FluidUtil.getFluidContained(stack).map(f -> !f.isEmpty()).orElse(false);
         }
 
         @Override
-        public ItemStack getContainerItem(ItemStack itemStack) {
+        public ItemStack getCraftingRemainingItem(ItemStack itemStack) {
             boolean creative = UpgradableItemUtils.hasCreativeUpgrade(itemStack);
             return FluidUtil.getFluidHandler(itemStack.copy()).map(handler -> {
                 // TODO can (or indeed should) we support recipes which drain amounts other than 1000mB?
@@ -220,7 +220,7 @@ public class FluidTankBlock extends AbstractPneumaticCraftBlock
         }
 
         @Override
-        public int getItemStackLimit(ItemStack stack) {
+        public int getMaxStackSize(ItemStack stack) {
             // empty tanks may stack, but not filled tanks (even if filled to the same level)
             // note: can't use hasContainerItem() here: it can lead to infinite recursion on init
             // https://github.com/TeamPneumatic/pnc-repressurized/issues/666

@@ -24,7 +24,7 @@ import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.client.event.ScreenOpenEvent;
+import net.minecraftforge.client.event.ScreenEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.event.config.ModConfigEvent;
@@ -51,10 +51,10 @@ public class Patchouli implements IThirdParty, IDocsProvider {
     }
 
     @SubscribeEvent
-    public void onGuiOpen(ScreenOpenEvent event) {
+    public void onGuiOpen(ScreenEvent.Opening event) {
         if (prevGui != null) {
             // reopen the programmer GUI if that's where we came from
-            event.setScreen(prevGui);
+            event.setNewScreen(prevGui);
             prevGui = null;
         }
     }

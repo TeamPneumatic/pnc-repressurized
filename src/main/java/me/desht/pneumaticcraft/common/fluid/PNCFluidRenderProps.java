@@ -18,11 +18,11 @@
 package me.desht.pneumaticcraft.common.fluid;
 
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.client.IFluidTypeRenderProperties;
+import net.minecraftforge.client.extensions.common.IClientFluidTypeExtensions;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
-public class PNCFluidRenderProps implements IFluidTypeRenderProperties {
+public class PNCFluidRenderProps implements IClientFluidTypeExtensions {
     private final ResourceLocation still;
     private final ResourceLocation flowing;
     private final int colorTint;
@@ -52,7 +52,7 @@ public class PNCFluidRenderProps implements IFluidTypeRenderProperties {
     }
 
     @Override
-    public int getColorTint() {
+    public int getTintColor() {
         return colorTint;
     }
 }

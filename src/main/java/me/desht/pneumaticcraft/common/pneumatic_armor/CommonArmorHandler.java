@@ -42,7 +42,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.entity.EntityJoinWorldEvent;
+import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -115,11 +115,11 @@ public class CommonArmorHandler implements ICommonArmorHandler {
         @SubscribeEvent
         public static void onPlayerLeave(PlayerEvent.PlayerLoggedOutEvent event) {
             // called server side when player logs off
-            clearHandlerForPlayer(event.getPlayer());
+            clearHandlerForPlayer(event.getEntity());
         }
 
         @SubscribeEvent
-        public static void onPlayerJoinWorld(EntityJoinWorldEvent event) {
+        public static void onPlayerJoinWorld(EntityJoinLevelEvent event) {
             // this will happen when a player changes dimension; they get a new player entity, so the armor
             // handler must be updated to reflect that
             if (event.getEntity() instanceof Player player) {
@@ -132,7 +132,7 @@ public class CommonArmorHandler implements ICommonArmorHandler {
     @Mod.EventBusSubscriber(modid = Names.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
     public static class ClientListeners {
         @SubscribeEvent
-        public static void onClientDisconnect(ClientPlayerNetworkEvent.LoggedOutEvent event) {
+        public static void onClientDisconnect(ClientPlayerNetworkEvent.LoggingOut event) {
             // called client side when client disconnects
             Player player = Minecraft.getInstance().player;
             if (player != null) {

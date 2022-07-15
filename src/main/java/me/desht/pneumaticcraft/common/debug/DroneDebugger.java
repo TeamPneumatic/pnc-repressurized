@@ -124,10 +124,10 @@ public class DroneDebugger {
     public static class Listener {
         // with thanks to @Zorn_Taov for this code, slightly adapted for drone debugger integration by desht...
         @SubscribeEvent
-        public static void onLivingUpdateEvent(LivingEvent.LivingUpdateEvent event) {
+        public static void onLivingUpdateEvent(LivingEvent.LivingTickEvent event) {
             if (!ConfigHelper.common().drones.droneDebuggerPathParticles.get()
-                    || !(event.getEntityLiving() instanceof DroneEntity drone)
-                    || event.getEntityLiving().level.isClientSide) {
+                    || !(event.getEntity() instanceof DroneEntity drone)
+                    || event.getEntity().level.isClientSide) {
                 return;
             }
 

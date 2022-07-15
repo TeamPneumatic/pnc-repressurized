@@ -196,14 +196,14 @@ public class FluidIngredient extends Ingredient {
      * Test the given item against this ingredient. The item must be a fluid container item (providing the
      * {@link CapabilityFluidHandler#FLUID_HANDLER_ITEM_CAPABILITY} capability) containing fluid which matches
      * this ingredient, AND it must be a container item
-     * ({@link net.minecraftforge.common.extensions.IForgeItem#hasContainerItem(ItemStack)} must return true).
+     * ({@link net.minecraftforge.common.extensions.IForgeItem#hasCraftingRemainingItem(ItemStack)} must return true).
      *
      * @param stack the itemstack to test
      * @return true if the fluid in the given itemstack matches this ingredient
      */
     @Override
     public boolean test(@Nullable ItemStack stack) {
-        return stack != null && stack.hasContainerItem() && FluidUtil.getFluidContained(stack).map(this::testFluid).orElse(false);
+        return stack != null && stack.hasCraftingRemainingItem() && FluidUtil.getFluidContained(stack).map(this::testFluid).orElse(false);
     }
 
     @Override

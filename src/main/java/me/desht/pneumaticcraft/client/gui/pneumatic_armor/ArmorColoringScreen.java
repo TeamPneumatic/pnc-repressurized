@@ -42,7 +42,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.client.gui.GuiUtils;
+import net.minecraftforge.client.gui.ScreenUtils;
 
 import java.util.*;
 
@@ -262,7 +262,7 @@ public class ArmorColoringScreen extends AbstractPneumaticCraftScreen {
         protected void renderBg(PoseStack pPoseStack, Minecraft pMinecraft, int pMouseX, int pMouseY) {
             int xPos = this.x + (int)(this.value * (double)(this.width - 8));
             int vOff = (this.isHoveredOrFocused() ? 2 : 1) * 20;
-            GuiUtils.drawContinuousTexturedBox(pPoseStack, WIDGETS_LOCATION, xPos, this.y, 0, 46 + vOff, 8, this.height, 200, 20, 2, 3, 2, 2, this.getBlitOffset());
+            ScreenUtils.blitWithBorder(pPoseStack, WIDGETS_LOCATION, xPos, this.y, 0, 46 + vOff, 8, this.height, 200, 20, 2, 3, 2, 2, this.getBlitOffset());
         }
     }
 

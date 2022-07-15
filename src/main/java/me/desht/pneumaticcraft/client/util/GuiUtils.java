@@ -43,9 +43,8 @@ import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
-import net.minecraftforge.client.IFluidTypeRenderProperties;
-import net.minecraftforge.client.RenderProperties;
-import net.minecraftforge.client.model.data.EmptyModelData;
+import net.minecraftforge.client.extensions.common.IClientFluidTypeExtensions;
+import net.minecraftforge.client.model.data.ModelData;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidTank;
 import org.apache.commons.lang3.StringUtils;
@@ -84,7 +83,7 @@ public class GuiUtils {
 
         bindTexture(InventoryMenu.BLOCK_ATLAS);
         final MultiBufferSource.BufferSource buffers = mc.renderBuffers().bufferSource();
-        mc.getBlockRenderer().renderSingleBlock(block, matrixStack, buffers, RenderUtils.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, EmptyModelData.INSTANCE);
+        mc.getBlockRenderer().renderSingleBlock(block, matrixStack, buffers, RenderUtils.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, ModelData.EMPTY, null);
         buffers.endBatch();
 
         matrixStack.popPose();
@@ -103,7 +102,7 @@ public class GuiUtils {
         }
 
         Fluid fluid = fluidStack.getFluid();
-        IFluidTypeRenderProperties renderProps = RenderProperties.get(fluid);
+        IClientFluidTypeExtensions renderProps = IClientFluidTypeExtensions.of(fluid);
         ResourceLocation fluidStill = renderProps.getStillTexture(fluidStack);
         if (fluidStill == null) fluidStill = MissingTextureAtlasSprite.getLocation();
         TextureAtlasSprite fluidStillSprite = Minecraft.getInstance().getTextureAtlas(TextureAtlas.LOCATION_BLOCKS).apply(fluidStill);
@@ -127,7 +126,7 @@ public class GuiUtils {
 
         int yStart = bounds.getY() + bounds.getHeight();
         if (fluid.getFluidType().getDensity() < 0) yStart -= (bounds.getHeight() - scaledAmount);
-        int[] cols = RenderUtils.decomposeColor(renderProps.getColorTint(fluidStack));
+        int[] cols = RenderUtils.decomposeColor(renderProps.getTintColor(fluidStack));
 
         for (int xTile = 0; xTile <= xTileCount; xTile++) {
             for (int yTile = 0; yTile <= yTileCount; yTile++) {

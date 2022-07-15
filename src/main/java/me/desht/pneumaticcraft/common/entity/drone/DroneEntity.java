@@ -905,7 +905,7 @@ public class DroneEntity extends AbstractDroneEntity implements
 
     private Item getDroneItem() {
         // return the item which has the same name as our entity type
-        return PneumaticCraftUtils.getRegistryName(ForgeRegistries.ENTITIES, getType())
+        return PneumaticCraftUtils.getRegistryName(ForgeRegistries.ENTITY_TYPES, getType())
                 .map(ForgeRegistries.ITEMS::getValue)
                 .orElseThrow();
     }

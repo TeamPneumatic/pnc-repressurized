@@ -74,7 +74,7 @@ public class MinigunMagazineScreen extends AbstractPneumaticCraftContainerScreen
     }
 
     @Override
-    public void drawExtras(ContainerScreenEvent.DrawForeground event) {
+    public void drawExtras(ContainerScreenEvent.Render.Foreground event) {
         if (lockedSlot >= 0) {
             // highlight the locked slot with a semitransparent green tint
             int minX = 26 + (lockedSlot % 2) * 18;

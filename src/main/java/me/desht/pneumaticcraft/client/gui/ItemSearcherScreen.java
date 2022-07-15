@@ -208,9 +208,9 @@ public class ItemSearcherScreen extends AbstractContainerScreen<ItemSearcherMenu
         String s = searchField.getValue().toLowerCase();
 
         List<ItemStack> applicableEntries = getSearchEntries()
-                                                .filter(entry -> entry.test(s))
-                                                .map(entry -> entry.stack)
-                                                .collect(Collectors.toList());
+                .filter(entry -> entry.test(s))
+                .map(entry -> entry.stack)
+                .toList();
 
         menu.itemList.addAll(applicableEntries);
 

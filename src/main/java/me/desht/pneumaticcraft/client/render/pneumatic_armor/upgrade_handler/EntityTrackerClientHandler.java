@@ -194,7 +194,7 @@ public class EntityTrackerClientHandler extends IArmorUpgradeClientHandler.Abstr
         getTargetsStream().forEach(RenderEntityTarget::selectAsDebuggingTarget);
     }
 
-    public boolean scroll(InputEvent.MouseScrollEvent event) {
+    public boolean scroll(InputEvent.MouseScrollingEvent event) {
         return getTargetsStream().anyMatch(target -> target.scroll(event));
     }
 

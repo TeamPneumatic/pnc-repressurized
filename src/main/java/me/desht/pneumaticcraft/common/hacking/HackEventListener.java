@@ -27,7 +27,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.entity.EntityJoinWorldEvent;
+import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
@@ -41,9 +41,9 @@ public enum HackEventListener {
     }
 
     @SubscribeEvent
-    public void worldTick(TickEvent.WorldTickEvent event) {
+    public void worldTick(TickEvent.LevelTickEvent event) {
         if (event.phase == TickEvent.Phase.END) {
-            HackTickTracker.getInstance(event.world).tick(event.world);
+            HackTickTracker.getInstance(event.level).tick(event.level);
         }
     }
 
@@ -53,16 +53,16 @@ public enum HackEventListener {
     }
 
     @SubscribeEvent
-    public void onEntityJoining(EntityJoinWorldEvent event) {
+    public void onEntityJoining(EntityJoinLevelEvent event) {
         // re-add any entity with hacks on it (i.e. before the last server restart) to the tracker
         event.getEntity().getCapability(PNCCapabilities.HACKING_CAPABILITY)
                 .ifPresent(hacking -> hacking.getCurrentHacks()
-                        .forEach(hack -> HackTickTracker.getInstance(event.getWorld()).trackEntity(event.getEntity(), hack)));
+                        .forEach(hack -> HackTickTracker.getInstance(event.getLevel()).trackEntity(event.getEntity(), hack)));
     }
 
     @SubscribeEvent
     public void onEntityTracking(PlayerEvent.StartTracking event) {
-        if (event.getPlayer() instanceof ServerPlayer sp) {
+        if (event.getEntity() instanceof ServerPlayer sp) {
             event.getTarget().getCapability(PNCCapabilities.HACKING_CAPABILITY).ifPresent(hacking -> {
                 List<ResourceLocation> ids = hacking.getCurrentHacks().stream().map(IHackableEntity::getHackableId).toList();
                 if (!ids.isEmpty()) {

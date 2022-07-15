@@ -6,6 +6,7 @@
 		"1": "pneumaticcraft:model/thermopneumatic_processing_plant",
 		"particle": "pneumaticcraft:model/thermopneumatic_processing_plant"
 	},
+	"render_type": "cutout_mipped",
 	"elements": [
 		{
 			"from": [14, 5, 5],

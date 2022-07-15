@@ -6,6 +6,7 @@
 		"1": "pneumaticcraft:model/liquid_compressor",
 		"particle": "pneumaticcraft:model/liquid_compressor"
 	},
+	"render_type": "cutout_mipped",
 	"elements": [
 		{
 			"from": [10.5, 5.5, 2.75],

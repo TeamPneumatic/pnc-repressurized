@@ -13,18 +13,19 @@ import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.RenderGameOverlayEvent;
-import net.minecraftforge.client.gui.ForgeIngameGui;
-import net.minecraftforge.client.gui.IIngameOverlay;
+import net.minecraftforge.client.event.RenderGuiOverlayEvent;
+import net.minecraftforge.client.gui.overlay.ForgeGui;
+import net.minecraftforge.client.gui.overlay.IGuiOverlay;
+import net.minecraftforge.client.gui.overlay.VanillaGuiOverlay;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import org.lwjgl.opengl.GL11;
 
-public class MinigunOverlay implements IIngameOverlay {
+public class MinigunOverlay implements IGuiOverlay {
     private static final float MINIGUN_TEXT_SIZE = 0.55f;
 
     @Override
-    public void render(ForgeIngameGui gui, PoseStack matrixStack, float partialTicks, int width, int height) {
+    public void render(ForgeGui gui, PoseStack matrixStack, float partialTicks, int width, int height) {
         Minecraft mc = Minecraft.getInstance();
         Player player = mc.player;
         if (player == null || !(player.getMainHandItem().getItem() instanceof MinigunItem itemMinigun) || !Minecraft.getInstance().options.getCameraType().isFirstPerson())
@@ -57,9 +58,9 @@ public class MinigunOverlay implements IIngameOverlay {
     @Mod.EventBusSubscriber(modid = Names.MOD_ID, value = Dist.CLIENT)
     public static class Listener {
         @SubscribeEvent
-        public static void crosshairsEvent(RenderGameOverlayEvent.PreLayer event) {
+        public static void crosshairsEvent(RenderGuiOverlayEvent.Pre event) {
             boolean firstPerson = Minecraft.getInstance().options.getCameraType().isFirstPerson();
-            if (event.getOverlay() == ForgeIngameGui.CROSSHAIR_ELEMENT
+            if (event.getOverlay().id().equals(VanillaGuiOverlay.CROSSHAIR.id())
                     && ClientUtils.getClientPlayer().getMainHandItem().getItem() instanceof MinigunItem
                     && firstPerson) {
                 event.setCanceled(true);

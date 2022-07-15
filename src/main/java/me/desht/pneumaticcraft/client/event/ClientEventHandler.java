@@ -64,7 +64,7 @@ public class ClientEventHandler {
     private static float currentScreenRoll = 0F;
 
     @SubscribeEvent
-    public static void screenTilt(EntityViewRenderEvent.CameraSetup event) {
+    public static void screenTilt(ViewportEvent.ComputeCameraAngles event) {
         if (event.getCamera().getEntity() instanceof Player player) {
             if (PneumaticArmorItem.isPneumaticArmorPiece(player, EquipmentSlot.FEET) && !player.isOnGround()) {
                 float targetRoll;
@@ -91,7 +91,7 @@ public class ClientEventHandler {
 
     @SubscribeEvent
     public static void playerPreRotateEvent(RenderPlayerEvent.Pre event) {
-        Player player = event.getPlayer();
+        Player player = event.getEntity();
         if (!player.isFallFlying()) {
             JetBootsState state = JetBootsStateTracker.getClientTracker().getJetBootsState(player);
             if (state != null && state.shouldRotatePlayer()) {
@@ -101,7 +101,7 @@ public class ClientEventHandler {
     }
 
     @SubscribeEvent
-    public static void adjustFOVEvent(FOVModifierEvent event) {
+    public static void adjustFOVEvent(ComputeFovModifierEvent event) {
         float modifier = 1.0f;
         for (EquipmentSlot slot : EquipmentSlot.values()) {
             ItemStack stack = event.getPlayer().getItemBySlot(slot);
@@ -110,11 +110,11 @@ public class ClientEventHandler {
             }
         }
 
-        event.setNewFov(event.getNewFov() * modifier);
+        event.setNewFovModifier(event.getNewFovModifier() * modifier);
     }
 
     @SubscribeEvent
-    public static void fogDensityEvent(EntityViewRenderEvent.RenderFogEvent event) {
+    public static void fogDensityEvent(ViewportEvent.RenderFog event) {
         if (event.getCamera().getFluidInCamera() == FogType.WATER && event.getCamera().getEntity() instanceof Player) {
             CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer();
             if (handler.upgradeUsable(CommonUpgradeHandlers.scubaHandler, true)) {
@@ -130,7 +130,7 @@ public class ClientEventHandler {
     private static final int Z_LEVEL = 233;  // should be just above the drawn itemstack
 
     @SubscribeEvent
-    public static void guiContainerForeground(ContainerScreenEvent.DrawForeground event) {
+    public static void guiContainerForeground(ContainerScreenEvent.Render.Foreground event) {
         // general extra rendering
         if (event.getContainerScreen() instanceof IExtraGuiHandling e) {
             e.drawExtras(event);
@@ -162,7 +162,7 @@ public class ClientEventHandler {
     }
 
     @SubscribeEvent
-    public static void onGuiDrawPost(ScreenEvent.DrawScreenEvent.Post event) {
+    public static void onGuiDrawPost(ScreenEvent.Render.Post event) {
         if (event.getScreen() instanceof AbstractPneumaticCraftContainerScreen || event.getScreen() instanceof AbstractPneumaticCraftScreen) {
             List<IDrawAfterRender> toDraw = event.getScreen().children().stream()
                     .filter(l -> l instanceof IDrawAfterRender)
@@ -178,13 +178,13 @@ public class ClientEventHandler {
     }
 
     @SubscribeEvent
-    public static void onShiftScroll(InputEvent.MouseScrollEvent event) {
+    public static void onShiftScroll(InputEvent.MouseScrollingEvent event) {
         if (ClientUtils.getClientPlayer().isCrouching()) {
             if (!tryHand(event, InteractionHand.MAIN_HAND)) tryHand(event, InteractionHand.OFF_HAND);
         }
     }
 
-    private static boolean tryHand(InputEvent.MouseScrollEvent event, InteractionHand hand) {
+    private static boolean tryHand(InputEvent.MouseScrollingEvent event, InteractionHand hand) {
         ItemStack stack = ClientUtils.getClientPlayer().getItemInHand(hand);
         if (stack.getItem() instanceof IShiftScrollable s) {
             NetworkHandler.sendToServer(new PacketShiftScrollWheel(event.getScrollDelta() > 0, InteractionHand.MAIN_HAND));
@@ -196,7 +196,7 @@ public class ClientEventHandler {
     }
 
     @SubscribeEvent
-    public static void onClientConnect(ClientPlayerNetworkEvent.LoggedInEvent event) {
+    public static void onClientConnect(ClientPlayerNetworkEvent.LoggingIn event) {
         AuxConfigHandler.postInit(IAuxConfig.Sidedness.CLIENT);
         ArmorMainScreen.initHelmetCoreComponents();
     }

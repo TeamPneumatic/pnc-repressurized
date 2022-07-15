@@ -5,6 +5,7 @@
 		"1": "pneumaticcraft:model/spawner_extractor",
 		"particle": "pneumaticcraft:model/spawner_extractor"
 	},
+	"render_type": "cutout_mipped",
 	"elements": [
 		{
 			"from": [0, 0, 0],

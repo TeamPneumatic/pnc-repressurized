@@ -214,11 +214,11 @@ public class ChargingStationBlockEntity extends AbstractAirHandlingBlockEntity i
             case "open_upgrades":
                 if (getChargingStack().getItem() instanceof IChargeableContainerProvider) {
                     MenuProvider provider = ((IChargeableContainerProvider) getChargingStack().getItem()).getContainerProvider(this);
-                    NetworkHooks.openGui(player, provider, getBlockPos());
+                    NetworkHooks.openScreen(player, provider, getBlockPos());
                 }
                 break;
             case "close_upgrades":
-                NetworkHooks.openGui(player, this, getBlockPos());
+                NetworkHooks.openScreen(player, this, getBlockPos());
                 break;
             case "toggle_upgrade_only":
                 upgradeOnly = !upgradeOnly;
@@ -381,7 +381,7 @@ public class ChargingStationBlockEntity extends AbstractAirHandlingBlockEntity i
                 if (player instanceof ServerPlayer sp
                         && player.containerMenu instanceof ChargingStationUpgradeManagerMenu manager
                         && manager.te == te) {
-                    NetworkHooks.openGui(sp, ChargingStationBlockEntity.this, getBlockPos());
+                    NetworkHooks.openScreen(sp, ChargingStationBlockEntity.this, getBlockPos());
                 }
             }
         }

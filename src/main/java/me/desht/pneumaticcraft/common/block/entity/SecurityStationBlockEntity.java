@@ -74,8 +74,8 @@ import net.minecraftforge.common.util.BlockSnapshot;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.entity.player.PlayerContainerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-import net.minecraftforge.event.world.BlockEvent;
-import net.minecraftforge.event.world.ExplosionEvent;
+import net.minecraftforge.event.level.BlockEvent;
+import net.minecraftforge.event.level.ExplosionEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -202,7 +202,7 @@ public class SecurityStationBlockEntity extends AbstractTickingBlockEntity imple
             }
         } else if (player.containerMenu instanceof SecurityStationHackingMenu && isPlayerHacking(player)) {
             if (tag.equals("end_test") && simulationController.isJustTesting()) {
-                NetworkHooks.openGui(player, this, getBlockPos());
+                NetworkHooks.openScreen(player, this, getBlockPos());
             } else if (tag.startsWith("nuke:")) {
                 tryNukeVirus(tag, player);
             } else if (tag.equals("stop_worm")) {
@@ -456,7 +456,7 @@ public class SecurityStationBlockEntity extends AbstractTickingBlockEntity imple
             hacker.displayClientMessage(xlate("pneumaticcraft.message.securityStation.hackInProgress").withStyle(ChatFormatting.GOLD), false);
         } else {
             simulationController = new SimulationController(this, hacker, isPlayerOnWhiteList(hacker));
-            NetworkHooks.openGui((ServerPlayer) hacker, getHackingContainerProvider(), buf -> simulationController.toBytes(buf));
+            NetworkHooks.openScreen((ServerPlayer) hacker, getHackingContainerProvider(), buf -> simulationController.toBytes(buf));
         }
     }
 
@@ -671,13 +671,13 @@ public class SecurityStationBlockEntity extends AbstractTickingBlockEntity imple
     public static class Listener {
         @SubscribeEvent(priority = EventPriority.HIGHEST)
         public static void onPlayerInteract(PlayerInteractEvent event) {
-            if (event instanceof PlayerInteractEvent.RightClickEmpty || event.getWorld().isClientSide) return;
+            if (event instanceof PlayerInteractEvent.RightClickEmpty || event.getLevel().isClientSide) return;
 
-            Player player = event.getPlayer();
+            Player player = event.getEntity();
             if (isPlayerExempt(player)) return;
 
             ItemStack heldItem = player.getItemInHand(event.getHand());
-            BlockState interactedBlockState = event.getWorld().getBlockState(event.getPos());
+            BlockState interactedBlockState = event.getLevel().getBlockState(event.getPos());
             Block interactedBlock = interactedBlockState.getBlock();
 
             if (interactedBlock != ModBlocks.SECURITY_STATION.get() || event instanceof PlayerInteractEvent.LeftClickBlock) {
@@ -697,7 +697,7 @@ public class SecurityStationBlockEntity extends AbstractTickingBlockEntity imple
 
         @SubscribeEvent(priority = EventPriority.HIGHEST)
         public static void onBlockPlace(BlockEvent.EntityPlaceEvent event) {
-            if (event.getEntity() instanceof Player player && !event.getWorld().isClientSide()) {
+            if (event.getEntity() instanceof Player player && !event.getLevel().isClientSide()) {
                 if (!isPlayerExempt(player)) {
                     if (event instanceof BlockEvent.EntityMultiPlaceEvent) {
                         for (BlockSnapshot snapshot : ((BlockEvent.EntityMultiPlaceEvent) event).getReplacedBlockSnapshots()) {
@@ -724,7 +724,7 @@ public class SecurityStationBlockEntity extends AbstractTickingBlockEntity imple
         @SubscribeEvent(priority = EventPriority.HIGHEST)
         public static void onBlockExplode(ExplosionEvent event) {
             final Player player = getPlayerForExplosion(event);
-            if (player != null && !isPlayerExempt(player) && event.getWorld() != null && !event.getWorld().isClientSide) {
+            if (player != null && !isPlayerExempt(player) && event.getLevel() != null && !event.getLevel().isClientSide) {
                 event.getExplosion().getToBlow().removeIf(pos -> isProtectedFromPlayer(player, pos, false));
             }
         }
@@ -750,14 +750,14 @@ public class SecurityStationBlockEntity extends AbstractTickingBlockEntity imple
         @SubscribeEvent
         public static void onContainerClose(PlayerContainerEvent.Close event) {
             // reopen the main secstation window if closing a test-mode hacking window
-            if (event.getPlayer() instanceof ServerPlayer && event.getContainer() instanceof SecurityStationHackingMenu) {
+            if (event.getEntity() instanceof ServerPlayer && event.getContainer() instanceof SecurityStationHackingMenu) {
                 SecurityStationBlockEntity teSS = ((SecurityStationHackingMenu) event.getContainer()).te;
                 if (teSS.getSimulationController() != null && teSS.getSimulationController().isJustTesting()) {
-                    ServerPlayer player = (ServerPlayer) event.getPlayer();
+                    ServerPlayer player = (ServerPlayer) event.getEntity();
                     MinecraftServer server = player.getServer();
                     if (server != null) {
                         // deferring is important to avoid infinite close/open loop
-                        server.tell(new TickTask(server.getTickCount(), () -> NetworkHooks.openGui(player, teSS, teSS.getBlockPos())));
+                        server.tell(new TickTask(server.getTickCount(), () -> NetworkHooks.openScreen(player, teSS, teSS.getBlockPos())));
                     }
                 }
             }

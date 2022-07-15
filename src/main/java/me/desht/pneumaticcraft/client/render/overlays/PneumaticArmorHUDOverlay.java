@@ -18,8 +18,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.client.gui.ForgeIngameGui;
-import net.minecraftforge.client.gui.IIngameOverlay;
+import net.minecraftforge.client.gui.overlay.ForgeGui;
+import net.minecraftforge.client.gui.overlay.IGuiOverlay;
 import org.lwjgl.opengl.GL11;
 
 import java.util.List;
@@ -29,14 +29,14 @@ import static me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler.
 import static me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler.LOW_PRESSURE;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class PneumaticArmorHUDOverlay implements IIngameOverlay {
+public class PneumaticArmorHUDOverlay implements IGuiOverlay {
     private static final int PROGRESS_BAR_HEIGHT = 17;
 
     private final boolean[] gaveCriticalWarning = new boolean[4];  // per-slot
     private final boolean[] gaveLowPressureWarning = new boolean[4];  // per-slot
 
     @Override
-    public void render(ForgeIngameGui gui, PoseStack matrixStack, float partialTicks, int width, int height) {
+    public void render(ForgeGui gui, PoseStack matrixStack, float partialTicks, int width, int height) {
         Minecraft mc = Minecraft.getInstance();
         Player player = mc.player;
 

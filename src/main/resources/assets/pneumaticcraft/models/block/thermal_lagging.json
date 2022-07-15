@@ -4,6 +4,7 @@
 		"particle": "pneumaticcraft:block/thermal_lagging",
 		"all": "pneumaticcraft:block/thermal_lagging"
 	},
+	"render_type": "translucent",
 	"elements": [
 		{
 			"from": [0, 0, 15.5],

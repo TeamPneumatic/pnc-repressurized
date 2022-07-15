@@ -66,7 +66,7 @@ public class ModRenderTypes extends RenderType {
         return TEXTURE_RENDER_COLORED.apply(texture, disableDepthTest);
     }
 
-    public static RenderType UNTEXTURED_QUAD_NO_DEPTH = create("untextured_quad_no_depth", DefaultVertexFormat.POSITION_COLOR_LIGHTMAP, VertexFormat.Mode.QUADS, 256,
+    public static final RenderType UNTEXTURED_QUAD_NO_DEPTH = create("untextured_quad_no_depth", DefaultVertexFormat.POSITION_COLOR_LIGHTMAP, VertexFormat.Mode.QUADS, 256,
             false, false,
             RenderType.CompositeState.builder()
                     .setTextureState(RenderStateShard.NO_TEXTURE)

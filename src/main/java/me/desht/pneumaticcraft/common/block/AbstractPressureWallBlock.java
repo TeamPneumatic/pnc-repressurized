@@ -67,7 +67,7 @@ public abstract class AbstractPressureWallBlock extends AbstractPneumaticCraftBl
         return PneumaticCraftUtils.getTileEntityAt(world, pos, PressureChamberWallBlockEntity.class).map(te -> {
             PressureChamberValveBlockEntity valve = te.getPrimaryValve();
             if (valve != null) {
-                NetworkHooks.openGui((ServerPlayer) player, valve, valve.getBlockPos());
+                NetworkHooks.openScreen((ServerPlayer) player, valve, valve.getBlockPos());
                 return InteractionResult.CONSUME;
             }
             return InteractionResult.FAIL;

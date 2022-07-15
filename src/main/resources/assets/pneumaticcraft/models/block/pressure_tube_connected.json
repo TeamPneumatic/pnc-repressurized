@@ -4,6 +4,7 @@
 		"particle": "pneumaticcraft:model/pressure_tube",
 		"pipe": "pneumaticcraft:model/pressure_tube"
 	},
+	"render_type": "solid",
 	"elements": [
 		{
 			"from": [6, 10, 7],

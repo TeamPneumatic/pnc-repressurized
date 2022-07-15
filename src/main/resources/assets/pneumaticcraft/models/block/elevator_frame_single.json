@@ -5,6 +5,7 @@
 		"1": "pneumaticcraft:model/elevator_base",
 		"particle": "pneumaticcraft:model/elevator_base"
 	},
+	"render_type": "cutout",
 	"elements": [
 		{
 			"from": [1, 0, 1],

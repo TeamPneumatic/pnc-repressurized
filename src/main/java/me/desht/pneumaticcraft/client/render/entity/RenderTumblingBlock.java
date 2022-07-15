@@ -20,13 +20,13 @@ package me.desht.pneumaticcraft.client.render.entity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.common.entity.projectile.TumblingBlockEntity;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.BlockRenderDispatcher;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.BlockItem;
@@ -35,8 +35,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.client.ForgeHooksClient;
-import net.minecraftforge.client.model.data.EmptyModelData;
+import net.minecraftforge.client.model.data.ModelData;
 
 public class RenderTumblingBlock extends EntityRenderer<TumblingBlockEntity> {
     public RenderTumblingBlock(EntityRendererProvider.Context ctx) {
@@ -65,13 +64,10 @@ public class RenderTumblingBlock extends EntityRenderer<TumblingBlockEntity> {
 
                 BlockPos blockpos = new BlockPos(entity.getX(), entity.getBoundingBox().maxY, entity.getZ());
                 BlockRenderDispatcher renderer = Minecraft.getInstance().getBlockRenderer();
-                for (RenderType type : RenderType.chunkBufferLayers()) {
-                    if (ItemBlockRenderTypes.canRenderInLayer(state, type)) {
-                        ForgeHooksClient.setRenderType(type);
-                        renderer.getModelRenderer().tesselateBlock(world, renderer.getBlockModel(state), state, blockpos, matrixStackIn, bufferIn.getBuffer(type), false, world.getRandom(), state.getSeed(entity.getOrigin()), OverlayTexture.NO_OVERLAY, EmptyModelData.INSTANCE);
-                    }
+                BakedModel blockModel = renderer.getBlockModel(state);
+                for (RenderType type : blockModel.getRenderTypes(state, world.getRandom(), ModelData.EMPTY)) {
+                    renderer.getModelRenderer().tesselateBlock(world, blockModel, state, blockpos, matrixStackIn, bufferIn.getBuffer(type), false, world.getRandom(), state.getSeed(entity.getOrigin()), OverlayTexture.NO_OVERLAY, ModelData.EMPTY, type);
                 }
-                ForgeHooksClient.setRenderType(null);
                 matrixStackIn.popPose();
             }
         }

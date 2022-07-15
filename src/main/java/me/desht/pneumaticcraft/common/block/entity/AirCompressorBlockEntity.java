@@ -104,8 +104,8 @@ public class AirCompressorBlockEntity extends AbstractAirHandlingBlockEntity imp
             if (itemBurnTime > 0) {
                 burnTime += itemBurnTime;
                 maxBurnTime = burnTime;
-                if (fuelStack.hasContainerItem()) {
-                    itemHandler.setStackInSlot(FUEL_SLOT, fuelStack.getContainerItem());
+                if (fuelStack.hasCraftingRemainingItem()) {
+                    itemHandler.setStackInSlot(FUEL_SLOT, fuelStack.getCraftingRemainingItem());
                 } else {
                     itemHandler.extractItem(FUEL_SLOT, 1, false);
                 }

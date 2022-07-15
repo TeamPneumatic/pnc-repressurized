@@ -62,7 +62,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.ShapedRecipe;
-import net.minecraftforge.client.event.ScreenOpenEvent;
+import net.minecraftforge.client.event.ScreenEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import org.jetbrains.annotations.Nullable;
 
@@ -180,9 +180,9 @@ public class ProgrammerTransferHandler implements IRecipeTransferHandler<Program
 
     public static class Listener {
         @SubscribeEvent
-        public static void onGuiOpen(ScreenOpenEvent event) {
-            if (event.getScreen() instanceof IRecipesGui && Minecraft.getInstance().screen instanceof ProgrammerScreen) {
-                programmerScreen = (ProgrammerScreen) Minecraft.getInstance().screen;
+        public static void onGuiOpen(ScreenEvent.Opening event) {
+            if (event.getScreen() instanceof IRecipesGui && Minecraft.getInstance().screen instanceof ProgrammerScreen p) {
+                programmerScreen = p;
             } else if (!(event.getScreen() instanceof IRecipesGui)) {
                 programmerScreen = null;
             }

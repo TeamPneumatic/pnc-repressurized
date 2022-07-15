@@ -52,14 +52,15 @@
 		}
 	],
 
-	"loader": "forge:multi-layer",
-	"layers": {
+	"loader": "forge:composite",
+	"children": {
 		"translucent": {
 			"parent": "forge:block/default",
 			"textures": {
 				"0": "pneumaticcraft:model/etching_tank",
 				"particle": "pneumaticcraft:model/etching_tank"
 			},
+			"render_type": "translucent",
 			"elements": [
 				{
 					"name": "glass",
@@ -119,6 +120,7 @@
 				"0": "pneumaticcraft:model/etching_tank",
 				"particle": "pneumaticcraft:model/etching_tank"
 			},
+			"render_type": "solid",
 			"elements": [
 				{
 					"from": [0, 1, 2],

@@ -25,7 +25,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.DyeColor;
 import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nullable;
 import java.util.List;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
@@ -34,7 +33,6 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 public class HackableSheep implements IHackableEntity<Sheep> {
     private static final ResourceLocation ID = RL("sheep");
 
-    @Nullable
     @Override
     public ResourceLocation getHackableId() {
         return ID;

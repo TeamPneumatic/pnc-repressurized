@@ -6,6 +6,7 @@
 		"0": "pneumaticcraft:model/vacuum_pump",
 		"particle": "pneumaticcraft:model/vacuum_pump"
 	},
+	"render_type": "translucent",
 	"elements": [
 		{
 			"from": [15, 5, 5],

@@ -1,5 +1,6 @@
 {
 	"credit": "Made with Blockbench",
+	"render_type": "cutout",
 	"elements": [
 		{
 			"from": [6, 0, 6],

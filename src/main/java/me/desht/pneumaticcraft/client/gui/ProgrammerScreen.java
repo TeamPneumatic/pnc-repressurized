@@ -333,7 +333,7 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
 
     private void updateDroneName() {
         ItemStack stack = te.getItemInProgrammingSlot();
-        if (stack != ItemStack.EMPTY && !stack.getHoverName().getContents().equals(nameField.getValue())) {
+        if (stack != ItemStack.EMPTY && !stack.getHoverName().getString().equals(nameField.getValue())) {
             stack.setHoverName(Component.literal(nameField.getValue()));
             sendDelayed(5);
         }
@@ -834,7 +834,7 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
 
         if (!programmedItem.isEmpty()) {
             nameField.setEditable(true);
-            if (!nameField.getValue().equals(programmedItem.getHoverName().getContents())) {
+            if (!nameField.getValue().equals(programmedItem.getHoverName().getString())) {
                 nameField.setValue(programmedItem.getHoverName().getString());
             }
         } else {

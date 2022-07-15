@@ -28,7 +28,7 @@ import net.minecraft.network.FriendlyByteBuf;
  */
 
 public abstract class LocationIntPacket {
-    protected BlockPos pos;
+    protected final BlockPos pos;
 
     public LocationIntPacket(FriendlyByteBuf buffer) {
         pos = buffer.readBlockPos();

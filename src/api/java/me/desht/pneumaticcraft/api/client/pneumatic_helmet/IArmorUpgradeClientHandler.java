@@ -42,7 +42,7 @@ import java.util.function.Consumer;
  * configuration GUI page, reading/writing client-side configuration, and handling keybinds. It's recommended to extend
  * {@link AbstractHandler} or {@link SimpleToggleableHandler} rather than implement this interface directly.
  * <p>
- * Register an instance of this via {@link IClientArmorRegistry#registerRenderHandler(IArmorUpgradeHandler, IArmorUpgradeClientHandler)}.
+ * Register an instance of this via {@link IClientArmorRegistry#registerUpgradeHandler(IArmorUpgradeHandler, IArmorUpgradeClientHandler)}.
  * You will need a corresponding {@link IArmorUpgradeHandler} object; there is a 1-1 relationship.
  */
 public interface IArmorUpgradeClientHandler<T extends IArmorUpgradeHandler<?>> {
@@ -82,7 +82,7 @@ public interface IArmorUpgradeClientHandler<T extends IArmorUpgradeHandler<?>> {
     void tickClient(ICommonArmorHandler armorHandler);
 
     /**
-     * Called in the 3D render stage (via {@link net.minecraftforge.client.event.RenderLevelLastEvent})
+     * Called in the 3D render stage (via {@link net.minecraftforge.client.event.RenderLevelStageEvent})
      *
      * @param matrixStack the matrix stack
      * @param buffer the render type buffer
@@ -91,7 +91,7 @@ public interface IArmorUpgradeClientHandler<T extends IArmorUpgradeHandler<?>> {
     void render3D(PoseStack matrixStack, MultiBufferSource buffer, float partialTicks);
 
     /**
-     * Called in the 2D render stage (via the Forge {@link net.minecraftforge.client.gui.IIngameOverlay} system).
+     * Called in the 2D render stage (via Forge's {@link net.minecraftforge.client.gui.overlay.IGuiOverlay} system).
      *
      * @param matrixStack the matrix stack
      * @param partialTicks partial ticks since last world tick

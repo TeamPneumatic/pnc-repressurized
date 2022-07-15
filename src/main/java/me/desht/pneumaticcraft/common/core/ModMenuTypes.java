@@ -28,7 +28,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 
 public class ModMenuTypes {
-    public static final DeferredRegister<MenuType<?>> MENU_TYPES = DeferredRegister.create(ForgeRegistries.CONTAINERS, Names.MOD_ID);
+    public static final DeferredRegister<MenuType<?>> MENU_TYPES = DeferredRegister.create(ForgeRegistries.MENU_TYPES, Names.MOD_ID);
 
     public static final RegistryObject<MenuType<AdvancedAirCompressorMenu>> ADVANCED_AIR_COMPRESSOR
             = register("advanced_air_compressor", AdvancedAirCompressorMenu::new);

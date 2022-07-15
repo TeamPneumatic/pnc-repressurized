@@ -2,5 +2,6 @@
     "parent": "minecraft:block/cube_all",
     "textures": {
         "all": "pneumaticcraft:block/pressure_chamber/window"
-    }
+    },
+    "render_type": "cutout"
 }

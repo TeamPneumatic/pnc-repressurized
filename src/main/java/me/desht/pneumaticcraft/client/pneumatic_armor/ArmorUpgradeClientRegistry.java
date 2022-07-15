@@ -23,11 +23,12 @@ import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IArmorUpgradeClientHa
 import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorUpgradeHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import net.minecraft.client.KeyMapping;
+import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraftforge.client.ClientRegistry;
 import net.minecraftforge.client.settings.KeyConflictContext;
 import net.minecraftforge.client.settings.KeyModifier;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.Validate;
 import org.lwjgl.glfw.GLFW;
 
@@ -58,7 +59,6 @@ public enum ArmorUpgradeClientRegistry {
 
     private void registerKeyBinding(ResourceLocation upgradeID, KeyMapping keyBinding) {
         id2KeyBindMap.put(upgradeID, keyBinding);
-        ClientRegistry.registerKeyBinding(keyBinding);
     }
 
     private void registerTriggerKeybinding(IArmorUpgradeClientHandler<?> clientHandler, KeyMapping keyBinding) {
@@ -75,6 +75,14 @@ public enum ArmorUpgradeClientRegistry {
                             clientHandler.getSubKeybindCategory())
             ));
         });
+    }
+
+    public void registerKeybindsWithMinecraft() {
+        // do the actual registration of keymappings with Minecraft
+        // called from late init, after registerSubKeyBinds(); not ideal, but RegisterKeyMappingsEvent fires much too early to be useful here
+        // i.e. before FMLClientSetupEvent is fired and any handlers are actually registered
+        KeyMapping[] keys = id2KeyBindMap.values().toArray(new KeyMapping[0]);
+        Minecraft.getInstance().options.keyMappings = ArrayUtils.addAll(Minecraft.getInstance().options.keyMappings, keys);
     }
 
     public KeyMapping getKeybindingForUpgrade(ResourceLocation upgradeID) {
@@ -139,7 +147,7 @@ public enum ArmorUpgradeClientRegistry {
 
     public void refreshConfig() {
         // we will get called really early (when client config is first loaded)
-        // at that point, no upgrade handlers (client or common) are yet registered
+        // at that point, no upgrade handlers (client or common) are yet registered, so bail
         if (clientUpgradeHandlers == null) return;
 
         for (EquipmentSlot slot : ArmorUpgradeRegistry.ARMOR_SLOTS) {

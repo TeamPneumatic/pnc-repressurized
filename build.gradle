@@ -123,10 +123,10 @@ dependencies {
 	//compileOnly fg.deobf("vazkii.botania:Botania:${botania_version}:api")
 	//runtimeOnly fg.deobf("vazkii.botania:Botania:${botania_version}")
 	compileOnly fg.deobf("vazkii.patchouli:Patchouli:${patchouli_version}:api")
-	runtimeOnly fg.deobf("vazkii.patchouli:Patchouli:${patchouli_version}")
+//	runtimeOnly fg.deobf("vazkii.patchouli:Patchouli:${patchouli_version}")
 	// compileOnly until early config access bug fixed...
 	compileOnly fg.deobf("org.squiddev:cc-tweaked-${project.mc_version}:${cc_tweaked_version}")
-	implementation fg.deobf("blusunrize.immersiveengineering:ImmersiveEngineering:${immersive_engineering_version}")
+	compileOnly fg.deobf("blusunrize.immersiveengineering:ImmersiveEngineering:${immersive_engineering_version}")
 	//implementation fg.deobf("curse.maven:mekanism-268560:${mekanism_curse_id}")
 	//implementation fg.deobf("curse.maven:create-328085:${create_curse_id}")
 	//implementation fg.deobf("curse.maven:flywheel-486392:${flywheel_curse_id}")

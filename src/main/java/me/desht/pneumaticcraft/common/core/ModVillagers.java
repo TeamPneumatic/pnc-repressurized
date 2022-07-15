@@ -39,7 +39,7 @@ public class ModVillagers {
     public static final DeferredRegister<PoiType> POI
             = DeferredRegister.create(ForgeRegistries.POI_TYPES, Names.MOD_ID);
     public static final DeferredRegister<VillagerProfession> PROFESSIONS
-            = DeferredRegister.create(ForgeRegistries.PROFESSIONS, Names.MOD_ID);
+            = DeferredRegister.create(ForgeRegistries.VILLAGER_PROFESSIONS, Names.MOD_ID);
 
     public static final RegistryObject<PoiType> MECHANIC_POI
             = POI.register("mechanic", () -> new PoiType(getAllStates(ModBlocks.CHARGING_STATION.get()), 1, 1));

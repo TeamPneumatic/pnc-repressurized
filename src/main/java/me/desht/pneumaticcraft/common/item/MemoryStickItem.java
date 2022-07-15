@@ -227,12 +227,12 @@ public class MemoryStickItem extends Item implements ColorHandlers.ITintableItem
         @SubscribeEvent
         public static void onLeftClick(PlayerInteractEvent.LeftClickBlock event) {
             if (event.getItemStack().getItem() instanceof MemoryStickItem) {
-                if (!event.getWorld().isClientSide) {
-                    long now = event.getWorld().getGameTime();
-                    long last = lastEvent.getOrDefault(event.getPlayer().getUUID(), 0L);
+                if (!event.getLevel().isClientSide) {
+                    long now = event.getLevel().getGameTime();
+                    long last = lastEvent.getOrDefault(event.getEntity().getUUID(), 0L);
                     if (now - last > 5) {
-                        toggleXPAbsorption(event.getPlayer(), event.getItemStack());
-                        lastEvent.put(event.getPlayer().getUUID(), now);
+                        toggleXPAbsorption(event.getEntity(), event.getItemStack());
+                        lastEvent.put(event.getEntity().getUUID(), now);
                     }
                 }
                 event.setCanceled(true);
@@ -242,14 +242,14 @@ public class MemoryStickItem extends Item implements ColorHandlers.ITintableItem
         @SubscribeEvent
         public static void onLeftClickEmpty(PlayerInteractEvent.LeftClickEmpty event) {
             // client only event, but let's be paranoid...
-            if (event.getWorld().isClientSide && event.getItemStack().getItem() instanceof MemoryStickItem) {
+            if (event.getLevel().isClientSide && event.getItemStack().getItem() instanceof MemoryStickItem) {
                 NetworkHandler.sendToServer(new PacketLeftClickEmpty());
             }
         }
 
         @SubscribeEvent
         public static void onXpOrbPickup(PlayerXpEvent.PickupXp event) {
-            ItemStack stack = findMemoryStick(event.getPlayer());
+            ItemStack stack = findMemoryStick(event.getEntity());
             if (!stack.isEmpty()) {
                 stack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY).ifPresent(handler -> {
                     if (PneumaticCraftUtils.fillTankWithOrb(handler, event.getOrb(), IFluidHandler.FluidAction.EXECUTE)) {

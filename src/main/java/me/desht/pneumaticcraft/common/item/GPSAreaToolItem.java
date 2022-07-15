@@ -239,10 +239,10 @@ public class GPSAreaToolItem extends Item implements IPositionProvider, IGPSTool
         @SubscribeEvent
         public static void onBlockLeftClick(PlayerInteractEvent.LeftClickBlock event) {
             if (event.getItemStack().getItem() == ModItems.GPS_AREA_TOOL.get()) {
-                Optional<BlockPos> optPos = getGPSLocation(event.getPlayer(), event.getItemStack(), 1);
+                Optional<BlockPos> optPos = getGPSLocation(event.getEntity(), event.getItemStack(), 1);
                 if (!event.getPos().equals(optPos.orElse(null))) {
-                    event.getPlayer().playSound(ModSounds.CHIRP.get(), 1.0f, 1.5f);
-                    setGPSPosAndNotify(event.getPlayer(), event.getHand(), event.getPos(), 1);
+                    event.getEntity().playSound(ModSounds.CHIRP.get(), 1.0f, 1.5f);
+                    setGPSPosAndNotify(event.getEntity(), event.getHand(), event.getPos(), 1);
                 }
                 event.setCanceled(true);
             }

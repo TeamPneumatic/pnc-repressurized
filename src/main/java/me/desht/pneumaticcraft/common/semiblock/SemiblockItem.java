@@ -61,7 +61,7 @@ public class SemiblockItem extends Item {
      */
     public AbstractSemiblockEntity createEntity(Level world, ItemStack stack, Player player, BlockPos pos) {
         ResourceLocation regName = PneumaticCraftUtils.getRegistryName(this).orElseThrow();
-        EntityType<?> type = ForgeRegistries.ENTITIES.getValue(regName);
+        EntityType<?> type = ForgeRegistries.ENTITY_TYPES.getValue(regName);
         if (type != null) {
             Entity e = type.create(world);
             if (e != null) {

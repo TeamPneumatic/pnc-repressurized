@@ -283,7 +283,7 @@ public abstract class AbstractSemiblockEntity extends Entity implements ISemiBlo
 
     @Override
     public ResourceLocation getSemiblockId() {
-        return PneumaticCraftUtils.getRegistryName(ForgeRegistries.ENTITIES, getType()).orElseThrow();
+        return PneumaticCraftUtils.getRegistryName(ForgeRegistries.ENTITY_TYPES, getType()).orElseThrow();
     }
 
     @Override

@@ -708,7 +708,7 @@ public class PneumaticCraftUtils {
     }
 
     public static Optional<ResourceLocation> getRegistryName(Entity entity) {
-        return getRegistryName(ForgeRegistries.ENTITIES, entity.getType());
+        return getRegistryName(ForgeRegistries.ENTITY_TYPES, entity.getType());
     }
 
     public static <T> Optional<ResourceLocation> getRegistryName(IForgeRegistry<T> registry, T object) {

@@ -3,5 +3,6 @@
   "textures": {
     "all": "pneumaticcraft:block/pressure_chamber/window",
     "particle": "pneumaticcraft:block/pressure_chamber/window"
-  }
+  },
+  "render_type": "cutout"
 }

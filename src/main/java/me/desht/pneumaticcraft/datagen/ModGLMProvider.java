@@ -1,7 +1,6 @@
 package me.desht.pneumaticcraft.datagen;
 
 import me.desht.pneumaticcraft.api.lib.Names;
-import me.desht.pneumaticcraft.common.core.ModLootModifiers;
 import me.desht.pneumaticcraft.common.loot.PNCDungeonLootModifier;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.resources.ResourceLocation;
@@ -17,7 +16,7 @@ public class ModGLMProvider extends GlobalLootModifierProvider {
 
     @Override
     protected void start() {
-        add("dungeon_loot", ModLootModifiers.DUNGEON_LOOT.get(), new PNCDungeonLootModifier(new LootItemCondition[]{
+        add("dungeon_loot", new PNCDungeonLootModifier(new LootItemCondition[]{
                 getList(new String[]{
                         "simple_dungeon", "jungle_temple", "abandoned_mineshaft", "bastion_treasure",
                         "desert_pyramid", "end_city_treasure", "ruined_portal", "pillager_outpost",

@@ -267,9 +267,9 @@ public class PastebinScreen extends AbstractPneumaticCraftScreen {
 
         super.render(matrixStack, x, y, partialTicks);
 
-        if (statusMessage != Component.empty()) {
+        if (!statusMessage.getString().isEmpty()) {
             drawString(matrixStack, font, statusMessage, guiLeft + 5, guiTop + 5, 0xFFFFFF00);
-        } else if (lastMessage != Component.empty()) {
+        } else if (!lastMessage.getString().isEmpty()) {
             drawString(matrixStack, font, lastMessage, guiLeft + 5, guiTop + 5, 0xFF00FF00);
         }
     }

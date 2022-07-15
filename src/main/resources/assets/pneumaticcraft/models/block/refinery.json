@@ -6,6 +6,7 @@
 		"particle": "pneumaticcraft:model/refinery",
 		"base": "pneumaticcraft:model/refinery"
 	},
+	"render_type": "cutout_mipped",
 	"elements": [
 		{
 			"name": "sw_frame_corner",

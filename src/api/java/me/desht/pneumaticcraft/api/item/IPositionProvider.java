@@ -74,7 +74,7 @@ public interface IPositionProvider {
      * this method to sync their values to the client. This method is called server-side when an item in any player's
      * inventory (which implements {@link IPositionProvider}) changes in any way.
      * <p>
-     * See {@link me.desht.pneumaticcraft.api.PneumaticRegistry.IPneumaticCraftInterface#syncGlobalVariable(ServerPlayer, String)}}
+     * See {@link me.desht.pneumaticcraft.api.misc.IMiscHelpers#syncGlobalVariable(ServerPlayer, String)}
      * for a convenience method to send the necessary sync packet.
      *
      * @param player the player to sync to

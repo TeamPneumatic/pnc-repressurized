@@ -40,7 +40,6 @@ import me.desht.pneumaticcraft.client.render.pneumatic_armor.entity_tracker.Enti
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.*;
 import me.desht.pneumaticcraft.client.render.tube_module.*;
 import me.desht.pneumaticcraft.client.sound.MovingSoundJackhammer;
-import me.desht.pneumaticcraft.common.block.AbstractCamouflageBlock;
 import me.desht.pneumaticcraft.common.core.*;
 import me.desht.pneumaticcraft.common.item.DrillBitItem;
 import me.desht.pneumaticcraft.common.item.JackHammerItem;
@@ -54,8 +53,6 @@ import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.geom.EntityModelSet;
 import net.minecraft.client.model.geom.LayerDefinitions;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
-import net.minecraft.client.renderer.ItemBlockRenderTypes;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.ArmorStandRenderer;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.HumanoidMobRenderer;
@@ -65,66 +62,71 @@ import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.block.Block;
-import net.minecraftforge.client.MinecraftForgeClient;
-import net.minecraftforge.client.event.EntityRenderersEvent;
-import net.minecraftforge.client.event.ParticleFactoryRegisterEvent;
-import net.minecraftforge.client.gui.OverlayRegistry;
+import net.minecraftforge.client.event.*;
+import net.minecraftforge.client.gui.overlay.VanillaGuiOverlay;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.registries.RegistryObject;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 public class ClientSetup {
-    public static void initEarly() {
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(ClientSetup::init);
+    public static void onModConstruction() {
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(ClientSetup::onClientSetup);
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(ClientSetup::registerGuiOverlays);
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(ClientSetup::registerTooltipComponentFactories);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(ClientSetup::registerParticleFactories);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(ClientSetup::registerRenderers);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(ClientSetup::registerRenderLayers);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(ClientSetup::registerLayerDefinitions);
-    }
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(ClientSetup::registerKeyMappings);
 
-    static void init(FMLClientSetupEvent event) {
         MinecraftForge.EVENT_BUS.register(HUDHandler.getInstance());
-//        MinecraftForge.EVENT_BUS.register(HackEventListener.getInstance());
         MinecraftForge.EVENT_BUS.register(AreaRenderManager.getInstance());
         MinecraftForge.EVENT_BUS.register(KeyHandler.getInstance());
+    }
 
+    static void onClientSetup(FMLClientSetupEvent event) {
         EntityTrackHandler.getInstance().registerDefaultEntries();
         BlockTrackHandler.getInstance().registerDefaultEntries();
         ThirdPartyManager.instance().clientInit();
 
         registerProgWidgetScreenFactories();
         registerTubeModuleFactories();
-
-        OverlayRegistry.registerOverlayTop("jackhammer", new JackhammerOverlay());
-        OverlayRegistry.registerOverlayTop("pneumatic_armor", new PneumaticArmorHUDOverlay());
-        OverlayRegistry.registerOverlayTop("minigun", new MinigunOverlay());
-
-        MinecraftForgeClient.registerTooltipComponentFactory(MicromissilesItem.Tooltip.class, MicromissileClientTooltip::new);
-
         registerArmorClientUpgradeHandlers();
 
         event.enqueueWork(ClientSetup::initLate);
     }
 
-    public static void registerParticleFactories(ParticleFactoryRegisterEvent event) {
-        Minecraft.getInstance().particleEngine.register(ModParticleTypes.AIR_PARTICLE.get(), AirParticle.Factory::new);
-        Minecraft.getInstance().particleEngine.register(ModParticleTypes.AIR_PARTICLE_2.get(), AirParticle.Factory::new);
-        Minecraft.getInstance().particleEngine.register(ModParticleTypes.BULLET_PARTICLE.get(), BulletParticle.Factory::new);
+    public static void registerTooltipComponentFactories(RegisterClientTooltipComponentFactoriesEvent event) {
+        event.register(MicromissilesItem.Tooltip.class, MicromissileClientTooltip::new);
+    }
+
+    public static void registerGuiOverlays(RegisterGuiOverlaysEvent event) {
+        event.registerAbove(VanillaGuiOverlay.CROSSHAIR.id(), "jackhammer", new JackhammerOverlay());
+        event.registerAbove(VanillaGuiOverlay.CROSSHAIR.id(), "minigun", new MinigunOverlay());
+        event.registerAboveAll("pneumatic_armor", new PneumaticArmorHUDOverlay());
+    }
+
+    public static void registerParticleFactories(RegisterParticleProvidersEvent event) {
+        event.register(ModParticleTypes.AIR_PARTICLE.get(), AirParticle.Factory::new);
+        event.register(ModParticleTypes.AIR_PARTICLE_2.get(), AirParticle.Factory::new);
+        event.register(ModParticleTypes.BULLET_PARTICLE.get(), BulletParticle.Factory::new);
+    }
+
+    public static void registerKeyMappings(RegisterKeyMappingsEvent event) {
+        KeyHandler.getInstance().registerKeyMappings(event);
     }
 
     public static void initLate() {
         // stuff to do on the main thread
-        setBlockRenderLayers();
         registerItemModelProperties();
 
         // freeze entity & block track handlers before registering client upgrade handlers
         EntityTrackHandler.getInstance().freeze();
         BlockTrackHandler.getInstance().freeze();
         ArmorUpgradeClientRegistry.getInstance().registerSubKeyBinds();
+        ArmorUpgradeClientRegistry.getInstance().registerKeybindsWithMinecraft();
 
         registerScreenFactories();
         registerProgWidgetExtraRenderers();
@@ -216,40 +218,6 @@ public class ClientSetup {
     private static void registerProgWidgetExtraRenderers() {
         ProgWidgetRenderer.registerItemRenderer(ModProgWidgets.CRAFTING.get(), ProgWidgetRenderer::renderCraftingItem);
         ProgWidgetRenderer.registerItemRenderer(ModProgWidgets.ITEM_FILTER.get(), ProgWidgetRenderer::renderItemFilterItem);
-    }
-
-    private static void setBlockRenderLayers() {
-        ItemBlockRenderTypes.setRenderLayer(ModBlocks.ADVANCED_LIQUID_COMPRESSOR.get(), RenderType.cutoutMipped());
-        ItemBlockRenderTypes.setRenderLayer(ModBlocks.APHORISM_TILE.get(), RenderType.cutoutMipped());
-        ItemBlockRenderTypes.setRenderLayer(ModBlocks.ELEVATOR_FRAME.get(), RenderType.cutout());
-        ItemBlockRenderTypes.setRenderLayer(ModBlocks.EMPTY_SPAWNER.get(), RenderType.cutout());
-        ItemBlockRenderTypes.setRenderLayer(ModBlocks.ETCHING_TANK.get(), layer -> layer == RenderType.solid() || layer == RenderType.translucent());
-        ItemBlockRenderTypes.setRenderLayer(ModBlocks.FLUID_MIXER.get(), RenderType.cutoutMipped());
-        ItemBlockRenderTypes.setRenderLayer(ModBlocks.GAS_LIFT.get(), RenderType.cutoutMipped());
-        ItemBlockRenderTypes.setRenderLayer(ModBlocks.KEROSENE_LAMP.get(), RenderType.cutoutMipped());
-        ItemBlockRenderTypes.setRenderLayer(ModBlocks.LIQUID_HOPPER.get(), RenderType.cutoutMipped());
-        ItemBlockRenderTypes.setRenderLayer(ModBlocks.LIQUID_COMPRESSOR.get(), RenderType.cutoutMipped());
-        ItemBlockRenderTypes.setRenderLayer(ModBlocks.PRESSURE_CHAMBER_GLASS.get(), RenderType.cutout());
-        ItemBlockRenderTypes.setRenderLayer(ModBlocks.PRESSURE_TUBE.get(), RenderType.cutout());
-        ItemBlockRenderTypes.setRenderLayer(ModBlocks.PRESSURIZED_SPAWNER.get(), RenderType.cutout());
-        ItemBlockRenderTypes.setRenderLayer(ModBlocks.REFINERY.get(), RenderType.cutoutMipped());
-        ItemBlockRenderTypes.setRenderLayer(ModBlocks.REFINERY_OUTPUT.get(), RenderType.cutoutMipped());
-        ItemBlockRenderTypes.setRenderLayer(ModBlocks.TANK_SMALL.get(), RenderType.cutoutMipped());
-        ItemBlockRenderTypes.setRenderLayer(ModBlocks.TANK_MEDIUM.get(), RenderType.cutoutMipped());
-        ItemBlockRenderTypes.setRenderLayer(ModBlocks.TANK_LARGE.get(), RenderType.cutoutMipped());
-        ItemBlockRenderTypes.setRenderLayer(ModBlocks.TANK_HUGE.get(), RenderType.cutoutMipped());
-        ItemBlockRenderTypes.setRenderLayer(ModBlocks.VACUUM_PUMP.get(), RenderType.translucent());
-        ItemBlockRenderTypes.setRenderLayer(ModBlocks.THERMOPNEUMATIC_PROCESSING_PLANT.get(), RenderType.cutoutMipped());
-        ItemBlockRenderTypes.setRenderLayer(ModBlocks.UV_LIGHT_BOX.get(), layer -> layer == RenderType.cutoutMipped() || layer == RenderType.translucent());
-        ItemBlockRenderTypes.setRenderLayer(ModBlocks.THERMAL_LAGGING.get(), RenderType.translucent());
-        ItemBlockRenderTypes.setRenderLayer(ModBlocks.SPAWNER_EXTRACTOR.get(), RenderType.cutoutMipped());
-
-        // camouflageable blocks need to render in all layers, since their camo could render in any layer
-        for (RegistryObject<Block> ro: ModBlocks.BLOCKS.getEntries()) {
-            if (ro.get() instanceof AbstractCamouflageBlock) {
-                ItemBlockRenderTypes.setRenderLayer(ro.get(), r -> true);
-            }
-        }
     }
 
     public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {

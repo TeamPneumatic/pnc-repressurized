@@ -57,7 +57,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.client.model.data.EmptyModelData;
+import net.minecraftforge.client.model.data.ModelData;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -225,7 +225,7 @@ public class ClientUtils {
     public static float[] getTextureUV(BlockState state, Direction face) {
         if (state == null) return null;
         BakedModel model = Minecraft.getInstance().getBlockRenderer().getBlockModel(state);
-        List<BakedQuad> quads = model.getQuads(state, face, getClientLevel().random, EmptyModelData.INSTANCE);
+        List<BakedQuad> quads = model.getQuads(state, face, getClientLevel().random, ModelData.EMPTY, null);
         if (!quads.isEmpty()) {
             TextureAtlasSprite sprite = quads.get(0).getSprite();
             return new float[] { sprite.getU0(), sprite.getV0(), sprite.getU1(), sprite.getV1() };

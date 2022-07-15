@@ -23,7 +23,7 @@ import me.desht.pneumaticcraft.mixin.accessors.ShulkerAccess;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.monster.Shulker;
 import net.minecraft.world.entity.projectile.ShulkerBullet;
-import net.minecraftforge.event.entity.EntityJoinWorldEvent;
+import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import org.jetbrains.annotations.NotNull;
@@ -60,7 +60,7 @@ public class HackableShulker extends AbstractPersistentEntityHack<Shulker> {
     @Mod.EventBusSubscriber(modid = Names.MOD_ID)
     public static class Listener {
         @SubscribeEvent
-        public static void onBullet(EntityJoinWorldEvent event) {
+        public static void onBullet(EntityJoinLevelEvent event) {
             if (event.getEntity() instanceof ShulkerBullet b && b.getOwner() instanceof Shulker shulker
                     && hasPersistentHack(shulker, HackableShulker.class)) {
                 event.setCanceled(true);

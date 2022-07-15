@@ -24,7 +24,7 @@ import net.minecraft.world.level.levelgen.structure.StructureStart;
 
 public class OilLakeFilter extends PlacementFilter {
     private static final OilLakeFilter INSTANCE = new OilLakeFilter();
-    public static Codec<OilLakeFilter> CODEC = Codec.unit(() -> INSTANCE);
+    public static final Codec<OilLakeFilter> CODEC = Codec.unit(() -> INSTANCE);
 
     public static OilLakeFilter oilLakeFilter() {
         return INSTANCE;

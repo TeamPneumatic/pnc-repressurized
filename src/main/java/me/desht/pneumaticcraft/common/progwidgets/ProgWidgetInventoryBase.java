@@ -30,7 +30,6 @@ import net.minecraft.network.chat.Component;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
@@ -118,7 +117,7 @@ public abstract class ProgWidgetInventoryBase extends ProgWidgetAreaItemBase imp
             List<String> l = Arrays.stream(DirectionUtil.VALUES)
                     .filter(side -> accessingSides[side.get3DDataValue()])
                     .map(ClientUtils::translateDirection)
-                    .collect(Collectors.toList());
+                    .toList();
             return Collections.singletonList(Component.literal(Strings.join(l, ", ")));
         }
     }

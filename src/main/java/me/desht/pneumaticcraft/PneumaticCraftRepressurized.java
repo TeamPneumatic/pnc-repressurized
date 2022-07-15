@@ -80,7 +80,7 @@ public class PneumaticCraftRepressurized {
         ConfigHolder.init();
         AuxConfigHandler.preInit();
 
-        DistExecutor.safeRunWhenOn(Dist.CLIENT, () -> ClientSetup::initEarly);
+        DistExecutor.safeRunWhenOn(Dist.CLIENT, () -> ClientSetup::onModConstruction);
 
         modBus.addListener(this::modConstructSetup);
         modBus.addListener(this::commonSetup);
@@ -120,7 +120,7 @@ public class PneumaticCraftRepressurized {
         ModRecipeTypes.RECIPE_TYPES.register(modBus);
         ModVillagers.POI.register(modBus);
         ModVillagers.PROFESSIONS.register(modBus);
-        ModLootModifiers.LOOT_MODIFIER.register(modBus);
+        ModLootModifiers.LOOT_MODIFIERS.register(modBus);
         ModCommands.COMMAND_ARGUMENT_TYPES.register(modBus);
         ModLootFunctions.LOOT_FUNCTIONS.register(modBus);
         ModPlacementModifierTypes.PLACEMENT_MODIFIERS.register(modBus);

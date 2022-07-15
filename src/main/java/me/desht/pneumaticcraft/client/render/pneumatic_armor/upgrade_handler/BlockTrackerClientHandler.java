@@ -364,7 +364,7 @@ public class BlockTrackerClientHandler extends IArmorUpgradeClientHandler.Abstra
         return blockTargets.get(pos);
     }
 
-    public boolean scroll(InputEvent.MouseScrollEvent event) {
+    public boolean scroll(InputEvent.MouseScrollingEvent event) {
         for (RenderBlockTarget target : blockTargets.values()) {
             if (target.scroll(event)) {
                 getAnimatedStat().mouseScrolled(event.getMouseX(), event.getMouseY(), event.getScrollDelta());

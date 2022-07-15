@@ -8,7 +8,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.animal.Pufferfish;
 import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -18,7 +17,6 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 public class HackablePufferfish implements IHackableEntity<Pufferfish> {
     private static final ResourceLocation ID = RL("pufferfish");
 
-    @Nullable
     @Override
     public ResourceLocation getHackableId() {
         return ID;

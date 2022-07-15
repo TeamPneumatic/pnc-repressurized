@@ -32,7 +32,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.entity.EntityJoinWorldEvent;
+import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
@@ -109,8 +109,8 @@ public class MovingSounds {
     @Mod.EventBusSubscriber(modid = Names.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
     private static class Listener {
         @SubscribeEvent
-        public static void onPlayerJoinWorld(EntityJoinWorldEvent event) {
-            if (event.getWorld().isClientSide && event.getEntity() instanceof LocalPlayer) {
+        public static void onPlayerJoinWorld(EntityJoinLevelEvent event) {
+            if (event.getLevel().isClientSide && event.getEntity() instanceof LocalPlayer) {
                 posToTickableSound.clear();
             }
         }

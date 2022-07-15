@@ -20,6 +20,7 @@ package me.desht.pneumaticcraft.client.model.custom;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.BlockModel;
 import net.minecraft.client.renderer.block.model.ItemOverrides;
@@ -28,15 +29,14 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.*;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.client.model.IModelConfiguration;
-import net.minecraftforge.client.model.IModelLoader;
-import net.minecraftforge.client.model.data.IDynamicBakedModel;
-import net.minecraftforge.client.model.data.IModelData;
-import net.minecraftforge.client.model.geometry.IModelGeometry;
+import net.minecraftforge.client.model.IDynamicBakedModel;
+import net.minecraftforge.client.model.data.ModelData;
+import net.minecraftforge.client.model.geometry.IGeometryBakingContext;
+import net.minecraftforge.client.model.geometry.IGeometryLoader;
+import net.minecraftforge.client.model.geometry.IUnbakedGeometry;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -59,8 +59,8 @@ public class RenderedItemModel implements IDynamicBakedModel {
 
     @Nonnull
     @Override
-    public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, @Nonnull RandomSource rand, @Nonnull IModelData extraData) {
-        return bakedBaseModel.getQuads(state, side, rand, extraData);
+    public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, @Nonnull RandomSource rand, @Nonnull ModelData extraData, RenderType renderType) {
+        return bakedBaseModel.getQuads(state, side, rand, extraData, renderType);
     }
 
     @Override
@@ -94,14 +94,22 @@ public class RenderedItemModel implements IDynamicBakedModel {
     }
 
     @Override
-    public BakedModel handlePerspective(ItemTransforms.TransformType cameraTransformType, PoseStack mat) {
-        return switch (cameraTransformType) {
-            case GROUND, HEAD, NONE, GUI, FIXED -> bakedBaseModel.handlePerspective(cameraTransformType, mat);
+    public BakedModel applyTransform(ItemTransforms.TransformType transformType, PoseStack poseStack, boolean applyLeftHandTransform) {
+        return switch (transformType) {
+            case GROUND, HEAD, NONE, GUI, FIXED -> bakedBaseModel.applyTransform(transformType, poseStack, applyLeftHandTransform);
             default -> this;
         };
     }
 
-    private static class Geometry implements IModelGeometry<Geometry> {
+//    @Override
+//    public BakedModel handlePerspective(ItemTransforms.TransformType cameraTransformType, PoseStack mat) {
+//        return switch (cameraTransformType) {
+//            case GROUND, HEAD, NONE, GUI, FIXED -> bakedBaseModel.handlePerspective(cameraTransformType, mat);
+//            default -> this;
+//        };
+//    }
+
+    private static class Geometry implements IUnbakedGeometry<Geometry> {
         private final BlockModel baseModel;
 
         Geometry(BlockModel baseModel) {
@@ -109,25 +117,21 @@ public class RenderedItemModel implements IDynamicBakedModel {
         }
 
         @Override
-        public BakedModel bake(IModelConfiguration owner, ModelBakery bakery, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelTransform, ItemOverrides overrides, ResourceLocation modelLocation) {
+        public BakedModel bake(IGeometryBakingContext owner, ModelBakery bakery, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelTransform, ItemOverrides overrides, ResourceLocation modelLocation) {
             return new RenderedItemModel(baseModel.bake(bakery, baseModel, spriteGetter, modelTransform, modelLocation, true));
         }
 
         @Override
-        public Collection<Material> getTextures(IModelConfiguration owner, Function<ResourceLocation, UnbakedModel> modelGetter, Set<com.mojang.datafixers.util.Pair<String, String>> missingTextureErrors) {
+        public Collection<Material> getMaterials(IGeometryBakingContext owner, Function<ResourceLocation, UnbakedModel> modelGetter, Set<com.mojang.datafixers.util.Pair<String, String>> missingTextureErrors) {
             return baseModel.getMaterials(modelGetter, missingTextureErrors);
         }
     }
 
-    public enum Loader implements IModelLoader<Geometry> {
+    public enum Loader implements IGeometryLoader<Geometry> {
         INSTANCE;
 
         @Override
-        public void onResourceManagerReload(ResourceManager resourceManager) {
-        }
-
-        @Override
-        public Geometry read(JsonDeserializationContext deserializationContext, JsonObject modelContents) {
+        public Geometry read(JsonObject modelContents, JsonDeserializationContext deserializationContext) {
             BlockModel baseModel = deserializationContext.deserialize(GsonHelper.getAsJsonObject(modelContents, "base_model"), BlockModel.class);
             return new Geometry(baseModel);
         }

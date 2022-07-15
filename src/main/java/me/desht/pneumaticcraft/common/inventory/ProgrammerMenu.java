@@ -40,7 +40,6 @@ import net.minecraftforge.server.ServerLifecycleHooks;
 
 import javax.annotation.Nonnull;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class ProgrammerMenu extends AbstractPneumaticCraftMenu<ProgrammerBlockEntity> {
 
@@ -90,7 +89,7 @@ public class ProgrammerMenu extends AbstractPneumaticCraftMenu<ProgrammerBlockEn
                     final AbstractPneumaticCraftMenu<?> self = this;
                     List<ServerPlayer> players = ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayers().stream()
                             .filter(p -> p.containerMenu == self)
-                            .collect(Collectors.toList());
+                            .toList();
                     if (!players.isEmpty()) {
                         players.forEach(p -> NetworkHandler.sendToPlayer(new PacketSendNBTPacket(neighbor), p));
                     }

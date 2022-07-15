@@ -197,7 +197,7 @@ public class AmadronTabletItem extends PressurizableItem
     }
 
     public static void openGui(Player playerIn, InteractionHand handIn) {
-        NetworkHooks.openGui((ServerPlayer) playerIn, new MenuProvider() {
+        NetworkHooks.openScreen((ServerPlayer) playerIn, new MenuProvider() {
             @Override
             public Component getDisplayName() {
                 return playerIn.getItemInHand(handIn).getHoverName();

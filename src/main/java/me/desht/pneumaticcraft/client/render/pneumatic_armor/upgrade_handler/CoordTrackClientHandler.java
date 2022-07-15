@@ -194,8 +194,8 @@ public class CoordTrackClientHandler extends IArmorUpgradeClientHandler.Abstract
     public static class Listener {
         @SubscribeEvent
         public static void onPlayerInteract(PlayerInteractEvent.RightClickBlock event) {
-            ItemStack helmetStack = event.getPlayer().getItemBySlot(EquipmentSlot.HEAD);
-            if (!event.getWorld().isClientSide || event.getPlayer().getItemBySlot(EquipmentSlot.HEAD).getItem() != ModItems.PNEUMATIC_HELMET.get()) {
+            ItemStack helmetStack = event.getEntity().getItemBySlot(EquipmentSlot.HEAD);
+            if (!event.getLevel().isClientSide || event.getEntity().getItemBySlot(EquipmentSlot.HEAD).getItem() != ModItems.PNEUMATIC_HELMET.get()) {
                 return;
             }
             CommonArmorHandler commonArmorHandler = CommonArmorHandler.getHandlerForPlayer();
@@ -207,7 +207,7 @@ public class CoordTrackClientHandler extends IArmorUpgradeClientHandler.Abstract
                 handler.isListeningToCoordTrackerSetting = false;
                 if (event.getFace() != null) {
                     handler.reset();
-                    GlobalPos gPos = GlobalPosHelper.makeGlobalPos(event.getWorld(), event.getPos().relative(event.getFace()));
+                    GlobalPos gPos = GlobalPosHelper.makeGlobalPos(event.getLevel(), event.getPos().relative(event.getFace()));
                     PneumaticArmorItem.setCoordTrackerPos(helmetStack, gPos);
                     CompoundTag tag = new CompoundTag();
                     tag.put(PneumaticArmorItem.NBT_COORD_TRACKER, GlobalPosHelper.toNBT(gPos));

@@ -6,6 +6,7 @@
 		"2": "pneumaticcraft:model/fluid_mixer",
 		"particle": "pneumaticcraft:model/fluid_mixer"
 	},
+	"render_type": "cutout_mipped",
 	"elements": [
 		{
 			"from": [0, 10, 14],

@@ -43,7 +43,7 @@ import java.util.List;
 public class WidgetButtonExtended extends ExtendedButton implements ITaggedWidget, ITooltipProvider {
     private int iconSpacing = 18;
 
-    public enum IconPosition { MIDDLE, LEFT, RIGHT;}
+    public enum IconPosition { MIDDLE, LEFT, RIGHT }
     private ItemStack[] renderedStacks;
     private ResourceLocation resLoc;
     private final List<Component> tooltipText = new ArrayList<>();

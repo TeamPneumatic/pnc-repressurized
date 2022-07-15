@@ -51,7 +51,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.event.InputEvent;
-import net.minecraftforge.client.event.RenderLevelLastEvent;
+import net.minecraftforge.client.event.RenderLevelStageEvent;
 import net.minecraftforge.client.event.ScreenEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -86,7 +86,9 @@ public enum HUDHandler implements IKeyListener {
      * Handles the 3D drawing for armor components (see {@link PneumaticArmorHUDOverlay} for 2D)
      */
     @SubscribeEvent
-    public void renderHUD3d(RenderLevelLastEvent event) {
+    public void renderHUD3d(RenderLevelStageEvent event) {
+        if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_PARTICLES) return;
+
         Minecraft mc = Minecraft.getInstance();
         Player player = mc.player;
 
@@ -277,7 +279,7 @@ public enum HUDHandler implements IKeyListener {
     }
 
     @SubscribeEvent
-    public void onMouseScroll(InputEvent.MouseScrollEvent event) {
+    public void onMouseScroll(InputEvent.MouseScrollingEvent event) {
         ArmorUpgradeClientRegistry c = ArmorUpgradeClientRegistry.getInstance();
         boolean isCaptured = c.getClientHandler(CommonUpgradeHandlers.blockTrackerHandler, BlockTrackerClientHandler.class).scroll(event);
         if (!isCaptured) isCaptured = c.getClientHandler(CommonUpgradeHandlers.entityTrackerHandler, EntityTrackerClientHandler.class).scroll(event);
@@ -285,7 +287,7 @@ public enum HUDHandler implements IKeyListener {
     }
 
     @SubscribeEvent
-    public void handleResolutionChange(ScreenEvent.InitScreenEvent event) {
+    public void handleResolutionChange(ScreenEvent.Init event) {
         Screen gui = event.getScreen();
         if (gui.getMinecraft().level != null) {
             Window mw = gui.getMinecraft().getWindow();

@@ -58,7 +58,7 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 public class TooltipEventHandler {
     @SubscribeEvent
     public static void onItemTooltip(ItemTooltipEvent event) {
-        if (event.getPlayer() == null) return;
+        if (event.getEntity() == null) return;
 
         ItemStack stack = event.getItemStack();
 

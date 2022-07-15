@@ -135,8 +135,8 @@ public class DroneAICrafting extends Goal {
             ItemStack stack = craftMatrix.getItem(i);
 
             if (!stack.isEmpty()) {
-                if (stack.getItem().hasContainerItem(stack)) {
-                    ItemStack containerItem = stack.getItem().getContainerItem(stack);
+                if (stack.getItem().hasCraftingRemainingItem(stack)) {
+                    ItemStack containerItem = stack.getItem().getCraftingRemainingItem(stack);
                     if (!containerItem.isEmpty() && containerItem.isDamageableItem() && containerItem.getDamageValue() > containerItem.getMaxDamage()) {
                         MinecraftForge.EVENT_BUS.post(new PlayerDestroyItemEvent(drone.getFakePlayer(), containerItem, InteractionHand.MAIN_HAND));
                         continue;

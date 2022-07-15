@@ -28,7 +28,7 @@ import net.minecraft.world.phys.Vec3;
  */
 
 public abstract class LocationDoublePacket {
-    protected double x, y, z;
+    protected final double x, y, z;
 
     LocationDoublePacket(double x, double y, double z) {
         this.x = x;

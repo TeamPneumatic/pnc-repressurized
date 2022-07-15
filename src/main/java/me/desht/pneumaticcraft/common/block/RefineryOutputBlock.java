@@ -104,7 +104,7 @@ public class RefineryOutputBlock extends AbstractPneumaticCraftBlock
             } else if (!world.isClientSide) {
                 RefineryControllerBlockEntity master = te.getRefineryController();
                 if (master != null) {
-                    NetworkHooks.openGui((ServerPlayer) player, master, master.getBlockPos());
+                    NetworkHooks.openScreen((ServerPlayer) player, master, master.getBlockPos());
                 }
             }
             return InteractionResult.SUCCESS;

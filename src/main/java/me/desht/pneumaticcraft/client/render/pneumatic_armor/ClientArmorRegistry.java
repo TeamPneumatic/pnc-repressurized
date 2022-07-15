@@ -72,7 +72,7 @@ public enum ClientArmorRegistry implements IClientArmorRegistry {
     }
 
     @Override
-    public <T extends IArmorUpgradeHandler<?>> void registerRenderHandler(T handler, IArmorUpgradeClientHandler<T> clientHandler) {
+    public <T extends IArmorUpgradeHandler<?>> void registerUpgradeHandler(T handler, IArmorUpgradeClientHandler<T> clientHandler) {
         Validate.notNull(clientHandler, "Render handler can't be null!");
         ArmorUpgradeClientRegistry.getInstance().registerHandler(handler, clientHandler);
     }

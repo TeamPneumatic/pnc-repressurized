@@ -84,7 +84,7 @@ public interface IClientArmorRegistry {
      * @param handler the common upgrade handler, previously registered with
      * @param clientHandler the client handler to register with the common upgrade handler
      */
-    <T extends IArmorUpgradeHandler<?>> void registerRenderHandler(T handler, IArmorUpgradeClientHandler<T> clientHandler);
+    <T extends IArmorUpgradeHandler<?>> void registerUpgradeHandler(T handler, IArmorUpgradeClientHandler<T> clientHandler);
 
     /**
      * Create a new keybinding button for an {@link IOptionPage} armor GUI screen.  This is intended to be called from

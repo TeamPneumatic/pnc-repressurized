@@ -22,7 +22,7 @@ import me.desht.pneumaticcraft.api.pneumatic_armor.hacking.AbstractPersistentEnt
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.monster.Ghast;
 import net.minecraft.world.entity.projectile.Fireball;
-import net.minecraftforge.event.entity.EntityJoinWorldEvent;
+import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
@@ -48,7 +48,7 @@ public class HackableGhast extends AbstractPersistentEntityHack<Ghast> {
     @Mod.EventBusSubscriber(modid = Names.MOD_ID)
     public static class Listener {
         @SubscribeEvent
-        public static void onFireball(EntityJoinWorldEvent event) {
+        public static void onFireball(EntityJoinLevelEvent event) {
             if (event.getEntity() instanceof Fireball f && f.getOwner() instanceof Ghast ghast
                     && hasPersistentHack(ghast, HackableGhast.class)) {
                 event.setCanceled(true);

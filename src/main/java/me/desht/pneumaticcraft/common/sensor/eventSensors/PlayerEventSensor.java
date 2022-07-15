@@ -43,7 +43,7 @@ abstract class PlayerEventSensor implements IEventSensorSetting {
     @Override
     public int emitRedstoneOnEvent(Event event, BlockEntity sensor, int range, String textboxText) {
         if (event instanceof PlayerEvent playerEvent) {
-            Player player = playerEvent.getPlayer();
+            Player player = playerEvent.getEntity();
             if (Math.abs(player.getX() - sensor.getBlockPos().getX() + 0.5D) < range + 0.5D
                     && Math.abs(player.getY() - sensor.getBlockPos().getY() + 0.5D) < range + 0.5D
                     && Math.abs(player.getZ() - sensor.getBlockPos().getZ() + 0.5D) < range + 0.5D)

@@ -43,15 +43,15 @@ public class PNCCapabilities {
     /**
      * Item air handler; use this on items which can be pressurized.
      */
-    public static Capability<IAirHandlerItem> AIR_HANDLER_ITEM_CAPABILITY = CapabilityManager.get(new CapabilityToken<>() {});
+    public static final Capability<IAirHandlerItem> AIR_HANDLER_ITEM_CAPABILITY = CapabilityManager.get(new CapabilityToken<>() {});
 
     /**
      * Hacking handler; use this on entities which can be hacked by the Pneumatic Helmet.
      */
-    public static Capability<IHacking> HACKING_CAPABILITY = CapabilityManager.get(new CapabilityToken<>() {});
+    public static final Capability<IHacking> HACKING_CAPABILITY = CapabilityManager.get(new CapabilityToken<>() {});
 
     /**
      * Heat exchanger capability
      */
-    public static Capability<IHeatExchangerLogic> HEAT_EXCHANGER_CAPABILITY = CapabilityManager.get(new CapabilityToken<>() {});
+    public static final Capability<IHeatExchangerLogic> HEAT_EXCHANGER_CAPABILITY = CapabilityManager.get(new CapabilityToken<>() {});
 }

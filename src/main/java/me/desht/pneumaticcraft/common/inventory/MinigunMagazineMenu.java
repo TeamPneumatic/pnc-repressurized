@@ -30,8 +30,6 @@ import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.SlotItemHandler;
 
-import javax.annotation.Nonnull;
-
 public class MinigunMagazineMenu extends AbstractPneumaticCraftMenu<AbstractPneumaticCraftBlockEntity> {
     private final MinigunItem.MagazineHandler gunInv;
     private final InteractionHand hand;
@@ -65,7 +63,6 @@ public class MinigunMagazineMenu extends AbstractPneumaticCraftMenu<AbstractPneu
         return true;
     }
 
-    @Nonnull
     @Override
     public void clicked(int slotId, int dragType, ClickType clickType, Player player) {
         if (clickType == ClickType.CLONE && dragType == 2 && slotId >= 0 && slotId < MinigunItem.MAGAZINE_SIZE) {

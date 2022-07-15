@@ -93,7 +93,7 @@ public class UniversalSensorBlock extends AbstractPneumaticCraftBlock implements
 
     @Override
     protected void doOpenGui(ServerPlayer player, BlockEntity te) {
-        NetworkHooks.openGui(player, (MenuProvider) te, buf -> {
+        NetworkHooks.openScreen(player, (MenuProvider) te, buf -> {
             buf.writeBlockPos(te.getBlockPos());
             Collection<String> vars = GlobalVariableManager.getInstance().getAllActiveVariableNames(player);
             buf.writeVarInt(vars.size());

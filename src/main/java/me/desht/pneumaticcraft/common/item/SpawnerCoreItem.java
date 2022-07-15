@@ -102,7 +102,7 @@ public class SpawnerCoreItem extends Item implements ColorHandlers.ITintableItem
             Level world = context.getLevel();
             EntityType<?> type = stats.pickEntity(false);
             if (type == null) return false;
-            return PneumaticCraftUtils.getRegistryName(ForgeRegistries.ENTITIES, type).map(regName -> {
+            return PneumaticCraftUtils.getRegistryName(ForgeRegistries.ENTITY_TYPES, type).map(regName -> {
                 Vec3 vec = context.getClickLocation();
                 if (world.noCollision(type.getAABB(vec.x(), vec.y(), vec.z()))) {
                     ServerLevel serverworld = (ServerLevel)world;
@@ -151,7 +151,7 @@ public class SpawnerCoreItem extends Item implements ColorHandlers.ITintableItem
             if (nbt0 != null && nbt0.contains(NBT_SPAWNER_CORE)) {
                 CompoundTag nbt = nbt0.getCompound(NBT_SPAWNER_CORE);
                 for (String k : nbt.getAllKeys()) {
-                    EntityType<?> type = ForgeRegistries.ENTITIES.getValue(new ResourceLocation(k));
+                    EntityType<?> type = ForgeRegistries.ENTITY_TYPES.getValue(new ResourceLocation(k));
                     if (type != null) {
                         int amount = nbt.getInt(k);
                         entityCounts.put(type, amount);
@@ -174,7 +174,7 @@ public class SpawnerCoreItem extends Item implements ColorHandlers.ITintableItem
                     if (tag != null) tag.remove(NBT_SPAWNER_CORE);
                 } else {
                     CompoundTag subTag = stack.getOrCreateTagElement(NBT_SPAWNER_CORE);
-                    entityCounts.forEach((type, amount) -> PneumaticCraftUtils.getRegistryName(ForgeRegistries.ENTITIES, type).ifPresent(regName -> {
+                    entityCounts.forEach((type, amount) -> PneumaticCraftUtils.getRegistryName(ForgeRegistries.ENTITY_TYPES, type).ifPresent(regName -> {
                         if (amount > 0) {
                             subTag.putInt(regName.toString(), amount);
                         } else {

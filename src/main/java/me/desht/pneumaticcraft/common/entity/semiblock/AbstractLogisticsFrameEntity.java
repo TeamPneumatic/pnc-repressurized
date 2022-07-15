@@ -435,7 +435,7 @@ public abstract class AbstractLogisticsFrameEntity extends AbstractSemiblockEnti
             };
 
             NetworkHandler.sendToPlayer(new PacketSyncSemiblock(this, false), (ServerPlayer) player);
-            NetworkHooks.openGui((ServerPlayer) player, provider, buffer -> buffer.writeVarInt(getId()));
+            NetworkHooks.openScreen((ServerPlayer) player, provider, buffer -> buffer.writeVarInt(getId()));
         }
         return true;
     }
@@ -509,7 +509,7 @@ public abstract class AbstractLogisticsFrameEntity extends AbstractSemiblockEnti
             if (event.getTarget() instanceof AbstractLogisticsFrameEntity frame) {
                 // pass a left-click on invisible logistics frame through to the block it's on
                 if (frame.isSemiblockInvisible()) {
-                    frame.getBlockState().attack(frame.getWorld(), frame.getBlockPos(), event.getPlayer());
+                    frame.getBlockState().attack(frame.getWorld(), frame.getBlockPos(), event.getEntity());
                     event.setCanceled(true);
                 }
             }

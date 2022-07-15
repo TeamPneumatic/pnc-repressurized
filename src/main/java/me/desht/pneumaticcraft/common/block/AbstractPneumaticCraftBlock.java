@@ -132,7 +132,7 @@ public abstract class AbstractPneumaticCraftBlock extends Block
      * @param te the block entity, which is known to be an INamedContainerProvider
      */
     protected void doOpenGui(ServerPlayer player, BlockEntity te) {
-        NetworkHooks.openGui(player, (MenuProvider) te, te.getBlockPos());
+        NetworkHooks.openScreen(player, (MenuProvider) te, te.getBlockPos());
     }
 
     @Nullable

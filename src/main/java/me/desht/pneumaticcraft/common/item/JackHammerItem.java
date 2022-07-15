@@ -139,7 +139,7 @@ public class JackHammerItem extends PressurizableItem
         ItemStack stack = playerIn.getItemInHand(handIn);
         if (!playerIn.isCrouching() || stack.getCount() != 1) return InteractionResultHolder.pass(stack);
         if (playerIn instanceof ServerPlayer sp) {
-            NetworkHooks.openGui(sp, new MenuProvider() {
+            NetworkHooks.openScreen(sp, new MenuProvider() {
                 @Override
                 public Component getDisplayName() {
                     return stack.getHoverName();
@@ -557,12 +557,12 @@ public class JackHammerItem extends PressurizableItem
     public static class Listener {
         @SubscribeEvent
         public static void onLeftClickBlock(PlayerInteractEvent.LeftClickBlock event) {
-            Player player = event.getPlayer();
+            Player player = event.getEntity();
             ItemStack stack = player.getItemInHand(event.getHand());
             if (stack.getItem() instanceof JackHammerItem jackHammer && jackHammer.getAir(stack) > 0f) {
-                if (event.getWorld().isClientSide) {
+                if (event.getLevel().isClientSide) {
                     // play the sound to this player
-                    MovingSounds.playMovingSound(MovingSounds.Sound.JACKHAMMER, event.getPlayer());
+                    MovingSounds.playMovingSound(MovingSounds.Sound.JACKHAMMER, event.getEntity());
                 } else {
                     // play the sound to any other players tracking this player
                     NetworkHandler.sendToAllTracking(new PacketPlayMovingSound(MovingSounds.Sound.JACKHAMMER, MovingSoundFocus.of(player)), player);

@@ -288,7 +288,6 @@ public abstract class AbstractPneumaticCraftMenu<T extends AbstractPneumaticCraf
         return flag;
     }
 
-    @Nonnull
     @Override
     public void clicked(int slotId, int dragType, ClickType clickType, Player player) {
         Slot slot = slotId < 0 ? null : slots.get(slotId);

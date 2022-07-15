@@ -44,7 +44,7 @@ public class ElectricAttackHandler {
     public static void onElectricalAttack(LivingHurtEvent event) {
         if (!event.getSource().getMsgId().equals(Lib.DMG_WireShock)) return;
 
-        if (event.getEntityLiving() instanceof DroneEntity drone) {
+        if (event.getEntity() instanceof DroneEntity drone) {
             if (drone.getUpgrades(ModUpgrades.SECURITY.get()) > 0) {
                 float dmg = event.getAmount();
                 drone.getCapability(PNCCapabilities.AIR_HANDLER_CAPABILITY).orElseThrow(RuntimeException::new).addAir((int)(-50 * dmg));
@@ -54,7 +54,7 @@ public class ElectricAttackHandler {
                 event.setAmount(0f);
                 playLeakSound(drone);
             }
-        } else if (event.getEntityLiving() instanceof Player player) {
+        } else if (event.getEntity() instanceof Player player) {
             CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
             if (handler.getUpgradeCount(EquipmentSlot.CHEST, ModUpgrades.SECURITY.get()) > 0
                     && handler.getArmorPressure(EquipmentSlot.CHEST) > 0.1

@@ -400,7 +400,7 @@ public enum AmadronOfferManager {
     public static class EventListener {
         @SubscribeEvent
         public static void serverLogin(PlayerEvent.PlayerLoggedInEvent evt) {
-            NetworkHandler.sendNonLocal((ServerPlayer) evt.getPlayer(), new PacketSyncAmadronOffers(false));
+            NetworkHandler.sendNonLocal((ServerPlayer) evt.getEntity(), new PacketSyncAmadronOffers(false));
         }
     }
 }

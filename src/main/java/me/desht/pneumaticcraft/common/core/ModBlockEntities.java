@@ -31,7 +31,7 @@ import java.util.Arrays;
 import java.util.stream.Collectors;
 
 public class ModBlockEntities {
-    public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES = DeferredRegister.create(ForgeRegistries.BLOCK_ENTITIES, Names.MOD_ID);
+    public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES = DeferredRegister.create(ForgeRegistries.BLOCK_ENTITY_TYPES, Names.MOD_ID);
 
     public static final RegistryObject<BlockEntityType<PressureTubeBlockEntity>> PRESSURE_TUBE
             = register("pressure_tube", PressureTubeBlockEntity::new, ModBlocks.PRESSURE_TUBE);
