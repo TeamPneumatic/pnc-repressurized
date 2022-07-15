@@ -20,7 +20,7 @@ package me.desht.pneumaticcraft.common.config.subconfig;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.google.gson.JsonSyntaxException;
 import me.desht.pneumaticcraft.common.amadron.AmadronOfferManager;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronPlayerOffer;
 import net.minecraft.resources.ResourceLocation;
@@ -77,7 +77,7 @@ public class AmadronPlayerOffers extends AuxConfigJson {
             try {
                 AmadronPlayerOffer offer = AmadronPlayerOffer.fromJson((JsonObject) element);
                 if (offer != null) playerOffers.put(offer.getId(), offer);
-            } catch (CommandSyntaxException e) {
+            } catch (JsonSyntaxException e) {
                 e.printStackTrace();
             }
         }
