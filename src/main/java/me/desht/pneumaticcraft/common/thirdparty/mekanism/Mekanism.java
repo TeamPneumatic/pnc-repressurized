@@ -48,10 +48,10 @@ public class Mekanism implements IThirdParty {
     public void attachHeatAdapters(AttachCapabilitiesEvent<BlockEntity> event) {
         if (ConfigHelper.common().integration.mekThermalEfficiencyFactor.get() != 0) {
             if (event.getObject() instanceof IHeatExchangingTE) {
-//                event.addCapability(RL("pnc2mek_heat_adapter"), new PNC2MekHeatProvider(event.getObject()));
+                event.addCapability(RL("pnc2mek_heat_adapter"), new PNC2MekHeatProvider(event.getObject()));
             }
             if (MekanismIntegration.isMekHeatHandler(event.getObject())) {
-//                event.addCapability(RL("mek2pnc_heat_adapter"), new Mek2PNCHeatProvider(event.getObject()));
+                event.addCapability(RL("mek2pnc_heat_adapter"), new Mek2PNCHeatProvider(event.getObject()));
             }
         }
     }
@@ -59,9 +59,7 @@ public class Mekanism implements IThirdParty {
     @SubscribeEvent
     public void attachRadiationShield(AttachCapabilitiesEvent<ItemStack> event) {
         if (event.getObject().getItem() instanceof PneumaticArmorItem armor) {
-//            event.addCapability(RL("mek_rad_shielding"),
-//                    new MekRadShieldProvider(event.getObject(), armor.getSlot())
-//            );
+            event.addCapability(RL("mek_rad_shielding"), new MekRadShieldProvider(event.getObject(), armor.getSlot()));
         }
     }
 
