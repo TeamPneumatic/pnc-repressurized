@@ -20,6 +20,7 @@ package me.desht.pneumaticcraft.client.model.custom;
 import com.google.common.collect.ImmutableList;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.datafixers.util.Pair;
 import me.desht.pneumaticcraft.client.render.fluid.TankRenderInfo;
 import me.desht.pneumaticcraft.common.item.IFluidRendered;
@@ -29,6 +30,7 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.BlockModel;
 import net.minecraft.client.renderer.block.model.ItemOverrides;
+import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.*;
 import net.minecraft.core.Direction;
@@ -58,13 +60,11 @@ import java.util.function.Function;
 
 public class FluidItemModel implements IDynamicBakedModel {
     private final BakedModel bakedBaseModel;
-//    private final ImmutableMap<ItemTransforms.TransformType, Transformation> transformMap;
     private final ItemOverrides overrideList = new FluidOverridesList(this);
     private List<TankRenderInfo> tanksToRender = Collections.emptyList();
 
-    private FluidItemModel(BakedModel bakedBaseModel/*, ImmutableMap<ItemTransforms.TransformType, Transformation> transformMap*/) {
+    private FluidItemModel(BakedModel bakedBaseModel) {
         this.bakedBaseModel = bakedBaseModel;
-//        this.transformMap = transformMap;
     }
 
     @Nonnull
@@ -147,7 +147,7 @@ public class FluidItemModel implements IDynamicBakedModel {
         quadBaker.vertex(x, y, z);
         quadBaker.normal((float) normal.x, (float) normal.y, (float) normal.z);
         quadBaker.color(cols[1], cols[2], cols[3], cols[0]);
-        quadBaker.uv(u, v);
+        quadBaker.uv(sprite.getU(u), sprite.getV(v));
         quadBaker.setSprite(sprite);
         quadBaker.setDirection(face);
         quadBaker.endVertex();
@@ -188,15 +188,16 @@ public class FluidItemModel implements IDynamicBakedModel {
         return overrideList;
     }
 
-//    @Override
-//    public boolean doesHandlePerspectives() {
-//        return true;
-//    }
-//
-//    @Override
-//    public BakedModel handlePerspective(ItemTransforms.TransformType cameraTransformType, PoseStack mat) {
-//        return PerspectiveMapWrapper.handlePerspective(this, transformMap, cameraTransformType, mat);
-//    }
+    @Override
+    public List<BakedModel> getRenderPasses(ItemStack itemStack, boolean fabulous) {
+        return IDynamicBakedModel.super.getRenderPasses(itemStack, fabulous);
+    }
+
+    @Override
+    public BakedModel applyTransform(ItemTransforms.TransformType transformType, PoseStack poseStack, boolean applyLeftHandTransform) {
+        bakedBaseModel.getTransforms().getTransform(transformType).apply(applyLeftHandTransform, poseStack);
+        return this;
+    }
 
     public static class Geometry implements IUnbakedGeometry<Geometry> {
         private final BlockModel baseModel;
@@ -207,7 +208,7 @@ public class FluidItemModel implements IDynamicBakedModel {
 
         @Override
         public BakedModel bake(IGeometryBakingContext owner, ModelBakery bakery, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelTransform, ItemOverrides overrides, ResourceLocation modelLocation) {
-            return new FluidItemModel(baseModel.bake(bakery, baseModel.parent, spriteGetter, modelTransform, modelLocation, true)/*, PerspectiveMapWrapper.getTransforms(baseModel.getTransforms())*/);
+            return new FluidItemModel(baseModel.bake(bakery, baseModel.parent, spriteGetter, modelTransform, modelLocation, true));
         }
 
         @Override
