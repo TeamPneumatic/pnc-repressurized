@@ -21,8 +21,8 @@ import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IGuiScreen;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IKeybindingButton;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
 import me.desht.pneumaticcraft.client.KeyHandler;
-import me.desht.pneumaticcraft.client.render.pneumatic_armor.ClientArmorRegistry;
-import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.KickClientHandler;
+import me.desht.pneumaticcraft.client.pneumatic_armor.ClientArmorRegistry;
+import me.desht.pneumaticcraft.client.pneumatic_armor.upgrade_handler.KickClientHandler;
 
 import java.util.Optional;
 

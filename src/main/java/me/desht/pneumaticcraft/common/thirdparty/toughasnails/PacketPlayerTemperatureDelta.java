@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.common.thirdparty.toughasnails;
 
 import io.netty.buffer.ByteBuf;
-import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.AirConClientHandler;
+import me.desht.pneumaticcraft.client.pneumatic_armor.upgrade_handler.AirConClientHandler;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.network.NetworkEvent;
 

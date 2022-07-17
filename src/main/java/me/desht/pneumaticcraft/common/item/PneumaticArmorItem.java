@@ -25,7 +25,7 @@ import me.desht.pneumaticcraft.api.item.ICustomDurabilityBar;
 import me.desht.pneumaticcraft.api.lib.NBTKeys;
 import me.desht.pneumaticcraft.api.pressure.IPressurizableItem;
 import me.desht.pneumaticcraft.client.ColorHandlers;
-import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.EnderVisorClientHandler;
+import me.desht.pneumaticcraft.client.pneumatic_armor.upgrade_handler.EnderVisorClientHandler;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import me.desht.pneumaticcraft.common.block.entity.ChargingStationBlockEntity;

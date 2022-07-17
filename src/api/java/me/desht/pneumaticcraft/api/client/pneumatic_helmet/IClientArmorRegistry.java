@@ -28,16 +28,15 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 /**
  * Retrieve an instance of this via {@link me.desht.pneumaticcraft.api.PneumaticRegistry.IPneumaticCraftInterface#getClientArmorRegistry()}
- * <p>Note: despite the name of this interface, it is for used for all armor pieces. The name is historical.
  */
 public interface IClientArmorRegistry {
     int DEFAULT_MESSAGE_BGCOLOR = 0x7000AA00;
@@ -155,9 +154,11 @@ public interface IClientArmorRegistry {
     /**
      * Get the block position and face that is currently focused on by the player via the Block Tracker upgrade. If the
      * Block Tracker isn't currently active or the player isn't currently looking at a block which is of interest to the
-     * block tracker, this will return (null,null).
+     * block tracker, this will return {@code Optional.empty()}.
      *
-     * @return a pair of position and facing
+     * @return the block and face the player is currently looking at, or Optional.empty() if not focused on a block
      */
-    Pair<BlockPos, Direction> getBlockTrackerFocus();
+    Optional<BlockTrackerFocus> getBlockTrackerFocus();
+
+    record BlockTrackerFocus(BlockPos pos, Direction face) { }
 }

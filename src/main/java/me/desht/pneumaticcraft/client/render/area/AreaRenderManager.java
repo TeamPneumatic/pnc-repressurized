@@ -21,9 +21,9 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import me.desht.pneumaticcraft.api.item.IPositionProvider;
-import me.desht.pneumaticcraft.client.pneumatic_armor.ArmorUpgradeClientRegistry;
-import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.CoordTrackClientHandler;
-import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.DroneDebugClientHandler;
+import me.desht.pneumaticcraft.client.pneumatic_armor.ClientArmorRegistry;
+import me.desht.pneumaticcraft.client.pneumatic_armor.upgrade_handler.CoordTrackClientHandler;
+import me.desht.pneumaticcraft.client.pneumatic_armor.upgrade_handler.DroneDebugClientHandler;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.block.entity.CamouflageableBlockEntity;
@@ -129,7 +129,7 @@ public enum AreaRenderManager {
     private void maybeRenderCoordinateTracker(PoseStack matrixStack, MultiBufferSource.BufferSource buffer, Player player, float partialTicks) {
         CoordTrackerHandler handler = CommonUpgradeHandlers.coordTrackerHandler;
         if (CommonArmorHandler.getHandlerForPlayer().upgradeUsable(handler, true)) {
-            BlockPos pos = ArmorUpgradeClientRegistry.getInstance().getClientHandler(handler, CoordTrackClientHandler.class).getTrackedPos();
+            BlockPos pos = ClientArmorRegistry.getInstance().getClientHandler(handler, CoordTrackClientHandler.class).getTrackedPos();
             if (pos != null) {
                 float progress = (player.level.getGameTime() % 20 + partialTicks) / 20;
                 float g = progress < 0.5F ? progress + 0.5F : 1.5F - progress;
@@ -163,7 +163,7 @@ public enum AreaRenderManager {
         ItemStack helmet = player.getItemBySlot(EquipmentSlot.HEAD);
         if (helmet.getItem() == ModItems.PNEUMATIC_HELMET.get()) {
             if (droneDebugger == null) {
-                droneDebugger = ArmorUpgradeClientRegistry.getInstance()
+                droneDebugger = ClientArmorRegistry.getInstance()
                         .getClientHandler(CommonUpgradeHandlers.droneDebugHandler, DroneDebugClientHandler.class);
             }
             Set<BlockPos> posSet = droneDebugger.getShowingPositions();

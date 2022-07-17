@@ -17,9 +17,9 @@
 
 package me.desht.pneumaticcraft.common.network;
 
-import me.desht.pneumaticcraft.client.pneumatic_armor.ArmorUpgradeClientRegistry;
-import me.desht.pneumaticcraft.client.render.pneumatic_armor.block_tracker.RenderBlockTarget;
-import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.BlockTrackerClientHandler;
+import me.desht.pneumaticcraft.client.pneumatic_armor.ClientArmorRegistry;
+import me.desht.pneumaticcraft.client.pneumatic_armor.upgrade_handler.BlockTrackerClientHandler;
+import me.desht.pneumaticcraft.client.render.pneumatic_armor.RenderBlockTarget;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.hacking.WorldAndCoord;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
@@ -55,7 +55,7 @@ public class PacketHackingBlockStart extends LocationIntPacket {
                         .getExtensionData(CommonUpgradeHandlers.hackHandler)
                         .setHackedBlockPos(new WorldAndCoord(cPlayer.level, pos));
 
-                RenderBlockTarget target = ArmorUpgradeClientRegistry.getInstance()
+                RenderBlockTarget target = ClientArmorRegistry.getInstance()
                         .getClientHandler(CommonUpgradeHandlers.blockTrackerHandler, BlockTrackerClientHandler.class)
                         .getTargetForCoord(pos);
                 if (target != null) target.onHackConfirmServer();

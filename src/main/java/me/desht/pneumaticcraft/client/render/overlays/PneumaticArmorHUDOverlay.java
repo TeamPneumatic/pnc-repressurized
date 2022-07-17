@@ -6,7 +6,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IArmorUpgradeClientHandler;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetKeybindCheckBox;
-import me.desht.pneumaticcraft.client.pneumatic_armor.ArmorUpgradeClientRegistry;
+import me.desht.pneumaticcraft.client.pneumatic_armor.ClientArmorRegistry;
 import me.desht.pneumaticcraft.client.render.ProgressBarRenderer;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.ArmorMessage;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
@@ -113,7 +113,7 @@ public class PneumaticArmorHUDOverlay implements IGuiOverlay {
 
         // all enabled upgrades do their 2D rendering here
         if (WidgetKeybindCheckBox.getCoreComponents().checked || Minecraft.getInstance().screen == null) {
-            List<IArmorUpgradeClientHandler<?>> renderHandlers = ArmorUpgradeClientRegistry.getInstance().getHandlersForSlot(slot);
+            List<IArmorUpgradeClientHandler<?>> renderHandlers = ClientArmorRegistry.getInstance().getHandlersForSlot(slot);
             for (int i = 0; i < renderHandlers.size(); i++) {
                 IArmorUpgradeClientHandler<?> clientHandler = renderHandlers.get(i);
                 if (comHudHandler.isUpgradeInserted(slot, i) && (comHudHandler.isUpgradeEnabled(slot, i) || !clientHandler.isToggleable())) {

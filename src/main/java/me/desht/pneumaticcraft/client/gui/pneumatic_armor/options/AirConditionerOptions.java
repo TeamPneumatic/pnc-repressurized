@@ -19,8 +19,8 @@ package me.desht.pneumaticcraft.client.gui.pneumatic_armor.options;
 
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IGuiScreen;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
-import me.desht.pneumaticcraft.client.render.pneumatic_armor.ClientArmorRegistry;
-import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.AirConClientHandler;
+import me.desht.pneumaticcraft.client.pneumatic_armor.ClientArmorRegistry;
+import me.desht.pneumaticcraft.client.pneumatic_armor.upgrade_handler.AirConClientHandler;
 
 public class AirConditionerOptions extends IOptionPage.SimpleOptionPage<AirConClientHandler> {
 

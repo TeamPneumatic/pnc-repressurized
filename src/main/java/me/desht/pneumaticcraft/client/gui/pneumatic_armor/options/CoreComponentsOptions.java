@@ -25,8 +25,8 @@ import me.desht.pneumaticcraft.client.gui.pneumatic_armor.ArmorColoringScreen;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.ArmorStatMoveScreen;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetCheckBox;
-import me.desht.pneumaticcraft.client.render.pneumatic_armor.ClientArmorRegistry;
-import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.CoreComponentsClientHandler;
+import me.desht.pneumaticcraft.client.pneumatic_armor.ClientArmorRegistry;
+import me.desht.pneumaticcraft.client.pneumatic_armor.upgrade_handler.CoreComponentsClientHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.CoreComponentsHandler;
 import net.minecraft.client.Minecraft;
 

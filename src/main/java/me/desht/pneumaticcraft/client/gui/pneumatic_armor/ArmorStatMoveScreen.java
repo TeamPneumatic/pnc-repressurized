@@ -25,8 +25,8 @@ import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorUpgradeHandler;
 import me.desht.pneumaticcraft.client.gui.AbstractPneumaticCraftScreen;
 import me.desht.pneumaticcraft.client.gui.widget.PNCForgeSlider;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetCheckBox;
-import me.desht.pneumaticcraft.client.pneumatic_armor.ArmorUpgradeClientRegistry;
-import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.CoreComponentsClientHandler;
+import me.desht.pneumaticcraft.client.pneumatic_armor.ClientArmorRegistry;
+import me.desht.pneumaticcraft.client.pneumatic_armor.upgrade_handler.CoreComponentsClientHandler;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.config.subconfig.ArmorHUDLayout;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
@@ -77,7 +77,7 @@ public class ArmorStatMoveScreen extends AbstractPneumaticCraftScreen {
         // so they can be rendered for positioning purposes
         CommonArmorHandler commonArmorHandler = CommonArmorHandler.getHandlerForPlayer();
         for (EquipmentSlot slot : ArmorUpgradeRegistry.ARMOR_SLOTS) {
-            List<IArmorUpgradeClientHandler<?>> renderHandlers = ArmorUpgradeClientRegistry.getInstance().getHandlersForSlot(slot);
+            List<IArmorUpgradeClientHandler<?>> renderHandlers = ClientArmorRegistry.getInstance().getHandlersForSlot(slot);
             for (int i = 0; i < renderHandlers.size(); i++) {
                 IArmorUpgradeClientHandler<?> upgradeRenderHandler = renderHandlers.get(i);
                 if (commonArmorHandler.isUpgradeInserted(slot, i) && commonArmorHandler.isUpgradeEnabled(slot, i)) {
@@ -90,7 +90,7 @@ public class ArmorStatMoveScreen extends AbstractPneumaticCraftScreen {
         }
 
         // special case: the core components handler has a second configurable stat position: hud message display
-        CoreComponentsClientHandler mainOptions = ArmorUpgradeClientRegistry.getInstance()
+        CoreComponentsClientHandler mainOptions = ClientArmorRegistry.getInstance()
                 .getClientHandler(CommonUpgradeHandlers.coreComponentsHandler, CoreComponentsClientHandler.class);
         IGuiAnimatedStat testMessageStat = mainOptions.getTestMessageStat();
         if (movedStat != testMessageStat) {

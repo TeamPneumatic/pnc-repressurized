@@ -22,9 +22,9 @@ import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IArmorUpgradeClientHa
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.ICheckboxWidget;
 import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorUpgradeHandler;
-import me.desht.pneumaticcraft.client.pneumatic_armor.ArmorUpgradeClientRegistry;
+import me.desht.pneumaticcraft.client.pneumatic_armor.ClientArmorRegistry;
+import me.desht.pneumaticcraft.client.pneumatic_armor.upgrade_handler.CoreComponentsClientHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
-import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.CoreComponentsClientHandler;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.config.subconfig.ArmorFeatureStatus;
@@ -82,7 +82,7 @@ public class WidgetKeybindCheckBox extends WidgetCheckBox implements ITooltipPro
         return id2checkBox.computeIfAbsent(upgradeID, id -> {
             WidgetKeybindCheckBox newCheckBox = new WidgetKeybindCheckBox(id, x, y, color, pressable);
             newCheckBox.checked = ArmorFeatureStatus.INSTANCE.isUpgradeEnabled(id);
-            KeyMapping keyBinding = ArmorUpgradeClientRegistry.getInstance().getKeybindingForUpgrade(id);
+            KeyMapping keyBinding = ClientArmorRegistry.getInstance().getKeybindingForUpgrade(id);
             if (keyBinding != null) {
                 KeyDispatcher.desc2checkbox.put(keyBinding.getName(), newCheckBox);
             }
@@ -212,7 +212,7 @@ public class WidgetKeybindCheckBox extends WidgetCheckBox implements ITooltipPro
         NetworkHandler.sendToServer(new PacketToggleArmorFeatureBulk(features));
         if (checked) {
             // force pressure stat to recalc its layout (just using .reset() isn't enough)
-            ArmorUpgradeClientRegistry.getInstance()
+            ClientArmorRegistry.getInstance()
                     .getClientHandler(CommonUpgradeHandlers.coreComponentsHandler, CoreComponentsClientHandler.class)
                     .onResolutionChanged();
         } else {
@@ -234,7 +234,7 @@ public class WidgetKeybindCheckBox extends WidgetCheckBox implements ITooltipPro
 
     @Override
     public void addTooltip(double mouseX, double mouseY, List<Component> curTooltip, boolean shiftPressed) {
-        KeyMapping keyBinding = ArmorUpgradeClientRegistry.getInstance().getKeybindingForUpgrade(upgradeID);
+        KeyMapping keyBinding = ClientArmorRegistry.getInstance().getKeybindingForUpgrade(upgradeID);
         String k = IArmorUpgradeHandler.getStringKey(upgradeID) + ".desc";
         if (I18n.exists(k)) {
             curTooltip.addAll(GuiUtils.xlateAndSplit(k));
@@ -257,7 +257,7 @@ public class WidgetKeybindCheckBox extends WidgetCheckBox implements ITooltipPro
      */
     private void updateBinding(InputConstants.Key input) {
         isListeningForBinding = false;
-        KeyMapping keyBinding = ArmorUpgradeClientRegistry.getInstance().getKeybindingForUpgrade(upgradeID);
+        KeyMapping keyBinding = ClientArmorRegistry.getInstance().getKeybindingForUpgrade(upgradeID);
         if (keyBinding != null) {
             KeyModifier mod = input == InputConstants.UNKNOWN ? KeyModifier.NONE : KeyModifier.getActiveModifier();
             keyBinding.setKeyModifierAndCode(mod, input);

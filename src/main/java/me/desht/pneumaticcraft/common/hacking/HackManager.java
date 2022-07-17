@@ -21,11 +21,11 @@ import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorRegistry;
 import me.desht.pneumaticcraft.api.pneumatic_armor.hacking.IHackableBlock;
 import me.desht.pneumaticcraft.api.pneumatic_armor.hacking.IHackableEntity;
-import me.desht.pneumaticcraft.client.pneumatic_armor.ArmorUpgradeClientRegistry;
-import me.desht.pneumaticcraft.client.render.pneumatic_armor.block_tracker.RenderBlockTarget;
-import me.desht.pneumaticcraft.client.render.pneumatic_armor.entity_tracker.RenderEntityTarget;
-import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.BlockTrackerClientHandler;
-import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.EntityTrackerClientHandler;
+import me.desht.pneumaticcraft.client.pneumatic_armor.ClientArmorRegistry;
+import me.desht.pneumaticcraft.client.pneumatic_armor.upgrade_handler.BlockTrackerClientHandler;
+import me.desht.pneumaticcraft.client.pneumatic_armor.upgrade_handler.EntityTrackerClientHandler;
+import me.desht.pneumaticcraft.client.render.pneumatic_armor.RenderBlockTarget;
+import me.desht.pneumaticcraft.client.render.pneumatic_armor.RenderEntityTarget;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.hacking.block.*;
@@ -186,7 +186,7 @@ public class HackManager {
 
     private static boolean isInDisplayCooldown(IHackableBlock hackableBlock, BlockGetter world, BlockPos pos, Player player) {
         if (player.level.isClientSide) {
-            RenderBlockTarget target = ArmorUpgradeClientRegistry.getInstance()
+            RenderBlockTarget target = ClientArmorRegistry.getInstance()
                     .getClientHandler(CommonUpgradeHandlers.blockTrackerHandler, BlockTrackerClientHandler.class)
                     .getTargetForCoord(pos);
             int requiredHackTime = hackableBlock.getHackTime(world, pos, player);
@@ -198,7 +198,7 @@ public class HackManager {
 
     private static boolean isInDisplayCooldown(IHackableEntity<?> hackableEntity, Entity entity) {
         if (entity.level.isClientSide) {
-            RenderEntityTarget target = ArmorUpgradeClientRegistry.getInstance()
+            RenderEntityTarget target = ClientArmorRegistry.getInstance()
                     .getClientHandler(CommonUpgradeHandlers.entityTrackerHandler, EntityTrackerClientHandler.class)
                     .getTargetForEntity(entity);
             int requiredHackTime = hackableEntity._getHackTime(entity, ClientUtils.getClientPlayer());

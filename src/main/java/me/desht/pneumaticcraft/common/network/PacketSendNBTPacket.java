@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.common.network;
 
-import me.desht.pneumaticcraft.client.render.pneumatic_armor.block_tracker.TrackerBlacklistManager;
+import me.desht.pneumaticcraft.client.pneumatic_armor.block_tracker.TrackerBlacklistManager;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;

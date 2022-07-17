@@ -21,8 +21,8 @@ import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.platform.Window;
 import me.desht.pneumaticcraft.client.gui.AbstractPneumaticCraftContainerScreen;
 import me.desht.pneumaticcraft.client.gui.programmer.AbstractProgWidgetScreen;
-import me.desht.pneumaticcraft.client.pneumatic_armor.ArmorUpgradeClientRegistry;
-import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.EntityTrackerClientHandler;
+import me.desht.pneumaticcraft.client.pneumatic_armor.ClientArmorRegistry;
+import me.desht.pneumaticcraft.client.pneumatic_armor.upgrade_handler.EntityTrackerClientHandler;
 import me.desht.pneumaticcraft.common.entity.drone.DroneEntity;
 import me.desht.pneumaticcraft.common.inventory.AbstractPneumaticCraftMenu;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
@@ -96,7 +96,7 @@ public class ClientUtils {
     }
 
     public static void addDroneToHudHandler(DroneEntity drone, BlockPos pos) {
-        ArmorUpgradeClientRegistry.getInstance()
+        ClientArmorRegistry.getInstance()
                 .getClientHandler(CommonUpgradeHandlers.entityTrackerHandler, EntityTrackerClientHandler.class)
                 .getTargetsStream()
                 .filter(target -> target.entity == drone)
@@ -150,6 +150,10 @@ public class ClientUtils {
     @Nonnull
     public static Player getClientPlayer() {
         return Objects.requireNonNull(Minecraft.getInstance().player);
+    }
+
+    public static Optional<Player> getOptionalClientPlayer() {
+        return Optional.ofNullable(Minecraft.getInstance().player);
     }
 
     public static boolean hasShiftDown() {

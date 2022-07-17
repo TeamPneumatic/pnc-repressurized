@@ -26,10 +26,10 @@ import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorUpgradeHandler;
 import me.desht.pneumaticcraft.client.IKeyListener;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.ArmorColoringScreen;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetKeybindCheckBox;
-import me.desht.pneumaticcraft.client.pneumatic_armor.ArmorUpgradeClientRegistry;
+import me.desht.pneumaticcraft.client.pneumatic_armor.ClientArmorRegistry;
+import me.desht.pneumaticcraft.client.pneumatic_armor.upgrade_handler.BlockTrackerClientHandler;
+import me.desht.pneumaticcraft.client.pneumatic_armor.upgrade_handler.EntityTrackerClientHandler;
 import me.desht.pneumaticcraft.client.render.overlays.PneumaticArmorHUDOverlay;
-import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.BlockTrackerClientHandler;
-import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.EntityTrackerClientHandler;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.item.PneumaticArmorItem;
@@ -111,7 +111,7 @@ public enum HUDHandler implements IKeyListener {
             for (EquipmentSlot slot : ArmorUpgradeRegistry.ARMOR_SLOTS) {
                 if (commonArmorHandler.isArmorReady(slot)) {
                     GlStateManager._disableTexture();
-                    List<IArmorUpgradeClientHandler<?>> clientHandlers = ArmorUpgradeClientRegistry.getInstance().getHandlersForSlot(slot);
+                    List<IArmorUpgradeClientHandler<?>> clientHandlers = ClientArmorRegistry.getInstance().getHandlersForSlot(slot);
                     for (int i = 0; i < clientHandlers.size(); i++) {
                         if (commonArmorHandler.isUpgradeInserted(slot, i)
                                 && WidgetKeybindCheckBox.forUpgrade(clientHandlers.get(i)).checked) {
@@ -169,7 +169,7 @@ public enum HUDHandler implements IKeyListener {
     private void tickArmorPiece(Player player, EquipmentSlot slot, CommonArmorHandler commonArmorHandler) {
         boolean armorEnabled = WidgetKeybindCheckBox.getCoreComponents().checked;
         List<IArmorUpgradeHandler<?>> upgradeHandlers = ArmorUpgradeRegistry.getInstance().getHandlersForSlot(slot);
-        List<IArmorUpgradeClientHandler<?>> clientHandlers = ArmorUpgradeClientRegistry.getInstance().getHandlersForSlot(slot);
+        List<IArmorUpgradeClientHandler<?>> clientHandlers = ClientArmorRegistry.getInstance().getHandlersForSlot(slot);
 
         ItemStack armorStack = player.getItemBySlot(slot);
         int ticksSinceEquipped = commonArmorHandler.getTicksSinceEquipped(slot);
@@ -202,7 +202,7 @@ public enum HUDHandler implements IKeyListener {
             addMessage(new ArmorMessage(xlate("pneumaticcraft.armor.message.initComplete", itemName), 50, DEFAULT_MESSAGE_BGCOLOR));
         } else if (ticksSinceEquipped == 0 && WidgetKeybindCheckBox.getCoreComponents().checked) {
             // tick 0: inform the server which upgrades are enabled
-            for (IArmorUpgradeClientHandler<?> handler : ArmorUpgradeClientRegistry.getInstance().getHandlersForSlot(slot)) {
+            for (IArmorUpgradeClientHandler<?> handler : ClientArmorRegistry.getInstance().getHandlersForSlot(slot)) {
                 handler.reset();
             }
             List<FeatureSetting> features = new ArrayList<>();
@@ -273,14 +273,14 @@ public enum HUDHandler implements IKeyListener {
     @Override
     public void handleInput(KeyMapping key) {
         if (Minecraft.getInstance().isWindowActive()) {
-            ArmorUpgradeClientRegistry.getInstance().getTriggeredHandler(key)
+            ClientArmorRegistry.getInstance().getTriggeredHandler(key)
                     .ifPresent(h -> h.onTriggered(CommonArmorHandler.getHandlerForPlayer()));
         }
     }
 
     @SubscribeEvent
     public void onMouseScroll(InputEvent.MouseScrollingEvent event) {
-        ArmorUpgradeClientRegistry c = ArmorUpgradeClientRegistry.getInstance();
+        ClientArmorRegistry c = ClientArmorRegistry.getInstance();
         boolean isCaptured = c.getClientHandler(CommonUpgradeHandlers.blockTrackerHandler, BlockTrackerClientHandler.class).scroll(event);
         if (!isCaptured) isCaptured = c.getClientHandler(CommonUpgradeHandlers.entityTrackerHandler, EntityTrackerClientHandler.class).scroll(event);
         if (isCaptured) event.setCanceled(true);
@@ -293,7 +293,7 @@ public enum HUDHandler implements IKeyListener {
             Window mw = gui.getMinecraft().getWindow();
             if (mw.getGuiScaledWidth() != lastScaledWidth || mw.getGuiScaledHeight() != lastScaledHeight) {
                 for (EquipmentSlot slot : ArmorUpgradeRegistry.ARMOR_SLOTS) {
-                    for (IArmorUpgradeClientHandler<?> handler : ArmorUpgradeClientRegistry.getInstance().getHandlersForSlot(slot)) {
+                    for (IArmorUpgradeClientHandler<?> handler : ClientArmorRegistry.getInstance().getHandlersForSlot(slot)) {
                         handler.onResolutionChanged();
                     }
                 }
@@ -314,7 +314,7 @@ public enum HUDHandler implements IKeyListener {
 
     public void updateOverlayColors(EquipmentSlot slot) {
         int color = getStatOverlayColor();
-        ArmorUpgradeClientRegistry.getInstance().getHandlersForSlot(slot).forEach(clientHandler -> clientHandler.setOverlayColor(color));
+        ClientArmorRegistry.getInstance().getHandlersForSlot(slot).forEach(clientHandler -> clientHandler.setOverlayColor(color));
     }
 
     public void renderMessages(PoseStack poseStack, float partialTicks) {

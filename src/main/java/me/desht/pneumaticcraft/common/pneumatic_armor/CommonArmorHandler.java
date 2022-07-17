@@ -26,14 +26,13 @@ import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorUpgradeHandler;
 import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorHandler;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerItem;
-import me.desht.pneumaticcraft.client.pneumatic_armor.ArmorUpgradeClientRegistry;
+import me.desht.pneumaticcraft.client.pneumatic_armor.ClientArmorRegistry;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.item.PneumaticArmorItem;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
-import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -134,18 +133,15 @@ public class CommonArmorHandler implements ICommonArmorHandler {
         @SubscribeEvent
         public static void onClientDisconnect(ClientPlayerNetworkEvent.LoggingOut event) {
             // called client side when client disconnects
-            Player player = Minecraft.getInstance().player;
-            if (player != null) {
-                clearHandlerForPlayer(player);
-            }
+            ClientUtils.getOptionalClientPlayer().ifPresent(CommonArmorHandler::clearHandlerForPlayer);
         }
 
         @SubscribeEvent
         public static void tickEnd(TickEvent.ClientTickEvent event) {
             if (event.phase == TickEvent.Phase.END) {
-                if (Minecraft.getInstance().player == null && ArmorUpgradeRegistry.getInstance().isFrozen()) {
+                if (ClientUtils.getOptionalClientPlayer().isEmpty() && ArmorUpgradeRegistry.getInstance().isFrozen()) {
                     for (EquipmentSlot slot : ArmorUpgradeRegistry.ARMOR_SLOTS) {
-                        for (IArmorUpgradeClientHandler<?> handler : ArmorUpgradeClientRegistry.getInstance().getHandlersForSlot(slot)) {
+                        for (IArmorUpgradeClientHandler<?> handler : ClientArmorRegistry.getInstance().getHandlersForSlot(slot)) {
                             handler.reset();
                         }
                     }
