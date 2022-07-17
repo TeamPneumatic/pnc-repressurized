@@ -40,7 +40,7 @@ public class Mekanism implements IThirdParty {
 
     @SubscribeEvent
     public static void attachHeatAdapters(AttachCapabilitiesEvent<TileEntity> event) {
-        if (ConfigHelper.common().integration.mekThermalEfficiencyFactor.get() != 0 && MekanismIntegration.CAPABILITY_HEAT_HANDLER != null) {
+        if (ConfigHelper.common().integration.mekThermalEfficiencyFactor.get() != 0 && MekanismIntegration.CAPABILITY_HEAT_HANDLER != null && event.getObject().getType() != null) {
             ResourceLocation registryName = event.getObject().getType().getRegistryName();
             if (registryName != null) {
                 if (registryName.getNamespace().equals(Names.MOD_ID)) {
