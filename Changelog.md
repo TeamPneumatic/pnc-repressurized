@@ -12,6 +12,11 @@ Changes are in reverse chronological order; newest changes at the top.
 * PNC:R 2.15.1 and later *require* Forge 36.2.0 or later, **and** Patchouli 1.16.4-50 or later.
 * If Mekanism is installed, PNC:R 2.15.1 and later *require* Mekanism 10.1.x or later.
 
+## 2.15.12-??? (unreleased)
+
+### Fixes
+* Hopefully fix crash related to some tile entities not having a registry name (https://github.com/TeamPneumatic/pnc-repressurized/issues/1052)
+
 ## 2.15.11-334 (14 Jul 2022)
 
 ### Updates
