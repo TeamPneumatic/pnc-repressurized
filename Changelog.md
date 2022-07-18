@@ -6,7 +6,7 @@ Changes are in reverse chronological order; newest changes at the top.
 
 # Minecraft 1.19
 
-## 4.0.0-?? (unreleased)
+## 4.0.0-117 (18-Jul-2022)
 
 PneumaticCraft: Repressurized 4.0.0 for Minecraft 1.19 is based on the 3.3.1 release for 1.18.2 with a few small changes.
 
@@ -21,18 +21,18 @@ PneumaticCraft: Repressurized 4.0.0 for Minecraft 1.19 is based on the 3.3.1 rel
     * Filtering on `Creeper` will match actual Creepers, but no longer a player or other entity named "Creeper" 
   * It is now possible to filter on entities only from a certain mod with the `(mod=<modname>)` modifier
     * E.g. filtering on `@mob(mod=minecraft)` will match hostile mobs only from vanilla and not any other mod
-* GPS and Area GPS Tools now have a "Teleport" button, only usable by op-level players
+* GPS and Area GPS Tools now have a "Teleport" button, only usable by op-level players (i.e. need to able to use the `/tp` command)
   * Warning: no safety checks are done for the destination position! Creative or Spectator mode recommended if you're unsure of the destination
   * No cross-dimension teleporting (GPS Tools are not dimension-aware)
 * Amadron player matching now uses Biome tags rather than Biome Dictionary names
   * Biome Dictionary no longer exists in Forge for MC 1.19; Biome Tags are the vanilla replacement
   * See https://github.com/TeamPneumatic/pnc-repressurized/wiki/Amadron-and-Datapacks#player-filtering for more information
 
+
 # Minecraft 1.18.2
 
 * PNC:R 3.2.3 and later *require* Forge 40.1.20 or later
 * PNC:R 3.2.0 and later *require* Forge 40.1.0 or later and JEI 9.7.0 or later
-
 
 ## 3.3.1-110 (4 July 2022)
 
