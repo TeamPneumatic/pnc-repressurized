@@ -9,6 +9,25 @@ Changes are in reverse chronological order; newest changes at the top.
 * PNC:R 3.2.3 and later *require* Forge 40.1.20 or later
 * PNC:R 3.2.0 and later *require* Forge 40.1.0 or later and JEI 9.7.0 or later
 
+## 3.3.2-??? (unreleased)
+
+### Updates
+* It is now possible to filter on entities only from a certain mod with the `(mod=<modname>)` modifier
+  * E.g. filtering on `@mob(mod=minecraft)` will match hostile mobs only from vanilla and not any other mod
+  * This feature was backported from the 1.19 release
+* Seismic Sensor now tells you the depth of both the top and bottom fluid blocks of lakes that it finds
+  * Makes it easier to judge the deepest part of the lake if placing a Gas Lift to pump it
+  
+### Fixes
+* Fixed Redstone Module GUI not being able to update modules on Reinforced or Advanced Pressure Tubes (only worked on basic tubes)
+* Fixed Pneumatic Armor not being repairable in an Anvil (with Compressed Iron Ingots)
+  * Also added a page in the Patchouli book overview listing the ways to repair Pneumatic Armor
+* Fixed potential client crash when teleporting into an area with currently-leaking tubes or machines
+* Fixed Transfer Gadgets not being placeable on blocks which offer only a fluid handler capability, e.g. Refineries
+* Fixed broken elevator image in Patchouli manual
+* Fixed Pressure Chambers behaving weirdly if constructed or deconstructed by Modular Routers Extruder Modules
+  * Probably also applies to other automated block placing/breaking systems
+
 ## 3.3.1-110 (4 July 2022)
 
 ### Updates
