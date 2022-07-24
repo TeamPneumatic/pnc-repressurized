@@ -44,6 +44,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.items.CapabilityItemHandler;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
@@ -67,7 +68,11 @@ public class BlockTrackEntryInventory implements IBlockTrackEntry {
 
     @Override
     public List<BlockPos> getServerUpdatePositions(BlockEntity te) {
-        // lootr chests can be like this
+        if (te instanceof RandomizableContainerBlockEntity && !IBlockTrackEntry.hasCapabilityOnAnyFace(te, CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)) {
+            // lootr chests can be like this
+            return Collections.emptyList();
+        }
+
         ImmutableList.Builder<BlockPos> builder = ImmutableList.builder();
         if (te instanceof ChestBlockEntity && te.getBlockState().getValue(ChestBlock.TYPE) == ChestType.LEFT) {
             Direction dir = ChestBlock.getConnectedDirection(te.getBlockState());
