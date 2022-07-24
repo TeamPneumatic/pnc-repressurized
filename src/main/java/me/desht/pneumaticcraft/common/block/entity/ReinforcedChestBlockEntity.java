@@ -132,7 +132,7 @@ public class ReinforcedChestBlockEntity extends AbstractPneumaticCraftBlockEntit
         return new ReinforcedChestMenu(windowId, inv, getBlockPos());
     }
 
-    private void maybeFillWithLoot(Player player) {
+    public void maybeFillWithLoot(Player player) {
         if (lootTable != null && level instanceof ServerLevel) {
             LootTable table = level.getServer().getLootTables().get(this.lootTable);
             lootTable = null;

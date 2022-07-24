@@ -20,17 +20,21 @@ package me.desht.pneumaticcraft.client.render.pneumatic_armor.block_tracker;
 import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IBlockTrackEntry;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.InventoryTrackEvent;
+import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.mixin.accessors.BaseContainerBlockEntityAccess;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.LockCode;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.ChestBlock;
+import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.ChestBlockEntity;
 import net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity;
@@ -40,7 +44,6 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.items.CapabilityItemHandler;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
@@ -64,10 +67,7 @@ public class BlockTrackEntryInventory implements IBlockTrackEntry {
 
     @Override
     public List<BlockPos> getServerUpdatePositions(BlockEntity te) {
-        if (te instanceof RandomizableContainerBlockEntity && !IBlockTrackEntry.hasCapabilityOnAnyFace(te, CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)) {
-            // lootr chests can be like this
-            return Collections.emptyList();
-        }
+        // lootr chests can be like this
         ImmutableList.Builder<BlockPos> builder = ImmutableList.builder();
         if (te instanceof ChestBlockEntity && te.getBlockState().getValue(ChestBlock.TYPE) == ChestType.LEFT) {
             Direction dir = ChestBlock.getConnectedDirection(te.getBlockState());
@@ -84,6 +84,10 @@ public class BlockTrackEntryInventory implements IBlockTrackEntry {
 
     @Override
     public void addInformation(Level world, BlockPos pos, BlockEntity te, Direction face, List<Component> infoList) {
+        if (!canUnlock(te)) {
+            infoList.add(xlate("pneumaticcraft.gui.misc.locked").withStyle(ChatFormatting.ITALIC));
+            return;
+        }
         try {
             IOHelper.getInventoryForTE(te, face).ifPresent(inventory -> {
                 boolean empty = true;
@@ -109,5 +113,14 @@ public class BlockTrackEntryInventory implements IBlockTrackEntry {
     @Override
     public ResourceLocation getEntryID() {
         return ID;
+    }
+
+    private static boolean canUnlock(BlockEntity be) {
+        // respect vanilla chest locking
+        if (be instanceof BaseContainerBlockEntity base) {
+            LockCode key = ((BaseContainerBlockEntityAccess) base).getLockKey();
+            return key.unlocksWith(ClientUtils.getClientPlayer().getMainHandItem());
+        }
+        return true;
     }
 }

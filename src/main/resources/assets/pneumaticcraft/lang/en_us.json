@@ -942,6 +942,7 @@
    "pneumaticcraft.gui.misc.all" : "All",
    "pneumaticcraft.gui.misc.empty" : "Empty",
    "pneumaticcraft.gui.misc.holdShiftFastAdjust" : "Hold Shift for fast adjust",
+   "pneumaticcraft.gui.misc.locked" : "Locked",
    "pneumaticcraft.gui.misc.no_fluids" : "No fluids",
    "pneumaticcraft.gui.misc.no_items" : "No items",
    "pneumaticcraft.gui.misc.none" : "None",

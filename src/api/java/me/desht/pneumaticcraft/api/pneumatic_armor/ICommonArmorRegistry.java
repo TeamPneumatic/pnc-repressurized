@@ -23,10 +23,12 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 
 import javax.annotation.Nonnull;
 import java.util.List;
+import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
 /**
@@ -101,4 +103,18 @@ public interface ICommonArmorRegistry {
     @Nonnull
     List<IHackableEntity> getCurrentEntityHacks(@Nonnull Entity entity);
 
+    /**
+     * Register a block entity as being able to have a loot table for the purposes of dungeon-style loot generation.
+     * This is for the benefit of the Pneumatic Helmet Block Tracker module (inventory scanning).
+     * <p>
+     * The supplied consumer must check that the block entity is of the appropriate type, and that the player may loot
+     * the chest (e.g. vanilla locking is honoured), and if so generate the chest's loot as if the player had just
+     * opened the chest.
+     * <p>
+     * Vanilla chests and PneumaticCraft chests are registered with this by default; this method can be used for third
+     * party mods which add chests or other inventories with their own custom loot tables.
+     *
+     * @param consumer consumer accepting a player (who is doing the scanning) and the block entity of interest
+     */
+    void registerBlockTrackerLootable(BiConsumer<Player, BlockEntity> consumer);
 }

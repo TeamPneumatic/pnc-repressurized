@@ -42,6 +42,7 @@ import me.desht.pneumaticcraft.common.heat.behaviour.HeatBehaviourManager;
 import me.desht.pneumaticcraft.common.item.GPSAreaToolItem;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
+import me.desht.pneumaticcraft.common.pneumatic_armor.BlockTrackLootable;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
 import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
 import me.desht.pneumaticcraft.common.sensor.SensorHandler;
@@ -151,6 +152,7 @@ public class PneumaticCraftRepressurized {
         ModNameCache.init();
         HeatBehaviourManager.getInstance().registerDefaultBehaviours();
         PlayerFilter.registerDefaultMatchers();
+        BlockTrackLootable.INSTANCE.addDefaultEntries();
 
         event.enqueueWork(() -> {
             ArmorUpgradeRegistry.getInstance().freeze();
