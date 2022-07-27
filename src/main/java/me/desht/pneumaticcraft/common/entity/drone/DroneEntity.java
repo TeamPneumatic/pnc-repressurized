@@ -978,7 +978,7 @@ public class DroneEntity extends AbstractDroneEntity implements
         if (carriedEntityAIdisabled) tag.putBoolean("carriedEntityAIdisabled", true);
         tag.putInt("color", getDroneColor());
         tag.put("variables", aiManager.writeToNBT(new CompoundTag()));
-        tag.put("deployPos", NbtUtils.writeBlockPos(deployPos));
+        if (deployPos != null) tag.put("deployPos", NbtUtils.writeBlockPos(deployPos));
 
         ItemStackHandler tmpHandler = new ItemStackHandler(droneItemHandler.getSlots());
         PneumaticCraftUtils.copyItemHandler(droneItemHandler, tmpHandler, droneItemHandler.getSlots());
