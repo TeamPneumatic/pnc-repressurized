@@ -62,6 +62,7 @@ public class DroneFakePlayer extends FakePlayer {
     @Override
     public void tick() {
         attackStrengthTicker++;  // without this, drone's melee will be hopeless
+        getCooldowns().tick();   // allow use of items with cooldowns
     }
 
     @Override

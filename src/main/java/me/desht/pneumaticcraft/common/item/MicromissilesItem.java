@@ -112,8 +112,7 @@ public class MicromissilesItem extends Item {
 
         if (!worldIn.isClientSide) {
             HitResult res = RayTraceUtils.getMouseOverServer(playerIn, 100);
-            if (res instanceof EntityHitResult) {
-                EntityHitResult ertr = (EntityHitResult) res;
+            if (res instanceof EntityHitResult ertr) {
                 if (missile.isValidTarget(ertr.getEntity())) {
                     missile.setTarget(ertr.getEntity());
                 }

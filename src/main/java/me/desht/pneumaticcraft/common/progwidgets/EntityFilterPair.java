@@ -100,4 +100,15 @@ class EntityFilterPair<T extends IProgWidget & IEntityProvider> {
         return new ArrayList<>(entities);
     }
 
+    public String getFilterString() {
+        int pos = widget.getEntityFilterPosition();
+        IProgWidget whitelist = widget.getConnectedParameters()[pos];
+        IProgWidget blacklist = widget.getConnectedParameters()[widget.getParameters().size() + pos];
+        if (whitelist instanceof ProgWidgetText txt) {
+            return txt.string;
+        } else if (blacklist instanceof ProgWidgetText txt) {
+            return "!" + txt.string;
+        }
+        return "";
+    }
 }

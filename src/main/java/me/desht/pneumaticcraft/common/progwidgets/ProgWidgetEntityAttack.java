@@ -68,7 +68,7 @@ public class ProgWidgetEntityAttack extends ProgWidget implements IAreaProvider,
 
     @Override
     public Goal getWidgetAI(IDroneBase drone, IProgWidget widget) {
-        return new DroneAIAttackEntity((DroneEntity) drone, 1.0D, false);
+        return new DroneAIAttackEntity((DroneEntity) drone, 1.0D, false, getEntityFilters().getFilterString());
     }
 
     @Override
@@ -93,18 +93,19 @@ public class ProgWidgetEntityAttack extends ProgWidget implements IAreaProvider,
 
     @Override
     public List<Entity> getValidEntities(Level world) {
-        if (entityFilters == null) {
-            entityFilters = new EntityFilterPair<>(this);
-        }
-        return entityFilters.getValidEntities(world);
+        return getEntityFilters().getValidEntities(world);
     }
 
     @Override
     public boolean isEntityValid(Entity entity) {
+        return getEntityFilters().isEntityValid(entity);
+    }
+
+    public EntityFilterPair<ProgWidgetEntityAttack> getEntityFilters() {
         if (entityFilters == null) {
             entityFilters = new EntityFilterPair<>(this);
         }
-        return entityFilters.isEntityValid(entity);
+        return entityFilters;
     }
 
     @Override

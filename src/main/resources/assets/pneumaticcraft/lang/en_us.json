@@ -1153,6 +1153,7 @@
    "pneumaticcraft.gui.progWidget.entityAttack.checkSight.tooltip": "Only target mobs which can be seen by the drone; ignore mobs behind walls etc.",
    "pneumaticcraft.gui.progWidget.entityAttack.debug.noAmmo" : "No ammo for the minigun.",
    "pneumaticcraft.gui.progWidget.entityAttack.debug.noEntityToAttack" : "No entity to attack in the area.",
+   "pneumaticcraft.gui.progWidget.entityAttack.debug.noMissile" : "Micromissile missing or depleted.",
    "pneumaticcraft.gui.progWidget.externalProgram.shareVariables" : "Share Variables",
    "pneumaticcraft.gui.progWidget.externalProgram.shareVariables.tooltip" : "When checked, the variables stored in the calling program will be shared with the called program.",
    "pneumaticcraft.gui.progWidget.general.affectingSides" : "Affecting Sides:",
