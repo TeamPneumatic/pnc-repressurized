@@ -6,6 +6,23 @@ Changes are in reverse chronological order; newest changes at the top.
 
 # Minecraft 1.19
 
+## 4.0.1-??? (unreleased)
+
+## Updates
+* Seismic Sensor now tells you the depth of both the top and bottom fluid blocks of lakes that it finds
+  * Makes it easier to judge the deepest part of the lake if placing a Gas Lift to pump it
+* Drones now know how to use Micromissiles
+  * If Drone is carrying a Micromissile when the Entity Attack widget executes, it will fire a missile at its current target
+  * Entity filters are supported; the Drone will copy the Entity Attack widget's filter to the missile (if a filter exists)
+
+## Fixes
+* Fixed Drones not being able to use the Right Click action on an item with cooldowns more than once
+* Fixed a few issues with Pneumatic Helmet Block Tracker:
+  * Fixed blocks not being trackable below Y=0 or above Y=255
+  * Fixed PNC chest loot not being generated when inspected with block tracker inventory mode
+  * Loot generation no longer occurs for players in spectator mode
+  * Vanilla-style locked chests (requiring a named item to be held) are now honoured by the block tracker
+
 ## 4.0.0-117 (18-Jul-2022)
 
 PneumaticCraft: Repressurized 4.0.0 for Minecraft 1.19 is based on the 3.3.1 release for 1.18.2 with a few small changes.
