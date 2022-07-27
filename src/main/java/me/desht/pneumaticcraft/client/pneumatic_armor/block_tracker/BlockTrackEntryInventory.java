@@ -20,17 +20,21 @@ package me.desht.pneumaticcraft.client.pneumatic_armor.block_tracker;
 import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IBlockTrackEntry;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.InventoryTrackEvent;
+import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.mixin.accessors.BaseContainerBlockEntityAccess;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.LockCode;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.ChestBlock;
+import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.ChestBlockEntity;
 import net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity;
@@ -84,6 +88,10 @@ public class BlockTrackEntryInventory implements IBlockTrackEntry {
 
     @Override
     public void addInformation(Level world, BlockPos pos, BlockEntity te, Direction face, List<Component> infoList) {
+        if (!canUnlock(te)) {
+            infoList.add(xlate("pneumaticcraft.gui.misc.locked").withStyle(ChatFormatting.ITALIC));
+            return;
+        }
         try {
             IOHelper.getInventoryForTE(te, face).ifPresent(inventory -> {
                 List<ItemStack> inventoryStacks = new ArrayList<>(inventory.getSlots());
@@ -107,5 +115,14 @@ public class BlockTrackEntryInventory implements IBlockTrackEntry {
     @Override
     public ResourceLocation getEntryID() {
         return ID;
+    }
+
+    private static boolean canUnlock(BlockEntity be) {
+        // respect vanilla chest locking
+        if (be instanceof BaseContainerBlockEntity base) {
+            LockCode key = ((BaseContainerBlockEntityAccess) base).getLockKey();
+            return key.unlocksWith(ClientUtils.getClientPlayer().getMainHandItem());
+        }
+        return true;
     }
 }

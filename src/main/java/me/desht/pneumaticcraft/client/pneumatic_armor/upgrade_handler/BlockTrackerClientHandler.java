@@ -247,7 +247,9 @@ public class BlockTrackerClientHandler extends IArmorUpgradeClientHandler.Abstra
                 }
                 break;
         }
-        pos.set(player.getX() + xOff, Mth.clamp(player.getY() + yOff, 0, 255), player.getZ() + zOff);
+        int minY = player.level.getMinBuildHeight();
+        int maxY = player.level.getMaxBuildHeight();
+        pos.set(player.getX() + xOff, Mth.clamp(player.getY() + yOff, minY, maxY), player.getZ() + zOff);
     }
 
     private void updateBlockTypeCounts() {
@@ -294,9 +296,9 @@ public class BlockTrackerClientHandler extends IArmorUpgradeClientHandler.Abstra
             blockTrackInfo.setTitle(xlate("pneumaticcraft.blockTracker.info.trackedBlocks"));
 
             List<Component> textList = new ArrayList<>();
-            blockTypeCount.forEach((k, v) -> {
-                if (v > 0 && WidgetKeybindCheckBox.get(k).checked) {
-                    textList.add(xlate("pneumaticcraft.message.misc.countedItem", v, xlate(IArmorUpgradeHandler.getStringKey(k))));
+            blockTypeCount.forEach((upgradeId, count) -> {
+                if (count > 0 && WidgetKeybindCheckBox.get(upgradeId).checked) {
+                    textList.add(xlate("pneumaticcraft.message.misc.countedItem", count, xlate(IArmorUpgradeHandler.getStringKey(upgradeId))));
                 }
             });
 

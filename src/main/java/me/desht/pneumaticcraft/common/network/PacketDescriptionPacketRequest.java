@@ -17,12 +17,13 @@
 
 package me.desht.pneumaticcraft.common.network;
 
+import me.desht.pneumaticcraft.common.pneumatic_armor.BlockTrackLootable;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity;
 import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
@@ -43,27 +44,18 @@ public class PacketDescriptionPacketRequest extends LocationIntPacket {
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(ctx.get().getSender());
-            if (handler.upgradeUsable(CommonUpgradeHandlers.blockTrackerHandler, true)) {
-                BlockEntity te = ctx.get().getSender().level.getBlockEntity(pos);
-                if (te != null) {
-                    forceLootGeneration(te);
-                    NetworkHandler.sendToPlayer(new PacketSendNBTPacket(te), ctx.get().getSender());
+            ServerPlayer player = ctx.get().getSender();
+            if (player != null && !player.isSpectator()) {
+                CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
+                if (handler.upgradeUsable(CommonUpgradeHandlers.blockTrackerHandler, true)) {
+                    BlockEntity blockEntity = player.level.getBlockEntity(pos);
+                    if (blockEntity != null) {
+                        BlockTrackLootable.INSTANCE.apply(player, blockEntity);
+                        NetworkHandler.sendToPlayer(new PacketSendNBTPacket(blockEntity), player);
+                    }
                 }
             }
         });
         ctx.get().setPacketHandled(true);
-    }
-    
-    /**
-     * Force loot generation, as this is required on the client side to peek inside inventories.
-     * The client is not able to generate the loot.
-     * @param te the block entity
-     */
-    private void forceLootGeneration(BlockEntity te){
-        if(te instanceof RandomizableContainerBlockEntity){
-            RandomizableContainerBlockEntity teLoot = (RandomizableContainerBlockEntity)te;
-            teLoot.unpackLootTable(null);
-        }
     }
 }

@@ -32,11 +32,13 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.commons.lang3.Validate;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
 public enum CommonArmorRegistry implements ICommonArmorRegistry {
@@ -103,6 +105,11 @@ public enum CommonArmorRegistry implements ICommonArmorRegistry {
     @Override
     public Collection<IHackableEntity<?>> getCurrentEntityHacks(Entity entity) {
         return entity.getCapability(PNCCapabilities.HACKING_CAPABILITY).map(IHacking::getCurrentHacks).orElse(Collections.emptyList());
+    }
+
+    @Override
+    public void registerBlockTrackerLootable(BiConsumer<Player, BlockEntity> consumer) {
+        BlockTrackLootable.INSTANCE.addLootable(consumer);
     }
 
     /**
