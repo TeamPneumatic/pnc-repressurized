@@ -33,17 +33,19 @@ import me.desht.pneumaticcraft.common.item.MicromissilesItem.FireMode;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdateMicromissileSettings;
 import me.desht.pneumaticcraft.common.util.EntityFilter;
-import me.desht.pneumaticcraft.common.util.NBTUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.client.resources.language.I18n;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
 import org.lwjgl.glfw.GLFW;
+
+import java.util.Objects;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
@@ -78,12 +80,13 @@ public class MicromissileScreen extends AbstractPneumaticCraftScreen {
 
         ItemStack stack = ClientUtils.getClientPlayer().getItemInHand(hand);
         if (stack.getItem() == ModItems.MICROMISSILES.get() && stack.hasTag()) {
-            topSpeed = NBTUtils.getFloat(stack, MicromissilesItem.NBT_TOP_SPEED);
-            turnSpeed = NBTUtils.getFloat(stack, MicromissilesItem.NBT_TURN_SPEED);
-            damage = NBTUtils.getFloat(stack, MicromissilesItem.NBT_DAMAGE);
-            entityFilter = NBTUtils.getString(stack, MicromissilesItem.NBT_FILTER);
-            point = new PointXY(NBTUtils.getInteger(stack, MicromissilesItem.NBT_PX), NBTUtils.getInteger(stack, MicromissilesItem.NBT_PY));
-            fireMode = FireMode.fromString(NBTUtils.getString(stack, MicromissilesItem.NBT_FIRE_MODE));
+            CompoundTag tag = Objects.requireNonNull(stack.getTag());
+            topSpeed = tag.getFloat(MicromissilesItem.NBT_TOP_SPEED);
+            turnSpeed = tag.getFloat(MicromissilesItem.NBT_TURN_SPEED);
+            damage = tag.getFloat(MicromissilesItem.NBT_DAMAGE);
+            entityFilter = tag.getString(MicromissilesItem.NBT_FILTER);
+            point = new PointXY(tag.getInt(MicromissilesItem.NBT_PX), tag.getInt(MicromissilesItem.NBT_PY));
+            fireMode = FireMode.fromString(tag.getString(MicromissilesItem.NBT_FIRE_MODE));
             this.hand = hand;
         } else {
             topSpeed = turnSpeed = damage = 1/3f;

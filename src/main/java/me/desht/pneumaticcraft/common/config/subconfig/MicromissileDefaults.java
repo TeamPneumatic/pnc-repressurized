@@ -26,6 +26,7 @@ import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
 
+import javax.annotation.Nonnull;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -33,7 +34,9 @@ import java.util.UUID;
 public class MicromissileDefaults extends AuxConfigJson {
     public static final MicromissileDefaults INSTANCE = new MicromissileDefaults();
 
-    private static final Map<UUID, Entry> defaults = new HashMap<>();
+    public static final Entry FALLBACK = new Entry(1/3f, 1/3f, 1/3f, new PointXY(46, 54), "", FireMode.SMART);
+
+    private final Map<UUID, Entry> defaults = new HashMap<>();
 
     private MicromissileDefaults() {
         super(true);
@@ -72,13 +75,14 @@ public class MicromissileDefaults extends AuxConfigJson {
         return Sidedness.SERVER;
     }
 
-    public void setDefaults(Player player, Entry record) {
-        record.playerName = player.getName().getString();
-        defaults.put(player.getUUID(), record);
+    public void setDefaults(Player player, Entry entry) {
+        entry.playerName = player.getName().getString();
+        defaults.put(player.getUUID(), entry);
     }
 
+    @Nonnull
     public Entry getDefaults(Player player) {
-        return defaults.get(player.getUUID());
+        return defaults.getOrDefault(player.getUUID(), FALLBACK);
     }
 
     public static class Entry {

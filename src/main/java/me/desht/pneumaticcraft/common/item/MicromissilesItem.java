@@ -24,13 +24,13 @@ import me.desht.pneumaticcraft.common.config.subconfig.MicromissileDefaults;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.entity.projectile.MicromissileEntity;
 import me.desht.pneumaticcraft.common.util.ITranslatableEnum;
+import me.desht.pneumaticcraft.common.util.NBTUtils;
 import me.desht.pneumaticcraft.common.util.RayTraceUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.Item;
@@ -96,6 +96,10 @@ public class MicromissilesItem extends Item {
     public InteractionResultHolder<ItemStack> use(Level worldIn, Player playerIn, InteractionHand handIn) {
         ItemStack stack = playerIn.getItemInHand(handIn);
 
+        if (!NBTUtils.hasTag(stack, MicromissilesItem.NBT_TOP_SPEED)) {
+            stack.setTag(MicromissileDefaults.INSTANCE.getDefaults(playerIn).toNBT());
+        }
+
         if (playerIn.isShiftKeyDown()) {
             if (worldIn.isClientSide) {
                 MicromissileScreen.openGui(stack.getHoverName(), handIn);
@@ -147,40 +151,25 @@ public class MicromissilesItem extends Item {
         curInfo.add(xlate("pneumaticcraft.gui.micromissile.remaining")
                 .append(Component.literal(Integer.toString(stack.getMaxDamage() - stack.getDamageValue())).withStyle(ChatFormatting.AQUA))
         );
-        if (stack.hasTag()) {
+        if (NBTUtils.hasTag(stack, MicromissilesItem.NBT_TOP_SPEED)) {
             FireMode mode = getFireMode(stack);
+            curInfo.add(xlate("pneumaticcraft.gui.micromissile.firingMode")
+                    .append(": ")
+                    .append(xlate(mode.getTranslationKey()).withStyle(ChatFormatting.AQUA)));
             if (mode == FireMode.SMART) {
-                CompoundTag tag = Objects.requireNonNull(stack.getTag());
-                curInfo.add(xlate("pneumaticcraft.gui.micromissile.topSpeed"));
-                curInfo.add(xlate("pneumaticcraft.gui.micromissile.turnSpeed"));
-                curInfo.add(xlate("pneumaticcraft.gui.micromissile.damage"));
-                String filter = tag.getString(NBT_FILTER);
+                String filter = Objects.requireNonNull(stack.getTag()).getString(NBT_FILTER);
                 if (!filter.isEmpty()) {
                     curInfo.add(xlate("pneumaticcraft.gui.sentryTurret.targetFilter")
                             .append(": ")
                             .append(ChatFormatting.AQUA + filter));
                 }
             }
-            curInfo.add(xlate("pneumaticcraft.gui.micromissile.firingMode")
-                    .append(": ")
-                    .append(xlate(mode.getTranslationKey()).withStyle(ChatFormatting.AQUA)));
-            if (ConfigHelper.common().micromissiles.damageTerrain.get()) {
-                curInfo.add(xlate("pneumaticcraft.gui.tooltip.terrainWarning"));
-            } else {
-                curInfo.add(xlate("pneumaticcraft.gui.tooltip.terrainSafe"));
-            }
         }
-    }
-
-    @Override
-    public void inventoryTick(ItemStack stack, Level worldIn, Entity entityIn, int itemSlot, boolean isSelected) {
-        if (!stack.hasTag() && entityIn instanceof Player) {
-            MicromissileDefaults.Entry def = MicromissileDefaults.INSTANCE.getDefaults((Player) entityIn);
-            if (def != null) {
-                stack.setTag(def.toNBT());
-            }
+        if (ConfigHelper.common().micromissiles.damageTerrain.get()) {
+            curInfo.add(xlate("pneumaticcraft.gui.tooltip.terrainWarning"));
+        } else {
+            curInfo.add(xlate("pneumaticcraft.gui.tooltip.terrainSafe"));
         }
-        super.inventoryTick(stack, worldIn, entityIn, itemSlot, isSelected);
     }
 
     public static void setEntityFilter(ItemStack stack, String filterString) {
