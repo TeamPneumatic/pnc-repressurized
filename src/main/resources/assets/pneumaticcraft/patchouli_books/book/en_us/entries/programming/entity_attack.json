@@ -6,22 +6,28 @@
   "pages": [
     {
       "type": "text",
-      "text": "The $(l:tools/drone)Drone/$ will attack every living creature within the area.$(p)Keep in mind that any $(l:programming/area)Area/$ widgets connected to this widget must have an area type of $(thing)Box/$; this is only supported shape. It's possible to create different shapes, though, by using whitelisting/blacklisting of areas."
+      "text": "The $(l:tools/drone)Drone/$ will attack any living entity within the area.$(p)Keep in mind that any $(l:programming/area)Area/$ widgets connected to this widget must have an area type of $(thing)Box/$; this is the only supported shape. It's possible to create different shapes though, by using multiple Area widgets on either whitelist (right) or blacklist (left) side."
     },
     {
       "type": "text",
       "title": "Filtering Entities",
-      "text": "You can specify which creatures may be attacked by using $(l:programming/text)Text/$ widgets as an $(l:base_concepts/entity_filter)Entity Filter/$. E.g. if you want the $(item)Drone/$ to attack all players, connect a $(thing)Text/$ widget to the $(italic)right/$ of the $(thing)Entity Attack/$ widget containing $(#600)@player/$.$(p)If you don't want to be attacked yourself, connect up a $(thing)Text/$ widget on the $(italic)left/$ containing your player name."
+      "text": "You can specify which creatures may be attacked by using $(l:programming/text)Text/$ widgets as an $(l:base_concepts/entity_filter)Entity Filter/$. E.g. if you want the $(thing)Drone/$ to attack all players, connect a $(thing)Text/$ widget to the $(italic)right/$ of the $(thing)Entity Attack/$ widget containing $(#600)@player/$.$(p)If you don't want to be attacked yourself, connect up a $(thing)Text/$ widget on the $(italic)left/$ containing your player name."
     },
     {
-      "type": "text",
+      "type": "spotlight",
+      "item": "minecraft:diamond_sword",
       "title": "Melee Attacks",
-      "text": "$(l:tools/drone)Drones/$ will equip and use any melee weapon in their inventory to attack. If a $(item)Drone/$ has multiple weapons in its inventory, it will equip the most damaging one. $(p)You can use an $(l:programming/inventory_import)Inventory Import/$ widget to provide the $(item)Drone/$ with a weapon, which is strongly recommended - its unarmed melee attack is weak."
+      "text": "$(l:tools/drone)Drones/$ will equip and use any melee weapon in their inventory to attack. If a $(thing)Drone/$ has multiple weapons in its inventory, it will equip the most damaging one. $(p)You can use an $(l:programming/inventory_import)Inventory Import/$ widget to provide the Drone with a weapon, which is strongly recommended - its unarmed melee attack is weak."
     },
     {
-      "type": "text",
-      "title": "Ranged Attacks",
-      "text": "By inserting an $(l:base_concepts/upgrades#minigun)Minigun Upgrade/$ into the $(l:tools/drone)Drone/$, it will have a $(l:tools/minigun)Minigun/$ attached to it. When provided with $(l:tools/minigun_ammo)Gun Ammo/$ (using an $(l:programming/inventory_import)Inventory Import/$ widget) the $(item)Drone/$ will use this Minigun to perform ranged attacks on its foes.$(p)The default range is 16 blocks, which can be upgraded by inserting up to 16 $(l:base_concepts/upgrades#range_upgrade)Range Upgrades/$, for a maximum range of 32 blocks."
+      "type": "spotlight",
+      "item": "pneumaticcraft:minigun_upgrade",
+      "text": "Insert a $(l:base_concepts/upgrades#minigun)Minigun Upgrade/$ into the $(l:tools/drone)Drone/$ to give it a $(l:tools/minigun)Minigun/$. When provided with $(l:tools/minigun_ammo)Gun Ammo/$ (using an $(l:programming/inventory_import)Inventory Import/$ widget), the $(thing)Drone/$ will use this Minigun for ranged attacks.$(p)The default range is 16 blocks, which can be upgraded by inserting up to 16 $(l:base_concepts/upgrades#range_upgrade)Range Upgrades/$, for a maximum range of 32 blocks."
+    },
+    {
+      "type": "spotlight",
+      "item": "pneumaticcraft:micromissiles",
+      "text": "Drones also know how to fire $(l:tools/micromissiles)Micromissiles/$: if the $(thing)Drone/$ is holding a $(item)Micromissile/$ when this widget executes, it will fire a missile at its current target. Any connected $(l:base_concepts/entity_filter)entity filter/$ is copied into the Micromissile's own entity filter by the drone."
     },
     {
       "type": "image",

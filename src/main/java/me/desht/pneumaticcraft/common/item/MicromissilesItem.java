@@ -49,6 +49,7 @@ import org.apache.commons.lang3.Validate;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
@@ -128,7 +129,7 @@ public class MicromissilesItem extends Item {
 
     private float getInitialVelocity(ItemStack stack) {
         if (stack.hasTag()) {
-            CompoundTag tag = stack.getTag();
+            CompoundTag tag = Objects.requireNonNull(stack.getTag());
             FireMode fireMode = FireMode.fromString(tag.getString(NBT_FIRE_MODE));
             if (fireMode == FireMode.SMART) {
                 return Math.max(0.2f, tag.getFloat(NBT_TOP_SPEED) / 2f);
@@ -150,7 +151,7 @@ public class MicromissilesItem extends Item {
         if (stack.hasTag()) {
             FireMode mode = getFireMode(stack);
             if (mode == FireMode.SMART) {
-                CompoundTag tag = stack.getTag();
+                CompoundTag tag = Objects.requireNonNull(stack.getTag());
                 curInfo.add(xlate("pneumaticcraft.gui.micromissile.topSpeed"));
                 curInfo.add(xlate("pneumaticcraft.gui.micromissile.turnSpeed"));
                 curInfo.add(xlate("pneumaticcraft.gui.micromissile.damage"));
@@ -183,9 +184,15 @@ public class MicromissilesItem extends Item {
         super.inventoryTick(stack, worldIn, entityIn, itemSlot, isSelected);
     }
 
+    public static void setEntityFilter(ItemStack stack, String filterString) {
+        if (stack.getItem() instanceof MicromissilesItem) {
+            stack.getOrCreateTag().putString(MicromissilesItem.NBT_FILTER, filterString);
+        }
+    }
+
     public static FireMode getFireMode(ItemStack stack) {
         Validate.isTrue(stack.getItem() instanceof MicromissilesItem);
-        return stack.hasTag() ? FireMode.fromString(stack.getTag().getString(MicromissilesItem.NBT_FIRE_MODE)) : FireMode.SMART;
+        return stack.hasTag() ? FireMode.fromString(Objects.requireNonNull(stack.getTag()).getString(MicromissilesItem.NBT_FIRE_MODE)) : FireMode.SMART;
     }
 
     @Mod.EventBusSubscriber(modid = Names.MOD_ID)

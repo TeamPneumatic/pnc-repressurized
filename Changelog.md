@@ -17,7 +17,10 @@ Changes are in reverse chronological order; newest changes at the top.
   * This feature was backported from the 1.19 release
 * Seismic Sensor now tells you the depth of both the top and bottom fluid blocks of lakes that it finds
   * Makes it easier to judge the deepest part of the lake if placing a Gas Lift to pump it
-  
+* Drones now know how to use Micromissiles
+  * If Drone is carrying a Micromissile when the Entity Attack widget executes, it will fire a missile at its current target
+  * Entity filters are supported; the Drone will copy the Entity Attack widget's filter to the missile (if a filter exists)
+ 
 ### Fixes
 * Fixed Redstone Module GUI not being able to update modules on Reinforced or Advanced Pressure Tubes (only worked on basic tubes)
 * Fixed Pneumatic Armor not being repairable in an Anvil (with Compressed Iron Ingots)
@@ -27,6 +30,12 @@ Changes are in reverse chronological order; newest changes at the top.
 * Fixed broken elevator image in Patchouli manual
 * Fixed Pressure Chambers behaving weirdly if constructed or deconstructed by Modular Routers Extruder Modules
   * Probably also applies to other automated block placing/breaking systems
+* Fixed Drones not being able to use the Right Click action on an item with cooldowns more than once
+* Fixed a few issues with Pneumatic Helmet Block Tracker:
+  * Fixed blocks not being trackable below Y=0 or above Y=255
+  * Fixed PNC chest loot not being generated when inspected with block tracker inventory mode
+  * Loot generation no longer occurs for players in spectator mode
+  * Vanilla-style locked chests (requiring a named item to be held) are now honoured by the block tracker
 
 ## 3.3.1-110 (4 July 2022)
 
