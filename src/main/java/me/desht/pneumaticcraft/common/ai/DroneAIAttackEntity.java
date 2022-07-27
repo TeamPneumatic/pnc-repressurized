@@ -51,10 +51,7 @@ public class DroneAIAttackEntity extends MeleeAttackGoal {
                 }
             }
             case MISSILE -> {
-                ItemStack stack = attacker.getInv().getStackInSlot(0);
-                if (stack.getItem() instanceof MicromissilesItem) {
-                    stack.getOrCreateTag().putString(MicromissilesItem.NBT_FILTER, filterString);
-                }
+                MicromissilesItem.setEntityFilter(attacker.getInv().getStackInSlot(0), filterString);
                 rangeMult = 2f;
             }
         }
@@ -102,10 +99,9 @@ public class DroneAIAttackEntity extends MeleeAttackGoal {
     public boolean canContinueToUse() {
         if (attackType != AttackType.MELEE) {
             LivingEntity target = attacker.getTarget();
-            if (target == null || !target.isAlive()) return false;
-            if (attackType == AttackType.MINIGUN && attacker.getSlotForAmmo() < 0) {
-                return false;
-            } else if (attackType == AttackType.MISSILE && !isMissileUsable(attacker)) {
+            if (target == null || !target.isAlive()
+                    || attackType == AttackType.MINIGUN && attacker.getSlotForAmmo() < 0
+                    || attackType == AttackType.MISSILE && !isMissileUsable(attacker)) {
                 return false;
             }
             double dist = attacker.distanceToSqr(target.getX(), target.getBoundingBox().minY, target.getZ());
