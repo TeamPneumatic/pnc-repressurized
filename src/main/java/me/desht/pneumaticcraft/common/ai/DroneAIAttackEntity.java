@@ -19,7 +19,10 @@ package me.desht.pneumaticcraft.common.ai;
 
 import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.entity.drone.DroneEntity;
+import me.desht.pneumaticcraft.common.item.MicromissilesItem;
 import me.desht.pneumaticcraft.common.item.minigun.AbstractGunAmmoItem;
+import net.minecraft.commands.arguments.EntityAnchorArgument;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
@@ -28,21 +31,31 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraftforge.common.util.FakePlayer;
 
 public class DroneAIAttackEntity extends MeleeAttackGoal {
     private final DroneEntity attacker;
-    private final boolean isRanged;
+    private final AttackType attackType;
     private final double rangedAttackRange;
 
-    public DroneAIAttackEntity(DroneEntity attacker, double speed, boolean useLongMemory) {
+    public DroneAIAttackEntity(DroneEntity attacker, double speed, boolean useLongMemory, String filterString) {
         super(attacker, speed, useLongMemory);
         this.attacker = attacker;
-        isRanged = attacker.hasMinigun();
+        this.attackType = AttackType.forDrone(attacker);
         float rangeMult = 1.0f;
-        if (isRanged) {
-            ItemStack stack = attacker.getMinigun().getAmmoStack();
-            if (stack.getItem() instanceof AbstractGunAmmoItem) {
-                rangeMult = ((AbstractGunAmmoItem) stack.getItem()).getRangeMultiplier(stack);
+        switch (attackType) {
+            case MINIGUN -> {
+                ItemStack stack = attacker.getMinigun().getAmmoStack();
+                if (stack.getItem() instanceof AbstractGunAmmoItem ammo) {
+                    rangeMult = ammo.getRangeMultiplier(stack);
+                }
+            }
+            case MISSILE -> {
+                ItemStack stack = attacker.getInv().getStackInSlot(0);
+                if (stack.getItem() instanceof MicromissilesItem) {
+                    stack.getOrCreateTag().putString(MicromissilesItem.NBT_FILTER, filterString);
+                }
+                rangeMult = 2f;
             }
         }
         rangedAttackRange = (16 + Math.min(16, attacker.getUpgrades(ModUpgrades.RANGE.get()))) * rangeMult;
@@ -50,14 +63,25 @@ public class DroneAIAttackEntity extends MeleeAttackGoal {
 
     @Override
     public boolean canUse() {
-        if (isRanged && attacker.getSlotForAmmo() < 0) {
-            attacker.getDebugger().addEntry("pneumaticcraft.gui.progWidget.entityAttack.debug.noAmmo");
-            return false;
+        switch (attackType) {
+            case MINIGUN -> {
+                if (attacker.getSlotForAmmo() < 0) {
+                    attacker.getDebugger().addEntry("pneumaticcraft.gui.progWidget.entityAttack.debug.noAmmo");
+                    return false;
+                }
+            }
+            case MISSILE -> {
+                if (!isMissileUsable(attacker)) {
+                    attacker.getDebugger().addEntry("pneumaticcraft.gui.progWidget.entityAttack.debug.noMissile");
+                    return false;
+                }
+            }
         }
 
         LivingEntity target = attacker.getTarget();
         if (target == null || !target.isAlive()) {
             attacker.getDebugger().addEntry("pneumaticcraft.gui.progWidget.entityAttack.debug.noEntityToAttack");
+            return false;
         }
 
         return super.canUse();
@@ -69,38 +93,21 @@ public class DroneAIAttackEntity extends MeleeAttackGoal {
 
         attacker.incAttackCount();
 
-        // switch to the carried melee weapon with the highest attack damage
-        if (attacker.getTarget() != null && attacker.getInv().getSlots() > 1) {
-            int bestSlot = 0;
-            double bestDmg = 0;
-            for (int i = 0; i < attacker.getInv().getSlots(); i++) {
-                ItemStack stack = attacker.getInv().getStackInSlot(i);
-                if (!stack.isEmpty()) {
-                    AttributeInstance damage = new AttributeInstance(Attributes.ATTACK_DAMAGE, c -> {});
-                    for (AttributeModifier modifier : stack.getAttributeModifiers(EquipmentSlot.MAINHAND).get(Attributes.ATTACK_DAMAGE)) {
-                        damage.addTransientModifier(modifier);
-                    }
-                    float f1 = EnchantmentHelper.getDamageBonus(stack, attacker.getTarget().getMobType());
-                    if (damage.getValue() + f1 > bestDmg) {
-                        bestDmg = damage.getValue() + f1;
-                        bestSlot = i;
-                    }
-                }
-            }
-            if (bestSlot != 0) {
-                ItemStack copy = attacker.getInv().getStackInSlot(0).copy();
-                attacker.getInv().setStackInSlot(0, attacker.getInv().getStackInSlot(bestSlot));
-                attacker.getInv().setStackInSlot(bestSlot, copy);
-            }
+        if (attackType == AttackType.MELEE && attacker.getTarget() != null && attacker.getInv().getSlots() > 1) {
+            equipBestMeleeWeapon();
         }
     }
 
     @Override
     public boolean canContinueToUse() {
-        if (isRanged) {
+        if (attackType != AttackType.MELEE) {
             LivingEntity target = attacker.getTarget();
             if (target == null || !target.isAlive()) return false;
-            if (attacker.getSlotForAmmo() < 0) return false;
+            if (attackType == AttackType.MINIGUN && attacker.getSlotForAmmo() < 0) {
+                return false;
+            } else if (attackType == AttackType.MISSILE && !isMissileUsable(attacker)) {
+                return false;
+            }
             double dist = attacker.distanceToSqr(target.getX(), target.getBoundingBox().minY, target.getZ());
             if (dist < Math.pow(rangedAttackRange, 2) && attacker.getSensing().hasLineOfSight(target))
                 return true;
@@ -110,13 +117,13 @@ public class DroneAIAttackEntity extends MeleeAttackGoal {
 
     @Override
     public void tick() {
-        if (isRanged) {
+        if (attackType != AttackType.MELEE) {
             LivingEntity target = attacker.getTarget();
             if (target != null) {
                 double dist = attacker.distanceToSqr(target.getX(), target.getBoundingBox().minY, target.getZ());
                 if (dist < Math.pow(rangedAttackRange, 2) && attacker.getSensing().hasLineOfSight(target)) {
                     attacker.getFakePlayer().setPos(attacker.getX(), attacker.getY(), attacker.getZ());
-                    attacker.tryFireMinigun(target);
+                    attackType.doAttack(attacker, target);
                     if (dist < Math.pow(rangedAttackRange * 0.75, 2)) {
                         attacker.getNavigation().stop();
                     }
@@ -124,6 +131,63 @@ public class DroneAIAttackEntity extends MeleeAttackGoal {
             }
         } else {
             super.tick();
+        }
+    }
+
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
+    private boolean isMissileUsable(DroneEntity drone) {
+        ItemStack stack = drone.getInv().getStackInSlot(0);
+        return stack.getItem() instanceof MicromissilesItem && stack.getDamageValue() < stack.getMaxDamage();
+    }
+
+    private void equipBestMeleeWeapon() {
+        // switch to the carried melee weapon with the highest attack damage
+        int bestSlot = 0;
+        double bestDmg = 0;
+        for (int i = 0; i < attacker.getInv().getSlots(); i++) {
+            ItemStack stack = attacker.getInv().getStackInSlot(i);
+            if (!stack.isEmpty()) {
+                AttributeInstance damage = new AttributeInstance(Attributes.ATTACK_DAMAGE, c -> {});
+                for (AttributeModifier modifier : stack.getAttributeModifiers(EquipmentSlot.MAINHAND).get(Attributes.ATTACK_DAMAGE)) {
+                    damage.addTransientModifier(modifier);
+                }
+                float f1 = EnchantmentHelper.getDamageBonus(stack, attacker.getTarget().getMobType());
+                if (damage.getValue() + f1 > bestDmg) {
+                    bestDmg = damage.getValue() + f1;
+                    bestSlot = i;
+                }
+            }
+        }
+        if (bestSlot != 0) {
+            ItemStack copy = attacker.getInv().getStackInSlot(0).copy();
+            attacker.getInv().setStackInSlot(0, attacker.getInv().getStackInSlot(bestSlot));
+            attacker.getInv().setStackInSlot(bestSlot, copy);
+        }
+    }
+
+    private enum AttackType {
+        MELEE,
+        MINIGUN,
+        MISSILE;
+
+        static AttackType forDrone(DroneEntity drone) {
+            if (drone.hasMinigun()) return MINIGUN;
+            if (drone.getInv().getStackInSlot(0).getItem() instanceof MicromissilesItem) return MISSILE;
+            return MELEE;
+        }
+
+        public void doAttack(DroneEntity attacker, LivingEntity target) {
+            switch (this) {
+                case MINIGUN -> attacker.tryFireMinigun(target);
+                case MISSILE -> {
+                    FakePlayer fakePlayer = attacker.getFakePlayer();
+                    fakePlayer.lookAt(EntityAnchorArgument.Anchor.EYES, target.position());
+                    ItemStack stack = attacker.getInv().getStackInSlot(0);
+                    if (stack.getItem() instanceof MicromissilesItem) {
+                        fakePlayer.gameMode.useItem(fakePlayer, attacker.getLevel(), stack, InteractionHand.MAIN_HAND);
+                    }
+                }
+            }
         }
     }
 }
