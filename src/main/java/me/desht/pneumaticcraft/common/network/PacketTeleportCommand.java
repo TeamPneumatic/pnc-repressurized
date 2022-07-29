@@ -33,7 +33,7 @@ public class PacketTeleportCommand {
             if (sender != null && sender.getServer() != null) {
                 CommandSourceStack stack = sender.createCommandSourceStack();
                 String command = String.format("tp %d %d %d", targetPos.getX(), targetPos.getY(), targetPos.getZ());
-                sender.getServer().getCommands().performCommand(stack, command);
+                sender.getServer().getCommands().performPrefixedCommand(stack, command);
             }
         });
         ctx.get().setPacketHandled(true);

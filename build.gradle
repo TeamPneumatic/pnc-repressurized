@@ -111,7 +111,7 @@ dependencies {
 	testImplementation "org.junit.jupiter:junit-jupiter-api:5.7.2"
 	testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.7.2"
 
-	implementation fg.deobf("curse.maven:theoneprobe-245211:${top_curse_id}")
+	compileOnly fg.deobf("curse.maven:theoneprobe-245211:${top_curse_id}")
 	// compile against the JEI API but do not include it at runtime
 	compileOnly fg.deobf("mezz.jei:jei-${mc_version}-common-api:${jei_version}")
 	compileOnly fg.deobf("mezz.jei:jei-${mc_version}-forge-api:${jei_version}")
@@ -123,7 +123,7 @@ dependencies {
 	//compileOnly fg.deobf("vazkii.botania:Botania:${botania_version}:api")
 	//runtimeOnly fg.deobf("vazkii.botania:Botania:${botania_version}")
 	compileOnly fg.deobf("vazkii.patchouli:Patchouli:${patchouli_version}:api")
-	runtimeOnly fg.deobf("vazkii.patchouli:Patchouli:${patchouli_version}")
+	//runtimeOnly fg.deobf("vazkii.patchouli:Patchouli:${patchouli_version}")
 	// compileOnly until early config access bug fixed...
 	compileOnly fg.deobf("org.squiddev:cc-tweaked-${project.mc_version}:${cc_tweaked_version}")
 	compileOnly fg.deobf("blusunrize.immersiveengineering:ImmersiveEngineering:${immersive_engineering_version}")
