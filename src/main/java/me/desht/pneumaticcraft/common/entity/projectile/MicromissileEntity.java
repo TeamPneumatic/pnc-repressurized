@@ -50,6 +50,7 @@ import net.minecraftforge.network.NetworkHooks;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 public class MicromissileEntity extends ThrowableProjectile {
     private static final double SEEK_RANGE = 24;
@@ -138,14 +139,15 @@ public class MicromissileEntity extends ThrowableProjectile {
                 entityData.set(ACCEL, accel);
                 entityData.set(TURN_SPEED, turnSpeed);
             }
-        }
-
-        if (tickCount > ConfigHelper.common().micromissiles.lifetime.get()) {
+        } else if (tickCount > ConfigHelper.common().micromissiles.lifetime.get()) {
             outOfFuel = true;
+            if (tickCount > ConfigHelper.common().micromissiles.maxLifetime.get()) {
+                explode(null);
+            }
         }
 
         if (!outOfFuel) {
-            // negate default slowdown of projectiles applied in superclass
+            // undo default slowdown of projectiles applied in super.tick()
             if (this.isInWater()) {
                 setDeltaMovement(getDeltaMovement().scale(1.25));
             } else {
@@ -163,7 +165,7 @@ public class MicromissileEntity extends ThrowableProjectile {
             }
 
             // accelerate up to max velocity but cap there
-            double velSq = getDeltaMovement().lengthSqr();//motionX * motionX + motionY * motionY + motionZ * motionZ;
+            double velSq = getDeltaMovement().lengthSqr();
             double mul = velSq > maxVelocitySq ? maxVelocitySq / velSq : accel;
             setDeltaMovement(getDeltaMovement().scale(mul));
 
@@ -196,12 +198,13 @@ public class MicromissileEntity extends ThrowableProjectile {
 
     public boolean isValidTarget(Entity e) {
         // never target the player who fired the missile or any of their pets/drones
-        Entity thrower = getOwner();  // getThrower()
+        Entity thrower = getOwner();
         if (thrower != null) {
-            if (e.equals(thrower)
-                    || e instanceof TamableAnimal && thrower.equals(((TamableAnimal) e).getOwner())
-                    || e instanceof DroneEntity && thrower.getUUID().equals(((DroneEntity) e).getOwnerUUID())
-                    || e instanceof Horse && thrower.getUUID().equals(((Horse) e).getOwnerUUID())) {
+            UUID throwerID = thrower.getUUID();
+            if (thrower.equals(e)
+                    || e instanceof TamableAnimal t && throwerID.equals(t.getOwnerUUID())
+                    || e instanceof DroneEntity d && throwerID.equals(d.getOwnerUUID())
+                    || e instanceof Horse h && throwerID.equals(h.getOwnerUUID())) {
                 return false;
             }
         }
@@ -237,7 +240,6 @@ public class MicromissileEntity extends ThrowableProjectile {
         getCommandSenderWorld().explode(this, x, y, z, ConfigHelper.common().micromissiles.baseExplosionDamage.get().floatValue() * explosionPower, false, mode);
     }
 
-    // shoot()
     @Override
     public void shootFromRotation(Entity entityThrower, float pitch, float yaw, float pitchOffset, float velocity, float inaccuracy) {
         float x = -Mth.sin(yaw * 0.017453292F) * Mth.cos(pitch * 0.017453292F);
