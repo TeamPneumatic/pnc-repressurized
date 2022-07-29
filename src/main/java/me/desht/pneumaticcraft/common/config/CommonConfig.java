@@ -94,6 +94,7 @@ public class CommonConfig {
         public ForgeConfigSpec.BooleanValue damageTerrain;
         public ForgeConfigSpec.IntValue launchCooldown;
         public ForgeConfigSpec.IntValue lifetime;
+        public ForgeConfigSpec.IntValue maxLifetime;
         public ForgeConfigSpec.IntValue missilePodSize;
     }
     public static class Minigun {
@@ -414,9 +415,13 @@ public class CommonConfig {
                 .translation("pneumaticcraft.config.common.micromissile_properties.launch_cooldown")
                 .defineInRange("launch_cooldown", 15, 0, Integer.MAX_VALUE);
         micromissiles.lifetime = builder
-                .comment("Base missile lifetime in ticks (modified by missile setup)")
+                .comment("Base fueled-flight duration in ticks. After this, missiles will drop from the sky.")
                 .translation("pneumaticcraft.config.common.micromissile_properties.lifetime")
                 .defineInRange("lifetime", 300, 0, Integer.MAX_VALUE);
+        micromissiles.maxLifetime = builder
+                .comment("Hard missile lifetime in ticks. After this, missiles will immediately explode. Value must be greater than or equal to the 'lifetime' setting.")
+                .translation("pneumaticcraft.config.common.micromissile_properties.max_lifetime")
+                .defineInRange("max_lifetime", 600, 0, Integer.MAX_VALUE);
         micromissiles.missilePodSize = builder
                 .comment("Number of micromissiles per pod")
                 .translation("pneumaticcraft.config.common.micromissile_properties.missile_pod_size")
