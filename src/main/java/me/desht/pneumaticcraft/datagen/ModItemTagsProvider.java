@@ -87,6 +87,9 @@ public class ModItemTagsProvider extends ItemTagsProvider {
 
         addItemsToTag(PneumaticCraftTags.Items.WRENCHES, ModItems.PNEUMATIC_WRENCH);
 
+        addItemsToTag(PneumaticCraftTags.Items.GEARS, ModItems.COMPRESSED_IRON_GEAR);
+        addItemsToTag(PneumaticCraftTags.Items.GEARS_COMPRESSED_IRON, ModItems.COMPRESSED_IRON_GEAR);
+
         addItemsToTag(ItemTags.FREEZE_IMMUNE_WEARABLES,
                 ModItems.COMPRESSED_IRON_HELMET, ModItems.COMPRESSED_IRON_CHESTPLATE,
                 ModItems.COMPRESSED_IRON_LEGGINGS, ModItems.COMPRESSED_IRON_BOOTS,
