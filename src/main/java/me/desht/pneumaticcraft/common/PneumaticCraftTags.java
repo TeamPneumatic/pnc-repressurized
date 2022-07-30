@@ -89,6 +89,8 @@ public class PneumaticCraftTags {
 
         public static final TagKey<Item> INGOTS_COMPRESSED_IRON = forgeTag("ingots/compressed_iron");
         public static final TagKey<Item> STORAGE_BLOCKS_COMPRESSED_IRON = forgeTag("storage_blocks/compressed_iron");
+        public static final TagKey<Item> GEARS = forgeTag("gears");
+        public static final TagKey<Item> GEARS_COMPRESSED_IRON = forgeTag("gears/compressed_iron");
 
         public static final TagKey<Item> CURIO = tag("curios", "curio");
 
