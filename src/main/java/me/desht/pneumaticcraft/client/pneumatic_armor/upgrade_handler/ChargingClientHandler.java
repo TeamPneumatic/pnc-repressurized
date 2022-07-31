@@ -25,4 +25,9 @@ public class ChargingClientHandler extends IArmorUpgradeClientHandler.SimpleTogg
     public ChargingClientHandler() {
         super(CommonUpgradeHandlers.chargingHandler);
     }
+
+    @Override
+    public boolean isEnabledByDefault() {
+        return true;
+    }
 }

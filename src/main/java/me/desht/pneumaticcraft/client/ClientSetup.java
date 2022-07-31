@@ -450,5 +450,6 @@ public class ClientSetup {
         cr.registerUpgradeHandler(CommonUpgradeHandlers.stepAssistHandler, new StepAssistClientHandler());
         cr.registerUpgradeHandler(CommonUpgradeHandlers.kickHandler, new KickClientHandler());
         cr.registerUpgradeHandler(CommonUpgradeHandlers.stompHandler, new StompClientHandler());
+        cr.registerUpgradeHandler(CommonUpgradeHandlers.fallProtectionHandler, new FallProtectionClientHandler());
     }
 }

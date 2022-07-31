@@ -17,9 +17,7 @@
 
 package me.desht.pneumaticcraft.common.event;
 
-import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.data.PneumaticCraftTags;
-import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModSounds;
@@ -36,33 +34,30 @@ import me.desht.pneumaticcraft.common.pneumatic_armor.JetBootsStateTracker;
 import me.desht.pneumaticcraft.common.pneumatic_armor.JetBootsStateTracker.JetBootsState;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.util.Mth;
-import net.minecraft.world.Difficulty;
-import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.AnvilUpdateEvent;
 import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.entity.living.*;
+import net.minecraftforge.event.entity.living.LivingAttackEvent;
+import net.minecraftforge.event.entity.living.LivingDeathEvent;
+import net.minecraftforge.event.entity.living.LivingEvent;
+import net.minecraftforge.event.entity.living.LivingSetAttackTargetEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 import static me.desht.pneumaticcraft.common.item.PneumaticArmorItem.isPneumaticArmorPiece;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
@@ -102,71 +97,6 @@ public class PneumaticArmorHandler {
     @SubscribeEvent
     public void onEntityDeath(LivingDeathEvent event) {
         targetingTracker.remove(event.getEntity().getId());
-    }
-
-    @SubscribeEvent
-    public void onPlayerFall(LivingFallEvent event) {
-        if (event.getDistance() > 3.0F && event.getEntity() instanceof Player player) {
-            float origDistance = event.getDistance();
-            ItemStack stack = player.getItemBySlot(EquipmentSlot.FEET);
-            if (!(stack.getItem() instanceof PneumaticArmorItem)) {
-                return;
-            }
-            CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
-            JetBootsState jbState = JetBootsStateTracker.getTracker(player).getJetBootsState(player);
-            if (event.getEntity().level.getDifficulty() == Difficulty.HARD && jbState.isActive()) {
-                // thrusting into the ground hurts at hard difficulty!
-                event.setDamageMultiplier(0.2F);
-                return;
-            }
-            if (handler.upgradeUsable(CommonUpgradeHandlers.jumpBoostHandler, true)) {
-                // straight fall distance reduction if jump upgrade operational in legs
-                event.setDistance(Math.max(0, event.getDistance() - 1.5f * handler.getUpgradeCount(EquipmentSlot.LEGS, ModUpgrades.JUMPING.get())));
-                if (event.getDistance() < 2) {
-                    event.setCanceled(true);
-                    return;
-                }
-            }
-
-            if (!player.level.isClientSide) {
-                float airNeeded = event.getDistance() * PneumaticValues.PNEUMATIC_ARMOR_FALL_USAGE;
-                float extraAirNeeded = 0f;
-                int vol = stack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).map(IAirHandler::getVolume).orElse(0);
-                float airAvailable = vol * handler.getArmorPressure(EquipmentSlot.FEET);
-                List<Entity> stomped = new ArrayList<>();
-                if (handler.upgradeUsable(CommonUpgradeHandlers.stompHandler, true)) {
-                    for (Entity e: player.level.getEntities(player, new AABB(player.blockPosition()).inflate(7.0), e -> e instanceof Mob && e.isAlive())) {
-                        if (airAvailable > airNeeded + extraAirNeeded) {
-                            stomped.add(e);
-                            extraAirNeeded += airNeeded;
-                        } else {
-                            break;
-                        }
-                    }
-                }
-                if (airAvailable < 1) {
-                    return;
-                } else if (airAvailable >= airNeeded + extraAirNeeded) {
-                    event.setCanceled(true);
-                } else {
-                    event.setDamageMultiplier(1.0F - (airAvailable / airNeeded));
-                }
-                for (int i = 0; i < event.getDistance() / 2; i++) {
-                    float sx = player.getRandom().nextFloat() * 0.6F - 0.3F;
-                    float sz = player.getRandom().nextFloat() * 0.6F - 0.3F;
-                    NetworkHandler.sendToAllTracking(new PacketSpawnParticle(AirParticleData.DENSE, player.getX(), player.getY(), player.getZ(), sx, 0.1, sz), player.level, player.blockPosition());
-                }
-                for (Entity e : stomped) {
-                    NetworkHandler.sendToAllTracking(new PacketSpawnParticle(ParticleTypes.EXPLOSION, e.getX(), e.getY(), e.getZ(), 0, 0, 0), player.level, player.blockPosition());
-                    e.hurt(DamageSource.explosion(player), Mth.clamp(origDistance / 3f, 1f, 20f));
-                }
-                if (!stomped.isEmpty()) {
-                    player.level.playSound(null, player.blockPosition(), SoundEvents.GENERIC_EXPLODE, SoundSource.PLAYERS, 1f, 0.5f);
-                }
-                player.level.playSound(null, player.blockPosition(), ModSounds.SHORT_HISS.get(), SoundSource.PLAYERS, 0.3f, 0.8f);
-                handler.addAir(EquipmentSlot.FEET, (int) -(airNeeded + extraAirNeeded));
-            }
-        }
     }
 
     @SubscribeEvent

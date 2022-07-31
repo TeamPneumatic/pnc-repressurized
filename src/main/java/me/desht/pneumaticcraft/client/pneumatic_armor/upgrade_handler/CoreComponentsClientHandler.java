@@ -119,6 +119,11 @@ public class CoreComponentsClientHandler extends IArmorUpgradeClientHandler.Abst
         ConfigHelper.setShowPressureNumerically(showPressureNumerically);
     }
 
+    @Override
+    public boolean isEnabledByDefault() {
+        return true;
+    }
+
     public boolean shouldShowPressureNumerically() {
         return showPressureNumerically;
     }

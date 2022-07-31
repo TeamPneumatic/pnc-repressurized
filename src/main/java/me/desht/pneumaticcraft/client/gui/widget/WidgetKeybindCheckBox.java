@@ -162,7 +162,7 @@ public class WidgetKeybindCheckBox extends WidgetCheckBox implements ITooltipPro
             super.onClick(mouseX, mouseY);
 
             ArmorFeatureStatus.INSTANCE.setUpgradeEnabled(upgradeID, checked);
-            ArmorFeatureStatus.INSTANCE.tryWriteToFile();
+            ArmorFeatureStatus.INSTANCE.saveIfChanged();
 
             if (entry != null) {
                 EquipmentSlot slot = entry.getEquipmentSlot();

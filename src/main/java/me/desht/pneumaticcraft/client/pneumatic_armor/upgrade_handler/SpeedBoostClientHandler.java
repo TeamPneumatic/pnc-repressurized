@@ -33,4 +33,10 @@ public class SpeedBoostClientHandler extends IArmorUpgradeClientHandler.SimpleTo
     public IOptionPage getGuiOptionsPage(IGuiScreen screen) {
         return new SpeedBoostOptions(screen, this);
     }
+
+    @Override
+    public boolean isEnabledByDefault() {
+        return true;
+    }
+
 }

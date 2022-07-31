@@ -247,6 +247,27 @@ public interface IArmorUpgradeClientHandler<T extends IArmorUpgradeHandler<?>> {
     }
 
     /**
+     * Is this upgrade enabled by default, i.e. when the player first equips the armor and there's no value saved in
+     * ArmorFeatureStatus.json?
+     *
+     * @return whether the upgrade should be enabled by default
+     */
+    default boolean isEnabledByDefault() {
+        return false;
+    }
+
+    /**
+     * Is the given sub-feature of this upgrade enabled by default? (e.g. the various Block Tracker categories,
+     * or the Jet Boots builder mode)
+     *
+     * @param subModuleName name of the submodule name (by convention "{upgrade}.module.{subfeature}")
+     * @return whether the sub-feature should be enabled by default
+     */
+    default boolean isEnabledByDefault(String subModuleName) {
+        return false;
+    }
+
+    /**
      * Convenience class which allows a reference to the common upgrade handler to be passed in and retrieved.
      */
     abstract class AbstractHandler<T extends IArmorUpgradeHandler<?>> implements IArmorUpgradeClientHandler<T> {

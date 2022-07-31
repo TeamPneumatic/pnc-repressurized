@@ -25,6 +25,7 @@ public class CommonUpgradeHandlers {
     public static StepAssistHandler stepAssistHandler;
     public static KickHandler kickHandler;
     public static StompHandler stompHandler;
+    public static FallProtectionHandler fallProtectionHandler;
 
     public static void init() {
         ArmorUpgradeRegistry r = ArmorUpgradeRegistry.getInstance();
@@ -54,5 +55,6 @@ public class CommonUpgradeHandlers {
         stepAssistHandler = r.registerUpgradeHandler(new StepAssistHandler());
         kickHandler = r.registerUpgradeHandler(new KickHandler());
         stompHandler = r.registerUpgradeHandler(new StompHandler());
+        fallProtectionHandler = r.registerUpgradeHandler(new FallProtectionHandler());
     }
 }

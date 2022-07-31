@@ -33,4 +33,10 @@ public class JumpBoostClientHandler extends IArmorUpgradeClientHandler.SimpleTog
     public IOptionPage getGuiOptionsPage(IGuiScreen screen) {
         return new JumpBoostOptions(screen,this);
     }
+
+    @Override
+    public boolean isEnabledByDefault() {
+        return true;
+    }
+
 }

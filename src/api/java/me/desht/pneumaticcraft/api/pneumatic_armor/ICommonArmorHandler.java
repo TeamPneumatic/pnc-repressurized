@@ -62,6 +62,14 @@ public interface ICommonArmorHandler {
     float getArmorPressure(EquipmentSlot slot);
 
     /**
+     * Get the amount of air for the armor piece in the given equipment slot.
+     *
+     * @param slot the equipment slot
+     * @return air, in mL
+     */
+    int getAir(EquipmentSlot slot);
+
+    /**
      * Check that the armor in the given is above the minimum pressure limit to operate
      * @param slot the slot
      * @return true if the armor piece can function, false if not

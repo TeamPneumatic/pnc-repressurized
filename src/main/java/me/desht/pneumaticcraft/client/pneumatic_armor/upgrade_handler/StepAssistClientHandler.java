@@ -25,4 +25,10 @@ public class StepAssistClientHandler extends IArmorUpgradeClientHandler.SimpleTo
     public StepAssistClientHandler() {
         super(CommonUpgradeHandlers.stepAssistHandler);
     }
+
+    @Override
+    public boolean isEnabledByDefault() {
+        return true;
+    }
+
 }

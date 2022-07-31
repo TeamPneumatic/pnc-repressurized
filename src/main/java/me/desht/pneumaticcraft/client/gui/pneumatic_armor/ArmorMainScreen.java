@@ -32,6 +32,7 @@ import me.desht.pneumaticcraft.client.gui.pneumatic_armor.options.NullOptions;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.pneumatic_armor.ClientArmorRegistry;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
+import me.desht.pneumaticcraft.common.config.subconfig.ArmorFeatureStatus;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.item.PneumaticArmorItem;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
@@ -93,6 +94,7 @@ public class ArmorMainScreen extends AbstractPneumaticCraftScreen implements IGu
             }
             pageNumber = 0;
             instance.inInitPhase = false;
+            ArmorFeatureStatus.INSTANCE.saveIfChanged();
         }
     }
 

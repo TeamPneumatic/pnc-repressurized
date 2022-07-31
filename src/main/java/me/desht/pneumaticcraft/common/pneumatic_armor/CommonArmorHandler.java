@@ -348,6 +348,11 @@ public class CommonArmorHandler implements ICommonArmorHandler {
     }
 
     @Override
+    public int getAir(EquipmentSlot slot) {
+        return airHandlers.get(slot.getIndex()).map(IAirHandler::getAir).orElse(0);
+    }
+
+    @Override
     public boolean isArmorEnabled() {
         return isUpgradeEnabled(EquipmentSlot.HEAD, CommonUpgradeHandlers.coreComponentsHandler.getIndex());
     }
