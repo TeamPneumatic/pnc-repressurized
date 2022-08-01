@@ -21,7 +21,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.client.gui.ProgrammerScreen;
 import me.desht.pneumaticcraft.client.gui.widget.*;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
-import me.desht.pneumaticcraft.common.progwidgets.*;
+import me.desht.pneumaticcraft.common.drone.progwidgets.*;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
 import net.minecraft.core.Direction;

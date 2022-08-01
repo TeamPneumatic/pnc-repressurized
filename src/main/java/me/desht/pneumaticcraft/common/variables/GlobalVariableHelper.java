@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.common.variables;
 
-import me.desht.pneumaticcraft.common.progwidgets.IVariableProvider;
+import me.desht.pneumaticcraft.common.drone.progwidgets.IVariableProvider;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.ItemStack;

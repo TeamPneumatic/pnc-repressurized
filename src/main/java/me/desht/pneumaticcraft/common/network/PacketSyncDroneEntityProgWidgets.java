@@ -18,9 +18,9 @@
 package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.client.pneumatic_armor.upgrade_handler.DroneDebugClientHandler;
-import me.desht.pneumaticcraft.common.ai.IDroneBase;
-import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
-import me.desht.pneumaticcraft.common.progwidgets.WidgetSerializer;
+import me.desht.pneumaticcraft.common.drone.IDroneBase;
+import me.desht.pneumaticcraft.common.drone.progwidgets.IProgWidget;
+import me.desht.pneumaticcraft.common.drone.progwidgets.WidgetSerializer;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Player;
 

@@ -21,8 +21,8 @@ import me.desht.pneumaticcraft.client.gui.ProgrammerScreen;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetCheckBox;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetComboBox;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetLabel;
-import me.desht.pneumaticcraft.common.progwidgets.IBlockOrdered;
-import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetLiquidImport;
+import me.desht.pneumaticcraft.common.drone.progwidgets.IBlockOrdered;
+import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetLiquidImport;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 

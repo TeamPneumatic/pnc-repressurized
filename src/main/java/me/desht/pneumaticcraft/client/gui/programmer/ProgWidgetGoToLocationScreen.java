@@ -19,7 +19,7 @@ package me.desht.pneumaticcraft.client.gui.programmer;
 
 import me.desht.pneumaticcraft.client.gui.ProgrammerScreen;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetRadioButton;
-import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetGoToLocation;
+import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetGoToLocation;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 

@@ -17,8 +17,8 @@
 
 package me.desht.pneumaticcraft.common.thirdparty.computer_common;
 
+import me.desht.pneumaticcraft.common.drone.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.entity.drone.DroneEntity;
-import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.level.block.entity.BlockEntity;

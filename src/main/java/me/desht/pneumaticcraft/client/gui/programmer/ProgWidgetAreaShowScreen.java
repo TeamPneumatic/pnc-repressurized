@@ -20,7 +20,7 @@ package me.desht.pneumaticcraft.client.gui.programmer;
 import me.desht.pneumaticcraft.client.gui.ProgrammerScreen;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetCheckBox;
 import me.desht.pneumaticcraft.client.render.area.AreaRenderManager;
-import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
+import me.desht.pneumaticcraft.common.drone.progwidgets.IProgWidget;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 

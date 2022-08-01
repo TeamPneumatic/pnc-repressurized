@@ -24,7 +24,7 @@ import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetCheckBox;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTextField;
-import me.desht.pneumaticcraft.common.progwidgets.area.AreaType;
+import me.desht.pneumaticcraft.common.drone.progwidgets.area.AreaType;
 import me.desht.pneumaticcraft.common.util.JsonToNBTConverter;
 import me.desht.pneumaticcraft.common.util.LegacyAreaWidgetConverter;
 import me.desht.pneumaticcraft.common.util.LegacyAreaWidgetConverter.EnumOldAreaType;

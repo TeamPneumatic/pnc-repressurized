@@ -43,11 +43,11 @@ import me.desht.pneumaticcraft.client.render.pneumatic_armor.PneumaticElytraLaye
 import me.desht.pneumaticcraft.client.render.tube_module.*;
 import me.desht.pneumaticcraft.client.sound.MovingSoundJackhammer;
 import me.desht.pneumaticcraft.common.core.*;
+import me.desht.pneumaticcraft.common.drone.progwidgets.*;
 import me.desht.pneumaticcraft.common.item.DrillBitItem;
 import me.desht.pneumaticcraft.common.item.JackHammerItem;
 import me.desht.pneumaticcraft.common.item.MicromissilesItem;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
-import me.desht.pneumaticcraft.common.progwidgets.*;
 import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.MenuScreens;

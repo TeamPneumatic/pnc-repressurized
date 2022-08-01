@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.client.gui.programmer;
 
 import me.desht.pneumaticcraft.client.gui.ProgrammerScreen;
-import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetPlace;
+import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetPlace;
 
 public class ProgWidgetPlaceScreen<P extends ProgWidgetPlace> extends ProgWidgetDigAndPlaceScreen<P> {
     public ProgWidgetPlaceScreen(P progWidget, ProgrammerScreen guiProgrammer) {

@@ -21,8 +21,8 @@ import me.desht.pneumaticcraft.client.gui.ProgrammerScreen;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetCheckBox;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetComboBox;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetRadioButton;
-import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetCoordinateOperator;
-import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetCoordinateOperator.EnumOperator;
+import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetCoordinateOperator;
+import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetCoordinateOperator.EnumOperator;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 

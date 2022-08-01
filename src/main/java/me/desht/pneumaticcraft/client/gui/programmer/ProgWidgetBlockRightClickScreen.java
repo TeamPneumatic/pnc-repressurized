@@ -23,8 +23,8 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetComboBox;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetLabel;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
-import me.desht.pneumaticcraft.common.progwidgets.IBlockRightClicker.RightClickType;
-import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetBlockRightClick;
+import me.desht.pneumaticcraft.common.drone.progwidgets.IBlockRightClicker.RightClickType;
+import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetBlockRightClick;
 import net.minecraft.core.Direction;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;

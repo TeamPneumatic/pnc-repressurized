@@ -19,7 +19,7 @@ package me.desht.pneumaticcraft.client.gui.programmer;
 
 import me.desht.pneumaticcraft.client.gui.ProgrammerScreen;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTextField;
-import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetText;
+import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetText;
 
 public class ProgWidgetStringScreen<T extends ProgWidgetText> extends AbstractProgWidgetScreen<T> {
     private WidgetTextField textfield;

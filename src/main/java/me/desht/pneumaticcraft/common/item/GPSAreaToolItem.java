@@ -24,7 +24,7 @@ import me.desht.pneumaticcraft.client.gui.GPSAreaToolScreen;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModSounds;
-import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetArea;
+import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetArea;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableHelper;
 import net.minecraft.ChatFormatting;

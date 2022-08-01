@@ -21,7 +21,7 @@ import me.desht.pneumaticcraft.client.gui.ProgrammerScreen;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetFluidFilter;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTextField;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetVerticalScrollbar;
-import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetLiquidFilter;
+import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetLiquidFilter;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.material.Fluid;

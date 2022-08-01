@@ -17,9 +17,9 @@
 
 package me.desht.pneumaticcraft.client.gui.programmer;
 
+import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetArea;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdateGPSAreaTool;
-import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetArea;
 import net.minecraft.world.InteractionHand;
 
 /**

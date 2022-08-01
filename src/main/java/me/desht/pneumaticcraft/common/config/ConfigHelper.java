@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.common.config;
 
-import me.desht.pneumaticcraft.common.progwidgets.IProgWidget.WidgetDifficulty;
+import me.desht.pneumaticcraft.common.drone.progwidgets.IProgWidget.WidgetDifficulty;
 
 public class ConfigHelper {
     public static ClientConfig client() {

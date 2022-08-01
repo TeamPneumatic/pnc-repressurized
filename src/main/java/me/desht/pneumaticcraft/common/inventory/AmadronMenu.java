@@ -19,7 +19,6 @@ package me.desht.pneumaticcraft.common.inventory;
 
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.crafting.recipe.AmadronRecipe;
-import me.desht.pneumaticcraft.common.DroneRegistry;
 import me.desht.pneumaticcraft.common.amadron.AmadronOfferManager;
 import me.desht.pneumaticcraft.common.amadron.AmadronUtil;
 import me.desht.pneumaticcraft.common.amadron.ShoppingBasket;
@@ -29,6 +28,7 @@ import me.desht.pneumaticcraft.common.config.subconfig.AmadronPlayerOffers;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.core.ModSounds;
+import me.desht.pneumaticcraft.common.drone.DroneRegistry;
 import me.desht.pneumaticcraft.common.entity.drone.AmadroneEntity;
 import me.desht.pneumaticcraft.common.entity.drone.AmadroneEntity.AmadronAction;
 import me.desht.pneumaticcraft.common.item.AmadronTabletItem;

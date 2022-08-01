@@ -19,7 +19,7 @@ package me.desht.pneumaticcraft.common.entity.drone;
 
 import me.desht.pneumaticcraft.common.core.ModEntityTypes;
 import me.desht.pneumaticcraft.common.core.ModUpgrades;
-import me.desht.pneumaticcraft.common.progwidgets.*;
+import me.desht.pneumaticcraft.common.drone.progwidgets.*;
 import me.desht.pneumaticcraft.common.util.DroneProgramBuilder;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;

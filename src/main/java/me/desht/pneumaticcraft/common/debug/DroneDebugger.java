@@ -18,8 +18,8 @@
 package me.desht.pneumaticcraft.common.debug;
 
 import me.desht.pneumaticcraft.api.lib.Names;
-import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
+import me.desht.pneumaticcraft.common.drone.IDroneBase;
 import me.desht.pneumaticcraft.common.entity.drone.DroneEntity;
 import me.desht.pneumaticcraft.common.item.PneumaticArmorItem;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;

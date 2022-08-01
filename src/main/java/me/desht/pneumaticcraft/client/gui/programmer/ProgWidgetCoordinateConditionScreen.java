@@ -21,8 +21,8 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.client.gui.ProgrammerScreen;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetCheckBox;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetRadioButton;
-import me.desht.pneumaticcraft.common.progwidgets.ICondition.Operator;
-import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetCoordinateCondition;
+import me.desht.pneumaticcraft.common.drone.progwidgets.ICondition.Operator;
+import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetCoordinateCondition;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 

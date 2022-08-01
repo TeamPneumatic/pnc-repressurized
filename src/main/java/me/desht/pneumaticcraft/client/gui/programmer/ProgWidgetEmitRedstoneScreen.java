@@ -21,7 +21,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.client.gui.ProgrammerScreen;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetCheckBox;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
-import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetEmitRedstone;
+import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetEmitRedstone;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.Direction;

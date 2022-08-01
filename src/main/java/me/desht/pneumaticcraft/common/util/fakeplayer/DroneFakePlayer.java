@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.common.util.fakeplayer;
 
 import com.mojang.authlib.GameProfile;
-import me.desht.pneumaticcraft.common.ai.IDroneBase;
+import me.desht.pneumaticcraft.common.drone.IDroneBase;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;

@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.client.gui.semiblock;
 
 import me.desht.pneumaticcraft.client.gui.programmer.ProgWidgetLiquidFilterScreen;
-import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetLiquidFilter;
+import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetLiquidFilter;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.world.level.material.Fluid;
 

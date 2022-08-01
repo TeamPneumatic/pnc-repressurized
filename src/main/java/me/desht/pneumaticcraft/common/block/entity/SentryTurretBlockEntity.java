@@ -18,7 +18,6 @@
 package me.desht.pneumaticcraft.common.block.entity;
 
 import com.mojang.authlib.GameProfile;
-import me.desht.pneumaticcraft.common.ai.StringFilterEntitySelector;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.inventory.SentryTurretMenu;
@@ -30,6 +29,7 @@ import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.network.PacketPlayMovingSound.MovingSoundFocus;
 import me.desht.pneumaticcraft.common.util.EntityDistanceComparator;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.common.util.StringFilterEntitySelector;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;

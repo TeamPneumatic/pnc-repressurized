@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.api.lib.NBTKeys;
-import me.desht.pneumaticcraft.common.ai.IDroneBase;
+import me.desht.pneumaticcraft.common.drone.IDroneBase;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
 import me.desht.pneumaticcraft.common.util.NBTUtils;

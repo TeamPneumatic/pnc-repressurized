@@ -17,8 +17,8 @@
 
 package me.desht.pneumaticcraft.common.util;
 
+import me.desht.pneumaticcraft.common.drone.progwidgets.*;
 import me.desht.pneumaticcraft.common.entity.drone.AmadroneEntity;
-import me.desht.pneumaticcraft.common.progwidgets.*;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.GlobalPos;

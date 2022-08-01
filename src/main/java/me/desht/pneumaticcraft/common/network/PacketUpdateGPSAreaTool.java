@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.common.core.ModItems;
-import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetArea;
+import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetArea;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.InteractionHand;

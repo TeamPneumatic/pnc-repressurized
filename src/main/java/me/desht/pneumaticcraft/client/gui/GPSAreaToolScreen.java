@@ -19,10 +19,10 @@ package me.desht.pneumaticcraft.client.gui;
 
 import me.desht.pneumaticcraft.client.gui.programmer.ProgWidgetAreaToolScreen;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
+import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetArea;
 import me.desht.pneumaticcraft.common.item.GPSAreaToolItem;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketChangeGPSToolCoordinate;
-import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetArea;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableHelper;
 import net.minecraft.ChatFormatting;

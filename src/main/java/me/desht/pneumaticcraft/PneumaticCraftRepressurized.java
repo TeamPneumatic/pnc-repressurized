@@ -36,7 +36,7 @@ import me.desht.pneumaticcraft.common.config.subconfig.AuxConfigHandler;
 import me.desht.pneumaticcraft.common.config.subconfig.IAuxConfig;
 import me.desht.pneumaticcraft.common.core.*;
 import me.desht.pneumaticcraft.common.dispenser.DroneDispenseBehavior;
-import me.desht.pneumaticcraft.common.event.DroneSpecialVariableHandler;
+import me.desht.pneumaticcraft.common.drone.DroneSpecialVariableHandler;
 import me.desht.pneumaticcraft.common.event.MiscEventHandler;
 import me.desht.pneumaticcraft.common.event.PneumaticArmorHandler;
 import me.desht.pneumaticcraft.common.event.UniversalSensorHandler;

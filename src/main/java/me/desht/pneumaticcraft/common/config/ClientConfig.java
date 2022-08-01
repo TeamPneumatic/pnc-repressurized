@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.common.config;
 
-import me.desht.pneumaticcraft.common.progwidgets.IProgWidget.WidgetDifficulty;
+import me.desht.pneumaticcraft.common.drone.progwidgets.IProgWidget.WidgetDifficulty;
 import me.desht.pneumaticcraft.common.util.ITranslatableEnum;
 import net.minecraftforge.common.ForgeConfigSpec;
 

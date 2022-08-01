@@ -20,7 +20,7 @@ package me.desht.pneumaticcraft.client.gui.programmer;
 import me.desht.pneumaticcraft.client.gui.ProgrammerScreen;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetCheckBox;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTextFieldNumber;
-import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetEntityAttack;
+import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetEntityAttack;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 

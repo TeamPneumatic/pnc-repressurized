@@ -17,8 +17,8 @@
 
 package me.desht.pneumaticcraft.common.util;
 
-import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetArea;
-import me.desht.pneumaticcraft.common.progwidgets.area.*;
+import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetArea;
+import me.desht.pneumaticcraft.common.drone.progwidgets.area.*;
 import me.desht.pneumaticcraft.lib.Log;
 
 import java.util.EnumMap;

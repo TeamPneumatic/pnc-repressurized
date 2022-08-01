@@ -19,8 +19,8 @@ package me.desht.pneumaticcraft.client.gui.programmer;
 
 import me.desht.pneumaticcraft.client.gui.ProgrammerScreen;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetComboBox;
-import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
-import me.desht.pneumaticcraft.common.progwidgets.IVariableSetWidget;
+import me.desht.pneumaticcraft.common.drone.progwidgets.IProgWidget;
+import me.desht.pneumaticcraft.common.drone.progwidgets.IVariableSetWidget;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
