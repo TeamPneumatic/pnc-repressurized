@@ -46,6 +46,7 @@ import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
@@ -62,6 +63,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.extensions.common.IClientItemExtensions;
@@ -291,10 +293,24 @@ public class MinigunItem extends PressurizableItem implements
                 newSlot = (newSlot + (forward ? 1 : -1));
                 if (newSlot < 0) newSlot = MAGAZINE_SIZE - 1;
                 else if (newSlot >= MAGAZINE_SIZE) newSlot = 0;
-                if (handler.getStackInSlot(newSlot).getItem() instanceof AbstractGunAmmoItem) {
-                    // found one!
+                ItemStack ammoStack = handler.getStackInSlot(newSlot);
+                if (ammoStack.getItem() instanceof AbstractGunAmmoItem ammo) {
                     NBTUtils.setInteger(stack, MinigunItem.NBT_LOCKED_SLOT, newSlot);
-                    return;
+                    if (!player.getLevel().isClientSide) {
+                        // possible message for potion-tipped ammo
+                        if (ammo instanceof StandardGunAmmoItem) {
+                            ItemStack potion = StandardGunAmmoItem.getPotion(ammoStack);
+                            if (!potion.isEmpty()) {
+                                int col = PotionUtils.getColor(potion);
+                                player.displayClientMessage(potion.getDisplayName().copy().withStyle(Style.EMPTY.withColor(col)), true);
+                            } else {
+                                player.displayClientMessage(Component.literal(" "), true);
+                            }
+                        } else {
+                            player.displayClientMessage(Component.literal(" "), true);
+                        }
+                        return;
+                    }
                 }
             }
         }

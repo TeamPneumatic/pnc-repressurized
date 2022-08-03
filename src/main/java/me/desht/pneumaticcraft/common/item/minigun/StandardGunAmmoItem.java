@@ -54,7 +54,7 @@ public class StandardGunAmmoItem extends AbstractGunAmmoItem {
     }
 
     @Nonnull
-    private static ItemStack getPotion(ItemStack ammo) {
+    public static ItemStack getPotion(ItemStack ammo) {
         if (ammo.getTag() != null && ammo.getTag().contains(NBT_POTION)) {
             return ItemStack.of(ammo.getTag().getCompound(NBT_POTION));
         } else {
