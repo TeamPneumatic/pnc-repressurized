@@ -146,6 +146,15 @@ public interface IItemRegistry {
     IAirHandlerItem.Provider makeItemAirHandlerProvider(ItemStack stack, float maxPressure);
 
     /**
+     * Register an item launch behaviour for use by the Air Cannon and Pneumatic Chestplate Item Launcher (Dispenser
+     * upgrade). Call this from a {@link net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent} listener; no
+     * {@code enqueueWork()} required.
+     *
+     * @param behaviour the launch behaviour to register
+     */
+    void registerItemLaunchBehaviour(ILaunchBehaviour behaviour);
+
+    /**
      * Get the upgrade registry handler, which can be used to register custom upgrades with block entities, entities
      * and items.
      *
@@ -154,4 +163,5 @@ public interface IItemRegistry {
      */
     @Deprecated(forRemoval = true)
     IUpgradeRegistry getUpgradeRegistry();
+
 }

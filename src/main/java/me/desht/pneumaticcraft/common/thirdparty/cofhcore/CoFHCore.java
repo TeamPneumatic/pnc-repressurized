@@ -17,29 +17,19 @@
 
 package me.desht.pneumaticcraft.common.thirdparty.cofhcore;
 
-import me.desht.pneumaticcraft.api.PneumaticRegistry;
-import me.desht.pneumaticcraft.api.item.ItemVolumeModifier;
-import me.desht.pneumaticcraft.api.misc.Symbols;
 import me.desht.pneumaticcraft.api.pressure.IPressurizableItem;
 import me.desht.pneumaticcraft.common.thirdparty.IThirdParty;
 import me.desht.pneumaticcraft.lib.Log;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.resources.ResourceLocation;
+import me.desht.pneumaticcraft.lib.ModIds;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.enchantment.Enchantment;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.registries.ForgeRegistries;
-
-import java.util.List;
+import net.minecraftforge.fml.ModList;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 public class CoFHCore implements IThirdParty {
-    static Enchantment holdingEnchantment = null;
 
     private static boolean cofhVersionOK;
 
@@ -64,9 +54,10 @@ public class CoFHCore implements IThirdParty {
 
         if (cofhVersionOK) {
             // holding enchantment adds another volume multiplier
-            holdingEnchantment = ForgeRegistries.ENCHANTMENTS.getValue(new ResourceLocation("cofh_core", "holding"));
-            if (holdingEnchantment != null) {
-                PneumaticRegistry.getInstance().getItemRegistry().registerPneumaticVolumeModifier(new COFHVolumeModifier());
+            HoldingEnchantableProvider.registerVolumeModifier();
+
+            if (ModList.get().isLoaded(ModIds.THERMAL)) {
+                ThermalExplosiveLaunching.registerLaunchBehaviour();
             }
         }
     }
@@ -78,21 +69,6 @@ public class CoFHCore implements IThirdParty {
         } catch (ClassNotFoundException e) {
             Log.error("CoFH IEnchantableItem interface is not where we expected! Continuing, but PneumaticCraft items won't be able to use the Holding enchantment. Notify the PNC mod author, including the versions of PNC and CoFH Core you're using, if you see this error.");
             return false;
-        }
-    }
-
-    public static class COFHVolumeModifier implements ItemVolumeModifier {
-        @Override
-        public int getNewVolume(ItemStack stack, int oldVolume) {
-            return oldVolume * (1 + EnchantmentHelper.getItemEnchantmentLevel(holdingEnchantment, stack));
-        }
-
-        @Override
-        public void addInfo(ItemStack stack, List<Component> text) {
-            int nHolding = EnchantmentHelper.getItemEnchantmentLevel(holdingEnchantment, stack);
-            if (nHolding > 0) {
-                text.add(new TextComponent(Symbols.TRIANGLE_RIGHT + " ").append(holdingEnchantment.getFullname(nHolding)));
-            }
         }
     }
 

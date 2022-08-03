@@ -48,6 +48,7 @@ import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
 import me.desht.pneumaticcraft.common.sensor.SensorHandler;
 import me.desht.pneumaticcraft.common.thirdparty.ModNameCache;
 import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
+import me.desht.pneumaticcraft.common.util.ItemLaunching;
 import me.desht.pneumaticcraft.common.util.PlayerFilter;
 import me.desht.pneumaticcraft.common.util.Reflections;
 import me.desht.pneumaticcraft.common.util.upgrade.UpgradesDBSetup;
@@ -153,6 +154,7 @@ public class PneumaticCraftRepressurized {
         HeatBehaviourManager.getInstance().registerDefaultBehaviours();
         PlayerFilter.registerDefaultMatchers();
         BlockTrackLootable.INSTANCE.addDefaultEntries();
+        ItemLaunching.registerDefaultBehaviours();
 
         event.enqueueWork(() -> {
             ArmorUpgradeRegistry.getInstance().freeze();

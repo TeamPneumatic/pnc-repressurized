@@ -17,6 +17,7 @@
 
 package me.desht.pneumaticcraft.common.util;
 
+import me.desht.pneumaticcraft.api.item.ILaunchBehaviour;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.entity.projectile.TumblingBlockEntity;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
@@ -41,10 +42,15 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
 
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+
 /**
  * Common code for the Air Cannon and Pneumatic Chestplate item launcher
  */
 public class ItemLaunching {
+    private static final List<ILaunchBehaviour> behaviours = new CopyOnWriteArrayList<>();
+
     public static void launchEntity(Entity launchedEntity, Vec3 initialPos, Vec3 velocity, boolean doSpawn) {
         Level world = launchedEntity.getCommandSenderWorld();
 
@@ -91,42 +97,16 @@ public class ItemLaunching {
      */
     public static Entity getEntityToLaunch(Level world, ItemStack stack, Player player, boolean dispenserLike, boolean fallingBlocks) {
         Item item = stack.getItem();
+
         if (dispenserLike) {
-            if (item == Blocks.TNT.asItem()) {
-                PrimedTnt tnt = new PrimedTnt(world, 0, 0, 0, player);
-                tnt.setFuse(80);
-                return tnt;
-            } else if (item == Items.EXPERIENCE_BOTTLE) {
-                return new ThrownExperienceBottle(world, player);
-            } else if (item instanceof PotionItem) {
-                ThrownPotion potionEntity = new ThrownPotion(world, player);
-                potionEntity.setItem(stack);
-                return potionEntity;
-            } else if (item instanceof ArrowItem) {
-                return ((ArrowItem) item).createArrow(world, stack, player);
-            } else if (item == Items.EGG) {
-                return new ThrownEgg(world, player);
-            } else if (item == Items.FIRE_CHARGE) {
-                SmallFireball e = new SmallFireball(world, player, 0, 0, 0);
-                e.setItem(stack);
-                return e;
-            } else if (item == Items.SNOWBALL) {
-                return new Snowball(world, player);
-            } else if (item instanceof SpawnEggItem && world instanceof ServerLevel) {
-                EntityType<?> type = ((SpawnEggItem) item).getType(stack.getTag());
-                Entity e = type.spawn((ServerLevel) world, stack, player, player.blockPosition(), MobSpawnType.SPAWN_EGG, false, false);
-                if (e instanceof LivingEntity && stack.hasCustomHoverName()) {
-                    e.setCustomName(stack.getHoverName());
+            for (ILaunchBehaviour behaviour : behaviours) {
+                Entity e = behaviour.getEntityToLaunch(stack, player);
+                if (e != null) {
+                    return e;
                 }
-                return e;
-            } else if (item instanceof MinecartItem) {
-                return Minecart.createMinecart(world, 0, 0, 0, ((MinecartItem) item).type);
-            }  else if (item instanceof BoatItem) {
-                return new Boat(world, 0, 0, 0);
-            } else if (item == Items.FIREWORK_ROCKET) {
-                return new FireworkRocketEntity(world, 0, 0, 0, stack);
             }
         }
+
         if (fallingBlocks && item instanceof BlockItem) {
             return new TumblingBlockEntity(world, player, 0, 0, 0, stack);
         } else {
@@ -134,5 +114,51 @@ public class ItemLaunching {
             e.setPickUpDelay(20);
             return e;
         }
+    }
+
+    public static void registerBehaviour(ILaunchBehaviour behaviour) {
+        behaviours.add(behaviour);
+    }
+
+    public static void registerDefaultBehaviours() {
+        registerBehaviour((stack, player) -> {
+            Item item = stack.getItem();
+            Level level = player.getLevel();
+            if (item == Blocks.TNT.asItem()) {
+                PrimedTnt tnt = new PrimedTnt(level, 0, 0, 0, player);
+                tnt.setFuse(80);
+                return tnt;
+            } else if (item == Items.EXPERIENCE_BOTTLE) {
+                return new ThrownExperienceBottle(level, player);
+            } else if (item instanceof PotionItem) {
+                ThrownPotion potionEntity = new ThrownPotion(level, player);
+                potionEntity.setItem(stack);
+                return potionEntity;
+            } else if (item instanceof ArrowItem) {
+                return ((ArrowItem) item).createArrow(level, stack, player);
+            } else if (item == Items.EGG) {
+                return new ThrownEgg(level, player);
+            } else if (item == Items.FIRE_CHARGE) {
+                SmallFireball e = new SmallFireball(level, player, 0, 0, 0);
+                e.setItem(stack);
+                return e;
+            } else if (item == Items.SNOWBALL) {
+                return new Snowball(level, player);
+            } else if (item instanceof SpawnEggItem && level instanceof ServerLevel) {
+                EntityType<?> type = ((SpawnEggItem) item).getType(stack.getTag());
+                Entity e = type.spawn((ServerLevel) level, stack, player, player.blockPosition(), MobSpawnType.SPAWN_EGG, false, false);
+                if (e instanceof LivingEntity && stack.hasCustomHoverName()) {
+                    e.setCustomName(stack.getHoverName());
+                }
+                return e;
+            } else if (item instanceof MinecartItem) {
+                return Minecart.createMinecart(level, 0, 0, 0, ((MinecartItem) item).type);
+            } else if (item instanceof BoatItem) {
+                return new Boat(level, 0, 0, 0);
+            } else if (item == Items.FIREWORK_ROCKET) {
+                return new FireworkRocketEntity(level, 0, 0, 0, stack);
+            }
+            return null;
+        });
     }
 }
