@@ -28,7 +28,7 @@ Changes are in reverse chronological order; newest changes at the top.
   * Default is 600 ticks, which is twice the default fueled flight duration (`lifetime`)
 
 ### Fixes
-* Fixed Redstone Module GUI not being able to update modules on Reinforced or Advanced Pressure Tubes (only worked on basic tubes)
+* Fixed Redstone Modules not syncing settings properly on Reinforced or Advanced Pressure Tubes (only worked on basic tubes)
 * Fixed Pneumatic Armor not being repairable in an Anvil (with Compressed Iron Ingots)
   * Also added a page in the Patchouli book overview listing the ways to repair Pneumatic Armor
 * Fixed potential client crash when teleporting into an area with currently-leaking tubes or machines
