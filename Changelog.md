@@ -9,7 +9,7 @@ Changes are in reverse chronological order; newest changes at the top.
 * PNC:R 3.2.3 and later *require* Forge 40.1.20 or later
 * PNC:R 3.2.0 and later *require* Forge 40.1.0 or later and JEI 9.7.0 or later
 
-## 3.3.2-??? (unreleased)
+## 3.4.0-124 (3 Aug 2022)
 
 ### Updates
 * It is now possible to filter on entities only from a certain mod with the `(mod=<modname>)` modifier
@@ -20,7 +20,13 @@ Changes are in reverse chronological order; newest changes at the top.
 * Drones now know how to use Micromissiles
   * If Drone is carrying a Micromissile when the Entity Attack widget executes, it will fire a missile at its current target
   * Entity filters are supported; the Drone will copy the Entity Attack widget's filter to the missile (if a filter exists)
- 
+* Explosives from Thermal Foundation (Ice/Earth/Lightning charges) can now be launched as weaponry
+  * From the Air Cannon (Dispenser upgrade)  
+  * From the Pneumatic Chestplate item launcher (Dispenser upgrade)
+* Made Micromissile overall lifetime configurable (missile entities will be removed from server after this if they haven't exploded yet)
+  * Adjustable in config via `max_lifetime` setting in common config, Micromissiles section
+  * Default is 600 ticks, which is twice the default fueled flight duration (`lifetime`)
+
 ### Fixes
 * Fixed Redstone Module GUI not being able to update modules on Reinforced or Advanced Pressure Tubes (only worked on basic tubes)
 * Fixed Pneumatic Armor not being repairable in an Anvil (with Compressed Iron Ingots)
@@ -36,6 +42,8 @@ Changes are in reverse chronological order; newest changes at the top.
   * Fixed PNC chest loot not being generated when inspected with block tracker inventory mode
   * Loot generation no longer occurs for players in spectator mode
   * Vanilla-style locked chests (requiring a named item to be held) are now honoured by the block tracker
+* Compressed Iron Gears are now included again in the `forge:gears` and `forge:gears/compressed_iron` item tags
+* Fixed (non-fatal) exception logged by Amadrones despawning
 
 ## 3.3.1-110 (4 July 2022)
 
