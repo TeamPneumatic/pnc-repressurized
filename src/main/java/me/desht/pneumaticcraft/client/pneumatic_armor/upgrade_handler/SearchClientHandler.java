@@ -40,7 +40,6 @@ import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.SearchHandler;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
@@ -93,7 +92,7 @@ public class SearchClientHandler extends IArmorUpgradeClientHandler.AbstractHand
         Item item = PneumaticArmorItem.getSearchedItem(ClientUtils.getWornArmor(EquipmentSlot.HEAD));
         List<Component> textList = new ArrayList<>();
         if (item == null || item == Items.AIR) {
-            textList.add(xlate("pneumaticcraft.armor.search.configure", I18n.get(KeyHandler.getInstance().keybindOpenOptions.saveString())));
+            textList.add(xlate("pneumaticcraft.armor.search.configure", KeyHandler.getInstance().keybindOpenOptions.getTranslatedKeyMessage()));
         } else {
             if (searchedStack.getItem() != item) searchedStack = new ItemStack(item);
             textList.add(searchedStack.getHoverName().copy().append(xlate("pneumaticcraft.armor.search.found", totalSearchedItemCount)));

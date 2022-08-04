@@ -181,6 +181,7 @@
    "entity.pneumaticcraft.programmable_controller" : "Programmable Controller",
    "entity.pneumaticcraft.spawner_agitator" : "Spawner Agitator",
    "entity.pneumaticcraft.transfer_gadget" : "Transfer Gadget",
+   "entity.pneumaticcraft.tumbling_block" : "Tumbling Block",
    "fluid_type.pneumaticcraft.biodiesel" : "Biodiesel",
    "fluid_type.pneumaticcraft.diesel" : "Diesel",
    "fluid_type.pneumaticcraft.ethanol" : "Ethanol",
