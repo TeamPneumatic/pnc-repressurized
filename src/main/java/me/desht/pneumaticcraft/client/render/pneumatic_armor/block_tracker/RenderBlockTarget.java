@@ -130,7 +130,7 @@ public class RenderBlockTarget {
         List<IBlockTrackEntry> applicableTrackEntries = getApplicableEntries();
         nEntries = applicableTrackEntries.size();
 
-        if (isPlayerLookingAtTarget() && (!refreshSent || world.getGameTime() % SERVER_REQUEST_INTERVAL == posHash % SERVER_REQUEST_INTERVAL)) {
+        if (isPlayerLookingAtTarget() && (!refreshSent || world.getGameTime() % SERVER_REQUEST_INTERVAL == Math.abs(posHash) % SERVER_REQUEST_INTERVAL)) {
             requestServerUpdate(applicableTrackEntries);
         }
 
