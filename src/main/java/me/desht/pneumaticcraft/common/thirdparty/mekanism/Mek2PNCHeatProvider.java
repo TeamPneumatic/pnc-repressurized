@@ -22,14 +22,15 @@ import me.desht.pneumaticcraft.api.heat.IHeatExchangerAdapter;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.heat.HeatExchangerLogicAmbient;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.lib.ModIds;
 import mekanism.api.heat.IHeatHandler;
-import mekanism.common.tile.TileEntityQuantumEntangloporter;
-import mekanism.common.tile.transmitter.TileEntityTransmitter;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -92,12 +93,14 @@ public class Mek2PNCHeatProvider implements ICapabilityProvider {
     // resistance when connected to PNC:R blocks, limiting the rate with which a PNC:R heat exchanger will
     // equalise heat directly. This doesn't stop the TC from *pushing* heat, though.
     private double getResistanceMultiplier(BlockEntity te) {
-        // FIXME using non-API way of checking this
-        if (te instanceof TileEntityTransmitter || te instanceof TileEntityQuantumEntangloporter) {
-            return 10000000;
-        } else {
-            return 1;
-        }
+        return PneumaticCraftUtils.getRegistryName(ForgeRegistries.BLOCK_ENTITY_TYPES, te.getType()).map(name -> {
+            if (name.getNamespace().equals(ModIds.MEKANISM)
+                    && (name.getPath().equals("quantum_entangloporter") || name.getPath().endsWith("thermodynamic_conductor"))) {
+                return 10_000_000;
+            } else {
+                return 1;
+            }
+        }).orElse(1);
     }
 
     public static class Mek2PNCHeatAdapter extends IHeatExchangerAdapter.Simple<IHeatHandler> {
