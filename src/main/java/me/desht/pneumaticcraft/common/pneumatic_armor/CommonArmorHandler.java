@@ -141,9 +141,7 @@ public class CommonArmorHandler implements ICommonArmorHandler {
             if (event.phase == TickEvent.Phase.END) {
                 if (ClientUtils.getOptionalClientPlayer().isEmpty() && ArmorUpgradeRegistry.getInstance().isFrozen()) {
                     for (EquipmentSlot slot : ArmorUpgradeRegistry.ARMOR_SLOTS) {
-                        for (IArmorUpgradeClientHandler<?> handler : ClientArmorRegistry.getInstance().getHandlersForSlot(slot)) {
-                            handler.reset();
-                        }
+                        ClientArmorRegistry.getInstance().getHandlersForSlot(slot).forEach(IArmorUpgradeClientHandler::reset);
                     }
                 }
             }

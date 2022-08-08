@@ -34,7 +34,6 @@ import me.desht.pneumaticcraft.client.pneumatic_armor.block_tracker.BlockTrackHa
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.RenderBlockTarget;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModUpgrades;
-import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
 import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.BlockTrackerHandler;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
@@ -91,6 +90,9 @@ public class BlockTrackerClientHandler extends IArmorUpgradeClientHandler.Abstra
         Player player = armorHandler.getPlayer();
         Level world = armorHandler.getPlayer().level;
 
+        SearchClientHandler searcher = ClientArmorRegistry.getInstance()
+                .getClientHandler(CommonUpgradeHandlers.searchHandler, SearchClientHandler.class);
+
         BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
         for (int i = 0; i < HARD_MAX_BLOCKS_PER_TICK; i++) {
             // 1% of a tick = 500,000ns
@@ -108,9 +110,7 @@ public class BlockTrackerClientHandler extends IArmorUpgradeClientHandler.Abstra
 
             if (!MinecraftForge.EVENT_BUS.post(new BlockTrackEvent(world, pos, te))) {
                 if (te != null && te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).isPresent()) {
-                    SearchClientHandler searchHandler = ClientArmorRegistry.getInstance()
-                            .getClientHandler(CommonUpgradeHandlers.searchHandler, SearchClientHandler.class);
-                    searchHandler.checkInventoryForItems(te, null, WidgetKeybindCheckBox.isHandlerEnabled(CommonUpgradeHandlers.searchHandler));
+                    searcher.onBlockTrackStart(te);
                 }
                 List<IBlockTrackEntry> entries = BlockTrackHandler.getInstance().getEntriesForCoordinate(world, pos, te);
                 if (!entries.isEmpty()) {
@@ -119,8 +119,8 @@ public class BlockTrackerClientHandler extends IArmorUpgradeClientHandler.Abstra
                     // there's at least one tracker type relevant to this blockpos
                     RenderBlockTarget blockTarget = blockTargets.get(pos);
                     if (blockTarget != null) {
-                        // we already have a tracker active for this pos
-                        blockTarget.ticksExisted = Math.abs(blockTarget.ticksExisted); // cancel possible "lost target" status
+                        // we already have a tracker active for this pos so just ensure that it stays valid
+                        blockTarget.markValid();
                         blockTarget.setTileEntity(te);
                     } else if (pos.distSqr(player.blockPosition()) < blockTrackRangeSq) {
                         // no tracker currently active for this pos - add a new one
@@ -132,7 +132,7 @@ public class BlockTrackerClientHandler extends IArmorUpgradeClientHandler.Abstra
 
         checkBlockFocus(player, blockTrackRange);
 
-        processTrackerEntries(player, blockTrackRange);
+        processTrackerEntries(blockTrackRange);
 
         updateTrackerText();
     }
@@ -260,32 +260,17 @@ public class BlockTrackerClientHandler extends IArmorUpgradeClientHandler.Abstra
 
     /**
      * Update all existing trackers and cull any which are either out of range or otherwise invalid
-     * @param player the player
      * @param blockTrackRange the track range
      */
-    private void processTrackerEntries(Player player, int blockTrackRange) {
-        List<RenderBlockTarget> toRemove = new ArrayList<>();
+    private void processTrackerEntries(int blockTrackRange) {
         int rangeSq = (blockTrackRange + 5) * (blockTrackRange + 5);
-        int incr = CommonArmorHandler.getHandlerForPlayer(player).getSpeedFromUpgrades(EquipmentSlot.HEAD);
+
         for (RenderBlockTarget blockTarget : blockTargets.values()) {
-            boolean wasNegative = blockTarget.ticksExisted < 0;
-            blockTarget.ticksExisted += incr;
-            if (blockTarget.ticksExisted >= 0 && wasNegative) {
-                blockTarget.ticksExisted = -1;
-            }
-
             blockTarget.tick();
-
-            BlockPos pos = blockTarget.getPos();
-            if (player.distanceToSqr(pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D) > rangeSq || !blockTarget.isTargetStillValid()) {
-                if (blockTarget.ticksExisted > 0) {
-                    blockTarget.ticksExisted = -100;
-                } else if (blockTarget.ticksExisted == -1) {
-                    toRemove.add(blockTarget);
-                }
-            }
+            blockTarget.checkValidity(rangeSq);
         }
-        toRemove.forEach(this::removeBlockTarget);
+
+        blockTargets.values().removeIf(RenderBlockTarget::shouldRemoveNow);
     }
 
     private void updateTrackerText() {
@@ -309,10 +294,6 @@ public class BlockTrackerClientHandler extends IArmorUpgradeClientHandler.Abstra
 
     private void addBlockTarget(RenderBlockTarget blockTarget) {
         blockTargets.put(blockTarget.getPos(), blockTarget);
-    }
-
-    private void removeBlockTarget(RenderBlockTarget blockTarget) {
-        blockTargets.remove(blockTarget.getPos());
     }
 
     public int countBlockTrackersOfType(IBlockTrackEntry type) {

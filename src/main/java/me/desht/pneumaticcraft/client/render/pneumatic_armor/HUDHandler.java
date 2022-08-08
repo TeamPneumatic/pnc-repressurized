@@ -284,9 +284,10 @@ public enum HUDHandler implements IKeyListener {
     @SubscribeEvent
     public void onMouseScroll(InputEvent.MouseScrollingEvent event) {
         ClientArmorRegistry c = ClientArmorRegistry.getInstance();
-        boolean isCaptured = c.getClientHandler(CommonUpgradeHandlers.blockTrackerHandler, BlockTrackerClientHandler.class).scroll(event);
-        if (!isCaptured) isCaptured = c.getClientHandler(CommonUpgradeHandlers.entityTrackerHandler, EntityTrackerClientHandler.class).scroll(event);
-        if (isCaptured) event.setCanceled(true);
+        if (c.getClientHandler(CommonUpgradeHandlers.blockTrackerHandler, BlockTrackerClientHandler.class).scroll(event)
+                || c.getClientHandler(CommonUpgradeHandlers.entityTrackerHandler, EntityTrackerClientHandler.class).scroll(event)) {
+            event.setCanceled(true);
+        }
     }
 
     @SubscribeEvent
@@ -295,10 +296,9 @@ public enum HUDHandler implements IKeyListener {
         if (gui.getMinecraft().level != null) {
             Window mw = gui.getMinecraft().getWindow();
             if (mw.getGuiScaledWidth() != lastScaledWidth || mw.getGuiScaledHeight() != lastScaledHeight) {
+                ClientArmorRegistry c = ClientArmorRegistry.getInstance();
                 for (EquipmentSlot slot : ArmorUpgradeRegistry.ARMOR_SLOTS) {
-                    for (IArmorUpgradeClientHandler<?> handler : ClientArmorRegistry.getInstance().getHandlersForSlot(slot)) {
-                        handler.onResolutionChanged();
-                    }
+                    c.getHandlersForSlot(slot).forEach(IArmorUpgradeClientHandler::onResolutionChanged);
                 }
                 lastScaledWidth = mw.getGuiScaledWidth();
                 lastScaledHeight = mw.getGuiScaledHeight();

@@ -27,6 +27,7 @@ import me.desht.pneumaticcraft.api.client.pneumatic_helmet.StatPanelLayout;
 import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorHandler;
 import me.desht.pneumaticcraft.client.KeyHandler;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.options.SearchOptions;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetKeybindCheckBox;
 import me.desht.pneumaticcraft.client.pneumatic_armor.ClientArmorRegistry;
 import me.desht.pneumaticcraft.client.render.ModRenderTypes;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.RenderSearchItemBlock;
@@ -40,8 +41,6 @@ import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.SearchHandler;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -68,7 +67,7 @@ public class SearchClientHandler extends IArmorUpgradeClientHandler.AbstractHand
     private int itemSearchCount;
     private int ticksExisted;
     private final Map<ItemEntity, Integer> searchedItems = new HashMap<>();
-    private final Map<BlockPos, RenderSearchItemBlock> trackedInventories = new HashMap<>();
+    private final Map<BlockEntity, RenderSearchItemBlock> trackedInventories = new HashMap<>();
     private IGuiAnimatedStat searchInfo;
     private ItemStack searchedStack = ItemStack.EMPTY;
 
@@ -81,11 +80,15 @@ public class SearchClientHandler extends IArmorUpgradeClientHandler.AbstractHand
         ticksExisted++;
 
         if ((ticksExisted & 0xf) == 0) {
-            // count up all items in tracked inventories, and cull any inventories with no matching items
-            int blockSearchCount = trackInventoryCounts(armorHandler.getUpgradeCount(EquipmentSlot.HEAD, ModUpgrades.RANGE.get()));
+            // block tracker: count up all items in tracked inventories, and cull any inventories with no matching items
+            int rangeUpgrades = armorHandler.getUpgradeCount(EquipmentSlot.HEAD, ModUpgrades.RANGE.get());
+            int blockSearchCount = trackInventoryCounts(rangeUpgrades);
 
+            // entity tracker: handle tracking for item entities
+            if (armorHandler.upgradeUsable(CommonUpgradeHandlers.entityTrackerHandler, true)) {
+                trackItemEntities(rangeUpgrades);
+            }
             searchedItems.entrySet().removeIf(e -> !e.getKey().isAlive());
-
             totalSearchedItemCount = itemSearchCount + blockSearchCount;
         }
 
@@ -109,8 +112,8 @@ public class SearchClientHandler extends IArmorUpgradeClientHandler.AbstractHand
             RenderSearchItemBlock.renderSearch(matrixStack, builder,
                     item.xOld + (item.getX() - item.xOld) * partialTicks,
                     item.yOld + (item.getY() - item.yOld) * partialTicks + height,
-                    item.zOld + (item.getZ() - item.zOld) * partialTicks, value,
-                    totalSearchedItemCount, partialTicks
+                    item.zOld + (item.getZ() - item.zOld) * partialTicks,
+                    value, totalSearchedItemCount, partialTicks
             );
         });
 
@@ -128,15 +131,14 @@ public class SearchClientHandler extends IArmorUpgradeClientHandler.AbstractHand
         int blockTrackRangeSq = blockTrackRange * blockTrackRange;
 
         Player player = ClientUtils.getClientPlayer();
-        List<BlockPos> toRemove = new ArrayList<>();
-        for (Map.Entry<BlockPos,RenderSearchItemBlock> entry : trackedInventories.entrySet()) {
-            int nItems = entry.getKey().distSqr(player.blockPosition()) < blockTrackRangeSq ?
-                    entry.getValue().getSearchedItemCount() : 0;
-
-            if (nItems == 0) {
-                toRemove.add(entry.getKey());
+        List<BlockEntity> toRemove = new ArrayList<>();
+        for (var entry : trackedInventories.entrySet()) {
+            BlockEntity blockEntity = entry.getKey();
+            if (blockEntity.isRemoved() || blockEntity.getBlockPos().distSqr(player.blockPosition()) > blockTrackRangeSq) {
+                toRemove.add(blockEntity);
+            } else {
+                blockSearchCount += entry.getValue().getSearchedItemCount();
             }
-            blockSearchCount += nItems;
         }
         toRemove.forEach(trackedInventories::remove);
 
@@ -145,16 +147,16 @@ public class SearchClientHandler extends IArmorUpgradeClientHandler.AbstractHand
 
     /**
      * Called by the EntityTrackerUpgradeHandler every 16 ticks to find items in item entities on the ground.
-     * @param player the player
      * @param rangeUpgrades number of range upgrades installed in the helmet
      */
-    void trackItemEntities(Player player, int rangeUpgrades) {
+    private void trackItemEntities(int rangeUpgrades) {
         searchedItems.clear();
         itemSearchCount = 0;
 
         Item searchedItem = PneumaticArmorItem.getSearchedItem(ClientUtils.getWornArmor(EquipmentSlot.HEAD));
         if (searchedItem == null || searchedItem == Items.AIR) return;
 
+        Player player = ClientUtils.getClientPlayer();
         List<ItemEntity> items = player.level.getEntitiesOfClass(ItemEntity.class, EntityTrackerClientHandler.getAABBFromRange(player, rangeUpgrades));
         for (ItemEntity itemEntity : items) {
             if (!itemEntity.getItem().isEmpty()) {
@@ -178,25 +180,25 @@ public class SearchClientHandler extends IArmorUpgradeClientHandler.AbstractHand
         }
     }
 
+
     /**
-     * Called by the BlockTrackUpgradeHandler when it finds inventories while scanning blocks.  If
-     * the inventory contains any of the searched item, its position is added to a track list.
+     * Called by the BlockTrackUpgradeHandler when it finds a block entity while scanning blocks.  If
+     * the block entity is an inventory and contains any of the searched item, add it to a track list.
      *
-     * @param te TileEntity the block entity, which is already known to support the item handler capability
-     * @param handlerEnabled true if the search handler is actually enabled, false otherwise
+     * @param blockEntity the block entity
      */
-    void checkInventoryForItems(BlockEntity te, Direction face, boolean handlerEnabled) {
-        if (!handlerEnabled) {
-            trackedInventories.clear();
-        } else {
+    void onBlockTrackStart(BlockEntity blockEntity) {
+        if (WidgetKeybindCheckBox.isHandlerEnabled(CommonUpgradeHandlers.searchHandler)) {
             Item searchedItem = PneumaticArmorItem.getSearchedItem(ClientUtils.getWornArmor(EquipmentSlot.HEAD));
             if (searchedItem != null) {
-                te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, face).ifPresent(handler -> {
+                blockEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).ifPresent(handler -> {
                     if (checkForItems(handler, searchedItem)) {
-                        trackedInventories.put(te.getBlockPos(), new RenderSearchItemBlock(te.getLevel(), te.getBlockPos()));
+                        trackedInventories.put(blockEntity, new RenderSearchItemBlock(blockEntity.getLevel(), blockEntity.getBlockPos()));
                     }
                 });
             }
+        } else {
+            trackedInventories.clear();
         }
     }
 

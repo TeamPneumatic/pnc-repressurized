@@ -22,10 +22,8 @@ import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.*;
 import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorHandler;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.options.EntityTrackOptions;
-import me.desht.pneumaticcraft.client.gui.widget.WidgetKeybindCheckBox;
 import me.desht.pneumaticcraft.client.pneumatic_armor.ClientArmorRegistry;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.RenderEntityTarget;
-import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.item.PneumaticArmorItem;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
@@ -73,12 +71,7 @@ public class EntityTrackerClientHandler extends IArmorUpgradeClientHandler.Abstr
         int rangeUpgrades = armorHandler.getUpgradeCount(EquipmentSlot.HEAD, ModUpgrades.RANGE.get());
         Player player = armorHandler.getPlayer();
 
-        if ((ClientUtils.getClientLevel().getGameTime() & 0xf) == 0 && WidgetKeybindCheckBox.isHandlerEnabled(CommonUpgradeHandlers.searchHandler)) {
-            ClientArmorRegistry.getInstance()
-                    .getClientHandler(CommonUpgradeHandlers.searchHandler, SearchClientHandler.class)
-                    .trackItemEntities(player, rangeUpgrades);
-        }
-
+        // check for filter change and recompile filter if necessary
         ItemStack helmetStack = player.getItemBySlot(EquipmentSlot.HEAD);
         String filterStr = helmetStack.isEmpty() ? "" : PneumaticArmorItem.getEntityFilter(helmetStack);
         if (!entityFilter.toString().equals(filterStr)) {
@@ -88,6 +81,7 @@ public class EntityTrackerClientHandler extends IArmorUpgradeClientHandler.Abstr
             }
         }
 
+        // find applicable entities and create/update render targets for them as needed
         double entityTrackRange = ENTITY_TRACKING_RANGE + rangeUpgrades * PneumaticValues.RANGE_UPGRADE_HELMET_RANGE_INCREASE;
         AABB bbBox = getAABBFromRange(player, rangeUpgrades);
         List<Entity> entities = armorHandler.getPlayer().level.getEntitiesOfClass(Entity.class, bbBox,
@@ -101,6 +95,7 @@ public class EntityTrackerClientHandler extends IArmorUpgradeClientHandler.Abstr
             }
         }
 
+        // prune no-longer-applicable entities from the render target list
         List<Integer> toRemove = new ArrayList<>();
         targets.forEach((entityId, target) -> {
             if (!target.entity.isAlive() || player.distanceTo(target.entity) > entityTrackRange + 5 || !entityFilter.test(target.entity)) {
@@ -113,6 +108,7 @@ public class EntityTrackerClientHandler extends IArmorUpgradeClientHandler.Abstr
         });
         toRemove.forEach(targets::remove);
 
+        // handle tick logic for every valid render target
         List<Component> text = new ArrayList<>();
         for (RenderEntityTarget target : targets.values()) {
             boolean wasNegative = target.ticksExisted < 0;
