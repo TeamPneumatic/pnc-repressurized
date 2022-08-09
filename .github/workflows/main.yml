@@ -63,8 +63,7 @@ jobs:
         uses: Ilshidur/action-discord@master
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
-          DISCORD_EMBEDS: '{"embeds": [{"title": "Build complete for {{ EVENT_PAYLOAD.repository.full_name }}", "color": 1127128}, {"title": "Link to Build", "url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"}]}'
         if:
           env.DISCORD_WEBHOOK != null
         with:
-          args: 'GitHub Build Complete'
+          args: 'Build complete for project {{ EVENT_PAYLOAD.repository.full_name }} (Minecraft ${{ steps.mc_version.outputs.version}}): ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}.'
