@@ -4,24 +4,25 @@ This is an overview of significant new features and fixes by release.  See https
 
 Changes are in reverse chronological order; newest changes at the top.
 
-# Minecraft 1.19
+# Minecraft 1.19.2
 
-## 4.0.1-??? (unreleased)
+1.19.2 builds may also work on Minecraft 1.19.1 but no support will be provided for that.
+
+## 4.1.0-128
+
+This release includes all the updates and fixes from the 3.4.0 release (for MC 1.18.2), as well as:
 
 ## Updates
-* Seismic Sensor now tells you the depth of both the top and bottom fluid blocks of lakes that it finds
-  * Makes it easier to judge the deepest part of the lake if placing a Gas Lift to pump it
-* Drones now know how to use Micromissiles
-  * If Drone is carrying a Micromissile when the Entity Attack widget executes, it will fire a missile at its current target
-  * Entity filters are supported; the Drone will copy the Entity Attack widget's filter to the missile (if a filter exists)
+* Fall Protection is now a toggleable feature
+  * May be useful to switch it off to save air if you have some other method of fall protection available
+* Several Pneumatic Armor features are now active by default (i.e. when armor is equipped for the very first time):
+  * Step Assist, Charging, Fall Protection, Run Speed Boost & Jump Boost (assuming, of course, that the relevant upgrade is installed)
+  
+# Minecraft 1.19.1
 
-## Fixes
-* Fixed Drones not being able to use the Right Click action on an item with cooldowns more than once
-* Fixed a few issues with Pneumatic Helmet Block Tracker:
-  * Fixed blocks not being trackable below Y=0 or above Y=255
-  * Fixed PNC chest loot not being generated when inspected with block tracker inventory mode
-  * Loot generation no longer occurs for players in spectator mode
-  * Vanilla-style locked chests (requiring a named item to be held) are now honoured by the block tracker
+*No official release was made for Minecraft 1.19.1*
+
+# Minecraft 1.19
 
 ## 4.0.0-117 (18-Jul-2022)
 
@@ -45,11 +46,46 @@ PneumaticCraft: Repressurized 4.0.0 for Minecraft 1.19 is based on the 3.3.1 rel
   * Biome Dictionary no longer exists in Forge for MC 1.19; Biome Tags are the vanilla replacement
   * See https://github.com/TeamPneumatic/pnc-repressurized/wiki/Amadron-and-Datapacks#player-filtering for more information
 
-
 # Minecraft 1.18.2
 
 * PNC:R 3.2.3 and later *require* Forge 40.1.20 or later
 * PNC:R 3.2.0 and later *require* Forge 40.1.0 or later and JEI 9.7.0 or later
+
+## 3.4.0-124 (3 Aug 2022)
+
+### Updates
+* It is now possible to filter on entities only from a certain mod with the `(mod=<modname>)` modifier
+  * E.g. filtering on `@mob(mod=minecraft)` will match hostile mobs only from vanilla and not any other mod
+  * This feature was backported from the 1.19 release
+* Seismic Sensor now tells you the depth of both the top and bottom fluid blocks of lakes that it finds
+  * Makes it easier to judge the deepest part of the lake if placing a Gas Lift to pump it
+* Drones now know how to use Micromissiles
+  * If Drone is carrying a Micromissile when the Entity Attack widget executes, it will fire a missile at its current target
+  * Entity filters are supported; the Drone will copy the Entity Attack widget's filter to the missile (if a filter exists)
+* Explosives from Thermal Foundation (Ice/Earth/Lightning charges) can now be launched as weaponry
+  * From the Air Cannon (Dispenser upgrade)
+  * From the Pneumatic Chestplate item launcher (Dispenser upgrade)
+* Made Micromissile overall lifetime configurable (missile entities will be removed from server after this if they haven't exploded yet)
+  * Adjustable in config via `max_lifetime` setting in common config, Micromissiles section
+  * Default is 600 ticks, which is twice the default fueled flight duration (`lifetime`)
+
+### Fixes
+* Fixed Redstone Modules not syncing settings properly on Reinforced or Advanced Pressure Tubes (only worked on basic tubes)
+* Fixed Pneumatic Armor not being repairable in an Anvil (with Compressed Iron Ingots)
+  * Also added a page in the Patchouli book overview listing the ways to repair Pneumatic Armor
+* Fixed potential client crash when teleporting into an area with currently-leaking tubes or machines
+* Fixed Transfer Gadgets not being placeable on blocks which offer only a fluid handler capability, e.g. Refineries
+* Fixed broken elevator image in Patchouli manual
+* Fixed Pressure Chambers behaving weirdly if constructed or deconstructed by Modular Routers Extruder Modules
+  * Probably also applies to other automated block placing/breaking systems
+* Fixed Drones not being able to use the Right Click action on an item with cooldowns more than once
+* Fixed a few issues with Pneumatic Helmet Block Tracker:
+  * Fixed blocks not being trackable below Y=0 or above Y=255
+  * Fixed PNC chest loot not being generated when inspected with block tracker inventory mode
+  * Loot generation no longer occurs for players in spectator mode
+  * Vanilla-style locked chests (requiring a named item to be held) are now honoured by the block tracker
+* Compressed Iron Gears are now included again in the `forge:gears` and `forge:gears/compressed_iron` item tags
+* Fixed (non-fatal) exception logged by Amadrones despawning
 
 ## 3.3.1-110 (4 July 2022)
 
