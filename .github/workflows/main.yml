@@ -4,7 +4,7 @@ name: "Build applicable branches on push or pull request"
 # events for the branches listed
 on:
   push:
-    branches: [ "1.18.1", "1.18.2", "1.19", "1.19.1" ]
+    branches: [ "1.18*", "1.19*" ]
 
 jobs:
   build:
@@ -63,7 +63,8 @@ jobs:
         uses: Ilshidur/action-discord@master
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+          DISCORD_EMBEDS: '{"embeds": [{"title": "Build complete for {{ EVENT_PAYLOAD.repository.full_name }}", "color": 1127128}, {"title": "Link to Build", "url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"}]}'
         if:
           env.DISCORD_WEBHOOK != null
         with:
-          args: 'Build complete for project {{ EVENT_PAYLOAD.repository.full_name }} (Minecraft ${{ steps.mc_version.outputs.version}}): ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}.'
+          args: 'GitHub Build Complete'
