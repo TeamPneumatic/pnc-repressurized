@@ -89,12 +89,13 @@ public class ArmorFeatureStatus extends AuxConfigJson {
 
     public boolean isUpgradeEnabled(ResourceLocation upgradeID) {
         if (!activeUpgrades.containsKey(upgradeID)) {
-            IArmorUpgradeClientHandler<?> handler = ClientArmorRegistry.getInstance().getClientHandler(upgradeID);
+            String[] parts = upgradeID.getPath().split("\\.");
+            IArmorUpgradeClientHandler<?> handler = ClientArmorRegistry.getInstance().getClientHandler(new ResourceLocation(upgradeID.getNamespace(), parts[0]));
             if (handler == null) {
                 Log.warning("attempt to retrieve enablement for unknown upgrade ID '%s'", upgradeID);
                 return false;
             }
-            if (upgradeID.getPath().indexOf('.') == -1) {
+            if (parts.length == 1) {
                 // the upgrade itself
                 setUpgradeEnabled(upgradeID, handler.isEnabledByDefault());
             } else {
