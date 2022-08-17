@@ -26,6 +26,7 @@ conf
 *.swp
 *.pl
 extra-mods-*
+*.patch
 
 # datagen caches
 **/.cache
