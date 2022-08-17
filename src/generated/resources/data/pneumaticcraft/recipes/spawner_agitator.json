@@ -1,19 +1,35 @@
 {
-  "type": "minecraft:crafting_shaped",
-  "pattern": [
-    "III",
-    "IGI",
-    "III"
-  ],
-  "key": {
-    "I": {
-      "tag": "forge:ingots/compressed_iron"
-    },
-    "G": {
-      "item": "minecraft:ghast_tear"
+  "type": "forge:conditional",
+  "recipes": [
+    {
+      "conditions": [
+        {
+          "value": {
+            "modid": "apotheosis",
+            "type": "forge:mod_loaded"
+          },
+          "type": "forge:not"
+        }
+      ],
+      "recipe": {
+        "type": "minecraft:crafting_shaped",
+        "pattern": [
+          "III",
+          "IGI",
+          "III"
+        ],
+        "key": {
+          "I": {
+            "tag": "forge:ingots/compressed_iron"
+          },
+          "G": {
+            "item": "minecraft:ghast_tear"
+          }
+        },
+        "result": {
+          "item": "pneumaticcraft:spawner_agitator"
+        }
+      }
     }
-  },
-  "result": {
-    "item": "pneumaticcraft:spawner_agitator"
-  }
+  ]
 }

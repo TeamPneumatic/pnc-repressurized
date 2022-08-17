@@ -176,7 +176,7 @@ public class ModItems {
     public static final RegistryObject<SemiblockItem> HEAT_FRAME = register("heat_frame",
             SemiblockItem::new);
     public static final RegistryObject<SemiblockItem> SPAWNER_AGITATOR = register("spawner_agitator",
-            SemiblockItem::new);
+            SpawnerAgitatorItem::new);
     public static final RegistryObject<SemiblockItem> CROP_SUPPORT = register("crop_support",
             SemiblockItem::new);
     public static final RegistryObject<SemiblockItem> TRANSFER_GADGET = register("transfer_gadget",

@@ -25,6 +25,7 @@ import net.minecraft.world.level.BaseSpawner;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.entity.SpawnerBlockEntity;
 
 public class SpawnerAgitatorEntity extends AbstractSemiblockEntity {
@@ -34,7 +35,9 @@ public class SpawnerAgitatorEntity extends AbstractSemiblockEntity {
 
     @Override
     public boolean canPlace(Direction facing) {
-        return getBlockState().getBlock() == Blocks.SPAWNER;
+        // ensure vanilla spawner - https://github.com/TeamPneumatic/pnc-repressurized/issues/1071
+        return getBlockState().getBlock() == Blocks.SPAWNER
+                && getCachedTileEntity().getType() == BlockEntityType.MOB_SPAWNER;
     }
 
     @Override

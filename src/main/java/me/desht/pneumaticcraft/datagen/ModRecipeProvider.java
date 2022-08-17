@@ -36,6 +36,7 @@ import net.minecraftforge.common.crafting.ConditionalRecipe;
 import net.minecraftforge.common.crafting.NBTIngredient;
 import net.minecraftforge.common.crafting.conditions.ICondition;
 import net.minecraftforge.common.crafting.conditions.ModLoadedCondition;
+import net.minecraftforge.common.crafting.conditions.NotCondition;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.IForgeRegistryEntry;
@@ -786,11 +787,15 @@ public class ModRecipeProvider extends RecipeProvider {
                 'P', ModItems.PRINTED_CIRCUIT_BOARD.get()
         ).save(consumer);
 
-        shaped(ModItems.SPAWNER_AGITATOR.get(), ModItems.COMPRESSED_IRON_INGOT.get(),
-                "III/IGI/III",
-                'I', PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON,
-                'G', Items.GHAST_TEAR
-        ).save(consumer);
+        ConditionalRecipe.builder()
+                .addCondition(new NotCondition(new ModLoadedCondition(ModIds.APOTHEOSIS)))
+                .addRecipe(
+                        shaped(ModItems.SPAWNER_AGITATOR.get(), ModItems.COMPRESSED_IRON_INGOT.get(),
+                                "III/IGI/III",
+                                'I', PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON,
+                                'G', Items.GHAST_TEAR)
+                                ::save)
+                .build(consumer, RL("spawner_agitator"));
 
         shaped(ModItems.SPAWNER_CORE_SHELL.get(), ModBlocks.PRESSURE_CHAMBER_GLASS.get(),
                 "IGI/GEG/IGI",

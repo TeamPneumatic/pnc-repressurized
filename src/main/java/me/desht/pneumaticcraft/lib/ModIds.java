@@ -36,8 +36,10 @@ public class ModIds {
     public static final String CREATE = "create";
     public static final String THAUMCRAFT = "thaumcraft";
     public static final String TOUGH_AS_NAILS = "toughasnails";
+    public static final String APOTHEOSIS = "apotheosis";
 
-    // the mods we have integrated with in the past but not in 1.16
+    // the mods we have integrated with in the past but
+    // not in 1.16
     //    public static final String BUILDCRAFT = "buildcraftcore";
     //    public static final String INDUSTRIALCRAFT = "ic2";
     //    public static final String INDUSTRIALFOREGOING = "industrialforegoing";
