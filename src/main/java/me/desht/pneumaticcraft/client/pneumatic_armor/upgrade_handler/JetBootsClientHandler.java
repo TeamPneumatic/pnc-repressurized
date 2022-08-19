@@ -65,6 +65,7 @@ public class JetBootsClientHandler extends IArmorUpgradeClientHandler.SimpleTogg
 
     public static final ResourceLocation MODULE_BUILDER_MODE = RL("jet_boots.module.builder_mode");
     public static final ResourceLocation MODULE_FLIGHT_STABILIZERS = RL("jet_boots.module.flight_stabilizers");
+    public static final ResourceLocation MODULE_HOVER = RL("jet_boots.module.hover");
     public static final ResourceLocation MODULE_SMART_HOVER = RL("jet_boots.module.smart_hover");
 
     private static final StatPanelLayout DEFAULT_STAT_LAYOUT = new StatPanelLayout(0.5f, 0.005f, false);
@@ -85,6 +86,11 @@ public class JetBootsClientHandler extends IArmorUpgradeClientHandler.SimpleTogg
     @Override
     public IOptionPage getGuiOptionsPage(IGuiScreen screen) {
         return new JetBootsOptions(screen,this);
+    }
+
+    @Override
+    public boolean isEnabledByDefault(String subModuleName) {
+        return subModuleName.equals(MODULE_HOVER.getPath());
     }
 
     @Override
@@ -211,6 +217,7 @@ public class JetBootsClientHandler extends IArmorUpgradeClientHandler.SimpleTogg
         return ImmutableList.of(
                 MODULE_BUILDER_MODE,
                 MODULE_FLIGHT_STABILIZERS,
+                MODULE_HOVER,
                 MODULE_SMART_HOVER
         );
     }

@@ -57,6 +57,7 @@ public class PacketUpdateArmorExtraData {
         addKey(EquipmentSlot.FEET, PneumaticArmorItem.NBT_BUILDER_MODE, Tag.TAG_BYTE);
         addKey(EquipmentSlot.FEET, PneumaticArmorItem.NBT_JET_BOOTS_POWER, Tag.TAG_INT);
         addKey(EquipmentSlot.FEET, PneumaticArmorItem.NBT_FLIGHT_STABILIZERS, Tag.TAG_BYTE);
+        addKey(EquipmentSlot.FEET, PneumaticArmorItem.NBT_HOVER, Tag.TAG_BYTE);
         addKey(EquipmentSlot.FEET, PneumaticArmorItem.NBT_SMART_HOVER, Tag.TAG_BYTE);
     }
 

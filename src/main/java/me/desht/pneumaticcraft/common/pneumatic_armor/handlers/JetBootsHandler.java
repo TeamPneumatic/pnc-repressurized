@@ -115,7 +115,7 @@ public class JetBootsHandler extends BaseArmorUpgradeHandler<JetBootsHandler.Jet
             } else if (jbState.isEnabled() && !isOnGround(player) && !player.isFallFlying()) {
                 // jetboots not firing, but enabled - slowly descend (or hover if enough upgrades)
                 // and bring player to complete halt if flight stabilizers and not actively moving forward/sideways
-                boolean reallyHovering = !jbLocal.isSmartHover() || jbLocal.isHovering();
+                boolean reallyHovering = jbLocal.canHover() && (!jbLocal.isSmartHover() || jbLocal.isHovering());
                 boolean stopped = jbLocal.isFlightStabilizers()
                         && jetbootsCount >= STABILIZERS_LEVEL
                         && PneumaticCraftUtils.epsilonEquals(player.zza, 0f)
@@ -187,6 +187,7 @@ public class JetBootsHandler extends BaseArmorUpgradeHandler<JetBootsHandler.Jet
         JetBootsHandler.JetBootsLocalState jbLocal = commonArmorHandler.getExtensionData(this);
         jbLocal.flightStabilizers = PneumaticArmorItem.getBooleanData(armorStack, PneumaticArmorItem.NBT_FLIGHT_STABILIZERS, false);
         jbLocal.jetBootsPower = PneumaticArmorItem.getIntData(armorStack, PneumaticArmorItem.NBT_JET_BOOTS_POWER, 100, 0, 100) / 100f;
+        jbLocal.hover = PneumaticArmorItem.getBooleanData(armorStack, PneumaticArmorItem.NBT_HOVER, true);
         jbLocal.smartHover = PneumaticArmorItem.getBooleanData(armorStack, PneumaticArmorItem.NBT_SMART_HOVER, false);
         boolean jetBootsBuilderMode = PneumaticArmorItem.getBooleanData(armorStack, PneumaticArmorItem.NBT_BUILDER_MODE, false);
         JetBootsStateTracker.JetBootsState jbState = JetBootsStateTracker.getTracker(player).getJetBootsState(player);
@@ -213,6 +214,8 @@ public class JetBootsHandler extends BaseArmorUpgradeHandler<JetBootsHandler.Jet
                     jbLocal.jetBootsPower = Mth.clamp(((IntTag) inbt).getAsInt() / 100f, 0f, 1f);
             case PneumaticArmorItem.NBT_FLIGHT_STABILIZERS ->
                     jbLocal.flightStabilizers = ((ByteTag) inbt).getAsByte() == 1;
+            case PneumaticArmorItem.NBT_HOVER ->
+                    jbLocal.hover = ((ByteTag) inbt).getAsByte() == 1;
             case PneumaticArmorItem.NBT_SMART_HOVER ->
                     jbLocal.smartHover = ((ByteTag) inbt).getAsByte() == 1;
         }
@@ -257,6 +260,7 @@ public class JetBootsHandler extends BaseArmorUpgradeHandler<JetBootsHandler.Jet
      * Stuff that isn't sync'd like in JetBootsStateTracker but tracked internally on both client and server
      */
     public static class JetBootsLocalState implements IArmorExtensionData {
+        public boolean hover;
         public boolean smartHover;
         public boolean flightStabilizers;
         public float jetBootsPower;
@@ -309,6 +313,10 @@ public class JetBootsHandler extends BaseArmorUpgradeHandler<JetBootsHandler.Jet
 
         public int calcAirUsage(int jetbootsCount) {
             return (int) (ConfigHelper.common().armor.jetBootsAirUsage.get() * jetbootsCount * jetBootsPower);
+        }
+
+        public boolean canHover() {
+            return hover;
         }
 
         public boolean isSmartHover() {

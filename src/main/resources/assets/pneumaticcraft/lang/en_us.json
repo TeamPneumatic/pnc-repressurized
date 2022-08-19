@@ -745,6 +745,8 @@
    "pneumaticcraft.armor.upgrade.jet_boots.module.builder_mode.desc" : "Enables more creative-like flight: thrust key climbs vertically. Also, block break speed while in air is increased.",
    "pneumaticcraft.armor.upgrade.jet_boots.module.flight_stabilizers" : "Flight Stabilizers",
    "pneumaticcraft.armor.upgrade.jet_boots.module.flight_stabilizers.desc" : "Brings player to an instant stop when the thrust key is released.",
+   "pneumaticcraft.armor.upgrade.jet_boots.module.hover" : "Hover",
+   "pneumaticcraft.armor.upgrade.jet_boots.module.hover.desc" : "Hover mode allows the player to sink slowly (or not at all with maximum upgrades) instead of falling from the sky when not firing the Jet Boots.",
    "pneumaticcraft.armor.upgrade.jet_boots.module.smart_hover" : "Smart Hover",
    "pneumaticcraft.armor.upgrade.jet_boots.module.smart_hover.desc" : "Hover mode is only engaged when the thrust key is pressed, not when player jumps or steps off an edge.",
    "pneumaticcraft.armor.upgrade.jump_boost" : "Jump Boost",

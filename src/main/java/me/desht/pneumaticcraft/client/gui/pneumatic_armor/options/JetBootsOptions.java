@@ -64,20 +64,24 @@ public class JetBootsOptions extends AbstractSliderOptions<JetBootsClientHandler
                 b -> setFlag(PneumaticArmorItem.NBT_FLIGHT_STABILIZERS, JetBootsHandler.STABILIZERS_LEVEL, b))
                 .withOwnerUpgradeID(ownerID);
         gui.addWidget(checkBoxStabilizers.asWidget());
-        ICheckboxWidget hoverControl = registry.makeKeybindingCheckBox(JetBootsClientHandler.MODULE_SMART_HOVER, 5, 85, 0xFFFFFFFF,
+        ICheckboxWidget hover = registry.makeKeybindingCheckBox(JetBootsClientHandler.MODULE_HOVER, 5, 85, 0xFFFFFFFF,
+                        b -> setFlag(PneumaticArmorItem.NBT_HOVER, 1, b))
+                .withOwnerUpgradeID(ownerID);
+        gui.addWidget(hover.asWidget());
+        ICheckboxWidget smartHover = registry.makeKeybindingCheckBox(JetBootsClientHandler.MODULE_SMART_HOVER, 5, 105, 0xFFFFFFFF,
                 b -> setFlag(PneumaticArmorItem.NBT_SMART_HOVER, 1, b))
                 .withOwnerUpgradeID(ownerID);
-        gui.addWidget(hoverControl.asWidget());
+        gui.addWidget(smartHover.asWidget());
 
-        changeKeybindingButton = registry.makeKeybindingButton(135, KeyHandler.getInstance().keybindJetBoots);
+        changeKeybindingButton = registry.makeKeybindingButton(155, KeyHandler.getInstance().keybindJetBoots);
         gui.addWidget(changeKeybindingButton.asWidget());
 
-        gui.addWidget(ClientArmorRegistry.getInstance().makeStatMoveButton(30, 157, getClientUpgradeHandler()));
+        gui.addWidget(ClientArmorRegistry.getInstance().makeStatMoveButton(30, 177, getClientUpgradeHandler()));
     }
 
     @Override
     protected PointXY getSliderPos() {
-        return new PointXY(30, 105);
+        return new PointXY(30, 125);
     }
 
     private void setFlag(String flagName, int minTier, ICheckboxWidget cb) {
