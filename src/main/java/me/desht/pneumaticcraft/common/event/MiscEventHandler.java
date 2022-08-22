@@ -24,6 +24,7 @@ import me.desht.pneumaticcraft.api.crafting.ingredient.FluidIngredient;
 import me.desht.pneumaticcraft.api.drone.DroneConstructingEvent;
 import me.desht.pneumaticcraft.api.item.IPositionProvider;
 import me.desht.pneumaticcraft.api.lib.Names;
+import me.desht.pneumaticcraft.api.semiblock.ISemiBlock;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.PneumaticHelmetRegistry;
 import me.desht.pneumaticcraft.common.PneumaticCraftTags;
 import me.desht.pneumaticcraft.common.advancements.AdvancementTriggers;
@@ -33,6 +34,7 @@ import me.desht.pneumaticcraft.common.block.tubes.ModuleNetworkManager;
 import me.desht.pneumaticcraft.common.capabilities.CapabilityHacking;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
+import me.desht.pneumaticcraft.common.entity.semiblock.EntitySpawnerAgitator;
 import me.desht.pneumaticcraft.common.item.ItemMinigun;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
@@ -40,14 +42,17 @@ import me.desht.pneumaticcraft.common.network.PacketModWrenchBlock;
 import me.desht.pneumaticcraft.common.network.PacketPlaySound;
 import me.desht.pneumaticcraft.common.network.PacketServerTickTime;
 import me.desht.pneumaticcraft.common.recipes.machine.ExplosionCraftingRecipeImpl;
+import me.desht.pneumaticcraft.common.semiblock.SemiblockTracker;
 import me.desht.pneumaticcraft.common.thirdparty.ModdedWrenchUtils;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityRefineryController;
+import me.desht.pneumaticcraft.common.tileentity.TileEntityVacuumTrap;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.FlowingFluidBlock;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.MobEntity;
 import net.minecraft.entity.item.BoatEntity;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.item.minecart.AbstractMinecartEntity;
@@ -70,11 +75,13 @@ import net.minecraftforge.event.*;
 import net.minecraftforge.event.entity.EntityEvent.EntityConstructing;
 import net.minecraftforge.event.entity.EntityMountEvent;
 import net.minecraftforge.event.entity.living.LivingEquipmentChangeEvent;
+import net.minecraftforge.event.entity.living.LivingSpawnEvent;
 import net.minecraftforge.event.entity.player.FillBucketEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.furnace.FurnaceFuelBurnTimeEvent;
 import net.minecraftforge.event.world.ExplosionEvent;
 import net.minecraftforge.event.world.WorldEvent;
+import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
@@ -317,5 +324,24 @@ public class MiscEventHandler {
         PneumaticHelmetRegistry.getInstance().resolveBlockTags(event.getTagManager().getBlocks());
 
         PneumaticRegistry.getInstance().registerXPFluid(FluidIngredient.of(1, PneumaticCraftTags.Fluids.EXPERIENCE), 20);
+    }
+
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    public void onMobSpawn(LivingSpawnEvent.SpecialSpawn event) {
+        if (event.getSpawner() != null) {
+            // tag any mob spawned by a vanilla Spawner (rather than naturally) as a "defender"
+            // such defenders are immune to being absorbed by a Vacuum Trap
+            // note: mobs spawned by a Pressurized Spawner are not considered to be defenders
+            event.getEntity().addTag(TileEntityVacuumTrap.DEFENDER_TAG);
+
+            // any mob spawned due to a spawner with Agitator attached should be persistent
+            // i.e. not despawn if no players nearby
+            if (event.getWorld() instanceof World && event.getEntity() instanceof MobEntity) {
+                ISemiBlock semi = SemiblockTracker.getInstance().getSemiblock((World) event.getWorld(), event.getSpawner().getPos());
+                if (semi instanceof EntitySpawnerAgitator) {
+                    ((MobEntity) event.getEntity()).setPersistenceRequired();
+                }
+            }
+        }
     }
 }

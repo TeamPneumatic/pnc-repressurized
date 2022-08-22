@@ -50,9 +50,6 @@ public class EntitySpawnerAgitator extends EntitySemiblockBase {
             if (spawner != null) {
                 // just altering the range when added isn't enough - needs to be kept updated each tick
                 spawner.requiredPlayerRange = Integer.MAX_VALUE;
-                if (tickCount == 1) {
-                    setSpawnPersistentEntities(spawner, true);
-                }
             }
         }
     }
@@ -65,7 +62,6 @@ public class EntitySpawnerAgitator extends EntitySemiblockBase {
             AbstractSpawner spawner = getSpawner();
             if (spawner != null) {
                 spawner.requiredPlayerRange = 16;
-                setSpawnPersistentEntities(spawner, false);
             }
         }
     }
@@ -73,10 +69,6 @@ public class EntitySpawnerAgitator extends EntitySemiblockBase {
     private AbstractSpawner getSpawner() {
         TileEntity te = getCachedTileEntity();
         return te instanceof MobSpawnerTileEntity ? ((MobSpawnerTileEntity) te).getSpawner() : null;
-    }
-
-    private void setSpawnPersistentEntities(AbstractSpawner spawner, boolean persistent) {
-        spawner.nextSpawnData.getTag().putBoolean("PersistenceRequired", persistent);
     }
 
     @Mod.EventBusSubscriber(modid = Names.MOD_ID)
@@ -93,7 +85,6 @@ public class EntitySpawnerAgitator extends EntitySemiblockBase {
                     AbstractSpawner spawner = ((EntitySpawnerAgitator) semi).getSpawner();
                     if (spawner != null) {
                         spawner.requiredPlayerRange = 16;
-                        ((EntitySpawnerAgitator) semi).setSpawnPersistentEntities(spawner, false);
                     }
                 }
             }

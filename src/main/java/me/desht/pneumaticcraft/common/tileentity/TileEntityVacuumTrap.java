@@ -33,7 +33,6 @@ import me.desht.pneumaticcraft.common.util.ITranslatableEnum;
 import me.desht.pneumaticcraft.common.util.PNCFluidTank;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.block.BlockState;
-import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MobEntity;
 import net.minecraft.entity.passive.TameableEntity;
@@ -55,13 +54,10 @@ import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.event.entity.living.LivingSpawnEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidTank;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.items.IItemHandler;
 
 import javax.annotation.Nonnull;
@@ -73,7 +69,7 @@ import java.util.Map;
 
 public class TileEntityVacuumTrap extends TileEntityPneumaticBase implements
         IMinWorkingPressure, INamedContainerProvider, ISerializableTanks, IRangedTE {
-    static final String DEFENDER_TAG = Names.MOD_ID + ":defender";
+    public static final String DEFENDER_TAG = Names.MOD_ID + ":defender";
     public static final int MEMORY_ESSENCE_AMOUNT = 100;
 
     private final SpawnerCoreItemHandler inv = new SpawnerCoreItemHandler(this);
@@ -261,10 +257,6 @@ public class TileEntityVacuumTrap extends TileEntityPneumaticBase implements
         return rangeManager.shouldShowRange() ? rangeManager.getExtents() : super.getRenderBoundingBox();
     }
 
-    private static boolean isEntityBlacklisted(EntityType<?> type) {
-        return type.is(PneumaticCraftTags.EntityTypes.VACUUM_TRAP_BLACKLISTED);
-    }
-
     public enum Problems implements ITranslatableEnum {
         OK,
         NO_CORE,
@@ -285,19 +277,6 @@ public class TileEntityVacuumTrap extends TileEntityPneumaticBase implements
         @Override
         public boolean isFluidValid(FluidStack stack) {
             return stack.getFluid().is(PneumaticCraftTags.Fluids.EXPERIENCE);
-        }
-    }
-
-    @Mod.EventBusSubscriber(modid = Names.MOD_ID)
-    public static class Listener {
-        @SubscribeEvent
-        public static void onMobSpawn(LivingSpawnEvent.SpecialSpawn event) {
-            // tag any mob spawned by a vanilla Spawner (rather than naturally) as a "defender"
-            // such defenders are immune to being absorbed by a Vacuum Trap
-            // note: mobs spawned by a Pressurized Spawner are not considered to be defenders
-            if (!event.isCanceled() && event.getSpawner() != null) {
-                event.getEntity().addTag(DEFENDER_TAG);
-            }
         }
     }
 }
