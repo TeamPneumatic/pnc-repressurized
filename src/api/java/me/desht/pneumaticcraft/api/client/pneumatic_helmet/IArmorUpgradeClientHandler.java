@@ -78,8 +78,19 @@ public interface IArmorUpgradeClientHandler<T extends IArmorUpgradeHandler<?>> {
      * which are actually enabled (or not toggleable).
      *
      * @param armorHandler common armor handler for the player wearing this armor piece
+     * @deprecated override {@link #tickClient(ICommonArmorHandler, boolean)} instead
      */
+    @Deprecated(forRemoval = true)
     void tickClient(ICommonArmorHandler armorHandler);
+
+    /**
+     * This method is called every client tick, and should be used to update clientside logic for armor upgrades.
+     *
+     * @param armorHandler common armor handler for the player wearing this armor piece
+     * @param isEnabled true if the upgrade is currently enabled, false otherwise
+     */
+    default void tickClient(ICommonArmorHandler armorHandler, boolean isEnabled) {
+    }
 
     /**
      * Called in the 3D render stage (via {@link net.minecraftforge.client.event.RenderLevelLastEvent})

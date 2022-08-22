@@ -69,6 +69,9 @@ public class JetBootsClientHandler extends IArmorUpgradeClientHandler.SimpleTogg
 
     private static final StatPanelLayout DEFAULT_STAT_LAYOUT = new StatPanelLayout(0.5f, 0.005f, false);
 
+    private static final String WHITE = ChatFormatting.WHITE.toString();
+    private static final String GREEN = ChatFormatting.GREEN.toString();
+
     private String l1, l2, l3, r1, r2, r3;
     private int widestR;
     private boolean builderMode;
@@ -88,11 +91,10 @@ public class JetBootsClientHandler extends IArmorUpgradeClientHandler.SimpleTogg
     }
 
     @Override
-    public void tickClient(ICommonArmorHandler armorHandler) {
-        super.tickClient(armorHandler);
-
+    public void tickClient(ICommonArmorHandler armorHandler, boolean isEnabled) {
         JetBootsHandler jbHandler = CommonUpgradeHandlers.jetBootsHandler;
         JetBootsStateTracker.JetBootsState jbState = jbHandler.getJetBootsSyncedState(armorHandler);
+
         if (armorHandler.upgradeUsable(jbHandler, false)) {
             if (jbState.isActive() && (!jbState.isEnabled() || !thrustKeyPressed(jbState.isBuilderMode()))) {
                 NetworkHandler.sendToServer(new PacketJetBootsActivate(false));
@@ -103,11 +105,8 @@ public class JetBootsClientHandler extends IArmorUpgradeClientHandler.SimpleTogg
             }
         }
 
-        String g1 = ChatFormatting.WHITE.toString();
-        String g2 = ChatFormatting.GREEN.toString();
-
-        Player player = armorHandler.getPlayer();
-        if (jbStat.isStatOpen()) {
+        if (isEnabled && jbStat.isStatOpen()) {
+            Player player = armorHandler.getPlayer();
             double mx = player.getX() - prevX;
             double my = player.getY() - prevY;
             double mz = player.getZ() - prevZ;
@@ -121,12 +120,12 @@ public class JetBootsClientHandler extends IArmorUpgradeClientHandler.SimpleTogg
             if (yaw < 0) yaw += 360;
             BlockPos pos = player.blockPosition();
 
-            l1 = String.format(" %sSpd: %s%05.2fm/s", g1, g2, v * 20);
-            l2 = String.format("  %sAlt: %s%03dm", g1, g2, pos.getY());
-            l3 = String.format("%sHead: %s%d° (%s)", g1, g2, yaw, HEADINGS[heading]);
-            r1 = String.format("%sGnd: %s%05.2f", g1, g2, vg * 20);
-            r2 = String.format("%sGnd: %s%dm", g1, g2, pos.getY() - player.level.getHeight(Heightmap.Types.WORLD_SURFACE, pos.getX(), pos.getZ()));
-            r3 = String.format("%sPch: %s%d°", g1, g2, (int)-player.getXRot());
+            l1 = String.format(" %sSpd: %s%05.2fm/s", WHITE, GREEN, v * 20);
+            l2 = String.format("  %sAlt: %s%03dm", WHITE, GREEN, pos.getY());
+            l3 = String.format("%sHead: %s%d° (%s)", WHITE, GREEN, yaw, HEADINGS[heading]);
+            r1 = String.format("%sGnd: %s%05.2f", WHITE, GREEN, vg * 20);
+            r2 = String.format("%sGnd: %s%dm", WHITE, GREEN, pos.getY() - player.level.getHeight(Heightmap.Types.WORLD_SURFACE, pos.getX(), pos.getZ()));
+            r3 = String.format("%sPch: %s%d°", WHITE, GREEN, (int)-player.getXRot());
             Font fr = Minecraft.getInstance().font;
             widestR = Math.max(fr.width(r1), Math.max(fr.width(r2), fr.width(r3)));
 
