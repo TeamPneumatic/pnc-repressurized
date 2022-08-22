@@ -94,8 +94,8 @@ public class JetBootsClientHandler extends IArmorUpgradeClientHandler.SimpleTogg
     }
 
     @Override
-    public void tickClient(ICommonArmorHandler armorHandler) {
-        super.tickClient(armorHandler);
+    public void tickClient(ICommonArmorHandler armorHandler, boolean isEnabled) {
+        super.tickClient(armorHandler, isEnabled);
 
         JetBootsHandler jbHandler = CommonUpgradeHandlers.jetBootsHandler;
         JetBootsStateTracker.JetBootsState jbState = jbHandler.getJetBootsSyncedState(armorHandler);
@@ -109,11 +109,13 @@ public class JetBootsClientHandler extends IArmorUpgradeClientHandler.SimpleTogg
             }
         }
 
+        if (!isEnabled) return;
+
         String g1 = ChatFormatting.WHITE.toString();
         String g2 = ChatFormatting.GREEN.toString();
 
-        Player player = armorHandler.getPlayer();
         if (jbStat.isStatOpen()) {
+            Player player = armorHandler.getPlayer();
             double mx = player.getX() - prevX;
             double my = player.getY() - prevY;
             double mz = player.getZ() - prevZ;
