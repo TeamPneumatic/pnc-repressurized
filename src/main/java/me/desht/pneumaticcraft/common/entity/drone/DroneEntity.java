@@ -287,7 +287,12 @@ public class DroneEntity extends AbstractDroneEntity implements
         CompoundTag stackTag = droneStack.getTag();
         if (stackTag != null) {
             upgradeInventory.deserializeNBT(stackTag.getCompound(UpgradableItemUtils.NBT_UPGRADE_TAG));
-            stackEnchants.putAll(EnchantmentHelper.getEnchantments(droneStack));
+            Map<Enchantment, Integer> ench = EnchantmentHelper.getEnchantments(droneStack);
+            // filter out enchantments which shouldn't really be there -
+            // https://github.com/TeamPneumatic/pnc-repressurized/issues/1073
+            // https://github.com/EnigmaticaModpacks/Enigmatica6/issues/5167
+            ench.keySet().removeIf(e -> !droneStack.getItem().canApplyAtEnchantingTable(droneStack, e));
+            stackEnchants.putAll(ench);
             int air = droneStack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).orElseThrow(RuntimeException::new).getAir();
             getAirHandler().addAir(air);
             DroneItem droneItem = (DroneItem) droneStack.getItem();
