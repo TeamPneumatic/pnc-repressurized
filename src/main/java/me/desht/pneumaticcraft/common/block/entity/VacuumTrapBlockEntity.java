@@ -56,13 +56,10 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.event.entity.living.LivingSpawnEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidTank;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.items.IItemHandler;
 
 import javax.annotation.Nonnull;
@@ -74,7 +71,7 @@ import java.util.Map;
 
 public class VacuumTrapBlockEntity extends AbstractAirHandlingBlockEntity implements
         IMinWorkingPressure, MenuProvider, ISerializableTanks, IRangedTE {
-    static final String DEFENDER_TAG = Names.MOD_ID + ":defender";
+    public static final String DEFENDER_TAG = Names.MOD_ID + ":defender";
     public static final int MEMORY_ESSENCE_AMOUNT = 100;
 
     private final SpawnerCoreItemHandler inv = new SpawnerCoreItemHandler(this);
@@ -289,19 +286,6 @@ public class VacuumTrapBlockEntity extends AbstractAirHandlingBlockEntity implem
         @Override
         public boolean isFluidValid(FluidStack stack) {
             return stack.getFluid().is(PneumaticCraftTags.Fluids.EXPERIENCE);
-        }
-    }
-
-    @Mod.EventBusSubscriber(modid = Names.MOD_ID)
-    public static class Listener {
-        @SubscribeEvent
-        public static void onMobSpawn(LivingSpawnEvent.SpecialSpawn event) {
-            // tag any mob spawned by a vanilla Spawner (rather than naturally) as a "defender"
-            // such defenders are immune to being absorbed by a Vacuum Trap
-            // note: mobs spawned by a Pressurized Spawner are not considered to be defenders
-            if (!event.isCanceled() && event.getSpawner() != null) {
-                event.getEntity().addTag(DEFENDER_TAG);
-            }
         }
     }
 }

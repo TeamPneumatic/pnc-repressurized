@@ -18,15 +18,15 @@
 package me.desht.pneumaticcraft.common.entity.semiblock;
 
 import me.desht.pneumaticcraft.common.semiblock.SemiblockTracker;
-import me.desht.pneumaticcraft.mixin.accessors.BaseSpawnerAccess;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.BaseSpawner;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraft.world.level.block.entity.SpawnerBlockEntity;
+
+// Note: spawner agitator logic is handled by BaseSpawnerMixin for player-near checking,
+// and in MiscEventHandler#onMobSpawn() for tagging & mob persistence
 
 public class SpawnerAgitatorEntity extends AbstractSemiblockEntity {
     public SpawnerAgitatorEntity(EntityType<?> entityTypeIn, Level worldIn) {
@@ -35,39 +35,7 @@ public class SpawnerAgitatorEntity extends AbstractSemiblockEntity {
 
     @Override
     public boolean canPlace(Direction facing) {
-        // ensure vanilla spawner - https://github.com/TeamPneumatic/pnc-repressurized/issues/1071
-        return getBlockState().getBlock() == Blocks.SPAWNER
-                && getCachedTileEntity().getType() == BlockEntityType.MOB_SPAWNER;
-    }
-
-    @Override
-    public void tick() {
-        super.tick();
-
-        if (!level.isClientSide) {
-            BaseSpawner spawner = getSpawner();
-            if (spawner != null && tickCount == 1) {
-                setSpawnPersistentEntities(spawner, true);
-            }
-        }
-    }
-
-    @Override
-    public void doExtraCleanupTasks(boolean removingSemiblock) {
-        if (!level.isClientSide && removingSemiblock) {
-            BaseSpawner spawner = getSpawner();
-            if (spawner != null) {
-                setSpawnPersistentEntities(spawner, false);
-            }
-        }
-    }
-
-    private BaseSpawner getSpawner() {
-        return getCachedTileEntity() instanceof SpawnerBlockEntity s ? s.getSpawner() : null;
-    }
-
-    private void setSpawnPersistentEntities(BaseSpawner spawner, boolean persistent) {
-        ((BaseSpawnerAccess) spawner).getNextSpawnData().getEntityToSpawn().putBoolean("PersistenceRequired", persistent);
+        return getBlockState().getBlock() == Blocks.SPAWNER;
     }
 
     public static boolean isAgitated(BaseSpawner spawner) {
