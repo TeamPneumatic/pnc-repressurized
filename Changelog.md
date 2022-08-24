@@ -8,11 +8,23 @@ Changes are in reverse chronological order; newest changes at the top.
 
 1.19.2 builds may also work on Minecraft 1.19.1 but no support will be provided for that.
 
+## 4.1.1-??? (unreleased)
+
+### Updates
+* Added "Hover" checkbox (bindable to a hotkey) to the Jet Boots upgrade GUI
+  * Enabled by default
+  * Distinct from "Smart Hover" checkbox which is still available; "Hover" completely disables any hovering if unchecked
+
+### Fixes
+* Fixed mobs spawned by a Mob Spawner with Spawner Agitator attached being possible to absorb in a Vacuum Trap
+* Fixed potential enchantment dupe on Drones when converting between item and entity form
+* Fixed Jet Boots continuing to fire if upgrade is switched off while player is firing them
+
 ## 4.1.0-128
 
 This release includes all the updates and fixes from the 3.4.0 release (for MC 1.18.2), as well as:
 
-## Updates
+### Updates
 * Fall Protection is now a toggleable feature
   * May be useful to switch it off to save air if you have some other method of fall protection available
 * Several Pneumatic Armor features are now active by default (i.e. when armor is equipped for the very first time):
