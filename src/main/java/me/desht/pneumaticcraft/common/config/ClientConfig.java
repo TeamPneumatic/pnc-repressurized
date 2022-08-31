@@ -36,6 +36,7 @@ public class ClientConfig {
         public ForgeConfigSpec.BooleanValue guiRemoteGridSnap;
         public ForgeConfigSpec.BooleanValue programmerGuiPauses;
         public ForgeConfigSpec.BooleanValue notifyAmadronOfferUpdates;
+        public ForgeConfigSpec.BooleanValue pressureChamberParticles;
     }
 
     public static class Armor {
@@ -109,6 +110,10 @@ public class ClientConfig {
                 .comment("Should players holding an Amadron Tablet get a notification message when offers are shuffled periodically?")
                 .translation("pneumaticcraft.config.client.general.notify_amadron_offer_updates")
                 .define("notify_amadron_offer_updates", true);
+        general.pressureChamberParticles = builder
+                .comment("Should Pressure Chambers show air particle effects inside themselves when pressurized?")
+                .translation("pneumaticcraft.config.client.general.pressure_chamber_particles")
+                .define("pressure_chamber_particles", true);
         builder.pop();
 
         builder.push("armor");
