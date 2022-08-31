@@ -28,6 +28,7 @@ import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.block.IBlockPressureChamber;
 import me.desht.pneumaticcraft.common.block.PressureChamberGlassBlock;
 import me.desht.pneumaticcraft.common.block.PressureChamberValveBlock;
+import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.core.ModRecipeTypes;
 import me.desht.pneumaticcraft.common.inventory.PressureChamberValveMenu;
@@ -152,7 +153,7 @@ public class PressureChamberValveBlockEntity extends AbstractAirHandlingBlockEnt
     public void tickClient() {
         super.tickClient();
 
-        if (hasGlass && isPrimaryValve() && roundedPressure > 0.2D) {
+        if (hasGlass && isPrimaryValve() && ConfigHelper.client().general.pressureChamberParticles.get() && roundedPressure > 0.2D) {
             if (ClientUtils.getClientPlayer().distanceToSqr(getBlockPos().getX(), getBlockPos().getY(), getBlockPos().getZ()) < 256) {
                 Level level = nonNullLevel();
                 for (int i = 0; i < nParticles; i++) {
