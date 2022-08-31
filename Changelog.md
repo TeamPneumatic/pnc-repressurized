@@ -9,6 +9,26 @@ Changes are in reverse chronological order; newest changes at the top.
 * PNC:R 3.2.3 and later *require* Forge 40.1.20 or later
 * PNC:R 3.2.0 and later *require* Forge 40.1.0 or later and JEI 9.7.0 or later
 
+## 3.4.1-131 (31 Aug 2022)
+
+### Updates
+* Added clientside config setting `pressure_chamber_particles` to control whether air particles are displayed inside a pressurized Pressure Chamber
+  * Note: Some optimiztion mods like Oculus or Rubidium have been reported to have compatibilty issues with these particles; setting this to false is a workaround
+  * https://github.com/TeamPneumatic/pnc-repressurized/issues/1079
+
+### Fixes
+* Fixed an issue where inventory scanning by the Pneumatic Armor Block Tracker did not always pick up changes to inventories
+* Spawner Agitators have reduced functionality when Apotheosis is installed
+  * Item tooltips and Patchouli manual page for Agitator have been updated accordingly
+  * Apotheosis makes significant changes to vanilla Spawners which the Agitator does not work well with
+  * In addition, Apotheosis provides much more sophisticated spawner control than the Agitator does
+  * Mobs spawned when an Agitator attached are still protected from despawning when no players are near
+* Fixed Vacuum Trap being able to absorb mobs spawned by a Mob Spawner with a Spawner Agitator attached
+* Fixed potential enchantment duping issue related to Drones and Astral Sorcery perks
+* Fixed Jetboots continuing to fire if they're switched off while the thrust key is currently held down
+* Removed obsolete block heat properties data for Quark Brimstone blocks (no longer in Quark in 1.18+)
+  * Was causing annoying but harmless error messages in server log
+
 ## 3.4.0-124 (3 Aug 2022)
 
 ### Updates
