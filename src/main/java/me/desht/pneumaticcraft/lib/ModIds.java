@@ -20,6 +20,7 @@ package me.desht.pneumaticcraft.lib;
 public class ModIds {
     // the mods we integrate with
     public static final String AE2 = "appliedenergistics2";
+    public static final String APOTHEOSIS = "apotheosis";
     public static final String COMPUTERCRAFT = "computercraft";
     public static final String TOP = "theoneprobe";
     public static final String JEI = "jei";

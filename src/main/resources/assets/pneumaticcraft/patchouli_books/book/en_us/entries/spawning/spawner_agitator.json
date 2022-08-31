@@ -9,6 +9,12 @@
       "text": "When placed on a vanilla $(item)Spawner/$, this item $(thing)agitates/$ the Spawner:$(li)The spawner will keep spawning while no player is near$(li)It prevents spawned entities despawning when players leave the area$(p)Mob farm anyone?$(p)$(thing)Sneak-right-click/$ with a $(l:logistics/logistics_configurator)Logistics Configurator/$ or another agitator to remove it."
     },
     {
+      "type": "text",
+      "flag": "mod:apotheosis",
+      "title": "Apotheosis",
+      "text": "$(thing)Apotheosis/$ is a mod which adds (among other things) powerful customization of vanilla Spawners. It changes Spawner internals enough that Spawner Agitators cannot fully interact with them. Since you have Apotheosis installed, Spawner Agitator functionality is limited to preventing mobs despawning when players are far away; to allow mobs to spawn when no players are near, use Apotheosis functionality."
+    },
+    {
       "type": "crafting",
       "text": "Crafting a Spawner Agitator",
       "recipe": "pneumaticcraft:spawner_agitator"
