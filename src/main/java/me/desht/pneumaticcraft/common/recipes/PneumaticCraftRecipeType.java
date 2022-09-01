@@ -123,7 +123,8 @@ public class PneumaticCraftRecipeType<T extends PneumaticCraftRecipe> implements
         FuelRegistry.getInstance().clearCachedFuelFluids();
         ItemSeismicSensor.clearCachedFluids();
         BlockHeatProperties.getInstance().clear();
-        CraftingRecipeCache.INSTANCE.clear();
+        RecipeCache.CRAFTING.clear();
+        RecipeCache.SMELTING.clear();
     }
 
     public Map<ResourceLocation, T> getRecipes(World world) {

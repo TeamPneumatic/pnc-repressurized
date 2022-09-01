@@ -24,7 +24,7 @@ import me.desht.pneumaticcraft.common.ai.StringFilterEntitySelector;
 import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.progwidgets.*;
-import me.desht.pneumaticcraft.common.recipes.CraftingRecipeCache;
+import me.desht.pneumaticcraft.common.recipes.RecipeCache;
 import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
 import me.desht.pneumaticcraft.common.util.DummyContainer;
 import me.desht.pneumaticcraft.common.util.LegacyAreaWidgetConverter;
@@ -470,7 +470,7 @@ public class ProgWidgetCC extends ProgWidgetInventoryBase implements IBlockOrder
 
     @Override
     public Optional<ICraftingRecipe> getRecipe(World world, CraftingInventory grid) {
-        return CraftingRecipeCache.INSTANCE.getCachedRecipe(world, grid);
+        return RecipeCache.CRAFTING.getCachedRecipe(world, grid);
     }
 
     @Override
