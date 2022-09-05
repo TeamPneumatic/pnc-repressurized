@@ -78,15 +78,18 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.common.world.ForgeChunkManager;
-import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fluids.IFluidTank;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
-import net.minecraftforge.items.*;
+import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.IItemHandlerModifiable;
+import net.minecraftforge.items.ItemHandlerHelper;
+import net.minecraftforge.items.ItemStackHandler;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -182,10 +185,10 @@ public class ProgrammableControllerBlockEntity extends AbstractAirHandlingBlockE
 
         itemHandlerSideConfigurator = new SideConfigurator<>("items", this);
         itemHandlerSideConfigurator.registerHandler("droneInv", new ItemStack(ModItems.DRONE.get()),
-                CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, () -> droneItemHandler,
+                ForgeCapabilities.ITEM_HANDLER, () -> droneItemHandler,
                 SideConfigurator.RelativeFace.TOP, SideConfigurator.RelativeFace.FRONT, SideConfigurator.RelativeFace.BACK, SideConfigurator.RelativeFace.LEFT, SideConfigurator.RelativeFace.RIGHT);
         itemHandlerSideConfigurator.registerHandler("programmableInv", new ItemStack(ModItems.NETWORK_API.get()),
-                CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, () -> inventory,
+                ForgeCapabilities.ITEM_HANDLER, () -> inventory,
                 SideConfigurator.RelativeFace.BOTTOM);
         itemHandlerSideConfigurator.setNullFaceHandler("droneInv");
     }
@@ -311,7 +314,7 @@ public class ProgrammableControllerBlockEntity extends AbstractAirHandlingBlockE
         ItemStack held = droneItemHandler.getStackInSlot(0);
 
         if (energy.getEnergyStored() > 100) {
-            held.getCapability(CapabilityEnergy.ENERGY).ifPresent(handler -> {
+            held.getCapability(ForgeCapabilities.ENERGY).ifPresent(handler -> {
                 if (handler.getMaxEnergyStored() - handler.getEnergyStored() > 250) {
                     handler.receiveEnergy(energy.extractEnergy(250, false), false);
                 }
@@ -835,7 +838,7 @@ public class ProgrammableControllerBlockEntity extends AbstractAirHandlingBlockE
     private LazyOptional<IItemHandler> findEjectionDest() {
         Direction dir = null;
         for (Direction d : DirectionUtil.VALUES) {
-            if (getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, d).map(h -> h == inventory).orElse(false)) {
+            if (getCapability(ForgeCapabilities.ITEM_HANDLER, d).map(h -> h == inventory).orElse(false)) {
                 dir = d;
                 break;
             }

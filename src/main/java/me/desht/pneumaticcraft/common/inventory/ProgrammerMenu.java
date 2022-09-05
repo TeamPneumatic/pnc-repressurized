@@ -34,7 +34,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.items.SlotItemHandler;
 import net.minecraftforge.server.ServerLifecycleHooks;
 
@@ -85,7 +85,7 @@ public class ProgrammerMenu extends AbstractPneumaticCraftMenu<ProgrammerBlockEn
         if (te.nonNullLevel().getGameTime() % 20 == 0) {
             for (Direction d : DirectionUtil.VALUES) {
                 BlockEntity neighbor = te.getCachedNeighbor(d);
-                if (neighbor != null && neighbor.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, d.getOpposite()).isPresent()) {
+                if (neighbor != null && neighbor.getCapability(ForgeCapabilities.ITEM_HANDLER, d.getOpposite()).isPresent()) {
                     final AbstractPneumaticCraftMenu<?> self = this;
                     List<ServerPlayer> players = ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayers().stream()
                             .filter(p -> p.containerMenu == self)

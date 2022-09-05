@@ -23,7 +23,7 @@ import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.common.drone.IDroneBase;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.energy.CapabilityEnergy;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.energy.IEnergyStorage;
 
 import java.util.List;
@@ -45,7 +45,7 @@ public class ProgWidgetDroneConditionEnergy extends ProgWidgetDroneCondition {
 
     @Override
     protected int getCount(IDroneBase drone, IProgWidget widget) {
-        int energy = drone.getCapability(CapabilityEnergy.ENERGY).map(IEnergyStorage::getEnergyStored).orElse(0);
+        int energy = drone.getCapability(ForgeCapabilities.ENERGY).map(IEnergyStorage::getEnergyStored).orElse(0);
         maybeRecordMeasuredVal(drone, energy);
         return energy;
     }

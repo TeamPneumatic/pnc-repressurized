@@ -23,7 +23,7 @@ import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.energy.CapabilityEnergy;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 
 public class DroneAIEnergyImport extends DroneAIImExBase<ProgWidgetInventoryBase> {
     public DroneAIEnergyImport(IDroneBase drone, ProgWidgetInventoryBase widget) {
@@ -58,7 +58,7 @@ public class DroneAIEnergyImport extends DroneAIImExBase<ProgWidgetInventoryBase
     }
 
     private boolean tryImportFromSide(BlockEntity te, Direction face, boolean simulate) {
-        return te.getCapability(CapabilityEnergy.ENERGY, face).map(tileHandler -> {
+        return te.getCapability(ForgeCapabilities.ENERGY, face).map(tileHandler -> {
             int toExtract = tileHandler.extractEnergy(useCount() ? getRemainingCount() : Integer.MAX_VALUE, true);
             int toTransfer = insertToDrone(toExtract, true);
             if (toTransfer > 0) {
@@ -74,13 +74,13 @@ public class DroneAIEnergyImport extends DroneAIImExBase<ProgWidgetInventoryBase
     }
 
     private int insertToDrone(int maxTransfer, boolean simulate) {
-        return drone.getCapability(CapabilityEnergy.ENERGY)
+        return drone.getCapability(ForgeCapabilities.ENERGY)
                 .map(h -> h.receiveEnergy(maxTransfer, simulate))
                 .orElseThrow(RuntimeException::new);
     }
 
     private boolean droneIsFull() {
-        return drone.getCapability(CapabilityEnergy.ENERGY)
+        return drone.getCapability(ForgeCapabilities.ENERGY)
                 .map(h -> h.getEnergyStored() == h.getMaxEnergyStored())
                 .orElseThrow(RuntimeException::new);
     }

@@ -56,13 +56,12 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.phys.AABB;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.network.NetworkHooks;
 
@@ -144,8 +143,8 @@ public abstract class AbstractLogisticsFrameEntity extends AbstractSemiblockEnti
     public boolean canPlace(Direction facing) {
         BlockEntity te = getCachedTileEntity();
         return te != null &&
-                (te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, facing).isPresent()
-                        || te.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, facing).isPresent());
+                (te.getCapability(ForgeCapabilities.ITEM_HANDLER, facing).isPresent()
+                        || te.getCapability(ForgeCapabilities.FLUID_HANDLER, facing).isPresent());
     }
 
     @Override

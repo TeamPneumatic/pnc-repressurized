@@ -28,8 +28,8 @@ import net.minecraft.world.level.block.BucketPickup;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.FluidState;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler.FluidAction;
 
@@ -66,7 +66,7 @@ public class DroneAILiquidImport<W extends ProgWidgetInventoryBase & ILiquidFilt
                 boolean didWork = false;
                 for (Direction side : DirectionUtil.VALUES) {
                     if (progWidget.isSideSelected(side)) {
-                        didWork = te.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, side)
+                        didWork = te.getCapability(ForgeCapabilities.FLUID_HANDLER, side)
                                 .map(handler -> tryImportFluid(handler, simulate)).orElse(false);
                         if (didWork) break;
                     }

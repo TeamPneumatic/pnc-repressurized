@@ -57,12 +57,12 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.ForgeMod;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.BlockSnapshot;
 import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler.FluidAction;
-import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -504,7 +504,7 @@ public class PneumaticCraftUtils {
                 consumed = Math.min(invStack.getCount(), stack.getCount());
                 invStack.shrink(consumed);
             } else {
-                consumed = invStack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).map(h -> {
+                consumed = invStack.getCapability(ForgeCapabilities.ITEM_HANDLER).map(h -> {
                     for (int j = 0; j < h.getSlots(); j++) {
                         ItemStack invStack2 = h.getStackInSlot(j);
                         if (ItemStack.isSame(invStack2, stack)) {

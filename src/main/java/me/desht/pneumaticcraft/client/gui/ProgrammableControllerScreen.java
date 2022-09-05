@@ -37,7 +37,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
-import net.minecraftforge.energy.CapabilityEnergy;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 
 import java.util.Collections;
 import java.util.List;
@@ -68,7 +68,7 @@ public class ProgrammableControllerScreen extends AbstractPneumaticCraftContaine
     public void init() {
         super.init();
 
-        te.getCapability(CapabilityEnergy.ENERGY).ifPresent(handler -> addRenderableWidget(new WidgetEnergy(leftPos + 12, topPos + 20, handler)));
+        te.getCapability(ForgeCapabilities.ENERGY).ifPresent(handler -> addRenderableWidget(new WidgetEnergy(leftPos + 12, topPos + 20, handler)));
 
         List<Component> exc = ProgrammableControllerBlockEntity.BLACKLISTED_WIDGETS.stream()
                 .map(s -> Symbols.BULLET + " " + I18n.get("programmingPuzzle." + s.getNamespace() + "." + s.getPath() + ".name"))

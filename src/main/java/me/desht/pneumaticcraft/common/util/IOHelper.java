@@ -24,11 +24,10 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 
@@ -76,7 +75,7 @@ public class IOHelper {
     }
 
     public static LazyOptional<IItemHandler> getInventoryForTE(BlockEntity te, Direction facing) {
-        return te == null ? LazyOptional.empty() : te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, facing);
+        return te == null ? LazyOptional.empty() : te.getCapability(ForgeCapabilities.ITEM_HANDLER, facing);
     }
 
     public static LazyOptional<IItemHandler> getInventoryForTE(BlockEntity te) {
@@ -84,7 +83,7 @@ public class IOHelper {
     }
 
     public static LazyOptional<IFluidHandler> getFluidHandlerForTE(BlockEntity te, Direction facing) {
-        return te == null ? LazyOptional.empty() : te.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, facing);
+        return te == null ? LazyOptional.empty() : te.getCapability(ForgeCapabilities.FLUID_HANDLER, facing);
     }
 
     public static LazyOptional<IFluidHandler> getFluidHandlerForTE(BlockEntity te) {
@@ -164,7 +163,7 @@ public class IOHelper {
 
     @Nonnull
     public static ItemStack insert(ICapabilityProvider provider, ItemStack itemStack, Direction side, boolean simulate) {
-        return provider.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, side)
+        return provider.getCapability(ForgeCapabilities.ITEM_HANDLER, side)
                 .map(handler -> ItemHandlerHelper.insertItem(handler, itemStack, simulate))
                 .orElse(itemStack);
     }

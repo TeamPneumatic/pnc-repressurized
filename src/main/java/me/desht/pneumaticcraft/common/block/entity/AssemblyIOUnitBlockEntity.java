@@ -35,7 +35,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 
@@ -270,7 +270,7 @@ public class AssemblyIOUnitBlockEntity extends AbstractAssemblyRobotBlockEntity 
             if (searchedItemStack.isEmpty()) { // we don't know what we're supposed to pick up
                 reset();
             } else {
-                extracted = tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, Direction.UP).map(sourceInv -> {
+                extracted = tile.getCapability(ForgeCapabilities.ITEM_HANDLER, Direction.UP).map(sourceInv -> {
                     ItemStack heldStack = itemHandler.getStackInSlot(0);
                     int initialHeldAmount = heldStack.getCount();
                     boolean foundIt = false;
@@ -450,7 +450,7 @@ public class AssemblyIOUnitBlockEntity extends AbstractAssemblyRobotBlockEntity 
     private static int getPlacementSlot(ItemStack exportedItem, BlockEntity te) {
         if (te == null || te instanceof AbstractAssemblyRobotBlockEntity) return -1;
 
-        return te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, Direction.UP).map(handler -> {
+        return te.getCapability(ForgeCapabilities.ITEM_HANDLER, Direction.UP).map(handler -> {
             for (int slot = 0; slot < handler.getSlots(); slot++) {
                 ItemStack excess = handler.insertItem(slot, exportedItem, true);
                 if (excess.getCount() < exportedItem.getCount()) {

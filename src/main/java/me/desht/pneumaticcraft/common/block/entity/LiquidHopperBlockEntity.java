@@ -43,9 +43,9 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.phys.AABB;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.*;
-import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler.FluidAction;
 import net.minecraftforge.items.IItemHandler;
@@ -119,7 +119,7 @@ public class LiquidHopperBlockEntity extends AbstractHopperBlockEntity<LiquidHop
         } else if (getUpgrades(ModUpgrades.ENTITY_TRACKER.get()) > 0) {
             for (Entity e : cachedOutputEntities) {
                 if (!e.isAlive()) continue;
-                FluidStack transferred = e.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, getRotation().getOpposite()).map(h -> {
+                FluidStack transferred = e.getCapability(ForgeCapabilities.FLUID_HANDLER, getRotation().getOpposite()).map(h -> {
                     int amount = Math.min(maxItems * 100, tank.getFluid().getAmount() - leaveMaterialCount * 1000);
                     return FluidUtil.tryFluidTransfer(h, tank, amount, true);
                 }).orElse(FluidStack.EMPTY);
@@ -153,7 +153,7 @@ public class LiquidHopperBlockEntity extends AbstractHopperBlockEntity<LiquidHop
         BlockEntity inputInv = getCachedNeighbor(inputDir);
 
         if (inputInv != null) {
-            LazyOptional<IFluidHandler> cap = inputInv.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, inputDir.getOpposite());
+            LazyOptional<IFluidHandler> cap = inputInv.getCapability(ForgeCapabilities.FLUID_HANDLER, inputDir.getOpposite());
             if (cap.isPresent()) {
                 return cap.map(fluidHandler -> {
                     FluidStack fluid = fluidHandler.drain(maxItems * 100, FluidAction.SIMULATE);
@@ -170,7 +170,7 @@ public class LiquidHopperBlockEntity extends AbstractHopperBlockEntity<LiquidHop
         } else if (getUpgrades(ModUpgrades.ENTITY_TRACKER.get()) > 0) {
             for (Entity e : cachedInputEntities) {
                 if (!e.isAlive()) continue;
-                FluidStack transferred = e.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, inputDir.getOpposite())
+                FluidStack transferred = e.getCapability(ForgeCapabilities.FLUID_HANDLER, inputDir.getOpposite())
                         .map(h -> FluidUtil.tryFluidTransfer(tank, h, maxItems * 100, true))
                         .orElse(FluidStack.EMPTY);
                 if (!transferred.isEmpty()) return true;
@@ -209,7 +209,7 @@ public class LiquidHopperBlockEntity extends AbstractHopperBlockEntity<LiquidHop
     @Override
     boolean shouldScanForEntities(Direction dir) {
         BlockEntity te = getCachedNeighbor(dir);
-        return (te == null || !te.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, dir.getOpposite()).isPresent())
+        return (te == null || !te.getCapability(ForgeCapabilities.FLUID_HANDLER, dir.getOpposite()).isPresent())
                 && !Block.canSupportCenter(nonNullLevel(), worldPosition.relative(dir), dir.getOpposite());
     }
 

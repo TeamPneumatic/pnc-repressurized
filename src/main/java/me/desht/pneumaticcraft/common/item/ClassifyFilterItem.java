@@ -25,7 +25,7 @@ import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.common.ForgeHooks;
-import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.server.ServerLifecycleHooks;
 import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.Nullable;
@@ -126,7 +126,7 @@ public class ClassifyFilterItem extends Item implements IFilteringItem {
         FUEL_ITEM(Items.COAL, s -> ForgeHooks.getBurnTime(s, RecipeType.SMELTING) > 0),
         EDIBLE(Items.BREAD, s -> s.isEdible()),
         PLACEABLE(Items.STONE, s -> s.getItem() instanceof BlockItem),
-        FLUID_CONTAINER(Items.BUCKET, s -> s.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY).isPresent()),
+        FLUID_CONTAINER(Items.BUCKET, s -> s.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).isPresent()),
         UNSTACKABLE(Items.WRITABLE_BOOK, s -> s.getMaxStackSize() == 1),
         WEARABLE(Items.LEATHER_HELMET, s -> s.getItem() instanceof ArmorItem),
         TOOL(Items.IRON_PICKAXE, s -> s.getItem() instanceof TieredItem),

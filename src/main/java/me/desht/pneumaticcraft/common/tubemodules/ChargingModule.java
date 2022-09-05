@@ -25,8 +25,8 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 
 public class ChargingModule extends AbstractTubeModule {
@@ -82,6 +82,6 @@ public class ChargingModule extends AbstractTubeModule {
         if (neighbourTE == null || neighbourTE.isRemoved()) {
             neighbourTE = pressureTube.nonNullLevel().getBlockEntity(pressureTube.getBlockPos().relative(dir));
         }
-        return neighbourTE == null ? LazyOptional.empty() : neighbourTE.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, dir.getOpposite());
+        return neighbourTE == null ? LazyOptional.empty() : neighbourTE.getCapability(ForgeCapabilities.ITEM_HANDLER, dir.getOpposite());
     }
 }

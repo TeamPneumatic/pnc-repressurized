@@ -20,9 +20,9 @@ package me.desht.pneumaticcraft.common.block.entity;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidUtil;
-import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler.FluidAction;
 
@@ -30,7 +30,7 @@ import static net.minecraftforge.fluids.FluidType.BUCKET_VOLUME;
 
 interface IAutoFluidEjecting {
     default void autoExportFluid(AbstractPneumaticCraftBlockEntity te) {
-        te.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY).ifPresent(handler -> {
+        te.getCapability(ForgeCapabilities.FLUID_HANDLER).ifPresent(handler -> {
             FluidStack toDrain = handler.drain(BUCKET_VOLUME, FluidAction.SIMULATE);
             if (!toDrain.isEmpty()) {
                 Direction ejectDir = te.getUpgradeCache().getEjectDirection();
@@ -49,7 +49,7 @@ interface IAutoFluidEjecting {
     default int tryEjectLiquid(AbstractPneumaticCraftBlockEntity te, IFluidHandler handler, Direction dir, int amount) {
         BlockEntity teNeighbour = te.getCachedNeighbor(dir);
         if (teNeighbour != null) {
-            return teNeighbour.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, dir.getOpposite()).map(destHandler -> {
+            return teNeighbour.getCapability(ForgeCapabilities.FLUID_HANDLER, dir.getOpposite()).map(destHandler -> {
                 FluidStack fluidStack = FluidUtil.tryFluidTransfer(destHandler, handler, amount, true);
                 return fluidStack.getAmount();
             }).orElse(0);

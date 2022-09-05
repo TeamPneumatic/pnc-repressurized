@@ -43,12 +43,12 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerXpEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fml.common.Mod;
 import org.apache.commons.lang3.Validate;
@@ -80,7 +80,7 @@ public class MemoryStickItem extends Item implements ColorHandlers.ITintableItem
         if (stack.getCount() != 1) return InteractionResultHolder.pass(stack);
 
         if (!worldIn.isClientSide) {
-            stack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY).ifPresent(handler -> {
+            stack.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).ifPresent(handler -> {
                 int ratio = XPFluidManager.getInstance().getXPRatio(ModFluids.MEMORY_ESSENCE.get());
                 int playerXp = EnchantmentUtils.getPlayerXP(playerIn);
                 if (playerIn.isShiftKeyDown()) {
@@ -112,7 +112,7 @@ public class MemoryStickItem extends Item implements ColorHandlers.ITintableItem
                 }
             });
         } else {
-            stack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY).ifPresent(handler -> {
+            stack.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).ifPresent(handler -> {
                 int amount = handler.getFluidInTank(0).getAmount();
                 if (EnchantmentUtils.getPlayerXP(playerIn) > 0 && amount < handler.getTankCapacity(0) && !playerIn.isShiftKeyDown()
                         || handler.getFluidInTank(0).getAmount() > 0 && playerIn.isShiftKeyDown()) {
@@ -129,7 +129,7 @@ public class MemoryStickItem extends Item implements ColorHandlers.ITintableItem
         super.appendHoverText(stack, worldIn, tooltip, flagIn);
 
         if (worldIn != null) {
-            stack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY).ifPresent(handler -> {
+            stack.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).ifPresent(handler -> {
                 int ratio = XPFluidManager.getInstance().getXPRatio(ModFluids.MEMORY_ESSENCE.get());
                 if (ratio > 0) {  // could be 0 if queried too early, e.g. JEI item scanning
                     FluidStack fluidStack = handler.getFluidInTank(0);
@@ -145,7 +145,7 @@ public class MemoryStickItem extends Item implements ColorHandlers.ITintableItem
 
     @Override
     public int getBarWidth(ItemStack pStack) {
-        return pStack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY).map(handler -> {
+        return pStack.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).map(handler -> {
             FluidStack fluidStack = handler.getFluidInTank(0);
             return Math.round((float)fluidStack.getAmount() / (float) handler.getTankCapacity(0) * 13F);
         }).orElse(0);
@@ -177,7 +177,7 @@ public class MemoryStickItem extends Item implements ColorHandlers.ITintableItem
     @Override
     public int getTintColor(ItemStack stack, int tintIndex) {
         return switch (tintIndex) {
-            case 1 -> stack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY).map(handler -> {
+            case 1 -> stack.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).map(handler -> {
                 FluidStack fluidStack = handler.getFluidInTank(0);
                 if (fluidStack.isEmpty()) return 0xFFFFFF;
                 float f = (float) fluidStack.getAmount() / (float) handler.getTankCapacity(0);
@@ -201,7 +201,7 @@ public class MemoryStickItem extends Item implements ColorHandlers.ITintableItem
     }
 
     public static boolean isRoomInStick(ItemStack stick) {
-        return stick.getItem() instanceof MemoryStickItem && stick.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY)
+        return stick.getItem() instanceof MemoryStickItem && stick.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM)
                 .map(h -> h.getFluidInTank(0).getAmount() < h.getTankCapacity(0))
                 .orElseThrow(RuntimeException::new);
     }
@@ -251,7 +251,7 @@ public class MemoryStickItem extends Item implements ColorHandlers.ITintableItem
         public static void onXpOrbPickup(PlayerXpEvent.PickupXp event) {
             ItemStack stack = findMemoryStick(event.getEntity());
             if (!stack.isEmpty()) {
-                stack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY).ifPresent(handler -> {
+                stack.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).ifPresent(handler -> {
                     if (PneumaticCraftUtils.fillTankWithOrb(handler, event.getOrb(), IFluidHandler.FluidAction.EXECUTE)) {
                         // orb's xp can fit in the memory stick: remove the entity, cancel the event
                         stack.setTag(handler.getContainer().getTag());

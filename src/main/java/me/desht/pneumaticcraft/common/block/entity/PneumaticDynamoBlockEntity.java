@@ -38,8 +38,8 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.items.IItemHandler;
 import org.jetbrains.annotations.NotNull;
@@ -100,7 +100,7 @@ public class PneumaticDynamoBlockEntity extends AbstractAirHandlingBlockEntity i
 
         BlockEntity receiver = getCachedNeighbor(getRotation());
         if (receiver != null) {
-            receiver.getCapability(CapabilityEnergy.ENERGY, getRotation().getOpposite()).ifPresent(neighborStorage -> {
+            receiver.getCapability(ForgeCapabilities.ENERGY, getRotation().getOpposite()).ifPresent(neighborStorage -> {
                 int extracted = energy.extractEnergy(rfPerTick * 2, true);
                 int energyPushed = neighborStorage.receiveEnergy(extracted, true);
                 if (energyPushed > 0) {

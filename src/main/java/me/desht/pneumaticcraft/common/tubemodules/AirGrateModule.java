@@ -50,10 +50,9 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 
@@ -242,9 +241,9 @@ public class AirGrateModule extends AbstractTubeModule {
             for (Direction dir : DirectionUtil.VALUES) {
                 BlockEntity te = pressureTube.nonNullLevel().getBlockEntity(pressureTube.getBlockPos().relative(dir));
                 if (te != null) {
-                    LazyOptional<IItemHandler> cap = te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, dir.getOpposite());
+                    LazyOptional<IItemHandler> cap = te.getCapability(ForgeCapabilities.ITEM_HANDLER, dir.getOpposite());
                     // bit of a kludge: exclude BE's which also offer a fluid capability on this side
-                    if (cap.isPresent() && !te.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, dir.getOpposite()).isPresent()) {
+                    if (cap.isPresent() && !te.getCapability(ForgeCapabilities.FLUID_HANDLER, dir.getOpposite()).isPresent()) {
                         itemInsertionCap = cap;
                         itemInsertionCap.addListener(l -> itemInsertionCap = null);
                         break;
@@ -261,7 +260,7 @@ public class AirGrateModule extends AbstractTubeModule {
             for (Direction dir : DirectionUtil.VALUES) {
                 BlockEntity te = pressureTube.nonNullLevel().getBlockEntity(pressureTube.getBlockPos().relative(dir));
                 if (te != null) {
-                    LazyOptional<IFluidHandler> cap = te.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, dir.getOpposite());
+                    LazyOptional<IFluidHandler> cap = te.getCapability(ForgeCapabilities.FLUID_HANDLER, dir.getOpposite());
                     if (cap.isPresent()) {
                         fluidInsertionCap = cap;
                         fluidInsertionCap.addListener(l -> fluidInsertionCap = null);

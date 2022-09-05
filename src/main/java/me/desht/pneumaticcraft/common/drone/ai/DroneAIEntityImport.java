@@ -29,7 +29,7 @@ import net.minecraft.world.entity.vehicle.Boat;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
-import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.fluids.capability.IFluidHandler.FluidAction;
 
 public class DroneAIEntityImport extends DroneEntityBase<IEntityProvider, Entity> {
@@ -43,7 +43,7 @@ public class DroneAIEntityImport extends DroneEntityBase<IEntityProvider, Entity
         if (entity instanceof LivingEntity || entity instanceof AbstractMinecart || entity instanceof Boat) {
             return drone.getCarryingEntities().isEmpty();
         } else if (ConfigHelper.common().drones.dronesCanImportXPOrbs.get() && entity instanceof ExperienceOrb) {
-            return drone.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY)
+            return drone.getCapability(ForgeCapabilities.FLUID_HANDLER)
                     .map(handler -> PneumaticCraftUtils.fillTankWithOrb(handler, (ExperienceOrb) entity, FluidAction.SIMULATE))
                     .orElse(false);
         }
@@ -53,7 +53,7 @@ public class DroneAIEntityImport extends DroneEntityBase<IEntityProvider, Entity
     @Override
     protected boolean doAction() {
         if (ConfigHelper.common().drones.dronesCanImportXPOrbs.get() && targetedEntity instanceof ExperienceOrb) {
-            drone.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY).ifPresent(handler -> {
+            drone.getCapability(ForgeCapabilities.FLUID_HANDLER).ifPresent(handler -> {
                 ExperienceOrb orb = (ExperienceOrb) targetedEntity;
                 ItemStack heldStack = drone.getInv().getStackInSlot(0);
                 if (!heldStack.isEmpty() && heldStack.isDamaged() && EnchantmentHelper.getItemEnchantmentLevel(Enchantments.MENDING, heldStack) > 0) {

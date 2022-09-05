@@ -36,8 +36,8 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.material.Fluid;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -147,8 +147,8 @@ public class LiquidCompressorScreen extends AbstractPneumaticCraftContainerScree
     public void addProblems(List<Component> curInfo) {
         super.addProblems(curInfo);
 
-        if (te.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY).isPresent()) {
-            te.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY).ifPresent(fluidHandler -> {
+        if (te.getCapability(ForgeCapabilities.FLUID_HANDLER).isPresent()) {
+            te.getCapability(ForgeCapabilities.FLUID_HANDLER).ifPresent(fluidHandler -> {
                 if (!te.isActive() && fluidHandler.getFluidInTank(0).isEmpty()) {
                     curInfo.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.liquidCompressor.noFuel"));
                 }

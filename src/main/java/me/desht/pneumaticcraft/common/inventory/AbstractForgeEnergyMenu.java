@@ -23,7 +23,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.MenuType;
-import net.minecraftforge.energy.CapabilityEnergy;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.energy.EnergyStorage;
 
 public abstract class AbstractForgeEnergyMenu<T extends AbstractPneumaticCraftBlockEntity> extends Abstract4SlotMenu<T> {
@@ -35,10 +35,10 @@ public abstract class AbstractForgeEnergyMenu<T extends AbstractPneumaticCraftBl
     public AbstractForgeEnergyMenu(MenuType type, int i, Inventory playerInventory, BlockPos tilePos) {
         super(type, i, playerInventory, tilePos);
 
-        if (!te.getCapability(CapabilityEnergy.ENERGY).isPresent()) {
-            throw new IllegalStateException("block entity must support CapabilityEnergy.ENERGY on face null!");
+        if (!te.getCapability(ForgeCapabilities.ENERGY).isPresent()) {
+            throw new IllegalStateException("block entity must support ForgeCapabilities.ENERGY on face null!");
         }
-        te.getCapability(CapabilityEnergy.ENERGY).ifPresent(h -> {
+        te.getCapability(ForgeCapabilities.ENERGY).ifPresent(h -> {
             try {
                 addSyncedField(new SyncedField.SyncedInt(h, EnergyStorage.class.getDeclaredField("energy")));
             } catch (NoSuchFieldException e) {

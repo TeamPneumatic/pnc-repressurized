@@ -27,9 +27,9 @@ import me.desht.pneumaticcraft.common.util.FluidUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler.FluidAction;
 
@@ -82,7 +82,7 @@ public class DroneAILiquidExport<W extends ProgWidgetInventoryBase & ILiquidFilt
             // drop through to here if there was no BE or a BE had no valid fluid handler
 
             if (progWidget.isPlacingFluidBlocks() && (!progWidget.useCount() || getRemainingCount() >= BUCKET_VOLUME)) {
-                LazyOptional<IFluidHandler> cap = drone.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY);
+                LazyOptional<IFluidHandler> cap = drone.getCapability(ForgeCapabilities.FLUID_HANDLER);
                 if (FluidUtils.tryPourOutFluid(cap, drone.world(), pos, false, false, simulate ? FluidAction.SIMULATE : FluidAction.EXECUTE)) {
                     if (!simulate) {
                         decreaseCount(BUCKET_VOLUME);
@@ -95,7 +95,7 @@ public class DroneAILiquidExport<W extends ProgWidgetInventoryBase & ILiquidFilt
     }
 
     private FillStatus trySide(BlockEntity te, Direction side, FluidStack fluidToExport, boolean simulate) {
-        return te.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, side).map(fluidHandler -> {
+        return te.getCapability(ForgeCapabilities.FLUID_HANDLER, side).map(fluidHandler -> {
             int filledAmount = fluidHandler.fill(fluidToExport, FluidAction.SIMULATE);
             if (filledAmount > 0) {
                 if (((ICountWidget) progWidget).useCount()) {

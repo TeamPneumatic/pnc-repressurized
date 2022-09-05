@@ -43,8 +43,8 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 
@@ -99,7 +99,7 @@ public class OmnidirectionalHopperBlockEntity extends AbstractHopperBlockEntity<
     private int tryEntityExport(int maxItems, Direction dir) {
         for (Entity e : cachedOutputEntities) {
             if (!e.isAlive()) continue;
-            int notExported = e.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, dir).map(h -> exportToInventory(h, maxItems)).orElse(maxItems);
+            int notExported = e.getCapability(ForgeCapabilities.ITEM_HANDLER, dir).map(h -> exportToInventory(h, maxItems)).orElse(maxItems);
             if (notExported < maxItems) return notExported;
         }
         return maxItems;
@@ -185,7 +185,7 @@ public class OmnidirectionalHopperBlockEntity extends AbstractHopperBlockEntity<
             if (e.isAlive() && !e.getType().is(PneumaticCraftTags.EntityTypes.OMNIHOPPER_BLACKLISTED)) {
                 final int r = remaining;
                 boolean playerArmor = e instanceof Player && dir.getAxis().isHorizontal();
-                int imported = e.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, dir).map(h -> importFromInventory(h, r, playerArmor)).orElse(0);
+                int imported = e.getCapability(ForgeCapabilities.ITEM_HANDLER, dir).map(h -> importFromInventory(h, r, playerArmor)).orElse(0);
                 remaining -= imported;
                 if (remaining <= 0) return maxItems - remaining;
             }
@@ -243,7 +243,7 @@ public class OmnidirectionalHopperBlockEntity extends AbstractHopperBlockEntity<
             return false;
         }
         BlockEntity te = getCachedNeighbor(dir);
-        return te == null || !te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, dir.getOpposite()).isPresent();
+        return te == null || !te.getCapability(ForgeCapabilities.ITEM_HANDLER, dir.getOpposite()).isPresent();
     }
 
     @Override

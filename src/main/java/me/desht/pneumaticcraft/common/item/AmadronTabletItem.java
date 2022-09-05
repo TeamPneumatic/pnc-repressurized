@@ -47,10 +47,9 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.NotNull;
@@ -87,13 +86,13 @@ public class AmadronTabletItem extends PressurizableItem
         BlockEntity te = worldIn.getBlockEntity(pos);
         if (te == null || player == null) return InteractionResult.PASS;
 
-        if (te.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, facing).isPresent()) {
+        if (te.getCapability(ForgeCapabilities.FLUID_HANDLER, facing).isPresent()) {
             if (!worldIn.isClientSide) {
                 setFluidProvidingLocation(player.getItemInHand(ctx.getHand()), GlobalPosHelper.makeGlobalPos(worldIn, pos));
             } else {
                 player.playSound(ModSounds.CHIRP.get(), 1.0f, 1.5f);
             }
-        } else if (te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, facing).isPresent()) {
+        } else if (te.getCapability(ForgeCapabilities.ITEM_HANDLER, facing).isPresent()) {
             if (!worldIn.isClientSide) {
                 setItemProvidingLocation(player.getItemInHand(ctx.getHand()), GlobalPosHelper.makeGlobalPos(worldIn, pos));
             } else {

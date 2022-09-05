@@ -36,8 +36,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.IBlockComponentProvider;
 import snownee.jade.api.IServerDataProvider;
@@ -86,7 +86,7 @@ public class PneumaticProvider {
                     compoundTag.put("heatData", new TemperatureData(beInfo).toNBT());
                 }
 
-                beInfo.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY)
+                beInfo.getCapability(ForgeCapabilities.FLUID_HANDLER)
                         .ifPresent(h -> {
                             ListTag list = new ListTag();
                             for (int i = 0; i < h.getTanks(); i++) {

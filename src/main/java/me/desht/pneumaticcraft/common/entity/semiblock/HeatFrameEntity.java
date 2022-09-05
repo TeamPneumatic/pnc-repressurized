@@ -44,10 +44,9 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 
@@ -105,8 +104,8 @@ public class HeatFrameEntity extends AbstractSemiblockEntity {
     @Override
     public boolean canPlace(Direction facing) {
         return getCachedTileEntity() != null
-                && getCachedTileEntity().getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).isPresent()
-                && !getCachedTileEntity().getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY).isPresent();
+                && getCachedTileEntity().getCapability(ForgeCapabilities.ITEM_HANDLER).isPresent()
+                && !getCachedTileEntity().getCapability(ForgeCapabilities.FLUID_HANDLER).isPresent();
     }
 
     private void setStatus(byte status) {
@@ -245,7 +244,7 @@ public class HeatFrameEntity extends AbstractSemiblockEntity {
             boolean extractedOK;
             if (recipe.getInput() instanceof FluidIngredient fluidIngredient) {
                 if (stack.getCount() != 1) return false;  // fluid-containing items must not be stacked!
-                extractedOK = stack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY).map(fluidHandler -> {
+                extractedOK = stack.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).map(fluidHandler -> {
                     int toDrain = fluidIngredient.getAmount();
                     if (fluidHandler.drain(toDrain, IFluidHandler.FluidAction.EXECUTE).getAmount() == toDrain) {
                         ItemStack containerStack = fluidHandler.getContainer().copy();

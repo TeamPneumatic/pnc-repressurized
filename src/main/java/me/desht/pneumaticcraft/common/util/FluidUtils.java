@@ -38,11 +38,11 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.*;
 import net.minecraftforge.common.SoundActions;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.FluidActionResult;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidUtil;
-import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
 import net.minecraftforge.items.IItemHandler;
@@ -124,10 +124,10 @@ public class FluidUtils {
     private static boolean doFluidInteraction(BlockEntity te, Direction face, Player player, InteractionHand hand, boolean isInserting) {
         ItemStack stack = player.getItemInHand(hand);
         return FluidUtil.getFluidHandler(stack).map(stackHandler -> {
-            if (te.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, face).isPresent()) {
+            if (te.getCapability(ForgeCapabilities.FLUID_HANDLER, face).isPresent()) {
                 if (stackHandler.getTanks() == 0) return false;
                 int capacity = stackHandler.getTankCapacity(0);
-                return te.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, face).map(handler -> {
+                return te.getCapability(ForgeCapabilities.FLUID_HANDLER, face).map(handler -> {
                     PlayerInvWrapper invWrapper = new PlayerInvWrapper(player.getInventory());
                     FluidActionResult result = isInserting ?
                             FluidUtils.tryEmptyContainerAndStow(player.getItemInHand(hand), handler, invWrapper, capacity, player, true) :

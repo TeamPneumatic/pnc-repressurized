@@ -56,14 +56,12 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.model.data.ModelData;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidUtil;
-import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.registries.ForgeRegistries;
 
@@ -443,14 +441,14 @@ public abstract class AbstractPneumaticCraftBlockEntity extends BlockEntity
      * @param outputSlot output slot
      */
     void processFluidItem(int inputSlot, int outputSlot) {
-        getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).ifPresent(itemHandler -> {
+        getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(itemHandler -> {
             ItemStack inputStack = itemHandler.getStackInSlot(inputSlot);
             if (inputStack.getCount() != 1) return;
 
             FluidUtil.getFluidHandler(inputStack).ifPresent(fluidHandlerItem -> {
                 FluidStack itemContents = fluidHandlerItem.drain(1000, IFluidHandler.FluidAction.SIMULATE);
 
-                getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY).ifPresent(fluidHandler -> {
+                getCapability(ForgeCapabilities.FLUID_HANDLER).ifPresent(fluidHandler -> {
                     if (!itemContents.isEmpty()) {
                         // input item contains fluid: drain from input item into tank, move to output if empty
                         FluidStack transferred = FluidUtil.tryFluidTransfer(fluidHandler, fluidHandlerItem, itemContents.getAmount(), true);
@@ -513,13 +511,13 @@ public abstract class AbstractPneumaticCraftBlockEntity extends BlockEntity
     @Nonnull
     @Override
     public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-        if (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
+        if (cap == ForgeCapabilities.ITEM_HANDLER) {
             return getInventoryCap(side).cast();
         } else if (cap == PNCCapabilities.HEAT_EXCHANGER_CAPABILITY) {
             return getHeatCap(side).cast();
-        } else if (cap == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY) {
+        } else if (cap == ForgeCapabilities.FLUID_HANDLER) {
             return getFluidCap(side).cast();
-        } else if (cap == CapabilityEnergy.ENERGY) {
+        } else if (cap == ForgeCapabilities.ENERGY) {
             return getEnergyCap(side).cast();
         }
         return super.getCapability(cap, side);

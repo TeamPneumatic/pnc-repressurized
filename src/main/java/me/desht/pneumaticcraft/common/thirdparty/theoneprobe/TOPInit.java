@@ -38,7 +38,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 
 import java.util.function.Function;
 
@@ -99,7 +99,7 @@ public class TOPInit implements Function<ITheOneProbe, Void> {
                     String p = PneumaticCraftUtils.roundNumberTo(h.getPressure(), 1);
                     probeInfo.text(xlate("pneumaticcraft.gui.tooltip.pressure", p).withStyle(COLOR));
                 });
-                entity.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY)
+                entity.getCapability(ForgeCapabilities.FLUID_HANDLER)
                         .ifPresent(h -> TOPInfoProvider.handleFluidTanks(mode, probeInfo, h));
             }
         });

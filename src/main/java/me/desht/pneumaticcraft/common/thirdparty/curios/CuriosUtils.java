@@ -20,7 +20,7 @@ package me.desht.pneumaticcraft.common.thirdparty.curios;
 import me.desht.pneumaticcraft.common.block.entity.PneumaticEnergyStorage;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.energy.CapabilityEnergy;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.wrapper.CombinedInvWrapper;
@@ -46,7 +46,7 @@ public class CuriosUtils {
         CuriosApi.getCuriosHelper().getCuriosHandler(player).ifPresent(handler -> handler.getCurios().forEach((id, stackHandler) -> {
             for (int i = 0; i < stackHandler.getSlots() && energyStorage.getEnergyStored() > 0; i++) {
                 ItemStack stack = stackHandler.getStacks().getStackInSlot(i);
-                stack.getCapability(CapabilityEnergy.ENERGY).ifPresent(receivingStorage -> {
+                stack.getCapability(ForgeCapabilities.ENERGY).ifPresent(receivingStorage -> {
                     int energyLeft = energyStorage.getEnergyStored();
                     energyStorage.extractEnergy(
                             receivingStorage.receiveEnergy(Math.min(energyLeft, maxTransfer), false), false

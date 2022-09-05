@@ -124,19 +124,17 @@ import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.common.util.ITeleporter;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.entity.IEntityAdditionalSpawnData;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.fluids.IFluidTank;
-import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
-import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemStackHandler;
@@ -364,11 +362,11 @@ public class DroneEntity extends AbstractDroneEntity implements
     @Nonnull
     @Override
     public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> capability, Direction facing) {
-        if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
+        if (capability == ForgeCapabilities.ITEM_HANDLER) {
             return droneItemHandlerCap.cast();
-        } else if (capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY) {
+        } else if (capability == ForgeCapabilities.FLUID_HANDLER) {
             return fluidCap.cast();
-        } else if (capability == CapabilityEnergy.ENERGY) {
+        } else if (capability == ForgeCapabilities.ENERGY) {
             return energyCap.cast();
         } else if (capability == PNCCapabilities.AIR_HANDLER_CAPABILITY) {
             return airCap.cast();
@@ -784,9 +782,9 @@ public class DroneEntity extends AbstractDroneEntity implements
                 }).orElse(InteractionResult.PASS);
             }
             return InteractionResult.SUCCESS;
-        } else if (stack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY).isPresent()) {
+        } else if (stack.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).isPresent()) {
             if (player.level.isClientSide) return InteractionResult.CONSUME;
-            return stack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY).map(handler -> {
+            return stack.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).map(handler -> {
                 if (handler.getFluidInTank(0).isEmpty()) {
                     boolean ok = player.level.isClientSide || FluidUtil.interactWithFluidHandler(player, hand, fluidTank);
                     return ok ? InteractionResult.CONSUME : InteractionResult.PASS;

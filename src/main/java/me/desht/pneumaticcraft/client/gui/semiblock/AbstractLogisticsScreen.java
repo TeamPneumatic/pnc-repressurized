@@ -42,8 +42,8 @@ import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -210,8 +210,8 @@ public class AbstractLogisticsScreen<L extends AbstractLogisticsFrameEntity> ext
             logistics.setFluidFilter(idx, widget.getFluidStack().copy());
             syncToServer();
             return;
-        } else if (menu.getCarried().getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY).isPresent()) {
-            FluidStack f = menu.getCarried().getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY)
+        } else if (menu.getCarried().getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).isPresent()) {
+            FluidStack f = menu.getCarried().getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM)
                     .map(h -> h.getFluidInTank(0)).orElse(FluidStack.EMPTY);
             logistics.setFluidFilter(idx, f.isEmpty() ? FluidStack.EMPTY : new FluidStack(f, 1000));
             widget.setFluid(f.getFluid());

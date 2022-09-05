@@ -45,8 +45,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 
 import java.util.ArrayList;
@@ -74,7 +74,7 @@ public class TOPInfoProvider {
             handleHeat(mode, probeInfo, te);
         }
         if (ConfigHelper.client().general.topShowsFluids.get()) {
-            te.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, data.getSideHit())
+            te.getCapability(ForgeCapabilities.FLUID_HANDLER, data.getSideHit())
                     .ifPresent(handler -> handleFluidTanks(mode, probeInfo, handler));
         }
         if (te instanceof IRedstoneControl) {

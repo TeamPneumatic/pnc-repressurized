@@ -30,7 +30,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.items.IItemHandler;
 
 import java.util.ArrayList;
@@ -70,7 +70,7 @@ public class DroneAIExternalProgram extends DroneAIBlockInteraction<ProgWidgetEx
         if (traversedPositions.add(pos)) {
             curSlot = 0;
             BlockEntity te = drone.world().getBlockEntity(pos);
-            return te != null && te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).isPresent();
+            return te != null && te.getCapability(ForgeCapabilities.ITEM_HANDLER).isPresent();
         }
         return false;
     }

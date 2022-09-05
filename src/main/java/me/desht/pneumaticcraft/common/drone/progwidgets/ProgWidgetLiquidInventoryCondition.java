@@ -29,8 +29,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 
 import java.util.List;
 
@@ -67,7 +67,7 @@ public class ProgWidgetLiquidInventoryCondition extends ProgWidgetCondition {
             }
 
             private int countFluid(BlockEntity te) {
-                return te.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY).map(handler -> {
+                return te.getCapability(ForgeCapabilities.FLUID_HANDLER).map(handler -> {
                     int total = 0;
                     for (int i = 0; i < handler.getTanks(); i++) {
                         FluidStack stack = handler.getFluidInTank(i);

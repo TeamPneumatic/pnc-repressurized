@@ -58,13 +58,12 @@ import net.minecraft.world.level.block.entity.SkullBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.wrapper.InvWrapper;
 import net.minecraftforge.items.wrapper.PlayerArmorInvWrapper;
@@ -140,15 +139,15 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
 
         itemHandlerSideConfigurator = new SideConfigurator<>("items", this);
         itemHandlerSideConfigurator.registerHandler("mainInv", new ItemStack(Blocks.CHEST),
-                CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, () -> playerMainInvHandler,
+                ForgeCapabilities.ITEM_HANDLER, () -> playerMainInvHandler,
                 SideConfigurator.RelativeFace.FRONT, SideConfigurator.RelativeFace.BACK, SideConfigurator.RelativeFace.LEFT, SideConfigurator.RelativeFace.RIGHT);
         itemHandlerSideConfigurator.registerHandler("armorInv", new ItemStack(ModItems.PNEUMATIC_CHESTPLATE.get()),
-                CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, () -> playerArmorInvHandler,
+                ForgeCapabilities.ITEM_HANDLER, () -> playerArmorInvHandler,
                 SideConfigurator.RelativeFace.TOP, SideConfigurator.RelativeFace.BOTTOM);
         itemHandlerSideConfigurator.registerHandler("offhandInv", new ItemStack(Items.SHIELD),
-                CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, () -> playerOffhandInvHandler);
+                ForgeCapabilities.ITEM_HANDLER, () -> playerOffhandInvHandler);
         itemHandlerSideConfigurator.registerHandler("enderInv", new ItemStack(Blocks.ENDER_CHEST),
-                CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, () -> playerEnderInvHandler);
+                ForgeCapabilities.ITEM_HANDLER, () -> playerEnderInvHandler);
 
         invHandlers.add(playerMainInvHandler);
         invHandlers.add(playerArmorInvHandler);
@@ -162,7 +161,7 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
 //        if (Curios.available) {
 //            PlayerCuriosHandler playerCuriosHandler = new PlayerCuriosHandler();
 //            itemHandlerSideConfigurator.registerHandler("curiosInv", new ItemStack(Items.DIAMOND),
-//                    CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, () -> playerCuriosHandler);
+//                    ForgeCapabilities.ITEM_HANDLER, () -> playerCuriosHandler);
 //            invHandlers.add(playerCuriosHandler);
 //        }
     }
@@ -356,7 +355,7 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
         chargeableSlots.clear();
         Inventory inv = player.getInventory();
         for (int i = 0; i < inv.getContainerSize(); i++) {
-            if (inv.getItem(i).getCapability(CapabilityEnergy.ENERGY).isPresent()) {
+            if (inv.getItem(i).getCapability(ForgeCapabilities.ENERGY).isPresent()) {
                 chargeableSlots.add(i);
             }
         }
@@ -367,7 +366,7 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
             Inventory inv = player.getInventory();
             for (int slot : chargeableSlots) {
                 ItemStack stack = inv.getItem(slot);
-                int energyLeft = stack.getCapability(CapabilityEnergy.ENERGY).map(receivingStorage -> {
+                int energyLeft = stack.getCapability(ForgeCapabilities.ENERGY).map(receivingStorage -> {
                     int stored = energyStorage.getEnergyStored();
                     if (stored > 0) {
                         energyStorage.extractEnergy(receivingStorage.receiveEnergy(Math.min(stored, RF_PER_TICK), false), false);

@@ -47,8 +47,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.items.wrapper.PlayerMainInvWrapper;
@@ -341,7 +341,7 @@ public class ProgrammerBlockEntity extends AbstractTickingBlockEntity implements
             if (te != null) {
                 while (count > 0) {
                     int toInsert = Math.min(count, stack.getMaxStackSize());
-                    int inserted = te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, d.getOpposite()).map(h -> {
+                    int inserted = te.getCapability(ForgeCapabilities.ITEM_HANDLER, d.getOpposite()).map(h -> {
                         ItemStack excess = ItemHandlerHelper.insertItem(h, ItemHandlerHelper.copyStackWithSize(stack, toInsert), false);
                         return toInsert - excess.getCount();
                     }).orElse(0);
@@ -413,7 +413,7 @@ public class ProgrammerBlockEntity extends AbstractTickingBlockEntity implements
             BlockEntity te = getCachedNeighbor(d);
             if (te != null) {
                 final int r = required - found;
-                found += te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, d.getOpposite())
+                found += te.getCapability(ForgeCapabilities.ITEM_HANDLER, d.getOpposite())
                         .map(h -> extractPuzzlePieces(h, r, simulate))
                         .orElse(0);
                 if (found >= required) return true;
@@ -456,7 +456,7 @@ public class ProgrammerBlockEntity extends AbstractTickingBlockEntity implements
             for (Direction dir : DirectionUtil.VALUES) {
                 BlockEntity te = getCachedNeighbor(dir);
                 if (te != null) {
-                    total += IOHelper.countItems(te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, dir.getOpposite()),
+                    total += IOHelper.countItems(te.getCapability(ForgeCapabilities.ITEM_HANDLER, dir.getOpposite()),
                             stack -> stack.getItem() == ModItems.PROGRAMMING_PUZZLE.get());
                 }
             }

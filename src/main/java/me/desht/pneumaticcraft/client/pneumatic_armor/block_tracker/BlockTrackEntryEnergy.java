@@ -26,7 +26,7 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.energy.CapabilityEnergy;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 
 import java.util.Collections;
 import java.util.List;
@@ -41,7 +41,7 @@ public class BlockTrackEntryEnergy implements IBlockTrackEntry {
     public boolean shouldTrackWithThisEntry(BlockGetter world, BlockPos pos, BlockState state, BlockEntity te) {
         return te != null
                 && !TrackerBlacklistManager.isEnergyBlacklisted(te)
-                && IBlockTrackEntry.hasCapabilityOnAnyFace(te, CapabilityEnergy.ENERGY);
+                && IBlockTrackEntry.hasCapabilityOnAnyFace(te, ForgeCapabilities.ENERGY);
     }
 
     @Override
@@ -60,7 +60,7 @@ public class BlockTrackEntryEnergy implements IBlockTrackEntry {
             infoList.add(xlate("pneumaticcraft.blockTracker.info.rf"));
             // FIXME: getting capabilities client-side is not a reliable way to do this
             // Need a more formal framework for sync'ing server-side data to the client
-            te.getCapability(CapabilityEnergy.ENERGY, face)
+            te.getCapability(ForgeCapabilities.ENERGY, face)
                     .ifPresent(storage -> infoList.add(Component.literal(storage.getEnergyStored() + " / " + storage.getMaxEnergyStored() + " RF")));
         } catch (Throwable e) {
             TrackerBlacklistManager.addEnergyTEToBlacklist(te, e);

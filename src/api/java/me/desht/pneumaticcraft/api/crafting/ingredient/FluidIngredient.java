@@ -35,6 +35,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.crafting.IIngredientSerializer;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidUtil;
@@ -251,7 +252,7 @@ public class FluidIngredient extends Ingredient {
 
     private void maybeAddTank(List<ItemStack> l, Block tankBlock, FluidStack stack) {
         ItemStack tank = new ItemStack(tankBlock);
-        tank.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY).ifPresent(h -> {
+        tank.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).ifPresent(h -> {
             h.fill(stack, IFluidHandler.FluidAction.EXECUTE);
             l.add(h.getContainer());
         });

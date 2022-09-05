@@ -41,7 +41,7 @@ import net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.ChestType;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -62,13 +62,13 @@ public class BlockTrackEntryInventory implements IBlockTrackEntry {
 
         return te != null
                 && !TrackerBlacklistManager.isInventoryBlacklisted(te)
-                && (te instanceof RandomizableContainerBlockEntity || IBlockTrackEntry.hasCapabilityOnAnyFace(te, CapabilityItemHandler.ITEM_HANDLER_CAPABILITY))
+                && (te instanceof RandomizableContainerBlockEntity || IBlockTrackEntry.hasCapabilityOnAnyFace(te, ForgeCapabilities.ITEM_HANDLER))
                 && !MinecraftForge.EVENT_BUS.post(new InventoryTrackEvent(te));
     }
 
     @Override
     public List<BlockPos> getServerUpdatePositions(BlockEntity te) {
-        if (te instanceof RandomizableContainerBlockEntity && !IBlockTrackEntry.hasCapabilityOnAnyFace(te, CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)) {
+        if (te instanceof RandomizableContainerBlockEntity && !IBlockTrackEntry.hasCapabilityOnAnyFace(te, ForgeCapabilities.ITEM_HANDLER)) {
             // lootr chests can be like this
             return Collections.emptyList();
         }

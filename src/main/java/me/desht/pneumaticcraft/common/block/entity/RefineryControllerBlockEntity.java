@@ -45,10 +45,10 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidTank;
-import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler.FluidAction;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
@@ -260,7 +260,7 @@ public class RefineryControllerBlockEntity extends AbstractTickingBlockEntity
         RefineryOutputBlockEntity output = findAdjacentOutput();
         while (output != null) {
             // direction DOWN is important here to get the unwrapped cap
-            LazyOptional<IFluidHandler> handler = output.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, Direction.DOWN);
+            LazyOptional<IFluidHandler> handler = output.getCapability(ForgeCapabilities.FLUID_HANDLER, Direction.DOWN);
             if (handler.isPresent()) handler.addListener(l -> cacheRefineryOutputs());
             cache.add(handler);
             BlockEntity te = output.getCachedNeighbor(Direction.UP);

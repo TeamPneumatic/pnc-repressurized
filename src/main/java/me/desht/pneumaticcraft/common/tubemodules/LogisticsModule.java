@@ -40,8 +40,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
@@ -258,12 +258,12 @@ public class LogisticsModule extends AbstractTubeModule implements INetworkedMod
     }
 
     private void handleFluids(LogisticsModule providingModule, LogisticsModule requestingModule, LogisticsTask task) {
-        task.requester.getCachedTileEntity().getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, requestingModule.dir.getOpposite()).ifPresent(requestingHandler -> {
+        task.requester.getCachedTileEntity().getCapability(ForgeCapabilities.FLUID_HANDLER, requestingModule.dir.getOpposite()).ifPresent(requestingHandler -> {
             int amountFilled = requestingHandler.fill(task.transportingFluid, IFluidHandler.FluidAction.SIMULATE);
             if (amountFilled > 0) {
                 FluidStack drainingFluid = task.transportingFluid.copy();
                 drainingFluid.setAmount(amountFilled);
-                task.provider.getCachedTileEntity().getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, providingModule.dir.getOpposite())
+                task.provider.getCachedTileEntity().getCapability(ForgeCapabilities.FLUID_HANDLER, providingModule.dir.getOpposite())
                         .ifPresent(providingHandler -> tryFluidTransfer(providingModule, providingHandler, requestingModule, requestingHandler, drainingFluid));
             }
         });

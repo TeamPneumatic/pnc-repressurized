@@ -37,7 +37,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraftforge.common.Tags;
-import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.items.IItemHandler;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -75,7 +75,7 @@ public abstract class AbstractChestUpgradeKitItem extends Item {
                 BlockEntity te = world.getBlockEntity(pos);
                 NonNullList<ItemStack> inv = NonNullList.create();
                 if (te != null) {
-                    te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).ifPresent(handler -> {
+                    te.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(handler -> {
                         Pair<Integer,Integer> range = getInvRange(state, handler);
                         for (int i = range.getLeft(); i < range.getRight(); i++) {
                             inv.add(handler.extractItem(i, Integer.MAX_VALUE, false));

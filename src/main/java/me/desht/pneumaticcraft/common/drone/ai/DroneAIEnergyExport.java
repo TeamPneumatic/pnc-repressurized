@@ -23,7 +23,7 @@ import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.energy.CapabilityEnergy;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.energy.IEnergyStorage;
 
 public class DroneAIEnergyExport extends DroneAIImExBase<ProgWidgetInventoryBase> {
@@ -43,7 +43,7 @@ public class DroneAIEnergyExport extends DroneAIImExBase<ProgWidgetInventoryBase
 
     private boolean exportEnergy(BlockPos pos, boolean simulate) {
         boolean didWork = false;
-        int energy = drone.getCapability(CapabilityEnergy.ENERGY).map(IEnergyStorage::getEnergyStored).orElseThrow(RuntimeException::new);
+        int energy = drone.getCapability(ForgeCapabilities.ENERGY).map(IEnergyStorage::getEnergyStored).orElseThrow(RuntimeException::new);
         if (energy == 0) {
             abort();
         } else {
@@ -61,7 +61,7 @@ public class DroneAIEnergyExport extends DroneAIImExBase<ProgWidgetInventoryBase
     }
 
     private boolean tryExportToSide(BlockEntity te, Direction face, boolean simulate) {
-        return te.getCapability(CapabilityEnergy.ENERGY, face).map(tileHandler -> {
+        return te.getCapability(ForgeCapabilities.ENERGY, face).map(tileHandler -> {
             int receivable = tileHandler.receiveEnergy(progWidget.useCount() ? getRemainingCount() : Integer.MAX_VALUE, true);
             int toTransfer = extractFromDrone(receivable, true);
             if (toTransfer > 0) {
@@ -77,7 +77,7 @@ public class DroneAIEnergyExport extends DroneAIImExBase<ProgWidgetInventoryBase
     }
 
     private int extractFromDrone(int maxEnergy, boolean simulate) {
-        return drone.getCapability(CapabilityEnergy.ENERGY)
+        return drone.getCapability(ForgeCapabilities.ENERGY)
                 .map(h -> h.extractEnergy(maxEnergy, simulate))
                 .orElseThrow(RuntimeException::new);
     }
