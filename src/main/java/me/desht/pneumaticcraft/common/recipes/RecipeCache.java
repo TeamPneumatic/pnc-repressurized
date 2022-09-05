@@ -25,24 +25,29 @@ import net.minecraft.item.crafting.FurnaceRecipe;
 import net.minecraft.item.crafting.ICraftingRecipe;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.IRecipeType;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.world.World;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * Cached vanilla crafting table recipe lookup, primarily for the benefit of drone crafting widget.
  */
 public class RecipeCache<T extends IRecipeType<R>, R extends IRecipe<C>, C extends IInventory> {
-    public static final RecipeCache<IRecipeType<ICraftingRecipe>, ICraftingRecipe, CraftingInventory> CRAFTING = new RecipeCache<>(IRecipeType.CRAFTING);
-    public static final RecipeCache<IRecipeType<FurnaceRecipe>, FurnaceRecipe, IInventory> SMELTING = new RecipeCache<>(IRecipeType.SMELTING);
+    public static final RecipeCache<IRecipeType<ICraftingRecipe>, ICraftingRecipe, CraftingInventory> CRAFTING = new RecipeCache<>(IRecipeType.CRAFTING, true);
+    public static final RecipeCache<IRecipeType<FurnaceRecipe>, FurnaceRecipe, IInventory> SMELTING = new RecipeCache<>(IRecipeType.SMELTING, false);
 
     private static final int MAX_CACHE_SIZE = 1024;
 
     private final T type;
+    private final boolean nbtSignificant;
     private final Int2ObjectLinkedOpenHashMap<Optional<R>> recipeCache = new Int2ObjectLinkedOpenHashMap<>(MAX_CACHE_SIZE, 0.25f);
 
-    private RecipeCache(T type) {
+    private RecipeCache(T type, boolean nbtSignificant) {
         this.type = type;
+        this.nbtSignificant = nbtSignificant;
     }
 
     public Optional<R> getCachedRecipe(World world, C inv) {
@@ -63,16 +68,19 @@ public class RecipeCache<T extends IRecipeType<R>, R extends IRecipe<C>, C exten
         recipeCache.clear();
     }
 
-    private int makeKey(IInventory inv) {
+    private int makeKey(C inv) {
         List<Integer> c = new ArrayList<>();
         for (int i = 0; i < inv.getContainerSize(); i++) {
             ItemStack stack = inv.getItem(i);
             if (!stack.isEmpty()) {
                 c.add(i);
                 c.add(stack.getItem().hashCode());
-                if (stack.hasTag()) c.add(Objects.requireNonNull(stack.getTag()).hashCode());
+                if (nbtSignificant) {
+                    CompoundNBT tag = stack.getTag();
+                    if (tag != null) c.add(tag.hashCode());
+                }
             }
         }
-        return Arrays.hashCode(c.toArray(new Integer[0]));
+        return c.hashCode();
     }
 }
