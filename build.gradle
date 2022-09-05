@@ -111,21 +111,21 @@ dependencies {
 	testImplementation "org.junit.jupiter:junit-jupiter-api:5.7.2"
 	testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.7.2"
 
-	compileOnly fg.deobf("mcjty.theoneprobe:theoneprobe:${top_version}") {
+	implementation fg.deobf("mcjty.theoneprobe:theoneprobe:${top_version}") {
 		exclude group: "net.minecraftforge", module: "forge"
 	}
 	// compile against the JEI API but do not include it at runtime
-	compileOnly fg.deobf("mezz.jei:jei-${mc_version_191}-common-api:${jei_version}")
-	compileOnly fg.deobf("mezz.jei:jei-${mc_version_191}-forge-api:${jei_version}")
+	compileOnly fg.deobf("mezz.jei:jei-${mc_version}-common-api:${jei_version}")
+	compileOnly fg.deobf("mezz.jei:jei-${mc_version}-forge-api:${jei_version}")
 	// at runtime, use the full JEI
-	runtimeOnly fg.deobf("mezz.jei:jei-${mc_version_191}-common:${jei_version}")
-	runtimeOnly fg.deobf("mezz.jei:jei-${mc_version_191}-forge:${jei_version}")
+	runtimeOnly fg.deobf("mezz.jei:jei-${mc_version}-common:${jei_version}")
+	runtimeOnly fg.deobf("mezz.jei:jei-${mc_version}-forge:${jei_version}")
 	compileOnly fg.deobf("top.theillusivec4.curios:curios-forge:${curios_version}:api")
 	runtimeOnly fg.deobf("top.theillusivec4.curios:curios-forge:${curios_version}")
-	//compileOnly fg.deobf("vazkii.botania:Botania:${botania_version}:api")
-	//runtimeOnly fg.deobf("vazkii.botania:Botania:${botania_version}")
+	compileOnly fg.deobf("vazkii.botania:Botania:${botania_version}:api")
+	runtimeOnly fg.deobf("vazkii.botania:Botania:${botania_version}")
 	compileOnly fg.deobf("vazkii.patchouli:Patchouli:${patchouli_version}:api")
-	//runtimeOnly fg.deobf("vazkii.patchouli:Patchouli:${patchouli_version}")
+	runtimeOnly fg.deobf("vazkii.patchouli:Patchouli:${patchouli_version}")
 	// compileOnly until early config access bug fixed...
 	compileOnly fg.deobf("org.squiddev:cc-tweaked-${project.mc_version_191}:${cc_tweaked_version}")
 	compileOnly fg.deobf("blusunrize.immersiveengineering:ImmersiveEngineering:${immersive_engineering_version}")
@@ -136,7 +136,7 @@ dependencies {
 	implementation fg.deobf("curse.maven:jade-324717:${jade_curse_id}")
 	//implementation fg.deobf("curse.maven:cofh_core-69162:${cofh_core_curse_id}")
 	//implementation fg.deobf("com.blamejared.crafttweaker:CraftTweaker-forge-1.18.2:${crafttweaker_version}")
-	compileOnly fg.deobf("net.darkhax.gamestages:GameStages-Forge-${project.mc_version_191}:${gamestages_version}")
+	compileOnly fg.deobf("net.darkhax.gamestages:GameStages-Forge-${project.mc_version}:${gamestages_version}")
 
 	//compileOnly fg.deobf("appeng:appliedenergistics2:${ae2_version}:api")
 	//runtimeOnly fg.deobf("appeng:appliedenergistics2:${ae2_version}")
@@ -161,6 +161,7 @@ dependencies {
 
 minecraft {
 	mappings channel: 'parchment', version: "${project.mappings_version}-${project.mc_version}"
+//	mappings channel: 'parchment', version: "${project.mappings_version}-${project.mc_version}"
 //	mappings channel: 'official', version: "1.19"
 
 	accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
