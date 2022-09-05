@@ -8,17 +8,26 @@ Changes are in reverse chronological order; newest changes at the top.
 
 1.19.2 builds may also work on Minecraft 1.19.1 but no support will be provided for that.
 
-## 4.1.1-??? (unreleased)
+## 4.1.1-132 (5 Sep 2022)
 
 ### Updates
 * Added "Hover" checkbox (bindable to a hotkey) to the Jet Boots upgrade GUI
   * Enabled by default
   * Distinct from "Smart Hover" checkbox which is still available; "Hover" completely disables any hovering if unchecked
+* Added clientside config setting `pressure_chamber_particles` to control whether air particles are displayed inside a pressurized Pressure Chamber
+  * Note: Some optimization mods like Oculus or Rubidium have been reported to have compatibility issues with these particles; setting this to false is a workaround
+  * https://github.com/TeamPneumatic/pnc-repressurized/issues/1079
 
 ### Fixes
+* Spawner Agitators have reduced functionality when Apotheosis is installed
+  * Item tooltips and Patchouli manual page for Agitator have been updated accordingly
+  * Apotheosis makes significant changes to vanilla Spawners which the Agitator does not work well with
+  * In addition, Apotheosis provides much more sophisticated spawner control than the Agitator does
+  * Mobs spawned when an Agitator attached are still protected from despawning when no players are near
 * Fixed mobs spawned by a Mob Spawner with Spawner Agitator attached being possible to absorb in a Vacuum Trap
 * Fixed potential enchantment dupe on Drones when converting between item and entity form
 * Fixed Jet Boots continuing to fire if upgrade is switched off while player is firing them
+* Fixed performance issue which could occur with Heat Frame on a full inventory, particularly on servers with a large number of smelting recipes
 
 ## 4.1.0-128
 
@@ -51,7 +60,7 @@ PneumaticCraft: Repressurized 4.0.0 for Minecraft 1.19 is based on the 3.3.1 rel
     * Filtering on `Creeper` will match actual Creepers, but no longer a player or other entity named "Creeper" 
   * It is now possible to filter on entities only from a certain mod with the `(mod=<modname>)` modifier
     * E.g. filtering on `@mob(mod=minecraft)` will match hostile mobs only from vanilla and not any other mod
-* GPS and Area GPS Tools now have a "Teleport" button, only usable by op-level players (i.e. need to able to use the `/tp` command)
+* GPS and Area GPS Tools now have a "Teleport" button, only usable by op-level players (i.e. need to be able to use the `/tp` command)
   * Warning: no safety checks are done for the destination position! Creative or Spectator mode recommended if you're unsure of the destination
   * No cross-dimension teleporting (GPS Tools are not dimension-aware)
 * Amadron player matching now uses Biome tags rather than Biome Dictionary names
@@ -62,6 +71,26 @@ PneumaticCraft: Repressurized 4.0.0 for Minecraft 1.19 is based on the 3.3.1 rel
 
 * PNC:R 3.2.3 and later *require* Forge 40.1.20 or later
 * PNC:R 3.2.0 and later *require* Forge 40.1.0 or later and JEI 9.7.0 or later
+
+## 3.4.1-131 (31 Aug 2022)
+
+### Updates
+* Added clientside config setting `pressure_chamber_particles` to control whether air particles are displayed inside a pressurized Pressure Chamber
+  * Note: Some optimiztion mods like Oculus or Rubidium have been reported to have compatibilty issues with these particles; setting this to false is a workaround
+  * https://github.com/TeamPneumatic/pnc-repressurized/issues/1079
+
+### Fixes
+* Fixed an issue where inventory scanning by the Pneumatic Armor Block Tracker did not always pick up changes to inventories
+* Spawner Agitators have reduced functionality when Apotheosis is installed
+  * Item tooltips and Patchouli manual page for Agitator have been updated accordingly
+  * Apotheosis makes significant changes to vanilla Spawners which the Agitator does not work well with
+  * In addition, Apotheosis provides much more sophisticated spawner control than the Agitator does
+  * Mobs spawned when an Agitator attached are still protected from despawning when no players are near
+* Fixed Vacuum Trap being able to absorb mobs spawned by a Mob Spawner with a Spawner Agitator attached
+* Fixed potential enchantment duping issue related to Drones and Astral Sorcery perks
+* Fixed Jetboots continuing to fire if they're switched off while the thrust key is currently held down
+* Removed obsolete block heat properties data for Quark Brimstone blocks (no longer in Quark in 1.18+)
+  * Was causing annoying but harmless error messages in server log
 
 ## 3.4.0-124 (3 Aug 2022)
 
