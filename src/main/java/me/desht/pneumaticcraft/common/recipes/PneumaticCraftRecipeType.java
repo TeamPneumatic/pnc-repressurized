@@ -133,7 +133,7 @@ public class PneumaticCraftRecipeType<T extends PneumaticCraftRecipe> implements
         AmadronOfferManager.getInstance().rebuildRequired();
         FuelRegistry.getInstance().clearCachedFuelFluids();
         BlockHeatProperties.getInstance().clear();
-        CraftingRecipeCache.INSTANCE.clear();
+        RecipeCache.clearAll();
     }
 
     public static class CacheReloadListener implements PreparableReloadListener {

@@ -23,7 +23,7 @@ import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.common.drone.IDroneBase;
 import me.desht.pneumaticcraft.common.drone.progwidgets.*;
 import me.desht.pneumaticcraft.common.entity.drone.DroneEntity;
-import me.desht.pneumaticcraft.common.recipes.CraftingRecipeCache;
+import me.desht.pneumaticcraft.common.recipes.RecipeCache;
 import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
 import me.desht.pneumaticcraft.common.util.DummyContainer;
 import me.desht.pneumaticcraft.common.util.LegacyAreaWidgetConverter;
@@ -460,7 +460,7 @@ public class ProgWidgetCC extends ProgWidgetInventoryBase implements IBlockOrder
 
     @Override
     public Optional<CraftingRecipe> getRecipe(Level world, CraftingContainer grid) {
-        return CraftingRecipeCache.INSTANCE.getCachedRecipe(world, grid);
+        return RecipeCache.CRAFTING.getCachedRecipe(world, grid);
     }
 
     @Override
