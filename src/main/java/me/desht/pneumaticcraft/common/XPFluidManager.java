@@ -20,13 +20,18 @@ package me.desht.pneumaticcraft.common;
 import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.api.crafting.ingredient.FluidIngredient;
 import me.desht.pneumaticcraft.common.core.ModFluids;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraftforge.fluids.FluidStack;
 import org.apache.commons.lang3.Validate;
 import org.apache.commons.lang3.tuple.Pair;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public enum XPFluidManager {
     INSTANCE;
@@ -37,16 +42,6 @@ public enum XPFluidManager {
 
     public static XPFluidManager getInstance() {
         return INSTANCE;
-    }
-
-    public void registerXPFluid(Fluid fluid, int liquidToPointRatio) {
-        Validate.isTrue(fluid != null && fluid != Fluids.EMPTY, "Fluid may not be null!");
-        if (liquidToPointRatio <= 0) {
-            liquidXPs.remove(fluid);
-        } else {
-            liquidXPs.put(fluid, liquidToPointRatio);
-        }
-        availableLiquidXPs = null;  // force recalc on next query
     }
 
     public void registerXPFluid(FluidIngredient fluidIngredient, int liquidToPointRatio) {
@@ -72,15 +67,26 @@ public enum XPFluidManager {
         }
     }
 
+    private void registerXPFluid(Fluid fluid, int liquidToPointRatio) {
+        Validate.isTrue(fluid != null && fluid != Fluids.EMPTY, "Fluid may not be null!");
+        if (liquidToPointRatio <= 0) {
+            liquidXPs.remove(fluid);
+        } else {
+            liquidXPs.put(fluid, liquidToPointRatio);
+        }
+        availableLiquidXPs = null;  // force recalc on next query
+    }
+
     public List<Fluid> getAvailableLiquidXPs() {
         if (availableLiquidXPs == null) {
-            // little kludge: ensure our own Memory Essence is always first in the list
-            Set<Fluid> tmpSet = new HashSet<>(liquidXPs.keySet());
             ImmutableList.Builder<Fluid> builder = ImmutableList.builder();
-            if (tmpSet.remove(ModFluids.MEMORY_ESSENCE.get())) {
-                builder.add(ModFluids.MEMORY_ESSENCE.get());
-            }
-            builder.addAll(tmpSet);
+            builder.addAll(liquidXPs.keySet().stream().sorted((f1, f2) -> {
+                // little kludge: ensure our own Memory Essence is always first in the list
+                if (f1 == ModFluids.MEMORY_ESSENCE.get()) return -1;
+                ResourceLocation r1 = PneumaticCraftUtils.getRegistryName(f1).orElseThrow();
+                ResourceLocation r2 = PneumaticCraftUtils.getRegistryName(f2).orElseThrow();
+                return r1.toString().compareTo(r2.toString());
+            }).toList());
             availableLiquidXPs = builder.build();
         }
         return availableLiquidXPs;
