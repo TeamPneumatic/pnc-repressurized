@@ -104,8 +104,8 @@ public class PressureTubeBlock extends AbstractCamouflageBlock
 
     @SuppressWarnings("unchecked")
     private static final EnumProperty<PressureTubeConnection>[] CONNECTION_PROPERTIES_3 = new EnumProperty[]{
-            PNCBlockStateProperties.DOWN, PNCBlockStateProperties.UP, PNCBlockStateProperties.NORTH,
-            PNCBlockStateProperties.SOUTH, PNCBlockStateProperties.WEST, PNCBlockStateProperties.EAST
+            PNCBlockStateProperties.PressureTubes.DOWN, PNCBlockStateProperties.PressureTubes.UP, PNCBlockStateProperties.PressureTubes.NORTH,
+            PNCBlockStateProperties.PressureTubes.SOUTH, PNCBlockStateProperties.PressureTubes.WEST, PNCBlockStateProperties.PressureTubes.EAST
     };
 
     private final BiFunction<BlockPos,BlockState,? extends PressureTubeBlockEntity> teFactory;
