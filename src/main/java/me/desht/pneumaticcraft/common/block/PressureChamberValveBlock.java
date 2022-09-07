@@ -17,6 +17,7 @@
 
 package me.desht.pneumaticcraft.common.block;
 
+import me.desht.pneumaticcraft.api.block.PNCBlockStateProperties;
 import me.desht.pneumaticcraft.common.advancements.AdvancementTriggers;
 import me.desht.pneumaticcraft.common.block.entity.PressureChamberValveBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
@@ -34,17 +35,14 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.Nullable;
 
 public class PressureChamberValveBlock extends AbstractPneumaticCraftBlock implements IBlockPressureChamber, PneumaticCraftEntityBlock {
-    public static final BooleanProperty FORMED = BooleanProperty.create("formed");
-
     public PressureChamberValveBlock() {
         super(ModBlocks.defaultProps());
-        registerDefaultState(getStateDefinition().any().setValue(FORMED, false));
+        registerDefaultState(getStateDefinition().any().setValue(PNCBlockStateProperties.FORMED, false));
     }
 
     @Override
@@ -68,7 +66,7 @@ public class PressureChamberValveBlock extends AbstractPneumaticCraftBlock imple
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         super.createBlockStateDefinition(builder);
-        builder.add(FORMED);
+        builder.add(PNCBlockStateProperties.FORMED);
     }
 
     @Override

@@ -34,7 +34,6 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.CollisionContext;
@@ -43,6 +42,8 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 
 import javax.annotation.Nullable;
 import java.util.stream.Stream;
+
+import static net.minecraft.world.level.block.state.properties.BlockStateProperties.LIT;
 
 public class KeroseneLampBlock extends AbstractPneumaticCraftBlock implements PneumaticCraftEntityBlock {
     private static final VoxelShape SHAPE_NS = Stream.of(
@@ -60,7 +61,6 @@ public class KeroseneLampBlock extends AbstractPneumaticCraftBlock implements Pn
     private static final VoxelShape SHAPE_EW = VoxelShapeUtils.rotateY(SHAPE_NS, 90);
 
     public static final EnumProperty<Direction> CONNECTED = EnumProperty.create("connected", Direction.class);
-    public static final BooleanProperty LIT = BooleanProperty.create("lit");
 
     public KeroseneLampBlock() {
         super(ModBlocks.defaultProps().lightLevel(state -> state.getValue(LIT) ? 15 : 0));

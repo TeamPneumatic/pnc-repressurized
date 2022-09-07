@@ -17,31 +17,21 @@
 
 package me.desht.pneumaticcraft.common.block;
 
-import net.minecraft.util.StringRepresentable;
+import me.desht.pneumaticcraft.api.block.PNCBlockStateProperties;
+import me.desht.pneumaticcraft.api.block.PressureChamberWallState;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 
-import java.util.Locale;
-
 public class PressureChamberWallBlock extends AbstractPressureWallBlock {
-    public enum WallState implements StringRepresentable {
-        NONE, CENTER, XEDGE, ZEDGE, YEDGE, XMIN_YMIN_ZMIN, XMIN_YMIN_ZMAX, XMIN_YMAX_ZMIN, XMIN_YMAX_ZMAX;
-
-        @Override
-        public String getSerializedName() {
-            return toString().toLowerCase(Locale.ROOT);
-        }
-    }
-
     public PressureChamberWallBlock() {
         super(IBlockPressureChamber.pressureChamberBlockProps());
-        registerDefaultState(getStateDefinition().any().setValue(WALL_STATE, WallState.NONE));
+        registerDefaultState(getStateDefinition().any().setValue(PNCBlockStateProperties.WALL_STATE, PressureChamberWallState.NONE));
     }
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         super.createBlockStateDefinition(builder);
-        builder.add(WALL_STATE);
+        builder.add(PNCBlockStateProperties.WALL_STATE);
     }
 }

@@ -17,8 +17,8 @@
 
 package me.desht.pneumaticcraft.common.block.entity;
 
+import me.desht.pneumaticcraft.api.block.PNCBlockStateProperties;
 import me.desht.pneumaticcraft.api.pressure.PressureTier;
-import me.desht.pneumaticcraft.common.block.AirCompressorBlock;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.inventory.AirCompressorMenu;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
@@ -82,7 +82,7 @@ public class AirCompressorBlockEntity extends AbstractAirHandlingBlockEntity imp
     }
 
     public boolean isActive() {
-        return getBlockState().hasProperty(AirCompressorBlock.ON) && getBlockState().getValue(AirCompressorBlock.ON);
+        return getBlockState().hasProperty(PNCBlockStateProperties.ON) && getBlockState().getValue(PNCBlockStateProperties.ON);
     }
 
     @Override
@@ -126,8 +126,8 @@ public class AirCompressorBlockEntity extends AbstractAirHandlingBlockEntity imp
         boolean newIsActive = burnTime > curFuelUsage;
         if (isActive() != newIsActive) {
             BlockState state = getBlockState();
-            if (state.hasProperty(AirCompressorBlock.ON)) {
-                nonNullLevel().setBlockAndUpdate(getBlockPos(), state.setValue(AirCompressorBlock.ON, newIsActive));
+            if (state.hasProperty(PNCBlockStateProperties.ON)) {
+                nonNullLevel().setBlockAndUpdate(getBlockPos(), state.setValue(PNCBlockStateProperties.ON, newIsActive));
             }
         }
         airHandler.setSideLeaking(hasNoConnectedAirHandlers() ? getRotation() : null);

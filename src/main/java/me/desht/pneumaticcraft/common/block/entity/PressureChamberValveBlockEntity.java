@@ -19,6 +19,7 @@ package me.desht.pneumaticcraft.common.block.entity;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.math.IntMath;
+import me.desht.pneumaticcraft.api.block.PNCBlockStateProperties;
 import me.desht.pneumaticcraft.api.crafting.recipe.PressureChamberRecipe;
 import me.desht.pneumaticcraft.api.pressure.PressureTier;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
@@ -237,7 +238,7 @@ public class PressureChamberValveBlockEntity extends AbstractAirHandlingBlockEnt
         if (!nbtValveList.isEmpty()) {
             BlockState state = nonNullLevel().getBlockState(getBlockPos());
             if (state.getBlock() instanceof PressureChamberValveBlock)
-                nonNullLevel().setBlock(getBlockPos(), state.setValue(PressureChamberValveBlock.FORMED, isPrimaryValve()), 2);
+                nonNullLevel().setBlock(getBlockPos(), state.setValue(PNCBlockStateProperties.FORMED, isPrimaryValve()), 2);
 
             accessoryValves.clear();
             for (BlockPos valve : nbtValveList) {
@@ -627,7 +628,7 @@ public class PressureChamberValveBlockEntity extends AbstractAirHandlingBlockEnt
                         }
                     } else if (be instanceof PressureChamberValveBlockEntity v) {
                         BlockState state = world.getBlockState(be.getBlockPos());
-                        world.setBlock(be.getBlockPos(), state.setValue(PressureChamberValveBlock.FORMED, v.isPrimaryValve()), Block.UPDATE_CLIENTS);
+                        world.setBlock(be.getBlockPos(), state.setValue(PNCBlockStateProperties.FORMED, v.isPrimaryValve()), Block.UPDATE_CLIENTS);
                     }
                     if (be != null) {
                         double dx = x == 0 ? -0.1 : 0.1;

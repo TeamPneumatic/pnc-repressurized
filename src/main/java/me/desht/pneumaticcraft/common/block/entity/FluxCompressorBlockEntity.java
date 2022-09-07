@@ -18,9 +18,9 @@
 package me.desht.pneumaticcraft.common.block.entity;
 
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
+import me.desht.pneumaticcraft.api.block.PNCBlockStateProperties;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.api.pressure.PressureTier;
-import me.desht.pneumaticcraft.common.block.PneumaticDynamoBlock;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
@@ -98,7 +98,7 @@ public class FluxCompressorBlockEntity extends AbstractAirHandlingBlockEntity
         if ((level.getGameTime() & 0x7) == 0 && newEnabled != isEnabled) {
             isEnabled = newEnabled;
             BlockState state = level.getBlockState(worldPosition);
-            level.setBlockAndUpdate(worldPosition, state.setValue(PneumaticDynamoBlock.ACTIVE, isEnabled));
+            level.setBlockAndUpdate(worldPosition, state.setValue(PNCBlockStateProperties.ACTIVE, isEnabled));
         }
         airHandler.setSideLeaking(hasNoConnectedAirHandlers() ? getRotation().getOpposite() : null);
     }

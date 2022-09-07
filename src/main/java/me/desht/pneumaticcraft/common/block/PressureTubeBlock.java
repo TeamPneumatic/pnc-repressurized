@@ -19,6 +19,8 @@ package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
+import me.desht.pneumaticcraft.api.block.PNCBlockStateProperties;
+import me.desht.pneumaticcraft.api.block.PressureTubeConnection;
 import me.desht.pneumaticcraft.common.block.entity.PressureTubeBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
@@ -33,7 +35,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
@@ -69,7 +70,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.BiFunction;
 
-import static me.desht.pneumaticcraft.common.block.PressureTubeBlock.ConnectionType.CONNECTED;
+import static me.desht.pneumaticcraft.api.block.PressureTubeConnection.CONNECTED;
 import static me.desht.pneumaticcraft.common.util.DirectionUtil.HORIZONTALS;
 import static net.minecraft.world.level.block.state.properties.BlockStateProperties.WATERLOGGED;
 
@@ -101,15 +102,10 @@ public class PressureTubeBlock extends AbstractCamouflageBlock
     };
     private static final VoxelShape[] SHAPE_CACHE = new VoxelShape[729];  // 3 ^ 6
 
-    private static final EnumProperty<ConnectionType> UP_3 = EnumProperty.create("up", ConnectionType.class);
-    private static final EnumProperty<ConnectionType> DOWN_3 = EnumProperty.create("down", ConnectionType.class);
-    private static final EnumProperty<ConnectionType> NORTH_3 = EnumProperty.create("north", ConnectionType.class);
-    private static final EnumProperty<ConnectionType> EAST_3 = EnumProperty.create("east", ConnectionType.class);
-    private static final EnumProperty<ConnectionType> SOUTH_3 = EnumProperty.create("south", ConnectionType.class);
-    private static final EnumProperty<ConnectionType> WEST_3 = EnumProperty.create("west", ConnectionType.class);
     @SuppressWarnings("unchecked")
-    private static final EnumProperty<ConnectionType>[] CONNECTION_PROPERTIES_3 = new EnumProperty[]{
-            DOWN_3, UP_3, NORTH_3, SOUTH_3, WEST_3, EAST_3
+    private static final EnumProperty<PressureTubeConnection>[] CONNECTION_PROPERTIES_3 = new EnumProperty[]{
+            PNCBlockStateProperties.DOWN, PNCBlockStateProperties.UP, PNCBlockStateProperties.NORTH,
+            PNCBlockStateProperties.SOUTH, PNCBlockStateProperties.WEST, PNCBlockStateProperties.EAST
     };
 
     private final BiFunction<BlockPos,BlockState,? extends PressureTubeBlockEntity> teFactory;
@@ -119,8 +115,8 @@ public class PressureTubeBlock extends AbstractCamouflageBlock
         this.teFactory = teFactory;
 
         BlockState state = getStateDefinition().any();
-        for (EnumProperty<ConnectionType> p : CONNECTION_PROPERTIES_3) {
-            state = state.setValue(p, ConnectionType.UNCONNECTED);
+        for (EnumProperty<PressureTubeConnection> p : CONNECTION_PROPERTIES_3) {
+            state = state.setValue(p, PressureTubeConnection.OPEN);
         }
         registerDefaultState(state.setValue(WATERLOGGED, false));
     }
@@ -180,9 +176,9 @@ public class PressureTubeBlock extends AbstractCamouflageBlock
             tePT.clearCachedShape();
             BlockState state = stateIn;
             for (Direction dir : DirectionUtil.VALUES) {
-                ConnectionType type = ConnectionType.UNCONNECTED;
+                PressureTubeConnection type = PressureTubeConnection.OPEN;
                 if (tePT.isSideClosed(dir)) {
-                    type = ConnectionType.CLOSED;
+                    type = PressureTubeConnection.CLOSED;
                 } else if (tePT.canConnectPneumatic(dir)) {
                     BlockEntity neighbourTE = worldIn.getBlockEntity(currentPos.relative(dir));
                     if (neighbourTE != null && neighbourTE.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, dir.getOpposite()).isPresent()) {
@@ -205,7 +201,7 @@ public class PressureTubeBlock extends AbstractCamouflageBlock
             }
             switch (state.getValue(CONNECTION_PROPERTIES_3[dir.get3DDataValue()])) {
                 case CONNECTED: connected.add(dir); break;
-                case UNCONNECTED: nUnconnected++; break;
+                case OPEN: nUnconnected++; break;
                 case CLOSED: return state;
             }
             if (connected.size() > 1) break;
@@ -328,7 +324,7 @@ public class PressureTubeBlock extends AbstractCamouflageBlock
         return null;
     }
 
-    private static BlockState setSide(BlockState state, Direction side, ConnectionType type) {
+    private static BlockState setSide(BlockState state, Direction side, PressureTubeConnection type) {
         return state.setValue(CONNECTION_PROPERTIES_3[side.get3DDataValue()], type);
     }
 
@@ -576,7 +572,7 @@ public class PressureTubeBlock extends AbstractCamouflageBlock
 
     @Override
     public BlockState rotate(BlockState state, Rotation rotation) {
-        ConnectionType[] conns = new ConnectionType[HORIZONTALS.length];
+        PressureTubeConnection[] conns = new PressureTubeConnection[HORIZONTALS.length];
         for (Direction dir : HORIZONTALS) {
             conns[rotation.rotate(dir).get2DDataValue()] = state.getValue(CONNECTION_PROPERTIES_3[dir.get3DDataValue()]);
         }
@@ -588,7 +584,7 @@ public class PressureTubeBlock extends AbstractCamouflageBlock
 
     @Override
     public BlockState mirror(BlockState state, Mirror mirrorIn) {
-        ConnectionType[] conns = new ConnectionType[HORIZONTALS.length];
+        PressureTubeConnection[] conns = new PressureTubeConnection[HORIZONTALS.length];
         for (Direction dir : HORIZONTALS) {
             Rotation r = mirrorIn.getRotation(dir);
             conns[r.rotate(dir).get2DDataValue()] = state.getValue(CONNECTION_PROPERTIES_3[dir.get3DDataValue()]);
@@ -612,29 +608,4 @@ public class PressureTubeBlock extends AbstractCamouflageBlock
     private record BlockHitInfo(BlockHitResult res, @Nonnull TubeHitInfo tubeHitInfo) {
     }
 
-    /**
-     * Tri-state representing the 3 possible states for a tube connection.
-     */
-    public enum ConnectionType implements StringRepresentable {
-        UNCONNECTED(0, "open"),
-        CONNECTED(1, "connected"),
-        CLOSED(2, "closed");
-
-        private final int index;
-        private final String name;
-
-        ConnectionType(int index, String name) {
-            this.index = index;
-            this.name = name;
-        }
-
-        @Override
-        public String getSerializedName() {
-            return name;
-        }
-
-        public int getIndex() {
-            return index;
-        }
-    }
 }

@@ -17,9 +17,9 @@
 
 package me.desht.pneumaticcraft.common.block.entity;
 
+import me.desht.pneumaticcraft.api.block.PressureChamberWallState;
 import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.api.tileentity.IManoMeasurable;
-import me.desht.pneumaticcraft.common.block.PressureChamberWallBlock.WallState;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -39,8 +39,8 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.List;
 
-import static me.desht.pneumaticcraft.common.block.AbstractPressureWallBlock.WALL_STATE;
-import static me.desht.pneumaticcraft.common.block.PressureChamberValveBlock.FORMED;
+import static me.desht.pneumaticcraft.api.block.PNCBlockStateProperties.FORMED;
+import static me.desht.pneumaticcraft.api.block.PNCBlockStateProperties.WALL_STATE;
 
 public class PressureChamberWallBlockEntity extends AbstractTickingBlockEntity implements IManoMeasurable, IInfoForwarder {
     private PressureChamberValveBlockEntity teValve;  // lazily inited in getPrimaryValve()
@@ -95,7 +95,7 @@ public class PressureChamberWallBlockEntity extends AbstractTickingBlockEntity i
     }
 
     private BlockState calcNewWallState(PressureChamberValveBlockEntity valve) {
-        WallState wallState = WallState.NONE;
+        PressureChamberWallState wallState = PressureChamberWallState.NONE;
         if (valve != null && !valve.isRemoved()) {
             boolean xMin = getBlockPos().getX() == valve.multiBlockX;
             boolean yMin = getBlockPos().getY() == valve.multiBlockY;
@@ -106,27 +106,27 @@ public class PressureChamberWallBlockEntity extends AbstractTickingBlockEntity i
 
             // Corners
             if (xMin && yMin && zMin || xMax && yMax && zMax) {
-                wallState = WallState.XMIN_YMIN_ZMIN;
+                wallState = PressureChamberWallState.XMIN_YMIN_ZMIN;
             } else if (xMin && yMin && zMax || xMax && yMax && zMin) {
-                wallState = WallState.XMIN_YMIN_ZMAX;
+                wallState = PressureChamberWallState.XMIN_YMIN_ZMAX;
             } else if (xMin && yMax && zMax || xMax && yMin && zMin) {
-                wallState = WallState.XMIN_YMAX_ZMAX;
+                wallState = PressureChamberWallState.XMIN_YMAX_ZMAX;
             } else if (xMin && yMax && zMin || xMax && yMin && zMax) {
-                wallState = WallState.XMIN_YMAX_ZMIN;
+                wallState = PressureChamberWallState.XMIN_YMAX_ZMIN;
             }
             // Edges
             else if (yMin && xMin || yMax && xMax || yMin && xMax || yMax && xMin) {
-                wallState = WallState.XEDGE;
+                wallState = PressureChamberWallState.XEDGE;
             } else if (yMin && zMin || yMax && zMax || yMin && zMax || yMax && zMin) {
-                wallState = WallState.ZEDGE;
+                wallState = PressureChamberWallState.ZEDGE;
             } else if (!yMin && !yMax) {
                 if (xMin && zMin || xMax && zMax || xMin && zMax || xMax && zMin) {
-                    wallState = WallState.YEDGE;
+                    wallState = PressureChamberWallState.YEDGE;
                 } else {
-                    wallState = WallState.CENTER;
+                    wallState = PressureChamberWallState.CENTER;
                 }
             } else {
-                wallState = WallState.CENTER;
+                wallState = PressureChamberWallState.CENTER;
             }
         }
         return getBlockState().setValue(WALL_STATE, wallState);

@@ -17,6 +17,7 @@
 
 package me.desht.pneumaticcraft.common.block;
 
+import me.desht.pneumaticcraft.api.block.PNCBlockStateProperties;
 import me.desht.pneumaticcraft.common.block.entity.PneumaticDynamoBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.util.VoxelShapeUtils;
@@ -27,7 +28,6 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
@@ -59,17 +59,15 @@ public class PneumaticDynamoBlock extends AbstractPneumaticCraftBlock implements
             SHAPE_DOWN, SHAPE_UP, SHAPE_NORTH, SHAPE_SOUTH, SHAPE_WEST, SHAPE_EAST  // DUNSWE order
     };
 
-    public static final BooleanProperty ACTIVE = BooleanProperty.create("active");
-
     public PneumaticDynamoBlock() {
         super(ModBlocks.defaultProps());
-        registerDefaultState(getStateDefinition().any().setValue(ACTIVE, false));
+        registerDefaultState(getStateDefinition().any().setValue(PNCBlockStateProperties.ACTIVE, false));
     }
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         super.createBlockStateDefinition(builder);
-        builder.add(ACTIVE);
+        builder.add(PNCBlockStateProperties.ACTIVE);
     }
 
     @Override

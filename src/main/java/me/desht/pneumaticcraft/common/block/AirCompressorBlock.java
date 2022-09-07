@@ -17,6 +17,7 @@
 
 package me.desht.pneumaticcraft.common.block;
 
+import me.desht.pneumaticcraft.api.block.PNCBlockStateProperties;
 import me.desht.pneumaticcraft.common.block.entity.AirCompressorBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.util.VoxelShapeUtils;
@@ -27,7 +28,6 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
@@ -66,17 +66,15 @@ public class AirCompressorBlock extends AbstractPneumaticCraftBlock implements P
     private static final VoxelShape SHAPE_W = VoxelShapeUtils.rotateY(SHAPE_S, 90);
     private static final VoxelShape[] SHAPES = new VoxelShape[] { SHAPE_S, SHAPE_W, SHAPE_N, SHAPE_E };
 
-    public static final BooleanProperty ON = BooleanProperty.create("on");
-
     public AirCompressorBlock() {
         super(ModBlocks.defaultProps());
-        registerDefaultState(getStateDefinition().any().setValue(ON, false));
+        registerDefaultState(getStateDefinition().any().setValue(PNCBlockStateProperties.ON, false));
     }
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         super.createBlockStateDefinition(builder);
-        builder.add(ON);
+        builder.add(PNCBlockStateProperties.ON);
     }
 
     @Override

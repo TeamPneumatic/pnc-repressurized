@@ -17,6 +17,8 @@
 
 package me.desht.pneumaticcraft.common.block;
 
+import me.desht.pneumaticcraft.api.block.PNCBlockStateProperties;
+import me.desht.pneumaticcraft.api.block.PressureChamberWallState;
 import me.desht.pneumaticcraft.common.advancements.AdvancementTriggers;
 import me.desht.pneumaticcraft.common.block.entity.PressureChamberValveBlockEntity;
 import me.desht.pneumaticcraft.common.block.entity.PressureChamberWallBlockEntity;
@@ -31,15 +33,13 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.Nullable;
 
-import static me.desht.pneumaticcraft.common.block.PressureChamberValveBlock.FORMED;
+import static me.desht.pneumaticcraft.api.block.PNCBlockStateProperties.FORMED;
 
 public abstract class AbstractPressureWallBlock extends AbstractPneumaticCraftBlock implements IBlockPressureChamber, PneumaticCraftEntityBlock {
-    public static final EnumProperty<PressureChamberWallBlock.WallState> WALL_STATE = EnumProperty.create("wall_state", PressureChamberWallBlock.WallState.class);
 
     AbstractPressureWallBlock(Properties props) {
         super(props);
@@ -76,8 +76,8 @@ public abstract class AbstractPressureWallBlock extends AbstractPneumaticCraftBl
     }
 
     private boolean isFormed(BlockState state) {
-        if (state.hasProperty(WALL_STATE)) {
-            return state.getValue(WALL_STATE) != PressureChamberWallBlock.WallState.NONE;
+        if (state.hasProperty(PNCBlockStateProperties.WALL_STATE)) {
+            return state.getValue(PNCBlockStateProperties.WALL_STATE) != PressureChamberWallState.NONE;
         } else if (state.hasProperty(FORMED)) {
             return state.getValue(FORMED);
         } else {

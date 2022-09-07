@@ -17,6 +17,7 @@
 
 package me.desht.pneumaticcraft.common.block;
 
+import me.desht.pneumaticcraft.api.block.PNCBlockStateProperties;
 import me.desht.pneumaticcraft.common.block.entity.LiquidCompressorBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.util.VoxelShapeUtils;
@@ -77,14 +78,14 @@ public class LiquidCompressorBlock extends AbstractPneumaticCraftBlock implement
     public LiquidCompressorBlock() {
         super(ModBlocks.defaultProps().noOcclusion());
 
-        registerDefaultState(getStateDefinition().any().setValue(AirCompressorBlock.ON, false));
+        registerDefaultState(getStateDefinition().any().setValue(PNCBlockStateProperties.ON, false));
     }
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         super.createBlockStateDefinition(builder);
 
-        builder.add(AirCompressorBlock.ON);
+        builder.add(PNCBlockStateProperties.ON);
     }
 
     @Override

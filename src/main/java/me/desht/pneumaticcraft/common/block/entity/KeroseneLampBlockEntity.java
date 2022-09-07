@@ -68,7 +68,7 @@ import javax.annotation.Nullable;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static me.desht.pneumaticcraft.common.block.KeroseneLampBlock.LIT;
+import static net.minecraft.world.level.block.state.properties.BlockStateProperties.LIT;
 
 public class KeroseneLampBlockEntity extends AbstractTickingBlockEntity implements
         IRedstoneControl<KeroseneLampBlockEntity>, ISerializableTanks, MenuProvider {
