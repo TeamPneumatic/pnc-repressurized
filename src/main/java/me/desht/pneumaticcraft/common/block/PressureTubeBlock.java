@@ -19,6 +19,7 @@ package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
+import me.desht.pneumaticcraft.api.block.ITubeNetworkConnector;
 import me.desht.pneumaticcraft.api.block.PNCBlockStateProperties;
 import me.desht.pneumaticcraft.api.block.PressureTubeConnection;
 import me.desht.pneumaticcraft.common.block.entity.PressureTubeBlockEntity;
@@ -75,7 +76,7 @@ import static me.desht.pneumaticcraft.common.util.DirectionUtil.HORIZONTALS;
 import static net.minecraft.world.level.block.state.properties.BlockStateProperties.WATERLOGGED;
 
 public class PressureTubeBlock extends AbstractCamouflageBlock
-        implements SimpleWaterloggedBlock, PneumaticCraftEntityBlock {
+        implements SimpleWaterloggedBlock, PneumaticCraftEntityBlock, ITubeNetworkConnector {
 
     private static final int TUBE_WIDTH = 2;
     public static final int CORE_MIN = 8 - TUBE_WIDTH;
@@ -593,6 +594,11 @@ public class PressureTubeBlock extends AbstractCamouflageBlock
             state = state.setValue(CONNECTION_PROPERTIES_3[dir.get3DDataValue()], conns[dir.get2DDataValue()]);
         }
         return super.mirror(state, mirrorIn);
+    }
+
+    @Override
+    public boolean canConnectToNetwork(Level level, BlockPos pos, Direction dir, BlockState state) {
+        return state.hasProperty(CONNECTION_PROPERTIES_3[dir.get3DDataValue()]) && state.getValue(CONNECTION_PROPERTIES_3[dir.get3DDataValue()]) == CONNECTED;
     }
 
     /**
