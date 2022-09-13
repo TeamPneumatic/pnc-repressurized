@@ -18,30 +18,50 @@
 package me.desht.pneumaticcraft.common.recipes;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectLinkedOpenHashMap;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.Container;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingRecipe;
+import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.item.crafting.SmeltingRecipe;
 import net.minecraft.world.level.Level;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 /**
- * Cached vanilla crafting table recipe lookup, primarily for the benefit of drone crafting widget.
+ * LRU recipe cache for quick lookup of recipes based on inventory contents.
+ * Currently used for vanilla crafting and smelting recipes.
  */
-public enum CraftingRecipeCache {
-    INSTANCE;
+public class RecipeCache<T extends RecipeType<R>, R extends Recipe<C>, C extends Container> {
+    public static final RecipeCache<RecipeType<CraftingRecipe>, CraftingRecipe, CraftingContainer> CRAFTING = new RecipeCache<>(RecipeType.CRAFTING, true);
+    public static final RecipeCache<RecipeType<SmeltingRecipe>, SmeltingRecipe, Container> SMELTING = new RecipeCache<>(RecipeType.SMELTING, false);
 
     private static final int MAX_CACHE_SIZE = 1024;
 
-    private final Int2ObjectLinkedOpenHashMap<Optional<CraftingRecipe>> recipeCache = new Int2ObjectLinkedOpenHashMap<>(MAX_CACHE_SIZE, 0.25f);
+    private final T type;
+    private final boolean nbtSignificant;
+    private final Int2ObjectLinkedOpenHashMap<Optional<R>> recipeCache = new Int2ObjectLinkedOpenHashMap<>(MAX_CACHE_SIZE, 0.25f);
 
-    public Optional<CraftingRecipe> getCachedRecipe(Level world, CraftingContainer inv) {
+    private RecipeCache(T type, boolean nbtSignificant) {
+        this.type = type;
+        this.nbtSignificant = nbtSignificant;
+    }
+
+    static void clearAll() {
+        CRAFTING.clear();
+        SMELTING.clear();
+    }
+
+    public Optional<R> getCachedRecipe(Level world, C inv) {
         int key = makeKey(inv);
         if (recipeCache.containsKey(key)) {
             return recipeCache.getAndMoveToFirst(key);
         } else {
-            Optional<CraftingRecipe> newRecipe = world.getRecipeManager().getRecipeFor(RecipeType.CRAFTING, inv, world);
+            Optional<R> newRecipe = world.getRecipeManager().getRecipeFor(type, inv, world);
             if (recipeCache.size() == MAX_CACHE_SIZE) {
                 recipeCache.removeLast();
             }
@@ -50,20 +70,23 @@ public enum CraftingRecipeCache {
         }
     }
 
-    public void clear() {
+    private void clear() {
         recipeCache.clear();
     }
 
-    private int makeKey(CraftingContainer inv) {
+    private int makeKey(C inv) {
         List<Integer> c = new ArrayList<>();
         for (int i = 0; i < inv.getContainerSize(); i++) {
             ItemStack stack = inv.getItem(i);
             if (!stack.isEmpty()) {
                 c.add(i);
                 c.add(stack.getItem().hashCode());
-                if (stack.hasTag()) c.add(Objects.requireNonNull(stack.getTag()).hashCode());
+                if (nbtSignificant) {
+                    CompoundTag tag = stack.getTag();
+                    if (tag != null) c.add(tag.hashCode());
+                }
             }
         }
-        return Arrays.hashCode(c.toArray(new Integer[0]));
+        return c.hashCode();
     }
 }

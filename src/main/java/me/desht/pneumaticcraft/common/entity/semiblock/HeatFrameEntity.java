@@ -26,6 +26,7 @@ import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.core.ModRecipeTypes;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.common.heat.SyncedTemperature;
+import me.desht.pneumaticcraft.common.recipes.RecipeCache;
 import me.desht.pneumaticcraft.common.recipes.machine.HeatFrameCoolingRecipeImpl;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -41,7 +42,6 @@ import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
@@ -194,7 +194,7 @@ public class HeatFrameEntity extends AbstractSemiblockEntity {
         if (!stack.isEmpty()) {
             SimpleContainer inv = new SimpleContainer(1);
             inv.setItem(0, stack);
-            return level.getRecipeManager().getRecipeFor(RecipeType.SMELTING, inv, this.level).map(recipe -> {
+            return RecipeCache.SMELTING.getCachedRecipe(this.level, inv).map(recipe -> {
                 ItemStack result = recipe.getResultItem().copy();
                 if (!result.isEmpty()) {
                     ItemStack remainder = ItemHandlerHelper.insertItem(handler, result, true);

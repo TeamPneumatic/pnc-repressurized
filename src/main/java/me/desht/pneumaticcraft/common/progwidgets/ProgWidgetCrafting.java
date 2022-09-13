@@ -23,7 +23,7 @@ import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.ai.DroneAICrafting;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import me.desht.pneumaticcraft.common.core.ModProgWidgets;
-import me.desht.pneumaticcraft.common.recipes.CraftingRecipeCache;
+import me.desht.pneumaticcraft.common.recipes.RecipeCache;
 import me.desht.pneumaticcraft.common.util.DummyContainer;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
@@ -140,7 +140,7 @@ public class ProgWidgetCrafting extends ProgWidget implements ICraftingWidget, I
         // no caching if using variables, because the item can change at any item
         return usingVariables ?
                 world.getRecipeManager().getRecipeFor(RecipeType.CRAFTING, grid, world) :
-                CraftingRecipeCache.INSTANCE.getCachedRecipe(world, grid);
+                RecipeCache.CRAFTING.getCachedRecipe(world, grid);
     }
 
     public static Recipe<CraftingContainer> getRecipe(Level world, ICraftingWidget widget) {
