@@ -15,6 +15,7 @@ import me.desht.pneumaticcraft.common.particle.AirParticleData;
 import me.desht.pneumaticcraft.common.util.PlayerFilter;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableHelper;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -80,5 +81,10 @@ public enum MiscAPIHandler implements IMiscHelpers {
                 level.playSound(null, pos, ModSounds.SHORT_HISS.get(), SoundSource.BLOCKS, 0.3f, 0.8f);
             }
         });
+    }
+
+    @Override
+    public ParticleOptions airParticle() {
+        return AirParticleData.DENSE;
     }
 }

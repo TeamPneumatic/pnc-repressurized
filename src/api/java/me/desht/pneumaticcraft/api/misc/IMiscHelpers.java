@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.api.misc;
 
 import me.desht.pneumaticcraft.api.crafting.ingredient.FluidIngredient;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -90,4 +91,12 @@ public interface IMiscHelpers {
      * @param blockEntity the block entity of the machine being broken
      */
     void playMachineBreakEffect(BlockEntity blockEntity);
+
+    /**
+     * Get an air particle data object, suitable for passing to {@link Level#addParticle(ParticleOptions, double, double, double, double, double, double)}
+     * and related methods.
+     *
+     * @return the air particle data
+     */
+    ParticleOptions airParticle();
 }
