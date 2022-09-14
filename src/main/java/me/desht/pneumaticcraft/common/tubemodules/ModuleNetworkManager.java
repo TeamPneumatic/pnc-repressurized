@@ -18,8 +18,9 @@
 package me.desht.pneumaticcraft.common.tubemodules;
 
 import me.desht.pneumaticcraft.api.block.ITubeNetworkConnector;
-import me.desht.pneumaticcraft.common.core.ModBlockEntities;
+import me.desht.pneumaticcraft.common.block.entity.PressureTubeBlockEntity;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
@@ -58,7 +59,7 @@ public class ModuleNetworkManager {
 
         while (!pendingPositions.isEmpty()) {
             BlockPos pos = pendingPositions.pop();
-            level.getBlockEntity(pos, ModBlockEntities.PRESSURE_TUBE.get()).ifPresent(tube -> tube.tubeModules()
+            PneumaticCraftUtils.getTileEntityAt(level, pos, PressureTubeBlockEntity.class).ifPresent(tube -> tube.tubeModules()
                     .filter(tm -> tm instanceof INetworkedModule && module.getClass() == tm.getClass())
                     .forEach(modules::add));
             for (Direction dir : DirectionUtil.VALUES) {
