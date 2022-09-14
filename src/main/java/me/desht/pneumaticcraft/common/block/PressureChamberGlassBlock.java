@@ -21,12 +21,21 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.material.FluidState;
 
 public class PressureChamberGlassBlock extends AbstractPressureWallBlock {
     public PressureChamberGlassBlock() {
         super(IBlockPressureChamber.pressureChamberBlockProps().noOcclusion());
+        registerDefaultState(getStateDefinition().any().setValue(PressureChamberValveBlock.FORMED, false));
+    }
+
+    @Override
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
+        super.createBlockStateDefinition(builder);
+        builder.add(PressureChamberValveBlock.FORMED);
     }
 
     @Override

@@ -37,6 +37,8 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.Nullable;
 
+import static me.desht.pneumaticcraft.common.block.PressureChamberValveBlock.FORMED;
+
 public abstract class AbstractPressureWallBlock extends AbstractPneumaticCraftBlock implements IBlockPressureChamber, PneumaticCraftEntityBlock {
     public static final EnumProperty<WallState> WALL_STATE = EnumProperty.create("wall_state", WallState.class);
 
@@ -61,9 +63,9 @@ public abstract class AbstractPressureWallBlock extends AbstractPneumaticCraftBl
     @Override
     public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult brtr) {
         if (world.isClientSide) {
-            return !state.hasProperty(WALL_STATE) || state.getValue(WALL_STATE) == WallState.NONE ?
-                    InteractionResult.PASS : InteractionResult.SUCCESS;
+            return isFormed(state) ? InteractionResult.SUCCESS : InteractionResult.PASS;
         }
+
         // forward activation to the pressure chamber valve, which will open the GUI
         return PneumaticCraftUtils.getTileEntityAt(world, pos, PressureChamberWallBlockEntity.class).map(te -> {
             PressureChamberValveBlockEntity valve = te.getPrimaryValve();
@@ -73,6 +75,16 @@ public abstract class AbstractPressureWallBlock extends AbstractPneumaticCraftBl
             }
             return InteractionResult.FAIL;
         }).orElse(InteractionResult.FAIL);
+    }
+
+    private boolean isFormed(BlockState state) {
+        if (state.hasProperty(WALL_STATE)) {
+            return state.getValue(WALL_STATE) != WallState.NONE;
+        } else if (state.hasProperty(FORMED)) {
+            return state.getValue(FORMED);
+        } else {
+            return false;
+        }
     }
 
     @Override

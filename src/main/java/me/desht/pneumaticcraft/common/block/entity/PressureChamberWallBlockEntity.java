@@ -27,6 +27,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -40,6 +41,7 @@ import java.util.Deque;
 import java.util.List;
 
 import static me.desht.pneumaticcraft.common.block.AbstractPressureWallBlock.WALL_STATE;
+import static me.desht.pneumaticcraft.common.block.PressureChamberValveBlock.FORMED;
 
 public class PressureChamberWallBlockEntity extends AbstractTickingBlockEntity implements IManoMeasurable, IInfoForwarder {
     private PressureChamberValveBlockEntity teValve;  // lazily inited in getPrimaryValve()
@@ -81,12 +83,20 @@ public class PressureChamberWallBlockEntity extends AbstractTickingBlockEntity i
     }
 
     private void updateBlockState(PressureChamberValveBlockEntity valve) {
-        if (!this.isRemoved() && (valve == null || !valve.isRemoved()) && getBlockState().hasProperty(WALL_STATE)) {
-            nonNullLevel().setBlock(getBlockPos(), calcNewBlockState(valve), 2);
+        if (!this.isRemoved() && (valve == null || !valve.isRemoved())) {
+            if (getBlockState().hasProperty(WALL_STATE)) {
+                nonNullLevel().setBlock(getBlockPos(), calcNewWallState(valve), Block.UPDATE_CLIENTS);
+            } else if (getBlockState().hasProperty(FORMED)) {
+                nonNullLevel().setBlock(getBlockPos(), calcNewGlassState(valve), Block.UPDATE_CLIENTS);
+            }
         }
     }
 
-    private BlockState calcNewBlockState(PressureChamberValveBlockEntity valve) {
+    private BlockState calcNewGlassState(PressureChamberValveBlockEntity valve) {
+        return getBlockState().setValue(FORMED, valve != null && !valve.isRemoved());
+    }
+
+    private BlockState calcNewWallState(PressureChamberValveBlockEntity valve) {
         WallState wallState = WallState.NONE;
         if (valve != null && !valve.isRemoved()) {
             boolean xMin = getBlockPos().getX() == valve.multiBlockX;

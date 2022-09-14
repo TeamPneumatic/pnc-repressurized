@@ -36,6 +36,7 @@ public class PressureChamberWallBlock extends AbstractPressureWallBlock {
 
     public PressureChamberWallBlock() {
         super(IBlockPressureChamber.pressureChamberBlockProps());
+        registerDefaultState(getStateDefinition().any().setValue(WALL_STATE, WallState.NONE));
     }
 
     @Override
