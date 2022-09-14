@@ -26,7 +26,11 @@ import net.minecraftforge.fluids.FluidStack;
 import org.apache.commons.lang3.Validate;
 import org.apache.commons.lang3.tuple.Pair;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public enum XPFluidManager {
     INSTANCE;
@@ -74,13 +78,13 @@ public enum XPFluidManager {
 
     public List<Fluid> getAvailableLiquidXPs() {
         if (availableLiquidXPs == null) {
-            // little kludge: ensure our own Memory Essence is always first in the list
-            Set<Fluid> tmpSet = new HashSet<>(liquidXPs.keySet());
             ImmutableList.Builder<Fluid> builder = ImmutableList.builder();
-            if (tmpSet.remove(ModFluids.MEMORY_ESSENCE.get())) {
-                builder.add(ModFluids.MEMORY_ESSENCE.get());
-            }
-            builder.addAll(tmpSet);
+            builder.addAll(liquidXPs.keySet().stream().sorted((f1, f2) -> {
+                // little kludge: ensure our own Memory Essence is always first in the list
+                if (f1 == ModFluids.MEMORY_ESSENCE.get()) return -1;
+                if (f1.getRegistryName() == null || f2.getRegistryName() == null) return 0;
+                return f1.getRegistryName().compareTo(f2.getRegistryName());
+            }).collect(Collectors.toList()));
             availableLiquidXPs = builder.build();
         }
         return availableLiquidXPs;
