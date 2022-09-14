@@ -9,6 +9,22 @@ Changes are in reverse chronological order; newest changes at the top.
 * PNC:R 3.2.3 and later *require* Forge 40.1.20 or later
 * PNC:R 3.2.0 and later *require* Forge 40.1.0 or later and JEI 9.7.0 or later
 
+## 3.4.2-137 (14 Sep 2022)
+
+### Updates
+* A few new pieces of API:
+  * `IMiscHelpers#airParticle`
+  * Exposed some blockstate properties in `PNCBlockStateProperties`
+  * Added `ITubeNetworkConnector` interface to support using blocks other than Pressure Tubes to connect tube modules (Logistics and Redstone)
+  * Mainly to support new Compressed Creativity functionality
+  * Compressed Creativity is a PNC:R/Create integration addon mod - it's cool, check it out!
+
+### Fixes
+* Fixed a problem where XP fluids shown in the Aerial Interface GUI could get out of sync with server-known fluids
+* Fixed issue where right-clicking a formed Pressure Chamber glass block would activate the held object too
+  * E.g. right-clicking with a water bucket would both open the GUI and pour out the water
+* Fixed potential performance issue with Heat Frame on inventories full of items, particularly on servers with many known smelting recipes
+
 ## 3.4.1-131 (31 Aug 2022)
 
 ### Updates
