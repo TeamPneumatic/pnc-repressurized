@@ -61,7 +61,7 @@ jobs:
       - name: Publish to Modrinth
         env:
           CHANGELOG: ${{ steps.mod_meta.outputs.changelog }}
-          MODRINTH: ${{ secrets.MODRINTH_TOKEN }}
+          MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
         run: ./gradlew modrinth
       - name: Discord notification
         uses: Ilshidur/action-discord@master
