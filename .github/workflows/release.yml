@@ -3,8 +3,8 @@ name: "Build applicable branches on push or pull request"
 # Controls when the action will run. Triggers the workflow on push or pull request
 # events for the branches listed
 on:
-  push:
-    branches: [ "1.18.*", "1.19", "1.19.*" ]
+  release:
+    types: [ published ]
 
 jobs:
   build:
@@ -52,11 +52,17 @@ jobs:
         run: |
           echo "::set-output name=mod_version::$(grep ^mod_version_ ./gradle.properties | cut -d= -f2 | tr '\012' '.' | sed -e 's/\.$//')"
           echo "::set-output name=mc_version::$(grep ^mc_version ./gradle.properties | cut -d= -f2)"
+          echo "::set-output name=changelog::$(./scripts/extract_changes.sh)"
       - name: Upload artifact to GitHub
         uses: actions/upload-artifact@v2
         with:
           name: pncr-dist-${{ github.ref_name }}-${{ steps.mod_meta.outputs.mod_version}}-${{ github.run_number }}
           path: build/libs/
+      - name: Publish to Modrinth
+        env:
+          CHANGELOG: ${{ steps.mod_meta.outputs.changelog }}
+          MODRINTH: ${{ secrets.MODRINTH }}
+        run: ./gradlew modrinth
       - name: Discord notification
         uses: Ilshidur/action-discord@master
         env:
@@ -64,4 +70,4 @@ jobs:
         if:
           env.DISCORD_WEBHOOK != null
         with:
-          args: 'Build complete for project {{ EVENT_PAYLOAD.repository.full_name }} (Minecraft ${{ steps.mod_meta.outputs.mc_version}}): ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}.'
+          args: 'Release made for project {{ EVENT_PAYLOAD.repository.full_name }} (Minecraft ${{ steps.mod_meta.outputs.mc_version}}): ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}.'
