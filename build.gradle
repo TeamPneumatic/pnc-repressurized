@@ -377,8 +377,8 @@ idea {
 
 modrinth {
 	token = System.getenv("MODRINTH_TOKEN")
-	projectId = "ncAcdgk7"
-	versionNumber = "${version}" // You don't need to set this manually. Will fail if Modrinth has this version already
+	projectId = "${project.modrinth_project_id}"
+	versionNumber = "${project.mc_version}-${semver}" // You don't need to set this manually. Will fail if Modrinth has this version already
 	versionType = "release" // This is the default -- can also be `beta` or `alpha`
 	uploadFile = jar // With Loom, this MUST be set to `remapJar` instead of `jar`!
 	additionalFiles = [ apiJar ]
