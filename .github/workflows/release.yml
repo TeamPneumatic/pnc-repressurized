@@ -13,9 +13,9 @@ jobs:
     steps:
       - name: Export release tag as environment variable
         env:
-         TAG: ${{ github.event.release.tag_name }}
-       run: |
-         echo "TAG=${TAG}" >> $GITHUB_ENV
+          TAG: ${{ github.event.release.tag_name }}
+        run: |
+          echo "TAG=${TAG}" >> $GITHUB_ENV
       - uses: actions/checkout@v2
       - name: Set up JDK 17
         uses: actions/setup-java@v2
