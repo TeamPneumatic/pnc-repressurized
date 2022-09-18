@@ -1,16 +1,21 @@
-name: "Build applicable branches on push or pull request"
+name: "Build a release"
 
 # Controls when the action will run. Triggers the workflow on push or pull request
 # events for the branches listed
 on:
-  push:
-    branches: [ "1.18.*", "1.19", "1.19.*" ]
+  release:
+    types: [ published ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Export release tag as environment variable
+        env:
+          TAG: ${{ github.event.release.tag_name }}
+        run: |
+          echo "TAG=${TAG}" >> $GITHUB_ENV
       - uses: actions/checkout@v2
       - name: Set up JDK 17
         uses: actions/setup-java@v2
@@ -19,22 +24,6 @@ jobs:
           java-version: '17'
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
-      - name: Use gradle cache for faster builds
-        uses: actions/cache@v1
-        with:
-          path: ~/.gradle/caches
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
-      - name: Cleanup Gradle Cache
-        # Remove some files from the Gradle cache, so they aren't cached by GitHub Actions.
-        # Restoring these files from a GitHub Actions cache might cause problems for future builds.
-        run: |
-          rm -f ~/.gradle/caches/modules-2/modules-2.lock
-          rm -f ~/.gradle/caches/modules-2/gc.properties
-      - name: Setup Gradle Wrapper Cache
-        uses: actions/cache@v2
-        with:
-          path: ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}
       - name: Clean gradle
         run: ./gradlew clean --no-daemon --max-workers 1
       - name: Remove any generated assets/data
@@ -52,11 +41,24 @@ jobs:
         run: |
           echo "::set-output name=mod_version::$(grep ^mod_version_ ./gradle.properties | cut -d= -f2 | tr '\012' '.' | sed -e 's/\.$//')"
           echo "::set-output name=mc_version::$(grep ^mc_version ./gradle.properties | cut -d= -f2)"
+          echo "::set-output name=changelog::$(./scripts/extract_changes.sh)"
       - name: Upload artifact to GitHub
         uses: actions/upload-artifact@v2
         with:
           name: pncr-dist-${{ github.ref_name }}-${{ steps.mod_meta.outputs.mod_version}}-${{ github.run_number }}
           path: build/libs/
+      - name: Publish to Modrinth
+        env:
+          CHANGELOG: ${{ steps.mod_meta.outputs.changelog }}
+          MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
+          BUILD_NUMBER: ${{ github.run_number }}
+        run: ./gradlew modrinth --no-daemon --max-workers 1
+      - name: Publish to Curseforge
+        env:
+          CHANGELOG: ${{ steps.mod_meta.outputs.changelog }}
+          CURSEFORGE_TOKEN: ${{ secrets.CURSEFORGE_TOKEN }}
+          BUILD_NUMBER: ${{ github.run_number }}
+        run: ./gradlew curseforge --no-daemon --max-workers 1
       - name: Discord notification
         uses: Ilshidur/action-discord@master
         env:
@@ -64,4 +66,4 @@ jobs:
         if:
           env.DISCORD_WEBHOOK != null
         with:
-          args: 'Build complete for project {{ EVENT_PAYLOAD.repository.full_name }} (Minecraft ${{ steps.mod_meta.outputs.mc_version}}): ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}.'
+          args: 'Release made for project {{ EVENT_PAYLOAD.repository.full_name }} (Minecraft ${{ steps.mod_meta.outputs.mc_version}}): ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}.'
