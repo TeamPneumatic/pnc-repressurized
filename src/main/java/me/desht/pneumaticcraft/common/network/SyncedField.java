@@ -33,7 +33,6 @@ public abstract class SyncedField<T> {
     private T lastValue;
     private int arrayIndex = -1;
     private boolean isLazy;
-    private Class<?> annotation;
 
     SyncedField(Object te, Field field) {
         this.field = field;
@@ -119,14 +118,6 @@ public abstract class SyncedField<T> {
     public void setValue(Object value) {
         //noinspection unchecked
         setValueInternal((T) value);
-    }
-
-    public void setAnnotation(Class<?> annotation) {
-        this.annotation = annotation;
-    }
-
-    public Class<?> getAnnotation() {
-        return annotation;
     }
 
     public static class SyncedInt extends SyncedField<Integer> {
@@ -291,8 +282,8 @@ public abstract class SyncedField<T> {
 
         @Override
         protected boolean equals(FluidStack oldValue, FluidStack newValue) {
-            // Default FluidStack .equals() implementation only checks the fluid, not the amount
-            return oldValue.isFluidEqual(newValue) && oldValue.getAmount() == newValue.getAmount();
+            // Note: FluidStack#equals() implementation only checks the fluid, not the amount
+            return oldValue.isFluidStackIdentical(newValue);
         }
     }
 

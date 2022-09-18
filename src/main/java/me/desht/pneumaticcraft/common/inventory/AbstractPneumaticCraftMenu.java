@@ -63,7 +63,7 @@ public abstract class AbstractPneumaticCraftMenu<T extends AbstractPneumaticCraf
             BlockEntity te0 = invPlayer.player.level.getBlockEntity(tilePos);
             if (te0 instanceof AbstractPneumaticCraftBlockEntity) {
                 //noinspection unchecked
-                te = (T) te0;  // should be safe: T extends TileEntityBase, and we're doing an instanceof
+                te = (T) te0;  // should be safe: T extends AbstractPneumaticCraftBlockEntity, and we're doing an instanceof
                 addSyncedFields(te);
             } else {
                 te = null;

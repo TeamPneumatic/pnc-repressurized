@@ -17,6 +17,7 @@
 
 package me.desht.pneumaticcraft.common.network;
 
+import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.common.network.SyncedField.*;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.world.item.ItemStack;
@@ -26,7 +27,7 @@ import net.minecraftforge.items.ItemStackHandler;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class NetworkUtils {
@@ -38,139 +39,118 @@ public class NetworkUtils {
      * @return a list of all the fields annotated with the given type
      */
     public static List<SyncedField<?>> getSyncedFields(Object syncable, Class<? extends Annotation> searchedAnnotation) {
-        List<SyncedField<?>> syncedFields = new ArrayList<>();
+        ImmutableList.Builder<SyncedField<?>> builder = ImmutableList.builder();
         Class<?> examinedClass = syncable.getClass();
         while (examinedClass != null) {
             for (Field field : examinedClass.getDeclaredFields()) {
                 if (field.getAnnotation(searchedAnnotation) != null) {
-                    syncedFields.addAll(getSyncedFieldsForField(field, syncable, searchedAnnotation));
+                    builder.addAll(getSyncedFieldsForField(field, syncable, searchedAnnotation));
                 }
             }
             examinedClass = examinedClass.getSuperclass();
         }
-        // record how the field was found - later on, SyncedField methods can use this information
-        // e.g. GuiSynced data can be sent much more often than DescSynced data
-        syncedFields.forEach(field -> field.setAnnotation(searchedAnnotation));
-        return syncedFields;
+        return builder.build();
     }
 
     private static List<SyncedField<?>> getSyncedFieldsForField(Field field, Object te, Class<? extends Annotation> searchedAnnotation) {
         boolean isLazy = field.getAnnotation(LazySynced.class) != null;
-        List<SyncedField<?>> syncedFields = new ArrayList<>();
         SyncedField<?> syncedField = getSyncedFieldForField(field, te);
         if (syncedField != null) {
-            syncedFields.add(syncedField.setLazy(isLazy));
+            return Collections.singletonList(syncedField.setLazy(isLazy));
         } else {
-            Object o;
+            ImmutableList.Builder<SyncedField<?>> builder = ImmutableList.builder();
+            int filteredIndex = field.getAnnotation(FilteredSynced.class) != null ? field.getAnnotation(FilteredSynced.class).index() : -1;
             try {
-                int filteredIndex = field.getAnnotation(FilteredSynced.class) != null ? field.getAnnotation(FilteredSynced.class).index() : -1;
                 field.setAccessible(true);
-                o = field.get(te);
+                Object o = field.get(te);
                 if (o instanceof int[] array) {
                     if (filteredIndex >= 0) {
-                        syncedFields.add(new SyncedInt(te, field).setArrayIndex(filteredIndex).setLazy(isLazy));
+                        builder.add(new SyncedInt(te, field).setArrayIndex(filteredIndex).setLazy(isLazy));
                     } else {
                         for (int i = 0; i < array.length; i++) {
-                            syncedFields.add(new SyncedInt(te, field).setArrayIndex(i).setLazy(isLazy));
+                            builder.add(new SyncedInt(te, field).setArrayIndex(i).setLazy(isLazy));
                         }
                     }
-                    return syncedFields;
-                }
-                if (o instanceof float[] array) {
+                } else if (o instanceof float[] array) {
                     if (filteredIndex >= 0) {
-                        syncedFields.add(new SyncedFloat(te, field).setArrayIndex(filteredIndex).setLazy(isLazy));
+                        builder.add(new SyncedFloat(te, field).setArrayIndex(filteredIndex).setLazy(isLazy));
                     } else {
                         for (int i = 0; i < array.length; i++) {
-                            syncedFields.add(new SyncedFloat(te, field).setArrayIndex(i).setLazy(isLazy));
+                            builder.add(new SyncedFloat(te, field).setArrayIndex(i).setLazy(isLazy));
                         }
                     }
-                    return syncedFields;
-                }
-                if (o instanceof double[] array) {
+                } else if (o instanceof double[] array) {
                     if (filteredIndex >= 0) {
-                        syncedFields.add(new SyncedDouble(te, field).setArrayIndex(filteredIndex).setLazy(isLazy));
+                        builder.add(new SyncedDouble(te, field).setArrayIndex(filteredIndex).setLazy(isLazy));
                     } else {
                         for (int i = 0; i < array.length; i++) {
-                            syncedFields.add(new SyncedDouble(te, field).setArrayIndex(i).setLazy(isLazy));
+                            builder.add(new SyncedDouble(te, field).setArrayIndex(i).setLazy(isLazy));
                         }
                     }
-                    return syncedFields;
-                }
-                if (o instanceof boolean[] array) {
+                } else if (o instanceof boolean[] array) {
                     if (filteredIndex >= 0) {
-                        syncedFields.add(new SyncedBoolean(te, field).setArrayIndex(filteredIndex).setLazy(isLazy));
+                        builder.add(new SyncedBoolean(te, field).setArrayIndex(filteredIndex).setLazy(isLazy));
                     } else {
                         for (int i = 0; i < array.length; i++) {
-                            syncedFields.add(new SyncedBoolean(te, field).setArrayIndex(i).setLazy(isLazy));
+                            builder.add(new SyncedBoolean(te, field).setArrayIndex(i).setLazy(isLazy));
                         }
                     }
-                    return syncedFields;
-                }
-                if (o instanceof String[] array) {
+                } else if (o instanceof String[] array) {
                     if (filteredIndex >= 0) {
-                        syncedFields.add(new SyncedString(te, field).setArrayIndex(filteredIndex).setLazy(isLazy));
+                        builder.add(new SyncedString(te, field).setArrayIndex(filteredIndex).setLazy(isLazy));
                     } else {
                         for (int i = 0; i < array.length; i++) {
-                            syncedFields.add(new SyncedString(te, field).setArrayIndex(i).setLazy(isLazy));
+                            builder.add(new SyncedString(te, field).setArrayIndex(i).setLazy(isLazy));
                         }
                     }
-                    return syncedFields;
-                }
-                if (o.getClass().isArray() && o.getClass().getComponentType().isEnum()) {
+                } else if (o.getClass().isArray() && o.getClass().getComponentType().isEnum()) {
                     Object[] enumArray = (Object[]) o;
                     if (filteredIndex >= 0) {
-                        syncedFields.add(new SyncedEnum(te, field).setArrayIndex(filteredIndex).setLazy(isLazy));
+                        builder.add(new SyncedEnum(te, field).setArrayIndex(filteredIndex).setLazy(isLazy));
                     } else {
                         for (int i = 0; i < enumArray.length; i++) {
-                            syncedFields.add(new SyncedEnum(te, field).setArrayIndex(i).setLazy(isLazy));
+                            builder.add(new SyncedEnum(te, field).setArrayIndex(i).setLazy(isLazy));
                         }
                     }
-                    return syncedFields;
-                }
-                if (o instanceof ItemStack[] array) {
+                } else if (o instanceof ItemStack[] array) {
                     if (filteredIndex >= 0) {
-                        syncedFields.add(new SyncedItemStack(te, field).setArrayIndex(filteredIndex).setLazy(isLazy));
+                        builder.add(new SyncedItemStack(te, field).setArrayIndex(filteredIndex).setLazy(isLazy));
                     } else {
                         for (int i = 0; i < array.length; i++) {
-                            syncedFields.add(new SyncedItemStack(te, field).setArrayIndex(i).setLazy(isLazy));
+                            builder.add(new SyncedItemStack(te, field).setArrayIndex(i).setLazy(isLazy));
                         }
                     }
-                    return syncedFields;
-                }
-                if (o instanceof FluidStack[] array) {
+                } else if (o instanceof FluidStack[] array) {
                     if (filteredIndex >= 0) {
-                        syncedFields.add(new SyncedFluidStack(te, field).setArrayIndex(filteredIndex).setLazy(isLazy));
+                        builder.add(new SyncedFluidStack(te, field).setArrayIndex(filteredIndex).setLazy(isLazy));
                     } else {
                         for (int i = 0; i < array.length; i++) {
-                            syncedFields.add(new SyncedFluidStack(te, field).setArrayIndex(i).setLazy(isLazy));
+                            builder.add(new SyncedFluidStack(te, field).setArrayIndex(i).setLazy(isLazy));
                         }
                     }
-                    return syncedFields;
-                }
-                if (o instanceof ItemStackHandler[] array) {
+                } else if (o instanceof ItemStackHandler[] array) {
                     if (filteredIndex >= 0) {
-                        syncedFields.add(new SyncedItemStack(te, field).setArrayIndex(filteredIndex).setLazy(isLazy));
+                        builder.add(new SyncedItemStack(te, field).setArrayIndex(filteredIndex).setLazy(isLazy));
                     } else {
                         for (int i = 0; i < array.length; i++) {
-                            syncedFields.add(new SyncedItemStack(te, field).setArrayIndex(i).setLazy(isLazy));
+                            builder.add(new SyncedItemStack(te, field).setArrayIndex(i).setLazy(isLazy));
                         }
                     }
-                }
-                if (field.getType().isArray()) {
+                } else if (field.getType().isArray()) {
                     Object[] array = (Object[]) o;
                     for (Object obj : array) {
-                        syncedFields.addAll(getSyncedFields(obj, searchedAnnotation));
+                        builder.addAll(getSyncedFields(obj, searchedAnnotation));
                     }
                 } else {
-                    syncedFields.addAll(getSyncedFields(o, searchedAnnotation));
+                    builder.addAll(getSyncedFields(o, searchedAnnotation));
                 }
-                if (syncedFields.size() > 0) return syncedFields;
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            Log.warning("Field " + field + " didn't produce any syncable fields!");
+            List<SyncedField<?>> syncedFields = builder.build();
+            if (syncedFields.isEmpty()) Log.warning("Field " + field + " didn't produce any syncable fields!");
+            return syncedFields;
         }
-        return syncedFields;
     }
 
     private static SyncedField<?> getSyncedFieldForField(Field field, Object te) {
