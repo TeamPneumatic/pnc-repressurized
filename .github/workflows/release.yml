@@ -11,6 +11,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Export release tag as environment variable
+        env:
+         TAG: ${{ github.event.release.tag_name }}
+       run: |
+         echo "TAG=${TAG}" >> $GITHUB_ENV
       - uses: actions/checkout@v2
       - name: Set up JDK 17
         uses: actions/setup-java@v2
@@ -48,6 +53,12 @@ jobs:
           MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
           BUILD_NUMBER: ${{ github.run_number }}
         run: ./gradlew modrinth --no-daemon --max-workers 1
+      - name: Publish to Curseforge
+        env:
+          CHANGELOG: ${{ steps.mod_meta.outputs.changelog }}
+          CURSEFORGE_TOKEN: ${{ secrets.CURSEFORGE_TOKEN }}
+          BUILD_NUMBER: ${{ github.run_number }}
+        run: ./gradlew curseforge --no-daemon --max-workers 1
       - name: Discord notification
         uses: Ilshidur/action-discord@master
         env:

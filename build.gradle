@@ -16,7 +16,7 @@ plugins {
 	id 'java'
 	id 'eclipse'
 	id 'idea'
-//	id 'com.matthewprenger.cursegradle' version '1.4.0'
+	id 'com.matthewprenger.cursegradle' version '1.4.0'
 	id 'se.bjurr.gitchangelog.git-changelog-gradle-plugin' version '1.71.4'
 	id 'maven-publish'
 	id "com.modrinth.minotaur" version "2.+"
@@ -38,6 +38,10 @@ String semver = "${mod_version_massive}.${mod_version_major}.${mod_version_minor
 version = "${project.mc_version}-${semver}-${build_number}"
 group = 'me.desht.pneumaticcraft' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "pneumaticcraft-repressurized"
+
+ext.tag = System.getenv('TAG') ?: ""
+ext.isAlpha = ext.tag.contains("alpha")
+ext.isBeta = ext.tag.contains("beta")
 
 // All jar files from this folder will be added automatically as runtime mod dependencies
 String extraModsDir = "extra-mods-${project.mc_version}"
@@ -375,11 +379,18 @@ idea {
 	}
 }
 
+def relType = "release"
+if (ext.isAlpha) {
+	relType = "alpha"
+} else if (ext.isBeta) {
+	relType = "beta"
+}
+
 modrinth {
 	token = System.getenv("MODRINTH_TOKEN")
 	projectId = "${project.modrinth_project_id}"
-	versionNumber = "${project.mc_version}-${semver}" // You don't need to set this manually. Will fail if Modrinth has this version already
-	versionType = "release" // This is the default -- can also be `beta` or `alpha`
+	versionNumber = "${project.mc_version}-${semver}"
+	versionType = relType
 	uploadFile = jar // With Loom, this MUST be set to `remapJar` instead of `jar`!
 	additionalFiles = [ apiJar ]
 	gameVersions = ["${mc_version}"] // Must be an array, even with only one version
@@ -391,6 +402,26 @@ modrinth {
 		required.project "nU0bVIaL"  // Patchouli
 	}
 }
+
+curseforge {
+	apiKey = System.getenv("CURSEFORGE_TOKEN")
+	project {
+		id = project.curse_project_id
+		changelogType = "markdown"
+		changelog = System.getenv("CHANGELOG")
+		releaseType = relType
+		addGameVersion project.mc_version
+		addGameVersion "Forge"
+		mainArtifact(jar.archiveFile) {
+			displayName = "${project.archivesBaseName} v${project.mc_version}-${semver}"
+			relations {
+				requiredDependency "patchouli"
+			}
+		}
+		addArtifact(apiJar.archiveFile)
+	}
+}
+
 
 //test {
 //	useJUnitPlatform()
