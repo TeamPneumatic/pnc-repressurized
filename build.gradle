@@ -403,22 +403,24 @@ modrinth {
 	}
 }
 
-curseforge {
-	apiKey = System.getenv("CURSEFORGE_TOKEN")
-	project {
-		id = project.curse_project_id
-		changelogType = "markdown"
-		changelog = System.getenv("CHANGELOG")
-		releaseType = relType
-		addGameVersion project.mc_version
-		addGameVersion "Forge"
-		mainArtifact(jar.archiveFile) {
-			displayName = "${project.archivesBaseName} v${project.mc_version}-${semver}"
-			relations {
-				requiredDependency "patchouli"
+if (System.getenv("CURSEFORGE_TOKEN")) {
+	curseforge {
+		apiKey = System.getenv("CURSEFORGE_TOKEN")
+		project {
+			id = project.curse_project_id
+			changelogType = "markdown"
+			changelog = System.getenv("CHANGELOG")
+			releaseType = relType
+			addGameVersion project.mc_version
+			addGameVersion "Forge"
+			mainArtifact(jar.archiveFile) {
+				displayName = "${project.archivesBaseName} v${project.mc_version}-${semver}"
+				relations {
+					requiredDependency "patchouli"
+				}
 			}
+			addArtifact(apiJar.archiveFile)
 		}
-		addArtifact(apiJar.archiveFile)
 	}
 }
 
