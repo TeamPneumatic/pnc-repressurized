@@ -20,6 +20,7 @@ package me.desht.pneumaticcraft.common.drone.ai;
 import me.desht.pneumaticcraft.common.drone.IDroneBase;
 import me.desht.pneumaticcraft.common.drone.progwidgets.IToolUser;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetAreaItemBase;
+import me.desht.pneumaticcraft.common.entity.drone.DroneEntity;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.mixin.accessors.ServerPlayerGameModeAccess;
 import net.minecraft.core.BlockPos;
@@ -155,11 +156,14 @@ public class DroneAIDig<W extends ProgWidgetAreaItemBase & IToolUser> extends Dr
 
     private static List<ItemStack> getDrops(BlockGetter worldCache, BlockPos pos, IDroneBase drone) {
         BlockState state = worldCache.getBlockState(pos);
+        DroneEntity d = drone instanceof DroneEntity ? (DroneEntity) drone : null;
         return state.getDrops(
                 new LootContext.Builder((ServerLevel) drone.world())
                         .withParameter(LootContextParams.BLOCK_STATE, state)
                         .withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(pos))
                         .withParameter(LootContextParams.TOOL, drone.getInv().getStackInSlot(0))
+                        .withOptionalParameter(LootContextParams.THIS_ENTITY, d)
+                        .withOptionalParameter(LootContextParams.BLOCK_ENTITY, worldCache.getBlockEntity(pos))
         );
     }
 
