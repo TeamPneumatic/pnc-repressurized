@@ -231,10 +231,11 @@ public class KeroseneLampBlockEntity extends AbstractTickingBlockEntity implemen
             }
         }
         BlockPos pos = new BlockPos(checkingX, checkingY, checkingZ);
-        BlockPos lampPos = new BlockPos(getBlockPos().getX(), getBlockPos().getY(), getBlockPos().getZ());
+        if (!nonNullLevel().isLoaded(pos)) return;
+
         if (managingLights.contains(pos)) {
             if (isLampLight(pos)) {
-                if (!passesRaytraceTest(pos, lampPos)) {
+                if (!passesRaytraceTest(pos, getBlockPos())) {
                     nonNullLevel().removeBlock(pos, false);
                     managingLights.remove(pos);
                 }
@@ -242,21 +243,20 @@ public class KeroseneLampBlockEntity extends AbstractTickingBlockEntity implemen
                 managingLights.remove(pos);
             }
         } else {
-            tryAddLight(pos, lampPos);
+            tryAddLight(pos);
         }
     }
 
     private void updateRange(int targetRange) {
         if (targetRange > range) {
             range++;
-            BlockPos lampPos = new BlockPos(getBlockPos().getX(), getBlockPos().getY(), getBlockPos().getZ());
             int roundedRange = range / LIGHT_SPACING * LIGHT_SPACING;
             for (int x = -roundedRange; x <= roundedRange; x += LIGHT_SPACING) {
                 for (int y = -roundedRange; y <= roundedRange; y += LIGHT_SPACING) {
                     for (int z = -roundedRange; z <= roundedRange; z += LIGHT_SPACING) {
-                        BlockPos pos = new BlockPos(x + getBlockPos().getX(), y + getBlockPos().getY(), z + getBlockPos().getZ());
+                        BlockPos pos = getBlockPos().offset(x, y, z);
                         if (!managingLights.contains(pos)) {
-                            tryAddLight(pos, lampPos);
+                            tryAddLight(pos);
                         }
                     }
                 }
@@ -264,27 +264,24 @@ public class KeroseneLampBlockEntity extends AbstractTickingBlockEntity implemen
         } else if (targetRange < range) {
             range--;
             Iterator<BlockPos> iterator = managingLights.iterator();
-            BlockPos lampPos = new BlockPos(getBlockPos().getX(), getBlockPos().getY(), getBlockPos().getZ());
             while (iterator.hasNext()) {
                 BlockPos pos = iterator.next();
-                if (!isLampLight(pos)) {
-                    iterator.remove();
-                } else if (PneumaticCraftUtils.distBetween(pos, lampPos) > range) {
-                    nonNullLevel().removeBlock(pos, false);
-                    iterator.remove();
+                if (nonNullLevel().isLoaded(pos)) {
+                    if (!isLampLight(pos)) {
+                        iterator.remove();
+                    } else if (PneumaticCraftUtils.distBetween(pos, getBlockPos()) > range) {
+                        nonNullLevel().removeBlock(pos, false);
+                        iterator.remove();
+                    }
                 }
             }
         }
         boolean wasOn = isOn;
         isOn = range > 0;
         if (isOn != wasOn) {
-            nonNullLevel().getChunkSource().getLightEngine().checkBlock(worldPosition);
-            nonNullLevel().setBlockAndUpdate(worldPosition, getBlockState().setValue(LIT, isOn));
+            nonNullLevel().getChunkSource().getLightEngine().checkBlock(getBlockPos());
+            nonNullLevel().setBlockAndUpdate(getBlockPos(), getBlockState().setValue(LIT, isOn));
         }
-    }
-
-    public boolean isOn() {
-        return isOn;
     }
 
     private boolean passesRaytraceTest(BlockPos pos, BlockPos lampPos) {
@@ -294,10 +291,10 @@ public class KeroseneLampBlockEntity extends AbstractTickingBlockEntity implemen
         return rtr.getType() == HitResult.Type.BLOCK && rtr.getBlockPos().equals(lampPos);
     }
 
-    private void tryAddLight(BlockPos pos, BlockPos lampPos) {
-        if (!ConfigHelper.common().advanced.disableKeroseneLampFakeAirBlock.get() && PneumaticCraftUtils.distBetween(pos, lampPos) <= range) {
+    private void tryAddLight(BlockPos pos) {
+        if (nonNullLevel().isLoaded(pos) && !ConfigHelper.common().advanced.disableKeroseneLampFakeAirBlock.get() && PneumaticCraftUtils.distBetween(pos, getBlockPos()) <= range) {
             if (nonNullLevel().isEmptyBlock(pos) && !isLampLight(pos)) {
-                if (passesRaytraceTest(pos, lampPos)) {
+                if (passesRaytraceTest(pos, getBlockPos())) {
                     nonNullLevel().setBlockAndUpdate(pos, ModBlocks.KEROSENE_LAMP_LIGHT.get().defaultBlockState());
                     managingLights.add(pos);
                 }
