@@ -9,11 +9,12 @@ Changes are in reverse chronological order; newest changes at the top.
 * PNC:R 3.2.3 and later *require* Forge 40.1.20 or later
 * PNC:R 3.2.0 and later *require* Forge 40.1.0 or later and JEI 9.7.0 or later
 
-## 3.4.3 (unreleased)
+## 3.4.3 (18 Sep 2022)
 
 ### Fixes
-* Fixed potential crash when calculating loot tables for certain modded blocks dug drones
-* Hopefully fixed chunk corruption issues related to using Kerosene Lamps with unloaded chunks nearby
+* Fixed potential crash when calculating loot tables for certain modded blocks when dug by drones
+* Hopefully fixed some chunk corruption issues related to using Kerosene Lamps with unloaded chunks nearby
+* Fixed Logistics Modules not working correctly on Reinforced & Advanced Pressure Tubes
 
 ## 3.4.2-137 (14 Sep 2022)
 
