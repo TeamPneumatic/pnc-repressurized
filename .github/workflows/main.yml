@@ -57,6 +57,11 @@ jobs:
         with:
           name: pncr-dist-${{ github.ref_name }}-${{ steps.mod_meta.outputs.mod_version}}-${{ github.run_number }}
           path: build/libs/
+      - name: Publish to Modmaven
+        env:
+          MODMAVEN_USER: ${{ secrets.MODMAVEN_USER }}
+          MODMAVEN_PASSWORD: ${{ secrets.MODMAVEN_PASSWORD }}
+        run: ./gradlew publishMavenPublicationToModmavenRepository --no-daemon --max-workers 1
       - name: Discord notification
         uses: Ilshidur/action-discord@master
         env:

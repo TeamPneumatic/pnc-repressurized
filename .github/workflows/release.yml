@@ -39,14 +39,23 @@ jobs:
       - name: Set up mod metadata
         id: mod_meta
         run: |
-          echo "::set-output name=mod_version::$(grep ^mod_version_ ./gradle.properties | cut -d= -f2 | tr '\012' '.' | sed -e 's/\.$//')"
-          echo "::set-output name=mc_version::$(grep ^mc_version ./gradle.properties | cut -d= -f2)"
-          echo "::set-output name=changelog::$(./scripts/extract_changes.sh)"
+          changelog=$(./scripts/extract_changes.sh)
+          changelog="${changelog//'%'/'%25'}"
+          changelog="${changelog//$'\n'/'%0A'}"
+          changelog="${changelog//$'\r'/'%0D'}"
+          echo ::set-output name=changelog::$changelog
+          echo ::set-output name=mod_version::$(grep ^mod_version_ ./gradle.properties | cut -d= -f2 | tr '\012' '.' | sed -e 's/\.$//')
+          echo ::set-output name=mc_version::$(grep ^mc_version ./gradle.properties | cut -d= -f2)
       - name: Upload artifact to GitHub
         uses: actions/upload-artifact@v2
         with:
           name: pncr-dist-${{ github.ref_name }}-${{ steps.mod_meta.outputs.mod_version}}-${{ github.run_number }}
           path: build/libs/
+      - name: Publish to Modmaven
+        env:
+          MODMAVEN_USER: ${{ secrets.MODMAVEN_USER }}
+          MODMAVEN_PASSWORD: ${{ secrets.MODMAVEN_PASSWORD }}
+        run: ./gradlew publishMavenPublicationToModmavenRepository --no-daemon --max-workers 1
       - name: Publish to Modrinth
         env:
           CHANGELOG: ${{ steps.mod_meta.outputs.changelog }}
@@ -66,4 +75,4 @@ jobs:
         if:
           env.DISCORD_WEBHOOK != null
         with:
-          args: 'Release made for project {{ EVENT_PAYLOAD.repository.full_name }} (Minecraft ${{ steps.mod_meta.outputs.mc_version}}): ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}.'
+          args: 'Release ${{ github.event.release.tag_name }} done for project {{ EVENT_PAYLOAD.repository.full_name }} (Minecraft ${{ steps.mod_meta.outputs.mc_version}}): ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}.'

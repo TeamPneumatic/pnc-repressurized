@@ -16,10 +16,9 @@ plugins {
 	id 'java'
 	id 'eclipse'
 	id 'idea'
-//	id 'com.matthewprenger.cursegradle' version '1.4.0'
-	id 'se.bjurr.gitchangelog.git-changelog-gradle-plugin' version '1.71.4'
 	id 'maven-publish'
 	id "com.modrinth.minotaur" version "2.+"
+	id 'com.matthewprenger.cursegradle' version '1.4.0'
 }
 apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'org.parchmentmc.librarian.forgegradle'
@@ -39,9 +38,9 @@ version = "${project.mc_version}-${semver}-${build_number}"
 group = 'me.desht.pneumaticcraft' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "pneumaticcraft-repressurized"
 
-ext.tag = System.getenv('TAG') ?: ""
-ext.isAlpha = ext.tag.contains("alpha")
-ext.isBeta = ext.tag.contains("beta")
+ext.releaseTag = System.getenv('TAG') ?: ""
+ext.isAlpha = ext.releaseTag.contains("alpha")
+ext.isBeta = ext.releaseTag.contains("beta")
 
 // All jar files from this folder will be added automatically as runtime mod dependencies
 String extraModsDir = "extra-mods-${project.mc_version}"
@@ -348,13 +347,14 @@ tasks.withType(GenerateModuleMetadata) {
 }
 
 // with thanks to AE2
+def mavenVer = ext.releaseTag == "" ? "${project.mc_version}-${semver}-SNAPSHOT" : "${project.mc_version}-${semver}"
 publishing {
-	if (System.getenv("artifactory_user") != null) {
+	if (System.getenv("MODMAVEN_USER") != null) {
 		publications {
 			maven(MavenPublication) {
 				groupId = project.group
 				artifactId = project.archivesBaseName
-				version = project.version
+				version = mavenVer
 
 				// ForgeGradle will generate wild dependency definitions, see https://github.com/MinecraftForge/ForgeGradle/issues/584
 				// Since we don't actually depend on anything, just remove the entire node.
@@ -372,8 +372,8 @@ publishing {
 			maven {
 				name = "modmaven"
 				credentials {
-					username System.getenv("artifactory_user")
-					password System.getenv("artifactory_password")
+					username System.getenv("MODMAVEN_USER")
+					password System.getenv("MODMAVEN_PASSWORD")
 				}
 				url = "https://modmaven.dev/artifactory/local-releases/"
 			}
