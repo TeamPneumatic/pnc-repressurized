@@ -30,6 +30,7 @@ import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.block.entity.SecurityStationBlockEntity;
 import me.desht.pneumaticcraft.common.block.entity.SecurityStationBlockEntity.EnumNetworkValidityProblem;
+import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.hacking.secstation.HackSimulation;
 import me.desht.pneumaticcraft.common.inventory.SecurityStationMainMenu;
@@ -95,8 +96,14 @@ public class SecurityStationInventoryScreen extends AbstractPneumaticCraftContai
         accessStat.setMinimumExpandedDimensions(125, 40);
 
         addRenderableWidget(rebootButton = new WidgetButtonExtended(leftPos + 110, topPos + 17, 60, 20, xlate("pneumaticcraft.gui.securityStation.reboot")).withTag("reboot"));
-        addRenderableWidget(new WidgetButtonExtended(leftPos + 110, topPos + 107, 60, 20, xlate("pneumaticcraft.gui.securityStation.test")))
+
+        WidgetButtonExtended testButton = addRenderableWidget(new WidgetButtonExtended(leftPos + 110, topPos + 107, 60, 20, xlate("pneumaticcraft.gui.securityStation.test")))
                 .withTag("test");
+        if (!ConfigHelper.common().machines.securityStationAllowHacking.get()) {
+            testButton.active = false;
+            testButton.setTooltipText(xlate("pneumaticcraft.message.securityStation.hackDisabled"));
+        }
+
         addRenderableWidget(new WidgetRangeToggleButton(leftPos + 154, topPos + 130, te));
 
         updateUserList();
@@ -199,8 +206,11 @@ public class SecurityStationInventoryScreen extends AbstractPneumaticCraftContai
             for (GameProfile hacker : te.hackedUsers) {
                 text.add(Component.literal("  ").append(Symbols.bullet()).append(hacker.getName()).withStyle(ChatFormatting.RED));
             }
-        } else {
+        } else if (te.hasValidNetwork()) {
             text.add(Component.literal("  ").append(xlate("pneumaticcraft.gui.tab.status.securityStation.secure")).withStyle(ChatFormatting.GREEN));
+        } else {
+            text.add(Component.literal("  -").withStyle(ChatFormatting.GRAY));
+            return text;
         }
         text.add(xlate("pneumaticcraft.gui.tab.status.securityStation.securityLevel").withStyle(ChatFormatting.WHITE));
         text.add(Component.literal("  ").append(Component.literal("L" + te.getSecurityLevel())).withStyle(ChatFormatting.BLACK));

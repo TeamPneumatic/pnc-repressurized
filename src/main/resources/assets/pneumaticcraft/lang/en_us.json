@@ -1865,6 +1865,7 @@
    "pneumaticcraft.message.misc.range" : "Range: %d blocks",
    "pneumaticcraft.message.securityStation.accessPrevented" : "Access prevented by Security Station!",
    "pneumaticcraft.message.securityStation.alreadyHacked" : "You've already hacked this Security Station!",
+   "pneumaticcraft.message.securityStation.hackDisabled" : "Security Station hacking is disabled in this world",
    "pneumaticcraft.message.securityStation.hackInProgress" : "Hack already in progress!",
    "pneumaticcraft.message.securityStation.cantHack" : "Insufficient security level to hack this Security Station. Add more Security Upgrades to your Pneumatic Helmet.",
    "pneumaticcraft.message.securityStation.outOfOrder" : "This Security Station is out of order!",

@@ -12,9 +12,17 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ### Updates
 * Botania integration (Solegnolia suppresses Pneumatic Armor magnet) re-added
+* A few new pieces of API:
+  * `IMiscHelpers#airParticle`
+  * Exposed some blockstate properties in `PNCBlockStateProperties`
+  * Added `ITubeNetworkConnector` interface to support using blocks other than Pressure Tubes to connect tube modules (Logistics and Redstone)
+  * Mainly to support new Compressed Creativity functionality
+  * Compressed Creativity is a PNC:R/Create integration addon mod - it's cool, check it out!
 
 ### Fixes
 * Fixed Logistics Modules not working correctly on Reinforced & Advanced Pressure Tubes
+* Fixed potential crash when calculating loot tables for certain modded blocks when dug by drones
+* Hopefully fixed some chunk corruption issues related to using Kerosene Lamps with unloaded chunks nearby
 * Fixed a problem where XP fluids shown in the Aerial Interface GUI could get out of sync with server-known fluids
 * Fixed issue where right-clicking a formed Pressure Chamber glass block would activate the held object too
   * E.g. right-clicking with a water bucket would both open the GUI and pour out the water

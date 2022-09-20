@@ -166,6 +166,10 @@ public class SecurityStationBlockEntity extends AbstractTickingBlockEntity imple
         rangeManager.setRange(Math.min(2 + getUpgrades(ModUpgrades.RANGE.get()), BlockEntityConstants.SECURITY_STATION_MAX_RANGE));
     }
 
+    private boolean isOwner(Player player) {
+        return !sharedUsers.isEmpty() && player.getGameProfile().equals(sharedUsers.get(0));
+    }
+
     public void rebootStation() {
         rebootTimer = BlockEntityConstants.SECURITY_STATION_REBOOT_TIME;
         NetworkHandler.sendToAllTracking(new PacketPlaySound(ModSounds.MINIGUN_STOP.get(), SoundSource.BLOCKS, getBlockPos(), 1f, 1f, false), getLevel(), getBlockPos());
@@ -187,16 +191,16 @@ public class SecurityStationBlockEntity extends AbstractTickingBlockEntity imple
         if (player.containerMenu instanceof SecurityStationMainMenu && isPlayerOnWhiteList(player)) {
             if (tag.equals("reboot")) {
                 rebootStation();
-            } else if (tag.equals("test")) {
+            } else if (tag.equals("test") && ConfigHelper.common().machines.securityStationAllowHacking.get()) {
                 if (hasValidNetwork()) {
                     initiateHacking(player);
                 } else {
                     player.displayClientMessage(Component.translatable("pneumaticcraft.message.securityStation.outOfOrder"), false);
                 }
-            } else if (tag.startsWith("remove:")) {
+            } else if (tag.startsWith("remove:") && isOwner(player)) {
                 String name = tag.split(":", 2)[1];
                 removeTrustedUser(name);
-            } else if (tag.startsWith("add:")) {
+            } else if (tag.startsWith("add:") && isOwner(player)) {
                 String name = tag.split(":", 2)[1];
                 addTrustedUser(new GameProfile(null, name));
             }

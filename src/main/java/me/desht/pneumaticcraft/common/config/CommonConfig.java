@@ -52,6 +52,7 @@ public class CommonConfig {
         public ForgeConfigSpec.BooleanValue liquidHopperDispenser;
         public ForgeConfigSpec.BooleanValue omniHopperDispenser;
         public ForgeConfigSpec.BooleanValue securityStationCreativePlayersExempt;
+        public ForgeConfigSpec.BooleanValue securityStationAllowHacking;
         public ForgeConfigSpec.IntValue pneumaticDynamoEfficiency;
         public ForgeConfigSpec.IntValue pneumaticEngineEfficiency;
         public ForgeConfigSpec.IntValue pneumaticGeneratorEfficiency;
@@ -282,6 +283,10 @@ public class CommonConfig {
                 .comment("Are players in Creative mode exempt from Security Station block protection? If false, only server ops are exempt (command permission >= 2)")
                 .translation("pneumaticcraft.config.common.machine_properties.security_station_creative_players_exempt")
                 .define("security_station_creative_players_exempt", false);
+        machines.securityStationAllowHacking = builder
+                .comment("Can Security Stations be hacked? If set to false, Security Stations are purely a grief protection feature with no hacking minigame")
+                .translation("pneumaticcraft.config.common.machine_properties.security_station_allow_hacking")
+                .define("security_station_allow_hacking", true);
         machines.pneumaticDynamoEfficiency = builder
                 .comment("The amount of FE (Forge Energy) produced by using 100mL of air in the Pneumatic Dynamo")
                 .translation("pneumaticcraft.config.common.machine_properties.pneumatic_dynamo_efficiency")

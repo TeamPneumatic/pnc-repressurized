@@ -20,6 +20,12 @@
     },
     {
       "type": "text",
+      "title": "Hacking Disabled",
+      "flag": "!pneumaticcraft:securityStationHacking",
+      "text": "Security Station hacking has been disabled by config on this server. While this means that no player can hack your Security Station once set up, it is still necessary to set it up with the correct components, as described on the previous page. However most of the following pages (other than $(thing)Allowing Friends/$) do not apply here."
+    },
+    {
+      "type": "text",
       "title": "Rules",
       "text": "The $(l:machines/security_station#hacking)hacker/$ starts at the $(thing)Network IO Port/$, and has the goal of capturing either the $(thing)Diagnostic Subroutine/$ or the $(thing)Network Registry/$.$(p)The $(thing)Diagnostic Subroutine/$ has the goal of tracing back to the hacker's entry point at the $(thing)Network IO Port/$."
     },

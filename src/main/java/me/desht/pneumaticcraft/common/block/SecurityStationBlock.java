@@ -18,6 +18,7 @@
 package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.common.block.entity.SecurityStationBlockEntity;
+import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModUpgrades;
@@ -114,7 +115,11 @@ public class SecurityStationBlock extends AbstractPneumaticCraftBlock implements
                         player.displayClientMessage(PneumaticCraftUtils.xlate("pneumaticcraft.message.securityStation.cantHack").withStyle(ChatFormatting.GOLD), false);
                         player.hurt(DamageSource.OUT_OF_WORLD, 1f);
                     } else {
-                        teSS.initiateHacking(player);
+                        if (ConfigHelper.common().machines.securityStationAllowHacking.get()) {
+                            teSS.initiateHacking(player);
+                        } else {
+                            player.displayClientMessage(PneumaticCraftUtils.xlate("pneumaticcraft.message.securityStation.hackDisabled").withStyle(ChatFormatting.GOLD), false);
+                        }
                     }
                 }
             }
