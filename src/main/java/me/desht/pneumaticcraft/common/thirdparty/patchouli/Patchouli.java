@@ -28,6 +28,7 @@ import net.minecraftforge.client.event.ScreenEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.event.config.ModConfigEvent;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
@@ -38,25 +39,10 @@ public class Patchouli implements IThirdParty, IDocsProvider {
 
     @Override
     public void clientInit() {
-        MinecraftForge.EVENT_BUS.register(this);
+        MinecraftForge.EVENT_BUS.register(ScreenListener.class);
+        FMLJavaModLoadingContext.get().getModEventBus().register(ConfigListener.class);
 
         PatchouliAccess.setup();
-    }
-
-    @SubscribeEvent
-    public void onConfigChange(ModConfigEvent.Reloading event) {
-        if (event.getConfig().getModId().equals(Names.MOD_ID)) {
-            PatchouliAccess.setConfigFlags();
-        }
-    }
-
-    @SubscribeEvent
-    public void onGuiOpen(ScreenEvent.Opening event) {
-        if (prevGui != null) {
-            // reopen the programmer GUI if that's where we came from
-            event.setNewScreen(prevGui);
-            prevGui = null;
-        }
     }
 
     @Override
@@ -77,4 +63,23 @@ public class Patchouli implements IThirdParty, IDocsProvider {
         return ThirdPartyManager.ModType.DOCUMENTATION;
     }
 
+    private static class ConfigListener {
+        @SubscribeEvent
+        public static void onConfigChange(ModConfigEvent.Reloading event) {
+            if (event.getConfig().getModId().equals(Names.MOD_ID)) {
+                PatchouliAccess.setConfigFlags();
+            }
+        }
+    }
+
+    private static class ScreenListener {
+        @SubscribeEvent
+        public void onGuiOpen(ScreenEvent.Opening event) {
+            if (prevGui != null) {
+                // reopen the programmer GUI if that's where we came from
+                event.setNewScreen(prevGui);
+                prevGui = null;
+            }
+        }
+    }
 }
