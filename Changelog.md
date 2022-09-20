@@ -12,11 +12,15 @@ Changes are in reverse chronological order; newest changes at the top.
 * PNC:R 2.15.1 and later *require* Forge 36.2.0 or later, **and** Patchouli 1.16.4-50 or later.
 * If Mekanism is installed, PNC:R 2.15.1 and later *require* Mekanism 10.1.x or later.
 
-## 2.15.12-??? (unreleased)
+## 2.15.12-339 (unreleased)
 
 ### Fixes
 * Hopefully fix crash related to some tile entities not having a registry name (https://github.com/TeamPneumatic/pnc-repressurized/issues/1052)
-
+* Fixed potential enchantment dupe related to Drones and Astral Sorcery perks
+* Fixed mobs spawned from a Spawner with a Spawner Agitator being able to be absorbed by a Vacuum Trap
+* Performance improvement for Heat Frames on inventories with many cookable items (particularly if there are many smelting recipes on this server)
+* Fixed Aerial Interface XP fluids sometimes getting out of sync between client (Aerial Interface GUI) and server
+  
 ## 2.15.11-334 (14 Jul 2022)
 
 ### Updates
