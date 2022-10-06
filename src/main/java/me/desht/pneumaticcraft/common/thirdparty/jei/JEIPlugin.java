@@ -192,7 +192,7 @@ public class JEIPlugin implements IModPlugin {
         registration.addGuiScreenHandler(ProgWidgetItemFilterScreen.class, Helpers::getGuiProperties);
 
         registration.addGhostIngredientHandler(AmadronAddTradeScreen.class, new AmadronAddTradeGhost());
-        registration.addGhostIngredientHandler(AbstractLogisticsScreen.class, new LogisticsFilterGhost());
+        registration.addGhostIngredientHandler(AbstractLogisticsScreen.class, new LogisticsFilterGhost<>());
         registration.addGhostIngredientHandler(ProgWidgetItemFilterScreen.class, new ProgWidgetItemFilterGhost());
     }
 

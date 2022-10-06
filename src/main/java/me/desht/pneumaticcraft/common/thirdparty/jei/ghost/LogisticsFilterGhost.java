@@ -29,14 +29,13 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidUtil;
 
-import java.util.Collections;
 import java.util.List;
 
-public class LogisticsFilterGhost<T extends AbstractLogisticsFrameEntity> implements IGhostIngredientHandler<AbstractLogisticsScreen<T>> {
+public class LogisticsFilterGhost<S extends AbstractLogisticsScreen<T>, T extends AbstractLogisticsFrameEntity> implements IGhostIngredientHandler<S> {
     @Override
-    public <I> List<Target<I>> getTargets(AbstractLogisticsScreen<T> gui, I ingredient, boolean doStart) {
+    public <I> List<Target<I>> getTargets(S gui, I ingredient, boolean doStart) {
+        ImmutableList.Builder<Target<I>> builder = ImmutableList.builder();
         if (ingredient instanceof ItemStack) {
-            ImmutableList.Builder<Target<I>> builder = ImmutableList.builder();
             for (Slot slot : gui.getMenu().slots) {
                 if (slot instanceof PhantomSlot ps) {
                     //noinspection unchecked
@@ -49,16 +48,13 @@ public class LogisticsFilterGhost<T extends AbstractLogisticsFrameEntity> implem
                     builder.add((Target<I>) new FluidStackItemTarget(i, gui));
                 }
             });
-            return builder.build();
         } else if (ingredient instanceof FluidStack) {
-            ImmutableList.Builder<Target<I>> builder = ImmutableList.builder();
             for (int i = 0; i < AbstractLogisticsFrameEntity.FLUID_FILTER_SLOTS; i++) {
                 //noinspection unchecked
                 builder.add((Target<I>) new FluidStackTarget(i, gui));
             }
-            return builder.build();
         }
-        return Collections.emptyList();
+        return builder.build();
     }
 
     @Override
