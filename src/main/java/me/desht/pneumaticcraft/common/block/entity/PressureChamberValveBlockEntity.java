@@ -600,6 +600,10 @@ public class PressureChamberValveBlockEntity extends AbstractAirHandlingBlockEnt
         // every valve in the structure has a list of every valve, including itself
         valveList.forEach(valve -> valve.accessoryValves = new ArrayList<>(valveList));
 
+        // coalesce any upgrades out of non-primary valves and into the primary valve
+        // this might be necessary if the pressure chamber is being rebuilt with more valves
+        if (valveList.size() > 1) maybeMoveUpgrades(valveList, primaryValve);
+
         // set the multi-block coords in the primary valve only
         //  also preserve the pressure after multiblock formation, since base volume can change here
         float pressure = primaryValve.getPressure();
@@ -614,24 +618,24 @@ public class PressureChamberValveBlockEntity extends AbstractAirHandlingBlockEnt
         for (int x = 0; x < size; x++) {
             for (int y = 0; y < size; y++) {
                 for (int z = 0; z < size; z++) {
-                    BlockEntity te = world.getBlockEntity(new BlockPos(x + baseX, y + baseY, z + baseZ));
-                    if (te instanceof PressureChamberWallBlockEntity teWall) {
-                        teWall.setPrimaryValve(primaryValve);  // this also forces re-rendering with the formed texture
-                        if (world.getBlockState(te.getBlockPos()).getBlock() instanceof PressureChamberGlassBlock) {
+                    BlockEntity be = world.getBlockEntity(new BlockPos(x + baseX, y + baseY, z + baseZ));
+                    if (be instanceof PressureChamberWallBlockEntity wall) {
+                        wall.setPrimaryValve(primaryValve);  // this also forces re-rendering with the formed texture
+                        if (world.getBlockState(be.getBlockPos()).getBlock() instanceof PressureChamberGlassBlock) {
                             primaryValve.hasGlass = true;
                         }
-                    } else if (te instanceof PressureChamberValveBlockEntity) {
-                        BlockState state = world.getBlockState(te.getBlockPos());
-                        world.setBlock(te.getBlockPos(), state.setValue(PressureChamberValveBlock.FORMED, ((PressureChamberValveBlockEntity) te).isPrimaryValve()), 2);
+                    } else if (be instanceof PressureChamberValveBlockEntity) {
+                        BlockState state = world.getBlockState(be.getBlockPos());
+                        world.setBlock(be.getBlockPos(), state.setValue(PressureChamberValveBlock.FORMED, ((PressureChamberValveBlockEntity) be).isPrimaryValve()), 2);
                     }
-                    if (te != null) {
+                    if (be != null) {
                         double dx = x == 0 ? -0.1 : 0.1;
                         double dz = z == 0 ? -0.1 : 0.1;
                         NetworkHandler.sendToAllTracking(
                                 new PacketSpawnParticle(ParticleTypes.POOF,
-                                        te.getBlockPos().getX() + 0.5, te.getBlockPos().getY() + 0.5, te.getBlockPos().getZ() + 0.5,
+                                        be.getBlockPos().getX() + 0.5, be.getBlockPos().getY() + 0.5, be.getBlockPos().getZ() + 0.5,
                                         dx, 0.3, dz, 5, 0, 0, 0),
-                                te);
+                                be);
                     }
                 }
             }
@@ -643,9 +647,25 @@ public class PressureChamberValveBlockEntity extends AbstractAirHandlingBlockEnt
         // force-sync primary valve details to clients for rendering purposes
         primaryValve.scheduleDescriptionPacket();
 
-        primaryValve.setChanged();
+        valveList.forEach(AbstractPneumaticCraftBlockEntity::setChanged);
 
         return true;
+    }
+
+    private static void maybeMoveUpgrades(List<PressureChamberValveBlockEntity> valveList, PressureChamberValveBlockEntity primaryValve) {
+        var primaryUpgradeHandler = primaryValve.getUpgradeHandler();
+        for (var valve : valveList) {
+            if (valve != primaryValve) {
+                var upgradeHandler = valve.getUpgradeHandler();
+                for (int i = 0; i < upgradeHandler.getSlots(); i++) {
+                    ItemStack stack = upgradeHandler.getStackInSlot(i);
+                    if (!stack.isEmpty()) {
+                        ItemStack excess = ItemHandlerHelper.insertItemStacked(primaryUpgradeHandler, stack, false);
+                        upgradeHandler.setStackInSlot(i, excess);
+                    }
+                }
+            }
+        }
     }
 
     private boolean isPrimaryValve() {
