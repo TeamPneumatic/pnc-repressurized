@@ -14,7 +14,9 @@
           "I": {
             "tag": "forge:ingots/compressed_iron"
           },
-          "M": [],
+          "M": {
+            "item": "computercraft:wireless_modem_normal"
+          },
           "P": {
             "item": "pneumaticcraft:printed_circuit_board"
           },
