@@ -133,7 +133,10 @@ dependencies {
 	compileOnly fg.deobf("blusunrize.immersiveengineering:ImmersiveEngineering:${immersive_engineering_version}")
 	compileOnly fg.deobf("mekanism:Mekanism:${mekanism_version}:api")
 	runtimeOnly fg.deobf("mekanism:Mekanism:${mekanism_version}")
-	implementation fg.deobf("curse.maven:create-328085:${create_curse_id}")
+	implementation fg.deobf("com.simibubi.create:create-${project.mc_version}:${create_version}:slim") { transitive = false }
+	implementation fg.deobf("com.jozufozu.flywheel:flywheel-forge-${project.mc_version}:${flywheel_version}")
+	implementation fg.deobf("com.tterrag.registrate:Registrate:${registrate_version}")
+//	implementation fg.deobf("curse.maven:create-328085:${create_curse_id}")
 	implementation fg.deobf("curse.maven:jade-324717:${jade_curse_id}")
 	//implementation fg.deobf("curse.maven:cofh_core-69162:${cofh_core_curse_id}")
 	implementation fg.deobf("com.blamejared.crafttweaker:CraftTweaker-forge-${project.mc_version}:${crafttweaker_version}")
