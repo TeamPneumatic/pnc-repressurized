@@ -8,10 +8,13 @@ Changes are in reverse chronological order; newest changes at the top.
 
 1.19.2 builds may also work on Minecraft 1.19.1 but no support will be provided for that.
 
-## 4.1.2 (unreleased)
+## 4.1.2 (30 Oct 2022)
 
 ### Updates
 * Botania integration (Solegnolia suppresses Pneumatic Armor magnet) re-added
+  * Note: no public release of Botania for 1.19.2 at this time
+* Create integration (Pneumatic Wrench usable on Create belts and other wrenchable blocks) re-added
+* CraftTweaker integration re-added
 * A few new pieces of API:
   * `IMiscHelpers#airParticle`
   * Exposed some blockstate properties in `PNCBlockStateProperties`
@@ -26,6 +29,7 @@ Changes are in reverse chronological order; newest changes at the top.
 * Fixed a problem where XP fluids shown in the Aerial Interface GUI could get out of sync with server-known fluids
 * Fixed issue where right-clicking a formed Pressure Chamber glass block would activate the held object too
   * E.g. right-clicking with a water bucket would both open the GUI and pour out the water
+* Fixed broken recipe for Drone Interface (CC:Tweaked integration)
 
 ## 4.1.1-132 (5 Sep 2022)
 
