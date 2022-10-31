@@ -1,6 +1,6 @@
 buildscript {
 	repositories {
-		maven { url = 'https://files.minecraftforge.net/maven' }
+		maven { url = 'https://maven.minecraftforge.net' }
 		maven { url = 'https://maven.parchmentmc.org' }
 		mavenCentral()
 	}
@@ -15,8 +15,8 @@ plugins {
 	id 'java'
 	id 'eclipse'
 	id 'idea'
+	id "com.modrinth.minotaur" version "2.+"
 	id 'com.matthewprenger.cursegradle' version '1.4.0'
-	id 'se.bjurr.gitchangelog.git-changelog-gradle-plugin' version '1.71.4'
 	id 'maven-publish'
 }
 apply plugin: 'net.minecraftforge.gradle'
@@ -35,6 +35,10 @@ String semver = "${mod_version_massive}.${mod_version_major}.${mod_version_minor
 version = "${project.mc_version}-${semver}-${build_number}"
 group = 'me.desht.pneumaticcraft' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "pneumaticcraft-repressurized"
+
+ext.releaseTag = System.getenv('TAG') ?: ""
+ext.isAlpha = ext.releaseTag.contains("alpha")
+ext.isBeta = ext.releaseTag.contains("beta")
 
 // All jar files from this folder will be added automatically as runtime mod dependencies
 String extraModsDir = "extra-mods-${project.mc_version}"
@@ -94,6 +98,9 @@ repositories {
 	maven {
 		name "K-4u Mod maven"
 		url "https://modmaven.dev/"
+		content {
+			includeGroup "appeng"
+		}
 	}
 	maven {
 		url "https://www.cursemaven.com"
@@ -234,28 +241,6 @@ javadoc {
 			.tags("apiNote:a:API Note:", "implSpec:a:Implementation Requirements:", "implNote:a:Implementation Note:")
 }
 
-//task makeChangelog(type: GitChangelogTask) {
-//	file = file('changelog.html')
-//	untaggedName = "Current release ${project.version}"
-//	fromCommit = '2fe051cf727adce1be210a46f778aa8fe031331e'
-//	toRef = 'HEAD'
-//	templateContent = file('changelog.mustache').getText('UTF-8')
-//}
-
-curseforge {
-	apiKey = project.findProperty('curseforge_apikey') ?: '0'
-	project {
-		id = curse_project_id
-		changelog = file('changelog.html')
-		changelogType = 'html'
-		releaseType = 'beta'
-	}
-}
-
-//afterEvaluate {
-//	tasks.curseforge281849.dependsOn makeChangelog
-//}
-
 jar {
 	from sourceSets.main.output
 	from sourceSets.api.output
@@ -323,13 +308,14 @@ tasks.withType(GenerateModuleMetadata) {
 }
 
 // with thanks to AE2
+def mavenVer = ext.releaseTag == "" ? "${project.mc_version}-${semver}-SNAPSHOT" : "${project.mc_version}-${semver}"
 publishing {
 	if (System.getenv("artifactory_user") != null) {
 		publications {
 			maven(MavenPublication) {
 				groupId = project.group
 				artifactId = project.archivesBaseName
-				version = project.version
+				version = mavenVer
 
 				// ForgeGradle will generate wild dependency definitions, see https://github.com/MinecraftForge/ForgeGradle/issues/584
 				// Since we don't actually depend on anything, just remove the entire node.
@@ -347,8 +333,8 @@ publishing {
 			maven {
 				name = "modmaven"
 				credentials {
-					username System.getenv("artifactory_user")
-					password System.getenv("artifactory_password")
+					username System.getenv("MODMAVEN_USER")
+					password System.getenv("MODMAVEN_PASSWORD")
 				}
 				url = "https://modmaven.dev/artifactory/local-releases/"
 			}
@@ -364,8 +350,45 @@ idea {
 	}
 }
 
-//test {
-//	useJUnitPlatform()
-//	include 'mezz/jei/**'
-//	exclude 'mezz/jei/lib/**'
-//}
+def relType = "release"
+if (ext.isAlpha) {
+	relType = "alpha"
+} else if (ext.isBeta) {
+	relType = "beta"
+}
+modrinth {
+	token = System.getenv("MODRINTH_TOKEN")
+	projectId = "${project.modrinth_project_id}"
+	versionNumber = "${project.mc_version}-${semver}"
+	versionType = relType
+	uploadFile = jar // With Loom, this MUST be set to `remapJar` instead of `jar`!
+	additionalFiles = [ apiJar ]
+	gameVersions = ["${mc_version}"] // Must be an array, even with only one version
+	changelog = System.getenv("CHANGELOG")
+	dependencies { // A special DSL for creating dependencies
+		// scope.type
+		// The scope can be `required`, `optional`, or `incompatible`
+		// The type can either be `project` or `version`
+		required.project "nU0bVIaL"  // Patchouli
+	}
+}
+if (System.getenv("CURSEFORGE_TOKEN")) {
+	curseforge {
+		apiKey = System.getenv("CURSEFORGE_TOKEN")
+		project {
+			id = project.curse_project_id
+			changelogType = "markdown"
+			changelog = System.getenv("CHANGELOG")
+			releaseType = relType
+			addGameVersion project.mc_version
+			addGameVersion "Forge"
+			mainArtifact(jar.archiveFile) {
+				displayName = "${project.archivesBaseName} v${project.mc_version}-${semver}"
+				relations {
+					requiredDependency "patchouli"
+				}
+			}
+			addArtifact(apiJar.archiveFile)
+		}
+	}
+}
