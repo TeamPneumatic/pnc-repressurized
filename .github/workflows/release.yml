@@ -41,11 +41,6 @@ jobs:
       - name: Set up mod metadata
         id: mod_meta
         run: |
-          changelog=$(./scripts/extract_changes.sh)
-          changelog="${changelog//'%'/'%25'}"
-          changelog="${changelog//$'\n'/'%0A'}"
-          changelog="${changelog//$'\r'/'%0D'}"
-          echo changelog=$changelog >> $GITHUB_OUTPUT
           echo mod_version=$(grep ^mod_version_ ./gradle.properties | cut -d= -f2 | tr '\012' '.' | sed -e 's/\.$//') >> $GITHUB_OUTPUT
           echo mc_version=$(grep ^mc_version ./gradle.properties | cut -d= -f2) >> $GITHUB_OUTPUT
       - name: Publish to Modmaven
@@ -58,7 +53,7 @@ jobs:
       - name: Publish to Modrinth
         uses: gradle/gradle-build-action@v2
         env:
-          CHANGELOG: ${{ steps.mod_meta.outputs.changelog }}
+          CHANGELOG: ${{ github.event.release.body }}
           MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
           BUILD_NUMBER: ${{ github.run_number }}
         with:
@@ -66,7 +61,7 @@ jobs:
       - name: Publish to Curseforge
         uses: gradle/gradle-build-action@v2
         env:
-          CHANGELOG: ${{ steps.mod_meta.outputs.changelog }}
+          CHANGELOG: ${{ github.event.release.body }}
           CURSEFORGE_TOKEN: ${{ secrets.CURSEFORGE_TOKEN }}
           BUILD_NUMBER: ${{ github.run_number }}
         with:
