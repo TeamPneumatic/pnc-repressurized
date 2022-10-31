@@ -16,58 +16,56 @@ jobs:
           TAG: ${{ github.event.release.tag_name }}
         run: |
           echo "TAG=${TAG}" >> $GITHUB_ENV
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Set up JDK 17
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
           java-version: '17'
-      - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
-      - name: Clean gradle
-        run: ./gradlew clean --no-daemon --max-workers 1
+      - name: Validate Gradle Wrapper
+        uses: gradle/wrapper-validation-action@v1
       - name: Remove any generated assets/data
         run: rm -rf ./src/generated
-      - name: Generate assets
-        run: ./gradlew runData --no-daemon --max-workers 1 || test -f ./src/generated/resources/.cache/cache
+      - name: Generate assets & data
+        uses: gradle/gradle-build-action@v2
+        with:
+          arguments: runData --no-daemon
       - name: Validate assets
-        run: test -d ./src/generated -a -f ./src/generated/resources/.cache/cache
-      - name: Build with Gradle
-        run: ./gradlew build --no-daemon --max-workers 1
+        run: test -d ./src/generated -a -d ./src/generated/resources/.cache
+      - name: Build JAR
+        uses: gradle/gradle-build-action@v2
+        with:
+          arguments: build --no-daemon
         env:
           BUILD_NUMBER: ${{ github.run_number }}
       - name: Set up mod metadata
         id: mod_meta
         run: |
-          changelog=$(./scripts/extract_changes.sh)
-          changelog="${changelog//'%'/'%25'}"
-          changelog="${changelog//$'\n'/'%0A'}"
-          changelog="${changelog//$'\r'/'%0D'}"
-          echo ::set-output name=changelog::$changelog
-          echo ::set-output name=mod_version::$(grep ^mod_version_ ./gradle.properties | cut -d= -f2 | tr '\012' '.' | sed -e 's/\.$//')
-          echo ::set-output name=mc_version::$(grep ^mc_version ./gradle.properties | cut -d= -f2)
-      - name: Upload artifact to GitHub
-        uses: actions/upload-artifact@v2
-        with:
-          name: pncr-dist-${{ github.ref_name }}-${{ steps.mod_meta.outputs.mod_version}}-${{ github.run_number }}
-          path: build/libs/
+          echo mod_version=$(grep ^mod_version_ ./gradle.properties | cut -d= -f2 | tr '\012' '.' | sed -e 's/\.$//') >> $GITHUB_OUTPUT
+          echo mc_version=$(grep ^mc_version ./gradle.properties | cut -d= -f2) >> $GITHUB_OUTPUT
       - name: Publish to Modmaven
+        uses: gradle/gradle-build-action@v2
         env:
           MODMAVEN_USER: ${{ secrets.MODMAVEN_USER }}
           MODMAVEN_PASSWORD: ${{ secrets.MODMAVEN_PASSWORD }}
-        run: ./gradlew publishMavenPublicationToModmavenRepository --no-daemon --max-workers 1
+        with:
+          arguments: publishMavenPublicationToModmavenRepository --no-daemon
       - name: Publish to Modrinth
+        uses: gradle/gradle-build-action@v2
         env:
-          CHANGELOG: ${{ steps.mod_meta.outputs.changelog }}
+          CHANGELOG: ${{ github.event.release.body }}
           MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
           BUILD_NUMBER: ${{ github.run_number }}
-        run: ./gradlew modrinth --no-daemon --max-workers 1
+        with:
+          arguments: modrinth --no-daemon
       - name: Publish to Curseforge
+        uses: gradle/gradle-build-action@v2
         env:
-          CHANGELOG: ${{ steps.mod_meta.outputs.changelog }}
+          CHANGELOG: ${{ github.event.release.body }}
           CURSEFORGE_TOKEN: ${{ secrets.CURSEFORGE_TOKEN }}
           BUILD_NUMBER: ${{ github.run_number }}
-        run: ./gradlew curseforge --no-daemon --max-workers 1
+        with:
+          arguments: curseforge --no-daemon
       - name: Discord notification
         uses: Ilshidur/action-discord@master
         env:
