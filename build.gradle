@@ -310,7 +310,7 @@ tasks.withType(GenerateModuleMetadata) {
 // with thanks to AE2
 def mavenVer = ext.releaseTag == "" ? "${project.mc_version}-${semver}-SNAPSHOT" : "${project.mc_version}-${semver}"
 publishing {
-	if (System.getenv("artifactory_user") != null) {
+	if (System.getenv("MODMAVEN_USER") != null) {
 		publications {
 			maven(MavenPublication) {
 				groupId = project.group
