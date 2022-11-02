@@ -21,7 +21,6 @@ import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.particle.AirParticleData;
-import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.JetBootsStateTracker;
 import net.minecraft.client.resources.sounds.AbstractTickableSoundInstance;
 import net.minecraft.sounds.SoundSource;
@@ -33,7 +32,6 @@ public class MovingSoundJetBoots extends AbstractTickableSoundInstance {
     private static final Vec3 IDLE_VEC = new Vec3(0, -0.5, 0);
 
     private final Player player;
-    private final CommonArmorHandler handler;
     private float targetPitch;
     private int endTimer = Integer.MAX_VALUE;
 
@@ -45,7 +43,6 @@ public class MovingSoundJetBoots extends AbstractTickableSoundInstance {
         this.delay = 0;
         this.targetPitch = 0.7F;
         this.pitch = 0.5F;
-        this.handler = CommonArmorHandler.getHandlerForPlayer(player);
         this.volume = volumeFromConfig(JetBootsStateTracker.getClientTracker().getJetBootsState(player).isBuilderMode());
 
         // kludge: tiny bit of upward displacement allows player to walk off an edge and back on again
@@ -56,8 +53,7 @@ public class MovingSoundJetBoots extends AbstractTickableSoundInstance {
 
     @Override
     public void tick() {
-        if (!handler.isValid() || !handler.isArmorEnabled()) {
-            // handler gets invalidated if the tracked player disconnects
+        if (!player.isAlive()) {
             return;
         }
 
@@ -102,7 +98,7 @@ public class MovingSoundJetBoots extends AbstractTickableSoundInstance {
 
     @Override
     public boolean isStopped() {
-        return !handler.isValid() || !handler.isArmorEnabled() || endTimer <= 0;
+        return !player.isAlive() || endTimer <= 0;
     }
 
     private void handleParticles(boolean jetBootsActive, boolean builderMode) {
