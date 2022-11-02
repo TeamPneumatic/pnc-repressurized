@@ -204,6 +204,11 @@ public class JetBootsHandler extends BaseArmorUpgradeHandler<JetBootsHandler.Jet
     }
 
     @Override
+    public void onShutdown(ICommonArmorHandler commonArmorHandler) {
+        setJetBootsActive(commonArmorHandler, false);
+    }
+
+    @Override
     public void onDataFieldUpdated(ICommonArmorHandler commonArmorHandler, String tagName, Tag inbt) {
         Player player = commonArmorHandler.getPlayer();
         JetBootsHandler.JetBootsLocalState jbLocal = commonArmorHandler.getExtensionData(this);
