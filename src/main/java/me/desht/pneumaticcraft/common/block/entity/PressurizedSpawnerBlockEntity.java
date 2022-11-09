@@ -143,6 +143,7 @@ public class PressurizedSpawnerBlockEntity extends AbstractAirHandlingBlockEntit
                 level.levelEvent(LevelEvent.PARTICLES_MOBBLOCK_SPAWN, worldPosition, 0);
                 mobentity.spawnAnim();
                 mobentity.setPersistenceRequired();
+                mobentity.getPersistentData().putBoolean("pneumaticcraft:pressurized_spawner", true);
                 return true;
             }
         }
