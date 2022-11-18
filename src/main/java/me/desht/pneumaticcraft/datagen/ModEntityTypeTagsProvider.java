@@ -16,6 +16,7 @@ public class ModEntityTypeTagsProvider extends EntityTypeTagsProvider {
     @Override
     protected void addTags() {
         tag(PneumaticCraftTags.EntityTypes.VACUUM_TRAP_BLACKLISTED);
+        tag(PneumaticCraftTags.EntityTypes.VACUUM_TRAP_WHITELISTED);
         tag(PneumaticCraftTags.EntityTypes.OMNIHOPPER_BLACKLISTED).add(EntityType.VILLAGER);
     }
 }
