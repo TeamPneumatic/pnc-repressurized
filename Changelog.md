@@ -8,6 +8,15 @@ Changes are in reverse chronological order; newest changes at the top.
 
 1.19.2 builds may also work on Minecraft 1.19.1 but no support will be provided for that.
 
+## 4.1.3 (unreleased)
+
+### Updates
+* Entities spawned by the Pressurized Spawner are now tagged with a "pneumaticcraft:pressurized_spawner" tag
+  * May be useful for identifying via KubeJS etc.
+* Added the Warden to the Vacuum Trap's hardcoded list of blacklisted mobs
+* Also added a new `pneumaticcraft:vacuum_trap_whitelisted` entity type tag
+  * Can be used to override the default hardcoded blacklist (bosses, drones, tame animals) - use with care!
+
 ## 4.1.2 (30 Oct 2022)
 
 ### Updates
