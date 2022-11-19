@@ -6,7 +6,7 @@
   "pages": [
     {
       "type": "text",
-      "text": "When placed on farmland with a $(thing)crop/$, this will improve the growth speed of that crop. $(thing)Green particles/$ are emitted to show when the $(item)Crop Support/$ speeds up the growth.$(p)To remove a $(link)Crop Support/$, either break the block underneath it or $(thing)sneak-right-click/$ the block with a $(l:tools/logistics_configurator)Logistics Configurator/$ or another $(item)Crop Support/$."
+      "text": "When placed on farmland with a $(thing)crop/$, this will improve the growth speed of that crop. $(thing)Green particles/$ are emitted to show when the $(item)Crop Support/$ speeds up the growth.$(p)To remove a $(item)Crop Support/$, either break the block underneath it or $(thing)sneak-right-click/$ the block with a $(l:tools/logistics_configurator)Logistics Configurator/$ or another $(item)Crop Support/$."
     },
     {
       "type": "crafting",
