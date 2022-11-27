@@ -18,6 +18,8 @@
 package me.desht.pneumaticcraft.client.render.blockentity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import me.desht.pneumaticcraft.api.client.IChargingStationRenderOverride;
+import me.desht.pneumaticcraft.client.ClientRegistryImpl;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.block.entity.ChargingStationBlockEntity;
 import net.minecraft.client.Minecraft;
@@ -27,6 +29,8 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.ItemStack;
 
 public class ChargingStationRenderer implements BlockEntityRenderer<ChargingStationBlockEntity> {
     public ChargingStationRenderer(BlockEntityRendererProvider.Context ctx) {
@@ -34,17 +38,24 @@ public class ChargingStationRenderer implements BlockEntityRenderer<ChargingStat
 
     @Override
     public void render(ChargingStationBlockEntity te, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
-        if (te.getChargingStackSynced().isEmpty() || !te.nonNullLevel().isLoaded(te.getBlockPos())) return;
+        ItemStack renderStack = te.getChargingStackSynced();
+        if (renderStack.isEmpty() || !te.nonNullLevel().isLoaded(te.getBlockPos()) || te.getCamouflage() != null) return;
 
         matrixStackIn.pushPose();
 
-        matrixStackIn.translate(0.5, 0.5, 0.5);
-        RenderUtils.rotateMatrixForDirection(matrixStackIn, te.getRotation());
-        matrixStackIn.scale(0.5F, 0.5F, 0.5F);
+        IChargingStationRenderOverride override = ClientRegistryImpl.getInstance().getChargingRenderOverride(renderStack.getItem());
 
-        ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
-        BakedModel bakedModel = itemRenderer.getModel(te.getChargingStackSynced(), te.getLevel(), null, 0);
-        itemRenderer.render(te.getChargingStackSynced(), ItemTransforms.TransformType.FIXED, true, matrixStackIn, bufferIn, combinedLightIn, combinedOverlayIn, bakedModel);
+        if (override.onRender(matrixStackIn, renderStack, partialTicks, bufferIn, combinedLightIn, combinedOverlayIn)) {
+            matrixStackIn.translate(0.5, 0.5, 0.5);
+            RenderUtils.rotateMatrixForDirection(matrixStackIn, te.getRotation());
+            if (!(renderStack.getItem() instanceof BlockItem)) {
+                matrixStackIn.scale(0.5F, 0.5F, 0.5F);
+            }
+
+            ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
+            BakedModel bakedModel = itemRenderer.getModel(renderStack, te.getLevel(), null, 0);
+            itemRenderer.render(renderStack, ItemTransforms.TransformType.FIXED, true, matrixStackIn, bufferIn, combinedLightIn, combinedOverlayIn, bakedModel);
+        }
 
         matrixStackIn.popPose();
     }

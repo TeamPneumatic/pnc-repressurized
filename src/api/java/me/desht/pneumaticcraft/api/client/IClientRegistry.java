@@ -79,4 +79,6 @@ public interface IClientRegistry {
      * @param renderOverride customized rendering behaviour for that item
      */
     void registerRenderOverride(@Nonnull ItemLike entry, @Nonnull IAssemblyRenderOverriding renderOverride);
+
+    void registerRenderOverride(@Nonnull ItemLike item, @Nonnull IChargingStationRenderOverride renderOverride);
 }

@@ -18,6 +18,7 @@
 package me.desht.pneumaticcraft.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import me.desht.pneumaticcraft.api.client.IChargingStationRenderOverride;
 import me.desht.pneumaticcraft.api.client.IClientRegistry;
 import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
 import me.desht.pneumaticcraft.api.client.assembly_machine.IAssemblyRenderOverriding;
@@ -29,6 +30,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ItemLike;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import java.util.Map;
@@ -38,6 +40,8 @@ public class ClientRegistryImpl implements IClientRegistry {
 
     private static final ClientRegistryImpl INSTANCE = new ClientRegistryImpl();
     private static final Map<Item, IAssemblyRenderOverriding> renderOverrides = new ConcurrentHashMap<>();
+    private static final Map<Item, IChargingStationRenderOverride> chargingRenderOverrides = new ConcurrentHashMap<>();
+    private static final IChargingStationRenderOverride DEFAULT_CHARGING_RENDERER = (poseStack, renderedStack, partialTicks, bufferIn, combinedLightIn, combinedOverlayIn) -> true;
 
     private ClientRegistryImpl() {}
 
@@ -70,7 +74,17 @@ public class ClientRegistryImpl implements IClientRegistry {
         renderOverrides.put(entry.asItem(), renderOverride);
     }
 
-    public IAssemblyRenderOverriding getRenderOverride(ItemLike entry) {
+    public IAssemblyRenderOverriding getAssemblyRenderOverride(ItemLike entry) {
         return renderOverrides.get(entry.asItem());
+    }
+
+    @Override
+    public void registerRenderOverride(@NotNull ItemLike item, @NotNull IChargingStationRenderOverride renderOverride) {
+        chargingRenderOverrides.put(item.asItem(), renderOverride);
+    }
+
+    @Nonnull
+    public IChargingStationRenderOverride getChargingRenderOverride(ItemLike item) {
+        return chargingRenderOverrides.getOrDefault(item.asItem(), DEFAULT_CHARGING_RENDERER);
     }
 }

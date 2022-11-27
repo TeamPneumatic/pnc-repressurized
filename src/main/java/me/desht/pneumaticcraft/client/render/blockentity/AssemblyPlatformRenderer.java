@@ -104,7 +104,7 @@ public class AssemblyPlatformRenderer extends AbstractBlockEntityModelRenderer<A
 
     private Pair<IAssemblyRenderOverriding, Float> getClawTranslation(float clawProgress, ItemStack heldStack) {
         float clawTrans;
-        IAssemblyRenderOverriding renderOverride = ClientRegistryImpl.getInstance().getRenderOverride(heldStack.getItem());
+        IAssemblyRenderOverriding renderOverride = ClientRegistryImpl.getInstance().getAssemblyRenderOverride(heldStack.getItem());
         if (!heldStack.isEmpty()) {
             if (renderOverride != null) {
                 clawTrans = renderOverride.getPlatformClawShift(heldStack);
