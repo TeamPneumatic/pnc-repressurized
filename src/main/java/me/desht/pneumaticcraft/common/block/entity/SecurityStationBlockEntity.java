@@ -675,7 +675,11 @@ public class SecurityStationBlockEntity extends AbstractTickingBlockEntity imple
     public static class Listener {
         @SubscribeEvent(priority = EventPriority.HIGHEST)
         public static void onPlayerInteract(PlayerInteractEvent event) {
-            if (event instanceof PlayerInteractEvent.RightClickEmpty || event.getLevel().isClientSide) return;
+            if (event instanceof PlayerInteractEvent.RightClickEmpty
+                    || event.getLevel().isClientSide
+                    || !event.getLevel().isLoaded(event.getPos())) {
+                return;
+            }
 
             Player player = event.getEntity();
             if (isPlayerExempt(player)) return;
