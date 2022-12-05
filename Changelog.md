@@ -9,7 +9,18 @@ Changes are in reverse chronological order; newest changes at the top.
 * PNC:R 3.2.3 and later *require* Forge 40.1.20 or later
 * PNC:R 3.2.0 and later *require* Forge 40.1.0 or later and JEI 9.7.0 or later
 
-## 3.4.3 (18 Sep 2022)
+## 3.4.4
+
+### Updates
+* Entities spawned by a Pressurized Spawner now have a `pneumaticcraft:pressurized_spawner` persistent entity tag
+  * May be useful to identify them with mods like KubeJS
+
+### Fixes
+* Jetboots sounds and particles now play properly to nearby players on SMP
+* Fixed potentially severe server TPS hit in Security Station checking for blocks in unloaded chunks
+  * Unlikely to occur as part of normal player interaction, but automation mods like Modular Routers and others can trigger it
+
+## 3.4.3
 
 ### Fixes
 * Fixed potential crash when calculating loot tables for certain modded blocks when dug by drones
