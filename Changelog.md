@@ -17,6 +17,11 @@ Changes are in reverse chronological order; newest changes at the top.
 * Also added a new `pneumaticcraft:vacuum_trap_whitelisted` entity type tag
   * Can be used to override the default hardcoded blacklist (bosses, drones, tame animals) - use with care!
 
+### Fixes
+* Jetboots sounds and particles now play properly to nearby players on SMP
+* Fixed potentially severe server TPS hit in Security Station checking for blocks in unloaded chunks
+  * Unlikely to occur as part of normal player interaction, but automation mods like Modular Routers and others can trigger it
+
 ## 4.1.2 (30 Oct 2022)
 
 ### Updates
