@@ -17,6 +17,7 @@
 
 package me.desht.pneumaticcraft.common.util;
 
+import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.item.ILaunchBehaviour;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.entity.projectile.TumblingBlockEntity;
@@ -24,13 +25,17 @@ import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSetEntityMotion;
 import me.desht.pneumaticcraft.common.network.PacketSpawnParticle;
 import me.desht.pneumaticcraft.common.particle.AirParticleData;
+import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.dispenser.AbstractProjectileDispenseBehavior;
+import net.minecraft.core.dispenser.DispenseItemBehavior;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.item.PrimedTnt;
 import net.minecraft.world.entity.player.Player;
@@ -40,9 +45,15 @@ import net.minecraft.world.entity.vehicle.Minecart;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.DispenserBlock;
+import net.minecraft.world.level.block.Rotation;
+import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.client.model.generators.ModelBuilder;
 
+import java.lang.reflect.Field;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
@@ -98,6 +109,7 @@ public class ItemLaunching {
     public static Entity getEntityToLaunch(Level world, ItemStack stack, Player player, boolean dispenserLike, boolean fallingBlocks) {
         Item item = stack.getItem();
 
+        // Checks if item has a special launch behavior, returning the corresponding entity to launch if so
         if (dispenserLike) {
             for (ILaunchBehaviour behaviour : behaviours) {
                 Entity e = behaviour.getEntityToLaunch(stack, player);
@@ -107,8 +119,11 @@ public class ItemLaunching {
             }
         }
 
+        // Checks if item is a block that should be launched as a tumbling block
         if (fallingBlocks && item instanceof BlockItem) {
             return new TumblingBlockEntity(world, player, 0, 0, 0, stack);
+
+        // Fallback to launch a generic item entity
         } else {
             ItemEntity e = new ItemEntity(world, 0, 0, 0, stack);
             e.setPickUpDelay(20);
@@ -124,37 +139,62 @@ public class ItemLaunching {
         registerBehaviour((stack, player) -> {
             Item item = stack.getItem();
             Level level = player.getLevel();
-            if (item == Blocks.TNT.asItem()) {
-                PrimedTnt tnt = new PrimedTnt(level, 0, 0, 0, player);
-                tnt.setFuse(80);
-                return tnt;
+            float playerYaw = player.getRotationVector().y;
+
+            if (item == Items.ARMOR_STAND) {
+                ArmorStand armorStand = new ArmorStand(level, 0, 0, 0);
+                armorStand.setYRot(playerYaw);
+                return armorStand;
+
+            } else if (item instanceof ArrowItem) {
+                return ((ArrowItem) item).createArrow(level, stack, player);
+
+            } else if (item instanceof BoatItem) {
+                return new Boat(level, 0, 0, 0);
+
+
+            // Experience bottle launched as entity
             } else if (item == Items.EXPERIENCE_BOTTLE) {
                 return new ThrownExperienceBottle(level, player);
+
+
             } else if (item instanceof PotionItem) {
                 ThrownPotion potionEntity = new ThrownPotion(level, player);
                 potionEntity.setItem(stack);
                 return potionEntity;
-            } else if (item instanceof ArrowItem) {
-                return ((ArrowItem) item).createArrow(level, stack, player);
+
+                // TNT blocks launch as entity
+            } else if (item == Blocks.TNT.asItem()) {
+                PrimedTnt tnt = new PrimedTnt(level, 0, 0, 0, player);
+                tnt.setFuse(80);
+                return tnt;
+
             } else if (item == Items.EGG) {
                 return new ThrownEgg(level, player);
+
             } else if (item == Items.FIRE_CHARGE) {
                 SmallFireball e = new SmallFireball(level, player, 0, 0, 0);
                 e.setItem(stack);
                 return e;
+
             } else if (item == Items.SNOWBALL) {
                 return new Snowball(level, player);
+
             } else if (item instanceof SpawnEggItem && level instanceof ServerLevel) {
                 EntityType<?> type = ((SpawnEggItem) item).getType(stack.getTag());
                 Entity e = type.spawn((ServerLevel) level, stack, player, player.blockPosition(), MobSpawnType.SPAWN_EGG, false, false);
+
                 if (e instanceof LivingEntity && stack.hasCustomHoverName()) {
                     e.setCustomName(stack.getHoverName());
                 }
+
                 return e;
+
             } else if (item instanceof MinecartItem) {
                 return Minecart.createMinecart(level, 0, 0, 0, ((MinecartItem) item).type);
-            } else if (item instanceof BoatItem) {
-                return new Boat(level, 0, 0, 0);
+
+
+
             } else if (item == Items.FIREWORK_ROCKET) {
                 return new FireworkRocketEntity(level, 0, 0, 0, stack);
             }

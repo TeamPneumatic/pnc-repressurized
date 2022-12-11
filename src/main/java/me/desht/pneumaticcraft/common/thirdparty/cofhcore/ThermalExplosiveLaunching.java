@@ -12,7 +12,18 @@ import java.util.Map;
 public class ThermalExplosiveLaunching {
     private static final Map<ResourceLocation, EntityType<?>> launchMap = Maps.newHashMap();
 
-    public static void registerLaunchBehaviour() {
+    public static void registerExplosiveLaunchBehaviour() {
+        register("ice");
+        register("earth");
+        register("lightning");
+
+        PneumaticRegistry.getInstance().getItemRegistry().registerItemLaunchBehaviour((stack, player) -> {
+            EntityType<?> entityType = launchMap.get(stack.getItem().getRegistryName());
+            return entityType != null ? entityType.create(player.getLevel()) : null;
+        });
+    }
+
+    public static void registerMinecartLaunchBehaviour() {
         register("ice");
         register("earth");
         register("lightning");
