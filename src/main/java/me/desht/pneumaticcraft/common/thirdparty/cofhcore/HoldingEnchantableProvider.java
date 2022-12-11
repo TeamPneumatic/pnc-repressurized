@@ -17,26 +17,48 @@
 
 package me.desht.pneumaticcraft.common.thirdparty.cofhcore;
 
-public class HoldingEnchantableProvider /*implements ICapabilityProvider*/ {
-//    public static final Capability<IEnchantableItem> CAPABILITY_ENCHANTABLE_ITEM = CapabilityManager.get(new CapabilityToken<>() {});
-//
-//    private final AllowHoldingEnchant ench = new AllowHoldingEnchant();
-//    private final LazyOptional<IEnchantableItem> lazy = LazyOptional.of(() -> ench);
-//
-//    @Nonnull
-//    @Override
-//    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-//        return CAPABILITY_ENCHANTABLE_ITEM.orEmpty(cap, lazy);
-//    }
-//
-//    public static class AllowHoldingEnchant implements IEnchantableItem {
-//        @Override
-//        public boolean supportsEnchantment(Enchantment enchantment) {
-//            return ConfigHelper.common().integration.cofhHoldingMultiplier.get() > 0 && enchantment == CoFHCore.holdingEnchantment;
-//        }
-//    }
-//
-    static void registerEnchantment() {
-//        CoreEnchantments.registerHoldingEnchantment();
+import me.desht.pneumaticcraft.api.PneumaticRegistry;
+import me.desht.pneumaticcraft.api.item.ItemVolumeModifier;
+import me.desht.pneumaticcraft.api.misc.Symbols;
+import me.desht.pneumaticcraft.common.config.ConfigHelper;
+import me.desht.pneumaticcraft.lib.ModIds;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraftforge.registries.ForgeRegistries;
+
+import java.util.List;
+
+public class HoldingEnchantableProvider {
+    static Enchantment holdingEnchantment = null;
+    private static final boolean holdingEnabled = ConfigHelper.common().integration.cofhHoldingMultiplier.get() > 0;
+
+    static void registerVolumeModifier() {
+        // Gets if Holding enchantment has been registered
+        holdingEnchantment = ForgeRegistries.ENCHANTMENTS.getValue(new ResourceLocation(ModIds.COFH_CORE, "holding"));
+
+        // Registers the volume modifier for the Holding enchant if it's present and config-enabled
+        if (holdingEnchantment != null && holdingEnabled) {
+            PneumaticRegistry.getInstance().getItemRegistry().registerPneumaticVolumeModifier(new C0FHVolumeModifier(holdingEnchantment));
+        }
+    }
+
+    public record C0FHVolumeModifier(Enchantment holding) implements ItemVolumeModifier {
+        @Override
+        public int getNewVolume(ItemStack stack, int oldVolume) {
+            // finalVolume = baseVolume * ((1 + level_of_holding_enchantment) * configMultiplier)
+            return (int)Math.ceil(oldVolume * ((1 + EnchantmentHelper.getItemEnchantmentLevel(holding, stack))
+                    * ConfigHelper.common().integration.cofhHoldingMultiplier.get()));
+        }
+
+        @Override
+        public void addInfo(ItemStack stack, List<Component> text) {
+            int nHolding = EnchantmentHelper.getItemEnchantmentLevel(holding, stack);
+            if (nHolding > 0) {
+                text.add(Component.literal(Symbols.TRIANGLE_RIGHT + " ").append(holding.getFullname(nHolding)));
+            }
+        }
     }
 }

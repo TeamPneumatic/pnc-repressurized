@@ -30,6 +30,12 @@ public class ModIds {
     public static final String MEKANISM = "mekanism";
     public static final String CURIOS = "curios";
     public static final String COFH_CORE = "cofh_core";
+    public static final String THERMAL = "thermal";
+    public static final String THERMAL_CULTIVATION = "thermal_cultivation";
+    public static final String THERMAL_EXPANSION = "thermal_expansion";
+    public static final String THERMAL_FOUNDATION = "thermal_foundation";
+    public static final String THERMAL_INNOVATION = "thermal_innovation";
+    public static final String THERMAL_LOCOMOTION = "thermal_locomotion";
     public static final String WAILA = "waila";
     public static final String CRAFTTWEAKER = "crafttweaker";
     public static final String GAMESTAGES = "gamestages";
