@@ -43,7 +43,7 @@ class CachedTileNeighbours {
         if (owner.getLevel() == null) return null;
         BlockEntity res = known.get(dir.get3DDataValue()) ? neighbours.get(dir).get() : findNeighbour(dir);
         if (res != null && res.isRemoved()) {
-            // shouldn't happen, but let's be defensive
+            // could happen if the neighbour's chunk has been unloaded
             res = findNeighbour(dir);
         }
         return res;

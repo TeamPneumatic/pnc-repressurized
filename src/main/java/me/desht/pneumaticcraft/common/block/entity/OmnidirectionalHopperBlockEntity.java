@@ -108,20 +108,20 @@ public class OmnidirectionalHopperBlockEntity extends AbstractHopperBlockEntity<
     private int exportToInventory(IItemHandler otherHandler, int maxItems) {
         int remaining = maxItems;
         for (int i = 0; i < itemHandler.getSlots(); i++) {
-            ItemStack stack = itemHandler.getStackInSlot(actualSlot(i));
-            if (stack.getCount() > leaveMaterialCount) {
-                ItemStack exportedStack = ItemHandlerHelper.copyStackWithSize(stack, Math.min(stack.getCount() - leaveMaterialCount, remaining));
-                int toExport = exportedStack.getCount();
+            int slot = actualSlot(i);
+            int amount = itemHandler.getStackInSlot(slot).getCount();
+            ItemStack exportedStack = itemHandler.extractItem(slot, amount - leaveMaterialCount, true);  //getStackInSlot(actualSlot(i));
+            if (exportedStack.getCount() > leaveMaterialCount) {
+                exportedStack.setCount(Math.min(exportedStack.getCount(), remaining));
                 ItemStack excess = ItemHandlerHelper.insertItem(otherHandler, exportedStack, false);
-                int exportedCount = toExport - excess.getCount();
-                if (!isCreative) {
-                    stack.shrink(exportedCount);
-                    if (exportedCount > 0) itemHandler.invalidateComparatorValue();
+                int exportedCount = exportedStack.getCount() - excess.getCount();
+                if (!isCreative && exportedCount > 0) {
+                    itemHandler.extractItem(slot, exportedCount, false);
                 }
                 remaining -= exportedCount;
                 if (remaining <= leaveMaterialCount) {
                     if (roundRobin) {
-                        rrSlot = actualSlot(i) + 1;
+                        rrSlot = slot + 1;
                         if (rrSlot >= itemHandler.getSlots()) rrSlot = 0;
                     }
                     break;
