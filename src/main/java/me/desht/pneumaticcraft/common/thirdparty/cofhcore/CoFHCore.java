@@ -18,7 +18,6 @@
 package me.desht.pneumaticcraft.common.thirdparty.cofhcore;
 
 import me.desht.pneumaticcraft.common.thirdparty.IThirdParty;
-import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.ModIds;
 import net.minecraftforge.fml.ModList;
 
@@ -37,14 +36,14 @@ public class CoFHCore implements IThirdParty {
             HoldingEnchantableProvider.registerVolumeModifier();
         }
 
-        // Launching compatibility with Thermal TNT and Grenades
-        if (ModList.get().isLoaded(ModIds.THERMAL)) {
-            ThermalExplosiveLaunching.registerExplosiveLaunchBehaviour();
+        // Launching compatibility with Thermal Foundation TNT and Grenades
+        if (ModList.get().isLoaded(ModIds.THERMAL_FOUNDATION)) {
+            ThermalFoundationExplosiveLaunching.registerExplosiveLaunchBehaviour();
         }
 
         // Launching compatibility with Thermal Locomotion Minecarts
         if (ModList.get().isLoaded(ModIds.THERMAL_LOCOMOTION)) {
-            ThermalExplosiveLaunching.registerMinecartLaunchBehaviour();
+            ThermalLocomotionMinecartLaunching.registerMinecartLaunchBehaviour();
         }
     }
 }
