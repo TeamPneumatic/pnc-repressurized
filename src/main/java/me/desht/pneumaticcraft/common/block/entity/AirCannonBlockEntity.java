@@ -24,7 +24,9 @@ import me.desht.pneumaticcraft.api.pressure.PressureTier;
 import me.desht.pneumaticcraft.common.block.entity.RedstoneController.ReceivingRedstoneMode;
 import me.desht.pneumaticcraft.common.block.entity.RedstoneController.RedstoneMode;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
+import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModUpgrades;
+import me.desht.pneumaticcraft.common.entity.projectile.MicromissileEntity;
 import me.desht.pneumaticcraft.common.inventory.AirCannonMenu;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.network.DescSynced;
@@ -607,7 +609,10 @@ public class AirCannonBlockEntity extends AbstractAirHandlingBlockEntity
                         trackedItems.add(itemEntity);
                     }
                     itemEntity.setPickUpDelay(20);
-                } else {
+                }
+
+                // Split stack only for items that are consumed when dispensed (not micromissiles)
+                else if (!(launchedEntity instanceof MicromissileEntity)) {
                     itemHandler.extractItem(CANNON_SLOT, 1, false);
                 }
             } else if (launchedEntity instanceof ServerPlayer serverPlayer) {

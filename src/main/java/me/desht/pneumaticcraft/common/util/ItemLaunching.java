@@ -19,8 +19,13 @@ package me.desht.pneumaticcraft.common.util;
 
 import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.item.ILaunchBehaviour;
+import me.desht.pneumaticcraft.common.PneumaticCraftTags;
+import me.desht.pneumaticcraft.common.config.ConfigHelper;
+import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModSounds;
+import me.desht.pneumaticcraft.common.entity.projectile.MicromissileEntity;
 import me.desht.pneumaticcraft.common.entity.projectile.TumblingBlockEntity;
+import me.desht.pneumaticcraft.common.item.MicromissilesItem;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSetEntityMotion;
 import me.desht.pneumaticcraft.common.network.PacketSpawnParticle;
@@ -30,6 +35,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.dispenser.AbstractProjectileDispenseBehavior;
 import net.minecraft.core.dispenser.DispenseItemBehavior;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -57,6 +63,7 @@ import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
@@ -162,6 +169,7 @@ public class ItemLaunching {
             Item item = stack.getItem();
             Level level = player.getLevel();
             float playerYaw = player.getRotationVector().y;
+            float playerPitch = player.getRotationVector().x;
 
             if (item == Items.ARMOR_STAND) {
                 ArmorStand armorStand = new ArmorStand(level, 0, 0, 0);
@@ -219,7 +227,23 @@ public class ItemLaunching {
                 return minecart;
 
             } else if (item == Items.FIREWORK_ROCKET) {
-                return new FireworkRocketEntity(level, 0, 0, 0, stack);
+                return new FireworkRocketEntity(level, stack, 0, 0, 0, true);
+
+            } else if (item == Items.TRIDENT) {
+                stack.hurtAndBreak(1, player, playerEntity -> { });
+                return new ThrownTrident(level, player, stack);
+
+            } else if (item == ModItems.MICROMISSILES.get()) {
+                stack.hurtAndBreak(1, player, playerEntity -> { });
+                MicromissileEntity micromissile = new MicromissileEntity(level, player, stack);
+
+                // Sets micromissile launch rotation
+                micromissile.shootFromRotation(player, player.getXRot(), player.getYRot(), 0.0F, 1/3f, 0.0F);
+
+                // Puts micromissile on cooldown which is 1/3 of normal cooldown to reward launching
+                player.getCooldowns().addCooldown(stack.getItem(), ConfigHelper.common().micromissiles.launchCooldown.get() / 3);
+
+                return micromissile;
             }
 
             return null;
