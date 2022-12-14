@@ -41,6 +41,13 @@ public class ThermalFoundationExplosiveLaunching {
         register("phyto_grenade");
         register("nuke_grenade");
 
+        // Adds thermal charges to launch map
+        // TODO: Find a way to get these to despawn after being launched, currently they float around forever
+//        register("ice_charge", "blizz_projectile");
+//        register("lightning_charge", "blitz_projectile");
+//        register("earth_charge", "basalz_projectile");
+
+
         // Registers launch map
         PneumaticRegistry.getInstance().getItemRegistry().registerItemLaunchBehaviour((stack, player) -> {
             EntityType<?> entityType = launchMap.get(stack.getItem().getRegistryName());
@@ -55,6 +62,20 @@ public class ThermalFoundationExplosiveLaunching {
     private static void register(String itemIDString) {
         ResourceLocation itemId = new ResourceLocation(ModIds.THERMAL, itemIDString);
         ResourceLocation entityId = new ResourceLocation(ModIds.THERMAL, itemIDString);
+        EntityType<?> entityType = ForgeRegistries.ENTITIES.getValue(entityId);
+        if (entityType != null) {
+            launchMap.put(itemId, entityType);
+        }
+    }
+
+    /**
+     * Adds the item and entity matching the passed IDs to the launch map to be registered as launch behaviors
+     * @param itemIDString item ID of item to add to launch map
+     * @param entityIDString entity ID of the entity to add to launch map
+     */
+    private static void register(String itemIDString, String entityIDString) {
+        ResourceLocation itemId = new ResourceLocation(ModIds.THERMAL, itemIDString);
+        ResourceLocation entityId = new ResourceLocation(ModIds.THERMAL, entityIDString);
         EntityType<?> entityType = ForgeRegistries.ENTITIES.getValue(entityId);
         if (entityType != null) {
             launchMap.put(itemId, entityType);

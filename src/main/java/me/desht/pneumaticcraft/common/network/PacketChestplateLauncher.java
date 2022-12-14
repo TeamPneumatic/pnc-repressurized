@@ -17,7 +17,10 @@
 
 package me.desht.pneumaticcraft.common.network;
 
+import me.desht.pneumaticcraft.common.config.ConfigHelper;
+import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModUpgrades;
+import me.desht.pneumaticcraft.common.entity.projectile.MicromissileEntity;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
 import me.desht.pneumaticcraft.common.util.ItemLaunching;
@@ -27,6 +30,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.projectile.AbstractArrow;
+import net.minecraft.world.entity.projectile.ThrownTrident;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.items.ItemHandlerHelper;
@@ -66,19 +70,31 @@ public class PacketChestplateLauncher {
         ItemStack stack = player.getOffhandItem();
         CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
 
-        if (handler.upgradeUsable(CommonUpgradeHandlers.chestplateLauncherHandler, false) && !stack.isEmpty()) {
-            ItemStack toFire = player.isCreative() ? ItemHandlerHelper.copyStackWithSize(stack, 1) : stack.split(1);
+        // Allows launching if upgrade is active, there is an offhand item, and the item is not on cooldown
+        if (handler.upgradeUsable(CommonUpgradeHandlers.chestplateLauncherHandler, false) && !stack.isEmpty()
+                && !player.getCooldowns().isOnCooldown(stack.getItem())) {
+
+            ItemStack toFire = stack;
+
+            // Split stack only for items that are consumed when dispensed (not micromissiles)
+            if (!(stack.getItem() == ModItems.MICROMISSILES.get())) {
+                toFire = player.isCreative() ? ItemHandlerHelper.copyStackWithSize(stack, 1) : stack.split(1);
+            }
+
             Entity launchedEntity = ItemLaunching.getEntityToLaunch(player.getCommandSenderWorld(), toFire, player,true, true);
             int upgrades = handler.getUpgradeCount(EquipmentSlot.CHEST, ModUpgrades.DISPENSER.get(), PneumaticValues.PNEUMATIC_LAUNCHER_MAX_UPGRADES);
+            Vec3 velocity = player.getLookAngle().normalize().scale(amount * upgrades * SCALE_FACTOR);
 
+            // Special launch case for arrows/tridents
             if (launchedEntity instanceof AbstractArrow arrow) {
                 arrow.pickup = player.isCreative() ? AbstractArrow.Pickup.CREATIVE_ONLY : AbstractArrow.Pickup.ALLOWED;
                 arrow.setBaseDamage(arrow.getBaseDamage() + 0.25 * upgrades * amount);
             }
 
-            Vec3 velocity = player.getLookAngle().normalize().scale(amount * upgrades * SCALE_FACTOR);
+            // Launches item
             ItemLaunching.launchEntity(launchedEntity, player.getEyePosition(1f).add(0, -0.1, 0), velocity, true);
 
+            // Uses air from chestplate (unless in creative)
             if (!player.isCreative()) {
                 int usedAir = (int) (20 * upgrades * amount);
                 handler.addAir(EquipmentSlot.CHEST, -usedAir);

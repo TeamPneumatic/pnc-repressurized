@@ -26,5 +26,6 @@ public class Botania implements IThirdParty {
         PneumaticRegistry.getInstance().getItemRegistry().registerMagnetSuppressor(new SolegnoliaHandler());
 
         PlasticBrickDyeHandler.setup();
+        MinecartLaunching.registerMinecartLaunchBehaviour();
     }
 }
