@@ -63,6 +63,7 @@ public enum ModdedWrenchUtils implements IWrenchRegistry {
         registerWrench("ic2:wrench");
         registerWrench("chiselsandbits:wrench_wood");
         registerWrench("mekanism:configurator");
+        registerWrench("create:wrench");
     }
 
     private void registerWrench(String wrenchId) {
