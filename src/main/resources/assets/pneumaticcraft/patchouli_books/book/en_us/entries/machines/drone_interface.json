@@ -221,7 +221,7 @@
     },
     {
       "type": "text",
-      "text": "$(#800)setOperator(<\">=\" / \"=\">)/$$(p)Used in conditions only. Says whether or not the condition is checking for an equal amount (=) or equal and higher than amount (>=). The amount can be set using $(#800)setCount()/$.",
+      "text": "$(#800)setOperator(<\"=\" / \">=\" / \"<=\">)/$$(p)Used in conditions only. Says whether or not the condition is checking for an equal amount (=), an equal or greater than amount (>=), or an equal or lesser than amount (<=). The amount can be set using $(#800)setCount()/$.",
       "title": "setOperator()"
     },
     {
