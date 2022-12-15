@@ -37,6 +37,7 @@ import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketShowArea;
 import me.desht.pneumaticcraft.common.network.PacketSpawnRing;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -505,7 +506,7 @@ public class DroneInterfaceBlockEntity extends AbstractTickingBlockEntity
         registry.registerLuaMethod(new LuaMethod("setOperator") {
             @Override
             public Object[] call(Object[] args) {
-                requireArgs(args, 1, "<string> '>=', '=' or = '>='");
+                requireArgs(args, 1, "<string> '>=', '=' or = '<='");
                 getWidget().setOperator((String) args[0]);
                 messageToDrone(0xFFFFFFFF);
                 return null;
@@ -517,7 +518,17 @@ public class DroneInterfaceBlockEntity extends AbstractTickingBlockEntity
             public Object[] call(Object[] args) {
                 requireNoArgs(args);
                 if (curAction instanceof ICondition) {
+                    // Sets the current action's condition variables to the current widget's
+                    // This is because the current widget is what has these attributes set, but cannot be what
+                    // is compared as it is always the computer control widget
+                    ((ICondition) curAction).setOperator(getWidget().getOperator());
+                    ((ICondition) curAction).setRequiredCount(getWidget().getRequiredCount());
+                    ((ICondition) curAction).setMeasureVar(getWidget().getMeasureVar());
+                    ((ICondition) curAction).setAndFunction(getWidget().isAndFunction());
+
+                    // Evaluates condition
                     boolean bool = ((ICondition) curAction).evaluate(drone, getWidget());
+
                     return new Object[]{bool};
                 } else {
                     throw new IllegalArgumentException("Current action is not a condition! Action: " + (curAction != null ? curAction.getType().toString() : "*none*"));
