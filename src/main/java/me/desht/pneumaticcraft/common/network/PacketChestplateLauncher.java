@@ -77,7 +77,7 @@ public class PacketChestplateLauncher {
             ItemStack toFire = stack;
 
             // Split stack only for items that are consumed when dispensed (not micromissiles)
-            if (!(stack.getItem() == ModItems.MICROMISSILES.get())) {
+            if (stack.getItem() != ModItems.MICROMISSILES.get()) {
                 toFire = player.isCreative() ? ItemHandlerHelper.copyStackWithSize(stack, 1) : stack.split(1);
             }
 

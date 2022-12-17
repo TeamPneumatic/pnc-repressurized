@@ -42,11 +42,11 @@ public class HoldingEnchantableProvider {
 
         // Registers the volume modifier for the Holding enchant if it's present and config-enabled
         if (holdingEnchantment != null && holdingEnabled) {
-            PneumaticRegistry.getInstance().getItemRegistry().registerPneumaticVolumeModifier(new C0FHVolumeModifier(holdingEnchantment));
+            PneumaticRegistry.getInstance().getItemRegistry().registerPneumaticVolumeModifier(new COFHVolumeModifier(holdingEnchantment));
         }
     }
 
-    public record C0FHVolumeModifier(Enchantment holding) implements ItemVolumeModifier {
+    public record COFHVolumeModifier(Enchantment holding) implements ItemVolumeModifier {
         @Override
         public int getNewVolume(ItemStack stack, int oldVolume) {
             // finalVolume = baseVolume * ((1 + level_of_holding_enchantment) * configMultiplier)
