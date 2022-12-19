@@ -54,15 +54,24 @@ public class MinigunItemRenderer extends BlockEntityWithoutLevelRenderer {
                         matrixStack.translate(-0.5, -2, -0.3);
                     }
                 } else {
-                    // our own gun in 1st person
-                    matrixStack.scale(1.5f, 1.5f, 1.5f);
-                    matrixStack.mulPose(Vector3f.XP.rotationDegrees(0));
-                    matrixStack.mulPose(Vector3f.YP.rotationDegrees(0));
-                    matrixStack.mulPose(Vector3f.ZP.rotationDegrees(180));
-                    if (mc.options.mainHand == HumanoidArm.RIGHT) {
-                        matrixStack.translate(-1, -1.7, 0.1);
-                    } else {
-                        matrixStack.translate(0, 0, 0);
+
+                    // Hides minigun in first person if in offhand because it's not usable in offhand anyway
+                    if(player.getOffhandItem() == stack) {
+                        matrixStack.scale(0f, 0f, 0f);
+                    }
+
+                    // Shows minigun in main hand appropriate to which side is set as the main hand
+                    else {
+                        // our own gun in 1st person
+                        matrixStack.scale(1.5f, 1.5f, 1.5f);
+                        matrixStack.mulPose(Vector3f.XP.rotationDegrees(0));
+                        matrixStack.mulPose(Vector3f.YP.rotationDegrees(0));
+                        matrixStack.mulPose(Vector3f.ZP.rotationDegrees(180));
+                        if (mc.options.mainHand == HumanoidArm.RIGHT) {
+                            matrixStack.translate(-1, -1.7, 0.1);
+                        } else {
+                            matrixStack.translate(0.4, -1.7, 0.1);
+                        }
                     }
                 }
                 model.renderMinigun(matrixStack, buffer, combinedLightIn, combinedOverlayIn, minigun, mc.getFrameTime(), false);
