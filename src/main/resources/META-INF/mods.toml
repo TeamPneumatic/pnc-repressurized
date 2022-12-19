@@ -39,3 +39,9 @@ PneumaticCraft: Repressurized: doing cool stuff with compressed air.'''
     versionRange="[9.7.0,)"
     ordering="NONE"
     side="BOTH"
+#[[dependencies.pneumaticcraft]]
+#    modId="cofh_core"
+#    mandatory=false
+#    versionRange="[9.1.2,)"
+#    ordering="NONE"
+#    side="BOTH"
