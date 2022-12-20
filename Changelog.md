@@ -9,6 +9,23 @@ Changes are in reverse chronological order; newest changes at the top.
 * PNC:R 3.2.3 and later *require* Forge 40.1.20 or later
 * PNC:R 3.2.0 and later *require* Forge 40.1.0 or later and JEI 9.7.0 or later
 
+## 3.5.0
+
+### Updates
+* Now supports Holding enchantment from latest CoFH Core releases (thanks @Daniel0Widing)
+  * Older versions of CoFH will work with this release of PNC:R, minus Holding enchantment compat
+* New functionality for the Pneumatic Chestplate Item Launcher (thanks @Daniel0Widing)
+  * Support for Botania Minecarts
+  * Support for Thermal Foundation TNT and Grenades
+  * Support for Thermal Locomotion Minecarts
+  * Fixed handling of vanilla boat launching
+* Added Create wrench to third-party wrench compat
+
+### Fixes
+* Fixed some Omnidirectional Hopper item transfer logic
+* Fixed Minigun not rendering when game in left-handed mode (thanks @Daniel0Widing)
+* Fixed Drone Interface drone conditions not evaluating correctly
+
 ## 3.4.4
 
 ### Updates

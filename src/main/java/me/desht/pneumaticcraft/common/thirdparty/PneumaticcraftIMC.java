@@ -7,7 +7,8 @@ import net.minecraftforge.fml.InterModComms;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
 
-import java.util.ArrayDeque;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * Class containing manager for sending all IMC messages to other mods
@@ -16,7 +17,7 @@ import java.util.ArrayDeque;
 public class PneumaticcraftIMC {
 
     // List of all IMC messages to be sent at the InterModEnqueueEvent stage
-    public static ArrayDeque<InterModComms.IMCMessage> iMCMessageQueue = new ArrayDeque<>();
+    public static Queue<InterModComms.IMCMessage> iMCMessageQueue = new ConcurrentLinkedQueue<>();
 
     /**
      * Adds the passed IMC message to the IMC message cache
@@ -32,11 +33,10 @@ public class PneumaticcraftIMC {
     @SubscribeEvent
     public static void sendIMCMessages(InterModEnqueueEvent event) {
         Log.info("Sending IMC messages.");
-        for (InterModComms.IMCMessage message : iMCMessageQueue) {
+
+        while (!iMCMessageQueue.isEmpty()) {
+            InterModComms.IMCMessage message = iMCMessageQueue.remove();
             InterModComms.sendTo(Names.MOD_ID, message.modId(), message.method(), message.messageSupplier());
         }
-
-        // Clears IMC message queue
-        iMCMessageQueue.clear();
     }
 }
