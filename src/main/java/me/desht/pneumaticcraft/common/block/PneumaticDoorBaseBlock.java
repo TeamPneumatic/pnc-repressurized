@@ -51,7 +51,7 @@ public class PneumaticDoorBaseBlock extends AbstractCamouflageBlock implements P
     private static final VoxelShape[] SHAPES = new VoxelShape[] { SHAPE_S, SHAPE_W, SHAPE_N, SHAPE_E };
 
     public PneumaticDoorBaseBlock() {
-        super(ModBlocks.defaultProps());
+        super(ModBlocks.defaultProps().noOcclusion());
     }
 
     @Override
