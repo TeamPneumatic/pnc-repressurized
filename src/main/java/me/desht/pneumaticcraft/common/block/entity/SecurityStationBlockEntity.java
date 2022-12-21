@@ -466,7 +466,7 @@ public class SecurityStationBlockEntity extends AbstractTickingBlockEntity imple
 
     public int findComponent(NetworkComponentType type) {
         for (int i = 0; i < GRID_SIZE; i++) {
-            if (NetworkComponentItem.getType(inventory.getStackInSlot(i)) == type) {
+            if (NetworkComponentItem.isType(inventory.getStackInSlot(i), type)) {
                 return i;
             }
         }
@@ -518,9 +518,9 @@ public class SecurityStationBlockEntity extends AbstractTickingBlockEntity imple
         int subroutineSlot = -1;
         for (int i = 0; i < INVENTORY_SIZE; i++) {
             if (!inventory.getStackInSlot(i).isEmpty()) {
-                NetworkComponentType type = NetworkComponentItem.getType(inventory.getStackInSlot(i));
-                if (type == null) continue; // shouldn't happen but let's be careful
-                switch (type) {
+                Optional<NetworkComponentType> type = NetworkComponentItem.getType(inventory.getStackInSlot(i));
+                if (type.isEmpty()) continue; // shouldn't happen but let's be careful
+                switch (type.get()) {
                     case DIAGNOSTIC_SUBROUTINE -> {
                         if (subroutineSlot != -1)
                             return EnumNetworkValidityProblem.TOO_MANY_SUBROUTINES; //only one subroutine per network
@@ -646,8 +646,7 @@ public class SecurityStationBlockEntity extends AbstractTickingBlockEntity imple
 
         @Override
         public boolean isItemValid(int slot, @NotNull ItemStack stack) {
-            NetworkComponentType type = NetworkComponentItem.getType(stack);
-            return type != null && type.isSecStationComponent();
+            return NetworkComponentItem.getType(stack).map(NetworkComponentType::isSecStationComponent).orElse(false);
         }
 
         @Override
