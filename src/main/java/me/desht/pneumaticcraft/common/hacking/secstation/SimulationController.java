@@ -156,7 +156,7 @@ public class SimulationController implements ISimulationController {
         if (!(hacker.containerMenu instanceof SecurityStationHackingMenu) && !playerSimulation.isHackComplete()) {
             // hacker closed their window before hack complete: AI wins
             for (int slot = 0; slot < HackSimulation.GRID_SIZE; slot++) {
-                if (NetworkComponentItem.getType(te.getPrimaryInventory().getStackInSlot(slot)) == NetworkComponentType.NETWORK_IO_PORT) {
+                if (NetworkComponentItem.isType(te.getPrimaryInventory().getStackInSlot(slot), NetworkComponentType.NETWORK_IO_PORT)) {
                     aiSimulation.getNodeAt(slot).setHackProgress(slot, 1F, true);
                     break;
                 }

@@ -130,7 +130,7 @@ public class HackSimulation {
     }
 
     public void addNode(int slot, ItemStack stack) {
-        addNode(slot, NetworkComponentItem.getType(stack), controller == null ? 1 : stack.getCount());
+        NetworkComponentItem.getType(stack).ifPresent(type -> addNode(slot, type, controller == null ? 1 : stack.getCount()));
     }
 
     private boolean isDummy() {
