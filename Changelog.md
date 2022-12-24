@@ -8,6 +8,26 @@ Changes are in reverse chronological order; newest changes at the top.
 
 1.19.2 builds may also work on Minecraft 1.19.1 but no support will be provided for that.
 
+## 4.2.0
+
+### Updates
+* Now supports Holding enchantment from latest CoFH Core releases (thanks @Daniel0Widing)
+  * Older versions of CoFH will work with this release of PNC:R, minus Holding enchantment compat
+* New functionality for the Pneumatic Chestplate Item Launcher (thanks @Daniel0Widing)
+  * Support for Botania Minecarts
+  * Support for Thermal Foundation TNT and Grenades
+  * Support for Thermal Locomotion Minecarts
+  * Fixed handling of vanilla boat launching
+* Added Create wrench to third-party wrench compat
+
+### Fixes
+* Fixed some Omnidirectional Hopper item transfer logic
+* Fixed Minigun not rendering when game in left-handed mode (thanks @Daniel0Widing)
+* Fixed Drone Interface drone conditions not evaluating correctly
+* Hopefully fixed locale-related issue with modifying pressure values in tube module GUI's
+* Fixed lockup when shift-clicking bad items into the Security Station GUI
+* Fixed Pneumatic Door Base block model allowing X-ray vision past it
+
 ## 4.1.3
 
 ### Updates
