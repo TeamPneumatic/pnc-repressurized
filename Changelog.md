@@ -25,6 +25,9 @@ Changes are in reverse chronological order; newest changes at the top.
 * Fixed some Omnidirectional Hopper item transfer logic
 * Fixed Minigun not rendering when game in left-handed mode (thanks @Daniel0Widing)
 * Fixed Drone Interface drone conditions not evaluating correctly
+* Hopefully fixed locale-related issue with modifying pressure values in tube module GUI's
+* Fixed lockup when shift-clicking bad items into the Security Station GUI
+* Fixed Pneumatic Door Base block model allowing X-ray vision past it
 
 ## 3.4.4
 
