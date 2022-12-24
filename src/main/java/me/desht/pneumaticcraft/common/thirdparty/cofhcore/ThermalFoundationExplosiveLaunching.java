@@ -2,12 +2,10 @@ package me.desht.pneumaticcraft.common.thirdparty.cofhcore;
 
 import com.google.common.collect.Maps;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.ModIds;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.vehicle.Boat;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.Items;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.Map;
@@ -50,7 +48,7 @@ public class ThermalFoundationExplosiveLaunching {
 
         // Registers launch map
         PneumaticRegistry.getInstance().getItemRegistry().registerItemLaunchBehaviour((stack, player) -> {
-            EntityType<?> entityType = launchMap.get(stack.getItem().getRegistryName());
+            EntityType<?> entityType = launchMap.get(PneumaticCraftUtils.getRegistryName(stack.getItem()).orElseThrow());
             return entityType != null ? entityType.create(player.getLevel()) : null;
         });
     }
@@ -62,7 +60,7 @@ public class ThermalFoundationExplosiveLaunching {
     private static void register(String itemIDString) {
         ResourceLocation itemId = new ResourceLocation(ModIds.THERMAL, itemIDString);
         ResourceLocation entityId = new ResourceLocation(ModIds.THERMAL, itemIDString);
-        EntityType<?> entityType = ForgeRegistries.ENTITIES.getValue(entityId);
+        EntityType<?> entityType = ForgeRegistries.ENTITY_TYPES.getValue(entityId);
         if (entityType != null) {
             launchMap.put(itemId, entityType);
         }
@@ -76,7 +74,7 @@ public class ThermalFoundationExplosiveLaunching {
     private static void register(String itemIDString, String entityIDString) {
         ResourceLocation itemId = new ResourceLocation(ModIds.THERMAL, itemIDString);
         ResourceLocation entityId = new ResourceLocation(ModIds.THERMAL, entityIDString);
-        EntityType<?> entityType = ForgeRegistries.ENTITIES.getValue(entityId);
+        EntityType<?> entityType = ForgeRegistries.ENTITY_TYPES.getValue(entityId);
         if (entityType != null) {
             launchMap.put(itemId, entityType);
         }

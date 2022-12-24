@@ -20,6 +20,7 @@ package me.desht.pneumaticcraft.common.item;
 import me.desht.pneumaticcraft.api.item.*;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerItem;
 import me.desht.pneumaticcraft.common.capabilities.AirHandlerItemStack;
+import me.desht.pneumaticcraft.common.util.ItemLaunching;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.network.chat.Component;
@@ -75,6 +76,12 @@ public enum ItemRegistry implements IItemRegistry {
     @Override
     public IAirHandlerItem.Provider makeItemAirHandlerProvider(ItemStack stack, float maxPressure) {
         return new AirHandlerItemStack(stack, maxPressure);
+    }
+
+
+    @Override
+    public void registerItemLaunchBehaviour(ILaunchBehaviour behaviour) {
+        ItemLaunching.registerBehaviour(behaviour);
     }
 
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")

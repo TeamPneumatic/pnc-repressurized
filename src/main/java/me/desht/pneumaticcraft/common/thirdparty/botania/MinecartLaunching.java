@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.common.thirdparty.botania;
 
 import com.google.common.collect.Maps;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.ModIds;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
@@ -18,7 +19,7 @@ public class MinecartLaunching {
 
         // Registers launch map
         PneumaticRegistry.getInstance().getItemRegistry().registerItemLaunchBehaviour((stack, player) -> {
-            EntityType<?> entityType = launchMap.get(stack.getItem().getRegistryName());
+            EntityType<?> entityType = launchMap.get(PneumaticCraftUtils.getRegistryName(stack.getItem()).orElseThrow());
             return entityType != null ? entityType.create(player.getLevel()) : null;
         });
     }
@@ -30,7 +31,7 @@ public class MinecartLaunching {
     private static void register(String itemIDString) {
         ResourceLocation itemId = new ResourceLocation(ModIds.BOTANIA, itemIDString);
         ResourceLocation entityId = new ResourceLocation(ModIds.BOTANIA, itemIDString);
-        EntityType<?> entityType = ForgeRegistries.ENTITIES.getValue(entityId);
+        EntityType<?> entityType = ForgeRegistries.ENTITY_TYPES.getValue(entityId);
         if (entityType != null) {
             launchMap.put(itemId, entityType);
         }

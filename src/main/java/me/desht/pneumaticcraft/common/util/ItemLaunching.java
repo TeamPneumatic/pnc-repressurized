@@ -27,7 +27,7 @@ import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSetEntityMotion;
 import me.desht.pneumaticcraft.common.network.PacketSpawnParticle;
 import me.desht.pneumaticcraft.common.particle.AirParticleData;
-import me.desht.pneumaticcraft.common.thirdparty.botania.Botania;
+import me.desht.pneumaticcraft.mixin.accessors.MinecartItemAccess;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
@@ -48,12 +48,16 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
 
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Common code for the Air Cannon and Pneumatic Chestplate item launcher
  */
 public class ItemLaunching {
+    private static final List<ILaunchBehaviour> behaviours = new CopyOnWriteArrayList<>();
+
     public static void launchEntity(Entity launchedEntity, Vec3 initialPos, Vec3 velocity, boolean doSpawn) {
         Level world = launchedEntity.getCommandSenderWorld();
 
@@ -173,7 +177,7 @@ public class ItemLaunching {
                 return new ThrownExperienceBottle(level, player);
 
             } else if (item instanceof PotionItem) {
-                ThrownPotion potionEntity = new ThrownPotion(world, player);
+                ThrownPotion potionEntity = new ThrownPotion(level, player);
                 potionEntity.setItem(stack);
                 return potionEntity;
 
@@ -186,7 +190,7 @@ public class ItemLaunching {
                 return new ThrownEgg(level, player);
 
             } else if (item == Items.FIRE_CHARGE) {
-                SmallFireball e = new SmallFireball(world, player, 0, 0, 0);
+                SmallFireball e = new SmallFireball(level, player, 0, 0, 0);
                 e.setItem(stack);
                 return e;
 
@@ -203,8 +207,8 @@ public class ItemLaunching {
 
                 return e;
 
-            } else if (item instanceof MinecartItem) {
-                AbstractMinecart minecart = Minecart.createMinecart(level, 0, 0, 0, ((MinecartItem) item).type);
+            } else if (item instanceof MinecartItem mi) {
+                AbstractMinecart minecart = Minecart.createMinecart(level, 0, 0, 0, ((MinecartItemAccess) mi).getType());
                 minecart.setYRot(playerYaw);
                 return minecart;
 

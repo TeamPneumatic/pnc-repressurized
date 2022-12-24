@@ -100,4 +100,13 @@ public interface IItemRegistry {
      */
     IAirHandlerItem.Provider makeItemAirHandlerProvider(ItemStack stack, float maxPressure);
 
+
+    /**
+     * Register an item launch behaviour for use by the Air Cannon and Pneumatic Chestplate Item Launcher (Dispenser
+     * upgrade). Call this from a {@link net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent} listener; no
+     * {@code enqueueWork()} required.
+     *
+     * @param behaviour the launch behaviour to register
+     */
+    void registerItemLaunchBehaviour(ILaunchBehaviour behaviour);
 }
