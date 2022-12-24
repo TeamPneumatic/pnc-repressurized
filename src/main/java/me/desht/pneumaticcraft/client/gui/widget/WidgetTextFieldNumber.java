@@ -23,6 +23,9 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.util.Mth;
 import org.apache.commons.lang3.math.NumberUtils;
 
+import java.text.NumberFormat;
+import java.text.ParseException;
+
 public class WidgetTextFieldNumber extends WidgetTextField {
     public int minValue = Integer.MIN_VALUE;
     public int maxValue = Integer.MAX_VALUE;
@@ -66,7 +69,14 @@ public class WidgetTextFieldNumber extends WidgetTextField {
     }
 
     public double getDoubleValue() {
-        return PneumaticCraftUtils.roundNumberToDouble(Mth.clamp(NumberUtils.toDouble(getValue()), minValue, maxValue), decimals);
+        try {
+            // using NumberFormat here rather than NumberUtils; NumberFormat honours locale settings, which is
+            // important, since locale settings are also honoured when putting a value into the widget
+            Number n = NumberFormat.getNumberInstance().parse(getValue());
+            return PneumaticCraftUtils.roundNumberToDouble(Mth.clamp(n.doubleValue(), minValue, maxValue), decimals);
+        } catch (ParseException e) {
+            return 0d;
+        }
     }
 
     public WidgetTextFieldNumber setAdjustments(double fineAdjust, double coarseAdjust) {
