@@ -28,6 +28,8 @@ Changes are in reverse chronological order; newest changes at the top.
 * Hopefully fixed locale-related issue with modifying pressure values in tube module GUI's
 * Fixed lockup when shift-clicking bad items into the Security Station GUI
 * Fixed Pneumatic Door Base block model allowing X-ray vision past it
+* Several pneumatic items now no longer use up air when used when player is in creative mode
+* Fixed Heat Frame becoming disconnected from heat handling block entities on world reload
 
 ## 3.4.4
 
