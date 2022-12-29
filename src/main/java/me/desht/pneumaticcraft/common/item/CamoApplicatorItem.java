@@ -134,7 +134,9 @@ public class CamoApplicatorItem extends PressurizableItem {
                     }
 
                     // and apply the new camouflage
-                    airHandler.addAir(-PneumaticValues.USAGE_CAMO_APPLICATOR);
+                    if (!player.isCreative()) {
+                        airHandler.addAir(-PneumaticValues.USAGE_CAMO_APPLICATOR);
+                    }
                     camoTE.setCamouflage(newCamo);
                     BlockState particleState = newCamo == null ? existingCamo : newCamo;
                     if (particleState != null) {
