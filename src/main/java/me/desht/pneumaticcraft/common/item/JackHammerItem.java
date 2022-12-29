@@ -174,7 +174,7 @@ public class JackHammerItem extends PressurizableItem
 
     @Override
     public boolean onBlockStartBreak(ItemStack itemstack, BlockPos pos, Player player) {
-        if (player instanceof ServerPlayer serverPlayer && !player.isCrouching()) {
+        if (player instanceof ServerPlayer serverPlayer && !player.isShiftKeyDown()) {
             Level level = serverPlayer.getCommandSenderWorld();
 
             HitResult hitResult = RayTraceUtils.getEntityLookedObject(player, PneumaticCraftUtils.getPlayerReachDistance(player));
@@ -229,7 +229,7 @@ public class JackHammerItem extends PressurizableItem
                         }
                         if (air < usage) break;
                     }
-                    if (air != air0) {
+                    if (air != air0 && !player.isCreative()) {
                         airHandler.addAir((int)(air - air0));
                     }
                 });

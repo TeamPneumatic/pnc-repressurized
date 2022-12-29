@@ -244,7 +244,9 @@ public abstract class Minigun {
                     if (getUpgrades(ModUpgrades.SPEED.get()) > 0) {
                         usage *= getUpgrades(ModUpgrades.SPEED.get()) + 1;
                     }
-                    airHandler.addAir(-usage);
+                    if (getPlayer() != null && !getPlayer().isCreative()) {
+                        airHandler.addAir(-usage);
+                    }
                 });
                 int roundsUsed = 1;
                 if (target != null) {

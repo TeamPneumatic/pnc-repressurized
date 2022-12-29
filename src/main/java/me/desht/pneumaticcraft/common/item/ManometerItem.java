@@ -132,8 +132,10 @@ public class ManometerItem extends PressurizableItem {
                 for (int i = 1; i < curInfo.size(); i++) {
                     curInfo.set(i, Symbols.bullet().append(curInfo.get(i)));
                 }
-                h.addAir(-PneumaticValues.USAGE_ITEM_MANOMETER);
                 curInfo.forEach(s -> player.displayClientMessage(s, false));
+                if (!player.isCreative()) {
+                    h.addAir(-PneumaticValues.USAGE_ITEM_MANOMETER);
+                }
             }
             return InteractionResult.SUCCESS;
         }).orElse(InteractionResult.PASS);
