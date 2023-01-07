@@ -12,6 +12,7 @@ Changes are in reverse chronological order; newest changes at the top.
 ## 3.5.0
 
 ### Updates
+* Charging Modules now run 4x faster when on Advanced Pressure Tubes
 * Now supports Holding enchantment from latest CoFH Core releases (thanks @Daniel0Widing)
   * Older versions of CoFH will work with this release of PNC:R, minus Holding enchantment compat
 * New functionality for the Pneumatic Chestplate Item Launcher (thanks @Daniel0Widing)
