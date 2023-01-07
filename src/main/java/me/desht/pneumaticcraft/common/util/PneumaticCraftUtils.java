@@ -386,7 +386,6 @@ public class PneumaticCraftUtils {
         float factor = 0.05F;
         entityItem.setDeltaMovement(world.random.nextGaussian() * factor, world.random.nextGaussian() * factor + 0.2, world.random.nextGaussian() * factor);
         world.addFreshEntity(entityItem);
-        stack.setCount(0);
     }
 
     public static void dropItemOnGroundPrecisely(ItemStack stack, Level world, double x, double y, double z) {
@@ -397,7 +396,6 @@ public class PneumaticCraftUtils {
         }
         entityItem.setDeltaMovement(0, 0, 0);
         world.addFreshEntity(entityItem);
-        stack.setCount(0);
     }
 
     public static ServerPlayer getPlayerFromId(UUID uuid) {
