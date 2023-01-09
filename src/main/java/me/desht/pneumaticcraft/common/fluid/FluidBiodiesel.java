@@ -17,7 +17,9 @@
 
 package me.desht.pneumaticcraft.common.fluid;
 
+import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModFluids;
+import me.desht.pneumaticcraft.common.core.ModItems;
 import net.minecraftforge.fluids.ForgeFlowingFluid;
 
 public class FluidBiodiesel {
@@ -26,7 +28,7 @@ public class FluidBiodiesel {
     private static ForgeFlowingFluid.Properties props() {
         return new ForgeFlowingFluid.Properties(
                 ModFluids.BIODIESEL_FLUID_TYPE, ModFluids.BIODIESEL, ModFluids.BIODIESEL_FLOWING
-        );
+        ).block(ModBlocks.BIODIESEL).bucket(ModItems.BIODIESEL_BUCKET);
     }
 
     public static class Source extends ForgeFlowingFluid.Source {
