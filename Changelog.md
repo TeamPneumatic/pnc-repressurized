@@ -8,6 +8,13 @@ Changes are in reverse chronological order; newest changes at the top.
 
 1.19.2 builds may also work on Minecraft 1.19.1 but no support will be provided for that.
 
+## 4.2.1
+
+### Fixes
+* The `/pncr global_var delete` command now accepts arbitrary strings, in case bad variable names were accidentally added via GPS Tool GUI
+* GPS Tool (and Area Tool) GUI now only allows alphanumeric and underscore characters in variable names
+* Fixed Biodiesel lacking a bucket item and in-world block
+
 ## 4.2.0
 
 ### Updates
