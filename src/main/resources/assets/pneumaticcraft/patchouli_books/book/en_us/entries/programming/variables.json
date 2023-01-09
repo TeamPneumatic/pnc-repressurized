@@ -40,7 +40,7 @@
     {
       "type": "text",
       "title": "Variable Commands",
-      "text": "Several commands exist (usable by any player) to manipulate global variales:$(li)/pncr global_var set <varname> <x> <y> <z>$(li)/pncr global_var set <varname> <item-registry-id>$(li)/pncr global_var get <varname>$(li)/pncr global_var list$(li)/pncr global_var delete <varname>"
+      "text": "Several commands exist (usable by any player) to manipulate global variables:$(li)/pncr global_var set <varname> <x> <y> <z>$(li)/pncr global_var set <varname> <item-registry-id>$(li)/pncr global_var get <varname>$(li)/pncr global_var list$(li)/pncr global_var delete <varname>"
     },
     {
       "type": "text",

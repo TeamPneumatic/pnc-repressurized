@@ -36,10 +36,13 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
 
+import java.util.regex.Pattern;
+
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class GPSToolScreen extends AbstractPneumaticCraftScreen {
     private static final int TEXTFIELD_WIDTH = 60;
+    private static final Pattern VAR_PATTERN = Pattern.compile("^\\w*$", Pattern.CASE_INSENSITIVE);
 
     protected final WidgetTextFieldNumber[] textFields = new WidgetTextFieldNumber[3];
     protected WidgetTextField variableField;
@@ -105,6 +108,7 @@ public class GPSToolScreen extends AbstractPneumaticCraftScreen {
         variableField = new WidgetTextField(font, xMiddle - 50, yMiddle + 60, 100, font.lineHeight + 1);
         playerGlobal = !oldVarName.startsWith("%");
         oldVarName = GlobalVariableHelper.stripVarPrefix(oldVarName);
+        variableField.setFilter(s -> VAR_PATTERN.matcher(s).matches());
         variableField.setValue(oldVarName);
         addRenderableWidget(variableField);
 
@@ -159,7 +163,7 @@ public class GPSToolScreen extends AbstractPneumaticCraftScreen {
     }
 
     protected void syncToServer() {
-        String varName = GlobalVariableHelper.getPrefixedVar(variableField.getValue(), playerGlobal);
+        String varName = GlobalVariableHelper.getPrefixedVar(GlobalVariableHelper.stripVarPrefix(variableField.getValue()), playerGlobal);
         NetworkHandler.sendToServer(new PacketChangeGPSToolCoordinate(getBlockPos(), hand, varName, getIndex()));
     }
 

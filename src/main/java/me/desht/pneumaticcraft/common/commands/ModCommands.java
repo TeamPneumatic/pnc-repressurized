@@ -23,6 +23,8 @@ import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.suggestion.Suggestions;
+import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import com.mojang.datafixers.util.Either;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.lib.Names;
@@ -36,6 +38,7 @@ import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.commands.arguments.coordinates.BlockPosArgument;
 import net.minecraft.commands.arguments.item.ItemArgument;
@@ -59,6 +62,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
@@ -83,6 +87,7 @@ public class ModCommands {
                 .then(literal("global_var")
                         .then(literal("get")
                                 .then(argument("varname", new VarnameType())
+                                        .suggests(ModCommands::suggestVarNames)
                                         .executes(c -> getGlobalVar(c, StringArgumentType.getString(c,"varname")))
                                 )
                         )
@@ -97,7 +102,8 @@ public class ModCommands {
                                 )
                         )
                         .then(literal("delete")
-                                .then(argument("varname", new VarnameType())
+                                .then(argument("varname", StringArgumentType.greedyString())
+                                        .suggests(ModCommands::suggestVarNames)
                                         .executes(c -> delGlobalVar(c, StringArgumentType.getString(c,"varname")))
                                 )
                         )
@@ -119,6 +125,11 @@ public class ModCommands {
                         )
                 )
         );
+    }
+
+    private static CompletableFuture<Suggestions> suggestVarNames(CommandContext<CommandSourceStack> ctx, SuggestionsBuilder builder) {
+        Collection<String> varNames = GlobalVariableManager.getInstance().getAllActiveVariableNames(ctx.getSource().getPlayer());
+        return SharedSuggestionProvider.suggest(varNames, builder);
     }
 
     private static int dumpNBT(CommandContext<CommandSourceStack> ctx) {
