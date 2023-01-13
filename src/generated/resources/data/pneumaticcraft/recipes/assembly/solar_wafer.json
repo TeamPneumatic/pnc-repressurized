@@ -1,0 +1,10 @@
+{
+  "type": "pneumaticcraft:assembly_drill",
+  "input": {
+    "item": "pneumaticcraft:upgrade_matrix"
+  },
+  "result": {
+    "item": "pneumaticcraft:solar_wafer"
+  },
+  "program": "drill"
+}

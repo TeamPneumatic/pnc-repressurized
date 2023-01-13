@@ -30,6 +30,7 @@ public class NBTKeys {
     public static final String NBT_SIDE_CONFIG = "SideConfiguration";
     public static final String NBT_EXTRA = "ExtraData";
     public static final String NBT_REDSTONE_MODE = "redstoneMode";
+    public static final String NBT_BROKEN = "IsBroken";
 
     // Standard tag for saving an item inventory
     public static final String NBT_ITEM_INV = "Items";

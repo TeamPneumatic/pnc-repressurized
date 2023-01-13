@@ -162,6 +162,8 @@ public class ModBlockEntities {
             = register("reinforced_pressure_tube", () -> new BlockEntityType<>(ReinforcedPressureTubeBlockEntity::new, ImmutableSet.of(ModBlocks.REINFORCED_PRESSURE_TUBE.get()), null));
     public static final RegistryObject<BlockEntityType<TubeJunctionBlockEntity>> TUBE_JUNCTION
             = register("tube_junction", () -> new BlockEntityType<>(TubeJunctionBlockEntity::new, ImmutableSet.of(ModBlocks.TUBE_JUNCTION.get()), null));
+    public static final RegistryObject<BlockEntityType<SolarCompressorBlockEntity>> SOLAR_COMPRESSOR =
+            register("solar_compressor", () -> new BlockEntityType<>(SolarCompressorBlockEntity::new, ImmutableSet.of(ModBlocks.SOLAR_COMPRESSOR.get()), null));
 
     private static <T extends BlockEntityType<?>> RegistryObject<T> register(String name, Supplier<T> sup) {
         return BLOCK_ENTITIES.register(name, sup);

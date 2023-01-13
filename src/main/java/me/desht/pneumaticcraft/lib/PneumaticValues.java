@@ -42,6 +42,7 @@ public class PneumaticValues {
 //    public static final float DANGER_PRESSURE_KINETIC_COMPRESSOR = DANGER_PRESSURE_TIER_TWO;
     public static final float DANGER_PRESSURE_PNEUMATIC_DYNAMO = DANGER_PRESSURE_TIER_TWO;
     public static final float DANGER_PRESSURE_FLUX_COMPRESSOR = DANGER_PRESSURE_TIER_TWO;
+    public static final float DANGER_PRESSURE_SOLAR_COMPRESSOR = DANGER_PRESSURE_TIER_TWO;
     public static final float DANGER_PRESSURE_AERIAL_INTERFACE = DANGER_PRESSURE_TIER_TWO;
     public static final float DANGER_PRESSURE_ELECTROSTATIC_COMPRESSOR = DANGER_PRESSURE_TIER_TWO;
 //    public static final float DANGER_PRESSURE_PNEUMATIC_PUMP = DANGER_PRESSURE_TIER_TWO;
@@ -69,6 +70,7 @@ public class PneumaticValues {
 //    public static final float MAX_PRESSURE_KINETIC_COMPRESSOR = MAX_PRESSURE_TIER_TWO;
     public static final float MAX_PRESSURE_PNEUMATIC_DYNAMO = MAX_PRESSURE_TIER_TWO;
     public static final float MAX_PRESSURE_FLUX_COMPRESSOR = MAX_PRESSURE_TIER_TWO;
+    public static final float MAX_PRESSURE_SOLAR_COMPRESSOR = MAX_PRESSURE_TIER_TWO;
     public static final float MAX_PRESSURE_AERIAL_INTERFACE = MAX_PRESSURE_TIER_TWO;
     public static final float MAX_PRESSURE_ELECTROSTATIC_COMPRESSOR = MAX_PRESSURE_TIER_TWO;
 //    public static final float MAX_PRESSURE_PNEUMATIC_PUMP = MAX_PRESSURE_TIER_TWO;
@@ -108,6 +110,7 @@ public class PneumaticValues {
 
     public static final int PRODUCTION_COMPRESSOR = 10; // mL per tick
     public static final int PRODUCTION_ADVANCED_COMPRESSOR = 50; // mL per tick
+    public static final int PRODUCTION_SOLAR_COMPRESSOR = 2; // mL per tick at ambient temperature
     public static final int PRODUCTION_VACUUM_PUMP = 4;// mL vacuum per tick
 //    public static final int PRODUCTION_PNEUMATIC_ENGINE = 100; //MJ/pump move.
     public static final int PRODUCTION_ELECTROSTATIC_COMPRESSOR = 200000; //per lightning strike
@@ -131,6 +134,7 @@ public class PneumaticValues {
 //    public static final int VOLUME_KINETIC_COMPRESSOR = 10000;
     public static final int VOLUME_PNEUMATIC_DYNAMO = 10000;
     public static final int VOLUME_FLUX_COMPRESSOR = 10000;
+    public static final int VOLUME_SOLAR_COMPRESSOR = 10000;
     public static final int VOLUME_AERIAL_INTERFACE = 4000;
     public static final int VOLUME_ELECTROSTATIC_COMPRESSOR = 50000;
 //    public static final int VOLUME_PNEUMATIC_PUMP = 10000;

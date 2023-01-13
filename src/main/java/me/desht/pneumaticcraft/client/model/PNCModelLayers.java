@@ -35,6 +35,7 @@ public class PNCModelLayers {
     public static final ModelLayerLocation SPAWNER_EXTRACTOR = register("spawner_extractor");
     public static final ModelLayerLocation UNIVERSAL_SENSOR = register("universal_sensor");
     public static final ModelLayerLocation VACUUM_PUMP = register("vacuum_pump");
+    public static final ModelLayerLocation SOLAR_COMPRESSOR = register("solar_compressor");
 
     // tube modules
     public static final ModelLayerLocation AIR_GRATE_MODULE = register("air_grate_module");

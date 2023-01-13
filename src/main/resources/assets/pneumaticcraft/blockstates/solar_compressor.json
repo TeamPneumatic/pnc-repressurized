@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "bounding=false": {
+      "model" :  "pneumaticcraft:block/solar_compressor_base"
+    },
+    "bounding=true": {
+      "model" :  "pneumaticcraft:block/solar_compressor_bounding"
+    }
+  }
+}

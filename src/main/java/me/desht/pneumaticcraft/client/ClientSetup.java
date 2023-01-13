@@ -190,6 +190,7 @@ public class ClientSetup {
         event.registerLayerDefinition(PNCModelLayers.SPAWNER_EXTRACTOR, SpawnerExtractorRenderer::createBodyLayer);
         event.registerLayerDefinition(PNCModelLayers.UNIVERSAL_SENSOR, UniversalSensorRenderer::createBodyLayer);
         event.registerLayerDefinition(PNCModelLayers.VACUUM_PUMP, VacuumPumpRenderer::createBodyLayer);
+        event.registerLayerDefinition(PNCModelLayers.SOLAR_COMPRESSOR, SolarCompressorRenderer::createBodyLayer);
 
         // tube modules
         event.registerLayerDefinition(PNCModelLayers.AIR_GRATE_MODULE, AirGrateRenderer::createBodyLayer);
@@ -326,6 +327,7 @@ public class ClientSetup {
         event.registerBlockEntityRenderer(ModBlockEntities.THERMOPNEUMATIC_PROCESSING_PLANT.get(), RenderThermopneumaticProcessingPlant::new);
         event.registerBlockEntityRenderer(ModBlockEntities.UNIVERSAL_SENSOR.get(), UniversalSensorRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.VACUUM_PUMP.get(), VacuumPumpRenderer::new);
+        event.registerBlockEntityRenderer(ModBlockEntities.SOLAR_COMPRESSOR.get(), SolarCompressorRenderer::new);
     }
 
     private static void registerScreenFactories() {
@@ -378,6 +380,7 @@ public class ClientSetup {
         MenuScreens.register(ModMenuTypes.SECURITY_STATION_HACKING.get(), SecurityStationHackingScreen::new);
         MenuScreens.register(ModMenuTypes.SENTRY_TURRET.get(), SentryTurretScreen::new);
         MenuScreens.register(ModMenuTypes.SMART_CHEST.get(), SmartChestScreen::new);
+        MenuScreens.register(ModMenuTypes.SOLAR_COMPRESSOR.get(), SolarCompressorScreen::new);
         MenuScreens.register(ModMenuTypes.SPAWNER_EXTRACTOR.get(), SpawnerExtractorScreen::new);
         MenuScreens.register(ModMenuTypes.TAG_MATCHER.get(), TagWorkbenchScreen::new);
         MenuScreens.register(ModMenuTypes.THERMAL_COMPRESSOR.get(), ThermalCompressorScreen::new);
