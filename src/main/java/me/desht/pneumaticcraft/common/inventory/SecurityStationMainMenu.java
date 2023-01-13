@@ -42,13 +42,17 @@ public class SecurityStationMainMenu extends AbstractPneumaticCraftMenu<Security
         //add the network slots
         for (int i = 0; i < SecurityStationBlockEntity.INV_ROWS; i++) {
             for (int j = 0; j < SecurityStationBlockEntity.INV_COLS; j++) {
-                addSlot(new SlotSecurityNode(te.getPrimaryInventory(), stack -> stack.getItem() instanceof NetworkComponentItem, j + i * 5, 17 + j * 18, 22 + i * 18));
+                addSlot(new SlotSecurityNode(te.getPrimaryInventory(), SecurityStationMainMenu::isSecStationComponent, j + i * 5, 17 + j * 18, 22 + i * 18));
             }
         }
 
         addUpgradeSlots(128, 62);
 
         addPlayerSlots(playerInventory, 157);
+    }
+
+    private static boolean isSecStationComponent(ItemStack stack) {
+        return NetworkComponentItem.getType(stack).map(NetworkComponentItem.NetworkComponentType::isSecStationComponent).orElse(false);
     }
 
     private class SlotSecurityNode extends ItemFilteredSlot {

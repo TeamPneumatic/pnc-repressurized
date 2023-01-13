@@ -97,7 +97,6 @@ public class SemiblockItem extends Item {
 
             world.addFreshEntity(eSemi);
             eSemi.onPlaced(player, context.getItemInHand(), direction);
-            world.updateNeighborsAt(blockpos, world.getBlockState(blockpos).getBlock());
             if (player != null && !player.isCreative()) {
                 itemstack.shrink(1);
             }

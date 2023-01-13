@@ -64,11 +64,13 @@ public class VortexCannonItem extends PressurizableItem {
                     vortex.setPos(vortexPos.x, vortexPos.y, vortexPos.z);
                     vortex.shootFromRotation(playerIn, playerIn.getXRot(), playerIn.getYRot(), 0.0F, 1.5F * factor, 0.0F);
                     world.addFreshEntity(vortex);
-                    airHandler.addAir(-PneumaticValues.USAGE_VORTEX_CANNON);
+                    if (!playerIn.isCreative()) {
+                        airHandler.addAir(-PneumaticValues.USAGE_VORTEX_CANNON);
+                    }
                 }
             }
         }
-        return InteractionResultHolder.success(iStack);
+        return InteractionResultHolder.sidedSuccess(iStack, world.isClientSide);
     }
 
     @Override

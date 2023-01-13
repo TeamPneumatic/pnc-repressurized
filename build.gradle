@@ -130,6 +130,12 @@ dependencies {
 	implementation fg.deobf("curse.maven:flywheel-486392:${flywheel_curse_id}")
 	implementation fg.deobf("curse.maven:jade-324717:${jade_curse_id}")
 	implementation fg.deobf("curse.maven:cofh_core-69162:${cofh_core_curse_id}")
+ 	implementation fg.deobf("curse.maven:thermal_cultivation-271835:${thermal_cultivation_curse_id}")
+	implementation fg.deobf("curse.maven:thermal_expansion-69163:${thermal_expansion_curse_id}")
+	implementation fg.deobf("curse.maven:thermal_foundation-222880:${thermal_foundation_curse_id}")
+	implementation fg.deobf("curse.maven:thermal_innovation-291737:${thermal_innovation_curse_id}")
+	implementation fg.deobf("curse.maven:thermal_locomotion-406959:${thermal_locomotion_curse_id}")
+
 	implementation fg.deobf("com.blamejared.crafttweaker:CraftTweaker-forge-1.18.2:${crafttweaker_version}")
 	compileOnly fg.deobf("net.darkhax.gamestages:GameStages-Forge-${project.mc_version}:${gamestages_version}")
 

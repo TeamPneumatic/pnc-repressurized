@@ -86,6 +86,10 @@ public abstract class AbstractTubeModule {
         return pressureTube;
     }
 
+    public boolean isValid() {
+        return !pressureTube.isRemoved();
+    }
+
     protected final void setChanged() {
         if (pressureTube != null && pressureTube.getLevel() != null && !pressureTube.getLevel().isClientSide) {
             pressureTube.setChanged();

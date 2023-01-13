@@ -75,9 +75,11 @@ public enum SemiblockTracker {
      * @param world the world
      * @param pos the blockpos
      * @param direction face of the blockpos, or null for the block itself
-     * @return the entity, or null if none was found
+     * @return the entity, or null if none was found, or the blockpos in question isn't loaded
      */
     public ISemiBlock getSemiblock(Level world, BlockPos pos, Direction direction) {
+        if (!world.isLoaded(pos)) return null;
+
         Map<BlockPos, SemiblockCollection> map = semiblockMap.get(getKey(world));
         if (map == null) return null;
         SemiblockCollection sc = map.get(pos);
@@ -103,6 +105,8 @@ public enum SemiblockTracker {
      * @return a stream of all the semiblocks at the given position
      */
     public Stream<ISemiBlock> getAllSemiblocks(Level world, BlockPos pos, Direction offsetDir) {
+        if (!world.isLoaded(pos)) return Stream.empty();
+
         Map<BlockPos, SemiblockCollection> map = semiblockMap.computeIfAbsent(getKey(world), k -> new HashMap<>());
         if (map.isEmpty()) return Stream.empty();
         SemiblockCollection sc = map.get(pos);

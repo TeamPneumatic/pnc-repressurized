@@ -32,6 +32,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 
+import java.util.List;
 import java.util.stream.Stream;
 
 public class LogisticsConfiguratorItem extends PressurizableItem {
@@ -47,24 +48,32 @@ public class LogisticsConfiguratorItem extends PressurizableItem {
         BlockPos pos = ctx.getClickedPos();
         Direction side = ctx.getClickedFace();
 
-        if (!world.isClientSide && player != null
-                && stack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).map(h -> h.getPressure() > 0.1).orElseThrow(RuntimeException::new)) {
-            Stream<ISemiBlock> semiBlocks = SemiblockTracker.getInstance().getAllSemiblocks(world, pos, side);
-
-            if (player.isShiftKeyDown()) {
-                semiBlocks.filter(s -> !(s instanceof IDirectionalSemiblock) || ((IDirectionalSemiblock) s).getSide() == side)
-                        .forEach(s -> s.killedByEntity(player));
-                return InteractionResult.SUCCESS;
-            } else {
-                if (semiBlocks.anyMatch(s -> s.onRightClickWithConfigurator(player, side))) {
-                    stack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY)
-                            .ifPresent(h -> h.addAir(-PneumaticValues.USAGE_LOGISTICS_CONFIGURATOR));
-                    return InteractionResult.SUCCESS;
-                }
-            }
-        } else if (world.isClientSide) {
+        if (world.isClientSide) {
             return InteractionResult.SUCCESS;
         }
+
+        if (player != null && stack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).map(h -> h.getPressure() > 0.1).orElseThrow(RuntimeException::new)) {
+            Stream<ISemiBlock> semiBlocks = SemiblockTracker.getInstance().getAllSemiblocks(world, pos, side);
+
+            boolean didWork = false;
+            if (player.isShiftKeyDown()) {
+                List<ISemiBlock> l = semiBlocks.filter(s -> !(s instanceof IDirectionalSemiblock) || ((IDirectionalSemiblock) s).getSide() == side).toList();
+                if (!l.isEmpty()) {
+                    l.forEach(s -> s.killedByEntity(player));
+                    didWork = true;
+                }
+            } else if (semiBlocks.anyMatch(s -> s.onRightClickWithConfigurator(player, side))) {
+                didWork = true;
+            }
+            if (didWork) {
+                if (!player.isCreative()) {
+                    stack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY)
+                            .ifPresent(h -> h.addAir(-PneumaticValues.USAGE_LOGISTICS_CONFIGURATOR));
+                }
+                return InteractionResult.SUCCESS;
+            }
+        }
+
         return InteractionResult.PASS;
     }
 }

@@ -166,7 +166,9 @@ public class MinigunItem extends PressurizableItem implements
                     ItemStack ammo = handler.getStackInSlot(i);
                     if (ammo.getItem() instanceof AbstractGunAmmoItem && ammo.getDamageValue() > 0) {
                         ammo.setDamageValue(ammo.getDamageValue() - 1);
-                        minigun.getAirCapability().ifPresent(h -> h.addAir(-(100 * itemLife)));
+                        if (!minigun.getPlayer().isCreative()) {
+                            minigun.getAirCapability().ifPresent(h -> h.addAir(-(100 * itemLife)));
+                        }
                         pressure = minigun.getAirCapability().orElseThrow(RuntimeException::new).getPressure();
                         repaired = true;
                     }

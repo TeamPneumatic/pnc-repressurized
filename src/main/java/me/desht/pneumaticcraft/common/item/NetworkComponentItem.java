@@ -28,6 +28,7 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 
 import java.util.List;
+import java.util.Optional;
 
 public class NetworkComponentItem extends Item implements IProgrammable {
     private final NetworkComponentType type;
@@ -92,7 +93,11 @@ public class NetworkComponentItem extends Item implements IProgrammable {
         return true;
     }
 
-    public static NetworkComponentType getType(ItemStack stack) {
-        return stack.getItem() instanceof NetworkComponentItem ? ((NetworkComponentItem) stack.getItem()).type : null;
+    public static Optional<NetworkComponentType> getType(ItemStack stack) {
+        return stack.getItem() instanceof NetworkComponentItem n ? Optional.ofNullable(n.type) : Optional.empty();
+    }
+
+    public static boolean isType(ItemStack stack, NetworkComponentType type) {
+        return stack.getItem() instanceof NetworkComponentItem n && n.type == type;
     }
 }
