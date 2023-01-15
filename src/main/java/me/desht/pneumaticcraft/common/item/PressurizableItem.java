@@ -81,23 +81,23 @@ public class PressurizableItem extends Item implements IPressurizableItem, Vanis
                 .orElse(false);
     }
 
-    @Override
-    public void fillItemCategory(CreativeModeTab group, NonNullList<ItemStack> items) {
-        // too early to use a capability here :(
-        if (this.allowedIn(group)) {
-            items.add(new ItemStack(this));
-
-            ItemStack stack = new ItemStack(this);
-            new AirHandlerItemStack(stack, maxPressure).addAir((int) (volume * maxPressure));
-            items.add(stack);
-        }
-    }
+//    @Override
+//    public void fillItemCategory(CreativeModeTab group, NonNullList<ItemStack> items) {
+//        // too early to use a capability here :(
+//        if (this.allowedIn(group)) {
+//            items.add(new ItemStack(this));
+//
+//            ItemStack stack = new ItemStack(this);
+//            new AirHandlerItemStack(stack, maxPressure).addAir((int) (volume * maxPressure));
+//            items.add(stack);
+//        }
+//    }
 
     @Nullable
     @Override
     public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundTag nbt) {
         return stack.getItem() instanceof PressurizableItem ?
-                new AirHandlerItemStack(stack, maxPressure) :
+                new AirHandlerItemStack(stack) :
                 super.initCapabilities(stack, nbt);
     }
 
@@ -121,6 +121,11 @@ public class PressurizableItem extends Item implements IPressurizableItem, Vanis
     public int getAir(ItemStack stack) {
         CompoundTag tag = stack.getTag();
         return tag != null ? tag.getInt(AirHandlerItemStack.AIR_NBT_KEY) : 0;
+    }
+
+    @Override
+    public float getMaxPressure() {
+        return maxPressure;
     }
 
     @Override

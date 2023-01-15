@@ -8,7 +8,7 @@ package me.desht.pneumaticcraft.client.model;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Vector3f;
+import com.mojang.math.Axis;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
 import me.desht.pneumaticcraft.lib.Textures;
@@ -155,8 +155,8 @@ public class ModelMinigun extends Model {
             float pitch = minigun.oldMinigunPitch + partialTick * (minigun.minigunPitch - minigun.oldMinigunPitch);
 
             matrixStack.translate(0, 23 / 16D, 0);
-            matrixStack.mulPose(Vector3f.YP.rotationDegrees(yaw));
-            matrixStack.mulPose(Vector3f.XP.rotationDegrees(pitch));
+            matrixStack.mulPose(Axis.YP.rotationDegrees(yaw));
+            matrixStack.mulPose(Axis.XP.rotationDegrees(pitch));
             matrixStack.translate(0, -18 / 16D, -12 / 16D);
         }
         barrel.yRot = 0;

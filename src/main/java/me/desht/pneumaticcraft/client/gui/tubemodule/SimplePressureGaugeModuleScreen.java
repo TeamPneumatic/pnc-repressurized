@@ -76,7 +76,7 @@ public class SimplePressureGaugeModuleScreen extends AbstractTubeModuleScreen<Ab
             );
             addRenderableWidget(moreOrLessButton);
         }
-        addLabel(xlate("pneumaticcraft.gui.general.bar"), thresholdField.x + thresholdField.getWidth() + 3, thresholdField.y + 1);
+        addLabel(xlate("pneumaticcraft.gui.general.bar"), thresholdField.getX() + thresholdField.getWidth() + 3, thresholdField.getY() + 1);
     }
 
     private void flipThreshold() {

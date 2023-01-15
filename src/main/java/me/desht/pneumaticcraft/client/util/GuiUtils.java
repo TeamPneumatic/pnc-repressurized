@@ -20,8 +20,7 @@ package me.desht.pneumaticcraft.client.util;
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
-import com.mojang.math.Matrix4f;
-import com.mojang.math.Vector3f;
+import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiComponent;
@@ -48,6 +47,7 @@ import net.minecraftforge.client.model.data.ModelData;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidTank;
 import org.apache.commons.lang3.StringUtils;
+import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL11;
 
 import javax.annotation.Nullable;
@@ -73,10 +73,10 @@ public class GuiUtils {
         matrixStack.scale(scale, -scale, scale);
         matrixStack.translate(-0.5F, -1F, 0);
 
-        matrixStack.mulPose(Vector3f.XP.rotationDegrees(30F));
+        matrixStack.mulPose(Axis.XP.rotationDegrees(30F));
 
         matrixStack.translate(0.5F, 0, -0.5F);
-        matrixStack.mulPose(Vector3f.YP.rotationDegrees(rotate));
+        matrixStack.mulPose(Axis.YP.rotationDegrees(rotate));
         matrixStack.translate(-0.5F, 0, 0.5F);
 
         matrixStack.translate(0, 0, -1);

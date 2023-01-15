@@ -63,7 +63,7 @@ public class WidgetFluidStack extends WidgetFluidFilter {
                 matrixStack.pushPose();
                 matrixStack.translate(0, 0, 200);  // ensure amount is drawn in front of the fluid texture
                 String s = fluidAmount + "B";
-                fr.drawShadow(matrixStack, s, x - fr.width(s) + 17, y + 9, 0xFFFFFFFF);
+                fr.drawShadow(matrixStack, s, getX() - fr.width(s) + 17, getY() + 9, 0xFFFFFFFF);
                 matrixStack.popPose();
             }
         }

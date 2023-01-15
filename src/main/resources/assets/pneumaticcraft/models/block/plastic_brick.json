@@ -1,4 +1,5 @@
 {
+  "parent": "forge:block/default",
   "textures": {
     "top": "pneumaticcraft:block/plastic_brick_top",
     "bottom": "pneumaticcraft:block/plastic_brick_bottom",

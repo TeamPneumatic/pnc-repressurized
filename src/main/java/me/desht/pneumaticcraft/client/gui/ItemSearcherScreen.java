@@ -39,9 +39,7 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.Slot;
-import net.minecraft.world.item.EnchantedBookItem;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.*;
 import net.minecraft.world.item.TooltipFlag.Default;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentInstance;
@@ -52,6 +50,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.lwjgl.glfw.GLFW;
 
 import javax.annotation.Nonnull;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Predicate;
@@ -118,8 +117,6 @@ public class ItemSearcherScreen extends AbstractContainerScreen<ItemSearcherMenu
     public void init() {
         super.init();
 
-        minecraft.keyboardHandler.setSendRepeatsToGui(true);
-
         searchField = new WidgetTextField(font, leftPos + 8, topPos + 36, 89, font.lineHeight);
         searchField.setMaxLength(15);
         searchField.setBordered(true);
@@ -144,7 +141,6 @@ public class ItemSearcherScreen extends AbstractContainerScreen<ItemSearcherMenu
 
     @Override
     public void onClose() {
-        minecraft.keyboardHandler.setSendRepeatsToGui(false);
         if (parentScreen != null) {
             ClientUtils.closeContainerGui(parentScreen);
         } else {
@@ -183,21 +179,24 @@ public class ItemSearcherScreen extends AbstractContainerScreen<ItemSearcherMenu
 
     private Stream<SearchEntry> getSearchEntries() {
         if (cachedSearchEntries == null) {
-            NonNullList<ItemStack> itemList = NonNullList.create();
+//            NonNullList<ItemStack> itemList = NonNullList.create();
+//
+//            for (Item item : ForgeRegistries.ITEMS.getValues()) {
+//                NonNullList<ItemStack> l = NonNullList.create();
+//                if (item != null && item.getItemCategory() != null) item.fillItemCategory(item.getItemCategory(), l);
+//                itemList.addAll(l);
+//            }
 
-            for (Item item : ForgeRegistries.ITEMS.getValues()) {
-                NonNullList<ItemStack> l = NonNullList.create();
-                if (item != null && item.getItemCategory() != null) item.fillItemCategory(item.getItemCategory(), l);
-                itemList.addAll(l);
-            }
+//            for (Enchantment enchantment : ForgeRegistries.ENCHANTMENTS.getValues()) {
+//                if (enchantment != null && enchantment.category != null) {
+//                    getAllEnchantedBooks(enchantment, itemList);
+//                }
+//            }
 
-            for (Enchantment enchantment : ForgeRegistries.ENCHANTMENTS.getValues()) {
-                if (enchantment != null && enchantment.category != null) {
-                    getAllEnchantedBooks(enchantment, itemList);
-                }
-            }
-
-            cachedSearchEntries = itemList.stream().map(SearchEntry::new).collect(Collectors.toList());
+            cachedSearchEntries = CreativeModeTabs.allTabs().stream()
+                    .flatMap(tab -> tab.getDisplayItems().stream())
+                    .map(SearchEntry::new)
+                    .toList();
         }
         return cachedSearchEntries.stream();
     }

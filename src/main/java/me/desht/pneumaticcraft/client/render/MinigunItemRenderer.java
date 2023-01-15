@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.client.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Vector3f;
+import com.mojang.math.Axis;
 import me.desht.pneumaticcraft.client.model.ModelMinigun;
 import me.desht.pneumaticcraft.client.model.PNCModelLayers;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
@@ -43,14 +43,14 @@ public class MinigunItemRenderer extends BlockEntityWithoutLevelRenderer {
                 if (thirdPerson) {
                     if (mc.screen instanceof InventoryScreen) {
                         // our own gun in the rendered player model in inventory screen
-                        matrixStack.mulPose(Vector3f.XP.rotationDegrees(-180f));
+                        matrixStack.mulPose(Axis.XP.rotationDegrees(-180f));
                         matrixStack.translate(0.5, -1, -0.5);
                     } else {
                         // rendering our own gun in 3rd person, or rendering someone else's gun
                         matrixStack.scale(1f, -1f, -1f);
-                        matrixStack.mulPose(Vector3f.XP.rotationDegrees(75f));
-                        matrixStack.mulPose(Vector3f.YP.rotationDegrees(180));
-                        matrixStack.mulPose(Vector3f.ZP.rotationDegrees(0f));
+                        matrixStack.mulPose(Axis.XP.rotationDegrees(75f));
+                        matrixStack.mulPose(Axis.YP.rotationDegrees(180));
+                        matrixStack.mulPose(Axis.ZP.rotationDegrees(0f));
                         matrixStack.translate(-0.5, -2, -0.3);
                     }
                 } else {
@@ -63,9 +63,9 @@ public class MinigunItemRenderer extends BlockEntityWithoutLevelRenderer {
                     else {
                         // our own gun in 1st person
                         matrixStack.scale(1.5f, 1.5f, 1.5f);
-                        matrixStack.mulPose(Vector3f.XP.rotationDegrees(0));
-                        matrixStack.mulPose(Vector3f.YP.rotationDegrees(0));
-                        matrixStack.mulPose(Vector3f.ZP.rotationDegrees(180));
+                        matrixStack.mulPose(Axis.XP.rotationDegrees(0));
+                        matrixStack.mulPose(Axis.YP.rotationDegrees(0));
+                        matrixStack.mulPose(Axis.ZP.rotationDegrees(180));
                         if (mc.options.mainHand().get() == HumanoidArm.RIGHT) {
                             matrixStack.translate(-1, -1.7, 0.1);
                         } else {

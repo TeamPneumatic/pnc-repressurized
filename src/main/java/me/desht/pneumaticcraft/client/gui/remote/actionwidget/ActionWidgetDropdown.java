@@ -44,8 +44,8 @@ public class ActionWidgetDropdown extends ActionWidgetVariable<WidgetComboBox> {
 
     public ActionWidgetDropdown(WidgetComboBox widget) {
         super(widget);
-        x = widget.x;
-        y = widget.y;
+        x = widget.getX();
+        y = widget.getY();
         width = widget.getWidth();
         height = widget.getHeight();
         widget.setValue(I18n.get("pneumaticcraft.gui.remote.tray.dropdown.name"));
@@ -127,8 +127,7 @@ public class ActionWidgetDropdown extends ActionWidgetVariable<WidgetComboBox> {
         String selectedElement = elements[Mth.clamp(idx, 0, elements.length - 1)];
 
         if (widget != null) {
-            widget.x = x;
-            widget.y = y;
+            widget.setPosition(x, y);
             widget.setWidth(width);
             widget.setHeight(height);
             widget.setElements(getDropdownElements());

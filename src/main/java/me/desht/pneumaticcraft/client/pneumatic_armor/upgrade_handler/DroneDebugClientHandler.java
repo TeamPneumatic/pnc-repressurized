@@ -86,7 +86,7 @@ public class DroneDebugClientHandler extends IArmorUpgradeClientHandler.Abstract
     }
 
     @Override
-    public void tickClient(ICommonArmorHandler armorHandler) {
+    public void tickClient(ICommonArmorHandler armorHandler, boolean isEnabled) {
     }
 
     @Override

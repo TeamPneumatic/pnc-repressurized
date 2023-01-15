@@ -89,7 +89,9 @@ public class CoreComponentsClientHandler extends IArmorUpgradeClientHandler.Abst
     }
 
     @Override
-    public void tickClient(ICommonArmorHandler armorHandler) {
+    public void tickClient(ICommonArmorHandler armorHandler, boolean isEnabled) {
+        if (!isEnabled) return;
+
         boolean needUpdate = forceUpdatePressureStat;
         for (int i = 0; i < 4; i++) {
             EquipmentSlot slot = ArmorUpgradeRegistry.ARMOR_SLOTS[i];

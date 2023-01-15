@@ -11,7 +11,7 @@ import org.apache.commons.lang3.Validate;
 
 public class ModGLMProvider extends GlobalLootModifierProvider {
     public ModGLMProvider(DataGenerator gen) {
-        super(gen, Names.MOD_ID);
+        super(gen.getPackOutput(), Names.MOD_ID);
     }
 
     @Override

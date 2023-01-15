@@ -184,7 +184,7 @@ public class MachineAirHandler extends BasicAirHandler implements IAirHandlerMac
             float delta = p - getDangerPressure();
             float rnd = world.random.nextFloat() * range;
             if (rnd < delta / 125f || p > getCriticalPressure()) {
-                world.explode(null, pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D, 1.0F, Explosion.BlockInteraction.BREAK);
+                world.explode(null, pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D, 1.0F, Level.ExplosionInteraction.BLOCK);
                 world.destroyBlock(pos, false);
                 // notify client too so block shapes can be properly updated
                 PneumaticRegistry.getInstance().getMiscHelpers().forceClientShapeRecalculation(world, pos);

@@ -20,7 +20,6 @@ package me.desht.pneumaticcraft.client.gui.widget;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Matrix4f;
 import me.desht.pneumaticcraft.client.render.ModRenderTypes;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.lib.Textures;
@@ -30,6 +29,7 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import org.apache.commons.lang3.Validate;
+import org.joml.Matrix4f;
 
 import static me.desht.pneumaticcraft.client.util.RenderUtils.*;
 
@@ -66,7 +66,7 @@ public class WidgetVerticalScrollbar extends AbstractWidget implements ICanRende
 
     @Override
     public void onClick(double x, double y) {
-        currentScroll = (float) (y - 7 - this.y) / (height - 17);
+        currentScroll = (float) (y - 7 - this.getY()) / (height - 17);
         currentScroll = Mth.clamp(currentScroll, 0, 1);
         dragging = true;
     }
@@ -79,7 +79,7 @@ public class WidgetVerticalScrollbar extends AbstractWidget implements ICanRende
     @Override
     protected void onDrag(double x, double y, double dx, double dy) {
         dragging = true;
-        currentScroll = (float) (y - 7 - this.y) / (height - 17);
+        currentScroll = (float) (y - 7 - this.getY()) / (height - 17);
         currentScroll = Mth.clamp(currentScroll, 0, 1);
     }
 
@@ -97,6 +97,7 @@ public class WidgetVerticalScrollbar extends AbstractWidget implements ICanRende
     @Override
     public void renderButton(PoseStack matrixStack, int mouseX, int mouseY, float partialTick) {
         if (visible) {
+            int x = getX(), y = getY();
             GuiUtils.bindTexture(Textures.WIDGET_VERTICAL_SCROLLBAR);
             blit(matrixStack, x, y, 12, 0, width, 1, 26, 15);
             for (int i = 0; i < height - 2; i++)
@@ -116,6 +117,7 @@ public class WidgetVerticalScrollbar extends AbstractWidget implements ICanRende
     @Override
     public void render3d(PoseStack matrixStack, MultiBufferSource buffer, float partialTicks) {
         if (visible) {
+            int x = getX(), y = getY();
             renderWithTypeAndFinish(matrixStack, buffer, ModRenderTypes.getTextureRenderColored(Textures.WIDGET_VERTICAL_SCROLLBAR, true), (posMat, builder)-> {
                 blit3d(builder, posMat, x, y, 12, 0, width, 1, 26, 15);
                 for (int i = 0; i < height - 2; i++) {
@@ -156,6 +158,6 @@ public class WidgetVerticalScrollbar extends AbstractWidget implements ICanRende
     }
 
     @Override
-    public void updateNarration(NarrationElementOutput pNarrationElementOutput) {
+    public void updateWidgetNarration(NarrationElementOutput pNarrationElementOutput) {
     }
 }

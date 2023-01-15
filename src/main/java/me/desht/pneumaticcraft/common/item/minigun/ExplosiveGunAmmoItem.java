@@ -50,7 +50,8 @@ public class ExplosiveGunAmmoItem extends AbstractGunAmmoItem {
     @Override
     public int onTargetHit(Minigun minigun, ItemStack ammo, Entity target) {
         if (minigun.dispenserWeightedPercentage(ConfigHelper.common().minigun.explosiveAmmoExplosionChance.get())) {
-            Explosion.BlockInteraction mode = ConfigHelper.common().minigun.explosiveAmmoTerrainDamage.get() ? Explosion.BlockInteraction.BREAK : Explosion.BlockInteraction.NONE;
+            Level.ExplosionInteraction mode = ConfigHelper.common().minigun.explosiveAmmoTerrainDamage.get() ?
+                    Level.ExplosionInteraction.MOB : Level.ExplosionInteraction.NONE;
             minigun.getWorld().explode(null, target.getX(), target.getY(), target.getZ(),
                     ConfigHelper.common().minigun.explosiveAmmoExplosionPower.get().floatValue(), mode);
         }
@@ -60,7 +61,8 @@ public class ExplosiveGunAmmoItem extends AbstractGunAmmoItem {
     @Override
     public int onBlockHit(Minigun minigun, ItemStack ammo, BlockHitResult brtr) {
         if (minigun.dispenserWeightedPercentage(ConfigHelper.common().minigun.explosiveAmmoExplosionChance.get())) {
-            Explosion.BlockInteraction mode = ConfigHelper.common().minigun.explosiveAmmoTerrainDamage.get() ? Explosion.BlockInteraction.BREAK : Explosion.BlockInteraction.NONE;
+            Level.ExplosionInteraction mode = ConfigHelper.common().minigun.explosiveAmmoTerrainDamage.get() ?
+                    Level.ExplosionInteraction.MOB : Level.ExplosionInteraction.NONE;
             minigun.getWorld().explode(null, brtr.getLocation().x, brtr.getLocation().y, brtr.getLocation().z,
                     ConfigHelper.common().minigun.explosiveAmmoExplosionPower.get().floatValue(), mode);
         }

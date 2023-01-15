@@ -19,8 +19,7 @@ package me.desht.pneumaticcraft.client.render.entity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Matrix4f;
-import com.mojang.math.Vector3f;
+import com.mojang.math.Axis;
 import me.desht.pneumaticcraft.client.render.ModRenderTypes;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.entity.projectile.VortexEntity;
@@ -33,6 +32,7 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.HumanoidArm;
+import org.joml.Matrix4f;
 
 public class RenderEntityVortex extends EntityRenderer<VortexEntity> {
     private static final int CIRCLE_POINTS = 20;
@@ -58,8 +58,8 @@ public class RenderEntityVortex extends EntityRenderer<VortexEntity> {
 
         VertexConsumer builder = bufferIn.getBuffer(ModRenderTypes.getTextureRenderColored(getTextureLocation(entity)));
 
-        matrixStackIn.mulPose(Vector3f.YP.rotationDegrees(Mth.lerp(partialTicks, entity.yRotO, entity.getYRot())));
-        matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(-Mth.lerp(partialTicks, entity.xRotO, entity.getXRot())));
+        matrixStackIn.mulPose(Axis.YP.rotationDegrees(Mth.lerp(partialTicks, entity.yRotO, entity.getYRot())));
+        matrixStackIn.mulPose(Axis.XP.rotationDegrees(-Mth.lerp(partialTicks, entity.xRotO, entity.getXRot())));
         float incr = (float) (2 * Math.PI / CIRCLE_POINTS);
         for (float angleRads = 0f; angleRads < 2 * Math.PI; angleRads += incr) {
             matrixStackIn.pushPose();
@@ -89,7 +89,7 @@ public class RenderEntityVortex extends EntityRenderer<VortexEntity> {
 
         matrixStackIn.scale(TEX_SCALE, TEX_SCALE, TEX_SCALE);
         matrixStackIn.translate(xOffset, 0, 0);
-        matrixStackIn.mulPose(Vector3f.YP.rotationDegrees(90));
+        matrixStackIn.mulPose(Axis.YP.rotationDegrees(90));
 
         Matrix4f posMat = matrixStackIn.last().pose();
 

@@ -30,10 +30,6 @@ import java.util.List;
 
 public class WidgetLabel extends AbstractWidget implements ITooltipProvider {
 
-    @Override
-    public void updateNarration(NarrationElementOutput pNarrationElementOutput) {
-    }
-
     public enum Alignment {
         LEFT, CENTRE, RIGHT
     }
@@ -115,23 +111,27 @@ public class WidgetLabel extends AbstractWidget implements ITooltipProvider {
             int drawX;
             Font fr = Minecraft.getInstance().font;
             drawX = switch (alignment) {
-                case LEFT -> x;
-                case CENTRE -> x - (int) (width / 2 * scale);
-                case RIGHT -> x - (int) (width * scale);
+                case LEFT -> getX();
+                case CENTRE -> getX() - (int) (width / 2 * scale);
+                case RIGHT -> getX() - (int) (width * scale);
             };
             if (scale != 1.0f) {
                 matrixStack.pushPose();
                 matrixStack.scale(scale, scale, scale);
-                matrixStack.translate(drawX, y, 0);
+                matrixStack.translate(drawX, getY(), 0);
             }
             if (dropShadow) {
-                fr.drawShadow(matrixStack, getMessage().getVisualOrderText(), drawX, y, color);
+                fr.drawShadow(matrixStack, getMessage().getVisualOrderText(), drawX, getY(), color);
             } else {
-                fr.draw(matrixStack, getMessage().getVisualOrderText(), drawX, y, color);
+                fr.draw(matrixStack, getMessage().getVisualOrderText(), drawX, getY(), color);
             }
             if (scale != 1.0f) {
                 matrixStack.popPose();
             }
         }
+    }
+
+    @Override
+    public void updateWidgetNarration(NarrationElementOutput pNarrationElementOutput) {
     }
 }

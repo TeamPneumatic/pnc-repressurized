@@ -1,5 +1,6 @@
 {
   "type": "pneumaticcraft:crafting_shaped_no_mirror",
+  "category": "misc",
   "key": {
     "B": {
       "item": "pneumaticcraft:printed_circuit_board"

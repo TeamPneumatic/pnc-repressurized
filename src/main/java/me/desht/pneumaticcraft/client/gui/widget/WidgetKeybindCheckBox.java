@@ -263,7 +263,7 @@ public class WidgetKeybindCheckBox extends WidgetCheckBox implements ITooltipPro
             keyBinding.setKeyModifierAndCode(mod, input);
             Minecraft.getInstance().options.setKey(keyBinding, input);
             KeyMapping.resetMapping();
-            Minecraft.getInstance().player.playSound(SoundEvents.NOTE_BLOCK_CHIME, 1.0f, input == InputConstants.UNKNOWN ? 0.5f :1.0f);
+            Minecraft.getInstance().player.playSound(SoundEvents.NOTE_BLOCK_CHIME.get(), 1.0f, input == InputConstants.UNKNOWN ? 0.5f :1.0f);
         }
         setMessage(oldCheckboxText);
     }

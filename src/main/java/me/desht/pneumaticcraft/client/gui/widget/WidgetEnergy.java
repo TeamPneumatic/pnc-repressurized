@@ -42,6 +42,7 @@ public class WidgetEnergy extends AbstractWidget implements ITooltipProvider {
     public void renderButton(PoseStack matrixStack, int mouseX, int mouseY, float partialTick){
         int amount = getScaled();
 
+        int x = getX(), y = getY();
         GuiUtils.bindTexture(Textures.WIDGET_ENERGY);
         GuiComponent.blit(matrixStack, x + 1, y, 1, 0, width - 2, height, 32, 64);
         GuiComponent.blit(matrixStack, x + 1, y + DEFAULT_SCALE - amount, 17, DEFAULT_SCALE - amount, width - 2, amount, 32, 64);
@@ -60,6 +61,6 @@ public class WidgetEnergy extends AbstractWidget implements ITooltipProvider {
     }
 
     @Override
-    public void updateNarration(NarrationElementOutput pNarrationElementOutput) {
+    public void updateWidgetNarration(NarrationElementOutput pNarrationElementOutput) {
     }
 }

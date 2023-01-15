@@ -18,6 +18,7 @@
 package me.desht.pneumaticcraft.common.block.entity;
 
 import me.desht.pneumaticcraft.common.block.AbstractCamouflageBlock;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.nbt.Tag;
@@ -68,7 +69,7 @@ public interface CamouflageableBlockEntity {
     }
 
     static BlockState readCamo(CompoundTag tag) {
-        BlockState state = tag.contains("camoState", Tag.TAG_COMPOUND) ? NbtUtils.readBlockState(tag.getCompound("camoState")) : null;
+        BlockState state = tag.contains("camoState", Tag.TAG_COMPOUND) ? NbtUtils.readBlockState(BuiltInRegistries.BLOCK.asLookup(), tag.getCompound("camoState")) : null;
         return state != null && state.getBlock() == Blocks.AIR ? null : state;
     }
 

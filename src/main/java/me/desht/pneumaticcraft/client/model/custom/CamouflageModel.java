@@ -20,7 +20,6 @@ package me.desht.pneumaticcraft.client.model.custom;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
-import com.mojang.datafixers.util.Pair;
 import me.desht.pneumaticcraft.common.block.AbstractCamouflageBlock;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderType;
@@ -44,10 +43,8 @@ import net.minecraftforge.client.model.geometry.IUnbakedGeometry;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 import java.util.function.Function;
 
 public class CamouflageModel implements IDynamicBakedModel {
@@ -131,21 +128,15 @@ public class CamouflageModel implements IDynamicBakedModel {
         }
     }
 
-    private static class Geometry implements IUnbakedGeometry<Geometry> {
-        private final BlockModel baseModel;
-
-        Geometry(BlockModel baseModel) {
-            this.baseModel = baseModel;
+    private record Geometry(BlockModel baseModel) implements IUnbakedGeometry<Geometry> {
+        @Override
+        public BakedModel bake(IGeometryBakingContext owner, ModelBaker baker, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelTransform, ItemOverrides overrides, ResourceLocation modelLocation) {
+            return new CamouflageModel(baseModel.bake(baker, baseModel, spriteGetter, modelTransform, modelLocation, true));
         }
 
         @Override
-        public BakedModel bake(IGeometryBakingContext owner, ModelBakery bakery, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelTransform, ItemOverrides overrides, ResourceLocation modelLocation) {
-            return new CamouflageModel(baseModel.bake(bakery, baseModel, spriteGetter, modelTransform, modelLocation, true));
-        }
-
-        @Override
-        public Collection<Material> getMaterials(IGeometryBakingContext owner, Function<ResourceLocation, UnbakedModel> modelGetter, Set<Pair<String, String>> missingTextureErrors) {
-            return baseModel.getMaterials(modelGetter, missingTextureErrors);
+        public void resolveParents(Function<ResourceLocation, UnbakedModel> modelGetter, IGeometryBakingContext context) {
+            baseModel.resolveParents(modelGetter);
         }
     }
 }

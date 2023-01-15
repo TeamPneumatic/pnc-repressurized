@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.common.recipes;
 
 import com.google.gson.JsonObject;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.GsonHelper;
@@ -34,7 +34,7 @@ public class FluidTagPresentCondition implements ICondition {
     private final TagKey<Fluid> tagKey;
 
     public FluidTagPresentCondition(ResourceLocation tagName) {
-        this.tagKey = TagKey.create(Registry.FLUID_REGISTRY, tagName);
+        this.tagKey = TagKey.create(Registries.FLUID, tagName);
     }
 
     public FluidTagPresentCondition(String tagName) {

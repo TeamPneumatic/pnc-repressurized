@@ -19,8 +19,7 @@ package me.desht.pneumaticcraft.client.render.entity.drone;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Matrix4f;
-import com.mojang.math.Vector3f;
+import com.mojang.math.Axis;
 import me.desht.pneumaticcraft.client.model.entity.drone.ModelDrone;
 import me.desht.pneumaticcraft.client.render.ModRenderTypes;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
@@ -35,6 +34,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import org.joml.Matrix4f;
 
 public class DroneDigLaserLayer extends RenderLayer<AbstractDroneEntity, ModelDrone> {
     private static final float LASER_SIZE = 0.4f;
@@ -48,7 +48,7 @@ public class DroneDigLaserLayer extends RenderLayer<AbstractDroneEntity, ModelDr
         BlockPos diggingPos = entityIn.getDugBlock();
         if (diggingPos != null) {
             matrixStackIn.pushPose();
-            matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(180));
+            matrixStackIn.mulPose(Axis.XP.rotationDegrees(180));
             matrixStackIn.translate(0, -1, 0);
             BlockState state = entityIn.getCommandSenderWorld().getBlockState(diggingPos);
             VoxelShape shape = state.getShape(entityIn.getCommandSenderWorld(), diggingPos);
@@ -81,12 +81,12 @@ public class DroneDigLaserLayer extends RenderLayer<AbstractDroneEntity, ModelDr
         double rotYawRad = Math.atan2(dx, dz);
         double rotPitchRad = Math.PI / 2.0 - Math.atan2(dy, f3);
 
-        matrixStack.mulPose(Vector3f.YP.rotation((float) rotYawRad));
-        matrixStack.mulPose(Vector3f.XP.rotation((float) rotPitchRad));
+        matrixStack.mulPose(Axis.YP.rotation((float) rotYawRad));
+        matrixStack.mulPose(Axis.XP.rotation((float) rotPitchRad));
 
         matrixStack.scale(LASER_SIZE, LASER_SIZE, LASER_SIZE);
         matrixStack.translate(0, 0.6, 0);
-        matrixStack.mulPose(Vector3f.YP.rotationDegrees(drone.tickCount + partialTicks));
+        matrixStack.mulPose(Axis.YP.rotationDegrees(drone.tickCount + partialTicks));
 
         matrixStack.pushPose();
         matrixStack.scale(1f, laserLength / LASER_SIZE * 2, 1f);
@@ -104,7 +104,7 @@ public class DroneDigLaserLayer extends RenderLayer<AbstractDroneEntity, ModelDr
 
         matrixStack.popPose();
 
-        matrixStack.mulPose(Vector3f.XP.rotationDegrees(180));
+        matrixStack.mulPose(Axis.XP.rotationDegrees(180));
 
         posMat = matrixStack.last().pose();
         builder = buffer.getBuffer(ModRenderTypes.getTextureRenderColored(Textures.RENDER_LASER_START));

@@ -168,7 +168,7 @@ public class ThermalCompressorScreen extends AbstractPneumaticCraftContainerScre
             super.renderButton(matrixStack, mouseX, mouseY, partialTicks);
 
             String s = side.toString().substring(0, 1).toUpperCase();
-            GuiUtils.drawScaledText(matrixStack, font, s, x + 8, y - 4, 0x404040, 0.5f);
+            GuiUtils.drawScaledText(matrixStack, font, s, getX() + 8, getY() - 4, 0x404040, 0.5f);
         }
     }
 }

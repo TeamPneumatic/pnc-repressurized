@@ -20,6 +20,7 @@ package me.desht.pneumaticcraft.datagen;
 import me.desht.pneumaticcraft.api.data.PneumaticCraftTags;
 import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.common.core.ModFluids;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.tags.FluidTagsProvider;
 import net.minecraft.tags.TagKey;
@@ -27,16 +28,17 @@ import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.common.data.ExistingFileHelper;
 
 import java.util.Arrays;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.IntFunction;
 import java.util.function.Supplier;
 
 public class ModFluidTagsProvider extends FluidTagsProvider {
-    public ModFluidTagsProvider(DataGenerator generatorIn, ExistingFileHelper existingFileHelper) {
-        super(generatorIn, Names.MOD_ID, existingFileHelper);
+    public ModFluidTagsProvider(DataGenerator generatorIn, CompletableFuture<HolderLookup.Provider> lookupProvider, ExistingFileHelper existingFileHelper) {
+        super(generatorIn.getPackOutput(), lookupProvider, Names.MOD_ID, existingFileHelper);
     }
 
     @Override
-    protected void addTags() {
+    protected void addTags(HolderLookup.Provider pProvider) {
         createTag(PneumaticCraftTags.Fluids.CRUDE_OIL, ModFluids.OIL);
         createTag(PneumaticCraftTags.Fluids.ETCHING_ACID, ModFluids.ETCHING_ACID);
         createTag(PneumaticCraftTags.Fluids.PLASTIC, ModFluids.PLASTIC);

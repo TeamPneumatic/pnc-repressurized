@@ -194,8 +194,6 @@ public enum HUDHandler implements IKeyListener {
                             }
                             stat.tickWidget();
                         }
-                        //noinspection removal
-                        clientHandler.tickClient(commonArmorHandler);
                     }
                     clientHandler.tickClient(commonArmorHandler, commonArmorHandler.isUpgradeEnabled(slot, i));
                 }

@@ -145,7 +145,7 @@ public class UniversalSensorScreen extends AbstractPneumaticCraftContainerScreen
                 font.draw(matrixStack, line.getVisualOrderText(), 70, 48 + yOff, 0x404040);
                 yOff += font.lineHeight;
             }
-            textField.y = topPos + 48 + yOff + 2;
+            textField.setY(topPos + 48 + yOff + 2);
         }
 
         if (sensor != null && !sensor.getHelpText().isEmpty()) {

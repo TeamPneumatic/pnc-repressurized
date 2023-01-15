@@ -32,6 +32,7 @@ import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.commands.arguments.blocks.BlockStateParser;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
@@ -97,7 +98,7 @@ public class HeatPropertiesRecipeImpl extends HeatPropertiesRecipe {
             try {
                 String regName = PneumaticCraftUtils.getRegistryName(block).orElseThrow().toString();
                 String str = regName + "[" + String.join(",", l) + "]";
-                BlockStateParser.BlockResult res = BlockStateParser.parseForBlock(Registry.BLOCK, str, false);
+                BlockStateParser.BlockResult res = BlockStateParser.parseForBlock(BuiltInRegistries.BLOCK.asLookup(), str, false);
                 return res.blockState();
             } catch (CommandSyntaxException e) {
                 return block.defaultBlockState();
@@ -349,7 +350,7 @@ public class HeatPropertiesRecipeImpl extends HeatPropertiesRecipe {
 
         private BlockState parseBlockState(String str) {
             try {
-                return BlockStateParser.parseForBlock(Registry.BLOCK, str, false).blockState();
+                return BlockStateParser.parseForBlock(BuiltInRegistries.BLOCK.asLookup(), str, false).blockState();
             } catch (CommandSyntaxException e) {
                 throw new JsonSyntaxException(String.format("invalid blockstate [%s] - %s", str, e.getMessage()));
             }

@@ -72,16 +72,16 @@ public interface IArmorUpgradeClientHandler<T extends IArmorUpgradeHandler<?>> {
      */
     default void saveToConfig() {}
 
-    /**
-     * This method is called every client tick, and should be used to update clientside logic for armor upgrades.
-     * Unlike {@link IArmorUpgradeHandler#tick(ICommonArmorHandler, boolean)}, this method is only called for upgrades
-     * which are actually enabled (or not toggleable).
-     *
-     * @param armorHandler common armor handler for the player wearing this armor piece
-     * @deprecated you should override {@link #tickClient(ICommonArmorHandler, boolean)} instead
-     */
-    @Deprecated(forRemoval = true)
-    void tickClient(ICommonArmorHandler armorHandler);
+//    /**
+//     * This method is called every client tick, and should be used to update clientside logic for armor upgrades.
+//     * Unlike {@link IArmorUpgradeHandler#tick(ICommonArmorHandler, boolean)}, this method is only called for upgrades
+//     * which are actually enabled (or not toggleable).
+//     *
+//     * @param armorHandler common armor handler for the player wearing this armor piece
+//     * @deprecated you should override {@link #tickClient(ICommonArmorHandler, boolean)} instead
+//     */
+//    @Deprecated(forRemoval = true)
+//    void tickClient(ICommonArmorHandler armorHandler);
 
     /**
      * This method is called every client tick, and should be used to update clientside logic for armor upgrades.
@@ -89,8 +89,7 @@ public interface IArmorUpgradeClientHandler<T extends IArmorUpgradeHandler<?>> {
      * @param armorHandler common armor handler for the player wearing this armor piece
      * @param isEnabled true if the upgrade is currently enabled, false otherwise
      */
-    default void tickClient(ICommonArmorHandler armorHandler, boolean isEnabled) {
-    }
+    void tickClient(ICommonArmorHandler armorHandler, boolean isEnabled);
 
     /**
      * Called in the 3D render stage (via {@link net.minecraftforge.client.event.RenderLevelStageEvent})
@@ -303,7 +302,7 @@ public interface IArmorUpgradeClientHandler<T extends IArmorUpgradeHandler<?>> {
         }
 
         @Override
-        public void tickClient(ICommonArmorHandler armorHandler) {
+        public void tickClient(ICommonArmorHandler armorHandler, boolean isEnabled) {
         }
 
         @Override

@@ -18,6 +18,7 @@
 package me.desht.pneumaticcraft.client.gui;
 
 import me.desht.pneumaticcraft.client.gui.programmer.ProgWidgetAreaToolScreen;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetArea;
 import me.desht.pneumaticcraft.common.item.GPSAreaToolItem;
@@ -72,13 +73,13 @@ public class GPSAreaToolScreen extends GPSToolScreen {
 
         int x = xMiddle - CHANGE_AREA_BUTTON_WIDTH / 2;
         int y = yMiddle + 100;
-        addRenderableWidget(new Button(x, y, CHANGE_AREA_BUTTON_WIDTH, 20, xlate("pneumaticcraft.gui.gps_area_tool.changeAreaType"), b -> {
+        addRenderableWidget(new WidgetButtonExtended(x, y, CHANGE_AREA_BUTTON_WIDTH, 20, xlate("pneumaticcraft.gui.gps_area_tool.changeAreaType"), b -> {
             ItemStack stack = ClientUtils.getClientPlayer().getItemInHand(hand);
             ProgWidgetArea area = GPSAreaToolItem.getArea(ClientUtils.getClientPlayer(), stack);
             minecraft.setScreen(new ProgWidgetAreaToolScreen(area, hand, () -> minecraft.setScreen(new GPSAreaToolScreen(stack, hand, index))));
         }));
 
-        addRenderableWidget(new Button(xMiddle - P1P2_BUTTON_WIDTH / 2, yMiddle - 45, P1P2_BUTTON_WIDTH, 20, getToggleLabel(),
+        addRenderableWidget(new WidgetButtonExtended(xMiddle - P1P2_BUTTON_WIDTH / 2, yMiddle - 45, P1P2_BUTTON_WIDTH, 20, getToggleLabel(),
                 this::toggleP1P2));
     }
 

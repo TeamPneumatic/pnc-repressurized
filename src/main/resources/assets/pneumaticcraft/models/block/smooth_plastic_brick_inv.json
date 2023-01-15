@@ -1,5 +1,4 @@
 {
-  "parent": "forge:block/default",
   "loader": "forge:composite",
   "children": {
     "part1": {

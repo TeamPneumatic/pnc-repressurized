@@ -2,7 +2,7 @@ package me.desht.pneumaticcraft.client.render.blockentity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Vector3f;
+import com.mojang.math.Axis;
 import me.desht.pneumaticcraft.client.model.PNCModelLayers;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.block.entity.AirCannonBlockEntity;
@@ -78,7 +78,7 @@ public class AirCannonRenderer extends AbstractBlockEntityModelRenderer<AirCanno
         float rotationAngle = te.rotationAngle - angle + 180F;
 
         matrixStackIn.translate(0.0, 0.0, -0.09375D);
-        matrixStackIn.mulPose(Vector3f.YP.rotationDegrees(rotationAngle));
+        matrixStackIn.mulPose(Axis.YP.rotationDegrees(rotationAngle));
         matrixStackIn.translate(0.0, 0.0, 0.09375D);
         baseTurn.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
         baseFrame1.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
@@ -86,7 +86,7 @@ public class AirCannonRenderer extends AbstractBlockEntityModelRenderer<AirCanno
         axis.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
 
         matrixStackIn.translate(0.0D, 1.0D, -0.09375D);
-        matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(te.heightAngle));
+        matrixStackIn.mulPose(Axis.XP.rotationDegrees(te.heightAngle));
         matrixStackIn.translate(0.0D, -1.0D, 0.09375D);
         cannon.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
     }

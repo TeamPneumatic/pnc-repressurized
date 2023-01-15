@@ -23,6 +23,7 @@ import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.mixin.accessors.StructureTemplatePoolAccess;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.levelgen.structure.pools.SinglePoolElement;
@@ -74,10 +75,10 @@ public class VillageStructures {
     public static void addMechanicHouse(final ServerAboutToStartEvent event) {
         int weight = ConfigHelper.common().villagers.mechanicHouseWeight.get();
         if (weight > 0) {
-            Holder<StructureProcessorList> emptyProcessor = event.getServer().registryAccess().registryOrThrow(Registry.PROCESSOR_LIST_REGISTRY)
-                    .getHolderOrThrow(ResourceKey.create(Registry.PROCESSOR_LIST_REGISTRY, new ResourceLocation("minecraft:empty")));
+            Holder<StructureProcessorList> emptyProcessor = event.getServer().registryAccess().registryOrThrow(Registries.PROCESSOR_LIST)
+                    .getHolderOrThrow(ResourceKey.create(Registries.PROCESSOR_LIST, new ResourceLocation("minecraft:empty")));
 
-            Registry<StructureTemplatePool> templatePoolRegistry = event.getServer().registryAccess().registryOrThrow(Registry.TEMPLATE_POOL_REGISTRY);
+            Registry<StructureTemplatePool> templatePoolRegistry = event.getServer().registryAccess().registryOrThrow(Registries.TEMPLATE_POOL);
 
             for (VillageBiome v : VillageBiome.values()) {
                 // desert & snowy villages don't have street pieces large enough to support a PNC house

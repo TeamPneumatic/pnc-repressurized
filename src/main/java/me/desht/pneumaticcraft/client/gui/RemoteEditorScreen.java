@@ -118,8 +118,6 @@ public class RemoteEditorScreen extends RemoteScreen {
         addRenderableWidget(snapCheck);
 
         addRenderableWidget(new WidgetLabel(leftPos + 234, topPos + 7, xlate("pneumaticcraft.gui.remote.widgetTray").withStyle(ChatFormatting.DARK_BLUE)).setAlignment(WidgetLabel.Alignment.CENTRE));
-
-        minecraft.keyboardHandler.setSendRepeatsToGui(true);
     }
 
     private void doImport() {
@@ -155,7 +153,7 @@ public class RemoteEditorScreen extends RemoteScreen {
 
     private boolean isOutsideProgrammingArea(ActionWidget<?> actionWidget) {
         AbstractWidget w = actionWidget.getWidget();
-        return w.x < leftPos || w.y < topPos || w.x + w.getWidth() > leftPos + 183 || w.y + w.getHeight() > topPos + imageHeight;
+        return w.getX() < leftPos || w.getY() < topPos || w.getX() + w.getWidth() > leftPos + 183 || w.getY() + w.getHeight() > topPos + imageHeight;
     }
 
     @Override
@@ -216,8 +214,8 @@ public class RemoteEditorScreen extends RemoteScreen {
         draggingWidget = widget;
         dragMouseStartX = x;
         dragMouseStartY = y;
-        dragWidgetStartX = widget.getWidget().x;
-        dragWidgetStartY = widget.getWidget().y;
+        dragWidgetStartX = widget.getWidget().getX();
+        dragWidgetStartY = widget.getWidget().getY();
     }
 
     @Override
@@ -265,8 +263,6 @@ public class RemoteEditorScreen extends RemoteScreen {
             stack.getOrCreateTag().put("actionWidgets", nbt.getList("actionWidgets", Tag.TAG_COMPOUND));
             NetworkHandler.sendToServer(new PacketUpdateRemoteLayout(remoteLayout.toNBT(leftPos, topPos), menu.getHand()));
         }
-
-        minecraft.keyboardHandler.setSendRepeatsToGui(false);
 
         super.removed();
     }

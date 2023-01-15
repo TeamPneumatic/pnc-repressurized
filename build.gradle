@@ -26,12 +26,12 @@ apply plugin: "com.jfrog.artifactory"
 apply plugin: "org.spongepowered.mixin"
 
 //adds the build number to the end of the version string if on a build server
-String build_number = System.getenv().BUILD_NUMBER
+def build_number = System.getenv().BUILD_NUMBER
 if (build_number == null) {
 	build_number = 'CUSTOM'
 }
 
-String semver = "${mod_version_massive}.${mod_version_major}.${mod_version_minor}"
+def semver = "${mod_version_massive}.${mod_version_major}.${mod_version_minor}"
 
 // these two are required for the java plugin to generate jar files with a version
 version = "${project.mc_version}-${semver}-${build_number}"
@@ -43,7 +43,7 @@ ext.isAlpha = ext.releaseTag.contains("alpha")
 ext.isBeta = ext.releaseTag.contains("beta")
 
 // All jar files from this folder will be added automatically as runtime mod dependencies
-String extraModsDir = "extra-mods-${project.mc_version}"
+def extraModsDir = "extra-mods-${project.mc_version}"
 
 sourceSets {
 	api
@@ -118,35 +118,36 @@ dependencies {
 		exclude group: "net.minecraftforge", module: "forge"
 	}
 	// compile against the JEI API but do not include it at runtime
-	compileOnly fg.deobf("mezz.jei:jei-${mc_version}-common-api:${jei_version}")
-	compileOnly fg.deobf("mezz.jei:jei-${mc_version}-forge-api:${jei_version}")
+	// FIXME: depending on 1.19.2 artifacts right now
+	compileOnly fg.deobf("mezz.jei:jei-1.19.2-common-api:${jei_version}")
+	compileOnly fg.deobf("mezz.jei:jei-1.19.2-forge-api:${jei_version}")
 	// at runtime, use the full JEI
-	runtimeOnly fg.deobf("mezz.jei:jei-${mc_version}-common:${jei_version}")
-	runtimeOnly fg.deobf("mezz.jei:jei-${mc_version}-forge:${jei_version}")
+	//runtimeOnly fg.deobf("mezz.jei:jei-${mc_version}-common:${jei_version}")
+	//runtimeOnly fg.deobf("mezz.jei:jei-${mc_version}-forge:${jei_version}")
 	compileOnly fg.deobf("top.theillusivec4.curios:curios-forge:${curios_version}:api")
 	runtimeOnly fg.deobf("top.theillusivec4.curios:curios-forge:${curios_version}")
 	compileOnly fg.deobf("vazkii.botania:Botania:${botania_version}-FORGE:api")
-	runtimeOnly fg.deobf("vazkii.botania:Botania:${botania_version}-FORGE")
+	//runtimeOnly fg.deobf("vazkii.botania:Botania:${botania_version}-FORGE")
 	compileOnly fg.deobf("vazkii.patchouli:Patchouli:${patchouli_version}:api")
-	runtimeOnly fg.deobf("vazkii.patchouli:Patchouli:${patchouli_version}")
-	implementation fg.deobf("org.squiddev:cc-tweaked-${project.mc_version}:${cc_tweaked_version}")
+	//runtimeOnly fg.deobf("vazkii.patchouli:Patchouli:${patchouli_version}")
+	compileOnly fg.deobf("org.squiddev:cc-tweaked-1.19.2:${cc_tweaked_version}")
 	compileOnly fg.deobf("blusunrize.immersiveengineering:ImmersiveEngineering:${immersive_engineering_version}")
 	compileOnly fg.deobf("mekanism:Mekanism:${mekanism_version}:api")
-	runtimeOnly fg.deobf("mekanism:Mekanism:${mekanism_version}")
-	implementation fg.deobf("com.simibubi.create:create-${project.mc_version}:${create_version}:slim") { transitive = false }
-	implementation fg.deobf("com.jozufozu.flywheel:flywheel-forge-${project.mc_version}:${flywheel_version}")
-	implementation fg.deobf("com.tterrag.registrate:Registrate:${registrate_version}")
+	//runtimeOnly fg.deobf("mekanism:Mekanism:${mekanism_version}")
+	compileOnly fg.deobf("com.simibubi.create:create-1.19.2:${create_version}:slim") { transitive = false }
+	compileOnly fg.deobf("com.jozufozu.flywheel:flywheel-forge-1.19.2:${flywheel_version}")
+	compileOnly fg.deobf("com.tterrag.registrate:Registrate:${registrate_version}")
 //	implementation fg.deobf("curse.maven:create-328085:${create_curse_id}")
 	implementation fg.deobf("curse.maven:jade-324717:${jade_curse_id}")
-	implementation fg.deobf("curse.maven:cofh_core-69162:${cofh_core_curse_id}")
- 	implementation fg.deobf("curse.maven:thermal_cultivation-271835:${thermal_cultivation_curse_id}")
-	implementation fg.deobf("curse.maven:thermal_expansion-69163:${thermal_expansion_curse_id}")
-	implementation fg.deobf("curse.maven:thermal_foundation-222880:${thermal_foundation_curse_id}")
-	implementation fg.deobf("curse.maven:thermal_innovation-291737:${thermal_innovation_curse_id}")
-	implementation fg.deobf("curse.maven:thermal_locomotion-406959:${thermal_locomotion_curse_id}")
+	compileOnly fg.deobf("curse.maven:cofh_core-69162:${cofh_core_curse_id}")
+ 	compileOnly fg.deobf("curse.maven:thermal_cultivation-271835:${thermal_cultivation_curse_id}")
+	compileOnly fg.deobf("curse.maven:thermal_expansion-69163:${thermal_expansion_curse_id}")
+	compileOnly fg.deobf("curse.maven:thermal_foundation-222880:${thermal_foundation_curse_id}")
+	compileOnly fg.deobf("curse.maven:thermal_innovation-291737:${thermal_innovation_curse_id}")
+	compileOnly fg.deobf("curse.maven:thermal_locomotion-406959:${thermal_locomotion_curse_id}")
 
-	implementation fg.deobf("com.blamejared.crafttweaker:CraftTweaker-forge-1.19.2:${crafttweaker_version}")
-	compileOnly fg.deobf("net.darkhax.gamestages:GameStages-Forge-${project.mc_version}:${gamestages_version}")
+	compileOnly fg.deobf("com.blamejared.crafttweaker:CraftTweaker-forge-1.19.2:${crafttweaker_version}")
+	compileOnly fg.deobf("net.darkhax.gamestages:GameStages-Forge-1.19.2:${gamestages_version}")
 
 	//compileOnly fg.deobf("appeng:appliedenergistics2:${ae2_version}:api")
 	//runtimeOnly fg.deobf("appeng:appliedenergistics2:${ae2_version}")

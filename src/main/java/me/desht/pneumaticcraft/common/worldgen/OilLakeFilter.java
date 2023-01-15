@@ -10,6 +10,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.SectionPos;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.WorldGenRegion;
 import net.minecraft.util.RandomSource;
@@ -42,7 +43,7 @@ public class OilLakeFilter extends PlacementFilter {
             SectionPos sectionPos = SectionPos.of(origin);
             ChunkAccess chunkAccess = context.getLevel().getChunk(origin);
 
-            Registry<Structure> reg = context.getLevel().registryAccess().registryOrThrow(Registry.STRUCTURE_REGISTRY);
+            Registry<Structure> reg = context.getLevel().registryAccess().registryOrThrow(Registries.STRUCTURE);
             StructureManager sfManager = ((WorldGenRegionAccess)region).getStructureManager();
 
             for (Holder<Structure> structureHolder : reg.getOrCreateTag(PneumaticCraftTags.Structures.NO_OIL_LAKES)) {

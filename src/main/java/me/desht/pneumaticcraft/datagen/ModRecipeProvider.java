@@ -11,6 +11,7 @@ import me.desht.pneumaticcraft.api.data.PneumaticCraftTags;
 import me.desht.pneumaticcraft.api.item.PNCUpgrade;
 import me.desht.pneumaticcraft.common.core.*;
 import me.desht.pneumaticcraft.common.recipes.FluidTagPresentCondition;
+import me.desht.pneumaticcraft.common.recipes.SimpleRecipeSerializer;
 import me.desht.pneumaticcraft.common.util.PlayerFilter;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.datagen.recipe.*;
@@ -28,7 +29,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.crafting.SimpleRecipeSerializer;
+import net.minecraft.world.item.crafting.SimpleCraftingRecipeSerializer;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.material.Fluids;
@@ -49,11 +50,11 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 public class ModRecipeProvider extends RecipeProvider {
     public ModRecipeProvider(DataGenerator generatorIn) {
-        super(generatorIn);
+        super(generatorIn.getPackOutput());
     }
 
     @Override
-    protected void buildCraftingRecipes(Consumer<FinishedRecipe> consumer) {
+    protected void buildRecipes(Consumer<FinishedRecipe> consumer) {
         shaped(ModItems.AIR_CANISTER.get(), ModItems.COMPRESSED_IRON_INGOT.get(),
                 " T /IRI/IRI",
                 'T', ModBlocks.PRESSURE_TUBE.get(),
@@ -1182,53 +1183,53 @@ public class ModRecipeProvider extends RecipeProvider {
         ).save(consumer);
 
         // vanilla stonecutter for bricks etc.
-        SingleItemRecipeBuilder.stonecutting(Ingredient.of(ModBlocks.REINFORCED_STONE.get()), ModBlocks.REINFORCED_STONE_SLAB.get(), 2)
+        SingleItemRecipeBuilder.stonecutting(Ingredient.of(ModBlocks.REINFORCED_STONE.get()), RecipeCategory.BUILDING_BLOCKS, ModBlocks.REINFORCED_STONE_SLAB.get(), 2)
                 .unlockedBy("has_reinforced_stone", has(ModBlocks.REINFORCED_STONE.get())
                 ).save(consumer, RL("reinforced_stone_slab_from_stone_stonecutting"));
-        SingleItemRecipeBuilder.stonecutting(Ingredient.of(ModBlocks.REINFORCED_STONE.get()), ModBlocks.REINFORCED_BRICKS.get())
+        SingleItemRecipeBuilder.stonecutting(Ingredient.of(ModBlocks.REINFORCED_STONE.get()), RecipeCategory.BUILDING_BLOCKS, ModBlocks.REINFORCED_BRICKS.get())
                 .unlockedBy("has_reinforced_stone", has(ModBlocks.REINFORCED_STONE.get())
                 ).save(consumer, RL("reinforced_bricks_from_stone_stonecutting"));
-        SingleItemRecipeBuilder.stonecutting(Ingredient.of(ModBlocks.REINFORCED_BRICKS.get()), ModBlocks.REINFORCED_BRICK_SLAB.get(), 2)
+        SingleItemRecipeBuilder.stonecutting(Ingredient.of(ModBlocks.REINFORCED_BRICKS.get()), RecipeCategory.BUILDING_BLOCKS, ModBlocks.REINFORCED_BRICK_SLAB.get(), 2)
                 .unlockedBy("has_reinforced_stone", has(ModBlocks.REINFORCED_STONE.get())
                 ).save(consumer, RL("reinforced_brick_slab_from_bricks_stonecutting"));
-        SingleItemRecipeBuilder.stonecutting(Ingredient.of(ModBlocks.REINFORCED_BRICKS.get()), ModBlocks.REINFORCED_BRICK_TILE.get())
+        SingleItemRecipeBuilder.stonecutting(Ingredient.of(ModBlocks.REINFORCED_BRICKS.get()), RecipeCategory.BUILDING_BLOCKS, ModBlocks.REINFORCED_BRICK_TILE.get())
                 .unlockedBy("has_reinforced_stone", has(ModBlocks.REINFORCED_STONE.get())
                 ).save(consumer, RL("reinforced_brick_tile_from_bricks_stonecutting"));
-        SingleItemRecipeBuilder.stonecutting(Ingredient.of(ModBlocks.REINFORCED_BRICKS.get()), ModBlocks.REINFORCED_BRICK_STAIRS.get())
+        SingleItemRecipeBuilder.stonecutting(Ingredient.of(ModBlocks.REINFORCED_BRICKS.get()), RecipeCategory.BUILDING_BLOCKS, ModBlocks.REINFORCED_BRICK_STAIRS.get())
                 .unlockedBy("has_reinforced_stone", has(ModBlocks.REINFORCED_STONE.get())
                 ).save(consumer, RL("reinforced_brick_stairs_from_bricks_stonecutting"));
-        SingleItemRecipeBuilder.stonecutting(Ingredient.of(ModBlocks.REINFORCED_BRICKS.get()), ModBlocks.REINFORCED_BRICK_WALL.get())
+        SingleItemRecipeBuilder.stonecutting(Ingredient.of(ModBlocks.REINFORCED_BRICKS.get()), RecipeCategory.BUILDING_BLOCKS, ModBlocks.REINFORCED_BRICK_WALL.get())
                 .unlockedBy("has_reinforced_stone", has(ModBlocks.REINFORCED_STONE.get())
                 ).save(consumer, RL("reinforced_brick_wall_from_bricks_stonecutting"));
-        SingleItemRecipeBuilder.stonecutting(Ingredient.of(ModBlocks.REINFORCED_BRICKS.get()), ModBlocks.REINFORCED_BRICK_PILLAR.get())
+        SingleItemRecipeBuilder.stonecutting(Ingredient.of(ModBlocks.REINFORCED_BRICKS.get()), RecipeCategory.BUILDING_BLOCKS, ModBlocks.REINFORCED_BRICK_PILLAR.get())
                 .unlockedBy("has_reinforced_stone", has(ModBlocks.REINFORCED_STONE.get())
                 ).save(consumer, RL("reinforced_brick_pillar_from_bricks_stonecutting"));
-        SingleItemRecipeBuilder.stonecutting(Ingredient.of(ModBlocks.REINFORCED_BRICK_TILE.get()), ModBlocks.REINFORCED_BRICKS.get())
+        SingleItemRecipeBuilder.stonecutting(Ingredient.of(ModBlocks.REINFORCED_BRICK_TILE.get()), RecipeCategory.BUILDING_BLOCKS, ModBlocks.REINFORCED_BRICKS.get())
                 .unlockedBy("has_reinforced_stone", has(ModBlocks.REINFORCED_STONE.get())
                 ).save(consumer, RL("reinforced_bricks_from_tile_stonecutting"));
 
-        SingleItemRecipeBuilder.stonecutting(Ingredient.of(ModBlocks.COMPRESSED_STONE.get()), ModBlocks.COMPRESSED_STONE_SLAB.get(), 2)
+        SingleItemRecipeBuilder.stonecutting(Ingredient.of(ModBlocks.COMPRESSED_STONE.get()), RecipeCategory.BUILDING_BLOCKS, ModBlocks.COMPRESSED_STONE_SLAB.get(), 2)
                 .unlockedBy("has_compressed_stone", has(ModBlocks.COMPRESSED_STONE.get())
                 ).save(consumer, RL("compressed_stone_slab_from_stone_stonecutting"));
-        SingleItemRecipeBuilder.stonecutting(Ingredient.of(ModBlocks.COMPRESSED_STONE.get()), ModBlocks.COMPRESSED_BRICKS.get())
+        SingleItemRecipeBuilder.stonecutting(Ingredient.of(ModBlocks.COMPRESSED_STONE.get()), RecipeCategory.BUILDING_BLOCKS, ModBlocks.COMPRESSED_BRICKS.get())
                 .unlockedBy("has_compressed_stone", has(ModBlocks.COMPRESSED_STONE.get())
                 ).save(consumer, RL("compressed_bricks_from_stone_stonecutting"));
-        SingleItemRecipeBuilder.stonecutting(Ingredient.of(ModBlocks.COMPRESSED_BRICKS.get()), ModBlocks.COMPRESSED_BRICK_SLAB.get(), 2)
+        SingleItemRecipeBuilder.stonecutting(Ingredient.of(ModBlocks.COMPRESSED_BRICKS.get()), RecipeCategory.BUILDING_BLOCKS, ModBlocks.COMPRESSED_BRICK_SLAB.get(), 2)
                 .unlockedBy("has_compressed_stone", has(ModBlocks.COMPRESSED_STONE.get())
                 ).save(consumer, RL("compressed_brick_slab_from_bricks_stonecutting"));
-        SingleItemRecipeBuilder.stonecutting(Ingredient.of(ModBlocks.COMPRESSED_BRICKS.get()), ModBlocks.COMPRESSED_BRICK_TILE.get())
+        SingleItemRecipeBuilder.stonecutting(Ingredient.of(ModBlocks.COMPRESSED_BRICKS.get()), RecipeCategory.BUILDING_BLOCKS, ModBlocks.COMPRESSED_BRICK_TILE.get())
                 .unlockedBy("has_compressed_stone", has(ModBlocks.COMPRESSED_STONE.get())
                 ).save(consumer, RL("compressed_brick_tile_from_bricks_stonecutting"));
-        SingleItemRecipeBuilder.stonecutting(Ingredient.of(ModBlocks.COMPRESSED_BRICKS.get()), ModBlocks.COMPRESSED_BRICK_STAIRS.get())
+        SingleItemRecipeBuilder.stonecutting(Ingredient.of(ModBlocks.COMPRESSED_BRICKS.get()), RecipeCategory.BUILDING_BLOCKS, ModBlocks.COMPRESSED_BRICK_STAIRS.get())
                 .unlockedBy("has_compressed_stone", has(ModBlocks.COMPRESSED_STONE.get())
                 ).save(consumer, RL("compressed_brick_stairs_from_bricks_stonecutting"));
-        SingleItemRecipeBuilder.stonecutting(Ingredient.of(ModBlocks.COMPRESSED_BRICKS.get()), ModBlocks.COMPRESSED_BRICK_WALL.get())
+        SingleItemRecipeBuilder.stonecutting(Ingredient.of(ModBlocks.COMPRESSED_BRICKS.get()), RecipeCategory.BUILDING_BLOCKS, ModBlocks.COMPRESSED_BRICK_WALL.get())
                 .unlockedBy("has_compressed_stone", has(ModBlocks.COMPRESSED_STONE.get())
                 ).save(consumer, RL("compressed_brick_wall_from_bricks_stonecutting"));
-        SingleItemRecipeBuilder.stonecutting(Ingredient.of(ModBlocks.COMPRESSED_BRICKS.get()), ModBlocks.COMPRESSED_BRICK_PILLAR.get())
+        SingleItemRecipeBuilder.stonecutting(Ingredient.of(ModBlocks.COMPRESSED_BRICKS.get()), RecipeCategory.BUILDING_BLOCKS, ModBlocks.COMPRESSED_BRICK_PILLAR.get())
                 .unlockedBy("has_compressed_stone", has(ModBlocks.COMPRESSED_STONE.get())
                 ).save(consumer, RL("compressed_brick_pillar_from_bricks_stonecutting"));
-        SingleItemRecipeBuilder.stonecutting(Ingredient.of(ModBlocks.COMPRESSED_BRICK_TILE.get()), ModBlocks.COMPRESSED_BRICKS.get())
+        SingleItemRecipeBuilder.stonecutting(Ingredient.of(ModBlocks.COMPRESSED_BRICK_TILE.get()), RecipeCategory.BUILDING_BLOCKS, ModBlocks.COMPRESSED_BRICKS.get())
                 .unlockedBy("has_compressed_stone", has(ModBlocks.COMPRESSED_STONE.get())
                 ).save(consumer, RL("compressed_bricks_from_tile_stonecutting"));
 
@@ -1244,8 +1245,8 @@ public class ModRecipeProvider extends RecipeProvider {
         specialRecipe(ModRecipeSerializers.DRONE_COLOR_CRAFTING.get()).save(consumer, getId("color_drone"));
         specialRecipe(ModRecipeSerializers.DRONE_UPGRADE_CRAFTING.get()).save(consumer, getId("drone_upgrade"));
         specialRecipe(ModRecipeSerializers.GUN_AMMO_POTION_CRAFTING.get()).save(consumer, getId("gun_ammo_potion_crafting"));
-        specialRecipe(ModRecipeSerializers.PRESSURE_CHAMBER_ENCHANTING.get()).save(consumer, getId("pressure_chamber/pressure_chamber_enchanting"));
-        specialRecipe(ModRecipeSerializers.PRESSURE_CHAMBER_DISENCHANTING.get()).save(consumer, getId("pressure_chamber/pressure_chamber_disenchanting"));
+        simpleRecipe(ModRecipeSerializers.PRESSURE_CHAMBER_ENCHANTING.get()).save(consumer, getId("pressure_chamber/pressure_chamber_enchanting"));
+        simpleRecipe(ModRecipeSerializers.PRESSURE_CHAMBER_DISENCHANTING.get()).save(consumer, getId("pressure_chamber/pressure_chamber_disenchanting"));
         ConditionalRecipe.builder()
                 .addCondition(new ModLoadedCondition("patchouli"))
                 .addRecipe(c -> specialRecipe(ModRecipeSerializers.PATCHOULI_BOOK_CRAFTING.get()).save(c, getId("patchouli_book_crafting")))
@@ -1256,19 +1257,19 @@ public class ModRecipeProvider extends RecipeProvider {
                 .build(consumer, RL("one_probe_crafting"));
 
         // smelting
-        SimpleCookingRecipeBuilder.blasting(Ingredient.of(ModItems.FAILED_PCB.get()), ModItems.EMPTY_PCB.get(),
+        SimpleCookingRecipeBuilder.blasting(Ingredient.of(ModItems.FAILED_PCB.get()), RecipeCategory.MISC, ModItems.EMPTY_PCB.get(),
                         0.25f, 100)
                 .unlockedBy("has_empty_pcb", has(ModItems.FAILED_PCB.get()))
                 .save(consumer, RL("empty_pcb_from_failed_pcb"));
-        SimpleCookingRecipeBuilder.smelting(Ingredient.of(PneumaticCraftTags.Items.PLASTIC_BRICKS), ModItems.PLASTIC.get(),
+        SimpleCookingRecipeBuilder.smelting(Ingredient.of(PneumaticCraftTags.Items.PLASTIC_BRICKS), RecipeCategory.MISC, ModItems.PLASTIC.get(),
                         0f, 100)
                 .unlockedBy("has_plastic", has(ModItems.PLASTIC.get()))
                 .save(consumer, RL("plastic_sheet_from_brick"));
-        SimpleCookingRecipeBuilder.smelting(Ingredient.of(PneumaticCraftTags.Items.SMOOTH_PLASTIC_BRICKS), ModItems.PLASTIC.get(),
+        SimpleCookingRecipeBuilder.smelting(Ingredient.of(PneumaticCraftTags.Items.SMOOTH_PLASTIC_BRICKS), RecipeCategory.BUILDING_BLOCKS, ModItems.PLASTIC.get(),
                         0f, 100)
                 .unlockedBy("has_plastic", has(ModItems.PLASTIC.get()))
                 .save(consumer, RL("plastic_sheet_from_smooth_brick"));
-        SimpleCookingRecipeBuilder.smelting(Ingredient.of(ModItems.SOURDOUGH.get()), ModItems.SOURDOUGH_BREAD.get(),
+        SimpleCookingRecipeBuilder.smelting(Ingredient.of(ModItems.SOURDOUGH.get()), RecipeCategory.FOOD, ModItems.SOURDOUGH_BREAD.get(),
                         0.35f, 100)
                 .unlockedBy("has_dough", has(ModItems.SOURDOUGH.get()))
                 .save(consumer, RL("sourdough_bread"));
@@ -1593,7 +1594,7 @@ public class ModRecipeProvider extends RecipeProvider {
     }
 
     private <T extends ItemLike> ShapelessRecipeBuilder shapeless(T result, int count, T required, Object... ingredients) {
-        ShapelessRecipeBuilder b = ShapelessRecipeBuilder.shapeless(result, count);
+        ShapelessRecipeBuilder b = ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, result, count);
         for (Object v : ingredients) {
             if (v instanceof TagKey<?>) {
                 //noinspection unchecked
@@ -1668,7 +1669,7 @@ public class ModRecipeProvider extends RecipeProvider {
     }
 
     private <T extends ItemLike> ShapedRecipeBuilder shaped(T result, int count, T required, String pattern, Object... keys) {
-        return genericShaped(ShapedRecipeBuilder.shaped(result, count), result, required, pattern, keys);
+        return genericShaped(ShapedRecipeBuilder.shaped(RecipeCategory.MISC, result, count), result, required, pattern, keys);
     }
 
     private <T extends ItemLike> ShapedRecipeBuilder shaped(T result, T required, String pattern, Object... keys) {
@@ -1720,8 +1721,12 @@ public class ModRecipeProvider extends RecipeProvider {
                 'C', center);
     }
 
-    private SpecialRecipeBuilder specialRecipe(SimpleRecipeSerializer<?> recipe) {
+    private SpecialRecipeBuilder specialRecipe(SimpleCraftingRecipeSerializer<?> recipe) {
         return SpecialRecipeBuilder.special(recipe);
+    }
+
+    private SimpleRecipeBuilder simpleRecipe(SimpleRecipeSerializer<?> recipe) {
+        return SimpleRecipeBuilder.simple(recipe);
     }
 
     private PressureChamberRecipeBuilder pressureChamber(List<Ingredient> in, float pressure, ItemStack... out) {
@@ -1796,8 +1801,8 @@ public class ModRecipeProvider extends RecipeProvider {
         return key == null ? "" : key.getPath().replace('/', '_');
     }
 
-    @Override
-    public String getName() {
-        return "PneumaticCraft Recipes";
-    }
+//    @Override
+//    public String getName() {
+//        return "PneumaticCraft Recipes";
+//    }
 }

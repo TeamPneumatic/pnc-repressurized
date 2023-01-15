@@ -750,7 +750,7 @@ public class SecurityStationBlockEntity extends AbstractTickingBlockEntity imple
         }
 
         private static Player getPlayerForExplosion(ExplosionEvent event) {
-            LivingEntity entity = event.getExplosion().getSourceMob();
+            LivingEntity entity = event.getExplosion().getIndirectSourceEntity();
             return entity instanceof Player ? (Player) entity : null;
         }
 

@@ -22,6 +22,7 @@ import com.google.gson.*;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.nbt.TagParser;
@@ -334,8 +335,7 @@ public class FluidIngredient extends Ingredient {
             boolean fuzzyNBT = GsonHelper.getAsBoolean(json, "fuzzyNBT", false);
             if (json.has("tag")) {
                 ResourceLocation rl = new ResourceLocation(GsonHelper.getAsString(json, "tag"));
-                TagKey<Fluid> tagKey = TagKey.create(Registry.FLUID_REGISTRY, rl);
-                result = FluidIngredient.of(amount, nbt, fuzzyNBT, tagKey);
+                result = FluidIngredient.of(amount, nbt, fuzzyNBT, TagKey.create(Registries.FLUID, rl));
             } else if (json.has("fluid")) {
                 ResourceLocation fluidId = new ResourceLocation(GsonHelper.getAsString(json, "fluid"));
                 Fluid fluid = ForgeRegistries.FLUIDS.getValue(fluidId);

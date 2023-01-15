@@ -1,5 +1,6 @@
 {
   "type": "pneumaticcraft:crafting_shaped_pressurizable",
+  "category": "misc",
   "key": {
     "A": {
       "item": "pneumaticcraft:air_canister"

@@ -141,6 +141,8 @@ public class WidgetList<T> extends AbstractWidget implements ITooltipProvider {
         int lineHeight = mc.font.lineHeight;
         int lines = height / lineHeight;
 
+        int x = getX(), y = getY();
+
         matrixStack.pushPose();
         GL11.glEnable(GL11.GL_SCISSOR_TEST);
         GL11.glScissor(x * scale, (y + height) * scale, width * scale, height * scale);
@@ -163,7 +165,7 @@ public class WidgetList<T> extends AbstractWidget implements ITooltipProvider {
         if (active) {
             long now = System.currentTimeMillis();
             int h = Minecraft.getInstance().font.lineHeight;
-            int newSel = Mth.clamp((int) (mouseY - this.y) / h, 0, items.size() - 1);
+            int newSel = Mth.clamp((int) (mouseY - this.getY()) / h, 0, items.size() - 1);
             doubleClicked = now - lastClick < 250 && newSel == selected;
             setSelected(newSel);
             lastClick = now;
@@ -176,7 +178,7 @@ public class WidgetList<T> extends AbstractWidget implements ITooltipProvider {
         if (toolTipType == ToolTipType.NONE) return;
 
         int h = Minecraft.getInstance().font.lineHeight;
-        int idx = Math.max(0, (int) (mouseY - this.y) / h);
+        int idx = Math.max(0, (int) (mouseY - this.getY()) / h);
         if (idx >= 0 && idx < items.size()) {
             String s = items.get(idx).toString();
             if (toolTipType == ToolTipType.ALWAYS || Minecraft.getInstance().font.width(s) * 3 / 4 > width) {
@@ -186,7 +188,7 @@ public class WidgetList<T> extends AbstractWidget implements ITooltipProvider {
     }
 
     @Override
-    public void updateNarration(NarrationElementOutput pNarrationElementOutput) {
+    public void updateWidgetNarration(NarrationElementOutput pNarrationElementOutput) {
     }
 
     public enum ToolTipType {

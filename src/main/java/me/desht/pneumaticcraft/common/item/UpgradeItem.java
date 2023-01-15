@@ -41,10 +41,11 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.util.List;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class UpgradeItem extends Item implements IUpgradeItem {
+public class UpgradeItem extends Item implements IUpgradeItem, CreativeTabStackProvider {
     public static final String NBT_DIRECTION = "Facing";
 
     private final Supplier<PNCUpgrade> upgrade;
@@ -134,9 +135,7 @@ public class UpgradeItem extends Item implements IUpgradeItem {
     }
 
     @Override
-    public void fillItemCategory(CreativeModeTab group, NonNullList<ItemStack> items) {
-        if (this.allowedIn(group) && getUpgradeType().isDependencyLoaded()) {
-            items.add(new ItemStack(this));
-        }
+    public Stream<ItemStack> getStacksForItem() {
+        return getUpgradeType().isDependencyLoaded() ? Stream.of(new ItemStack(this)) : Stream.empty();
     }
 }

@@ -106,7 +106,9 @@ public class CoordTrackClientHandler extends IArmorUpgradeClientHandler.Abstract
     }
 
     @Override
-    public void tickClient(ICommonArmorHandler armorHandler) {
+    public void tickClient(ICommonArmorHandler armorHandler, boolean isEnabled) {
+        if (!isEnabled) return;
+
         trackedPos = PneumaticArmorItem.getCoordTrackerPos(ClientUtils.getWornArmor(EquipmentSlot.HEAD), armorHandler.getPlayer().level);
         worldKey = armorHandler.getPlayer().level.dimension();
         if (trackedPos != null) {

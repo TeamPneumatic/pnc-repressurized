@@ -28,6 +28,8 @@ import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.chat.Component;
@@ -53,7 +55,7 @@ public class CamoApplicatorItem extends PressurizableItem {
 
     @Override
     public Component getName(ItemStack stack) {
-        BlockState camoState = getCamoState(stack);
+        BlockState camoState = getCamoState(stack, null);
         Component disp = super.getName(stack);
         if (camoState != null) {
             return disp.copy().append(": ").append(getCamoStateDisplayName(camoState)).withStyle(ChatFormatting.YELLOW);
@@ -68,7 +70,7 @@ public class CamoApplicatorItem extends PressurizableItem {
             if (!worldIn.isClientSide) {
                 setCamoState(playerIn.getItemInHand(handIn), null);
             } else {
-                if (getCamoState(playerIn.getItemInHand(handIn)) != null) {
+                if (getCamoState(playerIn.getItemInHand(handIn), playerIn.level) != null) {
                     playerIn.playSound(ModSounds.CHIRP.get(), 1.0f, 1.0f);
                 }
             }
@@ -104,7 +106,7 @@ public class CamoApplicatorItem extends PressurizableItem {
                         return InteractionResult.FAIL;
                     }
 
-                    BlockState newCamo = getCamoState(stack);
+                    BlockState newCamo = getCamoState(stack, level);
                     BlockState existingCamo = camoTE.getCamouflage();
 
                     if (existingCamo == newCamo) {
@@ -161,10 +163,10 @@ public class CamoApplicatorItem extends PressurizableItem {
         stack.setTag(tag);
     }
 
-    private static BlockState getCamoState(ItemStack stack) {
+    private static BlockState getCamoState(ItemStack stack, Level level) {
         CompoundTag tag = stack.getTag();
         if (tag != null && tag.contains("CamoState")) {
-            return NbtUtils.readBlockState(tag.getCompound("CamoState"));
+            return NbtUtils.readBlockState(level == null ? BuiltInRegistries.BLOCK.asLookup() : level.holderLookup(Registries.BLOCK), tag.getCompound("CamoState"));
         }
         return null;
     }

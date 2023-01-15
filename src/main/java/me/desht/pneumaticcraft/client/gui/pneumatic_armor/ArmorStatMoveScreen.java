@@ -103,11 +103,11 @@ public class ArmorStatMoveScreen extends AbstractPneumaticCraftScreen {
         super.init();
 
         snapToGrid = new WidgetCheckBox(10, (height * 3) / 5, 0xC0C0C0, xlate("pneumaticcraft.gui.misc.snapToGrid"));
-        snapToGrid.x = (width - snapToGrid.getWidth()) / 2;
+        snapToGrid.setX((width - snapToGrid.getWidth()) / 2);
         snapToGrid.checked = snap;
         addRenderableWidget(snapToGrid);
 
-        gridSlider = new PNCForgeSlider(snapToGrid.x, snapToGrid.y + 12, snapToGrid.getWidth(), 10,
+        gridSlider = new PNCForgeSlider(snapToGrid.getX(), snapToGrid.getY() + 12, snapToGrid.getWidth(), 10,
                 Component.empty(), Component.empty(), 1, 12, gridSize, true, null);
         addRenderableWidget(gridSlider);
     }
@@ -179,8 +179,8 @@ public class ArmorStatMoveScreen extends AbstractPneumaticCraftScreen {
         renderBackground(matrixStack);
 
         Rect2i bounds = GuiUtils.showPopupHelpScreen(matrixStack,this, font, helpText);
-        snapToGrid.y = bounds.getY() + bounds.getHeight() + 15;
-        gridSlider.y = snapToGrid.y + 12;
+        snapToGrid.setY(bounds.getY() + bounds.getHeight() + 15);
+        gridSlider.setY(snapToGrid.getY() + 12);
 
         super.render(matrixStack, x, y, partialTicks);
 

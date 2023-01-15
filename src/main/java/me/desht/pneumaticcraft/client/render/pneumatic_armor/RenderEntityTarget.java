@@ -18,8 +18,7 @@
 package me.desht.pneumaticcraft.client.render.pneumatic_armor;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Matrix3f;
-import com.mojang.math.Vector3f;
+import com.mojang.math.Axis;
 import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IEntityTrackEntry;
 import me.desht.pneumaticcraft.api.pneumatic_armor.hacking.IHackableEntity;
@@ -52,6 +51,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.vehicle.AbstractMinecart;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.event.InputEvent;
+import org.joml.Matrix3f;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -304,7 +304,7 @@ public class RenderEntityTarget {
 
             matrixStack.pushPose();
 
-            matrixStack.mulPose(Vector3f.ZP.rotationDegrees((float) renderRotationAngle));
+            matrixStack.mulPose(Axis.ZP.rotationDegrees((float) renderRotationAngle));
 
             for (int pass = 0; pass < 2; pass++) {
                 RenderUtils.renderWithTypeAndFinish(matrixStack, buffer, ModRenderTypes.TARGET_CIRCLE, (posMat, builder) -> {
@@ -342,7 +342,7 @@ public class RenderEntityTarget {
                     });
                 }
 
-                matrixStack.mulPose(Vector3f.ZP.rotationDegrees(180));
+                matrixStack.mulPose(Axis.ZP.rotationDegrees(180));
             }
             matrixStack.popPose();
         }

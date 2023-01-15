@@ -303,7 +303,7 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
         }
         maxPage++;
 
-        filterField.x = Math.min(leftPos + getWidgetTrayRight() - 25 - filterField.getWidth(), leftPos + getWidgetTrayRight() - (maxPage * WIDGET_X_SPACING) - 2);
+        filterField.setX(Math.min(leftPos + getWidgetTrayRight() - 25 - filterField.getWidth(), leftPos + getWidgetTrayRight() - (maxPage * WIDGET_X_SPACING) - 2));
         filterSpawnWidgets();
 
         if (widgetPage >= maxPage) {

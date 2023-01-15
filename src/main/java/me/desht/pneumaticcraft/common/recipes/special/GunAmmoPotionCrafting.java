@@ -29,6 +29,7 @@ import net.minecraft.world.item.PotionItem;
 import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.item.alchemy.Potions;
+import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.ShapelessRecipe;
@@ -38,8 +39,8 @@ import javax.annotation.Nullable;
 import java.util.stream.Stream;
 
 public class GunAmmoPotionCrafting extends ShapelessRecipe {
-    public GunAmmoPotionCrafting(ResourceLocation idIn) {
-        super(idIn, "", new ItemStack(ModItems.GUN_AMMO.get()),
+    public GunAmmoPotionCrafting(ResourceLocation idIn, CraftingBookCategory category) {
+        super(idIn, "", category, new ItemStack(ModItems.GUN_AMMO.get()),
                 NonNullList.of(Ingredient.EMPTY, Ingredient.of(ModItems.GUN_AMMO.get()), new PotionIngredient()));
     }
 

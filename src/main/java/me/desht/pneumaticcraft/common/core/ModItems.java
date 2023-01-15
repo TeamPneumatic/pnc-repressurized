@@ -277,7 +277,7 @@ public class ModItems {
     /* -----------------------*/
 
     public static Item.Properties defaultProps() {
-        return new Item.Properties().tab(ItemGroups.PNC_CREATIVE_TAB);
+        return new Item.Properties();
     }
 
     public static Item.Properties toolProps() {
@@ -323,14 +323,5 @@ public class ModItems {
                     register(itemName, () -> new UpgradeItem(upgrade, tier));
                 }
         );
-    }
-
-    static class ItemGroups {
-        static final CreativeModeTab PNC_CREATIVE_TAB = new CreativeModeTab(Names.MOD_ID) {
-            @Override
-            public ItemStack makeIcon() {
-                return new ItemStack(ModBlocks.AIR_COMPRESSOR.get());
-            }
-        };
     }
 }

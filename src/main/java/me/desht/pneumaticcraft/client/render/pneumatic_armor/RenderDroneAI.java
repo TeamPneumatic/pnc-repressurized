@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.client.render.pneumatic_armor;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Vector3f;
+import com.mojang.math.Axis;
 import me.desht.pneumaticcraft.client.render.ProgWidgetRenderer;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.drone.progwidgets.IProgWidget;
@@ -99,8 +99,8 @@ public class RenderDroneAI {
                 matrixStack.pushPose();
                 matrixStack.translate(x, y + 0.5, z);
                 matrixStack.scale(0.01f, 0.01f, 0.01f);
-                matrixStack.mulPose(Vector3f.XP.rotationDegrees(180));
-                matrixStack.mulPose(Vector3f.YP.rotationDegrees(Minecraft.getInstance().gameRenderer.getMainCamera().getYRot()));
+                matrixStack.mulPose(Axis.XP.rotationDegrees(180));
+                matrixStack.mulPose(Axis.YP.rotationDegrees(Minecraft.getInstance().gameRenderer.getMainCamera().getYRot()));
                 ProgWidgetRenderer.renderProgWidget3d(matrixStack, buffer, activeWidget);
                 matrixStack.popPose();
             }

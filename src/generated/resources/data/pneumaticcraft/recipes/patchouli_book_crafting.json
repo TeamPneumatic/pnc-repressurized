@@ -9,7 +9,8 @@
         }
       ],
       "recipe": {
-        "type": "pneumaticcraft:patchouli_book_crafting"
+        "type": "pneumaticcraft:patchouli_book_crafting",
+        "category": "misc"
       }
     }
   ]

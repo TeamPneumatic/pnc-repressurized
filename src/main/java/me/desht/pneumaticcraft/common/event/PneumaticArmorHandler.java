@@ -47,10 +47,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.AnvilUpdateEvent;
 import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.entity.living.LivingAttackEvent;
-import net.minecraftforge.event.entity.living.LivingDeathEvent;
-import net.minecraftforge.event.entity.living.LivingEvent;
-import net.minecraftforge.event.entity.living.LivingSetAttackTargetEvent;
+import net.minecraftforge.event.entity.living.*;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -72,15 +69,15 @@ public class PneumaticArmorHandler {
     private static final int ARMOR_REPAIR_AMOUNT = 16;  // durability repaired per compressed iron ingot
 
     @SubscribeEvent
-    public void onMobTargetSet(LivingSetAttackTargetEvent event) {
+    public void onMobTargetSet(LivingChangeTargetEvent event) {
         // Helmet with entity tracker upgrade warns player if a mob targets them.
-        // LivingSetAttackTargetEvent gets continuously fired even if the mob was already targeting the same target
+        // LivingSetAttackTargetEvent gets continuously fired even if the mob was already targeting the same target,
         // so we need to track locally what is targeting whom, and only warn the player if the mob is newly
         // targeting them - otherwise, massive spam.
         int mobId = event.getEntity().getId();
-        if (event.getTarget() instanceof ServerPlayer player) {
+        if (event.getNewTarget() instanceof ServerPlayer player) {
             if (isPneumaticArmorPiece(player, EquipmentSlot.HEAD)) {
-                if (!targetingTracker.containsKey(mobId) || targetingTracker.get(mobId) != event.getTarget().getId()) {
+                if (!targetingTracker.containsKey(mobId) || targetingTracker.get(mobId) != event.getNewTarget().getId()) {
                     CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
                     if (handler.upgradeUsable(CommonUpgradeHandlers.entityTrackerHandler, true)) {
                         Map<String, Integer> map = targetWarnings.computeIfAbsent(player.getUUID(), k -> new HashMap<>());
@@ -88,7 +85,7 @@ public class PneumaticArmorHandler {
                     }
                 }
             }
-            targetingTracker.put(mobId, event.getTarget().getId());
+            targetingTracker.put(mobId, event.getNewTarget().getId());
         } else {
             targetingTracker.remove(mobId);
         }

@@ -19,7 +19,7 @@ package me.desht.pneumaticcraft.client.render.entity.drone;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Vector3f;
+import com.mojang.math.Axis;
 import me.desht.pneumaticcraft.client.model.entity.drone.ModelDrone;
 import me.desht.pneumaticcraft.client.util.ProgressingLine;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
@@ -41,7 +41,7 @@ public class DroneTargetLaserLayer extends RenderLayer<AbstractDroneEntity, Mode
             ProgressingLine oldTargetLine = drone.getOldTargetLine();
             if (targetLine != null && oldTargetLine != null) {
                 matrixStackIn.pushPose();
-                matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(180));
+                matrixStackIn.mulPose(Axis.XP.rotationDegrees(180));
                 matrixStackIn.translate(0, -1.5, 0);
                 matrixStackIn.scale(2f, 2f, 2f);
                 VertexConsumer builder = bufferIn.getBuffer(RenderType.LINES);

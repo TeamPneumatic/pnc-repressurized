@@ -55,6 +55,6 @@ public class WidgetTooltipArea extends AbstractWidget implements ITooltipProvide
     }
 
     @Override
-    public void updateNarration(NarrationElementOutput pNarrationElementOutput) {
+    public void updateWidgetNarration(NarrationElementOutput pNarrationElementOutput) {
     }
 }

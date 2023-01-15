@@ -21,8 +21,7 @@ import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.datafixers.util.Either;
-import com.mojang.math.Matrix3f;
-import com.mojang.math.Vector3f;
+import com.mojang.math.Axis;
 import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.StatPanelLayout;
 import me.desht.pneumaticcraft.client.gui.AbstractPneumaticCraftContainerScreen;
@@ -56,6 +55,7 @@ import net.minecraft.util.FormattedCharSink;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ItemLike;
+import org.joml.Matrix3f;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 
@@ -123,7 +123,7 @@ public class WidgetAnimatedStat extends AbstractWidget implements IGuiAnimatedSt
         this.backGroundColor = backGroundColor;
         calculateColorHighlights(this.backGroundColor);
 
-        this.effectiveY = y;
+        this.effectiveY = getY();
         if (statAbove != null) {
             this.effectiveY += statAbove.getEffectiveY() + statAbove.getStatHeight();
         }
@@ -330,7 +330,7 @@ public class WidgetAnimatedStat extends AbstractWidget implements IGuiAnimatedSt
         } else if (gui instanceof AbstractPneumaticCraftScreen screen) {
             availableWidth = Math.min(Math.max(minExpandedWidth, screen.xSize), leftSided ? screen.guiLeft : screen.xSize - (screen.guiLeft + screen.xSize));
         } else {
-            availableWidth = leftSided ? x : Minecraft.getInstance().getWindow().getGuiScaledWidth() - x;
+            availableWidth = leftSided ? getX() : Minecraft.getInstance().getWindow().getGuiScaledWidth() - getX();
         }
         return availableWidth - 5 - SCROLLBAR_MARGIN_WIDTH;  // leave at least 5 pixel margin from edge of screen
     }
@@ -377,7 +377,7 @@ public class WidgetAnimatedStat extends AbstractWidget implements IGuiAnimatedSt
     public void tickWidget() {
         if (needTextRecalc) recalcText();
 
-        prevX = x;
+        prevX = getX();
         prevEffectiveY = effectiveY;
         prevWidth = width;
         prevHeight = height;
@@ -396,12 +396,12 @@ public class WidgetAnimatedStat extends AbstractWidget implements IGuiAnimatedSt
             int scaledWidth = Minecraft.getInstance().getWindow().getGuiScaledWidth();
             int scaledHeight = Minecraft.getInstance().getWindow().getGuiScaledHeight();
             if (isLeftSided()) {
-                if (x >= scaledWidth) x = scaledWidth;
+                if (getX() >= scaledWidth) setX(scaledWidth);
             } else {
-                if (x < 0) x = 1;
+                if (getX() < 0) setX(1);
             }
-            if (y + height >= scaledHeight) {
-                y = scaledHeight - height - 1;
+            if (getY() + height >= scaledHeight) {
+                setY(scaledHeight - height - 1);
             }
 
             if (doneExpanding && scrollBar != null) curScroll = scrollBar.getState();
@@ -412,7 +412,7 @@ public class WidgetAnimatedStat extends AbstractWidget implements IGuiAnimatedSt
             doneExpanding = false;
         }
 
-        effectiveY = y;
+        effectiveY = getY();
         if (statAbove != null) {
             effectiveY += statAbove.getEffectiveY() + statAbove.getStatHeight();
         }
@@ -430,10 +430,10 @@ public class WidgetAnimatedStat extends AbstractWidget implements IGuiAnimatedSt
     protected boolean clicked(double mouseX, double mouseY) {
         if (leftSided) {
             return this.active && this.visible
-                    && mouseX >= (double)this.x - this.width
-                    && mouseX < (double)this.x
-                    && mouseY >= (double)this.y
-                    && mouseY < (double)(this.y + this.height);
+                    && mouseX >= (double)this.getX() - this.width
+                    && mouseX < (double)this.getX()
+                    && mouseY >= (double)this.getY()
+                    && mouseY < (double)(this.getY() + this.height);
         } else {
             return super.clicked(mouseX, mouseY);
         }
@@ -443,12 +443,12 @@ public class WidgetAnimatedStat extends AbstractWidget implements IGuiAnimatedSt
     public void renderButton(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
         if (!this.visible) return;
 
-        int baseX = leftSided ? this.x - this.width : this.x;
+        int baseX = leftSided ? this.getX() - this.width : this.getX();
         this.isHovered = mouseX >= baseX && mouseY >= this.effectiveY && mouseX < baseX + this.width && mouseY < this.effectiveY + this.height;
 
         float zLevel = 0;
         Font fontRenderer = Minecraft.getInstance().font;
-        int renderBaseX = (int) Mth.lerp(partialTicks, prevX, x);
+        int renderBaseX = (int) Mth.lerp(partialTicks, prevX, getX());
         int renderAffectedY = (int) Mth.lerp(partialTicks, prevEffectiveY, effectiveY);
         int renderWidth = (int) Mth.lerp(partialTicks, prevWidth, width);
         int renderHeight = (int) Mth.lerp(partialTicks, prevHeight, height);
@@ -511,7 +511,7 @@ public class WidgetAnimatedStat extends AbstractWidget implements IGuiAnimatedSt
         // used by the Block Tracker & Entity Tracker armor upgrades
         if (needTextRecalc) recalcText();
 
-        int renderBaseX = (int) Mth.lerp(partialTicks, prevX, x);
+        int renderBaseX = (int) Mth.lerp(partialTicks, prevX, getX());
         int renderEffectiveY = (int) Mth.lerp(partialTicks, prevEffectiveY, effectiveY);
         int renderWidth = (int) Mth.lerp(partialTicks, prevWidth, width);
         int renderHeight = (int) Mth.lerp(partialTicks, prevHeight, height);
@@ -622,7 +622,7 @@ public class WidgetAnimatedStat extends AbstractWidget implements IGuiAnimatedSt
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (isHoveredOrFocused()) {
             for (AbstractWidget widget : subWidgets) {
-                if (widget.mouseClicked(mouseX - this.x, mouseY - this.effectiveY, button)) {
+                if (widget.mouseClicked(mouseX - this.getX(), mouseY - this.effectiveY, button)) {
                     return true;
                 }
             }
@@ -638,7 +638,7 @@ public class WidgetAnimatedStat extends AbstractWidget implements IGuiAnimatedSt
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
         if (isHoveredOrFocused()) {
             for (AbstractWidget widget : subWidgets) {
-                if (widget.mouseReleased(mouseX - this.x, mouseY - this.effectiveY, button)) {
+                if (widget.mouseReleased(mouseX - this.getX(), mouseY - this.effectiveY, button)) {
                     return true;
                 }
             }
@@ -714,12 +714,12 @@ public class WidgetAnimatedStat extends AbstractWidget implements IGuiAnimatedSt
 
     @Override
     public int getBaseX() {
-        return x;
+        return getX();
     }
 
     @Override
     public int getBaseY() {
-        return y;
+        return getY();
     }
 
     @Override
@@ -734,12 +734,12 @@ public class WidgetAnimatedStat extends AbstractWidget implements IGuiAnimatedSt
 
     @Override
     public void setBaseY(int y) {
-        this.y = y;
+        this.setY(y);
     }
 
     @Override
     public void setBaseX(int x) {
-        this.x = x;
+        this.setX(x);
     }
 
     @Override
@@ -749,7 +749,7 @@ public class WidgetAnimatedStat extends AbstractWidget implements IGuiAnimatedSt
 
     @Override
     public Rect2i getBounds() {
-        return new Rect2i(x - (leftSided ? width : 0), effectiveY, width, height);
+        return new Rect2i(getX() - (leftSided ? width : 0), effectiveY, width, height);
     }
 
     @Override
@@ -775,9 +775,9 @@ public class WidgetAnimatedStat extends AbstractWidget implements IGuiAnimatedSt
 
     private boolean mouseIsHoveringOverIcon(double x, double y) {
         if (leftSided) {
-            return x <= this.x && x >= this.x - 16 && y >= effectiveY && y <= effectiveY + 16;
+            return x <= this.getX() && x >= this.getX() - 16 && y >= effectiveY && y <= effectiveY + 16;
         } else {
-            return x >= this.x && x <= this.x + 16 && y >= effectiveY && y <= effectiveY + 16;
+            return x >= this.getX() && x <= this.getX() + 16 && y >= effectiveY && y <= effectiveY + 16;
         }
     }
 
@@ -797,7 +797,7 @@ public class WidgetAnimatedStat extends AbstractWidget implements IGuiAnimatedSt
     }
 
     @Override
-    public void updateNarration(NarrationElementOutput pNarrationElementOutput) {
+    public void updateWidgetNarration(NarrationElementOutput pNarrationElementOutput) {
     }
 
     public static class StatIcon {
@@ -833,7 +833,7 @@ public class WidgetAnimatedStat extends AbstractWidget implements IGuiAnimatedSt
             texture.ifLeft(stack -> {
                 matrixStack.pushPose();
                 matrixStack.translate(x + 8 , y + 8, 0);
-                matrixStack.mulPose(Vector3f.XP.rotationDegrees(180));
+                matrixStack.mulPose(Axis.XP.rotationDegrees(180));
                 matrixStack.scale(15, 15, 1);
                 ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
                 BakedModel ibakedmodel = itemRenderer.getModel(stack, ClientUtils.getClientLevel(), null, 0);

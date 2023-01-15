@@ -2,7 +2,7 @@ package me.desht.pneumaticcraft.client.render.entity.semiblock;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Vector3f;
+import com.mojang.math.Axis;
 import me.desht.pneumaticcraft.client.model.PNCModelLayers;
 import me.desht.pneumaticcraft.client.model.entity.semiblocks.ModelSpawnerAgitator;
 import me.desht.pneumaticcraft.common.entity.semiblock.SpawnerAgitatorEntity;
@@ -31,7 +31,7 @@ public class RenderSpawnerAgitator extends RenderSemiblockBase<SpawnerAgitatorEn
 
         matrixStackIn.pushPose();
         matrixStackIn.translate(0, 1.5, 0);
-        matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(180F));
+        matrixStackIn.mulPose(Axis.XP.rotationDegrees(180F));
         if (entity.getTimeSinceHit() > 0) {
             wobble(entity, partialTicks, matrixStackIn);
         }

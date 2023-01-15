@@ -1,3 +1,4 @@
 {
-  "type": "pneumaticcraft:drone_upgrade_crafting"
+  "type": "pneumaticcraft:drone_upgrade_crafting",
+  "category": "misc"
 }

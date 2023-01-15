@@ -74,7 +74,6 @@ public class InventorySearcherScreen extends AbstractContainerScreen<InventorySe
 
     @Override
     public void onClose() {
-        minecraft.keyboardHandler.setSendRepeatsToGui(false);
         if (parentScreen != null) {
             ClientUtils.closeContainerGui(parentScreen);
         } else {

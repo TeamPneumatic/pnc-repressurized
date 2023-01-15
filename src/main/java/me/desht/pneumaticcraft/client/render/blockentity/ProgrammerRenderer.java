@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.client.render.blockentity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Vector3f;
+import com.mojang.math.Axis;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.block.entity.ProgrammerBlockEntity;
 import net.minecraft.client.Minecraft;
@@ -49,7 +49,7 @@ public class ProgrammerRenderer implements BlockEntityRenderer<ProgrammerBlockEn
             matrixStackIn.translate(0.345, 0.025, 0.28);
         }
         // lie the item flat
-        matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(90));
+        matrixStackIn.mulPose(Axis.XP.rotationDegrees(90));
         matrixStackIn.scale(0.25f, 0.25f, 0.25f);
 
         ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();

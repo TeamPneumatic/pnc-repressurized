@@ -26,6 +26,7 @@ import me.desht.pneumaticcraft.common.particle.AirParticleData;
 import me.desht.pneumaticcraft.common.util.EntityFilter;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -99,7 +100,7 @@ public class MicromissileEntity extends ThrowableProjectile {
     }
 
     @Override
-    public Packet<?> getAddEntityPacket() {
+    public Packet<ClientGamePacketListener> getAddEntityPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 
@@ -225,7 +226,9 @@ public class MicromissileEntity extends ThrowableProjectile {
 
     private void explode(Entity e) {
         discard();
-        Explosion.BlockInteraction mode = ConfigHelper.common().micromissiles.damageTerrain.get() ? Explosion.BlockInteraction.BREAK : Explosion.BlockInteraction.NONE;
+        Level.ExplosionInteraction mode = ConfigHelper.common().micromissiles.damageTerrain.get() ?
+                Level.ExplosionInteraction.NONE :
+                Level.ExplosionInteraction.TNT;
         double x, y, z;
         if (e == null) {
             x = getX();

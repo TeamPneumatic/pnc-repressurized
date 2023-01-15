@@ -115,7 +115,7 @@ public class FallProtectionHandler extends BaseArmorUpgradeHandler<IArmorExtensi
                     }
                     for (Entity e : stomped) {
                         NetworkHandler.sendToAllTracking(new PacketSpawnParticle(ParticleTypes.EXPLOSION, e.getX(), e.getY(), e.getZ(), 0, 0, 0), player.level, player.blockPosition());
-                        e.hurt(DamageSource.explosion(player), Mth.clamp(origDistance / 3f, 1f, 20f));
+                        e.hurt(DamageSource.explosion(player, null), Mth.clamp(origDistance / 3f, 1f, 20f));
                     }
                     if (!stomped.isEmpty()) {
                         player.level.playSound(null, player.blockPosition(), SoundEvents.GENERIC_EXPLODE, SoundSource.PLAYERS, 1f, 0.5f);

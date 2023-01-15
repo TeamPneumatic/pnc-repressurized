@@ -2,7 +2,7 @@ package me.desht.pneumaticcraft.client.render.blockentity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Vector3f;
+import com.mojang.math.Axis;
 import me.desht.pneumaticcraft.client.model.PNCModelLayers;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.block.entity.VacuumPumpBlockEntity;
@@ -49,7 +49,7 @@ public class VacuumPumpRenderer extends AbstractBlockEntityModelRenderer<VacuumP
         VertexConsumer builder = bufferIn.getBuffer(RenderType.entityTranslucent(Textures.MODEL_VACUUM_PUMP));
 
         RenderUtils.rotateMatrixForDirection(matrixStackIn, te.getRotation());
-        matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(-90));
+        matrixStackIn.mulPose(Axis.XP.rotationDegrees(-90));
 
         renderBlades(te, partialTicks, matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
     }
@@ -63,13 +63,13 @@ public class VacuumPumpRenderer extends AbstractBlockEntityModelRenderer<VacuumP
         matrixStackIn.scale(0.8f, 0.8f, 0.8f);
         for (int i = 0; i < BLADE_COUNT; i++) {
             matrixStackIn.pushPose();
-            matrixStackIn.mulPose(Vector3f.YP.rotationDegrees(rotation * 2 + (i + 0.5F) / BLADE_COUNT * 360));
+            matrixStackIn.mulPose(Axis.YP.rotationDegrees(rotation * 2 + (i + 0.5F) / BLADE_COUNT * 360));
             matrixStackIn.translate(0, 0, 1D / 16D);
             blade.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
             matrixStackIn.popPose();
         }
         matrixStackIn.popPose();
 
-        matrixStackIn.mulPose(Vector3f.YP.rotationDegrees(180));
+        matrixStackIn.mulPose(Axis.YP.rotationDegrees(180));
     }
 }

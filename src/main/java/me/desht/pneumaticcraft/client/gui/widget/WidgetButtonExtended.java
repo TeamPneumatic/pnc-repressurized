@@ -188,7 +188,7 @@ public class WidgetButtonExtended extends ExtendedButton implements ITaggedWidge
     @Override
     public void renderButton(PoseStack matrixStack, int x, int y, float partialTicks) {
         if (thisVisible && visible && !active && highlightInactive) {
-            Gui.fill(matrixStack, this.x - 1, this.y - 1, this.x + getWidth() + 1, this.y + getHeight() + 1, 0xFF00FFFF);
+            Gui.fill(matrixStack, this.getX() - 1, this.getY() - 1, this.getX() + getWidth() + 1, this.getY() + getHeight() + 1, 0xFF00FFFF);
         }
 
         if (thisVisible) super.renderButton(matrixStack, x, y, partialTicks);
@@ -197,29 +197,29 @@ public class WidgetButtonExtended extends ExtendedButton implements ITaggedWidge
             if (renderedStacks != null) {
                 int startX = getIconX();
                 for (int i = renderedStacks.length - 1; i >= 0; i--) {
-                    Minecraft.getInstance().getItemRenderer().renderGuiItem(renderedStacks[i], startX + i * iconSpacing, this.y + 2);
+                    Minecraft.getInstance().getItemRenderer().renderGuiItem(renderedStacks[i], startX + i * iconSpacing, this.getY() + 2);
                     if (renderStackSize) {
-                        Minecraft.getInstance().getItemRenderer().renderGuiItemDecorations(Minecraft.getInstance().font, renderedStacks[i], startX + i * iconSpacing, this.y + 2, null);
+                        Minecraft.getInstance().getItemRenderer().renderGuiItemDecorations(Minecraft.getInstance().font, renderedStacks[i], startX + i * iconSpacing, this.getY() + 2, null);
                     }
                 }
             }
             if (resLoc != null) {
                 RenderSystem.enableBlend();
                 RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-                GuiUtils.drawTexture(matrixStack, resLoc, this.x + width / 2 - 8, this.y + 2);
+                GuiUtils.drawTexture(matrixStack, resLoc, this.getX() + width / 2 - 8, this.getY() + 2);
                 RenderSystem.disableBlend();
             }
-            if (active && !thisVisible && x >= this.x && y >= this.y && x < this.x + width && y < this.y + height) {
-                GuiComponent.fill(matrixStack, this.x, this.y, this.x + width, this.y + height, invisibleHoverColor);
+            if (active && !thisVisible && x >= this.getX() && y >= this.getY() && x < this.getX() + width && y < this.getY() + height) {
+                GuiComponent.fill(matrixStack, this.getX(), this.getY(), this.getX() + width, this.getY() + height, invisibleHoverColor);
             }
         }
     }
 
     private int getIconX() {
         return switch (iconPosition) {
-            case LEFT -> x - 1 - 18 * renderedStacks.length;
-            case RIGHT -> x + width + 1;
-            case MIDDLE -> x + width / 2 - renderedStacks.length * 9 + 1;
+            case LEFT -> getX() - 1 - 18 * renderedStacks.length;
+            case RIGHT -> getX() + width + 1;
+            case MIDDLE -> getX() + width / 2 - renderedStacks.length * 9 + 1;
         };
     }
 }

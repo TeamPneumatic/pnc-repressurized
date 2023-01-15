@@ -24,7 +24,6 @@ import me.desht.pneumaticcraft.api.pressure.PressureTier;
 import me.desht.pneumaticcraft.common.block.entity.RedstoneController.ReceivingRedstoneMode;
 import me.desht.pneumaticcraft.common.block.entity.RedstoneController.RedstoneMode;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
-import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.entity.projectile.MicromissileEntity;
 import me.desht.pneumaticcraft.common.inventory.AirCannonMenu;
@@ -52,6 +51,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.AbortableIterationConsumer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.Entity;
@@ -259,7 +259,10 @@ public class AirCannonBlockEntity extends AbstractAirHandlingBlockEntity
         if (trackedItemIds != null && level instanceof ServerLevel serverLevel) {
             trackedItems.clear();
             serverLevel.getEntities().get(EntityTypeTest.forClass(ItemEntity.class), itemEntity -> {
-                if (trackedItemIds.contains(itemEntity.getUUID())) trackedItems.add(itemEntity);
+                if (trackedItemIds.contains(itemEntity.getUUID())) {
+                    trackedItems.add(itemEntity);
+                }
+                return AbortableIterationConsumer.Continuation.CONTINUE;
             });
             trackedItemIds = null;
         }

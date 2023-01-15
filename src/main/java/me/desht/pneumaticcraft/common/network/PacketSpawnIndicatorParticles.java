@@ -17,7 +17,6 @@
 
 package me.desht.pneumaticcraft.common.network;
 
-import com.mojang.math.Vector3f;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.DustParticleOptions;
@@ -26,6 +25,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.network.NetworkEvent;
+import org.joml.Vector3f;
 
 import java.util.ArrayList;
 import java.util.List;

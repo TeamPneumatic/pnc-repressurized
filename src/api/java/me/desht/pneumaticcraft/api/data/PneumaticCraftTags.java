@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.api.data;
 
 import me.desht.pneumaticcraft.api.lib.Names;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
@@ -174,7 +174,7 @@ public class PneumaticCraftTags {
         public static final TagKey<Structure> NO_OIL_LAKES = modTag("no_oil_lakes");
 
         static TagKey<Structure> tag(String modid, String name) {
-            return TagKey.create(Registry.STRUCTURE_REGISTRY, new ResourceLocation(modid, name));
+            return TagKey.create(Registries.STRUCTURE, new ResourceLocation(modid, name));
         }
 
         static TagKey<Structure> modTag(String name) {

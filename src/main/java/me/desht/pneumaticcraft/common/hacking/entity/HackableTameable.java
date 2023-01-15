@@ -18,6 +18,8 @@
 package me.desht.pneumaticcraft.common.hacking.entity;
 
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.CatVariantTags;
 import net.minecraft.world.entity.TamableAnimal;
@@ -58,9 +60,9 @@ public class HackableTameable extends AbstractTameableHack<TamableAnimal> {
             // set up to prioritise getting a cat over a generic tameable.
             if (entity instanceof Cat cat) {
                 // TODO no forge registry for cat variants at this time
-                Registry.CAT_VARIANT.getTag(CatVariantTags.DEFAULT_SPAWNS)
-                        .flatMap((variants) -> variants.getRandomElement(cat.getLevel().getRandom()))
-                        .ifPresent((variant) -> cat.setCatVariant(variant.value()));
+                BuiltInRegistries.CAT_VARIANT.getTag(CatVariantTags.DEFAULT_SPAWNS)
+                        .flatMap(variants -> variants.getRandomElement(cat.getLevel().getRandom()))
+                        .ifPresent(variant -> cat.setVariant(variant.value()));
             }
         }
     }

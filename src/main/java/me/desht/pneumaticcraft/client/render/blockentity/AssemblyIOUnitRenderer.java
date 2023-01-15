@@ -19,7 +19,7 @@ package me.desht.pneumaticcraft.client.render.blockentity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Vector3f;
+import com.mojang.math.Axis;
 import me.desht.pneumaticcraft.api.client.assembly_machine.IAssemblyRenderOverriding;
 import me.desht.pneumaticcraft.client.ClientRegistryImpl;
 import me.desht.pneumaticcraft.client.model.PNCModelLayers;
@@ -145,31 +145,31 @@ public class AssemblyIOUnitRenderer extends AbstractBlockEntityModelRenderer<Ass
         VertexConsumer builder = bufferIn.getBuffer(RenderType.entityCutout(getTexture(te)));
         Pair<IAssemblyRenderOverriding, Float> clawTranslation = getClawTranslation(Mth.lerp(partialTicks, te.oldClawProgress, te.clawProgress), heldStack);
 
-        matrixStackIn.mulPose(Vector3f.YP.rotationDegrees(angles[0]));
+        matrixStackIn.mulPose(Axis.YP.rotationDegrees(angles[0]));
 
         baseTurn.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
         baseTurn2.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
 
         matrixStackIn.translate(0, 18 / 16F, 0);
-        matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(angles[1]));
+        matrixStackIn.mulPose(Axis.XP.rotationDegrees(angles[1]));
         matrixStackIn.translate(0, -18 / 16F, 0);
 
         armBase.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
 
         matrixStackIn.translate(0, 18 / 16F, 6 / 16F);
-        matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(angles[2]));
+        matrixStackIn.mulPose(Axis.XP.rotationDegrees(angles[2]));
         matrixStackIn.translate(0, -18 / 16F, -6 / 16F);
 
         armMiddle.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
 
         matrixStackIn.translate(0, 3 / 16F, 6 / 16F);
-        matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(angles[3]));
+        matrixStackIn.mulPose(Axis.XP.rotationDegrees(angles[3]));
         matrixStackIn.translate(0, -3 / 16F, -6 / 16F);
 
         clawBase.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
 
         matrixStackIn.translate(0, 3 / 16F, 0);
-        matrixStackIn.mulPose(Vector3f.ZP.rotationDegrees(angles[4]));
+        matrixStackIn.mulPose(Axis.ZP.rotationDegrees(angles[4]));
         matrixStackIn.translate(0, -3 / 16F, 0);
 
         clawAxle.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
@@ -189,10 +189,10 @@ public class AssemblyIOUnitRenderer extends AbstractBlockEntityModelRenderer<Ass
         if (!heldStack.isEmpty()) {
             IAssemblyRenderOverriding renderOverride = clawTranslation.getLeft();
             if (renderOverride == null || renderOverride.applyRenderChangeIOUnit(matrixStackIn, heldStack)) {
-                matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(90));
+                matrixStackIn.mulPose(Axis.XP.rotationDegrees(90));
                 double yOffset = heldStack.getItem() instanceof BlockItem ? 1.5 / 16D : 0.5 / 16D;
                 matrixStackIn.translate(0, yOffset, -3 / 16D);
-                matrixStackIn.mulPose(Vector3f.YP.rotationDegrees(-90));
+                matrixStackIn.mulPose(Axis.YP.rotationDegrees(-90));
                 matrixStackIn.scale(ITEM_SCALE, ITEM_SCALE, ITEM_SCALE);
                 ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
                 BakedModel bakedModel = itemRenderer.getModel(heldStack, te.getLevel(), null, 0);

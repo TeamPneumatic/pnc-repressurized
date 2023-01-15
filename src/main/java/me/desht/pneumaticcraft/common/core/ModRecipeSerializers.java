@@ -22,13 +22,14 @@ import me.desht.pneumaticcraft.api.crafting.ShapedPressurizableRecipe;
 import me.desht.pneumaticcraft.api.crafting.ShapedRecipeNoMirror;
 import me.desht.pneumaticcraft.api.crafting.recipe.*;
 import me.desht.pneumaticcraft.api.lib.Names;
+import me.desht.pneumaticcraft.common.recipes.SimpleRecipeSerializer;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOffer;
 import me.desht.pneumaticcraft.common.recipes.machine.*;
 import me.desht.pneumaticcraft.common.recipes.other.FuelQualityRecipeImpl;
 import me.desht.pneumaticcraft.common.recipes.other.HeatPropertiesRecipeImpl;
 import me.desht.pneumaticcraft.common.recipes.special.*;
 import net.minecraft.world.item.crafting.RecipeSerializer;
-import net.minecraft.world.item.crafting.SimpleRecipeSerializer;
+import net.minecraft.world.item.crafting.SimpleCraftingRecipeSerializer;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
@@ -85,16 +86,16 @@ public class ModRecipeSerializers {
             = RECIPE_SERIALIZERS.register(PneumaticCraftRecipeTypes.HEAT_PROPERTIES,
             () -> new HeatPropertiesRecipeImpl.Serializer<>(HeatPropertiesRecipeImpl::new));
 
-    public static final RegistryObject<SimpleRecipeSerializer<OneProbeCrafting>> ONE_PROBE_HELMET_CRAFTING
-            = RECIPE_SERIALIZERS.register("one_probe_helmet_crafting", () -> new SimpleRecipeSerializer<>(OneProbeCrafting::new));
-    public static final RegistryObject<SimpleRecipeSerializer<GunAmmoPotionCrafting>> GUN_AMMO_POTION_CRAFTING
-            = RECIPE_SERIALIZERS.register("gun_ammo_potion_crafting", () -> new SimpleRecipeSerializer<>(GunAmmoPotionCrafting::new));
-    public static final RegistryObject<SimpleRecipeSerializer<DroneUpgradeCrafting>> DRONE_UPGRADE_CRAFTING
-            = RECIPE_SERIALIZERS.register("drone_upgrade_crafting", () -> new SimpleRecipeSerializer<>(DroneUpgradeCrafting::new));
-    public static final RegistryObject<SimpleRecipeSerializer<DroneColorCrafting>> DRONE_COLOR_CRAFTING
-            = RECIPE_SERIALIZERS.register("drone_color_crafting", () -> new SimpleRecipeSerializer<>(DroneColorCrafting::new));
-    public static final RegistryObject<SimpleRecipeSerializer<PatchouliBookCrafting>> PATCHOULI_BOOK_CRAFTING
-            = RECIPE_SERIALIZERS.register("patchouli_book_crafting", () -> new SimpleRecipeSerializer<>(PatchouliBookCrafting::new));
+    public static final RegistryObject<SimpleCraftingRecipeSerializer<OneProbeCrafting>> ONE_PROBE_HELMET_CRAFTING
+            = RECIPE_SERIALIZERS.register("one_probe_helmet_crafting", () -> new SimpleCraftingRecipeSerializer<>(OneProbeCrafting::new));
+    public static final RegistryObject<SimpleCraftingRecipeSerializer<GunAmmoPotionCrafting>> GUN_AMMO_POTION_CRAFTING
+            = RECIPE_SERIALIZERS.register("gun_ammo_potion_crafting", () -> new SimpleCraftingRecipeSerializer<>(GunAmmoPotionCrafting::new));
+    public static final RegistryObject<SimpleCraftingRecipeSerializer<DroneUpgradeCrafting>> DRONE_UPGRADE_CRAFTING
+            = RECIPE_SERIALIZERS.register("drone_upgrade_crafting", () -> new SimpleCraftingRecipeSerializer<>(DroneUpgradeCrafting::new));
+    public static final RegistryObject<SimpleCraftingRecipeSerializer<DroneColorCrafting>> DRONE_COLOR_CRAFTING
+            = RECIPE_SERIALIZERS.register("drone_color_crafting", () -> new SimpleCraftingRecipeSerializer<>(DroneColorCrafting::new));
+    public static final RegistryObject<SimpleCraftingRecipeSerializer<PatchouliBookCrafting>> PATCHOULI_BOOK_CRAFTING
+            = RECIPE_SERIALIZERS.register("patchouli_book_crafting", () -> new SimpleCraftingRecipeSerializer<>(PatchouliBookCrafting::new));
 
     public static final RegistryObject<ShapedPressurizableRecipe.Serializer> CRAFTING_SHAPED_PRESSURIZABLE
             = RECIPE_SERIALIZERS.register("crafting_shaped_pressurizable", () -> ShapedPressurizableRecipe.SERIALIZER);

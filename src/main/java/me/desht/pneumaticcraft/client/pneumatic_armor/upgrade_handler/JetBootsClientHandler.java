@@ -95,8 +95,6 @@ public class JetBootsClientHandler extends IArmorUpgradeClientHandler.SimpleTogg
 
     @Override
     public void tickClient(ICommonArmorHandler armorHandler, boolean isEnabled) {
-        super.tickClient(armorHandler, isEnabled);
-
         JetBootsHandler jbHandler = CommonUpgradeHandlers.jetBootsHandler;
         JetBootsStateTracker.JetBootsState jbState = jbHandler.getJetBootsSyncedState(armorHandler);
         if (armorHandler.upgradeUsable(jbHandler, false)) {

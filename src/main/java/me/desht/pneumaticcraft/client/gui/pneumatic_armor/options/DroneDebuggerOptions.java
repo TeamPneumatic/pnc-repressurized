@@ -95,7 +95,7 @@ public class DroneDebuggerOptions extends IOptionPage.SimpleOptionPage<DroneDebu
         gui.addWidget(showActive);
 
         followCheckbox = new WidgetCheckBox(30, 176, 0xFFFFFFFF, Component.literal(" ").append(xlate("pneumaticcraft.gui.progWidget.debug.followActive")));
-        followCheckbox.x = 180 - followCheckbox.getWidth();
+        followCheckbox.setX(180 - followCheckbox.getWidth());
         gui.addWidget(followCheckbox);
 
         Screen guiScreen = getGuiScreen().getScreen();

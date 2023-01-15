@@ -75,8 +75,6 @@ public class BasicRemoteOptionScreen<A extends ActionWidget<?>> extends Abstract
     public void init() {
         super.init();
 
-        minecraft.keyboardHandler.setSendRepeatsToGui(true);
-
         playerGlobalEnableVar = actionWidget.getEnableVariable().isEmpty() || actionWidget.getEnableVariable().startsWith("#");
 
         addLabel(xlate("pneumaticcraft.gui.remote.enable"), guiLeft + 10, guiTop + 150);
@@ -137,8 +135,6 @@ public class BasicRemoteOptionScreen<A extends ActionWidget<?>> extends Abstract
 
     @Override
     public void removed() {
-        minecraft.keyboardHandler.setSendRepeatsToGui(false);
-
         actionWidget.setEnableVariable(GlobalVariableHelper.getPrefixedVar(enableField.getValue(), playerGlobalEnableVar));
         actionWidget.setEnablingValue(xValueField.getIntValue(), yValueField.getIntValue(), zValueField.getIntValue());
         if (actionWidget instanceof IActionWidgetLabeled) {

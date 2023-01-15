@@ -58,6 +58,7 @@ public class WidgetColorSelector extends WidgetButtonExtended implements IDrawAf
     public void renderButton(PoseStack matrixStack, int mouseX, int mouseY, float partialTick) {
         super.renderButton(matrixStack, mouseX, mouseY, partialTick);
 
+        int x = getX(), y = getY();
         fill(matrixStack,x + 3, y + 3, x + width - 4, y + height - 4, 0xFF000000 | PneumaticCraftUtils.getDyeColorAsRGB(color));
         hLine(matrixStack,x + 3, x + width - 3, y + height - 4, 0xFF606060);
         vLine(matrixStack,x + width - 4, y + 3, y + height - 3, 0xFF606060);
@@ -66,6 +67,7 @@ public class WidgetColorSelector extends WidgetButtonExtended implements IDrawAf
     @Override
     public void renderAfterEverythingElse(PoseStack matrixStack, int mouseX, int mouseY, float partialTick) {
         if (expanded) {
+            int x = getX(), y = getY();
             fill(matrixStack, x, y - 1 + height, x + width * 4, y -1 + height * 5, 0xFF000000);
             fill(matrixStack, x + 1, y + height, x + width * 4 - 1, y - 2 + height * 5, 0xFF808080);
             for (DyeColor color : DyeColor.values()) {

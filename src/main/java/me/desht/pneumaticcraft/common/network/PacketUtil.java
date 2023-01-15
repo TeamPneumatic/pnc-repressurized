@@ -22,7 +22,8 @@ import me.desht.pneumaticcraft.common.inventory.AbstractPneumaticCraftMenu;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.GlobalPos;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.FriendlyByteBuf;
@@ -44,7 +45,7 @@ public class PacketUtil {
     }
 
     public static GlobalPos readGlobalPos(FriendlyByteBuf buf) {
-        ResourceKey<Level> worldKey = ResourceKey.create(Registry.DIMENSION_REGISTRY, buf.readResourceLocation());
+        ResourceKey<Level> worldKey = ResourceKey.create(Registries.DIMENSION, buf.readResourceLocation());
         BlockPos pos = buf.readBlockPos();
         return GlobalPos.of(worldKey, pos);
     }
@@ -118,7 +119,7 @@ public class PacketUtil {
     public static BlockState readNullableBlockState(FriendlyByteBuf buf) {
         if (buf.readBoolean()) {
             CompoundTag tag = buf.readNbt();
-            return NbtUtils.readBlockState(Objects.requireNonNull(tag));
+            return NbtUtils.readBlockState(BuiltInRegistries.BLOCK.asLookup(), Objects.requireNonNull(tag));
         } else {
             return null;
         }

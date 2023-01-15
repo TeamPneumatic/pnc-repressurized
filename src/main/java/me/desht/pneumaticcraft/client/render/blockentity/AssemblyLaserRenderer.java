@@ -19,7 +19,7 @@ package me.desht.pneumaticcraft.client.render.blockentity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Vector3f;
+import com.mojang.math.Axis;
 import me.desht.pneumaticcraft.client.model.PNCModelLayers;
 import me.desht.pneumaticcraft.common.block.entity.AssemblyLaserBlockEntity;
 import me.desht.pneumaticcraft.lib.Textures;
@@ -111,25 +111,25 @@ public class AssemblyLaserRenderer extends AbstractBlockEntityModelRenderer<Asse
 
         VertexConsumer builder = bufferIn.getBuffer(RenderType.entityCutout(Textures.MODEL_ASSEMBLY_LASER_AND_DRILL));
 
-        matrixStackIn.mulPose(Vector3f.YP.rotationDegrees(angles[0]));
+        matrixStackIn.mulPose(Axis.YP.rotationDegrees(angles[0]));
 
         baseTurn.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
         baseTurn2.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
 
         matrixStackIn.translate(0, 18 / 16F, 0);
-        matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(angles[1]));
+        matrixStackIn.mulPose(Axis.XP.rotationDegrees(angles[1]));
         matrixStackIn.translate(0, -18 / 16F, 0);
 
         armBase.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
 
         matrixStackIn.translate(0, 18 / 16F, 6 / 16F);
-        matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(angles[2]));
+        matrixStackIn.mulPose(Axis.XP.rotationDegrees(angles[2]));
         matrixStackIn.translate(0, -18 / 16F, -6 / 16F);
 
         armMiddle.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
 
         matrixStackIn.translate(0, 3 / 16F, 6 / 16F);
-        matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(angles[3]));
+        matrixStackIn.mulPose(Axis.XP.rotationDegrees(angles[3]));
         matrixStackIn.translate(0, -3 / 16F, -6 / 16F);
 
         laserBase.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);

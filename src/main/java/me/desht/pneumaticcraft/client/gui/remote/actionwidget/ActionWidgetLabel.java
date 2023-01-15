@@ -40,8 +40,8 @@ public class ActionWidgetLabel extends ActionWidget<WidgetLabelVariable> impleme
     public CompoundTag toNBT(int guiLeft, int guiTop) {
         CompoundTag tag = super.toNBT(guiLeft, guiTop);
         tag.putString("text", Component.Serializer.toJson(widget.getMessage()));
-        tag.putInt("x", widget.x - guiLeft);
-        tag.putInt("y", widget.y - guiTop);
+        tag.putInt("x", widget.getX() - guiLeft);
+        tag.putInt("y", widget.getY() - guiTop);
         tag.put("tooltip", NBTUtils.serializeTextComponents(widget.getTooltip()));
         return tag;
     }
@@ -75,8 +75,7 @@ public class ActionWidgetLabel extends ActionWidget<WidgetLabelVariable> impleme
 
     @Override
     public void setWidgetPos(int x, int y) {
-        widget.x = x;
-        widget.y = y;
+        widget.setPosition(x, y);
     }
 
     @Override

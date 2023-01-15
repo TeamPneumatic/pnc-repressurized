@@ -40,12 +40,12 @@ public class AirHandlerItemStack extends IAirHandlerItem.Provider {
     private int baseVolume;
     private final float maxPressure;
 
-    public AirHandlerItemStack(ItemStack container, float maxPressure) {
+    public AirHandlerItemStack(ItemStack container) {
         Validate.isTrue(container.getItem() instanceof IPressurizableItem, "itemstack " + container + " must be an IPressurizableItem!");
         this.container = container;
         this.pressurizable = (IPressurizableItem) container.getItem();
         this.baseVolume = pressurizable.getBaseVolume();
-        this.maxPressure = maxPressure;
+        this.maxPressure = pressurizable.getMaxPressure();
     }
 
     @Nonnull

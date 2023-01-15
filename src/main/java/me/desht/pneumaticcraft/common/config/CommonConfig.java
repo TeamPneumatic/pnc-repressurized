@@ -376,7 +376,7 @@ public class CommonConfig {
                 .translation("pneumaticcraft.config.common.micromissile_properties.base_explosion_damage")
                 .defineInRange("base_explosion_damage", 1, 0, Double.MAX_VALUE);
         micromissiles.damageTerrain = builder
-                .comment("Do micromissile explosions cause terrain damage?")
+                .comment("Do micromissile explosions cause terrain damage? Note: when set to true, the 'tntExplosionDropDecay' gamerule is used to determin block drops.")
                 .translation("pneumaticcraft.config.common.micromissile_properties.damage_terrain")
                 .define("damage_terrain", false);
         micromissiles.launchCooldown = builder

@@ -56,6 +56,6 @@ public class ModSounds {
     public static final RegistryObject<SoundEvent> JACKHAMMER_STOP = register("jackhammer_stop");
 
     private static RegistryObject<SoundEvent> register(String name) {
-        return SOUNDS.register(name, () -> new SoundEvent(RL(name)));
+        return SOUNDS.register(name, () -> SoundEvent.createVariableRangeEvent(RL(name)));
     }
 }

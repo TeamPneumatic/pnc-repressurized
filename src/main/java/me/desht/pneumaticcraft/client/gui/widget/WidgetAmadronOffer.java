@@ -93,27 +93,27 @@ public class WidgetAmadronOffer extends AbstractWidget implements ITooltipProvid
             Font fr = Minecraft.getInstance().font;
             if (renderBackground) {
                 GuiUtils.bindTexture(Textures.WIDGET_AMADRON_OFFER);
-                GuiComponent.blit(matrixStack, x, y, 0, 0, width, height, 256, 256);
+                GuiComponent.blit(matrixStack, getX(), getY(), 0, 0, width, height, 256, 256);
             }
             FormattedCharSequence r = fr.split(offer.getVendorName(), 73).get(0);
-            fr.draw(matrixStack, r, x + 2, y + 2, 0xFF000000);
+            fr.draw(matrixStack, r, getX() + 2, getY() + 2, 0xFF000000);
             if (shoppingAmount > 0) {
                 String str = Integer.toString(shoppingAmount);
-                fr.draw(matrixStack,str, x + 36 - fr.width(str) / 2f, y + (offer.getStock() >= 0 ? 15 : 20), 0xFF000000);
+                fr.draw(matrixStack,str, getX() + 36 - fr.width(str) / 2f, getY() + (offer.getStock() >= 0 ? 15 : 20), 0xFF000000);
             }
             if (offer.getStock() >= 0) {
                 String str = ChatFormatting.DARK_BLUE.toString() + offer.getStock();
-                fr.draw(matrixStack, str, x + 36 - fr.width(str) / 2f, y + 25, 0xFF000000);
+                fr.draw(matrixStack, str, getX() + 36 - fr.width(str) / 2f, getY() + 25, 0xFF000000);
             }
             boolean availableHere = offer.isUsableByPlayer(ClientUtils.getClientPlayer());
             if (offer.isLocationLimited()) {
                 RenderSystem.enableBlend();
                 RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-                GuiUtils.drawTexture(matrixStack, availableHere ? Textures.GUI_OK_LOCATION : Textures.GUI_BAD_LOCATION, x + width - 15, y - 1);
+                GuiUtils.drawTexture(matrixStack, availableHere ? Textures.GUI_OK_LOCATION : Textures.GUI_BAD_LOCATION, getX() + width - 15, getY() - 1);
                 RenderSystem.disableBlend();
             }
             if (!canBuy || !availableHere) {
-                GuiComponent.fill(matrixStack, x, y, x + width, y + height, 0xC0804040);
+                GuiComponent.fill(matrixStack, getX(), getY(), getX() + width, getY() + height, 0xC0804040);
             }
         }
     }
@@ -184,7 +184,7 @@ public class WidgetAmadronOffer extends AbstractWidget implements ITooltipProvid
     }
 
     @Override
-    public void updateNarration(NarrationElementOutput pNarrationElementOutput) {
+    public void updateWidgetNarration(NarrationElementOutput pNarrationElementOutput) {
     }
 
     private static class WidgetItemStack extends WidgetButtonExtended {

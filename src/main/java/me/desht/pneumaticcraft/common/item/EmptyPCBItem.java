@@ -23,12 +23,10 @@ import me.desht.pneumaticcraft.common.block.entity.UVLightBoxBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.lib.BlockEntityConstants;
 import net.minecraft.ChatFormatting;
-import net.minecraft.core.NonNullList;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
@@ -37,10 +35,11 @@ import org.apache.commons.lang3.Validate;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Stream;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class EmptyPCBItem extends NonDespawningItem implements ICustomDurabilityBar {
+public class EmptyPCBItem extends NonDespawningItem implements ICustomDurabilityBar, CreativeTabStackProvider {
     private static final String NBT_ETCH_PROGRESS = "pneumaticcraft:etch_progress";
 
     @Override
@@ -133,16 +132,16 @@ public class EmptyPCBItem extends NonDespawningItem implements ICustomDurability
         return false;
     }
 
-    @Override
-    public void fillItemCategory(CreativeModeTab group, NonNullList<ItemStack> items) {
-        if (this.allowedIn(group)) {
-            items.add(new ItemStack(this));
-
-            ItemStack stack = new ItemStack(this);
-            UVLightBoxBlockEntity.setExposureProgress(stack, 100);
-            items.add(stack);
-        }
-    }
+//    @Override
+//    public void fillItemCategory(CreativeModeTab group, NonNullList<ItemStack> items) {
+//        if (this.allowedIn(group)) {
+//            items.add(new ItemStack(this));
+//
+//            ItemStack stack = new ItemStack(this);
+//            UVLightBoxBlockEntity.setExposureProgress(stack, 100);
+//            items.add(stack);
+//        }
+//    }
 
     @Override
     public boolean shouldShowCustomDurabilityBar(ItemStack stack) {
@@ -162,5 +161,12 @@ public class EmptyPCBItem extends NonDespawningItem implements ICustomDurability
     @Override
     public boolean isShowingOtherBar(ItemStack stack) {
         return true;
+    }
+
+    @Override
+    public Stream<ItemStack> getStacksForItem() {
+        ItemStack stack = new ItemStack(this);
+        ItemStack stack2 = UVLightBoxBlockEntity.setExposureProgress(stack.copy(), 100);
+        return Stream.of(stack, stack2);
     }
 }

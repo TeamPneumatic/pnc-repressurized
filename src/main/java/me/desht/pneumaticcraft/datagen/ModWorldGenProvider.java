@@ -1,0 +1,116 @@
+package me.desht.pneumaticcraft.datagen;
+
+import me.desht.pneumaticcraft.api.data.PneumaticCraftTags;
+import me.desht.pneumaticcraft.api.lib.Names;
+import me.desht.pneumaticcraft.common.core.ModBlocks;
+import me.desht.pneumaticcraft.common.worldgen.OilLakeFilter;
+import net.minecraft.core.*;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.data.DataProvider;
+import net.minecraft.data.PackOutput;
+import net.minecraft.data.worldgen.BootstapContext;
+import net.minecraft.data.worldgen.features.FeatureUtils;
+import net.minecraft.data.worldgen.placement.PlacementUtils;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.levelgen.GenerationStep;
+import net.minecraft.world.level.levelgen.Heightmap;
+import net.minecraft.world.level.levelgen.VerticalAnchor;
+import net.minecraft.world.level.levelgen.blockpredicates.BlockPredicate;
+import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
+import net.minecraft.world.level.levelgen.feature.Feature;
+import net.minecraft.world.level.levelgen.feature.LakeFeature;
+import net.minecraft.world.level.levelgen.feature.stateproviders.BlockStateProvider;
+import net.minecraft.world.level.levelgen.heightproviders.UniformHeight;
+import net.minecraft.world.level.levelgen.placement.*;
+import net.minecraftforge.common.data.DatapackBuiltinEntriesProvider;
+import net.minecraftforge.common.world.BiomeModifier;
+import net.minecraftforge.common.world.ForgeBiomeModifiers;
+import net.minecraftforge.registries.ForgeRegistries;
+
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
+
+public class ModWorldGenProvider {
+    public static final ResourceKey<ConfiguredFeature<?, ?>> OIL_LAKE
+            = ResourceKey.create(Registries.CONFIGURED_FEATURE, RL("oil_lake"));
+    public static final ResourceKey<PlacedFeature> OIL_LAKE_SURFACE
+            = ResourceKey.create(Registries.PLACED_FEATURE, RL("oil_lake_surface"));
+    public static final ResourceKey<PlacedFeature> OIL_LAKE_UNDERGROUND
+            = ResourceKey.create(Registries.PLACED_FEATURE, RL("oil_lake_underground"));
+    public static final ResourceKey<BiomeModifier> OIL_LAKE_SURFACE_BM
+            = ResourceKey.create(ForgeRegistries.Keys.BIOME_MODIFIERS, RL("oil_lake_surface"));
+    public static final ResourceKey<BiomeModifier> OIL_LAKE_UNDERGROUND_BM
+            = ResourceKey.create(ForgeRegistries.Keys.BIOME_MODIFIERS, RL("oil_lake_underground"));
+
+    public static DataProvider makeProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> vanillaRegistries) {
+        RegistrySetBuilder builder = new RegistrySetBuilder()
+                .add(Registries.CONFIGURED_FEATURE, ConfiguredFeatures::bootstrap)
+                .add(Registries.PLACED_FEATURE, PlacedFeatures::bootstrap)
+                .add(ForgeRegistries.Keys.BIOME_MODIFIERS, BiomeModifiers::bootstrap);
+        return new DatapackBuiltinEntriesProvider(output, vanillaRegistries, builder, Set.of(Names.MOD_ID));
+    }
+
+    private static class ConfiguredFeatures {
+        public static void bootstrap(BootstapContext<ConfiguredFeature<?,?>> ctx) {
+            FeatureUtils.register(ctx, OIL_LAKE, Feature.LAKE, new LakeFeature.Configuration(
+                    BlockStateProvider.simple(ModBlocks.OIL.get().defaultBlockState()),
+                    BlockStateProvider.simple(Blocks.AIR.defaultBlockState())
+            ));
+        }
+    }
+
+    private static class PlacedFeatures {
+        public static void bootstrap(BootstapContext<PlacedFeature> ctx) {
+            var configuredFeatures = ctx.lookup(Registries.CONFIGURED_FEATURE);
+            var oilLakeCF = configuredFeatures.getOrThrow(OIL_LAKE);
+
+            PlacementUtils.register(ctx, OIL_LAKE_SURFACE, oilLakeCF, List.of(
+                    RarityFilter.onAverageOnceEvery(25),
+                    InSquarePlacement.spread(),
+                    PlacementUtils.HEIGHTMAP_WORLD_SURFACE,
+                    BiomeFilter.biome(),
+                    OilLakeFilter.oilLakeFilter()
+            ));
+
+            PlacementUtils.register(ctx, OIL_LAKE_UNDERGROUND, oilLakeCF, List.of(
+                    RarityFilter.onAverageOnceEvery(6),
+                    InSquarePlacement.spread(),
+                    HeightRangePlacement.of(UniformHeight.of(VerticalAnchor.absolute(0), VerticalAnchor.top())),
+                    EnvironmentScanPlacement.scanningFor(Direction.DOWN, BlockPredicate.allOf(
+                                    BlockPredicate.not(BlockPredicate.ONLY_IN_AIR_PREDICATE),
+                                    BlockPredicate.insideWorld(new BlockPos(0, -5, 0))
+                            ), 32
+                    ),
+                    SurfaceRelativeThresholdFilter.of(Heightmap.Types.OCEAN_FLOOR_WG, Integer.MIN_VALUE, -5),
+                    BiomeFilter.biome(),
+                    OilLakeFilter.oilLakeFilter()
+            ));
+        }
+    }
+
+    private static class BiomeModifiers {
+        public static void bootstrap(BootstapContext<BiomeModifier> ctx) {
+            var placedFeatures = ctx.lookup(Registries.PLACED_FEATURE);
+            var biomeReg = ctx.lookup(Registries.BIOME);
+
+            ctx.register(OIL_LAKE_SURFACE_BM,
+                    new ForgeBiomeModifiers.AddFeaturesBiomeModifier(
+                            biomeReg.getOrThrow(PneumaticCraftTags.Biomes.OIL_LAKES_SURFACE),
+                            HolderSet.direct(placedFeatures.getOrThrow(OIL_LAKE_SURFACE)),
+                            GenerationStep.Decoration.LAKES
+                    )
+            );
+            ctx.register(OIL_LAKE_UNDERGROUND_BM,
+                    new ForgeBiomeModifiers.AddFeaturesBiomeModifier(
+                            biomeReg.getOrThrow(PneumaticCraftTags.Biomes.OIL_LAKES_UNDERGROUND),
+                            HolderSet.direct(placedFeatures.getOrThrow(OIL_LAKE_UNDERGROUND)),
+                            GenerationStep.Decoration.LAKES
+                    )
+            );
+        }
+    }
+}

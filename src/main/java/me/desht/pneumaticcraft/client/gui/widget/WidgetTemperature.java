@@ -93,6 +93,8 @@ public class WidgetTemperature extends AbstractWidget implements ITooltipProvide
         if (this.visible) {
             GuiUtils.bindTexture(Textures.WIDGET_TEMPERATURE);
 
+            int x = getX(), y = getY();
+
             // the background frame
             blit(matrixStack, x + 6, y, 6, 0, 7, 50, 18, 50);
 
@@ -115,6 +117,7 @@ public class WidgetTemperature extends AbstractWidget implements ITooltipProvide
         Font font = Minecraft.getInstance().font;
         int tickTempC = findNearestCelsius(totalRange.getMin() - 273, tickInterval);
         int n = 0;
+        int x = getX(), y = getY();
         while (tickTempC <= totalRange.getMax() - 273) {
             // draw...
             int yOffset = getYPos(tickTempC + 273);
@@ -133,6 +136,7 @@ public class WidgetTemperature extends AbstractWidget implements ITooltipProvide
 
     public void drawOperatingTempMarkers(PoseStack matrixStack) {
         if (operatingRange != null) {
+            int x = getX(), y = getY();
             if (totalRange.inRange(operatingRange.getMax())) {
                 int yOffset = getYPos(operatingRange.getMax());
                 hLine(matrixStack, x + 7, x + 11, y + 1 + height - yOffset, 0xFFE0E040);
@@ -241,6 +245,6 @@ public class WidgetTemperature extends AbstractWidget implements ITooltipProvide
     }
 
     @Override
-    public void updateNarration(NarrationElementOutput pNarrationElementOutput) {
+    public void updateWidgetNarration(NarrationElementOutput pNarrationElementOutput) {
     }
 }

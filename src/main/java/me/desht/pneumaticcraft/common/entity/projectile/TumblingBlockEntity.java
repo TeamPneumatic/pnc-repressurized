@@ -18,12 +18,12 @@
 package me.desht.pneumaticcraft.common.entity.projectile;
 
 import com.mojang.authlib.GameProfile;
-import com.mojang.math.Vector3f;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.core.ModEntityTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -51,6 +51,7 @@ import net.minecraftforge.common.util.FakePlayerFactory;
 import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.network.NetworkHooks;
 import org.apache.commons.lang3.Validate;
+import org.joml.Vector3f;
 
 import javax.annotation.Nonnull;
 
@@ -90,17 +91,16 @@ public class TumblingBlockEntity extends ThrowableProjectile {
 
     private Vector3f makeTumbleVec(Level world, LivingEntity thrower) {
         if (thrower != null) {
-            return new Vector3f(thrower.getLookAngle().cross(Y_POS));
+            return thrower.getLookAngle().cross(Y_POS).toVector3f();
         } else if (world != null && world.isClientSide) {
-            Player player = ClientUtils.getClientPlayer();
-            return player == null ? null : new Vector3f(player.getLookAngle().cross(Y_POS));
+            return ClientUtils.getClientPlayer().getLookAngle().cross(Y_POS).toVector3f();
         } else {
             return null;
         }
     }
 
     @Override
-    public Packet<?> getAddEntityPacket() {
+    public Packet<ClientGamePacketListener> getAddEntityPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 

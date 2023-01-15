@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.client.render.entity.semiblock;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Vector3f;
+import com.mojang.math.Axis;
 import me.desht.pneumaticcraft.common.entity.semiblock.AbstractSemiblockEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LightTexture;
@@ -30,13 +30,13 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.phys.Vec3;
+import org.joml.Vector3f;
 
-import static net.minecraft.core.Direction.*;
 
 abstract class RenderSemiblockBase<T extends AbstractSemiblockEntity> extends EntityRenderer<T> {
     // not the usual enum order: down last because it's the least likely candidate
     private static final Direction[] LIGHTING_DIRS = new Direction[] {
-            UP, NORTH, SOUTH, WEST, EAST, DOWN
+            Direction.UP, Direction.NORTH, Direction.SOUTH, Direction.WEST, Direction.EAST, Direction.DOWN
     };
 
     RenderSemiblockBase(EntityRendererProvider.Context ctx) {
@@ -53,7 +53,7 @@ abstract class RenderSemiblockBase<T extends AbstractSemiblockEntity> extends En
         if (f > 0.0F) {
             Vec3 look = Minecraft.getInstance().player.getViewVector(partialTicks);
             Vector3f wobble = new Vector3f((float)look.z(), 0.0F, -(float)look.x());
-            matrixStack.mulPose(wobble.rotationDegrees(Mth.sin(f) * f * f1 / 10.0F * 1));
+            matrixStack.mulPose(Axis.of(wobble).rotationDegrees(Mth.sin(f) * f * f1 / 10.0F * 1));
         }
     }
 

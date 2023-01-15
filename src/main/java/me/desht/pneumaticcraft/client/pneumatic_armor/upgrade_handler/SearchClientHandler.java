@@ -76,7 +76,9 @@ public class SearchClientHandler extends IArmorUpgradeClientHandler.AbstractHand
     }
 
     @Override
-    public void tickClient(ICommonArmorHandler armorHandler) {
+    public void tickClient(ICommonArmorHandler armorHandler, boolean isEnabled) {
+        if (!isEnabled) return;
+
         ticksExisted++;
 
         if ((ticksExisted & 0xf) == 0) {

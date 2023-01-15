@@ -93,13 +93,16 @@ public interface IItemRegistry {
      * PneumaticCraft, then create your own custom implementation of {@link IAirHandlerItem},
      * and attach that implementation to your item via {@link net.minecraftforge.event.AttachCapabilitiesEvent}.
      *
-     * @param stack the ItemStack
+     * @param stack the ItemStack, whose item must implement {@link me.desht.pneumaticcraft.api.pressure.IPressurizableItem}
      * @param maxPressure the maximum pressure allowed for the item
      * @return an implementation of IAirHandler
      * @implNote this air handler stores the item's air amount in the {@code}pneumaticcraft:air{@code} integer NBT tag
+     * @deprecated use {@link #makeItemAirHandlerProvider(ItemStack)}; the item itself now specifies its max pressure
      */
+    @Deprecated(forRemoval = true)
     IAirHandlerItem.Provider makeItemAirHandlerProvider(ItemStack stack, float maxPressure);
 
+    IAirHandlerItem.Provider makeItemAirHandlerProvider(ItemStack stack);
 
     /**
      * Register an item launch behaviour for use by the Air Cannon and Pneumatic Chestplate Item Launcher (Dispenser

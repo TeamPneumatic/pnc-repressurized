@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.client.render.blockentity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Vector3f;
+import com.mojang.math.Axis;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.block.entity.PressureChamberValveBlockEntity;
 import net.minecraft.client.Minecraft;
@@ -65,9 +65,9 @@ public class PressureChamberRenderer implements BlockEntityRenderer<PressureCham
 
             for (int i = 0; i < stacks.size(); i++) {
                 matrixStackIn.pushPose();
-                matrixStackIn.mulPose(Vector3f.YP.rotationDegrees(i * degreesPerStack));
+                matrixStackIn.mulPose(Axis.YP.rotationDegrees(i * degreesPerStack));
                 matrixStackIn.translate(circleRadius, yBob + 0.2, 0);
-                matrixStackIn.mulPose(Vector3f.YP.rotationDegrees(yRot));
+                matrixStackIn.mulPose(Axis.YP.rotationDegrees(yRot));
                 matrixStackIn.scale(0.5f, 0.5f, 0.5f);
 
                 ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();

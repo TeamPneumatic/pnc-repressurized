@@ -29,6 +29,7 @@ import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.DyeItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.ShapelessRecipe;
@@ -44,8 +45,8 @@ public class DroneColorCrafting extends ShapelessRecipe {
         Arrays.setAll(DYES, i -> DyeItem.byColor(DyeColor.values()[i]));
     }
 
-    public DroneColorCrafting(ResourceLocation idIn) {
-        super(idIn, "", new ItemStack(ModItems.DRONE.get()), NonNullList.of(Ingredient.EMPTY,
+    public DroneColorCrafting(ResourceLocation idIn, CraftingBookCategory category) {
+        super(idIn, "", category, new ItemStack(ModItems.DRONE.get()), NonNullList.of(Ingredient.EMPTY,
                     Ingredient.of(DYES), Ingredient.of(ModItems.DRONE.get()))
         );
     }

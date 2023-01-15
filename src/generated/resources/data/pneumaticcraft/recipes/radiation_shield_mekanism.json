@@ -10,6 +10,7 @@
       ],
       "recipe": {
         "type": "minecraft:crafting_shaped",
+        "category": "misc",
         "key": {
           "I": {
             "tag": "forge:ingots/compressed_iron"
@@ -17,9 +18,7 @@
           "L": {
             "tag": "pneumaticcraft:upgrade_components"
           },
-          "R": {
-            "item": "mekanism:module_radiation_shielding_unit"
-          }
+          "R": []
         },
         "pattern": [
           "LIL",

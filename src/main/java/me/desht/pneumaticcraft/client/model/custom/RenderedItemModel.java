@@ -50,7 +50,7 @@ import java.util.function.Function;
  * otherwise it will use the base model.  And isBuiltinRenderer() is true to allow ISTER drawing to happen.
  */
 public class RenderedItemModel implements IDynamicBakedModel {
-//    private static final TextureAtlasSprite MISSING = MissingTextureSprite.func_217790_a();
+    //    private static final TextureAtlasSprite MISSING = MissingTextureSprite.func_217790_a();
     private final BakedModel bakedBaseModel;
 
     private RenderedItemModel(BakedModel bakedBaseModel) {
@@ -101,29 +101,15 @@ public class RenderedItemModel implements IDynamicBakedModel {
         };
     }
 
-//    @Override
-//    public BakedModel handlePerspective(ItemTransforms.TransformType cameraTransformType, PoseStack mat) {
-//        return switch (cameraTransformType) {
-//            case GROUND, HEAD, NONE, GUI, FIXED -> bakedBaseModel.handlePerspective(cameraTransformType, mat);
-//            default -> this;
-//        };
-//    }
-
-    private static class Geometry implements IUnbakedGeometry<Geometry> {
-        private final BlockModel baseModel;
-
-        Geometry(BlockModel baseModel) {
-            this.baseModel = baseModel;
-        }
-
+    private record Geometry(BlockModel baseModel) implements IUnbakedGeometry<Geometry> {
         @Override
-        public BakedModel bake(IGeometryBakingContext owner, ModelBakery bakery, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelTransform, ItemOverrides overrides, ResourceLocation modelLocation) {
+        public BakedModel bake(IGeometryBakingContext owner, ModelBaker bakery, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelTransform, ItemOverrides overrides, ResourceLocation modelLocation) {
             return new RenderedItemModel(baseModel.bake(bakery, baseModel, spriteGetter, modelTransform, modelLocation, true));
         }
 
         @Override
-        public Collection<Material> getMaterials(IGeometryBakingContext owner, Function<ResourceLocation, UnbakedModel> modelGetter, Set<com.mojang.datafixers.util.Pair<String, String>> missingTextureErrors) {
-            return baseModel.getMaterials(modelGetter, missingTextureErrors);
+        public void resolveParents(Function<ResourceLocation, UnbakedModel> modelGetter, IGeometryBakingContext context) {
+            baseModel.resolveParents(modelGetter);
         }
     }
 

@@ -19,6 +19,7 @@ package me.desht.pneumaticcraft.common.util;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.ChunkPos;
@@ -88,9 +89,9 @@ public class ChunkCache implements CollisionGetter {
         int z = chunkZ - this.chunkZ;
         if (x >= 0 && x < this.chunks.length && z >= 0 && z < this.chunks[x].length) {
             ChunkAccess ichunk = this.chunks[x][z];
-            return (ichunk != null ? ichunk : new EmptyLevelChunk(this.world, new ChunkPos(chunkX, chunkZ), world.registryAccess().registryOrThrow(Registry.BIOME_REGISTRY).getHolderOrThrow(Biomes.PLAINS)));
+            return (ichunk != null ? ichunk : new EmptyLevelChunk(this.world, new ChunkPos(chunkX, chunkZ), world.registryAccess().registryOrThrow(Registries.BIOME).getHolderOrThrow(Biomes.PLAINS)));
         } else {
-            return new EmptyLevelChunk(this.world, new ChunkPos(chunkX, chunkZ), world.registryAccess().registryOrThrow(Registry.BIOME_REGISTRY).getHolderOrThrow(Biomes.PLAINS));
+            return new EmptyLevelChunk(this.world, new ChunkPos(chunkX, chunkZ), world.registryAccess().registryOrThrow(Registries.BIOME).getHolderOrThrow(Biomes.PLAINS));
         }
     }
 

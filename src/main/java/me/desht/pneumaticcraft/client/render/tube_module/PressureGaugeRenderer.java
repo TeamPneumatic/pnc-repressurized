@@ -2,7 +2,7 @@ package me.desht.pneumaticcraft.client.render.tube_module;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Vector3f;
+import com.mojang.math.Axis;
 import me.desht.pneumaticcraft.client.model.PNCModelLayers;
 import me.desht.pneumaticcraft.client.render.pressure_gauge.PressureGaugeRenderer3D;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
@@ -134,7 +134,7 @@ public class PressureGaugeRenderer extends AbstractTubeModuleRenderer<PressureGa
         RenderUtils.rotateMatrixForDirection(matrixStack, module.getDirection());
         matrixStack.translate(0, 1.01, 0.378);
         matrixStack.scale(GAUGE_SCALE, GAUGE_SCALE, GAUGE_SCALE);
-        matrixStack.mulPose(Vector3f.YP.rotationDegrees(180));
+        matrixStack.mulPose(Axis.YP.rotationDegrees(180));
         PressureTubeBlockEntity te = module.getTube();
         PressureGaugeRenderer3D.drawPressureGauge(matrixStack, buffer, -1, te.getCriticalPressure(), te.getDangerPressure(),
                 0, te.getPressure(), 0, 0, 0xFF000000);

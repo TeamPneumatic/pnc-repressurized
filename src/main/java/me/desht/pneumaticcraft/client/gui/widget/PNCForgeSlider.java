@@ -24,9 +24,9 @@ public class PNCForgeSlider extends ForgeSlider {
     @Override
     protected void renderBg(PoseStack pPoseStack, Minecraft pMinecraft, int pMouseX, int pMouseY) {
         // this works for slider heights of other than 20
-        int xPos = this.x + (int)(this.value * (double)(this.width - 8));
+        int xPos = this.getX() + (int)(this.value * (double)(this.width - 8));
         int vOff = (this.isHoveredOrFocused() ? 2 : 1) * 20;
-        ScreenUtils.blitWithBorder(pPoseStack, WIDGETS_LOCATION, xPos, this.y, 0, 46 + vOff, 8, this.height, 200, 20, 2, 3, 2, 2, this.getBlitOffset());
+        ScreenUtils.blitWithBorder(pPoseStack, WIDGETS_LOCATION, xPos, this.getY(), 0, 46 + vOff, 8, this.height, 200, 20, 2, 3, 2, 2, this.getBlitOffset());
     }
 
     @Override

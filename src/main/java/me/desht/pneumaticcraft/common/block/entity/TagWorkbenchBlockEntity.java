@@ -23,7 +23,7 @@ import me.desht.pneumaticcraft.common.inventory.TagWorkbenchMenu;
 import me.desht.pneumaticcraft.common.item.TagFilterItem;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -83,7 +83,7 @@ public class TagWorkbenchBlockEntity extends DisplayTableBlockEntity implements 
             if (!outputStack.isEmpty()) {
                 Set<TagKey<Item>> tags = TagFilterItem.getConfiguredTagList(outputStack);
                 for (String s : data) {
-                    tags.add(TagKey.create(Registry.ITEM_REGISTRY, new ResourceLocation(s)));
+                    tags.add(TagKey.create(Registries.ITEM, new ResourceLocation(s)));
                 }
                 TagFilterItem.setConfiguredTagList(outputStack, tags);
                 inventory.setStackInSlot(OUTPUT_SLOT, outputStack);

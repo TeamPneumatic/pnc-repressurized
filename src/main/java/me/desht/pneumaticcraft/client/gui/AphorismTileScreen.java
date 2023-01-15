@@ -76,8 +76,6 @@ public class AphorismTileScreen extends Screen {
 
     @Override
     public void init() {
-        minecraft.keyboardHandler.setSendRepeatsToGui(true);
-
         int yPos = (height - PANEL_HEIGHT) / 2;
         addRenderableWidget(new PNCForgeSlider(5, yPos, 90, 16,  Component.literal("Margin: "), Component.empty(),
                 0, 9, tile.getMarginSize(), true, slider -> tile.setMarginSize(slider.getValueInt())));
@@ -270,7 +268,6 @@ public class AphorismTileScreen extends Screen {
 
     @Override
     public void removed() {
-        minecraft.keyboardHandler.setSendRepeatsToGui(false);
         tile.needMaxLineWidthRecalc();
         super.removed();
     }

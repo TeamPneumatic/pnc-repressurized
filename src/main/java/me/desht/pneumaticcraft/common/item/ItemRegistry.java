@@ -75,9 +75,13 @@ public enum ItemRegistry implements IItemRegistry {
 
     @Override
     public IAirHandlerItem.Provider makeItemAirHandlerProvider(ItemStack stack, float maxPressure) {
-        return new AirHandlerItemStack(stack, maxPressure);
+        return new AirHandlerItemStack(stack);
     }
 
+    @Override
+    public IAirHandlerItem.Provider makeItemAirHandlerProvider(ItemStack stack) {
+        return new AirHandlerItemStack(stack);
+    }
 
     @Override
     public void registerItemLaunchBehaviour(ILaunchBehaviour behaviour) {

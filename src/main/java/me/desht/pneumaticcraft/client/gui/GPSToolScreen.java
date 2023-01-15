@@ -29,7 +29,6 @@ import me.desht.pneumaticcraft.common.network.PacketTeleportCommand;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableHelper;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.components.Button;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -94,13 +93,13 @@ public class GPSToolScreen extends AbstractPneumaticCraftScreen {
 
         for (int i = 0; i < 3; i++) {
             final int idx = i;
-            addRenderableWidget(new Button(xMiddle - 49 - TEXTFIELD_WIDTH / 2, yMiddle - 20 + i * 22, 22, 20,
+            addRenderableWidget(new WidgetButtonExtended(xMiddle - 49 - TEXTFIELD_WIDTH / 2, yMiddle - 20 + i * 22, 22, 20,
                     Component.literal("-10"), b -> updateTextField(idx, -10)));
-            addRenderableWidget(new Button(xMiddle - 25 - TEXTFIELD_WIDTH / 2, yMiddle - 20 + i * 22, 22, 20,
+            addRenderableWidget(new WidgetButtonExtended(xMiddle - 25 - TEXTFIELD_WIDTH / 2, yMiddle - 20 + i * 22, 22, 20,
                     Component.literal("-1"), b -> updateTextField(idx, -1)));
-            addRenderableWidget(new Button(xMiddle + 3 + TEXTFIELD_WIDTH / 2, yMiddle - 20 + i * 22, 22, 20,
+            addRenderableWidget(new WidgetButtonExtended(xMiddle + 3 + TEXTFIELD_WIDTH / 2, yMiddle - 20 + i * 22, 22, 20,
                     Component.literal("+1"), b -> updateTextField(idx, 1)));
-            addRenderableWidget(new Button(xMiddle + 27 + TEXTFIELD_WIDTH / 2, yMiddle - 20 + i * 22, 22, 20,
+            addRenderableWidget(new WidgetButtonExtended(xMiddle + 27 + TEXTFIELD_WIDTH / 2, yMiddle - 20 + i * 22, 22, 20,
                     Component.literal("+10"), b -> updateTextField(idx, 10)));
         }
 
@@ -112,21 +111,21 @@ public class GPSToolScreen extends AbstractPneumaticCraftScreen {
         variableField.setValue(oldVarName);
         addRenderableWidget(variableField);
 
-        varTypeButton = new WidgetButtonExtended(variableField.x - 13, yMiddle + 58, 12, 14, playerGlobal ? "#" : "%",
+        varTypeButton = new WidgetButtonExtended(variableField.getX() - 13, yMiddle + 58, 12, 14, playerGlobal ? "#" : "%",
                 b -> toggleVarType())
                 .setTooltipKey("pneumaticcraft.gui.remote.varType.tooltip");
         addRenderableWidget(varTypeButton);
 
         if (ClientUtils.getClientPlayer().hasPermissions(2)) {
             BlockPos pos = getBlockPos();
-            teleportButton = new WidgetButtonExtended(xMiddle - 50, variableField.y + variableField.getHeight() + 5, 100, 20, xlate("pneumaticcraft.gui.gps_tool.teleport"), p -> {
+            teleportButton = new WidgetButtonExtended(xMiddle - 50, variableField.getY() + variableField.getHeight() + 5, 100, 20, xlate("pneumaticcraft.gui.gps_tool.teleport"), p -> {
                 NetworkHandler.sendToServer(new PacketTeleportCommand(getBlockPos()));
                 if (!ClientUtils.hasShiftDown()) onClose();
             }).setTooltipText(Component.literal(String.format("/tp %d %d %d", pos.getX(), pos.getY(), pos.getZ())).withStyle(ChatFormatting.YELLOW));
             addRenderableWidget(teleportButton);
         }
 
-        addLabel(xlate("pneumaticcraft.gui.progWidget.coordinate.variable").append(":"), variableField.x, variableField.y - font.lineHeight - 2).setColor(0xFFFFFF);
+        addLabel(xlate("pneumaticcraft.gui.progWidget.coordinate.variable").append(":"), variableField.getX(), variableField.getY() - font.lineHeight - 2).setColor(0xFFFFFF);
     }
 
     protected BlockPos getBlockPos() {

@@ -56,6 +56,14 @@ public interface IPressurizableItem {
     int getAir(ItemStack stack);
 
     /**
+     * Get the maximum pressure to which this item can be charged. Note that items (unlike machines) don't tend to
+     * explode when they reach their pressure limit; they just stop charging.
+     *
+     * @return the maximum pressure for this item
+     */
+    float getMaxPressure();
+
+    /**
      * The effective volume is the item's base volume, modified by both the volume upgrades installed in the item,
      * and any extra registered modifiers (e.g. CoFH Holding enchantment).
      *

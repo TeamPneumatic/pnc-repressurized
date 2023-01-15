@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.client.render.blockentity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Vector3f;
+import com.mojang.math.Axis;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.block.DisplayTableBlock;
 import me.desht.pneumaticcraft.common.block.entity.DisplayTableBlockEntity;
@@ -60,7 +60,7 @@ public class DisplayTableRenderer implements BlockEntityRenderer<DisplayTableBlo
             } else {
                 // lie items flat
                 matrixStackIn.translate(xOffset, 0.025, zOffset);
-                matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(90));
+                matrixStackIn.mulPose(Axis.XP.rotationDegrees(90));
             }
             matrixStackIn.scale(scale, scale, scale);
             ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();

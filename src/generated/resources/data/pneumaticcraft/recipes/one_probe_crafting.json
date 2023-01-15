@@ -9,7 +9,8 @@
         }
       ],
       "recipe": {
-        "type": "pneumaticcraft:one_probe_helmet_crafting"
+        "type": "pneumaticcraft:one_probe_helmet_crafting",
+        "category": "misc"
       }
     }
   ]

@@ -2,7 +2,7 @@ package me.desht.pneumaticcraft.client.render.blockentity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Vector3f;
+import com.mojang.math.Axis;
 import me.desht.pneumaticcraft.client.model.PNCModelLayers;
 import me.desht.pneumaticcraft.client.render.ModRenderTypes;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
@@ -49,13 +49,13 @@ public class AssemblyControllerRenderer extends AbstractBlockEntityModelRenderer
         VertexConsumer builder = bufferIn.getBuffer(RenderType.entityCutout(Textures.MODEL_ASSEMBLY_CONTROLLER));
 
         // have the screen face the player
-        matrixStackIn.mulPose(Vector3f.YP.rotationDegrees(180 + Minecraft.getInstance().gameRenderer.getMainCamera().getYRot()));
+        matrixStackIn.mulPose(Axis.YP.rotationDegrees(180 + Minecraft.getInstance().gameRenderer.getMainCamera().getYRot()));
 
         screen.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
 
         // status text
         matrixStackIn.translate(-0.23D, 0.50D, -0.04D);
-        matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(-34));
+        matrixStackIn.mulPose(Axis.XP.rotationDegrees(-34));
         matrixStackIn.scale(TEXT_SIZE, TEXT_SIZE, TEXT_SIZE);
         Minecraft.getInstance().font.drawInBatch("> " + te.displayedText, 1, 4, 0xFF4ce568, false,  matrixStackIn.last().pose(), bufferIn, false, 0, combinedLightIn);
 

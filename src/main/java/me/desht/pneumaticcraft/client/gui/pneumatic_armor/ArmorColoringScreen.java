@@ -260,9 +260,9 @@ public class ArmorColoringScreen extends AbstractPneumaticCraftScreen {
 
         @Override
         protected void renderBg(PoseStack pPoseStack, Minecraft pMinecraft, int pMouseX, int pMouseY) {
-            int xPos = this.x + (int)(this.value * (double)(this.width - 8));
+            int xPos = this.getX() + (int)(this.value * (double)(this.width - 8));
             int vOff = (this.isHoveredOrFocused() ? 2 : 1) * 20;
-            ScreenUtils.blitWithBorder(pPoseStack, WIDGETS_LOCATION, xPos, this.y, 0, 46 + vOff, 8, this.height, 200, 20, 2, 3, 2, 2, this.getBlitOffset());
+            ScreenUtils.blitWithBorder(pPoseStack, WIDGETS_LOCATION, xPos, this.getY(), 0, 46 + vOff, 8, this.height, 200, 20, 2, 3, 2, 2, this.getBlitOffset());
         }
     }
 
@@ -336,6 +336,7 @@ public class ArmorColoringScreen extends AbstractPneumaticCraftScreen {
         public void renderButton(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
             super.renderButton(matrixStack, mouseX, mouseY, partialTicks);
 
+            int x = getX(), y = getY();
             fill(matrixStack, x + 3, y + 3, x + 14, y + 14, gui.colors[slot.getIndex()][selectorType.ordinal()]);
             hLine(matrixStack, x + 4, x + 14, y + 14, 0xFF202020);
             vLine(matrixStack, x + 14, y + 3, y + 14, 0xFF202020);

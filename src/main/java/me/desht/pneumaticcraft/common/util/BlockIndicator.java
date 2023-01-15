@@ -17,12 +17,12 @@
 
 package me.desht.pneumaticcraft.common.util;
 
-import com.mojang.math.Vector3f;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketDebugBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.world.level.Level;
+import org.joml.Vector3f;
 
 public class BlockIndicator {
     public static void indicateBlock(Level world, BlockPos pos) {

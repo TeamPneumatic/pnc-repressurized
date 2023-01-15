@@ -46,8 +46,8 @@ public class RemoteButtonOptionScreen extends RemoteVariableOptionScreen<ActionW
         WidgetLabel lw = addLabel(xlate("pneumaticcraft.gui.remote.button.width"), guiLeft + 10, guiTop + 123);
         WidgetLabel lh = addLabel(xlate("pneumaticcraft.gui.remote.button.height"), guiLeft + 10, guiTop + 136);
         int xOff = guiLeft + 13 + Math.max(lw.getWidth(), lh.getWidth());
-        lw.x = xOff - (lw.getWidth() + 3);
-        lh.x = xOff - (lh.getWidth() + 3);
+        lw.setX(xOff - (lw.getWidth() + 3));
+        lh.setX(xOff - (lh.getWidth() + 3));
 
         Component valueTooltip = xlate("pneumaticcraft.gui.remote.button.value.tooltip");
 

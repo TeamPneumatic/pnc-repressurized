@@ -48,8 +48,6 @@ public class WidgetCheckBox extends AbstractWidget implements ICheckboxWidget, I
     public WidgetCheckBox(int x, int y, int color, Component text, Consumer<? super WidgetCheckBox> pressable) {
         super(x, y, CHECKBOX_WIDTH, CHECKBOX_HEIGHT, text);
 
-        this.x = x;
-        this.y = y;
         this.width = CHECKBOX_WIDTH + 3 + Minecraft.getInstance().font.width(text);
         this.color = color;
         this.pressable = pressable;
@@ -67,6 +65,8 @@ public class WidgetCheckBox extends AbstractWidget implements ICheckboxWidget, I
     @Override
     public void renderButton(PoseStack matrixStack, int mouseX, int mouseY, float partialTick) {
         if (visible) {
+            int x = getX();
+            int y = getY();
             fill(matrixStack, x, y, x + CHECKBOX_WIDTH, y + CHECKBOX_HEIGHT, active ? 0xFFA0A0A0 : 0xFF999999);
             fill(matrixStack, x + 1, y + 1, x + CHECKBOX_WIDTH - 1, y + CHECKBOX_HEIGHT - 1, active ? 0xFF202020 : 0xFFAAAAAA);
             Font fr = Minecraft.getInstance().font;
@@ -84,6 +84,10 @@ public class WidgetCheckBox extends AbstractWidget implements ICheckboxWidget, I
             if (pressable != null) pressable.accept(this);
             if (tag != null) NetworkHandler.sendToServer(new PacketGuiButton(tag));
         }
+    }
+
+    @Override
+    protected void updateWidgetNarration(NarrationElementOutput pNarrationElementOutput) {
     }
 
     public WidgetCheckBox setTooltip(List<Component> tooltip) {
@@ -117,9 +121,5 @@ public class WidgetCheckBox extends AbstractWidget implements ICheckboxWidget, I
     @Override
     public boolean isChecked() {
         return checked;
-    }
-
-    @Override
-    public void updateNarration(NarrationElementOutput pNarrationElementOutput) {
     }
 }

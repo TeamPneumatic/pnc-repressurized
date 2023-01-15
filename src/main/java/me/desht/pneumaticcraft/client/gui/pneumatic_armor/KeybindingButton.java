@@ -71,7 +71,7 @@ public class KeybindingButton extends WidgetButtonExtended implements IKeybindin
             setMessage(origButtonText);
             addTooltip();
             switch (action) {
-                case ADD -> Minecraft.getInstance().player.playSound(SoundEvents.NOTE_BLOCK_CHIME, 1.0f, 1.0f);
+                case ADD -> Minecraft.getInstance().player.playSound(SoundEvents.NOTE_BLOCK_CHIME.get(), 1.0f, 1.0f);
                 case REMOVE -> Minecraft.getInstance().player.playSound(SoundEvents.GLASS_BREAK, 1.0f, 1.0f);
             }
             action = Action.NONE;

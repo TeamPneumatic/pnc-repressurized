@@ -2,7 +2,7 @@ package me.desht.pneumaticcraft.client.render.blockentity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Vector3f;
+import com.mojang.math.Axis;
 import me.desht.pneumaticcraft.client.model.PNCModelLayers;
 import me.desht.pneumaticcraft.common.block.entity.UniversalSensorBlockEntity;
 import me.desht.pneumaticcraft.lib.Textures;
@@ -174,7 +174,7 @@ public class UniversalSensorRenderer extends AbstractBlockEntityModelRenderer<Un
         VertexConsumer builder = bufferIn.getBuffer(RenderType.entityCutout(Textures.MODEL_UNIVERSAL_SENSOR));
 
         float rotation = Mth.lerp(partialTicks, te.oldDishRotation, te.dishRotation);
-        matrixStackIn.mulPose(Vector3f.YP.rotationDegrees(rotation));
+        matrixStackIn.mulPose(Axis.YP.rotationDegrees(rotation));
         part1.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
         part2.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
         part3.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);

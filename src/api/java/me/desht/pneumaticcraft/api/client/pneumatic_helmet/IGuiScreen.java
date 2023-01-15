@@ -19,8 +19,9 @@ package me.desht.pneumaticcraft.api.client.pneumatic_helmet;
 
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.components.AbstractWidget;
-import net.minecraft.client.gui.components.Widget;
+import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.screens.Screen;
+import org.jline.reader.Widget;
 
 import java.util.List;
 
@@ -39,7 +40,7 @@ public interface IGuiScreen {
      *
      * @return a list of widgets
      */
-    List<Widget> getWidgetList();
+    List<Renderable> getWidgetList();
 
     /**
      * Convenience method to get the GUI's font renderer.

@@ -64,7 +64,7 @@ public class HackClientHandler extends IArmorUpgradeClientHandler.AbstractHandle
     }
 
     @Override
-    public void tickClient(ICommonArmorHandler armorHandler) {
+    public void tickClient(ICommonArmorHandler armorHandler, boolean isEnabled) {
     }
 
     @Override

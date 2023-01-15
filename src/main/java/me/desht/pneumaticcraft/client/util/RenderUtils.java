@@ -20,9 +20,7 @@ package me.desht.pneumaticcraft.client.util;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Matrix3f;
-import com.mojang.math.Matrix4f;
-import com.mojang.math.Vector3f;
+import com.mojang.math.Axis;
 import me.desht.pneumaticcraft.client.render.ModRenderTypes;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -33,6 +31,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import org.joml.Matrix3f;
+import org.joml.Matrix4f;
 
 import java.util.function.BiConsumer;
 
@@ -206,12 +206,12 @@ public class RenderUtils {
         switch (facing) {
             case UP -> {
                 yRotation = 0;
-                matrixStack.mulPose(Vector3f.XP.rotationDegrees(90f));
+                matrixStack.mulPose(Axis.XP.rotationDegrees(90f));
                 matrixStack.translate(0, -1, -1);
             }
             case DOWN -> {
                 yRotation = 0;
-                matrixStack.mulPose(Vector3f.XP.rotationDegrees(-90f));
+                matrixStack.mulPose(Axis.XP.rotationDegrees(-90f));
                 matrixStack.translate(0, -1, 1);
             }
             case NORTH -> yRotation = 0;
@@ -219,7 +219,7 @@ public class RenderUtils {
             case SOUTH -> yRotation = 180;
             default -> yRotation = 270;
         }
-        matrixStack.mulPose(Vector3f.YP.rotationDegrees(yRotation));
+        matrixStack.mulPose(Axis.YP.rotationDegrees(yRotation));
         return yRotation;
     }
 
@@ -245,8 +245,8 @@ public class RenderUtils {
                 (line.endY - line.startY) * renderProgress,
                 (line.endZ - line.startZ) * renderProgress
         );
-        matrixStackIn.mulPose(Vector3f.YP.rotationDegrees(rotationYaw - 90));
-        matrixStackIn.mulPose(Vector3f.ZP.rotationDegrees(rotationPitch));
+        matrixStackIn.mulPose(Axis.YP.rotationDegrees(rotationYaw - 90));
+        matrixStackIn.mulPose(Axis.ZP.rotationDegrees(rotationPitch));
 
         VertexConsumer builder = bufferIn.getBuffer(ModRenderTypes.getLineLoops(1.0));
 
@@ -271,8 +271,8 @@ public class RenderUtils {
      * @param matrixStack the matrix stack
      */
     public static void rotateToPlayerFacing(PoseStack matrixStack) {
-        matrixStack.mulPose(Vector3f.YP.rotationDegrees(180F - Minecraft.getInstance().gameRenderer.getMainCamera().getYRot()));
-        matrixStack.mulPose(Vector3f.XP.rotationDegrees(180F - Minecraft.getInstance().gameRenderer.getMainCamera().getXRot()));
+        matrixStack.mulPose(Axis.YP.rotationDegrees(180F - Minecraft.getInstance().gameRenderer.getMainCamera().getYRot()));
+        matrixStack.mulPose(Axis.XP.rotationDegrees(180F - Minecraft.getInstance().gameRenderer.getMainCamera().getXRot()));
     }
 
     public static void drawTexture(PoseStack matrixStack, VertexConsumer builder, int x, int y, int packedLightIn) {

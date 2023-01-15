@@ -20,7 +20,7 @@ package me.desht.pneumaticcraft.client.pneumatic_armor.upgrade_handler;
 import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Vector3f;
+import com.mojang.math.Axis;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IArmorUpgradeClientHandler;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IGuiScreen;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
@@ -73,7 +73,9 @@ public class ChestplateLauncherClientHandler extends IArmorUpgradeClientHandler.
     }
 
     @Override
-    public void tickClient(ICommonArmorHandler armorHandler) {
+    public void tickClient(ICommonArmorHandler armorHandler, boolean isEnabled) {
+        if (!isEnabled) return;
+
         if (launcherProgress > 0) {
             if (!KeyHandler.getInstance().keybindLauncher.isDown()) {
                 NetworkHandler.sendToServer(new PacketChestplateLauncher((float) launcherProgress / (float) MAX_PROGRESS));
@@ -98,7 +100,7 @@ public class ChestplateLauncherClientHandler extends IArmorUpgradeClientHandler.
         } else {
             matrixStack.translate(30, mw.getGuiScaledHeight() - 30, -90);
         }
-        matrixStack.mulPose(Vector3f.ZP.rotationDegrees(-60));
+        matrixStack.mulPose(Axis.ZP.rotationDegrees(-60));
         float progress = Math.min(100f, (launcherProgress + partialTicks) * 100f / MAX_PROGRESS);
         ProgressBarRenderer.render2d(matrixStack, 0, 0, mw.getGuiScaledWidth() / 6f - 30, 12, 0,
                 progress, 0xAA0000A0, 0xAA40A0FF);

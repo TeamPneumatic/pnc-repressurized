@@ -2,7 +2,7 @@ package me.desht.pneumaticcraft.client.render.entity.semiblock;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Vector3f;
+import com.mojang.math.Axis;
 import me.desht.pneumaticcraft.client.model.PNCModelLayers;
 import me.desht.pneumaticcraft.client.model.entity.semiblocks.ModelCropSupport;
 import me.desht.pneumaticcraft.common.entity.semiblock.CropSupportEntity;
@@ -31,7 +31,7 @@ public class RenderCropSupport extends RenderSemiblockBase<CropSupportEntity> {
         matrixStackIn.pushPose();
 
         matrixStackIn.translate(0, 0.8f, 0);
-        matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(180F));
+        matrixStackIn.mulPose(Axis.XP.rotationDegrees(180F));
         if (entityIn.getTimeSinceHit() > 0) {
             wobble(entityIn, partialTicks, matrixStackIn);
         }

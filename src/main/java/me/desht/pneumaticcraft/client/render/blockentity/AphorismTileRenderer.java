@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.client.render.blockentity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Vector3f;
+import com.mojang.math.Axis;
 import me.desht.pneumaticcraft.client.gui.AphorismTileScreen;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.block.AphorismTileBlock;
@@ -62,7 +62,7 @@ public class AphorismTileRenderer implements BlockEntityRenderer<AphorismTileBlo
         float lineHeight = (fh * textLines.length) * (1 + (te.getMarginSize() + 1) * 0.075f);
         float textScale = Math.min(14 / 16F / lineWidth, 14 / 16F / lineHeight);
         matrixStack.scale(textScale, textScale, textScale);
-        matrixStack.mulPose(Vector3f.ZP.rotationDegrees(te.textRotation * 90));
+        matrixStack.mulPose(Axis.ZP.rotationDegrees(te.textRotation * 90));
 
         int editedLine = editor == null ? -1 : editor.cursorY;
         boolean showCursor = editor != null && (editor.updateCounter & 0xf) < 8;
@@ -71,7 +71,7 @@ public class AphorismTileRenderer implements BlockEntityRenderer<AphorismTileBlo
         for (int i = 0; i < textLines.length; i++) {
             if (!te.getIconAt(i).isEmpty() && editor == null) {
                 matrixStack.pushPose();
-                matrixStack.mulPose(Vector3f.ZP.rotationDegrees(180));
+                matrixStack.mulPose(Axis.ZP.rotationDegrees(180));
                 matrixStack.translate(0, 8 * (mid - i), 0);
                 matrixStack.scale(ICON_SCALE, ICON_SCALE, ICON_SCALE);
                 Minecraft.getInstance().getItemRenderer()

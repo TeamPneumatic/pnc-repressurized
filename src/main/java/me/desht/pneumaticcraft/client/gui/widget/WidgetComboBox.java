@@ -91,12 +91,13 @@ public class WidgetComboBox extends WidgetTextField implements IDrawAfterRender 
     public void renderButton(PoseStack matrixStack, int mouseX, int mouseY, float partialTick) {
         super.renderButton(matrixStack, mouseX, mouseY, partialTick);
 
-        fontRenderer.draw(matrixStack, isFocused() ? Symbols.TRIANGLE_UP : Symbols.TRIANGLE_DOWN, x + width - 7, y + 1, 0xc0c0c0);
+        fontRenderer.draw(matrixStack, isFocused() ? Symbols.TRIANGLE_UP : Symbols.TRIANGLE_DOWN, getX() + width - 7, getY() + 1, 0xc0c0c0);
     }
 
     @Override
     public void renderAfterEverythingElse(PoseStack matrixStack, int mouseX, int mouseY, float partialTick) {
         if (enabled && active && isFocused()) {
+            int x = getX(), y = getY();
             List<String> applicableElements = getApplicableElements();
             fill(matrixStack, x - 1, y + height + 1, x + width + 1, y + height + 3 + applicableElements.size() * fontRenderer.lineHeight, 0xFFA0A0A0);
             fill(matrixStack, x,     y + height + 1, x + width,     y + height + 2 + applicableElements.size() * fontRenderer.lineHeight, 0xFF000000);
@@ -111,9 +112,10 @@ public class WidgetComboBox extends WidgetTextField implements IDrawAfterRender 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (isVisible() && active && button == 0) {
+            int x = getX(), y = getY();
             int h = baseHeight + (isFocused() ? getApplicableElements().size() * fontRenderer.lineHeight : 0);
-            boolean flag = mouseX >= (double)this.x && mouseX < (double)(this.x + this.width)
-                    && mouseY >= (double)this.y && mouseY < (double)(this.y + h);
+            boolean flag = mouseX >= (double)x && mouseX < (double)(x + this.width)
+                    && mouseY >= (double)y && mouseY < (double)(y + h);
             if (flag) {
                 if (mouseY < y + height) {
                     // in the textfield itself

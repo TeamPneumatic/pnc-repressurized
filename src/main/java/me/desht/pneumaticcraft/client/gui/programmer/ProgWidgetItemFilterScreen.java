@@ -81,7 +81,7 @@ public class ProgWidgetItemFilterScreen extends AbstractProgWidgetScreen<ProgWid
         addRenderableWidget(itemLabel = new WidgetLabel(guiLeft + 8, guiTop + 55, xlate("pneumaticcraft.gui.progWidget.itemFilter.itemLabel").append(":")));
         addRenderableWidget(itemSearchButton = new WidgetButtonExtended(guiLeft + itemLabel.getWidth() + 35, guiTop + 50, 20, 20, Component.empty(),
                 b -> openSearcher()).setRenderStacks(new ItemStack(Items.COMPASS)).setTooltipKey("pneumaticcraft.gui.misc.searchItem"));
-        addRenderableWidget(invSearchButton = new WidgetButtonExtended(itemSearchButton.x + 25, guiTop + 50, 20, 20, Component.empty(),
+        addRenderableWidget(invSearchButton = new WidgetButtonExtended(itemSearchButton.getX() + 25, guiTop + 50, 20, 20, Component.empty(),
                 b -> openInventorySearcher()).setRenderStacks(new ItemStack(Items.CHEST)).setTooltipKey("pneumaticcraft.gui.misc.searchInventory"));
 
         // variable dropdown when in variable filter mode

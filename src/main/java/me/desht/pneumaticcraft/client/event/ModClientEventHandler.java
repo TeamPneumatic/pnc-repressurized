@@ -30,6 +30,7 @@ import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.ModelEvent;
 import net.minecraftforge.client.event.ModelEvent.BakingCompleted;
 import net.minecraftforge.client.event.ModelEvent.RegisterGeometryLoaders;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -39,7 +40,7 @@ import net.minecraftforge.registries.RegistryObject;
 @Mod.EventBusSubscriber(modid = Names.MOD_ID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class ModClientEventHandler {
     @SubscribeEvent
-    public static void onModelBaking(BakingCompleted event) {
+    public static void onModelBaking(ModelEvent.ModifyBakingResult event) {
         // set up camo models for camouflageable blocks
         for (RegistryObject<Block> block : ModBlocks.BLOCKS.getEntries()) {
             if (block.get() instanceof AbstractCamouflageBlock) {

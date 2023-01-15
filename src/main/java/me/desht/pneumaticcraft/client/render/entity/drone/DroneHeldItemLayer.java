@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.client.render.entity.drone;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Vector3f;
+import com.mojang.math.Axis;
 import me.desht.pneumaticcraft.client.model.entity.drone.ModelDrone;
 import me.desht.pneumaticcraft.common.entity.drone.AbstractDroneEntity;
 import me.desht.pneumaticcraft.common.item.minigun.AbstractGunAmmoItem;
@@ -52,7 +52,7 @@ public class DroneHeldItemLayer extends RenderLayer<AbstractDroneEntity, ModelDr
         if (!(stack.getItem() instanceof DiggerItem || stack.getItem() instanceof SwordItem || stack.getItem() instanceof HoeItem)) {
             // since items are rendered suspended under the drone,
             // holding tools upside down looks more natural - especially if the drone is digging with them
-            matrixStack.mulPose(Vector3f.XP.rotationDegrees(180));
+            matrixStack.mulPose(Axis.XP.rotationDegrees(180));
         }
         float scaleFactor = stack.getItem() instanceof BlockItem ? 0.7F : 0.5F;
         matrixStack.scale(scaleFactor, scaleFactor, scaleFactor);

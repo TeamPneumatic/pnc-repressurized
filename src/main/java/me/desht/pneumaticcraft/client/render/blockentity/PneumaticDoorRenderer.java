@@ -19,7 +19,7 @@ package me.desht.pneumaticcraft.client.render.blockentity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Vector3f;
+import com.mojang.math.Axis;
 import me.desht.pneumaticcraft.client.model.PNCModelLayers;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.block.PneumaticDoorBlock;
@@ -91,12 +91,12 @@ public class PneumaticDoorRenderer extends AbstractBlockEntityModelRenderer<Pneu
         RenderUtils.rotateMatrixForDirection(matrixStackIn, te.getRotation());
 
         matrixStackIn.translate((rightGoing ? -1 : 1) * 6.5F / 16F, 0, -6.5F / 16F);
-        matrixStackIn.mulPose(rightGoing ? Vector3f.YN.rotationDegrees(rotation) : Vector3f.YP.rotationDegrees(rotation));
+        matrixStackIn.mulPose(rightGoing ? Axis.YN.rotationDegrees(rotation) : Axis.YP.rotationDegrees(rotation));
         matrixStackIn.translate((rightGoing ? -1 : 1) * -6.5F / 16F, 0, 6.5F / 16F);
 
         if (rightGoing) {
             matrixStackIn.translate(0, 0, -6.5/16F);
-            matrixStackIn.mulPose(Vector3f.YP.rotationDegrees(180));
+            matrixStackIn.mulPose(Axis.YP.rotationDegrees(180));
             matrixStackIn.translate(0, 0, 6.5/16F);
         }
         door.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn, rgb[0], rgb[1], rgb[2], 1f);

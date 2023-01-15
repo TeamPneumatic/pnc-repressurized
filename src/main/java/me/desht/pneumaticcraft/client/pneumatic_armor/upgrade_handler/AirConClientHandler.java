@@ -52,8 +52,8 @@ public class AirConClientHandler extends IArmorUpgradeClientHandler.SimpleToggle
     }
 
     @Override
-    public void tickClient(ICommonArmorHandler armorHandler) {
-        super.tickClient(armorHandler);
+    public void tickClient(ICommonArmorHandler armorHandler, boolean isEnabled) {
+        if (!isEnabled) return;
 
         if ((armorHandler.getPlayer().level.getGameTime() & 0x3) == 0) {
             if (currentAC < deltaTemp)

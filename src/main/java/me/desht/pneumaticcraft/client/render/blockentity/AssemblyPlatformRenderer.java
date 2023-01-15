@@ -19,7 +19,7 @@ package me.desht.pneumaticcraft.client.render.blockentity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Vector3f;
+import com.mojang.math.Axis;
 import me.desht.pneumaticcraft.api.client.assembly_machine.IAssemblyRenderOverriding;
 import me.desht.pneumaticcraft.client.ClientRegistryImpl;
 import me.desht.pneumaticcraft.client.model.PNCModelLayers;
@@ -91,7 +91,7 @@ public class AssemblyPlatformRenderer extends AbstractBlockEntityModelRenderer<A
         if (!heldStack.isEmpty()) {
             IAssemblyRenderOverriding renderOverride = clawTranslation.getLeft();
             if (renderOverride == null || renderOverride.applyRenderChangePlatform(matrixStackIn, heldStack)) {
-                matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(180));
+                matrixStackIn.mulPose(Axis.XP.rotationDegrees(180));
                 double yOffset = heldStack.getItem() instanceof BlockItem ? -16.5 / 16F : -17.5 / 16F;
                 matrixStackIn.translate(0, yOffset + 0.05, 0);
                 matrixStackIn.scale(ITEM_SCALE, ITEM_SCALE, ITEM_SCALE);

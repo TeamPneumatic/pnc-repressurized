@@ -21,7 +21,8 @@ import com.google.common.collect.Lists;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSyntaxException;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -30,6 +31,7 @@ import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.common.crafting.IIngredientSerializer;
@@ -95,14 +97,12 @@ public class StackedIngredient extends Ingredient {
         if (json.has("item") && json.has("tag")) {
             throw new JsonParseException("An ingredient entry is either a tag or an item, not both");
         } else if (json.has("item")) {
-            ResourceLocation resourcelocation1 = new ResourceLocation(GsonHelper.getAsString(json, "item"));
-            Item item = Registry.ITEM.getOptional(resourcelocation1)
-                    .orElseThrow(() -> new JsonSyntaxException("Unknown item '" + resourcelocation1 + "'"));
+            Item item = ShapedRecipe.itemFromJson(json);
             int count = json.has("count") ? GsonHelper.getAsInt(json, "count") : 1;
             return new Ingredient.ItemValue(new ItemStack(item, count));
         } else if (json.has("tag")) {
             ResourceLocation resourcelocation = new ResourceLocation(GsonHelper.getAsString(json, "tag"));
-            TagKey<Item> tagKey = TagKey.create(Registry.ITEM_REGISTRY, resourcelocation);
+            TagKey<Item> tagKey = TagKey.create(Registries.ITEM, resourcelocation);
             int count = json.has("count") ? GsonHelper.getAsInt(json, "count") : 1;
             return new StackedTagList(tagKey, count);
         } else {

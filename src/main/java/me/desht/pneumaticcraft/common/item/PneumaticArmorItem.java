@@ -125,7 +125,7 @@ public class PneumaticArmorItem extends ArmorItem implements
     @Nullable
     @Override
     public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundTag nbt) {
-        return new AirHandlerItemStack(stack, 10F);
+        return new AirHandlerItemStack(stack);
     }
 
     @Override
@@ -164,6 +164,11 @@ public class PneumaticArmorItem extends ArmorItem implements
     public int getAir(ItemStack stack) {
         CompoundTag tag = stack.getTag();
         return tag != null ? tag.getInt(AirHandlerItemStack.AIR_NBT_KEY) : 0;
+    }
+
+    @Override
+    public float getMaxPressure() {
+        return 10F;
     }
 
     @Nullable

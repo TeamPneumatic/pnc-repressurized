@@ -17,8 +17,8 @@
 
 package me.desht.pneumaticcraft.client.util;
 
-import com.mojang.math.Vector3f;
 import net.minecraft.world.phys.Vec3;
+import org.joml.Vector3f;
 
 public class ProgressingLine {
 
@@ -43,7 +43,7 @@ public class ProgressingLine {
     }
 
     public ProgressingLine(Vec3 start, Vec3 end) {
-        this(new Vector3f(start), new Vector3f(end));
+        this(start.toVector3f(), end.toVector3f());
     }
 
     public ProgressingLine(float startX, float startY, float startZ, float endX, float endY, float endZ) {

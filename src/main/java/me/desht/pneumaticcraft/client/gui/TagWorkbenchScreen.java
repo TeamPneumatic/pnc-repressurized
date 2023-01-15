@@ -28,7 +28,7 @@ import me.desht.pneumaticcraft.common.item.TagFilterItem;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketGuiButton;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
@@ -36,6 +36,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.List;
 import java.util.Set;
@@ -119,8 +120,8 @@ public class TagWorkbenchScreen extends AbstractPneumaticCraftContainerScreen<Ta
         ItemStack stack = menu.getSlot(0).getItem();
         if (stack.getItem() != lastItem) {
             availableList.clear();
-            Registry.ITEM.getHolderOrThrow(Registry.ITEM.getResourceKey(stack.getItem()).orElseThrow()).tags()
-                            .forEach(tagKey -> availableList.add(tagKey.location()));
+            ForgeRegistries.ITEMS.getHolder(stack.getItem()).orElseThrow().tags()
+                    .forEach(tagKey -> availableList.add(tagKey.location()));
             availableList.unselectAll();
             lastItem = stack.getItem();
         }
@@ -128,7 +129,7 @@ public class TagWorkbenchScreen extends AbstractPneumaticCraftContainerScreen<Ta
         if (!ItemStack.matches(stack1, lastPaperStack)) {
             if (stack1.getItem() == ModItems.TAG_FILTER.get()) {
                 Set<TagKey<Item>> s = TagFilterItem.getConfiguredTagList(stack1);
-                s.addAll(selectedList.getLines().stream().map(rl -> TagKey.create(Registry.ITEM_REGISTRY, rl)).toList());
+                s.addAll(selectedList.getLines().stream().map(rl -> TagKey.create(Registries.ITEM, rl)).toList());
                 selectedList.clear();
                 s.forEach(rl -> selectedList.add(rl.location()));
             }

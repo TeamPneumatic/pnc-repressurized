@@ -55,7 +55,7 @@ import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.AbstractWidget;
-import net.minecraft.client.gui.components.Widget;
+import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.Rect2i;
@@ -378,15 +378,13 @@ public abstract class AbstractPneumaticCraftContainerScreen<C extends AbstractPn
         renderTooltip(matrixStack, x, y);
 
         List<Component> tooltip = new ArrayList<>();
-        for (Widget widget : renderables) {
-            if (widget instanceof ITooltipProvider provider && provider.shouldProvide()) {
+        for (Renderable renderable : renderables) {
+            if (renderable instanceof ITooltipProvider provider && provider.shouldProvide()) {
                 provider.addTooltip(x, y, tooltip, Screen.hasShiftDown());
             }
         }
         if (shouldParseVariablesInTooltips()) {
-            for (int i = 0; i < tooltip.size(); i++) {
-                tooltip.set(i, Component.literal(new TextVariableParser(tooltip.get(i).getString(), ClientUtils.getClientPlayer().getUUID()).parse()));
-            }
+            tooltip.replaceAll(component -> Component.literal(new TextVariableParser(component.getString(), ClientUtils.getClientPlayer().getUUID()).parse()));
         }
 
         if (!tooltip.isEmpty()) {
@@ -418,8 +416,8 @@ public abstract class AbstractPneumaticCraftContainerScreen<C extends AbstractPn
             sendDelay = -1;
         }
 
-        for (Widget w : renderables) {
-            if (w instanceof ITickableWidget t) {
+        for (Renderable renderable : renderables) {
+            if (renderable instanceof ITickableWidget t) {
                 t.tickWidget();
             }
         }

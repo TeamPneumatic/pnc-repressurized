@@ -2,7 +2,7 @@ package me.desht.pneumaticcraft.client.render.tube_module;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Vector3f;
+import com.mojang.math.Axis;
 import me.desht.pneumaticcraft.client.model.PNCModelLayers;
 import me.desht.pneumaticcraft.common.tubemodules.VacuumModule;
 import me.desht.pneumaticcraft.lib.Textures;
@@ -51,14 +51,14 @@ public class VacuumRenderer extends AbstractTubeModuleRenderer<VacuumModule> {
     protected void render(VacuumModule module, PoseStack matrixStack, VertexConsumer builder, float partialTicks, int combinedLight, int combinedOverlay, float alpha) {
         mainPart.render(matrixStack, builder, combinedLight, combinedOverlay, 1f, 1f, 1f, alpha);
 
-        matrixStack.mulPose(Vector3f.XP.rotationDegrees(-90));
+        matrixStack.mulPose(Axis.XP.rotationDegrees(-90));
         float rotation = Mth.lerp(partialTicks, module.oldRotation, module.rotation);
         matrixStack.pushPose();
         matrixStack.translate(0, -1.13f, 1f);
         matrixStack.scale(1.75f, 1.1f, 1.75f);
         for (int i = 0; i < BLADE_COUNT; i++) {
             matrixStack.pushPose();
-            matrixStack.mulPose(Vector3f.YP.rotationDegrees(rotation * 2 + (i + 0.5F) / BLADE_COUNT * 360));
+            matrixStack.mulPose(Axis.YP.rotationDegrees(rotation * 2 + (i + 0.5F) / BLADE_COUNT * 360));
             matrixStack.translate(0, 0, 1D / 16D);
             blade.render(matrixStack, builder, combinedLight, combinedOverlay, 1f, 1f, 1f, alpha);
             matrixStack.popPose();

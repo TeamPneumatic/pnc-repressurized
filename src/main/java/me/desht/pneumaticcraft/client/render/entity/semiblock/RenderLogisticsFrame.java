@@ -2,7 +2,7 @@ package me.desht.pneumaticcraft.client.render.entity.semiblock;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Vector3f;
+import com.mojang.math.Axis;
 import me.desht.pneumaticcraft.client.model.PNCModelLayers;
 import me.desht.pneumaticcraft.client.model.entity.semiblocks.ModelLogisticsFrame;
 import me.desht.pneumaticcraft.common.entity.semiblock.AbstractLogisticsFrameEntity;
@@ -43,21 +43,21 @@ public class RenderLogisticsFrame extends RenderSemiblockBase<AbstractLogisticsF
         matrixStackIn.translate(0, side.getAxis() == Direction.Axis.Y ? 0.5 : -0.5, 0);
         switch (side) {
             case UP:
-                matrixStackIn.mulPose(Vector3f.ZP.rotationDegrees(90));
+                matrixStackIn.mulPose(Axis.ZP.rotationDegrees(90));
                 matrixStackIn.translate(0, -1, 0);
                 break;
             case DOWN:
-                matrixStackIn.mulPose(Vector3f.ZP.rotationDegrees(-90));
+                matrixStackIn.mulPose(Axis.ZP.rotationDegrees(-90));
                 matrixStackIn.translate(0, -1, 0);
                 break;
             case NORTH:
-                matrixStackIn.mulPose(Vector3f.YP.rotationDegrees(90));
+                matrixStackIn.mulPose(Axis.YP.rotationDegrees(90));
                 break;
             case SOUTH:
-                matrixStackIn.mulPose(Vector3f.YP.rotationDegrees(-90));
+                matrixStackIn.mulPose(Axis.YP.rotationDegrees(-90));
                 break;
             case WEST:
-                matrixStackIn.mulPose(Vector3f.YP.rotationDegrees(180));
+                matrixStackIn.mulPose(Axis.YP.rotationDegrees(180));
                 break;
             case EAST:
                 break;

@@ -74,6 +74,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtUtils;
@@ -82,6 +83,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ServerboundPlayerActionPacket;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -375,7 +377,7 @@ public class DroneEntity extends AbstractDroneEntity implements
     }
 
     @Override
-    public Packet<?> getAddEntityPacket() {
+    public Packet<ClientGamePacketListener> getAddEntityPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 
@@ -1069,7 +1071,7 @@ public class DroneEntity extends AbstractDroneEntity implements
                 CompoundTag p = l.getCompound(0);
                 CompoundTag s = l.getCompound(1);
                 BlockPos pos = NbtUtils.readBlockPos(p);
-                BlockState state = NbtUtils.readBlockState(s);
+                BlockState state = NbtUtils.readBlockState(level.holderLookup(Registries.BLOCK), s);
                 displacedLiquids.put(pos, state);
             }
         }

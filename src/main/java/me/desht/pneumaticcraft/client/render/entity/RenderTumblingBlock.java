@@ -18,6 +18,7 @@
 package me.desht.pneumaticcraft.client.render.entity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Axis;
 import me.desht.pneumaticcraft.common.entity.projectile.TumblingBlockEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -58,7 +59,7 @@ public class RenderTumblingBlock extends EntityRenderer<TumblingBlockEntity> {
                     // spin the block on the x & z axes
                     matrixStackIn.translate(0, 0.5, 0);
                     float angle = ((entity.tickCount + partialTicks) * 18);
-                    matrixStackIn.mulPose(entity.tumbleVec.rotationDegrees(angle));
+                    matrixStackIn.mulPose(Axis.of(entity.tumbleVec).rotationDegrees(angle));
                     matrixStackIn.translate(-0.5, -0.5, -0.5);
                 }
 

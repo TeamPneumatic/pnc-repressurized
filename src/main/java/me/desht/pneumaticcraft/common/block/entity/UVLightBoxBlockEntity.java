@@ -203,9 +203,10 @@ public class UVLightBoxBlockEntity extends AbstractAirHandlingBlockEntity implem
         return stack.hasTag() ? stack.getTag().getInt(NBT_EXPOSURE) : 0;
     }
 
-    public static void setExposureProgress(ItemStack stack, int progress) {
+    public static ItemStack setExposureProgress(ItemStack stack, int progress) {
         Validate.isTrue(progress >= 0 && progress <= 100);
         stack.getOrCreateTag().putInt(NBT_EXPOSURE, progress);
+        return stack;
     }
 
     private int ticksPerProgress(int progress) {

@@ -690,7 +690,9 @@ public class PneumaticCraftUtils {
     }
 
     public static Set<TagKey<Item>> itemTags(Item item) {
-        return ForgeRegistries.ITEMS.getHolder(item).orElseThrow().tags().collect(Collectors.toSet());
+        return ForgeRegistries.ITEMS.tags().getReverseTag(item)
+                .map(reverseTag -> reverseTag.getTagKeys().collect(Collectors.toSet()))
+                .orElse(Set.of());
     }
 
     public static Optional<ResourceLocation> getRegistryName(Item item) {
@@ -712,4 +714,6 @@ public class PneumaticCraftUtils {
     public static <T> Optional<ResourceLocation> getRegistryName(IForgeRegistry<T> registry, T object) {
         return Optional.ofNullable(registry.getKey(object));
     }
+
+
 }

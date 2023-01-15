@@ -19,7 +19,7 @@ package me.desht.pneumaticcraft.client.render.blockentity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Vector3f;
+import com.mojang.math.Axis;
 import me.desht.pneumaticcraft.client.model.PNCModelLayers;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
@@ -86,7 +86,7 @@ public class PneumaticDoorBaseRenderer extends AbstractBlockEntityModelRenderer<
 
         matrixStackIn.translate(((te.rightGoing ? -4 : 0) + 2.5) / 16F, 0, -6 / 16F);
         float cylinderAngle = (float) Math.toDegrees(Math.atan(sinus / (cosinus + 14 / 16F)));
-        matrixStackIn.mulPose(te.rightGoing ? Vector3f.YP.rotationDegrees(cylinderAngle) : Vector3f.YN.rotationDegrees(cylinderAngle));
+        matrixStackIn.mulPose(te.rightGoing ? Axis.YP.rotationDegrees(cylinderAngle) : Axis.YN.rotationDegrees(cylinderAngle));
         matrixStackIn.translate(((te.rightGoing ? -3 : 0) - 2.5) / 16F, 0, 6 / 16F);
         double extensionPart = extension * 0.5D;
         int l = ClientUtils.getLightAt(te.getBlockPos().relative(te.getRotation()));  // avoid cylinders rendering unlit

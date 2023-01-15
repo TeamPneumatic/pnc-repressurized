@@ -76,7 +76,7 @@ public class MinigunMagazineMenu extends AbstractPneumaticCraftMenu<AbstractPneu
                     NBTUtils.setInteger(gunStack, MinigunItem.NBT_LOCKED_SLOT, slotId);
                 }
                 if (player.level.isClientSide) {
-                    player.playSound(SoundEvents.UI_BUTTON_CLICK, 0.5f, 1.0f);
+                    player.playSound(SoundEvents.UI_BUTTON_CLICK.get(), 0.5f, 1.0f);
                 }
             }
         } else {

@@ -57,7 +57,7 @@ public class SeismicSensorItem extends Item {
                                 ChatFormatting.GREEN + depthStr,
                                 ChatFormatting.GREEN.toString() + result.lakeSize()),
                         false);
-                player.playSound(SoundEvents.NOTE_BLOCK_CHIME, 1f, 1f);
+                player.playSound(SoundEvents.NOTE_BLOCK_CHIME.get(), 1f, 1f);
             }, () -> {
                 player.displayClientMessage(Component.translatable("pneumaticcraft.message.seismicSensor.noOilFound"), false);
             });

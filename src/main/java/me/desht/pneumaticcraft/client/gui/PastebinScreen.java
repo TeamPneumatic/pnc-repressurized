@@ -33,7 +33,6 @@ import me.desht.pneumaticcraft.common.util.PastebinHandler;
 import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -66,7 +65,6 @@ public class PastebinScreen extends AbstractPneumaticCraftScreen {
         ySize = 202;
         this.pastingNBT = tag;
         this.parentScreen = parentScreen;
-        Minecraft.getInstance().keyboardHandler.setSendRepeatsToGui(true);
     }
 
     @Override
@@ -119,14 +117,14 @@ public class PastebinScreen extends AbstractPneumaticCraftScreen {
 
         prettyCB = new WidgetCheckBox(0, guiTop + 102, 0xFF404040, xlate("pneumaticcraft.gui.pastebin.pretty"),
                 b -> shouldMerge = b.checked);
-        prettyCB.x = guiLeft + (170 - prettyCB.getWidth());
+        prettyCB.setX(guiLeft + (170 - prettyCB.getWidth()));
         prettyCB.setTooltipKey("pneumaticcraft.gui.pastebin.pretty.tooltip");
         addRenderableWidget(prettyCB);
 
         if (parentScreen instanceof ProgrammerScreen) {
             WidgetCheckBox mergeCB = new WidgetCheckBox(0, guiTop + 155, 0xFF404040, xlate("pneumaticcraft.gui.pastebin.merge"),
                     b -> shouldMerge = b.checked);
-            mergeCB.x = guiLeft + (170 - mergeCB.getWidth());
+            mergeCB.setX(guiLeft + (170 - mergeCB.getWidth()));
             mergeCB.setTooltipKey("pneumaticcraft.gui.pastebin.merge.tooltip");
             addRenderableWidget(mergeCB);
         }
@@ -272,11 +270,6 @@ public class PastebinScreen extends AbstractPneumaticCraftScreen {
         } else if (!lastMessage.getString().isEmpty()) {
             drawString(matrixStack, font, lastMessage, guiLeft + 5, guiTop + 5, 0xFF00FF00);
         }
-    }
-
-    @Override
-    public void removed() {
-        minecraft.keyboardHandler.setSendRepeatsToGui(false);
     }
 
     @Override

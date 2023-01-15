@@ -170,7 +170,7 @@ public class ItemLaunching {
                 boat.setYRot(playerYaw);
 
                 //TODO: Find a better way to get the boat type in 1.19
-                boat.setType(boatTypeMap.get(item));
+                boat.setVariant(boatTypeMap.get(item));
                 return boat;
 
             } else if (item == Items.EXPERIENCE_BOTTLE) {
