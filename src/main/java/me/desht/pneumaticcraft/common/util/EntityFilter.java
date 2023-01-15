@@ -307,7 +307,7 @@ public class EntityFilter implements Predicate<Entity> {
                 Validate.isTrue(entityPredicate != null, "Unknown entity type specifier: @" + sub);
                 regex = null;
                 matchCustomName = false;
-            } else if (splits[0].startsWith("\"") && splits[0].endsWith("\"") || splits[0].startsWith("'") && splits[0].endsWith("'")) {
+            } else if (splits[0].length() > 2 && (splits[0].startsWith("\"") && splits[0].endsWith("\"") || splits[0].startsWith("'") && splits[0].endsWith("'"))) {
                 // match an entity with a custom name
                 entityPredicate = null;
                 regex = Pattern.compile(wildcardToRegex(splits[0].substring(1, splits[0].length() - 1)));
@@ -348,11 +348,17 @@ public class EntityFilter implements Predicate<Entity> {
                 ok = entityPredicate.test(entity);
             } else if (regex != null) {
                 ok = matchCustomName ?
-                        entity.getCustomName() != null && regex.matcher(entity.getCustomName().getString()).matches() :
+                        matchByName(entity, regex) :
                         regex.matcher(PneumaticCraftUtils.getRegistryName(entity).orElseThrow().getPath()).matches();
             }
             // modifiers test is a match-all (e.g. "sheep(sheared=false,color=black)" matches sheep which are unsheared AND black)
             return ok && modifiers.stream().allMatch(modifierEntry -> modifierEntry.test(entity));
+        }
+
+        private boolean matchByName(Entity entity, Pattern regex) {
+            return entity instanceof Player player ?
+                    player.getGameProfile().getName() != null && regex.matcher(player.getGameProfile().getName()).matches() :
+                    entity.getCustomName() != null && regex.matcher(entity.getCustomName().getString()).matches();
         }
     }
 
