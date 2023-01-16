@@ -25,6 +25,7 @@ import me.desht.pneumaticcraft.common.network.PacketSetGlobalVariable;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableHelper;
 import me.desht.pneumaticcraft.common.variables.TextVariableParser;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -40,6 +41,8 @@ import net.minecraft.world.item.ItemStack;
 import javax.annotation.Nonnull;
 import java.util.*;
 
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
+
 public class RemoteMenu extends AbstractPneumaticCraftMenu<AbstractPneumaticCraftBlockEntity> {
     private final List<String> syncedVars;
     private final BlockPos[] lastValues;
@@ -53,7 +56,7 @@ public class RemoteMenu extends AbstractPneumaticCraftMenu<AbstractPneumaticCraf
         this.hand = hand;
         this.variables = new String[0];
         this.playerId = playerInventory.player.getUUID();
-        this.syncedVars = new ArrayList<>(getRelevantVariableNames(playerInventory.player.getItemInHand(hand)));
+        this.syncedVars = new ArrayList<>(getRelevantVariableNames(playerInventory.player, playerInventory.player.getItemInHand(hand)));
         this.lastValues = new BlockPos[syncedVars.size()];
     }
 
@@ -68,7 +71,7 @@ public class RemoteMenu extends AbstractPneumaticCraftMenu<AbstractPneumaticCraf
         }
 
         this.playerId = playerInventory.player.getUUID();
-        this.syncedVars = new ArrayList<>(getRelevantVariableNames(playerInventory.player.getItemInHand(hand)));
+        this.syncedVars = new ArrayList<>(getRelevantVariableNames(playerInventory.player, playerInventory.player.getItemInHand(hand)));
         this.lastValues = new BlockPos[syncedVars.size()];
     }
 
@@ -80,22 +83,34 @@ public class RemoteMenu extends AbstractPneumaticCraftMenu<AbstractPneumaticCraf
         return new RemoteMenu(ModMenuTypes.REMOTE_EDITOR.get(), windowId, playerInventory, buffer);
     }
 
-    private Set<String> getRelevantVariableNames(@Nonnull ItemStack remote) {
+    private Set<String> getRelevantVariableNames(Player player, @Nonnull ItemStack remote) {
         Set<String> variables = new HashSet<>();
         CompoundTag tag = remote.getTag();
         if (tag != null) {
             ListTag tagList = tag.getList("actionWidgets", Tag.TAG_COMPOUND);
             for (int i = 0; i < tagList.size(); i++) {
                 CompoundTag widgetTag = tagList.getCompound(i);
-                variables.add(widgetTag.getString("variableName"));
-                variables.add(widgetTag.getString("enableVariable"));
+                if (widgetTag.contains("variableName")) variables.add(widgetTag.getString("variableName"));
+                if (widgetTag.contains("enableVariable")) variables.add(widgetTag.getString("enableVariable"));
                 TextVariableParser parser = new TextVariableParser(widgetTag.getString("text"), playerId);
                 parser.parse(); // discover any ${variable} references in the text
                 variables.addAll(parser.getRelevantVariables());
             }
         }
-        variables.remove("");
-        return variables;
+
+        Set<String> result = new HashSet<>();
+        variables.forEach(varName -> {
+            if (!varName.isEmpty()) {
+                if (!GlobalVariableHelper.hasPrefix(varName)) {
+                    if (!player.level.isClientSide) {
+                        player.displayClientMessage(xlate("pneumaticcraft.command.globalVariable.prefixReminder", varName).withStyle(ChatFormatting.GOLD), false);
+                    }
+                    varName = "#" + varName;
+                }
+                result.add(varName);
+            }
+        });
+        return result;
     }
 
     @Override

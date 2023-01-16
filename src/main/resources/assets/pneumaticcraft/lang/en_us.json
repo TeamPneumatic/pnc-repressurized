@@ -790,7 +790,7 @@
    "pneumaticcraft.command.globalVariable.delete" : "Deleted global variable \"%s\"",
    "pneumaticcraft.command.globalVariable.missing" : "No such variable: \"%s\"",
    "pneumaticcraft.command.globalVariable.output" : "Variable name: \"%s\": [%s]",
-   "pneumaticcraft.command.globalVariable.prefixReminder" : "No prefix used, assuming player-global. Use '#' for player-global, '%' for server-global.",
+   "pneumaticcraft.command.globalVariable.prefixReminder" : "No prefix used in \"%s\", assuming player-global. Use '#' for player-global, '%%' for server-global.",
    "pneumaticcraft.death.attack.acid1" : "%1$s was etched to death!",
    "pneumaticcraft.death.attack.acid2" : "%1$s turned into a PCB!",
    "pneumaticcraft.death.attack.plastic_block1" : "%1$s stepped on something unreasonably painful!",

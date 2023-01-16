@@ -146,7 +146,7 @@ public class GlobalVariableHelper {
      * @return true if prefixed, false otherwise
      */
     public static boolean hasPrefix(String varName) {
-        return varName.startsWith("#") || varName.startsWith("%");
+        return varName.length() > 1 && (varName.startsWith("#") || varName.startsWith("%"));
     }
 
     /**
