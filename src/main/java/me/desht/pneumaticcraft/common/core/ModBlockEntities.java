@@ -41,6 +41,8 @@ public class ModBlockEntities {
             = register("advanced_air_compressor", () -> new BlockEntityType<>(AdvancedAirCompressorBlockEntity::new, ImmutableSet.of(ModBlocks.ADVANCED_AIR_COMPRESSOR.get()), null));
     public static final RegistryObject<BlockEntityType<AirCannonBlockEntity>> AIR_CANNON
             = register("air_cannon", () -> new BlockEntityType<>(AirCannonBlockEntity::new, ImmutableSet.of(ModBlocks.AIR_CANNON.get()), null));
+    public static final RegistryObject<BlockEntityType<ManualCompressorBlockEntity>> MANUAL_COMPRESSOR
+            = register("manual_compressor", () -> new BlockEntityType<>(ManualCompressorBlockEntity::new, ImmutableSet.of(ModBlocks.MANUAL_COMPRESSOR.get()), null));
     public static final RegistryObject<BlockEntityType<PressureChamberWallBlockEntity>> PRESSURE_CHAMBER_WALL
             = register("pressure_chamber_wall", () -> new BlockEntityType<>(PressureChamberWallBlockEntity::new, ImmutableSet.of(ModBlocks.PRESSURE_CHAMBER_WALL.get(), ModBlocks.PRESSURE_CHAMBER_GLASS.get()), null));
     public static final RegistryObject<BlockEntityType<PressureChamberValveBlockEntity>> PRESSURE_CHAMBER_VALVE

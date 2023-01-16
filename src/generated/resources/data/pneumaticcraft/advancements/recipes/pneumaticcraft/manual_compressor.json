@@ -1,0 +1,34 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "pneumaticcraft:manual_compressor"
+    ]
+  },
+  "criteria": {
+    "has_pressure_tube": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "pneumaticcraft:pressure_tube"
+            ]
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "pneumaticcraft:manual_compressor"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_pressure_tube",
+      "has_the_recipe"
+    ]
+  ]
+}

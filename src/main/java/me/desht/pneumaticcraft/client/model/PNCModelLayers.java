@@ -31,6 +31,7 @@ public class PNCModelLayers {
     public static final ModelLayerLocation ASSEMBLY_IO_UNIT = register("assembly_io_unit");
     public static final ModelLayerLocation ASSEMBLY_PLATFORM = register("assembly_platform");
     public static final ModelLayerLocation ELEVATOR_BASE = register("elevator_base");
+    public static final ModelLayerLocation MANUAL_COMPRESSOR = register("manual_compressor");
     public static final ModelLayerLocation PRESSURE_CHAMBER_INTERFACE = register("pressure_chamber_interface");
     public static final ModelLayerLocation SPAWNER_EXTRACTOR = register("spawner_extractor");
     public static final ModelLayerLocation UNIVERSAL_SENSOR = register("universal_sensor");
