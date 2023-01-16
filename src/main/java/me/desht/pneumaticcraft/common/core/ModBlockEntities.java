@@ -43,6 +43,8 @@ public class ModBlockEntities {
             = register("advanced_air_compressor", AdvancedAirCompressorBlockEntity::new, ModBlocks.ADVANCED_AIR_COMPRESSOR);
     public static final RegistryObject<BlockEntityType<AirCannonBlockEntity>> AIR_CANNON
             = register("air_cannon", AirCannonBlockEntity::new, ModBlocks.AIR_CANNON);
+    public static final RegistryObject<BlockEntityType<ManualCompressorBlockEntity>> MANUAL_COMPRESSOR
+            = register("manual_compressor", ManualCompressorBlockEntity::new, ModBlocks.MANUAL_COMPRESSOR);
     public static final RegistryObject<BlockEntityType<PressureChamberWallBlockEntity>> PRESSURE_CHAMBER_WALL
             = register("pressure_chamber_wall", PressureChamberWallBlockEntity::new, ModBlocks.PRESSURE_CHAMBER_WALL, ModBlocks.PRESSURE_CHAMBER_GLASS);
     public static final RegistryObject<BlockEntityType<PressureChamberValveBlockEntity>> PRESSURE_CHAMBER_VALVE

@@ -490,6 +490,15 @@ public class ModRecipeProvider extends RecipeProvider {
                 'C', ModItems.AIR_CANISTER.get()
         ).save(consumer);
 
+        shaped(ModBlocks.MANUAL_COMPRESSOR.get(), ModBlocks.PRESSURE_TUBE.get(),
+                "RIR/ T /GBG",
+                'R', Items.RED_DYE,
+                'I', PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON,
+                'T', ModBlocks.PRESSURE_TUBE.get(),
+                'G', PneumaticCraftTags.Items.GEARS_COMPRESSED_IRON,
+                'B', ModItems.STONE_BASE.get()
+        ).save(consumer);
+
         shaped(ModItems.MEMORY_STICK.get(), ModItems.PLASTIC.get(),
                 "DED/PSP/G G",
                 'D', Tags.Items.GEMS_DIAMOND,
