@@ -167,7 +167,7 @@ public class ModCommands {
     private static int getGlobalVar(CommandContext<CommandSourceStack> ctx, String varName) {
         CommandSourceStack source = ctx.getSource();
         if (!GlobalVariableHelper.hasPrefix(varName)) {
-            source.sendSuccess(xlate("pneumaticcraft.command.globalVariable.prefixReminder").withStyle(ChatFormatting.GOLD), false);
+            source.sendSuccess(xlate("pneumaticcraft.command.globalVariable.prefixReminder", varName).withStyle(ChatFormatting.GOLD), false);
             varName = "#" + varName;
         }
         UUID id = varName.startsWith("%") || !(ctx.getSource().getEntity() instanceof Player player) ? null : player.getUUID();
@@ -188,7 +188,7 @@ public class ModCommands {
         CommandSourceStack source = ctx.getSource();
 
         if (!GlobalVariableHelper.hasPrefix(varName)) {
-            source.sendSuccess(xlate("pneumaticcraft.command.globalVariable.prefixReminder").withStyle(ChatFormatting.GOLD), false);
+            source.sendSuccess(xlate("pneumaticcraft.command.globalVariable.prefixReminder", varName).withStyle(ChatFormatting.GOLD), false);
             varName = "#" + varName;
         }
 
@@ -212,8 +212,8 @@ public class ModCommands {
 
     private static int delGlobalVar(CommandContext<CommandSourceStack> ctx, String varName) {
         CommandSourceStack source = ctx.getSource();
-        if (!varName.startsWith("#") && !varName.startsWith("%")) {
-            source.sendSuccess(xlate("pneumaticcraft.command.globalVariable.prefixReminder").withStyle(ChatFormatting.GOLD), false);
+        if (!GlobalVariableHelper.hasPrefix(varName)) {
+            source.sendSuccess(xlate("pneumaticcraft.command.globalVariable.prefixReminder", varName).withStyle(ChatFormatting.GOLD), false);
             varName = "#" + varName;
         }
 

@@ -29,7 +29,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.network.NetworkDirection;
 import net.minecraftforge.network.NetworkEvent;
-import org.apache.commons.lang3.Validate;
 
 import javax.annotation.Nonnull;
 import java.util.Objects;
@@ -44,13 +43,13 @@ public class PacketSetGlobalVariable {
     private final Either<BlockPos, ItemStack> value;
 
     public PacketSetGlobalVariable(String varName, BlockPos value) {
-        Validate.isTrue(varName.startsWith("#") || varName.startsWith("%"));
+        if (!GlobalVariableHelper.hasPrefix(varName)) varName = "#" + varName;
         this.value = Either.left(value);
         this.varName = varName.startsWith("#") ? varName.substring(1) : varName;
     }
 
     public PacketSetGlobalVariable(String varName, @Nonnull ItemStack stack) {
-        Validate.isTrue(varName.startsWith("#") || varName.startsWith("%"));
+        if (!GlobalVariableHelper.hasPrefix(varName)) varName = "#" + varName;
         this.value = Either.right(stack);
         this.varName = varName;
     }
