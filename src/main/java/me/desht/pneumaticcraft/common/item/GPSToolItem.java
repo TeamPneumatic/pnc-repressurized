@@ -164,7 +164,7 @@ public class GPSToolItem extends Item implements IPositionProvider, IGPSToolSync
     @Override
     public void syncVariables(ServerPlayer player, ItemStack stack) {
         String varName = getVariable(stack);
-        if (!varName.isEmpty()) PneumaticRegistry.getInstance().getMiscHelpers().syncGlobalVariable(player, varName);
+        if (GlobalVariableHelper.hasPrefix(varName)) PneumaticRegistry.getInstance().getMiscHelpers().syncGlobalVariable(player, varName);
     }
 
     @Override

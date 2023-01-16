@@ -787,7 +787,7 @@
   "pneumaticcraft.command.globalVariable.delete": "Удаленная глобальная переменная \\\"%s\\\"",
   "pneumaticcraft.command.globalVariable.missing": "Нет такой переменной: \\\"%s\\\"",
   "pneumaticcraft.command.globalVariable.output": "Имя переменной: \\\"%s\\\": [%s]",
-  "pneumaticcraft.command.globalVariable.prefixReminder": "Префикс не используется, предполагая, что игрок-глобальный. Используйте '#' для глобального игрока, '%' для глобального сервера.",
+  "pneumaticcraft.command.globalVariable.prefixReminder": "Префикс не используется (%s), предполагается, что игрок-глобальный. Используйте '#' для глобального игрока, '%%' для глобального сервера.",
   "pneumaticcraft.death.attack.acid1": "%1$s был разъеден до смерти!",
   "pneumaticcraft.death.attack.acid2": "%1$s превратился в печатную плату!",
   "pneumaticcraft.death.attack.plastic_block1": "%1$s наступил на что-то беспричинно болезненное!",
