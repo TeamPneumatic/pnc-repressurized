@@ -1,0 +1,34 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "pneumaticcraft:assembly/solar_cell"
+    ]
+  },
+  "criteria": {
+    "assembly_controller": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "pneumaticcraft:assembly_controller"
+            ]
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "pneumaticcraft:assembly/solar_cell"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "assembly_controller",
+      "has_the_recipe"
+    ]
+  ]
+}

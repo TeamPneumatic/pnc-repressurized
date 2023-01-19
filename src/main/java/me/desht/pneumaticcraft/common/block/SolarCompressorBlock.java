@@ -4,14 +4,16 @@ import me.desht.pneumaticcraft.api.lib.NBTKeys;
 import me.desht.pneumaticcraft.common.block.entity.SolarCompressorBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
+import me.desht.pneumaticcraft.common.util.VoxelShapeUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -36,15 +38,12 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class SolarCompressorBlock extends AbstractPneumaticCraftBlock implements PneumaticCraftEntityBlock {
     public static final BooleanProperty BOUNDING = BooleanProperty.create("bounding");
+    private static final Vec3i[] BOUNDING_BLOCK_OFFSETS = {
+            new Vec3i(0, 1, 0),
+            new Vec3i(0, 1, 1),
+            new Vec3i(0, 1, -1)};
 
-    public SolarCompressorBlock() {
-        super(ModBlocks.defaultProps());
-
-        registerDefaultState(getStateDefinition().any()
-                .setValue(BOUNDING, false));
-    }
-
-    private static final VoxelShape SHAPE = Stream.of(
+    private static final VoxelShape SHAPE_S = Stream.of(
             Block.box(0, 1, 4, 16, 16, 12),
             Block.box(5, 16, 5, 11, 17, 11),
             Block.box(2, 15, 3, 3, 17, 13),
@@ -53,7 +52,23 @@ public class SolarCompressorBlock extends AbstractPneumaticCraftBlock implements
             Block.box(1, 1, 1, 15, 15, 15),
             Block.box(0, 0, 0, 16, 1, 16),
             Block.box(7, 17, 7, 9, 31, 9)
-    ).reduce((v1, v2) -> Shapes.join(v1, v2, BooleanOp.OR)).get();
+        ).reduce((v1, v2) -> Shapes.join(v1, v2, BooleanOp.OR)).get();
+    private static final VoxelShape SHAPE_W = VoxelShapeUtils.rotateY(SHAPE_S, 90);
+    private static final VoxelShape SHAPE_N = VoxelShapeUtils.rotateY(SHAPE_W, 90);
+    private static final VoxelShape SHAPE_E = VoxelShapeUtils.rotateY(SHAPE_N, 90);
+    private static final VoxelShape[] SHAPES = new VoxelShape[] { SHAPE_S, SHAPE_W, SHAPE_N, SHAPE_E };
+
+    public SolarCompressorBlock() {
+        super(ModBlocks.defaultProps());
+
+        registerDefaultState(getStateDefinition().any()
+                .setValue(BOUNDING, false));
+    }
+
+    @Override
+    public boolean isRotatable() {
+        return true;
+    }
 
     @Override
     public VoxelShape getShape(BlockState state, BlockGetter world, BlockPos pos, CollisionContext context) {
@@ -61,7 +76,8 @@ public class SolarCompressorBlock extends AbstractPneumaticCraftBlock implements
             return Block.box(0,0,0,0,0,0);
         }
         else {
-            return SHAPE;
+            Direction d = state.getValue(directionProperty());
+            return SHAPES[d.get2DDataValue()];
         }
     }
 
@@ -71,7 +87,8 @@ public class SolarCompressorBlock extends AbstractPneumaticCraftBlock implements
             return Block.box(0,0,0,0,0,0);
         }
         else {
-            return SHAPE;
+            Direction d = state.getValue(directionProperty());
+            return SHAPES[d.get2DDataValue()];
         }
     }
 
@@ -89,8 +106,8 @@ public class SolarCompressorBlock extends AbstractPneumaticCraftBlock implements
 
     public BlockPos getMainPos(BlockState state, LevelReader world, BlockPos pos) {
         // Gets position of main from bounding block based on offset
-        if(state.getValue(BOUNDING)) {
-            SolarCompressorBlockEntity bounding = (SolarCompressorBlockEntity) world.getBlockEntity(pos);
+        if(state.getValue(BOUNDING)
+                && world.getBlockEntity(pos) instanceof SolarCompressorBlockEntity bounding) {
 
             return pos.subtract(bounding.offsetFromMain);
         }
@@ -103,71 +120,91 @@ public class SolarCompressorBlock extends AbstractPneumaticCraftBlock implements
 
     @Override
     public boolean canSurvive(BlockState state, LevelReader world, BlockPos pos) {
+        // Returns if main block is present for bounding blocks
         if (state.getValue(BOUNDING)) {
-            return world.getBlockState(getMainPos(state, world, pos)).getBlock() == this;
-        } else {
-            return world.isEmptyBlock(pos.offset(0,1,0)) &&
-                    world.isEmptyBlock(pos.offset(0,1,1)) &&
-                    world.isEmptyBlock(pos.offset(0,1,-1));
+            return world.getBlockState(getMainPos(state, world, pos)).getBlock() == state.getBlock();
         }
-    }
 
-    @Override
-    public void setPlacedBy(Level world, BlockPos pos, BlockState state, LivingEntity par5EntityLiving, ItemStack par6ItemStack) {
-        super.setPlacedBy(world, pos, state, par5EntityLiving, par6ItemStack);
+        // Returns false for main block if any bounding blocks are not present
+        // Does not apply for initial placement
+        else if (world.getBlockEntity(pos) instanceof SolarCompressorBlockEntity solarCompressor
+                && solarCompressor.boundingPlaced) {
 
-        // Declares bounding block offsets
-        Vec3i boundingVec1 = new Vec3i(0, 1, 0);
-        Vec3i boundingVec2 = new Vec3i(0, 1, 1);
-        Vec3i boundingVec3 = new Vec3i(0, 1, -1);
+            for (Vec3i offset : BOUNDING_BLOCK_OFFSETS) {
+                if (world.isEmptyBlock(pos.offset(offset))) {
+                    return false;
+                }
+            }
+        }
 
-        // Creates bounding blocks and sets their offsets
-        world.setBlock(pos.offset(boundingVec1), world.getBlockState(pos).setValue(BOUNDING, true), Block.UPDATE_ALL);
-        ((SolarCompressorBlockEntity)world.getBlockEntity(pos.offset(boundingVec1))).offsetFromMain = boundingVec1;
+        // Returns false for main block if any bounding positions are not empty
+        // Only applies to initial placement
+        else {
+            for (Vec3i offset : BOUNDING_BLOCK_OFFSETS) {
+                if (!world.isEmptyBlock(pos.offset(offset))) {
+                    return false;
+                }
+            }
+        }
 
-        world.setBlock(pos.offset(boundingVec2), world.getBlockState(pos).setValue(BOUNDING, true), Block.UPDATE_ALL);
-        ((SolarCompressorBlockEntity)world.getBlockEntity(pos.offset(boundingVec2))).offsetFromMain = boundingVec2;
-
-        world.setBlock(pos.offset(boundingVec3), world.getBlockState(pos).setValue(BOUNDING, true), Block.UPDATE_ALL);
-        ((SolarCompressorBlockEntity)world.getBlockEntity(pos.offset(boundingVec3))).offsetFromMain = boundingVec3;
-
+        return true;
     }
 
     /**
      * Removes the connected bounding blocks of the main block
      * @param state main block state
      * @param level main block level
-     * @param pos main block position
+     * @param mainPos main block position
      * @param player player to spawn break particles around, null if no particles should spawn
      */
-    public void removeBoundingBlocks (BlockState state, Level level, BlockPos pos,
-                                      @Nullable Player player) {
-        BlockPos boundingPos1 = pos.offset(0, 1, 0);
-        BlockPos boundingPos2 = pos.offset(0, 1, 1);
-        BlockPos boundingPos3 = pos.offset(0, 1, -1);
-
-        if (level.getBlockState(boundingPos1).getBlock() == this) {
-            if(player != null) {
-                spawnDestroyParticles(level, player, boundingPos1, state);
-            }
-
-            level.removeBlock(boundingPos1, false);
+    public void removeBoundingBlocks (BlockState state, Level level, BlockPos mainPos, @Nullable Player player) {
+        // Prevents the bounding blocks from causing unwanted removals until all have been removed
+        if (level.getBlockEntity(mainPos) instanceof SolarCompressorBlockEntity solarCompressor) {
+            solarCompressor.mainBlockRemovalLock = true;
         }
 
-        if (level.getBlockState(boundingPos2).getBlock() == this) {
-            if(player != null) {
-                spawnDestroyParticles(level, player, boundingPos2, state);
-            }
+        for (Vec3i offset : BOUNDING_BLOCK_OFFSETS) {
+            // Gets bounding block's position
+            BlockPos offsetPos = mainPos.offset(offset);
 
-            level.removeBlock(boundingPos2, false);
+            if (level.getBlockState(offsetPos).getBlock() == this) {
+                // Spawns particles for destroyed bounding block if player present
+                if (player != null) {
+                    spawnDestroyParticles(level, player, offsetPos, state);
+                }
+
+                // Destroys bounding block
+                level.removeBlock(offsetPos, false);
+            }
         }
 
-        if (level.getBlockState(boundingPos3).getBlock() == this) {
-            if(player != null) {
-                spawnDestroyParticles(level, player, boundingPos3, state);
-            }
+        // Saves that all bounding blocks have been removed
+        // Used later to prevent main block being removed unnecessarily
+        if (level.getBlockEntity(mainPos) instanceof SolarCompressorBlockEntity solarCompressor) {
+            solarCompressor.boundingRemoved = true;
+            solarCompressor.mainBlockRemovalLock = false;
+        }
+    }
 
-            level.removeBlock(boundingPos3, false);
+    /**
+     * Places bounding blocks for the main block
+     * @param level main block level
+     * @param mainPos main block position
+     */
+    public void placeBoundingBlocks (Level level, BlockPos mainPos) {
+        for (Vec3i offset : BOUNDING_BLOCK_OFFSETS) {
+            level.setBlock(mainPos.offset(offset), level.getBlockState(mainPos).setValue(BOUNDING, true), Block.UPDATE_ALL);
+
+            // Sets offset for bounding block entity
+            if (level.getBlockEntity(mainPos.offset(offset)) instanceof SolarCompressorBlockEntity solarCompressor) {
+                solarCompressor.offsetFromMain = offset;
+            }
+        }
+
+        // Saves that all bounding blocks have been placed
+        // Used later when checking if main block can survive on updates
+        if (level.getBlockEntity(mainPos) instanceof SolarCompressorBlockEntity solarCompressor){
+            solarCompressor.boundingPlaced = true;
         }
     }
 
@@ -178,13 +215,12 @@ public class SolarCompressorBlock extends AbstractPneumaticCraftBlock implements
 
         // Redirects destroy to main block for bounding blocks
         if (state.getValue(BOUNDING)) {
-            onDestroyedByPlayer(mainBlockState, level, mainPos, player, willHarvest,
-                    mainBlockState.getFluidState());
+            onDestroyedByPlayer(mainBlockState, level, mainPos, player, willHarvest, mainBlockState.getFluidState());
 
             return false;
         }
 
-        // Destroys all present bounding blocks
+        // Destroys all bounding blocks
         else {
             removeBoundingBlocks(state, level, pos, player);
             return super.onDestroyedByPlayer(state, level, pos, player, willHarvest, fluid);
@@ -192,51 +228,66 @@ public class SolarCompressorBlock extends AbstractPneumaticCraftBlock implements
     }
 
     @Override
+    protected void setRotation(Level world, BlockPos pos, Direction rotation) {
+        // Only allows rotation of main block
+        if (!world.getBlockState(pos).getValue(BOUNDING)) {
+            // Prevents main block from being removed gratuitously when bounding blocks are removed
+            // from setting the rotation of the main block
+            if (world.getBlockEntity(pos) instanceof SolarCompressorBlockEntity solarCompressor) {
+                solarCompressor.mainBlockRemovalLock = true;
+
+                super.setRotation(world, pos, rotation);
+
+                solarCompressor.mainBlockRemovalLock = false;
+            }
+        }
+    }
+
+    @Override
     public boolean onWrenched(Level world, Player player, BlockPos pos, Direction face, InteractionHand hand) {
         BlockState state = world.getBlockState(pos);
-        BlockPos mainPos = getMainPos(state, world, pos);
 
         // Redirects wrenching to main block for bounding blocks
         if (state.getValue(BOUNDING)) {
-            return onWrenched(world, player, mainPos, face, hand);
+            return onWrenched(world, player, getMainPos(state, world, pos), face, hand);
         }
 
-        // Destroy main and then all present bounding blocks on wrench pickup
+        // Destroy bounding blocks on wrench pickup
         if (player != null && player.isShiftKeyDown()) {
-            super.onWrenched(world, player, pos, face, hand);
+           removeBoundingBlocks(state, world, pos, null);
+        }
+
+        return super.onWrenched(world, player, pos, face, hand);
+    }
+
+    @Override
+    public void onPlace(BlockState pState, Level pLevel, BlockPos pPos, BlockState pOldState, boolean pIsMoving) {
+        super.onPlace(pState, pLevel, pPos, pOldState, pIsMoving);
+
+        // Creates bounding blocks for main block
+        if (!pState.getValue(BOUNDING)) {
+            placeBoundingBlocks(pLevel, pPos);
+        }
+    }
+
+    // Ensures that all blocks are broken when one block breaks
+    // Common breaks should handle everything on their own, this is a failsafe
+    @Override
+    public void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean isMoving) {
+        // Removes bounding blocks for main block if they weren't already removed
+        if (!state.getValue(BOUNDING)
+                && world.getBlockEntity(pos) instanceof SolarCompressorBlockEntity solarCompressor
+                && !solarCompressor.boundingRemoved) {
 
             removeBoundingBlocks(state, world, pos, null);
         }
 
-        return true;
-    }
+        // Removes main block if a bounding block was forcefully removed separately
+        // Does not apply when bounding blocks are removed through removeBoundingBlocks method
+        else if (world.getBlockEntity(getMainPos(state, world, pos)) instanceof SolarCompressorBlockEntity solarCompressor
+                && !solarCompressor.mainBlockRemovalLock) {
 
-    // Ensures that all blocks are broken when one block breaks
-    // Common breaks should be handled by their own methods, this is more of a catch-all for
-    // things like /fill and explosions
-    @Override
-    public void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean isMoving) {
-        BlockPos mainPos = getMainPos(state, world, pos);
-        BlockPos boundingPos1 = mainPos.offset(0, 1, 0);
-        BlockPos boundingPos2 = mainPos.offset(0, 1, 1);
-        BlockPos boundingPos3 = mainPos.offset(0, 1, -1);
-
-        // Removes bounding blocks
-        if (world.getBlockState(boundingPos1).getBlock() == this) {
-            world.removeBlock(boundingPos1, false);
-        }
-
-        if (world.getBlockState(boundingPos2).getBlock() == this) {
-            world.removeBlock(boundingPos2, false);
-        }
-
-        if (world.getBlockState(boundingPos3).getBlock() == this) {
-            world.removeBlock(boundingPos3, false);
-        }
-
-        // Removes main block
-        if (world.getBlockState(mainPos).getBlock() == this) {
-            world.removeBlock(mainPos, false);
+            world.removeBlock(getMainPos(state, world, pos), false);
         }
 
         super.onRemove(state, world, pos, newState, isMoving);
@@ -244,46 +295,29 @@ public class SolarCompressorBlock extends AbstractPneumaticCraftBlock implements
 
     @Override
     public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult brtr) {
-        // Only can repair main block of compressor
-        if (!state.getValue(BOUNDING)) {
-            BlockEntity be = world.getBlockEntity(pos);
+        // Prevents any interactions with bounding blocks of compressor
+        if (state.getValue(BOUNDING)) {
+            return InteractionResult.FAIL;
+        }
 
-            // Only can repair if proper block entity type
-            if (be instanceof SolarCompressorBlockEntity) {
+        // Only can repair if proper block entity type and is broken
+        if (world.getBlockEntity(pos) instanceof SolarCompressorBlockEntity solarCompressor
+                && solarCompressor.isBroken()) {
 
-                // Only can repair if broken
-                if (((SolarCompressorBlockEntity)be).isBroken()) {
-                    // Uses wafer in main hand to repair compressor
-                    if (player.getMainHandItem().getItem() == ModItems.SOLAR_WAFER.get()) {
-                        ItemStack wafers = player.getMainHandItem();
-
-                        // Only consumes wafers outside of creative mode
-                        if (!player.isCreative()) {
-                            wafers.setCount(wafers.getCount() - 1);
-                        }
-
-                        ((SolarCompressorBlockEntity) be).fixBroken();
-
-                        return InteractionResult.CONSUME;
-                    }
-
-                    // Uses wafer in offhand to repair compressor
-                    else if (player.getOffhandItem().getItem() == ModItems.SOLAR_WAFER.get()) {
-                        ItemStack wafers = player.getOffhandItem();
-
-                        // Only consumes wafers outside of creative mode
-                        if (!player.isCreative()) {
-                            wafers.setCount(wafers.getCount() - 1);
-                        }
-
-                        ((SolarCompressorBlockEntity) be).fixBroken();
-
-                        return InteractionResult.CONSUME;
-                    }
+            if (player.getMainHandItem().getItem() == ModItems.SOLAR_CELL.get()) {
+                // Only consumes solar cell when player is not in creative
+                if (!player.isCreative()) {
+                    player.getMainHandItem().shrink(1);
                 }
+
+                solarCompressor.fixBroken();
+                world.playSound(null, pos, SoundEvents.ANVIL_USE, SoundSource.BLOCKS, 1 ,1.5f);
+
+                return InteractionResult.SUCCESS;
             }
         }
 
+        // Allows other interactions if cannot do repair interaction
         return super.use(state, world, pos, player, hand, brtr);
     }
 
