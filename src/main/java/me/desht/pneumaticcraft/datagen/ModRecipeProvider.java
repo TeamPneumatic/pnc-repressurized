@@ -788,7 +788,7 @@ public class ModRecipeProvider extends RecipeProvider {
 
         shaped(ModBlocks.SOLAR_COMPRESSOR.get(), ModItems.PRINTED_CIRCUIT_BOARD.get(),
                 "WWW/PGP/TBT",
-                'W', ModItems.SOLAR_WAFER.get(),
+                'W', ModItems.SOLAR_CELL.get(),
                 'P', ModItems.PRINTED_CIRCUIT_BOARD.get(),
                 'G', ModItems.COMPRESSED_IRON_GEAR.get(),
                 'T', ModBlocks.ADVANCED_PRESSURE_TUBE.get(),
@@ -1342,6 +1342,11 @@ public class ModRecipeProvider extends RecipeProvider {
         pressureChamber(ImmutableList.of(Ingredient.of(Tags.Items.STONE)),
                 1f, new ItemStack(ModBlocks.COMPRESSED_STONE.get()))
                 .build(consumer, RL("pressure_chamber/compressed_stone"));
+        pressureChamber(ImmutableList.of(
+                        Ingredient.of(ModItems.UPGRADE_MATRIX.get()),
+                        Ingredient.of(Items.AMETHYST_SHARD)),
+                2.5f, new ItemStack(ModItems.SOLAR_WAFER.get()))
+                .build(consumer, RL("pressure_chamber/solar_wafer"));
 
         // explosion crafting
         explosionCrafting(Ingredient.of(Tags.Items.INGOTS_IRON), 20, new ItemStack(ModItems.COMPRESSED_IRON_INGOT.get()))
@@ -1499,9 +1504,9 @@ public class ModRecipeProvider extends RecipeProvider {
         assembly(Ingredient.of(ModItems.UNASSEMBLED_NETHERITE_DRILL_BIT.get()), new ItemStack(ModItems.NETHERITE_DRILL_BIT.get()),
                 AssemblyProgramType.DRILL)
                 .build(consumer, RL("assembly/netherite_drill_bit"));
-        assembly(Ingredient.of(ModItems.UPGRADE_MATRIX.get()), new ItemStack(ModItems.SOLAR_WAFER.get()),
+        assembly(Ingredient.of(ModItems.SOLAR_WAFER.get()), new ItemStack(ModItems.SOLAR_CELL.get()),
                 AssemblyProgramType.DRILL)
-                .build(consumer, RL("assembly/solar_wafer"));
+                .build(consumer, RL("assembly/solar_cell"));
 
         // amadron (core static offers only)
         amadronStatic(

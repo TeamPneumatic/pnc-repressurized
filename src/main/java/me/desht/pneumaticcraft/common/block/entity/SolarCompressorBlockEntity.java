@@ -33,16 +33,9 @@ import javax.annotation.Nullable;
 import static me.desht.pneumaticcraft.common.block.SolarCompressorBlock.BOUNDING;
 
 public class SolarCompressorBlockEntity extends AbstractAirHandlingBlockEntity implements IHeatExchangingTE, MenuProvider {
-    public Vec3i offsetFromMain = new Vec3i(0, 0, 0);
-    public final double MAX_TEMPERATURE = 698.15; // 425C
-    @GuiSynced
-    private float airPerTick;
-    private float airBuffer;
-    @GuiSynced
-    private boolean isBroken = false;
-    @GuiSynced
-    private boolean canSeeSunlight = false;
-    private final Vec3i[] surroundingBlockOffsets = {
+    public static final double MAX_TEMPERATURE = 698.15; // 425C
+    public static final double WARNING_TEMPERATURE = MAX_TEMPERATURE - 15; // 410C
+    private static final Vec3i[] SURROUNDING_BLOCK_OFFSETS = {
             new Vec3i(1, 0, 0),
             new Vec3i(-1, 0, 0),
             new Vec3i(0, 0, 1),
@@ -51,6 +44,17 @@ public class SolarCompressorBlockEntity extends AbstractAirHandlingBlockEntity i
             new Vec3i(-1, 0, 1),
             new Vec3i(1, 0, 1),
             new Vec3i(-1, 0, -1)};
+    public Vec3i offsetFromMain = new Vec3i(0, 0, 0);
+    public boolean boundingPlaced = false; // only changed for main block
+    public boolean boundingRemoved = false; // only changed for main block
+    public boolean mainBlockRemovalLock = false; // only changed for main block
+    @GuiSynced
+    private float airPerTick;
+    private float airBuffer;
+    @GuiSynced
+    private boolean isBroken = false;
+    @GuiSynced
+    private boolean canSeeSunlight = false;
     @GuiSynced
     private IHeatExchangerLogic heatExchanger = PneumaticRegistry.getInstance().getHeatRegistry().makeHeatExchangerLogic();
     private final LazyOptional<IHeatExchangerLogic> heatCap = LazyOptional.of(() -> heatExchanger);
@@ -127,7 +131,7 @@ public class SolarCompressorBlockEntity extends AbstractAirHandlingBlockEntity i
             final Level level = nonNullLevel();
             BlockPos mainPos = getBlockPos();
 
-            for (Vec3i offset : surroundingBlockOffsets) {
+            for (Vec3i offset : SURROUNDING_BLOCK_OFFSETS) {
                 BlockPos offsetPos = mainPos.offset(offset);
 
                 // Only replaces air blocks with fire
@@ -263,7 +267,29 @@ public class SolarCompressorBlockEntity extends AbstractAirHandlingBlockEntity i
                 heatExchanger.setThermalResistance(1000000000);
             }
 
-            // Checks if compressor should break from overheating
+            // Emits smoke particles if overheating
+            if (heatExchanger.getTemperature() < MAX_TEMPERATURE
+                    && heatExchanger.getTemperature() > WARNING_TEMPERATURE) {
+
+                // Only emits smoke particles once every second
+                if (level.getGameTime() % 20 == 0) {
+                    BlockPos mainPos = getBlockPos();
+                    if (!level.isClientSide()) {
+                        ((ServerLevel) level).sendParticles(
+                                ParticleTypes.SMOKE,
+                                mainPos.getX() + 0.5,
+                                mainPos.getY() + 1.2,
+                                mainPos.getZ() + 0.5,
+                                10,
+                                0,
+                                0,
+                                0,
+                                0.05);
+                    }
+                }
+            }
+
+            // Breaks compressor if overheated
             if (!isBroken && (heatExchanger.getTemperature() > MAX_TEMPERATURE)) {
                 breakCompressor();
             }
@@ -272,7 +298,7 @@ public class SolarCompressorBlockEntity extends AbstractAirHandlingBlockEntity i
 
     @Override
     public boolean canConnectPneumatic(Direction side) {
-        return !isBounding() && (side == Direction.NORTH || side == Direction.SOUTH);
+        return !isBounding() && (side == getRotation() || side == getRotation().getOpposite());
     }
 
     @Override

@@ -15,7 +15,7 @@
     },
     {
       "type": "text",
-      "text": "While the $(item)Solar Compressor/$ generates compressed air, it also generates heat proportional to how much compressed air is generated. Proper heat management is necessary to reach the full potential of the $(item)Solar Compressor/$: too little heat and the compressor will barely generate any compressed air, too much heat and the compressor with overheat and breakdown, requiring manual repairs with $(l:components/solar_wafer)Solar Wafers/$."
+      "text": "While the $(item)Solar Compressor/$ generates compressed air, it also generates heat proportional to how much compressed air is generated. Proper heat management is necessary to reach the full potential of the $(item)Solar Compressor/$: too little heat and the compressor will barely generate any compressed air, too much heat and the compressor with overheat and breakdown, requiring manual repairs with $(l:components/solar_cell)Solar Cells/$."
     },
     {
       "type": "text",
