@@ -1,0 +1,6 @@
+{
+   "textures" : {
+      "layer0" : "pneumaticcraft:item/solar_cell"
+   },
+   "parent" : "item/generated"
+}

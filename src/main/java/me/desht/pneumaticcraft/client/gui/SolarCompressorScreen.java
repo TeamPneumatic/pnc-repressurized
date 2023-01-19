@@ -44,8 +44,9 @@ public class SolarCompressorScreen extends AbstractPneumaticCraftContainerScreen
     public void init() {
         super.init();
 
-        addRenderableWidget(tempWidget = new WidgetTemperature(leftPos + 97, topPos + 20, TemperatureRange.of(223, ((int) te.MAX_TEMPERATURE + 25)), 273, 50)
-                .setOperatingRange(TemperatureRange.of(312, ((int) te.MAX_TEMPERATURE + 25)))
+        addRenderableWidget(tempWidget = new WidgetTemperature(leftPos + 97, topPos + 20,
+                TemperatureRange.of(223, ((int) SolarCompressorBlockEntity.MAX_TEMPERATURE + 25)), 273, 50)
+                .setOperatingRange(TemperatureRange.of(312, ((int) SolarCompressorBlockEntity.MAX_TEMPERATURE + 25)))
                 .setShowOperatingRange(false));
     }
 
@@ -106,12 +107,12 @@ public class SolarCompressorScreen extends AbstractPneumaticCraftContainerScreen
         if (te.canGenerateAir()) {
             // Adds warning if the compressor is not at max efficiency
             if (te.getPercentHeatEfficiency() < 100) {
-                curInfo.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.solar_compressor.efficiency", te.getPercentHeatEfficiency() + "%",  (int)(te.MAX_TEMPERATURE - 273.15)));
+                curInfo.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.solar_compressor.efficiency", te.getPercentHeatEfficiency() + "%",  (int)(SolarCompressorBlockEntity.MAX_TEMPERATURE - 273.15)));
             }
 
             // Adds warning if the compressor is getting too hot
-            else if (te.getTemperature() > te.MAX_TEMPERATURE - 15) {
-                curInfo.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.solar_compressor.overheat", (int)(te.MAX_TEMPERATURE - 273.15)));
+            else if (te.getTemperature() > SolarCompressorBlockEntity.WARNING_TEMPERATURE) {
+                curInfo.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.solar_compressor.overheat", (int)(SolarCompressorBlockEntity.MAX_TEMPERATURE - 273.15)));
             }
         }
     }
