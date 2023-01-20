@@ -8,6 +8,7 @@ import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.inventory.SolarCompressorMenu;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
+import me.desht.pneumaticcraft.common.util.BoundingBlockEntityData;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -27,12 +28,11 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.IItemHandler;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 
-import static me.desht.pneumaticcraft.common.block.SolarCompressorBlock.BOUNDING;
-
-public class SolarCompressorBlockEntity extends AbstractAirHandlingBlockEntity implements IHeatExchangingTE, MenuProvider {
+public class SolarCompressorBlockEntity extends AbstractAirHandlingBlockEntity implements IHeatExchangingTE, MenuProvider, IHasBoundingBlocks {
     public static final double MAX_TEMPERATURE = 698.15; // 425C
     public static final double WARNING_TEMPERATURE = MAX_TEMPERATURE - 15; // 410C
     private static final Vec3i[] SURROUNDING_BLOCK_OFFSETS = {
@@ -44,10 +44,6 @@ public class SolarCompressorBlockEntity extends AbstractAirHandlingBlockEntity i
             new Vec3i(-1, 0, 1),
             new Vec3i(1, 0, 1),
             new Vec3i(-1, 0, -1)};
-    public Vec3i offsetFromMain = new Vec3i(0, 0, 0);
-    public boolean boundingPlaced = false; // only changed for main block
-    public boolean boundingRemoved = false; // only changed for main block
-    public boolean mainBlockRemovalLock = false; // only changed for main block
     @GuiSynced
     private float airPerTick;
     private float airBuffer;
@@ -58,13 +54,14 @@ public class SolarCompressorBlockEntity extends AbstractAirHandlingBlockEntity i
     @GuiSynced
     private IHeatExchangerLogic heatExchanger = PneumaticRegistry.getInstance().getHeatRegistry().makeHeatExchangerLogic();
     private final LazyOptional<IHeatExchangerLogic> heatCap = LazyOptional.of(() -> heatExchanger);
+    private final BoundingBlockEntityData boundingBlockEntityData = new BoundingBlockEntityData();
 
     public SolarCompressorBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.SOLAR_COMPRESSOR.get(), pos, state, PressureTier.TIER_TWO, PneumaticValues.VOLUME_SOLAR_COMPRESSOR, 4);
 
         // Nullifies the heat component of the bounding blocks
         // Might not be necessary but doesn't hurt anything
-        if(isBounding()) {
+        if(isBounding(this)) {
             heatExchanger.setThermalCapacity(0);
             heatExchanger.setThermalResistance(1000000000);
         }
@@ -72,6 +69,12 @@ public class SolarCompressorBlockEntity extends AbstractAirHandlingBlockEntity i
         else {
             heatExchanger.setThermalCapacity(100);
         }
+    }
+
+    @NotNull
+    @Override
+    public BoundingBlockEntityData getBoundingBlockEntityData() {
+        return boundingBlockEntityData;
     }
 
     /**
@@ -90,37 +93,10 @@ public class SolarCompressorBlockEntity extends AbstractAirHandlingBlockEntity i
     }
 
     /**
-     * Returns if the current block entity is a bounding block
-     * @return if the current block entity is a bounding block
-     */
-    public boolean isBounding() {
-        return this.getBlockState().getValue(BOUNDING);
-    }
-
-    /**
-     * Returns the block entity for the main block
-     * @return the block entity for the main block
-     */
-    @Nullable
-    public SolarCompressorBlockEntity getMain()
-    {
-        // Finds main block if bounding block
-        if(isBounding()) {
-            BlockPos mainPos = this.getBlockPos().subtract(this.offsetFromMain);
-            return (SolarCompressorBlockEntity)level.getBlockEntity(mainPos);
-        }
-
-        // Returns main block
-        else {
-            return this;
-        }
-    }
-
-    /**
      * Breaks solar compressor and dangerously vents all heat
      */
     public void breakCompressor() {
-        if(!isBounding()) {
+        if(!isBounding(this)) {
             // Breaks compressor
             isBroken = true;
 
@@ -202,7 +178,7 @@ public class SolarCompressorBlockEntity extends AbstractAirHandlingBlockEntity i
         final Level level = nonNullLevel();
 
         // Sets false for bounding blocks, during the night, and during rain
-        if (isBounding() || level.isNight() || level.isRaining())
+        if (isBounding(this) || level.isNight() || level.isRaining())
         {
             canSeeSunlight = false;
         }
@@ -228,7 +204,7 @@ public class SolarCompressorBlockEntity extends AbstractAirHandlingBlockEntity i
         super.tickServer();
 
         // Only does generation ticks for the main block
-        if(!isBounding()) {
+        if(!isBounding(this)) {
             final Level level = nonNullLevel();
 
             // Updates air generation amount every 5 ticks
@@ -298,7 +274,7 @@ public class SolarCompressorBlockEntity extends AbstractAirHandlingBlockEntity i
 
     @Override
     public boolean canConnectPneumatic(Direction side) {
-        return !isBounding() && (side == getRotation() || side == getRotation().getOpposite());
+        return !isBounding(this) && (side == getRotation() || side == getRotation().getOpposite());
     }
 
     @Override
@@ -309,7 +285,7 @@ public class SolarCompressorBlockEntity extends AbstractAirHandlingBlockEntity i
     @Override
     public LazyOptional<IHeatExchangerLogic> getHeatCap(Direction side) {
         // Returns null for the bounding blocks
-        if(isBounding()) {
+        if(isBounding(this)) {
             return LazyOptional.empty();
         }
 
@@ -334,7 +310,7 @@ public class SolarCompressorBlockEntity extends AbstractAirHandlingBlockEntity i
     @Override
     public AbstractContainerMenu createMenu(int i, Inventory playerInventory, Player playerEntity) {
         // Returns null for the bounding blocks
-        if (isBounding()) {
+        if (isBounding(this)) {
             return null;
         }
 
@@ -347,7 +323,7 @@ public class SolarCompressorBlockEntity extends AbstractAirHandlingBlockEntity i
     @Override
     public IHeatExchangerLogic getHeatExchanger(Direction dir) {
         // Returns null for the bounding blocks
-        if(isBounding()) {
+        if(isBounding(this)) {
             return null;
         }
 
