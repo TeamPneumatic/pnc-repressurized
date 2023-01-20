@@ -53,7 +53,7 @@ public class SolarCompressorRenderer extends AbstractBlockEntityModelRenderer<So
     void renderModel(SolarCompressorBlockEntity te, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
         VertexConsumer builder = bufferIn.getBuffer(RenderType.entityCutout(Textures.MODEL_SOLAR_COMPRESSOR));
 
-        if (!te.isBounding()) {
+        if (!te.isBounding(te)) {
             float panelAngle = (180F / (float) Math.PI) * te.getLevel().getSunAngle(te.getLevel().getDayTime());
 
             // Translates panels to origin to rotate
