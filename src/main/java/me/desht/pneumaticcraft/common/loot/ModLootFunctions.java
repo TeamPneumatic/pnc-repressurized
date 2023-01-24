@@ -46,8 +46,7 @@ import net.minecraftforge.fml.common.Mod;
 import java.util.Objects;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
-import static me.desht.pneumaticcraft.api.lib.NBTKeys.NBT_AIR_AMOUNT;
-import static me.desht.pneumaticcraft.api.lib.NBTKeys.NBT_SIDE_CONFIG;
+import static me.desht.pneumaticcraft.api.lib.NBTKeys.*;
 
 @Mod.EventBusSubscriber(modid = Names.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class ModLootFunctions {
@@ -127,6 +126,11 @@ public class ModLootFunctions {
                             subTag.putInt(NBT_AIR_AMOUNT, h.getAir());
                         }
                     });
+
+                    // Saves if solar compressor is broken
+                    if (te instanceof SolarCompressorBlockEntity solarCompressorBlockEntity) {
+                        subTag.putBoolean(NBT_BROKEN, solarCompressorBlockEntity.isBroken());
+                    }
                 }
 
                 teB.serializeExtraItemData(subTag, teB.shouldPreserveStateOnBreak());

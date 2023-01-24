@@ -62,6 +62,8 @@ public class ModMenuTypes {
             = register("elevator", ElevatorMenu::new);
     public static final RegistryObject<MenuType<FluxCompressorMenu>> FLUX_COMPRESSOR
             = register("flux_compressor", FluxCompressorMenu::new);
+    public static final RegistryObject<MenuType<SolarCompressorMenu>> SOLAR_COMPRESSOR
+            = register("solar_compressor", SolarCompressorMenu::new);
     public static final RegistryObject<MenuType<GasLiftMenu>> GAS_LIFT
             = register("gas_lift", GasLiftMenu::new);
     public static final RegistryObject<MenuType<KeroseneLampMenu>> KEROSENE_LAMP
