@@ -12,6 +12,7 @@ import net.minecraft.client.model.geom.builders.*;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.util.Mth;
 
 public class ManualCompressorRenderer extends AbstractBlockEntityModelRenderer<ManualCompressorBlockEntity> {
     private final ModelPart pump;
@@ -75,10 +76,16 @@ public class ManualCompressorRenderer extends AbstractBlockEntityModelRenderer<M
 
         matrixStackIn.translate(0, 9 / 16F, 0);
 
-        // Changes the position of the pumprod relative to the pump cycle's progress
-        // 0% = 0, 100% = 6.75
-        double pumprodVerticalOffset = (te.pumpCycleProgress / (400/27.0));
-        matrixStackIn.translate(0, pumprodVerticalOffset / 16F, 0);
+        // Renders the intermediate offsets of the pump rod during its animation
+        if (te.getLevel().getGameTime() <= te.pumpStepStartTick + ManualCompressorBlockEntity.TICKS_PER_PUMP_STEP) {
+            double offset = Mth.lerp(partialTicks, te.pumprodVerticalOffsetPreviousTick, te.pumprodVerticalOffsetCurrentTick);
+            matrixStackIn.translate(0, offset / 16F, 0);
+        }
+
+        // Renders the final stationary offset of the pump rod after animation is complete
+        else {
+            matrixStackIn.translate(0, te.pumprodVerticalOffsetCurrent / 16F, 0);
+        }
 
         pumprod.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
     }
