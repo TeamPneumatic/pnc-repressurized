@@ -787,6 +787,15 @@ public class ModRecipeProvider extends RecipeProvider {
                 'P', ModItems.PRINTED_CIRCUIT_BOARD.get()
         ).save(consumer);
 
+        shaped(ModBlocks.SOLAR_COMPRESSOR.get(), ModItems.PRINTED_CIRCUIT_BOARD.get(),
+                "WWW/PGP/TBT",
+                'W', ModItems.SOLAR_WAFER.get(),
+                'P', ModItems.PRINTED_CIRCUIT_BOARD.get(),
+                'G', ModItems.COMPRESSED_IRON_GEAR.get(),
+                'T', ModBlocks.ADVANCED_PRESSURE_TUBE.get(),
+                'B', ModBlocks.COMPRESSED_IRON_BLOCK.get()
+        ).save(consumer);
+
         shaped(ModItems.SPAWNER_AGITATOR.get(), ModItems.COMPRESSED_IRON_INGOT.get(),
                 "III/IGI/III",
                 'I', PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON,
@@ -1491,6 +1500,9 @@ public class ModRecipeProvider extends RecipeProvider {
         assembly(Ingredient.of(ModItems.UNASSEMBLED_NETHERITE_DRILL_BIT.get()), new ItemStack(ModItems.NETHERITE_DRILL_BIT.get()),
                 AssemblyProgramType.DRILL)
                 .build(consumer, RL("assembly/netherite_drill_bit"));
+        assembly(Ingredient.of(ModItems.UPGRADE_MATRIX.get()), new ItemStack(ModItems.SOLAR_WAFER.get()),
+                AssemblyProgramType.DRILL)
+                .build(consumer, RL("assembly/solar_wafer"));
 
         // amadron (core static offers only)
         amadronStatic(

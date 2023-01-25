@@ -1,0 +1,8 @@
+{
+	"credit": "Model by Daniel Rose",
+	"texture_size": [128, 128],
+	"textures": {
+		"0": "pneumaticcraft:model/solar_compressor",
+		"particle": "pneumaticcraft:model/solar_compressor"
+	}
+}

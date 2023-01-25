@@ -57,6 +57,7 @@ public class ModItems {
     public static final RegistryObject<Item> TRANSISTOR = register("transistor");
     public static final RegistryObject<Item> CAPACITOR = register("capacitor");
     public static final RegistryObject<Item> PRINTED_CIRCUIT_BOARD = register("printed_circuit_board");
+    public static final RegistryObject<Item> SOLAR_WAFER = register("solar_wafer");
     public static final RegistryObject<Item> STOP_WORM = register("stop_worm");
     public static final RegistryObject<Item> NUKE_VIRUS = register("nuke_virus");
     public static final RegistryObject<Item> COMPRESSED_IRON_GEAR = register("compressed_iron_gear");
