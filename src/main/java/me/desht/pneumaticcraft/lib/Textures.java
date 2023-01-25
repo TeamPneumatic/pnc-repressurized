@@ -41,6 +41,7 @@ public class Textures {
     public static final ResourceLocation MODEL_SPAWNER_AGITATOR = modelTexture("spawner_agitator.png");
     public static final ResourceLocation MODEL_TRANSFER_GADGET_IN = modelTexture("transfer_gadget_in.png");
     public static final ResourceLocation MODEL_TRANSFER_GADGET_OUT = modelTexture("transfer_gadget_out.png");
+    public static final ResourceLocation MODEL_SOLAR_COMPRESSOR = modelTexture("solar_compressor.png");
 
     // Tube Module textures
     public static final ResourceLocation MODEL_FLOW_DETECTOR = tubeModuleTexture("flow_detector.png");
@@ -126,6 +127,9 @@ public class Textures {
     // GUI background textures
     public static final ResourceLocation GUI_AIR_COMPRESSOR = guiTexture("gui_air_compressor.png");
     public static final ResourceLocation GUI_ADVANCED_AIR_COMPRESSOR = guiTexture("gui_advanced_air_compressor.png");
+    public static final ResourceLocation GUI_SOLAR_COMPRESSOR_INACTIVE = guiTexture("gui_solar_compressor_inactive.png");
+    public static final ResourceLocation GUI_SOLAR_COMPRESSOR_ACTIVE = guiTexture("gui_solar_compressor_active.png");
+    public static final ResourceLocation GUI_SOLAR_COMPRESSOR_BROKEN = guiTexture("gui_solar_compressor_broken.png");
     public static final ResourceLocation GUI_AIR_CANNON = guiTexture("gui_air_cannon.png");
     public static final ResourceLocation GUI_4UPGRADE_SLOTS = guiTexture("gui_pressure_chamber.png");
     public static final ResourceLocation GUI_CHARGING_STATION = guiTexture("gui_charging_station.png");

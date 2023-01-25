@@ -139,6 +139,8 @@ public class ModBlocks {
             AirCompressorBlock::new);
     public static final RegistryObject<AdvancedAirCompressorBlock> ADVANCED_AIR_COMPRESSOR = register("advanced_air_compressor",
             AdvancedAirCompressorBlock::new);
+    public static final RegistryObject<SolarCompressorBlock> SOLAR_COMPRESSOR = register("solar_compressor",
+            SolarCompressorBlock::new);
     public static final RegistryObject<LiquidHopperBlock> LIQUID_HOPPER = register("liquid_hopper",
             LiquidHopperBlock::new, block -> () -> new LiquidHopperBlock.ItemBlockLiquidHopper(block.get()));
     public static final RegistryObject<DroneRedstoneEmitterBlock> DRONE_REDSTONE_EMITTER = registerNoItem("drone_redstone_emitter",

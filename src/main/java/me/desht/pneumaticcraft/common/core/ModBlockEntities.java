@@ -161,6 +161,8 @@ public class ModBlockEntities {
             = register("reinforced_pressure_tube", ReinforcedPressureTubeBlockEntity::new, ModBlocks.REINFORCED_PRESSURE_TUBE);
     public static final RegistryObject<BlockEntityType<TubeJunctionBlockEntity>> TUBE_JUNCTION
             = register("tube_junction", TubeJunctionBlockEntity::new, ModBlocks.TUBE_JUNCTION);
+    public static final RegistryObject<BlockEntityType<SolarCompressorBlockEntity>> SOLAR_COMPRESSOR
+            = register("solar_compressor", SolarCompressorBlockEntity::new, ModBlocks.SOLAR_COMPRESSOR);
 
     @SafeVarargs
     public static <T extends BlockEntity> RegistryObject<BlockEntityType<T>> register(String name, BlockEntityType.BlockEntitySupplier<T> supplier, RegistryObject<? extends Block>... blocks) {

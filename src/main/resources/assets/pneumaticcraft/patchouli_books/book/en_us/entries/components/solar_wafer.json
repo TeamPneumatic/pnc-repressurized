@@ -1,0 +1,16 @@
+{
+  "name": "Solar Wafer",
+  "icon": "pneumaticcraft:solar_wafer",
+  "category": "pneumaticcraft:components",
+  "advancement": "pneumaticcraft:assembly_controller",
+  "pages": [
+    {
+      "type": "text",
+      "text": "The $(item)Solar Wafer/$ is used to craft and repair $(l:compressors/solar_compressor)Solar Compressors/$."
+    },
+    {
+      "type": "pneumaticcraft:assembly_system",
+      "recipe": "pneumaticcraft:assembly/solar_wafer"
+    }
+  ]
+}

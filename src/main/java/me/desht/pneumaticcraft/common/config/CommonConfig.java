@@ -46,6 +46,7 @@ public class CommonConfig {
         public ForgeConfigSpec.IntValue electrostaticLightningChance;
         public ForgeConfigSpec.IntValue elevatorBaseBlocksPerBase;
         public ForgeConfigSpec.IntValue fluxCompressorEfficiency;
+        public ForgeConfigSpec.DoubleValue solarCompressorMultiplier;
         public ForgeConfigSpec.BooleanValue keroseneLampCanUseAnyFuel;
         public ForgeConfigSpec.DoubleValue keroseneLampFuelEfficiency;
         public ForgeConfigSpec.IntValue kineticCompressorEfficiency;
@@ -259,6 +260,10 @@ public class CommonConfig {
                 .comment("The amount of air produced by using 100 FE (Forge Energy) in the flux compressor")
                 .translation("pneumaticcraft.config.common.machine_properties.flux_compressor_efficiency")
                 .defineInRange("flux_compressor_efficiency", 40, 0, Integer.MAX_VALUE);
+        machines.solarCompressorMultiplier = builder
+                .comment("The amount to multiply the air production of the solar compressor by.")
+                .translation("pneumaticcraft.config.common.machine_properties.solar_compressor_multiplier")
+                .defineInRange("solar_compressor_multiplier", 1.0, 0, Double.MAX_VALUE);
         machines.keroseneLampCanUseAnyFuel = builder
                 .comment("Can the Kerosene Lamp burn any kind of fuel?  If false, only Kerosene can be burnt")
                 .translation("pneumaticcraft.config.common.machine_properties.kerosene_lamp_can_use_any_fuel")
