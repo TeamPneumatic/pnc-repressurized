@@ -280,6 +280,10 @@ public class UpgradesDBSetup {
                 .with(ModUpgrades.RANGE.get(), 6)
                 .with(ModUpgrades.SPEED.get(), 10)
                 .with(ModUpgrades.SECURITY.get(), 1));
+        db.addApplicableUpgrades(ModBlockEntities.SOLAR_COMPRESSOR.get(), new Builder()
+                .with(ModUpgrades.SECURITY.get(), 1)
+                .with(ModUpgrades.VOLUME.get(), MAX_VOLUME)
+                .with(ModUpgrades.SPEED.get(), 10));
 
         // universal sensor needs some dynamic calculation...
         Builder sensorBuilder = new Builder();

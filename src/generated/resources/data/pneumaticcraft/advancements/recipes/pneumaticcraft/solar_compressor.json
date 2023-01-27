@@ -1,0 +1,34 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "pneumaticcraft:solar_compressor"
+    ]
+  },
+  "criteria": {
+    "has_printed_circuit_board": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "pneumaticcraft:printed_circuit_board"
+            ]
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "pneumaticcraft:solar_compressor"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_printed_circuit_board",
+      "has_the_recipe"
+    ]
+  ]
+}

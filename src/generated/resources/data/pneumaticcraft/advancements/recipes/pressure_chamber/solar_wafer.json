@@ -1,0 +1,34 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "pneumaticcraft:pressure_chamber/solar_wafer"
+    ]
+  },
+  "criteria": {
+    "pressure_chamber_valve": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "pneumaticcraft:pressure_chamber_valve"
+            ]
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "pneumaticcraft:pressure_chamber/solar_wafer"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "pressure_chamber_valve",
+      "has_the_recipe"
+    ]
+  ]
+}
