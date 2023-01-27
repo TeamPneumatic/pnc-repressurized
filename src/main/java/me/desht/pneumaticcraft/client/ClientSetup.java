@@ -185,6 +185,7 @@ public class ClientSetup {
         event.registerLayerDefinition(PNCModelLayers.ASSEMBLY_IO_UNIT, AssemblyIOUnitRenderer::createBodyLayer);
         event.registerLayerDefinition(PNCModelLayers.ASSEMBLY_PLATFORM, AssemblyPlatformRenderer::createBodyLayer);
         event.registerLayerDefinition(PNCModelLayers.ELEVATOR_BASE, ElevatorBaseRenderer::createBodyLayer);
+        event.registerLayerDefinition(PNCModelLayers.MANUAL_COMPRESSOR, ManualCompressorRenderer::createBodyLayer);
         event.registerLayerDefinition(PNCModelLayers.PRESSURE_CHAMBER_INTERFACE, PressureChamberInterfaceRenderer::createBodyLayer);
         event.registerLayerDefinition(PNCModelLayers.SPAWNER_EXTRACTOR, SpawnerExtractorRenderer::createBodyLayer);
         event.registerLayerDefinition(PNCModelLayers.SPAWNER_EXTRACTOR, SpawnerExtractorRenderer::createBodyLayer);
@@ -308,6 +309,7 @@ public class ClientSetup {
         event.registerBlockEntityRenderer(ModBlockEntities.GAS_LIFT.get(), RenderGasLift::new);
         event.registerBlockEntityRenderer(ModBlockEntities.LIQUID_HOPPER.get(), RenderLiquidHopper::new);
         event.registerBlockEntityRenderer(ModBlockEntities.LIQUID_COMPRESSOR.get(), RenderLiquidCompressor::new);
+        event.registerBlockEntityRenderer(ModBlockEntities.MANUAL_COMPRESSOR.get(), ManualCompressorRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.PNEUMATIC_DOOR.get(), PneumaticDoorRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.PNEUMATIC_DOOR_BASE.get(), PneumaticDoorBaseRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.PRESSURE_CHAMBER_VALVE.get(), PressureChamberRenderer::new);

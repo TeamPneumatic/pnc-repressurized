@@ -143,6 +143,8 @@ public class ModBlocks {
             SolarCompressorBlock::new);
     public static final RegistryObject<LiquidHopperBlock> LIQUID_HOPPER = register("liquid_hopper",
             LiquidHopperBlock::new, block -> () -> new LiquidHopperBlock.ItemBlockLiquidHopper(block.get()));
+    public static final RegistryObject<ManualCompressorBlock> MANUAL_COMPRESSOR = register("manual_compressor",
+            ManualCompressorBlock::new);
     public static final RegistryObject<DroneRedstoneEmitterBlock> DRONE_REDSTONE_EMITTER = registerNoItem("drone_redstone_emitter",
             DroneRedstoneEmitterBlock::new);
     public static final RegistryObject<HeatSinkBlock> HEAT_SINK = register("heat_sink",
