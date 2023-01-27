@@ -39,6 +39,7 @@ public class Textures {
     public static final ResourceLocation MODEL_LOGISTICS_FRAME_DEFAULT_STORAGE = modelTexture("logistics_frame_default_storage.png");
     public static final ResourceLocation MODEL_LOGISTICS_FRAME_STORAGE = modelTexture("logistics_frame_storage.png");
     public static final ResourceLocation MODEL_LOGISTICS_FRAME_REQUESTER = modelTexture("logistics_frame_requester.png");
+    public static final ResourceLocation MODEL_MANUAL_COMPRESSOR = modelTexture("manual_compressor.png");
     public static final ResourceLocation MODEL_CROP_SUPPORT = modelTexture("crop_support.png");
     public static final ResourceLocation MODEL_SPAWNER_EXTRACTOR = modelTexture("spawner_extractor.png");
     public static final ResourceLocation MODEL_SPAWNER_AGITATOR = modelTexture("spawner_agitator.png");
