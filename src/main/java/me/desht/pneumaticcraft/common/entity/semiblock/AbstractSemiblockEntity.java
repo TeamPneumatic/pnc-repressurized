@@ -33,6 +33,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -96,6 +97,11 @@ public abstract class AbstractSemiblockEntity extends Entity implements ISemiBlo
                 level.addFreshEntity(itemEntity);
             }
         }
+    }
+
+    @Override
+    public Component getDisplayName() {
+        return new ItemStack(getDroppedItem()).getDisplayName();
     }
 
     @Override
