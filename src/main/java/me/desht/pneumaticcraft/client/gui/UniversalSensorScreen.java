@@ -38,7 +38,6 @@ import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.AbstractWidget;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
@@ -74,10 +73,9 @@ public class UniversalSensorScreen extends AbstractPneumaticCraftContainerScreen
         imageHeight = 239;
     }
 
-    public static void maybeUpdateButtons() {
-        Screen guiScreen = Minecraft.getInstance().screen;
-        if (guiScreen instanceof UniversalSensorScreen) {
-            ((UniversalSensorScreen) guiScreen).updateButtons();
+    public static void refreshIfOpen() {
+        if (Minecraft.getInstance().screen instanceof UniversalSensorScreen us) {
+            us.updateButtons();
         }
     }
 
@@ -259,7 +257,7 @@ public class UniversalSensorScreen extends AbstractPneumaticCraftContainerScreen
                     textField.setMaxLength(MAX_TEXTFIELD_LENGTH);
                     textField.setWidth(98);
                 }
-                textField.changeFocus(true);
+                textField.setFocus(true);
                 setFocused(textField);
             } else {
                 comboBox.setElements(textOptions);
