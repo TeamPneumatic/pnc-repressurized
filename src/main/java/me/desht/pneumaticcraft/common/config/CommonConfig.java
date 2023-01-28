@@ -173,6 +173,7 @@ public class CommonConfig {
         public ForgeConfigSpec.IntValue stuckDroneTeleportTicks;
         public ForgeConfigSpec.IntValue maxDroneChargingStationSearchRange;
         public ForgeConfigSpec.IntValue maxDroneTeleportRange;
+        public ForgeConfigSpec.BooleanValue allowNavigateToUnloadedChunks;
         public ForgeConfigSpec.BooleanValue droneDebuggerPathParticles;
         public ForgeConfigSpec.BooleanValue enableDroneSuffocation;
     }
@@ -725,8 +726,12 @@ public class CommonConfig {
                 .defineInRange("max_drone_charging_station_search_range", 80, 16, Integer.MAX_VALUE);
         drones.maxDroneTeleportRange = builder
                 .comment("The maximum distance that a Drone may teleport when it can't find a path to its destination. Default value of 0 means no limit. This is primarily intended to limit abuse of teleportation to other players on PvP servers, but may find other uses. Be careful about setting this value very low.")
-                .translation("pneumaticcraft.config.common.advanced.max_drone_charging_station_search_range")
+                .translation("pneumaticcraft.config.common.advanced.max_drone_teleport_range")
                 .defineInRange("max_drone_teleport_range", 0, 0, Integer.MAX_VALUE);
+        drones.allowNavigateToUnloadedChunks = builder
+                .comment("When false, drones may not navigate or teleport into unloaded chunks. Setting this true may lead to server performance and stability issues - beware.")
+                .translation("pneumaticcraft.config.common.advanced.allow_navigate_to_unloaded_chunks")
+                .define("allow_navigate_to_unloaded_chunks", false);
         drones.stuckDroneTeleportTicks = builder
                 .comment("If a Drone has found a path, but gets stuck on a block along that path, it will teleport to its destination after this many ticks of being stuck. Set this to 0 to disable teleporting, which will likely leave the drone waiting there forever (or until it runs out of air). Note that getting stuck on a block is usually the fault of the mod that added the block (especially if the block has a non-full-cube shape), but if you encounter this behaviour, please report it as a PneumaticCraft: Repressurized issue so it can be investigated.")
                 .translation("pneumaticcraft.config.common.advanced.stuck_drone_teleport_ticks")

@@ -146,6 +146,9 @@ public class EntityPathNavigateDrone extends FlyingPathNavigation implements IPa
     }
 
     private boolean teleportationAllowed(BlockPos pos) {
+        if (!checkForChunkLoading(pos)) {
+            return false;
+        }
         int max = ConfigHelper.common().drones.maxDroneTeleportRange.get();
         return !droneEntity.isTeleportRangeLimited() || max == 0 || pos.closerToCenterThan(droneEntity.getDronePos(), max);
     }
@@ -177,7 +180,7 @@ public class EntityPathNavigateDrone extends FlyingPathNavigation implements IPa
             }
 
             if (++teleportCounter > TELEPORT_TICKS) {
-                if (droneEntity.isBlockValidPathfindBlock(telPos)) {
+                if (checkForChunkLoading(telPos) && droneEntity.isBlockValidPathfindBlock(telPos)) {
                     teleport();
                 }
                 teleportCounter = -1;
@@ -222,6 +225,11 @@ public class EntityPathNavigateDrone extends FlyingPathNavigation implements IPa
 
     @Override
     public boolean moveToXYZ(double x, double y, double z) {
+        BlockPos pos = new BlockPos(x, y, z);
+        if (!checkForChunkLoading(pos)) {
+            droneEntity.getDebugger().addEntry("pneumaticcraft.gui.progWidget.general.debug.unloadedChunk", pos);
+            return false;
+        }
         boolean success = moveTo(x, y, z, droneEntity.getDroneSpeed());
         if (success) forceRidingEntityPaths();
         return success;
@@ -234,12 +242,22 @@ public class EntityPathNavigateDrone extends FlyingPathNavigation implements IPa
         return success;
     }
 
+    private boolean checkForChunkLoading(BlockPos pos) {
+        return ConfigHelper.common().drones.allowNavigateToUnloadedChunks.get() || level.isLoaded(pos);
+    }
+
     /**
-     * Override to prevent MobEntity#updateEntityActionState() assigning a path with a higher speed.
+     * Override to prevent MobEntity#updateEntityActionState() assigning a path with a higher speed and to check the
+     * target position is loaded, if necessary.
      */
     @Override
-    public boolean moveTo(Path pathentityIn, double speedIn) {
-        return super.moveTo(pathentityIn, droneEntity.getDroneSpeed());
+    public boolean moveTo(Path path, double speedIn) {
+        if (path != null && !checkForChunkLoading(path.getTarget())) {
+            droneEntity.getDebugger().addEntry("pneumaticcraft.gui.progWidget.general.debug.unloadedChunk", path.getTarget());
+            return false;
+        } else {
+            return super.moveTo(path, droneEntity.getDroneSpeed());
+        }
     }
 
     /**
