@@ -331,12 +331,12 @@ public class ClientUtils {
      * @param value value to sync
      */
     public static void syncViaOpenContainerScreen(int syncId, Object value) {
-        if (Minecraft.getInstance().screen instanceof AbstractContainerScreen screen) {
+        if (Minecraft.getInstance().screen instanceof AbstractContainerScreen<?> screen) {
             AbstractContainerMenu container = screen.getMenu();
-            if (container instanceof AbstractPneumaticCraftMenu pncMenu) {
+            if (container instanceof AbstractPneumaticCraftMenu<?> pncMenu) {
                 pncMenu.updateField(syncId, value);
             }
-            if (screen instanceof AbstractPneumaticCraftContainerScreen pncScreen) {
+            if (screen instanceof AbstractPneumaticCraftContainerScreen<?,?> pncScreen) {
                 pncScreen.onGuiUpdate();
             }
         }

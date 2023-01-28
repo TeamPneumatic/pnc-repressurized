@@ -239,7 +239,7 @@ public class UniversalSensorBlockEntity extends AbstractAirHandlingBlockEntity i
     private void setSensorSetting(String sensorPath) {
         sensorSetting = sensorPath;
         if (getLevel() != null && getLevel().isClientSide) {
-            UniversalSensorScreen.maybeUpdateButtons();
+            UniversalSensorScreen.refreshIfOpen();
         }
     }
 
@@ -358,7 +358,7 @@ public class UniversalSensorBlockEntity extends AbstractAirHandlingBlockEntity i
             positions.addAll(gpsPositions);
             outOfRange = posList.size() - gpsPositions.size();
         }
-        if (getLevel() != null && getLevel().isClientSide) UniversalSensorScreen.maybeUpdateButtons();
+        if (getLevel() != null && getLevel().isClientSide) UniversalSensorScreen.refreshIfOpen();
     }
 
     @Override
