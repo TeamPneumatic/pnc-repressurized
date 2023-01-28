@@ -23,6 +23,7 @@ public class PneumaticValues {
     public static final float DANGER_PRESSURE_TIER_ONE = 5;
     public static final float DANGER_PRESSURE_PRESSURE_TUBE = DANGER_PRESSURE_TIER_ONE;
     public static final float DANGER_PRESSURE_AIR_COMPRESSOR = DANGER_PRESSURE_TIER_ONE;
+    public static final float DANGER_PRESSURE_MANUAL_COMPRESSOR = DANGER_PRESSURE_TIER_ONE;
     public static final float DANGER_PRESSURE_AIR_CANNON = DANGER_PRESSURE_TIER_ONE;
     public static final float DANGER_PRESSURE_PRESSURE_CHAMBER = DANGER_PRESSURE_TIER_ONE;
     public static final float DANGER_PRESSURE_ELEVATOR = DANGER_PRESSURE_TIER_ONE;
@@ -51,6 +52,7 @@ public class PneumaticValues {
     public static final float MAX_PRESSURE_TIER_ONE = 7F;
     public static final float MAX_PRESSURE_PRESSURE_TUBE = MAX_PRESSURE_TIER_ONE;
     public static final float MAX_PRESSURE_AIR_COMPRESSOR = MAX_PRESSURE_TIER_ONE;
+    public static final float MAX_PRESSURE_MANUAL_COMPRESSOR = MAX_PRESSURE_TIER_ONE;
     public static final float MAX_PRESSURE_AIR_CANNON = MAX_PRESSURE_TIER_ONE;
     public static final float MAX_PRESSURE_PRESSURE_CHAMBER = MAX_PRESSURE_TIER_ONE;
     public static final float MAX_PRESSURE_ELEVATOR = MAX_PRESSURE_TIER_ONE;
@@ -118,6 +120,7 @@ public class PneumaticValues {
     // volumes (mL)
     public static final int VOLUME_AIR_COMPRESSOR = 5000;
     public static final int VOLUME_ADVANCED_AIR_COMPRESSOR = 10000;
+    public static final int VOLUME_MANUAL_COMPRESSOR = 5000;
     public static final int VOLUME_AIR_CANNON = 2000;
     public static final int VOLUME_PRESSURE_TUBE = 1000;
     public static final int VOLUME_CHARGING_STATION = 1000;

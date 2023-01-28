@@ -54,6 +54,9 @@ public class CommonConfig {
         public ForgeConfigSpec.BooleanValue omniHopperDispenser;
         public ForgeConfigSpec.BooleanValue securityStationCreativePlayersExempt;
         public ForgeConfigSpec.BooleanValue securityStationAllowHacking;
+        public ForgeConfigSpec.IntValue manualCompressorAirPerCycle;
+        public ForgeConfigSpec.DoubleValue manualCompressorHungerDrainPerCycleStep;
+        public ForgeConfigSpec.BooleanValue manualCompressorAllowFakePlayers;
         public ForgeConfigSpec.IntValue pneumaticDynamoEfficiency;
         public ForgeConfigSpec.IntValue pneumaticEngineEfficiency;
         public ForgeConfigSpec.IntValue pneumaticGeneratorEfficiency;
@@ -292,6 +295,18 @@ public class CommonConfig {
                 .comment("Can Security Stations be hacked? If set to false, Security Stations are purely a grief protection feature with no hacking minigame")
                 .translation("pneumaticcraft.config.common.machine_properties.security_station_allow_hacking")
                 .define("security_station_allow_hacking", true);
+        machines.manualCompressorAirPerCycle = builder
+                .comment("The amount of air produced for 1 pump cycle in the manual compressor")
+                .translation("pneumaticcraft.config.common.machine_properties.manual_compressor_air_per_cycle")
+                .defineInRange("manual_compressor_air_per_cycle", 1000, 0, Integer.MAX_VALUE);
+        machines.manualCompressorHungerDrainPerCycleStep = builder
+                .comment("The amount of hunger consumed from the player for 1 pump cycle step in the manual compressor. For comparison, sprinting consumes 0.1 hunger per meter sprinted.")
+                .translation("pneumaticcraft.config.common.machine_properties.manual_compressor_hunger_drain_per_cycle")
+                .defineInRange("manual_compressor_hunger_drain_per_cycle_step", 0.1, 0, 40);
+        machines.manualCompressorAllowFakePlayers = builder
+                .comment("Whether to allow fake players to use the manual compressor")
+                .translation("pneumaticcraft.config.common.machine_properties.manual_compressor_allow_fake_players")
+                .define("manual_compressor_allow_fake_players", false);
         machines.pneumaticDynamoEfficiency = builder
                 .comment("The amount of FE (Forge Energy) produced by using 100mL of air in the Pneumatic Dynamo")
                 .translation("pneumaticcraft.config.common.machine_properties.pneumatic_dynamo_efficiency")
