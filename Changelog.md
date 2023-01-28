@@ -8,12 +8,30 @@ Changes are in reverse chronological order; newest changes at the top.
 
 1.19.2 builds may also work on Minecraft 1.19.1 but no support will be provided for that.
 
-## 4.2.1
+## 4.3.0
+
+### New
+* Added new Solar Compressor, thanks @Daniel0Widing
+  * Generates compressed air from sunlight. While generating compressed air, it also generates heat, proportional to how much compressed air is being generated.
+  * The efficiency of the compressor increases with its heat up to 350ºC. At that point the compressed air and heat generation remain constant up to 425ºC, at which point the compressor overheats, dumping all accumulated heat and shutting down. In order to restart the compressor, a Solar Wafer has to be right-clicked on it, consuming the wafer.
+  * The compressed air production of the compressor is roughly equivalent to the Flux Compressor. The trade-off for getting free compressed air is that the Solar Compressor only works during the day and requires a puzzle-like solution to keep it stable at max efficiency (confirmed possible with max speed upgrades using default configuration).
+* Added new Manual Compressor, thanks @Daniel0Widing
+  * Generates compressed air from manual labor (right-clicking) and player hunger.
+  * Generates a fixed amount of air each pump cycle, but the more air in the compressor, the longer each compressor cycle takes.
+  * Impossible to generate air at pressure greater than 5 bar.
+
+### Updates
+* Added a new `allow_navigate_to_unloaded_chunks` config setting, default false
+  * When false, Drones may not navigate (including teleportation) into unloaded chunks
+  * Setting this to true can cause server instability, including lockups, so beware
 
 ### Fixes
 * The `/pncr global_var delete` command now accepts arbitrary strings, in case bad variable names were accidentally added via GPS Tool GUI
 * GPS Tool (and Area Tool) GUI now only allows alphanumeric and underscore characters in variable names
 * Fixed Biodiesel lacking a bucket item and in-world block
+* Fixed Universal Sensor GUI textfield flickering between focused and unfocused for some sensor types
+* Fixed crash with certain invalid entity filter input
+* Fixed entity filters not being able to match players by name, using quoted `"player_name"` syntax (worked for named entities, but not players)
 
 ## 4.2.0
 
