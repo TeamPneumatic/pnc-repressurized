@@ -1171,6 +1171,7 @@
    "pneumaticcraft.gui.progWidget.general.affectingSides" : "Affecting Sides:",
    "pneumaticcraft.gui.progWidget.general.debug.cantNavigate" : "Can't navigate to one or more blocks.",
    "pneumaticcraft.gui.progWidget.general.debug.stuckBlock" : "Drone found a path but got stuck.",
+   "pneumaticcraft.gui.progWidget.general.debug.unloadedChunk" : "Navigating into unloaded chunks disallowed by server config",
    "pneumaticcraft.gui.progWidget.general.error.emptyVariable" : "Variable is empty. Specify a valid variable.",
    "pneumaticcraft.gui.progWidget.general.error.multipleStartPieces" : "More than one Start piece in this program. Only one is allowed.",
    "pneumaticcraft.gui.progWidget.general.error.noPieceConnected" : "No piece connected (on the bottom).",
