@@ -2,7 +2,7 @@ package me.desht.pneumaticcraft.client.render.blockentity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Vector3f;
+import com.mojang.math.Axis;
 import me.desht.pneumaticcraft.client.model.PNCModelLayers;
 import me.desht.pneumaticcraft.common.block.entity.SolarCompressorBlockEntity;
 import me.desht.pneumaticcraft.lib.Textures;
@@ -12,6 +12,7 @@ import net.minecraft.client.model.geom.builders.*;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import org.joml.Vector3f;
 
 public class SolarCompressorRenderer extends AbstractBlockEntityModelRenderer<SolarCompressorBlockEntity> {
     private final ModelPart panels;
@@ -61,12 +62,12 @@ public class SolarCompressorRenderer extends AbstractBlockEntityModelRenderer<So
 
             // Rotates panel with sun during the day
             if (panelAngle < 90 || panelAngle > 270) {
-                matrixStackIn.mulPose(Vector3f.ZN.rotationDegrees(panelAngle));
+                matrixStackIn.mulPose(Axis.ZN.rotationDegrees(panelAngle));
             }
 
             // Returns panel to default position
             else {
-                matrixStackIn.mulPose(Vector3f.ZN.rotationDegrees(90 - (panelAngle - 90)));
+                matrixStackIn.mulPose(Axis.ZN.rotationDegrees(90 - (panelAngle - 90)));
             }
 
             // Translates panels back to original position after rotation
