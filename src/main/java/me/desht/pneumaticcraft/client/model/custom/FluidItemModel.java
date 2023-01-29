@@ -57,6 +57,7 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Function;
 
 public class FluidItemModel implements IDynamicBakedModel {
@@ -131,8 +132,7 @@ public class FluidItemModel implements IDynamicBakedModel {
     }
 
     private BakedQuad createQuad(List<Vec3> vecs, float[] cols, TextureAtlasSprite sprite, Direction face, float u1, float u2, float v1, float v2) {
-        BakedQuad[] quad = new BakedQuad[1];
-        QuadBakingVertexConsumer quadBaker = new QuadBakingVertexConsumer(q -> quad[0] = q);
+        QuadBakingVertexConsumer.Buffered quadBaker = new QuadBakingVertexConsumer.Buffered();
         Vec3 normal = Vec3.atLowerCornerOf(face.getNormal());
 
         putVertex(quadBaker, normal, vecs.get(0).x, vecs.get(0).y, vecs.get(0).z, u1, v1, sprite, cols, face);
@@ -140,7 +140,7 @@ public class FluidItemModel implements IDynamicBakedModel {
         putVertex(quadBaker, normal, vecs.get(2).x, vecs.get(2).y, vecs.get(2).z, u2, v2, sprite, cols, face);
         putVertex(quadBaker, normal, vecs.get(3).x, vecs.get(3).y, vecs.get(3).z, u2, v1, sprite, cols, face);
 
-        return quad[0];
+        return quadBaker.getQuad();
     }
 
     private void putVertex(QuadBakingVertexConsumer quadBaker, Vec3 normal,
@@ -203,7 +203,7 @@ public class FluidItemModel implements IDynamicBakedModel {
     private record Geometry(BlockModel baseModel) implements IUnbakedGeometry<Geometry> {
         @Override
         public BakedModel bake(IGeometryBakingContext owner, ModelBaker baker, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelTransform, ItemOverrides overrides, ResourceLocation modelLocation) {
-            return new FluidItemModel(baseModel.bake(baker, baseModel.parent, spriteGetter, modelTransform, modelLocation, true));
+            return new FluidItemModel(baseModel.bake(baker, Objects.requireNonNull(baseModel.parent), spriteGetter, modelTransform, modelLocation, true));
         }
 
         @Override

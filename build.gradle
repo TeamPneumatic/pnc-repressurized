@@ -118,12 +118,11 @@ dependencies {
 		exclude group: "net.minecraftforge", module: "forge"
 	}
 	// compile against the JEI API but do not include it at runtime
-	// FIXME: depending on 1.19.2 artifacts right now
-	compileOnly fg.deobf("mezz.jei:jei-1.19.2-common-api:${jei_version}")
-	compileOnly fg.deobf("mezz.jei:jei-1.19.2-forge-api:${jei_version}")
+	compileOnly fg.deobf("mezz.jei:jei-${mc_version}-common-api:${jei_version}")
+	compileOnly fg.deobf("mezz.jei:jei-${mc_version}-forge-api:${jei_version}")
 	// at runtime, use the full JEI
-	//runtimeOnly fg.deobf("mezz.jei:jei-${mc_version}-common:${jei_version}")
-	//runtimeOnly fg.deobf("mezz.jei:jei-${mc_version}-forge:${jei_version}")
+	runtimeOnly fg.deobf("mezz.jei:jei-${mc_version}-common:${jei_version}")
+	runtimeOnly fg.deobf("mezz.jei:jei-${mc_version}-forge:${jei_version}")
 	compileOnly fg.deobf("top.theillusivec4.curios:curios-forge:${curios_version}:api")
 	runtimeOnly fg.deobf("top.theillusivec4.curios:curios-forge:${curios_version}")
 	compileOnly fg.deobf("vazkii.botania:Botania:${botania_version}-FORGE:api")
