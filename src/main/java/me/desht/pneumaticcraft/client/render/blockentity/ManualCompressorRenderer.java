@@ -2,7 +2,7 @@ package me.desht.pneumaticcraft.client.render.blockentity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Vector3f;
+import com.mojang.math.Axis;
 import me.desht.pneumaticcraft.client.model.PNCModelLayers;
 import me.desht.pneumaticcraft.common.block.entity.ManualCompressorBlockEntity;
 import me.desht.pneumaticcraft.lib.Textures;
@@ -13,6 +13,7 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.util.Mth;
+import org.joml.Vector3f;
 
 public class ManualCompressorRenderer extends AbstractBlockEntityModelRenderer<ManualCompressorBlockEntity> {
     private final ModelPart pump;
@@ -68,10 +69,10 @@ public class ManualCompressorRenderer extends AbstractBlockEntityModelRenderer<M
         matrixStackIn.translate(0, -9 / 16F, 0);
 
         switch (te.getRotation()) {
-            case NORTH -> matrixStackIn.mulPose(Vector3f.YN.rotationDegrees(0));
-            case EAST -> matrixStackIn.mulPose(Vector3f.YN.rotationDegrees(270));
-            case SOUTH -> matrixStackIn.mulPose(Vector3f.YN.rotationDegrees(180));
-            case WEST -> matrixStackIn.mulPose(Vector3f.YN.rotationDegrees(90));
+            case NORTH -> matrixStackIn.mulPose(Axis.YN.rotationDegrees(0));
+            case EAST -> matrixStackIn.mulPose(Axis.YN.rotationDegrees(270));
+            case SOUTH -> matrixStackIn.mulPose(Axis.YN.rotationDegrees(180));
+            case WEST -> matrixStackIn.mulPose(Axis.YN.rotationDegrees(90));
         }
 
         matrixStackIn.translate(0, 9 / 16F, 0);
