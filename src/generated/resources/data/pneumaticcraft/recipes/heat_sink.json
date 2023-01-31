@@ -6,7 +6,7 @@
       "item": "minecraft:iron_bars"
     },
     "G": {
-      "tag": "forge:ingots/gold"
+      "tag": "forge:ingots/copper"
     },
     "I": {
       "tag": "forge:ingots/compressed_iron"

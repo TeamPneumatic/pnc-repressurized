@@ -4,7 +4,7 @@
     {
       "type": "pneumaticcraft:stacked_item",
       "count": 2,
-      "tag": "forge:nuggets/gold"
+      "tag": "pneumaticcraft:wiring"
     },
     {
       "tag": "forge:slimeballs"

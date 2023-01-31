@@ -1,12 +1,12 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "assembly_controller": {
+    "has_copper_ingot": {
       "conditions": {
         "items": [
           {
             "items": [
-              "pneumaticcraft:assembly_controller"
+              "minecraft:copper_ingot"
             ]
           }
         ]
@@ -15,20 +15,20 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "pneumaticcraft:assembly/solar_cell"
+        "recipe": "pneumaticcraft:copper_nugget"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
   },
   "requirements": [
     [
-      "assembly_controller",
+      "has_copper_ingot",
       "has_the_recipe"
     ]
   ],
   "rewards": {
     "recipes": [
-      "pneumaticcraft:assembly/solar_cell"
+      "pneumaticcraft:copper_nugget"
     ]
   }
 }

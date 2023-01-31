@@ -262,6 +262,15 @@ public class ModRecipeProvider extends RecipeProvider {
                 'I', PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON
         ).save(consumer);
 
+        shapeless(ModItems.COPPER_NUGGET.get(), 9, Items.COPPER_INGOT,
+                Items.COPPER_INGOT
+        ).save(consumer);
+
+        shaped(Items.COPPER_INGOT, Items.COPPER_INGOT,
+                "NNN/NNN/NNN",
+                'N', ModItems.COPPER_NUGGET.get()
+        ).save(consumer);
+
         shaped(ModBlocks.DISPLAY_TABLE.get(), ModBlocks.REINFORCED_STONE.get(),
                 "SSS/I I",
                 'S', ModBlocks.REINFORCED_STONE_SLAB.get(),
@@ -397,7 +406,7 @@ public class ModRecipeProvider extends RecipeProvider {
         ).save(consumer);
 
         shapeless(ModItems.GUN_AMMO.get(), ModItems.MINIGUN.get(),
-                Tags.Items.GUNPOWDER, PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON, Tags.Items.INGOTS_GOLD
+                Tags.Items.GUNPOWDER, PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON, Tags.Items.INGOTS_COPPER
         ).save(consumer);
         miniGunAmmo(ModItems.GUN_AMMO_AP.get(), Tags.Items.GEMS_DIAMOND, Tags.Items.GEMS_DIAMOND).save(consumer);
         miniGunAmmo(ModItems.GUN_AMMO_EXPLOSIVE.get(), Blocks.TNT, Blocks.TNT).save(consumer);
@@ -427,7 +436,7 @@ public class ModRecipeProvider extends RecipeProvider {
                 "BBB/IGI",
                 'B', Blocks.IRON_BARS,
                 'I', PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON,
-                'G', Tags.Items.INGOTS_GOLD
+                'G', Tags.Items.INGOTS_COPPER
         ).save(consumer);
 
         shapeless(ModItems.COMPRESSED_IRON_INGOT.get(), 9, ModBlocks.COMPRESSED_IRON_BLOCK.get(),
@@ -522,7 +531,7 @@ public class ModRecipeProvider extends RecipeProvider {
                 'C', Tags.Items.CHESTS_WOODEN,
                 'I', PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON,
                 'B', ModItems.CANNON_BARREL.get(),
-                'G', Tags.Items.INGOTS_GOLD,
+                'G', Tags.Items.INGOTS_COPPER,
                 'L', Blocks.LEVER
         ).save(consumer);
 
@@ -628,7 +637,7 @@ public class ModRecipeProvider extends RecipeProvider {
 
         shaped(ModItems.PRESSURE_GAUGE.get(), ModItems.COMPRESSED_IRON_INGOT.get(),
                 " G /GIG/ G ",
-                'G', Tags.Items.INGOTS_GOLD,
+                'G', Tags.Items.INGOTS_COPPER,
                 'I', PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON
         ).save(consumer);
 
@@ -955,7 +964,7 @@ public class ModRecipeProvider extends RecipeProvider {
                 "ITI/GTG/III",
                 'I', PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON,
                 'T', ModBlocks.PRESSURE_TUBE.get(),
-                'G', Tags.Items.INGOTS_GOLD
+                'G', Tags.Items.INGOTS_COPPER
         ).save(consumer);
 
         shapeless(Items.PAPER, Items.PAPER, ModItems.TAG_FILTER.get()).save(consumer, RL("paper_from_tag_filter"));
@@ -1310,18 +1319,18 @@ public class ModRecipeProvider extends RecipeProvider {
                 .build(consumer, RL("pressure_chamber/compressed_iron_block"));
         pressureChamber(ImmutableList.of(
                         StackedIngredient.fromItems(2, Items.REDSTONE_TORCH),
-                        StackedIngredient.fromTag(Tags.Items.NUGGETS_GOLD, 3),
+                        StackedIngredient.fromTag(PneumaticCraftTags.Items.WIRING, 3),
                         Ingredient.of(ModItems.PLASTIC.get())),
                 1.5f, new ItemStack(ModItems.EMPTY_PCB.get(), 3))
                 .build(consumer, RL("pressure_chamber/empty_pcb"));
         pressureChamber(ImmutableList.of(
-                        StackedIngredient.fromTag(Tags.Items.NUGGETS_GOLD, 2),
+                        StackedIngredient.fromTag(PneumaticCraftTags.Items.WIRING, 2),
                         Ingredient.of(Tags.Items.SLIMEBALLS),
                         Ingredient.of(ModItems.PLASTIC.get())),
                 1f, new ItemStack(ModItems.CAPACITOR.get()))
                 .build(consumer, RL("pressure_chamber/capacitor"));
         pressureChamber(ImmutableList.of(
-                        StackedIngredient.fromTag(Tags.Items.NUGGETS_GOLD, 3),
+                        StackedIngredient.fromTag(PneumaticCraftTags.Items.WIRING, 3),
                         Ingredient.of(Tags.Items.DUSTS_REDSTONE),
                         Ingredient.of(ModItems.PLASTIC.get())),
                 1f, new ItemStack(ModItems.TRANSISTOR.get()))

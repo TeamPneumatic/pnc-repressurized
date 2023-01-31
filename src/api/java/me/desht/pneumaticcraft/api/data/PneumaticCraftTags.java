@@ -83,6 +83,7 @@ public class PneumaticCraftTags {
         public static final TagKey<Item> COMPRESSED_STONE = modTag("compressed_stone");
         public static final TagKey<Item> COMPRESSED_STONE_BRICKS = modTag("compressed_stone_bricks");
 
+        public static final TagKey<Item> WIRING = modTag("wiring");
         public static final TagKey<Item> UPGRADE_COMPONENTS = modTag("upgrade_components");
         public static final TagKey<Item> BASIC_DRONES = modTag("basic_drones");
         public static final TagKey<Item> PLASTIC_SHEETS = modTag("plastic_sheets");
@@ -92,6 +93,7 @@ public class PneumaticCraftTags {
         public static final TagKey<Item> STORAGE_BLOCKS_COMPRESSED_IRON = forgeTag("storage_blocks/compressed_iron");
         public static final TagKey<Item> GEARS = forgeTag("gears");
         public static final TagKey<Item> GEARS_COMPRESSED_IRON = forgeTag("gears/compressed_iron");
+        public static final TagKey<Item> NUGGETS_COPPER = forgeTag("nuggets/copper");
 
         public static final TagKey<Item> CURIO = tag("curios", "curio");
 

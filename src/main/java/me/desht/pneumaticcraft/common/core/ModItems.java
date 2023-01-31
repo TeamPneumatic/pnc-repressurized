@@ -73,6 +73,7 @@ public class ModItems {
     public static final RegistryObject<Item> SMART_CHEST_KIT = register("smart_chest_kit", AbstractChestUpgradeKitItem.Smart::new);
     public static final RegistryObject<Item> RAW_SALMON_TEMPURA = register("raw_salmon_tempura");
     public static final RegistryObject<Item> UNASSEMBLED_NETHERITE_DRILL_BIT = register("unassembled_netherite_drill_bit");
+    public static final RegistryObject<Item> COPPER_NUGGET = register("copper_nugget");
 
     public static final RegistryObject<Item> SOURDOUGH_BREAD = registerFood("sourdough_bread", ModFoods.SOURDOUGH);
     public static final RegistryObject<Item> CHIPS = registerFood("chips", ModFoods.CHIPS);

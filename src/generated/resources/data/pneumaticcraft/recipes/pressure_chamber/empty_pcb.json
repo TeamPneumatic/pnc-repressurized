@@ -9,7 +9,7 @@
     {
       "type": "pneumaticcraft:stacked_item",
       "count": 3,
-      "tag": "forge:nuggets/gold"
+      "tag": "pneumaticcraft:wiring"
     },
     {
       "item": "pneumaticcraft:plastic"
