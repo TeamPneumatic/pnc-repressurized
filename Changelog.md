@@ -9,6 +9,9 @@ Changes are in reverse chronological order; newest changes at the top.
 * PNC:R 3.2.3 and later *require* Forge 40.1.20 or later
 * PNC:R 3.2.0 and later *require* Forge 40.1.0 or later and JEI 9.7.0 or later
 
+## 3.5.1
+* Fixed a Minigun ammo dupe
+
 ## 3.5.0
 
 ### Updates
@@ -31,7 +34,6 @@ Changes are in reverse chronological order; newest changes at the top.
 * Fixed Pneumatic Door Base block model allowing X-ray vision past it
 * Several pneumatic items now no longer use up air when used when player is in creative mode
 * Fixed Heat Frame becoming disconnected from heat handling block entities on world reload
-* Fixed a Minigun ammo dupe
 
 ## 3.4.4
 
