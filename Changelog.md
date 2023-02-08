@@ -8,6 +8,12 @@ Changes are in reverse chronological order; newest changes at the top.
 
 1.19.2 builds may also work on Minecraft 1.19.1 but no support will be provided for that.
 
+## 4.3.1 (unreleased)
+
+### Fixes
+* Fixed item launch behaviour (Chestplate + Dispenser Upgrade) not working
+* Fixed misleading tooltip in Regulator Module (Regulator Module always regulates to 4.9 bar max when not upgraded)
+
 ## 4.3.0
 
 ### New
