@@ -27,6 +27,7 @@ import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSetEntityMotion;
 import me.desht.pneumaticcraft.common.network.PacketSpawnParticle;
 import me.desht.pneumaticcraft.common.particle.AirParticleData;
+import me.desht.pneumaticcraft.mixin.accessors.BoatItemAccess;
 import me.desht.pneumaticcraft.mixin.accessors.MinecartItemAccess;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -46,10 +47,11 @@ import net.minecraft.world.entity.vehicle.Minecart;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
@@ -67,7 +69,7 @@ public class ItemLaunching {
 
         BlockPos trackPos = new BlockPos(initialPos);
 
-        if (launchedEntity instanceof Boat boat) {
+        if (launchedEntity instanceof Boat) {
             // Boats are spawned slightly above the player to not push them down upon launching
             launchedEntity.setPos(initialPos.x, initialPos.y + 1, initialPos.z);
         } else {
@@ -141,16 +143,6 @@ public class ItemLaunching {
     }
 
     public static void registerDefaultBehaviours() {
-        // Map of boat items to boat entity types
-        Map<Item, Boat.Type> boatTypeMap = Map.ofEntries(
-            Map.entry(Items.OAK_BOAT, Boat.Type.OAK),
-            Map.entry(Items.SPRUCE_BOAT, Boat.Type.SPRUCE),
-            Map.entry(Items.BIRCH_BOAT, Boat.Type.BIRCH),
-            Map.entry(Items.JUNGLE_BOAT, Boat.Type.JUNGLE),
-            Map.entry(Items.ACACIA_BOAT, Boat.Type.ACACIA),
-            Map.entry(Items.DARK_OAK_BOAT, Boat.Type.DARK_OAK)
-        );
-
         registerBehaviour((stack, player) -> {
             Item item = stack.getItem();
             Level level = player.getLevel();
@@ -162,15 +154,13 @@ public class ItemLaunching {
                 armorStand.setYRot(playerYaw);
                 return armorStand;
 
-            } else if (item instanceof ArrowItem) {
-                return ((ArrowItem) item).createArrow(level, stack, player);
+            } else if (item instanceof ArrowItem arrowItem) {
+                return arrowItem.createArrow(level, stack, player);
 
-            } else if (item instanceof BoatItem) {
-                Boat boat = new Boat(level, 0, 0, 0);
+            } else if (item instanceof BoatItem boatItem) {
+                HitResult dummyHitResult = new EntityHitResult(player, new Vec3(0, 0, 0));
+                Boat boat = ((BoatItemAccess) boatItem).invokeGetBoat(level, dummyHitResult);
                 boat.setYRot(playerYaw);
-
-                //TODO: Find a better way to get the boat type in 1.19
-                boat.setVariant(boatTypeMap.get(item));
                 return boat;
 
             } else if (item == Items.EXPERIENCE_BOTTLE) {
@@ -197,9 +187,9 @@ public class ItemLaunching {
             } else if (item == Items.SNOWBALL) {
                 return new Snowball(level, player);
 
-            } else if (item instanceof SpawnEggItem && level instanceof ServerLevel) {
-                EntityType<?> type = ((SpawnEggItem) item).getType(stack.getTag());
-                Entity e = type.spawn((ServerLevel) level, stack, player, player.blockPosition(), MobSpawnType.SPAWN_EGG, false, false);
+            } else if (item instanceof SpawnEggItem egg && level instanceof ServerLevel serverLevel) {
+                EntityType<?> type = egg.getType(stack.getTag());
+                Entity e = type.spawn(serverLevel, stack, player, player.blockPosition(), MobSpawnType.SPAWN_EGG, false, false);
 
                 if (e instanceof LivingEntity && stack.hasCustomHoverName()) {
                     e.setCustomName(stack.getHoverName());
