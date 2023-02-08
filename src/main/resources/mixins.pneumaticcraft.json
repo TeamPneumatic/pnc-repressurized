@@ -4,11 +4,11 @@
   "compatibilityLevel": "JAVA_17",
   "refmap": "mixins.pneumaticcraft.refmap.json",
   "mixins": [
-    "coremods.BaseSpawnerMixin",
     "accessors.AbstractFurnaceBlockEntityAccess",
-    "accessors.BaseSpawnerAccess",
     "accessors.BaseContainerBlockEntityAccess",
+    "accessors.BaseSpawnerAccess",
     "accessors.BlockEntityTypeAccess",
+    "accessors.BoatItemAccess",
     "accessors.EntityAccess",
     "accessors.ItemEntityAccess",
     "accessors.MinecartItemAccess",
@@ -18,7 +18,8 @@
     "accessors.ShulkerAccess",
     "accessors.StructureTemplatePoolAccess",
     "accessors.WitchAccess",
-    "accessors.WorldGenRegionAccess"
+    "accessors.WorldGenRegionAccess",
+    "coremods.BaseSpawnerMixin"
   ],
   "minVersion": "0.8"
 }
