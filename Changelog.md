@@ -9,8 +9,29 @@ Changes are in reverse chronological order; newest changes at the top.
 * PNC:R 3.2.3 and later *require* Forge 40.1.20 or later
 * PNC:R 3.2.0 and later *require* Forge 40.1.0 or later and JEI 9.7.0 or later
 
-## 3.5.1
+## 3.6.0
+
+### New
+* Added new Solar Compressor, thanks @Daniel0Widing
+  * Generates compressed air from sunlight. While generating compressed air, it also generates heat, proportional to how much compressed air is being generated.
+  * The efficiency of the compressor increases with its heat up to 350ºC. At that point the compressed air and heat generation remain constant up to 425ºC, at which point the compressor overheats, dumping all accumulated heat and shutting down. In order to restart the compressor, a Solar Wafer has to be right-clicked on it, consuming the wafer.
+  * The compressed air production of the compressor is roughly equivalent to the Flux Compressor. The trade-off for getting free compressed air is that the Solar Compressor only works during the day and requires a puzzle-like solution to keep it stable at max efficiency (confirmed possible with max speed upgrades using default configuration).
+* Added new Manual Compressor, thanks @Daniel0Widing
+  * Generates compressed air from manual labor (right-clicking) and player hunger.
+  * Generates a fixed amount of air each pump cycle, but the more air in the compressor, the longer each compressor cycle takes.
+  * Impossible to generate air at pressure greater than 5 bar.
+  
+### Updates
+* Added a new `allow_navigate_to_unloaded_chunks` config setting, default false
+  * When false, Drones may not navigate (including teleportation) into unloaded chunks
+  * Setting this to true can cause server instability, including lockups, so beware
+
+### Fixes
 * Fixed a Minigun ammo dupe
+* Fixed Universal Sensor GUI textfield flickering between focused and unfocused for some sensor types
+* Fixed misleading tooltip in Regulator Module (Regulator Module always regulates to 4.9 bar max when not upgraded)
+* Fixed crash with invalid global variable names in the Remote
+* Fixed Jade/Waila info showing <ERROR> on Heat Frame (and possibly other semiblocks)
 
 ## 3.5.0
 
