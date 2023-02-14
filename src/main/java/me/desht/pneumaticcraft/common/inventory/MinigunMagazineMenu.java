@@ -18,6 +18,7 @@
 package me.desht.pneumaticcraft.common.inventory;
 
 import me.desht.pneumaticcraft.common.block.entity.AbstractPneumaticCraftBlockEntity;
+import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.item.minigun.MinigunItem;
 import me.desht.pneumaticcraft.common.util.NBTUtils;
@@ -60,7 +61,7 @@ public class MinigunMagazineMenu extends AbstractPneumaticCraftMenu<AbstractPneu
 
     @Override
     public boolean stillValid(Player player) {
-        return true;
+        return player.getItemInHand(hand).getItem() == ModItems.MINIGUN.get();
     }
 
     @Override
@@ -81,6 +82,7 @@ public class MinigunMagazineMenu extends AbstractPneumaticCraftMenu<AbstractPneu
             }
         } else {
             super.clicked(slotId, dragType, clickType, player);
+            gunInv.save();
         }
     }
 
