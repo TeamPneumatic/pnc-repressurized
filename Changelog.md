@@ -31,6 +31,7 @@ Changes are in reverse chronological order; newest changes at the top.
 * Fixed Pneumatic Door Base block model allowing X-ray vision past it
 * Several pneumatic items now no longer use up air when used when player is in creative mode
 * Fixed Heat Frame becoming disconnected from heat handling block entities on world reload
+* Fixed a Minigun ammo dupe
 
 ## 3.4.4
 
