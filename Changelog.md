@@ -8,7 +8,7 @@ Changes are in reverse chronological order; newest changes at the top.
 
 1.19.2 builds may also work on Minecraft 1.19.1 but no support will be provided for that.
 
-## 4.3.1 (unreleased)
+## 4.3.1
 
 ### Fixes
 * Fixed item launch behaviour (Chestplate + Dispenser Upgrade) not working
