@@ -13,6 +13,7 @@ Changes are in reverse chronological order; newest changes at the top.
 ### Fixes
 * Fixed item launch behaviour (Chestplate + Dispenser Upgrade) not working
 * Fixed misleading tooltip in Regulator Module (Regulator Module always regulates to 4.9 bar max when not upgraded)
+* Fixed a Minigun ammo dupe
 
 ## 4.3.0
 
