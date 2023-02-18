@@ -97,8 +97,7 @@ public abstract class AbstractPneumaticCraftBlockEntity extends BlockEntity
     }
 
     @Nonnull
-    public Level nonNullLevel()
-    {
+    public Level nonNullLevel() {
         // use in methods where we know the level is not null, e.g. tickers, renderers...
         return Objects.requireNonNull(super.getLevel());
     }

@@ -103,6 +103,7 @@ public class KeroseneLampBlockEntity extends AbstractTickingBlockEntity implemen
     @GuiSynced
     private int fuel;
     private int checkingX, checkingY, checkingZ;
+    private int rangeSq;
 
     @DescSynced
     @GuiSynced
@@ -127,7 +128,6 @@ public class KeroseneLampBlockEntity extends AbstractTickingBlockEntity implemen
         }
     };
     private final LazyOptional<IItemHandler> inventoryCap = LazyOptional.of(() -> inventory);
-
 
     public KeroseneLampBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.KEROSENE_LAMP.get(), pos, state);
@@ -189,7 +189,7 @@ public class KeroseneLampBlockEntity extends AbstractTickingBlockEntity implemen
 
     private void useFuel() {
         if (fuelQuality == 0) return; // tank is empty or a non-burnable liquid in the tank
-        fuel -= range * range * 3;// * range;
+        fuel -= rangeSq * 3;
         while (fuel <= 0 && !tank.drain(1, IFluidHandler.FluidAction.EXECUTE).isEmpty()) {
             fuel += fuelQuality;
         }
@@ -204,11 +204,11 @@ public class KeroseneLampBlockEntity extends AbstractTickingBlockEntity implemen
         checkingZ = getBlockPos().getZ();
     }
 
-    @Override
-    public void setRemoved() {
-        super.setRemoved();
+    public void removeLights() {
+        // called from KeroseneLampBlock#onRemove()
+        // note: this should *not* be done in setRemoved(), since that's also called on level unload!
         for (BlockPos pos : managingLights) {
-            if (isLampLight(pos)) {
+            if (nonNullLevel().isLoaded(pos) && isLampLight(pos)) {
                 nonNullLevel().removeBlock(pos, false);
             }
         }
@@ -269,13 +269,14 @@ public class KeroseneLampBlockEntity extends AbstractTickingBlockEntity implemen
                 if (nonNullLevel().isLoaded(pos)) {
                     if (!isLampLight(pos)) {
                         iterator.remove();
-                    } else if (PneumaticCraftUtils.distBetween(pos, getBlockPos()) > range) {
+                    } else if (PneumaticCraftUtils.distBetweenSq(pos, getBlockPos()) > rangeSq) {
                         nonNullLevel().removeBlock(pos, false);
                         iterator.remove();
                     }
                 }
             }
         }
+        rangeSq = range * range;
         boolean wasOn = isOn;
         isOn = range > 0;
         if (isOn != wasOn) {
@@ -292,13 +293,15 @@ public class KeroseneLampBlockEntity extends AbstractTickingBlockEntity implemen
     }
 
     private void tryAddLight(BlockPos pos) {
-        if (nonNullLevel().isLoaded(pos) && !ConfigHelper.common().advanced.disableKeroseneLampFakeAirBlock.get() && PneumaticCraftUtils.distBetween(pos, getBlockPos()) <= range) {
-            if (nonNullLevel().isEmptyBlock(pos) && !isLampLight(pos)) {
-                if (passesRaytraceTest(pos, getBlockPos())) {
-                    nonNullLevel().setBlockAndUpdate(pos, ModBlocks.KEROSENE_LAMP_LIGHT.get().defaultBlockState());
-                    managingLights.add(pos);
-                }
-            }
+        if (!ConfigHelper.common().advanced.disableKeroseneLampFakeAirBlock.get()
+                && nonNullLevel().isLoaded(pos)
+                && PneumaticCraftUtils.distBetweenSq(pos, getBlockPos()) <= rangeSq
+                && nonNullLevel().isEmptyBlock(pos)
+                && !isLampLight(pos)
+                && passesRaytraceTest(pos, getBlockPos()))
+        {
+            nonNullLevel().setBlockAndUpdate(pos, ModBlocks.KEROSENE_LAMP_LIGHT.get().defaultBlockState());
+            managingLights.add(pos);
         }
     }
 
@@ -334,6 +337,7 @@ public class KeroseneLampBlockEntity extends AbstractTickingBlockEntity implemen
         recalculateFuelQuality();
         targetRange = tag.getByte("targetRange");
         range = tag.getByte("range");
+        rangeSq = range * range;
         inventory.deserializeNBT(tag.getCompound("Items"));
     }
 
