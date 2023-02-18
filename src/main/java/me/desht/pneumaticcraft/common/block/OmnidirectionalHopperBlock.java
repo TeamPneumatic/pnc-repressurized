@@ -64,7 +64,7 @@ public class OmnidirectionalHopperBlock extends AbstractPneumaticCraftBlock
     private static final VoxelShape INPUT_WEST  = VoxelShapeUtils.rotateY(INPUT_NORTH, 270);
     private static final VoxelShape INPUT_EAST  = VoxelShapeUtils.rotateY(INPUT_NORTH, 90);
     public static final VoxelShape[] INPUT_SHAPES = {
-        INPUT_DOWN, INPUT_UP, INPUT_NORTH, INPUT_SOUTH, INPUT_WEST, INPUT_EAST
+            INPUT_DOWN, INPUT_UP, INPUT_NORTH, INPUT_SOUTH, INPUT_WEST, INPUT_EAST
     };
 
     private static final VoxelShape OUTPUT_DOWN = Shapes.join(Block.box(6, 3, 6, 10, 4, 10), Block.box(6.5, 0, 6.5, 9.5, 4, 9.5), BooleanOp.OR);
@@ -83,6 +83,11 @@ public class OmnidirectionalHopperBlock extends AbstractPneumaticCraftBlock
 
     public OmnidirectionalHopperBlock() {
         super(ModBlocks.defaultProps());
+    }
+
+    @Override
+    protected boolean isWaterloggable() {
+        return true;
     }
 
     @Override
@@ -105,8 +110,9 @@ public class OmnidirectionalHopperBlock extends AbstractPneumaticCraftBlock
 
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext ctx) {
-        return this.defaultBlockState()
-                .setValue(BlockStateProperties.FACING, ctx.getClickedFace().getOpposite())
+        BlockState state = super.getStateForPlacement(ctx);
+        if (state == null) return state;
+        return state.setValue(BlockStateProperties.FACING, ctx.getClickedFace().getOpposite())
                 .setValue(INPUT_FACING, ctx.getNearestLookingDirection().getOpposite());
     }
 

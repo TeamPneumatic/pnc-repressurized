@@ -42,7 +42,7 @@ import org.jetbrains.annotations.Nullable;
 public class PressureChamberValveBlock extends AbstractPneumaticCraftBlock implements IBlockPressureChamber, PneumaticCraftEntityBlock {
     public PressureChamberValveBlock() {
         super(ModBlocks.defaultProps());
-        registerDefaultState(getStateDefinition().any().setValue(PNCBlockStateProperties.FORMED, false));
+        registerDefaultState(defaultBlockState().setValue(PNCBlockStateProperties.FORMED, false));
     }
 
     @Override

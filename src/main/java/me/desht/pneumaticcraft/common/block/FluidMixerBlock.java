@@ -94,12 +94,17 @@ public class FluidMixerBlock extends AbstractPneumaticCraftBlock implements Pneu
 
     public FluidMixerBlock() {
         super(ModBlocks.defaultProps());
-        registerDefaultState(getStateDefinition().any()
+        registerDefaultState(defaultBlockState()
                 .setValue(AbstractPneumaticCraftBlock.NORTH, false)
                 .setValue(AbstractPneumaticCraftBlock.SOUTH, false)
                 .setValue(AbstractPneumaticCraftBlock.WEST, false)
                 .setValue(AbstractPneumaticCraftBlock.EAST, false)
         );
+    }
+
+    @Override
+    protected boolean isWaterloggable() {
+        return true;
     }
 
     @Override

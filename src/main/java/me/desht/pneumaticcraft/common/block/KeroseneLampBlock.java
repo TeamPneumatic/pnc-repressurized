@@ -64,7 +64,12 @@ public class KeroseneLampBlock extends AbstractPneumaticCraftBlock implements Pn
 
     public KeroseneLampBlock() {
         super(ModBlocks.defaultProps().lightLevel(state -> state.getValue(LIT) ? 15 : 0));
-        registerDefaultState(getStateDefinition().any().setValue(LIT, false));
+        registerDefaultState(defaultBlockState().setValue(LIT, false));
+    }
+
+    @Override
+    protected boolean isWaterloggable() {
+        return true;
     }
 
     @Override

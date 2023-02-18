@@ -78,7 +78,7 @@ public class LiquidCompressorBlock extends AbstractPneumaticCraftBlock implement
     public LiquidCompressorBlock() {
         super(ModBlocks.defaultProps().noOcclusion());
 
-        registerDefaultState(getStateDefinition().any().setValue(PNCBlockStateProperties.ON, false));
+        registerDefaultState(defaultBlockState().setValue(PNCBlockStateProperties.ON, false));
     }
 
     @Override
@@ -86,6 +86,11 @@ public class LiquidCompressorBlock extends AbstractPneumaticCraftBlock implement
         super.createBlockStateDefinition(builder);
 
         builder.add(PNCBlockStateProperties.ON);
+    }
+
+    @Override
+    protected boolean isWaterloggable() {
+        return true;
     }
 
     @Override

@@ -46,6 +46,11 @@ public class ThermalCompressorBlock extends AbstractPneumaticCraftBlock
     }
 
     @Override
+    protected boolean isWaterloggable() {
+        return true;
+    }
+
+    @Override
     public VoxelShape getShape(BlockState p_220053_1_, BlockGetter p_220053_2_, BlockPos p_220053_3_, CollisionContext p_220053_4_) {
         return BOUNDS;
     }

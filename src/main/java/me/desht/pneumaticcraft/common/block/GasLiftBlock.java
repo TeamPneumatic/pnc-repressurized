@@ -54,13 +54,18 @@ public class GasLiftBlock extends AbstractPneumaticCraftBlock implements Pneumat
     public GasLiftBlock() {
         super(ModBlocks.defaultProps());
 
-        registerDefaultState(getStateDefinition().any()
+        registerDefaultState(defaultBlockState()
                 .setValue(UP, false)
                 .setValue(NORTH, false)
                 .setValue(SOUTH, false)
                 .setValue(WEST, false)
                 .setValue(EAST, false)
         );
+    }
+
+    @Override
+    protected boolean isWaterloggable() {
+        return true;
     }
 
     @Override

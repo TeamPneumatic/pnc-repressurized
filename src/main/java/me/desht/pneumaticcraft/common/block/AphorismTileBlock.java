@@ -81,7 +81,12 @@ public class AphorismTileBlock extends AbstractPneumaticCraftBlock implements Co
 
     public AphorismTileBlock() {
         super(Block.Properties.of(Material.STONE).strength(1.5f, 4.0f).noCollission());
-        registerDefaultState(getStateDefinition().any().setValue(INVISIBLE, false));
+        registerDefaultState(defaultBlockState().setValue(INVISIBLE, false));
+    }
+
+    @Override
+    protected boolean isWaterloggable() {
+        return true;
     }
 
     @Override

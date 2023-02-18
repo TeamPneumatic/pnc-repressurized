@@ -39,7 +39,7 @@ public class DroneInterfaceBlock extends AbstractPneumaticCraftBlock implements 
     public DroneInterfaceBlock() {
         super(ModBlocks.defaultProps());
 
-        registerDefaultState(getStateDefinition().any().setValue(CONNECTED, false));
+        registerDefaultState(defaultBlockState().setValue(CONNECTED, false));
     }
 
     @Override

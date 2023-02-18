@@ -34,7 +34,12 @@ public class UVLightBoxBlock extends AbstractPneumaticCraftBlock implements Colo
 
     public UVLightBoxBlock() {
         super(ModBlocks.defaultProps().lightLevel(state -> state.getValue(LIT) ? 15 : 0));
-        registerDefaultState(getStateDefinition().any().setValue(LOADED, false).setValue(LIT, false));
+        registerDefaultState(defaultBlockState().setValue(LOADED, false).setValue(LIT, false));
+    }
+
+    @Override
+    protected boolean isWaterloggable() {
+        return true;
     }
 
     @Override

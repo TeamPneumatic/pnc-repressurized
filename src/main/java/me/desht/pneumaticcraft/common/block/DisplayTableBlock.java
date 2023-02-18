@@ -42,12 +42,17 @@ public class DisplayTableBlock extends AbstractPneumaticCraftBlock implements Pn
 
     public DisplayTableBlock() {
         super(ModBlocks.defaultProps());
-        registerDefaultState(getStateDefinition().any()
+        registerDefaultState(defaultBlockState()
                 .setValue(NE, false)
                 .setValue(NW, false)
                 .setValue(SE, false)
                 .setValue(NW, false)
         );
+    }
+
+    @Override
+    protected boolean isWaterloggable() {
+        return true;
     }
 
     @Override

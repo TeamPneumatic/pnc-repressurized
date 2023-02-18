@@ -47,6 +47,11 @@ public class ElectrostaticCompressorBlock extends AbstractPneumaticCraftBlock im
     }
 
     @Override
+    protected boolean isWaterloggable() {
+        return true;
+    }
+
+    @Override
     public VoxelShape getShape(BlockState state, BlockGetter world, BlockPos pos, CollisionContext selectionContext) {
         return SHAPE;
     }

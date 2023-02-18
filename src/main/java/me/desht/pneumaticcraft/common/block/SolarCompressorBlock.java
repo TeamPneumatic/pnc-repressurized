@@ -61,6 +61,11 @@ public class SolarCompressorBlock extends AbstractPNCBlockWithBoundingBlocks {
     }
 
     @Override
+    protected boolean isWaterloggable() {
+        return true;
+    }
+
+    @Override
     public @NotNull VoxelShape getShape(BlockState state, @NotNull BlockGetter world, @NotNull BlockPos pos, @NotNull CollisionContext context) {
         // Empty bounding blocks
         if(state.getValue(BOUNDING)) {

@@ -41,6 +41,11 @@ public class AirCannonBlock extends AbstractPneumaticCraftBlock implements Pneum
     }
 
     @Override
+    protected boolean isWaterloggable() {
+        return true;
+    }
+
+    @Override
     public boolean isRotatable() {
         return true;
     }

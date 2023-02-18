@@ -20,8 +20,6 @@ import net.minecraft.world.level.block.FaceAttachedHorizontalDirectionalBlock;
 import net.minecraft.world.level.block.SimpleWaterloggedBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.material.FluidState;
-import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
@@ -32,7 +30,6 @@ import java.util.function.ToIntFunction;
 import java.util.stream.Stream;
 
 import static net.minecraft.world.level.block.state.properties.BlockStateProperties.LIT;
-import static net.minecraft.world.level.block.state.properties.BlockStateProperties.WATERLOGGED;
 
 public class WallLampBlock extends AbstractPneumaticCraftBlock implements ColorHandlers.ITintableBlock, SimpleWaterloggedBlock {
     private static final VoxelShape SHAPE_UP = Stream.of(
@@ -73,24 +70,24 @@ public class WallLampBlock extends AbstractPneumaticCraftBlock implements ColorH
         this.color = color;
         this.inverted = inverted;
 
-        registerDefaultState(getStateDefinition().any().setValue(LIT, inverted).setValue(WATERLOGGED, false));
+        registerDefaultState(getStateDefinition().any().setValue(LIT, inverted));
+    }
+
+    @Override
+    protected boolean isWaterloggable() {
+        return true;
     }
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         super.createBlockStateDefinition(builder);
 
-        builder.add(LIT, WATERLOGGED);
+        builder.add(LIT);
     }
 
     @Override
     public VoxelShape getShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context) {
         return SHAPES[state.getValue(directionProperty()).get3DDataValue()];
-    }
-
-    @Override
-    public FluidState getFluidState(BlockState state) {
-        return state.getValue(WATERLOGGED) ? Fluids.WATER.getSource(false) : super.getFluidState(state);
     }
 
     @Override
@@ -117,19 +114,15 @@ public class WallLampBlock extends AbstractPneumaticCraftBlock implements ColorH
     @Override
     @Nullable
     public BlockState getStateForPlacement(BlockPlaceContext context) {
-        BlockState state = defaultBlockState()
+        BlockState state = super.getStateForPlacement(context);
+        if (state == null) return null;
+        return state
                 .setValue(directionProperty(), context.getClickedFace())
                 .setValue(LIT, shouldLight(context.getLevel(), context.getClickedPos()));
-
-        FluidState fluidState = context.getLevel().getFluidState(context.getClickedPos());
-        return state.setValue(WATERLOGGED, fluidState.getType() == Fluids.WATER);
     }
 
     @Override
     public BlockState updateShape(BlockState stateIn, Direction facing, BlockState facingState, LevelAccessor worldIn, BlockPos currentPos, BlockPos facingPos) {
-        if (stateIn.getValue(WATERLOGGED)) {
-            worldIn.scheduleTick(currentPos, Fluids.WATER, Fluids.WATER.getTickDelay(worldIn));
-        }
         return getRotation(stateIn).getOpposite() == facing && !stateIn.canSurvive(worldIn, currentPos) ?
                 Blocks.AIR.defaultBlockState() :
                 super.updateShape(stateIn, facing, facingState, worldIn, currentPos, facingPos);

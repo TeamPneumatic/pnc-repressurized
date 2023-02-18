@@ -68,7 +68,12 @@ public class AirCompressorBlock extends AbstractPneumaticCraftBlock implements P
 
     public AirCompressorBlock() {
         super(ModBlocks.defaultProps());
-        registerDefaultState(getStateDefinition().any().setValue(PNCBlockStateProperties.ON, false));
+        registerDefaultState(defaultBlockState().setValue(PNCBlockStateProperties.ON, false));
+    }
+
+    @Override
+    protected boolean isWaterloggable() {
+        return true;
     }
 
     @Override

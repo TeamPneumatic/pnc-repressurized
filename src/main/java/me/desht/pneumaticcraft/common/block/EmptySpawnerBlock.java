@@ -33,4 +33,9 @@ public class EmptySpawnerBlock extends AbstractPneumaticCraftBlock {
     public VoxelShape getShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context) {
         return ALMOST_FULL_SHAPE;
     }
+
+    @Override
+    protected boolean isWaterloggable() {
+        return true;
+    }
 }

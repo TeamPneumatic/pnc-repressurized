@@ -64,10 +64,15 @@ public class PneumaticDoorBlock extends AbstractPneumaticCraftBlock implements P
     public PneumaticDoorBlock() {
         super(ModBlocks.defaultProps());
 
-        registerDefaultState(getStateDefinition().any()
+        registerDefaultState(defaultBlockState()
                 .setValue(BlockStateProperties.HORIZONTAL_FACING, Direction.NORTH)
                 .setValue(DoorBlock.OPEN, false)
                 .setValue(TOP_DOOR, false));
+    }
+
+    @Override
+    protected boolean isWaterloggable() {
+        return true;
     }
 
     @Override
