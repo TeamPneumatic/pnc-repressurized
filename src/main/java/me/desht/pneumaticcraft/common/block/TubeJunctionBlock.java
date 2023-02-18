@@ -46,7 +46,12 @@ public class TubeJunctionBlock extends AbstractPneumaticCraftBlock implements Pn
     public TubeJunctionBlock() {
         super(ModBlocks.defaultProps());
 
-        registerDefaultState(getStateDefinition().any().setValue(BlockStateProperties.AXIS, Axis.Y));
+        registerDefaultState(defaultBlockState().setValue(BlockStateProperties.AXIS, Axis.Y));
+    }
+
+    @Override
+    protected boolean isWaterloggable() {
+        return true;
     }
 
     @Override

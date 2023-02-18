@@ -84,6 +84,11 @@ public class RefineryOutputBlock extends AbstractPneumaticCraftBlock
     }
 
     @Override
+    protected boolean isWaterloggable() {
+        return true;
+    }
+
+    @Override
     public boolean isRotatable() {
         return true;
     }

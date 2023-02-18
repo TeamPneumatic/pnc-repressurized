@@ -55,6 +55,11 @@ public class HeatSinkBlock extends AbstractPneumaticCraftBlock implements ColorH
     }
 
     @Override
+    protected boolean isWaterloggable() {
+        return true;
+    }
+
+    @Override
     public VoxelShape getShape(BlockState state, BlockGetter world, BlockPos pos, CollisionContext selectionContext) {
         return SHAPES[getRotation(state).get3DDataValue()];
     }

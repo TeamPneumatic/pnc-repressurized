@@ -44,8 +44,6 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
-import net.minecraft.world.level.material.FluidState;
-import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
@@ -55,8 +53,6 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 
 import javax.annotation.Nullable;
 import java.util.Optional;
-
-import static net.minecraft.world.level.block.state.properties.BlockStateProperties.WATERLOGGED;
 
 public class ElevatorFrameBlock extends AbstractPneumaticCraftBlock
         implements SimpleWaterloggedBlock, PneumaticCraftEntityBlock {
@@ -71,10 +67,13 @@ public class ElevatorFrameBlock extends AbstractPneumaticCraftBlock
     public ElevatorFrameBlock() {
         super(ModBlocks.defaultProps());
 
-        registerDefaultState(getStateDefinition().any()
-                .setValue(NE, false).setValue(SE, false).setValue(SW, false).setValue(NW, false)
-                .setValue(WATERLOGGED, false));
+        registerDefaultState(defaultBlockState()
+                .setValue(NE, false).setValue(SE, false).setValue(SW, false).setValue(NW, false));
+    }
 
+    @Override
+    protected boolean isWaterloggable() {
+        return true;
     }
 
     @Override
@@ -87,25 +86,18 @@ public class ElevatorFrameBlock extends AbstractPneumaticCraftBlock
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         super.createBlockStateDefinition(builder);
-        builder.add(NE, SW, SE, NW, WATERLOGGED);
+        builder.add(NE, SW, SE, NW);
     }
 
     @Nullable
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext ctx) {
-        boolean[] connected = getConnections(ctx.getLevel(), ctx.getClickedPos());
-        FluidState fluidState = ctx.getLevel().getFluidState(ctx.getClickedPos());
         BlockState state = super.getStateForPlacement(ctx);
         if (state != null) {
-            state.setValue(NE, connected[0]).setValue(SE, connected[1]).setValue(SW, connected[2]).setValue(NW, connected[3])
-                    .setValue(WATERLOGGED, fluidState.getType() == Fluids.WATER);
+            boolean[] connected = getConnections(ctx.getLevel(), ctx.getClickedPos());
+            state.setValue(NE, connected[0]).setValue(SE, connected[1]).setValue(SW, connected[2]).setValue(NW, connected[3]);
         }
         return state;
-    }
-
-    @Override
-    public FluidState getFluidState(BlockState state) {
-        return state.getValue(WATERLOGGED) ? Fluids.WATER.getSource(false) : super.getFluidState(state);
     }
 
     @Override
@@ -114,15 +106,12 @@ public class ElevatorFrameBlock extends AbstractPneumaticCraftBlock
             return Blocks.AIR.defaultBlockState();
         }
 
-        if (stateIn.getValue(WATERLOGGED)) {
-            worldIn.scheduleTick(currentPos, Fluids.WATER, Fluids.WATER.getTickDelay(worldIn));
-        }
-
         boolean[] connected = getConnections(worldIn, currentPos);
         for (Corner corner : Corner.values()) {
             stateIn = stateIn.setValue(corner.prop, connected[corner.ordinal()]);
         }
-        return stateIn;
+
+        return super.updateShape(stateIn, facing, facingState, worldIn, currentPos, facingPos);
     }
 
     @Override

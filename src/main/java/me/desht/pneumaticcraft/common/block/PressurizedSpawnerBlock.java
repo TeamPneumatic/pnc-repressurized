@@ -29,6 +29,11 @@ public class PressurizedSpawnerBlock extends AbstractPneumaticCraftBlock impleme
         super(ModBlocks.defaultProps().noOcclusion());
     }
 
+    @Override
+    protected boolean isWaterloggable() {
+        return true;
+    }
+
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {

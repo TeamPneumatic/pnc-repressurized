@@ -60,11 +60,14 @@ import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.FluidState;
+import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -77,11 +80,10 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
-import static net.minecraft.world.level.block.state.properties.BlockStateProperties.FACING;
-import static net.minecraft.world.level.block.state.properties.BlockStateProperties.HORIZONTAL_FACING;
+import static net.minecraft.world.level.block.state.properties.BlockStateProperties.*;
 
 public abstract class AbstractPneumaticCraftBlock extends Block
-        implements IPneumaticWrenchable, IPneumaticCraftProbeable {
+        implements IPneumaticWrenchable, IPneumaticCraftProbeable, SimpleWaterloggedBlock {
     static final VoxelShape ALMOST_FULL_SHAPE = Block.box(0.5, 0, 0.5, 15.5, 16, 15.5);
 
     public static final BooleanProperty UP = BooleanProperty.create("up");
@@ -94,6 +96,34 @@ public abstract class AbstractPneumaticCraftBlock extends Block
 
     protected AbstractPneumaticCraftBlock(Properties props) {
         super(props);
+
+        if (defaultBlockState().hasProperty(WATERLOGGED)) {
+            registerDefaultState(defaultBlockState().setValue(WATERLOGGED, false));
+        }
+    }
+
+    @Override
+    public boolean canPlaceLiquid(BlockGetter pLevel, BlockPos pPos, BlockState pState, Fluid pFluid) {
+        return pState.hasProperty(WATERLOGGED) && SimpleWaterloggedBlock.super.canPlaceLiquid(pLevel, pPos, pState, pFluid);
+    }
+
+    @Override
+    public boolean placeLiquid(LevelAccessor pLevel, BlockPos pPos, BlockState pState, FluidState pFluidState) {
+        return pState.hasProperty(WATERLOGGED) && SimpleWaterloggedBlock.super.placeLiquid(pLevel, pPos, pState, pFluidState);
+    }
+
+    @Override
+    public ItemStack pickupBlock(LevelAccessor pLevel, BlockPos pPos, BlockState pState) {
+        return pState.hasProperty(WATERLOGGED) ? SimpleWaterloggedBlock.super.pickupBlock(pLevel, pPos, pState) : ItemStack.EMPTY;
+    }
+
+    @Override
+    public FluidState getFluidState(BlockState state) {
+        return state.hasProperty(WATERLOGGED) && state.getValue(WATERLOGGED) ? Fluids.WATER.getSource(false) : super.getFluidState(state);
+    }
+
+    protected boolean isWaterloggable() {
+        return false;
     }
 
     @Override
@@ -151,6 +181,10 @@ public abstract class AbstractPneumaticCraftBlock extends Block
             if (isRotatable()) {
                 Direction f = canRotateToTopOrBottom() ? ctx.getNearestLookingDirection() : ctx.getHorizontalDirection();
                 state = state.setValue(directionProperty(), reversePlacementRotation() ? f.getOpposite() : f);
+            }
+            if (state.hasProperty(WATERLOGGED)) {
+                FluidState fluidState = ctx.getLevel().getFluidState(ctx.getClickedPos());
+                state = state.setValue(WATERLOGGED, fluidState.getType() == Fluids.WATER);
             }
         }
         return state;
@@ -211,6 +245,9 @@ public abstract class AbstractPneumaticCraftBlock extends Block
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         if (isRotatable()) {
             builder.add(directionProperty());
+        }
+        if (isWaterloggable()) {
+            builder.add(BlockStateProperties.WATERLOGGED);
         }
     }
 
@@ -381,6 +418,9 @@ public abstract class AbstractPneumaticCraftBlock extends Block
 
     @Override
     public BlockState updateShape(BlockState stateIn, Direction facing, BlockState facingState, LevelAccessor worldIn, BlockPos currentPos, BlockPos facingPos) {
+        if (stateIn.hasProperty(WATERLOGGED) && stateIn.getValue(WATERLOGGED)) {
+            worldIn.scheduleTick(currentPos, Fluids.WATER, Fluids.WATER.getTickDelay(worldIn));
+        }
         if (stateIn.hasProperty(connectionProperty(facing))) {
             BlockEntity ourTE = worldIn.getBlockEntity(currentPos);
             if (ourTE != null && ourTE.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, facing).isPresent()) {
@@ -398,7 +438,7 @@ public abstract class AbstractPneumaticCraftBlock extends Block
 
     @Override
     public boolean isPathfindable(BlockState state, BlockGetter worldIn, BlockPos pos, PathComputationType type) {
-        return getCollisionShape(state, worldIn, pos, CollisionContext.empty()).isEmpty();
+        return state.getCollisionShape(worldIn, pos).isEmpty();
     }
 
     static void removeBlockSneakWrenched(Level world, BlockPos pos) {

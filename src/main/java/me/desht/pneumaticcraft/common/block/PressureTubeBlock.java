@@ -51,8 +51,6 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
-import net.minecraft.world.level.material.FluidState;
-import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
@@ -122,6 +120,11 @@ public class PressureTubeBlock extends AbstractCamouflageBlock
         registerDefaultState(state.setValue(WATERLOGGED, false));
     }
 
+    @Override
+    protected boolean isWaterloggable() {
+        return true;
+    }
+
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
@@ -133,36 +136,29 @@ public class PressureTubeBlock extends AbstractCamouflageBlock
         super.createBlockStateDefinition(builder);
 
         builder.add(CONNECTION_PROPERTIES_3);
-        builder.add(WATERLOGGED);
     }
 
     @Nullable
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext ctx) {
-        BlockState state = defaultBlockState();
+        BlockState state = super.getStateForPlacement(ctx);
+        if (state == null) return null;
+
         List<Direction> l = new ArrayList<>();
         for (Direction dir : DirectionUtil.VALUES) {
             BlockEntity te = ctx.getLevel().getBlockEntity(ctx.getClickedPos().relative(dir));
             if (te != null && te.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, dir.getOpposite()).isPresent()) {
                 state = setSide(state, dir, CONNECTED);
                 l.add(dir);
+                if (l.size() > 1) break;
             }
         }
         if (l.size() == 1) state = setSide(state, l.get(0).getOpposite(), CONNECTED);
-        FluidState fluidState = ctx.getLevel().getFluidState(ctx.getClickedPos());
-        return state.setValue(WATERLOGGED, fluidState.getType() == Fluids.WATER);
-    }
-
-    @Override
-    public FluidState getFluidState(BlockState state) {
-        return state.getValue(WATERLOGGED) ? Fluids.WATER.getSource(false) : super.getFluidState(state);
+        return state;
     }
 
     @Override
     public BlockState updateShape(BlockState stateIn, Direction facing, BlockState facingState, LevelAccessor worldIn, BlockPos currentPos, BlockPos facingPos) {
-        if (stateIn.getValue(WATERLOGGED)) {
-            worldIn.scheduleTick(currentPos, Fluids.WATER, Fluids.WATER.getTickDelay(worldIn));
-        }
         BlockState newState = recalculateState(worldIn, currentPos, stateIn);
         return newState == null ?
                 super.updateShape(stateIn, facing, facingState, worldIn, currentPos, facingPos) :
@@ -181,7 +177,7 @@ public class PressureTubeBlock extends AbstractCamouflageBlock
                 if (tePT.isSideClosed(dir)) {
                     type = PressureTubeConnection.CLOSED;
                 } else if (tePT.canConnectPneumatic(dir)) {
-                    BlockEntity neighbourTE = worldIn.getBlockEntity(currentPos.relative(dir));
+                    BlockEntity neighbourTE = tePT.getCachedNeighbor(dir); //worldIn.getBlockEntity(currentPos.relative(dir));
                     if (neighbourTE != null && neighbourTE.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, dir.getOpposite()).isPresent()) {
                         type = CONNECTED;
                     }

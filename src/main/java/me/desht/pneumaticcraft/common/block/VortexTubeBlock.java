@@ -79,7 +79,7 @@ public class VortexTubeBlock extends AbstractPneumaticCraftBlock implements Colo
     public VortexTubeBlock() {
         super(ModBlocks.defaultProps());
 
-        registerDefaultState(getStateDefinition().any()
+        registerDefaultState(defaultBlockState()
             .setValue(DOWN, false)
             .setValue(UP, false)
             .setValue(NORTH, false)
@@ -87,6 +87,11 @@ public class VortexTubeBlock extends AbstractPneumaticCraftBlock implements Colo
             .setValue(WEST, false)
             .setValue(EAST, false)
         );
+    }
+
+    @Override
+    protected boolean isWaterloggable() {
+        return true;
     }
 
     @Override

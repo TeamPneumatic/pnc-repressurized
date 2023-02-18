@@ -93,7 +93,12 @@ public class FluidTankBlock extends AbstractPneumaticCraftBlock
         super(ModBlocks.defaultProps());
         this.size = size;
 
-        registerDefaultState(getStateDefinition().any().setValue(UP, false).setValue(DOWN, false));
+        registerDefaultState(defaultBlockState().setValue(UP, false).setValue(DOWN, false));
+    }
+
+    @Override
+    protected boolean isWaterloggable() {
+        return true;
     }
 
     @Override

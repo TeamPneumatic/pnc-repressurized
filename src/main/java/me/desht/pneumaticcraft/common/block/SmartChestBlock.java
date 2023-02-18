@@ -52,6 +52,11 @@ public class SmartChestBlock extends AbstractPneumaticCraftBlock implements Pneu
     }
 
     @Override
+    protected boolean isWaterloggable() {
+        return true;
+    }
+
+    @Override
     public boolean isRotatable() {
         return true;
     }
