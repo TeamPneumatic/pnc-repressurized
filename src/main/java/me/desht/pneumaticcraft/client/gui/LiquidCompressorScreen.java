@@ -19,32 +19,24 @@ package me.desht.pneumaticcraft.client.gui;
 
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTank;
+import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.block.entity.LiquidCompressorBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.fluid.FuelRegistry;
 import me.desht.pneumaticcraft.common.inventory.LiquidCompressorMenu;
-import me.desht.pneumaticcraft.common.thirdparty.ModNameCache;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.fluids.FluidStack;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
@@ -58,7 +50,11 @@ public class LiquidCompressorScreen extends AbstractPneumaticCraftContainerScree
         super.init();
         addRenderableWidget(new WidgetTank(leftPos + getFluidOffset(), topPos + 15, te.getTank()));
         WidgetAnimatedStat stat = addAnimatedStat(xlate("pneumaticcraft.gui.tab.liquidCompressor.fuel"), new ItemStack(ModItems.LPG_BUCKET.get()), 0xFFB04000, true);
-        Pair<Integer, List<Component>> p = getAllFuels();
+        Pair<Integer, List<Component>> p = ClientUtils.formatFuelList(xlate("pneumaticcraft.gui.liquidCompressor.fuelsHeader"),
+                getGuiLeft() - 10,
+                fluid -> FuelRegistry.getInstance().getFuelValue(ClientUtils.getClientLevel(), fluid) / 1000,
+                true
+        );
         stat.setMinimumExpandedDimensions(p.getLeft() + 30, 17);
         stat.setText(p.getRight());
     }
@@ -90,52 +86,6 @@ public class LiquidCompressorScreen extends AbstractPneumaticCraftContainerScree
     @Override
     protected String upgradeCategory() {
         return "liquid_compressor";
-    }
-
-    private Pair<Integer,List<Component>> getAllFuels() {
-        List<Component> text = new ArrayList<>();
-        MutableComponent header = xlate("pneumaticcraft.gui.liquidCompressor.fuelsHeader");
-        text.add(header.withStyle(ChatFormatting.UNDERLINE, ChatFormatting.AQUA));
-        int maxWidth = font.width(header);
-
-        FuelRegistry fuelRegistry = FuelRegistry.getInstance();
-
-        // kludge to get rid of negatively cached values (too-early init via JEI perhaps?)
-        // not a big deal to clear this cache client-side since the fuel manager is only really used here on the client
-        fuelRegistry.clearCachedFuelFluids();
-
-        Level world = te.getLevel();
-        List<Fluid> fluids = new ArrayList<>(fuelRegistry.registeredFuels(world));
-        fluids.sort((o1, o2) -> Integer.compare(fuelRegistry.getFuelValue(world, o2), fuelRegistry.getFuelValue(world, o1)));
-
-        Map<String, Integer> counted = fluids.stream()
-                .collect(Collectors.toMap(fluid -> new FluidStack(fluid, 1).getDisplayName().getString(), fluid -> 1, Integer::sum));
-
-        int dotWidth = font.width(".");
-        Component prevLine = Component.empty();
-        for (Fluid fluid : fluids) {
-            String value = String.format("%4d", fuelRegistry.getFuelValue(world, fluid) / 1000);
-            int nSpc = (32 - font.width(value)) / dotWidth;
-            value = value + StringUtils.repeat('.', nSpc);
-            String fluidName = new FluidStack(fluid, 1).getDisplayName().getString();
-            float mul = fuelRegistry.getBurnRateMultiplier(world, fluid);
-            Component line = mul == 1 ?
-                    Component.literal(value + "| " + StringUtils.abbreviate(fluidName, 25)) :
-                    Component.literal(value + "| " + StringUtils.abbreviate(fluidName, 20)
-                            + " (x" + PneumaticCraftUtils.roundNumberTo(mul, 2) + ")");
-            if (!line.equals(prevLine)) {
-                maxWidth = Math.max(maxWidth, font.width(line));
-                text.add(line);
-            }
-            prevLine = line;
-            if (counted.getOrDefault(fluidName, 0) > 1) {
-                Component line2 = Component.literal("       " + ModNameCache.getModName(fluid)).withStyle(ChatFormatting.GOLD);
-                text.add(line2);
-                maxWidth = Math.max(maxWidth, font.width(line2));
-            }
-        }
-
-        return Pair.of(Math.min(maxWidth, leftPos - 10), text);
     }
 
     @Override

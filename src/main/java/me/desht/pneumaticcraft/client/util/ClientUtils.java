@@ -19,17 +19,23 @@ package me.desht.pneumaticcraft.client.util;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.platform.Window;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import me.desht.pneumaticcraft.api.misc.Symbols;
 import me.desht.pneumaticcraft.client.gui.AbstractPneumaticCraftContainerScreen;
 import me.desht.pneumaticcraft.client.gui.programmer.AbstractProgWidgetScreen;
 import me.desht.pneumaticcraft.client.pneumatic_armor.ClientArmorRegistry;
 import me.desht.pneumaticcraft.client.pneumatic_armor.upgrade_handler.EntityTrackerClientHandler;
 import me.desht.pneumaticcraft.common.entity.drone.DroneEntity;
+import me.desht.pneumaticcraft.common.fluid.FuelRegistry;
 import me.desht.pneumaticcraft.common.inventory.AbstractPneumaticCraftMenu;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
+import me.desht.pneumaticcraft.common.thirdparty.ModNameCache;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -56,14 +62,17 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.model.data.ModelData;
+import net.minecraftforge.fluids.FluidStack;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nonnull;
-import java.util.List;
-import java.util.Locale;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
+import java.util.function.ToIntFunction;
+import java.util.stream.Collectors;
 
 /**
  * Miscellaneous client-side utilities.  Used to wrap client-only code in methods safe to call from classes that could
@@ -340,5 +349,67 @@ public class ClientUtils {
                 pncScreen.onGuiUpdate();
             }
         }
+    }
+
+    /**
+     * Format a nice list of all the known fuels and a quality factor, line-wrapped sensibly for the given width.
+     *
+     * @param header header line to add at start
+     * @param suggestedWidth suggested maximum width, for line-wrapping purposes (returned width may be smaller, but never larger)
+     * @param fluidFunc a function to map a fuel fluid to some quality property of the fluid (e.g. burn time, lighting time...)
+     * @param includeBurnRate true to append burn rate multiple info
+     * @return an actual display with, and a formatted list of fuels, suitable for client display
+     */
+    public static Pair<Integer,List<Component>> formatFuelList(Component header, int suggestedWidth, ToIntFunction<Fluid> fluidFunc, boolean includeBurnRate) {
+        Font font = Minecraft.getInstance().font;
+
+        List<Component> text = new ArrayList<>();
+        text.add(header.copy().withStyle(ChatFormatting.UNDERLINE, ChatFormatting.AQUA));
+        int maxWidth = font.width(header);
+
+        FuelRegistry fuelRegistry = FuelRegistry.getInstance();
+
+        // kludge to get rid of negatively cached values (too-early init via JEI perhaps?)
+        // not a big deal to clear this cache client-side since the fuel manager is only really used here on the client
+        fuelRegistry.clearCachedFuelFluids();
+
+        Level world = getClientLevel();
+        List<Fluid> fluids = new ArrayList<>(fuelRegistry.registeredFuels(world));
+        Object2IntMap<Fluid> valueMap = new Object2IntOpenHashMap<>();
+        fluids.forEach(f -> valueMap.put(f, fluidFunc.applyAsInt(f)));
+        fluids.sort((f1, f2) -> Integer.compare(valueMap.getInt(f2), valueMap.getInt(f1)));
+
+        Map<String, Integer> counted = fluids.stream()
+                .collect(Collectors.toMap(fluid -> new FluidStack(fluid, 1).getDisplayName().getString(), fluid -> 1, Integer::sum));
+
+        int dotWidth = font.width(".");
+        Component prevLine = Component.empty();
+        for (Fluid fluid : fluids) {
+            int val = valueMap.getInt(fluid);
+            if (val <= 0) {
+                continue;
+            }
+            String valStr = String.format("%4d", valueMap.getInt(fluid));
+            int nSpc = (32 - font.width(valStr)) / dotWidth;
+            valStr = valStr + StringUtils.repeat('.', nSpc);
+            String fluidName = new FluidStack(fluid, 1).getDisplayName().getString();
+            float mul = fuelRegistry.getBurnRateMultiplier(world, fluid);
+            Component line = mul == 1 || !includeBurnRate ?
+                    Component.literal(valStr + "| " + StringUtils.abbreviate(fluidName, 25)) :
+                    Component.literal(valStr + "| " + StringUtils.abbreviate(fluidName, 20)
+                            + " (x" + PneumaticCraftUtils.roundNumberTo(mul, 2) + ")");
+            if (!line.equals(prevLine)) {
+                maxWidth = Math.max(maxWidth, font.width(line));
+                text.add(line);
+            }
+            prevLine = line;
+            if (counted.getOrDefault(fluidName, 0) > 1) {
+                Component line2 = Component.literal("  " + Symbols.TRIANGLE_UP + " " + ModNameCache.getModName(fluid)).withStyle(ChatFormatting.GOLD);
+                text.add(line2);
+                maxWidth = Math.max(maxWidth, font.width(line2));
+            }
+        }
+
+        return Pair.of(Math.min(maxWidth, suggestedWidth), text);
     }
 }

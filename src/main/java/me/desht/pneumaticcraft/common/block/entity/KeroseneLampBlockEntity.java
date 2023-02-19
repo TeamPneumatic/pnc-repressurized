@@ -26,7 +26,6 @@ import me.desht.pneumaticcraft.common.block.entity.RedstoneController.RedstoneMo
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
-import me.desht.pneumaticcraft.common.core.ModFluids;
 import me.desht.pneumaticcraft.common.inventory.KeroseneLampMenu;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.network.DescSynced;
@@ -85,6 +84,7 @@ public class KeroseneLampBlockEntity extends AbstractTickingBlockEntity implemen
     );
 
     public static final int INVENTORY_SIZE = 2;
+    public static final int TICK_RATE = 5;
 
     private static final int INPUT_SLOT = 0;
     private static final int OUTPUT_SLOT = 1;
@@ -112,7 +112,7 @@ public class KeroseneLampBlockEntity extends AbstractTickingBlockEntity implemen
         protected void onContentsChanged(Fluid prevFluid, int prevAmount) {
             super.onContentsChanged(prevFluid, prevAmount);
             if (prevFluid != fluid.getFluid()) {
-                recalculateFuelQuality();
+                fuelQuality = calculateFuelQuality(fluid.getFluid());
             }
         }
     };
@@ -159,9 +159,11 @@ public class KeroseneLampBlockEntity extends AbstractTickingBlockEntity implemen
     public void tickServer() {
         super.tickServer();
 
-        if (fuelQuality < 0) recalculateFuelQuality();
+        if (fuelQuality < 0) {
+            fuelQuality = calculateFuelQuality(tank.getFluid().getFluid());
+        }
         processFluidItem(INPUT_SLOT, OUTPUT_SLOT);
-        if (nonNullLevel().getGameTime() % 5 == 0) {
+        if (nonNullLevel().getGameTime() % TICK_RATE == 0) {
             int effectiveRange = rsController.shouldRun() && fuel > 0 ? targetRange : 0;
             if (rsController.getCurrentMode() == RS_MODE_INTERPOLATE) {
                 effectiveRange = (int) (rsController.getCurrentRedstonePower() / 15D * targetRange);
@@ -172,19 +174,17 @@ public class KeroseneLampBlockEntity extends AbstractTickingBlockEntity implemen
         }
     }
 
-    private void recalculateFuelQuality() {
-        if (!tank.isEmpty()) {
-            if (ConfigHelper.common().machines.keroseneLampCanUseAnyFuel.get()) {
-                // 110 comes from kerosene's fuel value of 1,100,000 divided by the old FUEL_PER_MB value (10000)
-                fuelQuality = PneumaticRegistry.getInstance().getFuelRegistry().getFuelValue(level, tank.getFluid().getFluid()) / 110f;
-            } else {
-                fuelQuality = tank.getFluid().getFluid() == ModFluids.KEROSENE.get() ? 10000f : 0f;
-            }
-            if (tank.getFluid().getFluid().is(PneumaticCraftTags.Fluids.KEROSENE)) {
-                fuelQuality *= 2.5f;  // kerosene is better than everything for lighting purposes
-            }
-            fuelQuality *= ConfigHelper.common().machines.keroseneLampFuelEfficiency.get();
+    public float calculateFuelQuality(Fluid fuel) {
+        // 110 comes from kerosene's fuel value of 1,100,000 divided by the old FUEL_PER_MB value (10000)
+        boolean isKerosene = fuel.is(PneumaticCraftTags.Fluids.KEROSENE);
+        float quality = ConfigHelper.common().machines.keroseneLampCanUseAnyFuel.get() ?
+                PneumaticRegistry.getInstance().getFuelRegistry().getFuelValue(level, fuel) / 110f :
+                isKerosene ? 10000f : 0f;
+        if (isKerosene) {
+            quality *= 2.5f;  // kerosene is better than everything for lighting purposes
         }
+        quality *= ConfigHelper.common().machines.keroseneLampFuelEfficiency.get();
+        return quality;
     }
 
     private void useFuel() {
@@ -334,7 +334,7 @@ public class KeroseneLampBlockEntity extends AbstractTickingBlockEntity implemen
         for (int i = 0; i < lights.size(); i++) {
             managingLights.add(NbtUtils.readBlockPos(lights.getCompound(i)));
         }
-        recalculateFuelQuality();
+        fuelQuality = calculateFuelQuality(tank.getFluid().getFluid());
         targetRange = tag.getByte("targetRange");
         range = tag.getByte("range");
         rangeSq = range * range;
