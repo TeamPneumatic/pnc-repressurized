@@ -44,7 +44,7 @@ public class ElevatorBaseBlock extends AbstractCamouflageBlock implements Pneuma
 
     public ElevatorBaseBlock() {
         super(ModBlocks.defaultProps().noOcclusion());  // notSolid() because of camo requirements
-        registerDefaultState(getStateDefinition().any()
+        registerDefaultState(defaultBlockState()
                 .setValue(AbstractPneumaticCraftBlock.NORTH, false)
                 .setValue(AbstractPneumaticCraftBlock.SOUTH, false)
                 .setValue(AbstractPneumaticCraftBlock.WEST, false)

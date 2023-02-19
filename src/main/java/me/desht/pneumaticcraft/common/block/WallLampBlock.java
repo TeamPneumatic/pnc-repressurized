@@ -70,7 +70,7 @@ public class WallLampBlock extends AbstractPneumaticCraftBlock implements ColorH
         this.color = color;
         this.inverted = inverted;
 
-        registerDefaultState(getStateDefinition().any().setValue(LIT, inverted));
+        registerDefaultState(defaultBlockState().setValue(LIT, inverted));
     }
 
     @Override

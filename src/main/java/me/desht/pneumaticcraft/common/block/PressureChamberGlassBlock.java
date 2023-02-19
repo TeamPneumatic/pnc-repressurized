@@ -30,7 +30,7 @@ import net.minecraft.world.level.material.FluidState;
 public class PressureChamberGlassBlock extends AbstractPressureWallBlock {
     public PressureChamberGlassBlock() {
         super(IBlockPressureChamber.pressureChamberBlockProps().noOcclusion());
-        registerDefaultState(getStateDefinition().any().setValue(PNCBlockStateProperties.FORMED, false));
+        registerDefaultState(defaultBlockState().setValue(PNCBlockStateProperties.FORMED, false));
     }
 
     @Override
