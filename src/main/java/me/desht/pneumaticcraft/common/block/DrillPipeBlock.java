@@ -50,6 +50,11 @@ public class DrillPipeBlock extends AbstractPneumaticCraftBlock {
     }
 
     @Override
+    protected boolean isWaterloggable() {
+        return true;
+    }
+
+    @Override
     public VoxelShape getShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context) {
         return SHAPE;
     }

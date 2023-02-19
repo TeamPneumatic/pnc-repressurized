@@ -30,8 +30,7 @@ public abstract class AbstractPNCBlockWithBoundingBlocks extends AbstractPneumat
     public AbstractPNCBlockWithBoundingBlocks(Properties props) {
         super(props);
 
-        registerDefaultState(getStateDefinition().any()
-                .setValue(BOUNDING, false));
+        registerDefaultState(defaultBlockState().setValue(BOUNDING, false));
     }
 
     @Override

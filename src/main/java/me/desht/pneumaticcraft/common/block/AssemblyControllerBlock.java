@@ -44,12 +44,17 @@ public class AssemblyControllerBlock extends AbstractPneumaticCraftBlock impleme
 
     public AssemblyControllerBlock() {
         super(ModBlocks.defaultProps());
-        registerDefaultState(getStateDefinition().any()
+        registerDefaultState(defaultBlockState()
                 .setValue(NORTH, false)
                 .setValue(SOUTH, false)
                 .setValue(WEST, false)
                 .setValue(EAST, false)
         );
+    }
+
+    @Override
+    protected boolean isWaterloggable() {
+        return true;
     }
 
     @Override

@@ -81,12 +81,23 @@ public class ChargingStationBlock extends AbstractCamouflageBlock implements Pne
     private static final VoxelShape CHARGING_STATION_WITH_PAD_S = Shapes.join(CHARGING_STATION_S, CHARGING_PAD_S, BooleanOp.OR);
     private static final VoxelShape CHARGING_STATION_WITH_PAD_W = Shapes.join(CHARGING_STATION_W, CHARGING_PAD_W, BooleanOp.OR);
 
+    private static final VoxelShape CHARGING_STATION_WITH_PAD_N_COLL = Shapes.join(CHARGING_STATION_WITH_PAD_N, Shapes.block(), BooleanOp.AND);
+    private static final VoxelShape CHARGING_STATION_WITH_PAD_E_COLL = Shapes.join(CHARGING_STATION_WITH_PAD_E, Shapes.block(), BooleanOp.AND);
+    private static final VoxelShape CHARGING_STATION_WITH_PAD_S_COLL = Shapes.join(CHARGING_STATION_WITH_PAD_S, Shapes.block(), BooleanOp.AND);
+    private static final VoxelShape CHARGING_STATION_WITH_PAD_W_COLL = Shapes.join(CHARGING_STATION_WITH_PAD_W, Shapes.block(), BooleanOp.AND);
+
     private static final VoxelShape[] CHARGING_STATION = new VoxelShape[] { CHARGING_STATION_S, CHARGING_STATION_W, CHARGING_STATION_N, CHARGING_STATION_E };
     private static final VoxelShape[] CHARGING_STATION_WITH_PAD = new VoxelShape[] { CHARGING_STATION_WITH_PAD_S, CHARGING_STATION_WITH_PAD_W, CHARGING_STATION_WITH_PAD_N, CHARGING_STATION_WITH_PAD_E };
+    private static final VoxelShape[] CHARGING_STATION_WITH_PAD_COLL = new VoxelShape[] { CHARGING_STATION_WITH_PAD_S_COLL, CHARGING_STATION_WITH_PAD_W_COLL, CHARGING_STATION_WITH_PAD_N_COLL, CHARGING_STATION_WITH_PAD_E_COLL };
 
     public ChargingStationBlock() {
         super(ModBlocks.defaultProps());
         registerDefaultState(getStateDefinition().any().setValue(CHARGE_PAD, false));
+    }
+
+    @Override
+    protected boolean isWaterloggable() {
+        return true;
     }
 
     @Override
@@ -104,7 +115,8 @@ public class ChargingStationBlock extends AbstractCamouflageBlock implements Pne
     @Override
     public VoxelShape getCollisionShape(BlockState state, BlockGetter reader, BlockPos pos, CollisionContext ctx) {
         // avoids confusing entities, since the selection shape can extend into the block above, preventing pathfinding above the block
-        return state.getValue(CHARGE_PAD) ? Shapes.block() : getUncamouflagedShape(state, reader, pos, ctx);
+        Direction d = state.getValue(directionProperty());
+        return state.getValue(CHARGE_PAD) ? CHARGING_STATION_WITH_PAD_COLL[d.get2DDataValue()] : CHARGING_STATION[d.get2DDataValue()];
     }
 
     @Override

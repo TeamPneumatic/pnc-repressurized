@@ -48,6 +48,11 @@ public class AssemblyDrillBlock extends AbstractPneumaticCraftBlock implements P
     }
 
     @Override
+    protected boolean isWaterloggable() {
+        return true;
+    }
+
+    @Override
     public VoxelShape getShape(BlockState state, BlockGetter world, BlockPos pos, CollisionContext selectionContext) {
         return SHAPE;
     }

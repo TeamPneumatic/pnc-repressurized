@@ -8,7 +8,6 @@ import me.desht.pneumaticcraft.common.item.SpawnerCoreItem;
 import me.desht.pneumaticcraft.common.util.VoxelShapeUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
@@ -19,17 +18,13 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SimpleWaterloggedBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.material.FluidState;
-import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.CollisionContext;
@@ -42,7 +37,8 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
-import static net.minecraft.world.level.block.state.properties.BlockStateProperties.*;
+import static net.minecraft.world.level.block.state.properties.BlockStateProperties.OPEN;
+import static net.minecraft.world.level.block.state.properties.BlockStateProperties.POWERED;
 
 public class VacuumTrapBlock extends AbstractPneumaticCraftBlock implements SimpleWaterloggedBlock, PneumaticCraftEntityBlock {
     private static final VoxelShape SHAPE_N_OPEN = Stream.of(
@@ -86,36 +82,19 @@ public class VacuumTrapBlock extends AbstractPneumaticCraftBlock implements Simp
                 .setValue(EAST, false)
                 .setValue(WEST, false)
                 .setValue(DOWN, false)
-                .setValue(WATERLOGGED, false)
         );
+    }
+
+    @Override
+    protected boolean isWaterloggable() {
+        return true;
     }
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         super.createBlockStateDefinition(builder);
 
-        builder.add(OPEN, POWERED, NORTH, SOUTH, EAST, WEST, DOWN, WATERLOGGED);
-    }
-
-    @Nullable
-    @Override
-    public BlockState getStateForPlacement(BlockPlaceContext ctx) {
-        FluidState fluidState = ctx.getLevel().getFluidState(ctx.getClickedPos());
-        BlockState state = super.getStateForPlacement(ctx);
-        return state == null ? null : state.setValue(WATERLOGGED, fluidState.getType() == Fluids.WATER);
-    }
-
-    @Override
-    public FluidState getFluidState(BlockState state) {
-        return state.getValue(WATERLOGGED) ? Fluids.WATER.getSource(false) : super.getFluidState(state);
-    }
-
-    @Override
-    public BlockState updateShape(BlockState stateIn, Direction facing, BlockState facingState, LevelAccessor worldIn, BlockPos currentPos, BlockPos facingPos) {
-        if (stateIn.getValue(WATERLOGGED)) {
-            worldIn.scheduleTick(currentPos, Fluids.WATER, Fluids.WATER.getTickDelay(worldIn));
-        }
-        return super.updateShape(stateIn, facing, facingState, worldIn, currentPos, facingPos);
+        builder.add(OPEN, POWERED, NORTH, SOUTH, EAST, WEST, DOWN);
     }
 
     @Override

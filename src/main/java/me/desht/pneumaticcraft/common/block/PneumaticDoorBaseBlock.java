@@ -60,6 +60,11 @@ public class PneumaticDoorBaseBlock extends AbstractCamouflageBlock implements P
         return SHAPES[d.get2DDataValue()];
     }
 
+    @Override
+    protected boolean isWaterloggable() {
+        return true;
+    }
+
     /**
      * Called when the block is placed in the world.
      */

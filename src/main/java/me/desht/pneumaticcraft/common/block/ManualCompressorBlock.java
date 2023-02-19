@@ -52,6 +52,11 @@ public class ManualCompressorBlock extends AbstractPneumaticCraftBlock implement
     }
 
     @Override
+    protected boolean isWaterloggable() {
+        return true;
+    }
+
+    @Override
     public boolean isRotatable() {
         return true;
     }

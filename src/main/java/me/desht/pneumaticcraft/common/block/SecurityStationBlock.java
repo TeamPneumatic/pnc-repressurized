@@ -74,6 +74,11 @@ public class SecurityStationBlock extends AbstractPneumaticCraftBlock implements
     }
 
     @Override
+    protected boolean isWaterloggable() {
+        return true;
+    }
+
+    @Override
     public VoxelShape getShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context) {
         Direction d = state.getValue(directionProperty());
         return SHAPES[d.get2DDataValue()];

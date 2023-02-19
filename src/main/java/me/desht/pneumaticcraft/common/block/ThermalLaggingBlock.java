@@ -36,6 +36,11 @@ public class ThermalLaggingBlock extends AbstractPneumaticCraftBlock {
     }
 
     @Override
+    protected boolean isWaterloggable() {
+        return true;
+    }
+
+    @Override
     public VoxelShape getShape(BlockState state, BlockGetter world, BlockPos pos, CollisionContext selectionContext) {
         if (selectionContext instanceof EntityCollisionContext ecc && ecc.getEntity() instanceof LivingEntity livingEntity) {
             ItemStack stack = livingEntity.getMainHandItem();

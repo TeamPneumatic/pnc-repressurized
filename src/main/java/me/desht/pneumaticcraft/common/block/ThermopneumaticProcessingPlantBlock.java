@@ -66,6 +66,11 @@ public class ThermopneumaticProcessingPlantBlock extends AbstractPneumaticCraftB
     }
 
     @Override
+    protected boolean isWaterloggable() {
+        return true;
+    }
+
+    @Override
     public VoxelShape getShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context) {
         return SHAPES[state.getValue(directionProperty()).get2DDataValue()];
     }

@@ -20,26 +20,17 @@ package me.desht.pneumaticcraft.common.block;
 import me.desht.pneumaticcraft.common.block.entity.HeatPipeBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SimpleWaterloggedBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
-import net.minecraft.world.level.material.FluidState;
-import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-
-import javax.annotation.Nullable;
-
-import static net.minecraft.world.level.block.state.properties.BlockStateProperties.WATERLOGGED;
 
 public class HeatPipeBlock extends AbstractCamouflageBlock implements SimpleWaterloggedBlock, PneumaticCraftEntityBlock {
     private static final VoxelShape CORE = Block.box(4, 4, 4, 12, 12, 12);
@@ -61,7 +52,11 @@ public class HeatPipeBlock extends AbstractCamouflageBlock implements SimpleWate
         for (BooleanProperty prop : CONNECTION_PROPERTIES) {
             state = state.setValue(prop, false);
         }
-        registerDefaultState(state.setValue(WATERLOGGED, false));
+    }
+
+    @Override
+    protected boolean isWaterloggable() {
+        return true;
     }
 
     @Override
@@ -69,30 +64,6 @@ public class HeatPipeBlock extends AbstractCamouflageBlock implements SimpleWate
         super.createBlockStateDefinition(builder);
 
         builder.add(CONNECTION_PROPERTIES);
-        builder.add(WATERLOGGED);
-    }
-
-    @Override
-    public FluidState getFluidState(BlockState state) {
-        return state.getValue(WATERLOGGED) ? Fluids.WATER.getSource(false) : super.getFluidState(state);
-    }
-
-    @Nullable
-    @Override
-    public BlockState getStateForPlacement(BlockPlaceContext ctx) {
-        BlockState state = super.getStateForPlacement(ctx);
-        if (state == null) return null;
-
-        FluidState fluidState = ctx.getLevel().getFluidState(ctx.getClickedPos());
-        return state.setValue(WATERLOGGED, fluidState.getType() == Fluids.WATER);
-    }
-
-    @Override
-    public BlockState updateShape(BlockState stateIn, Direction facing, BlockState facingState, LevelAccessor worldIn, BlockPos currentPos, BlockPos facingPos) {
-        if (stateIn.getValue(WATERLOGGED)) {
-            worldIn.scheduleTick(currentPos, Fluids.WATER, Fluids.WATER.getTickDelay(worldIn));
-        }
-        return stateIn;
     }
 
     @Override

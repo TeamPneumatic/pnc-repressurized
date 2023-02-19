@@ -57,7 +57,12 @@ public class FluxCompressorBlock extends AbstractPneumaticCraftBlock implements 
     public FluxCompressorBlock() {
         super(ModBlocks.defaultProps());
 
-        registerDefaultState(getStateDefinition().any().setValue(PNCBlockStateProperties.ACTIVE, false));
+        registerDefaultState(defaultBlockState().setValue(PNCBlockStateProperties.ACTIVE, false));
+    }
+
+    @Override
+    protected boolean isWaterloggable() {
+        return true;
     }
 
     @Override

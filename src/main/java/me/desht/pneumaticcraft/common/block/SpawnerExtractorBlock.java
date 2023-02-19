@@ -85,7 +85,17 @@ public class SpawnerExtractorBlock extends AbstractPneumaticCraftBlock implement
     public SpawnerExtractorBlock() {
         super(ModBlocks.defaultProps());
 
-        registerDefaultState(stateDefinition.any().setValue(NORTH, false).setValue(SOUTH, false).setValue(WEST, false).setValue(EAST, false));
+        registerDefaultState(defaultBlockState()
+                .setValue(NORTH, false)
+                .setValue(SOUTH, false)
+                .setValue(WEST, false)
+                .setValue(EAST, false)
+        );
+    }
+
+    @Override
+    protected boolean isWaterloggable() {
+        return true;
     }
 
     @Override

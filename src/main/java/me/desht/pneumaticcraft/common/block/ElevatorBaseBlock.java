@@ -53,6 +53,11 @@ public class ElevatorBaseBlock extends AbstractCamouflageBlock implements Pneuma
     }
 
     @Override
+    protected boolean isWaterloggable() {
+        return true;
+    }
+
+    @Override
     public void onPlace(BlockState newState, Level world, BlockPos pos, BlockState oldState, boolean isMoving) {
         super.onPlace(newState, world, pos, oldState, isMoving);
         ElevatorBaseBlockEntity elevatorBase = getCoreTileEntity(world, pos);
