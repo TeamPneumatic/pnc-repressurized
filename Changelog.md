@@ -9,6 +9,12 @@ Changes are in reverse chronological order; newest changes at the top.
 1.19.2 builds may also work on Minecraft 1.19.1 but no support will be provided for that.
 
 ## 4.3.2
+
+### Updates
+* All non-full-cube blocks in the mod are now waterloggable
+* Kerosene Lamp GUI now has a fuel tab showing how long each fuel will burn for (based on lamp's current range)
+
+### Fixes
 * Fixed an issue with Kerosene Lamps which could lead to chunk corruption if the level is unloaded with a lit Kerosene Lamp present
 
 ## 4.3.1
