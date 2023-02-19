@@ -92,7 +92,7 @@ public class ChargingStationBlock extends AbstractCamouflageBlock implements Pne
 
     public ChargingStationBlock() {
         super(ModBlocks.defaultProps());
-        registerDefaultState(getStateDefinition().any().setValue(CHARGE_PAD, false));
+        registerDefaultState(defaultBlockState().setValue(CHARGE_PAD, false));
     }
 
     @Override

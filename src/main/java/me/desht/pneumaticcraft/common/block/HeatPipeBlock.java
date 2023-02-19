@@ -48,10 +48,11 @@ public class HeatPipeBlock extends AbstractCamouflageBlock implements SimpleWate
     public HeatPipeBlock() {
         super(ModBlocks.defaultProps().noOcclusion());  // notSolid() because of camo requirements
 
-        BlockState state = getStateDefinition().any();
+        BlockState state = defaultBlockState();
         for (BooleanProperty prop : CONNECTION_PROPERTIES) {
             state = state.setValue(prop, false);
         }
+        registerDefaultState(state);
     }
 
     @Override

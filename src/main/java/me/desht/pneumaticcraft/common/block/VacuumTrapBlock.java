@@ -74,7 +74,7 @@ public class VacuumTrapBlock extends AbstractPneumaticCraftBlock implements Simp
     public VacuumTrapBlock() {
         super(ModBlocks.defaultProps());
 
-        registerDefaultState(getStateDefinition().any()
+        registerDefaultState(defaultBlockState()
                 .setValue(OPEN, false)
                 .setValue(POWERED, false)
                 .setValue(NORTH, false)

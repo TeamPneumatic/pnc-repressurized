@@ -71,7 +71,6 @@ import java.util.function.BiFunction;
 
 import static me.desht.pneumaticcraft.api.block.PressureTubeConnection.CONNECTED;
 import static me.desht.pneumaticcraft.common.util.DirectionUtil.HORIZONTALS;
-import static net.minecraft.world.level.block.state.properties.BlockStateProperties.WATERLOGGED;
 
 public class PressureTubeBlock extends AbstractCamouflageBlock
         implements SimpleWaterloggedBlock, PneumaticCraftEntityBlock, ITubeNetworkConnector {
@@ -113,11 +112,11 @@ public class PressureTubeBlock extends AbstractCamouflageBlock
         super(ModBlocks.defaultProps().noOcclusion());  // noOcclusion() because of camo requirements
         this.teFactory = teFactory;
 
-        BlockState state = getStateDefinition().any();
+        BlockState state = defaultBlockState();
         for (EnumProperty<PressureTubeConnection> p : CONNECTION_PROPERTIES_3) {
             state = state.setValue(p, PressureTubeConnection.OPEN);
         }
-        registerDefaultState(state.setValue(WATERLOGGED, false));
+        registerDefaultState(state);
     }
 
     @Override
