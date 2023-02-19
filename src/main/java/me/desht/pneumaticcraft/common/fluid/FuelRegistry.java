@@ -24,15 +24,19 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 public enum FuelRegistry implements IFuelRegistry {
     INSTANCE;
 
     private static final FuelRecord MISSING_FUEL_ENTRY = new FuelRecord(0, 1f);
 
-    private final Map<Fluid, FuelRecord> cachedFuels = new HashMap<>();  // cleared on a /reload
-    private final Map<Fluid, FuelRecord> hotFluids = new HashMap<>();
+    private final Map<Fluid, FuelRecord> cachedFuels = new ConcurrentHashMap<>();  // cleared on a /reload
+    private final Map<Fluid, FuelRecord> hotFluids = new ConcurrentHashMap<>();
 
     public static FuelRegistry getInstance() {
         return INSTANCE;
@@ -44,8 +48,8 @@ public enum FuelRegistry implements IFuelRegistry {
     }
 
     @Override
-    public int getFuelValue(Level world, Fluid fluid) {
-        return cachedFuels.computeIfAbsent(fluid, k -> findEntry(world, fluid)).mLperBucket;
+    public int getFuelValue(Level level, Fluid fluid) {
+        return cachedFuels.computeIfAbsent(fluid, k -> findEntry(level, fluid)).mLperBucket;
     }
 
     @Override
@@ -54,10 +58,10 @@ public enum FuelRegistry implements IFuelRegistry {
     }
 
     @Override
-    public Collection<Fluid> registeredFuels(Level world) {
+    public Collection<Fluid> registeredFuels(Level level) {
         Set<Fluid> res = new HashSet<>(hotFluids.keySet());
 
-        for (FuelQualityRecipe recipe : ModRecipeTypes.getRecipes(world, ModRecipeTypes.FUEL_QUALITY)) {
+        for (FuelQualityRecipe recipe : ModRecipeTypes.getRecipes(level, ModRecipeTypes.FUEL_QUALITY)) {
             res.addAll(recipe.getFuel().getFluidStacks().stream()
                     .map(FluidStack::getFluid)
                     .filter(f -> f.isSource(f.defaultFluidState()))

@@ -902,6 +902,7 @@
    "pneumaticcraft.gui.jei.tooltip.processingTime" : "Effective processing time may be lower if extra pressure is supplied",
    "pneumaticcraft.gui.jei.tooltip.yeastCrafting" : "Drop some Sugar into a pool of Yeast Culture, then place some Water adjacent to it; the Yeast Culture will spread into the water.${br}${br}Note that the crafting check is done when the Water is placed, not when the Sugar is dropped. You can drop a stack of Sugar into the Yeast Culture; only one Sugar will be used at a time.",
    "pneumaticcraft.gui.jei.tooltip.droneImportOrbs" : "To import XP orbs into a Drone's fluid tank, use an Import Entity widget, possibly in conjunction with an @orb entity filter.",
+   "pneumaticcraft.gui.keroseneLamp.fuelsHeader": "ticks/mB | Fluid @ range %d",
    "pneumaticcraft.gui.keroseneLamp.maxRange" : "Max Range:",
    "pneumaticcraft.gui.keroseneLamp.timeLeft" : "Time left: %s",
    "pneumaticcraft.gui.keybindBoundKey" : "Bound to: §a%s",
