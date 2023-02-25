@@ -19,8 +19,14 @@ package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.common.block.entity.HeatPipeBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
+import me.desht.pneumaticcraft.common.heat.HeatExchangerManager;
+import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SimpleWaterloggedBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -31,6 +37,7 @@ import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import org.jetbrains.annotations.Nullable;
 
 public class HeatPipeBlock extends AbstractCamouflageBlock implements SimpleWaterloggedBlock, PneumaticCraftEntityBlock {
     private static final VoxelShape CORE = Block.box(4, 4, 4, 12, 12, 12);
@@ -65,6 +72,33 @@ public class HeatPipeBlock extends AbstractCamouflageBlock implements SimpleWate
         super.createBlockStateDefinition(builder);
 
         builder.add(CONNECTION_PROPERTIES);
+    }
+
+    @Nullable
+    @Override
+    public BlockState getStateForPlacement(BlockPlaceContext ctx) {
+        BlockState state = super.getStateForPlacement(ctx);
+
+        return recalculateState(ctx.getLevel(), ctx.getClickedPos(), state);
+    }
+
+    @Override
+    public BlockState updateShape(BlockState stateIn, Direction facing, BlockState facingState, LevelAccessor worldIn, BlockPos currentPos, BlockPos facingPos) {
+        return recalculateState(worldIn, currentPos, stateIn);
+    }
+
+    private static BlockState recalculateState(LevelAccessor worldIn, BlockPos currentPos, BlockState stateIn) {
+        if (stateIn == null) return null;
+
+        if (worldIn instanceof Level level) {
+            for (Direction dir : DirectionUtil.VALUES) {
+                BooleanProperty prop = AbstractPneumaticCraftBlock.connectionProperty(dir);
+                boolean connected = HeatExchangerManager.getInstance().getLogic(level, currentPos.relative(dir),
+                        dir.getOpposite(), HeatPipeBlockEntity.NO_AIR_OR_LIQUIDS).isPresent();
+                stateIn = stateIn.setValue(prop, connected);
+            }
+        }
+        return stateIn;
     }
 
     @Override
