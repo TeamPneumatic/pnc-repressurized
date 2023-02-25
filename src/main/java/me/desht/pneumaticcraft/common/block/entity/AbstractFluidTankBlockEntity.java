@@ -32,6 +32,7 @@ import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PNCFluidTank;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -138,6 +139,20 @@ public abstract class AbstractFluidTankBlockEntity extends AbstractTickingBlockE
     @Override
     public Map<String, PNCFluidTank> getSerializableTanks() {
         return ImmutableMap.of(ItemBlockFluidTank.TANK_NAME, tank);
+    }
+
+    @Override
+    public void saveAdditional(CompoundTag tag) {
+        super.saveAdditional(tag);
+
+        tag.put("Items", inventory.serializeNBT());
+    }
+
+    @Override
+    public void load(CompoundTag tag) {
+        super.load(tag);
+
+        inventory.deserializeNBT(tag.getCompound("Items"));
     }
 
     public SmartSyncTank getTank() {
