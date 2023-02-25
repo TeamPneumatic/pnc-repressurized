@@ -324,7 +324,7 @@ public abstract class AbstractSemiblockEntity extends Entity implements ISemiBlo
         if (!level.isClientSide) {
             if (SemiblockTracker.getInstance().putSemiblock(level, blockPos, this)) {
                 MinecraftForge.EVENT_BUS.post(new SemiblockEvent.PlaceEvent(level, blockPos, this));
-                level.updateNeighborsAt(blockPos, level.getBlockState(blockPos).getBlock());
+                level.markAndNotifyBlock(blockPos, level.getChunkAt(blockPos), getBlockState(), getBlockState(), Block.UPDATE_ALL, 512);
             } else {
                 Direction dir = this instanceof IDirectionalSemiblock d ? d.getSide() : null;
                 Log.error("SemiblockTracker: not overwriting existing semiblock at %s, pos=%s, dir=%s!", level, blockPos, dir);
@@ -345,7 +345,7 @@ public abstract class AbstractSemiblockEntity extends Entity implements ISemiBlo
             }
 
             if (level.isLoaded(blockPos)) {
-                level.updateNeighborsAt(blockPos, level.getBlockState(blockPos).getBlock());
+                level.markAndNotifyBlock(blockPos, level.getChunkAt(blockPos), getBlockState(), getBlockState(), Block.UPDATE_ALL, 512);
             }
         }
 

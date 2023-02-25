@@ -19,22 +19,22 @@ package me.desht.pneumaticcraft.common.block.entity;
 
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
-import me.desht.pneumaticcraft.common.block.AbstractPneumaticCraftBlock;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
-import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.IItemHandler;
 
 import java.util.function.BiPredicate;
 
 public class HeatPipeBlockEntity extends AbstractTickingBlockEntity implements CamouflageableBlockEntity, IHeatExchangingTE {
+    public static final BiPredicate<LevelAccessor, BlockPos> NO_AIR_OR_LIQUIDS =
+            (world, pos) -> !world.isEmptyBlock(pos) && !(world.getBlockState(pos).getBlock() instanceof LiquidBlock);
+
     private final IHeatExchangerLogic heatExchanger = PneumaticRegistry.getInstance().getHeatRegistry().makeHeatExchangerLogic();
     private final LazyOptional<IHeatExchangerLogic> heatCap = LazyOptional.of(() -> heatExchanger);
 
@@ -56,38 +56,7 @@ public class HeatPipeBlockEntity extends AbstractTickingBlockEntity implements C
 
     @Override
     public BiPredicate<LevelAccessor, BlockPos> heatExchangerBlockFilter() {
-        // heat pipes don't connect to air or fluids
-        return (world, pos) -> !world.isEmptyBlock(pos) && !(world.getBlockState(pos).getBlock() instanceof LiquidBlock);
-    }
-
-    @Override
-    public void onLoad() {
-        super.onLoad();
-
-        if (!nonNullLevel().isClientSide) {
-            updateConnections();
-        }
-    }
-
-    @Override
-    public void onNeighborBlockUpdate(BlockPos fromPos) {
-        super.onNeighborBlockUpdate(fromPos);
-
-        updateConnections();
-    }
-
-    public void updateConnections() {
-        BlockState state = getBlockState();
-        boolean changed = false;
-        for (Direction dir : DirectionUtil.VALUES) {
-            BooleanProperty prop = AbstractPneumaticCraftBlock.connectionProperty(dir);
-            boolean connected = heatExchanger.isSideConnected(dir);
-            if (state.getValue(prop) != connected) {
-                state = state.setValue(prop, connected);
-                changed = true;
-            }
-        }
-        if (changed) nonNullLevel().setBlockAndUpdate(worldPosition, state);
+        return NO_AIR_OR_LIQUIDS;
     }
 
     @Override
