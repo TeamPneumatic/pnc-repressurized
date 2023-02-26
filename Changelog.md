@@ -6,7 +6,11 @@ Changes are in reverse chronological order; newest changes at the top.
 
 # Minecraft 1.19.2
 
-1.19.2 builds may also work on Minecraft 1.19.1 but no support will be provided for that.
+## 4.3.3
+
+### Fixes
+* Fixed problems with Heat Pipe block update behaviour when placing pipes
+* Fixed Fluid Tanks not saving their item inventory (i.e. the bucket slots)
 
 ## 4.3.2
 
