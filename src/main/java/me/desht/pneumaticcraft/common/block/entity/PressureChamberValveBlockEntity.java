@@ -19,6 +19,9 @@ package me.desht.pneumaticcraft.common.block.entity;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.math.IntMath;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntCollection;
+import it.unimi.dsi.fastutil.ints.IntList;
 import me.desht.pneumaticcraft.api.block.PNCBlockStateProperties;
 import me.desht.pneumaticcraft.api.crafting.recipe.PressureChamberRecipe;
 import me.desht.pneumaticcraft.api.pressure.PressureTier;
@@ -193,7 +196,7 @@ public class PressureChamberValveBlockEntity extends AbstractAirHandlingBlockEnt
             final SizeLimitedItemHandlerWrapper h = new SizeLimitedItemHandlerWrapper(itemsInChamber);
             if (h.getSlots() > 0) {
                 ModRecipeTypes.PRESSURE_CHAMBER.get().stream(level).forEach(recipe -> {
-                    Collection<Integer> slots = recipe.findIngredients(h);
+                    IntCollection slots = recipe.findIngredients(h);
                     if (!slots.isEmpty()) {
                         applicableRecipes.add(new ApplicableRecipe(recipe, slots));
                     }
@@ -745,11 +748,11 @@ public class PressureChamberValveBlockEntity extends AbstractAirHandlingBlockEnt
 
     private static class ApplicableRecipe {
         final PressureChamberRecipe recipe;
-        final List<Integer> slots;
+        final IntList slots;
 
-        ApplicableRecipe(PressureChamberRecipe recipe, Collection<Integer> slots) {
+        ApplicableRecipe(PressureChamberRecipe recipe, IntCollection slots) {
             this.recipe = recipe;
-            this.slots = ImmutableList.copyOf(slots);
+            this.slots = new IntArrayList(slots);
         }
     }
 }

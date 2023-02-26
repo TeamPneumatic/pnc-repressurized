@@ -17,6 +17,8 @@
 
 package me.desht.pneumaticcraft.common.amadron;
 
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import me.desht.pneumaticcraft.api.crafting.AmadronTradeResource;
 import me.desht.pneumaticcraft.api.crafting.recipe.AmadronRecipe;
 import me.desht.pneumaticcraft.api.lib.Names;
@@ -64,7 +66,7 @@ public enum AmadronOfferManager {
     // static trades, always available: loaded from recipes datapack
     private final List<AmadronRecipe> staticOffers = new ArrayList<>();
     // periodic trades, randomly appear: loaded from recipes datapack
-    private final Map<Integer,List<AmadronRecipe>> periodicOffers = new HashMap<>();  // a list due to random access needs
+    private final Int2ObjectMap<List<AmadronRecipe>> periodicOffers = new Int2ObjectOpenHashMap<>();  // a list due to random access needs
     // maps villager profession/level to list of trades
     private final Map<String,List<AmadronRecipe>> villagerTrades = new HashMap<>();
     // villager professions which actually have some trades

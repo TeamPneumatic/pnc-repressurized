@@ -20,6 +20,8 @@ package me.desht.pneumaticcraft.common.recipes.machine;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
+import it.unimi.dsi.fastutil.ints.IntCollection;
+import it.unimi.dsi.fastutil.ints.IntList;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModRecipeSerializers;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -49,7 +51,7 @@ public class PressureDisenchantingRecipe extends PressureChamberRecipeImpl {
     }
 
     @Override
-    public Collection<Integer> findIngredients(@Nonnull IItemHandler chamberHandler) {
+    public IntCollection findIngredients(@Nonnull IItemHandler chamberHandler) {
         int bookSlot = -1;
         int itemSlot = -1;
 
@@ -65,15 +67,15 @@ public class PressureDisenchantingRecipe extends PressureChamberRecipeImpl {
                     itemSlot = i;
                 }
             }
-            if (bookSlot >= 0 && itemSlot >= 0) return ImmutableList.of(bookSlot, itemSlot);
+            if (bookSlot >= 0 && itemSlot >= 0) return IntList.of(bookSlot, itemSlot);
         }
-        return Collections.emptyList();
+        return IntList.of();
     }
 
     @Override
-    public NonNullList<ItemStack> craftRecipe(@Nonnull IItemHandler chamberHandler, List<Integer> ingredientSlots, boolean simulate) {
-        ItemStack book = chamberHandler.extractItem(ingredientSlots.get(0), 1, simulate);
-        ItemStack enchantedStack = chamberHandler.extractItem(ingredientSlots.get(1), 1, simulate);
+    public NonNullList<ItemStack> craftRecipe(@Nonnull IItemHandler chamberHandler, IntList ingredientSlots, boolean simulate) {
+        ItemStack book = chamberHandler.extractItem(ingredientSlots.getInt(0), 1, simulate);
+        ItemStack enchantedStack = chamberHandler.extractItem(ingredientSlots.getInt(1), 1, simulate);
 
         if (book.isEmpty() || enchantedStack.isEmpty()) return NonNullList.create();
 

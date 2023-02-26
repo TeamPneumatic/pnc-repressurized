@@ -17,6 +17,7 @@
 
 package me.desht.pneumaticcraft.common.capabilities;
 
+import it.unimi.dsi.fastutil.floats.FloatPredicate;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.pressure.PressureHelper;
@@ -63,7 +64,7 @@ public class MachineAirHandler extends BasicAirHandler implements IAirHandlerMac
     // note: leaks due to security upgrade are tracked separately from leaks due to disconnection
     private boolean safetyLeaking;   // is the handler venting right now?
     private Direction safetyLeakDir; // direction handler would vent in (non-null does not mean actively venting)
-    private Predicate<Float> safetyPredicate;  // for determining when safety venting is needed
+    private FloatPredicate safetyPredicate;  // for determining when safety venting is needed
 
     public MachineAirHandler(PressureTier tier, int volume) {
         super(volume);
@@ -106,7 +107,7 @@ public class MachineAirHandler extends BasicAirHandler implements IAirHandlerMac
     }
 
     @Override
-    public void enableSafetyVenting(Predicate<Float> pressureCheck, Direction dir) {
+    public void enableSafetyVenting(FloatPredicate pressureCheck, Direction dir) {
         this.safetyLeakDir = dir;
         this.safetyPredicate = pressureCheck;
     }

@@ -17,6 +17,7 @@
 
 package me.desht.pneumaticcraft.common.tubemodules;
 
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.semiblock.ISemiBlock;
@@ -46,7 +47,6 @@ import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 
 import java.util.List;
-import java.util.Map;
 import java.util.PriorityQueue;
 
 public class LogisticsModule extends AbstractTubeModule implements INetworkedModule {
@@ -171,8 +171,9 @@ public class LogisticsModule extends AbstractTubeModule implements INetworkedMod
         }
         if (--ticksUntilNextCycle <= 0) {
             LogisticsManager manager = new LogisticsManager();
-            Map<Integer, LogisticsModule> frame2module = new Int2ObjectOpenHashMap<>();
-            for (AbstractTubeModule module : ModuleNetworkManager.getInstance(getTube().nonNullLevel()).getConnectedModules(this)) {
+            Int2ObjectMap<LogisticsModule> frame2module = new Int2ObjectOpenHashMap<>();
+            ModuleNetworkManager networkManager = ModuleNetworkManager.getInstance(getTube().nonNullLevel());
+            for (AbstractTubeModule module : networkManager.getConnectedModules(this)) {
                 if (module.isValid() && module instanceof LogisticsModule logistics && logistics.getColorChannel() == this.getColorChannel()) {
                     // Make sure any connected module doesn't tick; set it to a 5-second timer.
                     // This is also a penalty value when no task is executed this tick.

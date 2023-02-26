@@ -17,6 +17,7 @@
 
 package me.desht.pneumaticcraft.common.item;
 
+import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.data.PneumaticCraftTags;
@@ -178,9 +179,9 @@ public class JackHammerItem extends PressurizableItem
                 itemstack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).ifPresent(airHandler -> {
                     DigMode digMode = JackHammerItem.getDigMode(itemstack);
 
-                    List<Integer> upgrades = UpgradableItemUtils.getUpgradeList(itemstack, ModUpgrades.SPEED.get(), ModUpgrades.MAGNET.get());
-                    int speed = upgrades.get(0);
-                    boolean magnet = upgrades.get(1) > 0 && digMode.isVeinMining();
+                    IntList upgrades = UpgradableItemUtils.getUpgradeList(itemstack, ModUpgrades.SPEED.get(), ModUpgrades.MAGNET.get());
+                    int speed = upgrades.getInt(0);
+                    boolean magnet = upgrades.getInt(1) > 0 && digMode.isVeinMining();
 
                     DrillBitType bitType = getDrillBit(itemstack);
                     if (TierSortingRegistry.getTiersLowerThan(digMode.getBitType().getTier()).contains(bitType.getTier())) {

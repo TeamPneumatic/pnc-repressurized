@@ -17,6 +17,8 @@
 
 package me.desht.pneumaticcraft.common.hacking.secstation;
 
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
 import me.desht.pneumaticcraft.common.hacking.secstation.ISimulationController.HackingSide;
 import me.desht.pneumaticcraft.common.item.NetworkComponentItem;
 import me.desht.pneumaticcraft.common.item.NetworkComponentItem.NetworkComponentType;
@@ -37,27 +39,27 @@ public class HackSimulation {
     public static final int GRID_SIZE = GRID_WIDTH * GRID_HEIGHT;
 
     // lookup table which maps a node index to a list of the nodes it can connect to
-    private static final List<List<Integer>> connectionMatrix = new ArrayList<>();
+    private static final List<IntList> connectionMatrix = new ArrayList<>();
     public static final int NODE_FORTIFICATION_TIME = 100;
 
     static {
         for (int i = 0; i < GRID_SIZE; i++) {
             int xPos = i % GRID_WIDTH;
             int yPos = i / GRID_WIDTH;
-            ArrayList<Integer> conns = new ArrayList<>();
+            IntList connections = new IntArrayList();
             if (yPos > 0) {
-                conns.add(i - GRID_WIDTH);  // up
-                if (xPos > 0) conns.add(i - (GRID_WIDTH + 1));  // up-left
-                if (xPos < GRID_WIDTH - 1) conns.add(i - (GRID_WIDTH - 1));  // up-right
+                connections.add(i - GRID_WIDTH);  // up
+                if (xPos > 0) connections.add(i - (GRID_WIDTH + 1));  // up-left
+                if (xPos < GRID_WIDTH - 1) connections.add(i - (GRID_WIDTH - 1));  // up-right
             }
             if (yPos < GRID_HEIGHT - 1) {
-                conns.add(i + GRID_WIDTH);  // down
-                if (xPos > 0) conns.add(i + (GRID_WIDTH - 1));  // down-left
-                if (xPos < GRID_WIDTH - 1) conns.add(i + (GRID_WIDTH + 1));  // down-right
+                connections.add(i + GRID_WIDTH);  // down
+                if (xPos > 0) connections.add(i + (GRID_WIDTH - 1));  // down-left
+                if (xPos < GRID_WIDTH - 1) connections.add(i + (GRID_WIDTH + 1));  // down-right
             }
-            if (xPos > 0) conns.add(i - 1);  // left
-            if (xPos < GRID_WIDTH - 1) conns.add(i + 1);  // right
-            connectionMatrix.add(conns);
+            if (xPos > 0) connections.add(i - 1);  // left
+            if (xPos < GRID_WIDTH - 1) connections.add(i + 1);  // right
+            connectionMatrix.add(connections);
         }
     }
 
@@ -238,7 +240,7 @@ public class HackSimulation {
         pendingNukePos = -1;
     }
 
-    public List<Integer> getNeighbours(int node) {
+    public IntList getNeighbours(int node) {
         return connectionMatrix.get(node);
     }
 

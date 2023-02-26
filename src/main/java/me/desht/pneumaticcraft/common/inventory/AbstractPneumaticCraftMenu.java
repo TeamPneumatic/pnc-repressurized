@@ -17,6 +17,8 @@
 
 package me.desht.pneumaticcraft.common.inventory;
 
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
 import me.desht.pneumaticcraft.common.block.entity.AbstractPneumaticCraftBlockEntity;
 import me.desht.pneumaticcraft.common.block.entity.IGUIButtonSensitive;
 import me.desht.pneumaticcraft.common.inventory.slot.IPhantomSlot;
@@ -105,7 +107,7 @@ public abstract class AbstractPneumaticCraftMenu<T extends AbstractPneumaticCraf
     @Override
     public void broadcastChanges() {
         super.broadcastChanges();
-        List<Integer> toUpdate = new ArrayList<>();
+        IntList toUpdate = new IntArrayList();
         for (int i = 0; i < syncedFields.size(); i++) {
             if (syncedFields.get(i).update() || firstTick) {
                 toUpdate.add(i);
@@ -166,6 +168,7 @@ public abstract class AbstractPneumaticCraftMenu<T extends AbstractPneumaticCraf
         }
     }
 
+    @SuppressWarnings("SameParameterValue")
     void addOffhandSlot(Inventory inventory, int x, int y) {
         this.addSlot(new PlayerEquipmentSlot(inventory, EquipmentSlot.OFFHAND, x, y));
     }

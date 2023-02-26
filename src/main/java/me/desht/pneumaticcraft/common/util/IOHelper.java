@@ -17,7 +17,8 @@
 
 package me.desht.pneumaticcraft.common.util;
 
-import com.google.common.collect.Lists;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
@@ -32,7 +33,6 @@ import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 
 import javax.annotation.Nonnull;
-import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.IntStream;
 
@@ -106,7 +106,7 @@ public class IOHelper {
 
         if (handler != null) {
             int itemsFound = 0;
-            List<Integer> slotsOfInterest = Lists.newArrayList();
+            IntList slotsOfInterest = new IntArrayList();
             for (int slot = 0; slot < handler.getSlots() && itemsFound < requestedStack.getCount(); slot++) {
                 ItemStack stack = handler.getStackInSlot(slot);
                 if (!stack.isEmpty() && matchStacks(stack, requestedStack, matchNBT)) {

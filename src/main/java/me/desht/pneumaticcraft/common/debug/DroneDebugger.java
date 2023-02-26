@@ -17,6 +17,8 @@
 
 package me.desht.pneumaticcraft.common.debug;
 
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.drone.IDroneBase;
@@ -97,7 +99,7 @@ public class DroneDebugger {
     }
 
     private class DroneDebugList {
-        private final Map<Integer, DroneDebugEntry> debugEntries = new HashMap<>();
+        private final Int2ObjectMap<DroneDebugEntry> debugEntries = new Int2ObjectOpenHashMap<>();
 
         private DroneDebugList() {
         }

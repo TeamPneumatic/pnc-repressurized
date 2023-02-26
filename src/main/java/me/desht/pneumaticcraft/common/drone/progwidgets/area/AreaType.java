@@ -24,6 +24,8 @@ import net.minecraft.network.FriendlyByteBuf;
 
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.IntConsumer;
+import java.util.function.IntSupplier;
 import java.util.function.Supplier;
 
 public abstract class AreaType {
@@ -114,10 +116,10 @@ public abstract class AreaType {
      * Adds a number textbox.
      */
     public static class AreaTypeWidgetInteger extends AreaTypeWidget{
-        public final Supplier<Integer> readAction;
-        public final Consumer<Integer> writeAction;
+        public final IntSupplier readAction;
+        public final IntConsumer writeAction;
         
-        public AreaTypeWidgetInteger(String title, Supplier<Integer> readAction, Consumer<Integer> writeAction){
+        public AreaTypeWidgetInteger(String title, IntSupplier readAction, IntConsumer writeAction){
             super(title);
             this.readAction = readAction;
             this.writeAction = writeAction;
@@ -125,7 +127,7 @@ public abstract class AreaType {
 
         @Override
         public String getCurValue(){
-            return readAction.get().toString();
+            return String.valueOf(readAction.getAsInt());
         }
     }
     

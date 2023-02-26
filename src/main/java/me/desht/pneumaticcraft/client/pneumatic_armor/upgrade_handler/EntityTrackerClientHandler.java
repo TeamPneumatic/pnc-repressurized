@@ -18,6 +18,10 @@
 package me.desht.pneumaticcraft.client.pneumatic_armor.upgrade_handler;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
 import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.*;
 import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorHandler;
@@ -56,7 +60,7 @@ public class EntityTrackerClientHandler extends IArmorUpgradeClientHandler.Abstr
     private static final float ENTITY_TRACKING_RANGE = 16F;
     private static final StatPanelLayout DEFAULT_STAT_LAYOUT = new StatPanelLayout(0.995f, 0.2f, true);
 
-    private final Map<Integer, RenderEntityTarget> targets = new HashMap<>();
+    private final Int2ObjectMap<RenderEntityTarget> targets = new Int2ObjectOpenHashMap<>();
 
     private IGuiAnimatedStat entityTrackInfo;
     @Nonnull
@@ -98,13 +102,13 @@ public class EntityTrackerClientHandler extends IArmorUpgradeClientHandler.Abstr
         }
 
         // prune no-longer-applicable entities from the render target list
-        List<Integer> toRemove = new ArrayList<>();
+        IntList toRemove = new IntArrayList();
         targets.forEach((entityId, target) -> {
             if (!target.entity.isAlive() || player.distanceTo(target.entity) > entityTrackRange + 5 || !entityFilter.test(target.entity)) {
                 if (target.ticksExisted > 0) {
                     target.ticksExisted = -60;
                 } else if (target.ticksExisted == -1) {
-                    toRemove.add(entityId);
+                    toRemove.add(entityId.intValue());
                 }
             }
         });

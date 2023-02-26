@@ -17,6 +17,8 @@
 
 package me.desht.pneumaticcraft.common.event;
 
+import it.unimi.dsi.fastutil.ints.Int2IntMap;
+import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import me.desht.pneumaticcraft.api.data.PneumaticCraftTags;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.core.ModItems;
@@ -63,7 +65,7 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
  * Events related to Pneumatic Armor.  Note any player-tick events are handled in CommonHUDHandler#tickArmorPiece()
  */
 public class PneumaticArmorHandler {
-    private static final Map<Integer, Integer> targetingTracker = new HashMap<>();
+    private static final Int2IntMap targetingTracker = new Int2IntOpenHashMap();
     private static final Map<UUID, Map<String, Integer>> targetWarnings = new HashMap<>();
 
     private static final int ARMOR_REPAIR_AMOUNT = 16;  // durability repaired per compressed iron ingot

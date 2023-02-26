@@ -67,6 +67,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.io.IOException;
 import java.util.BitSet;
 import java.util.List;
 import java.util.Objects;

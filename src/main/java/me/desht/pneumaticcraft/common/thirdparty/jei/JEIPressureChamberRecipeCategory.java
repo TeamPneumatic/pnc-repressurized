@@ -20,6 +20,9 @@ package me.desht.pneumaticcraft.common.thirdparty.jei;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.mojang.blaze3d.vertex.PoseStack;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.ints.IntLists;
 import me.desht.pneumaticcraft.api.crafting.recipe.PressureChamberRecipe;
 import me.desht.pneumaticcraft.api.crafting.recipe.PressureChamberRecipe.RecipeSlot;
 import me.desht.pneumaticcraft.api.crafting.recipe.PressureChamberRecipe.SlotCycle;
@@ -80,14 +83,14 @@ public class JEIPressureChamberRecipeCategory extends AbstractPNCCategory<Pressu
             List<ItemStack> stacks = slots.get(slot);
             // that has more than one item within
             if (stacks.size() > 1) {
-                ImmutableList.Builder<Integer> builder = ImmutableList.builder();
+                IntArrayList l = new IntArrayList();
                 // find matching stacks
                 for (int i = 0; i < stacks.size(); i++) {
                     if (needle.sameItem(stacks.get(i))) {
-                        builder.add(i);
+                        l.add(i);
                     }
                 }
-                ImmutableList<Integer> matches = builder.build();
+                IntList matches = IntLists.unmodifiable(l);
                 if (matches.size() > 0) {
                     // Return the first slot that has matches
                     return Optional.of(new SlotCycle(new RecipeSlot(role == RecipeIngredientRole.INPUT, slot), matches));
@@ -100,15 +103,15 @@ public class JEIPressureChamberRecipeCategory extends AbstractPNCCategory<Pressu
     /**
      * @return slot cycles with the overrides applied if applicable.
      */
-    protected static List<List<ItemStack>> applyOverrides(boolean isInput, List<List<ItemStack>> slotCycles, Map<RecipeSlot, List<Integer>> slotCycleOverrides) {
+    protected static List<List<ItemStack>> applyOverrides(boolean isInput, List<List<ItemStack>> slotCycles, Map<RecipeSlot, IntList> slotCycleOverrides) {
         ImmutableList.Builder<List<ItemStack>> builder = ImmutableList.builder();
         for (int i = 0; i < slotCycles.size(); i++) {
             List<ItemStack> stacks = slotCycles.get(i);
             // Apply cycle overrides if present
-            List<Integer> cycleOverrides = slotCycleOverrides.get(new RecipeSlot(isInput, i));
+            IntList cycleOverrides = slotCycleOverrides.get(new RecipeSlot(isInput, i));
             if (cycleOverrides != null) {
-                builder.add(cycleOverrides.stream()
-                        .map(stacks::get)
+                builder.add(cycleOverrides.intStream()
+                        .mapToObj(stacks::get)
                         .filter(Objects::nonNull)
                         .collect(ImmutableList.toImmutableList()));
             } else {
@@ -121,7 +124,7 @@ public class JEIPressureChamberRecipeCategory extends AbstractPNCCategory<Pressu
     @Override
     public void setRecipe(IRecipeLayoutBuilder builder, PressureChamberRecipe recipe, IFocusGroup focuses) {
         IFocus<ItemStack> focus = getItemStackFocus(focuses);
-        Map<RecipeSlot, List<Integer>> overrides = getMatchingCycle(recipe, focus)
+        Map<RecipeSlot, IntList> overrides = getMatchingCycle(recipe, focus)
                 .map(recipe::getSyncForDisplay)
                 .orElseGet(ImmutableMap::of);
         List<List<ItemStack>> l = recipe.getInputsForDisplay().stream().map(i -> Arrays.asList(i.getItems())).toList();

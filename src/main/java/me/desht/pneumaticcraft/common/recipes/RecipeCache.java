@@ -18,6 +18,8 @@
 package me.desht.pneumaticcraft.common.recipes;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectLinkedOpenHashMap;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.Container;
 import net.minecraft.world.inventory.CraftingContainer;
@@ -75,7 +77,7 @@ public class RecipeCache<T extends RecipeType<R>, R extends Recipe<C>, C extends
     }
 
     private int makeKey(C inv) {
-        List<Integer> c = new ArrayList<>();
+        IntList c = new IntArrayList();
         for (int i = 0; i < inv.getContainerSize(); i++) {
             ItemStack stack = inv.getItem(i);
             if (!stack.isEmpty()) {

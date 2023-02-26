@@ -19,6 +19,8 @@ package me.desht.pneumaticcraft.common.block.entity;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.authlib.GameProfile;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
 import me.desht.pneumaticcraft.api.pressure.PressureTier;
 import me.desht.pneumaticcraft.common.XPFluidManager;
 import me.desht.pneumaticcraft.common.block.entity.RedstoneController.EmittingRedstoneMode;
@@ -124,7 +126,7 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
 
     private WeakReference<Player> playerRef = new WeakReference<>(null);
 
-    private final List<Integer> chargeableSlots = new ArrayList<>();
+    private final IntList chargeableSlots = new IntArrayList();
 
     private final List<PlayerInvHandler> invHandlers = new ArrayList<>();
     public GameProfile gameProfileClient;  // for rendering
@@ -507,7 +509,7 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
         @Override
         public ItemStack extractItem(int slot, int amount, boolean simulate) {
             ItemStack stack = getStackInSlot(slot);
-            return EnchantmentHelper.getItemEnchantmentLevel(Enchantments.BINDING_CURSE, stack) > 0 ?
+            return stack.getEnchantmentLevel(Enchantments.BINDING_CURSE) > 0 ?
                     ItemStack.EMPTY :
                     super.extractItem(slot, amount, simulate);
         }
@@ -609,7 +611,9 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
 
         private int getFoodValue(ItemStack stack) {
             //noinspection ConstantConditions
-            return stack.getItem().isEdible() ? stack.getItem().getFoodProperties().getNutrition() : 0;
+            return stack.getItem().isEdible() ?
+                    getPlayer().map(player -> stack.getFoodProperties(player).getNutrition()).orElse(0) :
+                    0;
         }
     }
 

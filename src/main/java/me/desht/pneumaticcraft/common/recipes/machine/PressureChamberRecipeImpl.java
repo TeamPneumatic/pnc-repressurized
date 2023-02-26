@@ -22,6 +22,9 @@ import com.google.common.collect.Sets;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntCollection;
+import it.unimi.dsi.fastutil.ints.IntList;
 import me.desht.pneumaticcraft.api.crafting.recipe.PressureChamberRecipe;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModRecipeSerializers;
@@ -55,7 +58,7 @@ public class PressureChamberRecipeImpl extends PressureChamberRecipe {
     }
 
     @Override
-    public float getCraftingPressure(IItemHandler chamberHandler, List<Integer> ingredientSlots) {
+    public float getCraftingPressure(IItemHandler chamberHandler, IntList ingredientSlots) {
         return pressureRequired;
     }
 
@@ -65,14 +68,14 @@ public class PressureChamberRecipeImpl extends PressureChamberRecipe {
     }
 
     @Override
-    public Collection<Integer> findIngredients(IItemHandler chamberHandler) {
+    public IntCollection findIngredients(IItemHandler chamberHandler) {
         // Ingredient doesn't override equals() and hashCode() but there's always the possibility
         // that some subclass might, so we'll use an identity set here.  We want to always treat
         // two equivalent ingredients in a recipe as different objects.
         Set<Ingredient> inputSet = Sets.newIdentityHashSet();
         inputSet.addAll(inputs);
 
-        List<Integer> slots = new ArrayList<>();
+        IntCollection slots = new IntArrayList();
         for (int i = 0; i < chamberHandler.getSlots(); i++) {
             if (!chamberHandler.getStackInSlot(i).isEmpty()) {
                 Iterator<Ingredient> iter = inputSet.iterator();
@@ -89,7 +92,7 @@ public class PressureChamberRecipeImpl extends PressureChamberRecipe {
                 }
             }
         }
-        return Collections.emptyList();
+        return IntList.of();
     }
 
     @Override
@@ -130,7 +133,7 @@ public class PressureChamberRecipeImpl extends PressureChamberRecipe {
 
     @Nonnull
     @Override
-    public NonNullList<ItemStack> craftRecipe(@Nonnull IItemHandler chamberHandler, List<Integer> ingredientSlots, boolean simulate) {
+    public NonNullList<ItemStack> craftRecipe(@Nonnull IItemHandler chamberHandler, IntList ingredientSlots, boolean simulate) {
         // remove the recipe's input items from the chamber
         for (Ingredient ingredient : inputs) {
             if (ingredient.isEmpty()) return NonNullList.create(); // sanity check

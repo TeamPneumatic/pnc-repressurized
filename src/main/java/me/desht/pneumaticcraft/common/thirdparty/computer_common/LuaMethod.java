@@ -17,12 +17,13 @@
 
 package me.desht.pneumaticcraft.common.thirdparty.computer_common;
 
+import it.unimi.dsi.fastutil.ints.Int2ObjectLinkedOpenHashMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import net.minecraft.core.Direction;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 
@@ -42,8 +43,8 @@ public abstract class LuaMethod implements ILuaMethod {
         return Direction.valueOf(luaParm.toUpperCase(Locale.ROOT));
     }
 
-    LinkedHashMap<Integer, String> getStringTable(List<String> list) {
-        LinkedHashMap<Integer, String> table = new LinkedHashMap<>();
+    Int2ObjectMap<String> getStringTable(List<String> list) {
+        Int2ObjectMap<String> table = new Int2ObjectLinkedOpenHashMap<>();
         for (int i = 0; i < list.size(); i++) {
             table.put(i + 1, list.get(i));
         }

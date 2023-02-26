@@ -163,7 +163,7 @@ public class ProgWidgetAreaScreen extends ProgWidgetAreaShowScreen<ProgWidgetAre
 
             if (areaTypeWidget instanceof AreaTypeWidgetInteger intWidget) {
                 WidgetTextFieldNumber intField = new WidgetTextFieldNumber(font, x, curY, 40, font.lineHeight + 1).setRange(0, Integer.MAX_VALUE);
-                intField.setValue(intWidget.readAction.get());
+                intField.setValue(intWidget.readAction.getAsInt());
                 addRenderableWidget(intField);
                 areaTypeValueWidgets.add(new ImmutablePair<>(areaTypeWidget, intField));
 

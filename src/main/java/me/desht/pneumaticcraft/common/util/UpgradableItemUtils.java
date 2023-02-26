@@ -17,8 +17,10 @@
 
 package me.desht.pneumaticcraft.common.util;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.ints.IntLists;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.item.IUpgradeItem;
 import me.desht.pneumaticcraft.api.item.PNCUpgrade;
@@ -140,17 +142,17 @@ public class UpgradableItemUtils {
      * @param upgradeList the upgrades to check for
      * @return number of upgrades installed, in the same order as the upgrades which were passed to the method
      */
-    public static List<Integer> getUpgradeList(ItemStack stack, PNCUpgrade... upgradeList) {
-        ImmutableList.Builder<Integer> builder = ImmutableList.builder();
+    public static IntList getUpgradeList(ItemStack stack, PNCUpgrade... upgradeList) {
+        IntList res = new IntArrayList();
         if (stack.getTag() != null) {
             validateUpgradeCache(stack);
             CompoundTag subTag = stack.getTag().getCompound(NBT_UPGRADE_CACHE_TAG);
             for (PNCUpgrade upgrade : upgradeList) {
                 String key = PneumaticCraftUtils.modDefaultedString(PneumaticCraftUtils.getRegistryName(ModUpgrades.UPGRADES.get(), upgrade).orElseThrow());
-                builder.add(subTag.getInt(key));
+                res.add(subTag.getInt(key));
             }
         }
-        return builder.build();
+        return IntLists.unmodifiable(res);
     }
 
     public static boolean hasCreativeUpgrade(ItemStack stack) {

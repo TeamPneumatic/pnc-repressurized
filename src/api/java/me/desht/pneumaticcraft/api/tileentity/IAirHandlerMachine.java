@@ -17,6 +17,7 @@
 
 package me.desht.pneumaticcraft.api.tileentity;
 
+import it.unimi.dsi.fastutil.floats.FloatPredicate;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -75,7 +76,7 @@ public interface IAirHandlerMachine extends IAirHandler, IManoMeasurable, INBTSe
      * @param pressureCheck a predicate to test if venting is required
      * @param dir direction to leak air in
      */
-    void enableSafetyVenting(Predicate<Float> pressureCheck, Direction dir);
+    void enableSafetyVenting(FloatPredicate pressureCheck, Direction dir);
 
     /**
      * Disallow any safety venting.

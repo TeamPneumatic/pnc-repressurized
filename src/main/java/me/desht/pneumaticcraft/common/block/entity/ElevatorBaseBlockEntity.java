@@ -18,6 +18,10 @@
 package me.desht.pneumaticcraft.common.block.entity;
 
 import com.google.common.collect.ImmutableList;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
 import me.desht.pneumaticcraft.api.pressure.PressureTier;
 import me.desht.pneumaticcraft.client.sound.MovingSounds;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
@@ -60,7 +64,6 @@ import net.minecraftforge.items.ItemHandlerHelper;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Stack;
 
@@ -103,12 +106,12 @@ public class ElevatorBaseBlockEntity extends AbstractAirHandlingBlockEntity impl
     // horizontally-connected multiblock; will always be non-null after init, even when only one elevator
     private List<ElevatorBaseBlockEntity> multiElevators;
     public int[] floorHeights = new int[0]; // list of every floor of Elevator Callers.
-    private HashMap<Integer, String> floorNames = new HashMap<>();
+    private Int2ObjectMap<String> floorNames = new Int2ObjectOpenHashMap<>();
     private int redstoneInputLevel; // current redstone input level
     private BlockState camoState;
     private BlockState prevCamoState;
     public int ticksRunning;  // ticks since elevator started moving (0 = stopped)
-    private final List<Integer> floorList = new ArrayList<>();
+    private final IntList floorList = new IntArrayList();
     private final List<BlockPos> callerList = new ArrayList<>();
     private long lastFloorUpdate = 0L;
     public float[] fakeFloorTextureUV;
@@ -461,7 +464,7 @@ public class ElevatorBaseBlockEntity extends AbstractAirHandlingBlockEntity impl
                 }
 
                 for (ElevatorBaseBlockEntity base : multiElevators) {
-                    base.floorHeights = floorList.stream().mapToInt(Integer::intValue).toArray();
+                    base.floorHeights = floorList.intStream().toArray();
                 }
             }
             lastFloorUpdate = level.getGameTime();
@@ -484,7 +487,7 @@ public class ElevatorBaseBlockEntity extends AbstractAirHandlingBlockEntity impl
 
         if (multiElevators != null) {
             for (ElevatorBaseBlockEntity base : multiElevators) {
-                base.floorNames = new HashMap<>(floorNames);
+                base.floorNames = new Int2ObjectOpenHashMap<>(floorNames);
             }
         }
 
