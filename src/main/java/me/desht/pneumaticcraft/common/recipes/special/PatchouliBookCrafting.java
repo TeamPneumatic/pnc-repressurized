@@ -49,7 +49,7 @@ public class PatchouliBookCrafting extends ShapelessRecipe {
         return guide_book;
     }
 
-    private static ItemStack makeGuideBook() {
+    public static ItemStack makeGuideBook() {
         ItemStack book = new ItemStack(guide_book());
         CompoundTag tag = book.getOrCreateTag();
         tag.putString(NBT_KEY, NBT_VAL);

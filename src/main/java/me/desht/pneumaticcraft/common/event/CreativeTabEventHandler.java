@@ -7,17 +7,23 @@ import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.item.*;
 import me.desht.pneumaticcraft.common.item.minigun.AbstractGunAmmoItem;
+import me.desht.pneumaticcraft.common.recipes.special.PatchouliBookCrafting;
 import me.desht.pneumaticcraft.common.semiblock.SemiblockItem;
+import me.desht.pneumaticcraft.lib.ModIds;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.event.CreativeModeTabEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.ModList;
+import net.minecraftforge.fml.ModLoader;
 import net.minecraftforge.fml.common.Mod;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
@@ -30,11 +36,15 @@ public class CreativeTabEventHandler {
         List<ItemStack> items = ModItems.ITEMS.getEntries().stream()
                 .flatMap(ro -> stacksForItem(ro.get()))
                 .sorted(new ItemSorter())
-                .toList();
+                .collect(Collectors.toCollection(ArrayList::new));
+
+        if (ModList.get().isLoaded(ModIds.PATCHOULI)) {
+            items.add(PatchouliBookCrafting.makeGuideBook());
+        }
 
         event.registerCreativeModeTab(RL("default"), builder ->
             builder.title(xlate("itemGroup.pneumaticcraft"))
-                    .icon(() -> new ItemStack(ModBlocks.AIR_COMPRESSOR.get()))
+                    .icon(() -> new ItemStack(ModItems.PRESSURE_GAUGE.get()))
                     .displayItems((flags, output, b) -> output.acceptAll(items))
                     .build()
         );
