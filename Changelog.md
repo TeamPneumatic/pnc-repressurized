@@ -4,10 +4,64 @@ This is an overview of significant new features and fixes by release.  See https
 
 Changes are in reverse chronological order; newest changes at the top.
 
+# Minecraft 1.19.3
+
+Note: 1.19.3 releases of PneumaticCraft: Repressurized are in no way compatible with 1.19.2!
+
+## 5.0.0
+
+# New
+* Initial alpha release for MC 1.19.3. Functionally the same as the 4.3.3 release for MC 1.19.2.
+
 # Minecraft 1.19.2
 
-1.19.2 builds may also work on Minecraft 1.19.1 but no support will be provided for that.
+## 4.3.3
 
+### Fixes
+* Fixed problems with Heat Pipe block update behaviour when placing pipes
+* Fixed Fluid Tanks not saving their item inventory (i.e. the bucket slots)
+
+## 4.3.2
+
+### Updates
+* All non-full-cube blocks in the mod are now waterloggable
+* Kerosene Lamp GUI now has a fuel tab showing how long each fuel will burn for (based on lamp's current range)
+
+### Fixes
+* Fixed an issue with Kerosene Lamps which could lead to chunk corruption if the level is unloaded with a lit Kerosene Lamp present
+
+## 4.3.1
+
+### Fixes
+* Fixed item launch behaviour (Chestplate + Dispenser Upgrade) not working
+* Fixed misleading tooltip in Regulator Module (Regulator Module always regulates to 4.9 bar max when not upgraded)
+* Fixed a Minigun ammo dupe
+
+## 4.3.0
+
+### New
+* Added new Solar Compressor, thanks @Daniel0Widing
+  * Generates compressed air from sunlight. While generating compressed air, it also generates heat, proportional to how much compressed air is being generated.
+  * The efficiency of the compressor increases with its heat up to 350ºC. At that point the compressed air and heat generation remain constant up to 425ºC, at which point the compressor overheats, dumping all accumulated heat and shutting down. In order to restart the compressor, a Solar Wafer has to be right-clicked on it, consuming the wafer.
+  * The compressed air production of the compressor is roughly equivalent to the Flux Compressor. The trade-off for getting free compressed air is that the Solar Compressor only works during the day and requires a puzzle-like solution to keep it stable at max efficiency (confirmed possible with max speed upgrades using default configuration).
+* Added new Manual Compressor, thanks @Daniel0Widing
+  * Generates compressed air from manual labor (right-clicking) and player hunger.
+  * Generates a fixed amount of air each pump cycle, but the more air in the compressor, the longer each compressor cycle takes.
+  * Impossible to generate air at pressure greater than 5 bar.
+
+### Updates
+* Added a new `allow_navigate_to_unloaded_chunks` config setting, default false
+  * When false, Drones may not navigate (including teleportation) into unloaded chunks
+  * Setting this to true can cause server instability, including lockups, so beware
+
+### Fixes
+* The `/pncr global_var delete` command now accepts arbitrary strings, in case bad variable names were accidentally added via GPS Tool GUI
+* GPS Tool (and Area Tool) GUI now only allows alphanumeric and underscore characters in variable names
+* Fixed Biodiesel lacking a bucket item and in-world block
+* Fixed Universal Sensor GUI textfield flickering between focused and unfocused for some sensor types
+* Fixed crash with certain invalid entity filter input
+* Fixed entity filters not being able to match players by name, using quoted `"player_name"` syntax (worked for named entities, but not players)
+* 
 ## 4.2.1
 
 ### Fixes
