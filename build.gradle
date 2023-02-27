@@ -128,7 +128,7 @@ dependencies {
 	compileOnly fg.deobf("vazkii.botania:Botania:${botania_version}-FORGE:api")
 	//runtimeOnly fg.deobf("vazkii.botania:Botania:${botania_version}-FORGE")
 	compileOnly fg.deobf("vazkii.patchouli:Patchouli:${patchouli_version}:api")
-	//runtimeOnly fg.deobf("vazkii.patchouli:Patchouli:${patchouli_version}")
+	runtimeOnly fg.deobf("vazkii.patchouli:Patchouli:${patchouli_version}")
 	compileOnly fg.deobf("org.squiddev:cc-tweaked-1.19.2:${cc_tweaked_version}")
 	compileOnly fg.deobf("blusunrize.immersiveengineering:ImmersiveEngineering:${immersive_engineering_version}")
 	compileOnly fg.deobf("mekanism:Mekanism:${mekanism_version}:api")
