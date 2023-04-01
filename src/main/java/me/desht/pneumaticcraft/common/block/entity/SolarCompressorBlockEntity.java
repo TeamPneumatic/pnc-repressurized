@@ -32,6 +32,8 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 
+import static me.desht.pneumaticcraft.api.lib.NBTKeys.NBT_BROKEN;
+
 public class SolarCompressorBlockEntity extends AbstractAirHandlingBlockEntity implements IHeatExchangingTE, MenuProvider, IHasBoundingBlocks {
     public static final double MAX_TEMPERATURE = 698.15; // 425C
     public static final double WARNING_TEMPERATURE = MAX_TEMPERATURE - 15; // 410C
@@ -323,7 +325,7 @@ public class SolarCompressorBlockEntity extends AbstractAirHandlingBlockEntity i
     @Override
     public IHeatExchangerLogic getHeatExchanger(Direction dir) {
         // Returns null for the bounding blocks
-        if(isBounding(this)) {
+        if (isBounding(this)) {
             return null;
         }
 
@@ -342,6 +344,17 @@ public class SolarCompressorBlockEntity extends AbstractAirHandlingBlockEntity i
     @Override
     public void saveAdditional(CompoundTag tag) {
         super.saveAdditional(tag);
-        tag.putBoolean(NBTKeys.NBT_BROKEN, isBroken);
+        if (isBroken) {
+            tag.putBoolean(NBTKeys.NBT_BROKEN, true);
+        }
+    }
+
+    @Override
+    public void serializeExtraItemData(CompoundTag blockEntityTag, boolean preserveState) {
+        super.serializeExtraItemData(blockEntityTag, preserveState);
+
+        if (isBroken) {
+            blockEntityTag.putBoolean(NBT_BROKEN, true);
+        }
     }
 }
