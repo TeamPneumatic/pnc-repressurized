@@ -6,6 +6,12 @@ Changes are in reverse chronological order; newest changes at the top.
 
 # Minecraft 1.19.2
 
+## 4.3.4
+
+### Fixes
+* Fixed crash with Heat Frame if the underlying inventory changes
+  * E.g. if a dank/null is removed from its dock
+
 ## 4.3.3
 
 ### Fixes
