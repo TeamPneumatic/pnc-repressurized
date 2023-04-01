@@ -189,21 +189,23 @@ public class HeatFrameEntity extends AbstractSemiblockEntity {
     }
 
     private boolean tryCookSlot(IItemHandler handler, int slot) {
-        ItemStack stack = handler.getStackInSlot(slot);
-        if (!stack.isEmpty()) {
-            return RecipeCache.SMELTING.getCachedRecipe(level, new SimpleContainer(stack)).map(recipe -> {
-                ItemStack result = recipe.getResultItem().copy();
-                if (!result.isEmpty()) {
-                    ItemStack remainder = ItemHandlerHelper.insertItem(handler, result, true);
-                    if (remainder.isEmpty()) {
-                        handler.extractItem(slot, 1, false);
-                        ItemHandlerHelper.insertItem(handler, result, false);
-                        lastValidSlot = slot;
-                        return true;
+        if (slot >= 0 & slot < handler.getSlots()) {
+            ItemStack stack = handler.getStackInSlot(slot);
+            if (!stack.isEmpty()) {
+                return RecipeCache.SMELTING.getCachedRecipe(level, new SimpleContainer(stack)).map(recipe -> {
+                    ItemStack result = recipe.getResultItem().copy();
+                    if (!result.isEmpty()) {
+                        ItemStack remainder = ItemHandlerHelper.insertItem(handler, result, true);
+                        if (remainder.isEmpty()) {
+                            handler.extractItem(slot, 1, false);
+                            ItemHandlerHelper.insertItem(handler, result, false);
+                            lastValidSlot = slot;
+                            return true;
+                        }
                     }
-                }
-                return false;
-            }).orElse(false);
+                    return false;
+                }).orElse(false);
+            }
         }
         return false;
     }
@@ -235,35 +237,38 @@ public class HeatFrameEntity extends AbstractSemiblockEntity {
     }
 
     private boolean tryCoolSlot(IItemHandler handler, int slot) {
-        ItemStack stack = handler.getStackInSlot(slot);
-        if (stack.isEmpty()) return false;
+        if (slot >= 0 & slot < handler.getSlots()) {
+            ItemStack stack = handler.getStackInSlot(slot);
+            if (stack.isEmpty()) return false;
 
-        HeatFrameCoolingRecipe recipe = ModRecipeTypes.HEAT_FRAME_COOLING.get().findFirst(level, r -> r.matches(stack));
+            HeatFrameCoolingRecipe recipe = ModRecipeTypes.HEAT_FRAME_COOLING.get().findFirst(level, r -> r.matches(stack));
 
-        if (recipe != null) {
-            boolean extractedOK;
-            if (recipe.getInput() instanceof FluidIngredient fluidIngredient) {
-                if (stack.getCount() != 1) return false;  // fluid-containing items must not be stacked!
-                extractedOK = stack.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).map(fluidHandler -> {
-                    int toDrain = fluidIngredient.getAmount();
-                    if (fluidHandler.drain(toDrain, IFluidHandler.FluidAction.EXECUTE).getAmount() == toDrain) {
-                        ItemStack containerStack = fluidHandler.getContainer().copy();
-                        handler.extractItem(slot, 1, false);
-                        handler.insertItem(slot, containerStack, false);
-                        return true;
-                    }
-                    return false;
-                }).orElse(false);
-            } else {
-                extractedOK = handler.extractItem(slot, 1, false).getCount() == 1;
+            if (recipe != null) {
+                boolean extractedOK;
+                if (recipe.getInput() instanceof FluidIngredient fluidIngredient) {
+                    if (stack.getCount() != 1) return false;  // fluid-containing items must not be stacked!
+                    extractedOK = stack.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).map(fluidHandler -> {
+                        int toDrain = fluidIngredient.getAmount();
+                        if (fluidHandler.drain(toDrain, IFluidHandler.FluidAction.EXECUTE).getAmount() == toDrain) {
+                            ItemStack containerStack = fluidHandler.getContainer().copy();
+                            handler.extractItem(slot, 1, false);
+                            handler.insertItem(slot, containerStack, false);
+                            return true;
+                        }
+                        return false;
+                    }).orElse(false);
+                } else {
+                    extractedOK = handler.extractItem(slot, 1, false).getCount() == 1;
+                }
+                if (extractedOK) {
+                    ItemStack result = ItemHandlerHelper.copyStackWithSize(recipe.getOutput(), recipe.calculateOutputQuantity(logic.getTemperature()));
+                    ItemHandlerHelper.insertItem(handler, result, false);
+                    lastValidSlot = slot;
+                }
+                return extractedOK;
             }
-            if (extractedOK) {
-                ItemStack result = ItemHandlerHelper.copyStackWithSize(recipe.getOutput(), recipe.calculateOutputQuantity(logic.getTemperature()));
-                ItemHandlerHelper.insertItem(handler, result, false);
-                lastValidSlot = slot;
-            }
-            return extractedOK;
         }
+
         return false;
     }
 
