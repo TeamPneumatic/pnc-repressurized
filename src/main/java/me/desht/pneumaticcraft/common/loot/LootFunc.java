@@ -42,7 +42,6 @@ import java.util.Objects;
 
 import static me.desht.pneumaticcraft.api.lib.NBTKeys.NBT_AIR_AMOUNT;
 import static me.desht.pneumaticcraft.api.lib.NBTKeys.NBT_SIDE_CONFIG;
-import static me.desht.pneumaticcraft.api.lib.NBTKeys.NBT_BROKEN;
 
 public class LootFunc {
     /**
@@ -113,11 +112,6 @@ public class LootFunc {
                             subTag.putInt(NBT_AIR_AMOUNT, h.getAir());
                         }
                     });
-
-                    // Saves if solar compressor is broken
-                    if (te instanceof SolarCompressorBlockEntity solarCompressorBlockEntity) {
-                        subTag.putBoolean(NBT_BROKEN, solarCompressorBlockEntity.isBroken());
-                    }
                 }
 
                 teB.serializeExtraItemData(subTag, teB.shouldPreserveStateOnBreak());
