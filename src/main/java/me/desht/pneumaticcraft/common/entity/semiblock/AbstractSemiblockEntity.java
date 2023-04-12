@@ -101,7 +101,7 @@ public abstract class AbstractSemiblockEntity extends Entity implements ISemiBlo
 
 
     @Override
-    public Component getDisplayName() {
+    public Component getSemiblockDisplayName() {
         return new ItemStack(getDroppedItem()).getDisplayName();
     }
 
