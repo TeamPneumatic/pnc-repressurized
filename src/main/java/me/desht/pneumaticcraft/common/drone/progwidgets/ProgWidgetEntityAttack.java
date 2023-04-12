@@ -42,7 +42,8 @@ import java.util.Set;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class ProgWidgetEntityAttack extends ProgWidget implements IAreaProvider, IEntityProvider, IMaxActions {
+public class ProgWidgetEntityAttack extends ProgWidget
+        implements IAreaProvider, IEntityProvider, IMaxActions, ICheckLineOfSight {
     private EntityFilterPair<ProgWidgetEntityAttack> entityFilters;
     private int maxActions;
     private boolean useMaxActions;
@@ -159,10 +160,12 @@ public class ProgWidgetEntityAttack extends ProgWidget implements IAreaProvider,
         return useMaxActions;
     }
 
+    @Override
     public void setCheckSight(boolean checkSight) {
         this.checkSight = checkSight;
     }
 
+    @Override
     public boolean isCheckSight() {
         return checkSight;
     }

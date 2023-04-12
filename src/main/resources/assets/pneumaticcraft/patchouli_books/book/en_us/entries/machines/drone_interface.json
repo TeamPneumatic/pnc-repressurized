@@ -186,6 +186,11 @@
     },
     {
       "type": "text",
+      "title": "setCheckLineOfSight()",
+      "text": "$(#800)setCheckLineOfSight(<true/false>)/$$(p)When the \"entity_attack\" action is used, this controls whether drones will attack any target in their area, or only targets they have a direct line of sight to.$(p)The default is 'false'; line of sight is not checked."
+    },
+    {
+      "type": "text",
       "title": "setCount()",
       "text": "$(#800)setCount(<amount>)/$$(p)This configures the maximum number of items processed by import / export / drop actions, and is also used for the amount that's checked against in condition checks."
     },
