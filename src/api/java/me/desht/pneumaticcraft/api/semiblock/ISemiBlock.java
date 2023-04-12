@@ -51,7 +51,7 @@ public interface ISemiBlock extends ICapabilityProvider {
      *
      * @return the name
      */
-    Component getDisplayName();
+    Component getSemiblockDisplayName();
 
     /**
      * Get the world this semiblock is in.
