@@ -8,9 +8,14 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## 4.3.4
 
+### Added
+* Added "setCheckLineOfSight" Lua command to the Drone Interface
+  * Used by the "entity_attack" action; when true, drones will only attack entities they have line of sight to
+
 ### Fixes
 * Fixed crash with Heat Frame if the underlying inventory changes
   * E.g. if a dank/null is removed from its dock
+* Another fix to Heat Frame viewing with Jade
 
 ## 4.3.3
 
