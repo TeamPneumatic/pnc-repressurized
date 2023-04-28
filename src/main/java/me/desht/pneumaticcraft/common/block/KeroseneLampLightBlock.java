@@ -23,6 +23,6 @@ import net.minecraft.world.level.material.Material;
 
 public class KeroseneLampLightBlock extends AirBlock {
     public KeroseneLampLightBlock() {
-        super(Block.Properties.of(Material.AIR).noCollission().lightLevel(blockstate -> 15).noLootTable());
+        super(Block.Properties.of(Material.AIR).noCollission().lightLevel(blockstate -> 15).noLootTable().air());
     }
 }
