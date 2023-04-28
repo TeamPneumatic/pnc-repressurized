@@ -6,7 +6,7 @@ Changes are in reverse chronological order; newest changes at the top.
 
 # Minecraft 1.19.2
 
-## 4.3.4
+## [4.3.4]
 
 ### Added
 * Added "setCheckLineOfSight" Lua command to the Drone Interface
@@ -16,14 +16,15 @@ Changes are in reverse chronological order; newest changes at the top.
 * Fixed crash with Heat Frame if the underlying inventory changes
   * E.g. if a dank/null is removed from its dock
 * Another fix to Heat Frame viewing with Jade
+* Properly mark Kerosene Lamp fake-light blocks as air blocks, so other mods can replace them as needed
 
-## 4.3.3
+## [4.3.3]
 
 ### Fixes
 * Fixed problems with Heat Pipe block update behaviour when placing pipes
 * Fixed Fluid Tanks not saving their item inventory (i.e. the bucket slots)
 
-## 4.3.2
+## [4.3.2]
 
 ### Updates
 * All non-full-cube blocks in the mod are now waterloggable
@@ -32,14 +33,14 @@ Changes are in reverse chronological order; newest changes at the top.
 ### Fixes
 * Fixed an issue with Kerosene Lamps which could lead to chunk corruption if the level is unloaded with a lit Kerosene Lamp present
 
-## 4.3.1
+## [4.3.1]
 
 ### Fixes
 * Fixed item launch behaviour (Chestplate + Dispenser Upgrade) not working
 * Fixed misleading tooltip in Regulator Module (Regulator Module always regulates to 4.9 bar max when not upgraded)
 * Fixed a Minigun ammo dupe
 
-## 4.3.0
+## [4.3.0]
 
 ### New
 * Added new Solar Compressor, thanks @Daniel0Widing
@@ -64,7 +65,7 @@ Changes are in reverse chronological order; newest changes at the top.
 * Fixed crash with certain invalid entity filter input
 * Fixed entity filters not being able to match players by name, using quoted `"player_name"` syntax (worked for named entities, but not players)
 
-## 4.2.0
+## [4.2.0]
 
 ### Updates
 * Charging Modules now run 4x faster when on Advanced Pressure Tubes
@@ -87,7 +88,7 @@ Changes are in reverse chronological order; newest changes at the top.
 * Several pneumatic items now no longer use up air when used when player is in creative mode
 * Fixed Heat Frame becoming disconnected from heat handling block entities on world reload
 
-## 4.1.3
+## [4.1.3]
 
 ### Updates
 * Entities spawned by the Pressurized Spawner are now tagged with a `pneumaticcraft:pressurized_spawner` tag
@@ -101,7 +102,7 @@ Changes are in reverse chronological order; newest changes at the top.
 * Fixed potentially severe server TPS hit in Security Station checking for blocks in unloaded chunks
   * Unlikely to occur as part of normal player interaction, but automation mods like Modular Routers and others can trigger it
 
-## 4.1.2
+## [4.1.2]
 
 ### Updates
 * Botania integration (Solegnolia suppresses Pneumatic Armor magnet) re-added
@@ -124,7 +125,7 @@ Changes are in reverse chronological order; newest changes at the top.
   * E.g. right-clicking with a water bucket would both open the GUI and pour out the water
 * Fixed broken recipe for Drone Interface (CC:Tweaked integration)
 
-## 4.1.1-132 (5 Sep 2022)
+## [4.1.1]-132 (5 Sep 2022)
 
 ### Updates
 * Added "Hover" checkbox (bindable to a hotkey) to the Jet Boots upgrade GUI
@@ -145,7 +146,7 @@ Changes are in reverse chronological order; newest changes at the top.
 * Fixed Jet Boots continuing to fire if upgrade is switched off while player is firing them
 * Fixed performance issue which could occur with Heat Frame on a full inventory, particularly on servers with a large number of smelting recipes
 
-## 4.1.0-128
+## [4.1.0]-128
 
 This release includes all the updates and fixes from the 3.4.0 release (for MC 1.18.2), as well as:
 
@@ -161,7 +162,7 @@ This release includes all the updates and fixes from the 3.4.0 release (for MC 1
 
 # Minecraft 1.19
 
-## 4.0.0-117 (18-Jul-2022)
+## [4.0.0]-117 (18-Jul-2022)
 
 PneumaticCraft: Repressurized 4.0.0 for Minecraft 1.19 is based on the 3.3.1 release for 1.18.2 with a few small changes.
 
@@ -188,7 +189,7 @@ PneumaticCraft: Repressurized 4.0.0 for Minecraft 1.19 is based on the 3.3.1 rel
 * PNC:R 3.2.3 and later *require* Forge 40.1.20 or later
 * PNC:R 3.2.0 and later *require* Forge 40.1.0 or later and JEI 9.7.0 or later
 
-## 3.4.1-131 (31 Aug 2022)
+## [3.4.1]-131 (31 Aug 2022)
 
 ### Updates
 * Added clientside config setting `pressure_chamber_particles` to control whether air particles are displayed inside a pressurized Pressure Chamber
@@ -208,7 +209,7 @@ PneumaticCraft: Repressurized 4.0.0 for Minecraft 1.19 is based on the 3.3.1 rel
 * Removed obsolete block heat properties data for Quark Brimstone blocks (no longer in Quark in 1.18+)
   * Was causing annoying but harmless error messages in server log
 
-## 3.4.0-124 (3 Aug 2022)
+## [3.4.0]-124 (3 Aug 2022)
 
 ### Updates
 * It is now possible to filter on entities only from a certain mod with the `(mod=<modname>)` modifier
@@ -244,7 +245,7 @@ PneumaticCraft: Repressurized 4.0.0 for Minecraft 1.19 is based on the 3.3.1 rel
 * Compressed Iron Gears are now included again in the `forge:gears` and `forge:gears/compressed_iron` item tags
 * Fixed (non-fatal) exception logged by Amadrones despawning
 
-## 3.3.1-110 (4 July 2022)
+## [3.3.1]-110 (4 July 2022)
 
 ### Updates
 * Added new `getDronePositionVec()` Lua method to the Drone Interface
@@ -264,7 +265,7 @@ PneumaticCraft: Repressurized 4.0.0 for Minecraft 1.19 is based on the 3.3.1 rel
 * Fixed `$deploy_pos` special Drone variable not persisting properly across world restarts
 * Jet Boots: when already Elytra-gliding, transition to powered Jet Boots flight is now smoother (doesn't cause a brief stall in velocity anymore)
 
-## 3.3.0-99 (18 Jun 2022)
+## [3.3.0]-99 (18 Jun 2022)
 
 ### New
 * Added the Elytra Upgrade for the Pneumatic Chestplate
@@ -296,7 +297,7 @@ PneumaticCraft: Repressurized 4.0.0 for Minecraft 1.19 is based on the 3.3.1 rel
   * In particular, Drones which are completely out of air will no longer attempt to claim a Charging Station, locking all other Drones out of it
 * Fixed UV Lightbox losing the contents of the output slot on world reload
 
-## 3.2.4-93 (3 Jun 2022)
+## [3.2.4]-93 (3 Jun 2022)
 
 ### Updates
 * Gamestages integration has been re-added
@@ -312,7 +313,7 @@ PneumaticCraft: Repressurized 4.0.0 for Minecraft 1.19 is based on the 3.3.1 rel
 * Fixed Drone Condition: Upgrade causing a server crash (ArrayIndexOutOfBoundsException)
 * Fixed mistake in example Lua program in the manual page for the Drone Interface
 
-## 3.2.3-84 (19 May 2022)
+## [3.2.3]-84 (19 May 2022)
 
 ### Updates
 * CoFH integration has been re-added
@@ -334,7 +335,7 @@ PneumaticCraft: Repressurized 4.0.0 for Minecraft 1.19 is based on the 3.3.1 rel
 * Pneumatic Boots step assist now uses the Forge STEP_HEIGHT entity attribute rather than modifying the player's step height directly
   * Much better inter-mod compat this way
 
-## 3.2.2-79 (8 May 2022)
+## [3.2.2]-79 (8 May 2022)
 
 ### Updates
 * API: better exposure of methods for registering custom upgrades (primarily around new `IUpgradeRegistry` API class)
@@ -345,12 +346,12 @@ PneumaticCraft: Repressurized 4.0.0 for Minecraft 1.19 is based on the 3.3.1 rel
 * Fixed fluid tag handling bug in recipes which prevented Mekanism fuels being recognised as usable in PNC machines
 * Fixed harmless-but-annoying "Could not serialize" errors the log when a player logs into dedicated server
 
-## 3.2.1-75 (30 Apr 2022)
+## [3.2.1]-75 (30 Apr 2022)
 
 ### Fixes
 * Hotfix: fix client startup failure if JEI isn't installed
 
-## 3.2.0-74 (28 Apr 2022)
+## [3.2.0]-74 (28 Apr 2022)
 
 ### Updates
 * Re-added Mekanism integration
@@ -374,7 +375,7 @@ PneumaticCraft: Repressurized 4.0.0 for Minecraft 1.19 is based on the 3.3.1 rel
 * Fixed crash with Drone Condition: Pressure widget when used in Programmable Controller
 * Fixed Pneumatic Armor feature-enable config not getting read properly on dedicated server (i.e. game didn't remember which armor features were switched on)
 
-## 3.1.5-70 (11 Apr 2022)
+## [3.1.5]-70 (11 Apr 2022)
 
 ### Updates
 * Added whitelisting config settings for oil lakes, in addition to existing blacklisting settings
@@ -387,7 +388,7 @@ PneumaticCraft: Repressurized 4.0.0 for Minecraft 1.19 is based on the 3.3.1 rel
 * Fixed CME under some circumstances when unloading a chunk containing a Spawner Agitator
 * Fixed crash with invalid entity filters on an upgraded Air Grate Module
 
-## 3.1.4-68 (30 Mar 2022)
+## [3.1.4]-68 (30 Mar 2022)
 
 **This version requires a Forge release of 40.0.32 or later**
 
@@ -403,7 +404,7 @@ PneumaticCraft: Repressurized 4.0.0 for Minecraft 1.19 is based on the 3.3.1 rel
   * Fixed crash when using setSides() Lua call in conjunction with setAction("block_right_click")
   * Fixed condition actions, e.g. setAction("condition_redstone"), always return false when evaluated in a Lua program
   
-## 3.1.3-67 (25 Mar 2022)
+## [3.1.3]-67 (25 Mar 2022)
 
 ### Updates
 * Reworked dungeon loot system
@@ -417,7 +418,7 @@ PneumaticCraft: Repressurized 4.0.0 for Minecraft 1.19 is based on the 3.3.1 rel
 * Fixed combobox widgets (e.g. Redstone Module gui) not displaying their choices correctly
 * Fixed Logistics Module rendering causing client crash
 
-## 3.1.2-64 (21 Mar 2022)
+## [3.1.2]-64 (21 Mar 2022)
 
 **This release requires a Forge release of 40.0.18 or later**
 
@@ -430,7 +431,7 @@ PneumaticCraft: Repressurized 4.0.0 for Minecraft 1.19 is based on the 3.3.1 rel
 * Fixed semiblock (logistic frames, crop supports etc.) chunk load/unload behaviour
   * Unloading and reloading chunks with semiblocks was causing some desyncs
 
-## 3.1.1-61 (18 Mar 2022)
+## [3.1.1]-61 (18 Mar 2022)
 
 **This release requires a Forge release between 40.0.12 & 40.0.17 inclusive.  40.0.18 is a breaking change for many mods and will not work for this release.**
 
@@ -465,13 +466,13 @@ PneumaticCraft: Repressurized 4.0.0 for Minecraft 1.19 is based on the 3.3.1 rel
   * Not one I could reproduce myself, but extra defensive coding has been added to ensure a crash is impossible in these circumstances
   * NOTE: this does require an API break in the `HeatBehaviour` API class; generics are no longer used or required here
 
-## 3.1.0-56 (9 Mar 2022)
+## [3.1.0]-56 (9 Mar 2022)
 
 This release is just a straight port of 3.0.0 (1.18.1) to Minecraft 1.18.2. No player-visible changes.
 
 # Minecraft 1.18.1
 
-## 3.0.0-53 (7 Mar 2022)
+## [3.0.0]-53 (7 Mar 2022)
 
 This release is based on the latest 1.16.5 code, with the following changes and additions:
 
@@ -561,7 +562,7 @@ This release is based on the latest 1.16.5 code, with the following changes and 
 * PNC:R 2.11.0 and later *require* Forge 36.0.42 or later.
 * PNC:R 2.15.1 and later *require* Forge 36.2.0 or later, **and** Patchouli 1.16.4-50 or later.
 
-## 2.15.2-303 (4th Feb 2022)
+## [2.15.2]-303 (4th Feb 2022)
 
 ### Updates
 * Amadrone spawn-in location is now adjustable in config (`pneumaticcraft-common.toml`)
@@ -584,7 +585,7 @@ This release is based on the latest 1.16.5 code, with the following changes and 
 * Hopefully fix a CME causing player kicks when drones are deployed under certain circumstances (possibly related to carried equipment?)
   * I could not reproduce this one myself, so hard to know for sure if it's fixed, but some extra-defensive coding has been added
 
-## 2.15.1-297 (19th Jan 2022)
+## [2.15.1]-297 (19th Jan 2022)
 
 ### Updates
 * Patchouli is now a mandatory dependency!
@@ -607,7 +608,7 @@ This release is based on the latest 1.16.5 code, with the following changes and 
   * Creative-upgraded hoppers also got a visual makeover, thanks Rid
 * Fixed missing place-sound effect when any blocks are placed against Pressure Chamber walls
 
-## 2.15.0-289 (10th Jan 2022)
+## [2.15.0]-289 (10th Jan 2022)
 
 ### New
 * A complete retexture of the entire mod, courtesy of Ridanisaurus
@@ -615,7 +616,7 @@ This release is based on the latest 1.16.5 code, with the following changes and 
   * The CTM mod is now an optional dependency, and needed if you want texture-connected Pressure Chamber Glass
   * The texture of the various Reinforced Stone blocks has changed; if you want to use the old textures, look at the new Compressed Stone blocks
 
-## 2.14.7-283 (1st Jan 2022)
+## [2.14.7]-283 (1st Jan 2022)
 
 ### Updates
 * Security Station no longer exempts creative-mode players from block protection by default
@@ -631,7 +632,7 @@ This release is based on the latest 1.16.5 code, with the following changes and 
 * Fixed a server-side crash related to invalid villager trades
   * Seems like some mod is possibly adding trades with empty cost or result?  in any case, PNC:R now ignores these for Amadron purposes
 
-## 2.14.6-277 (24th Nov 2021)
+## [2.14.6]-277 (24th Nov 2021)
 
 ### Fixes
 * Fixed Aerial Interface allowing Charging Module to charge items through it when its pressure is under 10bar
@@ -655,7 +656,7 @@ This release is based on the latest 1.16.5 code, with the following changes and 
 * All Java source files now include license headers (GPLv3 for the main mod, LGPLv3 for the API)
 * Included a copy of COPYING.LESSER (LGPLv3 licence) in the source distribution
 
-## 2.14.5-272 (10th Nov 2021)
+## [2.14.5]-272 (10th Nov 2021)
 
 ### Updates
 * The Amadron Tablet can now accept Volume Upgrades (place it in a Charging Station to upgrade)
@@ -673,14 +674,14 @@ This release is based on the latest 1.16.5 code, with the following changes and 
 * Fixed NPE related to flowing fluids coming into contact with Heat Sinks or other heat-handling blocks
 * Fixed Charging Station continuing to emit redstone in "Item Inserted and Idle" mode, if an item is later removed from the station
 
-## 2.14.4-258 (24th Sep 2021)
+## [2.14.4]-258 (24th Sep 2021)
 
 ### Fixes
 
 * Hotfix: fix server crash related to changes made in 2.14.3 with Amadron villager trade scanning
   * Appears to be an unexpected interaction between Quark and/or Terraforged
 
-## 2.14.3-257 (23rd Sep 2021)
+## [2.14.3]-257 (23rd Sep 2021)
 
 ### Updates
 * Added the ability to filter Amadron offers by the player's location, intended for modpack makers
@@ -711,7 +712,7 @@ This release is based on the latest 1.16.5 code, with the following changes and 
 * Fixed Pneumatic Door in "nearby and looking" mode requiring *all* nearby players to be looking at the door
   * Only one player needs to be looking at the door
 
-## 2.14.2-247 (6 Sep 2021)
+## [2.14.2]-247 (6 Sep 2021)
 
 ### New
 * Added new Display Shelf block, which is basically a half-height Display Table
@@ -732,7 +733,7 @@ This release is based on the latest 1.16.5 code, with the following changes and 
   * Issue is noticeable e.g. with Mekanism Dynamic Tanks and a valve on the side
 * Villager Amadron offers now actually show a vendor name of "Villagers" on dedicated server
 
-## 2.14.1-245 (31 Aug 2021)
+## [2.14.1]-245 (31 Aug 2021)
 
 ### Fixes
 
@@ -743,7 +744,7 @@ This release is based on the latest 1.16.5 code, with the following changes and 
   * TAN page was written back in 1.12.2 days, and TAN 1.16 does not have all the features that it did in 1.12
 * Fixed build artifacts not being published to modmaven.dev after build system overhaul in 2.14.0
   
-## 2.14.0-227 (27 Aug 2021)
+## [2.14.0]-227 (27 Aug 2021)
 
 Note: despite the major version bump, only minor player-visible changes related to 2.13.5 in this release.
 This is an alpha intended for testing API updates, and a heavily-overhauled build system.
@@ -777,12 +778,12 @@ This is an alpha intended for testing API updates, and a heavily-overhauled buil
 * Fixed CraftTweaker removeRecipe() (to remove by output item) not working for Pressure Chamber and Explosion Crafting recipes
 * Fixed mobs spawned by Pressurized Spawner despawning when players are too far away
 
-## 2.13.5-218 (25 Aug 2021)
+## [2.13.5]-218 (25 Aug 2021)
 
 ### Fixes
 * Hotfix: server crash when Smart Chest tries to pull from Hopper Botany pot above
 
-## 2.13.4-215 (20 Aug 2021)
+## [2.13.4]-215 (20 Aug 2021)
   
 ### Updates
 * Entity Attack widget can now take a max entity count
@@ -809,7 +810,7 @@ This is an alpha intended for testing API updates, and a heavily-overhauled buil
 * Fixed Pressurized Spawner ignoring Speed Upgrades on initial spawn countdown when reloading world
 * Documented Drone XP Orb importing functionality in the manual (see Entity Import Widget page)
 
-## 2.13.3-211 (3 Aug 2021)
+## [2.13.3]-211 (3 Aug 2021)
 
 ### Updates
 * A few updates to ru_ru translations (thanks @shikhtv)
@@ -827,7 +828,7 @@ This is an alpha intended for testing API updates, and a heavily-overhauled buil
   * `setArea()` Lua call (7-param version) now properly accepts all the area types listed by `getAreaTypes()`
   * The area shown by `showArea()` will now disappear as soon as the drone dies (wrenched, killed, etc.) instead of hanging around until the next `hideArea()` call
 
-## 2.13.2-205 (19 Jul 2021)
+## [2.13.2]-205 (19 Jul 2021)
 
 ### New
 * New block: Creative Compressed Iron Block
@@ -847,7 +848,7 @@ This is an alpha intended for testing API updates, and a heavily-overhauled buil
 * Fixed Programmer only using/returning Puzzle Pieces for a single item when writing a program to a stack of multiple Network API items
 * Fixed right-clicking slots to split stacks not working in the Programmer GUI
 
-## 2.13.1-202 (6 Jul 2021)
+## [2.13.1]-202 (6 Jul 2021)
 
 ### New
 * Added a new Jet Boots Smart Hover mode
@@ -887,7 +888,7 @@ This is an alpha intended for testing API updates, and a heavily-overhauled buil
   * Also fixed odd rendering rotation when player inventory is open
 * Fixed Minigun not spinning up or firing if multiple Miniguns are being carried
 
-## 2.13.0-199 (24 Jun 2021)
+## [2.13.0]-199 (24 Jun 2021)
 
 ### New
 
@@ -937,7 +938,7 @@ This is an alpha intended for testing API updates, and a heavily-overhauled buil
 * Fixed player pose not being reset when flying with Jet Boots and running out of air
 * Fixed client crash when closing inventory search window from GPS Area Tool GUI
 
-## 2.12.5-190 (25 May 2021)
+## [2.12.5]-190 (25 May 2021)
 
 ### Updates
 * Added new `$owner_look` drone special variable
@@ -955,20 +956,20 @@ This is an alpha intended for testing API updates, and a heavily-overhauled buil
 * Fixed typo'd API class: `IHeatExhangerAdapter` -> `IHeatExchangerAdapter`
   * Class was only added in 2.12.4, getting in quick...
 
-## 2.12.4-188 (18 May 2021)
+## [2.12.4]-188 (18 May 2021)
 
 ### Fixes
 * Fixed dumb GUI bug making it impossible to enter negative numbers in numeric textfields
   * Caused problems with GPS Tool coordinates in particular
 
-## 2.12.3-187 (17 May 2021)
+## [2.12.3]-187 (17 May 2021)
 
 ### Fixes
 * Fixed mod compat problem causing crashes with new TheOneProbe (3.1.x) versions
 * Fixed potential item dupes with Thermopneumatic Processing Plant in conjunction with the logistics system
 * Fixed a couple of broken links in the Patchouli manual
 
-## 2.12.2-186 (13 May 2021)
+## [2.12.2]-186 (13 May 2021)
 
 ### Updates
 * Clarified Chestplate & Security Upgrade fire protection behaviour in Charging Station side tab & manual
@@ -980,7 +981,7 @@ This is an alpha intended for testing API updates, and a heavily-overhauled buil
   * Now the Core Components page is always visible, regardless of which armor pieces & upgrades are in use
 * Fixed dumb bug introduced in last update which broke the pressure textfield in the Pressure Gauge GUI (Advanced PCB)
 
-## 2.12.1-184 (3 May 2021)
+## [2.12.1]-184 (3 May 2021)
 
 ### Updates
 * Added config setting `in_world_plastic_solidification` (default: true) to control in-world conversion of Molten Plastic to Plastic Sheets
@@ -1017,7 +1018,7 @@ This is an alpha intended for testing API updates, and a heavily-overhauled buil
   * It has always worked to pipe a bucket/tank in, but the GUI slot wasn't configured to allow empty containers
 * Fixed Universal Sensor not always correctly calculating its range on world reload
   
-## 2.12.0-177 (16 Apr 2021)
+## [2.12.0]-177 (16 Apr 2021)
 
 ### Updates
 * Logistics Frames are now sided, meaning multiple frames can be placed on one block!
@@ -1052,18 +1053,18 @@ This is an alpha intended for testing API updates, and a heavily-overhauled buil
 * Fixed fluid-containing tile entities not rendering their fluid when any GUI is open  
 * Placing an item on a Display Table in creative mode no longer removes the item from the player
 
-## 2.11.4-170 (31 Mar 2021)
+## [2.11.4]-170 (31 Mar 2021)
 
 ### Fixes
 * Fix infinite recursion crash when breaking Refinery Output blocks
 * Fix potion-crafted ammo causing player kick on dedicated server
 
-## 2.11.3-168 (26 Mar 2021)
+## [2.11.3]-168 (26 Mar 2021)
 
 ### Fixes
 * Hotfix: drone pathfinding NPE introduced in 2.11.2
 
-## 2.11.2-167 (26 Mar 2021)
+## [2.11.2]-167 (26 Mar 2021)
 
 ### Updates
 * Memory Essence fluid is now tagged as `forge:experience` for more cross-mod compatibility
@@ -1085,7 +1086,7 @@ This is an alpha intended for testing API updates, and a heavily-overhauled buil
 * Fixed Air Grate range preview not being removed if the Air Grate module is removed
   * Also, Air Grates no longer show their range when initially placed (use the GUI to toggle range preview)
 
-## 2.11.1-163 (22 Mar 2021)
+## [2.11.1]-163 (22 Mar 2021)
 
 ### Updates
 * API note: the PneumaticCraft API is now licensed under the LGPLv3 (previous GPLv3)
@@ -1112,7 +1113,7 @@ This is an alpha intended for testing API updates, and a heavily-overhauled buil
 * Fixed neighbouring Pressure Tube block shapes not getting updated client-side when a tube explodes due to overpressure
 * Fixed Electrostatic Compressor not always finding all connected compressors if the grid is large
 
-## 2.11.0-155 (17 Mar 2021)
+## [2.11.0]-155 (17 Mar 2021)
 
 ### New
 * The Programmable Controller now has some optional chunkloading functionality
@@ -1171,13 +1172,13 @@ This is an alpha intended for testing API updates, and a heavily-overhauled buil
 
 # Minecraft 1.16.3 / 1.16.4 / 1.16.5
 
-## 2.10.3-149 (6 Mar 2021)
+## [2.10.3]-149 (6 Mar 2021)
 
 ### Fixes
 * Fix Pneumatic Armor bug where armor couldn't be switched on from cold (Core Components toggle button)
 * Fix timing issue on SMP where Pneumatic Armor feature enablement packets sometimes got ignored by server
 
-## 2.10.2-148 (4 Mar 2021)
+## [2.10.2]-148 (4 Mar 2021)
 
 ### Updates
 * Added a 4th tier of fluid tank: the Huge Fluid Tank, with 512000mB of storage (and an expensive recipe...)
@@ -1208,7 +1209,7 @@ This is an alpha intended for testing API updates, and a heavily-overhauled buil
 * Fixed Tube Module bounding box targeting being a bit off on the Y axis when sneaking and on dedicated server
 * Made Redstone Tube Module bounding box a bit larger, properly matching the model size
 
-## 2.10.1-140 (23 Feb 2021)
+## [2.10.1]-140 (23 Feb 2021)
 
 ### Updates
 * Pressure Chamber disenchanting now also works for Enchanted Books
@@ -1241,7 +1242,7 @@ This is an alpha intended for testing API updates, and a heavily-overhauled buil
   * Note that this widget can't filter by clicked block when in Item Mode; this is likely to be remedied in a later release, but will probably require a separate progwidget
 * Pneumatic Chestplate Security Upgrade will no longer attempt to extinguish fires or solidify lava when player is in creative or spectator mode
 
-## 2.10.0-134 (6 Feb 2021)
+## [2.10.0]-134 (6 Feb 2021)
 
 ### New
 * Pneumatic Armor has had a little re-texture (no fancy models, sorry!)
@@ -1287,12 +1288,12 @@ This is an alpha intended for testing API updates, and a heavily-overhauled buil
   * No more easy removal of cursed items, sorry!
 * Fixed potential Amadron exploit by badly-behaved clients being able to order more of an item than currently in stock
 
-## 2.9.5-128 (26 Jan 2021)
+## [2.9.5]-128 (26 Jan 2021)
 
 ### Fixes
 * Hotfix: fixed crash on dedicated server with GPS and GPS Area Tools due to bug introduced in 2.9.4
 
-## 2.9.4-126 (26 Jan 2021)
+## [2.9.4]-126 (26 Jan 2021)
 
 ### Updates
 * Harvesting Drones (and the Harvesting progwidget) now know about Sweet Berries and Kelp
@@ -1334,7 +1335,7 @@ This is an alpha intended for testing API updates, and a heavily-overhauled buil
 * Fixed Pneumatic Armor initialisation progress bars not going away (and "low pressure" message spam) if player wearing any armor pieces with 0 pressure
 * Fixed (hopefully) client crash when toggling Redstone Module input/output mode from GUI, when using Vivecraft (VR)
 
-## 2.9.3-120 (17 Jan 2020)
+## [2.9.3]-120 (17 Jan 2020)
 
 ### Updates
 * Added Reinforced and Smart Chest Upgrade Kit items
@@ -1369,7 +1370,7 @@ This is an alpha intended for testing API updates, and a heavily-overhauled buil
   * e.g. right click an Item Filter widget then press "Search Items...", then go back to the main Programmer GUI
 * Fixed Item Filter progwidget GUI not properly sync'ing variable names when GUI closed
 
-## 2.9.2-116 (13 Jan 2021)
+## [2.9.2]-116 (13 Jan 2021)
 
 ### Updates
 * Drones (and Guard Drones, but not other basic drones) can now take up to 15 Armor Upgrades
@@ -1383,7 +1384,7 @@ This is an alpha intended for testing API updates, and a heavily-overhauled buil
 * Fixed Vacuum Pump GUI showing wrong vacuum pressure when Volume Upgrades are installed (display bug only: actual pressure was OK)
 * Fixed Liquid Hopper ignoring "leave 1000mB" mode when ejecting fluid via Dispenser Upgrade
 
-## 2.9.1-115 (11 Jan 2021)
+## [2.9.1]-115 (11 Jan 2021)
 
 **IMPORTANT**: this release requires Forge 35.1.34 or later!
 
@@ -1414,7 +1415,7 @@ This is an alpha intended for testing API updates, and a heavily-overhauled buil
 * Amadrones will now try all sides of the target inventory/tank when delivering goods, not just the top
   * Prevents loss of goods (fluids especially) if there's any block on top the target inventory/tank
 
-## 2.9.0-111 (4 Jan 2021)
+## [2.9.0]-111 (4 Jan 2021)
 
 ### New
 * It is now possible to debug Programmable Controller drone programs in the same way that regular Drones can be debugged
@@ -1452,7 +1453,7 @@ This is an alpha intended for testing API updates, and a heavily-overhauled buil
   * Was possible to put redstone on top of a basic Liquid Compressor but not the Advanced version
 * When pastebin-importing old drone programs from Minecraft 1.12.2 and earlier, ignore item meta being enabled on item filter widgets for items that don't have durability/metadata anymore
 
-## 2.8.2-97 (28 Dec 2020)
+## [2.8.2]-97 (28 Dec 2020)
 
 ### Updates
 * The Coordinate Operator progwidget can now operate upon a specific subset of the X/Y/Z coordinate fields if desired
@@ -1480,7 +1481,7 @@ This is an alpha intended for testing API updates, and a heavily-overhauled buil
 * Hopefully fixed problem where Memory Stick XP auto-absorb randomly stopped working
 * Fixed higher-tier Mekanism pipes issue when extracting from UV Lightbox
 
-## 2.8.1-96 (19 Dec 2020)
+## [2.8.1]-96 (19 Dec 2020)
 
 ### Updates
 * Further performance work on Pressure Tube shape calculation, with more aggressive caching of block shapes
@@ -1491,7 +1492,7 @@ This is an alpha intended for testing API updates, and a heavily-overhauled buil
 * Fixed client crash on login when Minecolonies is installed
 * Fixed toggling of Pneumatic Armor "Core Components" (the master switch) leaving some upgrades in an inconsistent state
 
-## 2.8.0-95 (14 Dec 2020)
+## [2.8.0]-95 (14 Dec 2020)
 
 ### Updates
 * Aphorism Tiles have had a major boost in functionality
@@ -1557,12 +1558,12 @@ This is an alpha intended for testing API updates, and a heavily-overhauled buil
 * Fixed distance-sorting bug when drone searches for closest Charging Station for recharge
   * This could have caused the drone to fly (or teleport) to an unexpected Charging Station
 
-## 2.7.2-86 (3 Dec 2020)
+## [2.7.2]-86 (3 Dec 2020)
 
 ### Fixes
 * Hotfix: avoid infinite recursion crash when Quark is also installed
 
-## 2.7.1-84 (3 Dec 2020)
+## [2.7.1]-84 (3 Dec 2020)
 
 ### Updates
 * Omnidirectional and Liquid Hoppers can now take an Entity Tracker Upgrade
@@ -1583,7 +1584,7 @@ This is an alpha intended for testing API updates, and a heavily-overhauled buil
 * Fixed Transfer Gadgets in input mode pulling from the wrong side of sided inventories such as furnaces
 * Fixed spurious error icon for filter showing on Sentry Turret GUI even when the filter is valid
 
-## 2.7.0-83 (30 Nov 2020)
+## [2.7.0]-83 (30 Nov 2020)
 
 ### New
 * Added Wall Lamps!
@@ -1655,7 +1656,7 @@ This is an alpha intended for testing API updates, and a heavily-overhauled buil
   * Fixed fluid resources in Amadron offers lacking their tooltip
   * Fixed tooltip overlap on edge of right-hand slot in an offer leading to garbled tooltip
 
-## 2.6.2-73 (20 Nov 2020)
+## [2.6.2]-73 (20 Nov 2020)
 
 ### New
 * Placing a Range Upgrade in the Pneumatic Chestplate now gives the player a 3.5-block reach distance upgrade
@@ -1668,13 +1669,13 @@ This is an alpha intended for testing API updates, and a heavily-overhauled buil
 ### Fixes
 * Fixed NPE when breaking Aerial Interface
 
-## 2.6.1-72 (18 Nov 2020)
+## [2.6.1]-72 (18 Nov 2020)
 
 ### Fixes
 * Fixed crash with Spawner Extractor on dedicated server
 * Fixed a couple of HUD messages with helmet block tracker & mob spawners
 
-## 2.6.0-70 (16 Nov 2020)
+## [2.6.0]-70 (16 Nov 2020)
 
 ### New
 * Added a new mob spawning system!
@@ -1701,7 +1702,7 @@ This is an alpha intended for testing API updates, and a heavily-overhauled buil
 * Fixed a problem on SMP where players get kicked when they are near other players wearing or holding pressurizable items (tools & armor)
   * I couldn't reproduce this one myself, and I suspect another mod may be interfering, but I've added some defensive coding to cover it
 
-## 2.5.0-66 (5 Nov 2020)
+## [2.5.0]-66 (5 Nov 2020)
   
 ### Updates 
 * Support for MC 1.16.4, which is very much compatible with MC 1.16.3
@@ -1727,7 +1728,7 @@ This is an alpha intended for testing API updates, and a heavily-overhauled buil
   
 # Minecraft 1.16.3
 
-## 2.4.5-62 (25 Oct 2020)
+## [2.4.5]-62 (25 Oct 2020)
 
 ### Updates
 * Added a new "Void Item" progwidget for drones to use
@@ -1741,12 +1742,12 @@ This is an alpha intended for testing API updates, and a heavily-overhauled buil
 * Fixed server NPE when drones try to place certain unplaceable blocks (e.g. Farmer's Delight rice when there's no water block)
 * Fixed dedicated server crash (NoClassDefFoundError) when trying to merge drone programs
 
-## 2.4.4-59 (15 Oct 2020)
+## [2.4.4]-59 (15 Oct 2020)
 
 ### Fixes
 * Hotfix: fix init crash which will affect some Java installations (I was wrongly using a library routine not guaranteed to be present at runtime)
 
-## 2.4.3-58 (15 Oct 2020)
+## [2.4.3]-58 (15 Oct 2020)
 
 ### Updates
 * Universal Sensor heat sensor can now read the temperature of Heat Frames
@@ -1760,7 +1761,7 @@ This is an alpha intended for testing API updates, and a heavily-overhauled buil
   * Drone carrying limit is 36 stacks; if more is available for restocking, multiple trips will now be made
 * Fixed Volume Upgrades not being taken into account for negative pressures (Vacuum Pump)
 
-## 2.4.2-49 (9 Oct 2020)
+## [2.4.2]-49 (9 Oct 2020)
  
 Releases from 2.4.2 onward *require* Forge 34.1.0 or later.
 
@@ -1785,7 +1786,7 @@ Releases from 2.4.2 onward *require* Forge 34.1.0 or later.
 * Fixed Minigun Ammo and Micromissiles having infinite durability
 * Fixed Micromissile tooltips not fully rendering
 
-## 2.4.1-44 (25 Sep 2020)
+## [2.4.1]-44 (25 Sep 2020)
 
 ### Updates
 * AE2 Support has returned!  Tested with AE2 8.1.0-alpha.3
@@ -1807,7 +1808,7 @@ Releases from 2.4.2 onward *require* Forge 34.1.0 or later.
 * Fixed client crash when rendering fluid textures in GUI's
 * Fixed Amadron trade addition GUI bug where trying to open item/search GUIs just returned to the main Amadron GUI
  
-## 2.4.0-36 (18 Sep 2020)
+## [2.4.0]-36 (18 Sep 2020)
 
 The initial 2.4.0 release for MC 1.16.3 release is largely equivalent in functionality to the 2.2.2 release (for MC 1.16.1) with a couple of small worldgen-related changes.
 
@@ -1825,7 +1826,7 @@ The initial 1.16.1 release is largely equivalent in functionality to the 1.4.2 r
 
 Releases from 2.1.0 onward *require* Forge 32.0.108 or newer.
 
-## 2.2.2-35 (18 Sep 2020)
+## [2.2.2]-35 (18 Sep 2020)
 
 ## Updates
 * All pressurizable tool items are now unstackable (does not apply to drones or air canisters)
@@ -1836,7 +1837,7 @@ Releases from 2.1.0 onward *require* Forge 32.0.108 or newer.
 * Fixed air dupe exploit with stacked pressurizable items and the Charging Module
 * Fixed player death message translations
 
-## 2.2.1-32 (14 Sep 2020)
+## [2.2.1]-32 (14 Sep 2020)
 
 ### Fixes
 * Fixed Amadrones thinking they had only one inventory slot, causing orders with more than 64 of an item to fail
@@ -1845,7 +1846,7 @@ Releases from 2.1.0 onward *require* Forge 32.0.108 or newer.
 * Drone "Inventory Export" widget will now try to keep items stacked in the inventory it's exporting to
   * This also applies to Collector Drones, which use the "Inventory Export" widget internally
 
-## 2.2.0-29 (3 Sep 2020)
+## [2.2.0]-29 (3 Sep 2020)
 
 Important: if you are also using Immersive Engineering, this release of PNC:R *requires* IE 1.16.1-4.0.0-118 or newer.
 
@@ -1887,7 +1888,7 @@ Important: if you are also using Immersive Engineering, this release of PNC:R *r
   * This mainly affects languages such as Chinese, where whitespace is not necessarily used.
 * Fixed heat-tintable blocks (e.g. Compressed Iron Block) flashing blue briefly when placed down
 
-## 2.1.1-14 (14 Aug 2020)
+## [2.1.1]-14 (14 Aug 2020)
 
 ### Updates
 * Tweaked heat & air output of advanced compressors somewhat
@@ -1903,7 +1904,7 @@ Important: if you are also using Immersive Engineering, this release of PNC:R *r
 * Fixed Jackhammer being able to break bedrock (and other unbreakable blocks) in area dig modes
 * Fixed Drone upgrade crafting recipe not needing a PCB ingredient
 
-## 2.1.0-11 (11 Aug 2020)
+## [2.1.0]-11 (11 Aug 2020)
 
 ### New
 * Added a Pneumatic Jackhammer!
@@ -1949,7 +1950,7 @@ Important: if you are also using Immersive Engineering, this release of PNC:R *r
 * Fixed possible race conditions when registering custom model loaders (pressure chamber glass, minigun, fluid tanks)
   * Now using Forge `ModelRegistryEvent`, hence the 32.0.108 requirement
 
-## 2.0.0-4 (30 Jul 2020)
+## [2.0.0]-4 (30 Jul 2020)
 
 ### Updates
 * The Programmable Controller can now optionally charge (with pressure and/or Forge Energy) the "drone's" held item (i.e. the item in inventory slot 0)
@@ -1967,7 +1968,7 @@ Important: if you are also using Immersive Engineering, this release of PNC:R *r
 
 # Minecraft 1.15.2
 
-## 1.4.2-58 (29 Jul 2020)
+## [1.4.2]-58 (29 Jul 2020)
 
 ### Updates
 * Smart Chest filter slots can now also limit the number of items allowed in a slot
@@ -1985,7 +1986,7 @@ Important: if you are also using Immersive Engineering, this release of PNC:R *r
 * Fixed NPE when throwing some blocks with chestplate launcher
 * Fixed NPE when placing down a new Programmable Controller
 
-## 1.4.1-56 (20 Jul 2020)
+## [1.4.1]-56 (20 Jul 2020)
 
 ### Updates
 * Drones can now absorb Experience Orbs
@@ -2002,7 +2003,7 @@ Important: if you are also using Immersive Engineering, this release of PNC:R *r
 * Fluid tanks with any fluid will now never stack, even with identical fluid & amount (empty Fluid Tanks will still stack)
 * Fixed empty Fluid Tank items being unstackable with other empty tanks after draining in item form (e.g. during heat frame cooling)
 
-## 1.4.0-53 (14 Jul 2020)
+## [1.4.0]-53 (14 Jul 2020)
 
 ### New
 * Mekanism integration, still fairly experimental and subject to rebalancing
@@ -2036,7 +2037,7 @@ Important: if you are also using Immersive Engineering, this release of PNC:R *r
 * Fixed keybind handling bug causing modifiers (shift/control/alt) to be ignored in some circumstances
 * Fixed buggy Chestplate Launcher behaviour (wrongly consuming the mainhand item)
 
-## 1.3.2-42 (26 Jun 2020)
+## [1.3.2]-42 (26 Jun 2020)
 
 ### Updates
 * Block camouflage now properly mimics the complete blockstate recorded on the Camouflage Applicator
@@ -2049,7 +2050,7 @@ Important: if you are also using Immersive Engineering, this release of PNC:R *r
 * Fixed NPE with tile entity moving under certain circumstances (see https://github.com/TeamPneumatic/pnc-repressurized/issues/540)
 * Fixed Tag Filters in inventories with Requester Frames wrongly counting as requested items
 
-## 1.3.1-39 (22 Jun 2020)
+## [1.3.1]-39 (22 Jun 2020)
 ### New
 * Immersive Engineering integration has been added back (note: at time of writing, Immersive Engineering is in alpha status on 1.15.2)
   * Harvesting Drones (and Harvest programming widget) recognise Hemp as a harvestable crop
@@ -2087,7 +2088,7 @@ Important: if you are also using Immersive Engineering, this release of PNC:R *r
   * Tanks may now only be used as crafting ingredients when completely empty (item must have no NBT, so newly-crafted is recommended)
   * Emptying a stack of full tanks into another larger tank would transfer twice the fluid (actually a Forge bug but worked around in PNC)
 
-## 1.3.0-33 (12 Jun 2020)
+## [1.3.0]-33 (12 Jun 2020)
 
 ### Updates
 * Logistics Core recipe has been changed to create two cores instead of one
@@ -2135,7 +2136,7 @@ Important: if you are also using Immersive Engineering, this release of PNC:R *r
   * No player-visible change here but eliminates the risk of translation key clashes with other mods
 * Electrostatic Compressor item tooltip is much shorter now (long tooltip still visible in JEI and GUI side tab)
 
-## 1.2.2-30 (1 Jun 2020)
+## [1.2.2]-30 (1 Jun 2020)
 
 ### New
 * Added new Thermal Lagging block, an alternative to covering your Refinery & other heat machines with trapdoors
@@ -2161,7 +2162,7 @@ Important: if you are also using Immersive Engineering, this release of PNC:R *r
 * Fixed semiblock items (crop sticks, logistics frames etc.) being consumed when placed in creative mode
 * Fixed crop sticks allowing multiple sticks to be placed in the same block space
 
-## 1.2.1-25 (25 May 2020)
+## [1.2.1]-25 (25 May 2020)
 
 ### Updates
 * Made the volume of several sounds configurable in client-side config (pneumaticcraft-client.toml)
@@ -2190,7 +2191,7 @@ Important: if you are also using Immersive Engineering, this release of PNC:R *r
 * Fixed Refinery Controller block shape (caused x-ray effect with solid adjacent blocks)
 * Fixed client crash when trying to camouflage blocks with Pressure Chamber Glass
 
-## 1.2.0-20 (18 May 2020)
+## [1.2.0]-20 (18 May 2020)
 
 ### Known Issues
 * There is an incompatibility with the version 1.15.2-10m and older of the Performant mod, which (with default settings) will mess up Drone pathfinding
@@ -2223,7 +2224,7 @@ Important: if you are also using Immersive Engineering, this release of PNC:R *r
   * Fixed Programmer widget tray dragging sometimes selecting a widget under the open tray instead of the widget in the tray
   * Fixed fluid searching in the Liquid Filter prog widget GUI
 
-## 1.1.2-14 (May 11 2020)
+## [1.1.2]-14 (May 11 2020)
 
 ### Updates
 * Oil and Lubricant are now in the `forge:oil` and `forge:lubricant` fluid tags, respectively.
@@ -2249,7 +2250,7 @@ Important: if you are also using Immersive Engineering, this release of PNC:R *r
 * Fixed Amadron not matching items with NBT even when the item in the offer has no NBT
   * E.g. Quark adds some NBT to the vanilla Compass, which is a villager Amadron can offer sometimes. With the added NBT, any Compasses players held were untradeable.
 
-## 1.1.1-6 (May 5 2020)
+## [1.1.1]-6 (May 5 2020)
 
 ### Updates
 
@@ -2275,7 +2276,7 @@ Important: if you are also using Immersive Engineering, this release of PNC:R *r
 * Fixed server crash if no valid villager professions are found when looking for villager trades to add to Amadron (this should only happen if a previous datapack loading error occurred, like the missing `type` field error above)
 * Removed reference to non-existent plastic mixer from the Patchouli guidebook which was causing some log spam about missing items
 
-## 1.1.0-3 (May 3 2020)
+## [1.1.0]-3 (May 3 2020)
 
 This release adds no major new features to the 1.14.4 version, but there are several smaller changes & fixes worth noting.  See 1.14.4 changes below for major changes relative to 1.12.2, and also https://gist.github.com/desht/b604bd670f7f718bb4e6f20ff53893e2
 
@@ -2317,7 +2318,7 @@ This release adds no major new features to the 1.14.4 version, but there are sev
 
 This release brings a very major internal rewrite and many many major new and modified gameplay elements. See also https://gist.github.com/desht/b604bd670f7f718bb4e6f20ff53893e2
 
-## 1.0.1-10 (Apr 17 2020)
+## [1.0.1]-10 (Apr 17 2020)
 ### Fixes
 * Fixed Block Tracker behaviour (performance and crashes) with Hackables
 * Also, Block Tracker now picks up blocks added by block tag (doors & buttons)
@@ -2327,7 +2328,7 @@ This release brings a very major internal rewrite and many many major new and mo
 * Fixed Air Cannon not being able to fling entities when Entity Tracker upgrade is installed
 * Refinery Output block now has the right block shape
 
-## 1.0.0-8 (Mar 22)
+## [1.0.0]-8 (Mar 22)
 
 ### Known issues
 * On dedicated server, JEI may not show custom machine recipes when you log in. 
