@@ -11,6 +11,15 @@ Changes are in reverse chronological order; newest changes at the top.
 ### Added
 * Added "setCheckLineOfSight" Lua command to the Drone Interface
   * Used by the "entity_attack" action; when true, drones will only attack entities they have line of sight to
+* Added two security-related drone config settings:
+  * `allowAnyPlayerVarQuery`: allow drones to query the location of other players with the '@player=<name>' special variable
+  * `allowTeleportToProtectedArea`:  allow drones to teleport into areas protected by someone else's security station
+  * Both are true by default, but PvP servers might benefit from having these set to false
+* Speed upgrades in an Assembly Controller now reduce the Assembly Drill's braking time (previously it ignored speed upgrades when slowing down at the end of its cycle)
+* Crafting an Air Compressor or Liquid Compressor into its advanced version now preserves any air, fuel and upgrades in the compressor (thanks @ChiefArug)
+* Adjustable fluid filters in Logistic Frame GUI's now show the fluid amount even when it's 1 bucket of fluid
+  * Makes it clearer that it's an adjustable amount
+  * Also reduced the font scale to 0.5, in line with font scaling for normal item slots
 
 ### Fixes
 * Fixed crash with Heat Frame if the underlying inventory changes

@@ -35,7 +35,7 @@ import java.util.function.Predicate;
  * air handlers, and will push air to neighbouring air handlers with lower pressure.  It will also explode if
  * over-pressurized.
  * <p>
- * Don't implement this class yourself!  Use one of the methods in {@link IAirHandlerMachineFactory} to obtain
+ * Don't implement this class yourself!  Use one of the methods in {@link IAirHandulerMachineFactory} to obtain
  * a suitable implementation for your block entity.
  */
 public interface IAirHandlerMachine extends IAirHandler, IManoMeasurable, INBTSerializable<CompoundTag> {
