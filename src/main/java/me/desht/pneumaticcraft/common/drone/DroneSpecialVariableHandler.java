@@ -18,6 +18,7 @@
 package me.desht.pneumaticcraft.common.drone;
 
 import me.desht.pneumaticcraft.api.drone.SpecialVariableRetrievalEvent.CoordinateVariable.Drone;
+import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.core.BlockPos;
@@ -38,13 +39,13 @@ public class DroneSpecialVariableHandler {
         register("drone_pos", (event, extra) -> new BlockPos(event.drone.getDronePos()));
         register("controller_pos", (event, extra) -> event.drone.getControllerPos());
         register("owner_pos", (event, extra) -> getPosForPlayer(event.drone.getOwner()));
-        register("player_pos", (event, extra) -> getPosForPlayer(PneumaticCraftUtils.getPlayerFromName(extra)));
+        register("player_pos", (event, extra) -> getPosForOtherPlayer(event.drone.getOwner(), PneumaticCraftUtils.getPlayerFromName(extra)));
         register("deploy_pos", (event, extra) -> event.drone.getDeployPos());
         register("owner_look", (event, extra) -> getPlayerLookVec(event.drone.getOwner()));
 
         // old generation - they will stay around for backwards compatibility, but prefer to use the new vars above
         register("owner", (event, extra) -> getPosForPlayer(event.drone.getOwner()));
-        register("player", (event, extra) -> getPosForPlayer(PneumaticCraftUtils.getPlayerFromName(extra)));
+        register("player", (event, extra) -> getPosForOtherPlayer(event.drone.getOwner(), PneumaticCraftUtils.getPlayerFromName(extra)));
         // this method gets the block above the drone's position for historical reasons
         // https://github.com/TeamPneumatic/pnc-repressurized/issues/601 for more discussion
         register("drone", (event, extra) -> new BlockPos(event.drone.getDronePos()).relative(Direction.UP));
@@ -61,6 +62,14 @@ public class DroneSpecialVariableHandler {
     private static BlockPos getPosForPlayer(Player player) {
         // offset UP because "$owner" and "$player" get the player's head position, not feet position
         return player == null ? BlockPos.ZERO : player.blockPosition().relative(Direction.UP);
+    }
+
+    private static BlockPos getPosForOtherPlayer(Player droneOwner, Player otherPlayer) {
+        if (!ConfigHelper.common().drones.allowAnyPlayerVarQuery.get() && droneOwner != otherPlayer) {
+            return BlockPos.ZERO;
+        } else {
+            return getPosForPlayer(otherPlayer);
+        }
     }
 
     private static BlockPos getPlayerLookVec(Player player) {

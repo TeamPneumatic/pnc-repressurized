@@ -19,6 +19,7 @@ package me.desht.pneumaticcraft.common.drone;
 
 import com.google.common.collect.Lists;
 import me.desht.pneumaticcraft.api.drone.IPathNavigator;
+import me.desht.pneumaticcraft.common.block.entity.SecurityStationBlockEntity;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.entity.drone.DroneEntity;
@@ -149,8 +150,12 @@ public class EntityPathNavigateDrone extends FlyingPathNavigation implements IPa
         if (!checkForChunkLoading(pos)) {
             return false;
         }
+
+        boolean secStationProtected = !ConfigHelper.common().drones.allowTeleportToProtectedArea.get()
+                && SecurityStationBlockEntity.isProtectedFromPlayer(droneEntity.getOwnerUUID(), droneEntity.getLevel(), pos, false);
+
         int max = ConfigHelper.common().drones.maxDroneTeleportRange.get();
-        return !droneEntity.isTeleportRangeLimited() || max == 0 || pos.closerToCenterThan(droneEntity.getDronePos(), max);
+        return !secStationProtected && (!droneEntity.isTeleportRangeLimited() || max == 0 || pos.closerToCenterThan(droneEntity.getDronePos(), max));
     }
 
     @Override

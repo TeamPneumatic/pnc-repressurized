@@ -393,6 +393,18 @@ public class SecurityStationBlockEntity extends AbstractTickingBlockEntity imple
         return rebootTimer > 0 || isPlayerOnWhiteList(player) || hasPlayerHacked(player);
     }
 
+    public boolean doesAllowPlayer(UUID playerID) {
+        return rebootTimer > 0 || isPlayerOnWhiteList(playerID) || hasPlayerHacked(playerID);
+    }
+
+    private boolean isPlayerOnWhiteList(UUID playerID) {
+        return sharedUsers.stream().anyMatch(p -> p.getId().equals(playerID));
+    }
+
+    private boolean hasPlayerHacked(UUID playerID) {
+        return hackedUsers.stream().anyMatch(p -> p.getId().equals(playerID));
+    }
+
     public boolean isPlayerOnWhiteList(Player player) {
         for (int i = 0; i < sharedUsers.size(); i++) {
             GameProfile user = sharedUsers.get(i);
@@ -605,11 +617,25 @@ public class SecurityStationBlockEntity extends AbstractTickingBlockEntity imple
      * @param player                   the player who is trying to do something with the blockpos in question
      * @param pos                      the blockpos whose protection is being checked
      * @param isPlacingSecurityStation true when trying to place a security station, false otherwise
-     * @return the number of security stations which currently prevent access by the player
+     * @return  true if a security station would prevent access to the area
      */
     public static boolean isProtectedFromPlayer(Player player, BlockPos pos, final boolean isPlacingSecurityStation) {
         return getSecurityStations(player.getCommandSenderWorld(), pos, isPlacingSecurityStation)
                 .anyMatch(teSS -> !teSS.doesAllowPlayer(player));
+    }
+
+    /**
+     * Check if any security station is preventing the given player ID from interacting with the given blockpos. Works
+     * for offline players too, e.g. a player's drone may be operating while they are offline.
+     *
+     * @param playerId                 UUID of the player who is trying to do something with the blockpos in question
+     * @param pos                      the blockpos whose protection is being checked
+     * @param isPlacingSecurityStation true when trying to place a security station, false otherwise
+     * @return true if a security station would prevent access to the area
+     */
+    public static boolean isProtectedFromPlayer(UUID playerId, Level level, BlockPos pos, final boolean isPlacingSecurityStation) {
+        return getSecurityStations(level, pos, isPlacingSecurityStation)
+                .anyMatch(teSS -> !teSS.doesAllowPlayer(playerId));
     }
 
     static Stream<SecurityStationBlockEntity> getSecurityStations(final Level level, final BlockPos pos, final boolean isPlacingSecurityStation) {
