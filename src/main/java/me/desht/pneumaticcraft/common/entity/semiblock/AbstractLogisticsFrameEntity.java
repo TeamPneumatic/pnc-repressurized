@@ -339,11 +339,7 @@ public abstract class AbstractLogisticsFrameEntity extends AbstractSemiblockEnti
         setMatchDurability(tag.getBoolean(NBT_MATCH_DURABILITY));
         setMatchModId(tag.getBoolean(NBT_MATCH_MODID));
         setItemWhiteList(tag.getBoolean(NBT_ITEM_WHITELIST));
-        if (!tag.contains(NBT_FLUID_WHITELIST, Tag.TAG_BYTE)) {
-            setFluidWhiteList(true);
-        } else {
-            setFluidWhiteList(tag.getBoolean(NBT_FLUID_WHITELIST));
-        }
+        setFluidWhiteList(tag.getBoolean(NBT_FLUID_WHITELIST));
         setSide(tag.contains(NBT_SIDE) ? Direction.from3DDataValue(tag.getInt(NBT_SIDE)) : Direction.UP);
 
         if (this instanceof ISpecificRequester spr) {
@@ -358,12 +354,12 @@ public abstract class AbstractLogisticsFrameEntity extends AbstractSemiblockEnti
 
         tag.put(NBT_ITEM_FILTERS, itemFilterHandler.serializeNBT());
         tag.put(NBT_FLUID_FILTERS, fluidFilters.serializeNBT());
-        tag.putBoolean(NBT_INVISIBLE, isSemiblockInvisible());
-        tag.putBoolean(NBT_MATCH_NBT, isMatchNBT());
-        tag.putBoolean(NBT_MATCH_DURABILITY, isMatchDurability());
-        tag.putBoolean(NBT_MATCH_MODID, isMatchModId());
-        tag.putBoolean(NBT_ITEM_WHITELIST, isItemWhiteList());
-        tag.putBoolean(NBT_FLUID_WHITELIST, isFluidWhiteList());
+        if (isSemiblockInvisible()) tag.putBoolean(NBT_INVISIBLE, true);
+        if (isMatchNBT()) tag.putBoolean(NBT_MATCH_NBT, true);
+        if (isMatchDurability()) tag.putBoolean(NBT_MATCH_DURABILITY, true);
+        if (isMatchModId()) tag.putBoolean(NBT_MATCH_MODID, true);
+        if (isItemWhiteList()) tag.putBoolean(NBT_ITEM_WHITELIST, true);
+        if (isFluidWhiteList()) tag.putBoolean(NBT_FLUID_WHITELIST, true);
         if (getSide() != null) tag.putInt(NBT_SIDE, getSide().get3DDataValue());
         if (this instanceof ISpecificRequester spr) {
             tag.putInt(ISpecificRequester.NBT_MIN_ITEMS, spr.getMinItemOrderSize());
