@@ -171,6 +171,8 @@ public class CommonConfig {
         public ForgeConfigSpec.BooleanValue allowNavigateToUnloadedChunks;
         public ForgeConfigSpec.BooleanValue droneDebuggerPathParticles;
         public ForgeConfigSpec.BooleanValue enableDroneSuffocation;
+        public ForgeConfigSpec.BooleanValue allowAnyPlayerVarQuery;
+        public ForgeConfigSpec.BooleanValue allowTeleportToProtectedArea;
     }
 
     public final General general = new General();
@@ -667,44 +669,52 @@ public class CommonConfig {
         builder.push("Drones");
         drones.enableDroneSuffocation = builder
                 .comment("Enable Drone Suffocation Damage")
-                .translation("pneumaticcraft.config.common.general.enable_drone_suffocation")
+                .translation("pneumaticcraft.config.common.drones.enable_drone_suffocation")
                 .define("enable_drone_suffocation", true);
         drones.dronesRenderHeldItem = builder
                 .comment("Drones render their held item (the item in slot 0 of their inventory) ?  Note: this is in common config since if enabled, server needs to sync the item data to the client.")
-                .translation("pneumaticcraft.config.common.general.drones_render_held_item")
+                .translation("pneumaticcraft.config.common.drones.drones_render_held_item")
                 .define("drones_render_held_item", true);
         drones.dronesCanImportXPOrbs = builder
                 .comment("Are drones allowed to import Experience Orbs and convert them to Memory Essence fluid?")
-                .translation("pneumaticcraft.config.common.general.drones_can_import_xp_orbs")
+                .translation("pneumaticcraft.config.common.drones.drones_can_import_xp_orbs")
                 .define("drones_can_import_xp_orbs", true);
         drones.dronesCanBePickedUp = builder
                 .comment("Will Drones automatically get picked up by Boats/Minecarts/etc. if they're close enough?")
-                .translation("pneumaticcraft.config.common.general.drones_can_be_picked_up")
+                .translation("pneumaticcraft.config.common.drones.drones_can_be_picked_up")
                 .define("drones_can_be_picked_up", false);
         drones.droneDebuggerPathParticles = builder
                 .comment("Show particle trail indicating the currently-debugged drone's planned path")
-                .translation("pneumaticcraft.config.common.general.drone_debugger_path_particles")
+                .translation("pneumaticcraft.config.common.drones.drone_debugger_path_particles")
                 .define("drone_debugger_path_particles", true);
         drones.stopDroneAI = builder
                 .comment("When set to true, Drones will not execute any program. This is useful to set to true when due to a bug Drones are lagging your server or crashing it. Please report any such bugs as a PneumaticCraft: Repressurized issue so it can be investigated.")
-                .translation("pneumaticcraft.config.common.advanced.stop_drone_ai")
+                .translation("pneumaticcraft.config.common.drones.stop_drone_ai")
                 .define("stop_drone_ai", false);
         drones.maxDroneChargingStationSearchRange = builder
                 .comment("How far will a drone go to find a Charging Station when it's low on air? Note: drones will teleport, possibly across the world to someone else's base, if this range is very large.")
-                .translation("pneumaticcraft.config.common.advanced.max_drone_charging_station_search_range")
+                .translation("pneumaticcraft.config.common.drones.max_drone_charging_station_search_range")
                 .defineInRange("max_drone_charging_station_search_range", 80, 16, Integer.MAX_VALUE);
         drones.maxDroneTeleportRange = builder
                 .comment("The maximum distance that a Drone may teleport when it can't find a path to its destination. Default value of 0 means no limit. This is primarily intended to limit abuse of teleportation to other players on PvP servers, but may find other uses. Be careful about setting this value very low.")
-                .translation("pneumaticcraft.config.common.advanced.max_drone_teleport_range")
+                .translation("pneumaticcraft.config.common.drones.max_drone_teleport_range")
                 .defineInRange("max_drone_teleport_range", 0, 0, Integer.MAX_VALUE);
         drones.allowNavigateToUnloadedChunks = builder
                 .comment("When false, drones may not navigate or teleport into unloaded chunks. Setting this true may lead to server performance and stability issues - beware.")
-                .translation("pneumaticcraft.config.common.advanced.allow_navigate_to_unloaded_chunks")
+                .translation("pneumaticcraft.config.common.drones.allow_navigate_to_unloaded_chunks")
                 .define("allow_navigate_to_unloaded_chunks", false);
         drones.stuckDroneTeleportTicks = builder
                 .comment("If a Drone has found a path, but gets stuck on a block along that path, it will teleport to its destination after this many ticks of being stuck. Set this to 0 to disable teleporting, which will likely leave the drone waiting there forever (or until it runs out of air). Note that getting stuck on a block is usually the fault of the mod that added the block (especially if the block has a non-full-cube shape), but if you encounter this behaviour, please report it as a PneumaticCraft: Repressurized issue so it can be investigated.")
-                .translation("pneumaticcraft.config.common.advanced.stuck_drone_teleport_ticks")
+                .translation("pneumaticcraft.config.common.drones.stuck_drone_teleport_ticks")
                 .defineInRange("stuck_drone_teleport_ticks", 20, 0, Integer.MAX_VALUE);
+        drones.allowAnyPlayerVarQuery = builder
+                .comment("When true, drones can query the location of any player on the server with the '$player=<name>' variable syntax. Set this to false if you don't want to allow this, e.g. on a PvP server, where this can turn drones into lethal assassins.")
+                .translation("pneumaticcraft.config.common.general.allowAnyPlayerVarQuery")
+                .define("allowAnyPlayerVarQuery", true);
+        drones.allowTeleportToProtectedArea = builder
+                .comment("When true, drones can teleport into areas protected by Security Stations of other player. You may wish to set this to false on PvP servers.")
+                .translation("pneumaticcraft.config.common.general.allowTeleportToProtectedArea")
+                .define("allowTeleportToProtectedArea", true);
         builder.pop();
     }
 }
