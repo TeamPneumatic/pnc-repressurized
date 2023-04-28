@@ -28,6 +28,7 @@ import me.desht.pneumaticcraft.common.block.entity.AbstractPneumaticCraftBlockEn
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.entity.semiblock.AbstractLogisticsFrameEntity;
+import me.desht.pneumaticcraft.common.entity.semiblock.LogisticsRequesterEntity;
 import me.desht.pneumaticcraft.common.inventory.LogisticsMenu;
 import me.desht.pneumaticcraft.common.inventory.slot.PhantomSlot;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
@@ -126,7 +127,11 @@ public class AbstractLogisticsScreen<L extends AbstractLogisticsFrameEntity> ext
         IntStream.range(0, AbstractLogisticsFrameEntity.FLUID_FILTER_SLOTS).forEach(i -> {
             FluidStack stack = logistics.getFluidFilter(i);
             PointXY p = getFluidSlotPos(i);
-            fluidWidgets.add(new WidgetFluidStack(p.x(), p.y(), stack.copy(), w -> fluidClicked((WidgetFluidStack) w, i)).setAdjustable());
+            WidgetFluidStack widgetFluidStack = new WidgetFluidStack(p.x(), p.y(), stack.copy(), w -> fluidClicked((WidgetFluidStack) w, i));
+            if (logistics instanceof LogisticsRequesterEntity) {
+                widgetFluidStack.setAdjustable();
+            }
+            fluidWidgets.add(widgetFluidStack);
         });
         fluidWidgets.forEach(this::addRenderableWidget);
 

@@ -32,6 +32,8 @@ import java.util.function.Consumer;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class WidgetFluidStack extends WidgetFluidFilter {
+    private static final float TEXT_SCALE = 0.5f;
+
     private boolean adjustable = false;
 
     public WidgetFluidStack(int x, int y, FluidStack stack, Consumer<WidgetFluidFilter> pressable) {
@@ -58,12 +60,13 @@ public class WidgetFluidStack extends WidgetFluidFilter {
 
         if (!fluidStack.isEmpty()) {
             int fluidAmount = fluidStack.getAmount() / 1000;
-            if (fluidAmount > 1) {
-                Font fr = Minecraft.getInstance().font;
+            if (fluidAmount > 1 || adjustable) {
+                Font font = Minecraft.getInstance().font;
+                String str = fluidAmount + "B";
                 matrixStack.pushPose();
-                matrixStack.translate(0, 0, 200);  // ensure amount is drawn in front of the fluid texture
-                String s = fluidAmount + "B";
-                fr.drawShadow(matrixStack, s, getX() - fr.width(s) + 17, getY() + 9, 0xFFFFFFFF);
+                matrixStack.translate(getX() - font.width(str) * TEXT_SCALE + 16, getY() + 16 - font.lineHeight * TEXT_SCALE, 200);
+                matrixStack.scale(TEXT_SCALE, TEXT_SCALE, TEXT_SCALE);
+                font.drawShadow(matrixStack, str, 0, 0, 0xFFFFFFFF);
                 matrixStack.popPose();
             }
         }
@@ -96,7 +99,9 @@ public class WidgetFluidStack extends WidgetFluidFilter {
     public void addTooltip(double mouseX, double mouseY, List<Component> curTip, boolean shiftPressed) {
         if (!fluidStack.isEmpty()) {
             curTip.add(new FluidStack(fluidStack, 1).getDisplayName());
-            curTip.add(xlate("pneumaticcraft.message.misc.fluidmB", fluidStack.getAmount()).withStyle(ChatFormatting.GRAY));
+            if (adjustable) {
+                curTip.add(xlate("pneumaticcraft.message.misc.fluidmB", fluidStack.getAmount()).withStyle(ChatFormatting.GRAY));
+            }
             curTip.add(Component.literal(ModNameCache.getModName(fluidStack.getFluid()))
                     .withStyle(ChatFormatting.BLUE,  ChatFormatting.ITALIC));
         }
