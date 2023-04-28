@@ -28,6 +28,7 @@ import me.desht.pneumaticcraft.common.recipes.other.FuelQualityRecipeImpl;
 import me.desht.pneumaticcraft.common.recipes.other.HeatPropertiesRecipeImpl;
 import me.desht.pneumaticcraft.common.recipes.special.*;
 import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.minecraft.world.item.crafting.SimpleRecipeSerializer;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -100,5 +101,7 @@ public class ModRecipeSerializers {
             = RECIPE_SERIALIZERS.register("crafting_shaped_pressurizable", () -> ShapedPressurizableRecipe.SERIALIZER);
     public static final RegistryObject<ShapedRecipeNoMirror.Serializer> CRAFTING_SHAPED_NO_MIRROR
             = RECIPE_SERIALIZERS.register("crafting_shaped_no_mirror", () -> ShapedRecipeNoMirror.SERIALIZER);
+    public static final RegistryObject<ShapedRecipe.Serializer> COMPRESSOR_UPGRADE_CRAFTING
+            = RECIPE_SERIALIZERS.register("compressor_upgrade_crafting", () -> CompressorUpgradeCrafting.SERIALIZER);
 
 }

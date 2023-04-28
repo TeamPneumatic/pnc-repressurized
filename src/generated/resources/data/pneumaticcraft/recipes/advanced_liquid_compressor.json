@@ -1,5 +1,5 @@
 {
-  "type": "minecraft:crafting_shaped",
+  "type": "pneumaticcraft:compressor_upgrade_crafting",
   "key": {
     "C": {
       "item": "pneumaticcraft:liquid_compressor"

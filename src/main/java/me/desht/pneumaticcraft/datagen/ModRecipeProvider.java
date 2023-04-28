@@ -9,14 +9,24 @@ import me.desht.pneumaticcraft.api.crafting.ingredient.StackedIngredient;
 import me.desht.pneumaticcraft.api.crafting.recipe.AssemblyRecipe.AssemblyProgramType;
 import me.desht.pneumaticcraft.api.data.PneumaticCraftTags;
 import me.desht.pneumaticcraft.api.item.PNCUpgrade;
-import me.desht.pneumaticcraft.common.core.*;
+import me.desht.pneumaticcraft.common.core.ModBlocks;
+import me.desht.pneumaticcraft.common.core.ModFluids;
+import me.desht.pneumaticcraft.common.core.ModItems;
+import me.desht.pneumaticcraft.common.core.ModRecipeSerializers;
+import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.recipes.FluidTagPresentCondition;
 import me.desht.pneumaticcraft.common.util.PlayerFilter;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.datagen.recipe.*;
 import me.desht.pneumaticcraft.lib.ModIds;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.data.recipes.*;
+import net.minecraft.data.recipes.FinishedRecipe;
+import net.minecraft.data.recipes.RecipeProvider;
+import net.minecraft.data.recipes.ShapedRecipeBuilder;
+import net.minecraft.data.recipes.ShapelessRecipeBuilder;
+import net.minecraft.data.recipes.SimpleCookingRecipeBuilder;
+import net.minecraft.data.recipes.SingleItemRecipeBuilder;
+import net.minecraft.data.recipes.SpecialRecipeBuilder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.tags.ItemTags;
@@ -61,14 +71,14 @@ public class ModRecipeProvider extends RecipeProvider {
                 'R', Tags.Items.DUSTS_REDSTONE
         ).save(consumer);
 
-        shaped(ModBlocks.ADVANCED_AIR_COMPRESSOR.get(), ModBlocks.ADVANCED_PRESSURE_TUBE.get(),
+        shapedCompressorUpgrade(ModBlocks.ADVANCED_AIR_COMPRESSOR.get(), ModBlocks.ADVANCED_PRESSURE_TUBE.get(),
                 "III/I T/ICI",
                 'I', PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON,
                 'T', ModBlocks.ADVANCED_PRESSURE_TUBE.get(),
                 'C', ModBlocks.AIR_COMPRESSOR.get()
         ).save(consumer);
 
-        shaped(ModBlocks.ADVANCED_LIQUID_COMPRESSOR.get(), ModBlocks.ADVANCED_PRESSURE_TUBE.get(),
+        shapedCompressorUpgrade(ModBlocks.ADVANCED_LIQUID_COMPRESSOR.get(), ModBlocks.ADVANCED_PRESSURE_TUBE.get(),
                 "III/ITT/ICI",
                 'I', PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON,
                 'T', ModBlocks.ADVANCED_PRESSURE_TUBE.get(),
@@ -1684,6 +1694,10 @@ public class ModRecipeProvider extends RecipeProvider {
         builder.unlockedBy("has_" + safeName(required), has(required));
         return builder;
     }
+
+    private <T extends ItemLike> CompressorUpgradeRecipeBuilder shapedCompressorUpgrade(T result, T required, String pattern, Object... keys) {
+        return genericShaped(CompressorUpgradeRecipeBuilder.shapedRecipe(result), result, required, pattern, keys);
+    };
 
     private <T extends ItemLike> ShapedPressurizableRecipeBuilder shapedPressure(T result, T required, String pattern, Object... keys) {
         return genericShaped(ShapedPressurizableRecipeBuilder.shapedRecipe(result), result, required, pattern, keys);
