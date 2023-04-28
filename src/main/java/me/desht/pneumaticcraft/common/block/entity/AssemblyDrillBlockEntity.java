@@ -53,7 +53,7 @@ public class AssemblyDrillBlockEntity extends AbstractAssemblyRobotBlockEntity {
         if (isDrillOn) {
             drillSpeed = Math.min(drillSpeed + BlockEntityConstants.ASSEMBLY_DRILL_ACCELERATION * speed, BlockEntityConstants.ASSEMBLY_DRILL_MAX_SPEED);
         } else {
-            drillSpeed = Math.max(drillSpeed - BlockEntityConstants.ASSEMBLY_DRILL_ACCELERATION, 0);
+            drillSpeed = Math.max(drillSpeed - BlockEntityConstants.ASSEMBLY_DRILL_ACCELERATION * speed, 0);
         }
         drillRotation += drillSpeed;
         while (drillRotation >= 360) {
