@@ -85,13 +85,7 @@ public interface IItemRegistry {
     ISpawnerCoreStats getSpawnerCoreStats(ItemStack stack);
 
     /**
-     * Create an instance of PneumaticCraft's default item air handler provider, suitable for returning
-     * from {@link net.minecraft.world.item.Item#initCapabilities(ItemStack, CompoundTag)}.
-     * <p>
-     * You can use this method for your own air-handling items, <em>provided that</em> your item implements
-     * {@link me.desht.pneumaticcraft.api.pressure.IPressurizableItem}. If you want to avoid a hard dependency on
-     * PneumaticCraft, then create your own custom implementation of {@link IAirHandlerItem},
-     * and attach that implementation to your item via {@link net.minecraftforge.event.AttachCapabilitiesEvent}.
+     * See {@link #makeItemAirHandlerProvider(ItemStack)}
      *
      * @param stack the ItemStack, whose item must implement {@link me.desht.pneumaticcraft.api.pressure.IPressurizableItem}
      * @param maxPressure the maximum pressure allowed for the item
@@ -102,6 +96,19 @@ public interface IItemRegistry {
     @Deprecated(forRemoval = true)
     IAirHandlerItem.Provider makeItemAirHandlerProvider(ItemStack stack, float maxPressure);
 
+    /**
+     * Create an instance of PneumaticCraft's default item air handler provider, suitable for returning
+     * from {@link net.minecraft.world.item.Item#initCapabilities(ItemStack, CompoundTag)}.
+     * <p>
+     * You can use this method for your own air-handling items, <em>provided that</em> your item implements
+     * {@link me.desht.pneumaticcraft.api.pressure.IPressurizableItem}. If you want to avoid a hard dependency on
+     * PneumaticCraft, then create your own custom implementation of {@link IAirHandlerItem},
+     * and attach that implementation to your item via {@link net.minecraftforge.event.AttachCapabilitiesEvent}.
+     *
+     * @param stack the ItemStack, whose item must implement {@link me.desht.pneumaticcraft.api.pressure.IPressurizableItem}
+     * @return an implementation of IAirHandler
+     * @implNote this air handler stores the item's air amount in the {@code}pneumaticcraft:air{@code} integer NBT tag
+     */
     IAirHandlerItem.Provider makeItemAirHandlerProvider(ItemStack stack);
 
     /**

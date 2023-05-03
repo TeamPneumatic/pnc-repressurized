@@ -73,9 +73,11 @@ public enum ItemRegistry implements IItemRegistry {
         return SpawnerCoreItem.SpawnerCoreStats.forItemStack(stack);
     }
 
+    // will be gone in 1.19.4
+    @SuppressWarnings("removal")
     @Override
     public IAirHandlerItem.Provider makeItemAirHandlerProvider(ItemStack stack, float maxPressure) {
-        return new AirHandlerItemStack(stack);
+        return makeItemAirHandlerProvider(stack);
     }
 
     @Override
