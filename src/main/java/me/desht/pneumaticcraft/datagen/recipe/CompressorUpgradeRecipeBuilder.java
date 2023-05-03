@@ -19,6 +19,7 @@ package me.desht.pneumaticcraft.datagen.recipe;
 
 import me.desht.pneumaticcraft.common.core.ModRecipeSerializers;
 import net.minecraft.data.recipes.FinishedRecipe;
+import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.ShapedRecipeBuilder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.ItemLike;
@@ -27,7 +28,7 @@ import java.util.function.Consumer;
 
 public class CompressorUpgradeRecipeBuilder extends ShapedRecipeBuilder {
 	public CompressorUpgradeRecipeBuilder(ItemLike pResult, int pCount) {
-		super(pResult, pCount);
+		super(RecipeCategory.MISC, pResult, pCount);
 	}
 
     public static CompressorUpgradeRecipeBuilder shapedRecipe(ItemLike resultIn) {
