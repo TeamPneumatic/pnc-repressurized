@@ -20,8 +20,10 @@ package me.desht.pneumaticcraft.common.core;
 import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.common.fluid.*;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.client.extensions.common.IClientFluidTypeExtensions;
+import net.minecraftforge.common.SoundActions;
 import net.minecraftforge.fluids.FluidType;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -114,6 +116,11 @@ public class ModFluids {
     }
 
     private static FluidType.Properties standardProps(int density, int viscosity) {
-        return FluidType.Properties.create().density(density).viscosity(viscosity);
+        return FluidType.Properties.create()
+                .density(density)
+                .viscosity(viscosity)
+                .sound(SoundActions.BUCKET_EMPTY, SoundEvents.BUCKET_EMPTY)
+                .sound(SoundActions.BUCKET_FILL, SoundEvents.BUCKET_FILL)
+                .sound(SoundActions.FLUID_VAPORIZE, SoundEvents.FIRE_EXTINGUISH);
     }
 }
