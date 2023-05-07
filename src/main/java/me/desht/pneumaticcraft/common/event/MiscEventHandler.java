@@ -269,7 +269,7 @@ public class MiscEventHandler {
         PneumaticRegistry.getInstance().getMiscHelpers().registerXPFluid(FluidIngredient.of(1, PneumaticCraftTags.Fluids.EXPERIENCE), 20);
     }
 
-    @SubscribeEvent(priority = EventPriority.LOWEST)
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onMobSpawn(LivingSpawnEvent.SpecialSpawn event) {
         if (event.getSpawner() != null) {
             // tag any mob spawned by a vanilla Spawner (rather than naturally) as a "defender"

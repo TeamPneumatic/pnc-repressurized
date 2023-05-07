@@ -135,10 +135,9 @@ public class PressurizedSpawnerBlockEntity extends AbstractAirHandlingBlockEntit
                 int entityCount = serverworld.getEntitiesOfClass(Mob.class, rangeManager.getExtents()).size();
                 if (entityCount >= MAX_NEARBY_ENTITIES) return false;
                 entity.moveTo(x, y, z, level.random.nextFloat() * 360.0F, 0.0F);
-                if (ForgeEventFactory.doSpecialSpawn(mobentity, level, (float)entity.getX(), (float)entity.getY(), (float)entity.getZ(), null, MobSpawnType.SPAWNER)) {
-                    return false;
+                if (!ForgeEventFactory.doSpecialSpawn(mobentity, level, (float)entity.getX(), (float)entity.getY(), (float)entity.getZ(), null, MobSpawnType.SPAWNER)) {
+                    mobentity.finalizeSpawn(serverworld, level.getCurrentDifficultyAt(entity.blockPosition()), MobSpawnType.SPAWNER, null, null);
                 }
-                mobentity.finalizeSpawn(serverworld, level.getCurrentDifficultyAt(entity.blockPosition()), MobSpawnType.SPAWNER, null, null);
                 if (!serverworld.tryAddFreshEntityWithPassengers(entity)) return false;
                 level.levelEvent(LevelEvent.PARTICLES_MOBBLOCK_SPAWN, worldPosition, 0);
                 mobentity.spawnAnim();
