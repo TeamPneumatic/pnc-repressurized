@@ -56,15 +56,15 @@ public class TrackerBlacklistManager {
         }
     }
 
-    static boolean isEnergyBlacklisted(BlockEntity te) {
+    public static boolean isEnergyBlacklisted(BlockEntity te) {
         return ENERGY_BLACKLIST.contains(te.getType());
     }
 
-    static boolean isInventoryBlacklisted(BlockEntity te) {
+    public static boolean isInventoryBlacklisted(BlockEntity te) {
         return INVENTORY_BLACKLIST.contains(te.getType());
     }
 
-    static boolean isFluidBlacklisted(BlockEntity te) {
+    public static boolean isFluidBlacklisted(BlockEntity te) {
         return FLUID_BLACKLIST.contains(te.getType());
     }
 }

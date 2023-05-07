@@ -31,6 +31,7 @@ import me.desht.pneumaticcraft.client.gui.pneumatic_armor.options.BlockTrackOpti
 import me.desht.pneumaticcraft.client.gui.widget.WidgetKeybindCheckBox;
 import me.desht.pneumaticcraft.client.pneumatic_armor.ClientArmorRegistry;
 import me.desht.pneumaticcraft.client.pneumatic_armor.block_tracker.BlockTrackHandler;
+import me.desht.pneumaticcraft.client.pneumatic_armor.block_tracker.TrackerBlacklistManager;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.RenderBlockTarget;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModUpgrades;
@@ -109,23 +110,27 @@ public class BlockTrackerClientHandler extends IArmorUpgradeClientHandler.Abstra
             BlockEntity te = world.getBlockEntity(pos);
 
             if (!MinecraftForge.EVENT_BUS.post(new BlockTrackEvent(world, pos, te))) {
-                if (te != null && te.getCapability(ForgeCapabilities.ITEM_HANDLER).isPresent()) {
-                    searcher.onBlockTrackStart(te);
-                }
-                List<IBlockTrackEntry> entries = BlockTrackHandler.getInstance().getEntriesForCoordinate(world, pos, te);
-                if (!entries.isEmpty()) {
-                    entries.forEach(entry -> blockTypeCountPartial.mergeInt(entry.getEntryID(), 1, Integer::sum));
-
-                    // there's at least one tracker type relevant to this blockpos
-                    RenderBlockTarget blockTarget = blockTargets.get(pos);
-                    if (blockTarget != null) {
-                        // we already have a tracker active for this pos so just ensure that it stays valid
-                        blockTarget.markValid();
-                        blockTarget.setTileEntity(te);
-                    } else if (pos.distSqr(player.blockPosition()) < blockTrackRangeSq) {
-                        // no tracker currently active for this pos - add a new one
-                        addBlockTarget(new RenderBlockTarget(world, player, pos.immutable(), te, this));
+                try {
+                    if (te != null && !TrackerBlacklistManager.isInventoryBlacklisted(te) && te.getCapability(ForgeCapabilities.ITEM_HANDLER).isPresent()) {
+                        searcher.onBlockTrackStart(te);
                     }
+                    List<IBlockTrackEntry> entries = BlockTrackHandler.getInstance().getEntriesForCoordinate(world, pos, te);
+                    if (!entries.isEmpty()) {
+                        entries.forEach(entry -> blockTypeCountPartial.mergeInt(entry.getEntryID(), 1, Integer::sum));
+
+                        // there's at least one tracker type relevant to this blockpos
+                        RenderBlockTarget blockTarget = blockTargets.get(pos);
+                        if (blockTarget != null) {
+                            // we already have a tracker active for this pos so just ensure that it stays valid
+                            blockTarget.markValid();
+                            blockTarget.setTileEntity(te);
+                        } else if (pos.distSqr(player.blockPosition()) < blockTrackRangeSq) {
+                            // no tracker currently active for this pos - add a new one
+                            addBlockTarget(new RenderBlockTarget(world, player, pos.immutable(), te, this));
+                        }
+                    }
+                } catch (Throwable e) {
+                    TrackerBlacklistManager.addInventoryTEToBlacklist(te, e);
                 }
             }
         }
