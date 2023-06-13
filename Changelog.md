@@ -6,6 +6,16 @@ Changes are in reverse chronological order; newest changes at the top.
 
 # Minecraft 1.19.2
 
+## [4.3.5]
+
+### Added
+* Harvesting Drones now know how to harvest Bamboo
+
+### Fixed
+* Fixed a client crash with the Block Tracker when scanning certain block entities
+* Fixed a couple of subtle issues related to spawning mobs while extracting spawners
+* Fixed a couple of missing translations for armor upgrades in the Charging Station GUI
+
 ## [4.3.4]
 
 ### Added
