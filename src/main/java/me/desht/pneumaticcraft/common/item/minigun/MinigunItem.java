@@ -55,7 +55,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.MenuProvider;
-import net.minecraft.world.damagesource.EntityDamageSource;
+import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
@@ -223,7 +223,7 @@ public class MinigunItem extends PressurizableItem implements
     }
 
     @Override
-    public void onUsingTick(ItemStack stack, LivingEntity entity, int count) {
+    public void onUseTick(Level pLevel, LivingEntity entity, ItemStack stack, int pRemainingUseDuration) {
         if (!(entity instanceof Player player)) return;
 
         MagazineHandler magazineHandler = getMagazine(stack);
@@ -336,7 +336,7 @@ public class MinigunItem extends PressurizableItem implements
         @SubscribeEvent
         public static void onLivingAttack(LivingAttackEvent event) {
             if (event.getEntity() instanceof Player player
-                    && event.getSource() instanceof EntityDamageSource d && d.isThorns()) {
+                    && event.getSource().getEntity() != null && event.getSource().is(DamageTypes.THORNS)) {
                 // don't take thorns damage when attacking with minigun (it applies direct damage, but it's effectively ranged...)
                 ItemStack stack = player.getMainHandItem();
                 if (stack.getItem() instanceof MinigunItem) {

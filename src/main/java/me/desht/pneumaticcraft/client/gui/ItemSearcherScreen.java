@@ -125,7 +125,6 @@ public class ItemSearcherScreen extends AbstractContainerScreen<ItemSearcherMenu
         searchField.setResponder(s -> textFieldResponder());
         addRenderableWidget(searchField);
         setFocused(searchField);
-        searchField.setFocus(true);
 
         scrollArea = new Rect2i(leftPos + 156, topPos + 48, 14, 112);
 

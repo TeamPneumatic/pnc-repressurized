@@ -88,7 +88,7 @@ public class HeatSinkBlock extends AbstractPneumaticCraftBlock implements ColorH
         PneumaticCraftUtils.getTileEntityAt(world, pos, HeatSinkBlockEntity.class).ifPresent(te -> {
             double temp = te.getHeatExchanger().getTemperature();
             if (temp > 333) { // +60C
-                entity.hurt(DamageSource.HOT_FLOOR, 1f + ((float) temp - 333) * 0.05f);
+                entity.hurt(entity.damageSources().hotFloor(), 1f + ((float) temp - 333) * 0.05f);
                 if (temp > 373) { // +100C
                     entity.setSecondsOnFire(3);
                 }
@@ -105,7 +105,7 @@ public class HeatSinkBlock extends AbstractPneumaticCraftBlock implements ColorH
                         // more damage if cold-vulnerable, less damage if !canFreeze() (typically armour protection)
                         float dmg = entity.getType().is(EntityTypeTags.FREEZE_HURTS_EXTRA_TYPES) ? 5 : 2;
                         if (!canFreeze) dmg /= 2f;
-                        entity.hurt(DamageSource.FREEZE, dmg);
+                        entity.hurt(entity.damageSources().freeze(), dmg);
                     }
                 }
             }

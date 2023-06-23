@@ -31,7 +31,6 @@ import me.desht.pneumaticcraft.common.item.logistics.*;
 import me.desht.pneumaticcraft.common.item.minigun.*;
 import me.desht.pneumaticcraft.common.semiblock.SemiblockItem;
 import me.desht.pneumaticcraft.common.tubemodules.*;
-import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.material.Fluid;
@@ -114,22 +113,22 @@ public class ModItems {
             JackHammerItem::new);
 
     public static final RegistryObject<Item> COMPRESSED_IRON_HELMET = register("compressed_iron_helmet",
-            () -> new CompressedIronArmorItem(EquipmentSlot.HEAD));
+            () -> new CompressedIronArmorItem(ArmorItem.Type.HELMET));
     public static final RegistryObject<Item> COMPRESSED_IRON_CHESTPLATE = register("compressed_iron_chestplate",
-            () -> new CompressedIronArmorItem(EquipmentSlot.CHEST));
+            () -> new CompressedIronArmorItem(ArmorItem.Type.CHESTPLATE));
     public static final RegistryObject<Item> COMPRESSED_IRON_LEGGINGS = register("compressed_iron_leggings",
-            () -> new CompressedIronArmorItem(EquipmentSlot.LEGS));
+            () -> new CompressedIronArmorItem(ArmorItem.Type.LEGGINGS));
     public static final RegistryObject<Item> COMPRESSED_IRON_BOOTS = register("compressed_iron_boots",
-            () -> new CompressedIronArmorItem(EquipmentSlot.FEET));
+            () -> new CompressedIronArmorItem(ArmorItem.Type.BOOTS));
 
     public static final RegistryObject<PneumaticArmorItem> PNEUMATIC_HELMET = register("pneumatic_helmet",
-            () -> new PneumaticArmorItem(EquipmentSlot.HEAD));
+            () -> new PneumaticArmorItem(ArmorItem.Type.HELMET));
     public static final RegistryObject<PneumaticArmorItem> PNEUMATIC_CHESTPLATE = register("pneumatic_chestplate",
-            () -> new PneumaticArmorItem(EquipmentSlot.CHEST));
+            () -> new PneumaticArmorItem(ArmorItem.Type.CHESTPLATE));
     public static final RegistryObject<PneumaticArmorItem> PNEUMATIC_LEGGINGS = register("pneumatic_leggings",
-            () -> new PneumaticArmorItem(EquipmentSlot.LEGS));
+            () -> new PneumaticArmorItem(ArmorItem.Type.LEGGINGS));
     public static final RegistryObject<PneumaticArmorItem> PNEUMATIC_BOOTS = register("pneumatic_boots",
-            () -> new PneumaticArmorItem(EquipmentSlot.FEET));
+            () -> new PneumaticArmorItem(ArmorItem.Type.BOOTS));
 
     public static final RegistryObject<AssemblyProgramItem> ASSEMBLY_PROGRAM_LASER = register(AssemblyRecipe.AssemblyProgramType.LASER);
     public static final RegistryObject<AssemblyProgramItem> ASSEMBLY_PROGRAM_DRILL = register(AssemblyRecipe.AssemblyProgramType.DRILL);

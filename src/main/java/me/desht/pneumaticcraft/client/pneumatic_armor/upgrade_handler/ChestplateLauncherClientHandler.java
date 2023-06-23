@@ -93,7 +93,6 @@ public class ChestplateLauncherClientHandler extends IArmorUpgradeClientHandler.
         Window mw = Minecraft.getInstance().getWindow();
 
         matrixStack.pushPose();
-        RenderSystem.disableTexture();
         if (ClientUtils.getClientPlayer().getMainArm() == HumanoidArm.LEFT) {
             matrixStack.translate(mw.getGuiScaledWidth() - 30, mw.getGuiScaledHeight() - 30, -90);
             matrixStack.scale(-1, 1, 1);
@@ -104,7 +103,6 @@ public class ChestplateLauncherClientHandler extends IArmorUpgradeClientHandler.
         float progress = Math.min(100f, (launcherProgress + partialTicks) * 100f / MAX_PROGRESS);
         ProgressBarRenderer.render2d(matrixStack, 0, 0, mw.getGuiScaledWidth() / 6f - 30, 12, 0,
                 progress, 0xAA0000A0, 0xAA40A0FF);
-        RenderSystem.enableTexture();
         matrixStack.popPose();
     }
 }

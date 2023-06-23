@@ -19,5 +19,6 @@
   ],
   "result": {
     "item": "pneumaticcraft:elytra_upgrade"
-  }
+  },
+  "show_notification": true
 }

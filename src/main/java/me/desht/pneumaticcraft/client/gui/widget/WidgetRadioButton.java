@@ -61,7 +61,7 @@ public class WidgetRadioButton extends AbstractWidget implements ITooltipProvide
     }
 
     @Override
-    public void renderButton(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+    public void renderWidget(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
         int x = getX(), y = getY();
         drawCircle(matrixStack, x + BUTTON_WIDTH / 2f, y + BUTTON_HEIGHT / 2f, BUTTON_WIDTH / 2f, active ? 0xFFA0A0A0 : 0xFF999999);
         drawCircle(matrixStack, x + BUTTON_WIDTH / 2f, y + BUTTON_HEIGHT / 2f, BUTTON_WIDTH / 2f - 1, active ? 0XFF202020 : 0xFFAAAAAA);
@@ -88,7 +88,6 @@ public class WidgetRadioButton extends AbstractWidget implements ITooltipProvide
         int[] cols = RenderUtils.decomposeColor(color);
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
         RenderSystem.enableBlend();
-        RenderSystem.disableTexture();
         RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
         wr.begin(VertexFormat.Mode.TRIANGLE_FAN, DefaultVertexFormat.POSITION_COLOR);
         Matrix4f posMat = matrixStack.last().pose();
@@ -98,7 +97,6 @@ public class WidgetRadioButton extends AbstractWidget implements ITooltipProvide
             wr.vertex(posMat, x + sin * radius, y + cos * radius, 0f).color(cols[1], cols[2], cols[3], cols[0]).endVertex();
         }
         Tesselator.getInstance().end();
-        RenderSystem.enableTexture();
         RenderSystem.disableBlend();
     }
 

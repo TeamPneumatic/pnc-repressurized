@@ -30,8 +30,8 @@ import javax.annotation.Nullable;
 public class CompressedIronArmorItem extends ArmorItem {
     private static final ArmorMaterial COMPRESSED_IRON_ARMOR_MATERIAL = new CompressedIronArmorMaterial(0.075f);
 
-    public CompressedIronArmorItem(EquipmentSlot slot) {
-        super(COMPRESSED_IRON_ARMOR_MATERIAL, slot, ModItems.defaultProps());
+    public CompressedIronArmorItem(ArmorItem.Type type) {
+        super(COMPRESSED_IRON_ARMOR_MATERIAL, type, ModItems.defaultProps());
     }
 
     @Nullable

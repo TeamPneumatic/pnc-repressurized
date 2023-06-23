@@ -21,5 +21,6 @@
   ],
   "result": {
     "item": "pneumaticcraft:thermopneumatic_processing_plant"
-  }
+  },
+  "show_notification": true
 }

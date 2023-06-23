@@ -81,7 +81,7 @@ public class JEIRefineryCategory extends AbstractPNCCategory<RefineryRecipe> {
         WidgetTemperature w = tempWidgets.computeIfAbsent(recipe.getId(),
                 id -> WidgetTemperature.fromOperatingRange(26, 18, recipe.getOperatingTemp()));
         w.setTemperature(w.getTotalRange().getMin() + (w.getTotalRange().getMax() - w.getTotalRange().getMin()) * tickTimer.getValue() / tickTimer.getMaxValue());
-        w.renderButton(matrixStack, (int)mouseX, (int)mouseY, 0f);
+        w.renderWidget(matrixStack, (int)mouseX, (int)mouseY, 0f);
     }
 
     @Override

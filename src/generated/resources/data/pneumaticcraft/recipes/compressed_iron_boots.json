@@ -15,5 +15,6 @@
   ],
   "result": {
     "item": "pneumaticcraft:compressed_iron_boots"
-  }
+  },
+  "show_notification": true
 }

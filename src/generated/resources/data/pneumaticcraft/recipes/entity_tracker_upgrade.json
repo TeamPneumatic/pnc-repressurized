@@ -19,5 +19,6 @@
   ],
   "result": {
     "item": "pneumaticcraft:entity_tracker_upgrade"
-  }
+  },
+  "show_notification": true
 }

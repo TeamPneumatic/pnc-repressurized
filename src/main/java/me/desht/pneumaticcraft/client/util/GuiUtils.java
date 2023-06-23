@@ -214,7 +214,6 @@ public class GuiUtils {
 
     public static void drawTexture(PoseStack matrixStack, ResourceLocation texture, int x, int y) {
         bindTexture(texture);
-        RenderSystem.enableTexture();
         Matrix4f posMat = matrixStack.last().pose();
         BufferBuilder builder = Tesselator.getInstance().getBuilder();
         builder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);

@@ -22,5 +22,6 @@
   ],
   "result": {
     "item": "pneumaticcraft:jet_boots_upgrade_3"
-  }
+  },
+  "show_notification": true
 }

@@ -19,5 +19,6 @@
   ],
   "result": {
     "item": "pneumaticcraft:coordinate_tracker_upgrade"
-  }
+  },
+  "show_notification": true
 }

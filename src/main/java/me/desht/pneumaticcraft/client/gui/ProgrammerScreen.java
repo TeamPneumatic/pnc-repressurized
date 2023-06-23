@@ -358,7 +358,7 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
         showingAllWidgets = !showingAllWidgets;
         allWidgetsButton.setMessage(showingAllWidgets ? TDR : TUL);
         updateVisibleProgWidgets();
-        filterField.setFocus(showingAllWidgets);
+        if (showingAllWidgets) setFocused(filterField);
     }
 
     private void updateDifficulty(WidgetDifficulty difficulty) {
@@ -477,7 +477,6 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
             if (showingAllWidgets && draggingWidget != null) toggleShowWidgets();
         }
         // draw widgets in the widget tray
-        RenderSystem.enableTexture();
         RenderSystem.enableBlend();
         RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
         for (int i = 0; i < visibleSpawnWidgets.size(); i++) {
@@ -1306,12 +1305,12 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
         }
 
         @Override
-        public void renderButton(PoseStack matrixStack, int x, int y, float partialTicks) {
+        public void renderWidget(PoseStack matrixStack, int x, int y, float partialTicks) {
             // this is needed to force the textfield to draw on top of any
             // widgets in the programming area
             matrixStack.pushPose();
             matrixStack.translate(0, 0, 300);
-            super.renderButton(matrixStack, x, y, partialTicks);
+            super.renderWidget(matrixStack, x, y, partialTicks);
             matrixStack.popPose();
         }
     }

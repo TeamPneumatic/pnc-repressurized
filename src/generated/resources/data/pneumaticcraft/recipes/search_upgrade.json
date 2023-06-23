@@ -19,5 +19,6 @@
   ],
   "result": {
     "item": "pneumaticcraft:search_upgrade"
-  }
+  },
+  "show_notification": true
 }

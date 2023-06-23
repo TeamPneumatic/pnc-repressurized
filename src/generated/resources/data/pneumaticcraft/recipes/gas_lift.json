@@ -21,5 +21,6 @@
   ],
   "result": {
     "item": "pneumaticcraft:gas_lift"
-  }
+  },
+  "show_notification": true
 }

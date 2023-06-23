@@ -82,8 +82,8 @@ public class ProgWidgetConditionScreen<T extends ProgWidgetCondition> extends Pr
 
             textField = new WidgetTextFieldNumber(font, guiLeft + baseX, guiTop + baseY + 40, 50, 11)
                     .setValue(progWidget.getRequiredCount()).setRange(0, Integer.MAX_VALUE);
-            textField.setFocus(true);
             textField.setResponder(s -> progWidget.setRequiredCount(textField.getIntValue()));
+            setInitialFocus(textField);
             addRenderableWidget(textField);
         }
 

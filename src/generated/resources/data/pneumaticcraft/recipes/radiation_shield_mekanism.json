@@ -27,7 +27,8 @@
         ],
         "result": {
           "item": "pneumaticcraft:radiation_shielding_upgrade"
-        }
+        },
+        "show_notification": true
       }
     }
   ]

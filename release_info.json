@@ -4,8 +4,7 @@
     "1.19.3-recommended": "1.19.3-5.0.1",
     "1.19.3-latest": "1.19.3-5.0.1"
   },
-  "1.19.3": {
-    "1.19.3-5.0.0": "https://github.com/TeamPneumatic/pnc-repressurized/blob/1.19.3/Changelog.md#500",
-    "1.19.3-5.0.1": "https://github.com/TeamPneumatic/pnc-repressurized/blob/1.19.3/Changelog.md#501"
+  "1.19.4": {
+    "1.19.3-5.1.0": "https://github.com/TeamPneumatic/pnc-repressurized/blob/1.19.4/Changelog.md#510"
   }
 }

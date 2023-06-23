@@ -63,7 +63,7 @@ public class RenderTumblingBlock extends EntityRenderer<TumblingBlockEntity> {
                     matrixStackIn.translate(-0.5, -0.5, -0.5);
                 }
 
-                BlockPos blockpos = new BlockPos(entity.getX(), entity.getBoundingBox().maxY, entity.getZ());
+                BlockPos blockpos = BlockPos.containing(entity.getX(), entity.getBoundingBox().maxY, entity.getZ());
                 BlockRenderDispatcher renderer = Minecraft.getInstance().getBlockRenderer();
                 BakedModel blockModel = renderer.getBlockModel(state);
                 for (RenderType type : blockModel.getRenderTypes(state, world.getRandom(), ModelData.EMPTY)) {

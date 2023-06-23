@@ -26,10 +26,10 @@ import me.desht.pneumaticcraft.common.block.entity.AphorismTileBlockEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.block.model.ItemTransforms.TransformType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.world.item.ItemDisplayContext;
 
 import java.util.regex.Pattern;
 
@@ -75,12 +75,12 @@ public class AphorismTileRenderer implements BlockEntityRenderer<AphorismTileBlo
                 matrixStack.translate(0, 8 * (mid - i), 0);
                 matrixStack.scale(ICON_SCALE, ICON_SCALE, ICON_SCALE);
                 Minecraft.getInstance().getItemRenderer()
-                        .renderStatic(te.getIconAt(i), TransformType.FIXED, combinedLight, OverlayTexture.NO_OVERLAY, matrixStack, buffer, 0);
+                        .renderStatic(te.getIconAt(i), ItemDisplayContext.FIXED, combinedLight, OverlayTexture.NO_OVERLAY, matrixStack, buffer, te.getLevel(), 0);
                 matrixStack.popPose();
             } else {
                 String textLine;
                 if (editedLine == i) {
-                    String cursor = showCursor ? "\u25a0" : "\u25a1";
+                    String cursor = showCursor ? "■" : "□";
                     int cx = Math.min(editor.cursorX, textLines[i].length());
                     textLine = textLines[i].substring(0, cx) + cursor + textLines[i].substring(cx);
                 } else {
@@ -91,7 +91,7 @@ public class AphorismTileRenderer implements BlockEntityRenderer<AphorismTileBlo
                 }
                 float x = -font.width(textLine) / 2f;
                 float y = -(textLines.length * fh) / 2f + i * fh + 1;
-                font.drawInBatch(textLine, x, y, 0xFF000000, false, matrixStack.last().pose(), buffer, false, 0, combinedLight);
+                font.drawInBatch(textLine, x, y, 0xFF000000, false, matrixStack.last().pose(), buffer, Font.DisplayMode.NORMAL, 0, combinedLight);
             }
         }
 

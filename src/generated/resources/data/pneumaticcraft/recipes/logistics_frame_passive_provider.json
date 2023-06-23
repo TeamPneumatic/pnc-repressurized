@@ -20,5 +20,6 @@
   "result": {
     "count": 8,
     "item": "pneumaticcraft:logistics_frame_passive_provider"
-  }
+  },
+  "show_notification": true
 }

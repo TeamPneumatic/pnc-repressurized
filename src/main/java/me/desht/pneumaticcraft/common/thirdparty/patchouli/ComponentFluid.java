@@ -50,7 +50,7 @@ public class ComponentFluid implements ICustomComponent {
             tankWidget.setFluid(fluidStacks.get(ctx.getTicksInBook() / 20 % fluidStacks.size()));
         }
         if (tankWidget.getTank().getCapacity() > 0 && !tankWidget.getTank().getFluid().isEmpty()) {
-            tankWidget.renderButton(matrixStack, mouseX, mouseY, pticks);
+            tankWidget.renderWidget(matrixStack, mouseX, mouseY, pticks);
             if (ctx.isAreaHovered(mouseX, mouseY, tankWidget.getX(), tankWidget.getY(), tankWidget.getWidth(), tankWidget.getHeight())) {
                 List<Component> tooltip = new ArrayList<>();
                 tankWidget.addTooltip(mouseX, mouseY, tooltip, Screen.hasShiftDown());

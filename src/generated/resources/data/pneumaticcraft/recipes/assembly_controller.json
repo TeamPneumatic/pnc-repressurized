@@ -19,5 +19,6 @@
   ],
   "result": {
     "item": "pneumaticcraft:assembly_controller"
-  }
+  },
+  "show_notification": true
 }

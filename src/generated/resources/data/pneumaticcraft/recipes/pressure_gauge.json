@@ -16,5 +16,6 @@
   ],
   "result": {
     "item": "pneumaticcraft:pressure_gauge"
-  }
+  },
+  "show_notification": true
 }

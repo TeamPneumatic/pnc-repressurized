@@ -31,5 +31,6 @@
   ],
   "result": {
     "item": "pneumaticcraft:flux_compressor"
-  }
+  },
+  "show_notification": true
 }

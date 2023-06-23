@@ -30,6 +30,7 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 
 public class ChargingStationRenderer implements BlockEntityRenderer<ChargingStationBlockEntity> {
@@ -54,7 +55,7 @@ public class ChargingStationRenderer implements BlockEntityRenderer<ChargingStat
 
             ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
             BakedModel bakedModel = itemRenderer.getModel(renderStack, te.getLevel(), null, 0);
-            itemRenderer.render(renderStack, ItemTransforms.TransformType.FIXED, true, matrixStackIn, bufferIn, combinedLightIn, combinedOverlayIn, bakedModel);
+            itemRenderer.render(renderStack, ItemDisplayContext.FIXED, true, matrixStackIn, bufferIn, combinedLightIn, combinedOverlayIn, bakedModel);
         }
 
         matrixStackIn.popPose();

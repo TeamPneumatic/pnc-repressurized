@@ -113,7 +113,6 @@ public class MicromissileScreen extends AbstractPneumaticCraftScreen {
         textField = new WidgetTextField(font, textBoxX, guiTop + 128, textBoxWidth, 10);
         textField.setValue(entityFilter);
         setFocused(textField);
-        textField.setFocus(true);
         textField.setResponder(s -> {
             entityFilter = s;
             if (validateEntityFilter(entityFilter)) {

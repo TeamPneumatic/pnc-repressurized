@@ -41,14 +41,14 @@ public class WidgetTextField extends EditBox implements ITooltipProvider {
     }
 
     @Override
-    public void renderButton(PoseStack matrixStack, int mouseX, int mouseY, float partialTick) {
+    public void renderWidget(PoseStack matrixStack, int mouseX, int mouseY, float partialTick) {
         String oldText = getValue();
         int oldCursorPos = getCursorPosition();
         if (passwordBox) {
             setValue(StringUtils.repeat('*', oldText.length()));
             moveCursorTo(oldCursorPos);
         }
-        super.renderButton(matrixStack, mouseX, mouseY, partialTick);
+        super.renderWidget(matrixStack, mouseX, mouseY, partialTick);
         if (passwordBox) {
             setValue(oldText);
             moveCursorTo(oldCursorPos);

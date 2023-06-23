@@ -16,5 +16,6 @@
   ],
   "result": {
     "item": "pneumaticcraft:air_grate_module"
-  }
+  },
+  "show_notification": true
 }

@@ -67,7 +67,7 @@ public class ItemLaunching {
             launchedEntity.stopRiding();
         }
 
-        BlockPos trackPos = new BlockPos(initialPos);
+        BlockPos trackPos = BlockPos.containing(initialPos);
 
         if (launchedEntity instanceof Boat) {
             // Boats are spawned slightly above the player to not push them down upon launching

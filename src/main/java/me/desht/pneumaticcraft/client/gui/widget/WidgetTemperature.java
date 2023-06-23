@@ -89,7 +89,7 @@ public class WidgetTemperature extends AbstractWidget implements ITooltipProvide
     }
 
     @Override
-    public void renderButton(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+    public void renderWidget(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
         if (this.visible) {
             GuiUtils.bindTexture(Textures.WIDGET_TEMPERATURE);
 

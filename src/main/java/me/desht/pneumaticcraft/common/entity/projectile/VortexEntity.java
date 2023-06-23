@@ -31,6 +31,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.LeavesBlock;
+import net.minecraft.world.level.block.SnowLayerBlock;
 import net.minecraft.world.level.block.WebBlock;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
@@ -120,7 +121,7 @@ public class VortexEntity extends ThrowableProjectile {
     }
 
     private boolean vortexBreakable(Block block) {
-        return block instanceof IPlantable || block instanceof LeavesBlock || block instanceof WebBlock;
+        return block instanceof IPlantable || block instanceof LeavesBlock || block instanceof WebBlock || block instanceof SnowLayerBlock;
     }
 
     @Override

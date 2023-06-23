@@ -15,5 +15,6 @@
   ],
   "result": {
     "item": "pneumaticcraft:display_table"
-  }
+  },
+  "show_notification": true
 }

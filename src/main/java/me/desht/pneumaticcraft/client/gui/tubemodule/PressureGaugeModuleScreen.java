@@ -138,7 +138,6 @@ public class PressureGaugeModuleScreen extends AbstractTubeModuleScreen<Abstract
         bufferBuilder.begin(VertexFormat.Mode.DEBUG_LINE_STRIP, DefaultVertexFormat.POSITION_COLOR);
         RenderSystem.enableBlend();
         RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-        RenderSystem.disableTexture();
         Matrix4f posMat = matrixStack.last().pose();
         for (int i = 0; i < 16; i++) {
             float y = graphHighY + (graphLowY - graphHighY) * (15 - i) / 15f;
@@ -146,7 +145,6 @@ public class PressureGaugeModuleScreen extends AbstractTubeModuleScreen<Abstract
             bufferBuilder.vertex(posMat, x, y, 90f).color(0.25f + i * 0.05f, 0f, 0f, 1.0f).endVertex();
         }
         Tesselator.getInstance().end();
-        RenderSystem.enableTexture();
         RenderSystem.disableBlend();
 
     }

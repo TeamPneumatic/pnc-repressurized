@@ -9,6 +9,7 @@ import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.block.entity.AssemblyControllerBlockEntity;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.CubeListBuilder;
@@ -57,7 +58,7 @@ public class AssemblyControllerRenderer extends AbstractBlockEntityModelRenderer
         matrixStackIn.translate(-0.23D, 0.50D, -0.04D);
         matrixStackIn.mulPose(Axis.XP.rotationDegrees(-34));
         matrixStackIn.scale(TEXT_SIZE, TEXT_SIZE, TEXT_SIZE);
-        Minecraft.getInstance().font.drawInBatch("> " + te.displayedText, 1, 4, 0xFF4ce568, false,  matrixStackIn.last().pose(), bufferIn, false, 0, combinedLightIn);
+        Minecraft.getInstance().font.drawInBatch("> " + te.displayedText, 1, 4, 0xFF4ce568, false,  matrixStackIn.last().pose(), bufferIn, Font.DisplayMode.NORMAL, 0, combinedLightIn);
 
         // possible problem icon
         if (te.hasProblem) {

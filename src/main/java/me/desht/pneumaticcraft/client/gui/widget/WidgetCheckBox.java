@@ -63,7 +63,7 @@ public class WidgetCheckBox extends AbstractWidget implements ICheckboxWidget, I
     }
 
     @Override
-    public void renderButton(PoseStack matrixStack, int mouseX, int mouseY, float partialTick) {
+    public void renderWidget(PoseStack matrixStack, int mouseX, int mouseY, float partialTick) {
         if (visible) {
             int x = getX();
             int y = getY();

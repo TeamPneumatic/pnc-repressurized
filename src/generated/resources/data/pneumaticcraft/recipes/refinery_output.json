@@ -19,5 +19,6 @@
   ],
   "result": {
     "item": "pneumaticcraft:refinery_output"
-  }
+  },
+  "show_notification": true
 }

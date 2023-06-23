@@ -19,11 +19,11 @@ package me.desht.pneumaticcraft.common.util.fakeplayer;
 
 import me.desht.pneumaticcraft.api.drone.IDrone;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.items.ItemStackHandler;
 
@@ -114,7 +114,8 @@ public class DroneItemHandler extends ItemStackHandler {
                     // using super method here to avoid unnecessary copy of the item back to the fake player again
                     super.setStackInSlot(slot, stack);
                 } else {
-                    PneumaticCraftUtils.dropItemOnGround(stack, holder.world(), new BlockPos(holder.getDronePos()));
+                    Vec3 v = holder.getDronePos();
+                    PneumaticCraftUtils.dropItemOnGround(stack, holder.world(), v.x(), v.y(), v.z());
                 }
                 fakeInv.setItem(slot, ItemStack.EMPTY);
             }

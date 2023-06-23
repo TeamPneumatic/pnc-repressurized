@@ -22,5 +22,6 @@
   ],
   "result": {
     "item": "pneumaticcraft:camo_applicator"
-  }
+  },
+  "show_notification": true
 }

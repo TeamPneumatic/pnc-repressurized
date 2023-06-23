@@ -19,5 +19,6 @@
   ],
   "result": {
     "item": "pneumaticcraft:network_registry"
-  }
+  },
+  "show_notification": true
 }

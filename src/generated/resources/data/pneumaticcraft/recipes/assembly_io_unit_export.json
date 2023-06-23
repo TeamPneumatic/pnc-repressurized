@@ -22,5 +22,6 @@
   ],
   "result": {
     "item": "pneumaticcraft:assembly_io_unit_export"
-  }
+  },
+  "show_notification": true
 }

@@ -49,7 +49,7 @@ public class PneumaticArmorUpgradeScreen extends AbstractUpgradeManagerScreen {
         super(container, inv, displayString);
 
         registryName = PneumaticCraftUtils.getRegistryName(itemStack.getItem()).orElseThrow().getPath();
-        equipmentSlot = ((ArmorItem) itemStack.getItem()).getSlot();
+        equipmentSlot = ((ArmorItem) itemStack.getItem()).getEquipmentSlot();
     }
 
     @Override

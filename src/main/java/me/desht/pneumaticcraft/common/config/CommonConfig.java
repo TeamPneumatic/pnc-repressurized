@@ -91,6 +91,7 @@ public class CommonConfig {
     public static class Micromissiles {
         public ForgeConfigSpec.DoubleValue baseExplosionDamage;
         public ForgeConfigSpec.BooleanValue damageTerrain;
+        public ForgeConfigSpec.BooleanValue startFires;
         public ForgeConfigSpec.IntValue launchCooldown;
         public ForgeConfigSpec.IntValue lifetime;
         public ForgeConfigSpec.IntValue maxLifetime;
@@ -399,9 +400,13 @@ public class CommonConfig {
                 .translation("pneumaticcraft.config.common.micromissile_properties.base_explosion_damage")
                 .defineInRange("base_explosion_damage", 1, 0, Double.MAX_VALUE);
         micromissiles.damageTerrain = builder
-                .comment("Do micromissile explosions cause terrain damage? Note: when set to true, the 'tntExplosionDropDecay' gamerule is used to determin block drops.")
+                .comment("Do micromissile explosions cause terrain damage? Note: when set to true, the 'tntExplosionDropDecay' gamerule is used to determine block drops.")
                 .translation("pneumaticcraft.config.common.micromissile_properties.damage_terrain")
                 .define("damage_terrain", false);
+        micromissiles.startFires = builder
+                .comment("Do micromissile explosions start fires?")
+                .translation("pneumaticcraft.config.common.micromissile_properties.start_fires")
+                .define("start_fires", false);
         micromissiles.launchCooldown = builder
                 .comment("Cooldown for missile firing in ticks")
                 .translation("pneumaticcraft.config.common.micromissile_properties.launch_cooldown")

@@ -15,5 +15,6 @@
   ],
   "result": {
     "item": "pneumaticcraft:manometer"
-  }
+  },
+  "show_notification": true
 }

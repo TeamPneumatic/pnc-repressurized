@@ -31,6 +31,7 @@ import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 
@@ -65,7 +66,7 @@ public class DisplayTableRenderer implements BlockEntityRenderer<DisplayTableBlo
             matrixStackIn.scale(scale, scale, scale);
             ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
             BakedModel bakedModel = itemRenderer.getModel(stack, Minecraft.getInstance().level, null, 0);
-            itemRenderer.render(stack, ItemTransforms.TransformType.FIXED, true, matrixStackIn, bufferIn, combinedLightIn, combinedOverlayIn, bakedModel);
+            itemRenderer.render(stack, ItemDisplayContext.FIXED, true, matrixStackIn, bufferIn, combinedLightIn, combinedOverlayIn, bakedModel);
             matrixStackIn.popPose();
         }
     }

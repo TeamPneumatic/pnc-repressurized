@@ -95,7 +95,7 @@ public class WidgetVerticalScrollbar extends AbstractWidget implements ICanRende
     }
 
     @Override
-    public void renderButton(PoseStack matrixStack, int mouseX, int mouseY, float partialTick) {
+    public void renderWidget(PoseStack matrixStack, int mouseX, int mouseY, float partialTick) {
         if (visible) {
             int x = getX(), y = getY();
             GuiUtils.bindTexture(Textures.WIDGET_VERTICAL_SCROLLBAR);

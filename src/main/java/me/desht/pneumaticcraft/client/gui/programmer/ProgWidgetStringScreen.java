@@ -46,8 +46,7 @@ public class ProgWidgetStringScreen<T extends ProgWidgetText> extends AbstractPr
         };
         textfield.setMaxLength(1000);
         textfield.setValue(progWidget.string);
-        textfield.setFocus(true);
-        setFocused(textfield);
+        setInitialFocus(textfield);
         addRenderableWidget(textfield);
     }
 

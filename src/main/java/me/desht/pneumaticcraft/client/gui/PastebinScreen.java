@@ -91,12 +91,14 @@ public class PastebinScreen extends AbstractPneumaticCraftScreen {
 
         pastebinBox = new WidgetTextField(font, guiLeft + 10, guiTop + 130, 160, 10) {
             @Override
-            protected void onFocusedChanged(boolean focused) {
-                if (focused) {
+            public void setFocused(boolean focused) {
+                final boolean previousFocus = isFocused();
+                super.setFocused(focused);
+
+                if (previousFocus != focused && focused) {
                     moveCursorToEnd();
                     setHighlightPos(0);
                 }
-                super.onFocusedChanged(focused);
             }
         };
         addRenderableWidget(pastebinBox);

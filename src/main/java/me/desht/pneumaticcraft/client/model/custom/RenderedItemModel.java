@@ -31,6 +31,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.client.model.IDynamicBakedModel;
 import net.minecraftforge.client.model.data.ModelData;
@@ -94,9 +95,9 @@ public class RenderedItemModel implements IDynamicBakedModel {
     }
 
     @Override
-    public BakedModel applyTransform(ItemTransforms.TransformType transformType, PoseStack poseStack, boolean applyLeftHandTransform) {
-        return switch (transformType) {
-            case GROUND, HEAD, NONE, GUI, FIXED -> bakedBaseModel.applyTransform(transformType, poseStack, applyLeftHandTransform);
+    public BakedModel applyTransform(ItemDisplayContext displayContext, PoseStack poseStack, boolean applyLeftHandTransform) {
+        return switch (displayContext) {
+            case GROUND, HEAD, NONE, GUI, FIXED -> bakedBaseModel.applyTransform(displayContext, poseStack, applyLeftHandTransform);
             default -> this;
         };
     }

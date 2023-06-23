@@ -154,7 +154,7 @@ public class PlasticBrickBlock extends Block implements ColorHandlers.ITintableB
         if (hurtsToStepOn() && entityIn instanceof LivingEntity livingEntity) {
             ItemStack stack = livingEntity.getItemBySlot(EquipmentSlot.FEET);
             if (stack.isEmpty()) {
-                entityIn.hurt(PNCDamageSource.PLASTIC_BLOCK, 3);
+                entityIn.hurt(PNCDamageSource.plasticBlock(worldIn), 3);
                 livingEntity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 40, 1));
             }
         }

@@ -30,6 +30,7 @@ import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.List;
@@ -72,7 +73,7 @@ public class PressureChamberRenderer implements BlockEntityRenderer<PressureCham
 
                 ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
                 BakedModel bakedModel = itemRenderer.getModel(stacks.get(i), te.getLevel(), null, 0);
-                itemRenderer.render(stacks.get(i), ItemTransforms.TransformType.FIXED, true, matrixStackIn, bufferIn, light, combinedOverlayIn, bakedModel);
+                itemRenderer.render(stacks.get(i), ItemDisplayContext.FIXED, true, matrixStackIn, bufferIn, light, combinedOverlayIn, bakedModel);
 
                 matrixStackIn.popPose();
             }

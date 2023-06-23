@@ -222,7 +222,7 @@ public class ProgrammableControllerBlockEntity extends AbstractAirHandlingBlockE
     public void tickClient() {
         super.tickClient();
 
-        if ((drone == null || !drone.isAlive()) && nonNullLevel().isLoaded(new BlockPos(curX, curY, curZ))) {
+        if ((drone == null || !drone.isAlive()) && nonNullLevel().isLoaded(BlockPos.containing(curX, curY, curZ))) {
             drone = ModEntityTypes.PROGRAMMABLE_CONTROLLER.get().create(nonNullLevel());
             if (drone != null) {
                 drone.setController(this);
@@ -585,7 +585,7 @@ public class ProgrammableControllerBlockEntity extends AbstractAirHandlingBlockE
     }
 
     public BlockPos getTargetPos() {
-        return new BlockPos(targetX, targetY, targetZ);
+        return BlockPos.containing(targetX, targetY, targetZ);
     }
 
     @Override
@@ -895,7 +895,7 @@ public class ProgrammableControllerBlockEntity extends AbstractAirHandlingBlockE
     private class ControllerNavigator implements IPathNavigator {
         @Override
         public boolean moveToXYZ(double x, double y, double z) {
-            if (isBlockValidPathfindBlock(new BlockPos(x, y, z))) {
+            if (isBlockValidPathfindBlock(BlockPos.containing(x, y, z))) {
                 targetX = x + 0.5;
                 targetY = y + 0.5;
                 targetZ = z + 0.5;

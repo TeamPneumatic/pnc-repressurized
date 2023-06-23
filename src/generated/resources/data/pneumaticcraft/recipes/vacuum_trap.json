@@ -28,5 +28,6 @@
   ],
   "result": {
     "item": "pneumaticcraft:vacuum_trap"
-  }
+  },
+  "show_notification": true
 }

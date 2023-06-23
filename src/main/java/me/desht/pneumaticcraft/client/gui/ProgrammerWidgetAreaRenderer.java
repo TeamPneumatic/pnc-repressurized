@@ -201,7 +201,6 @@ public class ProgrammerWidgetAreaRenderer {
 
         if (showFlow) showFlow(matrixStack);
 
-        RenderSystem.enableTexture();
         RenderSystem.enableBlend();
         RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
         for (IProgWidget widget : progWidgets) {
@@ -236,7 +235,7 @@ public class ProgrammerWidgetAreaRenderer {
                 posestack.translate(widget.getX() + guiLeft, widget.getY() + guiTop, 0);
                 posestack.scale(0.5f, 0.5f, 1.0f);
                 RenderSystem.applyModelViewMatrix();
-                ProgWidgetRenderer.doItemRendering2d(widget);
+                ProgWidgetRenderer.doItemRendering2d(matrixStack, widget);
                 posestack.popPose();
                 RenderSystem.applyModelViewMatrix();
 
@@ -304,7 +303,6 @@ public class ProgrammerWidgetAreaRenderer {
 
     private void showFlow(PoseStack matrixStack) {
         RenderSystem.lineWidth(1);
-        RenderSystem.disableTexture();
 
         RenderSystem.setShader(GameRenderer::getPositionShader);
         BufferBuilder wr = Tesselator.getInstance().getBuilder();
@@ -344,8 +342,6 @@ public class ProgrammerWidgetAreaRenderer {
         }
 
         Tesselator.getInstance().end();
-
-        RenderSystem.enableTexture();
     }
 
     public float getScale() {

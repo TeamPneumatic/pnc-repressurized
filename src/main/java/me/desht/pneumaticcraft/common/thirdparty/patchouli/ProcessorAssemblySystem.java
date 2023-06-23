@@ -23,6 +23,7 @@ import me.desht.pneumaticcraft.common.item.AssemblyProgramItem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import vazkii.patchouli.api.IComponentProcessor;
 import vazkii.patchouli.api.IVariable;
 import vazkii.patchouli.api.IVariableProvider;
@@ -34,7 +35,7 @@ public class ProcessorAssemblySystem implements IComponentProcessor {
     private AssemblyRecipe recipe = null;
 
     @Override
-    public void setup(IVariableProvider iVariableProvider) {
+    public void setup(Level level, IVariableProvider iVariableProvider) {
         ResourceLocation recipeId = new ResourceLocation(iVariableProvider.get("recipe").asString());
         this.recipe = ModRecipeTypes.ASSEMBLY_DRILL_LASER.get().getRecipe(Minecraft.getInstance().level, recipeId);
         if (recipe == null) {
@@ -46,7 +47,7 @@ public class ProcessorAssemblySystem implements IComponentProcessor {
     }
 
     @Override
-    public IVariable process(String key) {
+    public IVariable process(Level level, String key) {
         if (recipe == null) return null;
 
         ItemStack programStack = new ItemStack(AssemblyProgramItem.fromProgramType(recipe.getProgramType()));

@@ -94,15 +94,13 @@ public class PneumaticArmorHUDOverlay implements IGuiOverlay {
             int yOffset = 10 + (3 - slot.getIndex()) * PROGRESS_BAR_HEIGHT;
             float progress = comHudHandler.getTicksSinceEquipped(slot) * 100f / comHudHandler.getStartupTime(slot);
             progress = Math.min(100, progress + partialTicks);
-            RenderSystem.disableTexture();
             RenderSystem.enableBlend();
             RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
             ProgressBarRenderer.render2d(matrixStack, mw.getGuiScaledWidth() / 2f, yOffset,
                     mw.getGuiScaledWidth() - 10, yOffset + PROGRESS_BAR_HEIGHT - 1, -90F,
                     progress, 0xAAFFC000, 0xAA00FF00);
             RenderSystem.disableBlend();
-            RenderSystem.enableTexture();
-            Minecraft.getInstance().getItemRenderer().renderGuiItem(armorStack, xLeft + 2, yOffset);
+            Minecraft.getInstance().getItemRenderer().renderGuiItem(matrixStack, armorStack, xLeft + 2, yOffset);
         }
     }
 

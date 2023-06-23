@@ -578,7 +578,7 @@ public class PneumaticCraftUtils {
      *
      * @param handler the fluid handler
      * @param orb the XP orb
-     * @param action whether or not to simulate the action
+     * @param action whether to simulate the action
      * @return true if the XP orb was (or could be) fully absorbed into the fluid handler
      */
     public static boolean fillTankWithOrb(IFluidHandler handler, ExperienceOrb orb, FluidAction action) {
@@ -594,7 +594,7 @@ public class PneumaticCraftUtils {
 
     public static double getPlayerReachDistance(Player player) {
         if (player != null) {
-            AttributeInstance attr = player.getAttribute(ForgeMod.REACH_DISTANCE.get());
+            AttributeInstance attr = player.getAttribute(ForgeMod.BLOCK_REACH.get());
             if (attr != null) return attr.getValue() + 1D;
         }
         return 4.5D;
@@ -718,5 +718,15 @@ public class PneumaticCraftUtils {
 
     public static boolean isChunkLoaded(LevelAccessor level, BlockPos pos) {
         return level.hasChunk(pos.getX() >> 4, pos.getZ() >> 4);
+    }
+
+    public static double average(long[] pValues) {
+        long i = 0L;
+
+        for(long j : pValues) {
+            i += j;
+        }
+
+        return (double)i / (double)pValues.length;
     }
 }

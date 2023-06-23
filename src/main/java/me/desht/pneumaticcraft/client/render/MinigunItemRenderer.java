@@ -12,10 +12,10 @@ import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.model.geom.EntityModelSet;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.block.model.ItemTransforms.TransformType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.client.extensions.common.IClientItemExtensions;
 import net.minecraftforge.common.util.NonNullLazy;
@@ -32,14 +32,14 @@ public class MinigunItemRenderer extends BlockEntityWithoutLevelRenderer {
     }
 
     @Override
-    public void renderByItem(ItemStack stack, TransformType transformType, PoseStack matrixStack, MultiBufferSource buffer, int combinedLightIn, int combinedOverlayIn) {
+    public void renderByItem(ItemStack stack, ItemDisplayContext displayContext, PoseStack matrixStack, MultiBufferSource buffer, int combinedLightIn, int combinedOverlayIn) {
         if (stack.getItem() instanceof MinigunItem itemMinigun && stack.hasTag()) {
             Minecraft mc = Minecraft.getInstance();
             int id = Objects.requireNonNull(stack.getTag()).getInt(MinigunItem.OWNING_PLAYER_ID);
             if (ClientUtils.getClientLevel().getEntity(id) instanceof Player player) {
                 Minigun minigun = itemMinigun.getMinigun(stack, player);
                 matrixStack.pushPose();
-                boolean thirdPerson = transformType == TransformType.THIRD_PERSON_RIGHT_HAND || transformType == TransformType.THIRD_PERSON_LEFT_HAND;
+                boolean thirdPerson = displayContext == ItemDisplayContext.THIRD_PERSON_RIGHT_HAND || displayContext == ItemDisplayContext.THIRD_PERSON_LEFT_HAND;
                 if (thirdPerson) {
                     if (mc.screen instanceof InventoryScreen) {
                         // our own gun in the rendered player model in inventory screen

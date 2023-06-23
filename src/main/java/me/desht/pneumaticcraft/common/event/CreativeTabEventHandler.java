@@ -3,21 +3,18 @@ package me.desht.pneumaticcraft.common.event;
 import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.api.pressure.IPressurizableItem;
 import me.desht.pneumaticcraft.common.capabilities.AirHandlerItemStack;
-import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.item.*;
 import me.desht.pneumaticcraft.common.item.minigun.AbstractGunAmmoItem;
 import me.desht.pneumaticcraft.common.recipes.special.PatchouliBookCrafting;
 import me.desht.pneumaticcraft.common.semiblock.SemiblockItem;
 import me.desht.pneumaticcraft.lib.ModIds;
-import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.event.CreativeModeTabEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModList;
-import net.minecraftforge.fml.ModLoader;
 import net.minecraftforge.fml.common.Mod;
 
 import java.util.ArrayList;
@@ -45,7 +42,7 @@ public class CreativeTabEventHandler {
         event.registerCreativeModeTab(RL("default"), builder ->
             builder.title(xlate("itemGroup.pneumaticcraft"))
                     .icon(() -> new ItemStack(ModItems.PRESSURE_GAUGE.get()))
-                    .displayItems((flags, output, b) -> output.acceptAll(items))
+                    .displayItems((flags, output) -> output.acceptAll(items))
                     .build()
         );
     }

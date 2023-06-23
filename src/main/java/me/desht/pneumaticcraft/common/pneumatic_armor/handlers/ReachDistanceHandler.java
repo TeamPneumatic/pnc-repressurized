@@ -63,7 +63,7 @@ public class ReachDistanceHandler extends BaseArmorUpgradeHandler<IArmorExtensio
     public void tick(ICommonArmorHandler commonArmorHandler, boolean enabled) {
         Player player = commonArmorHandler.getPlayer();
         if ((player.level.getGameTime() & 0xf) == 0) {
-            AttributeInstance attr = player.getAttribute(ForgeMod.REACH_DISTANCE.get());
+            AttributeInstance attr = player.getAttribute(ForgeMod.BLOCK_REACH.get());
             if (attr != null) {
                 attr.removeModifier(REACH_DIST_BOOST);
                 if (enabled && commonArmorHandler.hasMinPressure(EquipmentSlot.CHEST) && commonArmorHandler.isArmorEnabled()) {
@@ -76,7 +76,7 @@ public class ReachDistanceHandler extends BaseArmorUpgradeHandler<IArmorExtensio
     @Override
     public void onToggle(ICommonArmorHandler commonArmorHandler, boolean newState) {
         if (!newState) {
-            AttributeInstance attr = commonArmorHandler.getPlayer().getAttribute(ForgeMod.REACH_DISTANCE.get());
+            AttributeInstance attr = commonArmorHandler.getPlayer().getAttribute(ForgeMod.BLOCK_REACH.get());
             if (attr != null) {
                 attr.removeModifier(ReachDistanceHandler.REACH_DIST_BOOST);
             }

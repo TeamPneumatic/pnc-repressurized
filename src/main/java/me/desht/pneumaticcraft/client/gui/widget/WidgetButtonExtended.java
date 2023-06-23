@@ -186,20 +186,20 @@ public class WidgetButtonExtended extends ExtendedButton implements ITaggedWidge
     }
 
     @Override
-    public void renderButton(PoseStack matrixStack, int x, int y, float partialTicks) {
+    public void renderWidget(PoseStack matrixStack, int x, int y, float partialTicks) {
         if (thisVisible && visible && !active && highlightInactive) {
             Gui.fill(matrixStack, this.getX() - 1, this.getY() - 1, this.getX() + getWidth() + 1, this.getY() + getHeight() + 1, 0xFF00FFFF);
         }
 
-        if (thisVisible) super.renderButton(matrixStack, x, y, partialTicks);
+        if (thisVisible) super.renderWidget(matrixStack, x, y, partialTicks);
 
         if (visible) {
             if (renderedStacks != null) {
                 int startX = getIconX();
                 for (int i = renderedStacks.length - 1; i >= 0; i--) {
-                    Minecraft.getInstance().getItemRenderer().renderGuiItem(renderedStacks[i], startX + i * iconSpacing, this.getY() + 2);
+                    Minecraft.getInstance().getItemRenderer().renderGuiItem(matrixStack, renderedStacks[i], startX + i * iconSpacing, this.getY() + 2);
                     if (renderStackSize) {
-                        Minecraft.getInstance().getItemRenderer().renderGuiItemDecorations(Minecraft.getInstance().font, renderedStacks[i], startX + i * iconSpacing, this.getY() + 2, null);
+                        Minecraft.getInstance().getItemRenderer().renderGuiItemDecorations(matrixStack, Minecraft.getInstance().font, renderedStacks[i], startX + i * iconSpacing, this.getY() + 2, null);
                     }
                 }
             }

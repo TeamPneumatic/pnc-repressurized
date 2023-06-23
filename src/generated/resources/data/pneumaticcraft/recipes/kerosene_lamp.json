@@ -21,5 +21,6 @@
   ],
   "result": {
     "item": "pneumaticcraft:kerosene_lamp"
-  }
+  },
+  "show_notification": true
 }

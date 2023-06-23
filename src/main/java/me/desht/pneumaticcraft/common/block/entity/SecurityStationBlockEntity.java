@@ -56,7 +56,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.MenuProvider;
-import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
@@ -261,7 +260,7 @@ public class SecurityStationBlockEntity extends AbstractTickingBlockEntity imple
                 simulationController.getSimulation(HackingSide.AI).applyStopWorm(r);
             } else {
                 // client is lying about how many stop worms they have!
-                player.hurt(DamageSource.OUT_OF_WORLD, 10000);
+                player.kill();
             }
         }
     }
@@ -273,7 +272,7 @@ public class SecurityStationBlockEntity extends AbstractTickingBlockEntity imple
                 simulationController.getSimulation(HackingSide.PLAYER).initiateNukeVirus(nodePos);
             } else {
                 // client is lying about how many nuke viruses they have!
-                player.hurt(DamageSource.OUT_OF_WORLD, 10000);
+                player.kill();
             }
         } catch (IllegalArgumentException | IndexOutOfBoundsException e) {
             Log.warning("security station @ %s: ignoring bad message %s from %s",
@@ -495,7 +494,7 @@ public class SecurityStationBlockEntity extends AbstractTickingBlockEntity imple
     }
 
     public void retaliate(Player hacker) {
-        hacker.hurt(PNCDamageSource.SECURITY_STATION, hacker.getMaxHealth() - 0.5f);
+        hacker.hurt(PNCDamageSource.securityStation(getLevel()), hacker.getMaxHealth() - 0.5f);
         hacker.addEffect(new MobEffectInstance(MobEffects.CONFUSION, 100));
         hacker.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 200));
         hacker.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 300, 3));

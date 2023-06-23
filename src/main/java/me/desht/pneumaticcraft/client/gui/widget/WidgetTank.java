@@ -72,7 +72,7 @@ public class WidgetTank extends AbstractWidget implements ITooltipProvider {
     }
 
     @Override
-    public void renderButton(PoseStack matrixStack, int mouseX, int mouseY, float partialTick) {
+    public void renderWidget(PoseStack matrixStack, int mouseX, int mouseY, float partialTick) {
         int x = getX(), y = getY();
         GuiUtils.drawFluid(matrixStack, new Rect2i(x, y, width, height), getFluid(), getTank());
 

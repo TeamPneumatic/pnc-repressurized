@@ -226,9 +226,13 @@ public class MicromissileEntity extends ThrowableProjectile {
 
     private void explode(Entity e) {
         discard();
+
         Level.ExplosionInteraction mode = ConfigHelper.common().micromissiles.damageTerrain.get() ?
-                Level.ExplosionInteraction.NONE :
-                Level.ExplosionInteraction.TNT;
+                Level.ExplosionInteraction.TNT :
+                Level.ExplosionInteraction.NONE;
+        boolean fire = ConfigHelper.common().micromissiles.startFires.get();
+        float radius = ConfigHelper.common().micromissiles.baseExplosionDamage.get().floatValue() * explosionPower;
+
         double x, y, z;
         if (e == null) {
             x = getX();
@@ -240,7 +244,7 @@ public class MicromissileEntity extends ThrowableProjectile {
             y = Mth.lerp(0.25f, e.getY(), getY());
             z = Mth.lerp(0.25f, e.getZ(), getZ());
         }
-        getCommandSenderWorld().explode(this, x, y, z, ConfigHelper.common().micromissiles.baseExplosionDamage.get().floatValue() * explosionPower, false, mode);
+        getCommandSenderWorld().explode(this, x, y, z, radius, fire, mode);
     }
 
     @Override

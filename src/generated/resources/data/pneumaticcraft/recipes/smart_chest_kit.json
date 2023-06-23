@@ -17,5 +17,6 @@
   ],
   "result": {
     "item": "pneumaticcraft:smart_chest_kit"
-  }
+  },
+  "show_notification": true
 }

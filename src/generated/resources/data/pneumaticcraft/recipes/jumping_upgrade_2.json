@@ -21,5 +21,6 @@
   ],
   "result": {
     "item": "pneumaticcraft:jumping_upgrade_2"
-  }
+  },
+  "show_notification": true
 }

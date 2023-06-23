@@ -227,7 +227,7 @@ public class AirGrateModule extends AbstractTubeModule {
     }
 
     private boolean rayTraceOK(Entity entity, Vec3 traceVec) {
-        BlockPos pos = new BlockPos(entity.getEyePosition(0f));
+        BlockPos pos = BlockPos.containing(entity.getEyePosition(0f));
         return traceabilityCache.computeIfAbsent(pos, k -> {
             Vec3 entityVec = new Vec3(entity.getX(), entity.getY() + entity.getEyeHeight(), entity.getZ());
             ClipContext ctx = new ClipContext(entityVec, traceVec, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, entity);

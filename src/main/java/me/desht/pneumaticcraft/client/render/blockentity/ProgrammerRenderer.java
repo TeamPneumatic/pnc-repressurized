@@ -29,6 +29,7 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.Direction;
+import net.minecraft.world.item.ItemDisplayContext;
 
 public class ProgrammerRenderer implements BlockEntityRenderer<ProgrammerBlockEntity> {
     public ProgrammerRenderer(BlockEntityRendererProvider.Context ctx) {
@@ -54,7 +55,7 @@ public class ProgrammerRenderer implements BlockEntityRenderer<ProgrammerBlockEn
 
         ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
         BakedModel bakedModel = itemRenderer.getModel(te.displayedStack, Minecraft.getInstance().level, null, 0);
-        itemRenderer.render(te.displayedStack, ItemTransforms.TransformType.FIXED, true, matrixStackIn, bufferIn, combinedLightIn, combinedOverlayIn, bakedModel);
+        itemRenderer.render(te.displayedStack, ItemDisplayContext.FIXED, true, matrixStackIn, bufferIn, combinedLightIn, combinedOverlayIn, bakedModel);
 
         matrixStackIn.popPose();
     }

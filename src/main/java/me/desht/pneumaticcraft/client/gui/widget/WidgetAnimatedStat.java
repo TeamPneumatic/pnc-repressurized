@@ -43,7 +43,6 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.Rect2i;
-import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.resources.model.BakedModel;
@@ -53,6 +52,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.FormattedCharSink;
 import net.minecraft.util.Mth;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ItemLike;
 import org.joml.Matrix3f;
@@ -423,7 +423,7 @@ public class WidgetAnimatedStat extends AbstractWidget implements IGuiAnimatedSt
         // just delegate to the renderButton() method
         // a separately-named interface method is used to avoid AbstractMethodError problems arising
         // from having a renderButton() method in IGuiAnimatedStat
-        renderButton(matrixStack, x, y, partialTicks);
+        renderWidget(matrixStack, x, y, partialTicks);
     }
 
     @Override
@@ -440,7 +440,7 @@ public class WidgetAnimatedStat extends AbstractWidget implements IGuiAnimatedSt
     }
 
     @Override
-    public void renderButton(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+    public void renderWidget(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
         if (!this.visible) return;
 
         int baseX = leftSided ? this.getX() - this.width : this.getX();
@@ -495,7 +495,6 @@ public class WidgetAnimatedStat extends AbstractWidget implements IGuiAnimatedSt
             PoseStack poseStack = RenderSystem.getModelViewStack();
             poseStack.pushPose();
             poseStack.translate(renderBaseX + (leftSided ? widgetOffsetLeft : widgetOffsetRight), renderAffectedY + (titleYoffset - 10), 0);
-            RenderSystem.enableTexture();
             RenderSystem.applyModelViewMatrix();
             subWidgets.forEach(widget -> widget.render(matrixStack, mouseX - renderBaseX, mouseY - renderAffectedY, partialTicks));
             poseStack.popPose();
@@ -560,21 +559,21 @@ public class WidgetAnimatedStat extends AbstractWidget implements IGuiAnimatedSt
 
         if (doneExpanding) {
             matrixStack.pushPose();
+            int renderX = renderBaseX + (leftSided ? -renderWidth + 2 : 18);
             // text title
             String title = getMessage().getString();
+            int titleOffsetY = 3;
             if (!title.isEmpty()) {
-                RenderUtils.renderString3d(Component.literal(title).withStyle(ChatFormatting.UNDERLINE),
-                        renderBaseX + (leftSided ? -renderWidth + 2 : 18), renderEffectiveY + 2,
+                RenderUtils.renderString3d(Component.literal(title).withStyle(ChatFormatting.UNDERLINE), renderX, renderEffectiveY + 2,
                         titleColor, matrixStack, buffer, false, true);
+                titleOffsetY = 12;
             }
             // text lines
-            int titleOffsetY = title.isEmpty() ? 3 : 12;
-            Font font = Minecraft.getInstance().font;
+            int lineHeight = Minecraft.getInstance().font.lineHeight;
             for (int i = curScroll; i < textComponents.size() && i < curScroll + getVisibleLines(); i++) {
-                int renderX = renderBaseX + (leftSided ? -renderWidth + 2 : 18);
-                int renderY = renderEffectiveY + (i - curScroll) * lineSpacing + titleOffsetY + reservedLines * font.lineHeight;
-                font.drawInBatch(reorderingProcessors.get(i), renderX, renderY, foregroundColor, dropShadows.get(i),
-                        matrixStack.last().pose(), buffer, true, 0, RenderUtils.FULL_BRIGHT);
+                int renderY = renderEffectiveY + (i - curScroll) * lineSpacing + titleOffsetY + reservedLines * lineHeight;
+                RenderUtils.renderString3d(reorderingProcessors.get(i), renderX, renderY,
+                        0xFFFFFF, matrixStack, buffer, false, true);
             }
 
             matrixStack.pushPose();
@@ -606,7 +605,7 @@ public class WidgetAnimatedStat extends AbstractWidget implements IGuiAnimatedSt
             subWidgets.stream()
                     .filter(w -> w instanceof EditBox)
                     .findFirst()
-                    .ifPresent(w -> ((EditBox) w).setFocus(true));
+                    .ifPresent(w -> w.setFocused(true));
         }
     }
 
@@ -620,7 +619,7 @@ public class WidgetAnimatedStat extends AbstractWidget implements IGuiAnimatedSt
      */
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (isHoveredOrFocused()) {
+        if (isHovered()) {
             for (AbstractWidget widget : subWidgets) {
                 if (widget.mouseClicked(mouseX - this.getX(), mouseY - this.effectiveY, button)) {
                     return true;
@@ -636,7 +635,7 @@ public class WidgetAnimatedStat extends AbstractWidget implements IGuiAnimatedSt
 
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
-        if (isHoveredOrFocused()) {
+        if (isHovered()) {
             for (AbstractWidget widget : subWidgets) {
                 if (widget.mouseReleased(mouseX - this.getX(), mouseY - this.effectiveY, button)) {
                     return true;
@@ -649,7 +648,7 @@ public class WidgetAnimatedStat extends AbstractWidget implements IGuiAnimatedSt
 
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
-        if (isHoveredOrFocused()) {
+        if (isHovered()) {
             Rect2i bounds = getBounds();
             for (AbstractWidget widget : subWidgets) {
                 if (widget.mouseDragged(mouseX - bounds.getX(), mouseY - bounds.getY(), button, dragX, dragY)) {
@@ -760,8 +759,8 @@ public class WidgetAnimatedStat extends AbstractWidget implements IGuiAnimatedSt
         }
 
         for (AbstractWidget widget : subWidgets)
-            if (widget.isHoveredOrFocused() && widget instanceof ITooltipProvider) {
-                ((ITooltipProvider) widget).addTooltip(mouseX, mouseY, curTooltip, shiftPressed);
+            if (widget.isHovered() && widget instanceof ITooltipProvider provider) {
+                provider.addTooltip(mouseX, mouseY, curTooltip, shiftPressed);
             }
     }
 
@@ -824,7 +823,7 @@ public class WidgetAnimatedStat extends AbstractWidget implements IGuiAnimatedSt
         void render(PoseStack matrixStack, int x, int y, boolean leftSided) {
             RenderSystem.enableBlend();
             RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-            texture.ifLeft(stack -> Minecraft.getInstance().getItemRenderer().renderGuiItem(stack, x - (leftSided ? 16 : 0), y))
+            texture.ifLeft(stack -> Minecraft.getInstance().getItemRenderer().renderGuiItem(matrixStack, stack, x - (leftSided ? 16 : 0), y))
                     .ifRight(resLoc -> GuiUtils.drawTexture(matrixStack, resLoc, x - (leftSided ? 16 : 0), y));
             RenderSystem.disableBlend();
         }
@@ -837,7 +836,7 @@ public class WidgetAnimatedStat extends AbstractWidget implements IGuiAnimatedSt
                 matrixStack.scale(15, 15, 1);
                 ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
                 BakedModel ibakedmodel = itemRenderer.getModel(stack, ClientUtils.getClientLevel(), null, 0);
-                itemRenderer.render(stack, ItemTransforms.TransformType.GUI, true, matrixStack, buffer, RenderUtils.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, ibakedmodel);
+                itemRenderer.render(stack, ItemDisplayContext.GUI, true, matrixStack, buffer, RenderUtils.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, ibakedmodel);
                 matrixStack.popPose();
             }).ifRight(resLoc ->
                     RenderUtils.renderWithTypeAndFinish(matrixStack, buffer, ModRenderTypes.getTextureRenderColored(resLoc),

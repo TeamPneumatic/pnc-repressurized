@@ -65,7 +65,7 @@ public class AirParticle extends TextureSheetParticle {
     public void tick() {
         super.tick();
 
-        if (!level.isEmptyBlock(new BlockPos(x, y, z)) || onGround) {
+        if (!level.isEmptyBlock(BlockPos.containing(x, y, z)) || onGround) {
             remove();
         }
 

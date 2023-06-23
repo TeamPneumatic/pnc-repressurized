@@ -21,7 +21,7 @@ import me.desht.pneumaticcraft.api.data.PneumaticCraftTags;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ArmorMaterial;
 import net.minecraft.world.item.crafting.Ingredient;
 
@@ -35,13 +35,13 @@ class CompressedIronArmorMaterial implements ArmorMaterial {
     }
 
     @Override
-    public int getDurabilityForSlot(EquipmentSlot equipmentSlotType) {
-        return PneumaticValues.PNEUMATIC_ARMOR_DURABILITY_BASE * MAX_DAMAGE_ARRAY[equipmentSlotType.getIndex()];
+    public int getDurabilityForType(ArmorItem.Type type) {
+        return PneumaticValues.PNEUMATIC_ARMOR_DURABILITY_BASE * MAX_DAMAGE_ARRAY[type.getSlot().getIndex()];
     }
 
     @Override
-    public int getDefenseForSlot(EquipmentSlot equipmentSlotType) {
-        return DMG_REDUCTION[equipmentSlotType.getIndex()];
+    public int getDefenseForType(ArmorItem.Type type) {
+        return DMG_REDUCTION[type.getSlot().getIndex()];
     }
 
     @Override

@@ -19,5 +19,6 @@
   ],
   "result": {
     "item": "pneumaticcraft:diagnostic_subroutine"
-  }
+  },
+  "show_notification": true
 }

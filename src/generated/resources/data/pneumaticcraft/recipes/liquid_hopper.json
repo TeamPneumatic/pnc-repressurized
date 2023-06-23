@@ -17,5 +17,6 @@
   ],
   "result": {
     "item": "pneumaticcraft:liquid_hopper"
-  }
+  },
+  "show_notification": true
 }

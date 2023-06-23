@@ -22,5 +22,6 @@
   ],
   "result": {
     "item": "pneumaticcraft:pneumatic_dynamo"
-  }
+  },
+  "show_notification": true
 }

@@ -64,7 +64,7 @@ public class DroneAICrafting extends Goal {
                     ItemStack stack = equivalentsList.get(i).isEmpty() ? ItemStack.EMPTY : equivalentsList.get(i).get(equivIndices[i]);
                     craftMatrix.setItem(i, stack);
                 }
-                if (recipe.matches(craftMatrix, drone.world()) && doCrafting(recipe.assemble(craftMatrix), craftMatrix)) {
+                if (recipe.matches(craftMatrix, drone.world()) && doCrafting(recipe.assemble(craftMatrix, drone.world().registryAccess()), craftMatrix)) {
                     actionCount++;
                     return true;
                 }

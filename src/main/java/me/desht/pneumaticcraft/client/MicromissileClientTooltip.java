@@ -24,14 +24,14 @@ public record MicromissileClientTooltip(MicromissilesItem.Tooltip component) imp
             pY += 3;
             @SuppressWarnings("ConstantConditions") int col = ChatFormatting.GRAY.getColor();
             pFont.drawInBatch(xlate("pneumaticcraft.gui.micromissile.topSpeed"), pX, pY, col, false, pMatrix4f, pBufferSource,
-                    false, 0, RenderUtils.FULL_BRIGHT);
-            pFont.drawInBatch(xlate("pneumaticcraft.gui.micromissile.turnSpeed"), pX, pY + pFont.lineHeight + 1, col, false, pMatrix4f, pBufferSource, false, 0, RenderUtils.FULL_BRIGHT);
-            pFont.drawInBatch(xlate("pneumaticcraft.gui.micromissile.damage"), pX, pY + pFont.lineHeight * 2 + 2, col, false, pMatrix4f, pBufferSource, false, 0, RenderUtils.FULL_BRIGHT);
+                    Font.DisplayMode.NORMAL, 0, RenderUtils.FULL_BRIGHT);
+            pFont.drawInBatch(xlate("pneumaticcraft.gui.micromissile.turnSpeed"), pX, pY + pFont.lineHeight + 1, col, false, pMatrix4f, pBufferSource, Font.DisplayMode.NORMAL, 0, RenderUtils.FULL_BRIGHT);
+            pFont.drawInBatch(xlate("pneumaticcraft.gui.micromissile.damage"), pX, pY + pFont.lineHeight * 2 + 2, col, false, pMatrix4f, pBufferSource, Font.DisplayMode.NORMAL, 0, RenderUtils.FULL_BRIGHT);
         }
     }
 
     @Override
-    public void renderImage(Font pFont, int pMouseX, int pMouseY, PoseStack pPoseStack, ItemRenderer pItemRenderer, int pBlitOffset) {
+    public void renderImage(Font pFont, int pMouseX, int pMouseY, PoseStack pPoseStack, ItemRenderer pItemRenderer) {
         if (NBTUtils.hasTag(component.stack(), MicromissilesItem.NBT_TOP_SPEED)) {
             pMouseY += 3;
             int vSpace = pFont.lineHeight + 1;
@@ -42,7 +42,7 @@ public record MicromissileClientTooltip(MicromissilesItem.Tooltip component) imp
             int barY = 0;
             int barW = getWidth(pFont) - width - 10;
             pPoseStack.pushPose();
-            pPoseStack.translate(pMouseX, pMouseY, pBlitOffset);
+            pPoseStack.translate(pMouseX, pMouseY, 0);
             CompoundTag tag = Objects.requireNonNull(component.stack().getTag());
             drawLine(pPoseStack, barX, barY, barW, tag.getFloat(MicromissilesItem.NBT_TOP_SPEED));
             drawLine(pPoseStack, barX, barY + vSpace, barW, tag.getFloat(MicromissilesItem.NBT_TURN_SPEED));

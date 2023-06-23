@@ -20,7 +20,10 @@ package me.desht.pneumaticcraft.common.thirdparty.jei.ghost;
 import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.client.gui.AmadronAddTradeScreen;
 import me.desht.pneumaticcraft.common.inventory.slot.PhantomSlot;
+import mezz.jei.api.constants.VanillaTypes;
+import mezz.jei.api.forge.ForgeTypes;
 import mezz.jei.api.gui.handlers.IGhostIngredientHandler;
+import mezz.jei.api.ingredients.ITypedIngredient;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
@@ -30,10 +33,9 @@ import java.util.Collections;
 import java.util.List;
 
 public class AmadronAddTradeGhost implements IGhostIngredientHandler<AmadronAddTradeScreen> {
-
     @Override
-    public <I> List<Target<I>> getTargets(AmadronAddTradeScreen gui, I ingredient, boolean doStart) {
-        if (ingredient instanceof ItemStack) {
+    public <I> List<Target<I>> getTargetsTyped(AmadronAddTradeScreen gui, ITypedIngredient<I> ingredient, boolean doStart) {
+        if (ingredient.getType() == VanillaTypes.ITEM_STACK) {
             ImmutableList.Builder<Target<I>> builder = ImmutableList.builder();
             for (Slot slot : gui.getMenu().slots) {
                 if (slot instanceof PhantomSlot) {
@@ -42,7 +44,7 @@ public class AmadronAddTradeGhost implements IGhostIngredientHandler<AmadronAddT
                 }
             }
             return builder.build();
-        } else if (ingredient instanceof FluidStack) {
+        } else if (ingredient.getType() == ForgeTypes.FLUID_STACK) {
             ImmutableList.Builder<Target<I>> builder = ImmutableList.builder();
             for (Slot slot : gui.getMenu().slots) {
                 if (slot instanceof PhantomSlot) {

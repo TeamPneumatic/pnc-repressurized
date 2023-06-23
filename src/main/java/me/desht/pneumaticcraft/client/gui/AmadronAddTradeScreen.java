@@ -186,13 +186,13 @@ public class AmadronAddTradeScreen extends AbstractPneumaticCraftContainerScreen
             WidgetTextFieldNumber amountOut = amountFields[OUTPUT_SLOT];
             if (amountIn.isFocused()) {
                 amountIn.moveCursorTo(amountIn.getCursorPosition());
-                amountIn.setFocus(false);
+                amountIn.setFocused(false);
                 setFocused(amountOut);
                 amountOut.moveCursorTo(0);
                 amountOut.setHighlightPos(amountOut.getValue().length());
             } else if (amountOut.isFocused()) {
                 amountOut.moveCursorTo(amountOut.getCursorPosition());
-                amountOut.setFocus(false);
+                amountOut.setFocused(false);
                 setFocused(amountIn);
                 amountIn.moveCursorTo(0);
                 amountIn.setHighlightPos(amountIn.getValue().length());

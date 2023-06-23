@@ -50,7 +50,7 @@ public class WidgetFluidFilter extends AbstractWidget implements ITooltipProvide
     }
 
     @Override
-    public void renderButton(PoseStack matrixStack, int mouseX, int mouseY, float partialTick) {
+    public void renderWidget(PoseStack matrixStack, int mouseX, int mouseY, float partialTick) {
         if (!fluidStack.isEmpty()) {
             GuiUtils.drawFluid(matrixStack, new Rect2i(getX(), getY(), 16, 16), new FluidStack(fluidStack, 1000), null);
         }

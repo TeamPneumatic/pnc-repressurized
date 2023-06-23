@@ -28,5 +28,6 @@
   ],
   "result": {
     "item": "pneumaticcraft:minigun"
-  }
+  },
+  "show_notification": true
 }

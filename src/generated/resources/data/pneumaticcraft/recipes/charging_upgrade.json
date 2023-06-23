@@ -19,5 +19,6 @@
   ],
   "result": {
     "item": "pneumaticcraft:charging_upgrade"
-  }
+  },
+  "show_notification": true
 }

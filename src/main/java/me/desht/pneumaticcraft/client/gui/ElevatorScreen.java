@@ -83,7 +83,7 @@ public class ElevatorScreen extends AbstractPneumaticCraftContainerScreen<Elevat
             else if (currentEditedFloor < 0) currentEditedFloor = te.floorHeights.length - 1;
 
             floorNameField.setValue(te.getFloorName(currentEditedFloor));
-            floorNameField.setFocus(true);
+            setFocused(floorNameField);
         }
     }
 

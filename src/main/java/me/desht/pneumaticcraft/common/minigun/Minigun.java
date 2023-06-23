@@ -296,7 +296,7 @@ public abstract class Minigun {
             setMinigunSpeed(Math.min(getMinigunSpeed() + 0.01F + speedBonus, MAX_GUN_SPEED));
             if (!world.isClientSide && getMinigunSpeed() > lastSpeed && getMinigunSpeed() >= MAX_GUN_SPEED) {
                 // reached max speed: start playing the looping sound
-                NetworkHandler.sendToAllTracking(new PacketPlayMovingSound(MovingSounds.Sound.MINIGUN, getSoundSource()), player.level, new BlockPos(posX, posY, posZ));
+                NetworkHandler.sendToAllTracking(new PacketPlayMovingSound(MovingSounds.Sound.MINIGUN, getSoundSource()), player.level, BlockPos.containing(posX, posY, posZ));
             }
         } else {
             // spin down

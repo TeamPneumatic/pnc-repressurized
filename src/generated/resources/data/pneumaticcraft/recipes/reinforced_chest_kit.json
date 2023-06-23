@@ -17,5 +17,6 @@
   ],
   "result": {
     "item": "pneumaticcraft:reinforced_chest_kit"
-  }
+  },
+  "show_notification": true
 }

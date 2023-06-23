@@ -55,8 +55,8 @@ public class WidgetFluidStack extends WidgetFluidFilter {
     }
 
     @Override
-    public void renderButton(PoseStack matrixStack, int mouseX, int mouseY, float partialTick) {
-        super.renderButton(matrixStack, mouseX, mouseY, partialTick);
+    public void renderWidget(PoseStack matrixStack, int mouseX, int mouseY, float partialTick) {
+        super.renderWidget(matrixStack, mouseX, mouseY, partialTick);
 
         if (!fluidStack.isEmpty()) {
             int fluidAmount = fluidStack.getAmount() / 1000;

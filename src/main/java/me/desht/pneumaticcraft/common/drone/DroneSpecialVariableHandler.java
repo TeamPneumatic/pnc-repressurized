@@ -36,7 +36,7 @@ public class DroneSpecialVariableHandler {
 
     static {
         // new generation of special vars, all end in _pos; recommended to use these in new programs
-        register("drone_pos", (event, extra) -> new BlockPos(event.drone.getDronePos()));
+        register("drone_pos", (event, extra) -> BlockPos.containing(event.drone.getDronePos()));
         register("controller_pos", (event, extra) -> event.drone.getControllerPos());
         register("owner_pos", (event, extra) -> getPosForPlayer(event.drone.getOwner()));
         register("player_pos", (event, extra) -> getPosForOtherPlayer(event.drone.getOwner(), PneumaticCraftUtils.getPlayerFromName(extra)));
@@ -48,7 +48,7 @@ public class DroneSpecialVariableHandler {
         register("player", (event, extra) -> getPosForOtherPlayer(event.drone.getOwner(), PneumaticCraftUtils.getPlayerFromName(extra)));
         // this method gets the block above the drone's position for historical reasons
         // https://github.com/TeamPneumatic/pnc-repressurized/issues/601 for more discussion
-        register("drone", (event, extra) -> new BlockPos(event.drone.getDronePos()).relative(Direction.UP));
+        register("drone", (event, extra) -> BlockPos.containing(event.drone.getDronePos()).relative(Direction.UP));
     }
 
     private static void register(String var, BiFunction<Drone, String, BlockPos> func) {

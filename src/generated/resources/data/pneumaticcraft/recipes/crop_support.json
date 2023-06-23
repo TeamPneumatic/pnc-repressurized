@@ -12,5 +12,6 @@
   ],
   "result": {
     "item": "pneumaticcraft:crop_support"
-  }
+  },
+  "show_notification": true
 }

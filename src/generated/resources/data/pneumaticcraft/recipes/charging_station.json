@@ -19,5 +19,6 @@
   ],
   "result": {
     "item": "pneumaticcraft:charging_station"
-  }
+  },
+  "show_notification": true
 }

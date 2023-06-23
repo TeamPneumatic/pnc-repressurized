@@ -19,5 +19,6 @@
   ],
   "result": {
     "item": "pneumaticcraft:security_upgrade"
-  }
+  },
+  "show_notification": true
 }

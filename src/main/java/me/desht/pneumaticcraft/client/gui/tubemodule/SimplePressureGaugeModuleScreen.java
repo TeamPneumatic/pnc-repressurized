@@ -57,9 +57,8 @@ public class SimplePressureGaugeModuleScreen extends AbstractTubeModuleScreen<Ab
                 .setDecimals(1)
                 .setAdjustments(0.1, 1.0);
         addRenderableWidget(thresholdField);
-        setFocused(thresholdField);
         thresholdField.setWidth(40);
-        thresholdField.setFocus(true);
+        setInitialFocus(thresholdField);
 
         if (module instanceof AbstractRedstoneReceivingModule) {
             thresholdField.setValue(((AbstractRedstoneReceivingModule) module).getThreshold());

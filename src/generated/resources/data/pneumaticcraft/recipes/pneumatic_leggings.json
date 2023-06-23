@@ -22,5 +22,6 @@
   ],
   "result": {
     "item": "pneumaticcraft:pneumatic_leggings"
-  }
+  },
+  "show_notification": true
 }

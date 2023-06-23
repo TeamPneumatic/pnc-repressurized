@@ -34,9 +34,9 @@ public class FluidEtchingAcidBlock extends LiquidBlock {
     }
 
     @Override
-    public void entityInside(BlockState state, Level worldIn, BlockPos pos, Entity entity) {
+    public void entityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
         if (entity instanceof LivingEntity && entity.tickCount % 10 == 0) {
-            entity.hurt(PNCDamageSource.ETCHING_ACID, 1);
+            entity.hurt(PNCDamageSource.acid(level), 1);
         }
     }
 }

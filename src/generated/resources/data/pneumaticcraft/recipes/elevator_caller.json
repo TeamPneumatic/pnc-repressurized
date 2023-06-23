@@ -19,5 +19,6 @@
   ],
   "result": {
     "item": "pneumaticcraft:elevator_caller"
-  }
+  },
+  "show_notification": true
 }

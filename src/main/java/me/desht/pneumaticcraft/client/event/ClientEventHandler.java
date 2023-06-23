@@ -95,7 +95,8 @@ public class ClientEventHandler {
         if (!player.isFallFlying()) {
             JetBootsState state = JetBootsStateTracker.getClientTracker().getJetBootsState(player);
             if (state != null && state.shouldRotatePlayer()) {
-                player.animationPosition = player.animationSpeed = 0F;
+                player.walkAnimation.setSpeed(0f);
+//                player.animationPosition = player.animationSpeed = 0F;
             }
         }
     }
@@ -137,7 +138,7 @@ public class ClientEventHandler {
         }
 
         // custom durability bars
-        RenderSystem.disableTexture();
+//        RenderSystem.disableTexture();
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
         BufferBuilder bb = Tesselator.getInstance().getBuilder();
         AbstractContainerScreen<?> container = event.getContainerScreen();
@@ -158,7 +159,7 @@ public class ClientEventHandler {
                 }
             }
         }
-        RenderSystem.enableTexture();
+//        RenderSystem.enableTexture();
     }
 
     @SubscribeEvent

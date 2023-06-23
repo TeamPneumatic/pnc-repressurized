@@ -28,5 +28,6 @@
   ],
   "result": {
     "item": "pneumaticcraft:jackhammer"
-  }
+  },
+  "show_notification": true
 }

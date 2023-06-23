@@ -16,5 +16,6 @@
   ],
   "result": {
     "item": "pneumaticcraft:flow_detector_module"
-  }
+  },
+  "show_notification": true
 }

@@ -76,9 +76,8 @@ public class AirGrateModuleScreen extends AbstractTubeModuleScreen<AirGrateModul
                 sendTimer = 5;
             }
         });
-        textfield.setFocus(true);
         textfield.setVisible(module.isUpgraded());
-        setFocused(textfield);
+        setInitialFocus(textfield);
         addRenderableWidget(textfield);
 
         warningButton = new WidgetButtonExtended(guiLeft + tx, guiTop + 30, 20, 20, Component.empty())

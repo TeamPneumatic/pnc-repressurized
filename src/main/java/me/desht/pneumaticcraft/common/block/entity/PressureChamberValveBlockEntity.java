@@ -17,7 +17,6 @@
 
 package me.desht.pneumaticcraft.common.block.entity;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.math.IntMath;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
@@ -357,7 +356,7 @@ public class PressureChamberValveBlockEntity extends AbstractAirHandlingBlockEnt
             // Note: villager conversion is no longer a thing, since due to new 1.14+ villager mechanics,
             // the converted villager will just lose his progression. Instead, just place down a
             // charging station, and an unemployed villager will claim it.
-            entity.hurt(PNCDamageSource.PRESSURE, (int) (getPressure() * 2D));
+            entity.hurt(PNCDamageSource.pressure(getLevel()), (int) (getPressure() * 2D));
         }
     }
 

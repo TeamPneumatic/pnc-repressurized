@@ -70,7 +70,7 @@ import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.EntityEvent;
 import net.minecraftforge.event.entity.EntityMountEvent;
 import net.minecraftforge.event.entity.living.LivingEquipmentChangeEvent;
-import net.minecraftforge.event.entity.living.LivingSpawnEvent;
+import net.minecraftforge.event.entity.living.MobSpawnEvent;
 import net.minecraftforge.event.entity.player.FillBucketEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.furnace.FurnaceFuelBurnTimeEvent;
@@ -91,7 +91,7 @@ public class MiscEventHandler {
             DroneClaimManager.getInstance(event.level).tick();
 
             if (event.level.getGameTime() % 100 == 0) {
-                double tickTime = Mth.average(ServerLifecycleHooks.getCurrentServer().tickTimes) * 1.0E-6D;
+                double tickTime = PneumaticCraftUtils.average(ServerLifecycleHooks.getCurrentServer().tickTimes) * 1.0E-6D;
                 // In case world are going to get their own thread: MinecraftServer.getServer().worldTickTimes.get(event.world.provider.getDimension())
                 NetworkHandler.sendToDimension(new PacketServerTickTime(tickTime), event.level.dimension());
             }
@@ -270,7 +270,7 @@ public class MiscEventHandler {
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
-    public void onMobSpawn(LivingSpawnEvent.SpecialSpawn event) {
+    public void onMobSpawn(MobSpawnEvent.FinalizeSpawn event) {
         if (event.getSpawner() != null) {
             // tag any mob spawned by a vanilla Spawner (rather than naturally) as a "defender"
             // such defenders are immune to being absorbed by a Vacuum Trap

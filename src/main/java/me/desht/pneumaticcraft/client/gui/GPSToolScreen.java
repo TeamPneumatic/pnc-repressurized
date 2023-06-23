@@ -93,13 +93,13 @@ public class GPSToolScreen extends AbstractPneumaticCraftScreen {
 
         for (int i = 0; i < 3; i++) {
             final int idx = i;
-            addRenderableWidget(new WidgetButtonExtended(xMiddle - 49 - TEXTFIELD_WIDTH / 2, yMiddle - 20 + i * 22, 22, 20,
+            addRenderableWidget(new WidgetButtonExtended(xMiddle - 52 - TEXTFIELD_WIDTH / 2, yMiddle - 20 + i * 22, 25, 20,
                     Component.literal("-10"), b -> updateTextField(idx, -10)));
             addRenderableWidget(new WidgetButtonExtended(xMiddle - 25 - TEXTFIELD_WIDTH / 2, yMiddle - 20 + i * 22, 22, 20,
                     Component.literal("-1"), b -> updateTextField(idx, -1)));
             addRenderableWidget(new WidgetButtonExtended(xMiddle + 3 + TEXTFIELD_WIDTH / 2, yMiddle - 20 + i * 22, 22, 20,
                     Component.literal("+1"), b -> updateTextField(idx, 1)));
-            addRenderableWidget(new WidgetButtonExtended(xMiddle + 27 + TEXTFIELD_WIDTH / 2, yMiddle - 20 + i * 22, 22, 20,
+            addRenderableWidget(new WidgetButtonExtended(xMiddle + 27 + TEXTFIELD_WIDTH / 2, yMiddle - 20 + i * 22, 25, 20,
                     Component.literal("+10"), b -> updateTextField(idx, 10)));
         }
 

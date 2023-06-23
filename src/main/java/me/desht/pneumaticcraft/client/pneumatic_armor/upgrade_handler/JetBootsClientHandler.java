@@ -165,19 +165,19 @@ public class JetBootsClientHandler extends IArmorUpgradeClientHandler.SimpleTogg
 
             int iconX = xr - 30;
             if (builderMode) {
-                Minecraft.getInstance().getItemRenderer().renderGuiItem(PICK, iconX, jbStat.getBaseY());
+                Minecraft.getInstance().getItemRenderer().renderGuiItem(matrixStack, PICK, iconX, jbStat.getBaseY());
                 iconX -= 16;
             }
             if (flightStabilizers) {
-                Minecraft.getInstance().getItemRenderer().renderGuiItem(ROTOR, iconX, jbStat.getBaseY());
+                Minecraft.getInstance().getItemRenderer().renderGuiItem(matrixStack, ROTOR, iconX, jbStat.getBaseY());
                 iconX -= 16;
             }
             if (ClientUtils.getClientPlayer().isFallFlying()) {
-                Minecraft.getInstance().getItemRenderer().renderGuiItem(ELYTRA, iconX, jbStat.getBaseY());
+                Minecraft.getInstance().getItemRenderer().renderGuiItem(matrixStack, ELYTRA, iconX, jbStat.getBaseY());
                 iconX -= 16;
             }
             if (smartHover) {
-                Minecraft.getInstance().getItemRenderer().renderGuiItem(FEATHER, iconX, jbStat.getBaseY());
+                Minecraft.getInstance().getItemRenderer().renderGuiItem(matrixStack, FEATHER, iconX, jbStat.getBaseY());
 //                iconX -= 16;
             }
         }

@@ -15,5 +15,6 @@
   ],
   "result": {
     "item": "pneumaticcraft:stone_base"
-  }
+  },
+  "show_notification": true
 }

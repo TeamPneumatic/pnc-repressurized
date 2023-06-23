@@ -23,5 +23,6 @@
   "result": {
     "count": 4,
     "item": "pneumaticcraft:wall_lamp_light_gray"
-  }
+  },
+  "show_notification": true
 }

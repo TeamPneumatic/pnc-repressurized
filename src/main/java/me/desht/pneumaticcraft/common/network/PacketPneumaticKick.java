@@ -26,7 +26,6 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
@@ -81,9 +80,9 @@ public class PacketPneumaticKick {
 
         Entity target = entities.get(0);
         if (!target.skipAttackInteraction(player)) {
-            if (target instanceof LivingEntity) {
-                target.hurt(DamageSource.playerAttack(player), 3.0f + upgrades * 0.5f);
-                ((LivingEntity) target).setJumping(true);
+            if (target instanceof LivingEntity living) {
+                target.hurt(target.damageSources().playerAttack(player), 3.0f + upgrades * 0.5f);
+                living.setJumping(true);
             }
             target.setOnGround(false);
             target.horizontalCollision = false;

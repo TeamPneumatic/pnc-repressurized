@@ -22,5 +22,6 @@
   ],
   "result": {
     "item": "pneumaticcraft:night_vision_upgrade"
-  }
+  },
+  "show_notification": true
 }

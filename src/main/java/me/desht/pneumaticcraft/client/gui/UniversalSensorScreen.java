@@ -119,7 +119,7 @@ public class UniversalSensorScreen extends AbstractPneumaticCraftContainerScreen
             Set<PNCUpgrade> requiredUpgrades = SensorHandler.getInstance().getRequiredStacksFromText(folders[0]);
             int curX = 92;
             for (PNCUpgrade upgrade : requiredUpgrades) {
-                Minecraft.getInstance().getItemRenderer().renderGuiItem(upgrade.getItemStack(), curX, 20);
+                Minecraft.getInstance().getItemRenderer().renderGuiItem(matrixStack, upgrade.getItemStack(), curX, 20);
                 curX += 18;
             }
         } else {
@@ -255,13 +255,11 @@ public class UniversalSensorScreen extends AbstractPneumaticCraftContainerScreen
                     textField.setMaxLength(MAX_TEXTFIELD_LENGTH);
                     textField.setWidth(98);
                 }
-                textField.setFocus(true);
                 setFocused(textField);
             } else {
                 comboBox.setElements(textOptions);
                 comboBox.setShouldSort(true);
                 comboBox.setFixedOptions(sensor.strictComboBox());
-                comboBox.setFocus(true);
                 setFocused(comboBox);
             }
         }

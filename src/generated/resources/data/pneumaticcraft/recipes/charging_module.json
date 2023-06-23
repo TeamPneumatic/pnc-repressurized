@@ -16,5 +16,6 @@
   ],
   "result": {
     "item": "pneumaticcraft:charging_module"
-  }
+  },
+  "show_notification": true
 }

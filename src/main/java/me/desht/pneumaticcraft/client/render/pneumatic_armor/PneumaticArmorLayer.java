@@ -64,7 +64,7 @@ public class PneumaticArmorLayer<E extends LivingEntity, M extends HumanoidModel
 
     private void renderSlot(PoseStack matrixStack, MultiBufferSource buffer, E entity, EquipmentSlot slot, int light, HumanoidModel<E> model, float partialTicks, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
         ItemStack stack = entity.getItemBySlot(slot);
-        if (stack.getItem() instanceof PneumaticArmorItem armor && armor.getSlot() == slot) {
+        if (stack.getItem() instanceof PneumaticArmorItem armor && armor.getType().getSlot() == slot) {
             this.getParentModel().copyPropertiesTo(model);
             model.prepareMobModel(entity, limbSwing, limbSwingAmount, partialTicks);
             model.setupAnim(entity, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);

@@ -177,10 +177,9 @@ public class ProgWidgetItemFilterScreen extends AbstractProgWidgetScreen<ProgWid
 
         if (itemRad.isChecked()) {
             GuiUtils.bindTexture(getTexture());
-            RenderSystem.enableTexture();
             blit(matrixStack, guiLeft + itemX, guiTop + 51, 186, 0, 18, 18);
             if (!progWidget.getRawFilter().isEmpty()) {
-                Minecraft.getInstance().getItemRenderer().renderGuiItem(progWidget.getRawFilter(), guiLeft + itemX + 1, guiTop + 52);
+                Minecraft.getInstance().getItemRenderer().renderGuiItem(matrixStack, progWidget.getRawFilter(), guiLeft + itemX + 1, guiTop + 52);
                 if (mouseX >= guiLeft + itemX && mouseX <= guiLeft + itemX + 16 && mouseY >= guiTop + 51 && mouseY <= guiTop + 67) {
                     renderTooltip(matrixStack, progWidget.getRawFilter(), mouseX, mouseY);
                 }

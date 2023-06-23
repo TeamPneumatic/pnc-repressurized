@@ -34,7 +34,7 @@ public class WidgetTooltipArea extends AbstractWidget implements ITooltipProvide
     }
 
     @Override
-    public void renderButton(PoseStack matrixStack, int p_render_1_, int p_render_2_, float p_render_3_) {
+    public void renderWidget(PoseStack matrixStack, int p_render_1_, int p_render_2_, float p_render_3_) {
         // nothing
     }
 
@@ -50,8 +50,7 @@ public class WidgetTooltipArea extends AbstractWidget implements ITooltipProvide
     }
 
     @Override
-    public boolean changeFocus(boolean focus) {
-        return false;  // not focusable
+    public void setFocused(boolean pFocused) {
     }
 
     @Override

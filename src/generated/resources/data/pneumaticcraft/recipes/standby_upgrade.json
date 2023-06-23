@@ -19,5 +19,6 @@
   ],
   "result": {
     "item": "pneumaticcraft:standby_upgrade"
-  }
+  },
+  "show_notification": true
 }

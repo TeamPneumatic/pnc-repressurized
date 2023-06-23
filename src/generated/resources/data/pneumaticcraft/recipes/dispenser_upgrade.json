@@ -19,5 +19,6 @@
   ],
   "result": {
     "item": "pneumaticcraft:dispenser_upgrade"
-  }
+  },
+  "show_notification": true
 }

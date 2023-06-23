@@ -30,7 +30,8 @@
         ],
         "result": {
           "item": "pneumaticcraft:drone_interface"
-        }
+        },
+        "show_notification": true
       }
     }
   ]

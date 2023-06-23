@@ -19,5 +19,6 @@
   ],
   "result": {
     "item": "pneumaticcraft:stomp_upgrade"
-  }
+  },
+  "show_notification": true
 }

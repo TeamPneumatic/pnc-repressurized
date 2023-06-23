@@ -41,7 +41,7 @@ public class BulletParticle extends TextureSheetParticle {
 
         this.move(this.xd, this.yd, this.zd);
 
-        BlockPos pos = new BlockPos(x, y, z);
+        BlockPos pos = BlockPos.containing(x, y, z);
         BlockState state = level.getBlockState(pos);
         if (!state.getCollisionShape(level, pos).isEmpty() || onGround) {
             if (level.random.nextBoolean()) {

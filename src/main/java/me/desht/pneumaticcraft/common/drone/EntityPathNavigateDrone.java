@@ -69,7 +69,7 @@ public class EntityPathNavigateDrone extends FlyingPathNavigation implements IPa
      */
     @Override
     public Path createPath(Entity entity, int p2) {
-        BlockPos pos = new BlockPos(entity.getX(), entity.getBoundingBox().minY, entity.getZ());
+        BlockPos pos = BlockPos.containing(entity.getX(), entity.getBoundingBox().minY, entity.getZ());
 
         if ((entity instanceof ItemEntity && !droneEntity.isBlockValidPathfindBlock(pos)) || entity instanceof AbstractMinecart) {
             // items can end up with a blockpos of the ground they're sitting on,
@@ -201,7 +201,7 @@ public class EntityPathNavigateDrone extends FlyingPathNavigation implements IPa
                         if (stuckTicks++ > ConfigHelper.common().drones.stuckDroneTeleportTicks.get()) {
                             Vec3 v = droneEntity.getDronePos();
                             droneEntity.getDebugger().addEntry("pneumaticcraft.gui.progWidget.general.debug.stuckBlock",
-                                    new BlockPos(Math.round(v.x), Math.round(v.y), Math.round(v.z)));
+                                    BlockPos.containing(Math.round(v.x), Math.round(v.y), Math.round(v.z)));
                             teleportCounter = 0;
                             telPos = path.getTarget();
                             stuckTicks = 0;
@@ -230,7 +230,7 @@ public class EntityPathNavigateDrone extends FlyingPathNavigation implements IPa
 
     @Override
     public boolean moveToXYZ(double x, double y, double z) {
-        BlockPos pos = new BlockPos(x, y, z);
+        BlockPos pos = BlockPos.containing(x, y, z);
         if (!checkForChunkLoading(pos)) {
             droneEntity.getDebugger().addEntry("pneumaticcraft.gui.progWidget.general.debug.unloadedChunk", pos);
             return false;

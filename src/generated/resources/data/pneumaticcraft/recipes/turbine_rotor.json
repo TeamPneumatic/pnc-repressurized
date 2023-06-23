@@ -16,5 +16,6 @@
   ],
   "result": {
     "item": "pneumaticcraft:turbine_rotor"
-  }
+  },
+  "show_notification": true
 }

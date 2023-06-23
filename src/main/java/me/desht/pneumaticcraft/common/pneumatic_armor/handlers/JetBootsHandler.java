@@ -42,7 +42,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import net.minecraft.world.Difficulty;
-import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.Pose;
@@ -157,7 +156,7 @@ public class JetBootsHandler extends BaseArmorUpgradeHandler<JetBootsHandler.Jet
                 }
                 if (vel > 2) {
                     player.playSound(vel > 2.5 ? SoundEvents.GENERIC_BIG_FALL : SoundEvents.GENERIC_SMALL_FALL, 1.0F, 1.0F);
-                    player.hurt(DamageSource.FLY_INTO_WALL, (float) vel);
+                    player.hurt(player.damageSources().flyIntoWall(), (float) vel);
                     AdvancementTriggers.FLY_INTO_WALL.trigger((ServerPlayer) player);
                 }
             }

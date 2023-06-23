@@ -18,7 +18,6 @@
 package me.desht.pneumaticcraft.client.gui.widget;
 
 import com.google.common.collect.ImmutableList;
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.AbstractWidget;
@@ -77,7 +76,7 @@ public class WidgetList<T> extends AbstractWidget implements ITooltipProvider {
     }
 
     @Override
-    public void renderButton(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+    public void renderWidget(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
         if (visible) {
             drawList(matrixStack);
         }
@@ -147,9 +146,7 @@ public class WidgetList<T> extends AbstractWidget implements ITooltipProvider {
         GL11.glEnable(GL11.GL_SCISSOR_TEST);
         GL11.glScissor(x * scale, (y + height) * scale, width * scale, height * scale);
         if (inverseSelected && selected >= 0) {
-            RenderSystem.disableTexture();
             fill(matrixStack, x, y + lineHeight * selected, x + width, y + lineHeight * (selected + 1), 0xFF000000 | selectedBg);
-            RenderSystem.enableTexture();
         }
         matrixStack.translate(x, y, 0);
         matrixStack.scale(0.75f, 1f, 1f);

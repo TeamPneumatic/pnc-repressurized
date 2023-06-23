@@ -78,7 +78,6 @@ public abstract class ProgWidgetDroneConditionScreen<T extends ProgWidgetDroneCo
             textField = new WidgetTextFieldNumber(font, guiLeft + baseX, guiTop + baseY + 40, 50, 11).setRange(0, Integer.MAX_VALUE);
             textField.setValue(progWidget.getRequiredCount() + "");
             textField.setMaxLength(GlobalVariableManager.MAX_VARIABLE_LEN);
-            textField.setFocus(true);
             textField.setResponder(s -> progWidget.setRequiredCount(textField.getIntValue()));
             addRenderableWidget(textField);
             setInitialFocus(textField);

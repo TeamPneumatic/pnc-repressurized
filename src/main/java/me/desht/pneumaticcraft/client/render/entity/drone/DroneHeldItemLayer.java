@@ -24,10 +24,10 @@ import me.desht.pneumaticcraft.common.entity.drone.AbstractDroneEntity;
 import me.desht.pneumaticcraft.common.item.minigun.AbstractGunAmmoItem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.world.item.*;
+import net.minecraft.world.level.Level;
 
 import javax.annotation.Nonnull;
 
@@ -40,11 +40,11 @@ public class DroneHeldItemLayer extends RenderLayer<AbstractDroneEntity, ModelDr
     public void render(PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn, AbstractDroneEntity entityIn, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
         ItemStack held = entityIn.getDroneHeldItem();
         if (!held.isEmpty() && !(held.getItem() instanceof AbstractGunAmmoItem && entityIn.hasMinigun())) {
-            renderHeldItem(held, matrixStackIn, bufferIn, packedLightIn, LivingEntityRenderer.getOverlayCoords(entityIn, 0.0F));
+            renderHeldItem(held, matrixStackIn, bufferIn, packedLightIn, LivingEntityRenderer.getOverlayCoords(entityIn, 0.0F), entityIn.getLevel());
         }
     }
 
-    private void renderHeldItem(@Nonnull ItemStack stack, PoseStack matrixStack, MultiBufferSource buffer, int packedLight, int packedOverlay) {
+    private void renderHeldItem(@Nonnull ItemStack stack, PoseStack matrixStack, MultiBufferSource buffer, int packedLight, int packedOverlay, Level level) {
         matrixStack.pushPose();
 
         // note: transform is currently set up so items render upside down
@@ -56,7 +56,7 @@ public class DroneHeldItemLayer extends RenderLayer<AbstractDroneEntity, ModelDr
         }
         float scaleFactor = stack.getItem() instanceof BlockItem ? 0.7F : 0.5F;
         matrixStack.scale(scaleFactor, scaleFactor, scaleFactor);
-        Minecraft.getInstance().getItemRenderer().renderStatic(stack, ItemTransforms.TransformType.FIXED, packedLight, packedOverlay, matrixStack, buffer, 0);
+        Minecraft.getInstance().getItemRenderer().renderStatic(stack, ItemDisplayContext.FIXED, packedLight, packedOverlay, matrixStack, buffer, level, 0);
 
         matrixStack.popPose();
     }

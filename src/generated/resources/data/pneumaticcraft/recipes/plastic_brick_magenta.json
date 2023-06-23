@@ -17,5 +17,6 @@
   "result": {
     "count": 8,
     "item": "pneumaticcraft:plastic_brick_magenta"
-  }
+  },
+  "show_notification": true
 }

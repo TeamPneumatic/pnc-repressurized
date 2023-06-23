@@ -28,6 +28,7 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
+import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
@@ -336,7 +337,12 @@ public class RenderUtils {
 
     public static void renderString3d(Component str, float x, float y, int color, PoseStack matrixStack, MultiBufferSource buffer, boolean dropShadow, boolean disableDepthTest) {
         Font fr = Minecraft.getInstance().font;
-        fr.drawInBatch(str, x, y, color, dropShadow, matrixStack.last().pose(), buffer, disableDepthTest, 0, FULL_BRIGHT);
+        fr.drawInBatch(str, x, y, color, dropShadow, matrixStack.last().pose(), buffer, disableDepthTest ? Font.DisplayMode.SEE_THROUGH : Font.DisplayMode.NORMAL, 0, FULL_BRIGHT);
+    }
+
+    public static void renderString3d(FormattedCharSequence str, float x, float y, int color, PoseStack matrixStack, MultiBufferSource buffer, boolean dropShadow, boolean disableDepthTest) {
+        Font fr = Minecraft.getInstance().font;
+        fr.drawInBatch(str, x, y, color, dropShadow, matrixStack.last().pose(), buffer, disableDepthTest ? Font.DisplayMode.SEE_THROUGH : Font.DisplayMode.NORMAL, 0, FULL_BRIGHT);
     }
 
     public static void normalLine(VertexConsumer builder, Matrix4f posMat, Matrix3f normal, float x1, float y1, float z1, float x2, float y2, float z2, float a, float r, float g, float b, boolean isStrip) {

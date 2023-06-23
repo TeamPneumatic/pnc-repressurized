@@ -19,5 +19,6 @@
   ],
   "result": {
     "item": "pneumaticcraft:ender_visor_upgrade"
-  }
+  },
+  "show_notification": true
 }

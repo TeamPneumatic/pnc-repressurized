@@ -25,5 +25,6 @@
   ],
   "result": {
     "item": "pneumaticcraft:security_station"
-  }
+  },
+  "show_notification": true
 }

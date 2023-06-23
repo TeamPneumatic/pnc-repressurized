@@ -21,6 +21,7 @@ import me.desht.pneumaticcraft.api.lib.Names;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
+import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.biome.Biome;
@@ -180,6 +181,22 @@ public class PneumaticCraftTags {
         }
 
         static TagKey<Structure> modTag(String name) {
+            return tag(Names.MOD_ID, name);
+        }
+    }
+
+    public static class DamageTypes extends PneumaticCraftTags {
+        public static final TagKey<DamageType> ACID = modTag("etching_acid");
+        public static final TagKey<DamageType> PRESSURE = modTag("pressure");
+        public static final TagKey<DamageType> PLASTIC_BLOCK = modTag("plastic_block");
+        public static final TagKey<DamageType> SECURITY_STATION = modTag("security_station");
+        public static final TagKey<DamageType> MINIGUN = modTag("minigun");
+
+        static TagKey<DamageType> tag(String modid, String name) {
+            return TagKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(modid, name));
+        }
+
+        static TagKey<DamageType> modTag(String name) {
             return tag(Names.MOD_ID, name);
         }
     }

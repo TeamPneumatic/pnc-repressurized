@@ -1,7 +1,10 @@
 package me.desht.pneumaticcraft.api.misc;
 
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageType;
 
 /**
  * Get an instance of this via {@link PneumaticRegistry.IPneumaticCraftInterface#getDamageSources()}
@@ -40,11 +43,9 @@ public interface DamageSources {
     boolean isPlasticBlockDamage(DamageSource damageSource);
 
     /**
-     * Damage dealt to Drones when they are wrenched, execute a Suicide widget, or encounter a fatal run-time program
-     * error. This damage is always instantly fatal to the Drone.
-     *
+     * Damage dealt by a Minigun (including Drones and Sentry Turrets)
      * @param damageSource damage source to check
-     * @return true if drone overload damage
+     * @return true if minigun damage
      */
-    boolean isDroneOverloadDamage(DamageSource damageSource);
+    boolean isMinigunDamage(DamageSource damageSource);
 }

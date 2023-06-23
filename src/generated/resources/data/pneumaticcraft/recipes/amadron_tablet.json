@@ -19,5 +19,6 @@
   ],
   "result": {
     "item": "pneumaticcraft:amadron_tablet"
-  }
+  },
+  "show_notification": true
 }

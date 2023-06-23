@@ -24,7 +24,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.ExperienceOrb;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.util.FakePlayer;
 
@@ -66,8 +65,8 @@ public class DroneFakePlayer extends FakePlayer {
     }
 
     @Override
-    protected void playEquipSound(ItemStack stack) {
-        // nothing
+    public boolean isSilent() {
+        return true;
     }
 
     @Override
@@ -77,6 +76,6 @@ public class DroneFakePlayer extends FakePlayer {
 
     @Override
     public BlockPos blockPosition() {
-        return new BlockPos(drone.getDronePos());
+        return BlockPos.containing(drone.getDronePos());
     }
 }

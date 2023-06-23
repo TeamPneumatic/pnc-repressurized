@@ -22,7 +22,10 @@ import me.desht.pneumaticcraft.client.gui.semiblock.AbstractLogisticsScreen;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.entity.semiblock.AbstractLogisticsFrameEntity;
 import me.desht.pneumaticcraft.common.inventory.slot.PhantomSlot;
+import mezz.jei.api.constants.VanillaTypes;
+import mezz.jei.api.forge.ForgeTypes;
 import mezz.jei.api.gui.handlers.IGhostIngredientHandler;
+import mezz.jei.api.ingredients.ITypedIngredient;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
@@ -33,22 +36,22 @@ import java.util.List;
 
 public class LogisticsFilterGhost<S extends AbstractLogisticsScreen<T>, T extends AbstractLogisticsFrameEntity> implements IGhostIngredientHandler<S> {
     @Override
-    public <I> List<Target<I>> getTargets(S gui, I ingredient, boolean doStart) {
+    public <I> List<Target<I>> getTargetsTyped(S gui, ITypedIngredient<I> ingredient, boolean doStart) {
         ImmutableList.Builder<Target<I>> builder = ImmutableList.builder();
-        if (ingredient instanceof ItemStack) {
+        if (ingredient.getType() == VanillaTypes.ITEM_STACK) {
             for (Slot slot : gui.getMenu().slots) {
                 if (slot instanceof PhantomSlot ps) {
                     //noinspection unchecked
                     builder.add((Target<I>) new ItemStackTarget(ps, gui));
                 }
             }
-            FluidUtil.getFluidContained((ItemStack) ingredient).ifPresent(fluidStack -> {
+            FluidUtil.getFluidContained(ingredient.getIngredient(VanillaTypes.ITEM_STACK).orElse(ItemStack.EMPTY)).ifPresent(fluidStack -> {
                 for (int i = 0; i < AbstractLogisticsFrameEntity.FLUID_FILTER_SLOTS; i++) {
                     //noinspection unchecked
                     builder.add((Target<I>) new FluidStackItemTarget(i, gui));
                 }
             });
-        } else if (ingredient instanceof FluidStack) {
+        } else if (ingredient.getType() == ForgeTypes.FLUID_STACK) {
             for (int i = 0; i < AbstractLogisticsFrameEntity.FLUID_FILTER_SLOTS; i++) {
                 //noinspection unchecked
                 builder.add((Target<I>) new FluidStackTarget(i, gui));

@@ -80,7 +80,6 @@ public class MinigunMagazineScreen extends AbstractPneumaticCraftContainerScreen
             int minX = 26 + (lockedSlot % 2) * 18;
             int minY = 26 + (lockedSlot / 2) * 18;
 
-            RenderSystem.disableTexture();
             RenderSystem.enableBlend();
             RenderSystem.defaultBlendFunc();
 
@@ -91,8 +90,6 @@ public class MinigunMagazineScreen extends AbstractPneumaticCraftContainerScreen
             RenderSystem.lineWidth(3.0F);
             GuiUtils.drawOutline(matrixStack, wr, minX, minY, 0, 16, 16, 0, 208, 0, 255);
             RenderSystem.lineWidth(1.0F);
-
-            RenderSystem.enableTexture();
         }
     }
 }

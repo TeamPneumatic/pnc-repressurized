@@ -39,12 +39,10 @@ public class HackSimulationRenderer {
 
     public void render(PoseStack matrixStack, HackSimulation hackSimulation, int color) {
         RenderSystem.enableBlend();
-        RenderSystem.disableTexture();
         RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
         for (HackSimulation.ConnectionEntry entry : hackSimulation.allConnections) {
             GuiUtils.renderProgressingLine2d(matrixStack, makeProgressingLine(entry), color, 3F);
         }
-        RenderSystem.enableTexture();
         RenderSystem.disableBlend();
     }
 

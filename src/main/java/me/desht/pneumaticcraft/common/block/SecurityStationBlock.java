@@ -118,7 +118,7 @@ public class SecurityStationBlock extends AbstractPneumaticCraftBlock implements
                         player.displayClientMessage(PneumaticCraftUtils.xlate("pneumaticcraft.message.securityStation.alreadyHacked").withStyle(ChatFormatting.GOLD), false);
                     } else if (getPlayerHackLevel(player) < teSS.getSecurityLevel()) {
                         player.displayClientMessage(PneumaticCraftUtils.xlate("pneumaticcraft.message.securityStation.cantHack").withStyle(ChatFormatting.GOLD), false);
-                        player.hurt(DamageSource.OUT_OF_WORLD, 1f);
+                        player.hurt(player.damageSources().outOfWorld(), 1f);
                     } else {
                         if (ConfigHelper.common().machines.securityStationAllowHacking.get()) {
                             teSS.initiateHacking(player);

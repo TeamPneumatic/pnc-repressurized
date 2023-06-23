@@ -88,8 +88,8 @@ public class WidgetComboBox extends WidgetTextField implements IDrawAfterRender 
     }
 
     @Override
-    public void renderButton(PoseStack matrixStack, int mouseX, int mouseY, float partialTick) {
-        super.renderButton(matrixStack, mouseX, mouseY, partialTick);
+    public void renderWidget(PoseStack matrixStack, int mouseX, int mouseY, float partialTick) {
+        super.renderWidget(matrixStack, mouseX, mouseY, partialTick);
 
         fontRenderer.draw(matrixStack, isFocused() ? Symbols.TRIANGLE_UP : Symbols.TRIANGLE_DOWN, getX() + width - 7, getY() + 1, 0xc0c0c0);
     }

@@ -16,5 +16,6 @@
   ],
   "result": {
     "item": "pneumaticcraft:compressed_iron_leggings"
-  }
+  },
+  "show_notification": true
 }

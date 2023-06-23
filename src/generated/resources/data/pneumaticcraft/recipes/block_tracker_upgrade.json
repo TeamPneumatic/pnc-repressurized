@@ -19,5 +19,6 @@
   ],
   "result": {
     "item": "pneumaticcraft:block_tracker_upgrade"
-  }
+  },
+  "show_notification": true
 }

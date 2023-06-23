@@ -32,7 +32,6 @@ import me.desht.pneumaticcraft.api.semiblock.SemiblockEvent;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.api.tileentity.IManoMeasurable;
 import me.desht.pneumaticcraft.client.util.ProgressingLine;
-import me.desht.pneumaticcraft.common.PNCDamageSource;
 import me.desht.pneumaticcraft.common.block.entity.PneumaticEnergyStorage;
 import me.desht.pneumaticcraft.common.block.entity.ProgrammerBlockEntity;
 import me.desht.pneumaticcraft.common.capabilities.BasicAirHandler;
@@ -93,10 +92,11 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.damagesource.EntityDamageSource;
+import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -822,7 +822,7 @@ public class DroneEntity extends AbstractDroneEntity implements
     @Override
     public boolean onWrenched(Level world, Player player, BlockPos pos, Direction side, InteractionHand hand) {
         if (shouldDropAsItem()) {
-            hurt(new PNCDamageSource.DamageSourceDroneOverload("wrenched"), 2000.0F);
+            overload("wrenched");
             return true;
         } else {
             return false;
@@ -902,11 +902,14 @@ public class DroneEntity extends AbstractDroneEntity implements
             int x = (int) Math.floor(getX());
             int y = (int) Math.floor(getY());
             int z = (int) Math.floor(getZ());
-            Component msg = hasCustomName() ?
-                    Component.translatable("pneumaticcraft.death.drone.named", Objects.requireNonNull(getCustomName()).getString(), x, y, z) :
-                    Component.translatable("pneumaticcraft.death.drone", x, y, z);
-            msg = msg.plainCopy().append(" - ").append(damageSource.getLocalizedDeathMessage(this));
-            owner.displayClientMessage(msg, false);
+            String dim = getLevel().dimension().location().toString();
+            MutableComponent msg = hasCustomName() ?
+                    Component.translatable("pneumaticcraft.death.drone.named", Objects.requireNonNull(getCustomName()).getString(), dim, x, y, z) :
+                    Component.translatable("pneumaticcraft.death.drone", dim, x, y, z);
+            owner.displayClientMessage(msg.withStyle(ChatFormatting.GOLD), false);
+            if (!damageSource.is(DamageTypes.OUT_OF_WORLD)) {
+                owner.displayClientMessage(Component.literal(" - ").append(damageSource.getLocalizedDeathMessage(this)).withStyle(ChatFormatting.GRAY), false);
+            }
         }
     }
 
@@ -1135,28 +1138,26 @@ public class DroneEntity extends AbstractDroneEntity implements
     }
 
     @Override
-    public boolean hurt(DamageSource damageSource, float damage) {
-        if (damageSource == DamageSource.IN_WALL) {
+    public boolean hurt(DamageSource source, float damage) {
+        if (source.is(DamageTypes.IN_WALL)) {
             if (suffocationCounter > 0) suffocationCounter--;
         }
-        return super.hurt(damageSource, damage);
+        return super.hurt(source, damage);
     }
 
     @Override
     public boolean isInvulnerableTo(DamageSource source) {
-        if (source == DamageSource.IN_WALL) {
+        if (source.is(DamageTypes.IN_WALL)) {
             return suffocationCounter > 0 || !ConfigHelper.common().drones.enableDroneSuffocation.get();
         }
         if (RadiationSourceCheck.INSTANCE.isRadiation(source)) {
             return true;
         }
-        if (source instanceof EntityDamageSource) {
-            Entity e = source.getEntity();
-            if (e != null && !level.isClientSide && e.getId() == getFakePlayer().getId()) {
-                // don't allow the drone's own fake player to damage the drone
-                // e.g. if the drone is wielding an infinity hammer
-                return true;
-            }
+        Entity e = source.getEntity();
+        if (e != null && !level.isClientSide && e.getId() == getFakePlayer().getId()) {
+            // don't allow the drone's own fake player to damage the drone
+            // e.g. if the drone is wielding an infinity hammer
+            return true;
         }
         return super.isInvulnerableTo(source);
     }
@@ -1438,7 +1439,13 @@ public class DroneEntity extends AbstractDroneEntity implements
 
     @Override
     public void overload(String msgKey, Object... params) {
-        hurt(new PNCDamageSource.DamageSourceDroneOverload(msgKey, params), 2000.0F);
+        kill();
+        Player owner = getOwner();
+        if (owner != null) {
+            owner.displayClientMessage(Component.literal(" - ")
+                    .append(Component.translatable("pneumaticcraft.death.drone.overload." + msgKey, params))
+                    .withStyle(ChatFormatting.GRAY), false);
+        }
     }
 
     @Override

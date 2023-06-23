@@ -17,7 +17,6 @@
 
 package me.desht.pneumaticcraft.client.gui.upgrademanager;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
@@ -131,13 +130,10 @@ public abstract class AbstractUpgradeManagerScreen extends AbstractPneumaticCraf
         itemStack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY)
                 .ifPresent(h -> PressureGaugeRenderer2D.drawPressureGauge(matrixStack, font, 0, h.maxPressure(), h.maxPressure(), 0, te.chargingItemPressure, gaugeX, gaugeY));
 
-        PoseStack poseStack = RenderSystem.getModelViewStack();
-        poseStack.pushPose();
-        poseStack.scale(2f, 2f, 2f);
-        RenderSystem.applyModelViewMatrix();
-        Minecraft.getInstance().getItemRenderer().renderGuiItem(itemStack, 3, 22);
-        poseStack.popPose();
-        RenderSystem.applyModelViewMatrix();
+        matrixStack.pushPose();
+        matrixStack.scale(2f, 2f, 2f);
+        Minecraft.getInstance().getItemRenderer().renderGuiItem(matrixStack, itemStack, 3, 22);
+        matrixStack.popPose();
     }
 
     @Override

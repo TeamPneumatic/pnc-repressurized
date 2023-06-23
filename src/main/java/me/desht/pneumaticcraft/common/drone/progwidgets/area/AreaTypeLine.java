@@ -49,7 +49,7 @@ public class AreaTypeLine extends AreaType {
             curX += lineVec.x;
             curY += lineVec.y;
             curZ += lineVec.z;
-            areaAdder.accept(new BlockPos(curX, curY, curZ));
+            areaAdder.accept(BlockPos.containing(curX, curY, curZ));
         }
     }
 }

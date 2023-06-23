@@ -1,0 +1,5 @@
+{
+  "exhaustion": 1.0,
+  "message_id": "pnc_acid",
+  "scaling": "when_caused_by_living_non_player"
+}

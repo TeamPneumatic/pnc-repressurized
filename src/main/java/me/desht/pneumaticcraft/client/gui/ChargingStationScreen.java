@@ -164,13 +164,10 @@ public class ChargingStationScreen extends AbstractPneumaticCraftContainerScreen
     }
 
     private void renderAir(PoseStack matrixStack, float partialTicks) {
-        RenderSystem.disableTexture();
         RenderSystem.lineWidth(2.0F);
         for (int i = 0; i < PARTICLE_COUNT; i++) {
             renderAirParticle(matrixStack, renderAirProgress % (1F / PARTICLE_COUNT) + (float) i / PARTICLE_COUNT);
         }
-
-        RenderSystem.enableTexture();
     }
 
     private void renderAirParticle(PoseStack matrixStack, float particleProgress) {

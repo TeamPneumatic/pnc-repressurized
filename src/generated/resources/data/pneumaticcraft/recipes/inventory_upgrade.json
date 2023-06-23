@@ -19,5 +19,6 @@
   ],
   "result": {
     "item": "pneumaticcraft:inventory_upgrade"
-  }
+  },
+  "show_notification": true
 }

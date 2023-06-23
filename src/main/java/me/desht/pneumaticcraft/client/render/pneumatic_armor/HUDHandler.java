@@ -112,7 +112,6 @@ public enum HUDHandler implements IKeyListener {
 
             for (EquipmentSlot slot : ArmorUpgradeRegistry.ARMOR_SLOTS) {
                 if (commonArmorHandler.isArmorReady(slot)) {
-                    GlStateManager._disableTexture();
                     List<IArmorUpgradeClientHandler<?>> clientHandlers = ClientArmorRegistry.getInstance().getHandlersForSlot(slot);
                     for (int i = 0; i < clientHandlers.size(); i++) {
                         if (commonArmorHandler.isUpgradeInserted(slot, i)
@@ -120,7 +119,6 @@ public enum HUDHandler implements IKeyListener {
                             clientHandlers.get(i).render3D(poseStack, buffer, event.getPartialTick());
                         }
                     }
-                    GlStateManager._enableTexture();
                 }
             }
 
@@ -293,7 +291,7 @@ public enum HUDHandler implements IKeyListener {
     @SubscribeEvent
     public void handleResolutionChange(ScreenEvent.Init event) {
         Screen gui = event.getScreen();
-        if (gui.getMinecraft().level != null) {
+        if (gui.getMinecraft() != null && gui.getMinecraft().level != null) {
             Window mw = gui.getMinecraft().getWindow();
             if (mw.getGuiScaledWidth() != lastScaledWidth || mw.getGuiScaledHeight() != lastScaledHeight) {
                 ClientArmorRegistry c = ClientArmorRegistry.getInstance();

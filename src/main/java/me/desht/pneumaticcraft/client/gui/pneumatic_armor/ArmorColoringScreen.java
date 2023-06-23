@@ -201,7 +201,8 @@ public class ArmorColoringScreen extends AbstractPneumaticCraftScreen {
         super.render(matrixStack, x, y, partialTicks);
         double scaleFactor = Minecraft.getInstance().getWindow().getGuiScale();
         int scale = (int) (Minecraft.getInstance().getWindow().getScreenHeight() / (scaleFactor * 3));
-        InventoryScreen.renderEntityInInventory(width * 2 / 3, height * 3 / 4, scale, width * 2 / 3f - x, height / 4f - y,
+        InventoryScreen.renderEntityInInventoryFollowsMouse(matrixStack, width * 2 / 3, height * 3 / 4, scale,
+                width * 2 / 3f - x, height / 4f - y,
                 ClientUtils.getClientPlayer());
     }
 
@@ -258,12 +259,12 @@ public class ArmorColoringScreen extends AbstractPneumaticCraftScreen {
             super.applyValue();
         }
 
-        @Override
-        protected void renderBg(PoseStack pPoseStack, Minecraft pMinecraft, int pMouseX, int pMouseY) {
-            int xPos = this.getX() + (int)(this.value * (double)(this.width - 8));
-            int vOff = (this.isHoveredOrFocused() ? 2 : 1) * 20;
-            ScreenUtils.blitWithBorder(pPoseStack, WIDGETS_LOCATION, xPos, this.getY(), 0, 46 + vOff, 8, this.height, 200, 20, 2, 3, 2, 2, this.getBlitOffset());
-        }
+//        @Override
+//        protected void renderBg(PoseStack pPoseStack, Minecraft pMinecraft, int pMouseX, int pMouseY) {
+//            int xPos = this.getX() + (int)(this.value * (double)(this.width - 8));
+//            int vOff = (this.isHoveredOrFocused() ? 2 : 1) * 20;
+//            ScreenUtils.blitWithBorder(pPoseStack, WIDGETS_LOCATION, xPos, this.getY(), 0, 46 + vOff, 8, this.height, 200, 20, 2, 3, 2, 2, 0);
+//        }
     }
 
     private enum ColorComponent {
@@ -333,8 +334,8 @@ public class ArmorColoringScreen extends AbstractPneumaticCraftScreen {
         }
 
         @Override
-        public void renderButton(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
-            super.renderButton(matrixStack, mouseX, mouseY, partialTicks);
+        public void renderWidget(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+            super.renderWidget(matrixStack, mouseX, mouseY, partialTicks);
 
             int x = getX(), y = getY();
             fill(matrixStack, x + 3, y + 3, x + 14, y + 14, gui.colors[slot.getIndex()][selectorType.ordinal()]);

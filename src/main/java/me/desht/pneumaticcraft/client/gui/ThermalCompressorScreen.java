@@ -164,8 +164,8 @@ public class ThermalCompressorScreen extends AbstractPneumaticCraftContainerScre
         }
 
         @Override
-        public void renderButton(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
-            super.renderButton(matrixStack, mouseX, mouseY, partialTicks);
+        public void renderWidget(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+            super.renderWidget(matrixStack, mouseX, mouseY, partialTicks);
 
             String s = side.toString().substring(0, 1).toUpperCase();
             GuiUtils.drawScaledText(matrixStack, font, s, getX() + 8, getY() - 4, 0x404040, 0.5f);

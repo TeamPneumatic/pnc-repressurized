@@ -17,6 +17,7 @@
 
 package me.desht.pneumaticcraft.api.crafting.recipe;
 
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.Container;
@@ -48,7 +49,7 @@ public abstract class PneumaticCraftRecipe implements Recipe<PneumaticCraftRecip
     }
 
     @Override
-    public ItemStack assemble(DummyIInventory inv) {
+    public ItemStack assemble(DummyIInventory inv, RegistryAccess registryAccess) {
         return ItemStack.EMPTY;
     }
 
@@ -58,7 +59,7 @@ public abstract class PneumaticCraftRecipe implements Recipe<PneumaticCraftRecip
     }
 
     @Override
-    public ItemStack getResultItem() {
+    public ItemStack getResultItem(RegistryAccess registryAccess) {
         return ItemStack.EMPTY;
     }
 

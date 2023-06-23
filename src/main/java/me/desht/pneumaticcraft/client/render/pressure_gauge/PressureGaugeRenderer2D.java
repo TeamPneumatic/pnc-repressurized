@@ -58,7 +58,6 @@ public class PressureGaugeRenderer2D {
      * @param fgColor color to draw the surround, needle and text
      */
     public static void drawPressureGauge(PoseStack matrixStack, Font fontRenderer, float minPressure, float maxPressure, float dangerPressure, float minWorkingPressure, float currentPressure, int xPos, int yPos, int fgColor) {
-        RenderSystem.disableTexture();
         RenderSystem.lineWidth(1.0F);
 
         BufferBuilder wr = Tesselator.getInstance().getBuilder();
@@ -88,8 +87,6 @@ public class PressureGaugeRenderer2D {
         wr.begin(VertexFormat.Mode.DEBUG_LINE_STRIP, DefaultVertexFormat.POSITION_COLOR);
         drawNeedle(matrixStack, wr, xPos, yPos, angleIndicator, fgColor);
         Tesselator.getInstance().end();
-
-        RenderSystem.enableTexture();
 
         // draw the numbers next to the scaler.
         drawText(matrixStack, fontRenderer, xPos, yPos, fgColor, textScalers);

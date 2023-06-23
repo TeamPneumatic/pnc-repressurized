@@ -469,7 +469,7 @@ public class UniversalSensorBlockEntity extends AbstractAirHandlingBlockEntity i
                 requireArgs(args, 4, "slot, x, y, z");
                 ItemStack stack = getUpgradeHandler().getStackInSlot(((Double) args[0]).intValue() - 1); //minus one, as lua is 1-oriented.
                 if (stack.getItem() == ModItems.GPS_TOOL.get()) {
-                    GPSToolItem.setGPSLocation(null, stack, new BlockPos((Double) args[1], (Double) args[2], (Double) args[3]));
+                    GPSToolItem.setGPSLocation(null, stack, BlockPos.containing((Double) args[1], (Double) args[2], (Double) args[3]));
                     return new Object[]{true};
                 } else {
                     return new Object[]{false};

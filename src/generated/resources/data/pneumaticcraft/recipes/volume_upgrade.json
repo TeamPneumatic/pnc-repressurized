@@ -19,5 +19,6 @@
   ],
   "result": {
     "item": "pneumaticcraft:volume_upgrade"
-  }
+  },
+  "show_notification": true
 }

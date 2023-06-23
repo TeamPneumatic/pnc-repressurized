@@ -193,12 +193,10 @@ public class SpawnerExtractorBlockEntity extends AbstractAirHandlingBlockEntity 
             entity.moveTo(entity.getX(), entity.getY(), entity.getZ(), level.random.nextFloat() * 360.0F, 0.0F);
             if (entity instanceof Mob mobentity) {
                 if (nbt.size() == 1 && nbt.contains("id", Tag.TAG_STRING)) {
-                    if (!ForgeEventFactory.doSpecialSpawn(mobentity, this.level, (float)entity.getX(), (float)entity.getY(), (float)entity.getZ(), spawner, MobSpawnType.SPAWNER)) {
-                        mobentity.finalizeSpawn(serverworld, level.getCurrentDifficultyAt(entity.blockPosition()), MobSpawnType.SPAWNER, null, null);
-                        // note: "pneumaticcraft:defender" tag is added in TileEntityVacuumTrap.Listener.onMobSpawn()
-                        if (level.getDifficulty() == Difficulty.HARD) {
-                            getRandomEffects(level.random).forEach(effect -> mobentity.addEffect(new MobEffectInstance(effect, Integer.MAX_VALUE, 2)));
-                        }
+                    ForgeEventFactory.onFinalizeSpawn(mobentity, serverworld, serverworld.getCurrentDifficultyAt(getPosition()), MobSpawnType.SPAWNER, null, null);
+                    // note: "pneumaticcraft:defender" tag is added in TileEntityVacuumTrap.Listener.onMobSpawn()
+                    if (level.getDifficulty() == Difficulty.HARD) {
+                        getRandomEffects(level.random).forEach(effect -> mobentity.addEffect(new MobEffectInstance(effect, Integer.MAX_VALUE, 2)));
                     }
                 }
             }

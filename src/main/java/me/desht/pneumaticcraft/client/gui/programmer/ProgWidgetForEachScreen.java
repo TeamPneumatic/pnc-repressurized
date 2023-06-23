@@ -42,7 +42,7 @@ public class ProgWidgetForEachScreen<W extends IProgWidget & IVariableSetWidget>
         variableField.setMaxLength(GlobalVariableManager.MAX_VARIABLE_LEN);
         addRenderableWidget(variableField);
         variableField.setValue(progWidget.getVariable());
-        variableField.setFocus(true);
+        setInitialFocus(variableField);
 
         addLabel(xlate("pneumaticcraft.gui.progWidget.coordinate.variableName"), guiLeft + 10, guiTop + 30);
     }

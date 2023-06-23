@@ -208,7 +208,6 @@ public class SmartChestScreen extends AbstractPneumaticCraftContainerScreen<Smar
     protected void renderBg(PoseStack matrixStack, float partialTicks, int x, int y) {
         super.renderBg(matrixStack, partialTicks, x, y);
 
-        RenderSystem.enableTexture();
         RenderSystem.enableBlend();
         RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 
@@ -236,7 +235,6 @@ public class SmartChestScreen extends AbstractPneumaticCraftContainerScreen<Smar
     protected void renderLabels(PoseStack matrixStack, int x, int y) {
         super.renderLabels(matrixStack, x, y);
 
-        RenderSystem.enableTexture();
         RenderSystem.enableBlend();
         RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
         for (Pair<Integer, ItemStack> p : filter) {
@@ -246,7 +244,7 @@ public class SmartChestScreen extends AbstractPneumaticCraftContainerScreen<Smar
                 int sy = 18 + (slot / N_COLS) * 18;
                 matrixStack.pushPose();
                 ItemStack stack = p.getRight();
-                Minecraft.getInstance().getItemRenderer().renderGuiItem(stack, sx, sy);
+                Minecraft.getInstance().getItemRenderer().renderGuiItem(matrixStack, stack, sx, sy);
                 String label = "[" + stack.getCount() + "]";
                 matrixStack.translate(0, 0, 300);
                 if (!menu.slots.get(slot).hasItem()) {

@@ -41,7 +41,8 @@ public class IncendiaryGunAmmoItem extends AbstractGunAmmoItem {
 
     @Override
     protected DamageSource getDamageSource(Minigun minigun) {
-        return super.getDamageSource(minigun).setIsFire();
+        return minigun.getPlayer().damageSources().onFire();
+//        return super.getDamageSource(minigun).setIsFire();
     }
 
     @Override

@@ -17,5 +17,6 @@
   "result": {
     "count": 8,
     "item": "pneumaticcraft:reinforced_stone"
-  }
+  },
+  "show_notification": true
 }

@@ -84,7 +84,7 @@ public abstract class ProgWidgetAreaItemBase extends ProgWidget
 
     public CollisionGetter getChunkCache(Level world) {
         AABB aabb = getAreaExtents();
-        return new ChunkCache(world, new BlockPos(aabb.minX, aabb.minY, aabb.minZ), new BlockPos(aabb.maxX, aabb.maxY, aabb.maxZ));
+        return new ChunkCache(world, BlockPos.containing(aabb.minX, aabb.minY, aabb.minZ), BlockPos.containing(aabb.maxX, aabb.maxY, aabb.maxZ));
     }
 
     public AABB getAreaExtents() {

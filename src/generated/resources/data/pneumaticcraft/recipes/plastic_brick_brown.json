@@ -17,5 +17,6 @@
   "result": {
     "count": 8,
     "item": "pneumaticcraft:plastic_brick_brown"
-  }
+  },
+  "show_notification": true
 }

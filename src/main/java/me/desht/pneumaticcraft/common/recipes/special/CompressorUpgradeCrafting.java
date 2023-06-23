@@ -20,7 +20,9 @@ package me.desht.pneumaticcraft.common.recipes.special;
 import cofh.lib.util.constants.NBTTags;
 import com.google.common.base.Suppliers;
 import com.google.gson.JsonObject;
+import me.desht.pneumaticcraft.api.crafting.DummyRegistryAccess;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.FriendlyByteBuf;
@@ -62,8 +64,8 @@ public class CompressorUpgradeCrafting extends ShapedRecipe {
 
 	@NotNull
 	@Override
-	public ItemStack assemble(CraftingContainer inv) {
-		ItemStack result = super.assemble(inv);
+	public ItemStack assemble(CraftingContainer inv, RegistryAccess registryAccess) {
+		ItemStack result = super.assemble(inv, registryAccess);
 
 		int index = getMainItem(inv);
 		if (index == -1) {
@@ -108,13 +110,13 @@ public class CompressorUpgradeCrafting extends ShapedRecipe {
 		@Override
 		public ShapedRecipe fromJson(ResourceLocation pRecipeId, JsonObject pJson) {
 			ShapedRecipe r = super.fromJson(pRecipeId, pJson);
-			return new CompressorUpgradeCrafting(r.getId(), r.getGroup(), r.getRecipeWidth(), r.getRecipeHeight(), r.getIngredients(), r.getResultItem());
+			return new CompressorUpgradeCrafting(r.getId(), r.getGroup(), r.getRecipeWidth(), r.getRecipeHeight(), r.getIngredients(), r.getResultItem(DummyRegistryAccess.INSTANCE));
 		}
 
 		@Override
 		public ShapedRecipe fromNetwork(ResourceLocation pRecipeId, FriendlyByteBuf pBuffer) {
 			ShapedRecipe r = super.fromNetwork(pRecipeId, pBuffer);
-			return new CompressorUpgradeCrafting(r.getId(), r.getGroup(), r.getRecipeWidth(), r.getRecipeHeight(), r.getIngredients(), r.getResultItem());
+			return new CompressorUpgradeCrafting(r.getId(), r.getGroup(), r.getRecipeWidth(), r.getRecipeHeight(), r.getIngredients(), r.getResultItem(DummyRegistryAccess.INSTANCE));
 		}
 	}
 }

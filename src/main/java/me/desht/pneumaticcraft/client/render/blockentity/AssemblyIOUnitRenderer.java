@@ -38,6 +38,7 @@ import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -196,7 +197,7 @@ public class AssemblyIOUnitRenderer extends AbstractBlockEntityModelRenderer<Ass
                 matrixStackIn.scale(ITEM_SCALE, ITEM_SCALE, ITEM_SCALE);
                 ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
                 BakedModel bakedModel = itemRenderer.getModel(heldStack, te.getLevel(), null, 0);
-                itemRenderer.render(heldStack, ItemTransforms.TransformType.FIXED, true, matrixStackIn, bufferIn, combinedLightIn, combinedOverlayIn, bakedModel);
+                itemRenderer.render(heldStack, ItemDisplayContext.FIXED, true, matrixStackIn, bufferIn, combinedLightIn, combinedOverlayIn, bakedModel);
             }
         }
     }

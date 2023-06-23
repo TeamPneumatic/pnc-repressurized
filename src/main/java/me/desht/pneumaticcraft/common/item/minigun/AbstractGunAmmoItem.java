@@ -17,6 +17,7 @@
 
 package me.desht.pneumaticcraft.common.item.minigun;
 
+import me.desht.pneumaticcraft.common.PNCDamageSource;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModUpgrades;
@@ -104,7 +105,7 @@ public abstract class AbstractGunAmmoItem extends Item {
     }
 
     protected DamageSource getDamageSource(Minigun minigun) {
-        return DamageSource.playerAttack(minigun.getPlayer());
+        return PNCDamageSource.minigunAP(minigun.getPlayer().getLevel(), minigun.getPlayer());
     }
 
     @Override

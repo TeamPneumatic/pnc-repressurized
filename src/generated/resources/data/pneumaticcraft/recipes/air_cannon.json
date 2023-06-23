@@ -22,5 +22,6 @@
   ],
   "result": {
     "item": "pneumaticcraft:air_cannon"
-  }
+  },
+  "show_notification": true
 }

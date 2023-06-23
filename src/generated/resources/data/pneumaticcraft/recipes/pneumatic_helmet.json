@@ -19,5 +19,6 @@
   ],
   "result": {
     "item": "pneumaticcraft:pneumatic_helmet"
-  }
+  },
+  "show_notification": true
 }

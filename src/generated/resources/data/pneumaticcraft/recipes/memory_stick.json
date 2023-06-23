@@ -25,5 +25,6 @@
   ],
   "result": {
     "item": "pneumaticcraft:memory_stick"
-  }
+  },
+  "show_notification": true
 }

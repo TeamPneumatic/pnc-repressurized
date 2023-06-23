@@ -353,7 +353,6 @@ public abstract class AbstractPneumaticCraftContainerScreen<C extends AbstractPn
         if (guiTexture != null) {
             float[] c = RenderUtils.decomposeColorF(getBackgroundTint());
             GuiUtils.bindTexture(guiTexture, c[1], c[2], c[3], c[0]);
-            RenderSystem.enableTexture();
         }
     }
 

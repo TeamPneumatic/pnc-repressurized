@@ -20,6 +20,7 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.util.Mth;
+import net.minecraft.world.item.ItemDisplayContext;
 
 import static me.desht.pneumaticcraft.common.block.entity.PressureChamberInterfaceBlockEntity.MAX_PROGRESS;
 
@@ -151,7 +152,7 @@ public class PressureChamberInterfaceRenderer extends AbstractBlockEntityModelRe
             matrixStack.translate(0.5, 0.5, 0.5);
             ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
             BakedModel bakedModel = itemRenderer.getModel(te.getStackInInterface(), te.getLevel(), null, 0);
-            itemRenderer.render(te.getStackInInterface(), ItemTransforms.TransformType.GROUND, true, matrixStack, buffer, combinedLightIn, combinedOverlayIn, bakedModel);
+            itemRenderer.render(te.getStackInInterface(), ItemDisplayContext.GROUND, true, matrixStack, buffer, combinedLightIn, combinedOverlayIn, bakedModel);
 
             matrixStack.popPose();
         }

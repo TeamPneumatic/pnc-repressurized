@@ -25,5 +25,6 @@
   ],
   "result": {
     "item": "pneumaticcraft:programmer"
-  }
+  },
+  "show_notification": true
 }

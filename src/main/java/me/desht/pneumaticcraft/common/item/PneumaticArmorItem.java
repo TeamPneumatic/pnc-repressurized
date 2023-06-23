@@ -118,7 +118,7 @@ public class PneumaticArmorItem extends ArmorItem implements
     public static final int DEFAULT_SECONDARY_COLOR = 0xFFC0C0C0;
     public static final int DEFAULT_EYEPIECE_COLOR = 0xFF00AA00;
 
-    public PneumaticArmorItem(EquipmentSlot equipmentSlotIn) {
+    public PneumaticArmorItem(ArmorItem.Type equipmentSlotIn) {
         super(PNEUMATIC_ARMOR_MATERIAL, equipmentSlotIn, ModItems.defaultProps());
     }
 
@@ -152,7 +152,7 @@ public class PneumaticArmorItem extends ArmorItem implements
 
     @Override
     public int getBaseVolume() {
-        return ARMOR_VOLUMES[slot.getIndex()];
+        return ARMOR_VOLUMES[type.getSlot().getIndex()];
     }
 
     @Override
@@ -180,7 +180,7 @@ public class PneumaticArmorItem extends ArmorItem implements
 
     @Override
     public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
-        if (slot == EquipmentSlot.HEAD && worldIn != null) {
+        if (type == Type.HELMET && worldIn != null) {
             addHelmetInformation(stack, worldIn, tooltip);
         }
     }
@@ -218,7 +218,7 @@ public class PneumaticArmorItem extends ArmorItem implements
 //        Multimap<Attribute, AttributeModifier> m = MultimapBuilder.hashKeys().hashSetValues()
 //                .build(super.getAttributeModifiers(equipmentSlot, stack));
 
-        if (equipmentSlot == this.slot) {
+        if (equipmentSlot == type.getSlot()) {
             int upgrades = UpgradableItemUtils.getUpgradeCount(stack, ModUpgrades.ARMOR.get());
             multimap.put(Attributes.ARMOR, new AttributeModifier(PNEUMATIC_ARMOR_MODIFIERS[equipmentSlot.getIndex()], "Pneumatic Armor modifier boost", (double) upgrades / 2d, AttributeModifier.Operation.ADDITION));
             multimap.put(Attributes.ARMOR_TOUGHNESS, new AttributeModifier(PNEUMATIC_ARMOR_MODIFIERS[equipmentSlot.getIndex()], "Pneumatic Armor toughness boost", upgrades, AttributeModifier.Operation.ADDITION));
@@ -395,7 +395,7 @@ public class PneumaticArmorItem extends ArmorItem implements
     public boolean makesPiglinsNeutral(ItemStack stack, LivingEntity wearer) {
         if (wearer instanceof Player player && stack.getItem() instanceof PneumaticArmorItem armor) {
             return CommonArmorHandler.getHandlerForPlayer(player)
-                    .getUpgradeCount(armor.getSlot(), ModUpgrades.GILDED.get()) > 0;
+                    .getUpgradeCount(armor.type.getSlot(), ModUpgrades.GILDED.get()) > 0;
         }
         return false;
     }

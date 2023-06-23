@@ -18,5 +18,6 @@
   ],
   "result": {
     "item": "pneumaticcraft:redstone_module"
-  }
+  },
+  "show_notification": true
 }

@@ -12,5 +12,6 @@
   ],
   "result": {
     "item": "pneumaticcraft:compressed_stone"
-  }
+  },
+  "show_notification": true
 }

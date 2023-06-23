@@ -22,5 +22,6 @@
   ],
   "result": {
     "item": "pneumaticcraft:remote"
-  }
+  },
+  "show_notification": true
 }

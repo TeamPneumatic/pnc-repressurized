@@ -23,5 +23,6 @@
   ],
   "result": {
     "item": "pneumaticcraft:liquid_compressor"
-  }
+  },
+  "show_notification": true
 }

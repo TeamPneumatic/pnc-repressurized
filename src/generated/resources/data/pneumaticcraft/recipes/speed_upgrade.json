@@ -21,5 +21,6 @@
   ],
   "result": {
     "item": "pneumaticcraft:speed_upgrade"
-  }
+  },
+  "show_notification": true
 }

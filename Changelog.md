@@ -4,6 +4,14 @@ This is an overview of significant new features and fixes by release.  See https
 
 Changes are in reverse chronological order; newest changes at the top.
 
+# Minecraft 1.19.4
+
+## [5.1.0]
+
+* Ported to 1.19.4 - not planning to do a public release for this version
+* Damage message have been updated and reworked to fit with vanilla changes to how damage sources are handled
+* Added `micromissiles.startFires` to config; controls if Micromissile explosions start fires 
+
 # Minecraft 1.19.3
 
 Note: 1.19.3 releases of PneumaticCraft: Repressurized are in no way compatible with 1.19.2!

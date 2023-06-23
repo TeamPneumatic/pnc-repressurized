@@ -111,9 +111,9 @@ public class ClientSetup {
     }
 
     public static void registerParticleFactories(RegisterParticleProvidersEvent event) {
-        event.register(ModParticleTypes.AIR_PARTICLE.get(), AirParticle.Factory::new);
-        event.register(ModParticleTypes.AIR_PARTICLE_2.get(), AirParticle.Factory::new);
-        event.register(ModParticleTypes.BULLET_PARTICLE.get(), BulletParticle.Factory::new);
+        event.registerSpriteSet(ModParticleTypes.AIR_PARTICLE.get(), AirParticle.Factory::new);
+        event.registerSpriteSet(ModParticleTypes.AIR_PARTICLE_2.get(), AirParticle.Factory::new);
+        event.registerSpriteSet(ModParticleTypes.BULLET_PARTICLE.get(), BulletParticle.Factory::new);
     }
 
     public static void registerKeyMappings(RegisterKeyMappingsEvent event) {

@@ -19,5 +19,6 @@
   ],
   "result": {
     "item": "pneumaticcraft:printed_circuit_board"
-  }
+  },
+  "show_notification": true
 }

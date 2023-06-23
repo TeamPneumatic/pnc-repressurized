@@ -59,7 +59,7 @@ public class Mekanism implements IThirdParty {
     @SubscribeEvent
     public void attachRadiationShield(AttachCapabilitiesEvent<ItemStack> event) {
         if (event.getObject().getItem() instanceof PneumaticArmorItem armor) {
-            event.addCapability(RL("mek_rad_shielding"), new MekRadShieldProvider(event.getObject(), armor.getSlot()));
+            event.addCapability(RL("mek_rad_shielding"), new MekRadShieldProvider(event.getObject(), armor.getType().getSlot()));
         }
     }
 

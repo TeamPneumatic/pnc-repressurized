@@ -46,15 +46,8 @@ public class ModWorldGenProvider {
     public static final ResourceKey<BiomeModifier> OIL_LAKE_UNDERGROUND_BM
             = ResourceKey.create(ForgeRegistries.Keys.BIOME_MODIFIERS, RL("oil_lake_underground"));
 
-    public static DataProvider makeProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> vanillaRegistries) {
-        RegistrySetBuilder builder = new RegistrySetBuilder()
-                .add(Registries.CONFIGURED_FEATURE, ConfiguredFeatures::bootstrap)
-                .add(Registries.PLACED_FEATURE, PlacedFeatures::bootstrap)
-                .add(ForgeRegistries.Keys.BIOME_MODIFIERS, BiomeModifiers::bootstrap);
-        return new DatapackBuiltinEntriesProvider(output, vanillaRegistries, builder, Set.of(Names.MOD_ID));
-    }
 
-    private static class ConfiguredFeatures {
+    static class ConfiguredFeatures {
         public static void bootstrap(BootstapContext<ConfiguredFeature<?,?>> ctx) {
             FeatureUtils.register(ctx, OIL_LAKE, Feature.LAKE, new LakeFeature.Configuration(
                     BlockStateProvider.simple(ModBlocks.OIL.get().defaultBlockState()),
@@ -63,7 +56,7 @@ public class ModWorldGenProvider {
         }
     }
 
-    private static class PlacedFeatures {
+    static class PlacedFeatures {
         public static void bootstrap(BootstapContext<PlacedFeature> ctx) {
             var configuredFeatures = ctx.lookup(Registries.CONFIGURED_FEATURE);
             var oilLakeCF = configuredFeatures.getOrThrow(OIL_LAKE);
@@ -92,7 +85,7 @@ public class ModWorldGenProvider {
         }
     }
 
-    private static class BiomeModifiers {
+    static class BiomeModifiers {
         public static void bootstrap(BootstapContext<BiomeModifier> ctx) {
             var placedFeatures = ctx.lookup(Registries.PLACED_FEATURE);
             var biomeReg = ctx.lookup(Registries.BIOME);

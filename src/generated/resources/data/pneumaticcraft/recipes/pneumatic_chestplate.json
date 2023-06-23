@@ -19,5 +19,6 @@
   ],
   "result": {
     "item": "pneumaticcraft:pneumatic_chestplate"
-  }
+  },
+  "show_notification": true
 }

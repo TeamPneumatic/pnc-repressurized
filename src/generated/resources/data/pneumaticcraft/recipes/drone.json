@@ -16,5 +16,6 @@
   ],
   "result": {
     "item": "pneumaticcraft:drone"
-  }
+  },
+  "show_notification": true
 }

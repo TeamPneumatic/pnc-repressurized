@@ -35,10 +35,10 @@ public class WidgetLabelVariable extends WidgetLabel {
     }
 
     @Override
-    public void renderButton(PoseStack matrixStack, int mouseX, int mouseY, float partialTick) {
+    public void renderWidget(PoseStack matrixStack, int mouseX, int mouseY, float partialTick) {
         Component oldText = getMessage();
         setMessage(Component.literal(parser.parse()));
-        super.renderButton(matrixStack, mouseX, mouseY, partialTick);
+        super.renderWidget(matrixStack, mouseX, mouseY, partialTick);
         setMessage(oldText);
     }
 }

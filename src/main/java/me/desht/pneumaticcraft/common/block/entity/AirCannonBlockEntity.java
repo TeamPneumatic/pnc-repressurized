@@ -621,7 +621,7 @@ public class AirCannonBlockEntity extends AbstractAirHandlingBlockEntity
                     itemHandler.extractItem(CANNON_SLOT, 1, false);
                 }
             } else if (launchedEntity instanceof ServerPlayer serverPlayer) {
-                if (serverPlayer.connection.getConnection().isConnected()) {
+                if (serverPlayer.connection.isAcceptingMessages()) {
                     // This is a nasty hack to get around "player moved wrongly!" messages, which can be caused if player movement
                     // triggers a player teleport (e.g. player moves onto pressure plate, triggers air cannon with an entity tracker).
                     ((ServerPlayerAccess) serverPlayer).setIsChangingDimension(true);

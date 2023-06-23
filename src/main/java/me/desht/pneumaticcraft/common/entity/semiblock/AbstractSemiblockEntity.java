@@ -193,7 +193,7 @@ public abstract class AbstractSemiblockEntity extends Entity implements ISemiBlo
         // a semiblock is positioned when added to world, and not again
         if (!isAddedToWorld()) {
             super.setPos(x, y, z);
-            this.blockPos = new BlockPos(x, y, z);
+            this.blockPos = BlockPos.containing(x, y, z);
         }
     }
 

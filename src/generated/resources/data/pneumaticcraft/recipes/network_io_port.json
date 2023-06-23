@@ -19,5 +19,6 @@
   ],
   "result": {
     "item": "pneumaticcraft:network_io_port"
-  }
+  },
+  "show_notification": true
 }

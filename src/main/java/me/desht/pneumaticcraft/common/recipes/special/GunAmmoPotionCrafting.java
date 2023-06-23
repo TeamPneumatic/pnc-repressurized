@@ -21,6 +21,7 @@ import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModRecipeSerializers;
 import me.desht.pneumaticcraft.common.item.minigun.StandardGunAmmoItem;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.ItemStack;
@@ -45,7 +46,7 @@ public class GunAmmoPotionCrafting extends ShapelessRecipe {
     }
 
     @Override
-    public ItemStack assemble(CraftingContainer inv) {
+    public ItemStack assemble(CraftingContainer inv, RegistryAccess registryAccess) {
         ItemStack potion = ItemStack.EMPTY;
         ItemStack ammo = ItemStack.EMPTY;
         for (int i = 0; i < inv.getContainerSize(); i++) {

@@ -17,5 +17,6 @@
   "result": {
     "count": 2,
     "item": "pneumaticcraft:logistics_core"
-  }
+  },
+  "show_notification": true
 }

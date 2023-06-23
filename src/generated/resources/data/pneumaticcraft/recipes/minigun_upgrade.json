@@ -19,5 +19,6 @@
   ],
   "result": {
     "item": "pneumaticcraft:minigun_upgrade"
-  }
+  },
+  "show_notification": true
 }

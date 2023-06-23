@@ -22,5 +22,6 @@
   ],
   "result": {
     "item": "pneumaticcraft:assembly_platform"
-  }
+  },
+  "show_notification": true
 }

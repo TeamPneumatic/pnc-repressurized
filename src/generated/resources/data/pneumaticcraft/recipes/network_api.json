@@ -19,5 +19,6 @@
   ],
   "result": {
     "item": "pneumaticcraft:network_api"
-  }
+  },
+  "show_notification": true
 }

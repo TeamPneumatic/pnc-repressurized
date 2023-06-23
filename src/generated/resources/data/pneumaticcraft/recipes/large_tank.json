@@ -24,5 +24,6 @@
   ],
   "result": {
     "item": "pneumaticcraft:large_tank"
-  }
+  },
+  "show_notification": true
 }

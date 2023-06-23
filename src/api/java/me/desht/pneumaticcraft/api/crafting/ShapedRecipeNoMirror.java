@@ -85,14 +85,14 @@ public class ShapedRecipeNoMirror extends ShapedRecipe {
         @Override
         public ShapedRecipe fromJson(ResourceLocation recipeId, JsonObject json) {
             ShapedRecipe r = super.fromJson(recipeId, json);
-            return new ShapedRecipeNoMirror(r.getId(), r.getGroup(), r.getRecipeWidth(), r.getRecipeHeight(), r.getIngredients(), r.getResultItem());
+            return new ShapedRecipeNoMirror(r.getId(), r.getGroup(), r.getRecipeWidth(), r.getRecipeHeight(), r.getIngredients(), r.getResultItem(DummyRegistryAccess.INSTANCE));
         }
 
         @Nullable
         @Override
         public ShapedRecipe fromNetwork(ResourceLocation recipeId, FriendlyByteBuf buffer) {
             ShapedRecipe r = super.fromNetwork(recipeId, buffer);
-            return new ShapedRecipeNoMirror(r.getId(), r.getGroup(), r.getRecipeWidth(), r.getRecipeHeight(), r.getIngredients(), r.getResultItem());
+            return new ShapedRecipeNoMirror(r.getId(), r.getGroup(), r.getRecipeWidth(), r.getRecipeHeight(), r.getIngredients(), r.getResultItem(DummyRegistryAccess.INSTANCE));
         }
 
         @Override

@@ -19,5 +19,6 @@
   ],
   "result": {
     "item": "pneumaticcraft:sentry_turret"
-  }
+  },
+  "show_notification": true
 }

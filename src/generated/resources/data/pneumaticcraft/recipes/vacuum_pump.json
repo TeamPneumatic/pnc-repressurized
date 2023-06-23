@@ -22,5 +22,6 @@
   ],
   "result": {
     "item": "pneumaticcraft:vacuum_pump"
-  }
+  },
+  "show_notification": true
 }

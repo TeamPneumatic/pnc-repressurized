@@ -19,5 +19,6 @@
   ],
   "result": {
     "item": "pneumaticcraft:gilded_upgrade"
-  }
+  },
+  "show_notification": true
 }
