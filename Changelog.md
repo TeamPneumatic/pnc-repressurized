@@ -15,6 +15,7 @@ Changes are in reverse chronological order; newest changes at the top.
 * Fixed a client crash with the Block Tracker when scanning certain block entities
 * Fixed a couple of subtle issues related to spawning mobs while extracting spawners
 * Fixed a couple of missing translations for armor upgrades in the Charging Station GUI
+* Fixed a fluid dupe with fluid container items in Tanks, Kerosene Lamps and Liquid Compressors
 
 ## [4.3.4]
 
