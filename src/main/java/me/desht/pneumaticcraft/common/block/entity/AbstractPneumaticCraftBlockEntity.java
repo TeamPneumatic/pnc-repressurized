@@ -139,8 +139,8 @@ public abstract class AbstractPneumaticCraftBlockEntity extends BlockEntity
     }
 
     /***********
-       We don't override getUpdatePacket() or onDataPacket() because BE sync'ing is all handled
-       by our custom PacketDescription and the @DescSynced system
+     We don't override getUpdatePacket() or onDataPacket() because BE sync'ing is all handled
+     by our custom PacketDescription and the @DescSynced system
      ***********/
 
     @Override
@@ -459,6 +459,10 @@ public abstract class AbstractPneumaticCraftBlockEntity extends BlockEntity
                                 itemHandler.extractItem(inputSlot, 1, false);
                                 itemHandler.insertItem(outputSlot, emptyContainerStack, false);
                             }
+                        } else if (!transferred.isEmpty()) {
+                            // partial transfer; update the item in the input slot
+                            itemHandler.extractItem(inputSlot, 1, false);
+                            itemHandler.insertItem(inputSlot, fluidHandlerItem.getContainer().copy(), false);
                         }
                     } else if (itemHandler.getStackInSlot(outputSlot).isEmpty()) {
                         // input item is empty: drain from tank to item, move to output
