@@ -30,5 +30,6 @@
     "recipes": [
       "pneumaticcraft:omnidirectional_hopper"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

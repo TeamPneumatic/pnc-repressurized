@@ -70,7 +70,7 @@ public class CamoApplicatorItem extends PressurizableItem {
             if (!worldIn.isClientSide) {
                 setCamoState(playerIn.getItemInHand(handIn), null);
             } else {
-                if (getCamoState(playerIn.getItemInHand(handIn), playerIn.level) != null) {
+                if (getCamoState(playerIn.getItemInHand(handIn), playerIn.level()) != null) {
                     playerIn.playSound(ModSounds.CHIRP.get(), 1.0f, 1.0f);
                 }
             }

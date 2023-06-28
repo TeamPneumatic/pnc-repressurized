@@ -24,6 +24,7 @@ import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorUpgradeHandler;
 import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorHandler;
 import net.minecraft.client.KeyMapping;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -72,17 +73,6 @@ public interface IArmorUpgradeClientHandler<T extends IArmorUpgradeHandler<?>> {
      */
     default void saveToConfig() {}
 
-//    /**
-//     * This method is called every client tick, and should be used to update clientside logic for armor upgrades.
-//     * Unlike {@link IArmorUpgradeHandler#tick(ICommonArmorHandler, boolean)}, this method is only called for upgrades
-//     * which are actually enabled (or not toggleable).
-//     *
-//     * @param armorHandler common armor handler for the player wearing this armor piece
-//     * @deprecated you should override {@link #tickClient(ICommonArmorHandler, boolean)} instead
-//     */
-//    @Deprecated(forRemoval = true)
-//    void tickClient(ICommonArmorHandler armorHandler);
-
     /**
      * This method is called every client tick, and should be used to update clientside logic for armor upgrades.
      *
@@ -103,11 +93,11 @@ public interface IArmorUpgradeClientHandler<T extends IArmorUpgradeHandler<?>> {
     /**
      * Called in the 2D render stage (via Forge's {@link net.minecraftforge.client.gui.overlay.IGuiOverlay} system).
      *
-     * @param matrixStack the matrix stack
-     * @param partialTicks partial ticks since last world tick
+     * @param graphics              the matrix stack
+     * @param partialTicks          partial ticks since last world tick
      * @param armorPieceHasPressure true if the armor piece actually has any pressure
      */
-    void render2D(PoseStack matrixStack, float partialTicks, boolean armorPieceHasPressure);
+    void render2D(GuiGraphics graphics, float partialTicks, boolean armorPieceHasPressure);
 
     /**
      * You can return a {@link IGuiAnimatedStat} here, which the HUD Handler will pick up and render. It also
@@ -310,7 +300,7 @@ public interface IArmorUpgradeClientHandler<T extends IArmorUpgradeHandler<?>> {
         }
 
         @Override
-        public void render2D(PoseStack matrixStack, float partialTicks, boolean armorPieceHasPressure) {
+        public void render2D(GuiGraphics graphics, float partialTicks, boolean armorPieceHasPressure) {
         }
 
         @Override

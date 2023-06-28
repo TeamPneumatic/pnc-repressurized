@@ -30,5 +30,6 @@
     "recipes": [
       "pneumaticcraft:amadron/assembly_program_drill"
     ]
-  }
+  },
+  "sends_telemetry_event": true
 }

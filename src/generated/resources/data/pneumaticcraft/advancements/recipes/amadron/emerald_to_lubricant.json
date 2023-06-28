@@ -30,5 +30,6 @@
     "recipes": [
       "pneumaticcraft:amadron/emerald_to_lubricant"
     ]
-  }
+  },
+  "sends_telemetry_event": true
 }

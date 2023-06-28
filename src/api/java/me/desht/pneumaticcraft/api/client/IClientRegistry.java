@@ -17,9 +17,9 @@
 
 package me.desht.pneumaticcraft.api.client;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.api.client.assembly_machine.IAssemblyRenderOverriding;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -60,7 +60,7 @@ public interface IClientRegistry {
     /**
      * Draw a Pressure Gauge in GUI context, the same as in many PneumaticCraft machine GUI's.
      *
-     * @param matrixStack        the matrix stack
+     * @param graphics           the GUI draw context
      * @param fontRenderer       fontrenderer used to draw the numbers of the pressure gauge.
      * @param minPressure        The minimal pressure that needs to be displayed (this is -1 in most applications).
      * @param maxPressure        The maximal pressure that needs to be rendered (see {@link me.desht.pneumaticcraft.api.pressure.PressureTier} for standard pressure thresholds)
@@ -70,7 +70,7 @@ public interface IClientRegistry {
      * @param xPos               x position of the gauge.
      * @param yPos               y position of the gauge.
      */
-    void drawPressureGauge(PoseStack matrixStack, Font fontRenderer, float minPressure, float maxPressure, float dangerPressure, float minWorkingPressure, float currentPressure, int xPos, int yPos);
+    void drawPressureGauge(GuiGraphics graphics, Font fontRenderer, float minPressure, float maxPressure, float dangerPressure, float minWorkingPressure, float currentPressure, int xPos, int yPos);
 
     /**
      * Register some custom item rendering behaviour for an item when held in an Assembly machine.
@@ -80,5 +80,11 @@ public interface IClientRegistry {
      */
     void registerRenderOverride(@Nonnull ItemLike entry, @Nonnull IAssemblyRenderOverriding renderOverride);
 
-    void registerRenderOverride(@Nonnull ItemLike item, @Nonnull IChargingStationRenderOverride renderOverride);
+    /**
+     * Register some custom item rendering behaviour for an item when held in a Charging Station.
+     *
+     * @param entry an item or block
+     * @param renderOverride customized rendering behaviour for that item
+     */
+    void registerRenderOverride(@Nonnull ItemLike entry, @Nonnull IChargingStationRenderOverride renderOverride);
 }

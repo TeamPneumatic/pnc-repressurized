@@ -21,33 +21,12 @@ import me.desht.pneumaticcraft.common.entity.drone.DroneEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.pathfinder.FlyNodeEvaluator;
 import net.minecraft.world.level.pathfinder.Node;
-
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 public class NodeProcessorDrone extends FlyNodeEvaluator {
     @Nullable
     @Override
-    protected Node getNode(int x, int y, int z) {
-        return ((DroneEntity) mob).isBlockValidPathfindBlock(new BlockPos(x, y, z)) ? super.getNode(x, y, z) : null;
-    }
-
-    /**
-     * Override this, because the super method adds diagonals, this is fancy but doesn't work well with drones (drones stuck behind a wall).
-     */
-    @Override
-    public int getNeighbors(Node[] pathOptions, Node currentPoint) {
-        return super.getNeighbors(pathOptions, currentPoint);
-        // findPathOptions
-
-//        int i = 0;
-//
-//        for(Direction dir : DirectionUtil.VALUES){
-//            PathPoint point = getNode(currentPoint.x + dir.getStepX(), currentPoint.y + dir.getStepY(), currentPoint.z + dir.getStepZ());
-//            if(point != null && !point.closed) {
-//                pathOptions[i++] = point;
-//            }
-//        }
-//
-//        return i;
+    protected Node findAcceptedNode(int x, int y, int z) {
+        return ((DroneEntity) mob).isBlockValidPathfindBlock(new BlockPos(x, y, z)) ? super.findAcceptedNode(x, y, z) : null;
     }
 }

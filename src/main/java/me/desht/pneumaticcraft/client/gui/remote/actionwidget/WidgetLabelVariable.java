@@ -17,11 +17,11 @@
 
 package me.desht.pneumaticcraft.client.gui.remote.actionwidget;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetLabel;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.variables.TextVariableParser;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 
 public class WidgetLabelVariable extends WidgetLabel {
@@ -35,10 +35,10 @@ public class WidgetLabelVariable extends WidgetLabel {
     }
 
     @Override
-    public void renderWidget(PoseStack matrixStack, int mouseX, int mouseY, float partialTick) {
+    public void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
         Component oldText = getMessage();
         setMessage(Component.literal(parser.parse()));
-        super.renderWidget(matrixStack, mouseX, mouseY, partialTick);
+        super.renderWidget(graphics, mouseX, mouseY, partialTick);
         setMessage(oldText);
     }
 }

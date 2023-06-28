@@ -18,9 +18,9 @@
 package me.desht.pneumaticcraft.api.client.pneumatic_helmet;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorUpgradeHandler;
 import net.minecraft.client.KeyMapping;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 
@@ -55,25 +55,25 @@ public interface IOptionPage {
     void populateGui(IGuiScreen gui);
 
     /**
-     * Called immediately before {@link net.minecraft.client.gui.screens.Screen#render(PoseStack, int, int, float)}
+     * Called immediately before {@link net.minecraft.client.gui.screens.Screen#render(GuiGraphics, int, int, float)}
      *
-     * @param matrixStack the matrix stack
-     * @param x mouse X
-     * @param y mouse Y
+     * @param graphics     the GUI draw context
+     * @param x            mouse X
+     * @param y            mouse Y
      * @param partialTicks partial ticks since last world ticks
      */
-    void renderPre(PoseStack matrixStack, int x, int y, float partialTicks);
+    void renderPre(GuiGraphics graphics, int x, int y, float partialTicks);
 
     /**
-     * Called immediately after {@link net.minecraft.client.gui.screens.Screen#render(PoseStack, int, int, float)}
+     * Called immediately after {@link net.minecraft.client.gui.screens.Screen#render(GuiGraphics, int, int, float)}
      * Here you can render additional things like text.
      *
-     * @param matrixStack the matrix stack
-     * @param x mouse X
-     * @param y mouse Y
+     * @param graphics     the GUI draw context
+     * @param x            mouse X
+     * @param y            mouse Y
      * @param partialTicks partial ticks since last world ticks
      */
-    void renderPost(PoseStack matrixStack, int x, int y, float partialTicks);
+    void renderPost(GuiGraphics graphics, int x, int y, float partialTicks);
 
     /**
      * Called by {@link net.minecraft.client.gui.screens.Screen#keyPressed(int, int, int)} when a key is pressed.
@@ -194,11 +194,11 @@ public interface IOptionPage {
         }
 
         @Override
-        public void renderPre(PoseStack matrixStack, int x, int y, float partialTicks) {
+        public void renderPre(GuiGraphics graphics, int x, int y, float partialTicks) {
         }
 
         @Override
-        public void renderPost(PoseStack matrixStack, int x, int y, float partialTicks) {
+        public void renderPost(GuiGraphics graphics, int x, int y, float partialTicks) {
         }
 
         @Override

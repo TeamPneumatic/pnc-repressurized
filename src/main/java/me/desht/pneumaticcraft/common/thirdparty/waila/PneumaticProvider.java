@@ -33,8 +33,6 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.fluids.FluidStack;
@@ -53,11 +51,16 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 public class PneumaticProvider {
     private static final ResourceLocation ID = RL("pneumatic");
 
-    public static class DataProvider implements IServerDataProvider<BlockEntity> {
+    public static class DataProvider implements IServerDataProvider<BlockAccessor> {
         @Override
-        public void appendServerData(CompoundTag compoundTag, ServerPlayer serverPlayer, Level level, BlockEntity blockEntity, boolean b) {
+        public ResourceLocation getUid() {
+            return ID;
+        }
+
+        @Override
+        public void appendServerData(CompoundTag compoundTag, BlockAccessor blockAccessor) {
             BlockEntity beInfo;
-            if (blockEntity instanceof IInfoForwarder forwarder) {
+            if (blockAccessor.getBlockEntity() instanceof IInfoForwarder forwarder) {
                 beInfo = forwarder.getInfoBlockEntity();
                 if (beInfo != null) {
                     compoundTag.putInt("infoX", beInfo.getBlockPos().getX());
@@ -65,7 +68,7 @@ public class PneumaticProvider {
                     compoundTag.putInt("infoZ", beInfo.getBlockPos().getZ());
                 }
             } else {
-                beInfo = blockEntity;
+                beInfo = blockAccessor.getBlockEntity();
             }
             if (beInfo != null) {
                 Set<IAirHandlerMachine> set = new LinkedHashSet<>();
@@ -95,11 +98,6 @@ public class PneumaticProvider {
                             compoundTag.put("tanks", list);
                         });
             }
-        }
-
-        @Override
-        public ResourceLocation getUid() {
-            return ID;
         }
     }
 

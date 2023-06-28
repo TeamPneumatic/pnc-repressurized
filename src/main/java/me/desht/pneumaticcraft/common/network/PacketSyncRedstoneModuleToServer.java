@@ -95,7 +95,7 @@ public class PacketSyncRedstoneModuleToServer extends LocationIntPacket {
         ctx.get().enqueueWork(() -> {
             Player player = ctx.get().getSender();
             if (PneumaticCraftUtils.canPlayerReach(player, pos)) {
-                PneumaticCraftUtils.getTileEntityAt(player.level, pos, PressureTubeBlockEntity.class).ifPresent(tube -> {
+                PneumaticCraftUtils.getTileEntityAt(player.level(), pos, PressureTubeBlockEntity.class).ifPresent(tube -> {
                     if (tube.getModule(side) instanceof RedstoneModule mr) {
                         mr.setRedstoneDirection(input ? EnumRedstoneDirection.INPUT : EnumRedstoneDirection.OUTPUT);
                         mr.setColorChannel(ourColor);

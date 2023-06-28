@@ -30,5 +30,6 @@
     "recipes": [
       "pneumaticcraft:redstone_module"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

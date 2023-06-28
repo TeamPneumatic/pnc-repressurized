@@ -26,5 +26,6 @@
       "name": "omnidirectional_hopper",
       "rolls": 1.0
     }
-  ]
+  ],
+  "random_sequence": "pneumaticcraft:blocks/omnidirectional_hopper"
 }

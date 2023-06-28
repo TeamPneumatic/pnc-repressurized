@@ -15,18 +15,13 @@
  *     along with pnc-repressurized.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.desht.pneumaticcraft.client.gui.widget;
+package me.desht.pneumaticcraft.common.upgrades;
 
-import net.minecraft.client.gui.components.AbstractWidget;
-import net.minecraft.network.chat.Component;
-
-import java.util.List;
+import net.minecraftforge.items.IItemHandler;
 
 @FunctionalInterface
-public interface ITooltipProvider {
-    void addTooltip(double mouseX, double mouseY, List<Component> curTip, boolean shift);
+public interface IUpgradeHolder {
+    IItemHandler getUpgradeHandler();
 
-    default boolean shouldProvide() {
-        return this instanceof AbstractWidget a && a.isHoveredOrFocused() && a.visible;
-    }
+    default void onUpgradesChanged() {}
 }

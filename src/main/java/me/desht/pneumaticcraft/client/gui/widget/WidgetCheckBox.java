@@ -17,25 +17,21 @@
 
 package me.desht.pneumaticcraft.client.gui.widget;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.ICheckboxWidget;
 import me.desht.pneumaticcraft.api.misc.Symbols;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketGuiButton;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.Component;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 
-import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
-
-public class WidgetCheckBox extends AbstractWidget implements ICheckboxWidget, ITaggedWidget, ITooltipProvider {
+public class WidgetCheckBox extends PNCWidget<WidgetCheckBox> implements ICheckboxWidget, ITaggedWidget {
     public boolean checked;
     private final int color;
     private List<Component> tooltip = new ArrayList<>();
@@ -63,17 +59,17 @@ public class WidgetCheckBox extends AbstractWidget implements ICheckboxWidget, I
     }
 
     @Override
-    public void renderWidget(PoseStack matrixStack, int mouseX, int mouseY, float partialTick) {
+    public void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
         if (visible) {
             int x = getX();
             int y = getY();
-            fill(matrixStack, x, y, x + CHECKBOX_WIDTH, y + CHECKBOX_HEIGHT, active ? 0xFFA0A0A0 : 0xFF999999);
-            fill(matrixStack, x + 1, y + 1, x + CHECKBOX_WIDTH - 1, y + CHECKBOX_HEIGHT - 1, active ? 0xFF202020 : 0xFFAAAAAA);
+            graphics.fill(x, y, x + CHECKBOX_WIDTH, y + CHECKBOX_HEIGHT, active ? 0xFFA0A0A0 : 0xFF999999);
+            graphics.fill(x + 1, y + 1, x + CHECKBOX_WIDTH - 1, y + CHECKBOX_HEIGHT - 1, active ? 0xFF202020 : 0xFFAAAAAA);
             Font fr = Minecraft.getInstance().font;
             if (checked) {
-                fr.draw(matrixStack, Symbols.TICK_MARK,  x + 2, y + 2, 0xFF00C000);
+                graphics.drawString(fr, Symbols.TICK_MARK,  x + 2, y + 2, 0xFF00C000, false);
             }
-            fr.draw(matrixStack, getMessage().getVisualOrderText(), x + 3 + CHECKBOX_WIDTH, y + CHECKBOX_HEIGHT / 2f - fr.lineHeight / 2f, active ? color : 0xFF888888);
+            graphics.drawString(fr, getMessage(), x + 3 + CHECKBOX_WIDTH, y + CHECKBOX_HEIGHT / 2 - fr.lineHeight / 2, active ? color : 0xFF888888, false);
         }
     }
 
@@ -90,19 +86,6 @@ public class WidgetCheckBox extends AbstractWidget implements ICheckboxWidget, I
     protected void updateWidgetNarration(NarrationElementOutput pNarrationElementOutput) {
     }
 
-    public WidgetCheckBox setTooltip(List<Component> tooltip) {
-        this.tooltip = tooltip;
-        return this;
-    }
-
-    public WidgetCheckBox setTooltipKey(String translationKey) {
-        return setTooltip(Collections.singletonList(xlate(translationKey)));
-    }
-
-    public List<Component> getTooltip() {
-        return tooltip;
-    }
-
     public WidgetCheckBox setChecked(boolean checked) {
         this.checked = checked;
         return this;
@@ -111,11 +94,6 @@ public class WidgetCheckBox extends AbstractWidget implements ICheckboxWidget, I
     @Override
     public String getTag() {
         return tag;
-    }
-
-    @Override
-    public void addTooltip(double mouseX, double mouseY, List<Component> curTip, boolean shift) {
-        curTip.addAll(tooltip);
     }
 
     @Override

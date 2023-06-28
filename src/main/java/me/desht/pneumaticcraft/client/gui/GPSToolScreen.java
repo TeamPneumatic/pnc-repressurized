@@ -17,7 +17,6 @@
 
 package me.desht.pneumaticcraft.client.gui;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTextField;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTextFieldNumber;
@@ -29,6 +28,7 @@ import me.desht.pneumaticcraft.common.network.PacketTeleportCommand;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableHelper;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -142,17 +142,17 @@ public class GPSToolScreen extends AbstractPneumaticCraftScreen {
     }
 
     @Override
-    public void render(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
-        renderBackground(matrixStack);
-        super.render(matrixStack, mouseX, mouseY, partialTicks);
+    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+        renderBackground(graphics);
+        super.render(graphics, mouseX, mouseY, partialTicks);
 
         int xMiddle = width / 2;
         int yMiddle = height / 2;
         int stringX = xMiddle - 60 - TEXTFIELD_WIDTH / 2;
-        drawCenteredString(matrixStack, font, getTitle(), xMiddle, yMiddle - 58, 0xFFFFFFFF);
-        drawString(matrixStack, font, "X:", stringX, yMiddle - 10 - font.lineHeight / 2, 0xFFFFFFFF);
-        drawString(matrixStack, font, "Y:", stringX, yMiddle + 4 + font.lineHeight / 2, 0xFFFFFFFF);
-        drawString(matrixStack, font, "Z:", stringX, yMiddle + 34 - font.lineHeight / 2, 0xFFFFFFFF);
+        graphics.drawCenteredString(font, getTitle(), xMiddle, yMiddle - 58, 0xFFFFFFFF);
+        graphics.drawString(font, "X:", stringX, yMiddle - 10 - font.lineHeight / 2, 0xFFFFFFFF, false);
+        graphics.drawString(font, "Y:", stringX, yMiddle + 4 + font.lineHeight / 2, 0xFFFFFFFF, false);
+        graphics.drawString(font, "Z:", stringX, yMiddle + 34 - font.lineHeight / 2, 0xFFFFFFFF, false);
     }
 
     @Override

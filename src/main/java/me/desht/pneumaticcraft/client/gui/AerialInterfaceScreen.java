@@ -17,7 +17,6 @@
 
 package me.desht.pneumaticcraft.client.gui;
 
-import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.api.misc.Symbols;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
@@ -32,7 +31,9 @@ import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.ComponentContents;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
@@ -98,10 +99,13 @@ public class AerialInterfaceScreen extends AbstractPneumaticCraftContainerScreen
                 List<Component> l = new ArrayList<>();
                 l.add(xlate(mode.getTranslationKey()).withStyle(ChatFormatting.YELLOW));
                 l.addAll(GuiUtils.xlateAndSplit(mode.getDescTranslationKey()));
+                Component combined = l.stream().reduce((c1, c2) -> c1.copy().append("\n").append(c2)).orElse(Component.empty());
+
                 WidgetButtonExtended button = new WidgetButtonExtended(5 + 25 * i, 20, 20, 20)
                         .withTag(mode.toString())
-                        .setRenderStacks(mode.getIconStack())
-                        .setTooltipText(l);
+                        .setRenderStacks(mode.getIconStack());
+                if (combined.getContents() != ComponentContents.EMPTY) button.setTooltip(Tooltip.create(combined));
+
                 feedModeTab.addSubWidget(button);
                 modeButtons[i] = button;
             }
@@ -146,13 +150,11 @@ public class AerialInterfaceScreen extends AbstractPneumaticCraftContainerScreen
             FluidStack fluidStack = new FluidStack(fluid, 1000);
             xpButton.setRenderStacks(FluidUtil.getFilledBucket(fluidStack));
             String modName = ModNameCache.getModName(fluid);
-            xpButton.setTooltipText(ImmutableList.of(
-                    fluidStack.getDisplayName(),
-                    Component.literal(modName).withStyle(ChatFormatting.ITALIC, ChatFormatting.BLUE))
-            );
+            xpButton.setTooltip(Tooltip.create(fluidStack.getDisplayName().copy().append("\n")
+                    .append(Component.literal(modName).withStyle(ChatFormatting.ITALIC, ChatFormatting.BLUE))));
         } else {
             xpButton.setRenderStacks(new ItemStack(Items.BUCKET));
-            xpButton.setTooltipText(xlate("pneumaticcraft.gui.tooltip.aerial_interface.xpDisabled"));
+            xpButton.setTooltip(Tooltip.create(xlate("pneumaticcraft.gui.tooltip.aerial_interface.xpDisabled")));
         }
     }
 

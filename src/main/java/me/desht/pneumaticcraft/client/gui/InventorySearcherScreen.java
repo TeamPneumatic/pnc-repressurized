@@ -18,16 +18,15 @@
 package me.desht.pneumaticcraft.client.gui;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.api.item.IPositionProvider;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetLabel;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
-import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.inventory.InventorySearcherMenu;
 import me.desht.pneumaticcraft.common.item.GPSAreaToolItem;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.core.BlockPos;
@@ -54,7 +53,7 @@ public class InventorySearcherScreen extends AbstractContainerScreen<InventorySe
         super(container, inv, title);
 
         inv.player.containerMenu = container;
-        passEvents = true;
+//        passEvents = true;
         imageHeight = 176;
         parentScreen = Minecraft.getInstance().screen;
         container.init(inventory);
@@ -150,35 +149,34 @@ public class InventorySearcherScreen extends AbstractContainerScreen<InventorySe
     }
 
     @Override
-    protected void renderBg(PoseStack matrixStack, float par1, int par2, int par3) {
-        renderBackground(matrixStack);
-        GuiUtils.bindTexture(Textures.GUI_INVENTORY_SEARCHER);
+    protected void renderBg(GuiGraphics graphics, float par1, int par2, int par3) {
+        renderBackground(graphics);
         int xStart = (width - imageWidth) / 2;
         int yStart = (height - imageHeight) / 2;
-        blit(matrixStack, xStart, yStart, 0, 0, imageWidth, imageHeight);
+        graphics.blit(Textures.GUI_INVENTORY_SEARCHER, xStart, yStart, 0, 0, imageWidth, imageHeight);
     }
 
     @Override
-    protected void renderLabels(PoseStack matrixStack, int mouseX, int mouseY) {
-        font.draw(matrixStack, getTitle().getVisualOrderText(), this.width / 2f, 5, 0x404040);
+    protected void renderLabels(GuiGraphics graphics, int mouseX, int mouseY) {
+        graphics.drawString(font, getTitle(), this.width / 2, 5, 0x404040, false);
 
         // darken out all non-matching slots
         for (int i = 0; i < this.menu.slots.size() - 1; ++i) {
             Slot slot = this.menu.slots.get(i);
             if (!stackPredicate.test(slot.getItem())) {
                 RenderSystem.colorMask(true, true, true, false);
-                this.fillGradient(matrixStack, slot.x, slot.y, slot.x + 16, slot.y + 16, 0xC0202020, 0xC0202020);
+                graphics.fillGradient(slot.x, slot.y, slot.x + 16, slot.y + 16, 0xC0202020, 0xC0202020);
                 RenderSystem.colorMask(true, true, true, true);
             }
         }
     }
 
     @Override
-    public void render(PoseStack matrixStack, int par1, int par2, float par3) {
-        super.render(matrixStack, par1, par2, par3);
+    public void render(GuiGraphics graphics, int par1, int par2, float par3) {
+        super.render(graphics, par1, par2, par3);
 
         if (this.hoveredSlot != null && stackPredicate.test(this.hoveredSlot.getItem())) {
-            renderTooltip(matrixStack, par1, par2);
+            renderTooltip(graphics, par1, par2);
         }
     }
 }

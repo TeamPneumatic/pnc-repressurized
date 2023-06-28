@@ -17,7 +17,6 @@
 
 package me.desht.pneumaticcraft.client.gui.programmer;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.api.item.IPositionProvider;
 import me.desht.pneumaticcraft.client.gui.InventorySearcherScreen;
 import me.desht.pneumaticcraft.client.gui.ProgrammerScreen;
@@ -28,7 +27,7 @@ import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetCoordinate;
 import me.desht.pneumaticcraft.common.item.GPSToolItem;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
-import net.minecraft.client.resources.language.I18n;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
@@ -117,11 +116,11 @@ public class ProgWidgetCoordinateScreen extends ProgWidgetAreaShowScreen<ProgWid
     }
 
     @Override
-    public void render(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
-        super.render(matrixStack, mouseX, mouseY, partialTicks);
-        font.draw(matrixStack, "x:", guiLeft + 90, guiTop + 51, 0xFF404040);
-        font.draw(matrixStack, "y:", guiLeft + 90, guiTop + 64, 0xFF404040);
-        font.draw(matrixStack, "z:", guiLeft + 90, guiTop + 77, 0xFF404040);
-        font.draw(matrixStack, I18n.get("pneumaticcraft.gui.progWidget.coordinate.variableName"), guiLeft + 90, guiTop + 100, 0xFF404060);
+    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+        super.render(graphics, mouseX, mouseY, partialTicks);
+        graphics.drawString(font, "x:", guiLeft + 90, guiTop + 51, 0xFF404040, false);
+        graphics.drawString(font, "y:", guiLeft + 90, guiTop + 64, 0xFF404040, false);
+        graphics.drawString(font, "z:", guiLeft + 90, guiTop + 77, 0xFF404040, false);
+        graphics.drawString(font, xlate("pneumaticcraft.gui.progWidget.coordinate.variableName"), guiLeft + 90, guiTop + 100, 0xFF404060, false);
     }
 }

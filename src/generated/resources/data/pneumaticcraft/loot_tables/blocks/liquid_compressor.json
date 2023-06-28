@@ -26,5 +26,6 @@
       "name": "liquid_compressor",
       "rolls": 1.0
     }
-  ]
+  ],
+  "random_sequence": "pneumaticcraft:blocks/liquid_compressor"
 }

@@ -30,9 +30,11 @@ import me.desht.pneumaticcraft.common.inventory.AmadronMenu;
 import me.desht.pneumaticcraft.common.inventory.AmadronMenu.EnumProblemState;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketAmadronOrderUpdate;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
@@ -44,6 +46,7 @@ import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.OptionalInt;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
@@ -99,11 +102,9 @@ public class AmadronScreen extends AbstractPneumaticCraftContainerScreen<Amadron
 
         addTradeButton = new WidgetButtonExtended(16, 26, 20, 20)
                 .withTag("addPlayerTrade")
-                .setRenderStacks(new ItemStack(Items.EMERALD))
-                .setTooltipText(ImmutableList.of(
-                        xlate("pneumaticcraft.gui.amadron.button.addTrade"),
-                        xlate("pneumaticcraft.gui.amadron.button.addTrade.tooltip")
-                ));
+                .setRenderStacks(new ItemStack(Items.EMERALD));
+        addTradeButton.setTooltip(Tooltip.create(xlate("pneumaticcraft.gui.amadron.button.addTrade").append("\n")
+                .append(xlate("pneumaticcraft.gui.amadron.button.addTrade.tooltip"))));
         customTradesTab.addSubWidget(addTradeButton);
 
         addRenderableWidget(pageLabel = new WidgetLabel(leftPos + 158, topPos + 49, Component.literal("")));
@@ -131,8 +132,8 @@ public class AmadronScreen extends AbstractPneumaticCraftContainerScreen<Amadron
     }
 
     @Override
-    protected int getBackgroundTint() {
-        return 0xFF068e2c;
+    protected OptionalInt getBackgroundTint() {
+        return OptionalInt.of(0xFF068e2c);
     }
 
     @Override
@@ -193,7 +194,8 @@ public class AmadronScreen extends AbstractPneumaticCraftContainerScreen<Amadron
                 }
             }
         }
-        orderButton.setTooltipText(builder.build());
+        Component c = PneumaticCraftUtils.combineComponents(builder.build());
+        orderButton.setTooltip(Tooltip.create(c));
     }
 
     @Override

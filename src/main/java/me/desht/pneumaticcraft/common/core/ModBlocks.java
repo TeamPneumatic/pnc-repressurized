@@ -11,8 +11,7 @@ import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.material.FlowingFluid;
-import net.minecraft.world.level.material.Material;
-import net.minecraft.world.level.material.MaterialColor;
+import net.minecraft.world.level.material.MapColor;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
@@ -49,20 +48,26 @@ public class ModBlocks {
     }
 
     public static Block.Properties defaultProps() {
-        return Block.Properties.of(Material.METAL)
+        return Block.Properties.of()
+                .mapColor(MapColor.METAL)
                 .strength(3f, 10f)
                 .sound(SoundType.METAL);
     }
 
     public static Block.Properties reinforcedStoneProps() {
-        return Block.Properties.of(Material.STONE, MaterialColor.COLOR_GRAY)
+        return Block.Properties.of()
+                .mapColor(MapColor.STONE)
                 .requiresCorrectToolForDrops()
                 .strength(3f, 1200f)
                 .sound(SoundType.STONE);
     }
 
     private static Block.Properties fluidProps() {
-        return Block.Properties.of(Material.WATER).noCollission().strength(100f).noLootTable();
+        return Block.Properties.of()
+                .mapColor(MapColor.WATER)
+                .noCollission()
+                .strength(100f)
+                .noLootTable();
     }
 
     public static final RegistryObject<PressureTubeBlock> PRESSURE_TUBE = register("pressure_tube",
@@ -272,7 +277,7 @@ public class ModBlocks {
     public static final RegistryObject<LiquidBlock> LUBRICANT = registerNoItem("lubricant",
             () -> new LiquidBlock(() -> (FlowingFluid) ModFluids.LUBRICANT.get(), fluidProps()));
     public static final RegistryObject<LiquidBlock> OIL = registerNoItem("oil",
-            () -> new LiquidBlock(() -> (FlowingFluid) ModFluids.OIL.get(),  fluidProps()));
+            () -> new LiquidBlock(() -> (FlowingFluid) ModFluids.OIL.get(),  fluidProps().mapColor(DyeColor.BLACK)));
     public static final RegistryObject<LiquidBlock> DIESEL = registerNoItem("diesel",
             () -> new LiquidBlock(() -> (FlowingFluid) ModFluids.DIESEL.get(), fluidProps()));
     public static final RegistryObject<LiquidBlock> KEROSENE = registerNoItem("kerosene",

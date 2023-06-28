@@ -57,7 +57,7 @@ public class DroneAINearestAttackableTarget extends TargetGoal {
             return false;
         }
 
-        List<Entity> list = provider.getValidEntities(drone.level);
+        List<Entity> list = provider.getValidEntities(drone.level());
         list.sort(distanceSorter);
         for (Entity entity : list) {
             if (entity.isAlive() && entity != mob && entity instanceof LivingEntity && !shouldIgnore(entity)) {

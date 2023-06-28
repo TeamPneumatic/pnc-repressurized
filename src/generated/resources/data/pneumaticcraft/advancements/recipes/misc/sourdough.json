@@ -30,5 +30,6 @@
     "recipes": [
       "pneumaticcraft:sourdough"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

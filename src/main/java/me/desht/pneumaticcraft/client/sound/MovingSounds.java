@@ -56,26 +56,26 @@ public class MovingSounds {
         if (world == null) return null;
 
         switch (s) {
-            case JET_BOOTS:
+            case JET_BOOTS -> {
                 if (focus instanceof Player player) {
                     return new MovingSoundJetBoots(player);
                 }
-                break;
-            case MINIGUN:
+            }
+            case MINIGUN -> {
                 if (focus instanceof Player || focus instanceof DroneEntity) {
                     return new MovingSoundMinigun((Entity) focus);
                 } else if (focus instanceof BlockPos pos) {
                     BlockEntity te = world.getBlockEntity(pos);
                     return te == null ? null : new MovingSoundMinigun(te);
                 }
-                break;
-            case ELEVATOR:
+            }
+            case ELEVATOR -> {
                 if (focus instanceof BlockPos pos) {
                     BlockEntity te = world.getBlockEntity(pos);
                     return te instanceof ElevatorBaseBlockEntity ? new MovingSoundElevator((ElevatorBaseBlockEntity) te) : null;
                 }
-                break;
-            case AIR_LEAK:
+            }
+            case AIR_LEAK -> {
                 if (focus instanceof BlockPos pos) {
                     AbstractTickableSoundInstance sound = posToTickableSound.get(pos);
                     if (sound != null && !sound.isStopped()) {
@@ -90,11 +90,12 @@ public class MovingSounds {
                 } else {
                     return null;
                 }
-                break;
-            case JACKHAMMER:
+            }
+            case JACKHAMMER -> {
                 if (focus instanceof Player player) {
                     return MovingSoundJackhammer.startOrContinue(player);
                 }
+            }
         }
         throw new IllegalArgumentException("Invalid moving sound " + s + " for focus object " + focus);
     }

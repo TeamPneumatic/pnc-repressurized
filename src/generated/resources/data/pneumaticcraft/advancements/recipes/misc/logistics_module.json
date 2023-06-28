@@ -30,5 +30,6 @@
     "recipes": [
       "pneumaticcraft:logistics_module"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

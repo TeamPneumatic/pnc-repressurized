@@ -21,8 +21,8 @@ import me.desht.pneumaticcraft.common.block.entity.SecurityStationBlockEntity;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
-import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
+import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.VoxelShapeUtils;
 import net.minecraft.ChatFormatting;
@@ -30,7 +30,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -118,7 +117,7 @@ public class SecurityStationBlock extends AbstractPneumaticCraftBlock implements
                         player.displayClientMessage(PneumaticCraftUtils.xlate("pneumaticcraft.message.securityStation.alreadyHacked").withStyle(ChatFormatting.GOLD), false);
                     } else if (getPlayerHackLevel(player) < teSS.getSecurityLevel()) {
                         player.displayClientMessage(PneumaticCraftUtils.xlate("pneumaticcraft.message.securityStation.cantHack").withStyle(ChatFormatting.GOLD), false);
-                        player.hurt(player.damageSources().outOfWorld(), 1f);
+                        player.hurt(player.damageSources().fellOutOfWorld(), 1f);
                     } else {
                         if (ConfigHelper.common().machines.securityStationAllowHacking.get()) {
                             teSS.initiateHacking(player);

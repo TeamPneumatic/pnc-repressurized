@@ -17,7 +17,6 @@
 
 package me.desht.pneumaticcraft.client.render.pneumatic_armor;
 
-import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
@@ -44,6 +43,7 @@ import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.network.chat.Component;
@@ -131,7 +131,7 @@ public enum HUDHandler implements IKeyListener {
         if (event.phase == TickEvent.Phase.START) {
             Minecraft mc = Minecraft.getInstance();
             Player player = event.player;
-            if (player == mc.player && player.level.isClientSide) {
+            if (player == mc.player && player.level().isClientSide) {
                 boolean anyArmorEquipped = false;
                 CommonArmorHandler comHudHandler = CommonArmorHandler.getHandlerForPlayer();
                 for (EquipmentSlot slot : ArmorUpgradeRegistry.ARMOR_SLOTS) {
@@ -233,7 +233,7 @@ public enum HUDHandler implements IKeyListener {
 
     private void playArmorInitSound(Player player, float pitch) {
         // avoid playing sounds too often... if many upgrades are installed it could get really noisy
-        long when = player.level.getGameTime();
+        long when = player.level().getGameTime();
         if (when - lastArmorInitSound >= 30) {
             player.playNotifySound(ModSounds.HUD_INIT.get(), SoundSource.PLAYERS, 0.2F, pitch);
         }
@@ -241,7 +241,7 @@ public enum HUDHandler implements IKeyListener {
     }
 
     private void playArmorInitCompleteSound(Player player) {
-        long when = player.level.getGameTime();
+        long when = player.level().getGameTime();
         if (when - lastArmorInitCompleteSound >= 30) {
             player.playNotifySound(ModSounds.HUD_INIT_COMPLETE.get(), SoundSource.PLAYERS, 0.2F, (float) 1.0);
         }
@@ -318,7 +318,7 @@ public enum HUDHandler implements IKeyListener {
         ClientArmorRegistry.getInstance().getHandlersForSlot(slot).forEach(clientHandler -> clientHandler.setOverlayColor(color));
     }
 
-    public void renderMessages(PoseStack poseStack, float partialTicks) {
+    public void renderMessages(GuiGraphics poseStack, float partialTicks) {
         pendingMessages.forEach(message -> message.renderMessage(poseStack, partialTicks));
     }
 }

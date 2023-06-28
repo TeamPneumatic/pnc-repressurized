@@ -30,5 +30,6 @@
     "recipes": [
       "pneumaticcraft:liquid_hopper"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

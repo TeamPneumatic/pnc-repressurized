@@ -30,5 +30,6 @@
     "recipes": [
       "pneumaticcraft:heat_frame"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

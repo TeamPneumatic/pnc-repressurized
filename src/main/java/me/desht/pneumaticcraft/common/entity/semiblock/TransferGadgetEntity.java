@@ -74,7 +74,7 @@ public class TransferGadgetEntity extends AbstractSemiblockEntity implements IDi
     public void tick() {
         super.tick();
 
-        if (!level.isClientSide && isAlive()  && ++counter >= TRANSFER_INTERVAL) {
+        if (!level().isClientSide && isAlive()  && ++counter >= TRANSFER_INTERVAL) {
             counter = 0;
             doTransfer();
         }
@@ -194,7 +194,7 @@ public class TransferGadgetEntity extends AbstractSemiblockEntity implements IDi
         BlockEntity inputTE = getCachedTileEntity();
         Direction side = getSide();
         Direction otherSide = getSide().getOpposite();
-        BlockEntity outputTE = level.getBlockEntity(getBlockPos().relative(side));
+        BlockEntity outputTE = level().getBlockEntity(getBlockPos().relative(side));
         if (inputTE != null && outputTE != null) {
             if (getIOMode() == IOMode.OUTPUT) {
                 tryTransferItem(inputTE, outputTE, side, otherSide);

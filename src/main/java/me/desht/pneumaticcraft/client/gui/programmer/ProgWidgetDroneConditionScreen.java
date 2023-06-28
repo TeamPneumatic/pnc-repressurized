@@ -17,13 +17,13 @@
 
 package me.desht.pneumaticcraft.client.gui.programmer;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.client.gui.ProgrammerScreen;
 import me.desht.pneumaticcraft.client.gui.widget.*;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.drone.progwidgets.*;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 
@@ -83,8 +83,8 @@ public abstract class ProgWidgetDroneConditionScreen<T extends ProgWidgetDroneCo
             setInitialFocus(textField);
         }
 
-        WidgetLabel label = addLabel(xlate("pneumaticcraft.gui.progWidget.condition.measure"), guiLeft + 8, guiTop + 152);
-        label.setTooltip(xlate("pneumaticcraft.gui.progWidget.condition.measure.tooltip"));
+        WidgetLabel label = addLabel(xlate("pneumaticcraft.gui.progWidget.condition.measure"), guiLeft + 8, guiTop + 152)
+                .setTooltipKey("pneumaticcraft.gui.progWidget.condition.measure.tooltip");
         WidgetComboBox measureTextField = new WidgetComboBox(font, guiLeft + label.getWidth() + 8, guiTop + 150, 80, 11);
         measureTextField.setElements(guiProgrammer.te.getAllVariables());
         measureTextField.setValue(progWidget.getMeasureVar());
@@ -105,14 +105,14 @@ public abstract class ProgWidgetDroneConditionScreen<T extends ProgWidgetDroneCo
     }
 
     @Override
-    public void render(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
-        super.render(matrixStack, mouseX, mouseY, partialTicks);
+    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+        super.render(graphics, mouseX, mouseY, partialTicks);
 
         if (isSidedWidget()) {
-            font.draw(matrixStack, xlate("pneumaticcraft.gui.progWidget.inventory.accessingSides"), guiLeft + 4, guiTop + 20, 0xFF404060);
+            graphics.drawString(font, xlate("pneumaticcraft.gui.progWidget.inventory.accessingSides"), guiLeft + 4, guiTop + 20, 0xFF404060, false);
         }
         Component s = progWidget.getExtraStringInfo().get(0);
-        font.draw(matrixStack, s, guiLeft + xSize / 2f - font.width(s) / 2f, guiTop + 120, 0xFF404060);
+        graphics.drawString(font, s, guiLeft + xSize / 2 - font.width(s) / 2, guiTop + 120, 0xFF404060, false);
     }
 
     public static class Item extends ProgWidgetDroneConditionScreen<ProgWidgetDroneConditionItem> {

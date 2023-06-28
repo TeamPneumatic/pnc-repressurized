@@ -30,5 +30,6 @@
     "recipes": [
       "pneumaticcraft:electrostatic_compressor"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

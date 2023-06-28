@@ -30,5 +30,6 @@
     "recipes": [
       "pneumaticcraft:thermo_plant/lpg"
     ]
-  }
+  },
+  "sends_telemetry_event": true
 }

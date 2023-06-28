@@ -18,7 +18,6 @@
 package me.desht.pneumaticcraft.client.gui;
 
 import com.google.common.collect.ImmutableList;
-import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.block.entity.PressureChamberValveBlockEntity;
@@ -26,6 +25,7 @@ import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.inventory.PressureChamberValveMenu;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
@@ -55,11 +55,11 @@ public class PressureChamberScreen extends AbstractPneumaticCraftContainerScreen
     }
 
     @Override
-    protected void renderLabels(PoseStack matrixStack, int x, int y) {
-        super.renderLabels(matrixStack, x, y);
+    protected void renderLabels(GuiGraphics graphics, int x, int y) {
+        super.renderLabels(graphics, x, y);
 
         Component title = xlate("pneumaticcraft.gui.pressureChamberTitle", te.multiBlockSize + "x" + te.multiBlockSize + "x" + te.multiBlockSize);
-        font.draw(matrixStack, title.getVisualOrderText(), (imageWidth - font.width(title)) / 2f, 6, 0x404040);
+        graphics.drawString(font, title, (imageWidth - font.width(title)) / 2, 6, 0x404040, false);
     }
 
     @Override

@@ -25,7 +25,6 @@ import me.desht.pneumaticcraft.common.block.ChargingStationBlock;
 import me.desht.pneumaticcraft.common.block.entity.RedstoneController.EmittingRedstoneMode;
 import me.desht.pneumaticcraft.common.block.entity.RedstoneController.RedstoneMode;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
-import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.inventory.ChargingStationMenu;
 import me.desht.pneumaticcraft.common.inventory.ChargingStationUpgradeManagerMenu;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
@@ -33,6 +32,7 @@ import me.desht.pneumaticcraft.common.inventory.handler.ChargeableItemHandler;
 import me.desht.pneumaticcraft.common.item.IChargeableContainerProvider;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
+import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.util.GlobalBlockEntityCacheManager;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
@@ -366,7 +366,7 @@ public class ChargingStationBlockEntity extends AbstractAirHandlingBlockEntity i
             ChargingStationBlockEntity teCS = ChargingStationBlockEntity.this;
 
             ItemStack newStack = getStackInSlot(slot);
-            if (!ItemStack.isSame(chargingStackSynced, newStack)) {
+            if (!ItemStack.isSameItem(chargingStackSynced, newStack)) {
                 chargingStackSynced = new ItemStack(newStack.getItem());
             }
 

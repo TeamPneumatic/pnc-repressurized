@@ -30,5 +30,6 @@
     "recipes": [
       "pneumaticcraft:micromissiles"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

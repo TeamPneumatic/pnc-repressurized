@@ -30,5 +30,6 @@
     "recipes": [
       "pneumaticcraft:uv_light_box"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

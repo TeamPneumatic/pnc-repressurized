@@ -30,5 +30,6 @@
     "recipes": [
       "pneumaticcraft:pneumatic_chestplate"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

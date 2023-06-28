@@ -49,7 +49,6 @@ import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -255,7 +254,7 @@ public class MiscEventHandler {
             // prevent minecarts/boats which have just been dropped by drones from immediately picking up the drone
             if (event.getEntityMounting() instanceof DroneEntity
                     && (event.getEntityBeingMounted() instanceof AbstractMinecart || event.getEntityBeingMounted() instanceof Boat)) {
-                if (!event.getEntityBeingMounted().isOnGround()) {
+                if (!event.getEntityBeingMounted().onGround()) {
                     event.setCanceled(true);
                 }
             }

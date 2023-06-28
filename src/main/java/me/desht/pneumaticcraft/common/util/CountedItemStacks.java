@@ -37,8 +37,7 @@ public class CountedItemStacks extends Object2IntOpenCustomHashMap<ItemStack> {
         @Override
         public boolean equals(ItemStack o1, ItemStack o2) {
             return (o1 == o2) || !(o1 == null || o2 == null)
-                    && o1.getItem() == o2.getItem()
-                    && ItemStack.tagMatches(o1, o2);
+                    && ItemStack.isSameItemSameTags(o1, o2);
         }
     }
 

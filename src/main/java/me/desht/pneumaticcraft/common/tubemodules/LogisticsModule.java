@@ -142,7 +142,7 @@ public class LogisticsModule extends AbstractTubeModule implements INetworkedMod
         DyeColor color = DyeColor.getColor(player.getItemInHand(hand));
         if (color != null) {
             int colorId = color.getId();
-            if (!player.level.isClientSide) {
+            if (!player.level().isClientSide) {
                 setColorChannel(colorId);
                 NetworkHandler.sendToAllTracking(new PacketUpdateLogisticsModule(this, 0), getTube());
                 if (ConfigHelper.common().general.useUpDyesWhenColoring.get() && !player.isCreative()) {

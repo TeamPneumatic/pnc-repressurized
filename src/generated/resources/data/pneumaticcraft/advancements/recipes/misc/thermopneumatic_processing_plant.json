@@ -30,5 +30,6 @@
     "recipes": [
       "pneumaticcraft:thermopneumatic_processing_plant"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

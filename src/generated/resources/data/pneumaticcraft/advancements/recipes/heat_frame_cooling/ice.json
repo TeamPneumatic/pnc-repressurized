@@ -30,5 +30,6 @@
     "recipes": [
       "pneumaticcraft:heat_frame_cooling/ice"
     ]
-  }
+  },
+  "sends_telemetry_event": true
 }

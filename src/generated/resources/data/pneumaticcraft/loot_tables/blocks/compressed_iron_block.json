@@ -26,5 +26,6 @@
       "name": "compressed_iron_block",
       "rolls": 1.0
     }
-  ]
+  ],
+  "random_sequence": "pneumaticcraft:blocks/compressed_iron_block"
 }

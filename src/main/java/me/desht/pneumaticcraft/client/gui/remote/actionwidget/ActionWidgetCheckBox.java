@@ -21,13 +21,9 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetCheckBox;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSetGlobalVariable;
-import me.desht.pneumaticcraft.common.util.NBTUtils;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableHelper;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
-
-import java.util.List;
 
 public class ActionWidgetCheckBox extends ActionWidgetVariable<WidgetCheckBox> implements IActionWidgetLabeled {
     public ActionWidgetCheckBox() {
@@ -41,7 +37,7 @@ public class ActionWidgetCheckBox extends ActionWidgetVariable<WidgetCheckBox> i
     public void readFromNBT(CompoundTag tag, int guiLeft, int guiTop) {
         super.readFromNBT(tag, guiLeft, guiTop);
         widget = new WidgetCheckBox(tag.getInt("x") + guiLeft, tag.getInt("y") + guiTop, 0xFF404040, deserializeTextComponent(tag.getString("text")), b -> onActionPerformed());
-        widget.setTooltip(NBTUtils.deserializeTextComponents(tag.getList("tooltip", Tag.TAG_STRING)));
+        deserializeTooltip(tag.getString("tooltip"));
     }
 
     @Override
@@ -50,7 +46,7 @@ public class ActionWidgetCheckBox extends ActionWidgetVariable<WidgetCheckBox> i
         tag.putInt("x", widget.getX() - guiLeft);
         tag.putInt("y", widget.getY() - guiTop);
         tag.putString("text", Component.Serializer.toJson(widget.getMessage()));
-        tag.put("tooltip", NBTUtils.serializeTextComponents(widget.getTooltip()));
+        tag.putString("tooltip", Component.Serializer.toJson(getTooltipMessage()));
         return tag;
     }
 
@@ -82,15 +78,5 @@ public class ActionWidgetCheckBox extends ActionWidgetVariable<WidgetCheckBox> i
     @Override
     public void setWidgetPos(int x, int y) {
         widget.setPosition(x, y);
-    }
-
-    @Override
-    public void setTooltip(List<Component> text) {
-        widget.setTooltip(text);
-    }
-
-    @Override
-    public List<Component> getTooltip() {
-        return widget.getTooltip();
     }
 }

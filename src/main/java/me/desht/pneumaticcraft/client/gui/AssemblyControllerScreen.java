@@ -17,7 +17,6 @@
 
 package me.desht.pneumaticcraft.client.gui;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.api.misc.Symbols;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
@@ -28,6 +27,7 @@ import me.desht.pneumaticcraft.common.inventory.AssemblyControllerMenu;
 import me.desht.pneumaticcraft.common.recipes.assembly.AssemblyProgram.EnumMachine;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -56,9 +56,9 @@ public class AssemblyControllerScreen extends AbstractPneumaticCraftContainerScr
     }
 
     @Override
-    protected void renderLabels(PoseStack matrixStack, int x, int y) {
-        super.renderLabels(matrixStack, x, y);
-        font.draw(matrixStack, "Prog.", 70, 24, 0x404040);
+    protected void renderLabels(GuiGraphics graphics, int x, int y) {
+        super.renderLabels(graphics, x, y);
+        graphics.drawString(font, "Prog.", 70, 24, 0x404040, false);
     }
 
     @Override

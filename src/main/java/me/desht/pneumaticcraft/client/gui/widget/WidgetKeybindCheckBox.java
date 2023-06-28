@@ -36,9 +36,12 @@ import me.desht.pneumaticcraft.common.network.PacketToggleArmorFeatureBulk.Featu
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
@@ -58,7 +61,7 @@ import java.util.function.Consumer;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class WidgetKeybindCheckBox extends WidgetCheckBox implements ITooltipProvider {
+public class WidgetKeybindCheckBox extends WidgetCheckBox {
     // maps upgrade ID to keybind widget
     private static final Map<ResourceLocation, WidgetKeybindCheckBox> id2checkBox = new HashMap<>();
 
@@ -233,21 +236,35 @@ public class WidgetKeybindCheckBox extends WidgetCheckBox implements ITooltipPro
     }
 
     @Override
-    public void addTooltip(double mouseX, double mouseY, List<Component> curTooltip, boolean shiftPressed) {
+    public void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        super.renderWidget(graphics, mouseX, mouseY, partialTick);
+
+        buildTooltip();
+    }
+
+    private void buildTooltip() {
         KeyMapping keyBinding = ClientArmorRegistry.getInstance().getKeybindingForUpgrade(upgradeID);
         String k = IArmorUpgradeHandler.getStringKey(upgradeID) + ".desc";
+        if (keyBinding == null && !I18n.exists(k)) {
+            setTooltip(null);
+            return;
+        }
+
+        List<Component> l = new ArrayList<>();
         if (I18n.exists(k)) {
-            curTooltip.addAll(GuiUtils.xlateAndSplit(k));
+            l.addAll(GuiUtils.xlateAndSplit(k));
         }
         if (keyBinding != null) {
-            curTooltip.add(xlate("pneumaticcraft.gui.keybindBoundKey", ClientUtils.translateKeyBind(keyBinding)).withStyle(ChatFormatting.GOLD));
+            l.add(xlate("pneumaticcraft.gui.keybindBoundKey", ClientUtils.translateKeyBind(keyBinding)).withStyle(ChatFormatting.GOLD));
             if (!isListeningForBinding) {
-                curTooltip.add(xlate("pneumaticcraft.gui.keybindRightClickToSet").withStyle(ChatFormatting.GRAY));
+                l.add(xlate("pneumaticcraft.gui.keybindRightClickToSet").withStyle(ChatFormatting.GRAY));
                 if (keyBinding.getKey().getValue() != GLFW.GLFW_KEY_UNKNOWN) {
-                    curTooltip.add(xlate("pneumaticcraft.gui.keybindShiftRightClickToClear").withStyle(ChatFormatting.GRAY));
+                    l.add(xlate("pneumaticcraft.gui.keybindShiftRightClickToClear").withStyle(ChatFormatting.GRAY));
                 }
             }
         }
+
+        setTooltip(Tooltip.create(PneumaticCraftUtils.combineComponents(l)));
     }
 
     /**

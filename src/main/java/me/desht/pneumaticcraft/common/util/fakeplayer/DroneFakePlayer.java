@@ -49,7 +49,7 @@ public class DroneFakePlayer extends FakePlayer {
     }
 
     @Override
-    public boolean isSteppingCarefully() {
+    public boolean isShiftKeyDown() {
         return sneaking;
     }
 

@@ -30,5 +30,6 @@
     "recipes": [
       "pneumaticcraft:empty_pcb_from_failed_pcb"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

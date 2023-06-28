@@ -17,13 +17,13 @@
 
 package me.desht.pneumaticcraft.client.gui;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.block.entity.AirCompressorBlockEntity;
 import me.desht.pneumaticcraft.common.inventory.AirCompressorMenu;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
@@ -45,12 +45,12 @@ public class AirCompressorScreen extends AbstractPneumaticCraftContainerScreen<A
     }
 
     @Override
-    protected void renderBg(PoseStack matrixStack, float partialTicks, int x, int y) {
-        super.renderBg(matrixStack, partialTicks, x, y);
+    protected void renderBg(GuiGraphics graphics, float partialTicks, int x, int y) {
+        super.renderBg(graphics, partialTicks, x, y);
 
         int yOff = te.getBurnTimeRemainingScaled(12);
         if (te.burnTime >= te.curFuelUsage) {
-            blit(matrixStack, leftPos + getFuelSlotXOffset(), topPos + 38 + 12 - yOff, 176, 12 - yOff, 14, yOff + 2);
+            graphics.blit(getGuiTexture(), leftPos + getFuelSlotXOffset(), topPos + 38 + 12 - yOff, 176, 12 - yOff, 14, yOff + 2);
         }
     }
 

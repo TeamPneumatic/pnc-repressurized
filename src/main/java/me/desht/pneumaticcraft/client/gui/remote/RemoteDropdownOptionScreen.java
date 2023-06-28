@@ -22,6 +22,7 @@ import me.desht.pneumaticcraft.client.gui.remote.actionwidget.ActionWidgetDropdo
 import me.desht.pneumaticcraft.client.gui.widget.WidgetCheckBox;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTextField;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTextFieldNumber;
+import net.minecraft.client.gui.components.Tooltip;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
@@ -44,7 +45,7 @@ public class RemoteDropdownOptionScreen extends RemoteVariableOptionScreen<Actio
         dropDownElementsField = new WidgetTextField(font, guiLeft + 10, guiTop + 50, 160, 10);
         dropDownElementsField.setMaxLength(1024);
         dropDownElementsField.setValue(actionWidget.getDropDownElements());
-        dropDownElementsField.setTooltip(xlate("pneumaticcraft.gui.remote.dropdown.dropDownElements.tooltip"));
+        dropDownElementsField.setTooltip(Tooltip.create(xlate("pneumaticcraft.gui.remote.dropdown.dropDownElements.tooltip")));
         addRenderableWidget(dropDownElementsField);
 
         widthField = new WidgetTextFieldNumber(font, guiLeft + 50, guiTop + 99, 30, 10).setRange(10, Integer.MAX_VALUE);
@@ -53,8 +54,8 @@ public class RemoteDropdownOptionScreen extends RemoteVariableOptionScreen<Actio
         addRenderableWidget(widthField);
 
         sortCheckBox = new WidgetCheckBox(guiLeft + 10, guiTop + 120, 0x404040, xlate("pneumaticcraft.gui.remote.dropdown.sort"))
-                .setTooltipKey("pneumaticcraft.gui.remote.dropdown.sort.tooltip")
                 .setChecked(actionWidget.getSorted());
+        sortCheckBox.setTooltip(Tooltip.create(xlate("pneumaticcraft.gui.remote.dropdown.sort.tooltip")));
         addRenderableWidget(sortCheckBox);
     }
 

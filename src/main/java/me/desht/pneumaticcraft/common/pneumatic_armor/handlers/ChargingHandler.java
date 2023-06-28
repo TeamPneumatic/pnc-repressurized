@@ -18,11 +18,11 @@
 package me.desht.pneumaticcraft.common.pneumatic_armor.handlers;
 
 import me.desht.pneumaticcraft.api.PNCCapabilities;
-import me.desht.pneumaticcraft.api.item.PNCUpgrade;
 import me.desht.pneumaticcraft.api.pneumatic_armor.BaseArmorUpgradeHandler;
 import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorExtensionData;
 import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorHandler;
-import me.desht.pneumaticcraft.common.core.ModUpgrades;
+import me.desht.pneumaticcraft.api.upgrade.PNCUpgrade;
+import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -63,8 +63,8 @@ public class ChargingHandler extends BaseArmorUpgradeHandler<IArmorExtensionData
     @Override
     public void tick(ICommonArmorHandler commonArmorHandler, boolean enabled) {
         Player player = commonArmorHandler.getPlayer();
-        if (player.level.isClientSide || !enabled
-                || player.level.getGameTime() % PneumaticValues.ARMOR_CHARGER_INTERVAL != 5)
+        if (player.level().isClientSide || !enabled
+                || player.level().getGameTime() % PneumaticValues.ARMOR_CHARGER_INTERVAL != 5)
             return;
 
         int upgrades = commonArmorHandler.getUpgradeCount(EquipmentSlot.CHEST, ModUpgrades.CHARGING.get());

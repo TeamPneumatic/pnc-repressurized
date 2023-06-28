@@ -21,10 +21,13 @@ import me.desht.pneumaticcraft.client.gui.RemoteEditorScreen;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableHelper;
 import me.desht.pneumaticcraft.lib.Log;
+import me.desht.pneumaticcraft.mixin.accessors.TooltipAccess;
 import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 
 public abstract class ActionWidget<W extends AbstractWidget> {
     protected W widget;
@@ -97,5 +100,27 @@ public abstract class ActionWidget<W extends AbstractWidget> {
 
     public BlockPos getEnablingValue() {
         return enablingValue;
+    }
+
+    public void setTooltip(Tooltip tooltip) {
+        widget.setTooltip(tooltip);
+    }
+
+    public Tooltip getTooltip() {
+        return widget.getTooltip();
+    }
+
+    public Component getTooltipMessage() {
+        Tooltip tooltip = getWidget().getTooltip();
+        return tooltip == null ? Component.empty() : ((TooltipAccess) tooltip).getMessage();
+    }
+
+    void deserializeTooltip(String val) {
+        if (!val.isEmpty()) {
+            Component c = Component.Serializer.fromJson(val);
+            widget.setTooltip(c == null ? null : Tooltip.create(c));
+        } else {
+            widget.setTooltip(null);
+        }
     }
 }

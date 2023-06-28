@@ -26,5 +26,6 @@
       "name": "fluid_mixer",
       "rolls": 1.0
     }
-  ]
+  ],
+  "random_sequence": "pneumaticcraft:blocks/fluid_mixer"
 }

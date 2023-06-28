@@ -18,7 +18,10 @@
 package me.desht.pneumaticcraft.client.gui;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.*;
+import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.Tesselator;
+import com.mojang.blaze3d.vertex.VertexFormat;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetLabel;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTextField;
@@ -35,6 +38,7 @@ import me.desht.pneumaticcraft.common.util.EntityFilter;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.nbt.CompoundTag;
@@ -159,22 +163,22 @@ public class MicromissileScreen extends AbstractPneumaticCraftScreen {
     }
 
     @Override
-    public void render(PoseStack matrixStack, int x, int y, float partialTicks) {
-        renderBackground(matrixStack);
+    public void render(GuiGraphics graphics, int x, int y, float partialTicks) {
+        renderBackground(graphics);
 
-        super.render(matrixStack, x, y, partialTicks);
+        super.render(graphics, x, y, partialTicks);
 
         if (ClientUtils.isKeyDown(GLFW.GLFW_KEY_F1)) {
-            GuiUtils.showPopupHelpScreen(matrixStack, this, font,
+            GuiUtils.showPopupHelpScreen(graphics, this, font,
                     GuiUtils.xlateAndSplit("pneumaticcraft.gui.entityFilter.helpText"));
         } else if (textField.isHoveredOrFocused()) {
             String str = I18n.get("pneumaticcraft.gui.entityFilter.holdF1");
-            font.draw(matrixStack, str, guiLeft + (xSize - font.width(str)) / 2f, guiTop + ySize + 5, 0x808080);
+            graphics.drawString(font, str, guiLeft + (xSize - font.width(str)) / 2, guiTop + ySize + 5, 0x808080, false);
         }
     }
 
     @Override
-    protected void drawForeground(PoseStack matrixStack, int x, int y, float partialTicks) {
+    protected void drawForeground(GuiGraphics graphics, int x, int y, float partialTicks) {
         if (fireMode == FireMode.DUMB) {
             return;
         }
@@ -182,15 +186,15 @@ public class MicromissileScreen extends AbstractPneumaticCraftScreen {
         if (point != null) {
             float px = point.x();
             float py = point.y();
-            matrixStack.pushPose();
-            matrixStack.translate(guiLeft + SELECTOR_BOUNDS.getX(), guiTop + SELECTOR_BOUNDS.getY(), 0);
+            graphics.pose().pushPose();
+            graphics.pose().translate(guiLeft + SELECTOR_BOUNDS.getX(), guiTop + SELECTOR_BOUNDS.getY(), 0);
 
             // crosshairs
             int size = dragging ? 5 : 3;
             RenderSystem.lineWidth(2);
 
             BufferBuilder wr = Tesselator.getInstance().getBuilder();
-            Matrix4f posMat = matrixStack.last().pose();
+            Matrix4f posMat = graphics.pose().last().pose();
             wr.begin(VertexFormat.Mode.DEBUG_LINES, DefaultVertexFormat.POSITION_COLOR);
             wr.vertex(posMat, px - size, py, 0).color(32, 32, 32, 255).endVertex();
             wr.vertex(posMat, px + size, py, 0).color(32, 32, 32, 255).endVertex();
@@ -214,15 +218,15 @@ public class MicromissileScreen extends AbstractPneumaticCraftScreen {
             Tesselator.getInstance().end();
             RenderSystem.disableBlend();
 
-            matrixStack.popPose();
+            graphics.pose().popPose();
         }
 
-        matrixStack.pushPose();
-        matrixStack.translate(guiLeft, guiTop, 0);
-        fill(matrixStack, 125, 48, 125 + (int) (49 * topSpeed), 54, 0xFF00C000);
-        fill(matrixStack, 125, 68, 125 + (int) (49 * turnSpeed), 74, 0xFF00C000);
-        fill(matrixStack, 125, 88, 125 + (int) (49 * damage), 94, 0xFF00C000);
-        matrixStack.popPose();
+        graphics.pose().pushPose();
+        graphics.pose().translate(guiLeft, guiTop, 0);
+        graphics.fill(125, 48, 125 + (int) (49 * topSpeed), 54, 0xFF00C000);
+        graphics.fill(125, 68, 125 + (int) (49 * turnSpeed), 74, 0xFF00C000);
+        graphics.fill(125, 88, 125 + (int) (49 * damage), 94, 0xFF00C000);
+        graphics.pose().popPose();
     }
 
     @Override

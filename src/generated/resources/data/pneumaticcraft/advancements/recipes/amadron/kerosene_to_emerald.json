@@ -30,5 +30,6 @@
     "recipes": [
       "pneumaticcraft:amadron/kerosene_to_emerald"
     ]
-  }
+  },
+  "sends_telemetry_event": true
 }

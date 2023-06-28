@@ -26,5 +26,6 @@
       "name": "creative_compressor",
       "rolls": 1.0
     }
-  ]
+  ],
+  "random_sequence": "pneumaticcraft:blocks/creative_compressor"
 }

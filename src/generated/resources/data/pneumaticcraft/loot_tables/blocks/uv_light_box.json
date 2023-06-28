@@ -26,5 +26,6 @@
       "name": "uv_light_box",
       "rolls": 1.0
     }
-  ]
+  ],
+  "random_sequence": "pneumaticcraft:blocks/uv_light_box"
 }

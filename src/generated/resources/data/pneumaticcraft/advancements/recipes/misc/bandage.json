@@ -30,5 +30,6 @@
     "recipes": [
       "pneumaticcraft:bandage"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

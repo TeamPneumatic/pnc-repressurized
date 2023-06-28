@@ -26,5 +26,6 @@
       "name": "gas_lift",
       "rolls": 1.0
     }
-  ]
+  ],
+  "random_sequence": "pneumaticcraft:blocks/gas_lift"
 }

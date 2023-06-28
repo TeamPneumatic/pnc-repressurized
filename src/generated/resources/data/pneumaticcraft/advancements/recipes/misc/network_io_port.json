@@ -30,5 +30,6 @@
     "recipes": [
       "pneumaticcraft:network_io_port"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

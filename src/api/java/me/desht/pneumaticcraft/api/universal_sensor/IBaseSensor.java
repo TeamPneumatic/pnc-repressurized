@@ -17,8 +17,8 @@
 
 package me.desht.pneumaticcraft.api.universal_sensor;
 
-import me.desht.pneumaticcraft.api.item.PNCUpgrade;
 import me.desht.pneumaticcraft.api.misc.RangedInt;
+import me.desht.pneumaticcraft.api.upgrade.PNCUpgrade;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 
@@ -60,7 +60,8 @@ public interface IBaseSensor {
 
     /**
      * If this sensor should have a popup help panel, return a translation key here for the help text which should be
-     * shown when F1 is held down.  The translated text can include line breaks; use the sequence {@code {br}} for that.
+     * shown when F1 is held down.  The translated text can include line breaks; use the standard sequence {@code \n}
+     * for that.
      * @return help text translation key, or the empty string for no help text
      */
     default String getHelpText() {

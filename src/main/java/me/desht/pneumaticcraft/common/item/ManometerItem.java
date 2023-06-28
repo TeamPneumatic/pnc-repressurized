@@ -178,7 +178,7 @@ public class ManometerItem extends PressurizableItem {
 
     @Override
     public InteractionResult interactLivingEntity(ItemStack iStack, Player player, LivingEntity entity, InteractionHand hand) {
-        if (!player.level.isClientSide) {
+        if (!player.level().isClientSide) {
             return iStack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).map(h -> {
                 if (h.getAir() < PneumaticValues.USAGE_ITEM_MANOMETER) {
                     player.displayClientMessage(xlate("pneumaticcraft.message.misc.outOfAir", iStack.getHoverName()).withStyle(ChatFormatting.RED), true);

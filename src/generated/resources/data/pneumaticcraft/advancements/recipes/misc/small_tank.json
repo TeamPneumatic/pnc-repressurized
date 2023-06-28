@@ -30,5 +30,6 @@
     "recipes": [
       "pneumaticcraft:small_tank"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

@@ -30,5 +30,6 @@
     "recipes": [
       "pneumaticcraft:gun_ammo_ap"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

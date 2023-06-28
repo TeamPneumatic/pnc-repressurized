@@ -30,5 +30,6 @@
     "recipes": [
       "pneumaticcraft:crop_support"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

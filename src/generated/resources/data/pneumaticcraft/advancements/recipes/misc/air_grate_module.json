@@ -30,5 +30,6 @@
     "recipes": [
       "pneumaticcraft:air_grate_module"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

@@ -30,5 +30,6 @@
     "recipes": [
       "pneumaticcraft:drill_pipe"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

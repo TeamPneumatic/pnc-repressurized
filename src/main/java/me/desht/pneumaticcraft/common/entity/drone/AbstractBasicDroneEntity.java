@@ -17,9 +17,9 @@
 
 package me.desht.pneumaticcraft.common.entity.drone;
 
-import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetArea;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetStandby;
+import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.util.DroneProgramBuilder;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import net.minecraft.core.BlockPos;

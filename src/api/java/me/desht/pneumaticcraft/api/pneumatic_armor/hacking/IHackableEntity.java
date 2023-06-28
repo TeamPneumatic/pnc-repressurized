@@ -22,6 +22,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
+import org.jetbrains.annotations.ApiStatus;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -114,29 +115,35 @@ public interface IHackableEntity<T extends Entity> {
         return false;
     }
 
-    /************************************************************************************************************
-     * Do not use or override any methods below here. Only here for generics support.
+    /* =============================================================================
+     * Do not use or override any methods below here! Only here for generics support.
      */
+
+    @ApiStatus.Internal
     default boolean _afterHackTick(Entity e) {
         //noinspection unchecked
         return getHackableClass().isAssignableFrom(e.getClass()) && afterHackTick((T) e);
     }
+    @ApiStatus.Internal
     default int _getHackTime(Entity e, Player p) {
         //noinspection unchecked
         return getHackableClass().isAssignableFrom(e.getClass()) ? getHackTime((T) e, p) : -1;
     }
+    @ApiStatus.Internal
     default void _onHackFinished(Entity e, Player p) {
         if (getHackableClass().isAssignableFrom(e.getClass())) {
             //noinspection unchecked
             onHackFinished((T) e, p);
         }
     }
+    @ApiStatus.Internal
     default void _addHackInfo(Entity e, List<Component> componentList, Player p) {
         if (getHackableClass().isAssignableFrom(e.getClass())) {
             //noinspection unchecked
             addHackInfo((T) e, componentList, p);
         }
     }
+    @ApiStatus.Internal
     default void _addPostHackInfo(Entity e, List<Component> componentList, Player p) {
         if (getHackableClass().isAssignableFrom(e.getClass())) {
             //noinspection unchecked

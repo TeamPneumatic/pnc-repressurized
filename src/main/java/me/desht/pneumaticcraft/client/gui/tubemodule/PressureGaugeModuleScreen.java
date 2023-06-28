@@ -19,18 +19,22 @@ package me.desht.pneumaticcraft.client.gui.tubemodule;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.*;
+import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.Tesselator;
+import com.mojang.blaze3d.vertex.VertexFormat;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetCheckBox;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTooltipArea;
-import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdatePressureModule;
 import me.desht.pneumaticcraft.common.tubemodules.AbstractRedstoneReceivingModule;
 import me.desht.pneumaticcraft.common.tubemodules.AbstractTubeModule;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.client.resources.language.I18n;
@@ -87,10 +91,8 @@ public class PressureGaugeModuleScreen extends AbstractTubeModuleScreen<Abstract
         graphLeft = guiLeft + 22;
         graphRight = guiLeft + 172;
 
-        addRenderableWidget(new WidgetTooltipArea(graphLeft - 20, graphHighY, 25, graphLowY - graphHighY,
-                xlate("pneumaticcraft.gui.redstone")));
-        addRenderableWidget(new WidgetTooltipArea(graphLeft, graphLowY - 5, graphRight - graphLeft, 25,
-                xlate("pneumaticcraft.gui.threshold")));
+        addRenderableWidget(new WidgetTooltipArea(graphLeft - 20, graphHighY, 25, graphLowY - graphHighY, xlate("pneumaticcraft.gui.redstone")));
+        addRenderableWidget(new WidgetTooltipArea(graphLeft, graphLowY - 5, graphRight - graphLeft, 25, xlate("pneumaticcraft.gui.threshold")));
 
         WidgetAnimatedStat stat = new WidgetAnimatedStat(this, xlate("pneumaticcraft.gui.tab.info"), WidgetAnimatedStat.StatIcon.of(Textures.GUI_INFO_LOCATION), xStart, yStart + 5, 0xFF8888FF, null, true);
         stat.setText(xlate("pneumaticcraft.gui.tab.info.tubeModule"));
@@ -100,7 +102,8 @@ public class PressureGaugeModuleScreen extends AbstractTubeModuleScreen<Abstract
         WidgetCheckBox advancedMode = new WidgetCheckBox(guiLeft + 6, guiTop + 20, 0xFF404040, xlate("pneumaticcraft.gui.tubeModule.advancedConfig"), b -> {
             module.advancedConfig = b.checked;
             NetworkHandler.sendToServer(new PacketUpdatePressureModule(module));
-        }).setTooltipKey("pneumaticcraft.gui.tubeModule.advancedConfig.tooltip").setChecked(true);
+        }).setChecked(true);
+        advancedMode.setTooltip(Tooltip.create(xlate("pneumaticcraft.gui.tubeModule.advancedConfig.tooltip")));
         addRenderableWidget(advancedMode);
 
         higherBoundArea = new Rect2i(guiLeft + 11, guiTop + 59, 158, 15);
@@ -113,23 +116,22 @@ public class PressureGaugeModuleScreen extends AbstractTubeModuleScreen<Abstract
     }
 
     @Override
-    public void drawForeground(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
-        GuiUtils.bindTexture(getTexture());
+    public void drawForeground(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
         int scrollbarLowerBoundX = (int) (guiLeft + 16 + (157 - 11) * (module.lowerBound / (AbstractTubeModule.MAX_VALUE + 1)));
         int scrollbarHigherBoundX = (int) (guiLeft + 16 + (157 - 11) * (module.higherBound / (AbstractTubeModule.MAX_VALUE + 1)));
 
-        blit(matrixStack, scrollbarLowerBoundX, guiTop + 73, 183, 0, 15, 12);
-        blit(matrixStack, scrollbarHigherBoundX, guiTop + 59, 183, 0, 15, 12);
+        graphics.blit(getTexture(), scrollbarLowerBoundX, guiTop + 73, 183, 0, 15, 12);
+        graphics.blit(getTexture(), scrollbarHigherBoundX, guiTop + 59, 183, 0, 15, 12);
 
-        renderGraph(matrixStack);
+        renderGraph(graphics);
 
         // current redstone input, if applicable
         if (module instanceof AbstractRedstoneReceivingModule) {
             module.onNeighborBlockUpdate();
-            hLine(matrixStack, graphLeft + 4, graphRight, graphHighY + (graphLowY - graphHighY) * (15 - ((AbstractRedstoneReceivingModule) module).getReceivingRedstoneLevel()) / 15, 0xFFFF0000);
+            graphics.hLine(graphLeft + 4, graphRight, graphHighY + (graphLowY - graphHighY) * (15 - ((AbstractRedstoneReceivingModule) module).getReceivingRedstoneLevel()) / 15, 0xFFFF0000);
             String status = I18n.get("pneumaticcraft.gui.tubeModule.simpleConfig.threshold")
                     + " " + PneumaticCraftUtils.roundNumberTo(((AbstractRedstoneReceivingModule) module).getThreshold(), 1) + " bar";
-            font.draw(matrixStack, status, guiLeft + xSize / 2f - font.width(status) / 2f, guiTop + 175, 0xFF404040);
+            graphics.drawString(font, status, guiLeft + xSize / 2f - font.width(status) / 2f, guiTop + 175, 0xFF404040, false);
         }
 
         // the actual graph data
@@ -138,7 +140,7 @@ public class PressureGaugeModuleScreen extends AbstractTubeModuleScreen<Abstract
         bufferBuilder.begin(VertexFormat.Mode.DEBUG_LINE_STRIP, DefaultVertexFormat.POSITION_COLOR);
         RenderSystem.enableBlend();
         RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-        Matrix4f posMat = matrixStack.last().pose();
+        Matrix4f posMat = graphics.pose().last().pose();
         for (int i = 0; i < 16; i++) {
             float y = graphHighY + (graphLowY - graphHighY) * (15 - i) / 15f;
             float x = graphLeft + (graphRight - graphLeft) * module.getThreshold(i) / 30f;
@@ -149,24 +151,26 @@ public class PressureGaugeModuleScreen extends AbstractTubeModuleScreen<Abstract
 
     }
 
-    private void renderGraph(PoseStack matrixStack) {
-        vLine(matrixStack, graphLeft, graphHighY, graphLowY, 0xFF303030);
+    private void renderGraph(GuiGraphics graphics) {
+        graphics.vLine(graphLeft, graphHighY, graphLowY, 0xFF303030);
         for (int i = 0; i < 16; i++) {
             boolean longer = i % 5 == 0;
             if (longer) {
-                font.draw(matrixStack, i + "", graphLeft - 5 - font.width(i + ""), graphHighY + (graphLowY - graphHighY) * (15 - i) / 15f - 3, 0xFF303030);
-                hLine(matrixStack, graphLeft + 4, graphRight, graphHighY + (graphLowY - graphHighY) * (15 - i) / 15, i == 0 ? 0xFF303030 : 0x33000000);
+                String txt = String.valueOf(i);
+                graphics.drawString(font, txt, graphLeft - 5 - font.width(txt), graphHighY + (graphLowY - graphHighY) * (15 - i) / 15f - 3, 0xFF303030, false);
+                graphics.hLine(graphLeft + 4, graphRight, graphHighY + (graphLowY - graphHighY) * (15 - i) / 15, i == 0 ? 0xFF303030 : 0x33000000);
 
             }
-            hLine(matrixStack, graphLeft - (longer ? 5 : 3), graphLeft + 3, graphHighY + (graphLowY - graphHighY) * (15 - i) / 15, 0xFF303030);
+            graphics.hLine(graphLeft - (longer ? 5 : 3), graphLeft + 3, graphHighY + (graphLowY - graphHighY) * (15 - i) / 15, 0xFF303030);
         }
         for (int i = 0; i < 31; i++) {
             boolean longer = i % 5 == 0;
             if (longer) {
-                font.draw(matrixStack, i + "", graphLeft + (graphRight - graphLeft) * i / 30f - font.width(i + "") / 2f + 1, graphLowY + 6, 0xFF303030);
-                vLine(matrixStack, graphLeft + (graphRight - graphLeft) * i / 30, graphHighY, graphLowY - 2, 0x33000000);
+                String txt = String.valueOf(i);
+                graphics.drawString(font, txt, graphLeft + (graphRight - graphLeft) * i / 30f - font.width(txt) / 2f + 1, graphLowY + 6, 0xFF303030, false);
+                graphics.vLine(graphLeft + (graphRight - graphLeft) * i / 30, graphHighY, graphLowY - 2, 0x33000000);
             }
-            vLine(matrixStack, graphLeft + (graphRight - graphLeft) * i / 30, graphLowY - 3, graphLowY + (longer ? 5 : 3), 0xFF303030);
+            graphics.vLine(graphLeft + (graphRight - graphLeft) * i / 30, graphLowY - 3, graphLowY + (longer ? 5 : 3), 0xFF303030);
         }
     }
 

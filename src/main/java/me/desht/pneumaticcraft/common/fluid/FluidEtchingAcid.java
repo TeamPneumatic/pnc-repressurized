@@ -20,12 +20,12 @@ package me.desht.pneumaticcraft.common.fluid;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModFluids;
 import me.desht.pneumaticcraft.common.core.ModItems;
-import net.minecraft.world.level.material.MaterialColor;
+import net.minecraft.world.level.material.MapColor;
 import net.minecraftforge.fluids.ForgeFlowingFluid;
 
 public abstract class FluidEtchingAcid {
     public static final PNCFluidRenderProps RENDER_PROPS = new PNCFluidRenderProps
-            ("minecraft:block/water_still", "minecraft:block/water_flow", MaterialColor.EMERALD.col | 0xFF000000);
+            ("minecraft:block/water_still", "minecraft:block/water_flow", MapColor.EMERALD.col | 0xFF000000);
 
     private static ForgeFlowingFluid.Properties props() {
         return new ForgeFlowingFluid.Properties(

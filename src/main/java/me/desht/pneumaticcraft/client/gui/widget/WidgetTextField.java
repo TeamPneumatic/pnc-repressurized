@@ -17,18 +17,13 @@
 
 package me.desht.pneumaticcraft.client.gui.widget;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.network.chat.Component;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-public class WidgetTextField extends EditBox implements ITooltipProvider {
-    private final List<Component> tooltip = new ArrayList<>();
+public class WidgetTextField extends EditBox {
     private boolean passwordBox;
 
     public WidgetTextField(Font fontRenderer, int x, int y, int width, int height) {
@@ -41,35 +36,17 @@ public class WidgetTextField extends EditBox implements ITooltipProvider {
     }
 
     @Override
-    public void renderWidget(PoseStack matrixStack, int mouseX, int mouseY, float partialTick) {
+    public void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
         String oldText = getValue();
         int oldCursorPos = getCursorPosition();
         if (passwordBox) {
             setValue(StringUtils.repeat('*', oldText.length()));
             moveCursorTo(oldCursorPos);
         }
-        super.renderWidget(matrixStack, mouseX, mouseY, partialTick);
+        super.renderWidget(graphics, mouseX, mouseY, partialTick);
         if (passwordBox) {
             setValue(oldText);
             moveCursorTo(oldCursorPos);
-        }
-    }
-
-    public void setTooltip(Component... tooltip) {
-        this.tooltip.clear();
-        Collections.addAll(this.tooltip, tooltip);
-    }
-
-    public void setTooltip(List<Component> tooltip) {
-        this.tooltip.clear();
-        this.tooltip.addAll(tooltip);
-    }
-
-    @Override
-    public void addTooltip(double mouseX, double mouseY, List<Component> curTip, boolean shift) {
-        if (!isFocused()) {
-            // hide tooltip when actually typing; it just gets in the way
-            curTip.addAll(tooltip);
         }
     }
 

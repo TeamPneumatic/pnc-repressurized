@@ -48,7 +48,7 @@ public class PacketDescriptionPacketRequest extends LocationIntPacket {
             if (player != null && !player.isSpectator()) {
                 CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
                 if (handler.upgradeUsable(CommonUpgradeHandlers.blockTrackerHandler, true)) {
-                    BlockEntity blockEntity = player.level.getBlockEntity(pos);
+                    BlockEntity blockEntity = player.level().getBlockEntity(pos);
                     if (blockEntity != null) {
                         BlockTrackLootable.INSTANCE.apply(player, blockEntity);
                         NetworkHandler.sendToPlayer(new PacketSendNBTPacket(blockEntity), player);

@@ -47,7 +47,7 @@ public class RenderNavigator {
     public void updatePath() {
         Player player = Minecraft.getInstance().player;
         Mob e = PneumaticCraftUtils.createDummyEntity(player);
-        e.setOnGround(player.isOnGround());
+        e.setOnGround(player.onGround());
         path = e.getNavigation().createPath(targetPos, 1);
         // TODO: this just doesn't work anymore
         if (!tracedToDestination()) {

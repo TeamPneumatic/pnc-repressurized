@@ -19,18 +19,18 @@ package me.desht.pneumaticcraft.common.pneumatic_armor;
 
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IArmorUpgradeClientHandler;
-import me.desht.pneumaticcraft.api.item.PNCUpgrade;
 import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorExtensionData;
 import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorUpgradeHandler;
 import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorHandler;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerItem;
+import me.desht.pneumaticcraft.api.upgrade.PNCUpgrade;
 import me.desht.pneumaticcraft.client.pneumatic_armor.ClientArmorRegistry;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
-import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.item.PneumaticArmorItem;
+import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -88,7 +88,7 @@ public class CommonArmorHandler implements ICommonArmorHandler {
     }
 
     private static CommonArmorHandler getManagerInstance(Player player) {
-        return player.level.isClientSide ? clientHandler : serverHandler;
+        return player.level().isClientSide ? clientHandler : serverHandler;
     }
 
     public static CommonArmorHandler getHandlerForPlayer(Player player) {
@@ -170,7 +170,7 @@ public class CommonArmorHandler implements ICommonArmorHandler {
             ticksSinceEquip[slot.getIndex()]++;
             if (isArmorEnabled() && getArmorPressure(slot) > 0F) {
                 armorActive = true;
-                if (!player.level.isClientSide && isArmorReady(slot) && !player.isCreative()) {
+                if (!player.level().isClientSide && isArmorReady(slot) && !player.isCreative()) {
                     // use up air in the armor piece
                     float airUsage = getIdleAirUsage(slot, false);
                     if (airUsage != 0) {
@@ -233,14 +233,14 @@ public class CommonArmorHandler implements ICommonArmorHandler {
 
         // flippers & repairing are special cases; they don't have upgrade handlers
 
-        if (slot == EquipmentSlot.FEET && player.level.isClientSide && player.isInWater() && player.zza > 0) {
+        if (slot == EquipmentSlot.FEET && player.level().isClientSide && player.isInWater() && player.zza > 0) {
             // doing this client-side only appears to be effective
             if (isArmorReady(EquipmentSlot.FEET) && getUpgradeCount(EquipmentSlot.FEET, ModUpgrades.FLIPPERS.get()) > 0) {
-                player.moveRelative(player.isOnGround() ? ConfigHelper.common().armor.flippersSpeedBoostGround.get().floatValue() : ConfigHelper.common().armor.flippersSpeedBoostFloating.get().floatValue(), FORWARD);
+                player.moveRelative(player.onGround() ? ConfigHelper.common().armor.flippersSpeedBoostGround.get().floatValue() : ConfigHelper.common().armor.flippersSpeedBoostFloating.get().floatValue(), FORWARD);
             }
         }
 
-        if (!player.level.isClientSide && getUpgradeCount(slot, ModUpgrades.ITEM_LIFE.get()) > 0) {
+        if (!player.level().isClientSide && getUpgradeCount(slot, ModUpgrades.ITEM_LIFE.get()) > 0) {
             tryRepairArmor(slot);
         }
     }

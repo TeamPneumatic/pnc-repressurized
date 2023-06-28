@@ -26,5 +26,6 @@
       "name": "security_station",
       "rolls": 1.0
     }
-  ]
+  ],
+  "random_sequence": "pneumaticcraft:blocks/security_station"
 }

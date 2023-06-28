@@ -30,5 +30,6 @@
     "recipes": [
       "pneumaticcraft:explosion_crafting/compressed_iron_ingot"
     ]
-  }
+  },
+  "sends_telemetry_event": true
 }

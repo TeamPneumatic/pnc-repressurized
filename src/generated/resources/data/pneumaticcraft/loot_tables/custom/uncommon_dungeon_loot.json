@@ -162,5 +162,6 @@
       ],
       "rolls": 2.0
     }
-  ]
+  ],
+  "random_sequence": "pneumaticcraft:custom/uncommon_dungeon_loot"
 }

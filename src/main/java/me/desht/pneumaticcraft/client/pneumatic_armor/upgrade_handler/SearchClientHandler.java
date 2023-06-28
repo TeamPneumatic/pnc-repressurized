@@ -32,14 +32,15 @@ import me.desht.pneumaticcraft.client.pneumatic_armor.ClientArmorRegistry;
 import me.desht.pneumaticcraft.client.render.ModRenderTypes;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.RenderSearchItemBlock;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
-import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.item.ItemRegistry;
 import me.desht.pneumaticcraft.common.item.PneumaticArmorItem;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
 import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.BlockTrackerHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.SearchHandler;
+import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
@@ -123,7 +124,7 @@ public class SearchClientHandler extends IArmorUpgradeClientHandler.AbstractHand
     }
 
     @Override
-    public void render2D(PoseStack matrixStack, float partialTicks, boolean armorPieceHasPressure) {
+    public void render2D(GuiGraphics graphics, float partialTicks, boolean armorPieceHasPressure) {
     }
 
     private int trackInventoryCounts(int rangeUpgrades) {
@@ -159,7 +160,7 @@ public class SearchClientHandler extends IArmorUpgradeClientHandler.AbstractHand
         if (searchedItem == null || searchedItem == Items.AIR) return;
 
         Player player = ClientUtils.getClientPlayer();
-        List<ItemEntity> items = player.level.getEntitiesOfClass(ItemEntity.class, EntityTrackerClientHandler.getAABBFromRange(player, rangeUpgrades));
+        List<ItemEntity> items = player.level().getEntitiesOfClass(ItemEntity.class, EntityTrackerClientHandler.getAABBFromRange(player, rangeUpgrades));
         for (ItemEntity itemEntity : items) {
             if (!itemEntity.getItem().isEmpty()) {
                 if (itemEntity.getItem().getItem() == searchedItem) {

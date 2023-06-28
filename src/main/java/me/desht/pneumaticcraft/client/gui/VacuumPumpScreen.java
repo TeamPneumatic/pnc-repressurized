@@ -17,19 +17,19 @@
 
 package me.desht.pneumaticcraft.client.gui;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.misc.Symbols;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
 import me.desht.pneumaticcraft.client.render.pressure_gauge.PressureGaugeRenderer2D;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.block.entity.VacuumPumpBlockEntity;
-import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.inventory.VacuumPumpMenu;
+import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
@@ -50,21 +50,21 @@ public class VacuumPumpScreen extends AbstractPneumaticCraftContainerScreen<Vacu
     }
 
     @Override
-    protected void renderLabels(PoseStack matrixStack, int x, int y) {
-        super.renderLabels(matrixStack, x, y);
+    protected void renderLabels(GuiGraphics graphics, int x, int y) {
+        super.renderLabels(graphics, x, y);
 
-        font.draw(matrixStack, "+", 32, 47, 0xFF00AA00);
-        font.draw(matrixStack, "-", 138, 47, 0xFFFF0000);
+        graphics.drawString(font, "+", 32, 47, 0xFF00AA00, false);
+        graphics.drawString(font, "-", 138, 47, 0xFFFF0000, false);
 
         float pressure = te.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, te.getInputSide())
                 .orElseThrow(RuntimeException::new).getPressure();
-        PressureGaugeRenderer2D.drawPressureGauge(matrixStack, font, -1, PneumaticValues.MAX_PRESSURE_VACUUM_PUMP,
+        PressureGaugeRenderer2D.drawPressureGauge(graphics, font, -1, PneumaticValues.MAX_PRESSURE_VACUUM_PUMP,
                 PneumaticValues.DANGER_PRESSURE_VACUUM_PUMP, PneumaticValues.MIN_PRESSURE_VACUUM_PUMP, pressure,
                 imageWidth / 5, imageHeight / 5 + 4);
 
         float vacPressure = te.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, te.getVacuumSide())
                 .orElseThrow(RuntimeException::new).getPressure();
-        PressureGaugeRenderer2D.drawPressureGauge(matrixStack, font, -1, PneumaticValues.MAX_PRESSURE_VACUUM_PUMP,
+        PressureGaugeRenderer2D.drawPressureGauge(graphics, font, -1, PneumaticValues.MAX_PRESSURE_VACUUM_PUMP,
                 PneumaticValues.DANGER_PRESSURE_VACUUM_PUMP, -1, vacPressure,
                 imageWidth * 4 / 5, imageHeight / 5 + 4);
     }

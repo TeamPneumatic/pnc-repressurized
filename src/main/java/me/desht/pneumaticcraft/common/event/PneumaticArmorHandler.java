@@ -23,7 +23,6 @@ import me.desht.pneumaticcraft.api.data.PneumaticCraftTags;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModSounds;
-import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.item.PneumaticArmorItem;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketJetBootsStateSync;
@@ -34,6 +33,7 @@ import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
 import me.desht.pneumaticcraft.common.pneumatic_armor.JetBootsStateTracker;
 import me.desht.pneumaticcraft.common.pneumatic_armor.JetBootsStateTracker.JetBootsState;
+import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.MutableComponent;
@@ -111,15 +111,15 @@ public class PneumaticArmorHandler {
                 if (handler.isArmorEnabled() && handler.hasMinPressure(EquipmentSlot.CHEST) && handler.getUpgradeCount(EquipmentSlot.CHEST, ModUpgrades.SECURITY.get()) > 0) {
                     event.setCanceled(true);
                     player.clearFire();
-                    if (!player.level.isClientSide) {
+                    if (!player.level().isClientSide) {
                         handler.addAir(EquipmentSlot.CHEST, -PneumaticValues.PNEUMATIC_ARMOR_FIRE_USAGE);
                         for (int i = 0; i < 2; i++) {
                             float sx = player.getRandom().nextFloat() * 1.5F - 0.75F;
                             float sz = player.getRandom().nextFloat() * 1.5F - 0.75F;
-                            NetworkHandler.sendToAllTracking(new PacketSpawnParticle(AirParticleData.DENSE, player.getX() + sx, player.getY() + 1, player.getZ() + sz, sx / 4, -0.2, sz / 4), player.level, player.blockPosition());
+                            NetworkHandler.sendToAllTracking(new PacketSpawnParticle(AirParticleData.DENSE, player.getX() + sx, player.getY() + 1, player.getZ() + sz, sx / 4, -0.2, sz / 4), player.level(), player.blockPosition());
                         }
                         if ((player.tickCount & 0xf) == 0) {
-                            player.level.playSound(null, player.blockPosition(), ModSounds.LEAKING_GAS.get(), SoundSource.PLAYERS, 1f, 0.7f);
+                            player.level().playSound(null, player.blockPosition(), ModSounds.LEAKING_GAS.get(), SoundSource.PLAYERS, 1f, 0.7f);
                             tryExtinguish(player);
                         }
                     }
@@ -132,12 +132,12 @@ public class PneumaticArmorHandler {
         for (int i = -1; i <= 1; i++) {
             for (int j = -1; j <= 1; j++) {
                 BlockPos pos = player.blockPosition().offset(i, 0, j);
-                BlockState state = player.level.getBlockState(pos);
+                BlockState state = player.level().getBlockState(pos);
                 if (state.getBlock() == Blocks.FIRE && player.getRandom().nextInt(3) == 0) {
-                    player.level.removeBlock(pos, false);
+                    player.level().removeBlock(pos, false);
                 } else if ((state.getBlock() == Blocks.LAVA) && player.getRandom().nextInt(5) == 0) {
                     int level = state.getValue(LiquidBlock.LEVEL);
-                    player.level.setBlockAndUpdate(pos, level == 0 ? Blocks.OBSIDIAN.defaultBlockState() : Blocks.COBBLESTONE.defaultBlockState());
+                    player.level().setBlockAndUpdate(pos, level == 0 ? Blocks.OBSIDIAN.defaultBlockState() : Blocks.COBBLESTONE.defaultBlockState());
                 }
             }
         }
@@ -181,7 +181,7 @@ public class PneumaticArmorHandler {
     public void breakSpeedCheck(PlayerEvent.BreakSpeed event) {
         Player player = event.getEntity();
         int max = PneumaticValues.PNEUMATIC_JET_BOOTS_MAX_UPGRADES;
-        if (isPneumaticArmorPiece(player, EquipmentSlot.FEET) && !player.isOnGround()) {
+        if (isPneumaticArmorPiece(player, EquipmentSlot.FEET) && !player.onGround()) {
             CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(event.getEntity());
             JetBootsState jbState = JetBootsStateTracker.getTracker(player).getJetBootsState(player);
             if (jbState.isEnabled() && jbState.isBuilderMode()) {
@@ -220,10 +220,10 @@ public class PneumaticArmorHandler {
     public void onPlayerTick(TickEvent.PlayerTickEvent event) {
         if (event.phase == TickEvent.Phase.START) return;
 
-        if (event.player.level.isClientSide) {
+        if (event.player.level().isClientSide) {
             handleJetbootsPose(event.player);
         } else if (event.player instanceof ServerPlayer
-                && event.player.level.getGameTime() % 20 == 0
+                && event.player.level().getGameTime() % 20 == 0
                 && PneumaticArmorItem.isPneumaticArmorPiece(event.player, EquipmentSlot.HEAD)) {
             handleTargetWarnings((ServerPlayer) event.player);
         }
@@ -232,8 +232,8 @@ public class PneumaticArmorHandler {
     private void handleJetbootsPose(Player thisPlayer) {
         JetBootsStateTracker tracker = JetBootsStateTracker.getClientTracker();
         int distThresholdSq = ClientUtils.getRenderDistanceThresholdSq();
-        for (Player otherPlayer : thisPlayer.level.players()) {
-            if (!otherPlayer.isOnGround() && isPneumaticArmorPiece(otherPlayer, EquipmentSlot.FEET)) {
+        for (Player otherPlayer : thisPlayer.level().players()) {
+            if (!otherPlayer.onGround() && isPneumaticArmorPiece(otherPlayer, EquipmentSlot.FEET)) {
                 JetBootsState state = tracker.getJetBootsState(otherPlayer);
                 if (state != null && state.isEnabled() && (!otherPlayer.isFallFlying() || state.isActive()) && otherPlayer.distanceToSqr(thisPlayer) < distThresholdSq) {
                     // note: particles now played in MovingSoundJetboots

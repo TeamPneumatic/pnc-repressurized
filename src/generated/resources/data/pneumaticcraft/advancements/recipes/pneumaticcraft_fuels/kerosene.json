@@ -30,5 +30,6 @@
     "recipes": [
       "pneumaticcraft:pneumaticcraft_fuels/kerosene"
     ]
-  }
+  },
+  "sends_telemetry_event": true
 }

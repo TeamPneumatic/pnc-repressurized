@@ -26,5 +26,6 @@
       "name": "pneumatic_door_base",
       "rolls": 1.0
     }
-  ]
+  ],
+  "random_sequence": "pneumaticcraft:blocks/pneumatic_door_base"
 }

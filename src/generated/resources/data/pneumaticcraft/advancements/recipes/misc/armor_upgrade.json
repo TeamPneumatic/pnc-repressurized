@@ -30,5 +30,6 @@
     "recipes": [
       "pneumaticcraft:armor_upgrade"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

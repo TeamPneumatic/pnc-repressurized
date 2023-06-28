@@ -20,12 +20,12 @@ package me.desht.pneumaticcraft.common.thirdparty.immersiveengineering;
 import blusunrize.immersiveengineering.api.Lib;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.common.core.ModSounds;
-import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.entity.drone.DroneEntity;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSpawnParticle;
 import me.desht.pneumaticcraft.common.particle.AirParticleData;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
+import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -63,7 +63,7 @@ public class ElectricAttackHandler {
                 float sx = player.getRandom().nextFloat() * 1.5F - 0.75F;
                 float sz = player.getRandom().nextFloat() * 1.5F - 0.75F;
                 double dy = Math.min(event.getAmount() / 4, 0.5);
-                NetworkHandler.sendToAllTracking(new PacketSpawnParticle(AirParticleData.DENSE, player.getX() + sx, player.getY() + 1, player.getZ() + sz, sx / 4, -dy, sz / 4), player.level, player.blockPosition());
+                NetworkHandler.sendToAllTracking(new PacketSpawnParticle(AirParticleData.DENSE, player.getX() + sx, player.getY() + 1, player.getZ() + sz, sx / 4, -dy, sz / 4), player.level(), player.blockPosition());
                 event.setAmount(0f);
                 playLeakSound(player);
             }
@@ -71,9 +71,9 @@ public class ElectricAttackHandler {
     }
 
     private static void playLeakSound(Entity e) {
-        if (e.level.getGameTime() - sounds.getOrDefault(e.getUUID(), 0L) > 16) {
-            e.level.playSound(null, e.blockPosition(), ModSounds.LEAKING_GAS.get(), SoundSource.PLAYERS, 0.5f, 0.7f);
-            sounds.put(e.getUUID(), e.level.getGameTime());
+        if (e.level().getGameTime() - sounds.getOrDefault(e.getUUID(), 0L) > 16) {
+            e.level().playSound(null, e.blockPosition(), ModSounds.LEAKING_GAS.get(), SoundSource.PLAYERS, 0.5f, 0.7f);
+            sounds.put(e.getUUID(), e.level().getGameTime());
         }
     }
 }

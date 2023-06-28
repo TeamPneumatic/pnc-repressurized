@@ -30,5 +30,6 @@
     "recipes": [
       "pneumaticcraft:heat_frame_cooling/obsidian"
     ]
-  }
+  },
+  "sends_telemetry_event": true
 }

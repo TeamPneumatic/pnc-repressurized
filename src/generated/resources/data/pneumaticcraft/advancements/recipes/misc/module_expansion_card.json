@@ -30,5 +30,6 @@
     "recipes": [
       "pneumaticcraft:module_expansion_card"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

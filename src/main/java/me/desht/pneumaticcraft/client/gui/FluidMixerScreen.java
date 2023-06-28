@@ -17,7 +17,6 @@
 
 package me.desht.pneumaticcraft.client.gui;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.api.misc.Symbols;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTank;
@@ -29,6 +28,8 @@ import me.desht.pneumaticcraft.common.inventory.FluidMixerMenu;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
@@ -70,13 +71,12 @@ public class FluidMixerScreen extends AbstractPneumaticCraftContainerScreen<Flui
     }
 
     @Override
-    protected void renderBg(PoseStack matrixStack, float partialTicks, int x, int y) {
-        super.renderBg(matrixStack, partialTicks, x, y);
+    protected void renderBg(GuiGraphics graphics, float partialTicks, int x, int y) {
+        super.renderBg(graphics, partialTicks, x, y);
 
         // animated progress bar
         int progressWidth = (int) (te.getCraftingPercentage() * 48);
-        bindGuiTexture();
-        blit(matrixStack, leftPos + 50, topPos + 36, imageWidth, 0, progressWidth, 30);
+        graphics.blit(getGuiTexture(), leftPos + 50, topPos + 36, imageWidth, 0, progressWidth, 30);
     }
 
     @Override
@@ -93,7 +93,7 @@ public class FluidMixerScreen extends AbstractPneumaticCraftContainerScreen<Flui
         for (int i = 0; i < 2; i++) {
             String k = hasShiftDown() ? "dumpInput" : "moveInput";
             dumpButtons[i].setMessage(hasShiftDown() ? Component.literal("X").withStyle(ChatFormatting.RED) : Component.literal(Symbols.TRIANGLE_RIGHT).withStyle(ChatFormatting.DARK_AQUA));
-            dumpButtons[i].setTooltipKey("pneumaticcraft.gui.thermopneumatic." + k);
+            dumpButtons[i].setTooltip(Tooltip.create(xlate("pneumaticcraft.gui.thermopneumatic." + k)));
         }
     }
 

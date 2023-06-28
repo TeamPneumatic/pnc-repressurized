@@ -17,14 +17,14 @@
 
 package me.desht.pneumaticcraft.common.pneumatic_armor.handlers;
 
-import me.desht.pneumaticcraft.api.item.PNCUpgrade;
 import me.desht.pneumaticcraft.api.pneumatic_armor.BaseArmorUpgradeHandler;
 import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorExtensionData;
 import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorHandler;
-import me.desht.pneumaticcraft.common.core.ModUpgrades;
+import me.desht.pneumaticcraft.api.upgrade.PNCUpgrade;
 import me.desht.pneumaticcraft.common.item.PneumaticArmorItem;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
 import me.desht.pneumaticcraft.common.pneumatic_armor.JetBootsStateTracker;
+import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -72,22 +72,22 @@ public class SpeedBoostHandler extends BaseArmorUpgradeHandler<IArmorExtensionDa
         double speedBoost = getSpeedBoostFromLegs(commonArmorHandler);
         if (speedBoost == 0) return;
 
-        if (player.level.isClientSide) {
+        if (player.level().isClientSide) {
             // doing this client-side only appears to be effective
             if (player.zza > 0) {
                 JetBootsStateTracker.JetBootsState jbState = JetBootsStateTracker.getClientTracker().getJetBootsState(player);
-                if (!player.isOnGround() && jbState.isEnabled() && jbState.isBuilderMode()) {
+                if (!player.onGround() && jbState.isEnabled() && jbState.isBuilderMode()) {
                     player.moveRelative(commonArmorHandler.getUpgradeCount(EquipmentSlot.FEET, ModUpgrades.JET_BOOTS.get()) / 250f, FORWARD);
                 }
-                if (player.isOnGround() && !player.isInWater()) {
+                if (player.onGround() && !player.isInWater()) {
                     player.moveRelative((float) speedBoost, FORWARD);
                 }
             }
         }
-        if (!player.level.isClientSide && speedBoost > 0) {
+        if (!player.level().isClientSide && speedBoost > 0) {
             Vec3 prev = MOVE_MAP.get(player.getUUID());
             boolean moved = prev != null && (Math.abs(player.getX() - prev.x) > 0.0001 || Math.abs(player.getZ() - prev.z) > 0.0001);
-            if (moved && player.isOnGround() && !player.isInWater()) {
+            if (moved && player.onGround() && !player.isInWater()) {
                 int airUsage = (int) Math.ceil(PneumaticValues.PNEUMATIC_LEGS_SPEED_USAGE * speedBoost * 8);
                 commonArmorHandler.addAir(EquipmentSlot.LEGS, -airUsage);
             }

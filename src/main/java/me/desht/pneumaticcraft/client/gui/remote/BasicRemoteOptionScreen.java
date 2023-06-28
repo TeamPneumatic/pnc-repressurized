@@ -17,7 +17,6 @@
 
 package me.desht.pneumaticcraft.client.gui.remote;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.client.gui.AbstractPneumaticCraftScreen;
 import me.desht.pneumaticcraft.client.gui.RemoteEditorScreen;
 import me.desht.pneumaticcraft.client.gui.remote.actionwidget.ActionWidget;
@@ -25,19 +24,14 @@ import me.desht.pneumaticcraft.client.gui.remote.actionwidget.IActionWidgetLabel
 import me.desht.pneumaticcraft.client.gui.widget.*;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableHelper;
 import me.desht.pneumaticcraft.lib.Textures;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class BasicRemoteOptionScreen<A extends ActionWidget<?>> extends AbstractPneumaticCraftScreen {
-    private static final String TOOLTIP_DELIMITER = "//";
-
     protected final A actionWidget;
     final RemoteEditorScreen guiRemote;
     private WidgetTextField labelField, tooltipField;
@@ -56,9 +50,9 @@ public class BasicRemoteOptionScreen<A extends ActionWidget<?>> extends Abstract
     }
 
     @Override
-    public void render(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
-        renderBackground(matrixStack);
-        super.render(matrixStack, mouseX, mouseY, partialTicks);
+    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+        renderBackground(graphics);
+        super.render(graphics, mouseX, mouseY, partialTicks);
     }
 
     @Override
@@ -96,39 +90,39 @@ public class BasicRemoteOptionScreen<A extends ActionWidget<?>> extends Abstract
         enableField = new WidgetComboBox(font, guiLeft + 23, guiTop + 160, 147, 10);
         enableField.setElements(GlobalVariableHelper.extractVarnames(guiRemote.getMenu().variables, playerGlobalEnableVar));
         enableField.setValue(GlobalVariableHelper.stripVarPrefix(actionWidget.getEnableVariable()));
-        enableField.setTooltip(xlate("pneumaticcraft.gui.remote.enable.tooltip"));
+        enableField.setTooltip(Tooltip.create(xlate("pneumaticcraft.gui.remote.enable.tooltip")));
         addRenderableWidget(enableField);
 
         Component valueTooltip = xlate("pneumaticcraft.gui.remote.enableValue.tooltip");
 
         xValueField = new WidgetTextFieldNumber(font, guiLeft + 20, guiTop + 185, 38, 10);
         xValueField.setValue(actionWidget.getEnablingValue().getX());
-        xValueField.setTooltip(valueTooltip);
+        xValueField.setTooltip(Tooltip.create(valueTooltip));
         addRenderableWidget(xValueField);
 
         yValueField = new WidgetTextFieldNumber(font, guiLeft + 78, guiTop + 185, 38, 10);
         yValueField.setValue(actionWidget.getEnablingValue().getY());
-        yValueField.setTooltip(valueTooltip);
+        yValueField.setTooltip(Tooltip.create(valueTooltip));
         addRenderableWidget(yValueField);
 
         zValueField = new WidgetTextFieldNumber(font, guiLeft + 136, guiTop + 185, 38, 10);
         zValueField.setValue(actionWidget.getEnablingValue().getZ());
-        zValueField.setTooltip(valueTooltip);
+        zValueField.setTooltip(Tooltip.create(valueTooltip));
         addRenderableWidget(zValueField);
 
         if (actionWidget instanceof IActionWidgetLabeled) {
             labelField = new WidgetTextField(font, guiLeft + 10, guiTop + 30, 160, 10);
             labelField.setValue(((IActionWidgetLabeled) actionWidget).getText().getString());
-            labelField.setTooltip(xlate("pneumaticcraft.gui.remote.label.tooltip"));
+            labelField.setTooltip(Tooltip.create(xlate("pneumaticcraft.gui.remote.label.tooltip")));
             labelField.setMaxLength(1000);
             addRenderableWidget(labelField);
 
             tooltipField = new WidgetTextField(font, guiLeft + 10, guiTop + 56, 160, 10);
-
-            String joined = ((IActionWidgetLabeled) actionWidget).getTooltip().stream()
-                    .map(Component::getString)
-                    .collect(Collectors.joining(TOOLTIP_DELIMITER));
-            tooltipField.setValue(joined);
+            tooltipField.setValue(actionWidget.getTooltipMessage().getString());
+//            String joined = ((IActionWidgetLabeled) actionWidget).getTooltip().stream()
+//                    .map(Component::getString)
+//                    .collect(Collectors.joining(TOOLTIP_DELIMITER));
+//            tooltipField.setValue(joined);
             addRenderableWidget(tooltipField);
         }
     }
@@ -140,12 +134,14 @@ public class BasicRemoteOptionScreen<A extends ActionWidget<?>> extends Abstract
         if (actionWidget instanceof IActionWidgetLabeled) {
             ((IActionWidgetLabeled) actionWidget).setText(Component.literal(labelField.getValue()));
             if (tooltipField.getValue().isEmpty()) {
-                ((IActionWidgetLabeled) actionWidget).setTooltip(Collections.emptyList());
+                actionWidget.setTooltip(null);
+//                ((IActionWidgetLabeled) actionWidget).setTooltip(Collections.emptyList());
             } else {
-                List<Component> l = Arrays.stream(tooltipField.getValue().split(TOOLTIP_DELIMITER))
-                        .map(Component::literal)
-                        .collect(Collectors.toList());
-                ((IActionWidgetLabeled) actionWidget).setTooltip(l);
+                actionWidget.setTooltip(Tooltip.create(Component.literal(tooltipField.getValue())));
+//                List<Component> l = Arrays.stream(tooltipField.getValue().split(TOOLTIP_DELIMITER))
+//                        .map(Component::literal)
+//                        .collect(Collectors.toList());
+//                ((IActionWidgetLabeled) actionWidget).setTooltip(l);
             }
         }
     }

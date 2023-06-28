@@ -18,7 +18,6 @@
 package me.desht.pneumaticcraft.client.gui.pneumatic_armor.options;
 
 import com.google.common.collect.Sets;
-import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IGuiScreen;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
 import me.desht.pneumaticcraft.client.KeyHandler;
@@ -38,7 +37,8 @@ import me.desht.pneumaticcraft.common.item.PneumaticArmorItem;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.Rect2i;
@@ -120,31 +120,32 @@ public class DroneDebuggerOptions extends IOptionPage.SimpleOptionPage<DroneDebu
     }
 
     @Override
-    public void renderPre(PoseStack matrixStack, int x, int y, float partialTicks) {
-        GuiComponent.fill(matrixStack, programmingStartX, PROGRAMMING_START_Y, programmingStartX + programmingWidth, PROGRAMMING_START_Y + programmingHeight, 0x55000000);
+    public void renderPre(GuiGraphics graphics, int x, int y, float partialTicks) {
+        graphics.fill(programmingStartX, PROGRAMMING_START_Y, programmingStartX + programmingWidth, PROGRAMMING_START_Y + programmingHeight, 0x55000000);
     }
 
     @Override
-    public void renderPost(PoseStack matrixStack, int x, int y, float partialTicks) {
+    public void renderPost(GuiGraphics graphics, int x, int y, float partialTicks) {
         Screen guiScreen = getGuiScreen().getScreen();
+        Font font = getGuiScreen().getFontRenderer();
 
         int screenWidth = guiScreen.width;
         int screenHeight = guiScreen.height;
 
         if (isDroneValid()) {
-            Minecraft.getInstance().font.drawShadow(matrixStack, xlate("pneumaticcraft.gui.progWidget.debug.droneName",
+            graphics.drawString(font, xlate("pneumaticcraft.gui.progWidget.debug.droneName",
                     selectedDrone.getDroneName().getString()).getVisualOrderText(), 20, screenHeight - 15, 0xFFFFFFFF);
-            Minecraft.getInstance().font.drawShadow(matrixStack, xlate("pneumaticcraft.gui.progWidget.debug.routine",
-                    selectedDrone.getLabel()).getVisualOrderText(), screenWidth / 2f, screenHeight - 15, 0xFFFFFFFF);
+            graphics.drawString(font, xlate("pneumaticcraft.gui.progWidget.debug.routine",
+                    selectedDrone.getLabel()).getVisualOrderText(), screenWidth / 2, screenHeight - 15, 0xFFFFFFFF);
         }
 
-        matrixStack.pushPose();
-        matrixStack.translate(0, 0, 300);
-        programmerUnit.render(matrixStack, x, y, true, true);
-        programmerUnit.renderForeground(matrixStack, x, y, null, getGuiScreen().getFontRenderer());
-        matrixStack.popPose();
+        graphics.pose().pushPose();
+        graphics.pose().translate(0, 0, 300);
+        programmerUnit.render(graphics, x, y, true, true);
+        programmerUnit.renderForeground(graphics, x, y, null, font);
+        graphics.pose().popPose();
 
-        followCheckbox.render(matrixStack, x, y, partialTicks);
+        followCheckbox.render(graphics, x, y, partialTicks);
 
         if (isDroneValid()) {
 
@@ -157,13 +158,13 @@ public class DroneDebuggerOptions extends IOptionPage.SimpleOptionPage<DroneDebu
                 }
             }
         } else {
-            matrixStack.translate(0, 0, 200);
-            GuiComponent.drawCenteredString(matrixStack, Minecraft.getInstance().font,
+            graphics.pose().translate(0, 0, 200);
+            graphics.drawCenteredString(Minecraft.getInstance().font,
                     xlate("pneumaticcraft.gui.progWidget.debug.pressToDebug",
                             ClientUtils.translateKeyBind(KeyHandler.getInstance().keybindDebuggingDrone)),
                     screenWidth / 2, screenHeight - 40, 0xFFFF0000
             );
-            matrixStack.translate(0, 0, 200);
+            graphics.pose().translate(0, 0, 200);
         }
     }
 
@@ -217,7 +218,7 @@ public class DroneDebuggerOptions extends IOptionPage.SimpleOptionPage<DroneDebu
         DebugWidgetAreaRenderer(Screen parent, List<IProgWidget> progWidgets,
                                 int guiLeft, int guiTop, Rect2i bounds,
                                 int translatedX, int translatedY, int lastZoom) {
-            super(parent, progWidgets, guiLeft, guiTop, bounds, translatedX, translatedY, lastZoom);
+            super(progWidgets, guiLeft, guiTop, bounds, translatedX, translatedY, lastZoom);
             ProgrammerBlockEntity.updatePuzzleConnections(progWidgets);
         }
 
@@ -256,11 +257,11 @@ public class DroneDebuggerOptions extends IOptionPage.SimpleOptionPage<DroneDebu
         }
 
         @Override
-        protected void renderAdditionally(PoseStack matrixStack) {
+        protected void renderAdditionally(GuiGraphics graphics) {
             if (isDroneValid() && selectedDrone.getActiveWidget() != null) {
-                drawBorder(matrixStack, selectedDrone.getActiveWidget(), 0xFF00FF00);
+                drawBorder(graphics, selectedDrone.getActiveWidget(), 0xFF00FF00);
                 if (areaShowWidgetId >= 0) {
-                    drawBorder(matrixStack, selectedDrone.getProgWidgets().get(areaShowWidgetId), 0xA040FFA0, 2);
+                    drawBorder(graphics, selectedDrone.getProgWidgets().get(areaShowWidgetId), 0xA040FFA0, 2);
                 }
             }
         }

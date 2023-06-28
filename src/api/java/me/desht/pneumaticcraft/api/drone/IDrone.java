@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.api.drone;
 
-import me.desht.pneumaticcraft.api.item.PNCUpgrade;
+import me.desht.pneumaticcraft.api.upgrade.PNCUpgrade;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
@@ -63,7 +63,7 @@ public interface IDrone extends ICapabilityProvider {
 
     /**
      * Get the drone's fluid tank.  Note that this is also accessible via the
-     * {@link net.minecraftforge.fluids.capability.CapabilityFluidHandler#FLUID_HANDLER_CAPABILITY}
+     * {@link net.minecraftforge.common.capabilities.ForgeCapabilities#FLUID_HANDLER}
      * capability, which should be used in preference.
      *
      * @return a fluid tank
@@ -72,7 +72,7 @@ public interface IDrone extends ICapabilityProvider {
 
     /**
      * Get the drone's inventory.  Note that this is also accessible via the
-     * {@link net.minecraftforge.items.CapabilityItemHandler#ITEM_HANDLER_CAPABILITY} capability,
+     * {@link net.minecraftforge.common.capabilities.ForgeCapabilities#ITEM_HANDLER} capability,
      * which should be used in preference.
      *
      * @return an inventory

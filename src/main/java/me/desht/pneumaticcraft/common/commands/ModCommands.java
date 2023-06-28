@@ -48,7 +48,6 @@ import net.minecraft.commands.synchronization.ArgumentTypeInfos;
 import net.minecraft.commands.synchronization.SingletonArgumentInfo;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.GlobalPos;
-import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -145,7 +144,7 @@ public class ModCommands {
                 source.sendFailure(Component.literal("Empty NBT"));
                 return 0;
             }
-            source.sendSuccess(Component.literal(held.getTag().toString()), false);
+            source.sendSuccess(() -> Component.literal(held.getTag().toString()), false);
             return 1;
         }
         return 0;
@@ -162,7 +161,7 @@ public class ModCommands {
             if (deliveredStacks.size() > 0) {
                 GlobalPos gPos = GlobalPosHelper.makeGlobalPos(source.getLevel(), toPos);
                 PneumaticRegistry.getInstance().getDroneRegistry().deliverItemsAmazonStyle(gPos, deliveredStacks.toArray(new ItemStack[0]));
-                source.sendSuccess(xlate("pneumaticcraft.command.deliverAmazon.success", PneumaticCraftUtils.posToString(fromPos), PneumaticCraftUtils.posToString(toPos)), false);
+                source.sendSuccess(() -> xlate("pneumaticcraft.command.deliverAmazon.success", PneumaticCraftUtils.posToString(fromPos), PneumaticCraftUtils.posToString(toPos)), false);
                 return 1;
             } else {
                 source.sendFailure(xlate("pneumaticcraft.command.deliverAmazon.noItems", PneumaticCraftUtils.posToString(fromPos)));
@@ -179,43 +178,47 @@ public class ModCommands {
         Player playerEntity = source.getEntity() instanceof Player ? (Player) source.getEntity() : null;
         UUID id = playerEntity == null ? null : playerEntity.getUUID();
         Collection<String> varNames = GlobalVariableManager.getInstance().getAllActiveVariableNames(playerEntity);
-        source.sendSuccess(Component.literal(varNames.size() + " vars").withStyle(ChatFormatting.GREEN, ChatFormatting.UNDERLINE), false);
+        source.sendSuccess(() -> Component.literal(varNames.size() + " vars").withStyle(ChatFormatting.GREEN, ChatFormatting.UNDERLINE), false);
         varNames.stream().sorted().forEach(var -> {
             BlockPos pos = GlobalVariableHelper.getPos(id, var);
             ItemStack stack = GlobalVariableHelper.getStack(id, var);
-            String val = PneumaticCraftUtils.posToString(pos);
-            if (!stack.isEmpty()) val += " / " + PneumaticCraftUtils.getRegistryName(stack.getItem()).orElse(UNKNOWN_ITEM);
-            source.sendSuccess(Component.literal(var).append(" = [").append(val).append("]"), false);
+            String val = PneumaticCraftUtils.posToString(pos) + (stack.isEmpty() ? "" : " / " + PneumaticCraftUtils.getRegistryName(stack.getItem()).orElse(UNKNOWN_ITEM));
+            source.sendSuccess(() -> Component.literal(var).append(" = [").append(val).append("]"), false);
         });
         return 1;
     }
 
-    private static int getGlobalVar(CommandContext<CommandSourceStack> ctx, String varName) {
+    private static int getGlobalVar(CommandContext<CommandSourceStack> ctx, String varName0) {
         CommandSourceStack source = ctx.getSource();
-        if (!GlobalVariableHelper.hasPrefix(varName)) {
-            source.sendSuccess(xlate("pneumaticcraft.command.globalVariable.prefixReminder", varName).withStyle(ChatFormatting.GOLD), false);
-            varName = "#" + varName;
+        String varName;
+        if (!GlobalVariableHelper.hasPrefix(varName0)) {
+            source.sendSuccess(() -> xlate("pneumaticcraft.command.globalVariable.prefixReminder", varName0).withStyle(ChatFormatting.GOLD), false);
+            varName = "#" + varName0;
+        } else {
+            varName = varName0;
         }
         UUID id = varName.startsWith("%") || !(ctx.getSource().getEntity() instanceof Player player) ? null : player.getUUID();
         BlockPos pos = GlobalVariableHelper.getPos(id, varName);
         ItemStack stack = GlobalVariableHelper.getStack(id, varName);
-        String val = PneumaticCraftUtils.posToString(pos);
-        if (!stack.isEmpty()) val += " / " + PneumaticCraftUtils.getRegistryName(stack.getItem()).orElse(UNKNOWN_ITEM);
+        String val = PneumaticCraftUtils.posToString(pos) + (stack.isEmpty() ? "" : " / " + PneumaticCraftUtils.getRegistryName(stack.getItem()).orElse(UNKNOWN_ITEM));
         if (pos == null && stack.isEmpty()) {
             source.sendFailure(xlate("pneumaticcraft.command.globalVariable.missing", varName));
         } else {
-            source.sendSuccess(xlate("pneumaticcraft.command.globalVariable.output", varName, val), false);
+            source.sendSuccess(() -> xlate("pneumaticcraft.command.globalVariable.output", varName, val), false);
         }
 
         return 1;
     }
 
-    private static int setGlobalVar(CommandContext<CommandSourceStack> ctx, String varName, Either<BlockPos, ItemInput> posOrItem) {
+    private static int setGlobalVar(CommandContext<CommandSourceStack> ctx, String varName0, Either<BlockPos, ItemInput> posOrItem) {
         CommandSourceStack source = ctx.getSource();
 
-        if (!GlobalVariableHelper.hasPrefix(varName)) {
-            source.sendSuccess(xlate("pneumaticcraft.command.globalVariable.prefixReminder", varName).withStyle(ChatFormatting.GOLD), false);
-            varName = "#" + varName;
+        String varName;
+        if (!GlobalVariableHelper.hasPrefix(varName0)) {
+            source.sendSuccess(() -> xlate("pneumaticcraft.command.globalVariable.prefixReminder", varName0).withStyle(ChatFormatting.GOLD), false);
+            varName = "#" + varName0;
+        } else {
+            varName = varName0;
         }
 
         try {
@@ -223,11 +226,11 @@ public class ModCommands {
             final String v = varName;
             posOrItem.ifLeft(pos -> {
                 GlobalVariableHelper.setPos(id, v, pos);
-                source.sendSuccess(xlate("pneumaticcraft.command.globalVariable.output", v, PneumaticCraftUtils.posToString(pos)), true);
+                source.sendSuccess(() -> xlate("pneumaticcraft.command.globalVariable.output", v, PneumaticCraftUtils.posToString(pos)), true);
             }).ifRight(item -> {
                 ItemStack stack = new ItemStack(item.getItem());
                 GlobalVariableHelper.setStack(id, v, stack);
-                source.sendSuccess(xlate("pneumaticcraft.command.globalVariable.output", v, PneumaticCraftUtils.getRegistryName(stack.getItem()).orElse(UNKNOWN_ITEM)), true);
+                source.sendSuccess(() -> xlate("pneumaticcraft.command.globalVariable.output", v, PneumaticCraftUtils.getRegistryName(stack.getItem()).orElse(UNKNOWN_ITEM)), true);
             });
         } catch (CommandSyntaxException e) {
             source.sendFailure(Component.literal("Player-globals require player context!"));
@@ -236,11 +239,15 @@ public class ModCommands {
         return 1;
     }
 
-    private static int delGlobalVar(CommandContext<CommandSourceStack> ctx, String varName) {
+    private static int delGlobalVar(CommandContext<CommandSourceStack> ctx, String varName0) {
         CommandSourceStack source = ctx.getSource();
-        if (!GlobalVariableHelper.hasPrefix(varName)) {
-            source.sendSuccess(xlate("pneumaticcraft.command.globalVariable.prefixReminder", varName).withStyle(ChatFormatting.GOLD), false);
-            varName = "#" + varName;
+
+        String varName;
+        if (!GlobalVariableHelper.hasPrefix(varName0)) {
+            source.sendSuccess(() -> xlate("pneumaticcraft.command.globalVariable.prefixReminder", varName0).withStyle(ChatFormatting.GOLD), false);
+            varName = "#" + varName0;
+        } else {
+            varName = varName0;
         }
 
         try {
@@ -258,7 +265,7 @@ public class ModCommands {
                     NetworkHandler.sendToAll(new PacketSetGlobalVariable(varName, (BlockPos) null));
                     NetworkHandler.sendToAll(new PacketSetGlobalVariable(varName, ItemStack.EMPTY));
                 }
-                source.sendSuccess(xlate("pneumaticcraft.command.globalVariable.delete", varName), true);
+                source.sendSuccess(() -> xlate("pneumaticcraft.command.globalVariable.delete", varName), true);
             }
         } catch (CommandSyntaxException e) {
             source.sendFailure(Component.literal("Player-globals require player context!"));

@@ -43,7 +43,7 @@ public class HarvestingDroneEntity extends AbstractBasicDroneEntity {
 
     @Override
     public boolean addProgram(BlockPos clickPos, Direction facing, BlockPos pos, ItemStack droneStack, List<IProgWidget> widgets) {
-        BlockEntity te = level.getBlockEntity(clickPos);
+        BlockEntity te = level().getBlockEntity(clickPos);
         ProgWidgetHarvest harvestPiece = new ProgWidgetHarvest();
         harvestPiece.setRequiresTool(IOHelper.getInventoryForTE(te, facing).isPresent());
         harvestPiece.setOrder(Ordering.HIGH_TO_LOW);

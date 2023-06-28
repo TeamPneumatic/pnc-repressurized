@@ -30,5 +30,6 @@
     "recipes": [
       "pneumaticcraft:reinforced_brick_pillar"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

@@ -30,5 +30,6 @@
     "recipes": [
       "pneumaticcraft:pneumaticcraft_fuels/crude_oil"
     ]
-  }
+  },
+  "sends_telemetry_event": true
 }

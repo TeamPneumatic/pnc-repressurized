@@ -35,6 +35,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.inventory.CraftingContainer;
+import net.minecraft.world.inventory.TransientCraftingContainer;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -80,6 +81,7 @@ public class ProgWidgetCC extends ProgWidgetInventoryBase implements IBlockOrder
     private String measureVar = "";
     private boolean canSteal;
     private boolean checkSight;
+    private boolean signBackSide;
 
     public ProgWidgetCC() {
         super(ModProgWidgets.COMPUTER_CONTROL.get());
@@ -453,7 +455,7 @@ public class ProgWidgetCC extends ProgWidgetInventoryBase implements IBlockOrder
 
     @Override
     public CraftingContainer getCraftingGrid() {
-        CraftingContainer invCrafting = new CraftingContainer(new DummyContainer(), 3, 3);
+        CraftingContainer invCrafting = new TransientCraftingContainer(new DummyContainer(), 3, 3);
         for (int i = 0; i < 9; i++) {
             invCrafting.setItem(i, craftingGrid[i]);
         }
@@ -516,6 +518,16 @@ public class ProgWidgetCC extends ProgWidgetInventoryBase implements IBlockOrder
     @Override
     public String[] getLines() {
         return signText;
+    }
+
+    @Override
+    public boolean isSignBackSide() {
+        return signBackSide;
+    }
+
+    @Override
+    public void setSignBackSide(boolean signBackSide) {
+        this.signBackSide = signBackSide;
     }
 
     @Override

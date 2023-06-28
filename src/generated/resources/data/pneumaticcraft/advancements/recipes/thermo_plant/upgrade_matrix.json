@@ -30,5 +30,6 @@
     "recipes": [
       "pneumaticcraft:thermo_plant/upgrade_matrix"
     ]
-  }
+  },
+  "sends_telemetry_event": true
 }

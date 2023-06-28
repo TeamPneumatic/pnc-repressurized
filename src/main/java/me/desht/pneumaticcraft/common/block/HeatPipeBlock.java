@@ -53,7 +53,7 @@ public class HeatPipeBlock extends AbstractCamouflageBlock implements SimpleWate
     private static final VoxelShape[] SHAPE_CACHE = new VoxelShape[64];  // 2^6 shapes
 
     public HeatPipeBlock() {
-        super(ModBlocks.defaultProps().noOcclusion());  // notSolid() because of camo requirements
+        super(ModBlocks.defaultProps().noOcclusion().forceSolidOn());
 
         BlockState state = defaultBlockState();
         for (BooleanProperty prop : CONNECTION_PROPERTIES) {

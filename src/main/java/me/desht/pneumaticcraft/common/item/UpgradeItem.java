@@ -18,29 +18,30 @@
 package me.desht.pneumaticcraft.common.item;
 
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
-import me.desht.pneumaticcraft.api.item.IUpgradeItem;
-import me.desht.pneumaticcraft.api.item.PNCUpgrade;
+import me.desht.pneumaticcraft.api.upgrade.IUpgradeItem;
+import me.desht.pneumaticcraft.api.upgrade.PNCUpgrade;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.core.ModItems;
-import me.desht.pneumaticcraft.common.core.ModUpgrades;
+import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.util.NBTUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Direction;
-import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.*;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Rarity;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.util.List;
-import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
@@ -48,14 +49,14 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 public class UpgradeItem extends Item implements IUpgradeItem, CreativeTabStackProvider {
     public static final String NBT_DIRECTION = "Facing";
 
-    private final Supplier<PNCUpgrade> upgrade;
+    private final PNCUpgrade upgrade;
     private final int tier;
 
-    public UpgradeItem(Supplier<PNCUpgrade> upgrade, int tier) {
+    public UpgradeItem(PNCUpgrade upgrade, int tier) {
         this(upgrade, tier, ModItems.defaultProps());
     }
 
-    public UpgradeItem(Supplier<PNCUpgrade> upgrade, int tier, Properties properties) {
+    public UpgradeItem(PNCUpgrade upgrade, int tier, Properties properties) {
         super(properties);
         this.upgrade = upgrade;
         this.tier = tier;
@@ -63,7 +64,7 @@ public class UpgradeItem extends Item implements IUpgradeItem, CreativeTabStackP
 
     @Override
     public PNCUpgrade getUpgradeType() {
-        return upgrade.get();
+        return upgrade;
     }
 
     @Override
@@ -76,7 +77,7 @@ public class UpgradeItem extends Item implements IUpgradeItem, CreativeTabStackP
     public void appendHoverText(ItemStack stack, Level world, List<Component> infoList, TooltipFlag par4) {
         if (ClientUtils.hasShiftDown()) {
             infoList.add(xlate("pneumaticcraft.gui.tooltip.item.upgrade.usedIn").withStyle(ChatFormatting.AQUA));
-            PneumaticRegistry.getInstance().getUpgradeRegistry().addUpgradeTooltip(upgrade.get(), infoList);
+            PneumaticRegistry.getInstance().getUpgradeRegistry().addUpgradeTooltip(upgrade, infoList);
         } else {
             infoList.add(xlate("pneumaticcraft.gui.tooltip.item.upgrade.shiftMessage").withStyle(ChatFormatting.AQUA));
         }
@@ -136,6 +137,7 @@ public class UpgradeItem extends Item implements IUpgradeItem, CreativeTabStackP
 
     @Override
     public Stream<ItemStack> getStacksForItem() {
-        return getUpgradeType().isDependencyLoaded() ? Stream.of(new ItemStack(this)) : Stream.empty();
+//        return getUpgradeType().isDependencyLoaded() ? Stream.of(new ItemStack(this)) : Stream.empty();
+        return Stream.of(new ItemStack(this));
     }
 }

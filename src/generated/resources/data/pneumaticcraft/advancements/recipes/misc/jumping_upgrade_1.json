@@ -30,5 +30,6 @@
     "recipes": [
       "pneumaticcraft:jumping_upgrade_1"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

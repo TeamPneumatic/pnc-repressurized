@@ -17,7 +17,6 @@
 
 package me.desht.pneumaticcraft.common.thirdparty.jei;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.api.crafting.TemperatureRange.TemperatureScale;
 import me.desht.pneumaticcraft.api.crafting.recipe.ThermoPlantRecipe;
 import me.desht.pneumaticcraft.api.pressure.PressureTier;
@@ -37,6 +36,7 @@ import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -100,10 +100,10 @@ public class JEIThermopneumaticProcessingPlantCategory extends AbstractPNCCatego
     }
 
     @Override
-    public void draw(ThermoPlantRecipe recipe, IRecipeSlotsView recipeSlotsView, PoseStack matrixStack, double mouseX, double mouseY) {
+    public void draw(ThermoPlantRecipe recipe, IRecipeSlotsView recipeSlotsView, GuiGraphics graphics, double mouseX, double mouseY) {
         if (recipe.getRequiredPressure() != 0) {
             float pressure = recipe.getRequiredPressure() * ((float) tickTimer.getValue() / tickTimer.getMaxValue());
-            PressureGaugeRenderer2D.drawPressureGauge(matrixStack, Minecraft.getInstance().font, -1,
+            PressureGaugeRenderer2D.drawPressureGauge(graphics, Minecraft.getInstance().font, -1,
                     PressureTier.TIER_ONE_HALF.getCriticalPressure(), PressureTier.TIER_ONE_HALF.getDangerPressure(),
                     recipe.getRequiredPressure(), pressure, 141, 42);
         }
@@ -112,9 +112,9 @@ public class JEIThermopneumaticProcessingPlantCategory extends AbstractPNCCatego
             WidgetTemperature w = tempWidgets.computeIfAbsent(recipe.getId(),
                     id -> WidgetTemperature.fromOperatingRange(100, 12, recipe.getOperatingTemperature()));
             w.setTemperature(w.getTotalRange().getMin() + (w.getTotalRange().getMax() - w.getTotalRange().getMin()) * tickTimer.getValue() / tickTimer.getMaxValue());
-            w.render(matrixStack, (int) mouseX, (int) mouseY, 0f);
+            w.render(graphics, (int) mouseX, (int) mouseY, 0f);
         }
-        progressBar.draw(matrixStack, 25, 20);
+        progressBar.draw(graphics, 25, 20);
     }
 
     @Override

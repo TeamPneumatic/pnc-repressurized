@@ -353,7 +353,7 @@ public class AmadronMenu extends AbstractPneumaticCraftMenu<AbstractPneumaticCra
     @Override
     public void removed(Player player) {
         super.removed(player);
-        if (!player.level.isClientSide && player.getItemInHand(hand).getItem() == ModItems.AMADRON_TABLET.get()) {
+        if (!player.level().isClientSide && player.getItemInHand(hand).getItem() == ModItems.AMADRON_TABLET.get()) {
             AmadronTabletItem.saveShoppingCart(player.getItemInHand(hand), shoppingBasket);
         }
     }

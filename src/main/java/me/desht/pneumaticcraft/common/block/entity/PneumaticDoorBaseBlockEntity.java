@@ -24,9 +24,9 @@ import me.desht.pneumaticcraft.common.block.entity.RedstoneController.ReceivingR
 import me.desht.pneumaticcraft.common.block.entity.RedstoneController.RedstoneMode;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.core.ModSounds;
-import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.inventory.PneumaticDoorBaseMenu;
 import me.desht.pneumaticcraft.common.network.*;
+import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.BlockEntityConstants;
 import me.desht.pneumaticcraft.lib.PneumaticValues;

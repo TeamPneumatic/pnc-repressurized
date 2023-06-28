@@ -71,7 +71,7 @@ public class PressureTubeModuleRenderer implements BlockEntityRenderer<PressureT
             // "fake" module is for showing a preview of where the module would be placed
             Direction face = player.isCrouching() ? blockHitResult.getDirection().getOpposite() : blockHitResult.getDirection();
             if (blockHitResult.getBlockPos().equals(tile.getBlockPos())
-                    && player.level.getBlockEntity(blockHitResult.getBlockPos()) == tile
+                    && player.level().getBlockEntity(blockHitResult.getBlockPos()) == tile
                     && tile.getModule(face) == null) {
                 AbstractTubeModule fakeModule = moduleItem.createModule(face, tile);
                 if (tile.mayPlaceModule(fakeModule)) {

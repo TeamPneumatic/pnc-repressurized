@@ -30,5 +30,6 @@
     "recipes": [
       "pneumaticcraft:refinery/oil_3"
     ]
-  }
+  },
+  "sends_telemetry_event": true
 }

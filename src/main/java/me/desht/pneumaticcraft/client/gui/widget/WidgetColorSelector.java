@@ -17,8 +17,8 @@
 
 package me.desht.pneumaticcraft.client.gui.widget;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.DyeColor;
@@ -55,27 +55,27 @@ public class WidgetColorSelector extends WidgetButtonExtended implements IDrawAf
     }
 
     @Override
-    public void renderWidget(PoseStack matrixStack, int mouseX, int mouseY, float partialTick) {
-        super.renderWidget(matrixStack, mouseX, mouseY, partialTick);
+    public void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        super.renderWidget(graphics, mouseX, mouseY, partialTick);
 
         int x = getX(), y = getY();
-        fill(matrixStack,x + 3, y + 3, x + width - 4, y + height - 4, 0xFF000000 | PneumaticCraftUtils.getDyeColorAsRGB(color));
-        hLine(matrixStack,x + 3, x + width - 3, y + height - 4, 0xFF606060);
-        vLine(matrixStack,x + width - 4, y + 3, y + height - 3, 0xFF606060);
+        graphics.fill(x + 3, y + 3, x + width - 4, y + height - 4, 0xFF000000 | PneumaticCraftUtils.getDyeColorAsRGB(color));
+        graphics.hLine(x + 3, x + width - 3, y + height - 4, 0xFF606060);
+        graphics.vLine(x + width - 4, y + 3, y + height - 3, 0xFF606060);
     }
 
     @Override
-    public void renderAfterEverythingElse(PoseStack matrixStack, int mouseX, int mouseY, float partialTick) {
+    public void renderAfterEverythingElse(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
         if (expanded) {
             int x = getX(), y = getY();
-            fill(matrixStack, x, y - 1 + height, x + width * 4, y -1 + height * 5, 0xFF000000);
-            fill(matrixStack, x + 1, y + height, x + width * 4 - 1, y - 2 + height * 5, 0xFF808080);
+            graphics.fill(x, y - 1 + height, x + width * 4, y -1 + height * 5, 0xFF000000);
+            graphics.fill(x + 1, y + height, x + width * 4 - 1, y - 2 + height * 5, 0xFF808080);
             for (DyeColor color : DyeColor.values()) {
                 int dx = x + (color.getId() % 4) * 16;
                 int dy = y - 1 + height + (color.getId() / 4) * 16;
-                fill(matrixStack, dx + 3, dy + 3, dx + 13, dy + 13, 0xFF000000 | PneumaticCraftUtils.getDyeColorAsRGB(color));
-                hLine(matrixStack, dx + 3, dx + 13, dy + 13, 0xFF606060);
-                vLine(matrixStack, dx + 13, dy + 3, dy + 13, 0xFF606060);
+                graphics.fill(dx + 3, dy + 3, dx + 13, dy + 13, 0xFF000000 | PneumaticCraftUtils.getDyeColorAsRGB(color));
+                graphics.hLine(dx + 3, dx + 13, dy + 13, 0xFF606060);
+                graphics.vLine(dx + 13, dy + 3, dy + 13, 0xFF606060);
             }
         }
     }

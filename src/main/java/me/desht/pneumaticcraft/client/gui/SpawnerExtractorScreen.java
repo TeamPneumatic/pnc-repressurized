@@ -17,12 +17,12 @@
 
 package me.desht.pneumaticcraft.client.gui;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.block.entity.SpawnerExtractorBlockEntity;
 import me.desht.pneumaticcraft.common.inventory.SpawnerExtractorMenu;
 import me.desht.pneumaticcraft.lib.Textures;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -48,12 +48,12 @@ public class SpawnerExtractorScreen extends AbstractPneumaticCraftContainerScree
     }
 
     @Override
-    protected void renderLabels(PoseStack matrixStack, int x, int y) {
-        super.renderLabels(matrixStack, x, y);
+    protected void renderLabels(GuiGraphics graphics, int x, int y) {
+        super.renderLabels(graphics, x, y);
 
         int progress = Mth.clamp((int)(te.getProgress() * 100f), 0, 100);
-        font.draw(matrixStack, "Progress:", 65, 35, 0x404040);
-        font.draw(matrixStack, progress + "%", 80, 47, 0x404040);
+        graphics.drawString(font, "Progress:", 65, 35, 0x404040, false);
+        graphics.drawString(font, progress + "%", 80, 47, 0x404040, false);
     }
 
     @Override

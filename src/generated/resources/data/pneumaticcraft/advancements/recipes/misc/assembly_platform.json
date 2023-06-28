@@ -30,5 +30,6 @@
     "recipes": [
       "pneumaticcraft:assembly_platform"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

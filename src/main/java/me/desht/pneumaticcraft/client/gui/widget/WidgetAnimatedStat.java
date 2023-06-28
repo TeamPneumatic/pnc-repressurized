@@ -32,12 +32,15 @@ import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.client.util.TintColor;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.mixin.accessors.TooltipAccess;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -62,7 +65,7 @@ import org.lwjgl.opengl.GL11;
 import java.util.ArrayList;
 import java.util.List;
 
-public class WidgetAnimatedStat extends AbstractWidget implements IGuiAnimatedStat, ITooltipProvider {
+public class WidgetAnimatedStat extends AbstractWidget implements IGuiAnimatedStat {
     private static final int MIN_WIDTH_HEIGHT = 17;
     private static final int MAX_VISIBLE_LINES = 12;
     private static final int SCROLLBAR_MARGIN_WIDTH = 20;
@@ -419,11 +422,11 @@ public class WidgetAnimatedStat extends AbstractWidget implements IGuiAnimatedSt
     }
 
     @Override
-    public void renderStat(PoseStack matrixStack, int x, int y, float partialTicks) {
+    public void renderStat(GuiGraphics graphics, int x, int y, float partialTicks) {
         // just delegate to the renderButton() method
         // a separately-named interface method is used to avoid AbstractMethodError problems arising
         // from having a renderButton() method in IGuiAnimatedStat
-        renderWidget(matrixStack, x, y, partialTicks);
+        renderWidget(graphics, x, y, partialTicks);
     }
 
     @Override
@@ -440,7 +443,7 @@ public class WidgetAnimatedStat extends AbstractWidget implements IGuiAnimatedSt
     }
 
     @Override
-    public void renderWidget(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+    public void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
         if (!this.visible) return;
 
         int baseX = leftSided ? this.getX() - this.width : this.getX();
@@ -458,15 +461,15 @@ public class WidgetAnimatedStat extends AbstractWidget implements IGuiAnimatedSt
             renderWidth *= -1;
             xOff = -1;
         }
-        GuiComponent.fill(matrixStack, renderBaseX, renderAffectedY, renderBaseX + renderWidth, renderAffectedY + renderHeight, backGroundColor);
+        graphics.fill(renderBaseX, renderAffectedY, renderBaseX + renderWidth, renderAffectedY + renderHeight, backGroundColor);
         int sideU = bgColorHi.getRGB();
         int sideD = bgColorLo.getRGB();
         int sideL = leftSided ? sideD : sideU;
         int sideR = leftSided ? sideU : sideD;
-        GuiComponent.fill(matrixStack, renderBaseX, renderAffectedY - 1, renderBaseX + renderWidth, renderAffectedY, sideU);
-        GuiComponent.fill(matrixStack, renderBaseX + renderWidth, renderAffectedY, renderBaseX + renderWidth + xOff, renderAffectedY + renderHeight, sideR);
-        GuiComponent.fill(matrixStack, renderBaseX, renderAffectedY + renderHeight, renderBaseX + renderWidth, renderAffectedY + renderHeight + 1, sideD);
-        GuiComponent.fill(matrixStack, renderBaseX - xOff, renderAffectedY, renderBaseX, renderAffectedY + renderHeight, sideL);
+        graphics.fill(renderBaseX, renderAffectedY - 1, renderBaseX + renderWidth, renderAffectedY, sideU);
+        graphics.fill(renderBaseX + renderWidth, renderAffectedY, renderBaseX + renderWidth + xOff, renderAffectedY + renderHeight, sideR);
+        graphics.fill(renderBaseX, renderAffectedY + renderHeight, renderBaseX + renderWidth, renderAffectedY + renderHeight + 1, sideD);
+        graphics.fill(renderBaseX - xOff, renderAffectedY, renderBaseX, renderAffectedY + renderHeight, sideL);
         if (leftSided) renderWidth *= -1;
 
         // if done expanding, draw the information
@@ -476,17 +479,13 @@ public class WidgetAnimatedStat extends AbstractWidget implements IGuiAnimatedSt
             String title = getMessage().getString();
             int titleYoffset = title.isEmpty() ? 3 : 12;
             if (!title.isEmpty()) {
-                fontRenderer.drawShadow(matrixStack, title, renderBaseX + (leftSided ? -renderWidth + 2 : 18), renderAffectedY + 2, titleColor);
+                graphics.drawString(fontRenderer, title, renderBaseX + (leftSided ? -renderWidth + 2 : 18), renderAffectedY + 2, titleColor);
             }
             for (int i = curScroll; i < reorderingProcessors.size() && i < curScroll + getVisibleLines(); i++) {
                 FormattedCharSequence line = reorderingProcessors.get(i);
                 int renderX = renderBaseX + (leftSided ? -renderWidth + 2 : 18);
                 int renderY = renderAffectedY + (i - curScroll) * lineSpacing + titleYoffset + reservedLines * fontRenderer.lineHeight;
-                if (dropShadows.get(i)) {
-                    fontRenderer.drawShadow(matrixStack, line,renderX, renderY, foregroundColor);
-                } else {
-                    fontRenderer.draw(matrixStack, line,renderX, renderY, foregroundColor);
-                }
+                graphics.drawString(fontRenderer, line,renderX, renderY, foregroundColor, dropShadows.get(i));
             }
 
             // Set up necessary translations so subwidgets render in the right place
@@ -496,13 +495,33 @@ public class WidgetAnimatedStat extends AbstractWidget implements IGuiAnimatedSt
             poseStack.pushPose();
             poseStack.translate(renderBaseX + (leftSided ? widgetOffsetLeft : widgetOffsetRight), renderAffectedY + (titleYoffset - 10), 0);
             RenderSystem.applyModelViewMatrix();
-            subWidgets.forEach(widget -> widget.render(matrixStack, mouseX - renderBaseX, mouseY - renderAffectedY, partialTicks));
+            subWidgets.forEach(widget -> widget.render(graphics, mouseX - renderBaseX, mouseY - renderAffectedY, partialTicks));
             poseStack.popPose();
             RenderSystem.applyModelViewMatrix();
         }
         if (renderHeight > 16 && renderWidth > 16 && statIcon != null) {
-            statIcon.render(matrixStack, renderBaseX, renderAffectedY, leftSided);
+            statIcon.render(graphics, renderBaseX, renderAffectedY, leftSided);
         }
+
+        setupTooltip(mouseX, mouseY);
+    }
+
+    private void setupTooltip(int mouseX, int mouseY) {
+        List<Component> lines = new ArrayList<>();
+        if (mouseIsHoveringOverIcon(mouseX, mouseY)) {
+            lines.add(getMessage());
+            lines.addAll(getExtraTooltipText());
+        }
+
+        for (AbstractWidget widget : subWidgets) {
+            if (widget.isHovered()) {
+                Tooltip tooltip = widget.getTooltip();
+                if (tooltip != null) {
+                    lines.add(((TooltipAccess) tooltip).getMessage());
+                }
+            }
+        }
+        setTooltip(Tooltip.create(PneumaticCraftUtils.combineComponents(lines)));
     }
 
     @Override
@@ -751,19 +770,6 @@ public class WidgetAnimatedStat extends AbstractWidget implements IGuiAnimatedSt
         return new Rect2i(getX() - (leftSided ? width : 0), effectiveY, width, height);
     }
 
-    @Override
-    public void addTooltip(double mouseX, double mouseY, List<Component> curTooltip, boolean shiftPressed) {
-        if (mouseIsHoveringOverIcon(mouseX, mouseY)) {
-            curTooltip.add(getMessage());
-            curTooltip.addAll(getExtraTooltipText());
-        }
-
-        for (AbstractWidget widget : subWidgets)
-            if (widget.isHovered() && widget instanceof ITooltipProvider provider) {
-                provider.addTooltip(mouseX, mouseY, curTooltip, shiftPressed);
-            }
-    }
-
     public void setExtraTooltipText(List<Component> extraTooltipText) {
         this.extraTooltipText = extraTooltipText;
     }
@@ -820,11 +826,11 @@ public class WidgetAnimatedStat extends AbstractWidget implements IGuiAnimatedSt
             return new StatIcon(Either.right(texture));
         }
 
-        void render(PoseStack matrixStack, int x, int y, boolean leftSided) {
+        void render(GuiGraphics graphics, int x, int y, boolean leftSided) {
             RenderSystem.enableBlend();
             RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-            texture.ifLeft(stack -> Minecraft.getInstance().getItemRenderer().renderGuiItem(matrixStack, stack, x - (leftSided ? 16 : 0), y))
-                    .ifRight(resLoc -> GuiUtils.drawTexture(matrixStack, resLoc, x - (leftSided ? 16 : 0), y));
+            texture.ifLeft(stack -> graphics.renderItem(stack, x - (leftSided ? 16 : 0), y))
+                    .ifRight(resLoc -> graphics.blit(resLoc, x - (leftSided ? 16 : 0), y, 0, 0, 16, 16, 16, 16));
             RenderSystem.disableBlend();
         }
 

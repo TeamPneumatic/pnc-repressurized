@@ -30,5 +30,6 @@
     "recipes": [
       "pneumaticcraft:gps_area_tool"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

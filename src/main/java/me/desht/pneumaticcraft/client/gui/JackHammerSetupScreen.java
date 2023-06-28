@@ -30,6 +30,7 @@ import me.desht.pneumaticcraft.common.item.JackHammerItem.DigMode;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketGuiButton;
 import me.desht.pneumaticcraft.lib.Textures;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
@@ -76,14 +77,9 @@ public class JackHammerSetupScreen extends AbstractPneumaticCraftContainerScreen
             }
         }
 
-        addRenderableWidget(new WidgetTooltipArea(leftPos + 96, topPos + 19, 18, 18) {
-            @Override
-            public void addTooltip(double mouseX, double mouseY, List<Component> curTip, boolean shiftPressed) {
-                if (!menu.slots.get(1).hasItem()) {
-                    curTip.add(xlate("pneumaticcraft.gui.tooltip.jackhammer.enchantedBookTip"));
-                }
-            }
-        });
+        addRenderableWidget(new WidgetTooltipArea(leftPos + 96, topPos + 19, 18, 18,
+                () -> menu.slots.get(1).hasItem() ? Tooltip.create(xlate("pneumaticcraft.gui.tooltip.jackhammer.enchantedBookTip")) : null)
+        );
     }
 
     private void selectDigMode(DigMode digMode) {

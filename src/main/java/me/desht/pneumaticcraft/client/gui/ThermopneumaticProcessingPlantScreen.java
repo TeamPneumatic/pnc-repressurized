@@ -17,7 +17,6 @@
 
 package me.desht.pneumaticcraft.client.gui;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.api.crafting.TemperatureRange;
 import me.desht.pneumaticcraft.api.misc.Symbols;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
@@ -32,6 +31,7 @@ import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.common.inventory.ThermopneumaticProcessingPlantMenu;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
@@ -98,23 +98,22 @@ public class ThermopneumaticProcessingPlantScreen extends
     }
 
     @Override
-    protected void renderBg(PoseStack matrixStack, float partialTicks, int x, int y) {
-        super.renderBg(matrixStack, partialTicks, x, y);
+    protected void renderBg(GuiGraphics graphics, float partialTicks, int x, int y) {
+        super.renderBg(graphics, partialTicks, x, y);
 
         // animated progress bar
         double progress = te.getCraftingPercentage();
         int progressWidth = (int) (progress * 48);
-        bindGuiTexture();
-        blit(matrixStack, leftPos + 30, topPos + 36, imageWidth, 0, progressWidth, 30);
+        graphics.blit(getGuiTexture(), leftPos + 30, topPos + 36, imageWidth, 0, progressWidth, 30);
     }
 
     @Override
-    protected void renderLabels(PoseStack matrixStack, int x, int y) {
-        matrixStack.pushPose();
-        matrixStack.scale(0.95f, 1f, 1f);
-        font.draw(matrixStack, title.getVisualOrderText(), imageWidth / 2f - font.width(title) / 2.1f , 5, 0x404040);
-        matrixStack.popPose();
-        super.renderLabels(matrixStack, x, y);
+    protected void renderLabels(GuiGraphics graphics, int x, int y) {
+        graphics.pose().pushPose();
+        graphics.pose().scale(0.95f, 1f, 1f);
+        graphics.drawString(font, title.getVisualOrderText(), imageWidth / 2f - font.width(title) / 2.1f , 5, 0x404040, false);
+        graphics.pose().popPose();
+        super.renderLabels(graphics, x, y);
 
     }
 

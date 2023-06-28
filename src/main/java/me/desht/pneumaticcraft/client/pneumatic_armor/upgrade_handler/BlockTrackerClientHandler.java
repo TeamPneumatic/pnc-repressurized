@@ -33,10 +33,11 @@ import me.desht.pneumaticcraft.client.pneumatic_armor.ClientArmorRegistry;
 import me.desht.pneumaticcraft.client.pneumatic_armor.block_tracker.BlockTrackHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.RenderBlockTarget;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
-import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
 import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.BlockTrackerHandler;
+import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -90,7 +91,7 @@ public class BlockTrackerClientHandler extends IArmorUpgradeClientHandler.Abstra
         long now = System.nanoTime();
 
         Player player = armorHandler.getPlayer();
-        Level world = armorHandler.getPlayer().level;
+        Level world = armorHandler.getPlayer().level();
 
         SearchClientHandler searcher = ClientArmorRegistry.getInstance()
                 .getClientHandler(CommonUpgradeHandlers.searchHandler, SearchClientHandler.class);
@@ -150,8 +151,8 @@ public class BlockTrackerClientHandler extends IArmorUpgradeClientHandler.Abstra
             v = v.add(lookVec);
             checkPos.set(v.x, v.y, v.z);
             if (blockTargets.containsKey(checkPos)) {
-                BlockState state = player.level.getBlockState(checkPos);
-                BlockHitResult brtr = state.getShape(player.level, checkPos).clip(eyes, v, checkPos);
+                BlockState state = player.level().getBlockState(checkPos);
+                BlockHitResult brtr = state.getShape(player.level(), checkPos).clip(eyes, v, checkPos);
                 if (brtr != null && brtr.getType() == HitResult.Type.BLOCK) {
                     focusedTarget = blockTargets.get(checkPos);
                     focusedFace = brtr.getDirection();
@@ -249,8 +250,8 @@ public class BlockTrackerClientHandler extends IArmorUpgradeClientHandler.Abstra
                 }
                 break;
         }
-        int minY = player.level.getMinBuildHeight();
-        int maxY = player.level.getMaxBuildHeight();
+        int minY = player.level().getMinBuildHeight();
+        int maxY = player.level().getMaxBuildHeight();
         pos.set(player.getX() + xOff, Mth.clamp(player.getY() + yOff, minY, maxY), player.getZ() + zOff);
     }
 
@@ -308,7 +309,7 @@ public class BlockTrackerClientHandler extends IArmorUpgradeClientHandler.Abstra
     }
 
     @Override
-    public void render2D(PoseStack matrixStack, float partialTicks, boolean armorPieceHasPressure) {
+    public void render2D(GuiGraphics graphics, float partialTicks, boolean armorPieceHasPressure) {
     }
 
     @Override

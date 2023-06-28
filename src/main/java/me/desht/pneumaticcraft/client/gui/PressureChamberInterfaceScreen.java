@@ -17,7 +17,6 @@
 
 package me.desht.pneumaticcraft.client.gui;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetLabel;
@@ -27,6 +26,8 @@ import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.inventory.PressureChamberInterfaceMenu;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -71,18 +72,18 @@ public class PressureChamberInterfaceScreen extends AbstractPneumaticCraftContai
         if (exporting) {
             String textKey = "pneumaticcraft.gui.pressureChamberInterface.export." + (te.exportAny ? "any" : "valid");
             exportAnyButton.setMessage(xlate(textKey));
-            exportAnyButton.setTooltipKey(textKey + ".tooltip");
+            exportAnyButton.setTooltip(Tooltip.create(xlate(textKey + ".tooltip")));
         }
     }
 
     @Override
-    protected void renderLabels(PoseStack matrixStack, int x, int y) {
-        super.renderLabels(matrixStack, x, y);
+    protected void renderLabels(GuiGraphics graphics, int x, int y) {
+        super.renderLabels(graphics, x, y);
 
         int inputShift = (int) ((1F - Mth.cos(te.inputProgress / (float) (MAX_PROGRESS * Math.PI))) * 11);
         int outputShift = (int) ((1F - Mth.cos(te.outputProgress / (float) (MAX_PROGRESS * Math.PI))) * 11);
-        fill(matrixStack, 63 + inputShift, 30, 87 + inputShift, 32, 0xFF5A62FF);
-        fill(matrixStack, 63 + outputShift, 54, 87 + outputShift, 56, 0xFFFFA800);
+        graphics.fill(63 + inputShift, 30, 87 + inputShift, 32, 0xFF5A62FF);
+        graphics.fill(63 + outputShift, 54, 87 + outputShift, 56, 0xFFFFA800);
 
     }
 

@@ -30,5 +30,6 @@
     "recipes": [
       "pneumaticcraft:vacuum_pump"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

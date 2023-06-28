@@ -27,7 +27,7 @@ public class RenderSpawnerAgitator extends RenderSemiblockBase<SpawnerAgitatorEn
 
     @Override
     public void render(SpawnerAgitatorEntity entity, float entityYaw, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn) {
-        float g = 0.1f * Mth.sin((entity.level.getGameTime() + partialTicks) / 12f);
+        float g = 0.1f * Mth.sin((entity.level().getGameTime() + partialTicks) / 12f);
 
         matrixStackIn.pushPose();
         matrixStackIn.translate(0, 1.5, 0);

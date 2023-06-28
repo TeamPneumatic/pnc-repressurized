@@ -18,7 +18,10 @@
 package me.desht.pneumaticcraft.client.gui;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.*;
+import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.Tesselator;
+import com.mojang.blaze3d.vertex.VertexFormat;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
@@ -30,6 +33,7 @@ import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -81,13 +85,13 @@ public class ChargingStationScreen extends AbstractPneumaticCraftContainerScreen
     }
 
     @Override
-    protected void renderBg(PoseStack matrixStack, float partialTicks, int x, int y) {
-        super.renderBg(matrixStack, partialTicks, x, y);
+    protected void renderBg(GuiGraphics graphics, float partialTicks, int x, int y) {
+        super.renderBg(graphics, partialTicks, x, y);
 
         if (te.upgradeOnly) {
-            blit(matrixStack, leftPos + 102, topPos + 76, 177, 0, 13, 16);
+            graphics.blit(getGuiTexture(), leftPos + 102, topPos + 76, 177, 0, 13, 16);
         } else {
-            renderAir(matrixStack, partialTicks);
+            renderAir(graphics, partialTicks);
         }
     }
 
@@ -163,14 +167,14 @@ public class ChargingStationScreen extends AbstractPneumaticCraftContainerScreen
         }
     }
 
-    private void renderAir(PoseStack matrixStack, float partialTicks) {
+    private void renderAir(GuiGraphics graphics, float partialTicks) {
         RenderSystem.lineWidth(2.0F);
         for (int i = 0; i < PARTICLE_COUNT; i++) {
-            renderAirParticle(matrixStack, renderAirProgress % (1F / PARTICLE_COUNT) + (float) i / PARTICLE_COUNT);
+            renderAirParticle(graphics, renderAirProgress % (1F / PARTICLE_COUNT) + (float) i / PARTICLE_COUNT);
         }
     }
 
-    private void renderAirParticle(PoseStack matrixStack, float particleProgress) {
+    private void renderAirParticle(GuiGraphics graphics, float particleProgress) {
         int xStart = (width - imageWidth) / 2;
         int yStart = (height - imageHeight) / 2;
         float x = xStart + 117F;
@@ -188,7 +192,7 @@ public class ChargingStationScreen extends AbstractPneumaticCraftContainerScreen
         BufferBuilder bufferbuilder = Tesselator.getInstance().getBuilder();
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
         bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
-        Matrix4f posMat = matrixStack.last().pose();
+        Matrix4f posMat = graphics.pose().last().pose();
         bufferbuilder.vertex(posMat, x - 1f, y + 1f, 0.0F).color(0.7f, 0.8f, 0.9f, 1f).endVertex();
         bufferbuilder.vertex(posMat, x + 1f, y + 1f, 0.0F).color(0.6f, 0.7f, 0.7f, 1f).endVertex();
         bufferbuilder.vertex(posMat, x + 1f, y - 1f, 0.0F).color(0.7f, 0.8f, 0.9f, 1f).endVertex();

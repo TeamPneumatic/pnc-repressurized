@@ -18,7 +18,6 @@
 package me.desht.pneumaticcraft.client.gui;
 
 import com.mojang.authlib.GameProfile;
-import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.api.misc.Symbols;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
@@ -40,6 +39,7 @@ import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -130,9 +130,9 @@ public class SecurityStationInventoryScreen extends AbstractPneumaticCraftContai
     }
 
     @Override
-    protected void renderBg(PoseStack matrixStack, float opacity, int x, int y) {
-        super.renderBg(matrixStack, opacity, x, y);
-        hackRenderer.render(matrixStack, hackSimulation, 0xFF2222FF);
+    protected void renderBg(GuiGraphics graphics, float opacity, int x, int y) {
+        super.renderBg(graphics, opacity, x, y);
+        hackRenderer.render(graphics, hackSimulation, 0xFF2222FF);
     }
 
     @Override

@@ -21,8 +21,6 @@ import me.desht.pneumaticcraft.common.block.entity.IRedstoneControl;
 import me.desht.pneumaticcraft.common.block.entity.RedstoneController;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.IBlockComponentProvider;
@@ -38,10 +36,10 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 public class RedstoneControlProvider {
     public static final ResourceLocation ID = RL("redstone");
 
-    public static class DataProvider implements IServerDataProvider<BlockEntity> {
+    public static class DataProvider implements IServerDataProvider<BlockAccessor> {
         @Override
-        public void appendServerData(CompoundTag compoundTag, ServerPlayer serverPlayer, Level level, BlockEntity blockEntity, boolean b) {
-            if (blockEntity instanceof IRedstoneControl rc) {
+        public void appendServerData(CompoundTag compoundTag, BlockAccessor blockAccessor) {
+            if (blockAccessor.getBlockEntity() instanceof IRedstoneControl rc) {
                 compoundTag.putInt("redstoneMode", rc.getRedstoneMode());
             }
         }

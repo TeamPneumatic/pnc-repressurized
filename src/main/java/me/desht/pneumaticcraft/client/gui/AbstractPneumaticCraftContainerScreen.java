@@ -17,17 +17,13 @@
 
 package me.desht.pneumaticcraft.client.gui;
 
-import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.platform.Window;
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
 import me.desht.pneumaticcraft.api.client.ITickableWidget;
 import me.desht.pneumaticcraft.api.crafting.recipe.PneumaticCraftRecipe;
-import me.desht.pneumaticcraft.api.item.PNCUpgrade;
 import me.desht.pneumaticcraft.api.misc.Symbols;
-import me.desht.pneumaticcraft.client.gui.widget.ITooltipProvider;
+import me.desht.pneumaticcraft.api.upgrade.PNCUpgrade;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat.StatIcon;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
@@ -40,22 +36,23 @@ import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.block.entity.*;
 import me.desht.pneumaticcraft.common.block.entity.SideConfigurator.RelativeFace;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
-import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.inventory.AbstractPneumaticCraftMenu;
 import me.desht.pneumaticcraft.common.item.ICustomTooltipName;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketGuiButton;
 import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
 import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
+import me.desht.pneumaticcraft.common.upgrades.ApplicableUpgradesDB;
+import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import me.desht.pneumaticcraft.common.util.upgrade.ApplicableUpgradesDB;
-import me.desht.pneumaticcraft.common.variables.TextVariableParser;
 import me.desht.pneumaticcraft.lib.ModIds;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Renderable;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.Rect2i;
@@ -195,7 +192,7 @@ public abstract class AbstractPneumaticCraftContainerScreen<C extends AbstractPn
     private WidgetButtonExtended createRedstoneModeButton(int x, int idx, RedstoneController.RedstoneMode<?> mode) {
         WidgetButtonExtended b = new WidgetButtonExtended(x, 24, 20, 20, Component.empty()).withTag("redstone:" + idx);
         mode.getTexture().ifLeft(b::setRenderStacks).ifRight(b::setRenderedIcon);
-        b.setTooltipKey(mode.getTranslationKey());
+        b.setTooltip(Tooltip.create(xlate(mode.getTranslationKey())));
         return b;
     }
 
@@ -220,8 +217,7 @@ public abstract class AbstractPneumaticCraftContainerScreen<C extends AbstractPn
                         int max = ApplicableUpgradesDB.getInstance().getMaxUpgrades(te, upgrade);
                         text.add(upgrade.getItemStack().getHoverName().copy().withStyle(ChatFormatting.WHITE, ChatFormatting.UNDERLINE));
                         text.add(xlate("pneumaticcraft.gui.tab.upgrades.max", max).withStyle(ChatFormatting.GRAY));
-                        ResourceLocation regName = PneumaticCraftUtils.getRegistryName(ModUpgrades.UPGRADES.get(), upgrade).orElseThrow();
-                        String upgradeName = PneumaticCraftUtils.modDefaultedString(regName);
+                        String upgradeName = PneumaticCraftUtils.modDefaultedString(upgrade.getId());
                         String k = "pneumaticcraft.gui.tab.upgrades." + upgradeCategory() + "." + upgradeName;
                         text.addAll(I18n.exists(k) ? GuiUtils.xlateAndSplit(k) : GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.upgrades.generic." + upgradeName));
                         text.add(Component.empty());
@@ -271,9 +267,9 @@ public abstract class AbstractPneumaticCraftContainerScreen<C extends AbstractPn
         } else {
             button.setRenderedIcon(Textures.GUI_X_BUTTON);
         }
-        button.setTooltipText(ImmutableList.of(
-                Component.literal(relativeFace.toString()).withStyle(ChatFormatting.YELLOW),
-                sc.getFaceLabel(relativeFace)
+        button.setTooltip(Tooltip.create(
+                Component.literal(relativeFace.toString()).withStyle(ChatFormatting.YELLOW)
+                        .append("\n").append(sc.getFaceLabel(relativeFace))
         ));
     }
 
@@ -312,30 +308,34 @@ public abstract class AbstractPneumaticCraftContainerScreen<C extends AbstractPn
 
     protected boolean shouldAddSideConfigTabs() { return te instanceof ISideConfigurable; }
 
-    protected int getBackgroundTint() { return 0xFFFFFFFF; }
+    protected OptionalInt getBackgroundTint() { return OptionalInt.empty(); }
 
     protected boolean shouldDrawBackground() {
         return true;
     }
 
     @Override
-    protected void renderBg(PoseStack matrixStack, float partialTicks, int i, int j) {
+    protected void renderBg(GuiGraphics graphics, float partialTicks, int i, int j) {
         if (shouldDrawBackground()) {
-            bindGuiTexture();
             int xStart = (width - imageWidth) / 2;
             int yStart = (height - imageHeight) / 2;
-            blit(matrixStack, xStart, yStart, 0, 0, imageWidth, imageHeight);
+            getBackgroundTint().ifPresent(tint -> {
+                float[] c = RenderUtils.decomposeColorF(tint);
+                graphics.setColor(c[1], c[2], c[3], c[0]);
+            });
+            graphics.blit(getGuiTexture(), xStart, yStart, 0, 0, imageWidth, imageHeight);
+            getBackgroundTint().ifPresent(tint -> graphics.setColor(1f, 1f, 1f, 1f));
         }
     }
 
     @Override
-    protected void renderLabels(PoseStack matrixStack, int x, int y) {
+    protected void renderLabels(GuiGraphics graphics, int x, int y) {
         if (getInvNameOffset() != null) {
-            font.draw(matrixStack, title, imageWidth / 2f - font.width(title) / 2f + getInvNameOffset().x(), 5 + getInvNameOffset().y(), getTitleColor());
+            graphics.drawString(font, title, imageWidth / 2 - font.width(title) / 2 + getInvNameOffset().x(), 5 + getInvNameOffset().y(), getTitleColor(), false);
         }
 
         if (getInvTextOffset() != null) {
-            font.draw(matrixStack, xlate("container.inventory"), 8 + getInvTextOffset().x(), imageHeight - 94 + getInvTextOffset().y(), 0x404040);
+            graphics.drawString(font, xlate("container.inventory"), 8 + getInvTextOffset().x(), imageHeight - 94 + getInvTextOffset().y(), 0x404040, false);
         }
 
         if (pressureStat != null) {
@@ -343,16 +343,8 @@ public abstract class AbstractPneumaticCraftContainerScreen<C extends AbstractPn
             if (gaugeLocation != null) {
                 AbstractAirHandlingBlockEntity pneu = (AbstractAirHandlingBlockEntity) te;
                 float minWorking = te instanceof IMinWorkingPressure min ? min.getMinWorkingPressure() : -Float.MAX_VALUE;
-                PressureGaugeRenderer2D.drawPressureGauge(matrixStack, font, -1, pneu.getCriticalPressure(), pneu.getDangerPressure(), minWorking, pneu.getPressure(), gaugeLocation.x() - leftPos, gaugeLocation.y() - topPos);
+                PressureGaugeRenderer2D.drawPressureGauge(graphics, font, -1, pneu.getCriticalPressure(), pneu.getDangerPressure(), minWorking, pneu.getPressure(), gaugeLocation.x() - leftPos, gaugeLocation.y() - topPos);
             }
-        }
-    }
-
-    void bindGuiTexture() {
-        ResourceLocation guiTexture = getGuiTexture();
-        if (guiTexture != null) {
-            float[] c = RenderUtils.decomposeColorF(getBackgroundTint());
-            GuiUtils.bindTexture(guiTexture, c[1], c[2], c[3], c[0]);
         }
     }
 
@@ -369,27 +361,10 @@ public abstract class AbstractPneumaticCraftContainerScreen<C extends AbstractPn
     }
 
     @Override
-    public void render(PoseStack matrixStack, int x, int y, float partialTick) {
-        renderBackground(matrixStack);
-
-        super.render(matrixStack, x, y, partialTick);
-
-        renderTooltip(matrixStack, x, y);
-
-        List<Component> tooltip = new ArrayList<>();
-        for (Renderable renderable : renderables) {
-            if (renderable instanceof ITooltipProvider provider && provider.shouldProvide()) {
-                provider.addTooltip(x, y, tooltip, Screen.hasShiftDown());
-            }
-        }
-        if (shouldParseVariablesInTooltips()) {
-            tooltip.replaceAll(component -> Component.literal(new TextVariableParser(component.getString(), ClientUtils.getClientPlayer().getUUID()).parse()));
-        }
-
-        if (!tooltip.isEmpty()) {
-            int max = Math.min(getXSize(), 350); //Math.min(imageWidth, width * 3 / 4);
-            renderTooltip(matrixStack, GuiUtils.wrapTextComponentList(tooltip, max, font), x, y);
-        }
+    public void render(GuiGraphics graphics, int x, int y, float partialTick) {
+        renderBackground(graphics);
+        super.render(graphics, x, y, partialTick);
+        renderTooltip(graphics, x, y);
     }
 
     protected PointXY getGaugeLocation() {

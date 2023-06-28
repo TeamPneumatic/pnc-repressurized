@@ -18,8 +18,8 @@
 package me.desht.pneumaticcraft.common.entity.drone;
 
 import me.desht.pneumaticcraft.common.core.ModEntityTypes;
-import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.drone.progwidgets.*;
+import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.util.DroneProgramBuilder;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
@@ -56,7 +56,7 @@ public class CollectorDroneEntity extends AbstractBasicDroneEntity {
         List<IProgWidget> params = new ArrayList<>();
         int rangeUpgrades = UpgradableItemUtils.getUpgradeCount(droneStack, ModUpgrades.RANGE.get());
         params.add(ProgWidgetArea.fromPosition(pos, 16 + rangeUpgrades * 2));
-        LazyOptional<IItemHandler> itemCap = IOHelper.getInventoryForTE(level.getBlockEntity(clickPos), facing);
+        LazyOptional<IItemHandler> itemCap = IOHelper.getInventoryForTE(level().getBlockEntity(clickPos), facing);
         if (itemCap.isPresent()) {
             // placed on a chest; filter on the chest's contents, if any
             Set<Item> filtered = getFilteredItems(itemCap);
@@ -86,7 +86,7 @@ public class CollectorDroneEntity extends AbstractBasicDroneEntity {
 
     private BlockPos findAdjacentInventory(BlockPos pos) {
         return Arrays.stream(Direction.values())
-                .filter(d -> IOHelper.getInventoryForTE(level.getBlockEntity(pos.relative(d)), d.getOpposite()).isPresent())
+                .filter(d -> IOHelper.getInventoryForTE(level().getBlockEntity(pos.relative(d)), d.getOpposite()).isPresent())
                 .findFirst()
                 .map(pos::relative)
                 .orElse(pos);

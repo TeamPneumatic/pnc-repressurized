@@ -30,5 +30,6 @@
     "recipes": [
       "pneumaticcraft:paper_from_tag_filter"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

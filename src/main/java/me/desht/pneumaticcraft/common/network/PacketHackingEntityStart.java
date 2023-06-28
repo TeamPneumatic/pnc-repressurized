@@ -58,7 +58,7 @@ public class PacketHackingEntityStart {
             if (player == null) {
                 // client
                 Player cPlayer = ClientUtils.getClientPlayer();
-                Entity entity = cPlayer.level.getEntity(entityId);
+                Entity entity = cPlayer.level().getEntity(entityId);
                 if (entity != null) {
                     CommonArmorHandler.getHandlerForPlayer(cPlayer)
                             .getExtensionData(CommonUpgradeHandlers.hackHandler)
@@ -74,7 +74,7 @@ public class PacketHackingEntityStart {
                 // server
                 CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
                 if (handler.upgradeUsable(CommonUpgradeHandlers.entityTrackerHandler, true)) {
-                    Entity entity = player.level.getEntity(entityId);
+                    Entity entity = player.level().getEntity(entityId);
                     if (entity != null) {
                         handler.getExtensionData(CommonUpgradeHandlers.hackHandler).setHackedEntity(entity);
                         NetworkHandler.sendToPlayer(this, player);

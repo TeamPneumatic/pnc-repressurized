@@ -278,7 +278,7 @@ public class AssemblyIOUnitBlockEntity extends AbstractAssemblyRobotBlockEntity 
                     for (int i = 0; i < sourceInv.getSlots() && !foundIt; i++) {
                         ItemStack stack = sourceInv.getStackInSlot(i);
                         if (stack.isEmpty()) continue;
-                        if (heldStack.isEmpty() && stack.sameItem(searchedItemStack)
+                        if (heldStack.isEmpty() && ItemStack.isSameItem(stack, searchedItemStack)
                                 || ItemHandlerHelper.canItemStacksStack(heldStack, stack)) {
                             ItemStack takenStack = sourceInv.extractItem(i, needed, false);
                             ItemStack excess = itemHandler.insertItem(0, takenStack, false);

@@ -18,20 +18,20 @@
 package me.desht.pneumaticcraft.client.gui.widget;
 
 import com.google.common.collect.ImmutableList;
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
-import org.lwjgl.opengl.GL11;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
-public class WidgetList<T> extends AbstractWidget implements ITooltipProvider {
+public class WidgetList<T> extends AbstractWidget {
     @Nonnull
     private final Consumer<WidgetList<T>> pressable;
     private final List<T> items = new ArrayList<>();
@@ -76,9 +76,21 @@ public class WidgetList<T> extends AbstractWidget implements ITooltipProvider {
     }
 
     @Override
-    public void renderWidget(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+    public void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
         if (visible) {
-            drawList(matrixStack);
+            drawList(graphics);
+
+            setTooltip(null);
+            if (toolTipType != ToolTipType.NONE) {
+                int h = Minecraft.getInstance().font.lineHeight;
+                int idx = Math.max(0, (mouseY - this.getY()) / h);
+                if (idx < items.size()) {
+                    String s = items.get(idx).toString();
+                    if (toolTipType == ToolTipType.ALWAYS || Minecraft.getInstance().font.width(s) * 3 / 4 > width) {
+                        setTooltip(Tooltip.create(Component.literal(s)));
+                    }
+                }
+            }
         }
     }
 
@@ -134,27 +146,25 @@ public class WidgetList<T> extends AbstractWidget implements ITooltipProvider {
         return items.size();
     }
 
-    private void drawList(PoseStack matrixStack) {
+    private void drawList(GuiGraphics graphics) {
         Minecraft mc = Minecraft.getInstance();
-        int scale = mc.options.guiScale().get();
         int lineHeight = mc.font.lineHeight;
         int lines = height / lineHeight;
 
         int x = getX(), y = getY();
 
-        matrixStack.pushPose();
-        GL11.glEnable(GL11.GL_SCISSOR_TEST);
-        GL11.glScissor(x * scale, (y + height) * scale, width * scale, height * scale);
+        graphics.pose().pushPose();
+        graphics.enableScissor(x, y, x + width, y + height);
         if (inverseSelected && selected >= 0) {
-            fill(matrixStack, x, y + lineHeight * selected, x + width, y + lineHeight * (selected + 1), 0xFF000000 | selectedBg);
+            graphics.fill(x, y + lineHeight * selected, x + width, y + lineHeight * (selected + 1), 0xFF000000 | selectedBg);
         }
-        matrixStack.translate(x, y, 0);
-        matrixStack.scale(0.75f, 1f, 1f);
+        graphics.pose().translate(x, y, 0);
+        graphics.pose().scale(0.75f, 1f, 1f);
         for (int i = 0; i < items.size() && i < lines; i++) {
-            mc.font.draw(matrixStack, items.get(i).toString(), 0, i * lineHeight, i == selected ? selectedFg : fgColor);
+            graphics.drawString(mc.font, items.get(i).toString(), 0, i * lineHeight, i == selected ? selectedFg : fgColor, false);
         }
-        GL11.glDisable(GL11.GL_SCISSOR_TEST);
-        matrixStack.popPose();
+        graphics.disableScissor();
+        graphics.pose().popPose();
     }
 
     @Override
@@ -167,20 +177,6 @@ public class WidgetList<T> extends AbstractWidget implements ITooltipProvider {
             setSelected(newSel);
             lastClick = now;
             pressable.accept(this);
-        }
-    }
-
-    @Override
-    public void addTooltip(double mouseX, double mouseY, List<Component> curTip, boolean shift) {
-        if (toolTipType == ToolTipType.NONE) return;
-
-        int h = Minecraft.getInstance().font.lineHeight;
-        int idx = Math.max(0, (int) (mouseY - this.getY()) / h);
-        if (idx >= 0 && idx < items.size()) {
-            String s = items.get(idx).toString();
-            if (toolTipType == ToolTipType.ALWAYS || Minecraft.getInstance().font.width(s) * 3 / 4 > width) {
-                curTip.add(Component.literal(s));
-            }
         }
     }
 

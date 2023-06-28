@@ -105,7 +105,7 @@ public class RenderEntityTarget {
 
         if (ticksExisted >= 30 && !didMakeLockSound) {
             didMakeLockSound = true;
-            player.level.playLocalSound(player.getX(), player.getY(), player.getZ(), ModSounds.HUD_ENTITY_LOCK.get(), SoundSource.PLAYERS, 0.1F, 1.0F, true);
+            player.level().playLocalSound(player.getX(), player.getY(), player.getZ(), ModSounds.HUD_ENTITY_LOCK.get(), SoundSource.PLAYERS, 0.1F, 1.0F, true);
         }
 
         boolean tagged = entity instanceof AbstractDroneEntity drone && PneumaticArmorItem.isPlayerDebuggingDrone(player, drone);

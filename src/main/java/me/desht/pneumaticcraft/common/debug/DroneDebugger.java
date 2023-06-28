@@ -40,7 +40,9 @@ import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 public class DroneDebugger {
     private final IDroneBase drone;
@@ -129,14 +131,14 @@ public class DroneDebugger {
         public static void onLivingUpdateEvent(LivingEvent.LivingTickEvent event) {
             if (!ConfigHelper.common().drones.droneDebuggerPathParticles.get()
                     || !(event.getEntity() instanceof DroneEntity drone)
-                    || event.getEntity().level.isClientSide) {
+                    || event.getEntity().level().isClientSide) {
                 return;
             }
 
             if (drone.getDebugger().debuggingPlayers.isEmpty()) return;
 
             PathNavigation navi = drone.getNavigation();
-            if (drone.level instanceof ServerLevel && drone.level.getGameTime() % 10 == 0) { // only generate every 0.5 seconds, to try and cut back on packet spam
+            if (drone.level() instanceof ServerLevel && drone.level().getGameTime() % 10 == 0) { // only generate every 0.5 seconds, to try and cut back on packet spam
                 Path path = navi.getPath();
                 if (path != null) {
                     for (int i = path.getNextNodeIndex(); i < path.getNodeCount(); i++) {

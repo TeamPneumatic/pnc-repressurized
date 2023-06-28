@@ -25,9 +25,6 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.IEntityComponentProvider;
@@ -41,23 +38,21 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 public class EntityProvider {
     private static final ResourceLocation ID = RL("entity");
 
-    public static class DataProvider implements IServerDataProvider<Entity> {
-
-
-        @Override
-        public void appendServerData(CompoundTag compoundTag, ServerPlayer serverPlayer, Level level, Entity entity, boolean b) {
-            entity.getCapability(PNCCapabilities.AIR_HANDLER_CAPABILITY)
-                    .ifPresent(h -> compoundTag.putFloat("Pressure", h.getPressure()));
-            entity.getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY)
-                    .ifPresent(h -> compoundTag.putFloat("Temperature", h.getTemperatureAsInt()));
-            if (entity instanceof ISemiBlock s) {
-                s.serializeNBT(compoundTag);
-            }
-        }
-
+    public static class DataProvider implements IServerDataProvider<EntityAccessor> {
         @Override
         public ResourceLocation getUid() {
             return ID;
+        }
+
+        @Override
+        public void appendServerData(CompoundTag compoundTag, EntityAccessor accessor) {
+            accessor.getEntity().getCapability(PNCCapabilities.AIR_HANDLER_CAPABILITY)
+                    .ifPresent(h -> compoundTag.putFloat("Pressure", h.getPressure()));
+            accessor.getEntity().getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY)
+                    .ifPresent(h -> compoundTag.putFloat("Temperature", h.getTemperatureAsInt()));
+            if (accessor instanceof ISemiBlock s) {
+                s.serializeNBT(compoundTag);
+            }
         }
     }
 

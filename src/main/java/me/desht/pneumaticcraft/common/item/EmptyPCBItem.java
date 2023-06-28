@@ -30,7 +30,7 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.material.MaterialColor;
+import net.minecraft.world.level.material.MapColor;
 import org.apache.commons.lang3.Validate;
 
 import java.util.List;
@@ -90,7 +90,7 @@ public class EmptyPCBItem extends NonDespawningItem implements ICustomDurability
     public boolean onEntityItemUpdate(ItemStack stack, ItemEntity entityItem) {
         super.onEntityItemUpdate(stack, entityItem);
 
-        if (entityItem.level.getFluidState(entityItem.blockPosition()).getType().is(PneumaticCraftTags.Fluids.ETCHING_ACID)) {
+        if (entityItem.level().getFluidState(entityItem.blockPosition()).getType().is(PneumaticCraftTags.Fluids.ETCHING_ACID)) {
             if (!stack.hasTag()) {
                 stack.setTag(new CompoundTag());
             }
@@ -106,12 +106,12 @@ public class EmptyPCBItem extends NonDespawningItem implements ICustomDurability
                     double z = entityItem.getZ() + world.random.nextDouble() * 0.3 - 0.15;
                     world.addParticle(ParticleTypes.CLOUD, x, y, z, 0.0, 0.05, 0.0);
                 }
-            } else if (!entityItem.level.isClientSide) {
+            } else if (!entityItem.level().isClientSide) {
                 int successCount = 0;
                 int failedCount = 0;
                 int uvProgress = UVLightBoxBlockEntity.getExposureProgress(stack);
                 for (int i = 0; i < stack.getCount(); i++) {
-                    if (entityItem.level.random.nextInt(100) <= uvProgress) {
+                    if (entityItem.level().random.nextInt(100) <= uvProgress) {
                         successCount++;
                     } else {
                         failedCount++;
@@ -125,7 +125,7 @@ public class EmptyPCBItem extends NonDespawningItem implements ICustomDurability
                 // Only when we have failed items and the existing item entity wasn't reused already for the failed items.
                 if (successCount > 0 && failedCount > 0) {
                     ItemStack failedStack = new ItemStack(ModItems.FAILED_PCB.get(), failedCount);
-                    entityItem.level.addFreshEntity(new ItemEntity(entityItem.level, entityItem.getX(), entityItem.getY(), entityItem.getZ(), failedStack));
+                    entityItem.level().addFreshEntity(new ItemEntity(entityItem.level(), entityItem.getX(), entityItem.getY(), entityItem.getZ(), failedStack));
                 }
             }
         }
@@ -150,7 +150,7 @@ public class EmptyPCBItem extends NonDespawningItem implements ICustomDurability
 
     @Override
     public int getCustomDurabilityColour(ItemStack stack) {
-        return MaterialColor.EMERALD.col;
+        return MapColor.EMERALD.col;
     }
 
     @Override

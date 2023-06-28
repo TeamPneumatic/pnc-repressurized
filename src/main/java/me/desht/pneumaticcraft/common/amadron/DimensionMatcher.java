@@ -63,7 +63,7 @@ public class DimensionMatcher implements IPlayerMatcher {
 
     @Override
     public boolean test(Player playerEntity) {
-        return dimensionIds.isEmpty() || dimensionIds.contains(playerEntity.level.dimension().location());
+        return dimensionIds.isEmpty() || dimensionIds.contains(playerEntity.level().dimension().location());
     }
 
     public static class Factory implements MatcherFactory<DimensionMatcher> {

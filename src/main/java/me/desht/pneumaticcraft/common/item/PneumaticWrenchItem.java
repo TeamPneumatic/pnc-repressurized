@@ -98,18 +98,18 @@ public class PneumaticWrenchItem extends PressurizableItem {
 
     @Override
     public InteractionResult interactLivingEntity(ItemStack iStack, Player player, LivingEntity target, InteractionHand hand) {
-        if (player.level.isClientSide) {
+        if (player.level().isClientSide) {
             return InteractionResult.SUCCESS;
         } else if (target.isAlive() && target instanceof IPneumaticWrenchable) {
             return iStack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).map(h -> {
                 if (!player.isCreative() && h.getAir() < PneumaticValues.USAGE_PNEUMATIC_WRENCH) {
                     return InteractionResult.FAIL;
                 }
-                if (((IPneumaticWrenchable) target).onWrenched(target.level, player, null, null, hand)) {
+                if (((IPneumaticWrenchable) target).onWrenched(target.level(), player, null, null, hand)) {
                     if (!player.isCreative()) {
                         h.addAir(-PneumaticValues.USAGE_PNEUMATIC_WRENCH);
                     }
-                    playWrenchSound(target.level, target.blockPosition());
+                    playWrenchSound(target.level(), target.blockPosition());
                     return InteractionResult.SUCCESS;
                 } else {
                     return InteractionResult.PASS;

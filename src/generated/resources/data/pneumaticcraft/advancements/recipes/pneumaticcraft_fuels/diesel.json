@@ -30,5 +30,6 @@
     "recipes": [
       "pneumaticcraft:pneumaticcraft_fuels/diesel"
     ]
-  }
+  },
+  "sends_telemetry_event": true
 }

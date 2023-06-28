@@ -30,5 +30,6 @@
     "recipes": [
       "pneumaticcraft:advanced_air_compressor"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

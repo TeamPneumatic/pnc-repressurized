@@ -166,5 +166,6 @@
       ],
       "rolls": 1.0
     }
-  ]
+  ],
+  "random_sequence": "pneumaticcraft:custom/rare_dungeon_loot"
 }

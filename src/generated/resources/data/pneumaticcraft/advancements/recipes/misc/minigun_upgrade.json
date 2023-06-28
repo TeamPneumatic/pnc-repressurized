@@ -30,5 +30,6 @@
     "recipes": [
       "pneumaticcraft:minigun_upgrade"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

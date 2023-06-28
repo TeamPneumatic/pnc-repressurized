@@ -28,7 +28,6 @@ import me.desht.pneumaticcraft.common.block.entity.ChargingStationBlockEntity;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModMenuTypes;
-import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.inventory.AbstractPneumaticCraftMenu;
 import me.desht.pneumaticcraft.common.inventory.JackhammerSetupMenu;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
@@ -36,6 +35,7 @@ import me.desht.pneumaticcraft.common.item.DrillBitItem.DrillBitType;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketPlayMovingSound;
 import me.desht.pneumaticcraft.common.network.PacketPlayMovingSound.MovingSoundFocus;
+import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.util.*;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
@@ -200,7 +200,7 @@ public class JackHammerItem extends PressurizableItem
                         BlockState state1 = level.getBlockState(pos1);
                         if (state1.getDestroySpeed(level, pos1) < 0) continue;
 
-                        int exp = ForgeHooks.onBlockBreakEvent(serverPlayer.level, serverPlayer.gameMode.getGameModeForPlayer(), serverPlayer, pos1);
+                        int exp = ForgeHooks.onBlockBreakEvent(serverPlayer.level(), serverPlayer.gameMode.getGameModeForPlayer(), serverPlayer, pos1);
                         if (exp == -1) {
                             continue;
                         }
@@ -407,14 +407,14 @@ public class JackHammerItem extends PressurizableItem
 
     @Override
     public void onShiftScrolled(Player player, boolean forward, InteractionHand hand) {
-        if (!player.level.isClientSide) {
+        if (!player.level().isClientSide) {
             DigMode newMode = cycleDigMode(player.getItemInHand(hand), forward);
             if (newMode != null) {
                 player.displayClientMessage(xlate("pneumaticcraft.message.jackhammer.mode")
                         .append(xlate(newMode.getTranslationKey()).withStyle(ChatFormatting.YELLOW)), true);
             }
         } else {
-            lastModeSwitchTime = player.level.getGameTime();
+            lastModeSwitchTime = player.level().getGameTime();
         }
     }
 

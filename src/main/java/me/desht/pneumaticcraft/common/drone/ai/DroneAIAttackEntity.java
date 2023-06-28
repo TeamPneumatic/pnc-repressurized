@@ -17,10 +17,10 @@
 
 package me.desht.pneumaticcraft.common.drone.ai;
 
-import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.entity.drone.DroneEntity;
 import me.desht.pneumaticcraft.common.item.MicromissilesItem;
 import me.desht.pneumaticcraft.common.item.minigun.AbstractGunAmmoItem;
+import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -180,7 +180,7 @@ public class DroneAIAttackEntity extends MeleeAttackGoal {
                     fakePlayer.lookAt(EntityAnchorArgument.Anchor.EYES, target.position());
                     ItemStack stack = attacker.getInv().getStackInSlot(0);
                     if (stack.getItem() instanceof MicromissilesItem) {
-                        fakePlayer.gameMode.useItem(fakePlayer, attacker.getLevel(), stack, InteractionHand.MAIN_HAND);
+                        fakePlayer.gameMode.useItem(fakePlayer, attacker.level(), stack, InteractionHand.MAIN_HAND);
                     }
                 }
             }

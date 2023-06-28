@@ -17,11 +17,11 @@
 
 package me.desht.pneumaticcraft.common.pneumatic_armor.handlers;
 
-import me.desht.pneumaticcraft.api.item.PNCUpgrade;
 import me.desht.pneumaticcraft.api.pneumatic_armor.BaseArmorUpgradeHandler;
 import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorExtensionData;
 import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorHandler;
-import me.desht.pneumaticcraft.common.core.ModUpgrades;
+import me.desht.pneumaticcraft.api.upgrade.PNCUpgrade;
+import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -58,7 +58,7 @@ public class NightVisionHandler extends BaseArmorUpgradeHandler<IArmorExtensionD
     public void tick(ICommonArmorHandler commonArmorHandler, boolean enabled) {
         Player player = commonArmorHandler.getPlayer();
         boolean hasPressure = commonArmorHandler.hasMinPressure(EquipmentSlot.HEAD);
-        if (!player.level.isClientSide) {
+        if (!player.level().isClientSide) {
             MobEffectInstance nvInstance = player.getEffect(MobEffects.NIGHT_VISION);
             if (enabled && hasPressure && (nvInstance == null || nvInstance.getDuration() <= 220)) {
                 player.addEffect(new MobEffectInstance(MobEffects.NIGHT_VISION, 500, 0, false, false));

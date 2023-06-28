@@ -51,7 +51,7 @@ public class HackableShulker extends AbstractPersistentEntityHack<Shulker> {
 
     @Override
     public boolean afterHackTick(Shulker entity) {
-        if (entity.getLevel().random.nextInt(5) < 4) {
+        if (entity.level().random.nextInt(5) < 4) {
             ((ShulkerAccess)entity).callSetRawPeekAmount(100);
         }
         return true;

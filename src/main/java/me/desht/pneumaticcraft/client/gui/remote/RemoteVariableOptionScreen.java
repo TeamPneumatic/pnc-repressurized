@@ -22,6 +22,7 @@ import me.desht.pneumaticcraft.client.gui.remote.actionwidget.ActionWidgetVariab
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetComboBox;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableHelper;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.network.chat.Component;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
@@ -51,7 +52,7 @@ public class RemoteVariableOptionScreen<A extends ActionWidgetVariable<?>> exten
         variableField = new WidgetComboBox(font, guiLeft + 23, guiTop + 80, 147, 10);
         variableField.setElements(GlobalVariableHelper.extractVarnames(guiRemote.getMenu().variables, playerGlobal));
         variableField.setValue(GlobalVariableHelper.stripVarPrefix(actionWidget.getVariableName()));
-        variableField.setTooltip(xlate("pneumaticcraft.gui.remote.variable.tooltip"));
+        variableField.setTooltip(Tooltip.create(xlate("pneumaticcraft.gui.remote.variable.tooltip")));
         addRenderableWidget(variableField);
     }
 

@@ -32,7 +32,6 @@ import me.desht.pneumaticcraft.common.config.ClientConfig;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModEntityTypes;
 import me.desht.pneumaticcraft.common.core.ModItems;
-import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.drone.EntityPathNavigateDrone;
 import me.desht.pneumaticcraft.common.entity.drone.DroneEntity;
 import me.desht.pneumaticcraft.common.item.PneumaticArmorItem;
@@ -41,8 +40,10 @@ import me.desht.pneumaticcraft.common.network.PacketUpdateArmorExtraData;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
 import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.CoordTrackerHandler;
+import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.util.GlobalPosHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.GlobalPos;
@@ -109,8 +110,8 @@ public class CoordTrackClientHandler extends IArmorUpgradeClientHandler.Abstract
     public void tickClient(ICommonArmorHandler armorHandler, boolean isEnabled) {
         if (!isEnabled) return;
 
-        trackedPos = PneumaticArmorItem.getCoordTrackerPos(ClientUtils.getWornArmor(EquipmentSlot.HEAD), armorHandler.getPlayer().level);
-        worldKey = armorHandler.getPlayer().level.dimension();
+        trackedPos = PneumaticArmorItem.getCoordTrackerPos(ClientUtils.getWornArmor(EquipmentSlot.HEAD), armorHandler.getPlayer().level());
+        worldKey = armorHandler.getPlayer().level().dimension();
         if (trackedPos != null) {
             navigator = new RenderNavigator(trackedPos);
         }
@@ -136,7 +137,7 @@ public class CoordTrackClientHandler extends IArmorUpgradeClientHandler.Abstract
     }
 
     @Override
-    public void render2D(PoseStack matrixStack, float partialTicks, boolean armorPieceHasPressure) {
+    public void render2D(GuiGraphics graphics, float partialTicks, boolean armorPieceHasPressure) {
     }
 
     @Override
@@ -146,15 +147,15 @@ public class CoordTrackClientHandler extends IArmorUpgradeClientHandler.Abstract
     }
 
     public EnumNavigationResult navigateToSurface(Player player) {
-        Level world = player.level;
-        BlockPos navigatingPos = world.getHeightmapPos(Heightmap.Types.WORLD_SURFACE, player.blockPosition());
+        Level level = player.level();
+        BlockPos navigatingPos = level.getHeightmapPos(Heightmap.Types.WORLD_SURFACE, player.blockPosition());
         Mob e = PneumaticCraftUtils.createDummyEntity(player);
         Path path = e.getNavigation().createPath(navigatingPos, 0);
         if (path != null) {
             for (int i = 0; i < path.getNodeCount(); i++) {
                 Node pathPoint = path.getNode(i);
                 BlockPos pathPos = new BlockPos(pathPoint.x, pathPoint.y, pathPoint.z);
-                if (world.canSeeSkyFromBelowWater(pathPos)) {
+                if (level.canSeeSkyFromBelowWater(pathPos)) {
                     trackedPos = pathPos;
                     navigator = new RenderNavigator(pathPos);
                     return EnumNavigationResult.EASY_PATH;
@@ -166,7 +167,7 @@ public class CoordTrackClientHandler extends IArmorUpgradeClientHandler.Abstract
             for (int i = 0; i < path.getNodeCount(); i++) {
                 Node pathPoint = path.getNode(i);
                 BlockPos pathPos = new BlockPos(pathPoint.x, pathPoint.y, pathPoint.z);
-                if (world.canSeeSkyFromBelowWater(pathPos)) {
+                if (level.canSeeSkyFromBelowWater(pathPos)) {
                     trackedPos = pathPos;
                     navigator = new RenderNavigator(pathPos);
                     return EnumNavigationResult.DRONE_PATH;
@@ -177,10 +178,10 @@ public class CoordTrackClientHandler extends IArmorUpgradeClientHandler.Abstract
     }
 
     public static Path getDronePath(Player player, BlockPos pos) {
-        Level world = player.level;
-        DroneEntity drone = new DroneEntity(ModEntityTypes.DRONE.get(), world);
+        Level level = player.level();
+        DroneEntity drone = new DroneEntity(ModEntityTypes.DRONE.get(), level);
         drone.setPos(player.getX(), player.getY(), player.getZ());
-        return new EntityPathNavigateDrone(drone, world).createPath(pos, 0);
+        return new EntityPathNavigateDrone(drone, level).createPath(pos, 0);
     }
 
     public BlockPos getTrackedPos() {

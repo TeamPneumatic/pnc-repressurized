@@ -17,7 +17,6 @@
 
 package me.desht.pneumaticcraft.client.gui.widget;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.api.crafting.TemperatureRange;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
@@ -25,31 +24,40 @@ import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.util.Mth;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.List;
+import java.util.function.Supplier;
 
 import static me.desht.pneumaticcraft.api.crafting.TemperatureRange.TemperatureScale.CELSIUS;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class WidgetTemperature extends AbstractWidget implements ITooltipProvider {
+public class WidgetTemperature extends AbstractWidget {
     private int temperature;
     private int tickInterval;
+    private final Supplier<Tooltip> tooltipSupplier;
     private TemperatureRange totalRange;
     private TemperatureRange operatingRange;
     private boolean drawText = true;
     private boolean showOperatingRange = true;
 
     public WidgetTemperature(int xIn, int yIn, TemperatureRange totalRange, int initialTemp, int tickInterval) {
+        this(xIn, yIn, totalRange, initialTemp, tickInterval, null);
+    }
+
+    public WidgetTemperature(int xIn, int yIn, TemperatureRange totalRange, int initialTemp, int tickInterval, Supplier<Tooltip> tooltipSupplier) {
         super(xIn, yIn, 13, 50, Component.empty());
         this.totalRange = totalRange;
         this.temperature = initialTemp;
         this.tickInterval = tickInterval;
+        this.tooltipSupplier = tooltipSupplier == null ? this::defaultTooltip : tooltipSupplier;
         this.operatingRange = null;
     }
 
@@ -89,31 +97,40 @@ public class WidgetTemperature extends AbstractWidget implements ITooltipProvide
     }
 
     @Override
-    public void renderWidget(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+    public void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
         if (this.visible) {
-            GuiUtils.bindTexture(Textures.WIDGET_TEMPERATURE);
-
             int x = getX(), y = getY();
 
             // the background frame
-            blit(matrixStack, x + 6, y, 6, 0, 7, 50, 18, 50);
+            graphics.blit(Textures.WIDGET_TEMPERATURE, x + 6, y, 6, 0, 7, 50, 18, 50);
 
             // the coloured temperature bar
             int barLength = getYPos(temperature);
-            blit(matrixStack, x + 7, y - 1 + height - barLength, 13, height - barLength - 2, 5, barLength, 18, 50);
+            graphics.blit(Textures.WIDGET_TEMPERATURE, x + 7, y - 1 + height - barLength, 13, height - barLength - 2, 5, barLength, 18, 50);
 
             // ticks
-            drawTicks(matrixStack);
+            drawTicks(graphics);
             if (drawText) {
-                GuiUtils.drawScaledText(matrixStack, Minecraft.getInstance().font, CELSIUS.symbol(), x + 7, y + height + 1, 0xFF404040, 0.5f);
+                GuiUtils.drawScaledText(graphics, Minecraft.getInstance().font, Component.literal(CELSIUS.symbol()), x + 7, y + height + 1, 0xFF404040, 0.5f, false);
             }
 
             // operating temp markers, if necessary
-            drawOperatingTempMarkers(matrixStack);
+            drawOperatingTempMarkers(graphics);
         }
+
+        setTooltip(tooltipSupplier.get());
     }
 
-    public void drawTicks(PoseStack matrixStack) {
+    private Tooltip defaultTooltip() {
+        MutableComponent c = HeatUtil.formatHeatString(temperature).copy();
+        if (operatingRange != null && showOperatingRange) {
+            ChatFormatting tf = operatingRange.inRange(temperature) ? ChatFormatting.GREEN : ChatFormatting.GOLD;
+            c.append("\n").append(xlate("pneumaticcraft.gui.misc.requiredTemperatureString", operatingRange.asString(CELSIUS)).withStyle(tf));
+        }
+        return Tooltip.create(c);
+    }
+
+    public void drawTicks(GuiGraphics graphics) {
         Font font = Minecraft.getInstance().font;
         int tickTempC = findNearestCelsius(totalRange.getMin() - 273, tickInterval);
         int n = 0;
@@ -121,35 +138,35 @@ public class WidgetTemperature extends AbstractWidget implements ITooltipProvide
         while (tickTempC <= totalRange.getMax() - 273) {
             // draw...
             int yOffset = getYPos(tickTempC + 273);
-            hLine(matrixStack, x + 4, x + 6, y - 1 + height - yOffset, 0xA0404040);
+            graphics.hLine(x + 4, x + 6, y - 1 + height - yOffset, 0xA0404040);
             if (yOffset != 0 && yOffset != height - 1) {
-                hLine(matrixStack, x + 6, x + 8, y - 1 + height - yOffset, 0x80C0C0C0);
+                graphics.hLine(x + 6, x + 8, y - 1 + height - yOffset, 0x80C0C0C0);
             }
             if (drawText && n % 2 == 0) { // && (tickInterval > 10 || n > 0)) {
-                String s = Integer.toString(tickTempC);
-                GuiUtils.drawScaledText(matrixStack, font, s, x + 4 - font.width(s) / 2, y - 2 + height - yOffset, 0xFF404040, 0.5f);
+                Component s = Component.literal(Integer.toString(tickTempC));
+                GuiUtils.drawScaledText(graphics, font, s, x + 4 - font.width(s) / 2, y - 2 + height - yOffset, 0xFF404040, 0.5f, false);
             }
             n++;
             tickTempC += tickInterval;
         }
     }
 
-    public void drawOperatingTempMarkers(PoseStack matrixStack) {
+    public void drawOperatingTempMarkers(GuiGraphics graphics) {
         if (operatingRange != null) {
             int x = getX(), y = getY();
             if (totalRange.inRange(operatingRange.getMax())) {
                 int yOffset = getYPos(operatingRange.getMax());
-                hLine(matrixStack, x + 7, x + 11, y + 1 + height - yOffset, 0xFFE0E040);
-                hLine(matrixStack, x + 9, x + 9,  y     + height - yOffset, 0x80E0E040);
-                hLine(matrixStack, x + 8, x + 10, y - 1 + height - yOffset, 0x80E0E040);
-                hLine(matrixStack, x + 7, x + 11, y - 2 + height - yOffset, 0x80E0E040);
+                graphics.hLine(x + 7, x + 11, y + 1 + height - yOffset, 0xFFE0E040);
+                graphics.hLine(x + 9, x + 9,  y     + height - yOffset, 0x80E0E040);
+                graphics.hLine(x + 8, x + 10, y - 1 + height - yOffset, 0x80E0E040);
+                graphics.hLine(x + 7, x + 11, y - 2 + height - yOffset, 0x80E0E040);
             }
             if (totalRange.inRange(operatingRange.getMin())) {
                 int yOffset = getYPos(operatingRange.getMin());
-                hLine(matrixStack, x + 7, x + 11, y - 1 + height - yOffset, 0xFFE0E040);
-                hLine(matrixStack, x + 9, x + 9,  y     + height - yOffset, 0x80E0E040);
-                hLine(matrixStack, x + 8, x + 10, y + 1 + height - yOffset, 0x80E0E040);
-                hLine(matrixStack, x + 7, x + 11, y + 2 + height - yOffset, 0x80E0E040);
+                graphics.hLine(x + 7, x + 11, y - 1 + height - yOffset, 0xFFE0E040);
+                graphics.hLine(x + 9, x + 9,  y     + height - yOffset, 0x80E0E040);
+                graphics.hLine(x + 8, x + 10, y + 1 + height - yOffset, 0x80E0E040);
+                graphics.hLine(x + 7, x + 11, y + 2 + height - yOffset, 0x80E0E040);
             }
         }
     }
@@ -164,15 +181,6 @@ public class WidgetTemperature extends AbstractWidget implements ITooltipProvide
         if (q == 0) return temp;
         int n = temp - q;
         return Math.max(-273, n - interval);
-    }
-
-    @Override
-    public void addTooltip(double mouseX, double mouseY, List<Component> curTip, boolean shift) {
-        curTip.add(HeatUtil.formatHeatString(temperature));
-        if (operatingRange != null && showOperatingRange) {
-            ChatFormatting tf = operatingRange.inRange(temperature) ? ChatFormatting.GREEN : ChatFormatting.GOLD;
-            curTip.add(xlate("pneumaticcraft.gui.misc.requiredTemperatureString", operatingRange.asString(CELSIUS)).withStyle(tf));
-        }
     }
 
     public void autoScaleForTemperature() {

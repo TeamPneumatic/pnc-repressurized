@@ -145,7 +145,7 @@ public class ItemLaunching {
     public static void registerDefaultBehaviours() {
         registerBehaviour((stack, player) -> {
             Item item = stack.getItem();
-            Level level = player.getLevel();
+            Level level = player.level();
             float playerYaw = player.getRotationVector().y;
             float playerPitch = player.getRotationVector().x;
 

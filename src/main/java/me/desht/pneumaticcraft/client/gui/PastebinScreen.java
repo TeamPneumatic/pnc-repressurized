@@ -18,7 +18,6 @@
 package me.desht.pneumaticcraft.client.gui;
 
 import com.google.common.base.CaseFormat;
-import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.api.item.IProgrammable;
 import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
@@ -33,6 +32,8 @@ import me.desht.pneumaticcraft.common.util.PastebinHandler;
 import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -120,14 +121,14 @@ public class PastebinScreen extends AbstractPneumaticCraftScreen {
         prettyCB = new WidgetCheckBox(0, guiTop + 102, 0xFF404040, xlate("pneumaticcraft.gui.pastebin.pretty"),
                 b -> shouldMerge = b.checked);
         prettyCB.setX(guiLeft + (170 - prettyCB.getWidth()));
-        prettyCB.setTooltipKey("pneumaticcraft.gui.pastebin.pretty.tooltip");
+        prettyCB.setTooltip(Tooltip.create(xlate("pneumaticcraft.gui.pastebin.pretty.tooltip")));
         addRenderableWidget(prettyCB);
 
         if (parentScreen instanceof ProgrammerScreen) {
             WidgetCheckBox mergeCB = new WidgetCheckBox(0, guiTop + 155, 0xFF404040, xlate("pneumaticcraft.gui.pastebin.merge"),
                     b -> shouldMerge = b.checked);
             mergeCB.setX(guiLeft + (170 - mergeCB.getWidth()));
-            mergeCB.setTooltipKey("pneumaticcraft.gui.pastebin.merge.tooltip");
+            mergeCB.setTooltip(Tooltip.create(xlate("pneumaticcraft.gui.pastebin.merge.tooltip")));
             addRenderableWidget(mergeCB);
         }
 
@@ -179,15 +180,15 @@ public class PastebinScreen extends AbstractPneumaticCraftScreen {
             statusMessage = Component.empty();
             String pastebinText;
             switch (state) {
-                case GETTING:
+                case GETTING -> {
                     pastebinText = PastebinHandler.getHandler().contents;
                     if (pastebinText != null) {
                         readFromString(pastebinText);
                     } else {
                         statusMessage = xlate("pneumaticcraft.gui.pastebin.invalidPastebin");
                     }
-                    break;
-                case PUTTING:
+                }
+                case PUTTING -> {
                     if (PastebinHandler.getException() != null) {
                         statusMessage = Component.literal(PastebinHandler.getException().getMessage());
                     } else {
@@ -200,12 +201,13 @@ public class PastebinScreen extends AbstractPneumaticCraftScreen {
                             statusMessage = Component.literal(pastebinText);
                         }
                     }
-                    break;
-                case LOGIN:
+                }
+                case LOGIN -> {
                     if (!PastebinHandler.isLoggedIn()) {
                         statusMessage = xlate("pneumaticcraft.gui.pastebin.invalidLogin");
                     }
                     init();
+                }
             }
             state = EnumState.NONE;
         }
@@ -262,15 +264,15 @@ public class PastebinScreen extends AbstractPneumaticCraftScreen {
     }
 
     @Override
-    public void render(PoseStack matrixStack, int x, int y, float partialTicks) {
-        renderBackground(matrixStack);
+    public void render(GuiGraphics graphics, int x, int y, float partialTicks) {
+        renderBackground(graphics);
 
-        super.render(matrixStack, x, y, partialTicks);
+        super.render(graphics, x, y, partialTicks);
 
         if (!statusMessage.getString().isEmpty()) {
-            drawString(matrixStack, font, statusMessage, guiLeft + 5, guiTop + 5, 0xFFFFFF00);
+            graphics.drawString(font, statusMessage, guiLeft + 5, guiTop + 5, 0xFFFFFF00, false);
         } else if (!lastMessage.getString().isEmpty()) {
-            drawString(matrixStack, font, lastMessage, guiLeft + 5, guiTop + 5, 0xFF00FF00);
+            graphics.drawString(font, lastMessage, guiLeft + 5, guiTop + 5, 0xFF00FF00, false);
         }
     }
 

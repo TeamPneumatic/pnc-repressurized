@@ -26,5 +26,6 @@
       "name": "kerosene_lamp",
       "rolls": 1.0
     }
-  ]
+  ],
+  "random_sequence": "pneumaticcraft:blocks/kerosene_lamp"
 }

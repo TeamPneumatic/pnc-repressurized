@@ -17,11 +17,10 @@
 
 package me.desht.pneumaticcraft.common.hacking.entity;
 
-import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.CatVariantTags;
+import net.minecraft.world.entity.EntityEvent;
 import net.minecraft.world.entity.TamableAnimal;
 import net.minecraft.world.entity.animal.Cat;
 import net.minecraft.world.entity.player.Player;
@@ -45,14 +44,14 @@ public class HackableTameable extends AbstractTameableHack<TamableAnimal> {
 
     @Override
     public void onHackFinished(TamableAnimal entity, Player player) {
-        if (entity.level.isClientSide) {
+        if (entity.level().isClientSide) {
             entity.handleEntityEvent((byte) 7);
         } else {
             entity.getNavigation().stop();
             entity.setTarget(null);
             entity.setHealth(20.0F);
             entity.setOwnerUUID(player.getUUID());
-            entity.level.broadcastEntityEvent(entity, (byte) 7);
+            entity.level().broadcastEntityEvent(entity, EntityEvent.TAMING_SUCCEEDED);
             entity.setTame(true);
 
             // TODO: code smell
@@ -61,7 +60,7 @@ public class HackableTameable extends AbstractTameableHack<TamableAnimal> {
             if (entity instanceof Cat cat) {
                 // TODO no forge registry for cat variants at this time
                 BuiltInRegistries.CAT_VARIANT.getTag(CatVariantTags.DEFAULT_SPAWNS)
-                        .flatMap(variants -> variants.getRandomElement(cat.getLevel().getRandom()))
+                        .flatMap(variants -> variants.getRandomElement(cat.level().getRandom()))
                         .ifPresent(variant -> cat.setVariant(variant.value()));
             }
         }

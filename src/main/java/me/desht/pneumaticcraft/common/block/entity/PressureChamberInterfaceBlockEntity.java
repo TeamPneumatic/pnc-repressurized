@@ -22,12 +22,12 @@ import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.core.ModRecipeTypes;
 import me.desht.pneumaticcraft.common.core.ModSounds;
-import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.inventory.PressureChamberInterfaceMenu;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.network.LazySynced;
+import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.util.AcceptabilityCache;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.ITranslatableEnum;
@@ -215,7 +215,7 @@ public class PressureChamberInterfaceBlockEntity extends PressureChamberWallBloc
                 continue;
             }
             ItemStack stackInInterface = inventory.getStackInSlot(0);
-            if ((stackInInterface.isEmpty() || stackInInterface.sameItem(chamberStack))) {
+            if ((stackInInterface.isEmpty() || ItemStack.isSameItem(stackInInterface, chamberStack))) {
                 IAirHandlerMachine coreAirHandler = core.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY)
                         .orElseThrow(RuntimeException::new);
                 int maxAllowedItems = Math.abs(coreAirHandler.getAir()) / PneumaticValues.USAGE_CHAMBER_INTERFACE;

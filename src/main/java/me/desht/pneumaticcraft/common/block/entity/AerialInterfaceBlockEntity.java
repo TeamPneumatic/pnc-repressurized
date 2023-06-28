@@ -25,7 +25,10 @@ import me.desht.pneumaticcraft.api.pressure.PressureTier;
 import me.desht.pneumaticcraft.common.XPFluidManager;
 import me.desht.pneumaticcraft.common.block.entity.RedstoneController.EmittingRedstoneMode;
 import me.desht.pneumaticcraft.common.block.entity.RedstoneController.RedstoneMode;
-import me.desht.pneumaticcraft.common.core.*;
+import me.desht.pneumaticcraft.common.core.ModBlockEntities;
+import me.desht.pneumaticcraft.common.core.ModBlocks;
+import me.desht.pneumaticcraft.common.core.ModItems;
+import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.inventory.AerialInterfaceMenu;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
@@ -33,6 +36,7 @@ import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketPlaySound;
 import me.desht.pneumaticcraft.common.thirdparty.curios.Curios;
 import me.desht.pneumaticcraft.common.thirdparty.curios.CuriosUtils;
+import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.util.EnchantmentUtils;
 import me.desht.pneumaticcraft.common.util.GlobalBlockEntityCacheManager;
 import me.desht.pneumaticcraft.common.util.ITranslatableEnum;
@@ -53,7 +57,6 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.SkullBlockEntity;
@@ -566,7 +569,7 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
                 ItemStack remainingItem = stack;
                 ItemStack copy = stack.copy();
                 while (stack.getCount() > 0) {
-                    remainingItem = stack.finishUsingItem(player.level, player);
+                    remainingItem = stack.finishUsingItem(player.level(), player);
                     remainingItem = ForgeEventFactory.onItemUseFinish(player, stack, 0, remainingItem);
                     if (remainingItem.getCount() > 0 && (remainingItem != stack || remainingItem.getCount() != startValue)) {
                         if (!player.getInventory().add(remainingItem) && remainingItem.getCount() > 0) {

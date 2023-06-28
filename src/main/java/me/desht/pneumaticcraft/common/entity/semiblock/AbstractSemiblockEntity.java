@@ -89,13 +89,13 @@ public abstract class AbstractSemiblockEntity extends Entity implements ISemiBlo
 
     private void dropItem(ItemStack stack) {
         if (!stack.isEmpty()) {
-            ItemEntity itemEntity = new ItemEntity(level, getX() + dropOffset.x(), getY() + dropOffset.y(), getZ() + dropOffset.z(), stack);
+            ItemEntity itemEntity = new ItemEntity(level(), getX() + dropOffset.x(), getY() + dropOffset.y(), getZ() + dropOffset.z(), stack);
             itemEntity.setDefaultPickUpDelay();
             Collection<ItemEntity> capture = captureDrops();
             if (capture != null) {
                 capture.add(itemEntity);
             } else {
-                level.addFreshEntity(itemEntity);
+                level().addFreshEntity(itemEntity);
             }
         }
     }
@@ -125,7 +125,7 @@ public abstract class AbstractSemiblockEntity extends Entity implements ISemiBlo
             this.setDamageTaken(this.getDamageTaken() - 1.0F);
         }
 
-        if (!level.isClientSide && isAlive() && !canStay()) {
+        if (!level().isClientSide && isAlive() && !canStay()) {
             beingRemoved = true;
             kill();
         }
@@ -143,13 +143,13 @@ public abstract class AbstractSemiblockEntity extends Entity implements ISemiBlo
         Vec3 eye = player.getEyePosition(0f);
         Vec3 end = eye.add(player.getLookAngle().normalize().scale(5f));
         ClipContext ctx = new ClipContext(eye, end, ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, player);
-        BlockHitResult brtr = player.level.clip(ctx);
+        BlockHitResult brtr = player.level().clip(ctx);
 
         if (brtr.getType() != HitResult.Type.BLOCK) {
             return InteractionResult.PASS;
         }
 
-        if (player.getItemInHand(hand).getItem() == ModItems.LOGISTICS_CONFIGURATOR.get() && !player.level.isClientSide) {
+        if (player.getItemInHand(hand).getItem() == ModItems.LOGISTICS_CONFIGURATOR.get() && !player.level().isClientSide) {
             if (player.isShiftKeyDown()) {
                 killedByEntity(player);
                 return InteractionResult.SUCCESS;
@@ -165,7 +165,7 @@ public abstract class AbstractSemiblockEntity extends Entity implements ISemiBlo
         } else {
             // allow right-clicks to pass through to the inventory block being covered
             UseOnContext itemCtx = new UseOnContext(player, hand, brtr);
-            InteractionResult res = player.isShiftKeyDown() ? InteractionResult.PASS : getBlockState().use(level, player, hand, brtr);
+            InteractionResult res = player.isShiftKeyDown() ? InteractionResult.PASS : getBlockState().use(level(), player, hand, brtr);
             if (res.consumesAction() || res == InteractionResult.FAIL) return res;
             res = player.getItemInHand(hand).onItemUseFirst(itemCtx);
             return res == InteractionResult.PASS ? player.getItemInHand(hand).useOn(itemCtx) : res;
@@ -180,7 +180,7 @@ public abstract class AbstractSemiblockEntity extends Entity implements ISemiBlo
 
     @Override
     public Level getWorld() {
-        return level;
+        return level();
     }
 
     @Override
@@ -209,15 +209,15 @@ public abstract class AbstractSemiblockEntity extends Entity implements ISemiBlo
      * @return the blockstate
      */
     public BlockState getBlockState() {
-        return level.getBlockState(blockPos);
+        return level().getBlockState(blockPos);
     }
 
     @Override
     public BlockEntity getCachedTileEntity() {
-        if (!level.isLoaded(blockPos)) return null;
+        if (!level().isLoaded(blockPos)) return null;
 
         if (cachedTE == null || cachedTE.isRemoved()) {
-            cachedTE = level.getBlockEntity(blockPos);
+            cachedTE = level().getBlockEntity(blockPos);
         }
         return cachedTE;
     }
@@ -270,8 +270,8 @@ public abstract class AbstractSemiblockEntity extends Entity implements ISemiBlo
     protected AABB calculateBlockBounds() {
         // default behaviour: try & fit around the block in this blockpos
         AABB aabb;
-        if (level != null) {
-            VoxelShape shape = level.getBlockState(blockPos).getShape(level, blockPos);
+        if (level() != null) {
+            VoxelShape shape = level().getBlockState(blockPos).getShape(level(), blockPos);
             aabb = shape.isEmpty() ? Shapes.block().bounds() : shape.bounds();
         } else {
             aabb = Shapes.block().bounds();
@@ -321,6 +321,7 @@ public abstract class AbstractSemiblockEntity extends Entity implements ISemiBlo
     public void onAddedToWorld() {
         super.onAddedToWorld();
 
+        Level level = level();
         if (!level.isClientSide) {
             if (SemiblockTracker.getInstance().putSemiblock(level, blockPos, this)) {
                 MinecraftForge.EVENT_BUS.post(new SemiblockEvent.PlaceEvent(level, blockPos, this));
@@ -334,6 +335,7 @@ public abstract class AbstractSemiblockEntity extends Entity implements ISemiBlo
 
     @Override
     public void onRemovedFromWorld() {
+        Level level = level();
         if (!level.isClientSide) {
             Direction dir = this instanceof IDirectionalSemiblock d ? d.getSide() : null;
             SemiblockTracker.getInstance().clearSemiblock(level, blockPos, dir);
@@ -387,7 +389,7 @@ public abstract class AbstractSemiblockEntity extends Entity implements ISemiBlo
 
     @Override
     public void killedByEntity(Entity entity) {
-        entity.level.playSound(null, blockPos, SoundEvents.ITEM_PICKUP, SoundSource.PLAYERS, 1.0f, 1.0f);
+        entity.level().playSound(null, blockPos, SoundEvents.ITEM_PICKUP, SoundSource.PLAYERS, 1.0f, 1.0f);
         dropOffset = entity.position().subtract(this.position()).normalize();
         beingRemoved = true;
         kill();
@@ -397,7 +399,7 @@ public abstract class AbstractSemiblockEntity extends Entity implements ISemiBlo
     public boolean hurt(DamageSource source, float amount) {
         if (this.isInvulnerableTo(source) || !(source.getDirectEntity() instanceof Player)) {
             return false;
-        } else if (!this.level.isClientSide && this.isAlive()) {
+        } else if (!this.level().isClientSide && this.isAlive()) {
             this.setTimeSinceHit(10);
             this.setDamageTaken(this.getDamageTaken() + amount * 10.0F);
             if (this.getDamageTaken() > MAX_HEALTH) {

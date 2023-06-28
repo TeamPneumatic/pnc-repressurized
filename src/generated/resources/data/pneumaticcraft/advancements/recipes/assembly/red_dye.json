@@ -30,5 +30,6 @@
     "recipes": [
       "pneumaticcraft:assembly/red_dye"
     ]
-  }
+  },
+  "sends_telemetry_event": true
 }

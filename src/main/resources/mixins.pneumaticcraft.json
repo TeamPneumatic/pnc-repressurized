@@ -22,5 +22,8 @@
     "accessors.WorldGenRegionAccess",
     "coremods.BaseSpawnerMixin"
   ],
+  "client": [
+    "accessors.TooltipAccess"
+  ],
   "minVersion": "0.8"
 }

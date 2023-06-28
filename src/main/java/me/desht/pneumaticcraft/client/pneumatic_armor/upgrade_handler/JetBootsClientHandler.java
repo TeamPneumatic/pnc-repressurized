@@ -18,7 +18,6 @@
 package me.desht.pneumaticcraft.client.pneumatic_armor.upgrade_handler;
 
 import com.google.common.collect.ImmutableList;
-import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IArmorUpgradeClientHandler;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IGuiScreen;
@@ -31,16 +30,17 @@ import me.desht.pneumaticcraft.client.gui.pneumatic_armor.options.JetBootsOption
 import me.desht.pneumaticcraft.client.pneumatic_armor.ClientArmorRegistry;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.core.ModItems;
-import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketJetBootsActivate;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
 import me.desht.pneumaticcraft.common.pneumatic_armor.JetBootsStateTracker;
 import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.JetBootsHandler;
+import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -131,7 +131,7 @@ public class JetBootsClientHandler extends IArmorUpgradeClientHandler.SimpleTogg
             l2 = String.format("  %sAlt: %s%03dm", g1, g2, pos.getY());
             l3 = String.format("%sHead: %s%d° (%s)", g1, g2, yaw, HEADINGS[heading]);
             r1 = String.format("%sGnd: %s%05.2f", g1, g2, vg * 20);
-            r2 = String.format("%sGnd: %s%dm", g1, g2, pos.getY() - player.level.getHeight(Heightmap.Types.WORLD_SURFACE, pos.getX(), pos.getZ()));
+            r2 = String.format("%sGnd: %s%dm", g1, g2, pos.getY() - player.level().getHeight(Heightmap.Types.WORLD_SURFACE, pos.getX(), pos.getZ()));
             r3 = String.format("%sPch: %s%d°", g1, g2, (int)-player.getXRot());
             Font fr = Minecraft.getInstance().font;
             widestR = Math.max(fr.width(r1), Math.max(fr.width(r2), fr.width(r3)));
@@ -146,7 +146,7 @@ public class JetBootsClientHandler extends IArmorUpgradeClientHandler.SimpleTogg
     }
 
     @Override
-    public void render2D(PoseStack matrixStack, float partialTicks, boolean armorPieceHasPressure) {
+    public void render2D(GuiGraphics graphics, float partialTicks, boolean armorPieceHasPressure) {
         if (armorPieceHasPressure && jbStat.isStatOpen()) {
             Font fr = Minecraft.getInstance().font;
             int xl = jbStat.getBaseX() + 5;
@@ -156,28 +156,28 @@ public class JetBootsClientHandler extends IArmorUpgradeClientHandler.SimpleTogg
                 xl -= jbStat.getStatWidth();
                 xr -= jbStat.getStatWidth();
             }
-            fr.drawShadow(matrixStack, l1, xl, y, 0x404040);
-            fr.drawShadow(matrixStack, l2, xl, y + fr.lineHeight, 0x404040);
-            fr.drawShadow(matrixStack, l3, xl, y + fr.lineHeight * 2, 0x404040);
-            fr.drawShadow(matrixStack, r1, xr - widestR, y, 0x404040);
-            fr.drawShadow(matrixStack, r2, xr - widestR, y + fr.lineHeight, 0x404040);
-            fr.drawShadow(matrixStack, r3, xr - widestR, y + fr.lineHeight * 2, 0x404040);
+            graphics.drawString(fr, l1, xl, y, 0x404040);
+            graphics.drawString(fr, l2, xl, y + fr.lineHeight, 0x404040);
+            graphics.drawString(fr, l3, xl, y + fr.lineHeight * 2, 0x404040);
+            graphics.drawString(fr, r1, xr - widestR, y, 0x404040);
+            graphics.drawString(fr, r2, xr - widestR, y + fr.lineHeight, 0x404040);
+            graphics.drawString(fr, r3, xr - widestR, y + fr.lineHeight * 2, 0x404040);
 
             int iconX = xr - 30;
             if (builderMode) {
-                Minecraft.getInstance().getItemRenderer().renderGuiItem(matrixStack, PICK, iconX, jbStat.getBaseY());
+                graphics.renderItem(PICK, iconX, jbStat.getBaseY());
                 iconX -= 16;
             }
             if (flightStabilizers) {
-                Minecraft.getInstance().getItemRenderer().renderGuiItem(matrixStack, ROTOR, iconX, jbStat.getBaseY());
+                graphics.renderItem(ROTOR, iconX, jbStat.getBaseY());
                 iconX -= 16;
             }
             if (ClientUtils.getClientPlayer().isFallFlying()) {
-                Minecraft.getInstance().getItemRenderer().renderGuiItem(matrixStack, ELYTRA, iconX, jbStat.getBaseY());
+                graphics.renderItem(ELYTRA, iconX, jbStat.getBaseY());
                 iconX -= 16;
             }
             if (smartHover) {
-                Minecraft.getInstance().getItemRenderer().renderGuiItem(matrixStack, FEATHER, iconX, jbStat.getBaseY());
+                graphics.renderItem(FEATHER, iconX, jbStat.getBaseY());
 //                iconX -= 16;
             }
         }

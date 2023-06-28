@@ -49,7 +49,7 @@ public class ProgrammerMenu extends AbstractPneumaticCraftMenu<ProgrammerBlockEn
         super(ModMenuTypes.PROGRAMMER.get(), i, playerInventory, pos);
 
         // server side doesn't care about slot positioning, so doesn't care about screen res either
-        this.hiRes = playerInventory.player.level.isClientSide && ClientUtils.isScreenHiRes();
+        this.hiRes = playerInventory.player.level().isClientSide && ClientUtils.isScreenHiRes();
         int xBase = hiRes ? 270 : 95;
         int yBase = hiRes ? 430 : 174;
 
@@ -133,6 +133,6 @@ public class ProgrammerMenu extends AbstractPneumaticCraftMenu<ProgrammerBlockEn
     public void removed(Player playerIn) {
         super.removed(playerIn);
 
-        if (playerIn.level.isClientSide) ProgrammerScreen.onCloseFromContainer();
+        if (playerIn.level().isClientSide) ProgrammerScreen.onCloseFromContainer();
     }
 }

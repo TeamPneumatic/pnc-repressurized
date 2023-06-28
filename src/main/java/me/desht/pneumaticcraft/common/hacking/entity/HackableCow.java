@@ -69,14 +69,14 @@ public class HackableCow implements IHackableEntity<Cow> {
 
     @Override
     public void onHackFinished(Cow entity, Player player) {
-        if (!entity.level.isClientSide) {
+        if (!entity.level().isClientSide) {
             entity.discard();
-            MushroomCow entitycow = new MushroomCow(EntityType.MOOSHROOM, entity.level);
+            MushroomCow entitycow = new MushroomCow(EntityType.MOOSHROOM, entity.level());
             entitycow.moveTo(entity.getX(), entity.getY(), entity.getZ(), entity.getYRot(), entity.getXRot());
             entitycow.setHealth(entity.getHealth());
             entitycow.yBodyRot = entity.yBodyRot;
-            entity.level.addFreshEntity(entitycow);
-            entity.level.addParticle(ParticleTypes.EXPLOSION, entity.getX(), entity.getY() + entity.getBbHeight() / 2.0F, entity.getZ(), 0.0D, 0.0D, 0.0D);
+            entity.level().addFreshEntity(entitycow);
+            entity.level().addParticle(ParticleTypes.EXPLOSION, entity.getX(), entity.getY() + entity.getBbHeight() / 2.0F, entity.getZ(), 0.0D, 0.0D, 0.0D);
         }
     }
 

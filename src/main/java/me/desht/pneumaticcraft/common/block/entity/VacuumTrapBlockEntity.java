@@ -24,12 +24,12 @@ import me.desht.pneumaticcraft.api.pressure.PressureTier;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
-import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.entity.drone.DroneEntity;
 import me.desht.pneumaticcraft.common.inventory.VacuumTrapMenu;
 import me.desht.pneumaticcraft.common.item.SpawnerCoreItem.SpawnerCoreItemHandler;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
+import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.util.ITranslatableEnum;
 import me.desht.pneumaticcraft.common.util.PNCFluidTank;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
@@ -148,13 +148,13 @@ public class VacuumTrapBlockEntity extends AbstractAirHandlingBlockEntity implem
     private void absorbEntity(Mob e) {
         int toAdd = 1;
         if (xpTank.getFluid().getAmount() >= MEMORY_ESSENCE_AMOUNT) {
-            toAdd += e.level.random.nextInt(3) + 1;
+            toAdd += e.level().random.nextInt(3) + 1;
         }
         if (inv.getStats().addAmount(e.getType(), toAdd)) {
             e.discard();
             if (toAdd > 1) xpTank.drain(MEMORY_ESSENCE_AMOUNT, IFluidHandler.FluidAction.EXECUTE);
             inv.getStats().serialize(inv.getStackInSlot(0));
-            e.level.playSound(null, worldPosition, SoundEvents.PORTAL_TRIGGER, SoundSource.BLOCKS, 1f, 2f);
+            e.level().playSound(null, worldPosition, SoundEvents.PORTAL_TRIGGER, SoundSource.BLOCKS, 1f, 2f);
             if (level instanceof ServerLevel) {
                 ((ServerLevel) level).sendParticles(ParticleTypes.CLOUD, e.getX(), e.getY() + 0.5, e.getZ(), 5, 0, 1, 0, 0);
             }

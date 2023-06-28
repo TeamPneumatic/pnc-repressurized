@@ -30,5 +30,6 @@
     "recipes": [
       "pneumaticcraft:tube_junction"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

@@ -26,5 +26,6 @@
       "name": "assembly_laser",
       "rolls": 1.0
     }
-  ]
+  ],
+  "random_sequence": "pneumaticcraft:blocks/assembly_laser"
 }

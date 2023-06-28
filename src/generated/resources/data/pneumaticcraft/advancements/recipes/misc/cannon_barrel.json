@@ -30,5 +30,6 @@
     "recipes": [
       "pneumaticcraft:cannon_barrel"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

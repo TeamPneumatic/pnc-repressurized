@@ -41,6 +41,7 @@ import me.desht.pneumaticcraft.common.entity.semiblock.AbstractLogisticsFrameEnt
 import me.desht.pneumaticcraft.common.inventory.ProgrammableControllerMenu;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.network.*;
+import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;

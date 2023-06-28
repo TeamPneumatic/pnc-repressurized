@@ -30,5 +30,6 @@
     "recipes": [
       "pneumaticcraft:coordinate_tracker_upgrade"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

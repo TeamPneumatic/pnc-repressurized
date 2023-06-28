@@ -30,5 +30,6 @@
     "recipes": [
       "pneumaticcraft:night_vision_upgrade"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

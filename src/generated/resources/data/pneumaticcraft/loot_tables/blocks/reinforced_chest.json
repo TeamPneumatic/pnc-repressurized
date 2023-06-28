@@ -26,5 +26,6 @@
       "name": "reinforced_chest",
       "rolls": 1.0
     }
-  ]
+  ],
+  "random_sequence": "pneumaticcraft:blocks/reinforced_chest"
 }

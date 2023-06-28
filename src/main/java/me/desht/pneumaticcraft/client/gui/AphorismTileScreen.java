@@ -17,7 +17,6 @@
 
 package me.desht.pneumaticcraft.client.gui;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.client.gui.widget.PNCForgeSlider;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetCheckBox;
@@ -34,6 +33,7 @@ import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.drama.DramaGenerator;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -127,13 +127,13 @@ public class AphorismTileScreen extends Screen {
     }
 
     @Override
-    public void render(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
-        GuiUtils.drawPanel(matrixStack, -5, (height - PANEL_HEIGHT) / 2, PANEL_HEIGHT, panelWidth);
+    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+        GuiUtils.drawPanel(graphics, -5, (height - PANEL_HEIGHT) / 2, PANEL_HEIGHT, panelWidth);
 
-        super.render(matrixStack, mouseX, mouseY, partialTicks);
+        super.render(graphics, mouseX, mouseY, partialTicks);
 
         if (ClientUtils.isKeyDown(GLFW.GLFW_KEY_F1)) {
-            GuiUtils.showPopupHelpScreen(matrixStack, this, font,
+            GuiUtils.showPopupHelpScreen(graphics, this, font,
                     GuiUtils.xlateAndSplit("pneumaticcraft.gui.aphorismTile.helpText"));
         }
     }
@@ -146,60 +146,53 @@ public class AphorismTileScreen extends Screen {
         float p = curLine.isEmpty() ? 0f : (float)cursorX / curLine.length();
 
         switch (keyCode) {
-            case GLFW.GLFW_KEY_ESCAPE:
-                NetworkHandler.sendToServer(new PacketAphorismTileUpdate(tile));
-                break;
-            case GLFW.GLFW_KEY_UP:
+            case GLFW.GLFW_KEY_ESCAPE -> NetworkHandler.sendToServer(new PacketAphorismTileUpdate(tile));
+            case GLFW.GLFW_KEY_UP -> {
                 cursorY--;
                 if (cursorY < 0) cursorY = textLines.length - 1;
                 cursorX = (int) (textLines[cursorY].length() * p);
-                break;
-            case GLFW.GLFW_KEY_DOWN:
-            case GLFW.GLFW_KEY_KP_ENTER:
+            }
+            case GLFW.GLFW_KEY_DOWN, GLFW.GLFW_KEY_KP_ENTER -> {
                 cursorY++;
                 if (cursorY >= textLines.length) cursorY = 0;
                 cursorX = (int) (textLines[cursorY].length() * p);
-                break;
-            case GLFW.GLFW_KEY_LEFT:
+            }
+            case GLFW.GLFW_KEY_LEFT -> {
                 if (cursorX > 0) {
                     cursorX--;
-                    if (cursorX > 0 && curLine.charAt(cursorX - 1) == '\u00a7') {
+                    if (cursorX > 0 && curLine.charAt(cursorX - 1) == '§') {
                         cursorX--;
                     }
                 } else if (cursorX == 0 && cursorY > 0) {
                     cursorY--;
                     cursorX = textLines[cursorY].length();
                 }
-                break;
-            case GLFW.GLFW_KEY_RIGHT:
+            }
+            case GLFW.GLFW_KEY_RIGHT -> {
                 if (cursorX < curLine.length()) {
                     cursorX++;
-                    if (cursorX < curLine.length() && curLine.charAt(cursorX - 1) == '\u00a7') cursorX++;
+                    if (cursorX < curLine.length() && curLine.charAt(cursorX - 1) == '§') cursorX++;
                 } else if (cursorY < textLines.length - 1) {
                     cursorY++;
                     cursorX = 0;
                 }
-                break;
-            case GLFW.GLFW_KEY_HOME:
-                cursorX = 0;
-                break;
-            case GLFW.GLFW_KEY_END:
-                cursorX = curLine.length();
-                break;
-            case GLFW.GLFW_KEY_ENTER:
+            }
+            case GLFW.GLFW_KEY_HOME -> cursorX = 0;
+            case GLFW.GLFW_KEY_END -> cursorX = curLine.length();
+            case GLFW.GLFW_KEY_ENTER -> {
                 cursorY++;
                 int oldCursorX = cursorX;
                 cursorX = 0;
                 textLines = insertLine(textLines[cursorY - 1].substring(oldCursorX), cursorY);
                 textLines[cursorY - 1] = textLines[cursorY - 1].substring(0, oldCursorX);
                 updateTE = true;
-                break;
-            case GLFW.GLFW_KEY_BACKSPACE:
+            }
+            case GLFW.GLFW_KEY_BACKSPACE -> {
                 if (curLine.length() > 0 && cursorX > 0) {
                     // delete behind cursor, move cursor back
                     textLines[cursorY] = curLine.substring(0, cursorX - 1) + curLine.substring(Math.min(curLine.length(), cursorX));
                     cursorX--;
-                    if (cursorX > 0 && textLines[cursorY].charAt(cursorX - 1) == '\u00a7') {
+                    if (cursorX > 0 && textLines[cursorY].charAt(cursorX - 1) == '§') {
                         textLines[cursorY] = textLines[cursorY].substring(0, cursorX - 1) + textLines[cursorY].substring(Math.min(textLines[cursorY].length(), cursorX));
                         cursorX--;
                     }
@@ -212,8 +205,8 @@ public class AphorismTileScreen extends Screen {
                     textLines[cursorY] = textLines[cursorY] + line;
                 }
                 updateTE = true;
-                break;
-            case GLFW.GLFW_KEY_DELETE:
+            }
+            case GLFW.GLFW_KEY_DELETE -> {
                 if (Screen.hasShiftDown()) {
                     // clear all
                     textLines = new String[1];
@@ -232,7 +225,7 @@ public class AphorismTileScreen extends Screen {
                 } else {
                     if (curLine.length() > 0 && cursorX < curLine.length()) {
                         // delete ahead of cursor
-                        int n = curLine.charAt(cursorX) == '\u00a7' && cursorX < curLine.length() - 1 ? 2 : 1;
+                        int n = curLine.charAt(cursorX) == '§' && cursorX < curLine.length() - 1 ? 2 : 1;
                         textLines[cursorY] = curLine.substring(0, cursorX) + curLine.substring(cursorX + n);
                     } else if (cursorY < textLines.length - 1) {
                         // join following line to this
@@ -240,9 +233,9 @@ public class AphorismTileScreen extends Screen {
                         textLines = ArrayUtils.remove(textLines, cursorY + 1);
                     }
                 }
-                if (cursorX > textLines[cursorY].length()) cursorX = (int)(textLines[cursorY].length() * p);
+                if (cursorX > textLines[cursorY].length()) cursorX = (int) (textLines[cursorY].length() * p);
                 updateTE = true;
-                break;
+            }
         }
         tile.setCursorPos(cursorX, cursorY);
         if (updateTE) tile.setTextLines(textLines);
@@ -254,7 +247,7 @@ public class AphorismTileScreen extends Screen {
         if (SharedConstants.isAllowedChatCharacter(ch)) {
             if (Screen.hasAltDown()) {
                 if (ch >= 'a' && ch <= 'f' || ch >= 'l' && ch <= 'o' || ch == 'r' || ch >= '0' && ch <= '9') {
-                    textLines[cursorY] = textLines[cursorY].substring(0, cursorX) + "\u00a7" + ch + textLines[cursorY].substring(cursorX);
+                    textLines[cursorY] = textLines[cursorY].substring(0, cursorX) + "§" + ch + textLines[cursorY].substring(cursorX);
                     cursorX += 2;
                 }
             } else {

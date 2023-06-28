@@ -30,5 +30,6 @@
     "recipes": [
       "pneumaticcraft:reinforced_bricks_from_tile"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

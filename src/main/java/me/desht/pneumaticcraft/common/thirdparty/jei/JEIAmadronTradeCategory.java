@@ -17,7 +17,6 @@
 
 package me.desht.pneumaticcraft.common.thirdparty.jei;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.api.crafting.recipe.AmadronRecipe;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAmadronOffer;
 import me.desht.pneumaticcraft.common.core.ModItems;
@@ -32,6 +31,7 @@ import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
@@ -74,20 +74,20 @@ public class JEIAmadronTradeCategory extends AbstractPNCCategory<AmadronRecipe> 
     }
 
     @Override
-    public void draw(AmadronRecipe recipe, IRecipeSlotsView recipeSlotsView, PoseStack matrixStack, double mouseX, double mouseY) {
+    public void draw(AmadronRecipe recipe, IRecipeSlotsView recipeSlotsView, GuiGraphics graphics, double mouseX, double mouseY) {
         Font fr = Minecraft.getInstance().font;
         int x = (getBackground().getWidth() - fr.width(recipe.getVendorName())) / 2;
         if (recipe.isLocationLimited()) {
-            limitedIcon.draw(matrixStack, 60, -4);
+            limitedIcon.draw(graphics, 60, -4);
         }
-        fr.draw(matrixStack, recipe.getVendorName(), x, 3, 0xFF404040);
+        graphics.drawString(fr, recipe.getVendorName(), x, 3, 0xFF404040, false);
     }
 
     @Override
     public List<Component> getTooltipStrings(AmadronRecipe recipe, IRecipeSlotsView recipeSlotsView, double mouseX, double mouseY) {
         List<Component> res = new ArrayList<>();
         if (mouseX >= 22 && mouseX <= 51) {
-            WidgetAmadronOffer.addTooltip(recipe, res, -1);
+            res.addAll(WidgetAmadronOffer.makeTooltip(recipe, -1));
         }
         return res;
     }
@@ -110,9 +110,9 @@ public class JEIAmadronTradeCategory extends AbstractPNCCategory<AmadronRecipe> 
         }
 
         @Override
-        public void draw(PoseStack matrixStack, int x, int y) {
+        public void draw(GuiGraphics graphics, int x, int y) {
             Font fr = Minecraft.getInstance().font;
-            fr.drawShadow(matrixStack, text, x + getWidth() - fr.width(text), y + getHeight() - fr.lineHeight, 0xFFFFFFFF);
+            graphics.drawString(fr, text, x + getWidth() - fr.width(text), y + getHeight() - fr.lineHeight, 0xFFFFFFFF, false);
         }
     }
 }

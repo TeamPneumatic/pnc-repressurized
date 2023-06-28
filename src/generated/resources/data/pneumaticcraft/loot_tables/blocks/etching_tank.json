@@ -26,5 +26,6 @@
       "name": "etching_tank",
       "rolls": 1.0
     }
-  ]
+  ],
+  "random_sequence": "pneumaticcraft:blocks/etching_tank"
 }

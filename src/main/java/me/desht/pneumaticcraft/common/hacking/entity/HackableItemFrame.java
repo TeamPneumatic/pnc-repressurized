@@ -68,7 +68,7 @@ public class HackableItemFrame implements IHackableEntity<ItemFrame> {
 
     @Override
     public void onHackFinished(ItemFrame entity, Player player) {
-        if (!entity.level.isClientSide) {
+        if (!entity.level().isClientSide) {
             entity.hurt(entity.damageSources().playerAttack(player), 0.1f);
         }
     }

@@ -15,16 +15,15 @@
  *     along with pnc-repressurized.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.desht.pneumaticcraft.common.util.upgrade;
+package me.desht.pneumaticcraft.common.upgrades;
 
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
 import com.google.common.collect.Tables;
-import me.desht.pneumaticcraft.api.item.IUpgradeRegistry;
-import me.desht.pneumaticcraft.api.item.PNCUpgrade;
 import me.desht.pneumaticcraft.api.misc.Symbols;
+import me.desht.pneumaticcraft.api.upgrade.IUpgradeRegistry;
+import me.desht.pneumaticcraft.api.upgrade.PNCUpgrade;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
-import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.item.UpgradeItem;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import me.desht.pneumaticcraft.mixin.accessors.BlockEntityTypeAccess;
@@ -42,7 +41,6 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Supplier;
 
 public enum ApplicableUpgradesDB implements IUpgradeRegistry {
     INSTANCE;
@@ -53,7 +51,8 @@ public enum ApplicableUpgradesDB implements IUpgradeRegistry {
     private final Table<EntityType<?>, PNCUpgrade, Integer> ENTITIES = Tables.synchronizedTable(HashBasedTable.create());
     private final Table<Item, PNCUpgrade, Integer> ITEMS = Tables.synchronizedTable(HashBasedTable.create());
 
-    private final Map<PNCUpgrade,Set<Item>> ACCEPTED_UPGRADES = new ConcurrentHashMap<>();
+    private final Map<ResourceLocation, PNCUpgrade> knownUpgrades = new ConcurrentHashMap<>();
+    private final Map<PNCUpgrade,Set<Item>> acceptedUpgrades = new ConcurrentHashMap<>();
 
     public static ApplicableUpgradesDB getInstance() {
         return INSTANCE;
@@ -118,12 +117,31 @@ public enum ApplicableUpgradesDB implements IUpgradeRegistry {
     }
 
     @Override
-    public Item makeUpgradeItem(Supplier<PNCUpgrade> upgrade, int tier) {
+    public PNCUpgrade registerUpgrade(ResourceLocation id, int maxTier, String... depModIds) {
+        PNCUpgrade upgrade = new PNCUpgradeImpl(id, maxTier, depModIds);
+        if (knownUpgrades.put(upgrade.getId(), upgrade) != null) {
+            throw new IllegalStateException("duplicate upgrade ID: " + id);
+        }
+        return upgrade;
+    }
+
+    @Override
+    public PNCUpgrade getUpgradeById(ResourceLocation upgradeId) {
+        return knownUpgrades.get(upgradeId);
+    }
+
+    @Override
+    public Collection<PNCUpgrade> getKnownUpgrades() {
+        return Collections.unmodifiableCollection(knownUpgrades.values());
+    }
+
+    @Override
+    public Item makeUpgradeItem(PNCUpgrade upgrade, int tier) {
         return new UpgradeItem(upgrade, tier);
     }
 
     @Override
-    public Item makeUpgradeItem(Supplier<PNCUpgrade> upgrade, int tier, Item.Properties properties) {
+    public Item makeUpgradeItem(PNCUpgrade upgrade, int tier, Item.Properties properties) {
         return new UpgradeItem(upgrade, tier, properties);
     }
 
@@ -133,20 +151,17 @@ public enum ApplicableUpgradesDB implements IUpgradeRegistry {
     }
 
     @Override
-    public Map<PNCUpgrade, Integer> getAllUpgrades(ItemStack stack) {
+    public Map<PNCUpgrade, Integer> getUpgradesInItem(ItemStack stack) {
         return UpgradableItemUtils.getUpgrades(stack);
     }
 
     @Override
     public ResourceLocation getItemRegistryName(PNCUpgrade upgrade, int tier) {
-        ResourceLocation id = ModUpgrades.UPGRADES.get().getKey(upgrade);
-        String registryName = Objects.requireNonNull(id) + "_upgrade";
-        if (upgrade.getMaxTier() > 1) registryName += "_" + tier;
-        return new ResourceLocation(registryName);
+        return upgrade.getItemRegistryName(tier);
     }
 
     public Collection<Item> getItemsWhichAccept(PNCUpgrade upgrade) {
-        return ACCEPTED_UPGRADES.getOrDefault(upgrade, Collections.emptySet());
+        return acceptedUpgrades.getOrDefault(upgrade, Collections.emptySet());
     }
 
     public Map<PNCUpgrade, Integer> getApplicableUpgrades(BlockEntity te) {
@@ -176,6 +191,6 @@ public enum ApplicableUpgradesDB implements IUpgradeRegistry {
     }
 
     private void addAccepted(PNCUpgrade upgrade, Item item) {
-        ACCEPTED_UPGRADES.computeIfAbsent(upgrade, k -> ConcurrentHashMap.newKeySet()).add(item);
+        acceptedUpgrades.computeIfAbsent(upgrade, k -> ConcurrentHashMap.newKeySet()).add(item);
     }
 }

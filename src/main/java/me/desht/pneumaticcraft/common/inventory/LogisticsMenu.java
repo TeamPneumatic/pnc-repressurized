@@ -49,7 +49,7 @@ public class LogisticsMenu extends AbstractPneumaticCraftMenu<AbstractPneumaticC
     public LogisticsMenu(MenuType<?> containerType, int i, Inventory playerInventory, int entityId) {
         super(containerType, i, playerInventory);
 
-        Level world = playerInventory.player.level;
+        Level world = playerInventory.player.level();
         if (entityId == -1) {
             // opening container from held item; no in-world entity so fake one up from the held item NBT
             this.logistics = AbstractLogisticsFrameEntity.fromItemStack(world, playerInventory.player, getHeldLogisticsFrame(playerInventory.player));

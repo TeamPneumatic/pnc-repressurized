@@ -39,7 +39,7 @@ public class MinigunPlayerTracker {
     private int ammoColor;
 
     public static MinigunPlayerTracker getInstance(Player player) {
-        return player.level.isClientSide ? clientInstance : serverInstances.computeIfAbsent(player.getUUID(), k -> new MinigunPlayerTracker());
+        return player.level().isClientSide ? clientInstance : serverInstances.computeIfAbsent(player.getUUID(), k -> new MinigunPlayerTracker());
     }
 
     private MinigunPlayerTracker() {

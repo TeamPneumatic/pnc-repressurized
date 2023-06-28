@@ -77,7 +77,7 @@ public class PacketAphorismTileUpdate extends LocationIntPacket {
         ctx.get().enqueueWork(() -> {
             Player player = Objects.requireNonNull(ctx.get().getSender());
             if (PneumaticCraftUtils.canPlayerReach(player, pos)) {
-                PneumaticCraftUtils.getTileEntityAt(player.level, pos, AphorismTileBlockEntity.class).ifPresent(te -> {
+                PneumaticCraftUtils.getTileEntityAt(player.level(), pos, AphorismTileBlockEntity.class).ifPresent(te -> {
                     te.setTextLines(text, false);
                     te.textRotation = textRotation;
                     te.setMarginSize(margin);

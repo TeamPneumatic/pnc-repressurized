@@ -30,5 +30,6 @@
     "recipes": [
       "pneumaticcraft:thermal_compressor"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

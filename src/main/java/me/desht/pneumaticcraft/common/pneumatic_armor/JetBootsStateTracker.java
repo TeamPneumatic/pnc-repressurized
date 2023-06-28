@@ -40,7 +40,7 @@ public class JetBootsStateTracker {
     }
 
     public static JetBootsStateTracker getTracker(Player player) {
-        return player.level.isClientSide ? getClientTracker() : getServerTracker();
+        return player.level().isClientSide ? getClientTracker() : getServerTracker();
     }
 
     private JetBootsStateTracker() {
@@ -56,14 +56,14 @@ public class JetBootsStateTracker {
      * @param builderMode in builder mode?
      */
     public void setJetBootsState(Player player, boolean enabled, boolean active, boolean builderMode) {
-        if (!player.level.isClientSide) {
+        if (!player.level().isClientSide) {
             JetBootsState state = stateMap.computeIfAbsent(player.getUUID(), uuid -> new JetBootsState(false, false, false));
 
             boolean sendPacket = state.enabled != enabled || state.active != active || state.builderMode != builderMode;
             state.enabled = enabled;
             state.active = active;
             state.builderMode = builderMode;
-            if (sendPacket) NetworkHandler.sendToAllTracking(new PacketJetBootsStateSync(player, state), player.level, player.blockPosition());
+            if (sendPacket) NetworkHandler.sendToAllTracking(new PacketJetBootsStateSync(player, state), player.level(), player.blockPosition());
         }
     }
 

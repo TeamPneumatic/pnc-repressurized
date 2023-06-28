@@ -22,14 +22,10 @@ import me.desht.pneumaticcraft.client.gui.remote.RemoteButtonOptionScreen;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSetGlobalVariable;
-import me.desht.pneumaticcraft.common.util.NBTUtils;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
-
-import java.util.List;
 
 public class ActionWidgetButton extends ActionWidgetVariable<WidgetButtonExtended> implements IActionWidgetLabeled {
     public BlockPos settingCoordinate = BlockPos.ZERO; // The coordinate the variable is set to when the button is pressed.
@@ -46,7 +42,7 @@ public class ActionWidgetButton extends ActionWidgetVariable<WidgetButtonExtende
         super.readFromNBT(tag, guiLeft, guiTop);
         widget = new WidgetButtonExtended(tag.getInt("x") + guiLeft, tag.getInt("y") + guiTop, tag.getInt("width"), tag.getInt("height"), deserializeTextComponent(tag.getString("text")), b -> onActionPerformed());
         settingCoordinate = new BlockPos(tag.getInt("settingX"), tag.getInt("settingY"), tag.getInt("settingZ"));
-        widget.setTooltipText(NBTUtils.deserializeTextComponents(tag.getList("tooltip", Tag.TAG_STRING)));
+        deserializeTooltip(tag.getString("tooltip"));
     }
 
     @Override
@@ -60,7 +56,7 @@ public class ActionWidgetButton extends ActionWidgetVariable<WidgetButtonExtende
         tag.putInt("settingX", settingCoordinate.getX());
         tag.putInt("settingY", settingCoordinate.getY());
         tag.putInt("settingZ", settingCoordinate.getZ());
-        tag.put("tooltip", NBTUtils.serializeTextComponents(widget.getTooltip()));
+        tag.putString("tooltip", Component.Serializer.toJson(getTooltipMessage()));
         return tag;
     }
 
@@ -113,15 +109,5 @@ public class ActionWidgetButton extends ActionWidgetVariable<WidgetButtonExtende
 
     public int getHeight() {
         return widget.getHeight();
-    }
-
-    @Override
-    public void setTooltip(List<Component> text) {
-        widget.setTooltipText(text);
-    }
-
-    @Override
-    public List<Component> getTooltip() {
-        return widget.getTooltip();
     }
 }

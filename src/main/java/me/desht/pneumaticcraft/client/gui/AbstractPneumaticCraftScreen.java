@@ -17,17 +17,12 @@
 
 package me.desht.pneumaticcraft.client.gui;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.api.client.ITickableWidget;
-import me.desht.pneumaticcraft.client.gui.widget.ITooltipProvider;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetLabel;
-import me.desht.pneumaticcraft.client.util.GuiUtils;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public abstract class AbstractPneumaticCraftScreen extends Screen {
     public int guiLeft, guiTop, xSize, ySize;
@@ -61,37 +56,36 @@ public abstract class AbstractPneumaticCraftScreen extends Screen {
     }
 
     @Override
-    public void render(PoseStack matrixStack, int x, int y, float partialTicks) {
+    public void render(GuiGraphics graphics, int x, int y, float partialTicks) {
         if (getTexture() != null) {
-            GuiUtils.bindTexture(getTexture());
-            blit(matrixStack, guiLeft, guiTop, 0, 0, xSize, ySize);
+            graphics.blit(getTexture(), guiLeft, guiTop, 0, 0, xSize, ySize);
         }
 
-        super.render(matrixStack, x, y, partialTicks);
+        super.render(graphics, x, y, partialTicks);
 
-        drawForeground(matrixStack, x, y, partialTicks);
+        drawForeground(graphics, x, y, partialTicks);
 
-        List<Component> tooltip = new ArrayList<>();
-        boolean shift = Screen.hasShiftDown();
-        renderables.stream()
-                .filter(widget -> widget instanceof ITooltipProvider provider && provider.shouldProvide())
-                .forEach(widget -> ((ITooltipProvider) widget).addTooltip(x, y, tooltip, shift));
-
-        if (!tooltip.isEmpty()) {
-            int max = Math.min(xSize * 4 / 3, width / 3);
-            renderTooltip(matrixStack, GuiUtils.wrapTextComponentList(tooltip, max, font), x, y);
-        }
+//        List<Component> tooltip = new ArrayList<>();
+//        boolean shift = Screen.hasShiftDown();
+//        renderables.stream()
+//                .filter(widget -> widget instanceof ITooltipProvider provider && provider.shouldProvide())
+//                .forEach(widget -> ((ITooltipProvider) widget).addTooltip(x, y, tooltip, shift));
+//
+//        if (!tooltip.isEmpty()) {
+//            int max = Math.min(xSize * 4 / 3, width / 3);
+//            renderTooltip(graphics, GuiUtils.wrapTextComponentList(tooltip, max, font), x, y);
+//        }
     }
 
     /**
      * Do GUI-specific foreground drawing here rather than overriding render(), so that tooltips drawn by render are
      * drawn last and stay on top.
      *
-     * @param matrixStack the matrix stack
-     * @param x mouse X
-     * @param y mouse Y
+     * @param graphics     the matrix stack
+     * @param x            mouse X
+     * @param y            mouse Y
      * @param partialTicks partial ticks
      */
-    protected void drawForeground(PoseStack matrixStack, int x, int y, float partialTicks) {
+    protected void drawForeground(GuiGraphics graphics, int x, int y, float partialTicks) {
     }
 }

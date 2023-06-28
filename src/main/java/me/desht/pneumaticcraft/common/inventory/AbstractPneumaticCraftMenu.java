@@ -62,7 +62,7 @@ public abstract class AbstractPneumaticCraftMenu<T extends AbstractPneumaticCraf
     public AbstractPneumaticCraftMenu(MenuType type, int windowId, Inventory invPlayer, BlockPos tilePos) {
         super(type, windowId);
         if (tilePos != null) {
-            BlockEntity te0 = invPlayer.player.level.getBlockEntity(tilePos);
+            BlockEntity te0 = invPlayer.player.level().getBlockEntity(tilePos);
             if (te0 instanceof AbstractPneumaticCraftBlockEntity) {
                 //noinspection unchecked
                 te = (T) te0;  // should be safe: T extends AbstractPneumaticCraftBlockEntity, and we're doing an instanceof
@@ -336,7 +336,7 @@ public abstract class AbstractPneumaticCraftMenu<T extends AbstractPneumaticCraf
     }
 
     private boolean canStacksMerge(ItemStack stack1, ItemStack stack2) {
-        return !(stack1.isEmpty() || stack2.isEmpty()) && stack1.sameItem(stack2) && ItemStack.tagMatches(stack1, stack2);
+        return !(stack1.isEmpty() || stack2.isEmpty()) && ItemStack.isSameItemSameTags(stack1, stack2);
     }
 
     private void adjustPhantomSlot(Slot slot, ClickType clickType, int dragType) {

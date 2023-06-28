@@ -18,7 +18,6 @@
 package me.desht.pneumaticcraft.client.gui.pneumatic_armor;
 
 import com.mojang.blaze3d.platform.Window;
-import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IArmorUpgradeClientHandler;
 import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorUpgradeHandler;
@@ -33,6 +32,7 @@ import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -175,21 +175,21 @@ public class ArmorStatMoveScreen extends AbstractPneumaticCraftScreen {
     }
 
     @Override
-    public void render(PoseStack matrixStack, int x, int y, float partialTicks) {
-        renderBackground(matrixStack);
+    public void render(GuiGraphics graphics, int x, int y, float partialTicks) {
+        renderBackground(graphics);
 
-        Rect2i bounds = GuiUtils.showPopupHelpScreen(matrixStack,this, font, helpText);
+        Rect2i bounds = GuiUtils.showPopupHelpScreen(graphics,this, font, helpText);
         snapToGrid.setY(bounds.getY() + bounds.getHeight() + 15);
         gridSlider.setY(snapToGrid.getY() + 12);
 
-        super.render(matrixStack, x, y, partialTicks);
+        super.render(graphics, x, y, partialTicks);
 
-        movedStat.renderStat(matrixStack,-1, -1, partialTicks);
+        movedStat.renderStat(graphics,-1, -1, partialTicks);
 
         otherStats.forEach(stat -> {
             int c = stat.getBackgroundColor();
             stat.setBackgroundColor(0x30606060);
-            stat.renderStat(matrixStack, -1, -1, partialTicks);
+            stat.renderStat(graphics, -1, -1, partialTicks);
             stat.setBackgroundColor(c);
         });
     }

@@ -18,9 +18,9 @@
 package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.common.core.ModSounds;
-import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
+import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.FriendlyByteBuf;
@@ -74,7 +74,7 @@ public class PacketPneumaticKick {
         double playerFootY = player.getY() - player.getBbHeight() / 2;
         AABB box = new AABB(player.getX(), playerFootY, player.getZ(), player.getX(), playerFootY, player.getZ())
                 .inflate(1.5, 1.5, 1.5).move(lookVec);
-        List<Entity> entities = player.level.getEntities(player, box);
+        List<Entity> entities = player.level().getEntities(player, box);
         if (entities.isEmpty()) return;
         entities.sort(Comparator.comparingDouble(o -> o.distanceToSqr(player)));
 
@@ -89,7 +89,7 @@ public class PacketPneumaticKick {
             target.verticalCollision = false;
             target.setDeltaMovement(target.getDeltaMovement().add(lookVec.scale(1.0 + upgrades * 0.5)).add(0, upgrades * 0.1, 0));
         }
-        player.level.playSound(null, target.getX(), target.getY(), target.getZ(), ModSounds.PUNCH.get(), SoundSource.PLAYERS, 1f, 1f);
+        player.level().playSound(null, target.getX(), target.getY(), target.getZ(), ModSounds.PUNCH.get(), SoundSource.PLAYERS, 1f, 1f);
         NetworkHandler.sendToAllTracking(new PacketSetEntityMotion(target, target.getDeltaMovement()), target);
         NetworkHandler.sendToAllTracking(new PacketSpawnParticle(ParticleTypes.EXPLOSION, target.getX(), target.getY(), target.getZ(), 1.0D, 0.0D, 0.0D), target);
         CommonArmorHandler.getHandlerForPlayer(player).addAir(EquipmentSlot.FEET, -PneumaticValues.PNEUMATIC_KICK_AIR_USAGE * upgrades);

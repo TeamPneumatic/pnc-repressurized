@@ -19,11 +19,11 @@ package me.desht.pneumaticcraft.client.gui;
 
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetCheckBox;
-import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.block.entity.PneumaticDoorBaseBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.inventory.PneumaticDoorBaseMenu;
 import me.desht.pneumaticcraft.lib.Textures;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
@@ -47,8 +47,8 @@ public class PneumaticDoorBaseScreen extends AbstractPneumaticCraftContainerScre
         WidgetCheckBox cb;
         passRedstoneTab.addSubWidget(cb = new WidgetCheckBox(5, 20, 0x404040, xlate("pneumaticcraft.gui.tab.pneumaticDoorBaseRedstone.text"))
                 .setChecked(te.shouldPassSignalToDoor())
-                .setTooltip(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.pneumaticDoorBaseRedstone.tooltip"))
                 .withTag("pass_signal"));
+        passRedstoneTab.setTooltip(Tooltip.create(xlate("pneumaticcraft.gui.tab.pneumaticDoorBaseRedstone.tooltip")));
         passRedstoneTab.setMinimumExpandedDimensions(cb.getWidth(), 40);
     }
 

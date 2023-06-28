@@ -30,5 +30,6 @@
     "recipes": [
       "pneumaticcraft:assembly/unassembled_pcb"
     ]
-  }
+  },
+  "sends_telemetry_event": true
 }

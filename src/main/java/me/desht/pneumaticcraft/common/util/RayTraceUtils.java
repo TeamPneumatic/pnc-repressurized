@@ -33,7 +33,7 @@ public class RayTraceUtils {
     public static HitResult getEntityLookedObject(LivingEntity entity, double maxDistance) {
         Pair<Vec3, Vec3> vecs = getStartAndEndLookVec(entity, maxDistance);
         ClipContext ctx = new ClipContext(vecs.getLeft(), vecs.getRight(), ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, entity);
-        return entity.level.clip(ctx);
+        return entity.level().clip(ctx);
     }
 
     public static Pair<Vec3, Vec3> getStartAndEndLookVec(LivingEntity entity, double maxDistance) {
@@ -59,7 +59,7 @@ public class RayTraceUtils {
         Vec3 lookVec = lookingEntity.getLookAngle().scale(range + 1);
         AABB box = lookingEntity.getBoundingBox().inflate(lookVec.x, lookVec.y, lookVec.z);
 
-        for (Entity entity : lookingEntity.level.getEntities(lookingEntity, box, Entity::isPickable)) {
+        for (Entity entity : lookingEntity.level().getEntities(lookingEntity, box, Entity::isPickable)) {
             AABB aabb = entity.getBoundingBox().inflate(entity.getPickRadius());
             Optional<Vec3> vec = aabb.clip(eyePos, startAndEnd.getRight());
 
@@ -93,6 +93,6 @@ public class RayTraceUtils {
     private static HitResult raytraceEntityBlocks(LivingEntity entity, double range) {
         Pair<Vec3, Vec3> startAndEnd = getStartAndEndLookVec(entity, (float) range);
         ClipContext ctx = new ClipContext(startAndEnd.getLeft(), startAndEnd.getRight(), ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, entity);
-        return entity.level.clip(ctx);
+        return entity.level().clip(ctx);
     }
 }

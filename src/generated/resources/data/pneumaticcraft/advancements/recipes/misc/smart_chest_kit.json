@@ -30,5 +30,6 @@
     "recipes": [
       "pneumaticcraft:smart_chest_kit"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

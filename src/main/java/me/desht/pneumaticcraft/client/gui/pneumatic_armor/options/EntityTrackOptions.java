@@ -17,7 +17,6 @@
 
 package me.desht.pneumaticcraft.client.gui.pneumatic_armor.options;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IGuiScreen;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
@@ -33,6 +32,7 @@ import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.nbt.CompoundTag;
@@ -76,11 +76,11 @@ public class EntityTrackOptions extends IOptionPage.SimpleOptionPage<EntityTrack
     }
 
     @Override
-    public void renderPost(PoseStack matrixStack, int x, int y, float partialTicks) {
-        Font fontRenderer = Minecraft.getInstance().font;
-        fontRenderer.draw(matrixStack, I18n.get("pneumaticcraft.gui.entityFilter"), 35, 50, 0xFFFFFFFF);
+    public void renderPost(GuiGraphics graphics, int x, int y, float partialTicks) {
+        Font font = getGuiScreen().getFontRenderer();
+        graphics.drawString(font, I18n.get("pneumaticcraft.gui.entityFilter"), 35, 50, 0xFFFFFFFF, false);
         if (ClientUtils.isKeyDown(GLFW.GLFW_KEY_F1)) {
-            GuiUtils.showPopupHelpScreen(matrixStack, Minecraft.getInstance().screen, fontRenderer,
+            GuiUtils.showPopupHelpScreen(graphics, getGuiScreen().getScreen(), font,
                     GuiUtils.xlateAndSplit("pneumaticcraft.gui.entityFilter.helpText"));
         }
     }

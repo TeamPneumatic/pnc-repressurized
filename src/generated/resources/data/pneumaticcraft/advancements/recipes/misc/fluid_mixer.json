@@ -30,5 +30,6 @@
     "recipes": [
       "pneumaticcraft:fluid_mixer"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

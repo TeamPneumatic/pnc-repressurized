@@ -69,7 +69,7 @@ public class SecurityStationHackingMenu extends AbstractPneumaticCraftMenu<Secur
 
         boolean justTesting = buffer.readBoolean();
 
-        return PneumaticCraftUtils.getTileEntityAt(player.level, tilePos, SecurityStationBlockEntity.class).map(teSS -> {
+        return PneumaticCraftUtils.getTileEntityAt(player.level(), tilePos, SecurityStationBlockEntity.class).map(teSS -> {
             ISimulationController controller = new SimulationController(teSS, player, playerSimulation, aiSimulation, justTesting);
             nodes.forEach(node -> {
                 controller.getSimulation(HackingSide.PLAYER).addNode(node.getLeft(), node.getRight());

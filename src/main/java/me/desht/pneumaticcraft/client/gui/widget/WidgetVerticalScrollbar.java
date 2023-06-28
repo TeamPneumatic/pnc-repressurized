@@ -17,12 +17,11 @@
 
 package me.desht.pneumaticcraft.client.gui.widget;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import me.desht.pneumaticcraft.client.render.ModRenderTypes;
-import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.lib.Textures;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -95,18 +94,18 @@ public class WidgetVerticalScrollbar extends AbstractWidget implements ICanRende
     }
 
     @Override
-    public void renderWidget(PoseStack matrixStack, int mouseX, int mouseY, float partialTick) {
+    public void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
         if (visible) {
             int x = getX(), y = getY();
-            GuiUtils.bindTexture(Textures.WIDGET_VERTICAL_SCROLLBAR);
-            blit(matrixStack, x, y, 12, 0, width, 1, 26, 15);
-            for (int i = 0; i < height - 2; i++)
-                blit(matrixStack, x, y + 1 + i, 12, 1, width, 1, 26, 15);
-            blit(matrixStack, x, y + height - 1, 12, 14, width, 1, 26, 15);
+            graphics.blit(Textures.WIDGET_VERTICAL_SCROLLBAR, x, y, 12, 0, width, 1, 26, 15);
+            for (int i = 0; i < height - 2; i++) {
+                graphics.blit(Textures.WIDGET_VERTICAL_SCROLLBAR, x, y + 1 + i, 12, 1, width, 1, 26, 15);
+            }
+            graphics.blit(Textures.WIDGET_VERTICAL_SCROLLBAR, x, y + height - 1, 12, 14, width, 1, 26, 15);
 
-            if (!active) RenderSystem.setShaderColor(0.6F, 0.6F, 0.6F, 1);
-            blit(matrixStack, x + 1, y + 1 + (int) ((height - 17) * currentScroll), 0, 0, 12, 15, 26, 15);
-            RenderSystem.setShaderColor(1, 1, 1, 1);
+            if (!active) graphics.setColor(0.6F, 0.6F, 0.6F, 1);
+            graphics.blit(Textures.WIDGET_VERTICAL_SCROLLBAR, x + 1, y + 1 + (int) ((height - 17) * currentScroll), 0, 0, 12, 15, 26, 15);
+            graphics.setColor(1, 1, 1, 1);
         }
     }
 

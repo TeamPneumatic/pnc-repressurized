@@ -129,7 +129,7 @@ public class HeatFrameEntity extends AbstractSemiblockEntity {
         super.tick();
 
         if (tickCount == 1) {
-            logic.initializeAmbientTemperature(level, getBlockPos());
+            logic.initializeAmbientTemperature(level(), getBlockPos());
         }
 
         if (!getWorld().isClientSide) {
@@ -155,8 +155,8 @@ public class HeatFrameEntity extends AbstractSemiblockEntity {
             if ((tickCount & 0x3) == 0) {
                 byte status = getStatus();
                 switch (status) {
-                    case COOKING -> ClientUtils.emitParticles(level, getBlockPos(), level.random.nextInt(4) == 0 ? ParticleTypes.FLAME : ParticleTypes.SMOKE);
-                    case COOLING -> ClientUtils.emitParticles(level, getBlockPos(), ParticleTypes.SPIT);
+                    case COOKING -> ClientUtils.emitParticles(level(), getBlockPos(), level().random.nextInt(4) == 0 ? ParticleTypes.FLAME : ParticleTypes.SMOKE);
+                    case COOLING -> ClientUtils.emitParticles(level(), getBlockPos(), ParticleTypes.SPIT);
                 }
             }
         }
@@ -192,8 +192,8 @@ public class HeatFrameEntity extends AbstractSemiblockEntity {
         if (slot >= 0 & slot < handler.getSlots()) {
             ItemStack stack = handler.getStackInSlot(slot);
             if (!stack.isEmpty()) {
-                return RecipeCache.SMELTING.getCachedRecipe(level, new SimpleContainer(stack)).map(recipe -> {
-                    ItemStack result = recipe.getResultItem(getLevel().registryAccess()).copy();
+                return RecipeCache.SMELTING.getCachedRecipe(level(), new SimpleContainer(stack)).map(recipe -> {
+                    ItemStack result = recipe.getResultItem(level().registryAccess()).copy();
                     if (!result.isEmpty()) {
                         ItemStack remainder = ItemHandlerHelper.insertItem(handler, result, true);
                         if (remainder.isEmpty()) {
@@ -241,7 +241,7 @@ public class HeatFrameEntity extends AbstractSemiblockEntity {
             ItemStack stack = handler.getStackInSlot(slot);
             if (stack.isEmpty()) return false;
 
-            HeatFrameCoolingRecipe recipe = ModRecipeTypes.HEAT_FRAME_COOLING.get().findFirst(level, r -> r.matches(stack));
+            HeatFrameCoolingRecipe recipe = ModRecipeTypes.HEAT_FRAME_COOLING.get().findFirst(level(), r -> r.matches(stack));
 
             if (recipe != null) {
                 boolean extractedOK;
@@ -293,7 +293,7 @@ public class HeatFrameEntity extends AbstractSemiblockEntity {
     @Override
     public void addTooltip(Consumer<Component> curInfo, Player player, CompoundTag tag, boolean extended) {
         int cook, cool;
-        if (!level.isClientSide) {
+        if (!level().isClientSide) {
             // TOP
             cook = cookingProgress;
             cool = coolingProgress;

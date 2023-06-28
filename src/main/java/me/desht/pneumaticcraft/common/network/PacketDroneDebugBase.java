@@ -74,7 +74,7 @@ public abstract class PacketDroneDebugBase {
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            Level world = ctx.get().getSender() == null ? ClientUtils.getClientLevel() : ctx.get().getSender().level;
+            Level world = ctx.get().getSender() == null ? ClientUtils.getClientLevel() : ctx.get().getSender().level();
             Player player =  ctx.get().getSender() == null ? ClientUtils.getClientPlayer() : ctx.get().getSender();
             if (entityId >= 0) {
                 Entity entity = world.getEntity(entityId);

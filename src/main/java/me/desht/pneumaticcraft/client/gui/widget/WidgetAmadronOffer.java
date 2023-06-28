@@ -18,18 +18,20 @@
 package me.desht.pneumaticcraft.client.gui.widget;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.api.crafting.recipe.AmadronRecipe;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketGuiButton;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
+import me.desht.pneumaticcraft.mixin.accessors.TooltipAccess;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
@@ -39,11 +41,12 @@ import net.minecraft.world.item.TooltipFlag;
 import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class WidgetAmadronOffer extends AbstractWidget implements ITooltipProvider {
+public class WidgetAmadronOffer extends AbstractWidget {
     private final AmadronRecipe offer;
     private final List<AbstractWidget> subWidgets = new ArrayList<>();
     private int shoppingAmount;
@@ -67,19 +70,35 @@ public class WidgetAmadronOffer extends AbstractWidget implements ITooltipProvid
         if (offer.isRemovableBy(Minecraft.getInstance().player)) {
             List<Component> l = new ArrayList<>(GuiUtils.xlateAndSplit("pneumaticcraft.gui.amadron.amadronWidget.sneakRightClickToRemove"));
             l.add(Component.empty());
-            subWidgets.add(new WidgetButtonExtended(x + 57, y + 1, 11, 11, Component.literal(ChatFormatting.RED + "x"),
-                    b -> NetworkHandler.sendToServer(new PacketGuiButton("remove:" + offer.getId())))
-                    .setTooltipText(l));
+            WidgetButtonExtended btn = new WidgetButtonExtended(x + 57, y + 1, 11, 11, Component.literal(ChatFormatting.RED + "x"),
+                    b -> NetworkHandler.sendToServer(new PacketGuiButton("remove:" + offer.getId())));
+            btn.setTooltip(Tooltip.create(PneumaticCraftUtils.combineComponents(l)));
+            subWidgets.add(btn);
         }
         tooltipRectangles[0] = new Rect2i(x + 5, y + 14, 18, 18);
         tooltipRectangles[1] = new Rect2i(x + 50, y + 14, 18, 18);
     }
 
     @Override
-    public void render(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
-        super.render(matrixStack, mouseX, mouseY, partialTicks);
+    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+        super.render(graphics, mouseX, mouseY, partialTicks);
 
-        subWidgets.forEach(w -> w.render(matrixStack, mouseX, mouseY, partialTicks));
+        subWidgets.forEach(w -> w.render(graphics, mouseX, mouseY, partialTicks));
+
+        List<Component> tooltip = new ArrayList<>();
+        for (AbstractWidget widget : subWidgets) {
+            if (widget.isHoveredOrFocused()) {
+                Component message = ((TooltipAccess) widget.getTooltip()).getMessage();
+                if (message != null) {
+                    tooltip.add(message);
+                }
+            }
+        }
+        if (Arrays.stream(tooltipRectangles).noneMatch(rect -> rect.contains(mouseX, mouseY))) {
+            tooltip.addAll(makeTooltip(offer, shoppingAmount));
+        }
+
+        setTooltip(Tooltip.create(PneumaticCraftUtils.combineComponents(tooltip)));
     }
 
     @Override
@@ -88,32 +107,31 @@ public class WidgetAmadronOffer extends AbstractWidget implements ITooltipProvid
     }
 
     @Override
-    public void renderWidget(PoseStack matrixStack, int mouseX, int mouseY, float partialTick) {
+    public void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
         if (visible) {
             Font fr = Minecraft.getInstance().font;
             if (renderBackground) {
-                GuiUtils.bindTexture(Textures.WIDGET_AMADRON_OFFER);
-                GuiComponent.blit(matrixStack, getX(), getY(), 0, 0, width, height, 256, 256);
+                graphics.blit(Textures.WIDGET_AMADRON_OFFER, getX(), getY(), 0, 0, width, height, 256, 256);
             }
             FormattedCharSequence r = fr.split(offer.getVendorName(), 73).get(0);
-            fr.draw(matrixStack, r, getX() + 2, getY() + 2, 0xFF000000);
+            graphics.drawString(fr, r, getX() + 2, getY() + 2, 0xFF000000, false);
             if (shoppingAmount > 0) {
                 String str = Integer.toString(shoppingAmount);
-                fr.draw(matrixStack,str, getX() + 36 - fr.width(str) / 2f, getY() + (offer.getStock() >= 0 ? 15 : 20), 0xFF000000);
+                graphics.drawString(fr, str, getX() + 36 - fr.width(str) / 2f, getY() + (offer.getStock() >= 0 ? 15 : 20), 0xFF000000, false);
             }
             if (offer.getStock() >= 0) {
                 String str = ChatFormatting.DARK_BLUE.toString() + offer.getStock();
-                fr.draw(matrixStack, str, getX() + 36 - fr.width(str) / 2f, getY() + 25, 0xFF000000);
+                graphics.drawString(fr, str, getX() + 36 - fr.width(str) / 2f, getY() + 25, 0xFF000000, false);
             }
             boolean availableHere = offer.isUsableByPlayer(ClientUtils.getClientPlayer());
             if (offer.isLocationLimited()) {
                 RenderSystem.enableBlend();
                 RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-                GuiUtils.drawTexture(matrixStack, availableHere ? Textures.GUI_OK_LOCATION : Textures.GUI_BAD_LOCATION, getX() + width - 15, getY() - 1);
+                graphics.blit(availableHere ? Textures.GUI_OK_LOCATION : Textures.GUI_BAD_LOCATION, getX() + width - 15, getY() - 1, 0, 0, 16, 16);
                 RenderSystem.disableBlend();
             }
             if (!canBuy || !availableHere) {
-                GuiComponent.fill(matrixStack, getX(), getY(), getX() + width, getY() + height, 0xC0804040);
+                graphics.fill(getX(), getY(), getX() + width, getY() + height, 0xC0804040);
             }
         }
     }
@@ -128,23 +146,23 @@ public class WidgetAmadronOffer extends AbstractWidget implements ITooltipProvid
         return this;
     }
 
-    @Override
-    public void addTooltip(double mouseX, double mouseY, List<Component> curTip, boolean shiftPressed) {
-        for (AbstractWidget widget : subWidgets) {
-            if (widget.isHoveredOrFocused() && widget instanceof ITooltipProvider provider) {
-                provider.addTooltip(mouseX, mouseY, curTip, shiftPressed);
-            }
-        }
-        boolean isInBounds = false;
-        for (Rect2i rect : tooltipRectangles) {
-            if (rect.contains((int)mouseX, (int)mouseY)) {
-                isInBounds = true;
-            }
-        }
-        if (!isInBounds) {
-            addTooltip(offer, curTip, shoppingAmount);
-        }
-    }
+//    @Override
+//    public void addTooltip(double mouseX, double mouseY, List<Component> curTip, boolean shiftPressed) {
+//        for (AbstractWidget widget : subWidgets) {
+//            if (widget.isHoveredOrFocused() && widget instanceof ITooltipProvider provider) {
+//                provider.addTooltip(mouseX, mouseY, curTip, shiftPressed);
+//            }
+//        }
+//        boolean isInBounds = false;
+//        for (Rect2i rect : tooltipRectangles) {
+//            if (rect.contains((int)mouseX, (int)mouseY)) {
+//                isInBounds = true;
+//            }
+//        }
+//        if (!isInBounds) {
+//            addTooltip(offer, curTip, shoppingAmount);
+//        }
+//    }
 
     public AmadronRecipe getOffer() {
         return offer;
@@ -154,33 +172,35 @@ public class WidgetAmadronOffer extends AbstractWidget implements ITooltipProvid
         shoppingAmount = amount;
     }
 
-    public static void addTooltip(AmadronRecipe offer, List<Component> curTip, int shoppingAmount) {
-        curTip.add(xlate("pneumaticcraft.gui.amadron.amadronWidget.vendor",
+    public static List<Component> makeTooltip(AmadronRecipe offer, int shoppingAmount) {
+        List<Component> tooltip = new ArrayList<>();
+        tooltip.add(xlate("pneumaticcraft.gui.amadron.amadronWidget.vendor",
                 offer.getVendorName().copy().withStyle(ChatFormatting.WHITE))
                 .withStyle(ChatFormatting.YELLOW));
-        curTip.add(xlate("pneumaticcraft.gui.amadron.amadronWidget.selling",
+        tooltip.add(xlate("pneumaticcraft.gui.amadron.amadronWidget.selling",
                 Component.literal(offer.getOutput().toString()).withStyle(ChatFormatting.WHITE))
                 .withStyle(ChatFormatting.YELLOW));
-        curTip.add(xlate("pneumaticcraft.gui.amadron.amadronWidget.buying",
+        tooltip.add(xlate("pneumaticcraft.gui.amadron.amadronWidget.buying",
                 Component.literal(offer.getInput().toString()).withStyle(ChatFormatting.WHITE))
                 .withStyle(ChatFormatting.YELLOW));
         if (shoppingAmount >= 0) {
             if (offer.getStock() >= 0) {
-                curTip.add(xlate("pneumaticcraft.gui.amadron.amadronWidget.stock",
+                tooltip.add(xlate("pneumaticcraft.gui.amadron.amadronWidget.stock",
                         Component.literal(Integer.toString(offer.getStock())).withStyle(ChatFormatting.WHITE))
                         .withStyle(ChatFormatting.AQUA));
             }
-            curTip.add(xlate("pneumaticcraft.gui.amadron.amadronWidget.inBasket",
+            tooltip.add(xlate("pneumaticcraft.gui.amadron.amadronWidget.inBasket",
                     Component.literal(Integer.toString(shoppingAmount)).withStyle(ChatFormatting.WHITE))
                     .withStyle(ChatFormatting.AQUA));
         }
         if (!offer.isUsableByPlayer(ClientUtils.getClientPlayer())) {
-            curTip.add(xlate("pneumaticcraft.playerFilter.unavailable").withStyle(ChatFormatting.RED));
+            tooltip.add(xlate("pneumaticcraft.playerFilter.unavailable").withStyle(ChatFormatting.RED));
         }
-        offer.addAvailabilityData(ClientUtils.getClientPlayer(), curTip);
+        offer.addAvailabilityData(ClientUtils.getClientPlayer(), tooltip);
         if (Minecraft.getInstance().options.advancedItemTooltips) {
-            curTip.add(Component.literal(offer.getId().toString()).withStyle(ChatFormatting.DARK_GRAY));
+            tooltip.add(Component.literal(offer.getId().toString()).withStyle(ChatFormatting.DARK_GRAY));
         }
+        return tooltip;
     }
 
     @Override
@@ -191,7 +211,7 @@ public class WidgetAmadronOffer extends AbstractWidget implements ITooltipProvid
         public WidgetItemStack(int startX, int startY, ItemStack stack) {
             super(startX, startY, 16, 16);
             setRenderStacks(stack);
-            setTooltipText(stack.getTooltipLines(Minecraft.getInstance().player, TooltipFlag.Default.NORMAL));
+            setTooltip(Tooltip.create(PneumaticCraftUtils.combineComponents(stack.getTooltipLines(Minecraft.getInstance().player, TooltipFlag.Default.NORMAL))));
             setVisible(false);
             setRenderStackSize(true);
         }

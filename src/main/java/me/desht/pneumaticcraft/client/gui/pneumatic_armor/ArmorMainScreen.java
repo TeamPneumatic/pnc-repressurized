@@ -19,14 +19,13 @@ package me.desht.pneumaticcraft.client.gui.pneumatic_armor;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.platform.Window;
-import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IArmorUpgradeClientHandler;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.ICheckboxWidget;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IGuiScreen;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
-import me.desht.pneumaticcraft.api.item.PNCUpgrade;
 import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorUpgradeHandler;
+import me.desht.pneumaticcraft.api.upgrade.PNCUpgrade;
 import me.desht.pneumaticcraft.client.gui.AbstractPneumaticCraftScreen;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.options.NullOptions;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
@@ -41,6 +40,7 @@ import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.CoreComponentsHan
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.network.chat.Component;
@@ -182,16 +182,16 @@ public class ArmorMainScreen extends AbstractPneumaticCraftScreen implements IGu
     }
 
     @Override
-    public void render(PoseStack matrixStack, int x, int y, float partialTicks) {
-        renderBackground(matrixStack);
+    public void render(GuiGraphics graphics, int x, int y, float partialTicks) {
+        renderBackground(graphics);
         IOptionPage optionPage = getCurrentOptionsPage().page;
-        optionPage.renderPre(matrixStack, x, y, partialTicks);
-        drawCenteredString(matrixStack, font, getCurrentOptionsPage().page.getPageName().copy().withStyle(TITLE_PREFIX), 100, 12, 0xFFFFFFFF);
+        optionPage.renderPre(graphics, x, y, partialTicks);
+        graphics.drawCenteredString(font, getCurrentOptionsPage().page.getPageName().copy().withStyle(TITLE_PREFIX), 100, 12, 0xFFFFFFFF);
         if (optionPage.displaySettingsHeader()) {
-            drawCenteredString(matrixStack, font, xlate("pneumaticcraft.armor.gui.misc.settings").withStyle(ChatFormatting.DARK_AQUA), 100, optionPage.settingsYposition(), 0xFFFFFFFF);
+            graphics.drawCenteredString(font, xlate("pneumaticcraft.armor.gui.misc.settings").withStyle(ChatFormatting.DARK_AQUA), 100, optionPage.settingsYposition(), 0xFFFFFFFF);
         }
-        super.render(matrixStack, x, y, partialTicks);
-        optionPage.renderPost(matrixStack, x, y, partialTicks);
+        super.render(graphics, x, y, partialTicks);
+        optionPage.renderPost(graphics, x, y, partialTicks);
     }
 
     @Override

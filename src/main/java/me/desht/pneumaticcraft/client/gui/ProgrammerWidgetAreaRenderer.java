@@ -17,8 +17,6 @@
 
 package me.desht.pneumaticcraft.client.gui;
 
-import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import me.desht.pneumaticcraft.api.misc.Symbols;
@@ -36,14 +34,12 @@ import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiComponent;
-import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
-import org.lwjgl.opengl.GL11;
 
 import java.util.*;
 
@@ -52,7 +48,6 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 public class ProgrammerWidgetAreaRenderer {
     private static final float SCALE_PER_STEP = 0.2F;
 
-    private final Screen parent;
     private final List<IProgWidget> progWidgets;
     private final int guiLeft, guiTop;
     private final int startX, startY, areaWidth, areaHeight;
@@ -64,9 +59,8 @@ public class ProgrammerWidgetAreaRenderer {
     private int totalErrors = 0;
     private int totalWarnings = 0;
 
-    public ProgrammerWidgetAreaRenderer(Screen parent, List<IProgWidget> progWidgets, int guiLeft, int guiTop,
+    public ProgrammerWidgetAreaRenderer(List<IProgWidget> progWidgets, int guiLeft, int guiTop,
                                         Rect2i bounds, double translatedX, double translatedY, int lastZoom) {
-        this.parent = parent;
         this.progWidgets = progWidgets;
         this.guiLeft = guiLeft;
         this.guiTop = guiTop;
@@ -109,7 +103,7 @@ public class ProgrammerWidgetAreaRenderer {
         }
     }
 
-    public void renderForeground(PoseStack matrixStack, int x, int y, IProgWidget tooltipExcludingWidget, Font font) {
+    public void renderForeground(GuiGraphics graphics, int x, int y, IProgWidget tooltipExcludingWidget, Font font) {
         int idx = getHoveredWidgetIndex(x, y);
         if (idx >= 0) {
             IProgWidget progWidget = progWidgets.get(idx);
@@ -122,7 +116,7 @@ public class ProgrammerWidgetAreaRenderer {
                     addMessages(tooltip, widgetWarnings.get(idx), "pneumaticcraft.gui.programmer.warnings", ChatFormatting.YELLOW);
                 addAdditionalInfoToTooltip(progWidget, tooltip);
                 if (!tooltip.isEmpty()) {
-                    parent.renderTooltip(matrixStack, GuiUtils.wrapTextComponentList(tooltip, areaWidth * 2 / 3, font), x - guiLeft, y - guiTop);
+                    graphics.renderTooltip(font, GuiUtils.wrapTextComponentList(tooltip, areaWidth * 2 / 3, font), x - guiLeft, y - guiTop);
                 }
             }
         }
@@ -179,7 +173,7 @@ public class ProgrammerWidgetAreaRenderer {
         }
     }
 
-    public void render(PoseStack matrixStack, int x, int y, boolean showFlow, boolean showInfo) {
+    public void render(GuiGraphics graphics, int x, int y, boolean showFlow, boolean showInfo) {
         if (scaleScroll.getState() != lastZoom) {
             float shift = SCALE_PER_STEP * (scaleScroll.getState() - lastZoom);
             float prevScale = 2.0F - lastZoom * SCALE_PER_STEP;
@@ -188,68 +182,56 @@ public class ProgrammerWidgetAreaRenderer {
         }
         lastZoom = scaleScroll.getState();
 
-        Window mw = Minecraft.getInstance().getWindow();
-        double sf = mw.getGuiScale();
-        GL11.glScissor((int)((guiLeft + startX) * mw.getGuiScale()), (int)(mw.getGuiScaledHeight() * sf - areaHeight * sf - (guiTop + startY) * sf), (int)(areaWidth * sf), (int)(areaHeight * sf));
-        GL11.glEnable(GL11.GL_SCISSOR_TEST);
+        graphics.enableScissor(guiLeft + startX, guiTop + startY, guiLeft + startX + areaWidth, guiTop + startY + areaHeight);
 
-        matrixStack.pushPose();
-        matrixStack.translate(translatedX, translatedY, 0);
+        PoseStack poseStack = graphics.pose();
+
+        poseStack.pushPose();
+        poseStack.translate(translatedX, translatedY, 0);
 
         float scale = getScale();
-        matrixStack.scale(scale, scale, 1);
+        poseStack.scale(scale, scale, 1);
 
-        if (showFlow) showFlow(matrixStack);
+        if (showFlow) showFlow(graphics);
 
-        RenderSystem.enableBlend();
-        RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+//        RenderSystem.enableBlend();
+//        RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
         for (IProgWidget widget : progWidgets) {
-            matrixStack.pushPose();
-            matrixStack.translate(widget.getX() + guiLeft, widget.getY() + guiTop, 0);
-            matrixStack.scale(0.5f, 0.5f, 1.0f);
-            ProgWidgetRenderer.renderProgWidget2d(matrixStack, widget);
-            matrixStack.popPose();
+            poseStack.pushPose();
+            poseStack.translate(widget.getX() + guiLeft, widget.getY() + guiTop, 0);
+            poseStack.scale(0.5f, 0.5f, 1.0f);
+            ProgWidgetRenderer.renderProgWidget2d(graphics, widget);
+            poseStack.popPose();
         }
 
         if (widgetErrors.size() == progWidgets.size() && widgetWarnings.size() == progWidgets.size()) {
             for (int i = 0; i < progWidgets.size(); i++) {
                 if (!widgetErrors.get(i).isEmpty()) {
-                    drawBorder(matrixStack, progWidgets.get(i), 0xFFFF0000);
+                    drawBorder(graphics, progWidgets.get(i), 0xFFFF0000);
                 } else if (!widgetWarnings.get(i).isEmpty()) {
-                    drawBorder(matrixStack, progWidgets.get(i), 0xFFFFFF00);
+                    drawBorder(graphics, progWidgets.get(i), 0xFFFFFF00);
                 }
             }
         }
 
-        renderAdditionally(matrixStack);
+        renderAdditionally(graphics);
 
-        RenderSystem.disableBlend();
+//        RenderSystem.disableBlend();
 
         if (showInfo) {
             for (IProgWidget widget : progWidgets) {
-                // Set up necessary model view stack translations so item rendering happens in the right place
-                PoseStack posestack = RenderSystem.getModelViewStack();
-                posestack.pushPose();
-                posestack.translate(translatedX, translatedY, 0);
-                posestack.scale(getScale(), getScale(), 1);
-                posestack.translate(widget.getX() + guiLeft, widget.getY() + guiTop, 0);
-                posestack.scale(0.5f, 0.5f, 1.0f);
-                RenderSystem.applyModelViewMatrix();
-                ProgWidgetRenderer.doItemRendering2d(matrixStack, widget);
-                posestack.popPose();
-                RenderSystem.applyModelViewMatrix();
-
-                matrixStack.pushPose();
-                matrixStack.translate(widget.getX() + guiLeft, widget.getY() + guiTop, 0);
-                matrixStack.scale(0.5f, 0.5f, 1.0f);
-                ProgWidgetRenderer.doExtraRendering2d(matrixStack, widget);
-                matrixStack.popPose();
+                poseStack.pushPose();
+                poseStack.translate(widget.getX() + guiLeft, widget.getY() + guiTop, 0);
+                poseStack.scale(0.5f, 0.5f, 1.0f);
+                ProgWidgetRenderer.doItemRendering2d(graphics, widget);
+                ProgWidgetRenderer.doExtraRendering2d(graphics, widget);
+                poseStack.popPose();
             }
         }
 
-        matrixStack.popPose();
+        poseStack.popPose();
 
-        GL11.glDisable(GL11.GL_SCISSOR_TEST);
+        graphics.disableScissor();
     }
 
     public boolean mouseDragged(double mouseX, double mouseY, int mouseButton, double dx, double dy) {
@@ -265,43 +247,27 @@ public class ProgrammerWidgetAreaRenderer {
         return scaleScroll.mouseScrolled(mouseX, mouseY, dir);
     }
 
-    protected void renderAdditionally(PoseStack matrixStack) {
+    protected void renderAdditionally(GuiGraphics graphics) {
         // nothing; to be overridden
     }
 
-    protected void drawBorder(PoseStack matrixStack, IProgWidget widget, int color) {
-        drawBorder(matrixStack, widget, color, 0);
+    protected void drawBorder(GuiGraphics graphics, IProgWidget widget, int color) {
+        drawBorder(graphics, widget, color, 0);
     }
 
-    protected void drawBorder(PoseStack matrixStack, IProgWidget widget, int color, int inset) {
-        matrixStack.pushPose();
-        matrixStack.translate(widget.getX() + guiLeft, widget.getY() + guiTop, 0);
-        matrixStack.scale(0.5f, 0.5f, 1f);
-        vLine(matrixStack, inset, inset, widget.getHeight() - inset, color);
-        vLine(matrixStack, widget.getWidth() - inset, inset, widget.getHeight() - inset, color);
-        hLine(matrixStack, widget.getWidth() - inset, inset, inset, color);
-        hLine(matrixStack, widget.getWidth() - inset, inset, widget.getHeight() - inset, color);
-        matrixStack.popPose();
-    }
-
-    private void hLine(PoseStack matrixStack, int minX, int maxX, int y, int color) {
-        if (maxX < minX) {
-            int i = minX; minX = maxX; maxX = i;
-        }
-        GuiComponent.fill(matrixStack, minX, y, maxX + 1, y + 1, color);
-    }
-
-    private void vLine(PoseStack matrixStack, int x, int minY, int maxY, int color) {
-        if (maxY < minY) {
-            int i = minY; minY = maxY; maxY = i;
-        }
-        GuiComponent.fill(matrixStack, x, minY + 1, x + 1, maxY, color);
+    protected void drawBorder(GuiGraphics graphics, IProgWidget widget, int color, int inset) {
+        int inset2 = inset + inset;
+        graphics.pose().pushPose();
+        graphics.pose().translate(widget.getX() + guiLeft, widget.getY() + guiTop, 0);
+        graphics.pose().scale(0.5f, 0.5f, 1f);
+        graphics.renderOutline(inset, inset, widget.getWidth() - inset2, widget.getHeight() - inset2, color);
+        graphics.pose().popPose();
     }
 
     private static final float ARROW_ANGLE = (float) Math.toRadians(30);
     private static final float ARROW_SIZE = 5;
 
-    private void showFlow(PoseStack matrixStack) {
+    private void showFlow(GuiGraphics graphics) {
         RenderSystem.lineWidth(1);
 
         RenderSystem.setShader(GameRenderer::getPositionShader);
@@ -315,7 +281,7 @@ public class ProgrammerWidgetAreaRenderer {
             }
         }
 
-        Matrix4f posMat = matrixStack.last().pose();
+        Matrix4f posMat = graphics.pose().last().pose();
         for (IProgWidget widget : progWidgets) {
             if (widget instanceof IJump jump) {
                 for (String jumpLocation : jump.getPossibleJumpLocations()) {

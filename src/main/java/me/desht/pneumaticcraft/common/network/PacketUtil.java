@@ -92,7 +92,7 @@ public class PacketUtil {
      */
     @Nonnull
     public static <T extends BlockEntity> Optional<T> getBlockEntity(Player player, Class<T> cls) {
-        if (player.level.isClientSide) throw new RuntimeException("don't call this method client side!");
+        if (player.level().isClientSide) throw new RuntimeException("don't call this method client side!");
         return getBlockEntity(player, null, cls);
     }
 

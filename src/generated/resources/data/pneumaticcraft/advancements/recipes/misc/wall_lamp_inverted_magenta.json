@@ -30,5 +30,6 @@
     "recipes": [
       "pneumaticcraft:wall_lamp_inverted_magenta"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

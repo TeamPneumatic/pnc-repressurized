@@ -52,6 +52,7 @@ public class CropSupportEntity extends AbstractSemiblockEntity {
     public void tick() {
         super.tick();
 
+        Level level = level();
         if (level.random.nextDouble() < ConfigHelper.common().machines.cropSticksGrowthBoostChance.get() && !getBlockState().isAir()) {
             if (!level.isClientSide) {
                 getBlockState().tick((ServerLevel) level, getBlockPos(), level.random);
@@ -75,7 +76,7 @@ public class CropSupportEntity extends AbstractSemiblockEntity {
         }
 
         BlockPos posBelow = getBlockPos().relative(Direction.DOWN);
-        BlockState stateBelow = level.getBlockState(posBelow);
+        BlockState stateBelow = level().getBlockState(posBelow);
         return !stateBelow.isAir();
     }
 
@@ -88,7 +89,7 @@ public class CropSupportEntity extends AbstractSemiblockEntity {
             Vec3 eye = player.getEyePosition(0f);
             Vec3 end = Vec3.atCenterOf(below).add(0, 0.25, 0);
             ClipContext ctx = new ClipContext(eye, end, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, player);
-            BlockHitResult brtr = player.level.clip(ctx);
+            BlockHitResult brtr = player.level().clip(ctx);
             if (brtr.getType() == HitResult.Type.BLOCK && brtr.getBlockPos().equals(below)) {
                 return player.getItemInHand(hand).useOn(new UseOnContext(player, hand, brtr));
             }

@@ -21,9 +21,9 @@ import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.common.block.entity.ChargingStationBlockEntity;
 import me.desht.pneumaticcraft.common.block.entity.SecurityStationBlockEntity;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
-import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.drone.DroneClaimManager;
 import me.desht.pneumaticcraft.common.entity.drone.DroneEntity;
+import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.util.GlobalBlockEntityCacheManager;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.BlockPos;
@@ -57,11 +57,11 @@ public class DroneGoToChargingStation extends Goal {
             if (h.getPressure() < PneumaticValues.DRONE_LOW_PRESSURE && h.getPressure() > 0.001f) {
                 int maxDistSq = ConfigHelper.common().drones.maxDroneChargingStationSearchRange.get()
                         * ConfigHelper.common().drones.maxDroneChargingStationSearchRange.get();
-                for (ChargingStationBlockEntity station : GlobalBlockEntityCacheManager.getInstance(drone.getLevel()).getChargingStations()) {
-                    Level level = drone.getLevel();
+                for (ChargingStationBlockEntity station : GlobalBlockEntityCacheManager.getInstance(drone.level()).getChargingStations()) {
+                    Level level = drone.level();
                     BlockPos chargingPos = station.getBlockPos();
                     if (station.getLevel() == level && level.isLoaded(chargingPos) && drone.distanceToSqr(Vec3.atCenterOf(chargingPos)) <= maxDistSq) {
-                        if (DroneClaimManager.getInstance(drone.level).isClaimed(chargingPos)) {
+                        if (DroneClaimManager.getInstance(drone.level()).isClaimed(chargingPos)) {
                             drone.getDebugger().addEntry("pneumaticcraft.gui.progWidget.chargingStation.debug.claimed", chargingPos);
                         } else if (station.getPressure() <= PneumaticValues.DRONE_LOW_PRESSURE) {
                             drone.getDebugger().addEntry("pneumaticcraft.gui.progWidget.chargingStation.debug.notEnoughPressure", chargingPos);
@@ -84,7 +84,7 @@ public class DroneGoToChargingStation extends Goal {
                     || drone.getPathNavigator().isGoingToTeleport()) {
                 isExecuting = true;
                 curCharger = station;
-                DroneClaimManager.getInstance(drone.level).claim(station.getBlockPos());
+                DroneClaimManager.getInstance(drone.level()).claim(station.getBlockPos());
                 return true;
             } else {
                 drone.getDebugger().addEntry("pneumaticcraft.gui.progWidget.chargingStation.debug.cantNavigate", station.getBlockPos());
@@ -116,12 +116,12 @@ public class DroneGoToChargingStation extends Goal {
                         chargingTime = 0;
                     }
                 }
-                DroneClaimManager.getInstance(drone.level).claim(curCharger.getBlockPos());
+                DroneClaimManager.getInstance(drone.level()).claim(curCharger.getBlockPos());
             }
             return isExecuting;
         } else {
             chargingTime = 0;
-            DroneClaimManager.getInstance(drone.level).claim(curCharger.getBlockPos());
+            DroneClaimManager.getInstance(drone.level()).claim(curCharger.getBlockPos());
             return drone.isAccelerating();
         }
     }

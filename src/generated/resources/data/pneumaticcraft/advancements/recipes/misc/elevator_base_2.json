@@ -30,5 +30,6 @@
     "recipes": [
       "pneumaticcraft:elevator_base_2"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

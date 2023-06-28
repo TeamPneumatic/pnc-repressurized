@@ -48,6 +48,7 @@ import net.minecraftforge.fluids.FluidStack;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.OptionalInt;
 import java.util.stream.IntStream;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
@@ -148,7 +149,7 @@ public class AbstractLogisticsScreen<L extends AbstractLogisticsFrameEntity> ext
         WidgetAnimatedStat minAmountStat = addAnimatedStat(xlate("pneumaticcraft.gui.logistics_frame.min_amount"), new ItemStack(Blocks.CHEST), 0xFFC0C080, false);
 
         WidgetLabel minItemsLabel = new WidgetLabel(5, 20, xlate("pneumaticcraft.gui.logistics_frame.min_items"));
-        minItemsLabel.setTooltip(xlate("pneumaticcraft.gui.logistics_frame.min_items.tooltip"));
+        minItemsLabel.setTooltipText(xlate("pneumaticcraft.gui.logistics_frame.min_items.tooltip"));
         minAmountStat.addSubWidget(minItemsLabel);
         minItemsField = new WidgetTextFieldNumber(font, 5, 30, 30, 12)
                 .setRange(1, 64)
@@ -158,7 +159,7 @@ public class AbstractLogisticsScreen<L extends AbstractLogisticsFrameEntity> ext
         minAmountStat.addSubWidget(minItemsField);
 
         WidgetLabel minFluidLabel = new WidgetLabel(5, 47, xlate("pneumaticcraft.gui.logistics_frame.min_fluid"));
-        minFluidLabel.setTooltip(xlate("pneumaticcraft.gui.logistics_frame.min_fluid.tooltip"));
+        minFluidLabel.setTooltipText(xlate("pneumaticcraft.gui.logistics_frame.min_fluid.tooltip"));
         minAmountStat.addSubWidget(minFluidLabel);
         minFluidField = new WidgetTextFieldNumber(font, 5, 57, 50, 12)
                 .setRange(1, 16000)
@@ -260,7 +261,7 @@ public class AbstractLogisticsScreen<L extends AbstractLogisticsFrameEntity> ext
     }
 
     @Override
-    protected int getBackgroundTint() {
+    protected OptionalInt getBackgroundTint() {
         if (!ConfigHelper.client().general.logisticsGuiTint.get()) return super.getBackgroundTint();
 
         int c = logistics.getColor();
@@ -268,7 +269,7 @@ public class AbstractLogisticsScreen<L extends AbstractLogisticsFrameEntity> ext
         float[] hsb = TintColor.RGBtoHSB((c & 0xFF0000) >> 16, (c & 0xFF00) >> 8, c & 0xFF, null);
         TintColor color = TintColor.getHSBColor(hsb[0], hsb[1] * 0.2f, hsb[2]);
         if (hsb[2] < 0.7) color = color.brighter();
-        return color.getRGB();
+        return OptionalInt.of(color.getRGB());
     }
 
     @Override

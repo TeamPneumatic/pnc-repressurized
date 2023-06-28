@@ -24,6 +24,8 @@ import me.desht.pneumaticcraft.common.drone.IDroneBase;
 import me.desht.pneumaticcraft.common.drone.ai.DroneAIEditSign;
 import me.desht.pneumaticcraft.common.variables.TextVariableParser;
 import me.desht.pneumaticcraft.lib.Textures;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.item.DyeColor;
@@ -32,6 +34,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ProgWidgetEditSign extends ProgWidgetAreaItemBase implements ISignEditWidget {
+    private boolean backSide = false;
 
     public ProgWidgetEditSign() {
         super(ModProgWidgets.EDIT_SIGN.get());
@@ -73,4 +76,37 @@ public class ProgWidgetEditSign extends ProgWidgetAreaItemBase implements ISignE
         return index != 3;
     }
 
+    @Override
+    public boolean isSignBackSide() {
+        return backSide;
+    }
+
+    @Override
+    public void setSignBackSide(boolean backSide) {
+        this.backSide = backSide;
+    }
+
+    @Override
+    public void writeToNBT(CompoundTag tag) {
+        super.writeToNBT(tag);
+        if (backSide) tag.putBoolean("back", isSignBackSide());
+    }
+
+    @Override
+    public void readFromNBT(CompoundTag tag) {
+        super.readFromNBT(tag);
+        backSide = tag.getBoolean("back");
+    }
+
+    @Override
+    public void writeToPacket(FriendlyByteBuf buf) {
+        super.writeToPacket(buf);
+        buf.writeBoolean(backSide);
+    }
+
+    @Override
+    public void readFromPacket(FriendlyByteBuf buf) {
+        super.readFromPacket(buf);
+        backSide = buf.readBoolean();
+    }
 }

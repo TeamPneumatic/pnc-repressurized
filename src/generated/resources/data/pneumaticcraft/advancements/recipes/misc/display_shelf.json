@@ -30,5 +30,6 @@
     "recipes": [
       "pneumaticcraft:display_shelf"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

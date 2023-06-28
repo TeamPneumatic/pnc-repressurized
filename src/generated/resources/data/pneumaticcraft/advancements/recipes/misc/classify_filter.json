@@ -30,5 +30,6 @@
     "recipes": [
       "pneumaticcraft:classify_filter"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

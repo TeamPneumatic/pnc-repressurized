@@ -18,7 +18,6 @@
 package me.desht.pneumaticcraft.client.gui.tubemodule;
 
 import com.google.common.collect.ImmutableList;
-import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.api.misc.Symbols;
 import me.desht.pneumaticcraft.client.gui.widget.*;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
@@ -30,6 +29,7 @@ import me.desht.pneumaticcraft.common.tubemodules.RedstoneModule.EnumRedstoneDir
 import me.desht.pneumaticcraft.common.tubemodules.RedstoneModule.Operation;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
@@ -190,12 +190,12 @@ public class RedstoneModuleScreen extends AbstractTubeModuleScreen<RedstoneModul
     }
 
     @Override
-    public void render(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
-        super.render(matrixStack, mouseX, mouseY, partialTicks);
+    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+        super.render(graphics, mouseX, mouseY, partialTicks);
 
         int yBase = guiTop + ySize - lowerText.size() * font.lineHeight - 10;
         for (int i = 0; i < lowerText.size(); i++) {
-            font.draw(matrixStack, lowerText.get(i), guiLeft + 10, yBase + i * font.lineHeight, 0xFF404040);
+            graphics.drawString(font, lowerText.get(i), guiLeft + 10, yBase + i * font.lineHeight, 0xFF404040, false);
         }
     }
 

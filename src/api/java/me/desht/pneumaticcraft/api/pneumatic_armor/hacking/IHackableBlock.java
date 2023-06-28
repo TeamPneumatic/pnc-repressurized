@@ -139,8 +139,8 @@ public interface IHackableBlock {
      * @return an optional ray trace result
      */
     default Optional<BlockHitResult> fakeRayTrace(Player player, BlockPos targetPos) {
-        BlockState state = player.level.getBlockState(targetPos);
-        AABB aabb = state.getShape(player.level, targetPos).bounds().move(targetPos);
+        BlockState state = player.level().getBlockState(targetPos);
+        AABB aabb = state.getShape(player.level(), targetPos).bounds().move(targetPos);
         Optional<Vec3> hit = aabb.clip(player.getEyePosition(1f), aabb.getCenter());
         Direction dir = Direction.orderedByNearest(player)[0];
         return hit.map(v -> new BlockHitResult(v, dir.getOpposite(), targetPos, false));

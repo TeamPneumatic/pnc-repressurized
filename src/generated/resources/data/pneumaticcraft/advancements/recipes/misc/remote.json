@@ -30,5 +30,6 @@
     "recipes": [
       "pneumaticcraft:remote"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

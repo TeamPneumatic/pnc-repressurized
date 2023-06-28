@@ -30,5 +30,6 @@
     "recipes": [
       "pneumaticcraft:network_node"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

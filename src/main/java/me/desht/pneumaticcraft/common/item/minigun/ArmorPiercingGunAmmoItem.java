@@ -43,7 +43,7 @@ public class ArmorPiercingGunAmmoItem extends AbstractGunAmmoItem {
     @Override
     protected DamageSource getDamageSource(Minigun minigun) {
         return minigun.dispenserWeightedPercentage(ConfigHelper.common().minigun.apAmmoIgnoreArmorChance.get()) ?
-                PNCDamageSource.minigunAP(minigun.getPlayer().getLevel(), minigun.getPlayer()) :
+                PNCDamageSource.minigunAP(minigun.getPlayer().level(), minigun.getPlayer()) :
                 super.getDamageSource(minigun);
     }
 }

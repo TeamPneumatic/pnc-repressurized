@@ -15,13 +15,12 @@
  *     along with pnc-repressurized.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.desht.pneumaticcraft.common.util.upgrade;
+package me.desht.pneumaticcraft.common.upgrades;
 
-import me.desht.pneumaticcraft.api.item.IUpgradeRegistry.Builder;
+import me.desht.pneumaticcraft.api.upgrade.IUpgradeRegistry.Builder;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.core.ModEntityTypes;
 import me.desht.pneumaticcraft.common.core.ModItems;
-import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.sensor.SensorHandler;
 import me.desht.pneumaticcraft.lib.PneumaticValues;

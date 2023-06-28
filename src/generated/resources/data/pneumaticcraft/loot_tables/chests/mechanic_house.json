@@ -231,5 +231,6 @@
       ],
       "rolls": 4.0
     }
-  ]
+  ],
+  "random_sequence": "pneumaticcraft:chests/mechanic_house"
 }

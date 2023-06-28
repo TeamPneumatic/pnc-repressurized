@@ -17,21 +17,18 @@
 
 package me.desht.pneumaticcraft.client.gui.programmer;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.client.gui.InventorySearcherScreen;
 import me.desht.pneumaticcraft.client.gui.ItemSearcherScreen;
 import me.desht.pneumaticcraft.client.gui.ProgrammerScreen;
 import me.desht.pneumaticcraft.client.gui.widget.*;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
-import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.drone.progwidgets.IProgWidget.WidgetDifficulty;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetItemFilter;
 import me.desht.pneumaticcraft.common.thirdparty.ModNameCache;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
-import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.item.BlockItem;
@@ -172,16 +169,15 @@ public class ProgWidgetItemFilterScreen extends AbstractProgWidgetScreen<ProgWid
     }
 
     @Override
-    public void render(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
-        super.render(matrixStack, mouseX, mouseY, partialTicks);
+    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+        super.render(graphics, mouseX, mouseY, partialTicks);
 
         if (itemRad.isChecked()) {
-            GuiUtils.bindTexture(getTexture());
-            blit(matrixStack, guiLeft + itemX, guiTop + 51, 186, 0, 18, 18);
+            graphics.blit(getTexture(), guiLeft + itemX, guiTop + 51, 186, 0, 18, 18);
             if (!progWidget.getRawFilter().isEmpty()) {
-                Minecraft.getInstance().getItemRenderer().renderGuiItem(matrixStack, progWidget.getRawFilter(), guiLeft + itemX + 1, guiTop + 52);
+                graphics.renderItem(progWidget.getRawFilter(), guiLeft + itemX + 1, guiTop + 52);
                 if (mouseX >= guiLeft + itemX && mouseX <= guiLeft + itemX + 16 && mouseY >= guiTop + 51 && mouseY <= guiTop + 67) {
-                    renderTooltip(matrixStack, progWidget.getRawFilter(), mouseX, mouseY);
+                    graphics.renderTooltip(font, progWidget.getRawFilter(), mouseX, mouseY);
                 }
             }
         }

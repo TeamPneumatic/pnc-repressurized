@@ -30,5 +30,6 @@
     "recipes": [
       "pneumaticcraft:stone_base"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

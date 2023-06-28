@@ -26,5 +26,6 @@
       "name": "reinforced_pressure_tube",
       "rolls": 1.0
     }
-  ]
+  ],
+  "random_sequence": "pneumaticcraft:blocks/reinforced_pressure_tube"
 }

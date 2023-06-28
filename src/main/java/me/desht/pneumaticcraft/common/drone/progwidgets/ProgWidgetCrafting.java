@@ -33,6 +33,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.inventory.CraftingContainer;
+import net.minecraft.world.inventory.TransientCraftingContainer;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingRecipe;
@@ -118,7 +119,7 @@ public class ProgWidgetCrafting extends ProgWidget implements ICraftingWidget, I
     @Override
     public CraftingContainer getCraftingGrid() {
         usingVariables = false;
-        CraftingContainer invCrafting = new CraftingContainer(new DummyContainer(), 3, 3);
+        CraftingContainer invCrafting = new TransientCraftingContainer(new DummyContainer(), 3, 3);
         for (int y = 0; y < 3; y++) {
             ProgWidgetItemFilter itemFilter = (ProgWidgetItemFilter) getConnectedParameters()[y];
             for (int x = 0; x < 3 && itemFilter != null; x++) {

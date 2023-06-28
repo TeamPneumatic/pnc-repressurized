@@ -21,6 +21,7 @@ import me.desht.pneumaticcraft.client.gui.RemoteEditorScreen;
 import me.desht.pneumaticcraft.client.gui.remote.actionwidget.ActionWidgetButton;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetLabel;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTextFieldNumber;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 
@@ -53,17 +54,17 @@ public class RemoteButtonOptionScreen extends RemoteVariableOptionScreen<ActionW
 
         xValueField = new WidgetTextFieldNumber(font, guiLeft + 20, guiTop + 105, 38, 10);
         xValueField.setValue(actionWidget.settingCoordinate.getX());
-        xValueField.setTooltip(valueTooltip);
+        xValueField.setTooltip(Tooltip.create(valueTooltip));
         addRenderableWidget(xValueField);
 
         yValueField = new WidgetTextFieldNumber(font, guiLeft + 78, guiTop + 105, 38, 10);
         yValueField.setValue(actionWidget.settingCoordinate.getY());
-        yValueField.setTooltip(valueTooltip);
+        yValueField.setTooltip(Tooltip.create(valueTooltip));
         addRenderableWidget(yValueField);
 
         zValueField = new WidgetTextFieldNumber(font, guiLeft + 136, guiTop + 105, 38, 10);
         zValueField.setValue(actionWidget.settingCoordinate.getZ());
-        zValueField.setTooltip(valueTooltip);
+        zValueField.setTooltip(Tooltip.create(valueTooltip));
         addRenderableWidget(zValueField);
 
         widthField = new WidgetTextFieldNumber(font, xOff, guiTop + 122, 35, 10)

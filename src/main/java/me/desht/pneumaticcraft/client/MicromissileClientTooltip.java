@@ -1,15 +1,13 @@
 package me.desht.pneumaticcraft.client;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.item.MicromissilesItem;
 import me.desht.pneumaticcraft.common.util.NBTUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.nbt.CompoundTag;
 import org.joml.Matrix4f;
 
@@ -31,7 +29,7 @@ public record MicromissileClientTooltip(MicromissilesItem.Tooltip component) imp
     }
 
     @Override
-    public void renderImage(Font pFont, int pMouseX, int pMouseY, PoseStack pPoseStack, ItemRenderer pItemRenderer) {
+    public void renderImage(Font pFont, int pMouseX, int pMouseY, GuiGraphics graphics) {
         if (NBTUtils.hasTag(component.stack(), MicromissilesItem.NBT_TOP_SPEED)) {
             pMouseY += 3;
             int vSpace = pFont.lineHeight + 1;
@@ -41,13 +39,13 @@ public record MicromissileClientTooltip(MicromissilesItem.Tooltip component) imp
             int barX = width + 5;
             int barY = 0;
             int barW = getWidth(pFont) - width - 10;
-            pPoseStack.pushPose();
-            pPoseStack.translate(pMouseX, pMouseY, 0);
+            graphics.pose().pushPose();
+            graphics.pose().translate(pMouseX, pMouseY, 0);
             CompoundTag tag = Objects.requireNonNull(component.stack().getTag());
-            drawLine(pPoseStack, barX, barY, barW, tag.getFloat(MicromissilesItem.NBT_TOP_SPEED));
-            drawLine(pPoseStack, barX, barY + vSpace, barW, tag.getFloat(MicromissilesItem.NBT_TURN_SPEED));
-            drawLine(pPoseStack, barX, barY + 2 * vSpace, barW, tag.getFloat(MicromissilesItem.NBT_DAMAGE));
-            pPoseStack.popPose();
+            drawLine(graphics, barX, barY, barW, tag.getFloat(MicromissilesItem.NBT_TOP_SPEED));
+            drawLine(graphics, barX, barY + vSpace, barW, tag.getFloat(MicromissilesItem.NBT_TURN_SPEED));
+            drawLine(graphics, barX, barY + 2 * vSpace, barW, tag.getFloat(MicromissilesItem.NBT_DAMAGE));
+            graphics.pose().popPose();
         }
     }
 
@@ -61,12 +59,12 @@ public record MicromissileClientTooltip(MicromissilesItem.Tooltip component) imp
         return 150;
     }
 
-    private static void drawLine(PoseStack matrixStack, int x, int y, int totalWidth, float amount) {
+    private static void drawLine(GuiGraphics graphics, int x, int y, int totalWidth, float amount) {
         int w1 = (int)(totalWidth * amount);
-        GuiComponent.fill(matrixStack, x, y, x + totalWidth, y + 9, 0xFF181818);
-        GuiComponent.fill(matrixStack, x, y + 1, x + w1, y + 8, 0xFF00C000);
+        graphics.fill(x, y, x + totalWidth, y + 9, 0xFF181818);
+        graphics.fill(x, y + 1, x + w1, y + 8, 0xFF00C000);
         for (int i = x + 3; i < x + w1; i += 4) {
-            GuiComponent.fill(matrixStack, i, y + 1, i + 1, y + 8, 0xFF006000);
+            graphics.fill(i, y + 1, i + 1, y + 8, 0xFF006000);
         }
     }
 }

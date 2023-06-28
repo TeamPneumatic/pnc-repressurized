@@ -22,13 +22,12 @@ import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntLists;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
-import me.desht.pneumaticcraft.api.item.IUpgradeItem;
-import me.desht.pneumaticcraft.api.item.PNCUpgrade;
 import me.desht.pneumaticcraft.api.lib.NBTKeys;
 import me.desht.pneumaticcraft.api.misc.Symbols;
-import me.desht.pneumaticcraft.common.core.ModUpgrades;
-import me.desht.pneumaticcraft.common.util.upgrade.ApplicableUpgradesDB;
-import me.desht.pneumaticcraft.common.util.upgrade.UpgradeCache;
+import me.desht.pneumaticcraft.api.upgrade.IUpgradeItem;
+import me.desht.pneumaticcraft.api.upgrade.PNCUpgrade;
+import me.desht.pneumaticcraft.common.upgrades.ApplicableUpgradesDB;
+import me.desht.pneumaticcraft.common.upgrades.UpgradeCache;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -128,7 +127,7 @@ public class UpgradableItemUtils {
         if (stack.getTag() != null) {
             validateUpgradeCache(stack);
             CompoundTag subTag = Objects.requireNonNull(stack.getTag()).getCompound(NBT_UPGRADE_CACHE_TAG);
-            String key = PneumaticCraftUtils.modDefaultedString(PneumaticCraftUtils.getRegistryName(ModUpgrades.UPGRADES.get(), upgrade).orElseThrow());
+            String key = PneumaticCraftUtils.modDefaultedString(upgrade.getId());
             return subTag.getInt(key);
         }
         return 0;
@@ -148,7 +147,7 @@ public class UpgradableItemUtils {
             validateUpgradeCache(stack);
             CompoundTag subTag = stack.getTag().getCompound(NBT_UPGRADE_CACHE_TAG);
             for (PNCUpgrade upgrade : upgradeList) {
-                String key = PneumaticCraftUtils.modDefaultedString(PneumaticCraftUtils.getRegistryName(ModUpgrades.UPGRADES.get(), upgrade).orElseThrow());
+                String key = PneumaticCraftUtils.modDefaultedString(upgrade.getId());
                 res.add(subTag.getInt(key));
             }
         }

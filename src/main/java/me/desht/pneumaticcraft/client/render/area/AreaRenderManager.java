@@ -115,8 +115,8 @@ public enum AreaRenderManager {
     public void tickEnd(TickEvent.ClientTickEvent event) {
         Player player = Minecraft.getInstance().player;
         if (player != null) {
-            if (player.level != level) {
-                level = player.level;
+            if (player.level() != level) {
+                level = player.level();
                 showHandlers.clear();
             } else {
                 if (event.phase == TickEvent.Phase.END) {
@@ -131,7 +131,7 @@ public enum AreaRenderManager {
         if (CommonArmorHandler.getHandlerForPlayer().upgradeUsable(handler, true)) {
             BlockPos pos = ClientArmorRegistry.getInstance().getClientHandler(handler, CoordTrackClientHandler.class).getTrackedPos();
             if (pos != null) {
-                float progress = (player.level.getGameTime() % 20 + partialTicks) / 20;
+                float progress = (player.level().getGameTime() % 20 + partialTicks) / 20;
                 float g = progress < 0.5F ? progress + 0.5F : 1.5F - progress;
                 int col = 0xA00000FF | (int)(g * 255) << 8;
                 Vec3 targetVec = Vec3.atCenterOf(pos);

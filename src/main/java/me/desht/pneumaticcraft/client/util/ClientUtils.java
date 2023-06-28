@@ -109,7 +109,7 @@ public class ClientUtils {
                 .getClientHandler(CommonUpgradeHandlers.entityTrackerHandler, EntityTrackerClientHandler.class)
                 .getTargetsStream()
                 .filter(target -> target.entity == drone)
-                .forEach(target -> target.getDroneAIRenderer(drone).addBlackListEntry(drone.level, pos));
+                .forEach(target -> target.getDroneAIRenderer(drone).addBlackListEntry(drone.level(), pos));
     }
 
     public static boolean isKeyDown(int keyCode) {
@@ -208,16 +208,6 @@ public class ClientUtils {
         Window mw = Minecraft.getInstance().getWindow();
         return mw.getGuiScaledWidth() > 700 && mw.getGuiScaledHeight() > 512;
     }
-
-//    public static float getBrightnessAtWorldHeight() {
-//        Player player = getClientPlayer();
-//        BlockPos pos = new BlockPos.MutableBlockPos(player.getX(), getClientLevel().getMaxBuildHeight(), player.getZ());
-//        if (player.level.isLoaded(pos)) {
-//            return player.level.dimensionType().brightness(player.level.getMaxLocalRawBrightness(pos));
-//        } else {
-//            return 0.0F;
-//        }
-//    }
 
     public static int getLightAt(BlockPos pos) {
         return LevelRenderer.getLightColor(getClientLevel(), pos);

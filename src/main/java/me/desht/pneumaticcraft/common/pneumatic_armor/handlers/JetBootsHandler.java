@@ -17,14 +17,13 @@
 
 package me.desht.pneumaticcraft.common.pneumatic_armor.handlers;
 
-import me.desht.pneumaticcraft.api.item.PNCUpgrade;
 import me.desht.pneumaticcraft.api.pneumatic_armor.BaseArmorUpgradeHandler;
 import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorExtensionData;
 import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorHandler;
+import me.desht.pneumaticcraft.api.upgrade.PNCUpgrade;
 import me.desht.pneumaticcraft.client.sound.MovingSounds;
 import me.desht.pneumaticcraft.common.advancements.AdvancementTriggers;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
-import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.item.PneumaticArmorItem;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketPlayMovingSound;
@@ -32,6 +31,7 @@ import me.desht.pneumaticcraft.common.network.PacketPlayMovingSound.MovingSoundF
 import me.desht.pneumaticcraft.common.network.PacketSpawnParticle;
 import me.desht.pneumaticcraft.common.particle.AirParticleData;
 import me.desht.pneumaticcraft.common.pneumatic_armor.JetBootsStateTracker;
+import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.ByteTag;
@@ -106,7 +106,7 @@ public class JetBootsHandler extends BaseArmorUpgradeHandler<JetBootsHandler.Jet
                     Vec3 lookVec = player.getLookAngle().scale(0.3 * jetbootsCount);
                     jbLocal.updateAccel(lookVec);
                     lookVec = jbLocal.getEffectiveMotion(lookVec, player.isFallFlying());
-                    player.setDeltaMovement(lookVec.x, player.isOnGround() ? 0 : lookVec.y, lookVec.z);
+                    player.setDeltaMovement(lookVec.x, player.onGround() ? 0 : lookVec.y, lookVec.z);
                     jetbootsAirUsage = jbLocal.calcAirUsage(jetbootsCount);
                 }
                 if (player.isInWater()) jetbootsAirUsage *= 4;
@@ -133,7 +133,7 @@ public class JetBootsHandler extends BaseArmorUpgradeHandler<JetBootsHandler.Jet
             }
         } else {
             // insufficient pressure!
-            if (jbState.isEnabled() && !player.isOnGround() && !player.isFallFlying() && jbLocal.isHovering()) {
+            if (jbState.isEnabled() && !player.onGround() && !player.isFallFlying() && jbLocal.isHovering()) {
                 // still active and in the air: using minimal air here keeps the boots running
                 // and thus avoids triggering multiple looping sounds (see "jet boots starting up" code below)
                 jetbootsAirUsage = 1;
@@ -141,17 +141,17 @@ public class JetBootsHandler extends BaseArmorUpgradeHandler<JetBootsHandler.Jet
             setJetBootsActive(commonArmorHandler,false);
         }
 
-        if (jetbootsAirUsage != 0 && !player.level.isClientSide) {
+        if (jetbootsAirUsage != 0 && !player.level().isClientSide) {
             if (jbLocal.getPrevJetBootsAirUsage() == 0) {
                 // jet boots starting up
-                NetworkHandler.sendToAllTracking(new PacketPlayMovingSound(MovingSounds.Sound.JET_BOOTS, MovingSoundFocus.of(player)), player.level, player.blockPosition());
+                NetworkHandler.sendToAllTracking(new PacketPlayMovingSound(MovingSounds.Sound.JET_BOOTS, MovingSoundFocus.of(player)), player.level(), player.blockPosition());
                 AdvancementTriggers.FLIGHT.trigger((ServerPlayer) player);
             }
             if (player.horizontalCollision) {
                 double vel = player.getDeltaMovement().length();
-                if (player.level.getDifficulty() == Difficulty.HARD) {
+                if (player.level().getDifficulty() == Difficulty.HARD) {
                     vel *= 2;
-                } else if (player.level.getDifficulty() == Difficulty.NORMAL) {
+                } else if (player.level().getDifficulty() == Difficulty.NORMAL) {
                     vel *= 1.5;
                 }
                 if (vel > 2) {
@@ -166,12 +166,12 @@ public class JetBootsHandler extends BaseArmorUpgradeHandler<JetBootsHandler.Jet
     }
 
     private boolean isOnGround(Player player) {
-        if (player.isOnGround()) return true;
-        if (!player.level.isClientSide) {
+        if (player.onGround()) return true;
+        if (!player.level().isClientSide) {
             // isOnGround() on server can be unreliable, especially if player flew into the ground
             // this little kludge makes sure jetboots properly switch off on both client and server
             BlockPos pos = player.getOnPos();
-            VoxelShape shape = player.level.getBlockState(pos).getCollisionShape(player.level, pos);
+            VoxelShape shape = player.level().getBlockState(pos).getCollisionShape(player.level(), pos);
             if (!shape.isEmpty()) {
                 return player.getBoundingBox().move(0, -0.01, 0).intersects(shape.bounds().move(pos));
             }
@@ -233,10 +233,10 @@ public class JetBootsHandler extends BaseArmorUpgradeHandler<JetBootsHandler.Jet
         if (!newActive) {
             jbLocal.resetActive();
             if (jbLocal.isFlightStabilizers() && jbs.isActive() && !jbs.isBuilderMode()) {
-                if (!player.level.isClientSide) {
+                if (!player.level().isClientSide) {
                     double l = Math.pow(player.getDeltaMovement().length(), 1.65);
                     commonArmorHandler.addAir(EquipmentSlot.FEET, (int) (l * -50));
-                    NetworkHandler.sendToAllTracking(new PacketSpawnParticle(AirParticleData.DENSE, player.getX(), player.getY(), player.getZ(), 0, 0, 0, (int) (l * 2), 0, 0, 0), player.level, player.blockPosition());
+                    NetworkHandler.sendToAllTracking(new PacketSpawnParticle(AirParticleData.DENSE, player.getX(), player.getY(), player.getZ(), 0, 0, 0, (int) (l * 2), 0, 0, 0), player.level(), player.blockPosition());
                 }
                 player.setDeltaMovement(Vec3.ZERO);
             }

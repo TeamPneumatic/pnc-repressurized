@@ -30,5 +30,6 @@
     "recipes": [
       "pneumaticcraft:scuba_upgrade"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

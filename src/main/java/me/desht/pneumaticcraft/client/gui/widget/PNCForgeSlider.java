@@ -1,9 +1,6 @@
 package me.desht.pneumaticcraft.client.gui.widget;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
-import net.minecraftforge.client.gui.ScreenUtils;
 import net.minecraftforge.client.gui.widget.ForgeSlider;
 
 import java.util.function.Consumer;

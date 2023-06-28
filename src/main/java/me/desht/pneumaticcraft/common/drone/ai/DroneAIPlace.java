@@ -53,7 +53,7 @@ public class DroneAIPlace<W extends ProgWidgetAreaItemBase /*& IBlockOrdered & I
 
     @Override
     protected boolean isValidPosition(BlockPos pos) {
-        if (drone.world().getBlockState(pos).getMaterial().isReplaceable()) {
+        if (drone.world().getBlockState(pos).canBeReplaced()) {
             if (Vec3.atCenterOf(pos).distanceToSqr(drone.getDronePos()) < 1.2) {
                 // too close - placement could be blocked by the drone
                 return false;
@@ -98,7 +98,7 @@ public class DroneAIPlace<W extends ProgWidgetAreaItemBase /*& IBlockOrdered & I
                 ItemStack droneStack = drone.getInv().getStackInSlot(slot);
                 if (droneStack.getItem() instanceof BlockItem blockItem
                         && progWidget.isItemValidForFilters(droneStack)
-                        && worldCache.getBlockState(pos).getMaterial().isReplaceable())
+                        && worldCache.getBlockState(pos).canBeReplaced())
                 {
                     BlockPlaceContext ctx = getPlacementContext(pos, pos, droneStack);
                     if (progWidget.getCachedAreaSet().contains(ctx.getClickedPos())) {
@@ -142,7 +142,7 @@ public class DroneAIPlace<W extends ProgWidgetAreaItemBase /*& IBlockOrdered & I
 
     private static class DroneBlockItemUseContext extends UseOnContext {
         protected DroneBlockItemUseContext(Player droneFakePlayer, ItemStack heldItem, BlockHitResult rayTraceResultIn) {
-            super(droneFakePlayer.level, droneFakePlayer, InteractionHand.MAIN_HAND, heldItem, rayTraceResultIn);
+            super(droneFakePlayer.level(), droneFakePlayer, InteractionHand.MAIN_HAND, heldItem, rayTraceResultIn);
         }
     }
 }

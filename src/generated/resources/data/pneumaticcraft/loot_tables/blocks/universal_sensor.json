@@ -26,5 +26,6 @@
       "name": "universal_sensor",
       "rolls": 1.0
     }
-  ]
+  ],
+  "random_sequence": "pneumaticcraft:blocks/universal_sensor"
 }

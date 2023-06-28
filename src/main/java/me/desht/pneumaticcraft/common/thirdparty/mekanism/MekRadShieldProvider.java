@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.common.thirdparty.mekanism;
 
-import me.desht.pneumaticcraft.common.core.ModUpgrades;
+import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import mekanism.api.radiation.capability.IRadiationShielding;
 import net.minecraft.core.Direction;

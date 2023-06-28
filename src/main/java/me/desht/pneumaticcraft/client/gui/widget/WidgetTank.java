@@ -17,12 +17,13 @@
 
 package me.desht.pneumaticcraft.client.gui.widget;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.thirdparty.ModNameCache;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
@@ -34,6 +35,7 @@ import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
 
 import java.text.NumberFormat;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -43,7 +45,7 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
  * This class is derived from BluePower and edited by MineMaarten:
  * https://github.com/Qmunity/BluePower/blob/FluidCrafting/src/main/java/com/bluepowermod/client/gui/widget/WidgetTank.java
  */
-public class WidgetTank extends AbstractWidget implements ITooltipProvider {
+public class WidgetTank extends AbstractWidget {
     private final IFluidTank tank;
 
     public WidgetTank(int x, int y, IFluidTank tank) {
@@ -72,32 +74,34 @@ public class WidgetTank extends AbstractWidget implements ITooltipProvider {
     }
 
     @Override
-    public void renderWidget(PoseStack matrixStack, int mouseX, int mouseY, float partialTick) {
+    public void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
         int x = getX(), y = getY();
-        GuiUtils.drawFluid(matrixStack, new Rect2i(x, y, width, height), getFluid(), getTank());
+        GuiUtils.drawFluid(graphics, new Rect2i(x, y, width, height), getFluid(), getTank());
 
-        matrixStack.pushPose();
-        matrixStack.translate(0, 0, 300);
+        graphics.pose().pushPose();
+        graphics.pose().translate(0, 0, 300);
         for (int i = 3; i < height - 1; i += 4) {
             int width = (i - 3) % 20 == 0 ? 16 : 2;
-            GuiComponent.fill(matrixStack, x, y + i, x + width, y + i + 1, 0xFF2F2F2F);
+            graphics.fill(x, y + i, x + width, y + i + 1, 0xFF2F2F2F);
         }
-        matrixStack.popPose();
+        graphics.pose().popPose();
+
+        setTooltip(Tooltip.create(PneumaticCraftUtils.combineComponents(makeTooltip())));
     }
 
-    @Override
-    public void addTooltip(double mouseX, double mouseY, List<Component> curTip, boolean shift) {
+    public List<Component> makeTooltip() {
         Fluid fluid = tank.getFluid().getFluid();
         String amt = NumberFormat.getNumberInstance(Locale.getDefault()).format(tank.getFluidAmount());
         String capacity = NumberFormat.getNumberInstance(Locale.getDefault()).format(tank.getCapacity());
-
-        curTip.add(Component.literal(amt + " / " + capacity + " mB"));
+        List<Component> l = new ArrayList<>();
+        l.add(Component.literal(amt + " / " + capacity + " mB"));
         if (fluid == Fluids.EMPTY || tank.getCapacity() == 0 || tank.getFluidAmount() == 0) {
-            curTip.add(xlate("pneumaticcraft.gui.misc.empty").withStyle(ChatFormatting.GRAY));
+            l.add(xlate("pneumaticcraft.gui.misc.empty").withStyle(ChatFormatting.GRAY));
         } else {
-            curTip.add(new FluidStack(fluid, tank.getFluidAmount()).getDisplayName().copy().withStyle(ChatFormatting.GRAY));
-            curTip.add(Component.literal(ModNameCache.getModName(fluid)).withStyle(ChatFormatting.BLUE, ChatFormatting.ITALIC));
+            l.add(new FluidStack(fluid, tank.getFluidAmount()).getDisplayName().copy().withStyle(ChatFormatting.GRAY));
+            l.add(Component.literal(ModNameCache.getModName(fluid)).withStyle(ChatFormatting.BLUE, ChatFormatting.ITALIC));
         }
+        return l;
     }
 
     public FluidStack getFluid() {

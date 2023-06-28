@@ -141,9 +141,9 @@ public class TumblingBlockEntity extends ThrowableProjectile {
 
         super.tick();  // handles nearly all of the in-flight logic
 
-        if (!level.isClientSide) {
+        if (!level().isClientSide) {
             BlockPos blockpos1 = blockPosition(); //new BlockPos(this);
-            if (!onGround && (tickCount > 100 && (blockpos1.getY() < 1 || blockpos1.getY() > 256) || tickCount > 600)) {
+            if (!onGround() && (tickCount > 100 && (blockpos1.getY() < 1 || blockpos1.getY() > 256) || tickCount > 600)) {
                 dropAsItem();
                 discard();
             }
@@ -152,7 +152,7 @@ public class TumblingBlockEntity extends ThrowableProjectile {
 
     @Override
     protected void onHit(HitResult result) {
-        if (!level.isClientSide) {
+        if (!level().isClientSide) {
             discard();
             if (result.getType() == HitResult.Type.BLOCK) {
                 if (!tryPlaceAsBlock((BlockHitResult) result)) {
@@ -173,12 +173,12 @@ public class TumblingBlockEntity extends ThrowableProjectile {
         Direction face = brtr.getDirection();
         // getOwner = getThrower
         Player placer = getOwner() instanceof Player ? (Player) getOwner() : getFakePlayer();
-        BlockState state = level.getBlockState(pos0);
+        BlockState state = level().getBlockState(pos0);
         BlockPlaceContext ctx = new LocalBlockPlaceContext(new UseOnContext(placer, InteractionHand.MAIN_HAND, brtr));
         BlockPos pos = state.canBeReplaced(ctx) ? pos0 : pos0.relative(face);
 
-        if (level.getBlockState(pos).canBeReplaced(ctx)) {
-            BlockSnapshot snapshot = BlockSnapshot.create(level.dimension(), level, pos);
+        if (level().getBlockState(pos).canBeReplaced(ctx)) {
+            BlockSnapshot snapshot = BlockSnapshot.create(level().dimension(), level(), pos);
             if (!ForgeEventFactory.onBlockPlace(placer, snapshot, face)) {
                 InteractionResult res = ((BlockItem) stack.getItem()).place(ctx);
                 return res == InteractionResult.SUCCESS || res == InteractionResult.CONSUME;
@@ -188,14 +188,14 @@ public class TumblingBlockEntity extends ThrowableProjectile {
     }
 
     private void dropAsItem() {
-        if (this.level.getGameRules().getBoolean(GameRules.RULE_DOENTITYDROPS)) {
+        if (this.level().getGameRules().getBoolean(GameRules.RULE_DOENTITYDROPS)) {
             spawnAtLocation(getStack().copy(), 0.0F);
         }
     }
 
     private Player getFakePlayer() {
         if (fakePlayer == null) {
-            fakePlayer = FakePlayerFactory.get((ServerLevel) level, new GameProfile(null, "[Tumbling Block]"));
+            fakePlayer = FakePlayerFactory.get((ServerLevel) level(), new GameProfile(null, "[Tumbling Block]"));
         }
         fakePlayer.setPos(getX(), getY(), getZ());
         fakePlayer.setItemInHand(InteractionHand.MAIN_HAND, getStack());

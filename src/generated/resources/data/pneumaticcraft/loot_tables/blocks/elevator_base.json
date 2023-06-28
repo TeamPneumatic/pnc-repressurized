@@ -26,5 +26,6 @@
       "name": "elevator_base",
       "rolls": 1.0
     }
-  ]
+  ],
+  "random_sequence": "pneumaticcraft:blocks/elevator_base"
 }

@@ -25,12 +25,12 @@ import me.desht.pneumaticcraft.api.drone.IDroneRegistry;
 import me.desht.pneumaticcraft.api.fuel.IFuelRegistry;
 import me.desht.pneumaticcraft.api.heat.IHeatRegistry;
 import me.desht.pneumaticcraft.api.item.IItemRegistry;
-import me.desht.pneumaticcraft.api.item.IUpgradeRegistry;
 import me.desht.pneumaticcraft.api.misc.DamageSources;
 import me.desht.pneumaticcraft.api.misc.IMiscHelpers;
 import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorRegistry;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachineFactory;
 import me.desht.pneumaticcraft.api.universal_sensor.ISensorRegistry;
+import me.desht.pneumaticcraft.api.upgrade.IUpgradeRegistry;
 import me.desht.pneumaticcraft.api.wrench.IWrenchRegistry;
 import me.desht.pneumaticcraft.client.ClientRegistryImpl;
 import me.desht.pneumaticcraft.client.pneumatic_armor.ClientArmorRegistry;
@@ -43,10 +43,11 @@ import me.desht.pneumaticcraft.common.pressure.AirHandlerMachineFactory;
 import me.desht.pneumaticcraft.common.recipes.PneumaticRecipeRegistry;
 import me.desht.pneumaticcraft.common.sensor.SensorHandler;
 import me.desht.pneumaticcraft.common.thirdparty.ModdedWrenchUtils;
-import me.desht.pneumaticcraft.common.util.upgrade.ApplicableUpgradesDB;
+import me.desht.pneumaticcraft.common.upgrades.ApplicableUpgradesDB;
 
-public class PneumaticCraftAPIHandler implements PneumaticRegistry.IPneumaticCraftInterface {
-    private final static PneumaticCraftAPIHandler INSTANCE = new PneumaticCraftAPIHandler();
+public enum PneumaticCraftAPIHandler implements PneumaticRegistry.IPneumaticCraftInterface {
+    INSTANCE;
+//    private final static PneumaticCraftAPIHandler INSTANCE = new PneumaticCraftAPIHandler();
 
     public static PneumaticCraftAPIHandler getInstance() {
         return INSTANCE;

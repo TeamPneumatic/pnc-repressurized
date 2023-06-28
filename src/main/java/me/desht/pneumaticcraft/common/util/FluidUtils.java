@@ -36,7 +36,10 @@ import net.minecraft.world.level.block.BucketPickup;
 import net.minecraft.world.level.block.LiquidBlockContainer;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.*;
+import net.minecraft.world.level.material.FlowingFluid;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.FluidState;
+import net.minecraft.world.level.material.Fluids;
 import net.minecraftforge.common.SoundActions;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
@@ -255,9 +258,9 @@ public class FluidUtils {
         // code partially lifted from BucketItem
 
         BlockState blockstate = world.getBlockState(pos);
-        Material material = blockstate.getMaterial();
-        boolean isReplaceable = material.isReplaceable();
-        boolean isNotSolid = !material.isSolid();
+//        Material material = blockstate.getMaterial();
+        boolean isReplaceable = blockstate.canBeReplaced();
+        boolean isNotSolid = !blockstate.isSolid(); //!material.isSolid();
 
         // if not force-placing then block must be:
         // - a waterloggable block (which is NOT currently waterlogged), or
@@ -409,7 +412,7 @@ public class FluidUtils {
                     {
                         SoundEvent soundevent = transfer.getFluid().getFluidType().getSound(SoundActions.BUCKET_EMPTY);
                         if (soundevent != null) {
-                            player.level.playSound(null, player.getX(), player.getY() + 0.5, player.getZ(), soundevent, SoundSource.BLOCKS, 1.0F, 1.0F);
+                            player.level().playSound(null, player.getX(), player.getY() + 0.5, player.getZ(), soundevent, SoundSource.BLOCKS, 1.0F, 1.0F);
                         }
                     }
 

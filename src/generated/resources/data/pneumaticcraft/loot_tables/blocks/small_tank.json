@@ -26,5 +26,6 @@
       "name": "small_tank",
       "rolls": 1.0
     }
-  ]
+  ],
+  "random_sequence": "pneumaticcraft:blocks/small_tank"
 }

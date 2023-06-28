@@ -30,5 +30,6 @@
     "recipes": [
       "pneumaticcraft:refinery"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

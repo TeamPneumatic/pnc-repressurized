@@ -18,8 +18,6 @@
 package me.desht.pneumaticcraft.client.pneumatic_armor.upgrade_handler;
 
 import com.mojang.blaze3d.platform.Window;
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IArmorUpgradeClientHandler;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IGuiScreen;
@@ -35,6 +33,7 @@ import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
 import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.ChestplateLauncherHandler;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.world.entity.HumanoidArm;
 
 import java.util.Optional;
@@ -74,8 +73,6 @@ public class ChestplateLauncherClientHandler extends IArmorUpgradeClientHandler.
 
     @Override
     public void tickClient(ICommonArmorHandler armorHandler, boolean isEnabled) {
-        if (!isEnabled) return;
-
         if (launcherProgress > 0) {
             if (!KeyHandler.getInstance().keybindLauncher.isDown()) {
                 NetworkHandler.sendToServer(new PacketChestplateLauncher((float) launcherProgress / (float) MAX_PROGRESS));
@@ -87,22 +84,22 @@ public class ChestplateLauncherClientHandler extends IArmorUpgradeClientHandler.
     }
 
     @Override
-    public void render2D(PoseStack matrixStack, float partialTicks, boolean armorPieceHasPressure) {
+    public void render2D(GuiGraphics graphics, float partialTicks, boolean armorPieceHasPressure) {
         if (launcherProgress == 0) return;
 
         Window mw = Minecraft.getInstance().getWindow();
 
-        matrixStack.pushPose();
+        graphics.pose().pushPose();
         if (ClientUtils.getClientPlayer().getMainArm() == HumanoidArm.LEFT) {
-            matrixStack.translate(mw.getGuiScaledWidth() - 30, mw.getGuiScaledHeight() - 30, -90);
-            matrixStack.scale(-1, 1, 1);
+            graphics.pose().translate(mw.getGuiScaledWidth() - 30, mw.getGuiScaledHeight() - 30, -90);
+            graphics.pose().scale(-1, 1, 1);
         } else {
-            matrixStack.translate(30, mw.getGuiScaledHeight() - 30, -90);
+            graphics.pose().translate(30, mw.getGuiScaledHeight() - 30, -90);
         }
-        matrixStack.mulPose(Axis.ZP.rotationDegrees(-60));
+        graphics.pose().mulPose(Axis.ZP.rotationDegrees(-60));
         float progress = Math.min(100f, (launcherProgress + partialTicks) * 100f / MAX_PROGRESS);
-        ProgressBarRenderer.render2d(matrixStack, 0, 0, mw.getGuiScaledWidth() / 6f - 30, 12, 0,
+        ProgressBarRenderer.render2d(graphics, 0, 0, mw.getGuiScaledWidth() / 6f - 30, 12, 0,
                 progress, 0xAA0000A0, 0xAA40A0FF);
-        matrixStack.popPose();
+        graphics.pose().popPose();
     }
 }

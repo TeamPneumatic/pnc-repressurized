@@ -18,35 +18,33 @@
 package me.desht.pneumaticcraft.client.gui.widget;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
-import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketGuiButton;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.client.gui.widget.ExtendedButton;
 import org.lwjgl.opengl.GL11;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 /**
  * Extension of GuiButtonExt that add: 1) a string tag which is sent to the server when clicked (PacketGuiButton),
  * 2) ability to draw itemstack or textured icons, and 3) can render its area when invisible
  */
-public class WidgetButtonExtended extends ExtendedButton implements ITaggedWidget, ITooltipProvider {
+public class WidgetButtonExtended extends ExtendedButton implements ITaggedWidget {
     private int iconSpacing = 18;
 
     public enum IconPosition { MIDDLE, LEFT, RIGHT }
     private ItemStack[] renderedStacks;
     private ResourceLocation resLoc;
-    private final List<Component> tooltipText = new ArrayList<>();
     private int invisibleHoverColor;
     private boolean thisVisible = true;
     private IconPosition iconPosition = IconPosition.MIDDLE;
@@ -140,35 +138,8 @@ public class WidgetButtonExtended extends ExtendedButton implements ITaggedWidge
         return this;
     }
 
-    public WidgetButtonExtended setTooltipKey(String key, Object... params) {
-        return setTooltipText(GuiUtils.xlateAndSplit(key, params));
-    }
-
-    public WidgetButtonExtended setTooltipText(Component tooltip) {
-        return setTooltipText(Collections.singletonList(tooltip));
-    }
-
-    public WidgetButtonExtended setTooltipText(List<Component> tooltip) {
-        tooltipText.clear();
-        tooltipText.addAll(tooltip);
-        return this;
-    }
-
     public void setHighlightWhenInactive(boolean highlight) {
         this.highlightInactive = highlight;
-    }
-
-    @Override
-    public void addTooltip(double mouseX, double mouseY, List<Component> curTip, boolean shift) {
-        curTip.addAll(tooltipText);
-    }
-
-    public boolean hasTooltip() {
-        return !tooltipText.isEmpty();
-    }
-
-    public List<Component> getTooltip() {
-        return tooltipText;
     }
 
     @Override
@@ -186,31 +157,31 @@ public class WidgetButtonExtended extends ExtendedButton implements ITaggedWidge
     }
 
     @Override
-    public void renderWidget(PoseStack matrixStack, int x, int y, float partialTicks) {
+    public void renderWidget(GuiGraphics graphics, int x, int y, float partialTicks) {
         if (thisVisible && visible && !active && highlightInactive) {
-            Gui.fill(matrixStack, this.getX() - 1, this.getY() - 1, this.getX() + getWidth() + 1, this.getY() + getHeight() + 1, 0xFF00FFFF);
+            graphics.fill(this.getX() - 1, this.getY() - 1, this.getX() + getWidth() + 1, this.getY() + getHeight() + 1, 0xFF00FFFF);
         }
 
-        if (thisVisible) super.renderWidget(matrixStack, x, y, partialTicks);
+        if (thisVisible) super.renderWidget(graphics, x, y, partialTicks);
 
         if (visible) {
             if (renderedStacks != null) {
                 int startX = getIconX();
                 for (int i = renderedStacks.length - 1; i >= 0; i--) {
-                    Minecraft.getInstance().getItemRenderer().renderGuiItem(matrixStack, renderedStacks[i], startX + i * iconSpacing, this.getY() + 2);
+                    graphics.renderItem(renderedStacks[i], startX + i * iconSpacing, this.getY() + 2);
                     if (renderStackSize) {
-                        Minecraft.getInstance().getItemRenderer().renderGuiItemDecorations(matrixStack, Minecraft.getInstance().font, renderedStacks[i], startX + i * iconSpacing, this.getY() + 2, null);
+                        graphics.renderItemDecorations(Minecraft.getInstance().font, renderedStacks[i], startX + i * iconSpacing, this.getY() + 2, null);
                     }
                 }
             }
             if (resLoc != null) {
                 RenderSystem.enableBlend();
                 RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-                GuiUtils.drawTexture(matrixStack, resLoc, this.getX() + width / 2 - 8, this.getY() + 2);
+                graphics.blit(resLoc, this.getX() + width / 2 - 8, this.getY() + 2, 0, 0, 16, 16, 16, 16);
                 RenderSystem.disableBlend();
             }
             if (active && !thisVisible && x >= this.getX() && y >= this.getY() && x < this.getX() + width && y < this.getY() + height) {
-                GuiComponent.fill(matrixStack, this.getX(), this.getY(), this.getX() + width, this.getY() + height, invisibleHoverColor);
+                graphics.fill(this.getX(), this.getY(), this.getX() + width, this.getY() + height, invisibleHoverColor);
             }
         }
     }
@@ -221,5 +192,21 @@ public class WidgetButtonExtended extends ExtendedButton implements ITaggedWidge
             case RIGHT -> getX() + width + 1;
             case MIDDLE -> getX() + width / 2 - renderedStacks.length * 9 + 1;
         };
+    }
+
+
+    public WidgetButtonExtended setTooltipText(Component comp) {
+        setTooltip(Tooltip.create(comp));
+        return this;
+    }
+
+    public WidgetButtonExtended setTooltipText(List<Component> comps) {
+        setTooltip(Tooltip.create(PneumaticCraftUtils.combineComponents(comps)));
+        return this;
+    }
+
+    public WidgetButtonExtended setTooltipKey(String tip) {
+        setTooltip(Tooltip.create(xlate(tip)));
+        return this;
     }
 }

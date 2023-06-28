@@ -38,7 +38,7 @@ class DroneAICC extends Goal {
         this.widget = widget;
         Set<BlockPos> area = widget.getInterfaceArea();
         for (BlockPos pos : area) {
-            BlockEntity te = drone.level.getBlockEntity(pos);
+            BlockEntity te = drone.level().getBlockEntity(pos);
             if (te instanceof DroneInterfaceBlockEntity interfaceTE) {
                 if (targetAI) {
                     if (interfaceTE.getDrone() == drone) {

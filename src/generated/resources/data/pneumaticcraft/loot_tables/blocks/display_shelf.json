@@ -26,5 +26,6 @@
       "name": "display_shelf",
       "rolls": 1.0
     }
-  ]
+  ],
+  "random_sequence": "pneumaticcraft:blocks/display_shelf"
 }

@@ -30,5 +30,6 @@
     "recipes": [
       "pneumaticcraft:pneumatic_boots"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

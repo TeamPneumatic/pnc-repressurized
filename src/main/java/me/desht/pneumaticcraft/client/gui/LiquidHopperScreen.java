@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.client.gui;
 
-import me.desht.pneumaticcraft.api.item.PNCUpgrade;
+import me.desht.pneumaticcraft.api.upgrade.PNCUpgrade;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTank;
@@ -26,10 +26,11 @@ import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.block.entity.LiquidHopperBlockEntity;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
-import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.inventory.LiquidHopperMenu;
+import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
@@ -61,13 +62,13 @@ public class LiquidHopperScreen extends AbstractPneumaticCraftContainerScreen<Li
 
         WidgetButtonExtended button = new WidgetButtonExtended(20, 20, 20, 20, Component.empty()).withTag("empty");
         button.setRenderStacks(new ItemStack(Items.BUCKET));
-        button.setTooltipText(xlate("pneumaticcraft.gui.tab.liquidHopper.mode.empty"));
+        button.setTooltip(Tooltip.create(xlate("pneumaticcraft.gui.tab.liquidHopper.mode.empty")));
         optionStat.addSubWidget(button);
         modeButtons[0] = button;
 
         button = new WidgetButtonExtended(45, 20, 20, 20, Component.empty()).withTag("leave");
         button.setRenderStacks(new ItemStack(Items.WATER_BUCKET));
-        button.setTooltipText(xlate("pneumaticcraft.gui.tab.liquidHopper.mode.leaveLiquid"));
+        button.setTooltip(Tooltip.create(xlate("pneumaticcraft.gui.tab.liquidHopper.mode.leaveLiquid")));
         optionStat.addSubWidget(button);
         modeButtons[1] = button;
     }

@@ -30,5 +30,6 @@
     "recipes": [
       "pneumaticcraft:thermo_plant/lubricant_from_diesel"
     ]
-  }
+  },
+  "sends_telemetry_event": true
 }

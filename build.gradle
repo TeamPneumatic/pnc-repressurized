@@ -19,8 +19,8 @@ plugins {
 	id 'maven-publish'
 	id "com.modrinth.minotaur" version "2.+"
 	id 'com.matthewprenger.cursegradle' version '1.4.0'
+	id 'net.minecraftforge.gradle' version '[6.0,6.2)'
 }
-apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'org.parchmentmc.librarian.forgegradle'
 apply plugin: "com.jfrog.artifactory"
 apply plugin: "org.spongepowered.mixin"
@@ -34,7 +34,7 @@ if (build_number == null) {
 def semver = "${mod_version_massive}.${mod_version_major}.${mod_version_minor}"
 
 // these two are required for the java plugin to generate jar files with a version
-version = "${project.mc_version}-${semver}-${build_number}"
+version = "${semver}+mc${project.mc_version}"
 group = 'me.desht.pneumaticcraft' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "pneumaticcraft-repressurized"
 
@@ -53,6 +53,7 @@ sourceSets {
 		resources {
 			srcDir 'src/generated/resources'
 		}
+		ext.refMap = "mixins.pneumaticcraft.refmap.json"
 	}
 	test {
 		compileClasspath += sourceSets.api.output
@@ -143,8 +144,8 @@ dependencies {
 	// at runtime, use the full JEI
 	runtimeOnly fg.deobf("mezz.jei:jei-${mc_version}-common:${jei_version}")
 	runtimeOnly fg.deobf("mezz.jei:jei-${mc_version}-forge:${jei_version}")
-	compileOnly fg.deobf("top.theillusivec4.curios:curios-forge:${curios_version}:api")
-	runtimeOnly fg.deobf("top.theillusivec4.curios:curios-forge:${curios_version}")
+//	compileOnly fg.deobf("top.theillusivec4.curios:curios-forge:${curios_version}:api")
+	implementation fg.deobf("top.theillusivec4.curios:curios-forge:${curios_version}")
 	compileOnly fg.deobf("vazkii.botania:Botania:${botania_version}-FORGE:api")
 	//runtimeOnly fg.deobf("vazkii.botania:Botania:${botania_version}-FORGE")
 	compileOnly fg.deobf("vazkii.patchouli:Patchouli:${patchouli_version}:api")
@@ -159,14 +160,14 @@ dependencies {
 //	implementation fg.deobf("curse.maven:create-328085:${create_curse_id}")
 	implementation fg.deobf("curse.maven:jade-324717:${jade_curse_id}")
 	compileOnly fg.deobf("curse.maven:cofh_core-69162:${cofh_core_curse_id}")
- 	compileOnly fg.deobf("curse.maven:thermal_cultivation-271835:${thermal_cultivation_curse_id}")
+	compileOnly fg.deobf("curse.maven:thermal_cultivation-271835:${thermal_cultivation_curse_id}")
 	compileOnly fg.deobf("curse.maven:thermal_expansion-69163:${thermal_expansion_curse_id}")
 	compileOnly fg.deobf("curse.maven:thermal_foundation-222880:${thermal_foundation_curse_id}")
 	compileOnly fg.deobf("curse.maven:thermal_innovation-291737:${thermal_innovation_curse_id}")
 	compileOnly fg.deobf("curse.maven:thermal_locomotion-406959:${thermal_locomotion_curse_id}")
 
 	compileOnly fg.deobf("com.blamejared.crafttweaker:CraftTweaker-forge-1.19.2:${crafttweaker_version}")
-	compileOnly fg.deobf("net.darkhax.gamestages:GameStages-Forge-${mc_version}:${gamestages_version}")
+	compileOnly fg.deobf("net.darkhax.gamestages:GameStages-Forge-1.19.4:${gamestages_version}")
 
 	//compileOnly fg.deobf("appeng:appliedenergistics2:${ae2_version}:api")
 	//runtimeOnly fg.deobf("appeng:appliedenergistics2:${ae2_version}")
@@ -223,7 +224,6 @@ minecraft {
 			property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
 			workingDirectory file('run')
 			ideaModule "${project.name}.main"
-			forceExit false
 			args '--mod', 'pneumaticcraft', '--all', '--output', file('src/generated/resources/'), '--existing', sourceSets.main.resources.srcDirs[0]
 			mods {
 				pneumaticcraft.sources((SourceSet[]) [sourceSets.main, sourceSets.api])
@@ -281,7 +281,7 @@ task getChangelogProperty(type: Exec) {
 	commandLine 'bash', './scripts/extract_changes.sh', "${semver}"
 	doLast {
 		ext.changelog = standardOutput.toString()
-    }
+	}
 }
 
 //task makeChangelog(type: GitChangelogTask) {
@@ -318,7 +318,10 @@ jar {
 			"Implementation-Title": project.name,
 			"Implementation-Version": "${project.version}",
 			"Implementation-Vendor" :"desht",
-			"Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
+			"Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
+			'TweakClass': 'org.spongepowered.asm.launch.MixinTweaker',
+			'MixinConfigs': 'mixins.pneumaticcraft.json',
+			'FMLCorePluginContainsFMLMod': 'true',
 	])
 
 	finalizedBy 'reobfJar'
@@ -359,8 +362,8 @@ artifacts {
 }
 
 reobf {
-	apiJar { classpath.from(sourceSets.api.compileClasspath) }
-	jar { classpath.from(sourceSets.main.compileClasspath) }
+	apiJar { libraries.from(sourceSets.api.compileClasspath) }
+	jar { libraries.from(sourceSets.main.compileClasspath) }
 }
 
 task reobf {
@@ -373,8 +376,17 @@ tasks.withType(GenerateModuleMetadata) {
 }
 
 // with thanks to AE2
-def mavenVer = ext.releaseTag == "" ? "${project.mc_version}-${semver}-SNAPSHOT" : "${project.mc_version}-${semver}"
+def mavenVer = ext.releaseTag == "" ? "${version}-SNAPSHOT" : "${version}"
 publishing {
+	publications {
+		mavenCommon(MavenPublication) {
+			artifactId = rootProject.archivesBaseName
+			from components.java
+		}
+	}
+	repositories {
+		mavenLocal()
+	}
 	if (System.getenv("MODMAVEN_USER") != null) {
 		publications {
 			maven(MavenPublication) {

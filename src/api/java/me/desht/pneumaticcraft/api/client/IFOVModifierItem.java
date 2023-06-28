@@ -22,8 +22,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
 /**
- * To be implemented on equippable items.  When equipped, the item can modify the player's
- * field of view.
+ * To be implemented on equippable items.  When equipped, the item can modify the player's field of view.
  */
 public interface IFOVModifierItem {
     /**

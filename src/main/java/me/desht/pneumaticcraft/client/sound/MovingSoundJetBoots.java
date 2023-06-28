@@ -61,11 +61,11 @@ public class MovingSoundJetBoots extends AbstractTickableSoundInstance {
         JetBootsStateTracker.JetBootsState jbState = JetBootsStateTracker.getClientTracker().getJetBootsState(player);
 
         if (endTimer == Integer.MAX_VALUE &&
-                (!jbState.isEnabled() || (!jbState.isActive() && (player.isOnGround() || player.isFallFlying())))) {
+                (!jbState.isEnabled() || (!jbState.isActive() && (player.onGround() || player.isFallFlying())))) {
             endTimer = END_TICKS;
         }
         if (endTimer <= END_TICKS) {
-            if (player.isOnGround() || !jbState.isActive()) {
+            if (player.onGround() || !jbState.isActive()) {
                 endTimer--;
             } else {
                 endTimer = Integer.MAX_VALUE;
@@ -104,14 +104,14 @@ public class MovingSoundJetBoots extends AbstractTickableSoundInstance {
 
     private void handleParticles(boolean jetBootsActive, boolean builderMode) {
         int distThresholdSq = ClientUtils.getRenderDistanceThresholdSq();
-        if ((jetBootsActive || (player.level.getGameTime() & 0x3) == 0 || !ClientUtils.isFirstPersonCamera()) && player.distanceToSqr(ClientUtils.getClientPlayer()) < distThresholdSq) {
+        if ((jetBootsActive || (player.level().getGameTime() & 0x3) == 0 || !ClientUtils.isFirstPersonCamera()) && player.distanceToSqr(ClientUtils.getClientPlayer()) < distThresholdSq) {
             int nParticles = jetBootsActive ? 3 : 1;
             Vec3 jetVec = jetBootsActive && !builderMode ? player.getLookAngle().scale(-0.5) : IDLE_VEC;
             Vec3 feet = jetBootsActive && !builderMode ?
                     player.position().add(player.getLookAngle().scale(player == ClientUtils.getClientPlayer() ? -4 : -2)) :
                     player.position().add(0, -0.25, 0);
             for (int i = 0; i < nParticles; i++) {
-                player.level.addParticle(AirParticleData.DENSE, feet.x, feet.y, feet.z, jetVec.x, jetVec.y, jetVec.z);
+                player.level().addParticle(AirParticleData.DENSE, feet.x, feet.y, feet.z, jetVec.x, jetVec.y, jetVec.z);
             }
         }
     }

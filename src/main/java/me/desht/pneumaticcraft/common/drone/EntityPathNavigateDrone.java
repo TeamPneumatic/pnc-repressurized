@@ -152,7 +152,7 @@ public class EntityPathNavigateDrone extends FlyingPathNavigation implements IPa
         }
 
         boolean secStationProtected = !ConfigHelper.common().drones.allowTeleportToProtectedArea.get()
-                && SecurityStationBlockEntity.isProtectedFromPlayer(droneEntity.getOwnerUUID(), droneEntity.getLevel(), pos, false);
+                && SecurityStationBlockEntity.isProtectedFromPlayer(droneEntity.getOwnerUUID(), droneEntity.level(), pos, false);
 
         int max = ConfigHelper.common().drones.maxDroneTeleportRange.get();
         return !secStationProtected && (!droneEntity.isTeleportRangeLimited() || max == 0 || pos.closerToCenterThan(droneEntity.getDronePos(), max));
@@ -173,7 +173,7 @@ public class EntityPathNavigateDrone extends FlyingPathNavigation implements IPa
         ++tick;
         if (isGoingToTeleport()) {
             if (teleportCounter == 0 || teleportCounter == 60) {
-                droneEntity.level.playSound(null, droneEntity.blockPosition(), ModSounds.HUD_INIT.get(), SoundSource.NEUTRAL, 0.3f, teleportCounter == 0 ? 0.7F : 1F);
+                droneEntity.level().playSound(null, droneEntity.blockPosition(), ModSounds.HUD_INIT.get(), SoundSource.NEUTRAL, 0.3f, teleportCounter == 0 ? 0.7F : 1F);
             }
 
             if (teleportCounter < TELEPORT_TICKS - 40) {
@@ -280,11 +280,6 @@ public class EntityPathNavigateDrone extends FlyingPathNavigation implements IPa
     public boolean hasNoPath() {
         return isDone();
     }
-
-//    @Override
-//    public boolean canMoveDirectly(Vec3 p_75493_1_, Vec3 p_75493_2_, int p_75493_3_, int p_75493_4_, int p_75493_5_) {
-//        return false;
-//    }
 
     @Override
     protected PathFinder createPathFinder(int r) {

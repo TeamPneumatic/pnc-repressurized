@@ -19,13 +19,9 @@ package me.desht.pneumaticcraft.client.gui.remote.actionwidget;
 
 import me.desht.pneumaticcraft.client.gui.RemoteEditorScreen;
 import me.desht.pneumaticcraft.client.gui.remote.BasicRemoteOptionScreen;
-import me.desht.pneumaticcraft.common.util.NBTUtils;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
-
-import java.util.List;
 
 public class ActionWidgetLabel extends ActionWidget<WidgetLabelVariable> implements IActionWidgetLabeled {
 
@@ -42,7 +38,7 @@ public class ActionWidgetLabel extends ActionWidget<WidgetLabelVariable> impleme
         tag.putString("text", Component.Serializer.toJson(widget.getMessage()));
         tag.putInt("x", widget.getX() - guiLeft);
         tag.putInt("y", widget.getY() - guiTop);
-        tag.put("tooltip", NBTUtils.serializeTextComponents(widget.getTooltip()));
+        tag.putString("tooltip", Component.Serializer.toJson(getTooltipMessage()));
         return tag;
     }
 
@@ -50,7 +46,7 @@ public class ActionWidgetLabel extends ActionWidget<WidgetLabelVariable> impleme
     public void readFromNBT(CompoundTag tag, int guiLeft, int guiTop) {
         super.readFromNBT(tag, guiLeft, guiTop);
         widget = new WidgetLabelVariable(tag.getInt("x") + guiLeft, tag.getInt("y") + guiTop, deserializeTextComponent(tag.getString("text")));
-        widget.setTooltip(NBTUtils.deserializeTextComponents(tag.getList("tooltip", Tag.TAG_STRING)));
+        deserializeTooltip(tag.getString("tooltip"));
     }
 
     @Override
@@ -78,13 +74,4 @@ public class ActionWidgetLabel extends ActionWidget<WidgetLabelVariable> impleme
         widget.setPosition(x, y);
     }
 
-    @Override
-    public void setTooltip(List<Component> text) {
-        widget.setTooltip(text);
-    }
-
-    @Override
-    public List<Component> getTooltip() {
-        return widget.getTooltip();
-    }
 }

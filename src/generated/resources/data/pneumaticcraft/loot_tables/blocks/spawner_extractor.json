@@ -26,5 +26,6 @@
       "name": "spawner_extractor",
       "rolls": 1.0
     }
-  ]
+  ],
+  "random_sequence": "pneumaticcraft:blocks/spawner_extractor"
 }

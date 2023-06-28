@@ -30,5 +30,6 @@
     "recipes": [
       "pneumaticcraft:assembly_io_unit_export"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

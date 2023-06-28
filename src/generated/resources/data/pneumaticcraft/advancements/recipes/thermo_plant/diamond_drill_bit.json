@@ -30,5 +30,6 @@
     "recipes": [
       "pneumaticcraft:thermo_plant/diamond_drill_bit"
     ]
-  }
+  },
+  "sends_telemetry_event": true
 }

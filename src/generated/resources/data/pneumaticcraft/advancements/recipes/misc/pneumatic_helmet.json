@@ -30,5 +30,6 @@
     "recipes": [
       "pneumaticcraft:pneumatic_helmet"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

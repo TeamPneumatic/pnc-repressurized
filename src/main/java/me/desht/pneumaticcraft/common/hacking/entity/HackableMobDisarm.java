@@ -73,7 +73,7 @@ public class HackableMobDisarm implements IHackableEntity<Mob> {
 
     @Override
     public void onHackFinished(Mob entity, Player player) {
-        if (!entity.level.isClientSide) {
+        if (!entity.level().isClientSide) {
             for (EquipmentSlot slot : EquipmentSlot.values()) {
                 if (doDisarm(entity, slot, player.getRandom())) {
                     return;

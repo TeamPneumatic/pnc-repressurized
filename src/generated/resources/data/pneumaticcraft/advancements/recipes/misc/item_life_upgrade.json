@@ -30,5 +30,6 @@
     "recipes": [
       "pneumaticcraft:item_life_upgrade"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

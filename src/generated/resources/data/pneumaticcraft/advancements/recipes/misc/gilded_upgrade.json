@@ -30,5 +30,6 @@
     "recipes": [
       "pneumaticcraft:gilded_upgrade"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

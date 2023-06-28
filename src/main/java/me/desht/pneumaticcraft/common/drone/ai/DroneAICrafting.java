@@ -25,6 +25,7 @@ import me.desht.pneumaticcraft.common.util.ItemTagMatcher;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.inventory.CraftingContainer;
+import net.minecraft.world.inventory.TransientCraftingContainer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.ForgeEventFactory;
@@ -58,7 +59,7 @@ public class DroneAICrafting extends Goal {
             List<List<ItemStack>> equivalentsList = buildEquivalentsList(craftingGrid);
             if (equivalentsList.isEmpty()) return false;
             int[] equivIndices = new int[9];
-            CraftingContainer craftMatrix = new CraftingContainer(new DummyContainer(), 3, 3);
+            CraftingContainer craftMatrix = new TransientCraftingContainer(new DummyContainer(), 3, 3);
             do {
                 for (int i = 0; i < equivalentsList.size(); i++) {
                     ItemStack stack = equivalentsList.get(i).isEmpty() ? ItemStack.EMPTY : equivalentsList.get(i).get(equivIndices[i]);

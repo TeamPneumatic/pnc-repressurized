@@ -29,17 +29,17 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 public class UniversalSensorHandler {
     @SubscribeEvent
     public void onInteraction(PlayerInteractEvent event) {
-        sendEventToSensors(event.getEntity().level, event);
+        sendEventToSensors(event.getEntity().level(), event);
     }
 
     @SubscribeEvent
     public void onPlayerAttack(AttackEntityEvent event) {
-        sendEventToSensors(event.getEntity().level, event);
+        sendEventToSensors(event.getEntity().level(), event);
     }
 
     @SubscribeEvent
     public void onItemPickUp(EntityItemPickupEvent event) {
-        sendEventToSensors(event.getEntity().level, event);
+        sendEventToSensors(event.getEntity().level(), event);
     }
 
     private void sendEventToSensors(Level level, Event event) {

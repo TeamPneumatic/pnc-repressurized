@@ -20,14 +20,13 @@ package me.desht.pneumaticcraft.common.item.minigun;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.client.IFOVModifierItem;
 import me.desht.pneumaticcraft.api.item.IInventoryItem;
-import me.desht.pneumaticcraft.api.item.PNCUpgrade;
 import me.desht.pneumaticcraft.api.lib.Names;
+import me.desht.pneumaticcraft.api.upgrade.PNCUpgrade;
 import me.desht.pneumaticcraft.client.render.MinigunItemRenderer;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.block.entity.ChargingStationBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModMenuTypes;
-import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.inventory.AbstractPneumaticCraftMenu;
 import me.desht.pneumaticcraft.common.inventory.MinigunMagazineMenu;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
@@ -39,9 +38,10 @@ import me.desht.pneumaticcraft.common.minigun.MinigunPlayerTracker;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketMinigunStop;
 import me.desht.pneumaticcraft.common.network.PacketPlaySound;
+import me.desht.pneumaticcraft.common.upgrades.ApplicableUpgradesDB;
+import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.util.NBTUtils;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
-import me.desht.pneumaticcraft.common.util.upgrade.ApplicableUpgradesDB;
 import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.ChatFormatting;
@@ -182,7 +182,7 @@ public class MinigunItem extends PressurizableItem implements
         return new ItemMinigunImpl(player, stack)
                 .setAmmoStack(ammo)
                 .setAirHandler(stack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY), PneumaticValues.USAGE_ITEM_MINIGUN)
-                .setWorld(player.level);
+                .setWorld(player.level());
     }
 
     public Minigun getMinigun(ItemStack stack, Player player) {
@@ -214,7 +214,7 @@ public class MinigunItem extends PressurizableItem implements
                 player.startUsingItem(handIn);
                 return InteractionResultHolder.sidedSuccess(stack, world.isClientSide);
             }
-            if (player.level.isClientSide) {
+            if (player.level().isClientSide) {
                 player.playSound(SoundEvents.COMPARATOR_CLICK, 1f, 1f);
                 player.displayClientMessage(Component.translatable("pneumaticcraft.message.minigun.outOfAmmo"), true);
             }
@@ -238,7 +238,7 @@ public class MinigunItem extends PressurizableItem implements
                 magazineHandler.save();
             }
         } else {
-            if (player.level.isClientSide) {
+            if (player.level().isClientSide) {
                 player.playSound(SoundEvents.COMPARATOR_CLICK, 1f, 1f);
                 player.displayClientMessage(Component.translatable("pneumaticcraft.message.minigun.outOfAmmo"), true);
             }
@@ -298,7 +298,7 @@ public class MinigunItem extends PressurizableItem implements
                 ItemStack ammoStack = handler.getStackInSlot(newSlot);
                 if (ammoStack.getItem() instanceof AbstractGunAmmoItem ammo) {
                     NBTUtils.setInteger(stack, MinigunItem.NBT_LOCKED_SLOT, newSlot);
-                    if (!player.getLevel().isClientSide) {
+                    if (!player.level().isClientSide) {
                         // possible message for potion-tipped ammo
                         if (ammo instanceof StandardGunAmmoItem) {
                             ItemStack potion = StandardGunAmmoItem.getPotion(ammoStack);
@@ -420,8 +420,8 @@ public class MinigunItem extends PressurizableItem implements
 
         @Override
         public void playSound(SoundEvent soundName, float volume, float pitch) {
-            if (!player.level.isClientSide) {
-                NetworkHandler.sendToAllTracking(new PacketPlaySound(soundName, SoundSource.PLAYERS, player.blockPosition(), volume, pitch, false), player.level, player.blockPosition());
+            if (!player.level().isClientSide) {
+                NetworkHandler.sendToAllTracking(new PacketPlaySound(soundName, SoundSource.PLAYERS, player.blockPosition(), volume, pitch, false), player.level(), player.blockPosition());
             }
         }
 

@@ -26,5 +26,6 @@
       "name": "thermopneumatic_processing_plant",
       "rolls": 1.0
     }
-  ]
+  ],
+  "random_sequence": "pneumaticcraft:blocks/thermopneumatic_processing_plant"
 }

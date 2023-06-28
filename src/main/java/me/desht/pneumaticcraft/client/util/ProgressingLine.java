@@ -21,7 +21,6 @@ import net.minecraft.world.phys.Vec3;
 import org.joml.Vector3f;
 
 public class ProgressingLine {
-
     public float startX;
     public float startY;
     public float startZ;

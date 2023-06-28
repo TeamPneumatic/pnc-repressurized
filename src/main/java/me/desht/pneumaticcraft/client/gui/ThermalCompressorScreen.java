@@ -17,7 +17,6 @@
 
 package me.desht.pneumaticcraft.client.gui;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.api.crafting.TemperatureRange;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTemperature;
@@ -30,6 +29,8 @@ import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -136,18 +137,13 @@ public class ThermalCompressorScreen extends AbstractPneumaticCraftContainerScre
     }
 
     static int getWidgetX(Direction side) {
-        switch (side) {
-            case SOUTH:
-                return 56;
-            case NORTH:
-                return 66;
-            case WEST:
-                return 89;
-            case EAST:
-                return 99;
-            default:
-                throw new IllegalArgumentException("invalid side " + side);
-        }
+        return switch (side) {
+            case SOUTH -> 56;
+            case NORTH -> 66;
+            case WEST -> 89;
+            case EAST -> 99;
+            default -> throw new IllegalArgumentException("invalid side " + side);
+        };
     }
 
     private class WidgetTemperatureSided extends WidgetTemperature {
@@ -159,16 +155,13 @@ public class ThermalCompressorScreen extends AbstractPneumaticCraftContainerScre
         }
 
         @Override
-        public void addTooltip(double mouseX, double mouseY, List<Component> curTip, boolean shift) {
-            curTip.add(HeatUtil.formatHeatString(side, getTemperature()));
-        }
-
-        @Override
-        public void renderWidget(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
-            super.renderWidget(matrixStack, mouseX, mouseY, partialTicks);
+        public void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+            super.renderWidget(graphics, mouseX, mouseY, partialTicks);
 
             String s = side.toString().substring(0, 1).toUpperCase();
-            GuiUtils.drawScaledText(matrixStack, font, s, getX() + 8, getY() - 4, 0x404040, 0.5f);
+            GuiUtils.drawScaledText(graphics, font, Component.literal(s), getX() + 8, getY() - 4, 0x404040, 0.5f, false);
+
+            setTooltip(Tooltip.create(HeatUtil.formatHeatString(side, getTemperature())));
         }
     }
 }

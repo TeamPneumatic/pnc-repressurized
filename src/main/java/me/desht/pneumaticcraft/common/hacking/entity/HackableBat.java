@@ -22,7 +22,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ambient.Bat;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 
 import java.util.List;
@@ -60,9 +59,9 @@ public class HackableBat implements IHackableEntity<Bat> {
 
     @Override
     public void onHackFinished(Bat entity, Player player) {
-        if (!entity.level.isClientSide) {
+        if (!entity.level().isClientSide) {
             entity.discard();
-            entity.level.explode(null, entity.getX(), entity.getY(), entity.getZ(), 0, Level.ExplosionInteraction.NONE);
+            entity.level().explode(null, entity.getX(), entity.getY(), entity.getZ(), 0, Level.ExplosionInteraction.NONE);
         }
     }
 }

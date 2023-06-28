@@ -17,19 +17,20 @@
 
 package me.desht.pneumaticcraft.client.gui;
 
-import me.desht.pneumaticcraft.api.item.PNCUpgrade;
 import me.desht.pneumaticcraft.api.misc.Symbols;
+import me.desht.pneumaticcraft.api.upgrade.PNCUpgrade;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.block.entity.OmnidirectionalHopperBlockEntity;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
-import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.inventory.OmnidirectionalHopperMenu;
+import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
@@ -64,13 +65,13 @@ public class OmnidirectionalHopperScreen extends AbstractPneumaticCraftContainer
 
         WidgetButtonExtended button = new WidgetButtonExtended(5, 20, 20, 20, Component.empty()).withTag("empty");
         button.setRenderStacks(new ItemStack(Items.BUCKET));
-        button.setTooltipText(xlate("pneumaticcraft.gui.tab.omnidirectionalHopper.mode.empty"));
+        button.setTooltip(Tooltip.create(xlate("pneumaticcraft.gui.tab.omnidirectionalHopper.mode.empty")));
         optionStat.addSubWidget(button);
         modeButtons[0] = button;
 
         button = new WidgetButtonExtended(30, 20, 20, 20, Component.empty()).withTag("leave");
         button.setRenderStacks(new ItemStack(Items.WATER_BUCKET));
-        button.setTooltipText(xlate("pneumaticcraft.gui.tab.omnidirectionalHopper.mode.leaveItem"));
+        button.setTooltip(Tooltip.create(xlate("pneumaticcraft.gui.tab.omnidirectionalHopper.mode.leaveItem")));
         optionStat.addSubWidget(button);
         modeButtons[1] = button;
 
@@ -90,7 +91,7 @@ public class OmnidirectionalHopperScreen extends AbstractPneumaticCraftContainer
         modeButtons[0].active = te.doesLeaveMaterial();
         modeButtons[1].active = !te.doesLeaveMaterial();
         rrButton.setMessage(te.roundRobin ? ARROW_RR : ARROW_NO_RR);
-        rrButton.setTooltipKey("pneumaticcraft.gui.tooltip.omnidirectional_hopper.roundRobin." + (te.roundRobin ? "on" : "off"));
+        rrButton.setTooltip(Tooltip.create(xlate("pneumaticcraft.gui.tooltip.omnidirectional_hopper.roundRobin." + (te.roundRobin ? "on" : "off"))));
     }
 
     private List<Component> getStatus() {

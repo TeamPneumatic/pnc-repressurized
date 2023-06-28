@@ -30,5 +30,6 @@
     "recipes": [
       "pneumaticcraft:aerial_interface"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

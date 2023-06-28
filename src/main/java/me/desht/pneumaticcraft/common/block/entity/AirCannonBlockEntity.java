@@ -24,7 +24,6 @@ import me.desht.pneumaticcraft.api.pressure.PressureTier;
 import me.desht.pneumaticcraft.common.block.entity.RedstoneController.ReceivingRedstoneMode;
 import me.desht.pneumaticcraft.common.block.entity.RedstoneController.RedstoneMode;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
-import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.entity.projectile.MicromissileEntity;
 import me.desht.pneumaticcraft.common.inventory.AirCannonMenu;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
@@ -33,6 +32,7 @@ import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.network.LazySynced;
 import me.desht.pneumaticcraft.common.thirdparty.computer_common.LuaMethod;
 import me.desht.pneumaticcraft.common.thirdparty.computer_common.LuaMethodRegistry;
+import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.util.EntityDistanceComparator;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.ItemLaunching;
@@ -269,7 +269,7 @@ public class AirCannonBlockEntity extends AbstractAirHandlingBlockEntity
         Iterator<ItemEntity> iterator = trackedItems.iterator();
         while (iterator.hasNext()) {
             ItemEntity item = iterator.next();
-            if (item.level != getLevel() || !item.isAlive()) {
+            if (item.level() != getLevel() || !item.isAlive()) {
                 iterator.remove();
             } else {
                 Map<BlockPos, Direction> positions = new HashMap<>();

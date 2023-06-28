@@ -18,7 +18,6 @@
 package me.desht.pneumaticcraft.common.thirdparty.jei;
 
 import com.google.common.collect.ImmutableList;
-import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.api.crafting.TemperatureRange.TemperatureScale;
 import me.desht.pneumaticcraft.api.crafting.recipe.RefineryRecipe;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTemperature;
@@ -32,6 +31,7 @@ import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -77,11 +77,11 @@ public class JEIRefineryCategory extends AbstractPNCCategory<RefineryRecipe> {
     }
 
     @Override
-    public void draw(RefineryRecipe recipe, IRecipeSlotsView recipeSlotsView, PoseStack matrixStack, double mouseX, double mouseY) {
+    public void draw(RefineryRecipe recipe, IRecipeSlotsView recipeSlotsView, GuiGraphics graphics, double mouseX, double mouseY) {
         WidgetTemperature w = tempWidgets.computeIfAbsent(recipe.getId(),
                 id -> WidgetTemperature.fromOperatingRange(26, 18, recipe.getOperatingTemp()));
         w.setTemperature(w.getTotalRange().getMin() + (w.getTotalRange().getMax() - w.getTotalRange().getMin()) * tickTimer.getValue() / tickTimer.getMaxValue());
-        w.renderWidget(matrixStack, (int)mouseX, (int)mouseY, 0f);
+        w.renderWidget(graphics, (int)mouseX, (int)mouseY, 0f);
     }
 
     @Override

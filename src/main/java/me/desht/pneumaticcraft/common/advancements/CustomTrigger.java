@@ -19,8 +19,8 @@ package me.desht.pneumaticcraft.common.advancements;
 
 import com.google.gson.JsonObject;
 import net.minecraft.advancements.critereon.AbstractCriterionTriggerInstance;
+import net.minecraft.advancements.critereon.ContextAwarePredicate;
 import net.minecraft.advancements.critereon.DeserializationContext;
-import net.minecraft.advancements.critereon.EntityPredicate;
 import net.minecraft.advancements.critereon.SimpleCriterionTrigger;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -49,7 +49,7 @@ public class CustomTrigger extends SimpleCriterionTrigger<CustomTrigger.Instance
     }
 
     @Override
-    protected Instance createInstance(JsonObject jsonIn, EntityPredicate.Composite entityPredicateIn, DeserializationContext conditionsParserIn) {
+    protected Instance createInstance(JsonObject jsonIn, ContextAwarePredicate predicate, DeserializationContext context) {
         return new CustomTrigger.Instance(this.getId());
     }
 
@@ -59,7 +59,7 @@ public class CustomTrigger extends SimpleCriterionTrigger<CustomTrigger.Instance
 
     public static class Instance extends AbstractCriterionTriggerInstance {
         public Instance(ResourceLocation parID) {
-            super(parID, EntityPredicate.Composite.ANY);
+            super(parID, ContextAwarePredicate.ANY);
         }
 
         public boolean test() {

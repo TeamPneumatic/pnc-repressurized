@@ -24,19 +24,22 @@ import me.desht.pneumaticcraft.api.drone.IDrone;
 import me.desht.pneumaticcraft.api.drone.IPathNavigator;
 import me.desht.pneumaticcraft.api.drone.IPathfindHandler;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
-import me.desht.pneumaticcraft.api.item.PNCUpgrade;
 import me.desht.pneumaticcraft.api.lib.NBTKeys;
 import me.desht.pneumaticcraft.api.pneumatic_armor.hacking.IHackableEntity;
 import me.desht.pneumaticcraft.api.pressure.PressureHelper;
 import me.desht.pneumaticcraft.api.semiblock.SemiblockEvent;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.api.tileentity.IManoMeasurable;
+import me.desht.pneumaticcraft.api.upgrade.PNCUpgrade;
 import me.desht.pneumaticcraft.client.util.ProgressingLine;
 import me.desht.pneumaticcraft.common.block.entity.PneumaticEnergyStorage;
 import me.desht.pneumaticcraft.common.block.entity.ProgrammerBlockEntity;
 import me.desht.pneumaticcraft.common.capabilities.BasicAirHandler;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
-import me.desht.pneumaticcraft.common.core.*;
+import me.desht.pneumaticcraft.common.core.ModBlocks;
+import me.desht.pneumaticcraft.common.core.ModEntityTypes;
+import me.desht.pneumaticcraft.common.core.ModItems;
+import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.debug.DroneDebugger;
 import me.desht.pneumaticcraft.common.drone.*;
 import me.desht.pneumaticcraft.common.drone.ai.DroneAIManager;
@@ -59,11 +62,12 @@ import me.desht.pneumaticcraft.common.network.PacketSyncDroneEntityProgWidgets;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
 import me.desht.pneumaticcraft.common.thirdparty.RadiationSourceCheck;
+import me.desht.pneumaticcraft.common.upgrades.IUpgradeHolder;
+import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
+import me.desht.pneumaticcraft.common.upgrades.UpgradeCache;
 import me.desht.pneumaticcraft.common.util.*;
 import me.desht.pneumaticcraft.common.util.fakeplayer.DroneFakePlayer;
 import me.desht.pneumaticcraft.common.util.fakeplayer.DroneItemHandler;
-import me.desht.pneumaticcraft.common.util.upgrade.IUpgradeHolder;
-import me.desht.pneumaticcraft.common.util.upgrade.UpgradeCache;
 import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.mixin.accessors.EntityAccess;
@@ -92,7 +96,6 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
@@ -118,7 +121,6 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
-import net.minecraft.world.level.material.Material;
 import net.minecraft.world.level.pathfinder.BlockPathTypes;
 import net.minecraft.world.level.pathfinder.Node;
 import net.minecraft.world.level.pathfinder.Path;
@@ -426,6 +428,8 @@ public class DroneEntity extends AbstractDroneEntity implements
             onFirstTick();
         }
 
+        Level level = level();
+
         boolean enabled = !disabledByHacking && getAirHandler().getPressure() > 0.01F;
         if (!level.isClientSide) {
             entityData.set(PRESSURE, ((int) (getAirHandler().getPressure() * 10.0f)) / 10.0f);  // rounded for client
@@ -489,10 +493,10 @@ public class DroneEntity extends AbstractDroneEntity implements
                 BlockState state = null;
                 for (int i = 0; i < 3; i++, y--) {
                     state = level.getBlockState(pos);
-                    if (state.getMaterial() != Material.AIR) break;
+                    if (!state.isAir()) break;
                 }
 
-                if (state.getMaterial() != Material.AIR) {
+                if (!state.isAir()) {
                     Vec3 vec = new Vec3(getY() - y, 0, 0);
                     vec = vec.yRot((float) (random.nextFloat() * Math.PI * 2));
                     ParticleOptions data = new BlockParticleOption(ParticleTypes.BLOCK, state);
@@ -530,7 +534,7 @@ public class DroneEntity extends AbstractDroneEntity implements
     }
 
     private void onFirstTick() {
-        if (!level.isClientSide) {
+        if (!level().isClientSide) {
             MinecraftForge.EVENT_BUS.register(this);
 
             double newDroneSpeed = 0.15f + Math.min(10, getUpgrades(ModUpgrades.SPEED.get())) * 0.015f;
@@ -558,8 +562,8 @@ public class DroneEntity extends AbstractDroneEntity implements
         for (Direction d : DirectionUtil.VALUES) {
             if (getEmittingRedstone(d) > 0) {
                 BlockPos emitterPos = new BlockPos((int) Math.floor(getX() + getBbWidth() / 2), (int) Math.floor(getY()), (int) Math.floor(getZ() + getBbWidth() / 2));
-                if (level.isEmptyBlock(emitterPos)) {
-                    level.setBlockAndUpdate(emitterPos, ModBlocks.DRONE_REDSTONE_EMITTER.get().defaultBlockState());
+                if (level().isEmptyBlock(emitterPos)) {
+                    level().setBlockAndUpdate(emitterPos, ModBlocks.DRONE_REDSTONE_EMITTER.get().defaultBlockState());
                 }
                 break;
             }
@@ -572,10 +576,10 @@ public class DroneEntity extends AbstractDroneEntity implements
         for (int x = (int) getX() - 1; x <= (int) (getX() + getBbWidth()); x++) {
             for (int y = (int) getY() - 1; y <= (int) (getY() + getBbHeight() + 1); y++) {
                 for (int z = (int) getZ() - 2; z <= (int) (getZ() + getBbWidth()); z++) {
-                    if (PneumaticCraftUtils.isBlockLiquid(level.getBlockState(new BlockPos(x, y, z)).getBlock())) {
+                    if (PneumaticCraftUtils.isBlockLiquid(level().getBlockState(new BlockPos(x, y, z)).getBlock())) {
                         BlockPos pos = new BlockPos(x, y, z);
-                        if (securityUpgradeCount == 2) displacedLiquids.put(pos, level.getBlockState(pos));
-                        level.setBlock(pos, Blocks.AIR.defaultBlockState(), Block.UPDATE_ALL);
+                        if (securityUpgradeCount == 2) displacedLiquids.put(pos, level().getBlockState(pos));
+                        level().setBlock(pos, Blocks.AIR.defaultBlockState(), Block.UPDATE_ALL);
                     }
                 }
             }
@@ -727,7 +731,7 @@ public class DroneEntity extends AbstractDroneEntity implements
      */
     @Override
     public void travel(Vec3 travelVec) {
-        if (level.isClientSide) {
+        if (level().isClientSide) {
             LivingEntity targetEntity = getTarget();
             if (targetEntity != null && !targetEntity.isAlive()) {
                 setTarget(null);
@@ -759,7 +763,7 @@ public class DroneEntity extends AbstractDroneEntity implements
         } else {
             super.travel(travelVec);
         }
-        onGround = true; //set onGround to true so AI pathfinding will keep updating.
+        setOnGround(true); //set onGround to true so AI pathfinding will keep updating.
     }
 
     public ProgressingLine getTargetLine() {
@@ -776,6 +780,8 @@ public class DroneEntity extends AbstractDroneEntity implements
         if (!getOwnerUUID().equals(player.getUUID())) return InteractionResult.PASS;
 
         ItemStack stack = player.getItemInHand(hand);
+        Level level = level();
+
         if (stack.getItem() == ModItems.GPS_TOOL.get()) {
             if (!level.isClientSide) {
                 return GPSToolItem.getGPSLocation(player.getUUID(), stack).map(gpsPos -> {
@@ -785,10 +791,10 @@ public class DroneEntity extends AbstractDroneEntity implements
             }
             return InteractionResult.SUCCESS;
         } else if (stack.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).isPresent()) {
-            if (player.level.isClientSide) return InteractionResult.CONSUME;
+            if (player.level().isClientSide) return InteractionResult.CONSUME;
             return stack.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).map(handler -> {
                 if (handler.getFluidInTank(0).isEmpty()) {
-                    boolean ok = player.level.isClientSide || FluidUtil.interactWithFluidHandler(player, hand, fluidTank);
+                    boolean ok = player.level().isClientSide || FluidUtil.interactWithFluidHandler(player, hand, fluidTank);
                     return ok ? InteractionResult.CONSUME : InteractionResult.PASS;
                 } else {
                     return InteractionResult.PASS;
@@ -840,8 +846,8 @@ public class DroneEntity extends AbstractDroneEntity implements
             Map.Entry<BlockPos, BlockState> entry = iter.next();
             BlockPos pos = entry.getKey();
             if (!distCheck || pos.distToCenterSqr(getX(), getY(), getZ()) > 1) {
-                if (level.isEmptyBlock(pos) || PneumaticCraftUtils.isBlockLiquid(level.getBlockState(pos).getBlock())) {
-                    level.setBlock(pos, entry.getValue(), Block.UPDATE_ALL);
+                if (level().isEmptyBlock(pos) || PneumaticCraftUtils.isBlockLiquid(level().getBlockState(pos).getBlock())) {
+                    level().setBlock(pos, entry.getValue(), Block.UPDATE_ALL);
                 }
                 iter.remove();
             }
@@ -882,12 +888,12 @@ public class DroneEntity extends AbstractDroneEntity implements
             ItemStack stack = new ItemStack(getDroneItem());
             writeToItemStack(stack);
             spawnAtLocation(stack, 0);
-            if (!level.isClientSide) {
+            if (!level().isClientSide) {
                 reportDroneDeath(getOwner(), damageSource);
             }
         }
 
-        if (!level.isClientSide && getDugBlock() != null) {
+        if (!level().isClientSide && getDugBlock() != null) {
             // stop any in-progress digging - 3rd & 4th parameters are unimportant here
             getFakePlayer().gameMode.handleBlockBreakAction(getDugBlock(), ServerboundPlayerActionPacket.Action.ABORT_DESTROY_BLOCK, Direction.UP, 0, 0);
         }
@@ -902,12 +908,12 @@ public class DroneEntity extends AbstractDroneEntity implements
             int x = (int) Math.floor(getX());
             int y = (int) Math.floor(getY());
             int z = (int) Math.floor(getZ());
-            String dim = getLevel().dimension().location().toString();
+            String dim = level().dimension().location().toString();
             MutableComponent msg = hasCustomName() ?
                     Component.translatable("pneumaticcraft.death.drone.named", Objects.requireNonNull(getCustomName()).getString(), dim, x, y, z) :
                     Component.translatable("pneumaticcraft.death.drone", dim, x, y, z);
             owner.displayClientMessage(msg.withStyle(ChatFormatting.GOLD), false);
-            if (!damageSource.is(DamageTypes.OUT_OF_WORLD)) {
+            if (!damageSource.is(DamageTypes.FELL_OUT_OF_WORLD)) {
                 owner.displayClientMessage(Component.literal(" - ").append(damageSource.getLocalizedDeathMessage(this)).withStyle(ChatFormatting.GRAY), false);
             }
         }
@@ -922,7 +928,7 @@ public class DroneEntity extends AbstractDroneEntity implements
 
     @Override
     public void onSyncedDataUpdated(EntityDataAccessor<?> key) {
-        if (level.isClientSide) {
+        if (level().isClientSide) {
             if (TARGET_ID.equals(key)) {
                 int id = entityData.get(TARGET_ID);
                 if (id > 0) {
@@ -946,7 +952,7 @@ public class DroneEntity extends AbstractDroneEntity implements
     @Override
     public void setTarget(LivingEntity entity) {
         super.setTarget(entity);
-        if (!level.isClientSide) {
+        if (!level().isClientSide) {
             entityData.set(TARGET_ID, entity == null ? 0 : entity.getId());
         }
     }
@@ -1074,7 +1080,7 @@ public class DroneEntity extends AbstractDroneEntity implements
                 CompoundTag p = l.getCompound(0);
                 CompoundTag s = l.getCompound(1);
                 BlockPos pos = NbtUtils.readBlockPos(p);
-                BlockState state = NbtUtils.readBlockState(level.holderLookup(Registries.BLOCK), s);
+                BlockState state = NbtUtils.readBlockState(level().holderLookup(Registries.BLOCK), s);
                 displacedLiquids.put(pos, state);
             }
         }
@@ -1103,18 +1109,18 @@ public class DroneEntity extends AbstractDroneEntity implements
 
     @Override
     public FakePlayer getFakePlayer() {
-        if (fakePlayer == null && !level.isClientSide) {
+        if (fakePlayer == null && !level().isClientSide) {
             // using the owner's UUID for the fake player should be fine in Forge 35.0.12 and up
             // see https://github.com/MinecraftForge/MinecraftForge/pull/7454
-            fakePlayer = new DroneFakePlayer((ServerLevel) level, new GameProfile(getOwnerUUID(), ownerName.getString()), this);
+            fakePlayer = new DroneFakePlayer((ServerLevel) level(), new GameProfile(getOwnerUUID(), ownerName.getString()), this);
         }
         return fakePlayer;
     }
 
     public Minigun getMinigun() {
         if (minigun == null) {
-            minigun = new MinigunDrone(level.isClientSide ? null : getFakePlayer())
-                    .setWorld(level)
+            minigun = new MinigunDrone(level().isClientSide ? null : getFakePlayer())
+                    .setWorld(level())
                     .setAirHandler(this.getCapability(PNCCapabilities.AIR_HANDLER_CAPABILITY), PneumaticValues.DRONE_USAGE_ATTACK);
         }
         return minigun;
@@ -1154,7 +1160,7 @@ public class DroneEntity extends AbstractDroneEntity implements
             return true;
         }
         Entity e = source.getEntity();
-        if (e != null && !level.isClientSide && e.getId() == getFakePlayer().getId()) {
+        if (e != null && !level().isClientSide && e.getId() == getFakePlayer().getId()) {
             // don't allow the drone's own fake player to damage the drone
             // e.g. if the drone is wielding an infinity hammer
             return true;
@@ -1176,25 +1182,25 @@ public class DroneEntity extends AbstractDroneEntity implements
         if (emittingRedstoneValues.getOrDefault(side, 0) != value) {
             emittingRedstoneValues.put(side, value);
             BlockPos pos = new BlockPos((int) Math.floor(getX() + getBbWidth() / 2), (int) Math.floor(getY()), (int) Math.floor(getZ() + getBbWidth() / 2));
-            BlockState state = level.getBlockState(pos);
-            level.sendBlockUpdated(pos, state, state, 3);
+            BlockState state = level().getBlockState(pos);
+            level().sendBlockUpdated(pos, state, state, 3);
         }
     }
 
     @Override
     public boolean isBlockValidPathfindBlock(BlockPos pos) {
-        if (level.isEmptyBlock(pos)) return true;
-        BlockState state = level.getBlockState(pos);
+        if (level().isEmptyBlock(pos)) return true;
+        BlockState state = level().getBlockState(pos);
         Block block = state.getBlock();
         if (PneumaticCraftUtils.isBlockLiquid(block)) {
             return securityUpgradeCount > 0;
         }
         if (checkMC181565kludge(block)) return false;
-        if (state.isPathfindable(level, pos, PathComputationType.LAND)) return true;
-        if (!state.getMaterial().blocksMotion() && block != Blocks.LADDER) return true;
+        if (state.isPathfindable(level(), pos, PathComputationType.LAND)) return true;
+//        if (!state.blocksMotion() && block != Blocks.LADDER) return true;
         if (DroneRegistry.getInstance().pathfindableBlocks.containsKey(block)) {
             IPathfindHandler pathfindHandler = DroneRegistry.getInstance().pathfindableBlocks.get(block);
-            return pathfindHandler == null || pathfindHandler.canPathfindThrough(level, pos);
+            return pathfindHandler == null || pathfindHandler.canPathfindThrough(level(), pos);
         } else {
             return false;
         }
@@ -1278,7 +1284,7 @@ public class DroneEntity extends AbstractDroneEntity implements
 
     @Override
     public void onHackFinished(DroneEntity entity, Player player) {
-        if (!level.isClientSide && player.getUUID().equals(ownerUUID)) {
+        if (!level().isClientSide && player.getUUID().equals(ownerUUID)) {
             setGoingToOwner(gotoOwnerAI == null); //toggle the state
         } else {
             disabledByHacking = true;
@@ -1291,7 +1297,7 @@ public class DroneEntity extends AbstractDroneEntity implements
     }
 
     private void setGoingToOwner(boolean state) {
-        if (!level.isClientSide) {
+        if (!level().isClientSide) {
             if (state && gotoOwnerAI == null) {
                 gotoOwnerAI = new DroneGoToOwner(this);
                 goalSelector.addGoal(2, gotoOwnerAI);
@@ -1316,7 +1322,7 @@ public class DroneEntity extends AbstractDroneEntity implements
 
     @Override
     public Player getOwner() {
-        MinecraftServer server = level.getServer();
+        MinecraftServer server = level().getServer();
         return server != null ? server.getPlayerList().getPlayer(ownerUUID) : null;
     }
 
@@ -1326,7 +1332,7 @@ public class DroneEntity extends AbstractDroneEntity implements
 
     @Override
     public Level world() {
-        return level;
+        return level();
     }
 
     @Override
@@ -1384,7 +1390,7 @@ public class DroneEntity extends AbstractDroneEntity implements
             // little kludge to prevent the dropped minecart/boat immediately picking up the drone
             y -= 2;
             BlockPos pos = e.blockPosition();
-            if (level.getBlockState(pos).isRedstoneConductor(level, pos)) {
+            if (level().getBlockState(pos).isRedstoneConductor(level(), pos)) {
                 y++;
             }
             // minecarts have their own tick() which doesn't decrement rideCooldown
@@ -1465,7 +1471,7 @@ public class DroneEntity extends AbstractDroneEntity implements
 
     @Override
     public void playSound(SoundEvent soundEvent, SoundSource category, float volume, float pitch) {
-        level.playSound(null, blockPosition(), soundEvent, category, volume, pitch);
+        level().playSound(null, blockPosition(), soundEvent, category, volume, pitch);
     }
 
     @Override
@@ -1577,7 +1583,7 @@ public class DroneEntity extends AbstractDroneEntity implements
 
     @Override
     public boolean isFlying() {
-        return !isOnGround();
+        return !onGround();
     }
 
     public class MinigunDrone extends Minigun {

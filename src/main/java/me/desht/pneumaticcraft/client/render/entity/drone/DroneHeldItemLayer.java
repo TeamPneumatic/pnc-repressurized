@@ -40,7 +40,7 @@ public class DroneHeldItemLayer extends RenderLayer<AbstractDroneEntity, ModelDr
     public void render(PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn, AbstractDroneEntity entityIn, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
         ItemStack held = entityIn.getDroneHeldItem();
         if (!held.isEmpty() && !(held.getItem() instanceof AbstractGunAmmoItem && entityIn.hasMinigun())) {
-            renderHeldItem(held, matrixStackIn, bufferIn, packedLightIn, LivingEntityRenderer.getOverlayCoords(entityIn, 0.0F), entityIn.getLevel());
+            renderHeldItem(held, matrixStackIn, bufferIn, packedLightIn, LivingEntityRenderer.getOverlayCoords(entityIn, 0.0F), entityIn.level());
         }
     }
 

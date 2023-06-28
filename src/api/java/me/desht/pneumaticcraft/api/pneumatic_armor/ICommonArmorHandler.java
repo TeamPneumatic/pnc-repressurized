@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.api.pneumatic_armor;
 
-import me.desht.pneumaticcraft.api.item.PNCUpgrade;
+import me.desht.pneumaticcraft.api.upgrade.PNCUpgrade;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 

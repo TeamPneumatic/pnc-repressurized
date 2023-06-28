@@ -30,5 +30,6 @@
     "recipes": [
       "pneumaticcraft:compressed_brick_tile"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

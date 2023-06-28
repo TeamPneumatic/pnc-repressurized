@@ -26,5 +26,6 @@
       "name": "air_compressor",
       "rolls": 1.0
     }
-  ]
+  ],
+  "random_sequence": "pneumaticcraft:blocks/air_compressor"
 }

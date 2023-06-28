@@ -17,10 +17,6 @@
 
 package me.desht.pneumaticcraft.client.gui;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.Tesselator;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.block.entity.AbstractPneumaticCraftBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModItems;
@@ -28,7 +24,6 @@ import me.desht.pneumaticcraft.common.inventory.MinigunMagazineMenu;
 import me.desht.pneumaticcraft.common.item.minigun.MinigunItem;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
@@ -80,16 +75,21 @@ public class MinigunMagazineScreen extends AbstractPneumaticCraftContainerScreen
             int minX = 26 + (lockedSlot % 2) * 18;
             int minY = 26 + (lockedSlot / 2) * 18;
 
-            RenderSystem.enableBlend();
-            RenderSystem.defaultBlendFunc();
+//            RenderSystem.enableBlend();
+//            RenderSystem.defaultBlendFunc();
 
-            PoseStack matrixStack = event.getPoseStack();
-            BufferBuilder wr = Tesselator.getInstance().getBuilder();
-            RenderSystem.setShader(GameRenderer::getPositionColorShader);
-            GuiUtils.drawUntexturedQuad(matrixStack, wr, minX, minY, 0, 16, 16, 0, 208, 0, 50);
-            RenderSystem.lineWidth(3.0F);
-            GuiUtils.drawOutline(matrixStack, wr, minX, minY, 0, 16, 16, 0, 208, 0, 255);
-            RenderSystem.lineWidth(1.0F);
+            event.getGuiGraphics().fill(minX, minY, minX + 16, minY + 16, 0x3200D000);
+            event.getGuiGraphics().hLine(minX, minX + 16, minY, 0xFF00D000);
+            event.getGuiGraphics().hLine(minX, minX + 16, minY + 16, 0xFF00D000);
+            event.getGuiGraphics().vLine(minX, minY, minY + 16, 0xFF00D000);
+            event.getGuiGraphics().vLine(minX + 16, minY, minY + 16, 0xFF00D000);
+//            PoseStack poseStack = event.getGuiGraphics().pose();
+//            BufferBuilder wr = Tesselator.getInstance().getBuilder();
+//            RenderSystem.setShader(GameRenderer::getPositionColorShader);
+//            GuiUtils.drawUntexturedQuad(poseStack, wr, minX, minY, 0, 16, 16, 0, 208, 0, 50);
+//            RenderSystem.lineWidth(3.0F);
+//            GuiUtils.drawOutline(poseStack, wr, minX, minY, 0, 16, 16, 0, 208, 0, 255);
+//            RenderSystem.lineWidth(1.0F);
         }
     }
 }

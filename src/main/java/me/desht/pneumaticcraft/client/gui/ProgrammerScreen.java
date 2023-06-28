@@ -31,7 +31,6 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetRadioButton;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTextField;
 import me.desht.pneumaticcraft.client.render.ProgWidgetRenderer;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
-import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.block.entity.ProgrammerBlockEntity;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
@@ -53,6 +52,8 @@ import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.client.resources.language.I18n;
@@ -145,7 +146,7 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
         }
 
         Rect2i bounds = getProgrammerBounds();
-        programmerUnit = new ProgrammerWidgetAreaRenderer(this, te.progWidgets, leftPos, topPos,
+        programmerUnit = new ProgrammerWidgetAreaRenderer(te.progWidgets, leftPos, topPos,
                 bounds, te.translatedX, te.translatedY, te.zoomState);
         addRenderableWidget(programmerUnit.getScrollBar());
 
@@ -168,7 +169,7 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
         addRenderableWidget(new WidgetButtonExtended(xStart + xRight - 3, yStart + yBottom, 13, 10, Symbols.TRIANGLE_LEFT, b -> adjustPage(-1)));
         addRenderableWidget(new WidgetButtonExtended(xStart + xRight + 34, yStart + yBottom, 13, 10, Symbols.TRIANGLE_RIGHT, b -> adjustPage(1)));
 
-        allWidgetsButton = new WidgetButtonExtended(xStart + xRight + 22, yStart + yBottom - 16, 10, 10, Symbols.TRIANGLE_UP_LEFT, b -> toggleShowWidgets());
+        allWidgetsButton = new WidgetButtonExtended(xStart + xRight + 22, yStart + yBottom - 18, 12, 12, Symbols.TRIANGLE_UP_LEFT, b -> toggleShowWidgets());
         allWidgetsButton.setTooltipText(xlate("pneumaticcraft.gui.programmer.button.openPanel.tooltip"));
         addRenderableWidget(allWidgetsButton);
 
@@ -176,7 +177,7 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
         for (WidgetDifficulty wd : WidgetDifficulty.values()) {
             DifficultyButton dButton = new DifficultyButton(xStart + xRight - 36, yStart + yBottom + 29 + wd.ordinal() * 12,
                     0xFF404040, wd, b -> updateDifficulty(wd));
-            dButton.setTooltip(xlate(wd.getTooltipTranslationKey()));
+            dButton.setTooltip(Tooltip.create(xlate(wd.getTooltipTranslationKey())));
             rbb.addRadioButton(dButton, wd == programmerDifficulty);
         }
         rbb.build(this::addRenderableWidget);
@@ -203,7 +204,7 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
         WidgetButtonExtended clearAllButton = new WidgetButtonExtended(leftPos - 24, topPos + 65, 20, 20, Component.empty(), b -> clear());
         convertToRelativeButton = new WidgetButtonExtended(leftPos - 24, topPos + 86, 20, 20, "R", b -> convertToRelative());
         rotateCoordsButton = new WidgetButtonExtended(leftPos - 24, topPos + 107, 20, 20, "90", b -> rotateCoords90())
-                .setTooltipText(GuiUtils.xlateAndSplit("pneumaticcraft.gui.programmer.button.rotate90button.tooltip"));
+                .setTooltipText(xlate("pneumaticcraft.gui.programmer.button.rotate90button.tooltip"));
 
         undoButton.setRenderedIcon(Textures.GUI_UNDO_ICON_LOCATION);
         redoButton.setRenderedIcon(Textures.GUI_REDO_ICON_LOCATION);
@@ -414,18 +415,18 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
     }
 
     @Override
-    protected void renderLabels(PoseStack matrixStack, int x, int y) {
-        super.renderLabels(matrixStack, x, y);
+    protected void renderLabels(GuiGraphics graphics, int x, int y) {
+        super.renderLabels(graphics, x, y);
 
         int xRight = getProgrammerBounds().getX() + getProgrammerBounds().getWidth(); // 299 or 649
         int yBottom = getProgrammerBounds().getY() + getProgrammerBounds().getHeight(); // 171 or 427
 
         String str = widgetPage + 1 + "/" + maxPage;
-        font.draw(matrixStack, str, xRight + 22 - font.width(str) / 2f, yBottom + 4, 0x404040);
-        font.draw(matrixStack, xlate("pneumaticcraft.gui.programmer.difficulty").getVisualOrderText(), xRight - 36, yBottom + 20, 0x404040);
+        graphics.drawString(font, str, xRight + 22 - font.width(str) / 2f, yBottom + 4, 0x404040, false);
+        graphics.drawString(font, xlate("pneumaticcraft.gui.programmer.difficulty"), xRight - 36, yBottom + 20, 0x404040, false);
 
         if (showingWidgetProgress == 0) {
-            programmerUnit.renderForeground(matrixStack, x, y, draggingWidget, font);
+            programmerUnit.renderForeground(graphics, x, y, draggingWidget, font);
         }
 
         for (int i = 0; i < visibleSpawnWidgets.size(); i++) {
@@ -442,86 +443,86 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
                     if (id != null) tooltip.add(Component.literal(id.toString()).withStyle(ChatFormatting.DARK_GRAY));
                 }
                 if (!tooltip.isEmpty()) {
-                    renderComponentTooltip(matrixStack, tooltip, x - leftPos, y - topPos, font);
+                    graphics.renderComponentTooltip(font, tooltip, x - leftPos, y - topPos);
                 }
             }
         }
     }
 
     @Override
-    protected void renderBg(PoseStack matrixStack, float partialTicks, int mouseX, int mouseY) {
+    protected void renderBg(GuiGraphics graphics, float partialTicks, int mouseX, int mouseY) {
         lastMouseX = mouseX;
         lastMouseY = mouseY;
 
-        renderBackground(matrixStack);
-        bindGuiTexture();
+        renderBackground(graphics);
         int xStart = (width - imageWidth) / 2;
         int yStart = (height - imageHeight) / 2;
-        blit(matrixStack, xStart, yStart, 0, 0, imageWidth, imageHeight, imageWidth, imageHeight);
-        super.renderBg(matrixStack, partialTicks, mouseX, mouseY);
+        graphics.blit(getGuiTexture(), xStart, yStart, 0, 0, imageWidth, imageHeight, imageWidth, imageHeight);
+        super.renderBg(graphics, partialTicks, mouseX, mouseY);
 
-        programmerUnit.render(matrixStack, mouseX, mouseY, showFlow.checked, showInfo.checked && showingWidgetProgress == 0);
+        programmerUnit.render(graphics, mouseX, mouseY, showFlow.checked, showInfo.checked && showingWidgetProgress == 0);
 
         // draw expanding widget tray
         if (showingWidgetProgress > 0) {
             int xRight = getProgrammerBounds().getX() + getProgrammerBounds().getWidth(); // 299 or 649
             int yBottom = getProgrammerBounds().getY() + getProgrammerBounds().getHeight(); // 171 or 427
 
-            bindGuiTexture();
             int width = (int)Mth.lerp(partialTicks, (float)oldShowingWidgetProgress, (float)showingWidgetProgress);
             for (int i = 0; i < width; i++) {
-                blit(matrixStack, xStart + xRight + 21 - i, yStart + 36, xRight + 24, 36, 1, yBottom - 35, imageWidth, imageHeight);
+                graphics.blit(getGuiTexture(), xStart + xRight + 21 - i, yStart + 36, xRight + 24, 36, 1, yBottom - 35, imageWidth, imageHeight);
             }
-            blit(matrixStack, xStart + xRight + 20 - width, yStart + 36, xRight + 20, 36, 2, yBottom - 35, imageWidth, imageHeight);
+            graphics.blit(getGuiTexture(), xStart + xRight + 20 - width, yStart + 36, xRight + 20, 36, 2, yBottom - 35, imageWidth, imageHeight);
 
             if (showingAllWidgets && draggingWidget != null) toggleShowWidgets();
         }
         // draw widgets in the widget tray
         RenderSystem.enableBlend();
         RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+        PoseStack poseStack = graphics.pose();
         for (int i = 0; i < visibleSpawnWidgets.size(); i++) {
             IProgWidget widget = visibleSpawnWidgets.get(i);
-            matrixStack.pushPose();
-            matrixStack.translate(widget.getX() + leftPos, widget.getY() + topPos, 0);
-            matrixStack.scale(0.5f, 0.5f, 1f);
+            poseStack.pushPose();
+            poseStack.translate(widget.getX() + leftPos, widget.getY() + topPos, 0);
+            poseStack.scale(0.5f, 0.5f, 1f);
             if (showingAllWidgets && filteredSpawnWidgets != null && !filteredSpawnWidgets.get(i)) {
-                ProgWidgetRenderer.renderProgWidget2d(matrixStack, widget, 48);
+                ProgWidgetRenderer.renderProgWidget2d(graphics, widget, 48);
             } else {
-                ProgWidgetRenderer.renderProgWidget2d(matrixStack, widget);
+                ProgWidgetRenderer.renderProgWidget2d(graphics, widget);
             }
-            matrixStack.popPose();
+            poseStack.popPose();
         }
 
         // draw the widget currently being dragged, if any
         float scale = programmerUnit.getScale();
-        matrixStack.pushPose();
-        matrixStack.translate(programmerUnit.getTranslatedX(), programmerUnit.getTranslatedY(), 0);
-        matrixStack.scale(scale, scale, 1f);
+        poseStack.pushPose();
+        poseStack.translate(programmerUnit.getTranslatedX(), programmerUnit.getTranslatedY(), 0);
+        poseStack.scale(scale, scale, 1f);
         if (draggingWidget != null) {
-            matrixStack.pushPose();
-            matrixStack.translate(draggingWidget.getX() + leftPos, draggingWidget.getY() + topPos, 0);
-            matrixStack.scale(0.5f, 0.5f, 1f);
-            ProgWidgetRenderer.renderProgWidget2d(matrixStack, draggingWidget);
-            matrixStack.popPose();
+            poseStack.pushPose();
+            poseStack.translate(draggingWidget.getX() + leftPos, draggingWidget.getY() + topPos, 0);
+            poseStack.scale(0.5f, 0.5f, 1f);
+            ProgWidgetRenderer.renderProgWidget2d(graphics, draggingWidget);
+            poseStack.popPose();
         }
-        matrixStack.popPose();
+        poseStack.popPose();
 
         RenderSystem.disableBlend();
 
-        if (!removingWidgets.isEmpty()) drawRemovingWidgets(matrixStack);
+        if (!removingWidgets.isEmpty()) drawRemovingWidgets(graphics);
     }
 
     /**
      * This doesn't achieve much other than look really cool.
      */
-    private void drawRemovingWidgets(PoseStack matrixStack) {
+    private void drawRemovingWidgets(GuiGraphics graphics) {
         Iterator<RemovingWidget> iter = removingWidgets.iterator();
         int h = minecraft.getWindow().getGuiScaledHeight();
         float scale = programmerUnit.getScale();
 
-        matrixStack.pushPose();
-        matrixStack.translate(programmerUnit.getTranslatedX(), programmerUnit.getTranslatedY(), 0);
-        matrixStack.scale(scale, scale, 1f);
+        PoseStack poseStack = graphics.pose();
+        poseStack.pushPose();
+        poseStack.translate(programmerUnit.getTranslatedX(), programmerUnit.getTranslatedY(), 0);
+        poseStack.scale(scale, scale, 1f);
         RenderSystem.enableBlend();
         RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
         while (iter.hasNext()) {
@@ -530,17 +531,17 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
             if (w.getY() + rw.ty > h / scale) {
                 iter.remove();
             } else {
-                matrixStack.pushPose();
-                matrixStack.translate(w.getX() + rw.tx + leftPos, w.getY() + rw.ty + topPos, 0);
-                matrixStack.scale(0.5f, 0.5f, 1f);
-                ProgWidgetRenderer.renderProgWidget2d(matrixStack, w);
-                matrixStack.popPose();
+                poseStack.pushPose();
+                poseStack.translate(w.getX() + rw.tx + leftPos, w.getY() + rw.ty + topPos, 0);
+                poseStack.scale(0.5f, 0.5f, 1f);
+                ProgWidgetRenderer.renderProgWidget2d(graphics, w);
+                poseStack.popPose();
                 rw.tick();
 
             }
         }
         RenderSystem.disableBlend();
-        matrixStack.popPose();
+        poseStack.popPose();
     }
 
     @Override
@@ -884,7 +885,7 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
         if (programmerUnit.getTotalWarnings() > 0)
             exportButtonTooltip.add(xlate("pneumaticcraft.gui.programmer.warningCount", programmerUnit.getTotalWarnings()).withStyle(ChatFormatting.YELLOW));
 
-        exportButton.setTooltipText(exportButtonTooltip);
+        exportButton.setTooltipText(PneumaticCraftUtils.combineComponents(exportButtonTooltip));
     }
 
     private int countPlayerPuzzlePieces() {
@@ -937,7 +938,7 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
             tooltip.add(xlate("pneumaticcraft.gui.programmer.button.convertToRelative.noBaseCoordinate").withStyle(ChatFormatting.RED));
         }
 
-        convertToRelativeButton.setTooltipText(tooltip);
+        convertToRelativeButton.setTooltipText(PneumaticCraftUtils.combineComponents(tooltip));
     }
 
     private boolean generateRelativeOperators(ProgWidgetCoordinateOperator baseWidget, List<Component> tooltip, boolean simulate) {
@@ -1105,7 +1106,7 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
         } else if (button == 1 && showingWidgetProgress == 0) {
             IProgWidget widget = programmerUnit.getHoveredWidget((int)origX, (int)origY);
             if (widget != null) {
-                // right click a prog widget: show its options screen, if any
+                // right-click a prog widget: show its options screen, if any
                 AbstractProgWidgetScreen<?> gui = ProgWidgetGuiManager.getGui(widget, this);
                 if (gui != null) {
                     minecraft.setScreen(gui);
@@ -1305,13 +1306,13 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
         }
 
         @Override
-        public void renderWidget(PoseStack matrixStack, int x, int y, float partialTicks) {
+        public void renderWidget(GuiGraphics graphics, int x, int y, float partialTicks) {
             // this is needed to force the textfield to draw on top of any
             // widgets in the programming area
-            matrixStack.pushPose();
-            matrixStack.translate(0, 0, 300);
-            super.renderWidget(matrixStack, x, y, partialTicks);
-            matrixStack.popPose();
+            graphics.pose().pushPose();
+            graphics.pose().translate(0, 0, 300);
+            super.renderWidget(graphics, x, y, partialTicks);
+            graphics.pose().popPose();
         }
     }
 

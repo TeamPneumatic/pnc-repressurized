@@ -17,7 +17,6 @@
 
 package me.desht.pneumaticcraft.common.thirdparty.jei;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.common.block.entity.UVLightBoxBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
@@ -30,6 +29,7 @@ import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -67,9 +67,9 @@ public class JEIUVLightBoxCategory extends AbstractPNCCategory<UVLightBoxRecipe>
     }
 
     @Override
-    public void draw(UVLightBoxRecipe recipe, IRecipeSlotsView recipeSlotsView, PoseStack matrixStack, double mouseX, double mouseY) {
-        progressBar.draw(matrixStack, 22, 0);
-        getIcon().draw(matrixStack, 30, -2);
+    public void draw(UVLightBoxRecipe recipe, IRecipeSlotsView recipeSlotsView, GuiGraphics graphics, double mouseX, double mouseY) {
+        progressBar.draw(graphics, 22, 0);
+        getIcon().draw(graphics, 30, -2);
     }
 
     @Override

@@ -30,5 +30,6 @@
     "recipes": [
       "pneumaticcraft:liquid_compressor"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

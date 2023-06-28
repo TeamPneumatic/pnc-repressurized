@@ -24,9 +24,6 @@ import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.IBlockComponentProvider;
 import snownee.jade.api.IServerDataProvider;
@@ -41,11 +38,11 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 public class TubeModuleProvider {
     public static final ResourceLocation ID = RL("tube_module");
 
-    public static class DataProvider implements IServerDataProvider<BlockEntity> {
+    public static class DataProvider implements IServerDataProvider<BlockAccessor> {
         @Override
-        public void appendServerData(CompoundTag compoundTag, ServerPlayer serverPlayer, Level level, BlockEntity blockEntity, boolean b) {
-            if (blockEntity instanceof PressureTubeBlockEntity) {
-                AbstractTubeModule module = PressureTubeBlock.getFocusedModule(level, blockEntity.getBlockPos(), serverPlayer);
+        public void appendServerData(CompoundTag compoundTag, BlockAccessor blockAccessor) {
+            if (blockAccessor.getBlockEntity() instanceof PressureTubeBlockEntity) {
+                AbstractTubeModule module = PressureTubeBlock.getFocusedModule(blockAccessor.getLevel(), blockAccessor.getPosition(), blockAccessor.getPlayer());
                 if (module != null) {
                     compoundTag.put("module", module.writeToNBT(new CompoundTag()));
                     compoundTag.putByte("side", (byte) module.getDirection().get3DDataValue());

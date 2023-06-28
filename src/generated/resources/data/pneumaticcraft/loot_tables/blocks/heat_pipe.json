@@ -26,5 +26,6 @@
       "name": "heat_pipe",
       "rolls": 1.0
     }
-  ]
+  ],
+  "random_sequence": "pneumaticcraft:blocks/heat_pipe"
 }

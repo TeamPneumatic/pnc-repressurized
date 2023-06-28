@@ -17,16 +17,13 @@
 
 package me.desht.pneumaticcraft.common.thirdparty.patchouli;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTank;
-import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.network.chat.Component;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraftforge.fluids.FluidStack;
 import vazkii.patchouli.api.IComponentRenderContext;
 import vazkii.patchouli.api.ICustomComponent;
 import vazkii.patchouli.api.IVariable;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
@@ -45,16 +42,14 @@ public class ComponentFluid implements ICustomComponent {
     }
 
     @Override
-    public void render(PoseStack matrixStack, IComponentRenderContext ctx, float pticks, int mouseX, int mouseY) {
+    public void render(GuiGraphics graphics, IComponentRenderContext ctx, float pticks, int mouseX, int mouseY) {
         if (!fluidStacks.isEmpty()) {
             tankWidget.setFluid(fluidStacks.get(ctx.getTicksInBook() / 20 % fluidStacks.size()));
         }
         if (tankWidget.getTank().getCapacity() > 0 && !tankWidget.getTank().getFluid().isEmpty()) {
-            tankWidget.renderWidget(matrixStack, mouseX, mouseY, pticks);
+            tankWidget.renderWidget(graphics, mouseX, mouseY, pticks);
             if (ctx.isAreaHovered(mouseX, mouseY, tankWidget.getX(), tankWidget.getY(), tankWidget.getWidth(), tankWidget.getHeight())) {
-                List<Component> tooltip = new ArrayList<>();
-                tankWidget.addTooltip(mouseX, mouseY, tooltip, Screen.hasShiftDown());
-                ctx.setHoverTooltipComponents(tooltip);
+                ctx.setHoverTooltipComponents(tankWidget.makeTooltip());
             }
         }
     }

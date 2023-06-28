@@ -26,5 +26,6 @@
       "name": "aphorism_tile",
       "rolls": 1.0
     }
-  ]
+  ],
+  "random_sequence": "pneumaticcraft:blocks/aphorism_tile"
 }

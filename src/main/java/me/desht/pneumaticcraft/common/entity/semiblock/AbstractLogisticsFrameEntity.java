@@ -197,7 +197,7 @@ public abstract class AbstractLogisticsFrameEntity extends AbstractSemiblockEnti
 
     @Override
     public void setSide(Direction facing) {
-        if (SemiblockTracker.getInstance().getSemiblock(level, getBlockPos(), facing) == null) {
+        if (SemiblockTracker.getInstance().getSemiblock(level(), getBlockPos(), facing) == null) {
             getEntityData().set(SIDE, facing);
         }
     }
@@ -250,7 +250,7 @@ public abstract class AbstractLogisticsFrameEntity extends AbstractSemiblockEnti
     public void tick() {
         super.tick();
 
-        if (!level.isClientSide) {
+        if (!level().isClientSide) {
             Iterator<Map.Entry<ItemStack, Integer>> iterator = incomingStacks.entrySet().iterator();
             while (iterator.hasNext()) {
                 Map.Entry<ItemStack, Integer> entry = iterator.next();
@@ -406,14 +406,14 @@ public abstract class AbstractLogisticsFrameEntity extends AbstractSemiblockEnti
         if (player.isShiftKeyDown()) {
             NonNullList<ItemStack> drops = getDrops();
             if (!drops.isEmpty()) {
-                AbstractLogisticsFrameItem.addLogisticsTooltip(drops.get(0), player.level, new ArrayList<>(), true).forEach(curInfo);
+                AbstractLogisticsFrameItem.addLogisticsTooltip(drops.get(0), player.level(), new ArrayList<>(), true).forEach(curInfo);
             }
         }
     }
 
     @Override
     public boolean onRightClickWithConfigurator(Player player, Direction side) {
-        if (!player.level.isClientSide) {
+        if (!player.level().isClientSide) {
             if (side != getSide()) {
                 return false;
             }
@@ -494,7 +494,7 @@ public abstract class AbstractLogisticsFrameEntity extends AbstractSemiblockEnti
 
     public boolean isObstructed(PathComputationType pathType) {
         BlockPos pos = getBlockPos().relative(getSide());
-        return !level.getBlockState(pos).isPathfindable(level, pos, pathType);
+        return !level().getBlockState(pos).isPathfindable(level(), pos, pathType);
     }
 
     @Mod.EventBusSubscriber(modid = Names.MOD_ID)

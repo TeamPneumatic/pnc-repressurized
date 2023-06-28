@@ -17,18 +17,14 @@
 
 package me.desht.pneumaticcraft.client.gui.widget;
 
-import com.mojang.blaze3d.vertex.PoseStack;
+import me.desht.pneumaticcraft.client.util.GuiUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.Component;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-public class WidgetLabel extends AbstractWidget implements ITooltipProvider {
+public class WidgetLabel extends PNCWidget<WidgetLabel> {
 
     public enum Alignment {
         LEFT, CENTRE, RIGHT
@@ -37,7 +33,6 @@ public class WidgetLabel extends AbstractWidget implements ITooltipProvider {
     private float scale = 1.0f;
     private int color;
     private Alignment alignment = Alignment.LEFT;
-    private List<Component> tooltip = new ArrayList<>();
     private boolean dropShadow = false;
 
     public WidgetLabel(int x, int y, Component text) {
@@ -70,24 +65,6 @@ public class WidgetLabel extends AbstractWidget implements ITooltipProvider {
         };
     }
 
-    @Override
-    public void addTooltip(double mouseX, double mouseY, List<Component> curTip, boolean shift) {
-        curTip.addAll(tooltip);
-    }
-
-    public WidgetLabel setTooltip(Component tooltip) {
-        return setTooltip(Collections.singletonList(tooltip));
-    }
-
-    public WidgetLabel setTooltip(List<Component> tooltip) {
-        this.tooltip = tooltip;
-        return this;
-    }
-
-    public List<Component> getTooltip() {
-        return tooltip;
-    }
-
     public WidgetLabel setColor(int color) {
         this.color = color;
         return this;
@@ -99,14 +76,14 @@ public class WidgetLabel extends AbstractWidget implements ITooltipProvider {
     }
 
     @Override
-    public void setMessage(Component p_setMessage_1_) {
-        super.setMessage(p_setMessage_1_);
+    public void setMessage(Component pMessage) {
+        super.setMessage(pMessage);
 
         width = Minecraft.getInstance().font.width(getMessage());
     }
 
     @Override
-    public void renderWidget(PoseStack matrixStack, int mouseX, int mouseY, float partialTick) {
+    public void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
         if (visible) {
             int drawX;
             Font fr = Minecraft.getInstance().font;
@@ -115,19 +92,7 @@ public class WidgetLabel extends AbstractWidget implements ITooltipProvider {
                 case CENTRE -> getX() - (int) (width / 2 * scale);
                 case RIGHT -> getX() - (int) (width * scale);
             };
-            if (scale != 1.0f) {
-                matrixStack.pushPose();
-                matrixStack.scale(scale, scale, scale);
-                matrixStack.translate(drawX, getY(), 0);
-            }
-            if (dropShadow) {
-                fr.drawShadow(matrixStack, getMessage().getVisualOrderText(), drawX, getY(), color);
-            } else {
-                fr.draw(matrixStack, getMessage().getVisualOrderText(), drawX, getY(), color);
-            }
-            if (scale != 1.0f) {
-                matrixStack.popPose();
-            }
+            GuiUtils.drawScaledText(graphics, fr, getMessage(), drawX, getY(), color, scale,  dropShadow);
         }
     }
 

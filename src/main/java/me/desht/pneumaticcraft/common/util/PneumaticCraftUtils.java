@@ -111,7 +111,7 @@ public class PneumaticCraftUtils {
 
         StringBuilder builder = new StringBuilder(text.length());
         String format = "";
-        for (String para : text.split(Pattern.quote("${br}"))) {
+        for (String para : text.split(Pattern.quote("\n"))) {
             StringTokenizer tok = new StringTokenizer(para, " ");
             int lineLen = 0;
             while (tok.hasMoreTokens()) {
@@ -121,7 +121,7 @@ public class PneumaticCraftUtils {
                 for (String word : Splitter.fixedLength(maxCharPerLine).split(token)) {
                     int idx = word.lastIndexOf("\u00a7");
                     if (idx >= 0 && idx < word.length() - 1) {
-                        // note any formatting sequence so it can also be applied to start of next line
+                        // note any formatting sequence, so it can also be applied to start of next line
                         format = word.substring(idx, idx + 2);
                         // formatting sequences do not contribute to line length
                         lineLen -= 2;
@@ -162,7 +162,7 @@ public class PneumaticCraftUtils {
      * @return a formatted time
      */
     public static String convertTicksToMinutesAndSeconds(long ticks, boolean fraction) {
-        String part = ticks % 20 * 5 + "";
+        String part = String.valueOf(ticks % 20 * 5);
         if (part.length() < 2) part = "0" + part;
         ticks /= 20;// first convert to seconds.
         if (ticks < 60) {
@@ -198,7 +198,8 @@ public class PneumaticCraftUtils {
      * @return a formatted string representation
      */
     public static String roundNumberTo(double value, int decimals) {
-        return String.format("%." + decimals + "f", roundNumberToDouble(value, decimals));
+        String fmtStr = "%." + decimals + "f";
+        return String.format(fmtStr, roundNumberToDouble(value, decimals));
     }
 
     /**
@@ -263,7 +264,7 @@ public class PneumaticCraftUtils {
         List<ItemStack> prevInventoryItems = null;
         for (ItemStack stack : sortedStacks) {
             if (!stack.isEmpty()) {
-                if (!stack.sameItem(prevItemStack) || prevInventoryItems != null && prevInventoryItems.size() > 0) {
+                if (!ItemStack.isSameItem(stack, prevItemStack) || prevInventoryItems != null && prevInventoryItems.size() > 0) {
                     if (!prevItemStack.isEmpty()) {
                         textList.add(prefix.copy().append(PneumaticCraftUtils.convertAmountToString(itemCount) + " x " + prevItemStack.getHoverName().getString()));
                     }
@@ -360,7 +361,7 @@ public class PneumaticCraftUtils {
         if (filterStack.getItem() != stack.getItem()) return false;
 
         boolean durabilityOK = !checkDurability || (filterStack.getMaxDamage() > 0 && filterStack.getDamageValue() == stack.getDamageValue());
-        boolean nbtOK = !checkNBT || ItemStack.tagMatches(filterStack, stack);
+        boolean nbtOK = !checkNBT || Objects.equals(filterStack.getTag(), stack.getTag());
 
         return durabilityOK && nbtOK;
     }
@@ -440,7 +441,7 @@ public class PneumaticCraftUtils {
      * @return a dummy player-sized living entity
      */
     public static Mob createDummyEntity(Player player) {
-        Zombie dummy = new Zombie(player.level) {
+        Zombie dummy = new Zombie(player.level()) {
 //            @Override
 //            protected void registerAttributes() {
 //                super.registerAttributes();
@@ -499,14 +500,14 @@ public class PneumaticCraftUtils {
         for (int i = 0; i < inv.items.size(); ++i) {
             ItemStack invStack = inv.items.get(i);
             int consumed;
-            if (ItemStack.isSame(invStack, stack)) {
+            if (ItemStack.isSameItem(invStack, stack)) {
                 consumed = Math.min(invStack.getCount(), stack.getCount());
                 invStack.shrink(consumed);
             } else {
                 consumed = invStack.getCapability(ForgeCapabilities.ITEM_HANDLER).map(h -> {
                     for (int j = 0; j < h.getSlots(); j++) {
                         ItemStack invStack2 = h.getStackInSlot(j);
-                        if (ItemStack.isSame(invStack2, stack)) {
+                        if (ItemStack.isSameItem(invStack2, stack)) {
                             int extracted = Math.min(invStack2.getCount(), stack.getCount());
                             ItemStack s = h.extractItem(j, extracted, false);
                             return s.getCount();
@@ -728,5 +729,9 @@ public class PneumaticCraftUtils {
         }
 
         return (double)i / (double)pValues.length;
+    }
+
+    public static Component combineComponents(List<Component> components) {
+        return components.stream().reduce((c1, c2) -> c1.copy().append("\n").append(c2)).orElse(Component.empty());
     }
 }

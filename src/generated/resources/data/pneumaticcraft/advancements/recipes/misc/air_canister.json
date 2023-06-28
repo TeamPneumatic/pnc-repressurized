@@ -30,5 +30,6 @@
     "recipes": [
       "pneumaticcraft:air_canister"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

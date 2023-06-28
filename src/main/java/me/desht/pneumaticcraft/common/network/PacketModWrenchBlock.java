@@ -26,6 +26,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.network.NetworkEvent;
 
@@ -82,17 +83,18 @@ public class PacketModWrenchBlock extends LocationIntPacket {
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
             ServerPlayer player = ctx.get().getSender();
-            if (player.level.isAreaLoaded(pos, 0) && PneumaticCraftUtils.canPlayerReach(player, pos)) {
+            Level level = player.level();
+            if (level.isAreaLoaded(pos, 0) && PneumaticCraftUtils.canPlayerReach(player, pos)) {
                 if (ModdedWrenchUtils.getInstance().isModdedWrench(player.getItemInHand(hand))) {
                     if (entityID >= 0) {
-                        Entity e = player.level.getEntity(entityID);
+                        Entity e = level.getEntity(entityID);
                         if (e instanceof IPneumaticWrenchable && e.isAlive()) {
-                            ((IPneumaticWrenchable) e).onWrenched(player.level, player, pos, side, hand);
+                            ((IPneumaticWrenchable) e).onWrenched(level, player, pos, side, hand);
                         }
                     } else if (side != null) {
-                        BlockState state = player.level.getBlockState(pos);
+                        BlockState state = level.getBlockState(pos);
                         if (state.getBlock() instanceof IPneumaticWrenchable) {
-                            ((IPneumaticWrenchable) state.getBlock()).onWrenched(player.level, player, pos, side, hand);
+                            ((IPneumaticWrenchable) state.getBlock()).onWrenched(level, player, pos, side, hand);
                         }
                     }
                 }

@@ -17,9 +17,9 @@
 
 package me.desht.pneumaticcraft.common.inventory.slot;
 
-import me.desht.pneumaticcraft.api.item.PNCUpgrade;
+import me.desht.pneumaticcraft.api.upgrade.PNCUpgrade;
 import me.desht.pneumaticcraft.common.block.entity.AbstractPneumaticCraftBlockEntity;
-import me.desht.pneumaticcraft.common.util.upgrade.ApplicableUpgradesDB;
+import me.desht.pneumaticcraft.common.upgrades.ApplicableUpgradesDB;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.SlotItemHandler;
 

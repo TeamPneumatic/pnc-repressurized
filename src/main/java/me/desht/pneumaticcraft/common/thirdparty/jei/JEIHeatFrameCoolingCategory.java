@@ -17,7 +17,6 @@
 
 package me.desht.pneumaticcraft.common.thirdparty.jei;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.api.crafting.recipe.HeatFrameCoolingRecipe;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -31,6 +30,7 @@ import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
@@ -65,10 +65,10 @@ public class JEIHeatFrameCoolingCategory extends AbstractPNCCategory<HeatFrameCo
     }
 
     @Override
-    public void draw(HeatFrameCoolingRecipe recipe, IRecipeSlotsView recipeSlotsView, PoseStack matrixStack, double mouseX, double mouseY) {
-        progressBar.draw(matrixStack, 22, 0);
+    public void draw(HeatFrameCoolingRecipe recipe, IRecipeSlotsView recipeSlotsView, GuiGraphics graphics, double mouseX, double mouseY) {
+        progressBar.draw(graphics, 22, 0);
         if (recipe.getBonusMultiplier() > 0f) {
-            bonusIcon.draw(matrixStack, 30, 0);
+            bonusIcon.draw(graphics, 30, 0);
         }
     }
 

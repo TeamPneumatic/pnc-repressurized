@@ -30,5 +30,6 @@
     "recipes": [
       "pneumaticcraft:thermo_plant/salmon_tempura"
     ]
-  }
+  },
+  "sends_telemetry_event": true
 }

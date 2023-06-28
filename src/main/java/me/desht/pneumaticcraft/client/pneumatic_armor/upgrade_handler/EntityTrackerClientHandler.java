@@ -28,14 +28,15 @@ import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorHandler;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.options.EntityTrackOptions;
 import me.desht.pneumaticcraft.client.pneumatic_armor.ClientArmorRegistry;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.RenderEntityTarget;
-import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.item.PneumaticArmorItem;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
 import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.EntityTrackerHandler;
+import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.util.EntityFilter;
 import me.desht.pneumaticcraft.common.util.StringFilterEntitySelector;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
@@ -50,7 +51,9 @@ import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.common.MinecraftForge;
 
 import javax.annotation.Nonnull;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.stream.Stream;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
@@ -90,7 +93,7 @@ public class EntityTrackerClientHandler extends IArmorUpgradeClientHandler.Abstr
         // find applicable entities and create/update render targets for them as needed
         double entityTrackRange = ENTITY_TRACKING_RANGE + rangeUpgrades * PneumaticValues.RANGE_UPGRADE_HELMET_RANGE_INCREASE;
         AABB bbBox = getAABBFromRange(player, rangeUpgrades);
-        List<Entity> entities = armorHandler.getPlayer().level.getEntitiesOfClass(Entity.class, bbBox,
+        List<Entity> entities = armorHandler.getPlayer().level().getEntitiesOfClass(Entity.class, bbBox,
                 new EntityTrackerSelector(player, entityFilter, entityTrackRange));
         for (Entity entity : entities) {
             RenderEntityTarget target = targets.get(entity.getId());
@@ -149,7 +152,7 @@ public class EntityTrackerClientHandler extends IArmorUpgradeClientHandler.Abstr
     }
 
     @Override
-    public void render2D(PoseStack matrixStack, float partialTicks, boolean armorPieceHasPressure) {
+    public void render2D(GuiGraphics graphics, float partialTicks, boolean armorPieceHasPressure) {
     }
 
     @Override

@@ -30,5 +30,6 @@
     "recipes": [
       "pneumaticcraft:safety_tube_module"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

@@ -17,7 +17,6 @@
 
 package me.desht.pneumaticcraft.client.gui.pneumatic_armor;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.client.gui.AbstractPneumaticCraftScreen;
 import me.desht.pneumaticcraft.client.gui.widget.PNCForgeSlider;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
@@ -33,6 +32,7 @@ import me.desht.pneumaticcraft.common.network.PacketUpdateArmorColors;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
@@ -42,7 +42,6 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.client.gui.ScreenUtils;
 
 import java.util.*;
 
@@ -196,12 +195,12 @@ public class ArmorColoringScreen extends AbstractPneumaticCraftScreen {
     }
 
     @Override
-    public void render(PoseStack matrixStack, int x, int y, float partialTicks) {
-        renderBackground(matrixStack);
-        super.render(matrixStack, x, y, partialTicks);
+    public void render(GuiGraphics graphics, int x, int y, float partialTicks) {
+        renderBackground(graphics);
+        super.render(graphics, x, y, partialTicks);
         double scaleFactor = Minecraft.getInstance().getWindow().getGuiScale();
         int scale = (int) (Minecraft.getInstance().getWindow().getScreenHeight() / (scaleFactor * 3));
-        InventoryScreen.renderEntityInInventoryFollowsMouse(matrixStack, width * 2 / 3, height * 3 / 4, scale,
+        InventoryScreen.renderEntityInInventoryFollowsMouse(graphics, width * 2 / 3, height * 3 / 4, scale,
                 width * 2 / 3f - x, height / 4f - y,
                 ClientUtils.getClientPlayer());
     }
@@ -334,13 +333,13 @@ public class ArmorColoringScreen extends AbstractPneumaticCraftScreen {
         }
 
         @Override
-        public void renderWidget(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
-            super.renderWidget(matrixStack, mouseX, mouseY, partialTicks);
+        public void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+            super.renderWidget(graphics, mouseX, mouseY, partialTicks);
 
             int x = getX(), y = getY();
-            fill(matrixStack, x + 3, y + 3, x + 14, y + 14, gui.colors[slot.getIndex()][selectorType.ordinal()]);
-            hLine(matrixStack, x + 4, x + 14, y + 14, 0xFF202020);
-            vLine(matrixStack, x + 14, y + 3, y + 14, 0xFF202020);
+            graphics.fill(x + 3, y + 3, x + 14, y + 14, gui.colors[slot.getIndex()][selectorType.ordinal()]);
+            graphics.hLine(x + 4, x + 14, y + 14, 0xFF202020);
+            graphics.vLine(x + 14, y + 3, y + 14, 0xFF202020);
         }
     }
 }

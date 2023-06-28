@@ -30,5 +30,6 @@
     "recipes": [
       "pneumaticcraft:raw_salmon_tempura"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

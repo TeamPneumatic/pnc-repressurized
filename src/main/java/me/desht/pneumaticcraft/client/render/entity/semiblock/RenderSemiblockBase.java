@@ -70,9 +70,9 @@ abstract class RenderSemiblockBase<T extends AbstractSemiblockEntity> extends En
             BlockPos pos = entityIn.getBlockPos();
             for (Direction d : LIGHTING_DIRS) {
                 BlockPos pos2 = pos.relative(d);
-                if (!Block.canSupportCenter(entityIn.level, pos2, d.getOpposite())) {
-                    int block = entityIn.level.getBrightness(LightLayer.BLOCK, pos2);
-                    int sky = entityIn.level.getBrightness(LightLayer.SKY, pos2);
+                if (!Block.canSupportCenter(entityIn.level(), pos2, d.getOpposite())) {
+                    int block = entityIn.level().getBrightness(LightLayer.BLOCK, pos2);
+                    int sky = entityIn.level().getBrightness(LightLayer.SKY, pos2);
                     return LightTexture.pack(block, sky);
                 }
             }

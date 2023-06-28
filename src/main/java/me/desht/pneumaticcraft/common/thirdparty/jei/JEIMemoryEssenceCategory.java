@@ -18,12 +18,11 @@
 package me.desht.pneumaticcraft.common.thirdparty.jei;
 
 import com.google.common.collect.ImmutableList;
-import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.common.XPFluidManager;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModFluids;
 import me.desht.pneumaticcraft.common.core.ModItems;
-import me.desht.pneumaticcraft.common.core.ModUpgrades;
+import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import mezz.jei.api.constants.VanillaTypes;
@@ -37,6 +36,7 @@ import mezz.jei.api.recipe.RecipeIngredientRole;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
@@ -70,12 +70,12 @@ public class JEIMemoryEssenceCategory extends AbstractPNCCategory<JEIMemoryEssen
     }
 
     @Override
-    public void draw(MemoryEssenceRecipe recipe, IRecipeSlotsView recipeSlotsView, PoseStack matrixStack, double mouseX, double mouseY) {
+    public void draw(MemoryEssenceRecipe recipe, IRecipeSlotsView recipeSlotsView, GuiGraphics graphics, double mouseX, double mouseY) {
         Font fr = Minecraft.getInstance().font;
         int ratio = XPFluidManager.getInstance().getXPRatio(ModFluids.MEMORY_ESSENCE.get());
         String s = "1 XP = " + ratio + " mB";
         int w = fr.width(s);
-        Minecraft.getInstance().font.draw(matrixStack, s, (getBackground().getWidth() - w) / 2f, 0, 0x404040);
+        graphics.drawString(fr, s, (getBackground().getWidth() - w) / 2, 0, 0x404040, false);
     }
 
     private record Tooltip(MemoryEssenceRecipe recipe, int slot) implements IRecipeSlotTooltipCallback {

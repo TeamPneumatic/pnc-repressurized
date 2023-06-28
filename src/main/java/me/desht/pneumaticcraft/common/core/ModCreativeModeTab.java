@@ -1,21 +1,21 @@
-package me.desht.pneumaticcraft.common.event;
+package me.desht.pneumaticcraft.common.core;
 
-import me.desht.pneumaticcraft.api.lib.Names;
+import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.pressure.IPressurizableItem;
 import me.desht.pneumaticcraft.common.capabilities.AirHandlerItemStack;
-import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.item.*;
 import me.desht.pneumaticcraft.common.item.minigun.AbstractGunAmmoItem;
 import me.desht.pneumaticcraft.common.recipes.special.PatchouliBookCrafting;
 import me.desht.pneumaticcraft.common.semiblock.SemiblockItem;
 import me.desht.pneumaticcraft.lib.ModIds;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.event.CreativeModeTabEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModList;
-import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.registries.DeferredRegister;
+import net.minecraftforge.registries.RegistryObject;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -23,13 +23,14 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-@Mod.EventBusSubscriber(modid = Names.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
-public class CreativeTabEventHandler {
-    @SubscribeEvent
-    public static void onCreativeTabRegister(CreativeModeTabEvent.Register event) {
+public class ModCreativeModeTab {
+    public static final DeferredRegister<CreativeModeTab> TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, PneumaticRegistry.MOD_ID);
+
+    public static final RegistryObject<CreativeModeTab> DEFAULT = TABS.register("default", ModCreativeModeTab::buildDefaultTab);
+
+    private static CreativeModeTab buildDefaultTab() {
         List<ItemStack> items = ModItems.ITEMS.getEntries().stream()
                 .flatMap(ro -> stacksForItem(ro.get()))
                 .sorted(new ItemSorter())
@@ -39,12 +40,11 @@ public class CreativeTabEventHandler {
             items.add(PatchouliBookCrafting.makeGuideBook());
         }
 
-        event.registerCreativeModeTab(RL("default"), builder ->
-            builder.title(xlate("itemGroup.pneumaticcraft"))
-                    .icon(() -> new ItemStack(ModItems.PRESSURE_GAUGE.get()))
-                    .displayItems((flags, output) -> output.acceptAll(items))
-                    .build()
-        );
+        return CreativeModeTab.builder()
+                .title(xlate("itemGroup.pneumaticcraft"))
+                .icon(() -> new ItemStack(ModItems.PRESSURE_GAUGE.get()))
+                .displayItems((params, output) -> output.acceptAll(items))
+                .build();
     }
 
     private static Stream<ItemStack> stacksForItem(Item item) {

@@ -17,12 +17,12 @@
 
 package me.desht.pneumaticcraft.client.gui.programmer;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.client.gui.ProgrammerScreen;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetCheckBox;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetRadioButton;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ICondition.Operator;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetCoordinateCondition;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 
@@ -53,10 +53,10 @@ public class ProgWidgetCoordinateConditionScreen extends AbstractProgWidgetScree
     }
 
     @Override
-    public void render(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
-        super.render(matrixStack, mouseX, mouseY, partialTicks);
+    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+        super.render(graphics, mouseX, mouseY, partialTicks);
 
         String condition = progWidget.getCondition();
-        font.draw(matrixStack, condition, width / 2f - font.width(condition) / 2f, guiTop + 70, 0xFF404060);
+        graphics.drawString(font, condition, width / 2 - font.width(condition) / 2, guiTop + 70, 0xFF404060, false);
     }
 }

@@ -31,8 +31,7 @@ import net.minecraft.server.level.ServerPlayerGameMode;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.Material;
-import net.minecraft.world.level.storage.loot.LootContext;
+import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.MinecraftForge;
@@ -157,18 +156,17 @@ public class DroneAIDig<W extends ProgWidgetAreaItemBase & IToolUser> extends Dr
     private static List<ItemStack> getDrops(BlockGetter worldCache, BlockPos pos, IDroneBase drone) {
         BlockState state = worldCache.getBlockState(pos);
         DroneEntity d = drone instanceof DroneEntity ? (DroneEntity) drone : null;
-        return state.getDrops(
-                new LootContext.Builder((ServerLevel) drone.world())
-                        .withParameter(LootContextParams.BLOCK_STATE, state)
-                        .withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(pos))
-                        .withParameter(LootContextParams.TOOL, drone.getInv().getStackInSlot(0))
-                        .withOptionalParameter(LootContextParams.THIS_ENTITY, d)
-                        .withOptionalParameter(LootContextParams.BLOCK_ENTITY, worldCache.getBlockEntity(pos))
+        return state.getDrops(new LootParams.Builder((ServerLevel) drone.world())
+                .withParameter(LootContextParams.BLOCK_STATE, state)
+                .withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(pos))
+                .withParameter(LootContextParams.TOOL, drone.getInv().getStackInSlot(0))
+                .withOptionalParameter(LootContextParams.THIS_ENTITY, d)
+                .withOptionalParameter(LootContextParams.BLOCK_ENTITY, worldCache.getBlockEntity(pos))
         );
     }
 
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     private static boolean ignoreBlock(BlockState state) {
-        return state.getMaterial() == Material.AIR || PneumaticCraftUtils.isBlockLiquid(state.getBlock());
+        return state.isAir() || PneumaticCraftUtils.isBlockLiquid(state.getBlock());
     }
 }

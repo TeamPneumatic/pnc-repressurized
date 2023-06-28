@@ -22,9 +22,9 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetCheckBox;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetComboBox;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetLabel;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
-import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.drone.progwidgets.IBlockRightClicker.RightClickType;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetBlockRightClick;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.core.Direction;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
@@ -55,13 +55,13 @@ public class ProgWidgetBlockRightClickScreen extends ProgWidgetDigAndPlaceScreen
 
         clickTypeSelector = new WidgetComboBox(font, guiLeft + 8 + opLabel.getWidth() + 5, guiTop + 63, 80, 12)
                 .initFromEnum(progWidget.getClickType());
-        clickTypeSelector.setTooltip(GuiUtils.xlateAndSplit("pneumaticcraft.gui.progWidget.blockRightClick.clickType.tooltip"));
+        clickTypeSelector.setTooltip(Tooltip.create(xlate("pneumaticcraft.gui.progWidget.blockRightClick.clickType.tooltip")));
         addRenderableWidget(clickTypeSelector);
 
         checkboxSneaking = new WidgetCheckBox(guiLeft + 8, guiTop + 83, 0xFF404040,
                 xlate("pneumaticcraft.gui.progWidget.blockRightClick.sneaking"))
-                .setChecked(progWidget.isSneaking())
-                .setTooltipKey("pneumaticcraft.gui.progWidget.blockRightClick.sneaking.tooltip");
+                .setChecked(progWidget.isSneaking());
+        checkboxSneaking.setTooltipKey("pneumaticcraft.gui.progWidget.blockRightClick.sneaking.tooltip");
         addRenderableWidget(checkboxSneaking);
     }
 

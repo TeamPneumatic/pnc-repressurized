@@ -50,7 +50,7 @@ public class MovingSoundJackhammer extends AbstractTickableSoundInstance {
         } else {
             res = null;  // don't start another one
         }
-        timers.put(player.getUUID(), player.level.getGameTime());
+        timers.put(player.getUUID(), player.level().getGameTime());
         return res;
     }
 
@@ -60,7 +60,7 @@ public class MovingSoundJackhammer extends AbstractTickableSoundInstance {
         y = player.getY();
         z = player.getZ();
         if (lastJackHammerTime(player) == 15) {
-            player.level.playSound(player, player.getX(), player.getY(), player.getZ(),
+            player.level().playSound(player, player.getX(), player.getY(), player.getZ(),
                     ModSounds.JACKHAMMER_STOP.get(), SoundSource.PLAYERS,
                     ConfigHelper.client().sound.jackhammerVolume.get().floatValue(), 1f);
         }

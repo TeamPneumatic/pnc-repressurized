@@ -18,14 +18,15 @@
 package me.desht.pneumaticcraft.common.thirdparty.computer_common;
 
 import me.desht.pneumaticcraft.api.PNCCapabilities;
+import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
-import me.desht.pneumaticcraft.api.item.PNCUpgrade;
+import me.desht.pneumaticcraft.api.upgrade.IUpgradeRegistry;
+import me.desht.pneumaticcraft.api.upgrade.PNCUpgrade;
 import me.desht.pneumaticcraft.common.block.entity.AbstractTickingBlockEntity;
 import me.desht.pneumaticcraft.common.block.entity.ILuaMethodProvider;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.core.ModEntityTypes;
 import me.desht.pneumaticcraft.common.core.ModProgWidgets;
-import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.drone.ai.DroneAIManager.WrappedGoal;
 import me.desht.pneumaticcraft.common.drone.progwidgets.IBlockOrdered.Ordering;
 import me.desht.pneumaticcraft.common.drone.progwidgets.IBlockRightClicker;
@@ -669,7 +670,8 @@ public class DroneInterfaceBlockEntity extends AbstractTickingBlockEntity
             @Override
             public Object[] call(Object[] args) {
                 requireArgs(args, 1, "<string> upgrade_name");
-                PNCUpgrade upgrade = ModUpgrades.UPGRADES.get().getValue(PneumaticCraftUtils.modDefaultedRL((String) args[0]));
+                IUpgradeRegistry reg = PneumaticRegistry.getInstance().getUpgradeRegistry();
+                PNCUpgrade upgrade = reg.getUpgradeById(PneumaticCraftUtils.modDefaultedRL((String) args[0]));
                 Validate.isTrue(upgrade != null, "unknown upgrade: '" + args[0] + "'");
                 return new Object[]{(double) validateAndGetDrone().getUpgrades(upgrade)};
             }
@@ -727,6 +729,16 @@ public class DroneInterfaceBlockEntity extends AbstractTickingBlockEntity
                 for (int i = 0; i < args.length; i++) {
                     getWidget().signText[i] = (String) args[i];
                 }
+                return null;
+            }
+        });
+
+        registry.registerLuaMethod(new LuaMethod("setSignBack") {
+            @Override
+            public Object[] call(Object[] args) {
+                requireArgs(args, 1, "<boolean> is_back_side");
+                getWidget().setSignBackSide((Boolean) args[0]);
+                messageToDrone(0xFFFFFFFF);
                 return null;
             }
         });

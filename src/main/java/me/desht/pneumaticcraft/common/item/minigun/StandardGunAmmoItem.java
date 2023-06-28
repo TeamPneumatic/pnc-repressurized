@@ -18,8 +18,8 @@
 package me.desht.pneumaticcraft.common.item.minigun;
 
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
-import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
+import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.util.NBTUtils;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.BlockPos;
@@ -124,12 +124,12 @@ public class StandardGunAmmoItem extends AbstractGunAmmoItem {
                     for (MobEffectInstance effect : effects) {
                         entity.addEffect(new MobEffectInstance(effect));
                     }
-                    entity.level.playSound(null, entity.blockPosition(), SoundEvents.SPLASH_POTION_BREAK, SoundSource.PLAYERS, 1f, 1f);
+                    entity.level().playSound(null, entity.blockPosition(), SoundEvents.SPLASH_POTION_BREAK, SoundSource.PLAYERS, 1f, 1f);
                 } else if (potion.getItem() == Items.SPLASH_POTION || potion.getItem() == Items.LINGERING_POTION) {
-                    ThrownPotion entityPotion = new ThrownPotion(shooter.level, shooter);
+                    ThrownPotion entityPotion = new ThrownPotion(shooter.level(), shooter);
                     entityPotion.setItem(potion);
                     entityPotion.setPos(entity.getX(), entity.getY(), entity.getZ());
-                    shooter.level.addFreshEntity(entityPotion);
+                    shooter.level().addFreshEntity(entityPotion);
                 }
             }
             return getPotionAmmoCost(potion.getItem());
@@ -144,12 +144,12 @@ public class StandardGunAmmoItem extends AbstractGunAmmoItem {
         if (potion.getItem() == Items.SPLASH_POTION || potion.getItem() == Items.LINGERING_POTION) {
             Player shooter = minigun.getPlayer();
             int chance = ConfigHelper.common().minigun.potionProcChance.get() + minigun.getUpgrades(ModUpgrades.DISPENSER.get()) * 2;
-            if (shooter.level.random.nextInt(100) < chance) {
-                ThrownPotion entityPotion = new ThrownPotion(shooter.level, shooter);
+            if (shooter.level().random.nextInt(100) < chance) {
+                ThrownPotion entityPotion = new ThrownPotion(shooter.level(), shooter);
                 entityPotion.setItem(potion);
                 BlockPos pos2 = brtr.getBlockPos().relative(brtr.getDirection());
                 entityPotion.setPos(pos2.getX() + 0.5, pos2.getY() + 0.5, pos2.getZ() + 0.5);
-                shooter.level.addFreshEntity(entityPotion);
+                shooter.level().addFreshEntity(entityPotion);
             }
             return getPotionAmmoCost(potion.getItem());
         } else {

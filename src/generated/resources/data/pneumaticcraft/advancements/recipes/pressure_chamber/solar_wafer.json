@@ -30,5 +30,6 @@
     "recipes": [
       "pneumaticcraft:pressure_chamber/solar_wafer"
     ]
-  }
+  },
+  "sends_telemetry_event": true
 }

@@ -15,11 +15,11 @@
  *     along with pnc-repressurized.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.desht.pneumaticcraft.common.util.upgrade;
+package me.desht.pneumaticcraft.common.upgrades;
 
-import me.desht.pneumaticcraft.api.item.IUpgradeItem;
-import me.desht.pneumaticcraft.api.item.PNCUpgrade;
-import me.desht.pneumaticcraft.common.core.ModUpgrades;
+import me.desht.pneumaticcraft.api.PneumaticRegistry;
+import me.desht.pneumaticcraft.api.upgrade.IUpgradeItem;
+import me.desht.pneumaticcraft.api.upgrade.PNCUpgrade;
 import me.desht.pneumaticcraft.common.item.UpgradeItem;
 import me.desht.pneumaticcraft.common.util.NBTUtils;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -86,11 +86,9 @@ public class UpgradeCache {
         for (int i = 0; i < handler.getSlots(); i++) {
             ItemStack stack = handler.getStackInSlot(i);
             if (stack.getItem() instanceof IUpgradeItem upgradeItem) {
-                PneumaticCraftUtils.getRegistryName(ModUpgrades.UPGRADES.get(), upgradeItem.getUpgradeType()).ifPresent(regName -> {
-                    String key = PneumaticCraftUtils.modDefaultedString(regName);
-                    int count = upgradeItem.getUpgradeTier() * stack.getCount();
-                    tag.put(key, IntTag.valueOf(count));
-                });
+                String key = PneumaticCraftUtils.modDefaultedString(upgradeItem.getUpgradeType().getId());
+                int count = upgradeItem.getUpgradeTier() * stack.getCount();
+                tag.put(key, IntTag.valueOf(count));
             }
         }
         return tag;
@@ -98,7 +96,7 @@ public class UpgradeCache {
 
     private int largestID() {
         int max = 0;
-        for (PNCUpgrade upgrade : ModUpgrades.UPGRADES.get().getValues()) {
+        for (PNCUpgrade upgrade : PneumaticRegistry.getInstance().getUpgradeRegistry().getKnownUpgrades()) {
             max = Math.max(max, upgrade.getCacheId());
         }
         return max;

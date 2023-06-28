@@ -90,7 +90,7 @@ public class AreaRenderer {
         Level level = ClientUtils.getClientLevel();
         BlockState state = level.getBlockState(pos);
         boolean xray = disableDepthTest || disableWriteMask;
-        if (!xray && !state.getMaterial().isReplaceable()) return;
+        if (!xray && !state.canBeReplaced()) return;
         if (drawShapes) {
             VoxelShape shape = state.getBlock() instanceof AbstractCamouflageBlock c ?
                     c.getUncamouflagedShape(state, level, pos, CollisionContext.empty()) :

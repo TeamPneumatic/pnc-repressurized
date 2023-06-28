@@ -18,7 +18,6 @@
 package me.desht.pneumaticcraft.client.gui;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.api.crafting.TemperatureRange;
 import me.desht.pneumaticcraft.api.crafting.recipe.RefineryRecipe;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTank;
@@ -30,6 +29,7 @@ import me.desht.pneumaticcraft.common.core.ModRecipeTypes;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.common.inventory.RefineryMenu;
 import me.desht.pneumaticcraft.lib.Textures;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
@@ -101,20 +101,20 @@ public class RefineryControllerScreen extends AbstractPneumaticCraftContainerScr
     }
 
     @Override
-    protected void renderBg(PoseStack matrixStack, float f, int x, int y) {
-        super.renderBg(matrixStack, f, x, y);
+    protected void renderBg(GuiGraphics graphics, float f, int x, int y) {
+        super.renderBg(graphics, f, x, y);
         if (outputs.size() < 4) {
             RenderSystem.enableBlend();
             RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-            fill(matrixStack, leftPos + 155, topPos + 17, leftPos + 171, topPos + 81, 0x40FF0000);
+            graphics.fill(leftPos + 155, topPos + 17, leftPos + 171, topPos + 81, 0x40FF0000);
             if (outputs.size() < 3) {
-                fill(matrixStack, leftPos + 135, topPos + 21, leftPos + 151, topPos + 85, 0x40FF0000);
+                graphics.fill(leftPos + 135, topPos + 21, leftPos + 151, topPos + 85, 0x40FF0000);
             }
             if (outputs.size() < 2) {
-                fill(matrixStack, leftPos + 115, topPos + 25, leftPos + 131, topPos + 89, 0x40FF0000);
+                graphics.fill(leftPos + 115, topPos + 25, leftPos + 131, topPos + 89, 0x40FF0000);
             }
             if (outputs.size() < 1) {
-                fill(matrixStack, leftPos + 95, topPos + 29, leftPos + 111, topPos + 93, 0x40FF0000);
+                graphics.fill(leftPos + 95, topPos + 29, leftPos + 111, topPos + 93, 0x40FF0000);
             }
             RenderSystem.disableBlend();
         }

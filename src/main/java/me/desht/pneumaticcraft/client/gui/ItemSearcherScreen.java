@@ -17,20 +17,18 @@
 
 package me.desht.pneumaticcraft.client.gui;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.ArmorMainScreen;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTextField;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
-import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.inventory.ItemSearcherMenu;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.Rect2i;
-import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -39,23 +37,25 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.Slot;
-import net.minecraft.world.item.*;
+import net.minecraft.world.item.CreativeModeTabs;
+import net.minecraft.world.item.EnchantedBookItem;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag.Default;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentInstance;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemStackHandler;
-import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.commons.lang3.StringUtils;
 import org.lwjgl.glfw.GLFW;
 
 import javax.annotation.Nonnull;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class ItemSearcherScreen extends AbstractContainerScreen<ItemSearcherMenu> {
     private static final ResourceLocation GUI_TEXTURE = Textures.GUI_ITEM_SEARCHER;
@@ -79,7 +79,7 @@ public class ItemSearcherScreen extends AbstractContainerScreen<ItemSearcherMenu
     public ItemSearcherScreen(ItemSearcherMenu container, Inventory playerInventory, Component displayString) {
         super(container, playerInventory, displayString);
 
-        passEvents = true;
+//        passEvents = true;
         imageHeight = 176;
         parentScreen = Minecraft.getInstance().screen;
         container.init(this);
@@ -265,32 +265,30 @@ public class ItemSearcherScreen extends AbstractContainerScreen<ItemSearcherMenu
     }
 
     @Override
-    public void render(PoseStack matrixStack, int x, int y, float partialTicks) {
-        renderBackground(matrixStack);
+    public void render(GuiGraphics graphics, int x, int y, float partialTicks) {
+        renderBackground(graphics);
 
-        super.render(matrixStack, x, y, partialTicks);
+        super.render(graphics, x, y, partialTicks);
 
-        renderTooltip(matrixStack, x, y);
+        renderTooltip(graphics, x, y);
     }
 
     @Override
-    protected void renderLabels(PoseStack matrixStack, int par1, int par2) {
-        font.draw(matrixStack, I18n.get("pneumaticcraft.armor.upgrade.search"), 5, 5, 0x404040);
-        font.draw(matrixStack, I18n.get("pneumaticcraft.gui.progWidget.itemFilter.filterLabel"), 8, 25, 0x404040);
+    protected void renderLabels(GuiGraphics graphics, int par1, int par2) {
+        graphics.drawString(font, xlate("pneumaticcraft.armor.upgrade.search"), 5, 5, 0x404040, false);
+        graphics.drawString(font, xlate("pneumaticcraft.gui.progWidget.itemFilter.filterLabel"), 8, 25, 0x404040, false);
     }
 
     @Override
-    protected void renderBg(PoseStack matrixStack, float par1, int par2, int par3) {
-        GuiUtils.bindTexture(GUI_TEXTURE);
+    protected void renderBg(GuiGraphics graphics, float par1, int par2, int par3) {
         int xStart = (width - imageWidth) / 2;
         int yStart = (height - imageHeight) / 2;
-        blit(matrixStack, xStart, yStart, 0, 0, imageWidth, imageHeight);
+        graphics.blit(GUI_TEXTURE, xStart, yStart, 0, 0, imageWidth, imageHeight);
 
         int x = scrollArea.getX();
         int y1 = scrollArea.getY();
         int y2 = y1 + scrollArea.getHeight();
-        GuiUtils.bindTexture(SCROLL_TEXTURE);
-        blit(matrixStack, x, y1 + (int) ((y2 - y1 - 17) * currentScroll), 232 + (needsScrollBars() ? 0 : 12), 0, 12, 15);
+        graphics.blit(SCROLL_TEXTURE, x, y1 + (int) ((y2 - y1 - 17) * currentScroll), 232 + (needsScrollBars() ? 0 : 12), 0, 12, 15);
 
     }
 

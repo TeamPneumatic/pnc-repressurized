@@ -251,7 +251,10 @@ public class ProgrammerBlockEntity extends AbstractTickingBlockEntity implements
     @Override
     public void handleGUIButtonPress(String tag, boolean shiftHeld, ServerPlayer player) {
         switch (tag) {
-            case "program_when" -> programOnInsert = !programOnInsert;
+            case "program_when" -> {
+                programOnInsert = !programOnInsert;
+                setChanged();
+            }
             case "import" -> tryImport(shiftHeld);
             case "export" -> tryProgramDrone(player);
             case "undo" -> undo();
@@ -509,6 +512,7 @@ public class ProgrammerBlockEntity extends AbstractTickingBlockEntity implements
     private void updateUndoRedoState() {
         canUndo = historyIndex > 0;
         canRedo = historyIndex < history.size() - 1;
+        setChanged();
     }
 
     @Nullable
@@ -528,6 +532,7 @@ public class ProgrammerBlockEntity extends AbstractTickingBlockEntity implements
         progWidgets.addAll(widgets);
         updatePuzzleConnections(progWidgets);
         if (!nonNullLevel().isClientSide) {
+            setChanged();
             saveToHistory();
             syncToClient(player);
         }

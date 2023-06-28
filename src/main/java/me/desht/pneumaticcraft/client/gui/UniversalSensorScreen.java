@@ -17,10 +17,9 @@
 
 package me.desht.pneumaticcraft.client.gui;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import me.desht.pneumaticcraft.api.item.PNCUpgrade;
 import me.desht.pneumaticcraft.api.misc.RangedInt;
 import me.desht.pneumaticcraft.api.universal_sensor.ISensorSetting;
+import me.desht.pneumaticcraft.api.upgrade.PNCUpgrade;
 import me.desht.pneumaticcraft.client.gui.widget.*;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
@@ -37,6 +36,7 @@ import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -107,11 +107,11 @@ public class UniversalSensorScreen extends AbstractPneumaticCraftContainerScreen
     }
 
     @Override
-    protected void renderLabels(PoseStack matrixStack, int x, int y) {
-        super.renderLabels(matrixStack, x, y);
+    protected void renderLabels(GuiGraphics graphics, int x, int y) {
+        super.renderLabels(graphics, x, y);
 
         if (maxPage > 1) {
-            font.draw(matrixStack, page + "/" + maxPage, 110, 46 + 22 * MAX_SENSORS_PER_PAGE, 0x404040);
+            graphics.drawString(font, page + "/" + maxPage, 110, 46 + 22 * MAX_SENSORS_PER_PAGE, 0x404040, false);
         }
 
         String[] folders = te.getSensorSetting().split("/");
@@ -119,19 +119,19 @@ public class UniversalSensorScreen extends AbstractPneumaticCraftContainerScreen
             Set<PNCUpgrade> requiredUpgrades = SensorHandler.getInstance().getRequiredStacksFromText(folders[0]);
             int curX = 92;
             for (PNCUpgrade upgrade : requiredUpgrades) {
-                Minecraft.getInstance().getItemRenderer().renderGuiItem(matrixStack, upgrade.getItemStack(), curX, 20);
+                graphics.renderItem(upgrade.getItemStack(), curX, 20);
                 curX += 18;
             }
         } else {
             int xSpace = imageWidth - 92;
             int size = font.width(folders[folders.length - 1]);
-            matrixStack.pushPose();
-            matrixStack.translate(88, 24, 0);
+            graphics.pose().pushPose();
+            graphics.pose().translate(88, 24, 0);
             if (size > xSpace) {
-                matrixStack.scale((float)xSpace / (float)size, 1, 1);
+                graphics.pose().scale((float)xSpace / (float)size, 1, 1);
             }
-            font.draw(matrixStack, folders[folders.length - 1], 0, 0, 0x4040A0);
-            matrixStack.popPose();
+            graphics.drawString(font, folders[folders.length - 1], 0, 0, 0x4040A0, false);
+            graphics.pose().popPose();
         }
 
         ISensorSetting sensor = SensorHandler.getInstance().getSensorFromPath(te.getSensorSetting());
@@ -140,7 +140,7 @@ public class UniversalSensorScreen extends AbstractPneumaticCraftContainerScreen
             sensor.getAdditionalInfo(info);
             int yOff = 0;
             for (Component line : info) {
-                font.draw(matrixStack, line.getVisualOrderText(), 70, 48 + yOff, 0x404040);
+                graphics.drawString(font, line.getVisualOrderText(), 70, 48 + yOff, 0x404040, false);
                 yOff += font.lineHeight;
             }
             textField.setY(topPos + 48 + yOff + 2);
@@ -148,10 +148,10 @@ public class UniversalSensorScreen extends AbstractPneumaticCraftContainerScreen
 
         if (sensor != null && !sensor.getHelpText().isEmpty()) {
             if (ClientUtils.isKeyDown(GLFW.GLFW_KEY_F1)) {
-                GuiUtils.showPopupHelpScreen(matrixStack, this, font, GuiUtils.xlateAndSplit("pneumaticcraft.gui.entityFilter.helpText"));
+                GuiUtils.showPopupHelpScreen(graphics, this, font, GuiUtils.xlateAndSplit("pneumaticcraft.gui.entityFilter.helpText"));
             } else if (!sensor.getHelpPromptText().isEmpty()) {
                 Component str = Component.translatable(sensor.getHelpPromptText());
-                font.draw(matrixStack, str, (imageWidth - font.width(str)) / 2f, imageHeight + 5, 0xFFFF00);
+                graphics.drawString(font, str, (imageWidth - font.width(str)) / 2, imageHeight + 5, 0xFFFF00, false);
             }
         }
     }

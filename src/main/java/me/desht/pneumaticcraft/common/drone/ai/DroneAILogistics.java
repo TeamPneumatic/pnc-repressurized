@@ -200,7 +200,7 @@ public class DroneAILogistics extends Goal {
 
         @Override
         public boolean isItemValidForFilters(@Nonnull ItemStack item) {
-            return !item.isEmpty() && item.sameItem(stack);
+            return !item.isEmpty() && ItemStack.isSameItem(item, stack);
         }
 
         @Override

@@ -53,12 +53,12 @@ public class PacketHackingEntityFinish {
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
             Player player = ClientUtils.getClientPlayer();
-            Entity entity = player.level.getEntity(entityId);
+            Entity entity = player.level().getEntity(entityId);
             if (entity != null) {
                 IHackableEntity<?> hackableEntity = HackManager.getHackableForEntity(entity, player);
                 if (hackableEntity != null) {
                     hackableEntity._onHackFinished(entity, player);
-                    HackTickTracker.getInstance(entity.level).trackEntity(entity, hackableEntity);
+                    HackTickTracker.getInstance(entity.level()).trackEntity(entity, hackableEntity);
                     CommonArmorHandler.getHandlerForPlayer(player).getExtensionData(CommonUpgradeHandlers.hackHandler).setHackedEntity(null);
                     player.playSound(ModSounds.HELMET_HACK_FINISH.get(), 1.0F, 1.0F);
                 }

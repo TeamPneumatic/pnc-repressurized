@@ -36,7 +36,7 @@ public class EntityTrackEntryHackable implements IEntityTrackEntry {
                     .findFirst()
                     .map(RenderEntityTarget::getHackTime)
                     .orElse(0);
-            boolean entityTracked = HackTickTracker.getInstance(entity.level).isEntityTracked(entity);
+            boolean entityTracked = HackTickTracker.getInstance(entity.level()).isEntityTracked(entity);
             if (hackTime == 0) {
                 if (isLookingAtTarget && !entityTracked) {
                     hackable._addHackInfo(entity, curInfo, player);

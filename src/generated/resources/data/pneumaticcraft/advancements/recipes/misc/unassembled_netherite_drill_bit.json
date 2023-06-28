@@ -30,5 +30,6 @@
     "recipes": [
       "pneumaticcraft:unassembled_netherite_drill_bit"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

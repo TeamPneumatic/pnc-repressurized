@@ -34,7 +34,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.storage.loot.LootContext;
+import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
@@ -134,18 +134,27 @@ public class ReinforcedChestBlockEntity extends AbstractPneumaticCraftBlockEntit
     }
 
     public void maybeFillWithLoot(Player player) {
-        if (lootTable != null && level instanceof ServerLevel) {
-            LootTable table = level.getServer().getLootTables().get(this.lootTable);
+        if (lootTable != null && level instanceof ServerLevel serverLevel) {
+            LootTable table = level.getServer().getLootData().getLootTable(lootTable);
             lootTable = null;
-            LootContext.Builder contextBuilder = new LootContext.Builder((ServerLevel)this.level).withOptionalRandomSeed(this.lootTableSeed);
-            contextBuilder.withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(this.worldPosition));
-            if (player != null) {
-                contextBuilder.withLuck(player.getLuck());
-            }
 
-            RecipeWrapper invWrapper = new RecipeWrapper(inventory);  // handy forge-provided IInventory->IItemHandlerModifiable adapter
-            LootContext context = contextBuilder.create(LootContextParamSets.CHEST);
-            table.fill(invWrapper, context);
+            LootParams.Builder builder = new LootParams.Builder(serverLevel)
+                    .withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(this.worldPosition));
+            if (player != null) {
+                builder.withLuck(player.getLuck()).withParameter(LootContextParams.THIS_ENTITY, player);
+            }
+            RecipeWrapper invWrapper = new RecipeWrapper(inventory);
+            table.fill(invWrapper, builder.create(LootContextParamSets.CHEST), lootTableSeed);
+
+//            LootContext.Builder contextBuilder = new LootContext.Builder((ServerLevel)this.level).withOptionalRandomSeed(this.lootTableSeed);
+//            contextBuilder.withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(this.worldPosition));
+//            if (player != null) {
+//                contextBuilder.withLuck(player.getLuck());
+//            }
+//
+//            RecipeWrapper invWrapper = new RecipeWrapper(inventory);  // handy forge-provided IInventory->IItemHandlerModifiable adapter
+//            LootContext context = contextBuilder.create(LootContextParamSets.CHEST);
+//            table.fill(invWrapper, context);
 
             setChanged();
         }

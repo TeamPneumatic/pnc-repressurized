@@ -17,7 +17,6 @@
 
 package me.desht.pneumaticcraft.client.gui;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.client.gui.remote.RemoteLayout;
 import me.desht.pneumaticcraft.client.gui.remote.actionwidget.*;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
@@ -35,7 +34,9 @@ import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdateRemoteLayout;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
@@ -102,15 +103,15 @@ public class RemoteEditorScreen extends RemoteScreen {
             addRenderableWidget(actionWidget.getWidget());
         }
 
-        addRenderableWidget(new WidgetButtonExtended(leftPos - 24, topPos, 20, 20, Component.empty(), b -> doImport())
-                .setTooltipText(xlate("pneumaticcraft.gui.remote.button.importRemoteButton"))
-                .setRenderStacks(new ItemStack(ModItems.REMOTE.get()))
-        );
+        var importBtn = new WidgetButtonExtended(leftPos - 24, topPos, 20, 20, Component.empty(), b -> doImport())
+                .setRenderStacks(new ItemStack(ModItems.REMOTE.get()));
+        importBtn.setTooltip(Tooltip.create(xlate("pneumaticcraft.gui.remote.button.importRemoteButton")));
+        addRenderableWidget(importBtn);
 
-        addRenderableWidget(new WidgetButtonExtended(leftPos - 24, topPos + 22, 20, 20, Component.empty(), b -> doPastebin())
-                .setTooltipText(xlate("pneumaticcraft.gui.remote.button.pastebinButton"))
-                .setRenderedIcon(Textures.GUI_PASTEBIN_ICON_LOCATION)
-        );
+        var pastebinBtn = new WidgetButtonExtended(leftPos - 24, topPos + 22, 20, 20, Component.empty(), b -> doPastebin())
+                .setRenderedIcon(Textures.GUI_PASTEBIN_ICON_LOCATION);
+        pastebinBtn.setTooltip(Tooltip.create(xlate("pneumaticcraft.gui.remote.button.pastebinButton")));
+        addRenderableWidget(pastebinBtn);
 
         WidgetCheckBox snapCheck = new WidgetCheckBox(leftPos + 194, topPos + 105, 0xFF404040, xlate("pneumaticcraft.gui.misc.snapToGrid"),
                 b -> ConfigHelper.setGuiRemoteGridSnap(b.checked));
@@ -140,10 +141,9 @@ public class RemoteEditorScreen extends RemoteScreen {
     }
 
     @Override
-    protected void renderBg(PoseStack matrixStack, float partialTicks, int x, int y) {
-        renderBackground(matrixStack);
-        bindGuiTexture();
-        blit(matrixStack, leftPos, topPos, 0, 0, imageWidth, imageHeight, 320, 256);
+    protected void renderBg(GuiGraphics graphics, float partialTicks, int x, int y) {
+        renderBackground(graphics);
+        graphics.blit(getGuiTexture(), leftPos, topPos, 0, 0, imageWidth, imageHeight, 320, 256);
     }
 
     @Override
@@ -162,7 +162,7 @@ public class RemoteEditorScreen extends RemoteScreen {
         int y = (int) mouseY;
 
         switch (mouseButton) {
-            case 0:
+            case 0 -> {
                 // left click - drag widget
                 for (ActionWidget<?> actionWidget : widgetTray) {
                     if (actionWidget.getWidget().isHoveredOrFocused()) {
@@ -182,8 +182,8 @@ public class RemoteEditorScreen extends RemoteScreen {
                         }
                     }
                 }
-                break;
-            case 1:
+            }
+            case 1 -> {
                 // right click - configure widget
                 for (ActionWidget<?> actionWidget : remoteLayout.getActionWidgets()) {
                     if (!isOutsideProgrammingArea(actionWidget)) {
@@ -194,8 +194,8 @@ public class RemoteEditorScreen extends RemoteScreen {
                         }
                     }
                 }
-                break;
-            case 2:
+            }
+            case 2 -> {
                 // middle click - copy existing widget
                 for (ActionWidget<?> actionWidget : remoteLayout.getActionWidgets()) {
                     if (actionWidget.getWidget().isHoveredOrFocused()) {
@@ -205,7 +205,7 @@ public class RemoteEditorScreen extends RemoteScreen {
                         return true;
                     }
                 }
-                break;
+            }
         }
         return super.mouseClicked(mouseX, mouseY, mouseButton);
     }

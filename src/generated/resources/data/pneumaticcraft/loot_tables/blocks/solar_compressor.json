@@ -26,5 +26,6 @@
       "name": "solar_compressor",
       "rolls": 1.0
     }
-  ]
+  ],
+  "random_sequence": "pneumaticcraft:blocks/solar_compressor"
 }

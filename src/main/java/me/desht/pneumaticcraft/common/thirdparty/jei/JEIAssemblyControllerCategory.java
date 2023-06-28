@@ -17,7 +17,6 @@
 
 package me.desht.pneumaticcraft.common.thirdparty.jei;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.api.crafting.recipe.AssemblyRecipe;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.item.AssemblyProgramItem;
@@ -32,6 +31,7 @@ import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.world.item.ItemStack;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
@@ -66,10 +66,10 @@ public class JEIAssemblyControllerCategory extends AbstractPNCCategory<AssemblyR
     }
 
     @Override
-    public void draw(AssemblyRecipe recipe, IRecipeSlotsView recipeSlotsView, PoseStack matrixStack, double mouseX, double mouseY) {
-        progressBar.draw(matrixStack, 68, 65);
+    public void draw(AssemblyRecipe recipe, IRecipeSlotsView recipeSlotsView, GuiGraphics graphics, double mouseX, double mouseY) {
+        progressBar.draw(graphics, 68, 65);
         Font fontRenderer = Minecraft.getInstance().font;
-        fontRenderer.draw(matrixStack, "Required Machines", 5, 15, 0xFF404040);
-        fontRenderer.draw(matrixStack, "Prog.", 129, 9, 0xFF404040);
+        graphics.drawString(fontRenderer, "Required Machines", 5, 15, 0xFF404040, false);
+        graphics.drawString(fontRenderer, "Prog.", 129, 9, 0xFF404040, false);
     }
 }

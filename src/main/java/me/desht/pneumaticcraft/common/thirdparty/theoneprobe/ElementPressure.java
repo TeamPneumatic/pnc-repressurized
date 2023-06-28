@@ -17,13 +17,13 @@
 
 package me.desht.pneumaticcraft.common.thirdparty.theoneprobe;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import mcjty.theoneprobe.api.IElement;
 import mcjty.theoneprobe.api.IElementFactory;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
 import me.desht.pneumaticcraft.client.render.pressure_gauge.PressureGaugeRenderer2D;
 import me.desht.pneumaticcraft.common.block.entity.IMinWorkingPressure;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -51,13 +51,13 @@ public class ElementPressure implements IElement {
     }
 
     @Override
-    public void render(PoseStack matrixStack, int x, int y) {
-        matrixStack.pushPose();
-        matrixStack.scale(SCALE, SCALE, SCALE);
+    public void render(GuiGraphics matrixStack, int x, int y) {
+        matrixStack.pose().pushPose();
+        matrixStack.pose().scale(SCALE, SCALE, SCALE);
         int x1 = (int)((x + getWidth() / 2) / SCALE);
         int y1 = (int)((y + getHeight() / 2) / SCALE);
         PressureGaugeRenderer2D.drawPressureGauge(matrixStack, Minecraft.getInstance().font, -1, crit, danger, min, pressure, x1, y1,0xFFC0C0C0);
-        matrixStack.popPose();
+        matrixStack.pose().popPose();
     }
 
     @Override

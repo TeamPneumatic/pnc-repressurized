@@ -30,5 +30,6 @@
     "recipes": [
       "pneumaticcraft:explosion_crafting/wheat_flour"
     ]
-  }
+  },
+  "sends_telemetry_event": true
 }

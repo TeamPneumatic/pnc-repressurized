@@ -22,7 +22,7 @@ import me.desht.pneumaticcraft.common.block.entity.AbstractHopperBlockEntity;
 import me.desht.pneumaticcraft.common.block.entity.OmnidirectionalHopperBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
-import me.desht.pneumaticcraft.common.core.ModUpgrades;
+import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import me.desht.pneumaticcraft.common.util.VoxelShapeUtils;

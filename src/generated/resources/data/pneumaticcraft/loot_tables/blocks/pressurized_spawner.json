@@ -26,5 +26,6 @@
       "name": "pressurized_spawner",
       "rolls": 1.0
     }
-  ]
+  ],
+  "random_sequence": "pneumaticcraft:blocks/pressurized_spawner"
 }

@@ -47,7 +47,7 @@ public class DroneGoToOwner extends Goal {
     }
 
     private ServerPlayer getOnlineOwner() {
-        if (drone.level.getServer() == null) return null;
-        return drone.level.getServer().getPlayerList().getPlayer(drone.getOwnerUUID());
+        if (drone.level().getServer() == null) return null;
+        return drone.level().getServer().getPlayerList().getPlayer(drone.getOwnerUUID());
     }
 }

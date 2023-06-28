@@ -21,7 +21,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.gson.*;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
-import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
@@ -40,7 +39,6 @@ import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.crafting.IIngredientSerializer;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidUtil;
-import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.registries.ForgeRegistries;
 
@@ -196,7 +194,7 @@ public class FluidIngredient extends Ingredient {
 
     /**
      * Test the given item against this ingredient. The item must be a fluid container item (providing the
-     * {@link CapabilityFluidHandler#FLUID_HANDLER_ITEM_CAPABILITY} capability) containing fluid which matches
+     * {@link ForgeCapabilities#FLUID_HANDLER_ITEM} capability) containing fluid which matches
      * this ingredient, AND it must be a container item
      * ({@link net.minecraftforge.common.extensions.IForgeItem#hasCraftingRemainingItem(ItemStack)} must return true).
      *

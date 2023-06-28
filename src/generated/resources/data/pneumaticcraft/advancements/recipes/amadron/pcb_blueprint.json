@@ -30,5 +30,6 @@
     "recipes": [
       "pneumaticcraft:amadron/pcb_blueprint"
     ]
-  }
+  },
+  "sends_telemetry_event": true
 }

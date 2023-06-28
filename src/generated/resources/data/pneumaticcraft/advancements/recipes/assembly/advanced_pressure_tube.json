@@ -30,5 +30,6 @@
     "recipes": [
       "pneumaticcraft:assembly/advanced_pressure_tube"
     ]
-  }
+  },
+  "sends_telemetry_event": true
 }

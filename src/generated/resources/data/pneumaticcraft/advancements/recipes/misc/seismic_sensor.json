@@ -30,5 +30,6 @@
     "recipes": [
       "pneumaticcraft:seismic_sensor"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

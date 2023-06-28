@@ -20,7 +20,6 @@ package me.desht.pneumaticcraft.client.gui;
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
@@ -32,13 +31,13 @@ import me.desht.pneumaticcraft.common.block.entity.SideConfigurator.RelativeFace
 import me.desht.pneumaticcraft.common.block.entity.SmartChestBlockEntity;
 import me.desht.pneumaticcraft.common.block.entity.SmartChestBlockEntity.PushPullMode;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
-import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.inventory.SmartChestMenu;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSyncSmartChest;
+import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -187,8 +186,8 @@ public class SmartChestScreen extends AbstractPneumaticCraftContainerScreen<Smar
     }
 
     @Override
-    public void render(PoseStack matrixStack, int x, int y, float partialTick) {
-        super.render(matrixStack, x, y, partialTick);
+    public void render(GuiGraphics graphics, int x, int y, float partialTick) {
+        super.render(graphics, x, y, partialTick);
 
         if (menu.getCarried().isEmpty()
                 && hoveredSlot != null
@@ -200,13 +199,13 @@ public class SmartChestScreen extends AbstractPneumaticCraftContainerScreen<Smar
             List<FormattedCharSequence> l = GuiUtils.wrapTextComponentList(
                     GuiUtils.xlateAndSplit("pneumaticcraft.gui.smart_chest.filter", stack.getHoverName().getString(), stack.getCount()),
                     imageWidth, font);
-            renderTooltip(matrixStack, l, x, y);
+            graphics.renderTooltip(font, l, x, y);
         }
     }
 
     @Override
-    protected void renderBg(PoseStack matrixStack, float partialTicks, int x, int y) {
-        super.renderBg(matrixStack, partialTicks, x, y);
+    protected void renderBg(GuiGraphics graphics, float partialTicks, int x, int y) {
+        super.renderBg(graphics, partialTicks, x, y);
 
         RenderSystem.enableBlend();
         RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
@@ -217,7 +216,7 @@ public class SmartChestScreen extends AbstractPneumaticCraftContainerScreen<Smar
             if (slot < te.getLastSlot() && menu.slots.get(slot).hasItem()) {
                 int sx = leftPos + 8 + (slot % N_COLS) * 18;
                 int sy = topPos + 18 + (slot / N_COLS) * 18;
-                fill(matrixStack, sx, sy, sx + 16, sy + 16, 0x8080D080);
+                graphics.fill(sx, sy, sx + 16, sy + 16, 0x8080D080);
             }
         }
 
@@ -225,15 +224,15 @@ public class SmartChestScreen extends AbstractPneumaticCraftContainerScreen<Smar
         for (int slot = te.getLastSlot(); slot < CHEST_SIZE; slot++) {
             int sx = leftPos + 8 + (slot % N_COLS) * 18;
             int sy = topPos + 18 + (slot / N_COLS) * 18;
-            fill(matrixStack, sx, sy, sx + 16, sy + 16, 0x40FF6060);
+            graphics.fill(sx, sy, sx + 16, sy + 16, 0x40FF6060);
         }
 
         RenderSystem.disableBlend();
     }
 
     @Override
-    protected void renderLabels(PoseStack matrixStack, int x, int y) {
-        super.renderLabels(matrixStack, x, y);
+    protected void renderLabels(GuiGraphics graphics, int x, int y) {
+        super.renderLabels(graphics, x, y);
 
         RenderSystem.enableBlend();
         RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
@@ -242,18 +241,18 @@ public class SmartChestScreen extends AbstractPneumaticCraftContainerScreen<Smar
             if (slot < te.getLastSlot()) {
                 int sx = 8 + (slot % N_COLS) * 18;
                 int sy = 18 + (slot / N_COLS) * 18;
-                matrixStack.pushPose();
+                graphics.pose().pushPose();
                 ItemStack stack = p.getRight();
-                Minecraft.getInstance().getItemRenderer().renderGuiItem(matrixStack, stack, sx, sy);
+                graphics.renderItem(stack, sx, sy);
                 String label = "[" + stack.getCount() + "]";
-                matrixStack.translate(0, 0, 300);
+                graphics.pose().translate(0, 0, 300);
                 if (!menu.slots.get(slot).hasItem()) {
-                    fill(matrixStack, sx, sy, sx + 16, sy + 16, 0x6080D080);
+                    graphics.fill(sx, sy, sx + 16, sy + 16, 0x6080D080);
                 }
-                matrixStack.scale(0.5f, 0.5f, 0.5f);
-                font.drawShadow(matrixStack, label, 2 * (sx + 16 - font.width(label) / 2f), 2 * (sy + 1), 0xFFFFFFA0);
-                matrixStack.scale(2.0f, 2.0f, 2.0f);
-                matrixStack.popPose();
+                graphics.pose().scale(0.5f, 0.5f, 0.5f);
+                graphics.drawString(font, label, 2 * (sx + 16 - font.width(label) / 2f), 2 * (sy + 1), 0xFFFFFFA0, false);
+                graphics.pose().scale(2.0f, 2.0f, 2.0f);
+                graphics.pose().popPose();
             }
         }
 

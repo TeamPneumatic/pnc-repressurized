@@ -27,10 +27,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.IBlockComponentProvider;
 import snownee.jade.api.IServerDataProvider;
@@ -42,11 +39,11 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 public class SemiblockProvider {
     public static final ResourceLocation ID = RL("semiblock");
 
-    public static class DataProvider implements IServerDataProvider<BlockEntity> {
+    public static class DataProvider implements IServerDataProvider<BlockAccessor> {
         @Override
-        public void appendServerData(CompoundTag compoundTag, ServerPlayer serverPlayer, Level level, BlockEntity blockEntity, boolean b) {
+        public void appendServerData(CompoundTag compoundTag, BlockAccessor blockAccessor) {
             CompoundTag tag = new CompoundTag();
-            SemiblockTracker.getInstance().getAllSemiblocks(level, blockEntity.getBlockPos())
+            SemiblockTracker.getInstance().getAllSemiblocks(blockAccessor.getLevel(), blockAccessor.getBlockEntity().getBlockPos())
                     .forEach((semiBlock) -> {
                         NonNullList<ItemStack> drops = semiBlock.getDrops();
                         if (!drops.isEmpty()) {

@@ -30,5 +30,6 @@
     "recipes": [
       "pneumaticcraft:plastic_brick_blue"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

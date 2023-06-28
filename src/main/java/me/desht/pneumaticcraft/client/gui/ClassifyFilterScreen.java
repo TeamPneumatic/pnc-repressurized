@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.client.gui;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetCheckBox;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
@@ -11,12 +10,16 @@ import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSyncClassifyFilter;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 
 import java.util.EnumSet;
 import java.util.Set;
+
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class ClassifyFilterScreen extends AbstractPneumaticCraftScreen {
     private final InteractionHand handIn;
@@ -48,17 +51,15 @@ public class ClassifyFilterScreen extends AbstractPneumaticCraftScreen {
 
         for (FilterCondition cond : FilterCondition.values()) {
             WidgetCheckBox cb = addRenderableWidget(new WidgetCheckBox(x + 20, y + 5, 20, Component.empty(), b -> toggleCondition(cond))
-                    .setTooltipKey(cond.getTranslationKey())
                     .setChecked(conditions.contains(cond))
             );
-            addRenderableWidget(new WidgetButtonExtended(x, y, 20, 20, "", b -> {
-                        toggleCondition(cond);
-                        cb.setChecked(conditions.contains(cond));
-                    })
-                    .setRenderStacks(cond.getIcon())
-                    .setVisible(false)
-                    .setTooltipKey(cond.getTranslationKey())
-            );
+            cb.setTooltip(Tooltip.create(xlate(cond.getTranslationKey())));
+            var btn = new WidgetButtonExtended(x, y, 20, 20, "", b -> {
+                toggleCondition(cond);
+                cb.setChecked(conditions.contains(cond));
+            }).setRenderStacks(cond.getIcon()).setVisible(false);
+            btn.setTooltip(Tooltip.create(xlate(cond.getTranslationKey())));
+            addRenderableWidget(btn);
             y += 20;
             if (y > guiTop + 140) {
                 x += 100;
@@ -89,17 +90,17 @@ public class ClassifyFilterScreen extends AbstractPneumaticCraftScreen {
     }
 
     @Override
-    public void render(PoseStack matrixStack, int x, int y, float partialTicks) {
-        renderBackground(matrixStack);
+    public void render(GuiGraphics graphics, int x, int y, float partialTicks) {
+        renderBackground(graphics);
 
-        super.render(matrixStack, x, y, partialTicks);
+        super.render(graphics, x, y, partialTicks);
     }
 
     @Override
-    protected void drawForeground(PoseStack matrixStack, int x, int y, float partialTicks) {
-        super.drawForeground(matrixStack, x, y, partialTicks);
+    protected void drawForeground(GuiGraphics graphics, int x, int y, float partialTicks) {
+        super.drawForeground(graphics, x, y, partialTicks);
 
-        font.draw(matrixStack, title, guiLeft + (xSize - font.width(title)) / 2f, guiTop + 8, 0x404040);
+        graphics.drawString(font, title, guiLeft + (xSize - font.width(title)) / 2, guiTop + 8, 0x404040, false);
     }
 
     @Override

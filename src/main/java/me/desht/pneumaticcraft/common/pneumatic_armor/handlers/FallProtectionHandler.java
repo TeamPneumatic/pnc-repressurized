@@ -1,18 +1,18 @@
 package me.desht.pneumaticcraft.common.pneumatic_armor.handlers;
 
-import me.desht.pneumaticcraft.api.item.PNCUpgrade;
 import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.api.pneumatic_armor.BaseArmorUpgradeHandler;
 import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorExtensionData;
 import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorHandler;
+import me.desht.pneumaticcraft.api.upgrade.PNCUpgrade;
 import me.desht.pneumaticcraft.common.core.ModSounds;
-import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSpawnParticle;
 import me.desht.pneumaticcraft.common.particle.AirParticleData;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
 import me.desht.pneumaticcraft.common.pneumatic_armor.JetBootsStateTracker;
+import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.resources.ResourceLocation;
@@ -67,7 +67,7 @@ public class FallProtectionHandler extends BaseArmorUpgradeHandler<IArmorExtensi
                 CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
 
                 JetBootsStateTracker.JetBootsState jbState = JetBootsStateTracker.getTracker(player).getJetBootsState(player);
-                if (event.getEntity().level.getDifficulty() == Difficulty.HARD && jbState.isActive()) {
+                if (event.getEntity().level().getDifficulty() == Difficulty.HARD && jbState.isActive()) {
                     // thrusting into the ground hurts at hard difficulty!
                     event.setDamageMultiplier(0.2F);
                     return;
@@ -84,14 +84,14 @@ public class FallProtectionHandler extends BaseArmorUpgradeHandler<IArmorExtensi
                     return;
                 }
 
-                if (!player.level.isClientSide) {
+                if (!player.level().isClientSide) {
                     float airNeeded = event.getDistance() * PneumaticValues.PNEUMATIC_ARMOR_FALL_USAGE;
                     float extraAirNeeded = 0f;
 
                     int airAvailable = handler.getAir(EquipmentSlot.FEET);
                     List<Entity> stomped = new ArrayList<>();
                     if (handler.upgradeUsable(CommonUpgradeHandlers.stompHandler, true)) {
-                        for (Entity e: player.level.getEntities(player, new AABB(player.blockPosition()).inflate(7.0), e -> e instanceof Mob && e.isAlive())) {
+                        for (Entity e: player.level().getEntities(player, new AABB(player.blockPosition()).inflate(7.0), e -> e instanceof Mob && e.isAlive())) {
                             if (airAvailable > airNeeded + extraAirNeeded) {
                                 stomped.add(e);
                                 extraAirNeeded += airNeeded;
@@ -110,16 +110,16 @@ public class FallProtectionHandler extends BaseArmorUpgradeHandler<IArmorExtensi
                     for (int i = 0; i < event.getDistance() / 2; i++) {
                         float sx = player.getRandom().nextFloat() * 0.6F - 0.3F;
                         float sz = player.getRandom().nextFloat() * 0.6F - 0.3F;
-                        NetworkHandler.sendToAllTracking(new PacketSpawnParticle(AirParticleData.DENSE, player.getX(), player.getY(), player.getZ(), sx, 0.1, sz), player.level, player.blockPosition());
+                        NetworkHandler.sendToAllTracking(new PacketSpawnParticle(AirParticleData.DENSE, player.getX(), player.getY(), player.getZ(), sx, 0.1, sz), player.level(), player.blockPosition());
                     }
                     for (Entity e : stomped) {
-                        NetworkHandler.sendToAllTracking(new PacketSpawnParticle(ParticleTypes.EXPLOSION, e.getX(), e.getY(), e.getZ(), 0, 0, 0), player.level, player.blockPosition());
+                        NetworkHandler.sendToAllTracking(new PacketSpawnParticle(ParticleTypes.EXPLOSION, e.getX(), e.getY(), e.getZ(), 0, 0, 0), player.level(), player.blockPosition());
                         e.hurt(player.damageSources().explosion(player, null), Mth.clamp(origDistance / 3f, 1f, 20f));
                     }
                     if (!stomped.isEmpty()) {
-                        player.level.playSound(null, player.blockPosition(), SoundEvents.GENERIC_EXPLODE, SoundSource.PLAYERS, 1f, 0.5f);
+                        player.level().playSound(null, player.blockPosition(), SoundEvents.GENERIC_EXPLODE, SoundSource.PLAYERS, 1f, 0.5f);
                     }
-                    player.level.playSound(null, player.blockPosition(), ModSounds.SHORT_HISS.get(), SoundSource.PLAYERS, 0.3f, 0.8f);
+                    player.level().playSound(null, player.blockPosition(), ModSounds.SHORT_HISS.get(), SoundSource.PLAYERS, 0.3f, 0.8f);
                     handler.addAir(EquipmentSlot.FEET, (int) -(airNeeded + extraAirNeeded));
                 }
             }

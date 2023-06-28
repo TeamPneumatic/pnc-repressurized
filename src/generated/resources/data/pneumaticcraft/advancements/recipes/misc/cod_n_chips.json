@@ -30,5 +30,6 @@
     "recipes": [
       "pneumaticcraft:cod_n_chips"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

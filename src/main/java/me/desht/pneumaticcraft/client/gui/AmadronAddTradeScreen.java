@@ -52,6 +52,7 @@ import net.minecraftforge.items.ItemHandlerHelper;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.List;
+import java.util.OptionalInt;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 import static me.desht.pneumaticcraft.common.inventory.AmadronAddTradeMenu.INPUT_SLOT;
@@ -207,8 +208,8 @@ public class AmadronAddTradeScreen extends AbstractPneumaticCraftContainerScreen
     }
 
     @Override
-    protected int getBackgroundTint() {
-        return 0xFF068E2C;
+    protected OptionalInt getBackgroundTint() {
+        return OptionalInt.of(0xFF068E2C);
     }
 
     @Override

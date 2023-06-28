@@ -1,4 +1,4 @@
-package me.desht.pneumaticcraft.api.item;
+package me.desht.pneumaticcraft.api.upgrade;
 
 import com.google.common.collect.ImmutableMap;
 import net.minecraft.network.chat.Component;
@@ -10,15 +10,15 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Supplier;
 
 /**
  * The upgrade registry can be used to register custom upgrades to be accepted by block entities, entities and items.
  * Get an instance of it via {@link me.desht.pneumaticcraft.api.PneumaticRegistry.IPneumaticCraftInterface#getUpgradeRegistry()}.
- *
+ * <p>
  * The {@code addApplicableUpgrades()} methods should be called from your
  * {@link net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent} handler.
  */
@@ -76,7 +76,7 @@ public interface IUpgradeRegistry {
      * This list is intended to be displayed while Shift is held down while hovering over the upgrade item, and will
      * scroll if larger than 12 lines.
      * <p>
-     * This is automatically used by custom upgrades created via {@link #makeUpgradeItem(Supplier, int)}. You can also
+     * This is automatically used by custom upgrades created via {@link #makeUpgradeItem(PNCUpgrade, int)}. You can also
      * call this yourself <strong>on the client only</strong> for custom upgrades that you create (i.e. items which
      * implement {@link IUpgradeItem}).
      *
@@ -84,6 +84,41 @@ public interface IUpgradeRegistry {
      * @param infoList the tooltip to append to
      */
     void addUpgradeTooltip(PNCUpgrade upgrade, List<Component> infoList);
+
+    /**
+     * Register an upgrade. Note: this is a not a Forge or Minecraft registry object. It's OK to register upgrades
+     * during item registration, i.e. when you register your upgrade item(s).
+     *
+     * @param id the unique upgrade ID
+     * @param maxTier the maximum tier of this upgrade
+     * @param depModIds zero or more mod ID which must be present for this upgrade to be relevant
+     * @return an upgrade object
+     * @throws IllegalStateException if this upgrade ID has already been registered
+     */
+    PNCUpgrade registerUpgrade(ResourceLocation id, int maxTier, String... depModIds);
+
+    /**
+     * Register an upgrade with just one tier.
+     * @param id the unique upgrade ID
+     * @return an upgrade object
+     * @throws IllegalStateException if this upgrade ID has already been registered
+     */
+    default PNCUpgrade registerUpgrade(ResourceLocation id) {
+        return registerUpgrade(id, 1);
+    }
+
+    /**
+     * Retrieve an upgrade by its ID
+     * @param upgradeId the upgrade ID, as used to register id
+     * @return the registered upgrade, or null if the id is not known
+     */
+    PNCUpgrade getUpgradeById(ResourceLocation upgradeId);
+
+    /**
+     * Retrieve an unmodifiable collection of all known registered upgrade objects
+     * @return all known upgrades
+     */
+    Collection<PNCUpgrade> getKnownUpgrades();
 
     /**
      * Convenience method to create an Item implementing the {@link IUpgradeItem} interface, which can be used as a
@@ -94,16 +129,16 @@ public interface IUpgradeRegistry {
      * {@link IUpgradeItem} yourself.
      * <p>
      * The item created by this method will be in the PneumaticCraft creative tab and have no other special
-     * item properties; see {@link #makeUpgradeItem(Supplier, int, Item.Properties)} if you need custom behaviour here.
+     * item properties; see {@link #makeUpgradeItem(PNCUpgrade, int, Item.Properties)} if you need custom behaviour here.
      *
-     * @param upgrade a supplier for the upgrade object, which will not yet be registered
+     * @param upgrade the upgrade object, as returned by {@link #registerUpgrade(ResourceLocation)}
      * @param tier upgrade tier of this item
      * @return an item, which should be registered in the usual way
      */
-    Item makeUpgradeItem(Supplier<PNCUpgrade> upgrade, int tier);
+    Item makeUpgradeItem(PNCUpgrade upgrade, int tier);
 
     /**
-     * Same as {@link #makeUpgradeItem(Supplier, int)} but allows a custom item properties object to be supplied for
+     * Same as {@link #makeUpgradeItem(PNCUpgrade, int)} but allows a custom item properties object to be supplied for
      * use when the {@code Item} is created.
      *
      * @param upgrade a supplier for the upgrade object, which will not yet be registered
@@ -111,7 +146,7 @@ public interface IUpgradeRegistry {
      * @param properties an item properties object
      * @return an item, which should be registered in the usual way
      */
-    Item makeUpgradeItem(Supplier<PNCUpgrade> upgrade, int tier, Item.Properties properties);
+    Item makeUpgradeItem(PNCUpgrade upgrade, int tier, Item.Properties properties);
 
     /**
      * Helper method to get the number of the given upgrade which is installed in the given itemstack.
@@ -122,13 +157,18 @@ public interface IUpgradeRegistry {
      */
     int getUpgradeCount(ItemStack stack, PNCUpgrade upgrade);
 
+    @Deprecated
+    default Map<PNCUpgrade,Integer> getAllUpgrades(ItemStack stack) {
+        return getUpgradesInItem(stack);
+    }
+
     /**
      * Helper method to get all the upgrades currently installed in the given itemstack
      *
      * @param stack the item holding the upgrades
      * @return an immutable map of (upgrade->count)
      */
-    Map<PNCUpgrade,Integer> getAllUpgrades(ItemStack stack);
+    Map<PNCUpgrade,Integer> getUpgradesInItem(ItemStack stack);
 
     /**
      * Get the registry name for the corresponding item for this upgrade, given a tier. Do not use this before the
@@ -141,8 +181,9 @@ public interface IUpgradeRegistry {
      * @param upgrade the upgrade in question
      * @param tier tier of the upgrade (ignored if the upgrade has only one tier)
      * @return an item registry name
-     * @throws NullPointerException if called before the upgrade is registered
+     * @deprecated just use {@link PNCUpgrade#getItemRegistryName()} or {@link PNCUpgrade#getItemRegistryName(int)}
      */
+    @Deprecated
     ResourceLocation getItemRegistryName(PNCUpgrade upgrade, int tier);
 
     /**

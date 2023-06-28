@@ -17,13 +17,13 @@
 
 package me.desht.pneumaticcraft.client.gui.upgrademanager;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
+import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
-import me.desht.pneumaticcraft.api.item.PNCUpgrade;
 import me.desht.pneumaticcraft.api.misc.Symbols;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
+import me.desht.pneumaticcraft.api.upgrade.PNCUpgrade;
 import me.desht.pneumaticcraft.client.gui.AbstractPneumaticCraftContainerScreen;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.render.pressure_gauge.PressureGaugeRenderer2D;
@@ -31,15 +31,15 @@ import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.block.entity.ChargingStationBlockEntity;
-import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.inventory.ChargingStationUpgradeManagerMenu;
 import me.desht.pneumaticcraft.common.item.ItemRegistry;
+import me.desht.pneumaticcraft.common.upgrades.ApplicableUpgradesDB;
+import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
-import me.desht.pneumaticcraft.common.util.upgrade.ApplicableUpgradesDB;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
@@ -121,19 +121,19 @@ public abstract class AbstractUpgradeManagerScreen extends AbstractPneumaticCraf
     protected abstract int getDefaultVolume();
 
     @Override
-    protected void renderLabels(PoseStack matrixStack, int x, int y) {
-        font.draw(matrixStack, itemStack.getHoverName().getVisualOrderText(), (imageWidth - font.width(itemStack.getHoverName())) / 2f, 5, 0x404040);
+    protected void renderLabels(GuiGraphics graphics, int x, int y) {
+        graphics.drawString(font, itemStack.getHoverName(), (imageWidth - font.width(itemStack.getHoverName())) / 2, 5, 0x404040, false);
 
         int gaugeX = imageWidth * 3 / 4 + 10;
         int gaugeY = imageHeight / 4 + 10;
 
         itemStack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY)
-                .ifPresent(h -> PressureGaugeRenderer2D.drawPressureGauge(matrixStack, font, 0, h.maxPressure(), h.maxPressure(), 0, te.chargingItemPressure, gaugeX, gaugeY));
+                .ifPresent(h -> PressureGaugeRenderer2D.drawPressureGauge(graphics, font, 0, h.maxPressure(), h.maxPressure(), 0, te.chargingItemPressure, gaugeX, gaugeY));
 
-        matrixStack.pushPose();
-        matrixStack.scale(2f, 2f, 2f);
-        Minecraft.getInstance().getItemRenderer().renderGuiItem(matrixStack, itemStack, 3, 22);
-        matrixStack.popPose();
+        graphics.pose().pushPose();
+        graphics.pose().scale(2f, 2f, 2f);
+        graphics.renderItem(itemStack, 3, 22);
+        graphics.pose().popPose();
     }
 
     @Override
@@ -169,8 +169,7 @@ public abstract class AbstractUpgradeManagerScreen extends AbstractPneumaticCraf
     void addUpgradeTabs(Item item, String... what) {
         boolean leftSided = true;
 
-        for (var entry : ModUpgrades.UPGRADES.get().getEntries()) {
-            PNCUpgrade upgrade = entry.getValue();
+        for (PNCUpgrade upgrade: PneumaticRegistry.getInstance().getUpgradeRegistry().getKnownUpgrades()) {
             if (upgrade.isDependencyLoaded()) {
                 int max = ApplicableUpgradesDB.getInstance().getMaxUpgrades(item, upgrade);
                 if (max > 0) {
@@ -178,7 +177,7 @@ public abstract class AbstractUpgradeManagerScreen extends AbstractPneumaticCraf
                     List<Component> text = new ArrayList<>();
                     text.add(xlate("pneumaticcraft.gui.tab.upgrades.max", max).withStyle(ChatFormatting.GRAY));
                     for (String w : what) {
-                        String name = PneumaticCraftUtils.modDefaultedString(entry.getKey().location()).replace(':', '.');
+                        String name = PneumaticCraftUtils.modDefaultedString(upgrade.getId()).replace(':', '.');
                         String key = "pneumaticcraft.gui.tab.info.item." + w + "." + name + "Upgrade";
                         if (I18n.exists(key)) {
                             text.addAll(GuiUtils.xlateAndSplit(key));

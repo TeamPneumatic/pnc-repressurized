@@ -17,13 +17,13 @@
 
 package me.desht.pneumaticcraft.common.pneumatic_armor.handlers;
 
-import me.desht.pneumaticcraft.api.item.PNCUpgrade;
 import me.desht.pneumaticcraft.api.pneumatic_armor.BaseArmorUpgradeHandler;
 import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorExtensionData;
 import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorHandler;
-import me.desht.pneumaticcraft.common.core.ModUpgrades;
+import me.desht.pneumaticcraft.api.upgrade.PNCUpgrade;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
+import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
@@ -57,7 +57,7 @@ public class ElytraHandler extends BaseArmorUpgradeHandler<IArmorExtensionData> 
 
     public static boolean handleFlightTick(LivingEntity entity, int flightTicks) {
         // called by ItemPneumaticArmor#elytraFlightTick()
-        if (!entity.getLevel().isClientSide()) {
+        if (!entity.level().isClientSide()) {
             int ticks = flightTicks + 1;
             if (ticks % 10 == 0 && entity instanceof Player player) {
                 CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);

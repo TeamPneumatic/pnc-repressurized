@@ -30,5 +30,6 @@
     "recipes": [
       "pneumaticcraft:heat_sink"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

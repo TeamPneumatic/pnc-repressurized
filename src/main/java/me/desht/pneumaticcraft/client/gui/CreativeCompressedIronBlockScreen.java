@@ -17,13 +17,13 @@
 
 package me.desht.pneumaticcraft.client.gui;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.block.entity.CreativeCompressedIronBlockBlockEntity;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.common.inventory.CreativeCompressedIronBlockMenu;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
@@ -100,17 +100,17 @@ public class CreativeCompressedIronBlockScreen extends AbstractPneumaticCraftCon
     }
 
     @Override
-    protected void renderLabels(PoseStack matrixStack, int x, int y) {
-        super.renderLabels(matrixStack, x, y);
+    protected void renderLabels(GuiGraphics graphics, int x, int y) {
+        super.renderLabels(graphics, x, y);
         Component txt = HeatUtil.formatHeatString(te.targetTemperature);
-        drawCenteredString(matrixStack, font, txt, width / 2 - leftPos, height / 2 - topPos - 20, 0xFFFFFF);
-        drawCenteredString(matrixStack, font, xlate("pneumaticcraft.gui.misc.holdShiftFastAdjust"), width / 2 - leftPos, height / 2 - topPos + 20, 0x808080);
+        graphics.drawCenteredString(font, txt, width / 2 - leftPos, height / 2 - topPos - 20, 0xFFFFFF);
+        graphics.drawCenteredString(font, xlate("pneumaticcraft.gui.misc.holdShiftFastAdjust"), width / 2 - leftPos, height / 2 - topPos + 20, 0x808080);
     }
 
     @Override
-    protected void renderBg(PoseStack matrixStack, float partialTicks, int i, int j){
-        renderBackground(matrixStack);
-        super.renderBg(matrixStack, partialTicks, i, j);
+    protected void renderBg(GuiGraphics graphics, float partialTicks, int i, int j){
+        renderBackground(graphics);
+        super.renderBg(graphics, partialTicks, i, j);
     }
 
     private void setText(WidgetButtonExtended b, String txt1, String txt2) {

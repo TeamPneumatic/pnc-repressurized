@@ -26,5 +26,6 @@
       "name": "thermal_compressor",
       "rolls": 1.0
     }
-  ]
+  ],
+  "random_sequence": "pneumaticcraft:blocks/thermal_compressor"
 }

@@ -19,4 +19,8 @@ package me.desht.pneumaticcraft.common.drone.progwidgets;
 
 public interface ISignEditWidget {
     String[] getLines();
+
+    boolean isSignBackSide();
+
+    void setSignBackSide(boolean backSide);
 }

@@ -23,14 +23,12 @@ import com.mojang.blaze3d.vertex.*;
 import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.ComponentRenderUtils;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.Rect2i;
-import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.texture.TextureAtlas;
@@ -39,9 +37,9 @@ import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
-import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.phys.Vec2;
 import net.minecraftforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.minecraftforge.client.model.data.ModelData;
 import net.minecraftforge.fluids.FluidStack;
@@ -59,44 +57,40 @@ import java.util.stream.Collectors;
 import static net.minecraft.util.Mth.lerp;
 
 public class GuiUtils {
-    private static final ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
-
     private static final int TEX_WIDTH = 16;
     private static final int TEX_HEIGHT = 16;
-    public static final String TRANSLATION_LINE_BREAK = "${br}";
+    public static final String TRANSLATION_LINE_BREAK = "\\n";
 
-    public static void renderBlockInGui(PoseStack matrixStack, BlockState block, float x, float y, float z, float rotate, float scale) {
+    public static void renderBlockInGui(GuiGraphics graphics, BlockState block, float x, float y, float z, float rotate, float scale) {
         // FIXME lighting angle isn't right
         final Minecraft mc = Minecraft.getInstance();
-        matrixStack.pushPose();
-        matrixStack.translate(x, y, z);
-        matrixStack.scale(scale, -scale, scale);
-        matrixStack.translate(-0.5F, -1F, 0);
+        PoseStack poseStack = graphics.pose();
+        poseStack.pushPose();
+        poseStack.translate(x, y, z);
+        poseStack.scale(-scale, -scale, -scale);
+        poseStack.mulPose(Axis.XP.rotationDegrees(-30F));
+        poseStack.translate(-0.5F, -0.5F, 0);
 
-        matrixStack.mulPose(Axis.XP.rotationDegrees(30F));
 
-        matrixStack.translate(0.5F, 0, -0.5F);
-        matrixStack.mulPose(Axis.YP.rotationDegrees(rotate));
-        matrixStack.translate(-0.5F, 0, 0.5F);
+        poseStack.translate(0.5F, 0, -0.5F);
+        poseStack.mulPose(Axis.YP.rotationDegrees(rotate));
+        poseStack.translate(-0.5F, 0, 0.5F);
 
-        matrixStack.translate(0, 0, -1);
+        poseStack.translate(0, 0, -1);
 
-        bindTexture(InventoryMenu.BLOCK_ATLAS);
-        final MultiBufferSource.BufferSource buffers = mc.renderBuffers().bufferSource();
-        mc.getBlockRenderer().renderSingleBlock(block, matrixStack, buffers, RenderUtils.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, ModelData.EMPTY, null);
-        buffers.endBatch();
+        mc.getBlockRenderer().renderSingleBlock(block, poseStack, graphics.bufferSource(), RenderUtils.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, ModelData.EMPTY, null);
 
-        matrixStack.popPose();
+        poseStack.popPose();
     }
 
     /**
      * Draw a fluid texture, tiling as appropriate
-     * @param poseStack the pose stack
+     * @param graphics the pose stack
      * @param bounds bounds in which to draw
      * @param fluidStack the fluid to draw
      * @param tank a fluid tank; if non-null, fluid Y size is scaled according to the tank's capacity
      */
-    public static void drawFluid(PoseStack poseStack, final Rect2i bounds, @Nullable FluidStack fluidStack, @Nullable IFluidTank tank) {
+    public static void drawFluid(GuiGraphics graphics, final Rect2i bounds, @Nullable FluidStack fluidStack, @Nullable IFluidTank tank) {
         if (fluidStack == null || fluidStack.getFluid() == null) {
             return;
         }
@@ -138,14 +132,14 @@ public class GuiUtils {
                     int maskTop = TEX_HEIGHT - h;
                     int maskRight = TEX_WIDTH - w;
 
-                    drawFluidTexture(poseStack, x, y, fluidStillSprite, maskTop, maskRight, 100, cols);
+                    drawFluidTexture(graphics, x, y, fluidStillSprite, maskTop, maskRight, 100, cols);
                 }
             }
         }
         RenderSystem.disableBlend();
     }
 
-    private static void drawFluidTexture(PoseStack matrixStack, float xCoord, float yCoord, TextureAtlasSprite textureSprite, int maskTop, int maskRight, float zLevel, int[] cols) {
+    private static void drawFluidTexture(GuiGraphics graphics, float xCoord, float yCoord, TextureAtlasSprite textureSprite, int maskTop, int maskRight, float zLevel, int[] cols) {
         float uMin = textureSprite.getU0();
         float uMax = textureSprite.getU1();
         float vMin = textureSprite.getV0();
@@ -153,7 +147,7 @@ public class GuiUtils {
         uMax = uMax - maskRight / 16.0f * (uMax - uMin);
         vMax = vMax - maskTop / 16.0f * (vMax - vMin);
 
-        Matrix4f posMat = matrixStack.last().pose();
+        Matrix4f posMat = graphics.pose().last().pose();
 
         Tesselator tessellator = Tesselator.getInstance();
         BufferBuilder worldrenderer = tessellator.getBuilder();
@@ -165,7 +159,7 @@ public class GuiUtils {
         tessellator.end();
     }
 
-    public static Rect2i showPopupHelpScreen(PoseStack matrixStack, Screen screen, Font fontRenderer, List<Component> helpText) {
+    public static Rect2i showPopupHelpScreen(GuiGraphics graphics, Screen screen, Font fontRenderer, List<Component> helpText) {
         List<FormattedCharSequence> l = GuiUtils.wrapTextComponentList(helpText, screen.width / 2, fontRenderer);
         int lineSpacing = fontRenderer.lineHeight + 1;
         int boxHeight = l.size() * lineSpacing;
@@ -180,7 +174,7 @@ public class GuiUtils {
         }
 
         int x, y;
-        if (screen instanceof AbstractContainerScreen a) {
+        if (screen instanceof AbstractContainerScreen<?> a) {
             x = (a.getXSize() - boxWidth) / 2;
             y = (a.getYSize() - boxHeight) / 2;
         } else {
@@ -188,72 +182,40 @@ public class GuiUtils {
             y = (screen.height - boxHeight) / 2;
         }
         Rect2i bounds = new Rect2i(x, y, boxWidth, boxHeight);
-        matrixStack.pushPose();
-        matrixStack.translate(x, y, 400);
-        drawPanel(matrixStack, 0, 0, boxHeight, boxWidth);
+        graphics.pose().pushPose();
+        graphics.pose().translate(x, y, 400);
+        drawPanel(graphics, 0, 0, boxHeight, boxWidth);
 
         int dy = 0;
-        matrixStack.scale(fontScale, fontScale, fontScale);
+        graphics.pose().scale(fontScale, fontScale, fontScale);
         for (FormattedCharSequence line : l) {
-            fontRenderer.draw(matrixStack, line, 0, dy, 0xFFE0E0E0);
+            graphics.drawString(fontRenderer, line, 0, dy, 0xFFE0E0E0, false);
             dy += lineSpacing;
             if (maxLines-- == 0) break;
         }
-        matrixStack.popPose();
+        graphics.pose().popPose();
 
         return bounds;
     }
 
-    public static void drawPanel(PoseStack matrixStack, int x, int y, int panelHeight, int panelWidth) {
-        GuiComponent.fill(matrixStack,x - 4, y - 4, x + panelWidth + 8, y + panelHeight + 8, 0xC0000000);
-        GuiComponent.fill(matrixStack,x - 4, y - 4, x + panelWidth + 8, y - 3, 0xFF808080);
-        GuiComponent.fill(matrixStack,x - 4, y + panelHeight + 8, x + panelWidth + 8, y + panelHeight + 9, 0xFF808080);
-        GuiComponent.fill(matrixStack,x - 4, y - 4, x - 3, y + panelHeight + 8, 0xFF808080);
-        GuiComponent.fill(matrixStack,x + panelWidth + 8, y - 4, x + panelWidth + 9, y + panelHeight + 8, 0xFF808080);
+    public static void drawPanel(GuiGraphics graphics, int x, int y, int panelHeight, int panelWidth) {
+        graphics.fill(x - 4, y - 4, x + panelWidth + 8, y + panelHeight + 8, 0xC0000000);
+        graphics.fill(x - 4, y - 4, x + panelWidth + 8, y - 3, 0xFF808080);
+        graphics.fill(x - 4, y + panelHeight + 8, x + panelWidth + 8, y + panelHeight + 9, 0xFF808080);
+        graphics.fill(x - 4, y - 4, x - 3, y + panelHeight + 8, 0xFF808080);
+        graphics.fill(x + panelWidth + 8, y - 4, x + panelWidth + 9, y + panelHeight + 8, 0xFF808080);
     }
 
-    public static void drawTexture(PoseStack matrixStack, ResourceLocation texture, int x, int y) {
-        bindTexture(texture);
-        Matrix4f posMat = matrixStack.last().pose();
-        BufferBuilder builder = Tesselator.getInstance().getBuilder();
-        builder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
-        builder.vertex(posMat, x, y + 16, 0).uv(0.0f, 1.0f).endVertex();
-        builder.vertex(posMat, x + 16, y + 16, 0).uv(1.0f, 1.0f).endVertex();
-        builder.vertex(posMat, x + 16, y, 0).uv(1.0f, 0.0f).endVertex();
-        builder.vertex(posMat, x, y, 0).uv(0.0f, 0.0f).endVertex();
-        Tesselator.getInstance().end();
-    }
-
-    public static void drawUntexturedQuad(PoseStack matrixStack, BufferBuilder renderer, float x, float y, float z, float width, float height, int red, int green, int blue, int alpha) {
-        Matrix4f posMat = matrixStack.last().pose();
-        renderer.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
-        renderer.vertex(posMat, x, y, z).color(red, green, blue, alpha).endVertex();
-        renderer.vertex(posMat, x, y + height, z).color(red, green, blue, alpha).endVertex();
-        renderer.vertex(posMat, x + width, y + height, z).color(red, green, blue, alpha).endVertex();
-        renderer.vertex(posMat, x + width,  y, z).color(red, green, blue, alpha).endVertex();
-        Tesselator.getInstance().end();
-    }
-
-    public static void drawOutline(PoseStack matrixStack, BufferBuilder renderer, float x, float y, float z, float width, float height, int red, int green, int blue, int alpha) {
-        Matrix4f posMat = matrixStack.last().pose();
-        renderer.begin(VertexFormat.Mode.DEBUG_LINE_STRIP, DefaultVertexFormat.POSITION_COLOR);
-        renderer.vertex(posMat, x, y, z).color(red, green, blue, alpha).endVertex();
-        renderer.vertex(posMat, x, y + height, z).color(red, green, blue, alpha).endVertex();
-        renderer.vertex(posMat, x + width, y + height, z).color(red, green, blue, alpha).endVertex();
-        renderer.vertex(posMat, x + width,  y, z).color(red, green, blue, alpha).endVertex();
-        renderer.vertex(posMat, x, y, z).color(red, green, blue, alpha).endVertex();
-        Tesselator.getInstance().end();
-    }
-
-    public static void drawScaledText(PoseStack matrixStack, Font fr, String text, int x, int y, int color, float scale) {
+    public static void drawScaledText(GuiGraphics graphics, Font fr, Component text, int x, int y, int color, float scale, boolean dropShadow) {
         if (scale != 1.0f) {
-            matrixStack.pushPose();
-            matrixStack.translate(x, y, 0);
-            matrixStack.scale(scale, scale, scale);
-            fr.draw(matrixStack, text, 0, 0, color);
-            matrixStack.popPose();
+            PoseStack poseStack = graphics.pose();
+            poseStack.pushPose();
+            poseStack.translate(x, y, 0);
+            poseStack.scale(scale, scale, scale);
+            graphics.drawString(fr, text, 0, 0, color, dropShadow);
+            poseStack.popPose();
         } else {
-            fr.draw(matrixStack, text, x, y, color);
+            graphics.drawString(fr, text, x, y, color, dropShadow);
         }
     }
 
@@ -271,26 +233,17 @@ public class GuiUtils {
                 .collect(Collectors.toList());
     }
 
-    public static void bindTexture(ResourceLocation texture, float r, float g, float b, float a) {
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
-        RenderSystem.setShaderColor(r, g, b, a);
-        RenderSystem.setShaderTexture(0, texture);
-    }
-
-    public static void bindTexture(ResourceLocation texture) {
-        bindTexture(texture, 1f, 1f, 1f, 1f);
-    }
-
     /**
      * Render a progressing line in GUI context
-     * @param matrixStack the matrix stack
+     * @param graphics the matrix stack
      * @param line the line to render
      * @param color line's colour
      */
-    public static void renderProgressingLine2d(PoseStack matrixStack, ProgressingLine line, int color, float lineWidth) {
+    public static void renderProgressingLine2d(GuiGraphics graphics, ProgressingLine line, int color, float lineWidth) {
         int[] cols = RenderUtils.decomposeColor(color);
         float progress = line.getProgress();
-        Matrix4f posMat = matrixStack.last().pose();
+
+        Matrix4f posMat = graphics.pose().last().pose();
         BufferBuilder wr = Tesselator.getInstance().getBuilder();
         RenderSystem.lineWidth(lineWidth);
         RenderSystem.setShader(GameRenderer::getPositionColorShader);

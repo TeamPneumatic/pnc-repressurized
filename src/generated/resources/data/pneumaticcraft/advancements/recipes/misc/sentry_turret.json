@@ -30,5 +30,6 @@
     "recipes": [
       "pneumaticcraft:sentry_turret"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

@@ -26,5 +26,6 @@
       "name": "drone_interface",
       "rolls": 1.0
     }
-  ]
+  ],
+  "random_sequence": "pneumaticcraft:blocks/drone_interface"
 }

@@ -17,16 +17,18 @@
 
 package me.desht.pneumaticcraft.client.gui.widget;
 
-import com.mojang.blaze3d.vertex.PoseStack;
+import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.thirdparty.ModNameCache;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraftforge.fluids.FluidStack;
 
-import java.util.List;
 import java.util.function.Consumer;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
@@ -55,20 +57,30 @@ public class WidgetFluidStack extends WidgetFluidFilter {
     }
 
     @Override
-    public void renderWidget(PoseStack matrixStack, int mouseX, int mouseY, float partialTick) {
-        super.renderWidget(matrixStack, mouseX, mouseY, partialTick);
+    public void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        super.renderWidget(graphics, mouseX, mouseY, partialTick);
 
         if (!fluidStack.isEmpty()) {
             int fluidAmount = fluidStack.getAmount() / 1000;
             if (fluidAmount > 1 || adjustable) {
                 Font font = Minecraft.getInstance().font;
-                String str = fluidAmount + "B";
-                matrixStack.pushPose();
-                matrixStack.translate(getX() - font.width(str) * TEXT_SCALE + 16, getY() + 16 - font.lineHeight * TEXT_SCALE, 200);
-                matrixStack.scale(TEXT_SCALE, TEXT_SCALE, TEXT_SCALE);
-                font.drawShadow(matrixStack, str, 0, 0, 0xFFFFFFFF);
-                matrixStack.popPose();
+                Component str = Component.literal(fluidAmount + "B");
+                GuiUtils.drawScaledText(graphics, font, str, (int) (getX() - font.width(str) * TEXT_SCALE + 16), (int) (getY() + 16 - font.lineHeight * TEXT_SCALE), 0xFFFFFF, TEXT_SCALE, true);
+//                graphics.pose().pushPose();
+//                graphics.translate(getX() - font.width(str) * TEXT_SCALE + 16, getY() + 16 - font.lineHeight * TEXT_SCALE, 200);
+//                graphics.scale(TEXT_SCALE, TEXT_SCALE, TEXT_SCALE);
+//                font.drawShadow(graphics, str, 0, 0, 0xFFFFFFFF);
+//                graphics.popPose();
             }
+            MutableComponent c = new FluidStack(fluidStack, 1).getDisplayName().copy();
+            if (adjustable) {
+                c.append("\n").append(xlate("pneumaticcraft.message.misc.fluidmB", fluidStack.getAmount()).withStyle(ChatFormatting.GRAY));
+            }
+            c.append("\n").append(Component.literal(ModNameCache.getModName(fluidStack.getFluid()))
+                    .withStyle(ChatFormatting.BLUE,  ChatFormatting.ITALIC));
+            setTooltip(Tooltip.create(c));
+        } else {
+            setTooltip(null);
         }
     }
 
@@ -92,18 +104,6 @@ public class WidgetFluidStack extends WidgetFluidFilter {
             return true;
         } else {
             return false;
-        }
-    }
-
-    @Override
-    public void addTooltip(double mouseX, double mouseY, List<Component> curTip, boolean shiftPressed) {
-        if (!fluidStack.isEmpty()) {
-            curTip.add(new FluidStack(fluidStack, 1).getDisplayName());
-            if (adjustable) {
-                curTip.add(xlate("pneumaticcraft.message.misc.fluidmB", fluidStack.getAmount()).withStyle(ChatFormatting.GRAY));
-            }
-            curTip.add(Component.literal(ModNameCache.getModName(fluidStack.getFluid()))
-                    .withStyle(ChatFormatting.BLUE,  ChatFormatting.ITALIC));
         }
     }
 }

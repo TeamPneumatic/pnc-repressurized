@@ -122,15 +122,15 @@ public class HackManager {
     }
 
     public static IHackableEntity<?> getHackableForEntity(Entity entity, Player player) {
-        HackManager manager = getInstance(player.getLevel());
+        HackManager manager = getInstance(player.level());
 
         // prune the tracked entities map every 60 ticks, removing dead or no-longer-hackable entities
-        if (player.getLevel().getGameTime() - 60 > manager.lastEntityPrune) {
+        if (player.level().getGameTime() - 60 > manager.lastEntityPrune) {
             manager.hackableEntities.entrySet().removeIf(
                     entry -> !entry.getKey().isAlive()
                             || !entry.getValue().canHack(entry.getKey(), player) && !isInDisplayCooldown(entry.getValue(), entry.getKey())
             );
-            manager.lastEntityPrune = player.getLevel().getGameTime();
+            manager.lastEntityPrune = player.level().getGameTime();
         }
 
         // entities which implement IHackableEntity directly
@@ -151,9 +151,9 @@ public class HackManager {
     public static IHackableBlock getHackableForBlock(BlockGetter blockGetter, BlockPos pos, Player player) {
         BlockState state = blockGetter.getBlockState(pos);
         Block block = state.getBlock();
-        HackManager manager = getInstance(player.getLevel());
+        HackManager manager = getInstance(player.level());
 
-        if (player.getLevel().getGameTime() - 60 > manager.lastBlockPrune) {
+        if (player.level().getGameTime() - 60 > manager.lastBlockPrune) {
             // clean up the tracked blocks map
             manager.hackableBlocks.entrySet().removeIf(
                     entry -> {
@@ -164,7 +164,7 @@ public class HackManager {
                                         && !isInDisplayCooldown(hackableBlock, entry.getKey().world, entry.getKey().pos, player);
                     }
             );
-            manager.lastBlockPrune = player.getLevel().getGameTime();
+            manager.lastBlockPrune = player.level().getGameTime();
         }
 
         if (block instanceof IHackableBlock h && h.canHack(blockGetter, pos, state, player))
@@ -185,7 +185,7 @@ public class HackManager {
     }
 
     private static boolean isInDisplayCooldown(IHackableBlock hackableBlock, BlockGetter world, BlockPos pos, Player player) {
-        if (player.level.isClientSide) {
+        if (player.level().isClientSide) {
             RenderBlockTarget target = ClientArmorRegistry.getInstance()
                     .getClientHandler(CommonUpgradeHandlers.blockTrackerHandler, BlockTrackerClientHandler.class)
                     .getTargetForCoord(pos);
@@ -197,7 +197,7 @@ public class HackManager {
     }
 
     private static boolean isInDisplayCooldown(IHackableEntity<?> hackableEntity, Entity entity) {
-        if (entity.level.isClientSide) {
+        if (entity.level().isClientSide) {
             RenderEntityTarget target = ClientArmorRegistry.getInstance()
                     .getClientHandler(CommonUpgradeHandlers.entityTrackerHandler, EntityTrackerClientHandler.class)
                     .getTargetForEntity(entity);

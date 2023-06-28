@@ -30,5 +30,6 @@
     "recipes": [
       "pneumaticcraft:assembly_laser"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

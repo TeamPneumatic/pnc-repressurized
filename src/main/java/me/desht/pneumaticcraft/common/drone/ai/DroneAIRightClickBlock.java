@@ -55,9 +55,9 @@ public class DroneAIRightClickBlock extends DroneAIBlockInteraction<ProgWidgetAr
     public DroneAIRightClickBlock(IDroneBase drone, ProgWidgetAreaItemBase widget) {
         super(drone, widget);
 
-        if (widget instanceof IBlockRightClicker) {
-            drone.getFakePlayer().setShiftKeyDown(((IBlockRightClicker) widget).isSneaking());
-            clickType = ((IBlockRightClicker)widget).getClickType();
+        if (widget instanceof IBlockRightClicker rc) {
+            drone.getFakePlayer().setShiftKeyDown(rc.isSneaking());
+            clickType = rc.getClickType();
         } else {
             throw new IllegalArgumentException("expecting a widget implementing IBlockRightClicker!");
         }
@@ -68,13 +68,15 @@ public class DroneAIRightClickBlock extends DroneAIBlockInteraction<ProgWidgetAr
         if (visitedPositions.contains(pos)) return false;
         if (progWidget.isItemFilterEmpty()) return true;
         switch (clickType) {
-            case CLICK_ITEM:
+            case CLICK_ITEM -> {
                 for (int i = 0; i < drone.getInv().getSlots(); i++) {
                     if (progWidget.isItemValidForFilters(drone.getInv().getStackInSlot(i))) return true;
                 }
                 return false;
-            case CLICK_BLOCK:
+            }
+            case CLICK_BLOCK -> {
                 return DroneAIDig.isBlockValidForFilter(drone.world(), pos, drone, progWidget);
+            }
         }
         return false;
 

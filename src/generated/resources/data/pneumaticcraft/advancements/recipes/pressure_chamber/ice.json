@@ -30,5 +30,6 @@
     "recipes": [
       "pneumaticcraft:pressure_chamber/ice"
     ]
-  }
+  },
+  "sends_telemetry_event": true
 }

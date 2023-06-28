@@ -30,5 +30,6 @@
     "recipes": [
       "pneumaticcraft:minigun"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

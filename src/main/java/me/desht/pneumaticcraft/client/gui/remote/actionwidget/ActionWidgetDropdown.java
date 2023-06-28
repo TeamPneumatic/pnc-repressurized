@@ -25,6 +25,7 @@ import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSetGlobalVariable;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableHelper;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.nbt.CompoundTag;
@@ -49,7 +50,7 @@ public class ActionWidgetDropdown extends ActionWidgetVariable<WidgetComboBox> {
         width = widget.getWidth();
         height = widget.getHeight();
         widget.setValue(I18n.get("pneumaticcraft.gui.remote.tray.dropdown.name"));
-        widget.setTooltip(xlate("pneumaticcraft.gui.remote.tray.dropdown.tooltip"));
+        widget.setTooltip(Tooltip.create(xlate("pneumaticcraft.gui.remote.tray.dropdown.tooltip")));
     }
 
     @Override

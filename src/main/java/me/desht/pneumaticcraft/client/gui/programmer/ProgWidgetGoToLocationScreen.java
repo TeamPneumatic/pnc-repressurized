@@ -37,12 +37,12 @@ public class ProgWidgetGoToLocationScreen<T extends ProgWidgetGoToLocation> exte
                 .addRadioButton(new WidgetRadioButton(guiLeft + 8, guiTop + 24, 0xFF404040,
                                 xlate("pneumaticcraft.gui.progWidget.goto.doneWhenArrived"),
                                 b -> progWidget.setDoneWhenDeparting(false))
-                                .setTooltip(xlate("pneumaticcraft.gui.progWidget.goto.doneWhenArrived.tooltip")),
+                                .setTooltipKey("pneumaticcraft.gui.progWidget.goto.doneWhenArrived.tooltip"),
                         !progWidget.doneWhenDeparting())
                 .addRadioButton(new WidgetRadioButton(guiLeft + 8, guiTop + 38, 0xFF404040,
                                 xlate("pneumaticcraft.gui.progWidget.goto.doneWhenDeparting"),
                                 b -> progWidget.setDoneWhenDeparting(true))
-                                .setTooltip(xlate("pneumaticcraft.gui.progWidget.goto.doneWhenDeparting.tooltip")),
+                                .setTooltipKey("pneumaticcraft.gui.progWidget.goto.doneWhenDeparting.tooltip"),
                         progWidget.doneWhenDeparting())
                 .build(this::addRenderableWidget);
     }

@@ -49,7 +49,7 @@ public class ThermalFoundationExplosiveLaunching {
         // Registers launch map
         PneumaticRegistry.getInstance().getItemRegistry().registerItemLaunchBehaviour((stack, player) -> {
             EntityType<?> entityType = launchMap.get(PneumaticCraftUtils.getRegistryName(stack.getItem()).orElseThrow());
-            return entityType != null ? entityType.create(player.getLevel()) : null;
+            return entityType != null ? entityType.create(player.level()) : null;
         });
     }
 

@@ -149,7 +149,7 @@ public class AirGrateModule extends AbstractTubeModule {
             if (ignoreEntity(entity) || !entity.isAlive() || !rayTraceOK(entity, traceVec)) {
                 continue;
             }
-            if (!entity.level.isClientSide) {
+            if (!entity.level().isClientSide) {
                 tryInsertion(traceVec, entity);
             }
             double x = (entity.getX() - pos.getX() - 0.5D) / d0;
@@ -165,7 +165,7 @@ public class AirGrateModule extends AbstractTubeModule {
             if (d5 > 0.0D) {
                 d5 *= d5;
                 if (vacuum) d5 *= -1;
-                if (entity.isOnGround() && entity instanceof ItemEntity) entity.setDeltaMovement(entity.getDeltaMovement().add(0, 0.25, 0));
+                if (entity.onGround() && entity instanceof ItemEntity) entity.setDeltaMovement(entity.getDeltaMovement().add(0, 0.25, 0));
                 entity.move(MoverType.SELF, new Vec3(x * d5, y * d5, z * d5));
                 entitiesMoved++;
                 if (world.isClientSide && world.random.nextDouble() < 0.2) {

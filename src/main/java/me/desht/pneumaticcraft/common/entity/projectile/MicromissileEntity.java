@@ -40,7 +40,6 @@ import net.minecraft.world.entity.vehicle.AbstractMinecart;
 import net.minecraft.world.entity.vehicle.Boat;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ClipContext;
-import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.EntityHitResult;
@@ -172,7 +171,7 @@ public class MicromissileEntity extends ThrowableProjectile {
 
             if (getCommandSenderWorld().isClientSide && getCommandSenderWorld().random.nextBoolean()) {
                 Vec3 m = getDeltaMovement();
-                level.addParticle(AirParticleData.DENSE, getX(), getY(), getZ(), -m.x/2, -m.y/2, -m.z/2);
+                level().addParticle(AirParticleData.DENSE, getX(), getY(), getZ(), -m.x/2, -m.y/2, -m.z/2);
             }
         }
     }

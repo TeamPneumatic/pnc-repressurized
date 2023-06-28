@@ -18,7 +18,6 @@
 package me.desht.pneumaticcraft.client.gui;
 
 import com.google.common.collect.ImmutableList;
-import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.render.HackSimulationRenderer;
@@ -38,6 +37,7 @@ import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
@@ -146,16 +146,16 @@ public class SecurityStationHackingScreen extends AbstractPneumaticCraftContaine
     }
 
     @Override
-    protected void renderLabels(PoseStack matrixStack, int x, int y) {
-        super.renderLabels(matrixStack, x, y);
+    protected void renderLabels(GuiGraphics graphics, int x, int y) {
+        super.renderLabels(graphics, x, y);
 
         if (te.getSimulationController() != null) {
             HackSimulation aiSim = te.getSimulationController().getSimulation(HackingSide.AI);
             HackSimulation playerSim = te.getSimulationController().getSimulation(HackingSide.PLAYER);
             if (aiSim.isAwake()) {
-                drawCenteredString(matrixStack, font, xlate("pneumaticcraft.gui.tooltip.hacking.aiTracing").withStyle(ChatFormatting.RED), imageWidth / 2, 7, 0xFFFFFF);
+                graphics.drawCenteredString(font, xlate("pneumaticcraft.gui.tooltip.hacking.aiTracing").withStyle(ChatFormatting.RED), imageWidth / 2, 7, 0xFFFFFF);
             } else {
-                drawCenteredString(matrixStack, font, xlate("pneumaticcraft.gui.tooltip.hacking.detectionChance", te.getDetectionChance()).withStyle(ChatFormatting.GOLD), imageWidth / 2, 7, 0xFFFFFF);
+                graphics.drawCenteredString(font, xlate("pneumaticcraft.gui.tooltip.hacking.detectionChance", te.getDetectionChance()).withStyle(ChatFormatting.GOLD), imageWidth / 2, 7, 0xFFFFFF);
             }
 
             if (aiSim.isHackComplete()) {
@@ -165,7 +165,7 @@ public class SecurityStationHackingScreen extends AbstractPneumaticCraftContaine
                     builder.add(Component.empty());
                     builder.add(xlate("pneumaticcraft.message.securityStation.hackFailed.2").withStyle(ChatFormatting.RED));
                 }
-                GuiUtils.showPopupHelpScreen(matrixStack, this, font, builder.build());
+                GuiUtils.showPopupHelpScreen(graphics, this, font, builder.build());
             } else if (playerSim.isHackComplete()) {
                 ImmutableList.Builder<Component> builder = ImmutableList.builder();
                 builder.add(xlate("pneumaticcraft.message.securityStation.hackSucceeded.1").withStyle(ChatFormatting.GREEN));
@@ -173,29 +173,29 @@ public class SecurityStationHackingScreen extends AbstractPneumaticCraftContaine
                     builder.add(Component.empty());
                     builder.add(xlate("pneumaticcraft.message.securityStation.hackSucceeded.2").withStyle(ChatFormatting.GREEN));
                 }
-                GuiUtils.showPopupHelpScreen(matrixStack, this, font, builder.build());
+                GuiUtils.showPopupHelpScreen(graphics, this, font, builder.build());
             }
         }
-        renderConsumables(matrixStack);
+        renderConsumables(graphics);
     }
 
     @Override
-    protected void renderBg(PoseStack matrixStack, float partialTicks, int x, int y) {
-        super.renderBg(matrixStack, partialTicks, x, y);
+    protected void renderBg(GuiGraphics graphics, float partialTicks, int x, int y) {
+        super.renderBg(graphics, partialTicks, x, y);
 
-        hackRenderer.render(matrixStack, bgSimulation, 0xFF2222FF);
+        hackRenderer.render(graphics, bgSimulation, 0xFF2222FF);
         if (te.getSimulationController() != null) {
             HackSimulation aiSim = te.getSimulationController().getSimulation(HackingSide.AI);
             if (!aiSim.isStopWormed() || (te.getLevel().getGameTime() & 0xf) < 8) {
-                hackRenderer.render(matrixStack, te.getSimulationController().getSimulation(HackingSide.AI), 0xFFFF0000);
+                hackRenderer.render(graphics, te.getSimulationController().getSimulation(HackingSide.AI), 0xFFFF0000);
             }
-            hackRenderer.render(matrixStack, te.getSimulationController().getSimulation(HackingSide.PLAYER), 0xFF00FF00);
+            hackRenderer.render(graphics, te.getSimulationController().getSimulation(HackingSide.PLAYER), 0xFF00FF00);
         }
     }
 
-    private void renderConsumables(PoseStack matrixStack) {
-        font.draw(matrixStack, PneumaticCraftUtils.convertAmountToString(nukeViruses), 158, 112, nukeViruses == 0 ? 0xFFFF6060: 0xFFFFFFFF);
-        font.draw(matrixStack, PneumaticCraftUtils.convertAmountToString(stopWorms), 158, 160, stopWorms == 0 ? 0xFFFF6060: 0xFFFFFFFF);
+    private void renderConsumables(GuiGraphics graphics) {
+        graphics.drawString(font, PneumaticCraftUtils.convertAmountToString(nukeViruses), 158, 112, nukeViruses == 0 ? 0xFFFF6060: 0xFFFFFFFF, false);
+        graphics.drawString(font, PneumaticCraftUtils.convertAmountToString(stopWorms), 158, 160, stopWorms == 0 ? 0xFFFF6060: 0xFFFFFFFF, false);
     }
 
     @Override

@@ -18,7 +18,6 @@
 package me.desht.pneumaticcraft.common.thirdparty.jei;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.api.crafting.recipe.HeatPropertiesRecipe;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
@@ -37,6 +36,7 @@ import mezz.jei.api.recipe.RecipeIngredientRole;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
@@ -144,7 +144,7 @@ public class JEIBlockHeatPropertiesCategory extends AbstractPNCCategory<HeatProp
     }
 
     @Override
-    public void draw(HeatPropertiesRecipe recipe, IRecipeSlotsView recipeSlotsView, PoseStack matrixStack, double mouseX, double mouseY) {
+    public void draw(HeatPropertiesRecipe recipe, IRecipeSlotsView recipeSlotsView, GuiGraphics graphics, double mouseX, double mouseY) {
         Font fontRenderer = Minecraft.getInstance().font;
 
         int h = fontRenderer.lineHeight;
@@ -152,32 +152,32 @@ public class JEIBlockHeatPropertiesCategory extends AbstractPNCCategory<HeatProp
         Component desc = recipe.getDescriptionKey().isEmpty() ?
                 Component.empty() :
                 Component.literal(" (" + I18n.get(recipe.getDescriptionKey()) + ")");
-        fontRenderer.draw(matrixStack, recipe.getInputDisplayName().copy().append(desc), 0, 0, 0x4040a0);
+        graphics.drawString(fontRenderer, recipe.getInputDisplayName().copy().append(desc), 0, 0, 0x4040a0, false);
 
         Component temp = xlate("pneumaticcraft.waila.temperature").append(Component.literal((recipe.getTemperature() - 273) + "°C"));
-        fontRenderer.draw(matrixStack, temp, 0, h * 2, 0x404040);
+        graphics.drawString(fontRenderer, temp, 0, h * 2, 0x404040, false);
 
         String res = NumberFormat.getNumberInstance(Locale.getDefault()).format(recipe.getThermalResistance());
-        fontRenderer.draw(matrixStack, I18n.get("pneumaticcraft.gui.jei.thermalResistance") + res, 0, h * 3, 0x404040);
+        graphics.drawString(fontRenderer, xlate("pneumaticcraft.gui.jei.thermalResistance").append(res), 0, h * 3, 0x404040, false);
 
         boolean showCapacity = false;
         if (recipe.getTransformCold() != null) {
-            coldArea.draw(matrixStack, INPUT_AREA.getX() - coldArea.getWidth() - 5, 42);
+            coldArea.draw(graphics, INPUT_AREA.getX() - coldArea.getWidth() - 5, 42);
             showCapacity = true;
         }
         if (recipe.getTransformHot() != null) {
-            hotArea.draw(matrixStack, HOT_AREA.getX() - hotArea.getWidth() - 5, 42);
+            hotArea.draw(graphics, HOT_AREA.getX() - hotArea.getWidth() - 5, 42);
             showCapacity = true;
         }
 
-        renderBlock(recipe.getBlockState(), matrixStack, INPUT_AREA.getX() + 9, INPUT_AREA.getY() + 1);
-        renderBlock(recipe.getTransformCold(), matrixStack, COLD_AREA.getX() + 9, COLD_AREA.getY() + 1);
-        renderBlock(recipe.getTransformHot(), matrixStack, HOT_AREA.getX() + 9, HOT_AREA.getY() + 1);
+        renderBlock(recipe.getBlockState(), graphics, INPUT_AREA.getX() + 9, INPUT_AREA.getY() + 1);
+        renderBlock(recipe.getTransformCold(), graphics, COLD_AREA.getX() + 9, COLD_AREA.getY() + 1);
+        renderBlock(recipe.getTransformHot(), graphics, HOT_AREA.getX() + 9, HOT_AREA.getY() + 1);
 
         if (showCapacity) {
-            fontRenderer.draw(matrixStack, xlate("pneumaticcraft.gui.jei.heatCapacity",
+            graphics.drawString(fontRenderer, xlate("pneumaticcraft.gui.jei.heatCapacity",
                     NumberFormat.getNumberInstance(Locale.getDefault()).format(recipe.getHeatCapacity())),
-                    0, getBackground().getHeight() - h, 0x404040
+                    0, getBackground().getHeight() - h, 0x404040, false
             );
         }
     }
@@ -253,14 +253,14 @@ public class JEIBlockHeatPropertiesCategory extends AbstractPNCCategory<HeatProp
         list.add(Component.literal(ModNameCache.getModName(stack.getItem())).withStyle(ChatFormatting.BLUE, ChatFormatting.ITALIC));
     }
 
-    private void renderBlock(BlockState state, PoseStack matrixStack, int x, int y) {
+    private void renderBlock(BlockState state, GuiGraphics graphics, int x, int y) {
         // note: fluid rendering is done by JEI (fluidstacks are registered in the recipe layout)
         if (state != null) {
             if (state.getBlock() == Blocks.AIR) {
-                air.draw(matrixStack, x - 8, y - 2);
+                air.draw(graphics, x - 8, y - 2);
             } else {
                 float rot = ClientUtils.getClientLevel().getGameTime() % 360;
-                GuiUtils.renderBlockInGui(matrixStack, state, x, y, 100, rot, 15f);
+                GuiUtils.renderBlockInGui(graphics, state, x, y, 100, rot, 15f);
             }
         }
     }

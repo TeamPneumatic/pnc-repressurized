@@ -25,6 +25,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.SignBlockEntity;
+import net.minecraft.world.level.block.entity.SignText;
 import net.minecraft.world.level.block.state.BlockState;
 
 public class DroneAIEditSign extends DroneAIBlockInteraction<ProgWidgetAreaItemBase> {
@@ -34,16 +35,19 @@ public class DroneAIEditSign extends DroneAIBlockInteraction<ProgWidgetAreaItemB
 
     @Override
     protected boolean isValidPosition(BlockPos pos) {
-        BlockEntity te = drone.world().getBlockEntity(pos);
-        if (te instanceof SignBlockEntity sign) {
-            String[] lines = ((ISignEditWidget) progWidget).getLines();
-            for (int i = 0; i < 4; i++) {
-                sign.setMessage(i, Component.literal(i < lines.length ? lines[i] : ""));
+        if (progWidget instanceof ISignEditWidget signEditWidget) {
+            BlockEntity te = drone.world().getBlockEntity(pos);
+            if (te instanceof SignBlockEntity sign) {
+                String[] lines = signEditWidget.getLines();
+                SignText signText = signEditWidget.isSignBackSide() ? sign.getBackText() : sign.getFrontText();
+                for (int i = 0; i < 4; i++) {
+                    signText.setMessage(i, Component.literal(i < lines.length ? lines[i] : ""));
+                }
+                BlockState state = drone.world().getBlockState(pos);
+                drone.world().sendBlockUpdated(pos, state, state, 3);
+            } else if (te instanceof AphorismTileBlockEntity teAT) {
+                teAT.setTextLines(signEditWidget.getLines());
             }
-            BlockState state = drone.world().getBlockState(pos);
-            drone.world().sendBlockUpdated(pos, state, state, 3);
-        } else if (te instanceof AphorismTileBlockEntity teAT) {
-            teAT.setTextLines(((ISignEditWidget) progWidget).getLines());
         }
         return false;
     }

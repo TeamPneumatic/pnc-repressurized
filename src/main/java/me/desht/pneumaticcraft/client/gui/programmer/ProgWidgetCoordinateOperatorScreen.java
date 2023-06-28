@@ -48,7 +48,7 @@ public class ProgWidgetCoordinateOperatorScreen extends ProgWidgetAreaShowScreen
         for (EnumOperator op : EnumOperator.values()) {
             builder.addRadioButton(new WidgetRadioButton(guiLeft + 7, guiTop + 42 + 12 * op.ordinal(), 0xFF404040,
                             xlate(op.getTranslationKey()), b -> progWidget.setOperator(op))
-                            .setTooltip(xlate(op.getTranslationKey() + ".hint")),
+                            .setTooltipKey(op.getTranslationKey() + ".hint"),
                     progWidget.getOperator() == op);
         }
         builder.build(this::addRenderableWidget);

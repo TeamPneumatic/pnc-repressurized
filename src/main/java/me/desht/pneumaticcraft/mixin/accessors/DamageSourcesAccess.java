@@ -12,5 +12,5 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 @Mixin(DamageSources.class)
 public interface DamageSourcesAccess {
     @Invoker
-    DamageSource invokeSource(ResourceKey<DamageType> p_270076_, @Nullable Entity p_270656_, @Nullable Entity p_270242_);
+    DamageSource invokeSource(ResourceKey<DamageType> damageTypeKey, @Nullable Entity causingEntity, @Nullable Entity directEntity);
 }

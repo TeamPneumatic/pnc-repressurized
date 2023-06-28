@@ -19,12 +19,12 @@ package me.desht.pneumaticcraft;
 
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
-import me.desht.pneumaticcraft.api.item.IUpgradeItem;
 import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.api.pneumatic_armor.hacking.IHacking;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerItem;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
+import me.desht.pneumaticcraft.api.upgrade.IUpgradeItem;
 import me.desht.pneumaticcraft.client.ClientSetup;
 import me.desht.pneumaticcraft.common.PneumaticCraftAPIHandler;
 import me.desht.pneumaticcraft.common.advancements.AdvancementTriggers;
@@ -53,10 +53,10 @@ import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
 import me.desht.pneumaticcraft.common.sensor.SensorHandler;
 import me.desht.pneumaticcraft.common.thirdparty.ModNameCache;
 import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
+import me.desht.pneumaticcraft.common.upgrades.UpgradesDBSetup;
 import me.desht.pneumaticcraft.common.util.ItemLaunching;
 import me.desht.pneumaticcraft.common.util.PlayerFilter;
 import me.desht.pneumaticcraft.common.util.Reflections;
-import me.desht.pneumaticcraft.common.util.upgrade.UpgradesDBSetup;
 import me.desht.pneumaticcraft.common.villages.VillageStructures;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraftforge.api.distmarker.Dist;
@@ -79,6 +79,8 @@ public class PneumaticCraftRepressurized {
         IEventBus forgeBus = MinecraftForge.EVENT_BUS;
         IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
 
+        PneumaticRegistry.init(PneumaticCraftAPIHandler.getInstance());
+
         ConfigHolder.init();
         AuxConfigHandler.preInit();
 
@@ -93,10 +95,9 @@ public class PneumaticCraftRepressurized {
         forgeBus.addListener(this::registerCommands);
         forgeBus.addListener(this::registerCapabilities);
 
-        registerAllDeferredRegistryObjects(modBus);
-
         Reflections.init();
-        PneumaticRegistry.init(PneumaticCraftAPIHandler.getInstance());
+
+        registerAllDeferredRegistryObjects(modBus);
 
         forgeBus.register(new MiscEventHandler());
         forgeBus.register(new AmadronEventListener());
@@ -131,7 +132,8 @@ public class PneumaticCraftRepressurized {
         ModHarvestHandlers.HARVEST_HANDLERS_DEFERRED.register(modBus);
         ModHoeHandlers.HOE_HANDLERS_DEFERRED.register(modBus);
         ModProgWidgets.PROG_WIDGETS_DEFERRED.register(modBus);
-        ModUpgrades.UPGRADES_DEFERRED.register(modBus);
+
+        ModCreativeModeTab.TABS.register(modBus);
     }
 
     private void modConstructSetup(FMLConstructModEvent event) {

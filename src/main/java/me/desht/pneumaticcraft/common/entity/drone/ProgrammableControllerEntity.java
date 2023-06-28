@@ -55,8 +55,8 @@ public class ProgrammableControllerEntity extends AbstractDroneEntity {
 
     @Override
     public void tick() {
-        if (level.isClientSide && controller != null) {
-            BlockEntity te = level.getBlockEntity(controller.getBlockPos());
+        if (level().isClientSide && controller != null) {
+            BlockEntity te = level().getBlockEntity(controller.getBlockPos());
             if (te != controller) {
                 // expire stale minidrones
                 discard();

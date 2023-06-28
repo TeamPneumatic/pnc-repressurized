@@ -30,5 +30,6 @@
     "recipes": [
       "pneumaticcraft:kerosene_lamp"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

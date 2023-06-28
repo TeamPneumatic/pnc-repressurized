@@ -81,7 +81,7 @@ public class GPSAreaToolItem extends Item implements IPositionProvider, IGPSTool
         setGPSLocation(player, stack, pos, null, index, true);
         if (player instanceof ServerPlayer sp) {
             player.displayClientMessage(Component.literal(ChatFormatting.AQUA + String.format("[%s] ", stack.getDisplayName().getString()))
-                    .append(getMessageText(player.level, pos, index)), false);
+                    .append(getMessageText(player.level(), pos, index)), false);
             sp.connection.send(new ClientboundSetCarriedItemPacket(player.getInventory().selected));
         }
     }
@@ -159,7 +159,7 @@ public class GPSAreaToolItem extends Item implements IPositionProvider, IGPSTool
 
         // if there's a variable set for this index, use its value instead (and update the stored position)
         String var = area.getVarName(index);
-        if (!var.isEmpty() && !player.getLevel().isClientSide) {
+        if (!var.isEmpty() && !player.level().isClientSide) {
             BlockPos newPos = GlobalVariableHelper.getPos(player.getUUID(), var);
             if (pos.isEmpty() || !pos.get().equals(newPos)) {
                 area.setPos(index, newPos);

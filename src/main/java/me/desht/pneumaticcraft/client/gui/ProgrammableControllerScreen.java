@@ -29,6 +29,7 @@ import me.desht.pneumaticcraft.common.drone.IDroneBase;
 import me.desht.pneumaticcraft.common.inventory.ProgrammableControllerMenu;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -82,7 +83,7 @@ public class ProgrammableControllerScreen extends AbstractPneumaticCraftContaine
                 new ItemStack(ModItems.CHARGING_MODULE.get()), 0xFFA0A0A0, false);
         chargeTab.addSubWidget(shouldCharge = new WidgetCheckBox(5, 15, 0x404040, xlate("pneumaticcraft.gui.tab.info.programmable_controller.chargeHeld")).withTag("charging"));
         chargeTab.setMinimumExpandedDimensions(shouldCharge.getWidth(), 35);
-        shouldCharge.setTooltipKey("pneumaticcraft.gui.tab.info.programmable_controller.chargeHeld.tooltip");
+        shouldCharge.setTooltip(Tooltip.create(xlate("pneumaticcraft.gui.tab.info.programmable_controller.chargeHeld.tooltip")));
 
         chunkTab = addAnimatedStat(xlate("pneumaticcraft.gui.tab.info.programmable_controller.chunkLoading"),
                 new ItemStack(Items.ENDER_EYE), 0xFF804080, false);

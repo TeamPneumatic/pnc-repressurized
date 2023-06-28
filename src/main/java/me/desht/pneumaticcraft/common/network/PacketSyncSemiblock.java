@@ -78,7 +78,7 @@ public class PacketSyncSemiblock {
                 Log.warning("PacketSyncSemiblock: received packet with entity -1, but player is not holding a semiblock item?");
             }
         } else {
-            processEntity(sender.getLevel());
+            processEntity(sender.level());
         }
     }
 

@@ -17,7 +17,6 @@
 
 package me.desht.pneumaticcraft.client.gui;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetLabel;
@@ -31,6 +30,7 @@ import me.desht.pneumaticcraft.common.network.PacketUpdateTextfield;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
@@ -103,8 +103,8 @@ public class ElevatorScreen extends AbstractPneumaticCraftContainerScreen<Elevat
     }
 
     @Override
-    protected void renderBg(PoseStack matrixStack, float opacity, int x, int y) {
-        super.renderBg(matrixStack, opacity, x, y);
+    protected void renderBg(GuiGraphics graphics, float opacity, int x, int y) {
+        super.renderBg(graphics, opacity, x, y);
     }
 
     @Override
