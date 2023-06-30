@@ -26,6 +26,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.client.event.ScreenEvent;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.event.config.ModConfigEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
@@ -36,6 +37,7 @@ public class Patchouli implements IThirdParty, IDocsProvider {
     static final ResourceLocation PNC_BOOK = RL("book");
 
     private static Screen prevGui;
+    private static Screen bookGui;
 
     @Override
     public void clientInit() {
@@ -49,6 +51,7 @@ public class Patchouli implements IThirdParty, IDocsProvider {
     public void showWidgetDocs(String path) {
         Screen prev = Minecraft.getInstance().screen;  // should be the programmer GUI
         if (PatchouliAccess.openBookEntry(RL("programming/" + path))) {
+            bookGui = Minecraft.getInstance().screen;
             prevGui = prev;
         }
     }
@@ -73,12 +76,25 @@ public class Patchouli implements IThirdParty, IDocsProvider {
     }
 
     private static class ScreenListener {
+        private static Runnable scheduledTask = null;
+
         @SubscribeEvent
-        public void onGuiOpen(ScreenEvent.Opening event) {
-            if (prevGui != null) {
+        public static void onGuiClosing(ScreenEvent.Closing event) {
+            if (prevGui != null && bookGui != null) {
                 // reopen the programmer GUI if that's where we came from
-                event.setNewScreen(prevGui);
-                prevGui = null;
+                scheduledTask = () -> {
+                    Minecraft.getInstance().setScreen(prevGui);
+                    prevGui = null;
+                };
+                bookGui = null;
+            }
+        }
+
+        @SubscribeEvent
+        public static void clientTick(TickEvent.ClientTickEvent event) {
+            if (scheduledTask != null) {
+                scheduledTask.run();
+                scheduledTask = null;
             }
         }
     }
