@@ -215,16 +215,14 @@ public class JackHammerItem extends PressurizableItem
                             if (removed) {
                                 block.destroy(level, pos1, state1);
                                 if (magnet) {
-                                    playerDestroyWithMagnet(block, level, player, pos, pos1, state1, itemstack);
+                                    magnetHarvest(block, level, player, pos, pos1, state1, itemstack);
                                 } else {
                                     block.playerDestroy(level, player, pos1, state1, null, itemstack);
                                 }
                                 if (exp > 0 && level instanceof ServerLevel) {
                                     block.popExperience((ServerLevel) level, magnet ? pos : pos1, exp);
                                 }
-                                if (!player.isCreative()) {
-                                    air -= usage;
-                                }
+                                air -= usage;
                                 player.awardStat(Stats.ITEM_USED.get(this));
                             }
                         }
@@ -239,7 +237,7 @@ public class JackHammerItem extends PressurizableItem
     }
 
     // just like Block#playerDestroy, except all items are dropped in the same place (the block that was mined)
-    private static void playerDestroyWithMagnet(Block block, Level level, Player player, BlockPos pos0, BlockPos pos, BlockState state, ItemStack stack) {
+    private static void magnetHarvest(Block block, Level level, Player player, BlockPos pos0, BlockPos pos, BlockState state, ItemStack stack) {
         player.awardStat(Stats.BLOCK_MINED.get(block));
         player.causeFoodExhaustion(0.005F);
         if (level instanceof ServerLevel serverLevel) {
