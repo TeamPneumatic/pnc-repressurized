@@ -71,6 +71,7 @@ import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.network.NetworkHooks;
+import org.apache.commons.lang3.mutable.MutableBoolean;
 
 import javax.annotation.Nonnull;
 import java.util.*;
@@ -156,21 +157,14 @@ public class JackHammerItem extends PressurizableItem
     }
 
     @Override
-    public boolean mineBlock(ItemStack stack, Level worldIn, BlockState state, BlockPos pos, LivingEntity entityLiving) {
-        if (entityLiving instanceof Player p && p.isCreative()) return true;
-        int speed = UpgradableItemUtils.getUpgradeCount(stack, ModUpgrades.SPEED.get());
-        stack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).orElseThrow(RuntimeException::new)
-                .addAir(-PneumaticValues.USAGE_JACKHAMMER * speed);
-        return true;
-    }
-
-    @Override
     public boolean onEntitySwing(ItemStack stack, LivingEntity entity) {
         return getDrillBit(stack) != DrillBitType.NONE && getAir(stack) > 0f;
     }
 
     @Override
     public boolean onBlockStartBreak(ItemStack itemstack, BlockPos pos, Player player) {
+        MutableBoolean didWork = new MutableBoolean(false);
+
         if (player instanceof ServerPlayer serverPlayer && !player.isShiftKeyDown()) {
             Level level = serverPlayer.getCommandSenderWorld();
 
@@ -193,50 +187,59 @@ public class JackHammerItem extends PressurizableItem
 
                     float air = airHandler.getAir();
                     float air0 = air;
-                    float usage = PneumaticValues.USAGE_JACKHAMMER * SPEED_MULT[speed];
+                    float usage = player.isCreative() ? 0f : PneumaticValues.USAGE_JACKHAMMER * SPEED_MULT[speed];
                     if (magnet) usage *= 1.1f;
 
-                    for (BlockPos pos1 : brokenPos) {
-                        BlockState state1 = level.getBlockState(pos1);
-                        if (state1.getDestroySpeed(level, pos1) < 0) continue;
+                    if (air >= usage) {
+                        didWork.setTrue();
 
-                        int exp = ForgeHooks.onBlockBreakEvent(serverPlayer.level(), serverPlayer.gameMode.getGameModeForPlayer(), serverPlayer, pos1);
-                        if (exp == -1) {
-                            continue;
-                        }
-                        if (level.getBlockEntity(pos1) != null) {
-                            continue;
-                        }
-                        Block block = state1.getBlock();
-                        boolean removed = state1.onDestroyedByPlayer(level, pos1, player, true, level.getFluidState(pos1));
-                        if (removed) {
-                            block.destroy(level, pos1, state1);
-                            if (magnet) {
-                                magnetHarvest(block, level, player, pos, pos1, state1, itemstack);
-                            } else {
-                                block.playerDestroy(level, player, pos1, state1, null, itemstack);
+                        // the first block (always mined)
+                        air -= usage;
+
+                        // any extra blocks, based on the dig mode
+                        for (BlockPos pos1 : brokenPos) {
+                            if (air < usage) break;
+
+                            BlockState state1 = level.getBlockState(pos1);
+                            if (state1.getDestroySpeed(level, pos1) < 0) continue;
+
+                            int exp = ForgeHooks.onBlockBreakEvent(serverPlayer.level(), serverPlayer.gameMode.getGameModeForPlayer(), serverPlayer, pos1);
+                            if (exp == -1) {
+                                continue;
                             }
-                            if (exp > 0 && level instanceof ServerLevel) {
-                                block.popExperience((ServerLevel) level, magnet ? pos : pos1, exp);
+                            if (level.getBlockEntity(pos1) != null) {
+                                continue;
                             }
-                            if (!player.isCreative()) {
-                                air -= usage;
+                            Block block = state1.getBlock();
+                            boolean removed = state1.onDestroyedByPlayer(level, pos1, player, true, level.getFluidState(pos1));
+                            if (removed) {
+                                block.destroy(level, pos1, state1);
+                                if (magnet) {
+                                    playerDestroyWithMagnet(block, level, player, pos, pos1, state1, itemstack);
+                                } else {
+                                    block.playerDestroy(level, player, pos1, state1, null, itemstack);
+                                }
+                                if (exp > 0 && level instanceof ServerLevel) {
+                                    block.popExperience((ServerLevel) level, magnet ? pos : pos1, exp);
+                                }
+                                if (!player.isCreative()) {
+                                    air -= usage;
+                                }
+                                player.awardStat(Stats.ITEM_USED.get(this));
                             }
-                            player.awardStat(Stats.ITEM_USED.get(this));
                         }
-                        if (air < usage) break;
-                    }
-                    if (air != air0 && !player.isCreative()) {
-                        airHandler.addAir((int)(air - air0));
+                        if (air != air0 && !player.isCreative()) {
+                            airHandler.addAir((int) (air - air0));
+                        }
                     }
                 });
             }
         }
-        return super.onBlockStartBreak(itemstack, pos, player);
+        return !didWork.booleanValue();
     }
 
     // just like Block#playerDestroy, except all items are dropped in the same place (the block that was mined)
-    private static void magnetHarvest(Block block, Level level, Player player, BlockPos pos0, BlockPos pos, BlockState state, ItemStack stack) {
+    private static void playerDestroyWithMagnet(Block block, Level level, Player player, BlockPos pos0, BlockPos pos, BlockState state, ItemStack stack) {
         player.awardStat(Stats.BLOCK_MINED.get(block));
         player.causeFoodExhaustion(0.005F);
         if (level instanceof ServerLevel serverLevel) {
