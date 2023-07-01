@@ -4,6 +4,13 @@ This is an overview of significant new features and fixes by release.  See https
 
 Changes are in reverse chronological order; newest changes at the top.
 
+# Minecraft 1.20.1
+
+## [6.0.0]
+
+* Ported to 1.20.1
+  * Functionally equivalent to 4.3.5 release
+
 # Minecraft 1.19.4
 
 ## [5.1.0]
