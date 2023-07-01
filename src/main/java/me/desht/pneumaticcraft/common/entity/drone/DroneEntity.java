@@ -913,7 +913,7 @@ public class DroneEntity extends AbstractDroneEntity implements
                     Component.translatable("pneumaticcraft.death.drone.named", Objects.requireNonNull(getCustomName()).getString(), dim, x, y, z) :
                     Component.translatable("pneumaticcraft.death.drone", dim, x, y, z);
             owner.displayClientMessage(msg.withStyle(ChatFormatting.GOLD), false);
-            if (!damageSource.is(DamageTypes.FELL_OUT_OF_WORLD)) {
+            if (!damageSource.is(DamageTypes.GENERIC_KILL)) {
                 owner.displayClientMessage(Component.literal(" - ").append(damageSource.getLocalizedDeathMessage(this)).withStyle(ChatFormatting.GRAY), false);
             }
         }
