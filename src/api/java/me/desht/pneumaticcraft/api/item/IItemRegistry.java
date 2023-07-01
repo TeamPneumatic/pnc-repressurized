@@ -85,18 +85,6 @@ public interface IItemRegistry {
     ISpawnerCoreStats getSpawnerCoreStats(ItemStack stack);
 
     /**
-     * See {@link #makeItemAirHandlerProvider(ItemStack)}
-     *
-     * @param stack the ItemStack, whose item must implement {@link me.desht.pneumaticcraft.api.pressure.IPressurizableItem}
-     * @param maxPressure the maximum pressure allowed for the item
-     * @return an implementation of IAirHandler
-     * @implNote this air handler stores the item's air amount in the {@code}pneumaticcraft:air{@code} integer NBT tag
-     * @deprecated use {@link #makeItemAirHandlerProvider(ItemStack)}; the item itself now specifies its max pressure
-     */
-    @Deprecated(forRemoval = true)
-    IAirHandlerItem.Provider makeItemAirHandlerProvider(ItemStack stack, float maxPressure);
-
-    /**
      * Create an instance of PneumaticCraft's default item air handler provider, suitable for returning
      * from {@link net.minecraft.world.item.Item#initCapabilities(ItemStack, CompoundTag)}.
      * <p>

@@ -157,7 +157,14 @@ public interface IUpgradeRegistry {
      */
     int getUpgradeCount(ItemStack stack, PNCUpgrade upgrade);
 
-    @Deprecated
+    /**
+     * Get all the upgrades install in a given item.
+     *
+     * @param stack an item
+     * @return all the upgrades installed in the item
+     * @deprecated use {@link #getUpgradesInItem(ItemStack)}
+     */
+    @Deprecated(forRemoval = true)
     default Map<PNCUpgrade,Integer> getAllUpgrades(ItemStack stack) {
         return getUpgradesInItem(stack);
     }
@@ -183,7 +190,7 @@ public interface IUpgradeRegistry {
      * @return an item registry name
      * @deprecated just use {@link PNCUpgrade#getItemRegistryName()} or {@link PNCUpgrade#getItemRegistryName(int)}
      */
-    @Deprecated
+    @Deprecated(forRemoval = true)
     ResourceLocation getItemRegistryName(PNCUpgrade upgrade, int tier);
 
     /**

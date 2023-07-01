@@ -35,7 +35,7 @@ public interface IAirHandlerItem extends IAirHandler {
 
     /**
      * Capability provider object for air-handling items. You can make an instance of this with
-     * {@link me.desht.pneumaticcraft.api.item.IItemRegistry#makeItemAirHandlerProvider(ItemStack, float)}
+     * {@link me.desht.pneumaticcraft.api.item.IItemRegistry#makeItemAirHandlerProvider(ItemStack)}
      * or create your own implementation; either way, it can be returned from
      * {@link net.minecraft.world.item.Item#initCapabilities(ItemStack, CompoundTag)}.
      */
