@@ -1,4 +1,7 @@
-# PneumaticCraft: Repressurized [![Build Status](https://jenkins.k-4u.nl/job/PneumaticCraft-Repressurized/badge/icon?style=plastic)](https://jenkins.k-4u.nl/job/PneumaticCraft-Repressurized)
+# PneumaticCraft: Repressurized
+
+![1.20.1 build status](https://github.com/TeamPneumatic/pnc-repressurized/actions/workflows/main.yml/badge.svg?branch=1.20.1)
+![1.19.2 build status](https://github.com/TeamPneumatic/pnc-repressurized/actions/workflows/main.yml/badge.svg?branch=1.19.2)
 
 This is a port to Minecraft 1.20.1 of MineMaarten's awesome PneumaticCraft mod: https://github.com/MineMaarten/PneumaticCraft.  It is fully functional at this point, and under active maintenance.
 
