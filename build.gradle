@@ -437,7 +437,7 @@ if (ext.isAlpha) {
 modrinth {
 	token = System.getenv("MODRINTH_TOKEN")
 	projectId = "${project.modrinth_project_id}"
-	versionNumber = "${project.mc_version}-${semver}"
+	versionNumber = "${project.version}"
 	versionType = relType
 	uploadFile = jar // With Loom, this MUST be set to `remapJar` instead of `jar`!
 	additionalFiles = [ apiJar ]
@@ -462,7 +462,7 @@ if (System.getenv("CURSEFORGE_TOKEN")) {
 			addGameVersion project.mc_version
 			addGameVersion "Forge"
 			mainArtifact(jar.archiveFile) {
-				displayName = "${project.archivesBaseName} v${project.mc_version}-${semver}"
+				displayName = "${project.archivesBaseName} ${project.version}"
 				relations {
 					requiredDependency "patchouli"
 				}
