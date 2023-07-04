@@ -28,23 +28,18 @@ jobs:
           arguments: runData --no-daemon
       - name: Validate assets
         run: test -d ./src/generated -a -d ./src/generated/resources/.cache
-      - name: Build JAR
-        uses: gradle/gradle-build-action@v2
-        with:
-          arguments: build --no-daemon
-        env:
-          BUILD_NUMBER: ${{ github.run_number }}
       - name: Set up mod metadata
         id: mod_meta
         run: |
           echo mc_version=$(grep ^mc_version ./gradle.properties | cut -d= -f2) >> $GITHUB_OUTPUT
-      - name: Publish to Modmaven
+      - name: Build JAR and Publish to Modmaven
         uses: gradle/gradle-build-action@v2
         env:
+          BUILD_NUMBER: ${{ github.run_number }}
           MODMAVEN_USER: ${{ secrets.MODMAVEN_USER }}
           MODMAVEN_PASSWORD: ${{ secrets.MODMAVEN_PASSWORD }}
         with:
-          arguments: publishMavenPublicationToModmavenRepository --no-daemon
+          arguments: build publishMavenPublicationToModmavenRepository --no-daemon
       - name: Discord notification
         uses: Ilshidur/action-discord@master
         env:
