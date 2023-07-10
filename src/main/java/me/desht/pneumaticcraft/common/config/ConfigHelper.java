@@ -17,6 +17,7 @@
 
 package me.desht.pneumaticcraft.common.config;
 
+import me.desht.pneumaticcraft.client.pneumatic_armor.ComponentInit;
 import me.desht.pneumaticcraft.common.drone.progwidgets.IProgWidget.WidgetDifficulty;
 
 public class ConfigHelper {
@@ -49,5 +50,9 @@ public class ConfigHelper {
 
     public static void setShowEnchantGlint(boolean show) {
         ConfigHolder.client.armor.showEnchantGlint.set(show);
+    }
+
+    public static void setComponentInit(ComponentInit when) {
+        ConfigHolder.client.armor.componentInitMessages.set(when);
     }
 }

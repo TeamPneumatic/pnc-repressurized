@@ -25,8 +25,12 @@ import me.desht.pneumaticcraft.client.gui.pneumatic_armor.ArmorColoringScreen;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.ArmorStatMoveScreen;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetCheckBox;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetComboBox;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetLabel;
 import me.desht.pneumaticcraft.client.pneumatic_armor.ClientArmorRegistry;
+import me.desht.pneumaticcraft.client.pneumatic_armor.ComponentInit;
 import me.desht.pneumaticcraft.client.pneumatic_armor.upgrade_handler.CoreComponentsClientHandler;
+import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.CoreComponentsHandler;
 import net.minecraft.client.Minecraft;
 
@@ -50,14 +54,17 @@ public class CoreComponentsOptions extends IOptionPage.SimpleOptionPage<CoreComp
             getClientUpgradeHandler().saveToConfig();
         }).setChecked(getClientUpgradeHandler().shouldShowPressureNumerically()));
 
+        gui.addWidget(new WidgetLabel(5, 75, xlate("pneumaticcraft.armor.gui.misc.showComponentInit")).setColor(0xFFFFFF));
+        gui.addWidget(new WidgetComboBox(Minecraft.getInstance().font, 20, 87, 90, 12,
+                b -> ConfigHelper.setComponentInit(ComponentInit.values()[b.getSelectedElementIndex()])
+        )).initFromEnum(ConfigHelper.client().armor.componentInitMessages.get());
+
         gui.addWidget(new WidgetButtonExtended(30, 150, 150, 20,
-                xlate("pneumaticcraft.armor.gui.misc.moveMessageScreen"), b -> {
-            Minecraft.getInstance().setScreen(new ArmorStatMoveScreen(getClientUpgradeHandler(), CoreComponentsHandler.getMessageID(), getClientUpgradeHandler().getTestMessageStat()));
-        }));
+                xlate("pneumaticcraft.armor.gui.misc.moveMessageScreen"),
+                b -> Minecraft.getInstance().setScreen(new ArmorStatMoveScreen(getClientUpgradeHandler(), CoreComponentsHandler.getMessageID(), getClientUpgradeHandler().getTestMessageStat()))));
 
         gui.addWidget(new WidgetButtonExtended(30, 194, 150, 20,
                 xlate("pneumaticcraft.armor.gui.misc.colors"), b -> Minecraft.getInstance().setScreen(new ArmorColoringScreen())));
-
 
         changeKeybindingButton = ClientArmorRegistry.getInstance().makeKeybindingButton(172, KeyHandler.getInstance().keybindOpenOptions);
         gui.addWidget(changeKeybindingButton.asWidget());

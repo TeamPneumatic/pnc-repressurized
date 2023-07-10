@@ -17,6 +17,7 @@
 
 package me.desht.pneumaticcraft.common.config;
 
+import me.desht.pneumaticcraft.client.pneumatic_armor.ComponentInit;
 import me.desht.pneumaticcraft.common.drone.progwidgets.IProgWidget.WidgetDifficulty;
 import me.desht.pneumaticcraft.common.util.ITranslatableEnum;
 import net.minecraftforge.common.ForgeConfigSpec;
@@ -50,6 +51,7 @@ public class ClientConfig {
         public ForgeConfigSpec.BooleanValue showPressureNumerically;
         public ForgeConfigSpec.BooleanValue showEnchantGlint;
         public ForgeConfigSpec.IntValue maxJetBootsFlightRoll;
+        public ForgeConfigSpec.EnumValue<ComponentInit> componentInitMessages;
     }
 
     public static class Sound {
@@ -153,6 +155,10 @@ public class ClientConfig {
                 .comment("Maximum screen roll in degrees when banking left or right during Jet Boots flight - cosmetic only")
                 .translation("pneumaticcraft.config.client.armor.max_jet_boots_roll")
                 .defineInRange("max_jet_boots_roll", 35, 0, 90);
+        armor.componentInitMessages = builder
+                .comment("Which component initialisation messages to display when armor is booting up")
+                .translation("pneumaticcraft.config.client.armor.component_init_messages")
+                .defineEnum("component_init_messages", ComponentInit.ALL);
         builder.pop();
 
         builder.push("sound");

@@ -27,10 +27,12 @@ import me.desht.pneumaticcraft.client.KeyHandler;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.ArmorColoringScreen;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetKeybindCheckBox;
 import me.desht.pneumaticcraft.client.pneumatic_armor.ClientArmorRegistry;
+import me.desht.pneumaticcraft.client.pneumatic_armor.ComponentInit;
 import me.desht.pneumaticcraft.client.pneumatic_armor.upgrade_handler.BlockTrackerClientHandler;
 import me.desht.pneumaticcraft.client.pneumatic_armor.upgrade_handler.EntityTrackerClientHandler;
 import me.desht.pneumaticcraft.client.render.overlays.PneumaticArmorHUDOverlay;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
+import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.item.PneumaticArmorItem;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
@@ -218,14 +220,19 @@ public enum HUDHandler implements IKeyListener {
             playArmorInitSound(player, 0.5F);
             addMessage(new ArmorMessage(xlate("pneumaticcraft.armor.message.initStarted", itemName), 50, DEFAULT_MESSAGE_BGCOLOR));
         } else {
-            // any other tick during startup: display found/not found message for each possible upgrade
-            for (int i = 0; i < upgradeHandlers.size(); i++) {
-                if (ticksSinceEquipped == startupTime / (upgradeHandlers.size() + 2) * (i + 1)) {
-                    playArmorInitSound(player, 0.5F + (float) (i + 1) / (upgradeHandlers.size() + 2) * 0.5F);
-                    boolean upgradeEnabled = commonArmorHandler.isUpgradeInserted(slot, i);
-                    Component message = xlate(upgradeHandlers.get(i).getTranslationKey())
-                            .append(upgradeEnabled ? " installed" : " not installed");
-                    addMessage(new ArmorMessage(message, 80, upgradeEnabled ? DEFAULT_MESSAGE_BGCOLOR : 0x70FF8000));
+            ComponentInit initWhen = ConfigHelper.client().armor.componentInitMessages.get();
+            if (initWhen != ComponentInit.NONE) {
+                // any other tick during startup: display found/not found message for each possible upgrade
+                for (int i = 0; i < upgradeHandlers.size(); i++) {
+                    if (ticksSinceEquipped == startupTime / (upgradeHandlers.size() + 2) * (i + 1)) {
+                        boolean upgradeEnabled = commonArmorHandler.isUpgradeInserted(slot, i);
+                        if (initWhen == ComponentInit.ALL || upgradeEnabled) {
+                            playArmorInitSound(player, 0.5F + (float) (i + 1) / (upgradeHandlers.size() + 2) * 0.5F);
+                            Component message = xlate(upgradeHandlers.get(i).getTranslationKey())
+                                    .append(upgradeEnabled ? " installed" : " not installed");
+                            addMessage(new ArmorMessage(message, 80, upgradeEnabled ? DEFAULT_MESSAGE_BGCOLOR : 0x70FF8000));
+                        }
+                    }
                 }
             }
         }
