@@ -61,7 +61,7 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 public class EntityTrackerClientHandler extends IArmorUpgradeClientHandler.AbstractHandler<EntityTrackerHandler> {
     private static final int ENTITY_TRACK_THRESHOLD = 7;
     private static final float ENTITY_TRACKING_RANGE = 16F;
-    private static final StatPanelLayout DEFAULT_STAT_LAYOUT = new StatPanelLayout(0.995f, 0.2f, true);
+    private static final StatPanelLayout DEFAULT_STAT_LAYOUT = StatPanelLayout.expandsLeft(0.995f, 0.2f);
 
     private final Int2ObjectMap<RenderEntityTarget> targets = new Int2ObjectOpenHashMap<>();
 

@@ -137,13 +137,13 @@ public enum AreaRenderManager {
                 Vec3 targetVec = Vec3.atCenterOf(pos);
                 float size = ClientUtils.calculateViewScaling(targetVec);
                 float textSize = size * 0.02f;
-                AreaRenderer.builder().withColor(col).xray().withSize(size / 2f).build(pos).render(matrixStack, buffer);
                 matrixStack.pushPose();
                 matrixStack.translate(targetVec.x(), targetVec.y(), targetVec.z());
                 matrixStack.scale(textSize, textSize, textSize);
                 RenderUtils.rotateToPlayerFacing(matrixStack);
                 RenderUtils.renderString3d(Component.literal(PneumaticCraftUtils.posToString(pos)), 0, 0, 0xFFFFFFFF, matrixStack, buffer, true, true);
                 matrixStack.popPose();
+                AreaRenderer.builder().withColor(col).xray().withSize(size / 2f).build(pos).render(matrixStack, buffer);
             }
         }
     }

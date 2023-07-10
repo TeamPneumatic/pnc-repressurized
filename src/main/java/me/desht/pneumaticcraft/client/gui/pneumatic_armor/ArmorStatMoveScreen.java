@@ -219,6 +219,6 @@ public class ArmorStatMoveScreen extends AbstractPneumaticCraftScreen {
         ArmorHUDLayout.INSTANCE.updateLayout(statID,
                 ((float) movedStat.getBaseX() / (float) window.getGuiScaledWidth()),
                 ((float) movedStat.getBaseY() / (float) window.getGuiScaledHeight()),
-                movedStat.isLeftSided());
+                movedStat.isLeftSided(), false);
     }
 }

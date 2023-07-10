@@ -62,8 +62,8 @@ public class CoreComponentsClientHandler extends IArmorUpgradeClientHandler.Abst
     private static final String[] BAR_STR_CACHE = new String[MAX_BARS + 1];
     private static final Component NO_ARMOR = Component.literal("-").withStyle(ChatFormatting.DARK_GRAY);
 
-    private static final StatPanelLayout DEF_STAT_LAYOUT = new StatPanelLayout(0.995f, 0.005f, true);
-    private static final StatPanelLayout DEFAULT_MESSAGE_LAYOUT = new StatPanelLayout(0.005f, 0.15f, false);
+    private static final StatPanelLayout DEF_STAT_LAYOUT = StatPanelLayout.expandsLeft(0.995f, 0.005f);
+    private static final StatPanelLayout DEFAULT_MESSAGE_LAYOUT = StatPanelLayout.expandsRight(0.005f, 0.15f);
 
     private final float[] lastPressure = new float[] { -1, -1, -1, -1 };
     private IGuiAnimatedStat powerStat;

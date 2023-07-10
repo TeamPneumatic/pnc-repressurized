@@ -56,15 +56,15 @@ public class JetBootsOptions extends AbstractSliderOptions<JetBootsClientHandler
 
         IClientArmorRegistry registry = PneumaticRegistry.getInstance().getClientArmorRegistry();
         ResourceLocation ownerID = getClientUpgradeHandler().getID();
-        checkBoxBuilderMode = registry.makeKeybindingCheckBox(JetBootsClientHandler.MODULE_BUILDER_MODE, 5, 45, 0xFFFFFFFF,
+        checkBoxBuilderMode = registry.makeKeybindingCheckBox(JetBootsClientHandler.MODULE_BUILDER_MODE, 5, 60, 0xFFFFFFFF,
                 b -> setFlag(PneumaticArmorItem.NBT_BUILDER_MODE, JetBootsHandler.BUILDER_MODE_LEVEL, b))
                 .withOwnerUpgradeID(ownerID);
         gui.addWidget(checkBoxBuilderMode.asWidget());
-        checkBoxStabilizers = registry.makeKeybindingCheckBox(JetBootsClientHandler.MODULE_FLIGHT_STABILIZERS, 5, 65, 0xFFFFFFFF,
+        checkBoxStabilizers = registry.makeKeybindingCheckBox(JetBootsClientHandler.MODULE_FLIGHT_STABILIZERS, 5, 75, 0xFFFFFFFF,
                 b -> setFlag(PneumaticArmorItem.NBT_FLIGHT_STABILIZERS, JetBootsHandler.STABILIZERS_LEVEL, b))
                 .withOwnerUpgradeID(ownerID);
         gui.addWidget(checkBoxStabilizers.asWidget());
-        ICheckboxWidget hover = registry.makeKeybindingCheckBox(JetBootsClientHandler.MODULE_HOVER, 5, 85, 0xFFFFFFFF,
+        ICheckboxWidget hover = registry.makeKeybindingCheckBox(JetBootsClientHandler.MODULE_HOVER, 5, 90, 0xFFFFFFFF,
                         b -> setFlag(PneumaticArmorItem.NBT_HOVER, 1, b))
                 .withOwnerUpgradeID(ownerID);
         gui.addWidget(hover.asWidget());

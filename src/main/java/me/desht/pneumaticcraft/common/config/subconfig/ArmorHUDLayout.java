@@ -48,7 +48,7 @@ public class ArmorHUDLayout extends AuxConfigJson {
 
     @Override
     protected void readFromJson(JsonObject json) {
-        // note: dedicated server will have neither old "stats" or new "layouts" data
+        // note: dedicated server not have "layouts" data
         // this information is only saved client-side
 
         if (json.has(HUD_LAYOUT)) {
@@ -76,8 +76,8 @@ public class ArmorHUDLayout extends AuxConfigJson {
         return Sidedness.CLIENT;
     }
 
-    public void updateLayout(ResourceLocation id, float x, float y, boolean leftSided) {
-        layouts.put(id, new StatPanelLayout(x, y, leftSided));
+    public void updateLayout(ResourceLocation id, float x, float y, boolean leftSided, boolean hidden) {
+        layouts.put(id, new StatPanelLayout(x, y, leftSided, hidden));
         tryWriteToFile();
     }
 

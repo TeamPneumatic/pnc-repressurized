@@ -54,7 +54,7 @@ public class EntityTrackOptions extends IOptionPage.SimpleOptionPage<EntityTrack
     public void populateGui(IGuiScreen gui) {
         gui.addWidget(ClientArmorRegistry.getInstance().makeStatMoveButton(30, 128, getClientUpgradeHandler()));
 
-        textField = new EditBox(gui.getFontRenderer(), 35, 60, 140, 10, Component.empty());
+        textField = new EditBox(gui.getFontRenderer(), 35, 75, 140, 10, Component.empty());
         if (Minecraft.getInstance().player != null) {
             textField.setValue(PneumaticArmorItem.getEntityFilter(Minecraft.getInstance().player.getItemBySlot(EquipmentSlot.HEAD)));
         }
@@ -78,7 +78,7 @@ public class EntityTrackOptions extends IOptionPage.SimpleOptionPage<EntityTrack
     @Override
     public void renderPost(GuiGraphics graphics, int x, int y, float partialTicks) {
         Font font = getGuiScreen().getFontRenderer();
-        graphics.drawString(font, I18n.get("pneumaticcraft.gui.entityFilter"), 35, 50, 0xFFFFFFFF, false);
+        graphics.drawString(font, I18n.get("pneumaticcraft.gui.entityFilter"), 35, textField.getY() - font.lineHeight - 2, 0xFFFFFFFF, false);
         if (ClientUtils.isKeyDown(GLFW.GLFW_KEY_F1)) {
             GuiUtils.showPopupHelpScreen(graphics, getGuiScreen().getScreen(), font,
                     GuiUtils.xlateAndSplit("pneumaticcraft.gui.entityFilter.helpText"));

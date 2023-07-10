@@ -48,10 +48,10 @@ public class SearchOptions extends IOptionPage.SimpleOptionPage<SearchClientHand
 
     @Override
     public void populateGui(IGuiScreen gui) {
-        gui.addWidget(new WidgetButtonExtended(30, 40, 150, 20,
+        gui.addWidget(new WidgetButtonExtended(30, 55, 150, 20,
                 xlate("pneumaticcraft.gui.misc.searchItem"), b -> openSearchGui()));
 
-        gui.addWidget(ClientArmorRegistry.getInstance().makeStatMoveButton(30, 128, getClientUpgradeHandler()));
+        gui.addWidget(ClientArmorRegistry.getInstance().makeStatMoveButton(30, settingsYposition() + 12, getClientUpgradeHandler()));
 
         if (searchGui != null && !player.getItemBySlot(EquipmentSlot.HEAD).isEmpty()) {
             ItemStack helmetStack = ClientUtils.getWornArmor(EquipmentSlot.HEAD);

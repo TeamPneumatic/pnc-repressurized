@@ -29,6 +29,7 @@ import me.desht.pneumaticcraft.client.KeyHandler;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.options.JetBootsOptions;
 import me.desht.pneumaticcraft.client.pneumatic_armor.ClientArmorRegistry;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
+import me.desht.pneumaticcraft.common.config.subconfig.ArmorHUDLayout;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketJetBootsActivate;
@@ -68,7 +69,7 @@ public class JetBootsClientHandler extends IArmorUpgradeClientHandler.SimpleTogg
     public static final ResourceLocation MODULE_HOVER = RL("jet_boots.module.hover");
     public static final ResourceLocation MODULE_SMART_HOVER = RL("jet_boots.module.smart_hover");
 
-    private static final StatPanelLayout DEFAULT_STAT_LAYOUT = new StatPanelLayout(0.5f, 0.005f, false);
+    private static final StatPanelLayout DEFAULT_STAT_LAYOUT = StatPanelLayout.expandsRight(0.5f, 0.005f);
 
     private String l1, l2, l3, r1, r2, r3;
     private int widestR;
@@ -147,7 +148,7 @@ public class JetBootsClientHandler extends IArmorUpgradeClientHandler.SimpleTogg
 
     @Override
     public void render2D(GuiGraphics graphics, float partialTicks, boolean armorPieceHasPressure) {
-        if (armorPieceHasPressure && jbStat.isStatOpen()) {
+        if (armorPieceHasPressure && jbStat.isStatOpen() && !ArmorHUDLayout.INSTANCE.getLayoutFor(getID(), getDefaultStatLayout()).hidden()) {
             Font fr = Minecraft.getInstance().font;
             int xl = jbStat.getBaseX() + 5;
             int y = jbStat.getBaseY() + fr.lineHeight + 8;

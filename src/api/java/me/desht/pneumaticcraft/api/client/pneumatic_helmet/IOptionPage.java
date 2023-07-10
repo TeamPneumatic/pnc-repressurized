@@ -162,6 +162,13 @@ public interface IOptionPage {
     default Optional<IKeybindingButton> getKeybindingButton() { return Optional.empty(); }
 
     /**
+     * Get the client upgrade handler that this screen is for.
+     *
+     * @return the client upgrade handler
+     */
+    IArmorUpgradeClientHandler<?> getClientUpgradeHandler();
+
+    /**
      * Convenience class for simple armor features with no additional settings.
      */
     class SimpleOptionPage<T extends IArmorUpgradeClientHandler<?>> implements IOptionPage {
@@ -175,7 +182,8 @@ public interface IOptionPage {
             this.clientUpgradeHandler = clientUpgradeHandler;
         }
 
-        protected T getClientUpgradeHandler() {
+        @Override
+        public T getClientUpgradeHandler() {
             return clientUpgradeHandler;
         }
 

@@ -20,18 +20,17 @@ package me.desht.pneumaticcraft.client.gui.pneumatic_armor;
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.platform.Window;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
-import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IArmorUpgradeClientHandler;
-import me.desht.pneumaticcraft.api.client.pneumatic_helmet.ICheckboxWidget;
-import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IGuiScreen;
-import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
+import me.desht.pneumaticcraft.api.client.pneumatic_helmet.*;
 import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorUpgradeHandler;
 import me.desht.pneumaticcraft.api.upgrade.PNCUpgrade;
 import me.desht.pneumaticcraft.client.gui.AbstractPneumaticCraftScreen;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.options.NullOptions;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetCheckBox;
 import me.desht.pneumaticcraft.client.pneumatic_armor.ClientArmorRegistry;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.config.subconfig.ArmorFeatureStatus;
+import me.desht.pneumaticcraft.common.config.subconfig.ArmorHUDLayout;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.item.PneumaticArmorItem;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
@@ -132,12 +131,30 @@ public class ArmorMainScreen extends AbstractPneumaticCraftScreen implements IGu
         }
         pageNumber = Math.min(pageNumber, upgradeOptions.size() - 1);
         if (pageNumber < 0 && !upgradeOptions.isEmpty()) pageNumber = 0;
+
+        maybeAddEnableCheckbox();
+        maybeAddStatHiddenCheckbox();
+        getCurrentOptionsPage().page.populateGui(this);
+    }
+
+    private void maybeAddEnableCheckbox() {
         ICheckboxWidget checkBox = PneumaticRegistry.getInstance().getClientArmorRegistry()
                 .makeKeybindingCheckBox(getCurrentOptionsPage().upgradeID, 40, 25, 0xFFFFFFFF, null);
         if (getCurrentOptionsPage().page.isToggleable()) {
             addRenderableWidget(checkBox.asWidget());
         }
-        getCurrentOptionsPage().page.populateGui(this);
+    }
+
+    private void maybeAddStatHiddenCheckbox() {
+        var handler = getCurrentOptionsPage().page.getClientUpgradeHandler();
+        StatPanelLayout layout = ArmorHUDLayout.INSTANCE.getLayoutFor(getCurrentOptionsPage().upgradeID, handler.getDefaultStatLayout());
+        WidgetCheckBox statToggle = new WidgetCheckBox(40, 37, 0xFFFFFFFF, xlate("pneumaticcraft.armor.gui.misc.hideStat"), b -> {
+            ArmorHUDLayout.INSTANCE.updateLayout(getCurrentOptionsPage().upgradeID, layout.x(), layout.y(), layout.expandsLeft(), b.checked);
+        });
+        if (handler.getAnimatedStat() != null) {
+            statToggle.checked = layout.hidden();
+            addRenderableWidget(statToggle);
+        }
     }
 
     private void setPage(int newPage) {

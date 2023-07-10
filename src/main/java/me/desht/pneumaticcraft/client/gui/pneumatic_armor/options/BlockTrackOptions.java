@@ -45,7 +45,7 @@ public class BlockTrackOptions extends IOptionPage.SimpleOptionPage<BlockTracker
         IClientArmorRegistry registry = PneumaticRegistry.getInstance().getClientArmorRegistry();
         for (int i = 0; i < entries.size(); i++) {
             ICheckboxWidget checkBox = registry.makeKeybindingCheckBox(
-                    entries.get(i).getEntryID(), 5, 38 + i * 12, 0xFFFFFFFF, cb -> {
+                    entries.get(i).getEntryID(), 5, 53 + i * 12, 0xFFFFFFFF, cb -> {
                         ResourceLocation subID = cb.getUpgradeId();
                         HUDHandler.getInstance().addFeatureToggleMessage(IArmorUpgradeHandler.getStringKey(blockTrackerID), IArmorUpgradeHandler.getStringKey(subID), cb.isChecked());
                     }).withOwnerUpgradeID(owningId);
@@ -60,6 +60,6 @@ public class BlockTrackOptions extends IOptionPage.SimpleOptionPage<BlockTracker
 
     @Override
     public int settingsYposition() {
-        return 50 + 12 * BlockTrackHandler.getInstance().getEntries().size();
+        return 60 + 12 * BlockTrackHandler.getInstance().getEntries().size();
     }
 }

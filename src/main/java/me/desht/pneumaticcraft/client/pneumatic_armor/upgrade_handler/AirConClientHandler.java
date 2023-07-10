@@ -35,7 +35,7 @@ import net.minecraft.world.item.ItemStack;
 
 public class AirConClientHandler extends IArmorUpgradeClientHandler.SimpleToggleableHandler<AirConHandler> {
     private static final int MAX_AC = 20;
-    private static final StatPanelLayout DEFAULT_STAT_LAYOUT = new StatPanelLayout(0.5f, 0.005f, false);
+    private static final StatPanelLayout DEFAULT_STAT_LAYOUT = StatPanelLayout.expandsRight(0.5f, 0.005f);
 
     public static int deltaTemp;  // set by packet from server
     private static int currentAC = 0; // cosmetic

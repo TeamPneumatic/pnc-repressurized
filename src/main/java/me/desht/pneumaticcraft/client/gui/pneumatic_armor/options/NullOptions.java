@@ -17,6 +17,7 @@
 
 package me.desht.pneumaticcraft.client.gui.pneumatic_armor.options;
 
+import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IArmorUpgradeClientHandler;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IGuiScreen;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.ArmorMainScreen;
@@ -100,5 +101,10 @@ public class NullOptions implements IOptionPage {
     @Override
     public boolean displaySettingsHeader() {
         return false;
+    }
+
+    @Override
+    public IArmorUpgradeClientHandler<?> getClientUpgradeHandler() {
+        return null;
     }
 }

@@ -62,7 +62,7 @@ import java.util.Map;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class SearchClientHandler extends IArmorUpgradeClientHandler.AbstractHandler<SearchHandler> {
-    private static final StatPanelLayout DEFAULT_STAT_LAYOUT = new StatPanelLayout(0.005f, 0.1f, false);
+    private static final StatPanelLayout DEFAULT_STAT_LAYOUT = StatPanelLayout.expandsRight(0.005f, 0.1f);
 
     private int totalSearchedItemCount;
     private int itemSearchCount;

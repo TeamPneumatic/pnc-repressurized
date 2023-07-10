@@ -45,6 +45,11 @@ public class CoreComponentsOptions extends IOptionPage.SimpleOptionPage<CoreComp
     public void populateGui(IGuiScreen gui) {
         gui.addWidget(ClientArmorRegistry.getInstance().makeStatMoveButton(30, 128, getClientUpgradeHandler()));
 
+        gui.addWidget(new WidgetCheckBox(5, 55, 0xFFFFFFFF, xlate("pneumaticcraft.armor.gui.misc.showPressureNumerically"), b -> {
+            getClientUpgradeHandler().setShowPressureNumerically(b.checked);
+            getClientUpgradeHandler().saveToConfig();
+        }).setChecked(getClientUpgradeHandler().shouldShowPressureNumerically()));
+
         gui.addWidget(new WidgetButtonExtended(30, 150, 150, 20,
                 xlate("pneumaticcraft.armor.gui.misc.moveMessageScreen"), b -> {
             Minecraft.getInstance().setScreen(new ArmorStatMoveScreen(getClientUpgradeHandler(), CoreComponentsHandler.getMessageID(), getClientUpgradeHandler().getTestMessageStat()));
@@ -53,10 +58,6 @@ public class CoreComponentsOptions extends IOptionPage.SimpleOptionPage<CoreComp
         gui.addWidget(new WidgetButtonExtended(30, 194, 150, 20,
                 xlate("pneumaticcraft.armor.gui.misc.colors"), b -> Minecraft.getInstance().setScreen(new ArmorColoringScreen())));
 
-        gui.addWidget(new WidgetCheckBox(5, 45, 0xFFFFFFFF, xlate("pneumaticcraft.armor.gui.misc.showPressureNumerically"), b -> {
-            getClientUpgradeHandler().setShowPressureNumerically(b.checked);
-            getClientUpgradeHandler().saveToConfig();
-        }).setChecked(getClientUpgradeHandler().shouldShowPressureNumerically()));
 
         changeKeybindingButton = ClientArmorRegistry.getInstance().makeKeybindingButton(172, KeyHandler.getInstance().keybindOpenOptions);
         gui.addWidget(changeKeybindingButton.asWidget());
