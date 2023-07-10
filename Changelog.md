@@ -6,8 +6,23 @@ Changes are in reverse chronological order; newest changes at the top.
 
 # Minecraft 1.20.1
 
+## [6.0.1]
+
+### New
+* Updated to Forge 47.1.0 RB (47.1.0 or later now required)
+* Patchouli support updated to Patchouli 1.20.1-80-FORGE
+  * Patchouli is now a mandatory dependency again
+
+### Added
+* Added a visibility checkbox to the Pneumatic Armor upgrade GUI for all upgrades which display stat panels
+  * Hiding stat panels for those upgrades you don't want to see is now easy
+* Added control over which messages are displayed on armor startup
+  * Can show component init messages for all components (the default), enabled components only, or no init messages at all
+  * Can be set in client config, and also via the "Core Components" armor GUI
+
 ## [6.0.0]
 
+### New
 * Ported to 1.20.1
   * Functionally equivalent to 4.3.5 release
 
