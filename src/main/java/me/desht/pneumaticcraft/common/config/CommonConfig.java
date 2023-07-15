@@ -64,6 +64,7 @@ public class CommonConfig {
         public ForgeConfigSpec.DoubleValue speedUpgradeSpeedMultiplier;
         public ForgeConfigSpec.DoubleValue speedUpgradeUsageMultiplier;
         public ForgeConfigSpec.ConfigValue<List<String>> disenchantingBlacklist;
+        public ForgeConfigSpec.ConfigValue<List<String>> aerialInterfaceDimensionBlacklist;
     }
     public static class Armor {
         public ForgeConfigSpec.IntValue jetBootsAirUsage;
@@ -339,6 +340,10 @@ public class CommonConfig {
                 .comment("Blacklist items from being allowed in the Pressure Chamber disenchanting system. This is a starts-with string match, so you can match by mod, or individual item names as you need. Blacklisted by default are Quark Ancient Tomes, and all Tetra items; both can lead to enchantment duping as they have special enchantment mechanics.")
                 .translation("pneumaticcraft.config.common.machines.disenchanting_blacklist")
                 .define("disenchanting_blacklist", Lists.newArrayList("quark:ancient_tome", "tetra:"));
+        machines.aerialInterfaceDimensionBlacklist = builder
+                .comment("ID's of dimensions in which the Aerial Interface is not allowed to operate. You can use wildcarded dimensions here, e.g. 'somemod:*'.")
+                .translation("pneumaticcraft.config.common.machines.aerial_interface_dimension_blacklist")
+                .define("aerial_interface_dimension_blacklist", Lists.newArrayList());
         builder.pop();
 
         builder.push("Pneumatic Armor");

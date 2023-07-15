@@ -25,10 +25,8 @@ import me.desht.pneumaticcraft.api.pressure.PressureTier;
 import me.desht.pneumaticcraft.common.XPFluidManager;
 import me.desht.pneumaticcraft.common.block.entity.RedstoneController.EmittingRedstoneMode;
 import me.desht.pneumaticcraft.common.block.entity.RedstoneController.RedstoneMode;
-import me.desht.pneumaticcraft.common.core.ModBlockEntities;
-import me.desht.pneumaticcraft.common.core.ModBlocks;
-import me.desht.pneumaticcraft.common.core.ModItems;
-import me.desht.pneumaticcraft.common.core.ModSounds;
+import me.desht.pneumaticcraft.common.config.ConfigHelper;
+import me.desht.pneumaticcraft.common.core.*;
 import me.desht.pneumaticcraft.common.inventory.AerialInterfaceMenu;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
@@ -37,10 +35,7 @@ import me.desht.pneumaticcraft.common.network.PacketPlaySound;
 import me.desht.pneumaticcraft.common.thirdparty.curios.Curios;
 import me.desht.pneumaticcraft.common.thirdparty.curios.CuriosUtils;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
-import me.desht.pneumaticcraft.common.util.EnchantmentUtils;
-import me.desht.pneumaticcraft.common.util.GlobalBlockEntityCacheManager;
-import me.desht.pneumaticcraft.common.util.ITranslatableEnum;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.common.util.*;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -97,6 +92,7 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
             new EmittingRedstoneMode<>("aerialInterface.playerConnected", new ItemStack(ModBlocks.AERIAL_INTERFACE.get()),
                     te -> te.isConnectedToPlayer)
     );
+    private static final String NO_AERIAL_INTERFACE = "pneumaticcraft:no_aerial_interface";
 
     @DescSynced
     private String playerName = "";
@@ -117,6 +113,8 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
     public boolean dispenserUpgradeInserted;
     @GuiSynced
     private final RedstoneController<AerialInterfaceBlockEntity> rsController = new RedstoneController<>(this, REDSTONE_MODES);
+    @GuiSynced
+    public OperatingProblem operatingProblem = OperatingProblem.OK;
 
     private final SideConfigurator<IItemHandler> itemHandlerSideConfigurator;
 
@@ -133,6 +131,7 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
 
     private final List<PlayerInvHandler> invHandlers = new ArrayList<>();
     public GameProfile gameProfileClient;  // for rendering
+    private static WildcardedRLMatcher dimensionBlacklist;
 
     public AerialInterfaceBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.AERIAL_INTERFACE.get(), pos, state, PressureTier.TIER_TWO, PneumaticValues.VOLUME_AERIAL_INTERFACE, 4);
@@ -248,11 +247,19 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
             needUpdateNeighbours = false;
             updateNeighbours();
         }
-        if (getLevel() instanceof ServerLevel && (getLevel().getGameTime() & 0xf) == 0) {
-            setPlayer(((ServerLevel) getLevel()).getServer().getPlayerList().getPlayer(playerUUID));
+        if (getLevel() instanceof ServerLevel serverLevel && (getLevel().getGameTime() & 0xf) == 0) {
+            ServerPlayer player = serverLevel.getServer().getPlayerList().getPlayer(playerUUID);
+            setPlayer(player);
+            if (player != null && player.getTags().contains(NO_AERIAL_INTERFACE)) {
+                operatingProblem = OperatingProblem.PLAYER_BARRED;
+            } else if (getDimensionBlacklist().test(serverLevel.dimension().location())) {
+                operatingProblem = OperatingProblem.BAD_DIMENSION;
+            } else {
+                operatingProblem = OperatingProblem.OK;
+            }
         }
         getPlayer().ifPresent(player -> {
-            if (getPressure() >= getMinWorkingPressure()) {
+            if (aiCanOperate()) {
                 addAir(-PneumaticValues.USAGE_AERIAL_INTERFACE);
                 if ((nonNullLevel().getGameTime() & 0x3f) == 0) {
                     scanForChargeableItems(player);
@@ -266,6 +273,17 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
             oldRedstoneStatus = rsController.shouldEmit();
             needUpdateNeighbours = true;
         }
+    }
+
+    private static WildcardedRLMatcher getDimensionBlacklist() {
+        if (dimensionBlacklist == null) {
+            dimensionBlacklist = new WildcardedRLMatcher(ConfigHelper.common().machines.aerialInterfaceDimensionBlacklist.get());
+        }
+        return dimensionBlacklist;
+    }
+
+    public static void clearDimensionBlacklist() {
+        dimensionBlacklist = null;
     }
 
     @Override
@@ -419,8 +437,8 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
         return rsController;
     }
 
-    private boolean hasEnoughPressure() {
-        return getPressure() >= getMinWorkingPressure();
+    private boolean aiCanOperate() {
+        return operatingProblem == OperatingProblem.OK && getPressure() >= getMinWorkingPressure();
     }
 
     private abstract class PlayerInvHandler implements IItemHandler {
@@ -449,7 +467,7 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
         @Override
         public int getSlots() {
             return getPlayer()
-                    .filter(p -> hasEnoughPressure())
+                    .filter(p -> aiCanOperate())
                     .map(p -> getInvWrapper(p).getSlots())
                     .orElse(0);
         }
@@ -458,7 +476,7 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
         @Override
         public ItemStack getStackInSlot(int slot) {
             return getPlayer()
-                    .filter(p -> hasEnoughPressure())
+                    .filter(p -> aiCanOperate())
                     .map(p -> getInvWrapper(p).getStackInSlot(slot))
                     .orElse(ItemStack.EMPTY);
         }
@@ -467,7 +485,7 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
         @Override
         public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
             return getPlayer()
-                    .filter(p -> hasEnoughPressure())
+                    .filter(p -> aiCanOperate())
                     .map(p -> getInvWrapper(p).insertItem(slot, stack, simulate))
                     .orElse(stack);
         }
@@ -476,7 +494,7 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
         @Override
         public ItemStack extractItem(int slot, int amount, boolean simulate) {
             return getPlayer()
-                    .filter(p -> hasEnoughPressure())
+                    .filter(p -> aiCanOperate())
                     .map(p -> getInvWrapper(p).extractItem(slot, amount, simulate))
                     .orElse(ItemStack.EMPTY);
         }
@@ -484,14 +502,14 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
         @Override
         public int getSlotLimit(int slot) {
             return getPlayer()
-                    .filter(p -> hasEnoughPressure())
+                    .filter(p -> aiCanOperate())
                     .map(p -> getInvWrapper(p).getSlotLimit(slot))
                     .orElse(1);
         }
 
         @Override
         public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
-            return hasEnoughPressure();
+            return aiCanOperate();
         }
     }
 
@@ -556,7 +574,7 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
         @Nonnull
         @Override
         public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
-            if (!hasEnoughPressure()) return stack;
+            if (!aiCanOperate()) return stack;
 
             return getPlayer().map(player -> {
                 if (getFoodValue(stack) <= 0 || !okToFeed(stack, player)) {
@@ -664,13 +682,13 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
         private boolean canFill(Fluid fluid) {
             return dispenserUpgradeInserted && fluid != Fluids.EMPTY && fluid == curXpFluid
                     && curXpRatio != 0
-                    && hasEnoughPressure();
+                    && aiCanOperate();
         }
 
         @Override
         public FluidStack drain(FluidStack resource, FluidAction doDrain) {
             return getPlayer().map(player -> {
-                if (curXpRatio != 0 && dispenserUpgradeInserted && hasEnoughPressure()) {
+                if (curXpRatio != 0 && dispenserUpgradeInserted && aiCanOperate()) {
                     int pointsDrained = Math.min(EnchantmentUtils.getPlayerXP(player), resource.getAmount() / curXpRatio);
                     if (doDrain.execute()) EnchantmentUtils.addPlayerXP(player, -pointsDrained);
                     return new FluidStack(resource.getFluid(), pointsDrained * curXpRatio);
@@ -710,6 +728,23 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
 
         public ItemStack getIconStack() {
             return stack;
+        }
+    }
+
+    public enum OperatingProblem implements ITranslatableEnum {
+        OK("ok"),
+        BAD_DIMENSION("bad_dimension"),
+        PLAYER_BARRED("player_barred");
+
+        private final String name;
+
+        OperatingProblem(String name) {
+            this.name = name;
+        }
+
+        @Override
+        public String getTranslationKey() {
+            return "pneumaticcraft.gui.tab.info.aerialInterface.problem." + name;
         }
     }
 }
