@@ -24,7 +24,9 @@ import me.desht.pneumaticcraft.common.drone.progwidgets.IEntityProvider;
 import me.desht.pneumaticcraft.common.drone.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetText;
 import me.desht.pneumaticcraft.common.entity.drone.DroneEntity;
+import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.animal.Cat;
@@ -187,6 +189,18 @@ public class EntityFilter implements Predicate<Entity> {
         AGE(ImmutableSet.of("adult", "baby"),
                 Modifier::testAge
         ),
+        AQUATIC(ImmutableSet.of("yes", "no"),
+                (entity, val) -> testMobType(entity, val, MobType.WATER)
+        ),
+        UNDEAD(ImmutableSet.of("yes", "no"),
+                (entity, val) -> testMobType(entity, val, MobType.UNDEAD)
+        ),
+        ILLAGER(ImmutableSet.of("yes", "no"),
+                (entity, val) -> testMobType(entity, val, MobType.ILLAGER)
+        ),
+        ARTHROPOD(ImmutableSet.of("yes", "no"),
+                (entity, val) -> testMobType(entity, val, MobType.ARTHROPOD)
+        ),
         BREEDABLE(ImmutableSet.of("yes", "no"),
                 Modifier::testBreedable
         ),
@@ -197,16 +211,22 @@ public class EntityFilter implements Predicate<Entity> {
                 Modifier::hasColor
         ),
         HOLDING((item) -> ForgeRegistries.ITEMS.containsKey(new ResourceLocation(item)),
-                "any valid item registry name, e.g. 'minecraft:cobblestone'",
+                "any valid item ID, e.g. 'minecraft:cobblestone'",
                 (entity, val) -> isHeldItem(entity, val, true)
         ),
         HOLDING_OFFHAND((item) -> ForgeRegistries.ITEMS.containsKey(new ResourceLocation(item)),
-                "any valid item registry name, e.g. 'minecraft:cobblestone'",
+                "any valid item ID, e.g. 'minecraft:cobblestone'",
                 (entity, val) -> isHeldItem(entity, val, false)
         ),
         MOD((str) -> true,
                 "any mod name, e.g. 'minecraft' or 'pneumaticcraft'",
-                Modifier::testMod);
+                Modifier::testMod),
+        ENTITY_TAG((str) -> true,
+                "any string tag (added to entities with the /tag command)",
+                Modifier::testEntityTag),
+        TYPE_TAG((str) -> true,
+                "any known entity type tag, e.g 'minecraft:skeletons'",
+                Modifier::testTypeTag);
 
         private final Set<String> validationSet;
         private final Predicate<String> validationPredicate;
@@ -234,18 +254,30 @@ public class EntityFilter implements Predicate<Entity> {
         }
 
         private static boolean testBreedable(Entity entity, String val) {
-            return entity instanceof Animal a &&
-                    (a.getAge() == 0 ? val.equalsIgnoreCase("yes") : val.equalsIgnoreCase("no"));
+            return entity instanceof Animal a && val.equalsIgnoreCase(a.getAge() == 0 ? "yes" : "no");
+        }
+
+        private static boolean testMobType(Entity entity, String val, MobType type) {
+            return entity instanceof LivingEntity l && val.equalsIgnoreCase(l.getMobType() == type ? "yes" : "no");
         }
 
         private static boolean testAge(Entity entity, String val) {
-            return entity instanceof AgeableMob a && a.getAge() >= 0 ?
-                    val.equalsIgnoreCase("adult") : val.equalsIgnoreCase("baby");
+            return val.equalsIgnoreCase(entity instanceof AgeableMob a && a.getAge() >= 0 ? "adult" : "baby");
         }
 
         private static boolean testMod(Entity entity, String modName) {
             ResourceLocation rl = PneumaticCraftUtils.getRegistryName(entity).orElseThrow();
             return rl.getNamespace().toLowerCase(Locale.ROOT).equals(modName.toLowerCase(Locale.ROOT));
+        }
+
+        private static boolean testEntityTag(Entity entity, String val) {
+            return entity.getTags().contains(val);
+        }
+
+        private static boolean testTypeTag(Entity entity, String val) {
+            if (!ResourceLocation.isValidResourceLocation(val)) return false;
+            TagKey<EntityType<?>> key = TagKey.create(Registry.ENTITY_TYPE_REGISTRY, new ResourceLocation(val));
+            return entity.getType().is(key);
         }
 
         boolean isValid(String s) {
