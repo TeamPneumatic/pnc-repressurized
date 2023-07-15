@@ -26,6 +26,7 @@ import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.XPFluidManager;
 import me.desht.pneumaticcraft.common.block.entity.AerialInterfaceBlockEntity;
 import me.desht.pneumaticcraft.common.block.entity.AerialInterfaceBlockEntity.FeedMode;
+import me.desht.pneumaticcraft.common.block.entity.AerialInterfaceBlockEntity.OperatingProblem;
 import me.desht.pneumaticcraft.common.inventory.AerialInterfaceMenu;
 import me.desht.pneumaticcraft.common.thirdparty.ModNameCache;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -199,6 +200,8 @@ public class AerialInterfaceScreen extends AbstractPneumaticCraftContainerScreen
             textList.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.aerialInterface.noPlayer"));
         } else if (!te.isConnectedToPlayer) {
             textList.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.aerialInterface.playerOffline", te.getPlayerName()));
+        } else if (te.operatingProblem != OperatingProblem.OK) {
+            textList.add(xlate(te.operatingProblem.getTranslationKey()));
         }
     }
 

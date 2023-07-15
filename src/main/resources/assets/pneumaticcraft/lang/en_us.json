@@ -1351,6 +1351,8 @@
    "pneumaticcraft.gui.tab.info.aerialInterface.linked" : "§0Linked with: %s",
    "pneumaticcraft.gui.tab.info.aerialInterface.liquidXp.info" : "With a Dispenser Upgrade installed in the Aerial Interface, you can pump liquid XP into or out of the Interface, directly filling or draining the player's stored experience. You can select which type of liquid XP to use with the above button; clicking it cycles through the available types, as well as the (default) disabled setting.${br}${br}Available XP types:",
    "pneumaticcraft.gui.tab.info.aerialInterface.liquidXp.info.title" : "Interfacing XP",
+   "pneumaticcraft.gui.tab.info.aerialInterface.problem.player_barred" : "You are not allowed to use the Aerial Interface at this time.",
+   "pneumaticcraft.gui.tab.info.aerialInterface.problem.bad_dimension" : "You are not allowed to use the Aerial Interface in this dimension.",
    "pneumaticcraft.gui.tab.info.aerialInterface.removeDispenser" : "Remove the Dispenser Upgrade to switch to interfacing items.",
    "pneumaticcraft.gui.tab.info.airCannon.coord" : "Coordinate: %d,%d,%d",
    "pneumaticcraft.gui.tab.info.airCannon.force" : "Force: %d%%",
