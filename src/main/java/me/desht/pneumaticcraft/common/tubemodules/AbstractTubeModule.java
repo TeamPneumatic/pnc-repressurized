@@ -144,18 +144,19 @@ public abstract class AbstractTubeModule {
     }
 
     public void readFromNBT(CompoundTag nbt) {
-        upgraded = nbt.getBoolean("upgraded");
         lowerBound = nbt.getFloat("lowerBound");
         higherBound = nbt.getFloat("higherBound");
-        advancedConfig = !nbt.contains("advancedConfig") || nbt.getBoolean("advancedConfig");
+        upgraded = nbt.getBoolean("upgraded");
+        advancedConfig = nbt.getBoolean("advancedConfig");
     }
 
     public CompoundTag writeToNBT(CompoundTag nbt) {
+        // important to write dir here, even though it's not read above; see PressureTubeBlockEntity#readFromPacket
         nbt.putInt("dir", dir.get3DDataValue());
-        nbt.putBoolean("upgraded", upgraded);
         nbt.putFloat("lowerBound", lowerBound);
         nbt.putFloat("higherBound", higherBound);
-        nbt.putBoolean("advancedConfig", advancedConfig);
+        if (upgraded) nbt.putBoolean("upgraded", true);
+        if (advancedConfig) nbt.putBoolean("advancedConfig", true);
         return nbt;
     }
 
