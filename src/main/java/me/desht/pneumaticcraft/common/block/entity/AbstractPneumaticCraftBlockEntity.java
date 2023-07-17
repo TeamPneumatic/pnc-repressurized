@@ -63,6 +63,7 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nonnull;
@@ -442,13 +443,14 @@ public abstract class AbstractPneumaticCraftBlockEntity extends BlockEntity
     void processFluidItem(int inputSlot, int outputSlot) {
         getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(itemHandler -> {
             ItemStack inputStack = itemHandler.getStackInSlot(inputSlot);
+            ItemStack outputStack = itemHandler.getStackInSlot(outputSlot);
             if (inputStack.getCount() != 1) return;
 
             FluidUtil.getFluidHandler(inputStack).ifPresent(fluidHandlerItem -> {
                 FluidStack itemContents = fluidHandlerItem.drain(1000, IFluidHandler.FluidAction.SIMULATE);
 
                 getCapability(ForgeCapabilities.FLUID_HANDLER).ifPresent(fluidHandler -> {
-                    if (!itemContents.isEmpty()) {
+                    if (!itemContents.isEmpty() && (outputStack.isEmpty() || ItemHandlerHelper.canItemStacksStack(inputStack.getItem().getCraftingRemainingItem(inputStack), outputStack))) {
                         // input item contains fluid: drain from input item into tank, move to output if empty
                         FluidStack transferred = FluidUtil.tryFluidTransfer(fluidHandler, fluidHandlerItem, itemContents.getAmount(), true);
                         if (transferred.getAmount() == itemContents.getAmount()) {
