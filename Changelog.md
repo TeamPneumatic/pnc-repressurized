@@ -16,6 +16,9 @@ Changes are in reverse chronological order; newest changes at the top.
 * Added a couple of methods to prevent Aerial Interface usage by dimension or player
   * Configurable dimension blacklist: `aerial_interface_dimension_blacklist` in pneumaticcraft-common.toml
   * Check for an entity tag (see /tag command) on the player of `pneumaticcraft:no_aerial_interface`
+* Pressure Gauge Modules can now be toggled to a simple textual display by right-clicking with a wrench
+  * Simpler display is less rendering work, good for gauges only used for redstone emission
+  * Also useful to work around an Oculus bug which breaks Pressure Gauge module rendering
 
 ### Fixed
 * Fixed another fluid dupe with fluid container items in Tanks
