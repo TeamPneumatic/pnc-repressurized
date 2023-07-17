@@ -22,10 +22,17 @@ import me.desht.pneumaticcraft.common.block.entity.PressureTubeBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdatePressureBlock;
+import me.desht.pneumaticcraft.common.thirdparty.ModdedWrenchUtils;
 import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 
 public class PressureGaugeModule extends AbstractRedstoneEmittingModule {
+    private boolean hideGauge = false;
+
     public PressureGaugeModule(Direction dir, PressureTubeBlockEntity pressureTube) {
         super(dir, pressureTube);
 
@@ -53,17 +60,22 @@ public class PressureGaugeModule extends AbstractRedstoneEmittingModule {
                     .filter(tm -> tm instanceof RedstoneModule)
                     .forEach(tm -> ((RedstoneModule) tm).setInputLevel(-1));
         }
+    }
 
-//        pressureTube.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY).ifPresent(h -> {
-//            if (pressureTube.nonNullLevel().getGameTime() % 20 == 0)
-//                NetworkHandler.sendToAllTracking(new PacketUpdatePressureBlock(getTube(), null, h.getSideLeaking(), h.getAir()), getTube());
-//            if (setRedstone(getRedstone(h.getPressure()))) {
-//                // force a recalc on next tick
-//                pressureTube.tubeModules()
-//                        .filter(tm -> tm instanceof RedstoneModule)
-//                        .forEach(tm -> ((RedstoneModule) tm).setInputLevel(-1));
-//            }
-//        });
+    @Override
+    public boolean onActivated(Player player, InteractionHand hand) {
+        ItemStack heldStack = player.getItemInHand(hand);
+        if (ModdedWrenchUtils.getInstance().isWrench(heldStack)) {
+            hideGauge = !hideGauge;
+            setChanged();
+            getTube().sendDescriptionPacket();
+            return true;
+        }
+        return super.onActivated(player, hand);
+    }
+
+    public boolean shouldShowGauge() {
+        return !hideGauge;
     }
 
     private int getRedstone(float pressure) {
@@ -83,5 +95,18 @@ public class PressureGaugeModule extends AbstractRedstoneEmittingModule {
     @Override
     public boolean hasGui() {
         return upgraded;
+    }
+
+    @Override
+    public CompoundTag writeToNBT(CompoundTag tag) {
+        super.writeToNBT(tag);
+        if (hideGauge) tag.putBoolean("hideGauge", true);
+        return tag;
+    }
+
+    @Override
+    public void readFromNBT(CompoundTag tag) {
+        super.readFromNBT(tag);
+        hideGauge = tag.getBoolean("hideGauge");
     }
 }

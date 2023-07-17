@@ -95,7 +95,9 @@ public class PressureTubeBlockEntity extends AbstractAirHandlingBlockEntity impl
         for (int i = 0; i < 6; i++) {
             if (sidesClosed[i]) closed |= 1 << i;
         }
-        nbt.putByte("sidesClosed", closed);
+        if (closed != 0) {
+            nbt.putByte("sidesClosed", closed);
+        }
     }
 
     @Override
@@ -117,7 +119,9 @@ public class PressureTubeBlockEntity extends AbstractAirHandlingBlockEntity impl
                 moduleList.add(moduleTag);
             }
         }
-        tag.put("modules", moduleList);
+        if (!moduleList.isEmpty()) {
+            tag.put("modules", moduleList);
+        }
     }
 
     @Override

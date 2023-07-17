@@ -9,7 +9,9 @@ import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.block.entity.PressureTubeBlockEntity;
 import me.desht.pneumaticcraft.common.tubemodules.PressureGaugeModule;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
+import net.minecraft.client.gui.Font;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.CubeListBuilder;
@@ -19,10 +21,14 @@ import net.minecraft.client.model.geom.builders.PartDefinition;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
 public class PressureGaugeRenderer extends AbstractTubeModuleRenderer<PressureGaugeModule> {
     private static final float GAUGE_SCALE = 0.007f;
+    private static final Component BAR = Component.literal("bar");
+
+    private final Font font;
 
     private final ModelPart tubeConnector1;
     private final ModelPart tubeConnector2;
@@ -49,6 +55,7 @@ public class PressureGaugeRenderer extends AbstractTubeModuleRenderer<PressureGa
     private static final String GAUGE8 = "gauge8";
 
     public PressureGaugeRenderer(BlockEntityRendererProvider.Context ctx) {
+        font = ctx.getFont();
         ModelPart root = ctx.bakeLayer(PNCModelLayers.PRESSURE_GAUGE_MODULE);
         tubeConnector1 = root.getChild(TUBECONNECTOR1);
         tubeConnector2 = root.getChild(TUBECONNECTOR2);
@@ -132,13 +139,19 @@ public class PressureGaugeRenderer extends AbstractTubeModuleRenderer<PressureGa
         matrixStack.translate(0.5, 1.5, 0.5);
         matrixStack.scale(1f, -1f, -1f);
         RenderUtils.rotateMatrixForDirection(matrixStack, module.getDirection());
+        PressureTubeBlockEntity te = module.getTube();
         matrixStack.translate(0, 1.01, 0.378);
         matrixStack.scale(GAUGE_SCALE, GAUGE_SCALE, GAUGE_SCALE);
         matrixStack.mulPose(Vector3f.YP.rotationDegrees(180));
-        PressureTubeBlockEntity te = module.getTube();
-        PressureGaugeRenderer3D.drawPressureGauge(matrixStack, buffer, -1, te.getCriticalPressure(), te.getDangerPressure(),
-                0, te.getPressure(), 0, 0, 0xFF000000);
-
+        if (module.shouldShowGauge()) {
+            PressureGaugeRenderer3D.drawPressureGauge(matrixStack, buffer, -1, te.getCriticalPressure(), te.getDangerPressure(),
+                    0, te.getPressure(), 0, 0, 0xFF000000);
+        } else {
+            // plain text display of bar
+            Component s = Component.literal(PneumaticCraftUtils.roundNumberTo(te.getPressure(), 1));
+            RenderUtils.renderString3d(s, -font.width(s) / 2f, -10, 0x000000, matrixStack, buffer, false, false);
+            RenderUtils.renderString3d(BAR, -font.width(BAR) / 2f, 0, 0x000000, matrixStack, buffer, false, false);
+        }
         matrixStack.popPose();
     }
 

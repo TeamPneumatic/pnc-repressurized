@@ -73,6 +73,8 @@ public interface CamouflageableBlockEntity {
     }
 
     static void writeCamo(CompoundTag tag, BlockState state) {
-        tag.put("camoState", NbtUtils.writeBlockState(state == null ? Blocks.AIR.defaultBlockState() : state));
+        if (state != null) {
+            tag.put("camoState", NbtUtils.writeBlockState(state));
+        }
     }
 }
