@@ -6,6 +6,21 @@ Changes are in reverse chronological order; newest changes at the top.
 
 # Minecraft 1.19.2
 
+## [4.3.6]
+
+### Added
+* Added some new entity filter modifiers
+  * "aquatic", "undead", "arthropod", "illager": all yes/no, e.g. "@living(aquatic=yes)"
+  * "type_tag" to check for entity type tags as defined in datapacks, e.g. "@mob(type_tag=minecraft:skeletons)"
+  * "entity_tag" to check for entity tags as added with the /tag command, e.g. "@player(entity_tag=marked_player)"
+* Added a couple of methods to prevent Aerial Interface usage by dimension or player
+  * Configurable dimension blacklist: `aerial_interface_dimension_blacklist` in pneumaticcraft-common.toml
+  * Check for an entity tag (see /tag command) on the player of `pneumaticcraft:no_aerial_interface`
+
+### Fixed
+* Fixed another fluid dupe with fluid container items in Tanks
+* Fixed a bug in Jack Hammer air usage calculation
+
 ## [4.3.5]
 
 ### Added
