@@ -32,7 +32,7 @@ import java.util.List;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class ProgWidgetJumpSub extends ProgWidget implements IJumpBackWidget, IJump {
-    private boolean jump_back;
+    private boolean jumpBack;
 
     public ProgWidgetJumpSub() {
         super(ModProgWidgets.JUMP_SUB.get());
@@ -57,11 +57,11 @@ public class ProgWidgetJumpSub extends ProgWidget implements IJumpBackWidget, IJ
     @Override
     public IProgWidget getOutputWidget(IDroneBase drone, List<IProgWidget> allWidgets) {
         List<String> locations = getPossibleJumpLocations();
-        if (locations.size() > 0 && !jump_back) {
-            jump_back = true;
+        if (locations.size() > 0 && !jumpBack) {
+            jumpBack = true;
             return ProgWidgetJump.jumpToLabel(drone, allWidgets, locations.get(0));
         }
-        jump_back = false;
+        jumpBack = false;
         return super.getOutputWidget(drone, allWidgets);
     }
 
