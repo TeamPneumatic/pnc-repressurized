@@ -100,6 +100,8 @@ public class ModProgWidgets {
             = register("label", ProgWidgetLabel::new);
     public static final RegistryObject<ProgWidgetType<ProgWidgetJump>> JUMP
             = register("jump", ProgWidgetJump::new);
+    public static final RegistryObject<ProgWidgetType<ProgWidgetJumpSub>> JUMP_SUB
+            = register("jump_sub", ProgWidgetJumpSub::new);
     public static final RegistryObject<ProgWidgetType<ProgWidgetWait>> WAIT
             = register("wait", ProgWidgetWait::new);
     public static final RegistryObject<ProgWidgetType<ProgWidgetRename>> RENAME

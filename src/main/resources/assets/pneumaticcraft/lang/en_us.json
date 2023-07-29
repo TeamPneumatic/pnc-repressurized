@@ -1979,6 +1979,7 @@
    "programmingPuzzle.pneumaticcraft.item_assign.name" : "Item Assignment",
    "programmingPuzzle.pneumaticcraft.item_filter.name" : "Item Filter",
    "programmingPuzzle.pneumaticcraft.jump.name" : "Jump",
+   "programmingPuzzle.pneumaticcraft.jump_sub.name" : "Jump Subroutine",
    "programmingPuzzle.pneumaticcraft.label.name" : "Label",
    "programmingPuzzle.pneumaticcraft.liquid_export.name" : "Export Fluid",
    "programmingPuzzle.pneumaticcraft.liquid_filter.name" : "Fluid Filter",
