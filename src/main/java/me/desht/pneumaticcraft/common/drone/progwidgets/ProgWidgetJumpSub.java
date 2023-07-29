@@ -26,10 +26,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.DyeColor;
 
-// import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-// import java.util.concurrent.ThreadLocalRandom;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
