@@ -6,6 +6,13 @@ Changes are in reverse chronological order; newest changes at the top.
 
 # Minecraft 1.20.1
 
+## [6.0.3]
+
+### Fixed
+* Fix client crash when Rats is also installed
+* Fixed a problem where logistics frames on the edge of a logistics area didn't always get picked up
+  * Most noticeable when using custom logistics areas with programmable drones
+
 ## [6.0.2]
 
 ### New
