@@ -87,9 +87,9 @@ public class MovingSounds {
                         posToTickableSound.put(pos, sound);
                         return sound;
                     }
-                } else {
-                    return null;
                 }
+                // can get here if the TE is not valid (e.g. chunk not fully loaded)
+                return null;
             }
             case JACKHAMMER -> {
                 if (focus instanceof Player player) {
