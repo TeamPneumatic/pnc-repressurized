@@ -93,7 +93,9 @@ public class TumblingBlockEntity extends ThrowableProjectile {
         if (thrower != null) {
             return thrower.getLookAngle().cross(Y_POS).toVector3f();
         } else if (world != null && world.isClientSide) {
-            return ClientUtils.getClientPlayer().getLookAngle().cross(Y_POS).toVector3f();
+            return ClientUtils.getOptionalClientPlayer()
+                    .map(p -> p.getLookAngle().cross(Y_POS).toVector3f())
+                    .orElse(null);
         } else {
             return null;
         }
