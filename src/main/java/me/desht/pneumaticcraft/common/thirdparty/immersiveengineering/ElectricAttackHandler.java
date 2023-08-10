@@ -42,7 +42,7 @@ public class ElectricAttackHandler {
 
     @SubscribeEvent
     public static void onElectricalAttack(LivingHurtEvent event) {
-        if (!event.getSource().getMsgId().equals(Lib.DMG_WireShock)) return;
+        if (!event.getSource().is(Lib.DamageTypes.WIRE_SHOCK)) return;
 
         if (event.getEntity() instanceof DroneEntity drone) {
             if (drone.getUpgrades(ModUpgrades.SECURITY.get()) > 0) {

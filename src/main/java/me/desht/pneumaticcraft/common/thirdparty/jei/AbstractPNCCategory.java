@@ -63,16 +63,6 @@ public abstract class AbstractPNCCategory<T> implements IRecipeCategory<T> {
         return type;
     }
 
-//    @Override
-//    public ResourceLocation getUid() {
-//        return type.getUid();
-//    }
-//
-//    @Override
-//    public Class<? extends T> getRecipeClass() {
-//        return type.getRecipeClass();
-//    }
-
     static IGuiHelper guiHelper() {
         return JEIPlugin.jeiHelpers.getGuiHelper();
     }

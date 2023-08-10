@@ -6,6 +6,26 @@ Changes are in reverse chronological order; newest changes at the top.
 
 # Minecraft 1.20.1
 
+## [6.0.2]
+
+### New
+* As of PNC:R 6.0.2, the mod is built with [Neoforge](https://neoforged.net/)
+  * While PNC:R is likely to remain compatible with [Forge](https://files.minecraftforge.net/) for now, future compatibility is not guaranteed in any way
+
+### Added
+* Pressure gauge display can now be toggled between visual dial and simple text display by right-clicking with a wrench
+* Added some new entity filter modifiers
+  * "aquatic", "undead", "arthropod", "illager": all yes/no, e.g. "@living(aquatic=yes)"
+  * "type_tag" to check for entity type tags as defined in datapacks, e.g. "@mob(type_tag=minecraft:skeletons)"
+  * "entity_tag" to check for entity tags as added with the /tag command, e.g. "@player(entity_tag=marked_player)"
+* Added a couple of methods to prevent Aerial Interface usage by dimension or player
+  * Configurable dimension blacklist: `aerial_interface_dimension_blacklist` in pneumaticcraft-common.toml
+  * Check for an entity tag (see /tag command) on the player of `pneumaticcraft:no_aerial_interface`
+
+### Fixed
+* Fixed a fluid dupe with fluid tanks
+* Fixed crash with Immersive Engineering installed
+
 ## [6.0.1]
 
 ### New
