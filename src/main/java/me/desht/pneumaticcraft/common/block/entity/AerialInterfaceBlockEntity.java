@@ -293,7 +293,7 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
 
     private static boolean isDimensionBlacklisted(ServerLevel beLevel, ServerPlayer player) {
         return getDimensionBlacklist().test(beLevel.dimension().location())
-                || player != null && getDimensionBlacklist().test(player.level.dimension().location());
+                || player != null && getDimensionBlacklist().test(player.level().dimension().location());
     }
 
     private static WildcardedRLMatcher getDimensionBlacklist() {

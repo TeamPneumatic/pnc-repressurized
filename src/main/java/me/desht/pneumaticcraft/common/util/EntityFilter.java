@@ -24,7 +24,7 @@ import me.desht.pneumaticcraft.common.drone.progwidgets.IEntityProvider;
 import me.desht.pneumaticcraft.common.drone.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetText;
 import me.desht.pneumaticcraft.common.entity.drone.DroneEntity;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.*;
@@ -276,7 +276,7 @@ public class EntityFilter implements Predicate<Entity> {
 
         private static boolean testTypeTag(Entity entity, String val) {
             if (!ResourceLocation.isValidResourceLocation(val)) return false;
-            TagKey<EntityType<?>> key = TagKey.create(Registry.ENTITY_TYPE_REGISTRY, new ResourceLocation(val));
+            TagKey<EntityType<?>> key = TagKey.create(Registries.ENTITY_TYPE, new ResourceLocation(val));
             return entity.getType().is(key);
         }
 
