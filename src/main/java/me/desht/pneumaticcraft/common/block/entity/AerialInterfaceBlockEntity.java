@@ -55,10 +55,13 @@ import net.minecraft.world.level.block.entity.SkullBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.event.ForgeEventFactory;
+import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.items.IItemHandler;
@@ -129,6 +132,7 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
     private final List<PlayerInvHandler> invHandlers = new ArrayList<>();
     public GameProfile gameProfileClient;  // for rendering
     private static WildcardedRLMatcher dimensionBlacklist;
+    private boolean validatePlayerNow;
 
     public AerialInterfaceBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.AERIAL_INTERFACE.get(), pos, state, PressureTier.TIER_TWO, PneumaticValues.VOLUME_AERIAL_INTERFACE, 4);
@@ -176,11 +180,15 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
         super.clearRemoved();
 
         GlobalBlockEntityCacheManager.getInstance(getLevel()).getAerialInterfaces().add(this);
+
+        MinecraftForge.EVENT_BUS.register(this);
     }
 
     @Override
     public void setRemoved() {
         super.setRemoved();
+
+        MinecraftForge.EVENT_BUS.unregister(this);
 
         GlobalBlockEntityCacheManager.getInstance(getLevel()).getAerialInterfaces().remove(this);
 
@@ -188,6 +196,13 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
         playerExpCap.invalidate();
         playerFoodCap.invalidate();
         energyCap.invalidate();
+    }
+
+    @SubscribeEvent
+    public void onPlayerDimChanged(PlayerEvent.PlayerChangedDimensionEvent event) {
+        if (!isRemoved() && isConnectedToPlayer && event.getEntity() == playerRef.get()) {
+            validatePlayerNow = true;
+        }
     }
 
     public void setPlayer(Player player) {
@@ -244,16 +259,17 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
             needUpdateNeighbours = false;
             updateNeighbours();
         }
-        if (getLevel() instanceof ServerLevel serverLevel && (getLevel().getGameTime() & 0xf) == 0) {
+        if (getLevel() instanceof ServerLevel serverLevel && (validatePlayerNow || (getLevel().getGameTime() & 0xf) == 0)) {
             ServerPlayer player = serverLevel.getServer().getPlayerList().getPlayer(playerUUID);
             setPlayer(player);
             if (player != null && player.getTags().contains(NO_AERIAL_INTERFACE)) {
                 operatingProblem = OperatingProblem.PLAYER_BARRED;
-            } else if (getDimensionBlacklist().test(serverLevel.dimension().location())) {
+            } else if (isDimensionBlacklisted(serverLevel, player)) {
                 operatingProblem = OperatingProblem.BAD_DIMENSION;
             } else {
                 operatingProblem = OperatingProblem.OK;
             }
+            validatePlayerNow = false;
         }
         getPlayer().ifPresent(player -> {
             if (aiCanOperate()) {
@@ -270,6 +286,11 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
             oldRedstoneStatus = rsController.shouldEmit();
             needUpdateNeighbours = true;
         }
+    }
+
+    private static boolean isDimensionBlacklisted(ServerLevel beLevel, ServerPlayer player) {
+        return getDimensionBlacklist().test(beLevel.dimension().location())
+                || player != null && getDimensionBlacklist().test(player.level.dimension().location());
     }
 
     private static WildcardedRLMatcher getDimensionBlacklist() {
