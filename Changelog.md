@@ -6,6 +6,11 @@ Changes are in reverse chronological order; newest changes at the top.
 
 # Minecraft 1.19.2
 
+## [4.3.7]
+
+### Fixed
+* Aerial Interface dimension blacklist (added in 4.3.6) now checks player's current dimension as well as AI's own dimension
+
 ## [4.3.6]
 
 ### Added
