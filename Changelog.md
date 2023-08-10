@@ -9,6 +9,12 @@ Changes are in reverse chronological order; newest changes at the top.
 * PNC:R 3.2.3 and later *require* Forge 40.1.20 or later
 * PNC:R 3.2.0 and later *require* Forge 40.1.0 or later and JEI 9.7.0 or later
 
+## 3.6.1
+
+### Fixed
+* Fixed crash when breaking one half of a double chest with a heat frame attached and actively cooking/cooling
+  * In general, this could be any case where an inventory changes size unexpectedly
+
 ## 3.6.0
 
 ### New
