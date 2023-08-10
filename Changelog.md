@@ -10,6 +10,8 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ### Fixed
 * Aerial Interface dimension blacklist (added in 4.3.6) now checks player's current dimension as well as AI's own dimension
+* Fixed a problem where logistics frames on the edge of a logistics area didn't always get picked up
+  * Most noticeable when using custom logistics areas with programmable drones
 
 ## [4.3.6]
 
