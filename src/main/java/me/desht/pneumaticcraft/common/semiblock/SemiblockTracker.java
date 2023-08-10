@@ -156,8 +156,16 @@ public enum SemiblockTracker {
         Map<BlockPos, SemiblockCollection> map = semiblockMap.computeIfAbsent(getKey(world), k -> new HashMap<>());
 
         return map.entrySet().stream()
-                .filter(e -> aabb.contains(e.getKey().getX(), e.getKey().getY(), e.getKey().getZ()))
+                .filter(e -> aabbContainsBlockPos(aabb, e.getKey()))
                 .flatMap(e -> e.getValue().getAll());
+    }
+
+    private boolean aabbContainsBlockPos(AABB aabb, BlockPos pos) {
+        // like AABB#contains() but works with blockpos instead of vec3
+        // and works for AABB's with min == max
+        return pos.getX() >= aabb.minX && pos.getX() <= aabb.maxX
+                && pos.getY() >= aabb.minY && pos.getY() <= aabb.maxY
+                && pos.getZ() >= aabb.minZ && pos.getZ() <= aabb.maxZ;
     }
 
     private ResourceLocation getKey(Level world) {
