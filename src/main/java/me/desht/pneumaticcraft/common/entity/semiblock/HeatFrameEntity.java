@@ -190,6 +190,9 @@ public class HeatFrameEntity extends AbstractSemiblockEntity {
     }
 
     private boolean tryCookSlot(IItemHandler handler, int slot) {
+        if (slot < 0 || slot >= handler.getSlots()) {
+            return false;
+        }
         ItemStack stack = handler.getStackInSlot(slot);
         if (!stack.isEmpty()) {
             SimpleContainer inv = new SimpleContainer(1);
@@ -238,6 +241,9 @@ public class HeatFrameEntity extends AbstractSemiblockEntity {
     }
 
     private boolean tryCoolSlot(IItemHandler handler, int slot) {
+        if (slot < 0 || slot >= handler.getSlots()) {
+            return false;
+        }
         ItemStack stack = handler.getStackInSlot(slot);
         if (stack.isEmpty()) return false;
 
