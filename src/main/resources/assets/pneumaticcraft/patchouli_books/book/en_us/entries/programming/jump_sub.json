@@ -1,0 +1,19 @@
+{
+  "name": "Jump Subroutine Widget",
+  "icon": "pneumaticcraft:textures/progwidgets/jump_sub_piece.png",
+  "category": "pneumaticcraft:widget_flow",
+  "advancement": "pneumaticcraft:programmer",
+  "pages": [
+    {
+      "type": "text",
+      "text": "This widget behaves like $(thing)Jump/$ except when the subroutine has completed, execution will continue in the widget connected to the bottom of the $(thing)Jump Subroutine/$ widget. A $(thing)Jump Subroutine/$ widget is useful for reusing common code and calling subroutines with arbitrary arguments by assigning variables before jumping to the subroutine."
+    },
+    {
+      "type": "image",
+      "images": [
+        "pneumaticcraft:textures/progwidgets/jump_sub_piece.png"
+      ],
+      "text": "$(italic)Jump Subroutine Widget/$"
+    }
+  ]
+}
