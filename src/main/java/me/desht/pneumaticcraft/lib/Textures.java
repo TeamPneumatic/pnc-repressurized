@@ -92,6 +92,7 @@ public class Textures {
     public static final ResourceLocation PROG_WIDGET_TEXT = progWidgetTexture("text_piece.png");
     public static final ResourceLocation PROG_WIDGET_LABEL = progWidgetTexture("label_piece.png");
     public static final ResourceLocation PROG_WIDGET_JUMP = progWidgetTexture("jump_piece.png");
+    public static final ResourceLocation PROG_WIDGET_JUMP_SUB = progWidgetTexture("jump_sub_piece.png");
     public static final ResourceLocation PROG_WIDGET_WAIT = progWidgetTexture("wait_piece.png");
     public static final ResourceLocation PROG_WIDGET_DROP_ITEM = progWidgetTexture("item_drop_piece.png");
     public static final ResourceLocation PROG_WIDGET_EMIT_REDSTONE = progWidgetTexture("emit_redstone_piece.png");
