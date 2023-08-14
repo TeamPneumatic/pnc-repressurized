@@ -8,6 +8,10 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## [4.3.7]
 
+### Added
+* New Programmer widget: Jump Subroutine (thanks @johalun)
+  * Like the Jump widget but returns to the following widget instead of the program start
+
 ### Fixed
 * Aerial Interface dimension blacklist (added in 4.3.6) now checks player's current dimension as well as AI's own dimension
 * Fixed a problem where logistics frames on the edge of a logistics area didn't always get picked up
