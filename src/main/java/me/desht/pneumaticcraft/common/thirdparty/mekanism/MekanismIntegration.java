@@ -32,7 +32,8 @@ public class MekanismIntegration {
     public static final Capability<IRadiationShielding> CAPABILITY_RADIATION_SHIELDING = CapabilityManager.get(new CapabilityToken<>() {});
 
     static void mekSetup() {
-        RadiationSourceCheck.INSTANCE.registerRadiationSource(s -> s == MekanismAPI.getRadiationManager().getRadiationDamageSource());
+        // TODO commented out until Mek 1.20 artifacts are available on maven
+//        RadiationSourceCheck.INSTANCE.registerRadiationSource(s -> s == MekanismAPI.getRadiationManager().getRadiationDamageSource());
     }
 
     static boolean isMekHeatHandler(BlockEntity blockEntity) {
