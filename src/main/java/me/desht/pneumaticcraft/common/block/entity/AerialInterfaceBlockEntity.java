@@ -200,7 +200,7 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
 
     @SubscribeEvent
     public void onPlayerDimChanged(PlayerEvent.PlayerChangedDimensionEvent event) {
-        if (!isRemoved() && isConnectedToPlayer && event.getEntity() == playerRef.get()) {
+        if (!isRemoved() && isConnectedToPlayer && event.getEntity().getUUID().equals(playerUUID)) {
             validatePlayerNow = true;
         }
     }
@@ -272,7 +272,7 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
             validatePlayerNow = false;
         }
         getPlayer().ifPresent(player -> {
-            if (aiCanOperate()) {
+            if (aiCanOperate() && !player.isRemoved()) {
                 addAir(-PneumaticValues.USAGE_AERIAL_INTERFACE);
                 if ((nonNullLevel().getGameTime() & 0x3f) == 0) {
                     scanForChargeableItems(player);
