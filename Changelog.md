@@ -6,6 +6,16 @@ Changes are in reverse chronological order; newest changes at the top.
 
 # Minecraft 1.20.1
 
+## [6.0.4]
+
+### Added
+* New Programmer widget: Jump Subroutine (thanks @johalun)
+  * Like the Jump widget but returns to the following widget instead of the program start
+
+### Fixed
+* Temporarily commented out some Mekanism integration code (related to drone damage source checking)
+  * Will be re-enabled when there's a public Mekanism release for 1.20.1
+
 ## [6.0.3]
 
 ### Fixed
