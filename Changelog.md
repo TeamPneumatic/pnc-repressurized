@@ -9,6 +9,11 @@ Changes are in reverse chronological order; newest changes at the top.
 * PNC:R 3.2.3 and later *require* Forge 40.1.20 or later
 * PNC:R 3.2.0 and later *require* Forge 40.1.0 or later and JEI 9.7.0 or later
 
+## 3.6.2
+
+### Fixed
+* Fixed crash when wrenching blocks from the Create mod (0.5.1c - latest 1.18.2 release) with the Pneumatic Wrench
+
 ## 3.6.1
 
 ### Fixed
