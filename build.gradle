@@ -127,7 +127,7 @@ dependencies {
 	implementation fg.deobf("blusunrize.immersiveengineering:ImmersiveEngineering:${immersive_engineering_version}")
 	implementation fg.deobf("curse.maven:mekanism-268560:${mekanism_curse_id}")
 	implementation fg.deobf("curse.maven:create-328085:${create_curse_id}")
-	implementation fg.deobf("curse.maven:flywheel-486392:${flywheel_curse_id}")
+//	implementation fg.deobf("curse.maven:flywheel-486392:${flywheel_curse_id}")
 	implementation fg.deobf("curse.maven:jade-324717:${jade_curse_id}")
 	implementation fg.deobf("curse.maven:cofh_core-69162:${cofh_core_curse_id}")
  	implementation fg.deobf("curse.maven:thermal_cultivation-271835:${thermal_cultivation_curse_id}")
