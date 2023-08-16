@@ -220,7 +220,7 @@ public class ThermoPlantRecipeImpl extends ThermoPlantRecipe {
         }
 
         public interface IFactory <T extends ThermoPlantRecipe> {
-            T create(ResourceLocation id, @Nonnull FluidIngredient inputFluid, @Nullable Ingredient inputItem,
+            T create(ResourceLocation id, @Nonnull FluidIngredient inputFluid, @Nonnull Ingredient inputItem,
                      FluidStack outputFluid, ItemStack outputItem, TemperatureRange operatingTemperature, float requiredPressure,
                      float recipeSpeed, float airUseMultiplier, boolean exothermic);
         }
