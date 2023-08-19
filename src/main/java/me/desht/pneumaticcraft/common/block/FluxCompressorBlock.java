@@ -38,7 +38,7 @@ import java.util.stream.Stream;
 
 public class FluxCompressorBlock extends AbstractPneumaticCraftBlock implements PneumaticCraftEntityBlock {
 
-    private static final VoxelShape SHAPE_N = Stream.of(
+    private static final VoxelShape SHAPE_N = VoxelShapeUtils.or(
             Block.box(15, 1, 4, 16, 16, 12),
             Block.box(3, 15, 4, 15, 16, 12),
             Block.box(2, 13, 4, 3, 16, 12),
@@ -47,7 +47,7 @@ public class FluxCompressorBlock extends AbstractPneumaticCraftBlock implements 
             Block.box(0, 0, 0, 16, 1, 16),
             Block.box(3, 3, 15, 13, 13, 16),
             Block.box(3, 3, 0, 13, 13, 1)
-    ).reduce((v1, v2) -> Shapes.join(v1, v2, BooleanOp.OR)).get();
+    );
 
     private static final VoxelShape SHAPE_E = VoxelShapeUtils.rotateY(SHAPE_N, 90);
     private static final VoxelShape SHAPE_S = VoxelShapeUtils.rotateY(SHAPE_E, 90);

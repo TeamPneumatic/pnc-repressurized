@@ -44,7 +44,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.stream.Stream;
 
 public class ProgrammerBlock extends AbstractPneumaticCraftBlock implements PneumaticCraftEntityBlock {
-    private static final VoxelShape SHAPE_N = Stream.of(
+    private static final VoxelShape SHAPE_N = VoxelShapeUtils.or(
             Block.box(0, 8, 0, 16, 10, 16),
             Block.box(13, 0, 13, 15, 8, 15),
             Block.box(1, 0, 13, 3, 8, 15),
@@ -57,7 +57,7 @@ public class ProgrammerBlock extends AbstractPneumaticCraftBlock implements Pneu
             Block.box(1, 0, 1, 3, 8, 3),
             Block.box(13, 0, 1, 15, 8, 3),
             Block.box(13.25, 10, 7, 13.75, 10.5, 11)
-    ).reduce((v1, v2) -> Shapes.join(v1, v2, BooleanOp.OR)).get();
+    );
     private static final VoxelShape SHAPE_E = VoxelShapeUtils.rotateY(SHAPE_N, 90);
     private static final VoxelShape SHAPE_S = VoxelShapeUtils.rotateY(SHAPE_E, 90);
     private static final VoxelShape SHAPE_W = VoxelShapeUtils.rotateY(SHAPE_S, 90);

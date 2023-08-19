@@ -19,7 +19,7 @@ import java.util.stream.Stream;
 public class ThermopneumaticProcessingPlantBlock extends AbstractPneumaticCraftBlock
         implements PneumaticCraftEntityBlock, IBlockComparatorSupport
 {
-    private static final VoxelShape SHAPE_N = Stream.of(
+    private static final VoxelShape SHAPE_N = VoxelShapeUtils.or(
             Block.box(2, 11, 0.5, 4, 12, 1.5),
             Block.box(14, 5, 5, 16, 10, 9),
             Block.box(0, 5, 5, 2, 10, 9),
@@ -54,7 +54,7 @@ public class ThermopneumaticProcessingPlantBlock extends AbstractPneumaticCraftB
             Block.box(3, 13, 12, 5, 13.25, 14),
             Block.box(0, 15, 15, 16, 16, 16),
             Block.box(12, 11, 0.5, 14, 12, 1.5)
-    ).reduce((v1, v2) -> Shapes.join(v1, v2, BooleanOp.OR)).get();
+    );
 
     private static final VoxelShape SHAPE_E = VoxelShapeUtils.rotateY(SHAPE_N, 90);
     private static final VoxelShape SHAPE_S = VoxelShapeUtils.rotateY(SHAPE_N, 180);

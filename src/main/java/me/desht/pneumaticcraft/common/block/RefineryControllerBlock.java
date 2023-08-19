@@ -22,7 +22,7 @@ import java.util.stream.Stream;
 public class RefineryControllerBlock extends AbstractPneumaticCraftBlock
         implements PneumaticCraftEntityBlock, IBlockComparatorSupport
 {
-    private static final VoxelShape SHAPE_N = Stream.of(
+    private static final VoxelShape SHAPE_N = VoxelShapeUtils.or(
             Block.box(6, 11, 12.5, 7, 12, 14.5),
             Block.box(14, 10, 0, 16, 13, 2),
             Block.box(14, 10, 14, 16, 13, 16),
@@ -56,7 +56,7 @@ public class RefineryControllerBlock extends AbstractPneumaticCraftBlock
             Block.box(1.5, 11, 0.5, 14.5, 12, 1.5),
             Block.box(2.5, 10.5, 10.5, 9, 12.5, 12.5),
             Block.box(2.75, 1, 10.75, 8.75, 11, 12.25)
-    ).reduce((v1, v2) -> Shapes.join(v1, v2, BooleanOp.OR)).get();
+    );
 
     private static final VoxelShape SHAPE_E = VoxelShapeUtils.rotateY(SHAPE_N, 90);
     private static final VoxelShape SHAPE_S = VoxelShapeUtils.rotateY(SHAPE_E, 90);

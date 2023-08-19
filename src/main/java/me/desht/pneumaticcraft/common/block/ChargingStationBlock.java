@@ -28,7 +28,7 @@ import java.util.stream.Stream;
 public class ChargingStationBlock extends AbstractCamouflageBlock implements PneumaticCraftEntityBlock {
     public static final BooleanProperty CHARGE_PAD = BooleanProperty.create("charge_pad");
 
-    private static final VoxelShape CHARGING_STATION_N = Stream.of(
+    private static final VoxelShape CHARGING_STATION_N = VoxelShapeUtils.or(
             Block.box(0, 0, 0, 16, 1, 16),
             Block.box(1, 1, 1, 15, 3, 15),
             Block.box(6, 6, 0, 10, 10, 1),
@@ -47,13 +47,13 @@ public class ChargingStationBlock extends AbstractCamouflageBlock implements Pne
             Block.box(4.25, 3.25, 2, 4.75, 8.25, 2.5),
             Block.box(4.25, 3.25, 2.5, 4.75, 3.75, 3),
             Block.box(5, 1, 0, 11, 5, 1)
-    ).reduce((v1, v2) -> Shapes.join(v1, v2, BooleanOp.OR)).get();
+    );
 
     private static final VoxelShape CHARGING_STATION_E = VoxelShapeUtils.rotateY(CHARGING_STATION_N, 90);
     private static final VoxelShape CHARGING_STATION_S = VoxelShapeUtils.rotateY(CHARGING_STATION_E, 90);
     private static final VoxelShape CHARGING_STATION_W = VoxelShapeUtils.rotateY(CHARGING_STATION_S, 90);
 
-    private static final VoxelShape CHARGING_PAD_N = Stream.of(
+    private static final VoxelShape CHARGING_PAD_N = VoxelShapeUtils.or(
             Block.box(4, 15.05, 4, 12, 16.05, 12),
             Block.box(2, 2, 13, 3, 15, 14),
             Block.box(13, 2, 13, 14, 15, 14),
@@ -70,7 +70,7 @@ public class ChargingStationBlock extends AbstractCamouflageBlock implements Pne
             Block.box(11.45, 9.2, 1.2, 12.05, 13.8, 1.8),
             Block.box(10.95, 9.2, 1.2, 11.55, 9.8, 1.8),
             Block.box(10.95, 13.2, 1.2, 11.55, 13.8, 1.8)
-    ).reduce((v1, v2) -> Shapes.join(v1, v2, BooleanOp.OR)).get();
+    );
 
     private static final VoxelShape CHARGING_PAD_E = VoxelShapeUtils.rotateY(CHARGING_PAD_N, 90);
     private static final VoxelShape CHARGING_PAD_S = VoxelShapeUtils.rotateY(CHARGING_PAD_E, 90);

@@ -41,7 +41,7 @@ public class SolarCompressorBlock extends AbstractPNCBlockWithBoundingBlocks {
             new Vec3i(0, 1, 1),
             new Vec3i(0, 1, -1)};
 
-    private static final VoxelShape SHAPE_S = Stream.of(
+    private static final VoxelShape SHAPE_S = VoxelShapeUtils.or(
             Block.box(0, 1, 4, 16, 16, 12),
             Block.box(5, 16, 5, 11, 17, 11),
             Block.box(2, 15, 3, 3, 17, 13),
@@ -50,7 +50,7 @@ public class SolarCompressorBlock extends AbstractPNCBlockWithBoundingBlocks {
             Block.box(1, 1, 1, 15, 15, 15),
             Block.box(0, 0, 0, 16, 1, 16),
             Block.box(7, 17, 7, 9, 31, 9)
-        ).reduce((v1, v2) -> Shapes.join(v1, v2, BooleanOp.OR)).get();
+    );
     protected static final VoxelShape SHAPE_W = VoxelShapeUtils.rotateY(SHAPE_S, 90);
     private static final VoxelShape SHAPE_N = VoxelShapeUtils.rotateY(SHAPE_W, 90);
     private static final VoxelShape SHAPE_E = VoxelShapeUtils.rotateY(SHAPE_N, 90);

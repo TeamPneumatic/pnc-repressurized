@@ -32,7 +32,7 @@ import java.util.stream.Stream;
 import static net.minecraft.world.level.block.state.properties.BlockStateProperties.LIT;
 
 public class WallLampBlock extends AbstractPneumaticCraftBlock implements ColorHandlers.ITintableBlock, SimpleWaterloggedBlock {
-    private static final VoxelShape SHAPE_UP = Stream.of(
+    private static final VoxelShape SHAPE_UP = VoxelShapeUtils.or(
             Block.box(3, 0, 3, 13, 1, 13),
             Block.box(4, 1, 4, 12, 2, 12),
             Block.box(6.15, 2.25, 4.75, 6.65, 3.5, 11.25),
@@ -41,7 +41,7 @@ public class WallLampBlock extends AbstractPneumaticCraftBlock implements ColorH
             Block.box(9.35, 2.25, 4.75, 9.85, 3.5, 11.25),
             Block.box(4.75, 2.25, 9.35, 11.25, 3.5, 9.85),
             Block.box(4.75, 2.25, 6.15, 11.25, 3.5, 6.65)
-        ).reduce((v1, v2) -> Shapes.join(v1, v2, BooleanOp.OR)).get();
+    );
     private static final VoxelShape SHAPE_NORTH = VoxelShapeUtils.rotateX(SHAPE_UP, 270);
     private static final VoxelShape SHAPE_DOWN = VoxelShapeUtils.rotateX(SHAPE_NORTH, 270);
     private static final VoxelShape SHAPE_SOUTH = VoxelShapeUtils.rotateX(SHAPE_UP, 90);
@@ -156,7 +156,7 @@ public class WallLampBlock extends AbstractPneumaticCraftBlock implements ColorH
     }
 
     private static ToIntFunction<BlockState> getLightValue() {
-        return (state) -> state.getValue(LIT) ? 15 : 0;
+        return state -> state.getValue(LIT) ? 15 : 0;
     }
 
     public static class ItemWallLamp extends BlockItem implements ICustomTooltipName {

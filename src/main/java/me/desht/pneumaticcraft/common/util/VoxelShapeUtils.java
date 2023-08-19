@@ -22,15 +22,14 @@ import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  * With thanks to JTK222 | Lukas for this
  */
 public class VoxelShapeUtils {
     public static VoxelShape rotateY(VoxelShape shape, int rotation) {
-        Set<VoxelShape> rotatedShapes = new HashSet<>();
+        List<VoxelShape> rotatedShapes = new ArrayList<>();
 
         shape.forAllBoxes((x1, y1, z1, x2, y2, z2) -> {
             x1 = (x1 * 16) - 8; x2 = (x2 * 16) - 8;
@@ -44,11 +43,11 @@ public class VoxelShapeUtils {
             }
         });
 
-        return rotatedShapes.stream().reduce((v1, v2) -> Shapes.join(v1, v2, BooleanOp.OR)).orElse(shape);
+        return rotatedShapes.stream().reduce((v1, v2) -> Shapes.joinUnoptimized(v1, v2, BooleanOp.OR)).orElse(shape).optimize();
     }
 
     public static VoxelShape rotateX(VoxelShape shape, int rotation) {
-        Set<VoxelShape> rotatedShapes = new HashSet<>();
+        List<VoxelShape> rotatedShapes = new ArrayList<>();
 
         shape.forAllBoxes((x1, y1, z1, x2, y2, z2) -> {
             y1 = (y1 * 16) - 8; y2 = (y2 * 16) - 8;
@@ -62,15 +61,15 @@ public class VoxelShapeUtils {
             }
         });
 
-        return rotatedShapes.stream().reduce((v1, v2) -> Shapes.join(v1, v2, BooleanOp.OR)).orElse(shape);
+        return rotatedShapes.stream().reduce((v1, v2) -> Shapes.joinUnoptimized(v1, v2, BooleanOp.OR)).orElse(shape).optimize();
     }
 
     public static VoxelShape combine(BooleanOp func, VoxelShape... shapes) {
-        VoxelShape result = Shapes.empty();
-        for (VoxelShape shape : shapes) {
-            result = Shapes.joinUnoptimized(result, shape, func);
-        }
-        return result.optimize();
+        return Arrays.stream(shapes).reduce((v1, v2) -> Shapes.joinUnoptimized(v1, v2, func)).orElseThrow().optimize();
+    }
+
+    public static VoxelShape or(VoxelShape... shapes) {
+        return combine(BooleanOp.OR, shapes);
     }
 
     private static VoxelShape boxSafe(double pMinX, double pMinY, double pMinZ, double pMaxX, double pMaxY, double pMaxZ) {

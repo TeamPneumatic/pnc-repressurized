@@ -37,7 +37,7 @@ import javax.annotation.Nullable;
 import java.util.stream.Stream;
 
 public class AirCompressorBlock extends AbstractPneumaticCraftBlock implements PneumaticCraftEntityBlock {
-    private static final VoxelShape SHAPE_N = Stream.of(
+    private static final VoxelShape SHAPE_N = VoxelShapeUtils.or(
             Block.box(1.5, 11, 9.25, 3.5, 13, 10.25),
             Block.box(11.5, 12, 10, 12.5, 13, 11),
             Block.box(13, 12, 10, 14, 13, 11),
@@ -59,7 +59,7 @@ public class AirCompressorBlock extends AbstractPneumaticCraftBlock implements P
             Block.box(5, 1, 11, 15, 14, 15),
             Block.box(0, 1, 1, 16, 11, 11),
             Block.box(0, 0, 0, 16, 1, 16)
-    ).reduce((v1, v2) -> Shapes.join(v1, v2, BooleanOp.OR)).get();
+    );
 
     private static final VoxelShape SHAPE_E = VoxelShapeUtils.rotateY(SHAPE_N, 90);
     private static final VoxelShape SHAPE_S = VoxelShapeUtils.rotateY(SHAPE_E, 90);
