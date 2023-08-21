@@ -9,6 +9,16 @@ Changes are in reverse chronological order; newest changes at the top.
 * PNC:R 3.2.3 and later *require* Forge 40.1.20 or later
 * PNC:R 3.2.0 and later *require* Forge 40.1.0 or later and JEI 9.7.0 or later
 
+## 3.6.3
+
+### Changed
+* Vortices from the Vortex Cannon can no longer affect the player's speed more often than every 10 ticks, by default
+  * Adjustable in common config; see `vortex_cannon_player_boost_rate`
+  * This limit was added since over-fast speed modifications can cause server performance issues
+
+### Fixed
+* Optimised block shape calculations a lot, meaning shorter mod startup time
+
 ## 3.6.2
 
 ### Fixed
