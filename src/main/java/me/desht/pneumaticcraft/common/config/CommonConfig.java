@@ -65,6 +65,7 @@ public class CommonConfig {
         public ForgeConfigSpec.DoubleValue speedUpgradeUsageMultiplier;
         public ForgeConfigSpec.ConfigValue<List<String>> disenchantingBlacklist;
         public ForgeConfigSpec.ConfigValue<List<String>> aerialInterfaceDimensionBlacklist;
+        public ForgeConfigSpec.IntValue vortexCannonPlayerBoostRate;
     }
     public static class Armor {
         public ForgeConfigSpec.IntValue jetBootsAirUsage;
@@ -344,6 +345,10 @@ public class CommonConfig {
                 .comment("ID's of dimensions in which the Aerial Interface is not allowed to operate. You can use wildcarded dimensions here, e.g. 'somemod:*'.")
                 .translation("pneumaticcraft.config.common.machines.aerial_interface_dimension_blacklist")
                 .define("aerial_interface_dimension_blacklist", Lists.newArrayList());
+        machines.vortexCannonPlayerBoostRate = builder
+                .comment("Minimum interval in ticks which the player can use the Vortex Cannon to boost their own speed")
+                .translation("pneumaticcraft.config.common.machines.vortex_cannon.player_boost_rate")
+                .defineInRange("vortex_cannon_player_boost_rate", 10, 1, Integer.MAX_VALUE);
         builder.pop();
 
         builder.push("Pneumatic Armor");
