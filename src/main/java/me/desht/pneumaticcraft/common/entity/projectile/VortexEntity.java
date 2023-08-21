@@ -43,6 +43,8 @@ public class VortexEntity extends ThrowableProjectile {
     // clientside: rendering X offset of vortex, depends on which hand the vortex was fired from
     private float renderOffsetX = -Float.MAX_VALUE;
 
+    private static int lastPlayerBoost;  // client-side
+
     public VortexEntity(EntityType<? extends VortexEntity> type, Level world) {
         super(type, world);
     }
@@ -91,6 +93,10 @@ public class VortexEntity extends ThrowableProjectile {
     protected void onHit(HitResult rtr) {
         if (rtr.getType() == HitResult.Type.ENTITY) {
             Entity entity = ((EntityHitResult) rtr).getEntity();
+            if (entity instanceof Player player && (!player.level.isClientSide() || boostedRecently(player))) {
+                return;
+            }
+            // for players, doing this client-side only does work as expected
             entity.setDeltaMovement(entity.getDeltaMovement().add(this.getDeltaMovement().add(0, 0.4, 0)));
             ItemStack shears = new ItemStack(Items.SHEARS);
             // getOwner = getShooter
@@ -111,6 +117,14 @@ public class VortexEntity extends ThrowableProjectile {
         }
         hitCounter++;
         if (hitCounter > 20) discard();
+    }
+
+    private boolean boostedRecently(Player player) {
+        if (player.tickCount - lastPlayerBoost < 20) {
+            return true;
+        }
+        lastPlayerBoost = player.tickCount;
+        return false;
     }
 
     private void handleVortexCollision(BlockPos pos) {

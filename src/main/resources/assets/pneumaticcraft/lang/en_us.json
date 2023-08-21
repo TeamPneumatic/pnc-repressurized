@@ -1886,6 +1886,7 @@
    "pneumaticcraft.message.seismicSensor.noOilFound" : "§6[Seismic Sensor] No fluid found below.",
    "pneumaticcraft.message.vacuum_pump.manometer" : "Input Pressure: %s bar. Vacuum Pressure: %s bar.",
    "pneumaticcraft.message.vacuum_trap.coreInstalled" : "Spawner Core Installed",
+   "pneumaticcraft.message.vortex_cannon.playerBoostRate" : "Vortex Cannon player boost rate reached, slow down a bit!",
    "pneumaticcraft.patchouli.book.landing" : "This manual is a complete reference guide to $(#228)PneumaticCraft: Repressurized/$.",
    "pneumaticcraft.patchouli.book.name" : "PNC:R Manual",
    "pneumaticcraft.patchouli.processor.pressureChamber.desc" : "In a $(item)Pressure Chamber/$, provide at least $(thing)%s bar/$ of pressure.",
