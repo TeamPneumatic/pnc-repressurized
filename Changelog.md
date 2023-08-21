@@ -6,6 +6,16 @@ Changes are in reverse chronological order; newest changes at the top.
 
 # Minecraft 1.20.1
 
+## [6.0.5]
+
+### Changed
+* Vortices from the Vortex Cannon can no longer affect the player's speed more often than every 10 ticks, by default
+  * Adjustable in common config; see `vortex_cannon_player_boost_rate`
+  * This limit was added since over-fast speed modifications can cause server performance issues
+
+### Fixed
+* Optimised block shape calculations a lot, meaning shorter mod startup time
+
 ## [6.0.4]
 
 ### Added
