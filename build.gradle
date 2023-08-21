@@ -74,25 +74,46 @@ repositories {
 		name "extra-mods"
 		dir file(extraModsDir)
 	}
-	maven {
-		name "JEI"
-		url "https://dvs1.progwml6.com/files/maven"
-	}
+//	maven {
+//		name "JEI"
+//		url "https://dvs1.progwml6.com/files/maven"
+//	}
 	maven {
 		name 'CC: Tweaked'
 		url 'https://squiddev.cc/maven/'
+		content {
+			includeGroup "org.squiddev"
+		}
 	}
 	maven {
-		name 'Crafttweaker/Patchouli/Botania/Immersive Engineering/Gamestages'
+		name 'Crafttweaker/Patchouli/Botania/Immersive Engineering/Gamestages/JEI'
 		url 'https://maven.blamejared.com/'
+		content {
+			includeGroup "vazkii.patchouli"
+			includeGroup "vazkii.botania"
+			includeGroup "mezz.jei"
+			includeGroup "blusunrize.immersiveengineering"
+			includeGroup "com.blamejared.crafttweaker"
+			includeGroup "net.darkhax.gamestages"
+		}
 	}
 	maven {
 		name 'Curios'
 		url "https://maven.theillusivec4.top/"
+		content {
+			includeGroup "top.theillusivec4.curios"
+		}
 	}
 	maven {
 		name "K-4u Mod maven"
 		url "https://modmaven.dev/"
+		content {
+			includeGroup "com.jozufozu.flywheel"
+			includeGroup "com.simibubi.create"
+			includeGroup "com.tterrag.registrate"
+			includeGroup "mekanism"
+			includeGroup "mcjty.theoneprobe"
+		}
 	}
 	maven {
 		url "https://www.cursemaven.com"
