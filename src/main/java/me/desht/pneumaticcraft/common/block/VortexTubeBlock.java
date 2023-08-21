@@ -13,17 +13,13 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.CollisionContext;
-import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.stream.Stream;
-
 public class VortexTubeBlock extends AbstractPneumaticCraftBlock implements ColorHandlers.IHeatTintable, PneumaticCraftEntityBlock {
 
-    private static final VoxelShape SHAPE_N = Stream.of(
+    private static final VoxelShape SHAPE_N = VoxelShapeUtils.or(
             Block.box(12, 4, 15, 13, 12, 16),
             Block.box(5, 5, 12, 11, 11, 13),
             Block.box(4, 4, 4, 12, 12, 12),
@@ -66,7 +62,7 @@ public class VortexTubeBlock extends AbstractPneumaticCraftBlock implements Colo
             Block.box(10, 10, 13, 11, 11, 14),
             Block.box(5, 5, 13, 6, 6, 14),
             Block.box(5, 10, 13, 6, 11, 14)
-    ).reduce((v1, v2) -> Shapes.join(v1, v2, BooleanOp.OR)).get();
+    );
 
     private static final VoxelShape SHAPE_E = VoxelShapeUtils.rotateY(SHAPE_N, 90);
     private static final VoxelShape SHAPE_S = VoxelShapeUtils.rotateY(SHAPE_E, 90);

@@ -28,17 +28,14 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
-import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.CollisionContext;
-import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 import javax.annotation.Nullable;
-import java.util.stream.Stream;
 
 public class PneumaticDynamoBlock extends AbstractPneumaticCraftBlock implements PneumaticCraftEntityBlock {
 
-    private static final VoxelShape SHAPE_UP = Stream.of(
+    private static final VoxelShape SHAPE_UP = VoxelShapeUtils.or(
             Block.box(0, 0, 0, 16, 10, 16),
             Block.box(4, 10, 4, 12, 16, 12),
             Block.box(0, 10, 0, 1, 11, 1),
@@ -49,7 +46,7 @@ public class PneumaticDynamoBlock extends AbstractPneumaticCraftBlock implements
             Block.box(15, 11, 0, 16, 12, 16),
             Block.box(1, 11, 0, 15, 12, 1),
             Block.box(1, 11, 15, 15, 12, 16)
-    ).reduce((v1, v2) -> Shapes.join(v1, v2, BooleanOp.OR)).get();
+    );
     private static final VoxelShape SHAPE_NORTH = VoxelShapeUtils.rotateX(SHAPE_UP, 270);
     private static final VoxelShape SHAPE_DOWN = VoxelShapeUtils.rotateX(SHAPE_NORTH, 270);
     private static final VoxelShape SHAPE_SOUTH = VoxelShapeUtils.rotateY(SHAPE_NORTH, 180);

@@ -9,16 +9,12 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.CollisionContext;
-import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.stream.Stream;
-
 public class VacuumPumpBlock extends AbstractPneumaticCraftBlock implements PneumaticCraftEntityBlock {
-    private static final VoxelShape SHAPE_N = Stream.of(
+    private static final VoxelShape SHAPE_N = VoxelShapeUtils.or(
             Block.box(3, 7.75, 7.75, 9, 8.25, 8.25),
             Block.box(15, 5, 5, 16, 11, 11),
             Block.box(9, 5, 4, 15, 12, 12),
@@ -33,7 +29,7 @@ public class VacuumPumpBlock extends AbstractPneumaticCraftBlock implements Pneu
             Block.box(0, 5, 5, 3, 11, 11),
             Block.box(12.5, 12, 7, 14.5, 12.25, 9),
             Block.box(0.5, 11, 7, 2.5, 11.25, 9)
-    ).reduce((v1, v2) -> Shapes.join(v1, v2, BooleanOp.OR)).get();
+    );
 
     private static final VoxelShape SHAPE_E = VoxelShapeUtils.rotateY(SHAPE_N, 90);
     private static final VoxelShape SHAPE_S = VoxelShapeUtils.rotateY(SHAPE_E, 90);

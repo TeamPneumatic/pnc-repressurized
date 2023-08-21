@@ -25,7 +25,10 @@ public class UVLightBoxBlock extends AbstractPneumaticCraftBlock implements Colo
     public static final BooleanProperty LOADED = BooleanProperty.create("loaded");
     public static final BooleanProperty LIT = RedstoneTorchBlock.LIT;
 
-    private static final VoxelShape SHAPE_N = Shapes.join(Block.box(1, 0, 2, 15, 14, 14), Block.box(15, 5, 5, 16, 11, 11), BooleanOp.OR);
+    private static final VoxelShape SHAPE_N = Shapes.join(
+            Block.box(1, 0, 2, 15, 14, 14),
+            Block.box(15, 5, 5, 16, 11, 11),
+            BooleanOp.OR);
     private static final VoxelShape SHAPE_E = VoxelShapeUtils.rotateY(SHAPE_N, 90);
     private static final VoxelShape SHAPE_S = VoxelShapeUtils.rotateY(SHAPE_E, 90);
     private static final VoxelShape SHAPE_W = VoxelShapeUtils.rotateY(SHAPE_S, 90);

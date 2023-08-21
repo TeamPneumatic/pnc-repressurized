@@ -31,21 +31,18 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.CollisionContext;
-import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.items.ItemStackHandler;
 
 import javax.annotation.Nullable;
 import java.util.List;
-import java.util.stream.Stream;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 import static net.minecraft.world.level.block.state.properties.BlockStateProperties.*;
 
 public class VacuumTrapBlock extends AbstractPneumaticCraftBlock implements SimpleWaterloggedBlock, PneumaticCraftEntityBlock {
-    private static final VoxelShape SHAPE_N_OPEN = Stream.of(
+    private static final VoxelShape SHAPE_N_OPEN = VoxelShapeUtils.or(
             Block.box(3, 1, 0, 13, 11, 16),
             Block.box(4, 0, 1, 12, 1, 15),
             Block.box(7, 12, 14, 9, 14, 16),
@@ -54,13 +51,13 @@ public class VacuumTrapBlock extends AbstractPneumaticCraftBlock implements Simp
             Block.box(7, 14, 8, 9, 16, 16),
             Block.box(11, 11, 2, 16, 12, 14),
             Block.box(0, 11, 2, 5, 12, 14)
-    ).reduce((v1, v2) -> Shapes.join(v1, v2, BooleanOp.OR)).get();
+    );
     private static final VoxelShape SHAPE_E_OPEN = VoxelShapeUtils.rotateY(SHAPE_N_OPEN, 90);
     private static final VoxelShape SHAPE_S_OPEN = VoxelShapeUtils.rotateY(SHAPE_E_OPEN, 90);
     private static final VoxelShape SHAPE_W_OPEN = VoxelShapeUtils.rotateY(SHAPE_S_OPEN, 90);
     private static final VoxelShape[] SHAPES_OPEN = new VoxelShape[] {SHAPE_S_OPEN, SHAPE_W_OPEN, SHAPE_N_OPEN, SHAPE_E_OPEN};
 
-    private static final VoxelShape SHAPE_N_CLOSED = Stream.of(
+    private static final VoxelShape SHAPE_N_CLOSED = VoxelShapeUtils.or(
             Block.box(3, 1, 0, 13, 11, 16),
             Block.box(4, 0, 1, 12, 1, 15),
             Block.box(7, 12, 14, 9, 14, 16),
@@ -69,7 +66,7 @@ public class VacuumTrapBlock extends AbstractPneumaticCraftBlock implements Simp
             Block.box(7, 14, 8, 9, 16, 16),
             Block.box(8, 11, 2, 13, 12, 14),
             Block.box(3, 11, 2, 8, 12, 14)
-    ).reduce((v1, v2) -> Shapes.join(v1, v2, BooleanOp.OR)).get();
+    );
     private static final VoxelShape SHAPE_E_CLOSED = VoxelShapeUtils.rotateY(SHAPE_N_CLOSED, 90);
     private static final VoxelShape SHAPE_S_CLOSED = VoxelShapeUtils.rotateY(SHAPE_E_CLOSED, 90);
     private static final VoxelShape SHAPE_W_CLOSED = VoxelShapeUtils.rotateY(SHAPE_S_CLOSED, 90);

@@ -27,17 +27,13 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.CollisionContext;
-import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.stream.Stream;
-
 public class FluidMixerBlock extends AbstractPneumaticCraftBlock implements PneumaticCraftEntityBlock {
 
-    private static final VoxelShape SHAPE_N = Stream.of(
+    private static final VoxelShape SHAPE_N = VoxelShapeUtils.or(
             Block.box(7, 13, 4, 12, 16, 5),
             Block.box(0, 10, 14, 2, 13, 16),
             Block.box(0, 10, 0, 2, 13, 2),
@@ -85,7 +81,7 @@ public class FluidMixerBlock extends AbstractPneumaticCraftBlock implements Pneu
             Block.box(12, 11, 14.5, 14, 12, 15.5),
             Block.box(2, 11, 14.5, 7, 12, 15.5),
             Block.box(2, 10, 0, 14, 16, 5)
-    ).reduce((v1, v2) -> Shapes.join(v1, v2, BooleanOp.OR)).get();
+    );
 
     private static final VoxelShape SHAPE_E = VoxelShapeUtils.rotateY(SHAPE_N, 90);
     private static final VoxelShape SHAPE_S = VoxelShapeUtils.rotateY(SHAPE_E, 90);

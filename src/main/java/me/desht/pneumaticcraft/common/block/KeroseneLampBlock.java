@@ -36,16 +36,13 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
-import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.CollisionContext;
-import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 import javax.annotation.Nullable;
-import java.util.stream.Stream;
 
 public class KeroseneLampBlock extends AbstractPneumaticCraftBlock implements PneumaticCraftEntityBlock {
-    private static final VoxelShape SHAPE_NS = Stream.of(
+    private static final VoxelShape SHAPE_NS = VoxelShapeUtils.or(
             Block.box(5, 0, 5, 11, 1, 11),
             Block.box(5, 9, 5, 11, 10, 11),
             Block.box(11.5, 0, 7, 12.5, 10, 9),
@@ -56,7 +53,7 @@ public class KeroseneLampBlock extends AbstractPneumaticCraftBlock implements Pn
             Block.box(3.5, 0, 7, 4.5, 10, 9),
             Block.box(6, 10, 6, 10, 11, 10),
             Block.box(5, 1, 5, 11, 9, 11)
-    ).reduce((v1, v2) -> Shapes.join(v1, v2, BooleanOp.OR)).get();
+    );
     private static final VoxelShape SHAPE_EW = VoxelShapeUtils.rotateY(SHAPE_NS, 90);
 
     public static final EnumProperty<Direction> CONNECTED = EnumProperty.create("connected", Direction.class);

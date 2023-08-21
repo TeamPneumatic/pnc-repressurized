@@ -21,9 +21,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.CollisionContext;
-import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidUtil;
@@ -32,12 +30,10 @@ import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.stream.Stream;
-
 public class RefineryOutputBlock extends AbstractPneumaticCraftBlock
         implements PneumaticCraftEntityBlock, IBlockComparatorSupport
 {
-    private static final VoxelShape SHAPE_N = Stream.of(
+    private static final VoxelShape SHAPE_N = VoxelShapeUtils.or(
             Block.box(0, 0, 0, 16, 1, 16),
             Block.box(13, 11, 14.5, 14.5, 12, 15.5),
             Block.box(12, 1, 14, 13, 13, 16),
@@ -72,7 +68,7 @@ public class RefineryOutputBlock extends AbstractPneumaticCraftBlock
             Block.box(14.5, 1, 9.75, 15.5, 8, 10.75),
             Block.box(0.5, 1, 3.5, 2.5, 4, 5.5),
             Block.box(14.5, 11, 1.5, 15.5, 12, 14.5)
-    ).reduce((v1, v2) -> Shapes.join(v1, v2, BooleanOp.OR)).get();
+    );
 
     private static final VoxelShape SHAPE_E = VoxelShapeUtils.rotateY(SHAPE_N, 90);
     private static final VoxelShape SHAPE_S = VoxelShapeUtils.rotateY(SHAPE_E, 90);

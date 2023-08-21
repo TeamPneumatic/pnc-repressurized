@@ -15,17 +15,13 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.CollisionContext;
-import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.common.util.FakePlayer;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.stream.Stream;
-
 public class ManualCompressorBlock extends AbstractPneumaticCraftBlock implements PneumaticCraftEntityBlock {
-    private static final VoxelShape SHAPE_S = Stream.of(
+    private static final VoxelShape SHAPE_S = VoxelShapeUtils.or(
             Block.box(6, 1, 5, 10, 7, 11),
             Block.box(10, 1, 6, 11, 7, 10),
             Block.box(5, 1, 6, 6, 7, 10),
@@ -40,7 +36,7 @@ public class ManualCompressorBlock extends AbstractPneumaticCraftBlock implement
             Block.box(3, 0, 0, 5, 2, 16),
             Block.box(11, 0, 0, 13, 2, 16),
             Block.box(5, 0, 1, 11, 1, 15)
-        ).reduce((v1, v2) -> Shapes.join(v1, v2, BooleanOp.OR)).get();
+    );
 
     private static final VoxelShape SHAPE_W = VoxelShapeUtils.rotateY(SHAPE_S, 90);
     private static final VoxelShape SHAPE_N = VoxelShapeUtils.rotateY(SHAPE_W, 90);
@@ -80,15 +76,15 @@ public class ManualCompressorBlock extends AbstractPneumaticCraftBlock implement
 
         // Triggers a pump cycle step when manual compressor is right-clicked
         if (be instanceof ManualCompressorBlockEntity manualCompressorBlockEntity
-            // Only allows fake players to use compressor if the config is true
-            && (ConfigHelper.common().machines.manualCompressorAllowFakePlayers.get() || !(player instanceof FakePlayer))
-            // Can only pump if hunger is not empty (does not apply to creative players, or if manual compressor does not consume hunger via config)
-            && (ConfigHelper.common().machines.manualCompressorHungerDrainPerCycleStep.get() == 0 || player.isCreative() || player.getFoodData().getFoodLevel() != 0)
-            // Can only pump if both hands are empty
-            && (player.getMainHandItem().isEmpty() && player.getOffhandItem().isEmpty())) {
-                manualCompressorBlockEntity.onPumpCycleStep(player);
-                return InteractionResult.SUCCESS;
-            }
+                // Only allows fake players to use compressor if the config is true
+                && (ConfigHelper.common().machines.manualCompressorAllowFakePlayers.get() || !(player instanceof FakePlayer))
+                // Can only pump if hunger is not empty (does not apply to creative players, or if manual compressor does not consume hunger via config)
+                && (ConfigHelper.common().machines.manualCompressorHungerDrainPerCycleStep.get() == 0 || player.isCreative() || player.getFoodData().getFoodLevel() != 0)
+                // Can only pump if both hands are empty
+                && (player.getMainHandItem().isEmpty() && player.getOffhandItem().isEmpty())) {
+            manualCompressorBlockEntity.onPumpCycleStep(player);
+            return InteractionResult.SUCCESS;
+        }
 
         return super.use(state, world, pos, player, hand, brtr);
     }

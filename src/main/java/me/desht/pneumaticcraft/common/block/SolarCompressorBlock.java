@@ -23,15 +23,12 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.CollisionContext;
-import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
-import java.util.stream.Stream;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
@@ -41,7 +38,7 @@ public class SolarCompressorBlock extends AbstractPNCBlockWithBoundingBlocks {
             new Vec3i(0, 1, 1),
             new Vec3i(0, 1, -1)};
 
-    private static final VoxelShape SHAPE_S = Stream.of(
+    private static final VoxelShape SHAPE_S = VoxelShapeUtils.or(
             Block.box(0, 1, 4, 16, 16, 12),
             Block.box(5, 16, 5, 11, 17, 11),
             Block.box(2, 15, 3, 3, 17, 13),
@@ -50,7 +47,7 @@ public class SolarCompressorBlock extends AbstractPNCBlockWithBoundingBlocks {
             Block.box(1, 1, 1, 15, 15, 15),
             Block.box(0, 0, 0, 16, 1, 16),
             Block.box(7, 17, 7, 9, 31, 9)
-        ).reduce((v1, v2) -> Shapes.join(v1, v2, BooleanOp.OR)).get();
+    );
     protected static final VoxelShape SHAPE_W = VoxelShapeUtils.rotateY(SHAPE_S, 90);
     private static final VoxelShape SHAPE_N = VoxelShapeUtils.rotateY(SHAPE_W, 90);
     private static final VoxelShape SHAPE_E = VoxelShapeUtils.rotateY(SHAPE_N, 90);
