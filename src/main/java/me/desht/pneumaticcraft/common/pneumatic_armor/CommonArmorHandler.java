@@ -183,7 +183,7 @@ public class CommonArmorHandler implements ICommonArmorHandler {
             airHandlers.set(slot.getIndex(), LazyOptional.empty());
         }
         if (!armorActive) {
-            if (ticksSinceEquip[slot.getIndex()] > 0) {
+            if (ticksSinceEquip[slot.getIndex()] > 1) {
                 onArmorRemoved(slot);
             }
             ticksSinceEquip[slot.getIndex()] = 0;
