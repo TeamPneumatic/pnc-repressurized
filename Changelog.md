@@ -15,6 +15,9 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ### Fixed
 * Optimised block shape calculations a lot, meaning shorter mod startup time
+* Cleaned up block atlas usage a bit; don't put entity textures on there unless they're needed for item textures (i.e. drones)
+* Fixed an arithmetic error in the "Random" area type and areas of a single block thickness in any axis
+* Fixed a recipe error causing the vanilla Copper Block -> 9 Copper Ingot recipe to be overwritten
 
 ## [6.0.4]
 
