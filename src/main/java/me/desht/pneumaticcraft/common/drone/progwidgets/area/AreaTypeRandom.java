@@ -43,7 +43,10 @@ public class AreaTypeRandom extends AreaType {
 
     @Override
     public void addArea(Consumer<BlockPos> areaAdder, BlockPos p1, BlockPos p2, int minX, int minY, int minZ, int maxX, int maxY, int maxZ) {
-        int size = (maxX - minX) * (maxY - minY) * (maxZ - minZ);
+        int sx = (maxX - minX) + 1;
+        int sy = (maxY - minY) + 1;
+        int sz = (maxZ - minZ) + 1;
+        int size = sx * sy * sz;
 
         if (pickedAmount >= size) {
             // If we pick >= than there are blocks, just pick all blocks
@@ -51,9 +54,9 @@ public class AreaTypeRandom extends AreaType {
         } else {
             Random rand = ThreadLocalRandom.current();
             for (int i = 0; i < pickedAmount; i++) {
-                int x = minX + rand.nextInt(maxX - minX);
-                int y = minY + rand.nextInt(maxY - minY);
-                int z = minZ + rand.nextInt(maxZ - minZ);
+                int x = minX + rand.nextInt(sx);
+                int y = minY + rand.nextInt(sy);
+                int z = minZ + rand.nextInt(sz);
                 areaAdder.accept(new BlockPos(x, y, z));
             }
         }
