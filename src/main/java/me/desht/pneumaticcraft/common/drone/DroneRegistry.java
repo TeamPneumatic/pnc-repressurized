@@ -17,9 +17,9 @@
 
 package me.desht.pneumaticcraft.common.drone;
 
-import me.desht.pneumaticcraft.api.drone.IDrone;
-import me.desht.pneumaticcraft.api.drone.IDroneRegistry;
-import me.desht.pneumaticcraft.api.drone.IPathfindHandler;
+import me.desht.pneumaticcraft.api.drone.*;
+import me.desht.pneumaticcraft.common.core.ModProgWidgets;
+import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetCustomBlockInteract;
 import me.desht.pneumaticcraft.common.util.ProgrammedDroneUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.GlobalPos;
@@ -51,16 +51,11 @@ public enum DroneRegistry implements IDroneRegistry {
         pathfindableBlocks.put(block, handler);
     }
 
-//    @Override
-//    public void registerCustomBlockInteractor(RegisterEvent event, ICustomBlockInteract interactor) {
-//        if (event.getRegistryKey().equals(ModProgWidgets.PROG_WIDGETS.get().getRegistryKey())) {
-//            ProgWidgetType<?> type = ProgWidgetType.createType(() -> new ProgWidgetCustomBlockInteract().setInteractor(interactor));
-//            event.register(ModProgWidgets.PROG_WIDGETS.get(), interactor.getID(), () -> type);
-//        }
-//        ProgWidgetType<?> type = ProgWidgetType.createType(() ->
-//                new ProgWidgetCustomBlockInteract().setInteractor(interactor)).setRegistryName(interactor.getID());
-//        event.getRegistry().register(type);
-//    }
+    @Override
+    public void registerCustomBlockInteractor(ICustomBlockInteract interactor) {
+        ModProgWidgets.PROG_WIDGETS_DEFERRED.register(interactor.getID(),
+                () -> ProgWidgetType.createType(() -> new ProgWidgetCustomBlockInteract().setInteractor(interactor)));
+    }
 
     @Override
     public PathfinderMob deliverItemsAmazonStyle(GlobalPos globalPos, ItemStack... deliveredStacks) {

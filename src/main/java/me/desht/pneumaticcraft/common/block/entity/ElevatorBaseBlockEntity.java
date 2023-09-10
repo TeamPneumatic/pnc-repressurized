@@ -416,7 +416,7 @@ public class ElevatorBaseBlockEntity extends AbstractAirHandlingBlockEntity impl
     }
 
     /**
-     * Elevator above us has just been broken; move its upgrades & camo to this elevator base, if possible.
+     * Elevator above us has just been broken; move its upgrades and camo to this elevator base, if possible.
      */
     public void moveUpgradesFromAbove() {
         BlockEntity brokenTE = nonNullLevel().getBlockEntity(getBlockPos().relative(Direction.UP));

@@ -29,7 +29,7 @@ import net.minecraft.world.item.ItemStack;
  * the alternative is to provide a custom implementation of {@link me.desht.pneumaticcraft.api.tileentity.IAirHandlerItem}
  * for your capability, which is more work.
  * <p>
- * @see me.desht.pneumaticcraft.api.item.IItemRegistry#makeItemAirHandlerProvider(ItemStack, float)
+ * @see me.desht.pneumaticcraft.api.item.IItemRegistry#makeItemAirHandlerProvider(ItemStack)
  */
 public interface IPressurizableItem {
     /**

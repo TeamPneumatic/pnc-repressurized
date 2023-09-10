@@ -17,8 +17,6 @@
 
 package me.desht.pneumaticcraft.common.thirdparty.mekanism;
 
-import me.desht.pneumaticcraft.common.thirdparty.RadiationSourceCheck;
-import mekanism.api.MekanismAPI;
 import mekanism.api.heat.IHeatHandler;
 import mekanism.api.heat.IMekanismHeatHandler;
 import mekanism.api.radiation.capability.IRadiationShielding;

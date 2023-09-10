@@ -31,7 +31,7 @@ public interface IAuxConfig {
 
     /**
      * Called during the pre-init phase, with the top-level mod config file name (pneumaticcraft.cfg). Pre-init
-     * configs are always loaded on both client and server ({@link #getSidedness() is ignored).
+     * configs are always loaded on both client and server ({@link #getSidedness()} is ignored).
      *
      * @param file the config file name
      * @throws IOException if there is a problem reading/writing any files

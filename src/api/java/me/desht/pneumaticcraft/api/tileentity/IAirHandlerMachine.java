@@ -29,7 +29,6 @@ import net.minecraftforge.common.util.INBTSerializable;
 
 import javax.annotation.Nullable;
 import java.util.List;
-import java.util.function.Predicate;
 
 /**
  * An extended air handler which is used by tile entities.  It supports the concept of connected neighbouring

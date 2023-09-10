@@ -24,9 +24,9 @@ import java.util.function.Consumer;
 
 /**
  * Represents a checkbox widget which can have a key bound to toggle it; use this to create a checkbox to toggle
- * a toggleable upgrade on & off.
+ * a toggleable upgrade on &amp; off.
  * <p>
- * Do not implement this class yourself; you can create &amp; retrieve instances of it via
+ * Do not implement this class yourself; you can create and retrieve instances of it via
  * {@link IClientArmorRegistry#makeKeybindingCheckBox(ResourceLocation, int, int, int, Consumer)}. This would
  * typically be done in {@link IOptionPage#populateGui(IGuiScreen)}.
  */

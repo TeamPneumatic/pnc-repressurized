@@ -43,7 +43,10 @@ import net.minecraftforge.items.ItemHandlerHelper;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
 public class PressureChamberRecipeImpl extends PressureChamberRecipe {
     private final float pressureRequired;

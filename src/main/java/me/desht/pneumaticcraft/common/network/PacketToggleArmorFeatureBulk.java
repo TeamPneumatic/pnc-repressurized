@@ -32,7 +32,7 @@ import java.util.function.Supplier;
 /**
  * Received on: SERVER
  * Sent by client to set the status of multiple armor features at once
- * (used in armor init & core components reset)
+ * (used in armor init and core components reset)
  */
 public class PacketToggleArmorFeatureBulk {
     private final List<FeatureSetting> features;

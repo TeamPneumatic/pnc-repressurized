@@ -18,7 +18,6 @@
 package me.desht.pneumaticcraft.common.util;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.BlockGetter;

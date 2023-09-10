@@ -1,10 +1,7 @@
 package me.desht.pneumaticcraft.api.misc;
 
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.damagesource.DamageType;
 
 /**
  * Get an instance of this via {@link PneumaticRegistry.IPneumaticCraftInterface#getDamageSources()}

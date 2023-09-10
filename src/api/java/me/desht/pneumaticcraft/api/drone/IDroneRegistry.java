@@ -42,29 +42,28 @@ public interface IDroneRegistry {
      */
     void addPathfindableBlock(Block block, IPathfindHandler handler);
 
-//    /**
-//     * This will add a custom puzzle piece that has only an Area whitelist/blacklist parameter (similar to a GoTo piece).
-//     * It will do the specified behaviour. This can be used, for example, to create energy import/export widgets for a
-//     * custom energy type (i.e. other than Forge Energy).
-//     * <p>This <strong>must</strong> be called
-//     * from a registry event handler for {@link net.minecraftforge.event.RegistryEvent.Register} to ensure registration
-//     * is done at the right time - do not call it directly from elsewhere.
-//     *
-//     * @param event the Forge registry event
-//     * @param interactor the custom interactor object
-//     */
-//    void registerCustomBlockInteractor(RegistryEvent.Register<ProgWidgetType<?>> event, ICustomBlockInteract interactor);
+    /**
+     * Register a custom puzzle piece that has only an Area whitelist/blacklist parameter (similar to a Go To piece).
+     * It will do the specified behaviour. This can be used, for example, to create energy import/export widgets for a
+     * custom energy type (i.e. other than Forge Energy).
+     * <p>
+     * <strong>Important:</strong> this must be called from your mod constructor, i.e. <em>before</em> registries are
+     * frozen, since it adds a deferred registration entry.
+     *
+     * @param interactor the custom interactor object
+     */
+    void registerCustomBlockInteractor(ICustomBlockInteract interactor);
 
     /**
      * Will spawn in a Drone a distance away from the given coordinate. When there is an inventory at the given block
      * position, the drone will export the items there. If there is no inventory or items don't fit, the drone will
      * travel to 5 blocks above the specified Y level, and drop the deliveredStacks. When there isn't a clear path for
-     * the items to fall these 5 blocks the Drone will deliver at a Y level above the specified Y that <em>is</em>
+     * the items to fall, the Drone will deliver at a Y level above the specified Y that <em>is</em>
      * clear. If no clear blocks can be found (when there are only solid blocks), the Drone will drop the items very
      * high up in the air instead.
      * <p>
      * When a player attempts to catch the drone (by wrenching it), the drone will only the drop the items that it was
-     * delivering (or none if it dropped those items already). The Drone itself never will be dropped.
+     * delivering (or none if it dropped those items already). The Drone itself will never be dropped.
      *
      * @param globalPos global position to deliver items to
      * @param deliveredStacks stacks to be delivered by the drone

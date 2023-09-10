@@ -12,7 +12,6 @@ import net.minecraft.client.model.geom.builders.*;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
-import org.joml.Vector3f;
 
 public class SolarCompressorRenderer extends AbstractBlockEntityModelRenderer<SolarCompressorBlockEntity> {
     private final ModelPart panels;

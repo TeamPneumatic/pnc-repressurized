@@ -41,7 +41,7 @@ import java.util.regex.Pattern;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 /**
- * Handles redstone behaviour & emission for a block entity
+ * Handles redstone behaviour and emission for a block entity
  */
 public class RedstoneController<T extends BlockEntity & IRedstoneControl<T>> {
     private static final Pattern RS_TAG_PATTERN = Pattern.compile("^redstone:(\\d+)$");

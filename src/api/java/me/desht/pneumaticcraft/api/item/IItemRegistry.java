@@ -96,6 +96,7 @@ public interface IItemRegistry {
      * @param stack the ItemStack, whose item must implement {@link me.desht.pneumaticcraft.api.pressure.IPressurizableItem}
      * @return an implementation of IAirHandler
      * @implNote this air handler stores the item's air amount in the {@code}pneumaticcraft:air{@code} integer NBT tag
+     * @throws IllegalArgumentException if the stack's item does not implement {@link me.desht.pneumaticcraft.api.pressure.IPressurizableItem}
      */
     IAirHandlerItem.Provider makeItemAirHandlerProvider(ItemStack stack);
 

@@ -239,7 +239,7 @@ public class PneumaticCraftUtils {
      * given string list.  This method is aware of inventory items implementing the {@link IInventoryItem} interface.
      *
      * @param textList string list to add information to
-     * @param originalStacks array of item stacks to sort & combine
+     * @param originalStacks array of item stacks to sort and combine
      */
     public static List<Component> summariseItemStacks(List<Component> textList, List<ItemStack> originalStacks) {
         return summariseItemStacks(textList, originalStacks, Symbols.bullet());
@@ -251,7 +251,7 @@ public class PneumaticCraftUtils {
      * implementing the {@link IInventoryItem} interface.
      *
      * @param textList text component list to add information to
-     * @param originalStacks array of item stacks to sort & combine
+     * @param originalStacks array of item stacks to sort and combine
      * @param prefix prefix string to prepend to each line of output
      */
     public static List<Component> summariseItemStacks(List<Component> textList, List<ItemStack> originalStacks, MutableComponent prefix) {
@@ -623,7 +623,7 @@ public class PneumaticCraftUtils {
     }
 
     /**
-     * Check if a given string encodes a valid number (negative & decimal point included). Also intended to work for
+     * Check if a given string encodes a valid number (negative &amp; decimal point included). Also intended to work for
      * partial strings, so useful for textfield validation.
      *
      * @param str the string to test

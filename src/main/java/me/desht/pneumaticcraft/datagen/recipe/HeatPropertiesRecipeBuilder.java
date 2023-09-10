@@ -31,7 +31,7 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 /**
  * Currently unused.  Would require a lot of extra mods in the dev workspace to use properly.  Maybe this should
- * just take string block & blockstate names?  For now though the heat properties files remain as non-generated
+ * just take string block and blockstate names?  For now though the heat properties files remain as non-generated
  * JSONs while I decide how best to handle it.
  */
 @SuppressWarnings("unused")

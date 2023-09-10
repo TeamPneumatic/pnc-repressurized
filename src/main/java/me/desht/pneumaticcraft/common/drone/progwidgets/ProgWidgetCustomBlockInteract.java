@@ -30,6 +30,8 @@ import org.apache.commons.lang3.Validate;
 
 import java.util.List;
 
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
+
 public class ProgWidgetCustomBlockInteract extends ProgWidgetInventoryBase {
     private ICustomBlockInteract interactor;
     private ProgWidgetType<?> customType = null;
@@ -46,7 +48,7 @@ public class ProgWidgetCustomBlockInteract extends ProgWidgetInventoryBase {
     @Override
     public ProgWidgetType<?> getType() {
         if (customType == null) {
-            customType = ModProgWidgets.PROG_WIDGETS.get().getValue(interactor.getID());
+            customType = ModProgWidgets.PROG_WIDGETS.get().getValue(RL(interactor.getID()));
             Validate.notNull(customType);
         }
         return customType;

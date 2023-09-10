@@ -103,7 +103,7 @@ public class ShoppingBasket implements Iterable<ResourceLocation> {
     }
 
     /**
-     * Go through all items & fluids in the basket and ensure that:
+     * Go through all items and fluids in the basket and ensure that:
      * <ol>
      * <li>the providing inventory/tank exists</li>
      * <li>there's enough of the offer in stock, where applicable</li>

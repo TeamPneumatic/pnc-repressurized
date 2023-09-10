@@ -300,20 +300,16 @@ public class WidgetKeybindCheckBox extends WidgetCheckBox {
         @SubscribeEvent
         public static void onKeyPress(InputEvent.Key event) {
             if (Minecraft.getInstance().screen == null && event.getAction() == GLFW.GLFW_PRESS) {
-                KeyMapping binding = KEY_BINDING_MAP.get(InputConstants.Type.KEYSYM.getOrCreate(event.getKey()));
-                if (binding != null) {
-                    getBoundWidget(binding.getName()).ifPresent(w -> w.handleClick(0, 0, 0));
-                }
+                KEY_BINDING_MAP.getAll(InputConstants.Type.KEYSYM.getOrCreate(event.getKey()))
+                        .forEach(binding -> getBoundWidget(binding.getName()).ifPresent(w -> w.handleClick(0, 0, 0)));
             }
         }
 
         @SubscribeEvent
         public static void onMouseClick(InputEvent.MouseButton event) {
             if (Minecraft.getInstance().screen == null && event.getAction() == GLFW.GLFW_PRESS) {
-                KeyMapping binding = KEY_BINDING_MAP.get(InputConstants.Type.MOUSE.getOrCreate(event.getButton()));
-                if (binding != null) {
-                    getBoundWidget(binding.getName()).ifPresent(w -> w.handleClick(0, 0, 0));
-                }
+                KEY_BINDING_MAP.getAll(InputConstants.Type.MOUSE.getOrCreate(event.getButton()))
+                        .forEach(binding -> getBoundWidget(binding.getName()).ifPresent(w -> w.handleClick(0, 0, 0)));
             }
         }
 

@@ -2,7 +2,6 @@ package me.desht.pneumaticcraft.common.thirdparty;
 
 import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.lib.Log;
-import me.desht.pneumaticcraft.lib.ModIds;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.InterModComms;
 import net.minecraftforge.fml.common.Mod;

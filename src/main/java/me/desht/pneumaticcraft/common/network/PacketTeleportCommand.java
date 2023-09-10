@@ -10,7 +10,7 @@ import java.util.function.Supplier;
 
 /**
  * Received on: SERVER
- * Sent by GPS Tool & Area GPS Tool GUI when the Teleport button is pressed
+ * Sent by GPS Tool and Area GPS Tool GUI when the Teleport button is pressed
  */
 public class PacketTeleportCommand {
     private final BlockPos targetPos;

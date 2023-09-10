@@ -13,7 +13,6 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.util.Mth;
-import org.joml.Vector3f;
 
 public class ManualCompressorRenderer extends AbstractBlockEntityModelRenderer<ManualCompressorBlockEntity> {
     private final ModelPart pump;

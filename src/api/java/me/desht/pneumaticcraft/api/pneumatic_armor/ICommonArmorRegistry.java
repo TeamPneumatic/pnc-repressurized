@@ -81,7 +81,7 @@ public interface ICommonArmorRegistry {
     void addHackable(@Nonnull Block block, @Nonnull Supplier<? extends IHackableBlock> iHackable);
 
     /**
-     * Register a block tag with your hackable. By default, the vanilla doors, buttons & trapdoors block tags are
+     * Register a block tag with your hackable. By default, the vanilla doors, buttons and trapdoors block tags are
      * registered, meaning any block added to any of those tags (e.g. modded doors) will also be considered hackable.
      * <p>
      * This must be called from a {@link FMLCommonSetupEvent} handler
