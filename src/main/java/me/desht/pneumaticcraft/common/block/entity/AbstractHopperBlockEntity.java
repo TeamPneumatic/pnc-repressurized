@@ -56,6 +56,7 @@ public abstract class AbstractHopperBlockEntity<T extends BlockEntity & IRedston
     AABB outputAABB;
     final List<Entity> cachedInputEntities = new ArrayList<>();
     final List<Entity> cachedOutputEntities = new ArrayList<>();
+    private boolean firstTick = true;
 
     AbstractHopperBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state, 4);
@@ -63,16 +64,6 @@ public abstract class AbstractHopperBlockEntity<T extends BlockEntity & IRedston
 
     public Direction getInputDirection() {
         return getBlockState().getValue(OmnidirectionalHopperBlock.INPUT_FACING);
-    }
-
-    @Override
-    public void onLoad() {
-        super.onLoad();
-
-        if (!nonNullLevel().isClientSide) {
-            isCreative = getUpgrades(ModUpgrades.CREATIVE.get()) > 0;
-            setupInputOutputRegions();
-        }
     }
 
     @Override
@@ -86,6 +77,12 @@ public abstract class AbstractHopperBlockEntity<T extends BlockEntity & IRedston
     @Override
     public void tickServer() {
         inputDir = getInputDirection();
+
+        if (firstTick) {
+            isCreative = getUpgrades(ModUpgrades.CREATIVE.get()) > 0;
+            setupInputOutputRegions();
+            firstTick = false;
+        }
 
         super.tickServer();
 
