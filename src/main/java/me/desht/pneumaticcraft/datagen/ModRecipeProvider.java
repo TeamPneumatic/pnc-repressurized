@@ -273,7 +273,7 @@ public class ModRecipeProvider extends RecipeProvider {
         shaped(Items.COPPER_INGOT, Items.COPPER_INGOT,
                 "NNN/NNN/NNN",
                 'N', ModItems.COPPER_NUGGET.get()
-        ).save(consumer);
+        ).save(consumer, RL("copper_ingot_from_nugget"));
 
         shaped(ModBlocks.DISPLAY_TABLE.get(), ModBlocks.REINFORCED_STONE.get(),
                 "SSS/I I",
