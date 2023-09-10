@@ -2,8 +2,8 @@
 	"credit": "Made with Blockbench",
 	"texture_size": [128, 128],
 	"textures": {
-		"0": "pneumaticcraft:entity/harvesting_drone",
-		"particle": "pneumaticcraft:entity/harvesting_drone"
+		"0": "pneumaticcraft:entity/drone/harvesting_drone",
+		"particle": "pneumaticcraft:entity/drone/harvesting_drone"
 	},
 	"elements": [
 		{

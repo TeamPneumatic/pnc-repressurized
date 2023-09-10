@@ -10,6 +10,7 @@ public class Textures {
     private static final String TUBE_MODULE_MODEL_LOCATION = MODEL_LOCATION + "modules/";
     private static final String GUI_LOCATION = ICON_LOCATION + "textures/gui/";
     private static final String ENTITY_LOCATION = ICON_LOCATION + "textures/entity/";
+    private static final String DRONE_LOCATION = ICON_LOCATION + "textures/entity/drone/";
     private static final String ARMOR_LOCATION = ICON_LOCATION + "textures/armor/";
     private static final String RENDER_LOCATION = ICON_LOCATION + "textures/render/";
     private static final String PROG_WIDGET_LOCATION = ICON_LOCATION + "textures/progwidgets/";
@@ -240,13 +241,13 @@ public class Textures {
     public static final ResourceLocation GLOW_RESOURCE = new ResourceLocation(RENDER_LOCATION + "blur.png");
 
     // entities
+    public static final ResourceLocation DRONE_ENTITY = droneTexture("default_drone.png");
+    public static final ResourceLocation GUARD_DRONE_ENTITY = droneTexture("guard_drone.png");
+    public static final ResourceLocation HARVESTING_DRONE_ENTITY = droneTexture("harvesting_drone.png");
+    public static final ResourceLocation LOGISTICS_DRONE_ENTITY = droneTexture("logistics_drone.png");
+    public static final ResourceLocation COLLECTOR_DRONE_ENTITY = droneTexture("collector_drone.png");
+    public static final ResourceLocation AMADRONE_ENTITY = droneTexture("amadrone.png");
     public static final ResourceLocation VORTEX_ENTITY = entityTexture("vortex.png");
-    public static final ResourceLocation DRONE_ENTITY = entityTexture("default_drone.png");
-    public static final ResourceLocation GUARD_DRONE_ENTITY = entityTexture("guard_drone.png");
-    public static final ResourceLocation HARVESTING_DRONE_ENTITY = entityTexture("harvesting_drone.png");
-    public static final ResourceLocation LOGISTICS_DRONE_ENTITY = entityTexture("logistics_drone.png");
-    public static final ResourceLocation COLLECTOR_DRONE_ENTITY = entityTexture("collector_drone.png");
-    public static final ResourceLocation AMADRONE_ENTITY = entityTexture("amadrone.png");
     public static final ResourceLocation MICROMISSILE_ENTITY = entityTexture("micromissile.png");
 
     private static ResourceLocation guiTexture(String img) {
@@ -271,5 +272,9 @@ public class Textures {
 
     public static ResourceLocation entityTexture(String img) {
         return new ResourceLocation(ENTITY_LOCATION + img);
+    }
+
+    public static ResourceLocation droneTexture(String img) {
+        return new ResourceLocation(DRONE_LOCATION + img);
     }
 }

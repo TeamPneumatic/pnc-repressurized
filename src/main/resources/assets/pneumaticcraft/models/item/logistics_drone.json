@@ -2,7 +2,7 @@
 	"credit": "Made with Blockbench",
 	"texture_size": [128, 128],
 	"textures": {
-		"1": "pneumaticcraft:entity/logistics_drone"
+		"1": "pneumaticcraft:entity/drone/logistics_drone"
 	},
 	"elements": [
 		{
