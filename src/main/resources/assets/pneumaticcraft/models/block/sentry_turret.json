@@ -2,8 +2,8 @@
 	"credit": "Made with Blockbench",
 	"texture_size": [32, 32],
 	"textures": {
-		"1": "pneumaticcraft:model/sentry_turret",
-		"particle": "pneumaticcraft:model/sentry_turret"
+		"1": "pneumaticcraft:pnc_model/sentry_turret",
+		"particle": "pneumaticcraft:pnc_model/sentry_turret"
 	},
 	"elements": [
 		{

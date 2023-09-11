@@ -2,8 +2,8 @@
 	"credit": "Made with Blockbench",
 	"texture_size": [32, 32],
 	"textures": {
-		"0": "pneumaticcraft:model/modules/flow_detector",
-		"particle": "pneumaticcraft:model/modules/flow_detector"
+		"0": "pneumaticcraft:pnc_model/modules/flow_detector",
+		"particle": "pneumaticcraft:pnc_model/modules/flow_detector"
 	},
 	"elements": [
 		{

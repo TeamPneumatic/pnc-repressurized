@@ -1,6 +1,6 @@
 {
   "textures": {
-    "face": "pneumaticcraft:model/omnihopper_outside"
+    "face": "pneumaticcraft:pnc_model/omnihopper_outside"
   },
   "elements": [
     {

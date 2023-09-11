@@ -3,9 +3,9 @@
 	"parent": "forge:block/default",
 	"texture_size": [64, 64],
 	"textures": {
-		"0": "pneumaticcraft:model/assembly_platform",
-		"1": "pneumaticcraft:model/assembly_base",
-		"particle": "pneumaticcraft:model/assembly_platform"
+		"0": "pneumaticcraft:pnc_model/assembly_platform",
+		"1": "pneumaticcraft:pnc_model/assembly_base",
+		"particle": "pneumaticcraft:pnc_model/assembly_platform"
 	},
 	"elements": [
 		{

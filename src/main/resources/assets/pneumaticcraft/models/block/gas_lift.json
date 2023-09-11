@@ -3,8 +3,8 @@
 	"parent": "forge:block/default",
 	"texture_size": [64, 64],
 	"textures": {
-		"0": "pneumaticcraft:model/gas_lift",
-		"particle": "pneumaticcraft:model/gas_lift"
+		"0": "pneumaticcraft:pnc_model/gas_lift",
+		"particle": "pneumaticcraft:pnc_model/gas_lift"
 	},
 	"render_type": "cutout_mipped",
 	"elements": [

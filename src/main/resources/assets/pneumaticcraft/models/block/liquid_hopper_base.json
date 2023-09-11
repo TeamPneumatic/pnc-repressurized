@@ -3,8 +3,8 @@
 	"ambientocclusion": false,
 	"texture_size": [32, 32],
 	"textures": {
-		"3": "pneumaticcraft:model/omnidirectional_hopper",
-		"particle": "pneumaticcraft:model/omnidirectional_hopper"
+		"3": "pneumaticcraft:pnc_model/omnidirectional_hopper",
+		"particle": "pneumaticcraft:pnc_model/omnidirectional_hopper"
 	},
 	"render_type": "cutout_mipped",
 	"elements": [

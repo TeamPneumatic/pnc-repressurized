@@ -4,8 +4,8 @@
 	"ambientocclusion": false,
 	"texture_size": [32, 32],
 	"textures": {
-		"0": "pneumaticcraft:model/omnidirectional_hopper",
-		"particle": "pneumaticcraft:model/omnidirectional_hopper"
+		"0": "pneumaticcraft:pnc_model/omnidirectional_hopper",
+		"particle": "pneumaticcraft:pnc_model/omnidirectional_hopper"
 	},
 	"elements": [
 		{

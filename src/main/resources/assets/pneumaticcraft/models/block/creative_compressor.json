@@ -2,8 +2,8 @@
 	"credit": "Made with Blockbench",
 	"parent": "forge:block/default",
 	"textures": {
-		"0": "pneumaticcraft:model/creative_compressor",
-		"particle": "pneumaticcraft:model/creative_compressor"
+		"0": "pneumaticcraft:pnc_model/creative_compressor",
+		"particle": "pneumaticcraft:pnc_model/creative_compressor"
 	},
 	"elements": [
 		{

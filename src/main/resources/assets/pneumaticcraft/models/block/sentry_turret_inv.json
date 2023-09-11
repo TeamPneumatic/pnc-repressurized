@@ -2,9 +2,9 @@
 	"credit": "Made with Blockbench",
 	"texture_size": [32, 32],
 	"textures": {
-		"0": "pneumaticcraft:model/drone_minigun",
-		"1": "pneumaticcraft:model/sentry_turret",
-		"particle": "pneumaticcraft:model/sentry_turret"
+		"0": "pneumaticcraft:pnc_model/drone_minigun",
+		"1": "pneumaticcraft:pnc_model/sentry_turret",
+		"particle": "pneumaticcraft:pnc_model/sentry_turret"
 	},
 	"elements": [
 		{

@@ -3,8 +3,8 @@
 	"parent": "forge:block/default",
 	"texture_size": [32, 32],
 	"textures": {
-		"2": "pneumaticcraft:model/uv_light_box",
-		"particle": "pneumaticcraft:model/uv_light_box"
+		"2": "pneumaticcraft:pnc_model/uv_light_box",
+		"particle": "pneumaticcraft:pnc_model/uv_light_box"
 	},
 	"elements": [
 		{

@@ -3,8 +3,8 @@
 	"parent": "forge:block/default",
 	"texture_size": [64, 64],
 	"textures": {
-		"2": "pneumaticcraft:model/fluid_mixer",
-		"particle": "pneumaticcraft:model/fluid_mixer"
+		"2": "pneumaticcraft:pnc_model/fluid_mixer",
+		"particle": "pneumaticcraft:pnc_model/fluid_mixer"
 	},
 	"render_type": "cutout_mipped",
 	"elements": [

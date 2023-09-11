@@ -1,6 +1,6 @@
 {
 	"parent": "pneumaticcraft:block/pressure_tube_inv",
 	"textures": {
-		"pipe": "pneumaticcraft:model/reinforced_pressure_tube"
+		"pipe": "pneumaticcraft:pnc_model/reinforced_pressure_tube"
 	}
 }

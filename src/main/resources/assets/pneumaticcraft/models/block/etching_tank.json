@@ -3,7 +3,7 @@
 	"parent": "forge:block/default",
 	"texture_size": [64, 64],
 	"textures": {
-		"0": "pneumaticcraft:model/etching_tank",
+		"0": "pneumaticcraft:pnc_model/etching_tank",
 		"particle": "pneumaticcraft:block/generic/plain_base"
 	},
 	"display": {
@@ -57,8 +57,8 @@
 		"translucent": {
 			"parent": "forge:block/default",
 			"textures": {
-				"0": "pneumaticcraft:model/etching_tank",
-				"particle": "pneumaticcraft:model/etching_tank"
+				"0": "pneumaticcraft:pnc_model/etching_tank",
+				"particle": "pneumaticcraft:pnc_model/etching_tank"
 			},
 			"render_type": "translucent",
 			"elements": [
@@ -117,8 +117,8 @@
 		"solid": {
 			"parent": "forge:block/default",
 			"textures": {
-				"0": "pneumaticcraft:model/etching_tank",
-				"particle": "pneumaticcraft:model/etching_tank"
+				"0": "pneumaticcraft:pnc_model/etching_tank",
+				"particle": "pneumaticcraft:pnc_model/etching_tank"
 			},
 			"render_type": "solid",
 			"elements": [

@@ -2,9 +2,9 @@
 	"credit": "Made with Blockbench",
 	"texture_size": [64, 64],
 	"textures": {
-		"particle": "pneumaticcraft:model/assembly_controller",
-		"controller": "pneumaticcraft:model/assembly_controller",
-		"base": "pneumaticcraft:model/assembly_base"
+		"particle": "pneumaticcraft:pnc_model/assembly_controller",
+		"controller": "pneumaticcraft:pnc_model/assembly_controller",
+		"base": "pneumaticcraft:pnc_model/assembly_base"
 	},
 	"elements": [
 		{

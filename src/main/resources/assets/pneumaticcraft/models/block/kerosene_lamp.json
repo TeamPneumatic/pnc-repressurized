@@ -3,8 +3,8 @@
 	"parent": "forge:block/default",
 	"texture_size": [32, 32],
 	"textures": {
-		"particle": "pneumaticcraft:model/kerosene_lamp",
-		"base": "pneumaticcraft:model/kerosene_lamp"
+		"particle": "pneumaticcraft:pnc_model/kerosene_lamp",
+		"base": "pneumaticcraft:pnc_model/kerosene_lamp"
 	},
 	"render_type": "cutout_mipped",
 	"elements": [

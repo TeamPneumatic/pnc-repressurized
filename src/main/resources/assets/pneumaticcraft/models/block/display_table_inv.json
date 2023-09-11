@@ -2,11 +2,11 @@
 	"credit": "Made with Blockbench",
 	"parent": "forge:block/default",
 	"textures": {
-		"bottom": "pneumaticcraft:model/display_table_bottom",
-		"particle": "pneumaticcraft:model/display_table_side",
-		"side": "pneumaticcraft:model/display_table_side",
-		"leg": "pneumaticcraft:model/display_table_leg",
-		"top": "pneumaticcraft:model/display_table_top"
+		"bottom": "pneumaticcraft:pnc_model/display_table_bottom",
+		"particle": "pneumaticcraft:pnc_model/display_table_side",
+		"side": "pneumaticcraft:pnc_model/display_table_side",
+		"leg": "pneumaticcraft:pnc_model/display_table_leg",
+		"top": "pneumaticcraft:pnc_model/display_table_top"
 	},
 	"elements": [
 		{

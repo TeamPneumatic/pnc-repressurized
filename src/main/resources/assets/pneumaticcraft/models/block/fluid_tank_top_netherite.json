@@ -3,7 +3,7 @@
 	"parent": "forge:block/default",
 	"texture_size": [64, 64],
 	"textures": {
-		"1": "pneumaticcraft:model/fluid_tank",
+		"1": "pneumaticcraft:pnc_model/fluid_tank",
 		"particle": "pneumaticcraft:block/generic/plain_base"
 	},
 	"elements": [

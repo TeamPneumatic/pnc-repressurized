@@ -3,8 +3,8 @@
 	"parent": "forge:block/default",
 	"texture_size": [64, 64],
 	"textures": {
-		"1": "pneumaticcraft:model/liquid_compressor",
-		"particle": "pneumaticcraft:model/liquid_compressor"
+		"1": "pneumaticcraft:pnc_model/liquid_compressor",
+		"particle": "pneumaticcraft:pnc_model/liquid_compressor"
 	},
 	"render_type": "cutout_mipped",
 	"elements": [

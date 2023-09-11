@@ -2,8 +2,8 @@
 	"credit": "Made with Blockbench",
 	"texture_size": [64, 64],
 	"textures": {
-		"2": "pneumaticcraft:model/air_cannon",
-		"particle": "pneumaticcraft:model/air_cannon"
+		"2": "pneumaticcraft:pnc_model/air_cannon",
+		"particle": "pneumaticcraft:pnc_model/air_cannon"
 	},
 	"elements": [
 		{

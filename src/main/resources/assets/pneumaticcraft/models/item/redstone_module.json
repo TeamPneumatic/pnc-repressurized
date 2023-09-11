@@ -2,7 +2,7 @@
 	"credit": "Made with Blockbench",
 	"texture_size": [64, 32],
 	"textures": {
-		"0": "pneumaticcraft:model/modules/redstone"
+		"0": "pneumaticcraft:pnc_model/modules/redstone"
 	},
 	"elements": [
 		{

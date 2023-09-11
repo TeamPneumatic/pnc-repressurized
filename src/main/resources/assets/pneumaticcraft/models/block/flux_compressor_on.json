@@ -1,6 +1,6 @@
 {
   "parent": "pneumaticcraft:block/flux_compressor_off",
   "textures": {
-    "0": "pneumaticcraft:model/flux_compressor_on"
+    "0": "pneumaticcraft:pnc_model/flux_compressor_on"
   }
 }

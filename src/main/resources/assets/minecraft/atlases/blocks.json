@@ -2,8 +2,8 @@
   "sources": [
     {
       "type": "directory",
-      "source": "model",
-      "prefix": "model/"
+      "source": "pnc_model",
+      "prefix": "pnc_model/"
     },
     {
       "type": "single",

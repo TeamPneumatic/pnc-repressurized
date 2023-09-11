@@ -3,8 +3,8 @@
 	"parent": "forge:block/default",
 	"texture_size": [32, 32],
 	"textures": {
-		"0": "pneumaticcraft:model/heatsink",
-		"particle": "pneumaticcraft:model/heatsink"
+		"0": "pneumaticcraft:pnc_model/heatsink",
+		"particle": "pneumaticcraft:pnc_model/heatsink"
 	},
 	"elements": [
 		{

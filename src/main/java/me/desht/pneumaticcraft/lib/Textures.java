@@ -6,7 +6,7 @@ import net.minecraft.resources.ResourceLocation;
 public class Textures {
     static final String ICON_LOCATION = Names.MOD_ID + ":";
 
-    private static final String MODEL_LOCATION = ICON_LOCATION + "textures/model/";
+    private static final String MODEL_LOCATION = ICON_LOCATION + "textures/pnc_model/";
     private static final String TUBE_MODULE_MODEL_LOCATION = MODEL_LOCATION + "modules/";
     private static final String GUI_LOCATION = ICON_LOCATION + "textures/gui/";
     private static final String ENTITY_LOCATION = ICON_LOCATION + "textures/entity/";

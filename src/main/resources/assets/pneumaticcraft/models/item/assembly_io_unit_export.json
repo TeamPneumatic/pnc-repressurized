@@ -2,9 +2,9 @@
 	"credit": "Made with Blockbench",
 	"texture_size": [64, 64],
 	"textures": {
-		"1": "pneumaticcraft:model/assembly_base",
-		"2": "pneumaticcraft:model/assembly_io_export",
-		"particle": "pneumaticcraft:model/assembly_io_export"
+		"1": "pneumaticcraft:pnc_model/assembly_base",
+		"2": "pneumaticcraft:pnc_model/assembly_io_export",
+		"particle": "pneumaticcraft:pnc_model/assembly_io_export"
 	},
 	"elements": [
 		{

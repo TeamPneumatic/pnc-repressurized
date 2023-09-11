@@ -3,8 +3,8 @@
 	"parent": "forge:block/default",
 	"texture_size": [32, 32],
 	"textures": {
-		"2": "pneumaticcraft:model/uv_light_box",
-		"particle": "pneumaticcraft:model/uv_light_box"
+		"2": "pneumaticcraft:pnc_model/uv_light_box",
+		"particle": "pneumaticcraft:pnc_model/uv_light_box"
 	},
 	"display": {
 		"thirdperson_righthand": {
@@ -54,8 +54,8 @@
 		"cutout_mipped": {
 			"parent": "forge:block/default",
 			"textures": {
-				"2": "pneumaticcraft:model/uv_light_box",
-				"particle": "pneumaticcraft:model/uv_light_box"
+				"2": "pneumaticcraft:pnc_model/uv_light_box",
+				"particle": "pneumaticcraft:pnc_model/uv_light_box"
 			},
 			"render_type": "cutout_mipped",
 			"elements": [
@@ -280,8 +280,8 @@
 		"translucent": {
 			"parent": "forge:block/default",
 			"textures": {
-				"2": "pneumaticcraft:model/uv_light_box",
-				"particle": "pneumaticcraft:model/uv_light_box"
+				"2": "pneumaticcraft:pnc_model/uv_light_box",
+				"particle": "pneumaticcraft:pnc_model/uv_light_box"
 			},
 			"render_type": "translucent",
 			"elements": [

@@ -2,7 +2,7 @@
 	"credit": "Made with Blockbench",
 	"texture_size": [128, 32],
 	"textures": {
-		"0": "pneumaticcraft:model/heat_frame_normal"
+		"0": "pneumaticcraft:pnc_model/heat_frame_normal"
 	},
 	"elements": [
 		{

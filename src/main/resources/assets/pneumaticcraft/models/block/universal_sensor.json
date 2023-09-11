@@ -2,8 +2,8 @@
 	"credit": "Made with Blockbench",
 	"texture_size": [32, 32],
 	"textures": {
-		"0": "pneumaticcraft:model/universal_sensor",
-		"particle": "pneumaticcraft:model/universal_sensor"
+		"0": "pneumaticcraft:pnc_model/universal_sensor",
+		"particle": "pneumaticcraft:pnc_model/universal_sensor"
 	},
 	"elements": [
 		{

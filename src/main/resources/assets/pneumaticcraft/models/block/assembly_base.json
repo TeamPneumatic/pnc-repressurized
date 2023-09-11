@@ -1,8 +1,8 @@
 {
 	"credit": "Made with Blockbench",
 	"textures": {
-		"1": "pneumaticcraft:model/assembly_base",
-	  	"particle": "pneumaticcraft:model/assembly_base"
+		"1": "pneumaticcraft:pnc_model/assembly_base",
+	  	"particle": "pneumaticcraft:pnc_model/assembly_base"
 	},
 	"elements": [
 		{
