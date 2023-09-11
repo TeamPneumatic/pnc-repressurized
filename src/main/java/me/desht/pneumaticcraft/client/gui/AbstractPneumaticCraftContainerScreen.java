@@ -404,7 +404,7 @@ public abstract class AbstractPneumaticCraftContainerScreen<C extends AbstractPn
         if (problemTab != null && ((ClientUtils.getClientLevel().getGameTime() & 0x7) == 0 || firstUpdate)) {
             handleProblemsTab();
         }
-        if (redstoneTab != null && te instanceof IRedstoneControl rc) {
+        if (redstoneTab != null && te instanceof IRedstoneControl<?> rc) {
             redstoneTab.setExtraTooltipText(Collections.singletonList(rc.getRedstoneController().getDescription()));
             for (int i = 0; i < redstoneButtons.size(); i++) {
                 redstoneButtons.get(i).active = i != rc.getRedstoneMode();

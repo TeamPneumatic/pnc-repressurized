@@ -72,7 +72,7 @@ public class CreativeCompressedIronBlockBlockEntity extends CompressedIronBlockB
     @Override
     public void handleGUIButtonPress(String tag, boolean shiftHeld, ServerPlayer player) {
         try {
-            targetTemperature += Integer.parseInt(tag) * (shiftHeld ? 10 : 1);
+            targetTemperature += Float.parseFloat(tag);
             targetTemperature = Mth.clamp(targetTemperature, 0, 2273);
             setChanged();
         } catch (IllegalArgumentException ignored) {

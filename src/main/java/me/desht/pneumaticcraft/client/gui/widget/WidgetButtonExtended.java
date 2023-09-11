@@ -32,6 +32,7 @@ import net.minecraftforge.client.gui.widget.ExtendedButton;
 import org.lwjgl.opengl.GL11;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
@@ -49,6 +50,7 @@ public class WidgetButtonExtended extends ExtendedButton implements ITaggedWidge
     private boolean thisVisible = true;
     private IconPosition iconPosition = IconPosition.MIDDLE;
     private String tag = null;
+    private Supplier<String> tagSupplier = null;
     private boolean renderStackSize = false;
     private boolean highlightInactive = false;
 
@@ -81,18 +83,27 @@ public class WidgetButtonExtended extends ExtendedButton implements ITaggedWidge
      */
     public WidgetButtonExtended withTag(String tag) {
         this.tag = tag;
+        this.tagSupplier = null;
+        return this;
+    }
+
+    public WidgetButtonExtended withTag(Supplier<String> tagSupplier) {
+        this.tag = null;
+        this.tagSupplier = tagSupplier;
         return this;
     }
 
     @Override
     public void onPress() {
         super.onPress();
-        if (tag != null && !tag.isEmpty()) NetworkHandler.sendToServer(new PacketGuiButton(tag));
+
+        String tag1 = getTag();
+        if (tag1 != null && !tag1.isEmpty()) NetworkHandler.sendToServer(new PacketGuiButton(tag1));
     }
 
     @Override
     public String getTag() {
-        return tag;
+        return tagSupplier == null ? tag : tagSupplier.get();
     }
 
     public WidgetButtonExtended setVisible(boolean visible) {
@@ -140,16 +151,6 @@ public class WidgetButtonExtended extends ExtendedButton implements ITaggedWidge
 
     public void setHighlightWhenInactive(boolean highlight) {
         this.highlightInactive = highlight;
-    }
-
-    @Override
-    public int getWidth() {
-        return width;
-    }
-
-    @Override
-    public int getHeight() {
-        return height;
     }
 
     public void setRenderStackSize(boolean renderStackSize) {
