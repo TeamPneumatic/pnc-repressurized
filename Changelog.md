@@ -14,6 +14,7 @@ Changes are in reverse chronological order; newest changes at the top.
 * A bit more block atlas cleanup; PNC block model texture now in the `pnc_model` directory instead of just `model` (no player-noticeable difference)
 * Fixed Omnidirectional & Liquid Hoppers not correctly processing installed upgrades when placed back down after breaking
   * Upgrades were still present but having no effect until manually removed and replaced
+* Stop server warnings about not finding trades when setting up random Amadron villager trades
 
 ## [6.0.5]
 
