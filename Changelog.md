@@ -6,6 +6,15 @@ Changes are in reverse chronological order; newest changes at the top.
 
 # Minecraft 1.20.1
 
+## [6.0.6]
+
+### Fixed
+* Fixed key modifiers for Pneumatic Armor hotkeys not working as intended (problem introduced in 6.0.5)
+* Creative Compressor GUI can now do fast-adjust of block's pressure level by holding Shift while clicking (x5 adjust)
+* A bit more block atlas cleanup; PNC block model texture now in the `pnc_model` directory instead of just `model` (no player-noticeable difference)
+* Fixed Omnidirectional & Liquid Hoppers not correctly processing installed upgrades when placed back down after breaking
+  * Upgrades were still present but having no effect until manually removed and replaced
+
 ## [6.0.5]
 
 ### Changed
