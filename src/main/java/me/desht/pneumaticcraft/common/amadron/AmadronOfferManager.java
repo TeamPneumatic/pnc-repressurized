@@ -180,12 +180,9 @@ public enum AmadronOfferManager {
     }
 
     public int countPlayerOffers(UUID playerId) {
-        int count = 0;
-        for (AmadronRecipe offer : activeOffers.values()) {
-            if (offer instanceof AmadronPlayerOffer && ((AmadronPlayerOffer) offer).getPlayerId().equals(playerId))
-                count++;
-        }
-        return count;
+        return (int) activeOffers.values().stream()
+                .filter(offer -> offer instanceof AmadronPlayerOffer po && po.getPlayerId().equals(playerId))
+                .count();
     }
 
     /**
@@ -255,9 +252,8 @@ public enum AmadronOfferManager {
         int nVillager = allOffers.size() - s2;
         if (!validProfessions.isEmpty()) {
             for (int i = 0; i < Math.min(nVillager, ConfigHelper.common().amadron.numVillagerOffers.get()); i++) {
-                int profIdx = rand.nextInt(validProfessions.size());
-                AmadronRecipe offer = pickRandomVillagerTrade(validProfessions.get(profIdx), rand);
-                if (offer != null) addOffer(activeOffers, offer);
+                pickRandomVillagerTrade(validProfessions.get(rand.nextInt(validProfessions.size())), rand)
+                        .ifPresent(offer -> addOffer(activeOffers, offer));
             }
         }
 
@@ -298,20 +294,19 @@ public enum AmadronOfferManager {
         return null;
     }
 
-    private AmadronRecipe pickRandomVillagerTrade(VillagerProfession profession, Random rand) {
+    private Optional<AmadronRecipe> pickRandomVillagerTrade(VillagerProfession profession, Random rand) {
         int level = getWeightedTradeLevel(rand);
         do {
             String key = profession.toString() + "_" + level;
             List<AmadronRecipe> offers = villagerTrades.get(key);
             if (offers != null && !offers.isEmpty()) {
                 int idx = rand.nextInt(offers.size());
-                return offers.get(idx);
+                return Optional.ofNullable(offers.get(idx));
             } else {
                 level--;
             }
         } while (level > 0);
-        Log.warning("Amadron: failed to find any trades for profession %s ?", profession.toString());
-        return null;
+        return Optional.empty();
     }
 
     private int getWeightedTradeLevel(Random rand) {
