@@ -164,7 +164,7 @@ public class JackHammerItem extends PressurizableItem
     public boolean onBlockStartBreak(ItemStack itemstack, BlockPos pos, Player player) {
         MutableBoolean didWork = new MutableBoolean(false);
 
-        if (player instanceof ServerPlayer serverPlayer && !player.isShiftKeyDown()) {
+        if (player instanceof ServerPlayer serverPlayer) {
             Level level = serverPlayer.getCommandSenderWorld();
 
             HitResult hitResult = RayTraceUtils.getEntityLookedObject(player, PneumaticCraftUtils.getPlayerReachDistance(player));
@@ -181,8 +181,7 @@ public class JackHammerItem extends PressurizableItem
                         // sanity check
                         digMode = DigMode.MODE_1X1;
                     }
-                    Set<BlockPos> brokenPos = getBreakPositions(level, pos, blockHitResult.getDirection(), player.getDirection(), digMode);
-                    brokenPos.remove(pos); // start pos already broken
+                    Set<BlockPos> brokenPos = getBreakPositions(level, pos, blockHitResult.getDirection(), player, digMode);
 
                     float air = airHandler.getAir();
                     float air0 = air;
@@ -245,11 +244,15 @@ public class JackHammerItem extends PressurizableItem
         }
     }
 
-    public static Set<BlockPos> getBreakPositions(Level world, BlockPos pos, Direction dir, Direction playerHoriz, DigMode digMode) {
+    public static Set<BlockPos> getBreakPositions(Level world, BlockPos pos, Direction dir, Player player, DigMode digMode) {
+        if (player.isShiftKeyDown()) {
+            return new HashSet<>();
+        }
         if (digMode.isVeinMining()) {
             return new HashSet<>(getVeinPositions(world, pos, digMode));
         }
 
+        Direction playerHoriz = player.getDirection();
         Set<BlockPos> res = new HashSet<>();
         if (digMode.atLeast(DigMode.MODE_1X2)) {
             res.add(dir.getAxis() == Direction.Axis.Y ? pos.relative(playerHoriz) : pos.below());
@@ -301,6 +304,8 @@ public class JackHammerItem extends PressurizableItem
                 }
             }
         }
+
+        res.remove(pos);
         return res;
     }
 

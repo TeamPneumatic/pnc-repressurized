@@ -73,7 +73,7 @@ public enum AreaRenderManager {
     private List<AreaRenderer> cachedPositionProviderShowers;
     private AreaRenderer camoPositionShower;
     private AreaRenderer jackhammerPositionShower;
-    private LastJackhammerDetails lastJackhammerDetails = new LastJackhammerDetails(BlockPos.ZERO, null, null);
+    private LastJackhammerDetails lastJackhammerDetails = new LastJackhammerDetails(BlockPos.ZERO, null, null, false);
     private BlockPos lastPlayerPos;
     private int lastItemHashCode = 0;
 
@@ -257,16 +257,16 @@ public enum AreaRenderManager {
         BlockHitResult brtr = (BlockHitResult) Minecraft.getInstance().hitResult;
         if (!level.isLoaded(brtr.getBlockPos()) || level.getBlockState(brtr.getBlockPos()).isAir()) return;
 
-        if (!lastJackhammerDetails.matches(brtr.getBlockPos(), brtr.getDirection(), digMode)) {
+        if (!lastJackhammerDetails.matches(brtr.getBlockPos(), brtr.getDirection(), digMode, player.isShiftKeyDown())) {
             BlockState state = level.getBlockState(brtr.getBlockPos());
             Set<BlockPos> posSet = level.getBlockEntity(brtr.getBlockPos()) == null && !(state.getBlock() instanceof LiquidBlock) ?
-                    JackHammerItem.getBreakPositions(level, brtr.getBlockPos(), brtr.getDirection(), player.getDirection(), digMode) :
+                    JackHammerItem.getBreakPositions(level, brtr.getBlockPos(), brtr.getDirection(), player, digMode) :
                     Collections.emptySet();
             if (!posSet.isEmpty()) posSet.add(brtr.getBlockPos());
             AreaRenderer.Builder b = AreaRenderer.builder().withColor(0x20FFFFFF).withSize(1.01f).disableWriteMask();
             if (state.getShape(level, brtr.getBlockPos()) != (Shapes.block())) b = b.drawShapes();
             jackhammerPositionShower = b.build(posSet);
-            lastJackhammerDetails = new LastJackhammerDetails(brtr.getBlockPos(), brtr.getDirection(), digMode);
+            lastJackhammerDetails = new LastJackhammerDetails(brtr.getBlockPos(), brtr.getDirection(), digMode, player.isShiftKeyDown());
         }
         jackhammerPositionShower.render(matrixStack, buffer);
     }
@@ -307,10 +307,9 @@ public enum AreaRenderManager {
      * Used to determine when the jackhammer preview area needs to be recalculated.
      */
     private record LastJackhammerDetails(BlockPos pos, Direction face,
-                                         JackHammerItem.DigMode digMode) {
-
-        private boolean matches(BlockPos pos, Direction face, JackHammerItem.DigMode digMode) {
-            return face == this.face && digMode == this.digMode && pos.equals(this.pos);
+                                         JackHammerItem.DigMode digMode, boolean shift) {
+        private boolean matches(BlockPos pos, Direction face, JackHammerItem.DigMode digMode, boolean shift) {
+            return face == this.face && digMode == this.digMode && pos.equals(this.pos) && shift == this.shift;
         }
     }
 }
