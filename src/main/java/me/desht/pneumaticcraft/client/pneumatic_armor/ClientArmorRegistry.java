@@ -188,7 +188,9 @@ public enum ClientArmorRegistry implements IClientArmorRegistry {
     }
 
     public Optional<IArmorUpgradeClientHandler<?>> getTriggeredHandler(KeyMapping keyBinding) {
-        return Optional.ofNullable(triggerKeyBindMap.get(keyBinding.getName()));
+        return keyBinding.getKeyModifier() == KeyModifier.getActiveModifier() ?
+                Optional.ofNullable(triggerKeyBindMap.get(keyBinding.getName())) :
+                Optional.empty();
     }
 
     /**
