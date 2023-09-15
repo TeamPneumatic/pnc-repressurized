@@ -37,6 +37,7 @@ import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
@@ -145,8 +146,9 @@ public class WidgetKeybindCheckBox extends WidgetCheckBox {
 
     private boolean handleClick(double mouseX, double mouseY, int button) {
         if (button == 0) {
+            Log.info("handle click for upgrade type: " + getUpgradeId());
             if (!coreComponents.checked && this != coreComponents) {
-                Minecraft.getInstance().player.playSound(ModSounds.MINIGUN_STOP.get(), 1f, 2f);
+//                Minecraft.getInstance().player.playSound(ModSounds.MINIGUN_STOP.get(), 1f, 2f);
                 return true;
             }
 
