@@ -6,6 +6,11 @@ Changes are in reverse chronological order; newest changes at the top.
 
 # Minecraft 1.20.1
 
+## [6.0.7]
+
+### Fixed
+* Fixed problem with Pneumatic Armor and various keypresses (media volume controls in particular) causing spurious sounds to be played
+
 ## [6.0.6]
 
 ### Fixed
