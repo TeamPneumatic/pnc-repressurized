@@ -28,11 +28,11 @@ public class PNCDamageSource {
     }
 
     public static DamageSource minigun(Level level, Entity cause) {
-        return source(level, DamageTypes.MINIGUN, cause, null);
+        return source(level, DamageTypes.MINIGUN, cause, cause);
     }
 
     public static DamageSource minigunAP(Level level, Entity cause) {
-        return source(level, DamageTypes.MINIGUN_AP, cause, null);
+        return source(level, DamageTypes.MINIGUN_AP, cause, cause);
     }
 
     private static DamageSource source(Level level, ResourceKey<DamageType>type) {
