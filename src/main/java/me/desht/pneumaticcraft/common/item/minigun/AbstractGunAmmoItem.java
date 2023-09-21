@@ -105,7 +105,7 @@ public abstract class AbstractGunAmmoItem extends Item {
     }
 
     protected DamageSource getDamageSource(Minigun minigun) {
-        return PNCDamageSource.minigunAP(minigun.getPlayer().level(), minigun.getPlayer());
+        return PNCDamageSource.minigun(minigun.getPlayer().level(), minigun.getPlayer());
     }
 
     @Override
