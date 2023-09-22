@@ -49,8 +49,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.InputEvent;
-import net.minecraftforge.client.settings.KeyMappingLookup;
 import net.minecraftforge.client.settings.KeyModifier;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -85,9 +83,9 @@ public class WidgetKeybindCheckBox extends WidgetCheckBox {
         return id2checkBox.computeIfAbsent(upgradeID, id -> {
             WidgetKeybindCheckBox newCheckBox = new WidgetKeybindCheckBox(id, x, y, color, pressable);
             newCheckBox.checked = ArmorFeatureStatus.INSTANCE.isUpgradeEnabled(id);
-            KeyMapping keyBinding = ClientArmorRegistry.getInstance().getKeybindingForUpgrade(id);
-            if (keyBinding != null) {
-                KeyDispatcher.desc2checkbox.put(keyBinding.getName(), newCheckBox);
+            KeyMapping keyMapping = ClientArmorRegistry.getInstance().getKeybindingForUpgrade(id);
+            if (keyMapping != null && !keyMapping.isUnbound()) {
+                KeyDispatcher.in2checkbox.put(InputRecord.forKeyMapping(keyMapping), newCheckBox);
             }
             if (id.equals(CommonUpgradeHandlers.coreComponentsHandler.getID())) {
                 // stash this one since it's referenced a lot
@@ -297,35 +295,35 @@ public class WidgetKeybindCheckBox extends WidgetCheckBox {
 
     @Mod.EventBusSubscriber(modid = Names.MOD_ID, value = Dist.CLIENT)
     public static class KeyDispatcher {
-        // maps keybind ID (description) to keybind widget
-        private static final Map<String, WidgetKeybindCheckBox> desc2checkbox = new HashMap<>();
-        // thanks forge for caching these
-        private static final KeyMappingLookup KEY_BINDING_MAP = new KeyMappingLookup();
+        // maps key value + modifier to keybind widget
+        private static final Map<InputRecord, WidgetKeybindCheckBox> in2checkbox = new HashMap<>();
 
         @SubscribeEvent
-        public static void onKeyPress(InputEvent.Key event) {
+        public static void onKeyPress(net.minecraftforge.client.event.InputEvent.Key event) {
             if (Minecraft.getInstance().screen == null && event.getAction() == GLFW.GLFW_PRESS) {
-                InputConstants.Key key = InputConstants.Type.KEYSYM.getOrCreate(event.getKey());
-                processInput(key, KEY_BINDING_MAP.getAll(key));
+                handleInput(InputConstants.Type.KEYSYM.getOrCreate(event.getKey()));
             }
         }
 
         @SubscribeEvent
-        public static void onMouseClick(InputEvent.MouseButton event) {
+        public static void onMouseClick(net.minecraftforge.client.event.InputEvent.MouseButton event) {
             if (Minecraft.getInstance().screen == null && event.getAction() == GLFW.GLFW_PRESS) {
-                InputConstants.Key key = InputConstants.Type.MOUSE.getOrCreate(event.getButton());
-                processInput(key, KEY_BINDING_MAP.getAll(key));
+                handleInput(InputConstants.Type.MOUSE.getOrCreate(event.getButton()));
             }
         }
 
-        private static void processInput(InputConstants.Key key, List<KeyMapping> mappingList) {
-            mappingList.stream()
-                    .filter(binding -> binding.isActiveAndMatches(key) && binding.getKeyModifier() == KeyModifier.getActiveModifier())
-                    .forEach(binding -> getBoundWidget(binding.getName()).ifPresent(WidgetKeybindCheckBox::handleClick));
+        private static void handleInput(InputConstants.Key key) {
+            Optional.ofNullable(in2checkbox.get(InputRecord.forKey(key))).ifPresent(WidgetKeybindCheckBox::handleClick);
+        }
+    }
+
+    private record InputRecord(int key, KeyModifier modifier, InputConstants.Type type) {
+        private static InputRecord forKeyMapping(KeyMapping keyMapping) {
+            return new InputRecord(keyMapping.getKey().getValue(), keyMapping.getKeyModifier(), keyMapping.getKey().getType());
         }
 
-        private static Optional<WidgetKeybindCheckBox> getBoundWidget(String key) {
-            return Optional.ofNullable(desc2checkbox.get(key));
+        private static InputRecord forKey(InputConstants.Key key) {
+            return new InputRecord(key.getValue(), KeyModifier.getActiveModifier(), key.getType());
         }
     }
 }

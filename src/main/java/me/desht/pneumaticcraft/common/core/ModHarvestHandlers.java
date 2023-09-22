@@ -22,9 +22,8 @@ import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.common.harvesting.*;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.level.block.*;
-import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.registries.*;
 
 import java.util.function.Supplier;
@@ -38,19 +37,12 @@ public class ModHarvestHandlers {
             .makeRegistry(() -> new RegistryBuilder<HarvestHandler>().disableSaving().disableSync());
 
     public static final RegistryObject<HarvestHandler> CROPS = register("crops", HarvestHandlerCrops::new);
-    public static final RegistryObject<HarvestHandler> NETHER_WART = register("nether_wart", () -> new HarvestHandlerCropLike(state ->
-            state.getBlock() == Blocks.NETHER_WART, NetherWartBlock.AGE, stack -> stack.getItem() == Items.NETHER_WART));
-    public static final RegistryObject<HarvestHandler> SWEET_BERRIES = register("sweet_berries", () -> new HarvestHandlerCropLike(state ->
-            state.getBlock() == Blocks.SWEET_BERRY_BUSH, SweetBerryBushBlock.AGE, stack -> stack.getItem() == Items.SWEET_BERRIES) {
-        @Override
-        protected BlockState withMinAge(BlockState state) {
-            return state.setValue(SweetBerryBushBlock.AGE, 1);
-        }
-    });
-    public static final RegistryObject<HarvestHandler> COCOA = register("cocoa_beans", () -> new HarvestHandlerCropLike(state ->
-                state.getBlock() == Blocks.COCOA, CocoaBlock.AGE, stack -> stack.getItem() == Items.COCOA_BEANS));
-    public static final RegistryObject<HarvestHandler> CACTUS = register("cactus_like", () -> new HarvestHandlerCactusLike(state -> state.getBlock() == Blocks.CACTUS || state.getBlock() == Blocks.SUGAR_CANE || state.getBlock() == Blocks.KELP_PLANT));
-    public static final RegistryObject<HarvestHandler> PUMPKIN = register("pumpkin_like", () -> new HarvestHandler.SimpleHarvestHandler(Blocks.PUMPKIN, Blocks.MELON));
+    public static final RegistryObject<HarvestHandler> NETHER_WART = register("nether_wart", HarvestHandlerCropLike.NetherWart::new);
+    public static final RegistryObject<HarvestHandler> SWEET_BERRIES = register("sweet_berries", HarvestHandlerCropLike.SweetBerry::new);
+    public static final RegistryObject<HarvestHandler> COCOA = register("cocoa_beans", HarvestHandlerCropLike.Cocoa::new);
+    public static final RegistryObject<HarvestHandler> CACTUS = register("cactus_like", HarvestHandlerCactusLike.VanillaCrops::new);
+    public static final RegistryObject<HarvestHandler> PUMPKIN = register("pumpkin_like",
+            () -> new HarvestHandler.SimpleHarvestHandler(Blocks.PUMPKIN, Blocks.MELON));
     public static final RegistryObject<HarvestHandler> LEAVES = register("leaves", HarvestHandlerLeaves::new);
     public static final RegistryObject<HarvestHandler> TREES = register("trees", HarvestHandlerTree::new);
 

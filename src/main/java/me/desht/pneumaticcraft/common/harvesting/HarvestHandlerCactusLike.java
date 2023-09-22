@@ -23,6 +23,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.function.Predicate;
@@ -44,4 +45,10 @@ public class HarvestHandlerCactusLike extends HarvestHandler {
         return false;
     }
 
+    public static class VanillaCrops extends HarvestHandlerCactusLike {
+        public VanillaCrops() {
+            super(state -> state.getBlock() == Blocks.CACTUS || state.getBlock() == Blocks.SUGAR_CANE
+                    || state.getBlock() == Blocks.KELP_PLANT || state.getBlock() == Blocks.BAMBOO);
+        }
+    }
 }
