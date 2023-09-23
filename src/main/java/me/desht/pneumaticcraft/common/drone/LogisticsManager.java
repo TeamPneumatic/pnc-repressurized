@@ -89,7 +89,7 @@ public class LogisticsManager {
                             // if we provided something to the requester, move the requester to last in its list
                             // so another requester gets the next delivery, effectively round robin.
                             List<AbstractLogisticsFrameEntity> requesters = logistics.get(priority);
-                            if (tasks.size() > task_count && requesters.size() > 0) {
+                            if (tasks.size() > task_count && requesters.size() > 1) {
                                 requesters.add(requesters.remove(requester_id));
                             }
                         }
