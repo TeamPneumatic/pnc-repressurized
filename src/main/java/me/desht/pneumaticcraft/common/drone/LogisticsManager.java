@@ -56,8 +56,8 @@ public class LogisticsManager {
         FluidStack fluid = holdingStack instanceof FluidStack ? (FluidStack) holdingStack : FluidStack.EMPTY;
         PriorityQueue<LogisticsTask> tasks = new PriorityQueue<>();
         for (int priority = logistics.size() - 1; priority >= 0; priority--) {
-            for (int requester_id = 0; requester_id < logistics.get(priority).size(); requester_id++) {
-                AbstractLogisticsFrameEntity requester = logistics.get(priority).get(requester_id);
+            for (int requesterId = 0; requesterId < logistics.get(priority).size(); requesterId++) {
+                AbstractLogisticsFrameEntity requester = logistics.get(priority).get(requesterId);
                 if (droneAccess && requester.isObstructed(PathComputationType.AIR)) continue;
                 for (int i = 0; i < priority; i++) {
                     for (AbstractLogisticsFrameEntity provider : logistics.get(i)) {
@@ -83,14 +83,14 @@ public class LogisticsManager {
                             // it could be that the drone is carrying some item or fluid it can't drop off right now
                             // however it might still be able to transfer the other resource type (i.e. transfer items if
                             // it's holding a fluid, and vice versa)
-                            int task_count = tasks.size();
+                            int taskCount = tasks.size();
                             tryProvide(provider, requester, tasks, item.isEmpty(), fluid.isEmpty());
 
                             // if we provided something to the requester, move the requester to last in its list
                             // so another requester gets the next delivery, effectively round robin.
                             List<AbstractLogisticsFrameEntity> requesters = logistics.get(priority);
-                            if (tasks.size() > task_count && requesters.size() > 1) {
-                                requesters.add(requesters.remove(requester_id));
+                            if (tasks.size() > taskCount && requesters.size() > 1) {
+                                requesters.add(requesters.remove(requesterId));
                             }
                         }
                     }
