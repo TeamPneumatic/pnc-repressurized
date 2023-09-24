@@ -21,6 +21,7 @@ import com.blamejared.crafttweaker.api.CraftTweakerAPI;
 import com.blamejared.crafttweaker.api.action.base.IRuntimeAction;
 import com.blamejared.crafttweaker.api.annotation.ZenRegister;
 import com.blamejared.crafttweaker.api.fluid.CTFluidIngredient;
+import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.common.XPFluidManager;
 import me.desht.pneumaticcraft.common.thirdparty.crafttweaker.CTUtils;
 import org.openzen.zencode.java.ZenCodeType;
@@ -59,6 +60,11 @@ public class XPFluid {
             } else {
                 return "Registering XP fluid " + fluidIngredient.getCommandString() + " with mB->XP ratio: " + ratio;
             }
+        }
+
+        @Override
+        public String systemName() {
+            return PneumaticRegistry.MOD_ID;
         }
     }
 }

@@ -101,6 +101,8 @@ repositories {
 			includeGroup "blusunrize.immersiveengineering"
 			includeGroup "com.blamejared.crafttweaker"
 			includeGroup "net.darkhax.gamestages"
+			includeGroup "net.darkhax.bookshelf"
+			includeGroup "org.openzen.zencode"
 		}
 	}
 	maven {
@@ -155,9 +157,9 @@ dependencies {
 	implementation fg.deobf("blusunrize.immersiveengineering:ImmersiveEngineering:${immersive_engineering_version}")
 	compileOnly fg.deobf("mekanism:Mekanism:${mekanism_version}:api")
 	//runtimeOnly fg.deobf("mekanism:Mekanism:${mekanism_version}")
-	compileOnly fg.deobf("com.simibubi.create:create-1.20.1:${create_version}:slim") { transitive = false }
-	compileOnly fg.deobf("com.jozufozu.flywheel:flywheel-forge-1.20.1:${flywheel_version}")
-	compileOnly fg.deobf("com.tterrag.registrate:Registrate:${registrate_version}")
+	implementation fg.deobf("com.simibubi.create:create-1.20.1:${create_version}:slim") { transitive = false }
+	implementation fg.deobf("com.jozufozu.flywheel:flywheel-forge-1.20.1:${flywheel_version}")
+	implementation fg.deobf("com.tterrag.registrate:Registrate:${registrate_version}")
 //	implementation fg.deobf("curse.maven:create-328085:${create_curse_id}")
 	implementation fg.deobf("curse.maven:jade-324717:${jade_curse_id}")
 	compileOnly fg.deobf("curse.maven:cofh_core-69162:${cofh_core_curse_id}")
@@ -167,8 +169,8 @@ dependencies {
 	compileOnly fg.deobf("curse.maven:thermal_innovation-291737:${thermal_innovation_curse_id}")
 	compileOnly fg.deobf("curse.maven:thermal_locomotion-406959:${thermal_locomotion_curse_id}")
 
-	compileOnly fg.deobf("com.blamejared.crafttweaker:CraftTweaker-forge-1.19.2:${crafttweaker_version}")
-	compileOnly fg.deobf("net.darkhax.gamestages:GameStages-Forge-1.19.4:${gamestages_version}")
+	compileOnly fg.deobf("com.blamejared.crafttweaker:CraftTweaker-forge-1.20.1:${crafttweaker_version}")
+	compileOnly fg.deobf("net.darkhax.gamestages:GameStages-Forge-1.20.1:${gamestages_version}")
 
 	//compileOnly fg.deobf("appeng:appliedenergistics2:${ae2_version}:api")
 	//runtimeOnly fg.deobf("appeng:appliedenergistics2:${ae2_version}")

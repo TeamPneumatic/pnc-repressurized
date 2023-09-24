@@ -50,6 +50,6 @@ public class CTUtils {
 
     public static FluidIngredient toFluidIngredient(CTFluidIngredient ingredient) {
         // TODO is this OK?
-        return ingredient.mapTo(FluidIngredient::of, (tag, amount) -> FluidIngredient.of(amount, tag), FluidIngredient::ofFluidStream);
+        return ingredient.mapTo(fStack -> FluidIngredient.of((FluidStack) fStack.getImmutableInternal()), (tag, amount) -> FluidIngredient.of(amount, tag), FluidIngredient::ofFluidStream);
     }
 }
