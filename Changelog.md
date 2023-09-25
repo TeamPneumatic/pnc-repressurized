@@ -6,6 +6,20 @@ Changes are in reverse chronological order; newest changes at the top.
 
 # Minecraft 1.19.2
 
+## [4.3.8]
+
+### Fixed
+* Added missing manual page for the Reinforced Air Canister
+* Fixed a client disconnect/crash when right-clicking certain Logistics frames with the Logistics Configurator
+* Logistics Requester frames now round-robin requests more intelligently when multiple frames are requesting the same resource into their inventories
+  * Thanks @johalun
+* Fixed Jackhammer not breaking blocks when Shift was held
+  * Correct behaviour is to break only the focused block (assuming the Jackhammer is in multiblock mode)
+* Suppressed server log message about missing villager trades when scanning for Amadron trades
+  * Message was annoying, and there actually valid situations where a villager entity might have trades of a particular level
+* Fixed issue with Omnidirectional and Liquid Hoppers not paying attention to installed upgrades when placed back down after breaking
+  * Input direction was also not always correctly remembered
+
 ## [4.3.7]
 
 ### Added
