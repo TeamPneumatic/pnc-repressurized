@@ -6,6 +6,20 @@ Changes are in reverse chronological order; newest changes at the top.
 
 # Minecraft 1.20.1
 
+## [6.0.8]
+
+### Fixed
+* Added missing manual page for the Reinforced Air Canister
+* Fixed a client disconnect/crash when right-clicking certain Logistics frames with the Logistics Configurator
+* Logistics Requester frames now round-robin requests more intelligently when multiple frames are requesting the same resource into their inventories
+  * Thanks @johalun
+* Fixed Jackhammer not breaking blocks when Shift was held
+  * Correct behaviour is to break only the focused block (assuming the Jackhammer is in multiblock mode)
+* Fixed Harvesting drone widget not recognising Bamboo as harvestable
+  * This 1.19.2 feature got missed in the port to 1.20
+* Fixed Minigun basic ammo wrongly using the armor-piercing damage source
+* Fixed Minigun damage sources have a null direct source entity (meaning the shooter couldn't be reliably identified for aggro or protection purposes)
+
 ## [6.0.7]
 
 ### Fixed
