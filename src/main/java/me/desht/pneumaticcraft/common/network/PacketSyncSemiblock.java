@@ -49,7 +49,7 @@ public class PacketSyncSemiblock {
     PacketSyncSemiblock(FriendlyByteBuf buffer) {
         this.entityID = buffer.readInt();
         int size = buffer.readVarInt();
-        this.payload = new FriendlyByteBuf(Unpooled.buffer());
+        this.payload = new FriendlyByteBuf(Unpooled.buffer(size));
         buffer.readBytes(this.payload, size);
     }
 
