@@ -29,7 +29,9 @@ public class ProgWidgetItemFilterGhost implements IGhostIngredientHandler<ProgWi
     @Override
     public <I> List<Target<I>> getTargets(ProgWidgetItemFilterScreen gui, I ingredient, boolean doStart) {
         //noinspection unchecked
-        return gui.itemX >= 0 ? Collections.singletonList((Target<I>) new ItemTarget(gui)) : Collections.emptyList();
+        return gui.itemX >= 0 && ingredient instanceof ItemStack ?
+                Collections.singletonList((Target<I>) new ItemTarget(gui)) :
+                Collections.emptyList();
     }
 
     @Override
