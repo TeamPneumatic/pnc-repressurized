@@ -95,6 +95,7 @@ public enum ThirdPartyManager {
         ThirdPartyConfig.setupDefaults(thirdPartyClasses.keySet());
 
         List<String> modNames = new ArrayList<>();
+        thirdPartyMods.add(GENERIC);
         for (Map.Entry<String, Supplier<? extends IThirdParty>> entry : thirdPartyClasses.entrySet()) {
             if (ThirdPartyConfig.isEnabled(entry.getKey()) && ModList.get().isLoaded(entry.getKey())) {
                 IThirdParty mod = entry.getValue().get();
@@ -110,7 +111,6 @@ public enum ThirdPartyManager {
     public void preInit() {
         discoverMods();
 
-        GENERIC.preInit();
         for (IThirdParty thirdParty : thirdPartyMods) {
             try {
                 thirdParty.preInit();
@@ -121,7 +121,6 @@ public enum ThirdPartyManager {
     }
 
     public void init() {
-        GENERIC.init();
         for (IThirdParty thirdParty : thirdPartyMods) {
             try {
                 thirdParty.init();
@@ -132,7 +131,6 @@ public enum ThirdPartyManager {
     }
 
     public void postInit() {
-        GENERIC.postInit();
         for (IThirdParty thirdParty : thirdPartyMods) {
             try {
                 thirdParty.postInit();
@@ -143,7 +141,6 @@ public enum ThirdPartyManager {
     }
 
     public void clientInit() {
-        GENERIC.clientInit();
         for (IThirdParty thirdParty : thirdPartyMods) {
             try {
                 thirdParty.clientInit();

@@ -70,7 +70,6 @@ import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.event.lifecycle.FMLConstructModEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
 @Mod(Names.MOD_ID)
@@ -84,7 +83,6 @@ public class PneumaticCraftRepressurized {
 
         DistExecutor.safeRunWhenOn(Dist.CLIENT, () -> ClientSetup::onModConstruction);
 
-        modBus.addListener(this::modConstructSetup);
         modBus.addListener(this::commonSetup);
 
         forgeBus.addListener(this::serverStarted);
@@ -106,6 +104,8 @@ public class PneumaticCraftRepressurized {
         forgeBus.register(GPSAreaToolItem.EventHandler.class);
         forgeBus.register(HackEventListener.getInstance());
         forgeBus.addListener(VillageStructures::addMechanicHouse);
+
+        ThirdPartyManager.instance().preInit();
     }
 
     private void registerAllDeferredRegistryObjects(IEventBus modBus) {
@@ -132,10 +132,6 @@ public class PneumaticCraftRepressurized {
         ModHoeHandlers.HOE_HANDLERS_DEFERRED.register(modBus);
         ModProgWidgets.PROG_WIDGETS_DEFERRED.register(modBus);
         ModUpgrades.UPGRADES_DEFERRED.register(modBus);
-    }
-
-    private void modConstructSetup(FMLConstructModEvent event) {
-        ThirdPartyManager.instance().preInit();
     }
 
     private void commonSetup(FMLCommonSetupEvent event) {

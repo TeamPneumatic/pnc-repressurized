@@ -19,7 +19,9 @@ package me.desht.pneumaticcraft.common.thirdparty;
 
 public interface IThirdParty {
     /**
-     * Called on both client and server after mods have loaded but before registry events, in the mod creation thread.
+     * Called on both client and server in the mod creation thread from the mod constructor. Shouldn't do anything other
+     * than add event handlers here, or set simple availability flags. No guarantee that the third party mod's
+     * constructor has run yet.
      */
     default void preInit() {}
 
