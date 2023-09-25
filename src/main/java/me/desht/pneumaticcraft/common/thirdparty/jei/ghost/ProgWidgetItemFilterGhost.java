@@ -18,6 +18,7 @@
 package me.desht.pneumaticcraft.common.thirdparty.jei.ghost;
 
 import me.desht.pneumaticcraft.client.gui.programmer.ProgWidgetItemFilterScreen;
+import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.handlers.IGhostIngredientHandler;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import net.minecraft.client.renderer.Rect2i;
@@ -29,7 +30,9 @@ import java.util.List;
 public class ProgWidgetItemFilterGhost implements IGhostIngredientHandler<ProgWidgetItemFilterScreen> {
     @Override
     public <I> List<Target<I>> getTargetsTyped(ProgWidgetItemFilterScreen gui, ITypedIngredient<I> ingredient, boolean doStart) {
-        return gui.itemX >= 0 ? Collections.singletonList((Target<I>) new ItemTarget(gui)) : Collections.emptyList();
+        return gui.itemX >= 0 && ingredient.getType() == VanillaTypes.ITEM_STACK ?
+                Collections.singletonList((Target<I>) new ItemTarget(gui)) :
+                Collections.emptyList();
     }
 
     @Override
