@@ -41,6 +41,8 @@ public class LogisticsManager {
 
     private final List<List<AbstractLogisticsFrameEntity>> logistics = new ArrayList<>();
 
+    private boolean droneAccess;
+
     public LogisticsManager() {
         for (int i = 0; i < N_PRIORITIES; i++) {
             logistics.add(new ArrayList<>());
@@ -52,16 +54,23 @@ public class LogisticsManager {
     }
 
     public PriorityQueue<LogisticsTask> getTasks(Object holdingStack, boolean droneAccess) {
+        this.droneAccess = droneAccess;
+
         ItemStack item = holdingStack instanceof ItemStack ? (ItemStack) holdingStack : ItemStack.EMPTY;
         FluidStack fluid = holdingStack instanceof FluidStack ? (FluidStack) holdingStack : FluidStack.EMPTY;
         PriorityQueue<LogisticsTask> tasks = new PriorityQueue<>();
         for (int priority = logistics.size() - 1; priority >= 0; priority--) {
             for (int requesterId = 0; requesterId < logistics.get(priority).size(); requesterId++) {
                 AbstractLogisticsFrameEntity requester = logistics.get(priority).get(requesterId);
-                if (droneAccess && requester.isObstructed(PathComputationType.AIR)) continue;
+                if (droneAccess && requester.isObstructed(PathComputationType.AIR)) {
+                    continue;
+                }
                 for (int i = 0; i < priority; i++) {
-                    for (AbstractLogisticsFrameEntity provider : logistics.get(i)) {
-                        if (droneAccess && provider.isObstructed(PathComputationType.AIR)) continue;
+                    for (int providerId = 0; providerId < logistics.get(i).size(); providerId++) {
+                        AbstractLogisticsFrameEntity provider = logistics.get(i).get(providerId);
+                        if (droneAccess && provider.isObstructed(PathComputationType.AIR)) {
+                            continue;
+                        }
                         if (provider.shouldProvideTo(priority)) {
                             if (!item.isEmpty()) {
                                 int requestedAmount = getRequestedAmount(requester, item, false);
@@ -83,14 +92,16 @@ public class LogisticsManager {
                             // it could be that the drone is carrying some item or fluid it can't drop off right now
                             // however it might still be able to transfer the other resource type (i.e. transfer items if
                             // it's holding a fluid, and vice versa)
-                            int taskCount = tasks.size();
                             tryProvide(provider, requester, tasks, item.isEmpty(), fluid.isEmpty());
 
-                            // if we provided something to the requester, move the requester to last in its list
-                            // so another requester gets the next delivery, effectively round robin.
-                            List<AbstractLogisticsFrameEntity> requesters = logistics.get(priority);
-                            if (tasks.size() > taskCount && requesters.size() > 1) {
-                                requesters.add(requesters.remove(requesterId));
+                            // if we provided something to the requester, move the requester and provider to last in their
+                            // lists so another frame gets selected first, effectively round-robin.
+                            if (!tasks.isEmpty()) {
+                                if (logistics.get(priority).size() > 1)
+                                    logistics.get(priority).add(logistics.get(priority).remove(requesterId));
+                                if (logistics.get(i).size() > 1)
+                                    logistics.get(i).add(logistics.get(i).remove(providerId));
+                                return tasks;
                             }
                         }
                     }
@@ -115,6 +126,11 @@ public class LogisticsManager {
                             ItemStack stack = providingStack.copy();
                             stack.setCount(requestedAmount);
                             tasks.add(new LogisticsTask(provider, requester, stack));
+                            if (droneAccess) {
+                                // a logistics drone just handles the first applicable task, so we can bail here
+                                // - but logistics modules process all applicable tasks!
+                                return;
+                            }
                         }
                     }
                 }
