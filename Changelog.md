@@ -6,6 +6,13 @@ Changes are in reverse chronological order; newest changes at the top.
 
 # Minecraft 1.20.1
 
+## [6.0.9]
+
+### Added
+* Added new API methods to check and set the enablement of Pneumatic Armor upgrades
+* If Pneumatic Boots are on (vanilla) cooldown, flight effects are suppressed
+  * PNC doesn't do this itself, but it adds a hook for other mods to use...
+
 ## [6.0.8]
 
 ### Fixed
