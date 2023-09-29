@@ -18,6 +18,7 @@
 package me.desht.pneumaticcraft.common.pneumatic_armor.handlers;
 
 import me.desht.pneumaticcraft.api.pneumatic_armor.BaseArmorUpgradeHandler;
+import me.desht.pneumaticcraft.api.pneumatic_armor.BuiltinArmorUpgrades;
 import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorExtensionData;
 import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorHandler;
 import me.desht.pneumaticcraft.api.upgrade.PNCUpgrade;
@@ -27,12 +28,11 @@ import net.minecraft.world.entity.EquipmentSlot;
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 public class CoreComponentsHandler extends BaseArmorUpgradeHandler<IArmorExtensionData> {
-    public static final ResourceLocation ID = RL("core_components");
     public static final ResourceLocation MESSAGE_ID = RL("core_components_message");
 
     @Override
     public ResourceLocation getID() {
-        return ID;
+        return BuiltinArmorUpgrades.CORE_COMPONENTS;
     }
 
     @Override

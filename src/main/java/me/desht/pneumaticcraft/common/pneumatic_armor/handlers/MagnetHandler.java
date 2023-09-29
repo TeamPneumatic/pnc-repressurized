@@ -19,6 +19,7 @@ package me.desht.pneumaticcraft.common.pneumatic_armor.handlers;
 
 import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.api.pneumatic_armor.BaseArmorUpgradeHandler;
+import me.desht.pneumaticcraft.api.pneumatic_armor.BuiltinArmorUpgrades;
 import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorExtensionData;
 import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorHandler;
 import me.desht.pneumaticcraft.api.upgrade.PNCUpgrade;
@@ -37,14 +38,11 @@ import net.minecraft.world.phys.Vec3;
 
 import java.util.List;
 
-import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
-
 public class MagnetHandler extends BaseArmorUpgradeHandler<IArmorExtensionData> {
-    private static final ResourceLocation ID = RL("magnet");
 
     @Override
     public ResourceLocation getID() {
-        return ID;
+        return BuiltinArmorUpgrades.MAGNET;
     }
 
     @Override

@@ -18,12 +18,14 @@
 package me.desht.pneumaticcraft.common.pneumatic_armor.handlers;
 
 import me.desht.pneumaticcraft.api.pneumatic_armor.BaseArmorUpgradeHandler;
+import me.desht.pneumaticcraft.api.pneumatic_armor.BuiltinArmorUpgrades;
 import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorExtensionData;
 import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorHandler;
 import me.desht.pneumaticcraft.api.upgrade.PNCUpgrade;
 import me.desht.pneumaticcraft.client.sound.MovingSounds;
 import me.desht.pneumaticcraft.common.advancements.AdvancementTriggers;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
+import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.item.PneumaticArmorItem;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketPlayMovingSound;
@@ -52,16 +54,13 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 
 import java.util.function.Supplier;
 
-import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
-
 public class JetBootsHandler extends BaseArmorUpgradeHandler<JetBootsHandler.JetBootsLocalState> {
     public static final int BUILDER_MODE_LEVEL = 3;  // tier needed for builder mode
     public static final int STABILIZERS_LEVEL = 4;  // tier needed for flight stabilizers
-    public static final ResourceLocation ID = RL("jet_boots");
 
     @Override
     public ResourceLocation getID() {
-        return ID;
+        return BuiltinArmorUpgrades.JET_BOOTS;
     }
 
     @Override
@@ -86,6 +85,10 @@ public class JetBootsHandler extends BaseArmorUpgradeHandler<JetBootsHandler.Jet
 
     @Override
     public void tick(ICommonArmorHandler commonArmorHandler, boolean enabled) {
+        if (commonArmorHandler.getPlayer().getCooldowns().isOnCooldown(ModItems.PNEUMATIC_BOOTS.get())) {
+            return;  // putting the boots on cooldown is a way for mods to suppress jet boots
+        }
+
         int jetbootsCount = commonArmorHandler.getUpgradeCount(EquipmentSlot.FEET, ModUpgrades.JET_BOOTS.get());
         if (jetbootsCount == 0) return;
 

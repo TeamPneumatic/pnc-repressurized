@@ -18,6 +18,7 @@
 package me.desht.pneumaticcraft.common.pneumatic_armor.handlers;
 
 import me.desht.pneumaticcraft.api.pneumatic_armor.BaseArmorUpgradeHandler;
+import me.desht.pneumaticcraft.api.pneumatic_armor.BuiltinArmorUpgrades;
 import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorExtensionData;
 import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorHandler;
 import me.desht.pneumaticcraft.api.upgrade.PNCUpgrade;
@@ -31,16 +32,12 @@ import net.minecraftforge.common.ForgeMod;
 
 import java.util.UUID;
 
-import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
-
 public class StepAssistHandler extends BaseArmorUpgradeHandler<IArmorExtensionData> {
     private static final UUID STEP_ASSIST_MODIFIER_ID = UUID.fromString("30bc8c6e-4f40-41e5-8b11-4001a9a85afb");
 
-    private static final ResourceLocation ID = RL("step_assist");
-
     @Override
     public ResourceLocation getID() {
-        return ID;
+        return BuiltinArmorUpgrades.STEP_ASSIST;
     }
 
     @Override

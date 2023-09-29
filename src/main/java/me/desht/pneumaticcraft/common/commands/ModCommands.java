@@ -20,6 +20,7 @@ package me.desht.pneumaticcraft.common.commands;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.arguments.ArgumentType;
+import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -28,8 +29,12 @@ import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import com.mojang.datafixers.util.Either;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.lib.Names;
+import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorUpgradeHandler;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSetGlobalVariable;
+import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
+import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
+import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorRegistry;
 import me.desht.pneumaticcraft.common.util.GlobalPosHelper;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -40,6 +45,7 @@ import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.arguments.EntityArgument;
+import net.minecraft.commands.arguments.ResourceLocationArgument;
 import net.minecraft.commands.arguments.coordinates.BlockPosArgument;
 import net.minecraft.commands.arguments.item.ItemArgument;
 import net.minecraft.commands.arguments.item.ItemInput;
@@ -58,10 +64,7 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.RegistryObject;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
@@ -125,7 +128,38 @@ public class ModCommands {
                                 )
                         )
                 )
+                .then(literal("armor_upgrade")
+                        .then(argument("upgrade", ResourceLocationArgument.id())
+                                .suggests((ctx, builder) -> suggestUpgradeIDs(builder))
+                                .then(argument("enabled", BoolArgumentType.bool())
+                                        .executes(ctx -> setArmorUpgrade(ctx.getSource(), ResourceLocationArgument.getId(ctx, "upgrade"), BoolArgumentType.getBool(ctx, "enabled")))
+                                )
+                        )
+                )
         );
+    }
+
+    private static int setArmorUpgrade(CommandSourceStack source, ResourceLocation id, boolean enabled) throws CommandSyntaxException {
+        Optional<IArmorUpgradeHandler<?>> upgrade = CommonArmorRegistry.getInstance().getArmorUpgradeHandler(id);
+
+        if (upgrade.isPresent()) {
+            CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(source.getPlayerOrException());
+            if (handler.upgradeUsable(upgrade.get(), false)) {
+                handler.setUpgradeEnabled(upgrade.get(), enabled);
+                source.sendSuccess(() -> Component.literal(id + " enabled = " + enabled), false);
+                return 1;
+            } else {
+                source.sendFailure(Component.literal("Upgrade " + id + " is not inserted!").withStyle(ChatFormatting.RED));
+                return 0;
+            }
+        } else {
+            source.sendFailure(Component.literal("Unknown upgrade ID: " + id).withStyle(ChatFormatting.RED));
+            return 0;
+        }
+    }
+
+    private static CompletableFuture<Suggestions> suggestUpgradeIDs(SuggestionsBuilder builder) {
+        return SharedSuggestionProvider.suggest(ArmorUpgradeRegistry.getInstance().getKnownUpgradeIds(), builder);
     }
 
     private static CompletableFuture<Suggestions> suggestVarNames(CommandContext<CommandSourceStack> ctx, SuggestionsBuilder builder) {

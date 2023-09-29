@@ -18,6 +18,7 @@
 package me.desht.pneumaticcraft.common.pneumatic_armor.handlers;
 
 import me.desht.pneumaticcraft.api.pneumatic_armor.BaseArmorUpgradeHandler;
+import me.desht.pneumaticcraft.api.pneumatic_armor.BuiltinArmorUpgrades;
 import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorExtensionData;
 import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorHandler;
 import me.desht.pneumaticcraft.api.upgrade.PNCUpgrade;
@@ -36,18 +37,15 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
-
-public class SpeedBoostHandler extends BaseArmorUpgradeHandler<IArmorExtensionData> {
+public class RunSpeedHandler extends BaseArmorUpgradeHandler<IArmorExtensionData> {
     private static final Vec3 FORWARD = new Vec3(0, 0, 1);
-    private static final ResourceLocation ID = RL("run_speed");
 
     // track player movement across ticks on the server - very transient, a capability would be overkill here
     private static final Map<UUID,Vec3> MOVE_MAP = new HashMap<>();
 
     @Override
     public ResourceLocation getID() {
-        return ID;
+        return BuiltinArmorUpgrades.RUN_SPEED;
     }
 
     @Override

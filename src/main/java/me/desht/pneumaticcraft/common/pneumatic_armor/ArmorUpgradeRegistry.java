@@ -19,13 +19,14 @@ package me.desht.pneumaticcraft.common.pneumatic_armor;
 
 import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.api.lib.Names;
+import me.desht.pneumaticcraft.api.pneumatic_armor.BuiltinArmorUpgrades;
 import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorUpgradeHandler;
-import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.CoreComponentsHandler;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
 import org.apache.commons.lang3.Validate;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -37,6 +38,8 @@ public enum ArmorUpgradeRegistry {
     private final List<List<IArmorUpgradeHandler<?>>> upgradeHandlers;
     private final Map<ResourceLocation, IArmorUpgradeHandler<?>> byID = new ConcurrentHashMap<>();
     private boolean isFrozen = false;
+
+    private final List<String> knownUpgradeIds = new ArrayList<>();
 
     public static final EquipmentSlot[] ARMOR_SLOTS = new EquipmentSlot[] {
             EquipmentSlot.HEAD,
@@ -92,9 +95,24 @@ public enum ArmorUpgradeRegistry {
         isFrozen = true;
     }
 
+    public List<String> getKnownUpgradeIds() {
+        if (!isFrozen()) {
+            return List.of();
+        }
+
+        if (knownUpgradeIds.isEmpty()) {
+            for (EquipmentSlot slot : ARMOR_SLOTS) {
+                getInstance().getHandlersForSlot(slot).forEach(u -> knownUpgradeIds.add(u.getID().toString()));
+            }
+            knownUpgradeIds.sort(String::compareTo);
+        }
+
+        return Collections.unmodifiableList(knownUpgradeIds);
+    }
+
     private int compareHandlerID(ResourceLocation id1, ResourceLocation id2) {
         // special case: core components always first
-        if (id1.equals(CoreComponentsHandler.ID)) return -1;
+        if (id1.equals(BuiltinArmorUpgrades.CORE_COMPONENTS)) return -1;
         // special case: PNC handler come before 3rd party handlers
         if (id1.getNamespace().equals(Names.MOD_ID) && !id2.getNamespace().equals(Names.MOD_ID)) return -1;
         return id1.compareTo(id2);

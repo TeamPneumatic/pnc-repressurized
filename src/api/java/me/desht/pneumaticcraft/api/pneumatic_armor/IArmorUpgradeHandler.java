@@ -41,7 +41,8 @@ public interface IArmorUpgradeHandler<T extends IArmorExtensionData> {
     String UPGRADE_PREFIX = "pneumaticcraft.armor.upgrade.";
 
     /**
-     * Get a unique ID for this upgrade handler.
+     * Get a unique ID for this upgrade handler. You can use this ID to retrieve the handler object with
+     * {@link ICommonArmorRegistry#getArmorUpgradeHandler(ResourceLocation)}.
      *
      * @return a unique resource location
      */

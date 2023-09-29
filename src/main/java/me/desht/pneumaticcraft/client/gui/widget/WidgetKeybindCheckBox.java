@@ -137,7 +137,7 @@ public class WidgetKeybindCheckBox extends WidgetCheckBox {
         return false;
     }
 
-    private boolean handleClick() {
+    public boolean handleClick() {
         return handleClick(0, 0, 0);
     }
 

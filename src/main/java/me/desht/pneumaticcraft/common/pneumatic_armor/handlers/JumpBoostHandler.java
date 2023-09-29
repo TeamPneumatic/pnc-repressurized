@@ -18,6 +18,7 @@
 package me.desht.pneumaticcraft.common.pneumatic_armor.handlers;
 
 import me.desht.pneumaticcraft.api.pneumatic_armor.BaseArmorUpgradeHandler;
+import me.desht.pneumaticcraft.api.pneumatic_armor.BuiltinArmorUpgrades;
 import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorExtensionData;
 import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorHandler;
 import me.desht.pneumaticcraft.api.upgrade.PNCUpgrade;
@@ -25,14 +26,11 @@ import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
 
-import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
-
 public class JumpBoostHandler extends BaseArmorUpgradeHandler<IArmorExtensionData> {
-    private static final ResourceLocation ID = RL("jump_boost");
 
     @Override
     public ResourceLocation getID() {
-        return ID;
+        return BuiltinArmorUpgrades.JUMP_BOOST;
     }
 
     @Override

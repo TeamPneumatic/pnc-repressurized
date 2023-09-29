@@ -22,9 +22,9 @@ import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IGuiScreen;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.options.SpeedBoostOptions;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
-import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.SpeedBoostHandler;
+import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.RunSpeedHandler;
 
-public class SpeedBoostClientHandler extends IArmorUpgradeClientHandler.SimpleToggleableHandler<SpeedBoostHandler> {
+public class SpeedBoostClientHandler extends IArmorUpgradeClientHandler.SimpleToggleableHandler<RunSpeedHandler> {
     public SpeedBoostClientHandler() {
         super(CommonUpgradeHandlers.runSpeedHandler);
     }

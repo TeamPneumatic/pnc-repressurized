@@ -30,9 +30,12 @@ import me.desht.pneumaticcraft.client.pneumatic_armor.ClientArmorRegistry;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.item.PneumaticArmorItem;
+import me.desht.pneumaticcraft.common.network.NetworkHandler;
+import me.desht.pneumaticcraft.common.network.PacketToggleArmorFeature;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -375,5 +378,21 @@ public class CommonArmorHandler implements ICommonArmorHandler {
         int idx = upgrade.getIndex();
         return isArmorEnabled() && isArmorReady(slot) && hasMinPressure(slot)
                 && isUpgradeInserted(slot, idx) && (!mustBeActive || isUpgradeEnabled(slot, idx));
+    }
+
+    @Override
+    public boolean isUpgradeEnabled(IArmorUpgradeHandler<?> upgrade) {
+        return isUpgradeEnabled(upgrade.getEquipmentSlot(), upgrade.getIndex());
+    }
+
+    @Override
+    public void setUpgradeEnabled(IArmorUpgradeHandler<?> upgrade, boolean enabled) {
+        if (isUpgradeEnabled(upgrade) != enabled && upgradeUsable(upgrade, false)) {
+            if (player.level().isClientSide) {
+                ClientUtils.setArmorUpgradeEnabled(upgrade.getEquipmentSlot(), (byte) upgrade.getIndex(), enabled);
+            } else if (player instanceof ServerPlayer sp) {
+                NetworkHandler.sendToPlayer(new PacketToggleArmorFeature(upgrade.getEquipmentSlot(), (byte) upgrade.getIndex(), enabled), sp);
+            }
+        }
     }
 }

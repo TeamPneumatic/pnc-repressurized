@@ -18,6 +18,7 @@
 package me.desht.pneumaticcraft.common.pneumatic_armor.handlers;
 
 import me.desht.pneumaticcraft.api.pneumatic_armor.BaseArmorUpgradeHandler;
+import me.desht.pneumaticcraft.api.pneumatic_armor.BuiltinArmorUpgrades;
 import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorExtensionData;
 import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorHandler;
 import me.desht.pneumaticcraft.api.upgrade.PNCUpgrade;
@@ -26,15 +27,12 @@ import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
 
-import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
-
 public class EntityTrackerHandler extends BaseArmorUpgradeHandler<IArmorExtensionData> {
-    public static final ResourceLocation ID = RL("entity_tracker");
     private static final float ENTITY_TRACKING_RANGE = 16F;
 
     @Override
     public ResourceLocation getID() {
-        return ID;
+        return BuiltinArmorUpgrades.ENTITY_TRACKER;
     }
 
     @Override

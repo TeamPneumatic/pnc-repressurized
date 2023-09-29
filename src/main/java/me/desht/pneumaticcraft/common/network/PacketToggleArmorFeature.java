@@ -17,6 +17,7 @@
 
 package me.desht.pneumaticcraft.common.network;
 
+import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.item.PneumaticArmorItem;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
@@ -28,8 +29,10 @@ import net.minecraftforge.network.NetworkEvent;
 import java.util.function.Supplier;
 
 /**
- * Received on: SERVER
+ * Received on: BOTH
  * Sent by client to switch an armor module on or off
+ * Sent by server to initiate the process on the client (client will send this packet back in response if the module
+ *   was actually changed)
  */
 public class PacketToggleArmorFeature {
     private final byte featureIndex;
@@ -55,16 +58,20 @@ public class PacketToggleArmorFeature {
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> {
-            Player player = ctx.get().getSender();
-            if (player != null && featureIndex >= 0
-                    && featureIndex < ArmorUpgradeRegistry.getInstance().getHandlersForSlot(slot).size()
-                    && (PneumaticArmorItem.isPneumaticArmorPiece(player, slot) || slot == EquipmentSlot.HEAD && featureIndex == 0))
-            {
-                CommonArmorHandler.getHandlerForPlayer(player).setUpgradeEnabled(slot, featureIndex, state);
-            }
-        });
+        if (ctx.get().getSender() != null) {
+            // received on server
+            ctx.get().enqueueWork(() -> {
+                Player player = ctx.get().getSender();
+                if (player != null && featureIndex >= 0
+                        && featureIndex < ArmorUpgradeRegistry.getInstance().getHandlersForSlot(slot).size()
+                        && (PneumaticArmorItem.isPneumaticArmorPiece(player, slot) || slot == EquipmentSlot.HEAD && featureIndex == 0)) {
+                    CommonArmorHandler.getHandlerForPlayer(player).setUpgradeEnabled(slot, featureIndex, state);
+                }
+            });
+        } else {
+            // received on client
+            ctx.get().enqueueWork(() -> ClientUtils.setArmorUpgradeEnabled(slot, featureIndex, state));
+        }
         ctx.get().setPacketHandled(true);
     }
-
 }

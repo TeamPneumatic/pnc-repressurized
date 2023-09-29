@@ -18,6 +18,7 @@
 package me.desht.pneumaticcraft.common.pneumatic_armor.handlers;
 
 import me.desht.pneumaticcraft.api.pneumatic_armor.BaseArmorUpgradeHandler;
+import me.desht.pneumaticcraft.api.pneumatic_armor.BuiltinArmorUpgrades;
 import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorExtensionData;
 import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorHandler;
 import me.desht.pneumaticcraft.api.upgrade.PNCUpgrade;
@@ -31,17 +32,13 @@ import net.minecraftforge.common.ForgeMod;
 
 import java.util.UUID;
 
-import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
-
 public class ReachDistanceHandler extends BaseArmorUpgradeHandler<IArmorExtensionData> {
     private static final UUID REACH_DIST_BOOST_ID = UUID.fromString("c9dce729-70c4-4c0f-95d4-31d2e50bc826");
     public static final AttributeModifier REACH_DIST_BOOST = new AttributeModifier(REACH_DIST_BOOST_ID, "Pneumatic Reach Boost", 3.5D, AttributeModifier.Operation.ADDITION);
 
-    private static final ResourceLocation ID = RL("reach_distance");
-
     @Override
     public ResourceLocation getID() {
-        return ID;
+        return BuiltinArmorUpgrades.REACH_DISTANCE;
     }
 
     @Override

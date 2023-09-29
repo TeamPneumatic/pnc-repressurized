@@ -18,6 +18,7 @@
 package me.desht.pneumaticcraft.common.pneumatic_armor.handlers;
 
 import me.desht.pneumaticcraft.api.pneumatic_armor.BaseArmorUpgradeHandler;
+import me.desht.pneumaticcraft.api.pneumatic_armor.BuiltinArmorUpgrades;
 import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorExtensionData;
 import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorHandler;
 import me.desht.pneumaticcraft.api.pneumatic_armor.hacking.IHackableBlock;
@@ -40,14 +41,11 @@ import net.minecraft.world.level.BlockGetter;
 
 import java.util.function.Supplier;
 
-import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
-
 public class HackHandler extends BaseArmorUpgradeHandler<HackHandler.HackData> {
-    private static final ResourceLocation ID = RL("hacking");
 
     @Override
     public ResourceLocation getID() {
-        return ID;
+        return BuiltinArmorUpgrades.HACKING;
     }
 
     @Override

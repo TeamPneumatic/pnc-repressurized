@@ -19,6 +19,7 @@ package me.desht.pneumaticcraft.api.pneumatic_armor;
 
 import me.desht.pneumaticcraft.api.pneumatic_armor.hacking.IHackableBlock;
 import me.desht.pneumaticcraft.api.pneumatic_armor.hacking.IHackableEntity;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -28,6 +29,7 @@ import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 
 import javax.annotation.Nonnull;
 import java.util.Collection;
+import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
@@ -117,4 +119,13 @@ public interface ICommonArmorRegistry {
      * @param consumer consumer accepting a player (who is doing the scanning) and the block entity of interest
      */
     void registerBlockTrackerLootable(BiConsumer<Player, BlockEntity> consumer);
+
+    /**
+     * Get the common armor handler object for the given upgrade ID. A collection of known upgrade ID's can be found
+     * in {@link BuiltinArmorUpgrades}.
+     *
+     * @param id the ID of the upgrade to retrieve
+     * @return the upgrade optional, or {@code Optional.empty()} if the ID is not known
+     */
+    Optional<IArmorUpgradeHandler<?>> getArmorUpgradeHandler(ResourceLocation id);
 }

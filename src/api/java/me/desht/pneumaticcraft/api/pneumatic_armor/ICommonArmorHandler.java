@@ -110,4 +110,23 @@ public interface ICommonArmorHandler {
      * @return the extension, or null if there is none for this type of upgrade
      */
     <T extends IArmorExtensionData> T getExtensionData(IArmorUpgradeHandler<T> handler);
+
+    /**
+     * Check if the given upgrade is currently enabled, i.e. has been switched on by the player.
+     *
+     * @param upgrade the upgrade to check
+     * @return true if the upgrade is currently enabled, false otherwise
+     */
+    boolean isUpgradeEnabled(IArmorUpgradeHandler<?> upgrade);
+
+    /**
+     * Set the given upgrade enablement status. This can be called on either client or server, and will handle
+     * sync'ing the enablement appropriately. This is a no-op if the status is already the same as the requested
+     * new status, or if the upgrade isn't usable (i.e. not installed, armor disabled, out of air...)
+     *
+     * @param upgrade the upgrade to enable/disable
+     * @param enabled the new enablement status
+     */
+    void setUpgradeEnabled(IArmorUpgradeHandler<?> upgrade, boolean enabled);
+
 }

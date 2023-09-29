@@ -19,7 +19,7 @@ public class CommonUpgradeHandlers {
     public static ChestplateLauncherHandler chestplateLauncherHandler;
     public static AirConHandler airConHandler;
     public static ReachDistanceHandler reachDistanceHandler;
-    public static SpeedBoostHandler runSpeedHandler;
+    public static RunSpeedHandler runSpeedHandler;
     public static JumpBoostHandler jumpBoostHandler;
     public static JetBootsHandler jetBootsHandler;
     public static StepAssistHandler stepAssistHandler;
@@ -48,7 +48,7 @@ public class CommonUpgradeHandlers {
         reachDistanceHandler = r.registerUpgradeHandler(new ReachDistanceHandler());
         elytraHandler = r.registerUpgradeHandler(new ElytraHandler());
 
-        runSpeedHandler = r.registerUpgradeHandler(new SpeedBoostHandler());
+        runSpeedHandler = r.registerUpgradeHandler(new RunSpeedHandler());
         jumpBoostHandler = r.registerUpgradeHandler(new JumpBoostHandler());
 
         jetBootsHandler = r.registerUpgradeHandler(new JetBootsHandler());

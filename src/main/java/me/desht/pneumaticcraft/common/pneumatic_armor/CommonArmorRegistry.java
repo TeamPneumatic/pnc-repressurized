@@ -112,6 +112,11 @@ public enum CommonArmorRegistry implements ICommonArmorRegistry {
         BlockTrackLootable.INSTANCE.addLootable(consumer);
     }
 
+    @Override
+    public Optional<IArmorUpgradeHandler<?>> getArmorUpgradeHandler(ResourceLocation id) {
+        return Optional.ofNullable(ArmorUpgradeRegistry.getInstance().getUpgradeEntry(id));
+    }
+
     /**
      * Non-API.
      * Called when a TagsUpdatedEvent is received, on both server and client, to refresh the actual blocks referred to

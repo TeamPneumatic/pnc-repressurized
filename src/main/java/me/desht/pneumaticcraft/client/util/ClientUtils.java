@@ -22,13 +22,17 @@ import com.mojang.blaze3d.platform.Window;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import me.desht.pneumaticcraft.api.misc.Symbols;
+import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorUpgradeHandler;
 import me.desht.pneumaticcraft.client.gui.AbstractPneumaticCraftContainerScreen;
 import me.desht.pneumaticcraft.client.gui.programmer.AbstractProgWidgetScreen;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetKeybindCheckBox;
 import me.desht.pneumaticcraft.client.pneumatic_armor.ClientArmorRegistry;
 import me.desht.pneumaticcraft.client.pneumatic_armor.upgrade_handler.EntityTrackerClientHandler;
 import me.desht.pneumaticcraft.common.entity.drone.DroneEntity;
 import me.desht.pneumaticcraft.common.fluid.FuelRegistry;
 import me.desht.pneumaticcraft.common.inventory.AbstractPneumaticCraftMenu;
+import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
+import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
 import me.desht.pneumaticcraft.common.thirdparty.ModNameCache;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -401,5 +405,16 @@ public class ClientUtils {
         }
 
         return Pair.of(Math.min(maxWidth, suggestedWidth), text);
+    }
+
+    public static void setArmorUpgradeEnabled(EquipmentSlot slot, byte idx, boolean state) {
+        List<IArmorUpgradeHandler<?>> l = ArmorUpgradeRegistry.getInstance().getHandlersForSlot(slot);
+
+        if (idx >= 0 && idx < l.size() && CommonArmorHandler.getHandlerForPlayer().isUpgradeInserted(slot, idx)) {
+            WidgetKeybindCheckBox cb = WidgetKeybindCheckBox.forUpgrade(l.get(idx));
+            if (cb != null && cb.checked != state) {
+                cb.handleClick();
+            }
+        }
     }
 }
