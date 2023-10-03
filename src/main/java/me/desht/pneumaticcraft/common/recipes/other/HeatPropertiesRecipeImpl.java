@@ -164,11 +164,7 @@ public class HeatPropertiesRecipeImpl extends HeatPropertiesRecipe {
         PacketUtil.writeNullableBlockState(buffer, transformCold);
         PacketUtil.writeNullableBlockState(buffer, transformHotFlowing);
         PacketUtil.writeNullableBlockState(buffer, transformColdFlowing);
-        buffer.writeVarInt(predicates.size());
-        predicates.forEach((key, val) -> {
-            buffer.writeUtf(key);
-            buffer.writeUtf(val);
-        });
+        buffer.writeMap(predicates, FriendlyByteBuf::writeUtf, FriendlyByteBuf::writeUtf);
         buffer.writeInt(temperature);
         buffer.writeInt(heatCapacity);
         buffer.writeDouble(thermalResistance);
@@ -238,25 +234,21 @@ public class HeatPropertiesRecipeImpl extends HeatPropertiesRecipe {
                 if (blockId.toString().equals("minecraft:air")) {
                     throw new JsonSyntaxException("minecraft:air block heat properties may not be changed!");
                 }
-                if (!ModList.get().isLoaded(blockId.getNamespace())) {
-                    Log.info("ignoring heat properties for block %s: mod not loaded", blockId);
+                block = ForgeRegistries.BLOCKS.getValue(blockId);
+                if (!validateBlock(blockId, block)) {
                     return null;
                 }
-                block = ForgeRegistries.BLOCKS.getValue(blockId);
-                validateBlock(blockId, block);
                 fluid = Objects.requireNonNull(block).defaultBlockState().getFluidState().getType();  // ok if this is absent
             } else if (json.has("fluid")) {
                 ResourceLocation fluidId = new ResourceLocation(GsonHelper.getAsString(json, "fluid"));
-                if (!ModList.get().isLoaded(fluidId.getNamespace())) {
-                    Log.info("ignoring heat properties for fluid %s: mod not loaded", fluidId);
+                fluid = ForgeRegistries.FLUIDS.getValue(fluidId);
+                if (!validateFluid(fluidId, fluid)) {
                     return null;
                 }
-                fluid = ForgeRegistries.FLUIDS.getValue(fluidId);
-                if (fluid == null || fluid == Fluids.EMPTY) {
-                    throw new JsonSyntaxException("unknown fluid " + fluidId);
+                block = Objects.requireNonNull(fluid).defaultFluidState().createLegacyBlock().getBlock();  // not ok if this is absent!
+                if (!validateBlock(fluidId, block)) {
+                    return null;
                 }
-                block = fluid.defaultFluidState().createLegacyBlock().getBlock();  // not ok if this is absent!
-                validateBlock(fluidId, block);
             } else {
                 throw new JsonSyntaxException("heat properties entry must have a \"block\" or \"fluid\" field!");
             }
@@ -320,11 +312,7 @@ public class HeatPropertiesRecipeImpl extends HeatPropertiesRecipe {
             BlockState transformCold = PacketUtil.readNullableBlockState(buffer);
             BlockState transformHotFlowing = PacketUtil.readNullableBlockState(buffer);
             BlockState transformColdFlowing = PacketUtil.readNullableBlockState(buffer);
-            ImmutableMap.Builder<String,String> predBuilder = ImmutableMap.builder();
-            int nPredicates = buffer.readVarInt();
-            for (int i = 0; i < nPredicates; i++) {
-                predBuilder.put(buffer.readUtf(), buffer.readUtf());
-            }
+            Map<String,String> predicates = buffer.readMap(FriendlyByteBuf::readUtf, FriendlyByteBuf::readUtf);
             int temperature = buffer.readInt();
             int heatCapacity = buffer.readInt();
             double thermalResistance = buffer.readDouble();
@@ -332,7 +320,7 @@ public class HeatPropertiesRecipeImpl extends HeatPropertiesRecipe {
 
             return factory.create(recipeId, block,
                     transformHot, transformHotFlowing, transformCold, transformColdFlowing,
-                    heatCapacity, temperature, thermalResistance, predBuilder.build(), descriptionKey
+                    heatCapacity, temperature, thermalResistance, predicates, descriptionKey
             );
         }
 
@@ -341,10 +329,29 @@ public class HeatPropertiesRecipeImpl extends HeatPropertiesRecipe {
             recipe.write(buffer);
         }
 
-        private void validateBlock(ResourceLocation blockId, Block block) {
-            if (block == null || block == Blocks.AIR) {
-                throw new JsonSyntaxException("unknown block id: " + blockId.toString());
+        private boolean validateFluid(ResourceLocation fluidId, Fluid fluid) {
+            if (fluid == null || fluid == Fluids.EMPTY) {
+                if (!ModList.get().isLoaded(fluidId.getNamespace())) {
+                    Log.info("ignoring heat properties for fluid %s: mod not loaded", fluidId);
+                } else {
+                    throw new JsonSyntaxException("unknown fluid id: " + fluidId);
+                }
+                return false;
             }
+            return true;
+        }
+
+        @SuppressWarnings("BooleanMethodIsAlwaysInverted")
+        private boolean validateBlock(ResourceLocation blockId, Block block) {
+            if (block == null || block == Blocks.AIR) {
+                if (!ModList.get().isLoaded(blockId.getNamespace())) {
+                    Log.info("ignoring heat properties for block %s: mod not loaded", blockId);
+                } else {
+                    throw new JsonSyntaxException("unknown block id: " + blockId);
+                }
+                return false;
+            }
+            return true;
         }
 
         private BlockState parseBlockState(String str) {
