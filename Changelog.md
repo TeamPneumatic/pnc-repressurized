@@ -11,7 +11,14 @@ Changes are in reverse chronological order; newest changes at the top.
 ### Added
 * Added new API methods to check and set the enablement of Pneumatic Armor upgrades
 * If Pneumatic Boots are on (vanilla) cooldown, flight effects are suppressed
+  * When suppressed, the Jet Boots display panel switches stats from green to red, and blinks them
+  * This will also happen if you try to fly more than 64 blocks above max build height (so Y > 384 for the overworld)
   * PNC doesn't do this itself, but it adds a hook for other mods to use...
+
+### Fixed
+* When adding custom Heat Properties recipes, no longer require a mod matching the block's namespace to be loaded
+  * This allows blocks with custom namespaces to be registered, e.g. via KubeJS
+  * Existence of the block in the block registry is still checked for, of course
 
 ## [6.0.8]
 

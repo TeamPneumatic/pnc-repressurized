@@ -129,4 +129,14 @@ public interface ICommonArmorHandler {
      */
     void setUpgradeEnabled(IArmorUpgradeHandler<?> upgrade, boolean enabled);
 
+    /**
+     * Convenience method to check if the armor item in the given slot is on (vanilla) cooldown. Note that the
+     * method does not check if the item is actually a Pneumatic Armor piece; this method is typically called
+     * from {@link IArmorUpgradeHandler#tick(ICommonArmorHandler, boolean)} where the armor is already known to
+     * be Pneumatic Armor.
+     *
+     * @param slot the slot to check
+     * @return true if the equipped item is on cooldown, false otherwise
+     */
+    boolean isOnCooldown(EquipmentSlot slot);
 }

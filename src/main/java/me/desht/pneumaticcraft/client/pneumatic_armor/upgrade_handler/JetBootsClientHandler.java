@@ -77,6 +77,7 @@ public class JetBootsClientHandler extends IArmorUpgradeClientHandler.SimpleTogg
     private boolean flightStabilizers;
     private boolean smartHover;
     private double prevX, prevY, prevZ;
+    private boolean suppressed;
 
     private IGuiAnimatedStat jbStat;
 
@@ -110,10 +111,11 @@ public class JetBootsClientHandler extends IArmorUpgradeClientHandler.SimpleTogg
 
         if (!isEnabled) return;
 
-        String g1 = ChatFormatting.WHITE.toString();
-        String g2 = ChatFormatting.GREEN.toString();
-
         if (jbStat.isStatOpen()) {
+            suppressed = CommonArmorHandler.getHandlerForPlayer().isOnCooldown(EquipmentSlot.FEET);
+            String g1 = suppressed ? ChatFormatting.GRAY.toString() : ChatFormatting.WHITE.toString();
+            String g2 = suppressed ? ChatFormatting.RED.toString() : ChatFormatting.GREEN.toString();
+
             Player player = armorHandler.getPlayer();
             double mx = player.getX() - prevX;
             double my = player.getY() - prevY;
@@ -127,6 +129,7 @@ public class JetBootsClientHandler extends IArmorUpgradeClientHandler.SimpleTogg
             int yaw = ((int) player.getYRot() + 180) % 360;
             if (yaw < 0) yaw += 360;
             BlockPos pos = player.blockPosition();
+
 
             l1 = String.format(" %sSpd: %s%05.2fm/s", g1, g2, v * 20);
             l2 = String.format("  %sAlt: %s%03dm", g1, g2, pos.getY());
@@ -150,6 +153,7 @@ public class JetBootsClientHandler extends IArmorUpgradeClientHandler.SimpleTogg
     public void render2D(GuiGraphics graphics, float partialTicks, boolean armorPieceHasPressure) {
         if (armorPieceHasPressure && jbStat.isStatOpen() && !ArmorHUDLayout.INSTANCE.getLayoutFor(getID(), getDefaultStatLayout()).hidden()) {
             Font fr = Minecraft.getInstance().font;
+
             int xl = jbStat.getBaseX() + 5;
             int y = jbStat.getBaseY() + fr.lineHeight + 8;
             int xr = jbStat.getBaseX() + jbStat.getStatWidth() - 5;
@@ -157,13 +161,16 @@ public class JetBootsClientHandler extends IArmorUpgradeClientHandler.SimpleTogg
                 xl -= jbStat.getStatWidth();
                 xr -= jbStat.getStatWidth();
             }
-            graphics.drawString(fr, l1, xl, y, 0x404040);
-            graphics.drawString(fr, l2, xl, y + fr.lineHeight, 0x404040);
-            graphics.drawString(fr, l3, xl, y + fr.lineHeight * 2, 0x404040);
-            graphics.drawString(fr, r1, xr - widestR, y, 0x404040);
-            graphics.drawString(fr, r2, xr - widestR, y + fr.lineHeight, 0x404040);
-            graphics.drawString(fr, r3, xr - widestR, y + fr.lineHeight * 2, 0x404040);
 
+            int color = suppressed ? 0x202020 : 0x404040;
+            if (!suppressed || (Minecraft.getInstance().level.getGameTime() & 0xf) > 2) {
+                graphics.drawString(fr, l1, xl, y, color);
+                graphics.drawString(fr, l2, xl, y + fr.lineHeight, color);
+                graphics.drawString(fr, l3, xl, y + fr.lineHeight * 2, color);
+                graphics.drawString(fr, r1, xr - widestR, y, color);
+                graphics.drawString(fr, r2, xr - widestR, y + fr.lineHeight, color);
+                graphics.drawString(fr, r3, xr - widestR, y + fr.lineHeight * 2, color);
+            }
             int iconX = xr - 30;
             if (builderMode) {
                 graphics.renderItem(PICK, iconX, jbStat.getBaseY());

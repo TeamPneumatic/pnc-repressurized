@@ -85,8 +85,9 @@ public class JetBootsHandler extends BaseArmorUpgradeHandler<JetBootsHandler.Jet
 
     @Override
     public void tick(ICommonArmorHandler commonArmorHandler, boolean enabled) {
-        if (commonArmorHandler.getPlayer().getCooldowns().isOnCooldown(ModItems.PNEUMATIC_BOOTS.get())) {
-            return;  // putting the boots on cooldown is a way for mods to suppress jet boots
+        if (commonArmorHandler.isOnCooldown(EquipmentSlot.FEET)) {
+            // putting the boots on cooldown is a way for other mods to temporarily suppress jet boots
+            return;
         }
 
         int jetbootsCount = commonArmorHandler.getUpgradeCount(EquipmentSlot.FEET, ModUpgrades.JET_BOOTS.get());
@@ -164,8 +165,13 @@ public class JetBootsHandler extends BaseArmorUpgradeHandler<JetBootsHandler.Jet
                 }
             }
             commonArmorHandler.addAir(EquipmentSlot.FEET, -jetbootsAirUsage);
+
+            if (player.position().y > player.level().getMaxBuildHeight() + 64) {
+                player.getCooldowns().addCooldown(ModItems.PNEUMATIC_BOOTS.get(), 20);
+            }
         }
         jbLocal.setPrevJetBootsAirUsage(jetbootsAirUsage);
+
     }
 
     private boolean isOnGround(Player player) {
