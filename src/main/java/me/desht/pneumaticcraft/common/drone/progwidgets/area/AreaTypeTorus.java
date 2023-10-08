@@ -17,8 +17,8 @@
 
 package me.desht.pneumaticcraft.common.drone.progwidgets.area;
 
+import me.desht.pneumaticcraft.common.util.ITranslatableEnum;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
@@ -33,7 +33,7 @@ public class AreaTypeTorus extends AreaType {
     private EnumAxis axis = EnumAxis.Y;
     private EnumTorusType torusType = EnumTorusType.FILLED;
 
-    private enum EnumTorusType {
+    private enum EnumTorusType implements ITranslatableEnum {
         FILLED("filled"), HOLLOW("hollow");
 
         private final String name;
@@ -43,8 +43,8 @@ public class AreaTypeTorus extends AreaType {
         }
 
         @Override
-        public String toString() {
-            return I18n.get(name);
+        public String getTranslationKey() {
+            return name;
         }
     }
 

@@ -17,8 +17,8 @@
 
 package me.desht.pneumaticcraft.common.drone.progwidgets.area;
 
+import me.desht.pneumaticcraft.common.util.ITranslatableEnum;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
@@ -31,19 +31,19 @@ public class AreaTypeSphere extends AreaType{
     public static final String ID = "sphere";
     
     private EnumSphereType sphereType = EnumSphereType.FILLED;
-    
-    private enum EnumSphereType{
+
+    private enum EnumSphereType implements ITranslatableEnum {
         FILLED("filled"), HOLLOW("hollow");
-        
+
         private final String name;
-        
-        EnumSphereType(String name){
+
+        EnumSphereType(String name) {
             this.name = "pneumaticcraft.gui.progWidget.area.type.sphere.sphereType." + name;
         }
-        
+
         @Override
-        public String toString(){
-            return I18n.get(name);
+        public String getTranslationKey() {
+            return name;
         }
     }
     

@@ -17,8 +17,8 @@
 
 package me.desht.pneumaticcraft.common.drone.progwidgets.area;
 
+import me.desht.pneumaticcraft.common.util.ITranslatableEnum;
 import me.desht.pneumaticcraft.common.util.LegacyAreaWidgetConverter;
-import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
@@ -34,34 +34,10 @@ public class AreaTypePyramid extends AreaType {
     private EnumAxis axis = EnumAxis.X;
     private EnumAreaTypePyramid pyramidType = EnumAreaTypePyramid.FILLED;
 
-    private enum EnumAreaTypePyramid {
-        FILLED("filled"), HOLLOW("hollow");
-
-        private final String name;
-
-        EnumAreaTypePyramid(String name) {
-            this.name = "pneumaticcraft.gui.progWidget.area.type.pyramid.pyramidType." + name;
-        }
-
-        @Override
-        public String toString() {
-            return I18n.get(name);
-        }
-    }
-
-    public AreaTypePyramid() {
-        super(ID);
-    }
-
-    @Override
-    public String toString() {
-        return getName() + "/" + pyramidType + "/" + axis;
-    }
-
     @Override
     public void addArea(Consumer<BlockPos> areaAdder, BlockPos p1, BlockPos p2, int minX, int minY, int minZ, int maxX, int maxY, int maxZ) {
         switch (axis) {
-            case X:
+            case X -> {
                 if (p2.getX() != p1.getX()) {
                     Vec3 lineVec = new Vec3(p2.getX() - p1.getX(), p2.getY() - p1.getY(), p2.getZ() - p1.getZ()).normalize();
                     lineVec = new Vec3(lineVec.x, lineVec.y / lineVec.x, lineVec.z / lineVec.x);
@@ -91,8 +67,8 @@ public class AreaTypePyramid extends AreaType {
                         prevDZ = dZ;
                     }
                 }
-                break;
-            case Y:
+            }
+            case Y -> {
                 if (p2.getY() != p1.getY()) {
                     Vec3 lineVec = new Vec3(p2.getX() - p1.getX(), p2.getY() - p1.getY(), p2.getZ() - p1.getZ()).normalize();
                     lineVec = new Vec3(lineVec.x / lineVec.y, lineVec.y, lineVec.z / lineVec.y);
@@ -126,8 +102,8 @@ public class AreaTypePyramid extends AreaType {
                         prevDZ = dZ;
                     }
                 }
-                break;
-            case Z:
+            }
+            case Z -> {
                 if (p2.getZ() != p1.getZ()) {
                     Vec3 lineVec = new Vec3(p2.getX() - p1.getX(), p2.getY() - p1.getY(), p2.getZ() - p1.getZ()).normalize();
                     lineVec = new Vec3(lineVec.x / lineVec.z, lineVec.y / lineVec.z, lineVec.z);
@@ -156,9 +132,27 @@ public class AreaTypePyramid extends AreaType {
                         prevDY = dY;
                     }
                 }
-                break;
-            default:
-                throw new IllegalArgumentException(axis.toString());
+            }
+            default -> throw new IllegalArgumentException(axis.toString());
+        }
+    }
+
+    public AreaTypePyramid() {
+        super(ID);
+    }
+
+    @Override
+    public String toString() {
+        return getName() + "/" + pyramidType + "/" + axis;
+    }
+
+    @Override
+    public void convertFromLegacy(LegacyAreaWidgetConverter.EnumOldAreaType oldAreaType, int typeInfo) {
+        switch (oldAreaType) {
+            case X_PYRAMID -> axis = EnumAxis.X;
+            case Y_PYRAMID -> axis = EnumAxis.Y;
+            case Z_PYRAMID -> axis = EnumAxis.Z;
+            default -> throw new IllegalArgumentException();
         }
     }
 
@@ -197,20 +191,18 @@ public class AreaTypePyramid extends AreaType {
         pyramidType = EnumAreaTypePyramid.values()[buf.readByte()];
     }
 
-    @Override
-    public void convertFromLegacy(LegacyAreaWidgetConverter.EnumOldAreaType oldAreaType, int typeInfo) {
-        switch (oldAreaType) {
-            case X_PYRAMID:
-                axis = EnumAxis.X;
-                break;
-            case Y_PYRAMID:
-                axis = EnumAxis.Y;
-                break;
-            case Z_PYRAMID:
-                axis = EnumAxis.Z;
-                break;
-            default:
-                throw new IllegalArgumentException();
+    private enum EnumAreaTypePyramid implements ITranslatableEnum {
+        FILLED("filled"), HOLLOW("hollow");
+
+        private final String name;
+
+        EnumAreaTypePyramid(String name) {
+            this.name = "pneumaticcraft.gui.progWidget.area.type.pyramid.pyramidType." + name;
+        }
+
+        @Override
+        public String getTranslationKey() {
+            return name;
         }
     }
 }

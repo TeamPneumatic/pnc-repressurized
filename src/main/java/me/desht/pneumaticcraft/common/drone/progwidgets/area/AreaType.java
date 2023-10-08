@@ -17,10 +17,12 @@
 
 package me.desht.pneumaticcraft.common.drone.progwidgets.area;
 
+import me.desht.pneumaticcraft.common.util.ITranslatableEnum;
 import me.desht.pneumaticcraft.common.util.LegacyAreaWidgetConverter;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.Component;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -32,8 +34,19 @@ public abstract class AreaType {
     private final String translationKey;
     private final String name;
 
-    public enum EnumAxis {
-        X, Y, Z
+    public enum EnumAxis implements ITranslatableEnum {
+        X("x"), Y("y"), Z("z");
+
+        private final String name;
+
+        EnumAxis(String name) {
+            this.name = "pneumaticcraft.gui.progWidget.area.type.axis." + name;
+        }
+
+        @Override
+        public String getTranslationKey() {
+            return name;
+        }
     }
 
     public AreaType(String name) {
@@ -99,17 +112,16 @@ public abstract class AreaType {
     }
 
     public void addUIWidgets(List<AreaTypeWidget> widgets){
-        
     }
-        
-    public static abstract class AreaTypeWidget{
+
+    public static abstract class AreaTypeWidget {
         public final String title;
-        
-        public AreaTypeWidget(String title){
+
+        public AreaTypeWidget(String title) {
             this.title = title;
         }
-        
-        public abstract String getCurValue();
+
+        public abstract Component getDisplayName();
     }
     
     /**
@@ -126,23 +138,22 @@ public abstract class AreaType {
         }
 
         @Override
-        public String getCurValue(){
-            return String.valueOf(readAction.getAsInt());
+        public Component getDisplayName() {
+            return Component.literal(Integer.toString(readAction.getAsInt()));
         }
     }
-    
+
     /**
      * Adds a dropdownlist with alle the enum options
-     * @author Maarten
      *
+     * @author Maarten
      */
-    public static class AreaTypeWidgetEnum<E extends Enum<?>> extends AreaTypeWidget{
-
+    public static class AreaTypeWidgetEnum<E extends ITranslatableEnum> extends AreaTypeWidget {
         public final Class<E> enumClass;
         public final Supplier<E> readAction;
         public final Consumer<E> writeAction;
-        
-        public AreaTypeWidgetEnum(String title, Class<E> enumClass, Supplier<E> readAction, Consumer<E> writeAction){
+
+        public AreaTypeWidgetEnum(String title, Class<E> enumClass, Supplier<E> readAction, Consumer<E> writeAction) {
             super(title);
             this.enumClass = enumClass;
             this.readAction = readAction;
@@ -150,9 +161,8 @@ public abstract class AreaType {
         }
 
         @Override
-        public String getCurValue(){
-            return readAction.get().toString();
+        public Component getDisplayName() {
+            return Component.translatable(readAction.get().getTranslationKey());
         }
-        
     }
 }

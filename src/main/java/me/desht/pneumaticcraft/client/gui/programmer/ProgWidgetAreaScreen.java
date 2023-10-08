@@ -32,6 +32,7 @@ import me.desht.pneumaticcraft.common.drone.progwidgets.area.AreaType.AreaTypeWi
 import me.desht.pneumaticcraft.common.drone.progwidgets.area.AreaType.AreaTypeWidgetEnum;
 import me.desht.pneumaticcraft.common.drone.progwidgets.area.AreaType.AreaTypeWidgetInteger;
 import me.desht.pneumaticcraft.common.item.GPSToolItem;
+import me.desht.pneumaticcraft.common.util.ITranslatableEnum;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
@@ -171,7 +172,8 @@ public class ProgWidgetAreaScreen extends ProgWidgetAreaShowScreen<ProgWidgetAre
             } else if (areaTypeWidget instanceof AreaTypeWidgetEnum<?> enumWidget) {
                 WidgetComboBox enumCbb = new WidgetComboBox(font, x, curY, 80, font.lineHeight + 1).setFixedOptions(true);
                 enumCbb.setElements(getEnumNames(enumWidget.enumClass));
-                enumCbb.setValue(enumWidget.readAction.get().toString());
+                String txt = xlate(enumWidget.readAction.get().getTranslationKey()).getString();
+                enumCbb.setValue(txt);
                 addRenderableWidget(enumCbb);
                 areaTypeValueWidgets.add(new ImmutablePair<>(areaTypeWidget, enumCbb));
 
@@ -186,17 +188,17 @@ public class ProgWidgetAreaScreen extends ProgWidgetAreaShowScreen<ProgWidgetAre
         for (Pair<AreaTypeWidget, AbstractWidget> entry : areaTypeValueWidgets) {
             AreaTypeWidget widget = entry.getLeft();
             AbstractWidget guiWidget = entry.getRight();
-            if (widget instanceof AreaTypeWidgetInteger) {
-                AreaTypeWidgetInteger intWidget = (AreaTypeWidgetInteger) widget;
+            if (widget instanceof AreaTypeWidgetInteger intWidget) {
                 intWidget.writeAction.accept(((WidgetTextFieldNumber) guiWidget).getIntValue());
-            } else if (widget instanceof AreaTypeWidgetEnum<?>) {
+            } else if (widget instanceof AreaTypeWidgetEnum<? extends ITranslatableEnum>) {
                 @SuppressWarnings("unchecked")
-                AreaTypeWidgetEnum<Enum<?>> enumWidget = (AreaTypeWidgetEnum<Enum<?>>) widget;
+                AreaTypeWidgetEnum<ITranslatableEnum> enumWidget = (AreaTypeWidgetEnum<ITranslatableEnum>) widget;
                 WidgetComboBox cbb = (WidgetComboBox) guiWidget;
                 List<String> enumNames = getEnumNames(enumWidget.enumClass);
                 Object[] enumValues = enumWidget.enumClass.getEnumConstants();
-                Object selectedValue = enumValues[enumNames.indexOf(cbb.getValue())];
-                enumWidget.writeAction.accept((Enum<?>) selectedValue);
+                if (enumValues[enumNames.indexOf(cbb.getValue())] instanceof ITranslatableEnum tr) {
+                    enumWidget.writeAction.accept(tr);
+                }
             }
         }
     }
@@ -204,8 +206,12 @@ public class ProgWidgetAreaScreen extends ProgWidgetAreaShowScreen<ProgWidgetAre
     private List<String> getEnumNames(Class<?> enumClass) {
         Object[] enumValues = enumClass.getEnumConstants();
         List<String> enumNames = new ArrayList<>();
-        for (Object enumValue : enumValues){
-            enumNames.add(enumValue.toString());
+        for (Object enumValue : enumValues) {
+            if (enumValue instanceof ITranslatableEnum t) {
+                enumNames.add(xlate(t.getTranslationKey()).getString());
+            } else {
+                enumNames.add(enumValue.toString());
+            }
         }
         return enumNames;
     }

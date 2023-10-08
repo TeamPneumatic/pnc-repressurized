@@ -133,10 +133,10 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
                 res.add(Component.literal(PneumaticCraftUtils.posToString(pos[1])));
             }
             if (res.size() == 2) {
-                MutableComponent c = xlate(type.getTranslationKey()).append("/");
+                MutableComponent c = xlate(type.getTranslationKey());
                 List<AreaType.AreaTypeWidget> widgets = new ArrayList<>();
                 type.addUIWidgets(widgets);
-                c.append(String.join("/", widgets.stream().map(AreaType.AreaTypeWidget::getCurValue).toList()));
+                widgets.forEach(w -> c.append("/").append(w.getDisplayName()));
                 res.add(c);
             }
         }
@@ -173,7 +173,7 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
         List<AreaType.AreaTypeWidget> widgets = new ArrayList<>();
         type.addUIWidgets(widgets);
         for (AreaType.AreaTypeWidget widget : widgets) {
-            curTooltip.add(xlate(widget.title).append(" ").append(Component.literal(widget.getCurValue()).withStyle(ChatFormatting.YELLOW)));
+            curTooltip.add(xlate(widget.title).append(" ").append(widget.getDisplayName().copy().withStyle(ChatFormatting.YELLOW)));
         }
     }
 

@@ -17,9 +17,9 @@
 
 package me.desht.pneumaticcraft.common.drone.progwidgets.area;
 
+import me.desht.pneumaticcraft.common.util.ITranslatableEnum;
 import me.desht.pneumaticcraft.common.util.LegacyAreaWidgetConverter;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
@@ -34,7 +34,7 @@ public class AreaTypeCylinder extends AreaType {
     private EnumAxis axis = EnumAxis.X;
     private EnumCylinderType cylinderType = EnumCylinderType.FILLED;
 
-    private enum EnumCylinderType {
+    private enum EnumCylinderType implements ITranslatableEnum {
         FILLED("filled"), HOLLOW("hollow"), TUBE("tube");
 
         private final String name;
@@ -44,8 +44,8 @@ public class AreaTypeCylinder extends AreaType {
         }
 
         @Override
-        public String toString() {
-            return I18n.get(name);
+        public String getTranslationKey() {
+            return name;
         }
     }
 

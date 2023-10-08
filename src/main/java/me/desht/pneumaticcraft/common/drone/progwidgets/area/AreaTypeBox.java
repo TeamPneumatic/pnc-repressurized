@@ -17,8 +17,8 @@
 
 package me.desht.pneumaticcraft.common.drone.progwidgets.area;
 
+import me.desht.pneumaticcraft.common.util.ITranslatableEnum;
 import me.desht.pneumaticcraft.common.util.LegacyAreaWidgetConverter;
-import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
@@ -32,34 +32,10 @@ public class AreaTypeBox extends AreaType {
 
     private EnumBoxType boxType = EnumBoxType.FILLED;
 
-    private enum EnumBoxType {
-        FILLED("filled"), HOLLOW("hollow"), FRAME("frame");
-
-        private final String name;
-
-        EnumBoxType(String name) {
-            this.name = "pneumaticcraft.gui.progWidget.area.type.box.boxType." + name;
-        }
-
-        @Override
-        public String toString() {
-            return I18n.get(name);
-        }
-    }
-
-    public AreaTypeBox() {
-        super(ID);
-    }
-
-    @Override
-    public String toString() {
-        return getName() + "/" + boxType;
-    }
-
     @Override
     public void addArea(Consumer<BlockPos> areaAdder, BlockPos p1, BlockPos p2, int minX, int minY, int minZ, int maxX, int maxY, int maxZ) {
         switch (boxType) {
-            case FILLED:
+            case FILLED -> {
                 for (int x = minX; x <= maxX; x++) {
                     for (int y = maxY; y >= minY; y--) {
                         for (int z = minZ; z <= maxZ; z++) {
@@ -67,8 +43,8 @@ public class AreaTypeBox extends AreaType {
                         }
                     }
                 }
-                break;
-            case FRAME:
+            }
+            case FRAME -> {
                 for (int x = minX; x <= maxX; x++) {
                     for (int y = minY; y <= maxY; y++) {
                         for (int z = minZ; z <= maxZ; z++) {
@@ -82,8 +58,8 @@ public class AreaTypeBox extends AreaType {
                         }
                     }
                 }
-                break;
-            case HOLLOW:
+            }
+            case HOLLOW -> {
                 for (int x = minX; x <= maxX; x++) {
                     for (int y = minY; y <= maxY; y++) {
                         for (int z = minZ; z <= maxZ; z++) {
@@ -93,9 +69,27 @@ public class AreaTypeBox extends AreaType {
                         }
                     }
                 }
-                break;
-            default:
-                throw new IllegalArgumentException(boxType.toString());
+            }
+            default -> throw new IllegalArgumentException(boxType.toString());
+        }
+    }
+
+    public AreaTypeBox() {
+        super(ID);
+    }
+
+    @Override
+    public String toString() {
+        return getName() + "/" + boxType;
+    }
+
+    @Override
+    public void convertFromLegacy(LegacyAreaWidgetConverter.EnumOldAreaType oldAreaType, int typeInfo) {
+        switch (oldAreaType) {
+            case FILL -> boxType = EnumBoxType.FILLED;
+            case WALL -> boxType = EnumBoxType.HOLLOW;
+            case FRAME -> boxType = EnumBoxType.FRAME;
+            default -> throw new IllegalArgumentException();
         }
     }
 
@@ -129,20 +123,18 @@ public class AreaTypeBox extends AreaType {
         boxType = EnumBoxType.values()[buf.readByte()];
     }
 
-    @Override
-    public void convertFromLegacy(LegacyAreaWidgetConverter.EnumOldAreaType oldAreaType, int typeInfo) {
-        switch (oldAreaType) {
-            case FILL:
-                boxType = EnumBoxType.FILLED;
-                break;
-            case WALL:
-                boxType = EnumBoxType.HOLLOW;
-                break;
-            case FRAME:
-                boxType = EnumBoxType.FRAME;
-                break;
-            default:
-                throw new IllegalArgumentException();
+    private enum EnumBoxType implements ITranslatableEnum {
+        FILLED("filled"), HOLLOW("hollow"), FRAME("frame");
+
+        private final String name;
+
+        EnumBoxType(String name) {
+            this.name = "pneumaticcraft.gui.progWidget.area.type.box.boxType." + name;
+        }
+
+        @Override
+        public String getTranslationKey() {
+            return name;
         }
     }
 }
