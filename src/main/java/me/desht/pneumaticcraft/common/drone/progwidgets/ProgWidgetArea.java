@@ -74,6 +74,7 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
         register(AreaTypePyramid.ID, AreaTypePyramid::new);
         register(AreaTypeGrid.ID, AreaTypeGrid::new);
         register(AreaTypeRandom.ID, AreaTypeRandom::new);
+        register(AreaTypeTorus.ID, AreaTypeTorus::new);
     }
 
     public ProgWidgetArea() {
