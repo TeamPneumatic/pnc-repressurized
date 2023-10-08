@@ -9,6 +9,10 @@ Changes are in reverse chronological order; newest changes at the top.
 ## [6.0.9]
 
 ### Added
+* Added new area type for the Area progwidget (and Area GPS Tool): Torus
+  * Thanks @johalun
+  * P1 is assumed to be in the center of the torus
+  * When radially symmetric about the Y-axis, the distance between P1 and P2 in the X/Z plane makes the radius of the torus to the center of the tube and the distance in the Y plane makes the radius of the tube
 * Added new API methods to check and set the enablement of Pneumatic Armor upgrades
 * If Pneumatic Boots are on (vanilla) cooldown, flight effects are suppressed
   * When suppressed, the Jet Boots display panel switches stats from green to red, and blinks them
