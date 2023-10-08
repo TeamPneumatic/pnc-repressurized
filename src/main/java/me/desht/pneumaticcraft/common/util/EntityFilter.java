@@ -41,6 +41,7 @@ import net.minecraft.world.entity.vehicle.Boat;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.scores.PlayerTeam;
 import net.minecraftforge.common.IForgeShearable;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.commons.lang3.StringUtils;
@@ -224,9 +225,12 @@ public class EntityFilter implements Predicate<Entity> {
         ENTITY_TAG((str) -> true,
                 "any string tag (added to entities with the /tag command)",
                 Modifier::testEntityTag),
-        TYPE_TAG((str) -> true,
+        TYPE_TAG(ResourceLocation::isValidResourceLocation,
                 "any known entity type tag, e.g 'minecraft:skeletons'",
-                Modifier::testTypeTag);
+                Modifier::testTypeTag),
+        TEAM((str) -> true,
+                "any valid Minecraft team name",
+                Modifier::testTeamName);
 
         private final Set<String> validationSet;
         private final Predicate<String> validationPredicate;
@@ -280,6 +284,11 @@ public class EntityFilter implements Predicate<Entity> {
             return entity.getType().is(key);
         }
 
+        private static boolean testTeamName(Entity entity, String val) {
+            return entity.getTeam() instanceof PlayerTeam t
+                    && (t.getName().equalsIgnoreCase(val) || t.getDisplayName().getString().equalsIgnoreCase(val));
+        }
+
         boolean isValid(String s) {
             return validationPredicate == null ? validationSet.contains(s) : validationPredicate.test(s);
         }
@@ -318,85 +327,67 @@ public class EntityFilter implements Predicate<Entity> {
     }
 
     private static class EntityMatcher implements Predicate<Entity> {
-        private final Pattern regex;
-        private final Predicate<Entity> entityPredicate;
+        private final Predicate<Entity> matcher;
         private final List<ModifierEntry> modifiers = new ArrayList<>();
-        private final boolean matchCustomName;
 
         private EntityMatcher(String element) {
-            String[] splits = ELEMENT_SUBDIVIDER.split(element);
-            for (int i = 0; i < splits.length; i++) {
-                splits[i] = splits[i].trim();
-            }
+            List<String> splits = Arrays.stream(ELEMENT_SUBDIVIDER.split(element)).map(String::trim).toList();
 
-            if (splits[0].startsWith("@")) {
+            String arg0 = splits.get(0);
+            if (arg0.startsWith("@")) {
                 // match by entity predicate
-                String sub = splits[0].substring(1);
+                String sub = arg0.substring(1);
                 if (StringUtils.countMatches(element, "(") != StringUtils.countMatches(element, ")")) {
                     throw new IllegalArgumentException("Mismatched opening/closing braces");
                 }
-                entityPredicate = ENTITY_PREDICATES.get(sub);
-                Validate.isTrue(entityPredicate != null, "Unknown entity type specifier: @" + sub);
-                regex = null;
-                matchCustomName = false;
-            } else if (splits[0].length() > 2 && (splits[0].startsWith("\"") && splits[0].endsWith("\"") || splits[0].startsWith("'") && splits[0].endsWith("'"))) {
+                matcher = ENTITY_PREDICATES.get(sub);
+                Validate.isTrue(matcher != null, "Unknown entity type specifier: @" + sub);
+            } else if (arg0.length() > 2 && (arg0.startsWith("\"") && arg0.endsWith("\"") || arg0.startsWith("'") && arg0.endsWith("'"))) {
                 // match an entity with a custom name
-                entityPredicate = null;
-                regex = Pattern.compile(wildcardToRegex(splits[0].substring(1, splits[0].length() - 1)));
-                matchCustomName = true;
+                Pattern regex = Pattern.compile(wildcardToRegex(arg0.substring(1, arg0.length() - 1)));
+                matcher = e -> matchByName(e, regex);
             } else {
                 // wildcard match on entity type name
-                entityPredicate = null;
-                regex = Pattern.compile(wildcardToRegex(splits[0]), Pattern.CASE_INSENSITIVE);
-                matchCustomName = false;
+                Pattern regex = Pattern.compile(wildcardToRegex(arg0), Pattern.CASE_INSENSITIVE);
+                matcher = e -> regex.matcher(PneumaticCraftUtils.getRegistryName(e).orElseThrow().getPath()).matches();
             }
 
-            for (int i = 1; i < splits.length; i++) {
-                String[] parts = splits[i].split("=");
-                Validate.isTrue(parts.length == 2, "Invalid modifier syntax: " + splits[i]);
+            for (int i = 1; i < splits.size(); i++) {
+                String[] parts = splits.get(i).split("=");
+                Validate.isTrue(parts.length == 2, "Invalid modifier syntax: " + splits.get(i));
+                String key = parts[0], arg = parts[1];
                 boolean sense = true;
-                if (parts[0].endsWith("!")) {
-                    parts[0] = parts[0].substring(0, parts[0].length() - 1);
+                if (key.endsWith("!")) {
+                    key = key.substring(0, key.length() - 1);
                     sense = false;
                 }
-                Modifier modifier;
                 try {
-                    modifier = Modifier.valueOf(parts[0].toUpperCase(Locale.ROOT));
+                    Modifier modifier = Modifier.valueOf(key.toUpperCase(Locale.ROOT));
+                    if (!modifier.isValid(arg)) {
+                        throw new IllegalArgumentException(String.format("Invalid value '%s' for modifier '%s'. Valid values: %s",
+                                arg, key, modifier.displayValidOptions()));
+                    }
+                    modifiers.add(new ModifierEntry(modifier, arg, sense));
                 } catch (IllegalArgumentException e) {
-                    throw new IllegalArgumentException("Unknown modifier: " + parts[0]);
+                    throw new IllegalArgumentException("Unknown modifier: " + key);
                 }
-                if (!modifier.isValid(parts[1])) {
-                    throw new IllegalArgumentException(String.format("Invalid value '%s' for modifier '%s'. Valid values: %s",
-                            parts[1], parts[0], modifier.displayValidOptions()));
-                }
-                modifiers.add(new ModifierEntry(modifier, parts[1], sense));
             }
         }
 
         @Override
         public boolean test(Entity entity) {
-            boolean ok = false;
-            if (entityPredicate != null) {
-                ok = entityPredicate.test(entity);
-            } else if (regex != null) {
-                ok = matchCustomName ?
-                        matchByName(entity, regex) :
-                        regex.matcher(PneumaticCraftUtils.getRegistryName(entity).orElseThrow().getPath()).matches();
-            }
             // modifiers test is a match-all (e.g. "sheep(sheared=false,color=black)" matches sheep which are unsheared AND black)
-            return ok && modifiers.stream().allMatch(modifierEntry -> modifierEntry.test(entity));
+            return matcher.test(entity) && modifiers.stream().allMatch(modifierEntry -> modifierEntry.test(entity));
         }
 
-        private boolean matchByName(Entity entity, Pattern regex) {
+        private static boolean matchByName(Entity entity, Pattern regex) {
             return entity instanceof Player player ?
                     player.getGameProfile().getName() != null && regex.matcher(player.getGameProfile().getName()).matches() :
                     entity.getCustomName() != null && regex.matcher(entity.getCustomName().getString()).matches();
         }
     }
 
-    private record ModifierEntry(Modifier modifier, String value,
-                                 boolean sense) implements Predicate<Entity> {
-
+    private record ModifierEntry(Modifier modifier, String value, boolean sense) implements Predicate<Entity> {
         @Override
         public boolean test(Entity e) {
             return modifier.test(e, value) == sense;

@@ -28,7 +28,7 @@
     },
     {
       "type": "text",
-      "text": "All matches are case-insensitive, e.g. both $(#800)zombie/$ and $(#800)Zombie/$ will match zombies.$(p)You can specify a $(thing)sequence/$ of filters with the ';' (semicolon) separator - this is a $(italic)match any/$ function:$(li)$(#800)creeper;zombie/$ matches both Creepers $(italic)and/$ Zombies."
+      "text": "$(li)(#800)@player(team=team1)/$ matches players on scoreboard team \"team1\"$(p)All matches are case-insensitive, e.g. both $(#800)zombie/$ and $(#800)Zombie/$ will match zombies.$(p)You can specify a $(thing)sequence/$ of filters with the ';' (semicolon) separator - this is a $(italic)match any/$ function:$(li)$(#800)creeper;zombie/$ matches both Creepers $(italic)and/$ Zombies."
     },
     {
       "type": "text",

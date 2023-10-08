@@ -18,6 +18,8 @@ Changes are in reverse chronological order; newest changes at the top.
   * When suppressed, the Jet Boots display panel switches stats from green to red, and blinks them
   * This will also happen if you try to fly more than 64 blocks above max build height (so Y > 384 for the overworld)
   * PNC doesn't do this itself, but it adds a hook for other mods to use...
+* Added new "team" modifier for entity filters: checks if the entity is on the given scoreboard team
+  * E.g. `@player(team=team1)` matches players on team "team1"
 
 ### Fixed
 * When adding custom Heat Properties recipes, no longer require a mod matching the block's namespace to be loaded
