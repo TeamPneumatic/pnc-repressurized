@@ -6,6 +6,21 @@ Changes are in reverse chronological order; newest changes at the top.
 
 # Minecraft 1.19.2
 
+## [4.3.9]
+
+### Added
+* Added new area type for the Area progwidget (and Area GPS Tool): Torus
+  * Thanks @johalun
+  * P1 is assumed to be in the center of the torus
+  * When radially symmetric about the Y-axis, the distance between P1 and P2 in the X/Z plane makes the radius of the torus to the center of the tube and the distance in the Y plane makes the radius of the tube
+* Added new "team" modifier for entity filters: checks if the entity is on the given scoreboard team
+  * E.g. `@player(team=team1)` matches players on team "team1"
+
+### Fixed
+* When adding custom Heat Properties recipes, no longer require a mod matching the block's namespace to be loaded
+  * This allows blocks with custom namespaces to be registered, e.g. via KubeJS
+  * Existence of the block in the block registry is still checked for, of course
+
 ## [4.3.8]
 
 ### Fixed
