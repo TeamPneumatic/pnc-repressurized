@@ -59,7 +59,6 @@ import me.desht.pneumaticcraft.common.util.PlayerFilter;
 import me.desht.pneumaticcraft.common.util.Reflections;
 import me.desht.pneumaticcraft.common.villages.VillageStructures;
 import me.desht.pneumaticcraft.lib.Log;
-import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
 import net.minecraftforge.event.AddReloadListenerEvent;
@@ -67,11 +66,11 @@ import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.server.ServerStartedEvent;
 import net.minecraftforge.event.server.ServerStoppingEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLConstructModEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.fml.loading.FMLEnvironment;
 
 @Mod(Names.MOD_ID)
 public class PneumaticCraftRepressurized {
@@ -84,7 +83,9 @@ public class PneumaticCraftRepressurized {
         ConfigHolder.init();
         AuxConfigHandler.preInit();
 
-        DistExecutor.safeRunWhenOn(Dist.CLIENT, () -> ClientSetup::onModConstruction);
+        if (FMLEnvironment.dist.isClient()) {
+            ClientSetup.onModConstruction();
+        }
 
         modBus.addListener(this::modConstructSetup);
         modBus.addListener(this::commonSetup);
