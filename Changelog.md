@@ -6,6 +6,12 @@ Changes are in reverse chronological order; newest changes at the top.
 
 # Minecraft 1.20.1
 
+## [6.0.10]
+
+### Fixed
+* Fixed case where equipping a piece of Pneumatic Armor over another piece of Pneumatic Armor didn't trigger a re-init of the armor
+* Fixed server startup failing when in dev environment (launched via 'runServer')
+
 ## [6.0.9]
 
 ### Added
