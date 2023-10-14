@@ -102,6 +102,18 @@ public class CommonArmorHandler implements ICommonArmorHandler {
         return getHandlerForPlayer(ClientUtils.getClientPlayer());
     }
 
+    public void armorSwitched(EquipmentSlot slot) {
+        // called from LivingEntityMixin when a piece of pneumatic armor is equipped, replacing existing pneumatic armor
+        // need to reset the init counter to force rescan of upgrades etc.
+        if (ticksSinceEquip[slot.getIndex()] > 0) {
+            airHandlers.set(slot.getIndex(), LazyOptional.empty());
+            if (ticksSinceEquip[slot.getIndex()] > 1) {
+                onArmorRemoved(slot);
+            }
+            ticksSinceEquip[slot.getIndex()] = 0;
+        }
+    }
+
     @Mod.EventBusSubscriber(modid = Names.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
     public static class Listeners {
         @SubscribeEvent

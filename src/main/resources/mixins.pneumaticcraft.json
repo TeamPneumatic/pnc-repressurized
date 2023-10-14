@@ -20,7 +20,8 @@
     "accessors.StructureTemplatePoolAccess",
     "accessors.WitchAccess",
     "accessors.WorldGenRegionAccess",
-    "coremods.BaseSpawnerMixin"
+    "coremods.BaseSpawnerMixin",
+    "coremods.LivingEntityMixin"
   ],
   "client": [
     "accessors.TooltipAccess"
