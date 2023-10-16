@@ -67,7 +67,8 @@ public class ModBlocks {
                 .mapColor(MapColor.WATER)
                 .noCollission()
                 .strength(100f)
-                .noLootTable();
+                .noLootTable()
+                .replaceable();
     }
 
     public static final RegistryObject<PressureTubeBlock> PRESSURE_TUBE = register("pressure_tube",
