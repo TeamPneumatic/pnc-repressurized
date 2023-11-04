@@ -211,7 +211,7 @@ public class ArmorMainScreen extends AbstractPneumaticCraftScreen implements IGu
     @Override
     public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
         return getCurrentOptionsPage().page.keyReleased(keyCode, scanCode, modifiers)
-                || super.keyPressed(keyCode, scanCode, modifiers);
+                || super.keyReleased(keyCode, scanCode, modifiers);
     }
 
     @Override
