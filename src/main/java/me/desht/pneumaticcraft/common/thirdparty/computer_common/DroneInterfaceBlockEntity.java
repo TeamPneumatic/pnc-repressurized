@@ -786,6 +786,16 @@ public class DroneInterfaceBlockEntity extends AbstractTickingBlockEntity
                 return null;
             }
         });
+
+        registry.registerLuaMethod(new LuaMethod("setAllowStandbyPickup") {
+            @Override
+            public Object[] call(Object[] args) {
+                requireArgs(args, 1, "<boolean> standby_pickup");
+                getWidget().setAllowStandbyPickup((Boolean) args[0]);
+                messageToDrone(0xFFFFFFFF);
+                return null;
+            }
+        });
     }
 
     @Override

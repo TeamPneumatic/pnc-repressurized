@@ -52,7 +52,7 @@ import java.util.function.Predicate;
 public class ProgWidgetCC extends ProgWidgetInventoryBase implements IBlockOrdered, IGotoWidget, IItemPickupWidget,
         IEntityProvider, ITextWidget, ICondition, IItemDropper, ILiquidFiltered, IRedstoneEmissionWidget,
         IRenamingWidget, ICraftingWidget, IMaxActions, IBlockRightClicker, ILiquidExport, ISignEditWidget,
-        IToolUser, ICheckLineOfSight {
+        IToolUser, ICheckLineOfSight, IStandbyWidget {
     private Ordering order = Ordering.CLOSEST;
     private boolean[] sides = new boolean[6];
     private final Set<BlockPos> area = new HashSet<>();
@@ -82,6 +82,7 @@ public class ProgWidgetCC extends ProgWidgetInventoryBase implements IBlockOrder
     private boolean canSteal;
     private boolean checkSight;
     private boolean signBackSide;
+    private boolean allowStandbyPickup;
 
     public ProgWidgetCC() {
         super(ModProgWidgets.COMPUTER_CONTROL.get());
@@ -558,5 +559,15 @@ public class ProgWidgetCC extends ProgWidgetInventoryBase implements IBlockOrder
     @Override
     public boolean isCheckSight() {
         return checkSight;
+    }
+
+    @Override
+    public boolean allowPickupOnStandby() {
+        return allowStandbyPickup;
+    }
+
+    @Override
+    public void setAllowStandbyPickup(boolean allowStandbyPickup) {
+        this.allowStandbyPickup = allowStandbyPickup;
     }
 }
