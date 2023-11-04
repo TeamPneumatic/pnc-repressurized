@@ -17,20 +17,10 @@
 
 package me.desht.pneumaticcraft.client.particle;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.Tesselator;
-import com.mojang.blaze3d.vertex.VertexFormat;
 import me.desht.pneumaticcraft.common.particle.AirParticleData;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.*;
-import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.client.renderer.texture.TextureAtlas;
-import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.core.BlockPos;
-import org.lwjgl.opengl.GL11;
 
 import javax.annotation.Nullable;
 
@@ -87,7 +77,8 @@ public class AirParticle extends TextureSheetParticle {
 
     @Override
     public ParticleRenderType getRenderType() {
-        return AIR_PARTICLE_RENDER;
+//        return AIR_PARTICLE_RENDER;
+        return ParticleRenderType.PARTICLE_SHEET_TRANSLUCENT;
     }
 
     public static class Factory implements ParticleProvider<AirParticleData> {
@@ -106,36 +97,36 @@ public class AirParticle extends TextureSheetParticle {
         }
     }
 
-    private static final ParticleRenderType AIR_PARTICLE_RENDER = new ParticleRenderType() {
-        @Override
-        public void begin(BufferBuilder bufferBuilder, TextureManager textureManager) {
-            RenderSystem.depthMask(false);
-            RenderSystem.enableBlend();
-            RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-            // TODO 1.17 how do we do this now?
-//            RenderSystem.alphaFunc(GL11.GL_GREATER, 0.003921569F);
-//            RenderSystem.disableLighting();
-
-            RenderSystem.setShaderTexture(0, TextureAtlas.LOCATION_PARTICLES);
-            RenderSystem.setShader(GameRenderer::getParticleShader);
-//            textureManager.getTexture(TextureAtlas.LOCATION_PARTICLES).setBlurMipmap(true, false);
-            bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.PARTICLE);
-        }
-
-        @Override
-        public void end(Tesselator tessellator) {
-            tessellator.end();
-
-            Minecraft.getInstance().textureManager.getTexture(TextureAtlas.LOCATION_PARTICLES).restoreLastBlurMipmap();
-//            RenderSystem.alphaFunc(GL11.GL_GREATER, 0.1F);
-            RenderSystem.disableBlend();
-            RenderSystem.depthMask(true);
-        }
-
-        @Override
-        public String toString() {
-            return "pneumaticcraft:air_particle";
-        }
-    };
+//    private static final ParticleRenderType AIR_PARTICLE_RENDER = new ParticleRenderType() {
+//        @Override
+//        public void begin(BufferBuilder bufferBuilder, TextureManager textureManager) {
+//            RenderSystem.depthMask(false);
+//            RenderSystem.enableBlend();
+//            RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+//            // TODO 1.17 how do we do this now?
+////            RenderSystem.alphaFunc(GL11.GL_GREATER, 0.003921569F);
+////            RenderSystem.disableLighting();
+//
+//            RenderSystem.setShaderTexture(0, TextureAtlas.LOCATION_PARTICLES);
+//            RenderSystem.setShader(GameRenderer::getParticleShader);
+////            textureManager.getTexture(TextureAtlas.LOCATION_PARTICLES).setBlurMipmap(true, false);
+//            bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.PARTICLE);
+//        }
+//
+//        @Override
+//        public void end(Tesselator tessellator) {
+//            tessellator.end();
+//
+//            Minecraft.getInstance().textureManager.getTexture(TextureAtlas.LOCATION_PARTICLES).restoreLastBlurMipmap();
+////            RenderSystem.alphaFunc(GL11.GL_GREATER, 0.1F);
+//            RenderSystem.disableBlend();
+//            RenderSystem.depthMask(true);
+//        }
+//
+//        @Override
+//        public String toString() {
+//            return "pneumaticcraft:air_particle";
+//        }
+//    };
 
 }
