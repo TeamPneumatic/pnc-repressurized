@@ -8,8 +8,16 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## [6.0.10]
 
+### Added
+* Added "Allow Drone Pickup" option to the Standby programming widget
+  * When checked, drones in standby mode can be picked up by other entities (boats, minecarts...) regardless of the global `drones_can_be_picked_up` setting
+
 ### Fixed
 * Fixed case where equipping a piece of Pneumatic Armor over another piece of Pneumatic Armor didn't trigger a re-init of the armor
+* Fixed missing info for Item Life Pneumatic Armor upgrade in the charging station GUI
+* Fixed keypresses being picked up twice in the Entity Tracker GUI textfield
+* Fixed Pneumatic Armor chestplate charging module wasting air trying and failing to charge stacked Air Canisters 
+* Fixed PNC fluids not being replaceable (was impossible to place blocks to fill in an oil lake, for example)
 * Fixed server startup failing when in dev environment (launched via 'runServer')
 
 ## [6.0.9]
