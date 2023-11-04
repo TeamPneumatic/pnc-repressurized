@@ -1404,7 +1404,7 @@
    "pneumaticcraft.gui.tab.info.item.armor.generic.armorUpgrade" : "§0Armor Upgrades add a small amount of armor protection to the armor piece.  2 upgrades will bring the armor level up to Diamond Armor level; the maximum number of upgrades offers excellent protection.",
    "pneumaticcraft.gui.tab.info.item.armor.generic.creativeUpgrade" : "§0A Creative Upgrade in any armor piece negates all armor damage and air usage for that piece, unconditionally.",
    "pneumaticcraft.gui.tab.info.item.armor.generic.gildedUpgrade" : "§0A Gilded Upgrade in any armor piece is equivalent to wearing a piece of Gold Armor, as far as Piglins are concerned.",
-   "pneumaticcraft.gui.tab.info.item.armor.generic.itemLifeUpgrade" : "§0Item Life Upgrades allow this armor piece to be slowly auto-repaired, at a cost of air.  More upgrades mean faster repair (but progressively more inefficient air usage).",
+   "pneumaticcraft.gui.tab.info.item.armor.generic.item_lifeUpgrade" : "§0Item Life Upgrades make this armor piece slowly auto-repair, at a cost of air.  More upgrades mean faster repair (but progressively more inefficient air usage).",
    "pneumaticcraft.gui.tab.info.item.armor.generic.radiation_shieldingUpgrade" : "§0Protects against radiation damage from other mods, such as Mekanism. For full protection, you need one Radiation Shielding Upgrade in every piece of armor, although any upgrades are better than none at all.",
    "pneumaticcraft.gui.tab.info.item.armor.generic.speedUpgrade" : "§0Each Speed Upgrade installed reduces this armor piece's startup time.",
    "pneumaticcraft.gui.tab.info.item.armor.generic.thaumcraftUpgrade" : "§0With a Thaumcraft Upgrade installed, you get a Vis discount equivalent to the corresponding Thaumaturge's Armor piece.",
