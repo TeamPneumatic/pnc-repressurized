@@ -81,16 +81,17 @@ public class ChargingHandler extends BaseArmorUpgradeHandler<IArmorExtensionData
     }
 
     private void tryPressurize(ICommonArmorHandler commonArmorHandler, int airAmount, ItemStack destStack) {
-        if (destStack.isEmpty()) return;
-        destStack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).ifPresent(destHandler -> {
-            float pressure = destHandler.getPressure();
-            if (pressure < destHandler.maxPressure() && pressure < commonArmorHandler.getArmorPressure(EquipmentSlot.CHEST)) {
-                int currentAir = destHandler.getAir();// pressure * destHandler.getVolume();
-                int targetAir = (int) (commonArmorHandler.getArmorPressure(EquipmentSlot.CHEST) * destHandler.getVolume());
-                int amountToMove = Mth.clamp(targetAir - currentAir, -airAmount, airAmount);
-                destHandler.addAir(amountToMove);
-                commonArmorHandler.addAir(EquipmentSlot.CHEST, -amountToMove);
-            }
-        });
+        if (destStack.getCount() == 1) {
+            destStack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).ifPresent(destHandler -> {
+                float pressure = destHandler.getPressure();
+                if (pressure < destHandler.maxPressure() && pressure < commonArmorHandler.getArmorPressure(EquipmentSlot.CHEST)) {
+                    int currentAir = destHandler.getAir();// pressure * destHandler.getVolume();
+                    int targetAir = (int) (commonArmorHandler.getArmorPressure(EquipmentSlot.CHEST) * destHandler.getVolume());
+                    int amountToMove = Mth.clamp(targetAir - currentAir, -airAmount, airAmount);
+                    destHandler.addAir(amountToMove);
+                    commonArmorHandler.addAir(EquipmentSlot.CHEST, -amountToMove);
+                }
+            });
+        }
     }
 }
