@@ -111,7 +111,7 @@ public class EntityPathNavigateDrone extends FlyingPathNavigation implements IPa
             return null;
         }
 
-        droneEntity.setStandby(false);
+        droneEntity.setStandby(false, false);
 
         Path path;
         boolean tallBlockKludge = false;

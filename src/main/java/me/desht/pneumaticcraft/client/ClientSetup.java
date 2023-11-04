@@ -403,6 +403,7 @@ public class ClientSetup {
         ProgWidgetGuiManager.registerProgWidgetGui(ProgWidgetPressureCondition.class, ProgWidgetConditionScreen::new);
         ProgWidgetGuiManager.registerProgWidgetGui(ProgWidgetRedstoneCondition.class, ProgWidgetConditionScreen::new);
         ProgWidgetGuiManager.registerProgWidgetGui(ProgWidgetEnergyCondition.class, ProgWidgetConditionScreen::new);
+        ProgWidgetGuiManager.registerProgWidgetGui(ProgWidgetStandby.class, ProgWidgetStandbyScreen::new);
         ProgWidgetGuiManager.registerProgWidgetGui(ProgWidgetText.class, ProgWidgetStringScreen::new);
         ProgWidgetGuiManager.registerProgWidgetGui(ProgWidgetComment.class, ProgWidgetStringScreen::new);
         ProgWidgetGuiManager.registerProgWidgetGui(ProgWidgetTeleport.class, ProgWidgetGoToLocationScreen::new);

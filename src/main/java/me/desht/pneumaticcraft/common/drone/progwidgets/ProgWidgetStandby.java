@@ -22,6 +22,9 @@ import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.common.drone.IDroneBase;
 import me.desht.pneumaticcraft.common.entity.drone.DroneEntity;
 import me.desht.pneumaticcraft.lib.Textures;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.item.DyeColor;
@@ -29,7 +32,11 @@ import net.minecraft.world.item.DyeColor;
 import java.util.Collections;
 import java.util.List;
 
-public class ProgWidgetStandby extends ProgWidget {
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
+
+public class ProgWidgetStandby extends ProgWidget implements IStandbyWidget {
+    private boolean allowStandbyPickup;
+
     public ProgWidgetStandby() {
         super(ModProgWidgets.STANDBY.get());
     }
@@ -66,19 +73,65 @@ public class ProgWidgetStandby extends ProgWidget {
 
     @Override
     public Goal getWidgetAI(IDroneBase drone, IProgWidget widget) {
-        return new DroneAIStandby((DroneEntity) drone);
+        return new DroneAIStandby((DroneEntity) drone, (ProgWidget) widget);
+    }
+
+    @Override
+    public void getTooltip(List<Component> curTooltip) {
+        super.getTooltip(curTooltip);
+
+        if (allowStandbyPickup) {
+            curTooltip.add(xlate("pneumaticcraft.gui.progWidget.standby.allowPickup"));
+        }
+    }
+
+    @Override
+    public boolean allowPickupOnStandby() {
+        return allowStandbyPickup;
+    }
+
+    @Override
+    public void setAllowStandbyPickup(boolean allowStandbyPickup) {
+        this.allowStandbyPickup = allowStandbyPickup;
+    }
+
+    @Override
+    public void writeToNBT(CompoundTag tag) {
+        super.writeToNBT(tag);
+        if (allowStandbyPickup) tag.putBoolean("allowStandbyPickup", true);
+    }
+
+    @Override
+    public void readFromNBT(CompoundTag tag) {
+        super.readFromNBT(tag);
+        allowStandbyPickup = tag.getBoolean("allowStandbyPickup");
+    }
+
+    @Override
+    public void writeToPacket(FriendlyByteBuf buf) {
+        super.writeToPacket(buf);
+        buf.writeBoolean(allowStandbyPickup);
+    }
+
+    @Override
+    public void readFromPacket(FriendlyByteBuf buf) {
+        super.readFromPacket(buf);
+        allowStandbyPickup = buf.readBoolean();
     }
 
     public static class DroneAIStandby extends Goal {
         private final DroneEntity drone;
+        private final ProgWidget widget;
 
-        DroneAIStandby(DroneEntity drone) {
+        DroneAIStandby(DroneEntity drone, ProgWidget widget) {
             this.drone = drone;
+            this.widget = widget;
         }
 
         @Override
         public boolean canUse() {
-            drone.setStandby(true);
+            boolean allowPickup = widget instanceof IStandbyWidget s && s.allowPickupOnStandby();
+            drone.setStandby(true, allowPickup);
             return false;
         }
     }

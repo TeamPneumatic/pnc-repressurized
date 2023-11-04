@@ -111,7 +111,7 @@ public class DroneGoToChargingStation extends Goal {
                 if (chargingTime > 20) {
                     drone.getPathNavigator().moveToXYZ(curCharger.getBlockPos().getX() + 0.5, curCharger.getBlockPos().getY() + 1.5, curCharger.getBlockPos().getZ() + 0.5);
                     if (drone.getNavigation().getPath() == null || drone.getNavigation().getPath().isDone()) {
-                        drone.setStandby(true);
+                        drone.setStandby(true, false);
                     } else {
                         chargingTime = 0;
                     }

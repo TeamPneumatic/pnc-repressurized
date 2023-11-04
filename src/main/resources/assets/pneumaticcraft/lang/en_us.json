@@ -1240,6 +1240,8 @@
    "pneumaticcraft.gui.progWidget.place.debug.cantPlaceBlock" : "The block cannot be placed here.",
    "pneumaticcraft.gui.progWidget.place.debug.entityInWay" : "Can't place block: entity in the way.",
    "pneumaticcraft.gui.progWidget.place.debug.noClearSides" : "No clear sides to place a block.",
+   "pneumaticcraft.gui.progWidget.standby.allowPickup" : "Allow Drone Pickup",
+   "pneumaticcraft.gui.progWidget.standby.allowPickup.tooltip" : "When checked, the drone can be picked up by other entities (e.g. boats/minecarts) while in standby mode",
    "pneumaticcraft.gui.redstoneModule.addAdvancedPCB" : "Apply a Module Expansion Card to enable more features.",
    "pneumaticcraft.gui.redstoneModule.clickToToggle" : "Click to Toggle",
    "pneumaticcraft.gui.redstoneModule.constant" : "Constant",
