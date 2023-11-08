@@ -6,6 +6,11 @@ Changes are in reverse chronological order; newest changes at the top.
 
 # Minecraft 1.20.1
 
+## [6.0.11]
+
+### Fixed
+* Fixed Crop Supports not actually doing any growth tick acceleration!
+
 ## [6.0.10]
 
 ### Added
