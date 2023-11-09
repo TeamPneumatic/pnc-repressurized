@@ -21,6 +21,8 @@ import me.desht.pneumaticcraft.common.PneumaticCraftAPIHandler;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModFluids;
 import me.desht.pneumaticcraft.common.core.ModItems;
+import me.desht.pneumaticcraft.lib.Log;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -36,10 +38,18 @@ public class FluidSetup {
 
         // register hot fluids as (very inefficient) fuels
         for (Fluid fluid : ForgeRegistries.FLUIDS.getValues()) {
-            int temperature = fluid.getFluidType().getTemperature();
-            if (temperature >= ConfigHelper.common().general.minFluidFuelTemperature.get() && fluid.isSource(fluid.defaultFluidState())) {
-                // non-API usage... register an explicit fluid rather than a tag
-                FuelRegistry.getInstance().registerHotFluid(fluid, (temperature - 300) * 40, 0.25f);
+            try {
+                int temperature = fluid.getFluidType().getTemperature();
+                if (temperature >= ConfigHelper.common().general.minFluidFuelTemperature.get() && fluid.isSource(fluid.defaultFluidState())) {
+                    // non-API usage... register an explicit fluid rather than a tag
+                    FuelRegistry.getInstance().registerHotFluid(fluid, (temperature - 300) * 40, 0.25f);
+                }
+            } catch (RuntimeException e) {
+                ResourceLocation fluidId = ForgeRegistries.FLUIDS.getKey(fluid);
+                Log.error("Caught exception while checking the fluid type of {}: {}", fluidId, e.getMessage());
+                if (fluidId != null) {
+                    Log.error("Looks like {} isn't setting a fluid type for this fluid, please report to the mod author", fluidId.getNamespace());
+                }
             }
         }
 
