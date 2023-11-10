@@ -641,7 +641,10 @@ public class WidgetAnimatedStat extends AbstractWidget implements IGuiAnimatedSt
         if (isHovered()) {
             for (AbstractWidget widget : subWidgets) {
                 if (widget.mouseClicked(mouseX - this.getX(), mouseY - this.effectiveY, button)) {
-                    return true;
+                    gui.setFocused(widget);
+                    return false;
+                } else {
+                    widget.setFocused(false);
                 }
             }
             // no sub-widgets took the click; toggle this animated stat open/closed
