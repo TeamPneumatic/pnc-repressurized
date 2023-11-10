@@ -38,7 +38,6 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.BucketItem;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
@@ -210,7 +209,7 @@ public class LiquidHopperBlockEntity extends AbstractHopperBlockEntity<LiquidHop
     boolean shouldScanForEntities(Direction dir) {
         BlockEntity te = getCachedNeighbor(dir);
         return (te == null || !te.getCapability(ForgeCapabilities.FLUID_HANDLER, dir.getOpposite()).isPresent())
-                && !Block.canSupportCenter(nonNullLevel(), worldPosition.relative(dir), dir.getOpposite());
+                && !isInputBlocked();
     }
 
     public HopperTank getTank() {
