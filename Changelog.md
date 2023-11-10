@@ -13,7 +13,8 @@ Changes are in reverse chronological order; newest changes at the top.
   * Now behaves more like vanilla Hoppers, so e.g. a carpet on the hopper doesn't prevent item absorption
 * Fixed Crop Supports not actually doing any growth tick acceleration!
 * Fixed crash on init caused by other mods failing to set a fluid type for their modded fluids
-  * Now logs an error instead and shows which fluid was at fault; this fluid will not be useable as temperature-based fuel in compressors
+  * Now logs an error instead and shows which fluid was at fault; this fluid will not be usable as temperature-based fuel in compressors
+* Fixed textfield focus problems for Minimum Order Size GUI side tab for logistics frames
 
 ## [6.0.10]
 
