@@ -29,6 +29,7 @@ import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntitySelector;
 import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -202,4 +203,9 @@ public abstract class AbstractHopperBlockEntity<T extends BlockEntity & IRedston
     }
 
     abstract boolean shouldScanForEntities(Direction dir);
+
+    protected final boolean isInputBlocked() {
+        BlockPos inputPos = worldPosition.relative(inputDir);
+        return Block.isShapeFullBlock(nonNullLevel().getBlockState(inputPos).getShape(nonNullLevel(), inputPos));
+    }
 }

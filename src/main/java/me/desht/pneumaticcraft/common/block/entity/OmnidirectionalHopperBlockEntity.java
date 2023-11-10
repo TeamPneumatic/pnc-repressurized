@@ -158,8 +158,7 @@ public class OmnidirectionalHopperBlockEntity extends AbstractHopperBlockEntity<
         }
 
         // Suck in item entities in front of the input
-        BlockPos inputPos = worldPosition.relative(inputDir);
-        if (!Block.canSupportCenter(nonNullLevel(), inputPos, inputDir.getOpposite())) {
+        if (!isInputBlocked()) {
             for (Entity e : cachedInputEntities) {
                 if (e.isAlive() && e instanceof ItemEntity entity) {
                     ItemStack remainder = ItemHandlerHelper.insertItem(itemHandler, entity.getItem(), false);
@@ -238,8 +237,7 @@ public class OmnidirectionalHopperBlockEntity extends AbstractHopperBlockEntity<
 
     @Override
     boolean shouldScanForEntities(Direction dir) {
-        if (Block.canSupportCenter(nonNullLevel(), worldPosition.relative(dir), dir.getOpposite())
-                || dir == getRotation() && getUpgrades(ModUpgrades.ENTITY_TRACKER.get()) == 0) {
+        if (isInputBlocked() || dir == getRotation() && getUpgrades(ModUpgrades.ENTITY_TRACKER.get()) == 0) {
             return false;
         }
         BlockEntity te = getCachedNeighbor(dir);
