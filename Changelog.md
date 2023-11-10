@@ -9,7 +9,11 @@ Changes are in reverse chronological order; newest changes at the top.
 ## [6.0.11]
 
 ### Fixed
+* Fixed Omnidirectional & Liquid Hoppers having their input blocked by partial blocks
+  * Now behaves more like vanilla Hoppers, so e.g. a carpet on the hopper doesn't prevent item absorption
 * Fixed Crop Supports not actually doing any growth tick acceleration!
+* Fixed crash on init caused by other mods failing to set a fluid type for their modded fluids
+  * Now logs an error instead and shows which fluid was at fault; this fluid will not be useable as temperature-based fuel in compressors
 
 ## [6.0.10]
 
