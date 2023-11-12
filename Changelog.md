@@ -8,6 +8,10 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## [6.0.11]
 
+### Added
+* Sentry Turrets, Drones and Miniguns can now take a Creative Supply Upgrade
+  * When installed, those things have infinite ammunition and air (where applicable)
+
 ### Fixed
 * Fixed Omnidirectional & Liquid Hoppers having their input blocked by partial blocks
   * Now behaves more like vanilla Hoppers, so e.g. a carpet on the hopper doesn't prevent item absorption
