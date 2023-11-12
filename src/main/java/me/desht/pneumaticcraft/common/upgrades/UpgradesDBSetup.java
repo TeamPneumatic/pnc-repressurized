@@ -41,7 +41,8 @@ public class UpgradesDBSetup {
             .with(ModUpgrades.MINIGUN.get(), 1)
             .with(ModUpgrades.MAGNET.get(), 6)
             .with(ModUpgrades.ARMOR.get(), 15)
-            .with(ModUpgrades.RANGE.get(), 16);
+            .with(ModUpgrades.RANGE.get(), 16)
+            .with(ModUpgrades.CREATIVE.get(), 1);
     
     private static final Builder BASIC_DRONE_UPGRADES = new Builder()
             .with(ModUpgrades.VOLUME.get(), MAX_VOLUME)
@@ -53,7 +54,8 @@ public class UpgradesDBSetup {
     private static final Builder GUARD_DRONE_UPGRADES = Builder.copyOf(BASIC_DRONE_UPGRADES)
             .with(ModUpgrades.MINIGUN.get(), 1)
             .with(ModUpgrades.ARMOR.get(), 15)
-            .with(ModUpgrades.RANGE.get(), 16);
+            .with(ModUpgrades.RANGE.get(), 16)
+            .with(ModUpgrades.CREATIVE.get(), 1);
 
     private static final Builder COLLECTOR_DRONE_UPGRADES = Builder.copyOf(BASIC_DRONE_UPGRADES)
             .with(ModUpgrades.MAGNET.get(), 6)
@@ -85,7 +87,8 @@ public class UpgradesDBSetup {
                 .with(ModUpgrades.DISPENSER.get(), 3)
                 .with(ModUpgrades.ITEM_LIFE.get(), 4)
                 .with(ModUpgrades.ENTITY_TRACKER.get(), 4)
-                .with(ModUpgrades.SECURITY.get(), 1));
+                .with(ModUpgrades.SECURITY.get(), 1)
+                .with(ModUpgrades.CREATIVE.get(), 1));
 
         db.addApplicableUpgrades(ModItems.JACKHAMMER.get(), new Builder()
                 .with(ModUpgrades.SPEED.get(), 10)
@@ -235,6 +238,7 @@ public class UpgradesDBSetup {
                 .with(ModUpgrades.VOLUME.get(), MAX_VOLUME)
                 .with(ModUpgrades.DISPENSER.get(), 1));
         db.addApplicableUpgrades(ModBlockEntities.SENTRY_TURRET.get(), new Builder()
+                .with(ModUpgrades.CREATIVE.get(), 1)
                 .with(ModUpgrades.RANGE.get(), 16));
         db.addApplicableUpgrades(ModBlockEntities.FLUX_COMPRESSOR.get(), new Builder()
                 .with(ModUpgrades.SECURITY.get(), 1)

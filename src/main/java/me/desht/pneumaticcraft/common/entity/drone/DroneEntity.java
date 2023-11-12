@@ -508,7 +508,9 @@ public class DroneEntity extends AbstractDroneEntity implements
         if (isAccelerating()) {
             setDeltaMovement(getDeltaMovement().scale(0.3));
             propSpeed = Math.min(1, propSpeed + 0.04F);
-            getAirHandler().addAir(-1);
+            if (!level.isClientSide) {
+                getAirHandler().addAir(-1);
+            }
         } else {
             propSpeed = Math.max(0, propSpeed - 0.04F);
         }
@@ -969,7 +971,14 @@ public class DroneEntity extends AbstractDroneEntity implements
             ItemStack stack = new ItemStack(getDroneItem());
             EnchantmentHelper.setEnchantments(stackEnchants, stack);
             vol = ItemRegistry.getInstance().getModifiedVolume(stack, vol);
-            airHandler = new BasicAirHandler(vol);
+            airHandler = new BasicAirHandler(vol) {
+                @Override
+                public void addAir(int amount) {
+                    if (amount > 0 || getUpgrades(ModUpgrades.CREATIVE.get()) == 0) {
+                        super.addAir(amount);
+                    }
+                }
+            };
         }
         return airHandler;
     }
@@ -1124,7 +1133,8 @@ public class DroneEntity extends AbstractDroneEntity implements
         if (minigun == null) {
             minigun = new MinigunDrone(level().isClientSide ? null : getFakePlayer())
                     .setWorld(level())
-                    .setAirHandler(this.getCapability(PNCCapabilities.AIR_HANDLER_CAPABILITY), PneumaticValues.DRONE_USAGE_ATTACK);
+                    .setAirHandler(this.getCapability(PNCCapabilities.AIR_HANDLER_CAPABILITY), PneumaticValues.DRONE_USAGE_ATTACK)
+                    .setInfiniteAmmo(getUpgrades(ModUpgrades.CREATIVE.get()) > 0);
         }
         return minigun;
     }

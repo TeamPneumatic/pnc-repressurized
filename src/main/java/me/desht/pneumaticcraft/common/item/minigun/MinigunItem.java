@@ -179,10 +179,12 @@ public class MinigunItem extends PressurizableItem implements
     }
 
     private Minigun getMinigun(ItemStack stack, Player player, ItemStack ammo) {
+        boolean isCreative = UpgradableItemUtils.getUpgradeCount(stack, ModUpgrades.CREATIVE.get()) > 0;
         return new ItemMinigunImpl(player, stack)
                 .setAmmoStack(ammo)
-                .setAirHandler(stack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY), PneumaticValues.USAGE_ITEM_MINIGUN)
-                .setWorld(player.level());
+                .setAirHandler(stack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY), isCreative ? 0 : PneumaticValues.USAGE_ITEM_MINIGUN)
+                .setWorld(player.level())
+                .setInfiniteAmmo(isCreative);
     }
 
     public Minigun getMinigun(ItemStack stack, Player player) {

@@ -79,6 +79,7 @@ public abstract class Minigun {
     protected Level world;
     private LivingEntity attackTarget;
     private float idleYaw;
+    private boolean infiniteAmmo = false;
 
     public Minigun(Player player, boolean requiresTarget) {
         this.player = player;
@@ -226,6 +227,15 @@ public abstract class Minigun {
         return !requiresTarget || gunAimedAtTarget;
     }
 
+    public boolean isInfiniteAmmo() {
+        return infiniteAmmo;
+    }
+
+    public Minigun setInfiniteAmmo(boolean infiniteAmmo) {
+        this.infiniteAmmo = infiniteAmmo;
+        return  this;
+    }
+
     public boolean tryFireMinigun(Entity target) {
         boolean lastShotOfAmmo = false;
         if (!ammoStack.isEmpty() && ammoStack.getDamageValue() < ammoStack.getMaxDamage() && airCapability.map(h -> h.getPressure() > 0).orElse(true)) {
@@ -257,8 +267,10 @@ public abstract class Minigun {
                     roundsUsed = ammoItem.onBlockHit(this, ammoStack, brtr);
                 }
                 int ammoCost = roundsUsed * ammoItem.getAmmoCost(ammoStack);
-                lastShotOfAmmo = ammoStack.hurt(ammoCost, rand, player instanceof ServerPlayer ? (ServerPlayer) player : null)
-                        && EnchantmentHelper.getItemEnchantmentLevel(Enchantments.UNBREAKING, ammoStack) == 0;
+                if (!isInfiniteAmmo()) {
+                    lastShotOfAmmo = ammoStack.hurt(ammoCost, rand, player instanceof ServerPlayer ? (ServerPlayer) player : null)
+                            && EnchantmentHelper.getItemEnchantmentLevel(Enchantments.UNBREAKING, ammoStack) == 0;
+                }
             }
         }
         return lastShotOfAmmo;

@@ -288,6 +288,7 @@ public class SentryTurretBlockEntity extends AbstractTickingBlockEntity implemen
             // in that case, range is recalculated in onFirstServerTick()
             recalculateRange();
         }
+        getMinigun().setInfiniteAmmo(getUpgrades(ModUpgrades.CREATIVE.get()) > 0);
     }
 
     private void recalculateRange() {
