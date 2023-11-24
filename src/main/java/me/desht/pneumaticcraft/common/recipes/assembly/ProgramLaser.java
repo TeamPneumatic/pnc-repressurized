@@ -60,6 +60,11 @@ public class ProgramLaser extends AssemblyProgram {
         return useAir;
     }
 
+    @Override
+    public boolean validateBlockEntity(AssemblyControllerBlockEntity.AssemblySystem system) {
+        return system.getLaser() != null;
+    }
+
     private boolean canItemBeLasered(Level world, ItemStack item) {
         return ModRecipeTypes.ASSEMBLY_LASER.get().findFirst(world, r -> r.matches(item)) != null;
     }

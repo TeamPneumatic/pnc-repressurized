@@ -118,6 +118,11 @@ public class AssemblyControllerBlockEntity extends AbstractAirHandlingBlockEntit
                 if ((!isMachineMissing || curProgram == null) && !isMachineDuplicate) {
                     boolean useAir;
                     if (curProgram != null) {
+                        if (!curProgram.validateBlockEntity(assemblySystem)) {
+                            // just in case a machine we think should be there, isn't
+                            invalidateAssemblySystem();
+                            return;
+                        }
                         useAir = curProgram.executeStep(assemblySystem);
                         if (useAir) {
                             setStatus("Running...");
