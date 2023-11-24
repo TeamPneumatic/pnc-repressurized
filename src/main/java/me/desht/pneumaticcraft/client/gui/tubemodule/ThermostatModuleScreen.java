@@ -73,7 +73,7 @@ public class ThermostatModuleScreen extends AbstractTubeModuleScreen<ThermostatM
         thresholdField.setValue(threshold);
 
         x = guiLeft + 10 + thresholdLabel.getWidth() + thresholdField.getWidth() + 10;
-        addRenderableWidget(new WidgetLabel(x, y, xlate("pneumaticcraft.gui.tubeModule.celcius")));
+        addRenderableWidget(new WidgetLabel(x, y, xlate("pneumaticcraft.gui.tubeModule.celsius")));
     }
 
     @Override

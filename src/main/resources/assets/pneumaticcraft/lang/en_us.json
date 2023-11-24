@@ -1814,7 +1814,7 @@
    "pneumaticcraft.gui.tubeModule.simpleConfig.higherThan" : "Higher than",
    "pneumaticcraft.gui.tubeModule.simpleConfig.lowerThan" : "Lower than",
    "pneumaticcraft.gui.tubeModule.simpleConfig.threshold" : "Threshold:",
-   "pneumaticcraft.gui.tubeModule.celcius" : "°C",
+   "pneumaticcraft.gui.tubeModule.celsius" : "°C",
    "pneumaticcraft.gui.tubeModule.simpleConfig.turn" : "Emit when",
    "pneumaticcraft.gui.universalSensor.desc.block_comparator" : "This sensor setting simulates a Redstone Comparator at the position(s) marked by the GPS (Area) Tool, so the output redstone signal is proportional to the contents of inventories at those positions. If the comparator output would be side dependant, the highest signal will be emitted.\nIn the case of multiple positions, the highest comparator value from any position will be emitted.",
    "pneumaticcraft.gui.universalSensor.desc.block_heat" : "The block position(s) marked by the GPS (Area) Tool are monitored for heat. When the temperature of the monitored block is higher than the temperature in the text box (in °C) the sensor will emit a redstone level of 15, and 0 if not.\nIf the textfield is empty, the output level is proportional to the temperature, scaling from 0°C (redstone=0) through 400°C (redstone=15).\nIn the case of multiple positions, the position with the highest temperature is used.",
