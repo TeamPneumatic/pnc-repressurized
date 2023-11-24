@@ -31,6 +31,11 @@ import java.util.Collection;
 public class ProgramDrill extends AssemblyProgram {
 
     @Override
+    public boolean validateBlockEntity(AssemblyControllerBlockEntity.AssemblySystem system) {
+        return system.getDrill() != null;
+    }
+
+    @Override
     public EnumMachine[] getRequiredMachines() {
         return new EnumMachine[]{EnumMachine.PLATFORM, EnumMachine.IO_UNIT_EXPORT, EnumMachine.IO_UNIT_IMPORT, EnumMachine.DRILL};
     }

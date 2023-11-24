@@ -34,8 +34,9 @@ import java.util.Collection;
 import java.util.List;
 
 public abstract class AssemblyProgram {
+
     public enum EnumAssemblyProblem {
-        NO_PROBLEM, NO_INPUT, NO_OUTPUT
+        NO_PROBLEM, NO_INPUT, NO_OUTPUT;
     }
 
     public enum EnumMachine implements ITranslatableEnum {
@@ -83,6 +84,8 @@ public abstract class AssemblyProgram {
      * @return true if the controller should use air and display 'running'. Return false to display 'standby'.
      */
     public abstract boolean executeStep(AssemblyControllerBlockEntity.AssemblySystem system);
+
+    public abstract boolean validateBlockEntity(AssemblyControllerBlockEntity.AssemblySystem system);
 
     public abstract void writeToNBT(CompoundTag tag);
 

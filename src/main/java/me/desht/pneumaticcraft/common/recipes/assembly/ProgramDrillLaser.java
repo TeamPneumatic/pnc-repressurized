@@ -64,6 +64,11 @@ public class ProgramDrillLaser extends AssemblyProgram {
         return useAir;
     }
 
+    @Override
+    public boolean validateBlockEntity(AssemblyControllerBlockEntity.AssemblySystem system) {
+        return system.getDrill() != null && system.getLaser() != null;
+    }
+
     private boolean canItemBeLasered(Level world, ItemStack item) {
         return ModRecipeTypes.ASSEMBLY_LASER.get().stream(world).anyMatch(recipe -> recipe.matches(item));
     }
