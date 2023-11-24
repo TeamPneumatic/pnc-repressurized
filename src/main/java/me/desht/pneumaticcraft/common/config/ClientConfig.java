@@ -37,6 +37,7 @@ public class ClientConfig {
         public ForgeConfigSpec.BooleanValue programmerGuiPauses;
         public ForgeConfigSpec.BooleanValue notifyAmadronOfferUpdates;
         public ForgeConfigSpec.BooleanValue pressureChamberParticles;
+        public ForgeConfigSpec.BooleanValue jackHammerHud;
     }
 
     public static class Armor {
@@ -114,6 +115,10 @@ public class ClientConfig {
                 .comment("Should Pressure Chambers show air particle effects inside themselves when pressurized?")
                 .translation("pneumaticcraft.config.client.general.pressure_chamber_particles")
                 .define("pressure_chamber_particles", true);
+        general.jackHammerHud = builder
+                .comment("Should the Jackhammer continually show a HUD indicating break modes other than basic single-block? If false, the mode HUD will show only when switching modes")
+                .translation("pneumaticcraft.config.client.general.jackhammer_hud")
+                .define("jackhammer_hud", true);
         builder.pop();
 
         builder.push("armor");
