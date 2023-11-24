@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.client.render.overlays;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.item.JackHammerItem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -19,7 +20,8 @@ public class JackhammerOverlay implements IGuiOverlay {
             return;
         long timeDelta = player.level().getGameTime() - JackHammerItem.getLastModeSwitchTime();
         JackHammerItem.DigMode digMode = JackHammerItem.getDigMode(player.getMainHandItem());
-        if (digMode != null && (digMode.atLeast(JackHammerItem.DigMode.MODE_1X2) || timeDelta < 30 || player.isCrouching())) {
+        boolean showHud = ConfigHelper.client().general.jackHammerHud.get();
+        if (digMode != null && (digMode.atLeast(JackHammerItem.DigMode.MODE_1X2) && showHud || timeDelta < 30 || player.isCrouching())) {
             RenderSystem.enableBlend();
             RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
             RenderSystem.setShaderColor(1f, 1f, 1f, 0.25f);
