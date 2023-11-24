@@ -60,7 +60,7 @@ public class ModuleNetworkManager {
         while (!pendingPositions.isEmpty()) {
             BlockPos pos = pendingPositions.pop();
             PneumaticCraftUtils.getTileEntityAt(level, pos, PressureTubeBlockEntity.class).ifPresent(tube -> tube.tubeModules()
-                    .filter(tm -> tm instanceof INetworkedModule && module.getClass() == tm.getClass())
+                    .filter(tm -> tm instanceof INetworkedModule)
                     .forEach(modules::add));
             for (Direction dir : DirectionUtil.VALUES) {
                 BlockPos pos1 = pos.relative(dir);
