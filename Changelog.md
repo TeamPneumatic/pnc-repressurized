@@ -6,6 +6,10 @@ Changes are in reverse chronological order; newest changes at the top.
 
 # Minecraft 1.19.2
 
+## [4.3.11]
+* Fixed crash in Assembly system caused by missing machine
+* Added client config setting `jackhammer_hud` (default: true) to control the display of the Jackhammer mode overlay
+
 ## [4.3.10]
 
 ### Fixed
