@@ -6,6 +6,16 @@ Changes are in reverse chronological order; newest changes at the top.
 
 # Minecraft 1.20.1
 
+## [6.0.12]
+
+### Added
+* Added client config setting `jackhammer_hud` (default: true) to control the display of the Jackhammer mode overlay
+
+### Fixed
+* Fixed crash in Assembly system caused by missing machine
+* Fixed Thermopneumatic Processing Plant comparator "has work" output
+  * It wasn't taking fullness of the output into account - it does now
+
 ## [6.0.11]
 
 ### Added
