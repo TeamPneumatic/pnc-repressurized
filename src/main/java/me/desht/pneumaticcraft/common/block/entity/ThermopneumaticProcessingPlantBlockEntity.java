@@ -339,7 +339,13 @@ public class ThermopneumaticProcessingPlantBlockEntity extends AbstractAirHandli
 
     @Override
     public int getComparatorValue() {
-        return currentRecipe != null ? 15 : 0;
+        if (currentRecipe == null
+                || outputTank.fill(currentRecipe.getOutputFluid().copy(), FluidAction.SIMULATE) < currentRecipe.getOutputFluid().getAmount()
+                || !outputItemHandler.insertItem(0, currentRecipe.getOutputItem().copy(), true).isEmpty()) {
+            return 0;
+        } else {
+            return 15;
+        }
     }
 
     public static void clearCachedItemsAndFluids() {
@@ -361,7 +367,7 @@ public class ThermopneumaticProcessingPlantBlockEntity extends AbstractAirHandli
         ThermopneumaticFluidTankInput(int capacity){
             super(ThermopneumaticProcessingPlantBlockEntity.this, capacity);
         }
-        
+
         @Override
         public boolean isFluidValid(FluidStack fluid) {
             return fluid.isEmpty() || acceptedFluidCache.isAcceptable(fluid.getFluid(), () ->
