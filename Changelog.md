@@ -6,7 +6,15 @@ Changes are in reverse chronological order; newest changes at the top.
 
 # Minecraft 1.19.2
 
+## [4.3.12]
+
+### Fixed
+* Fixed Thermopneumatic Processing Plant comparator "has work" output
+  * It wasn't taking fullness of the output into account - it does now
+
 ## [4.3.11]
+
+### Fixed
 * Fixed crash in Assembly system caused by missing machine
 * Added client config setting `jackhammer_hud` (default: true) to control the display of the Jackhammer mode overlay
 
