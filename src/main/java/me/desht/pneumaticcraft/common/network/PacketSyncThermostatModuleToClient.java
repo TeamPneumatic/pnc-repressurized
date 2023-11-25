@@ -35,7 +35,7 @@ public class PacketSyncThermostatModuleToClient extends LocationIntPacket {
     private final Direction side;
     private final int channel;
     private final int level;
-    private final double temperature;
+    private final int temperature;
 
     public PacketSyncThermostatModuleToClient(ThermostatModule module) {
         super(module.getTube().getBlockPos());
@@ -51,7 +51,7 @@ public class PacketSyncThermostatModuleToClient extends LocationIntPacket {
         channel = buffer.readByte();
         side = buffer.readEnum(Direction.class);
         level = buffer.readInt();
-        temperature = buffer.readDouble();
+        temperature = buffer.readInt();
     }
 
     @Override
@@ -60,7 +60,7 @@ public class PacketSyncThermostatModuleToClient extends LocationIntPacket {
         buf.writeByte(channel);
         buf.writeEnum(side);
         buf.writeInt(level);
-        buf.writeDouble(temperature);
+        buf.writeInt(temperature);
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {

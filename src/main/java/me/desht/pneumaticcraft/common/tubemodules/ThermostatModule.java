@@ -53,21 +53,33 @@ import java.util.stream.IntStream;
 
 public class ThermostatModule extends AbstractTubeModule implements INetworkedModule {
 
+    public static final int MIN_VALUE = -273;
+    public static final int MAX_VALUE = 2000;
+
     private int colorChannel;
-    private double temperature = 0.0;
+    private int temperature = 0;
     private int level;
     private int threshold;
     private boolean update = true;
 
     public ThermostatModule(Direction dir, PressureTubeBlockEntity pressureTube) {
         super(dir, pressureTube);
+        lowerBound = ThermostatModule.MIN_VALUE;
+        higherBound = ThermostatModule.MAX_VALUE;
     }
 
-    public double getTemperature() {
+    public int getTemperature() {
         return this.temperature;
     }
 
-    public void setTemperature(double temperature) {
+    public int getTemperatureForLevel(int level) {
+        float temperatureRange = higherBound - lowerBound;
+        float levelNormalized = (float)level / 15f;
+        float temperature = levelNormalized * temperatureRange + lowerBound;
+        return (int)temperature;
+    }
+
+    public void setTemperature(int temperature) {
         this.temperature = temperature;
     }
 
@@ -125,7 +137,12 @@ public class ThermostatModule extends AbstractTubeModule implements INetworkedMo
     @Override
     public void addInfo(List<Component> curInfo) {
         super.addInfo(curInfo);
-        curInfo.add(PneumaticCraftUtils.xlate("pneumaticcraft.waila.tubeModule.threshold_temp", PneumaticCraftUtils.roundNumberTo(getThreshold(), 1)));
+        if (advancedConfig) {
+            curInfo.add(PneumaticCraftUtils.xlate("pneumaticcraft.waila.tubeModule.threshold_temp_bounds",
+                PneumaticCraftUtils.roundNumberTo(lowerBound, 0), PneumaticCraftUtils.roundNumberTo(higherBound, 0)));
+        } else {
+            curInfo.add(PneumaticCraftUtils.xlate("pneumaticcraft.waila.tubeModule.threshold_temp", PneumaticCraftUtils.roundNumberTo(getThreshold(), 1)));
+        }
         curInfo.add(PneumaticCraftUtils.xlate("pneumaticcraft.waila.thermostatModule.temperature", temperature));
         curInfo.add(PneumaticCraftUtils.xlate("pneumaticcraft.waila.thermostatModule.level", level));
     }
@@ -157,6 +174,11 @@ public class ThermostatModule extends AbstractTubeModule implements INetworkedMo
     }
 
     @Override
+    public boolean canConnectTo(AbstractTubeModule other) {
+        return true;
+    }
+
+    @Override
     public void tickServer() {
         super.tickServer();
 
@@ -167,17 +189,23 @@ public class ThermostatModule extends AbstractTubeModule implements INetworkedMo
         }
     }
 
-    private void updateInputLevel() {
+    public void updateInputLevel() {
         Level world = Objects.requireNonNull(pressureTube.getLevel());
-
         BlockPos pos = pressureTube.getBlockPos().relative(getDirection());
 
         HeatExchangerManager.getInstance().getLogic(world, pos, null)
-            .ifPresent(logic -> setTemperature(logic.getTemperature() - 273));
+            .ifPresent(logic -> setTemperature((int)logic.getTemperature() - 273));
 
         int level = 0;
-        if (temperature >= threshold) {
-            level = 15;
+        if (advancedConfig) {
+            float temperatureRange = higherBound - lowerBound;
+            float temperatureNormalized = (temperature - lowerBound) / temperatureRange;
+            level = (int)(15f * temperatureNormalized);
+            level = Math.max(0, Math.min(15, level));
+        } else {
+            if (temperature >= threshold) {
+                level = 15;
+            }
         }
 
         if (this.level != level) {
@@ -192,7 +220,7 @@ public class ThermostatModule extends AbstractTubeModule implements INetworkedMo
 
         tag.putByte("channel", (byte) colorChannel);
         tag.putByte("level", (byte) level);
-        tag.putDouble("temperature", temperature);
+        tag.putInt("temperature", temperature);
         tag.putInt("threshold", threshold);
 
         return tag;
@@ -204,7 +232,7 @@ public class ThermostatModule extends AbstractTubeModule implements INetworkedMo
 
         colorChannel = tag.getByte("channel");
         level = tag.getByte("level");
-        temperature = tag.getDouble("temperature");
+        temperature = tag.getInt("temperature");
         threshold = tag.getInt("threshold");
     }
 

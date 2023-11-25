@@ -418,7 +418,7 @@ public class ClientSetup {
         TubeModuleClientRegistry.registerTubeModuleGUI(Names.MODULE_SAFETY_VALVE, PressureGaugeModuleScreen::createGUI);
         TubeModuleClientRegistry.registerTubeModuleGUI(Names.MODULE_REDSTONE, RedstoneModuleScreen::new);
         TubeModuleClientRegistry.registerTubeModuleGUI(Names.MODULE_LOGISTICS, LogisticsModuleScreen::new);
-        TubeModuleClientRegistry.registerTubeModuleGUI(Names.MODULE_THERMOSTAT, ThermostatModuleScreen::new);
+        TubeModuleClientRegistry.registerTubeModuleGUI(Names.MODULE_THERMOSTAT, ThermostatModuleScreen::createGUI);
 
         TubeModuleClientRegistry.registerTubeModuleRenderer(Names.MODULE_AIR_GRATE, AirGrateRenderer::new);
         TubeModuleClientRegistry.registerTubeModuleRenderer(Names.MODULE_REDSTONE, RedstoneRenderer::new);
