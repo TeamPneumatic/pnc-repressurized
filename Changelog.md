@@ -9,6 +9,11 @@ Changes are in reverse chronological order; newest changes at the top.
 * PNC:R 3.2.3 and later *require* Forge 40.1.20 or later
 * PNC:R 3.2.0 and later *require* Forge 40.1.0 or later and JEI 9.7.0 or later
 
+## 3.6.4
+
+### Fixed
+* Fixed hang on world unload with a lit kerosene lamp (backported fix from 1.19.2)
+
 ## 3.6.3
 
 ### Changed
