@@ -141,7 +141,8 @@ public class ThermostatModule extends AbstractTubeModule implements INetworkedMo
             curInfo.add(PneumaticCraftUtils.xlate("pneumaticcraft.waila.tubeModule.threshold_temp_bounds",
                 PneumaticCraftUtils.roundNumberTo(lowerBound, 0), PneumaticCraftUtils.roundNumberTo(higherBound, 0)));
         } else {
-            curInfo.add(PneumaticCraftUtils.xlate("pneumaticcraft.waila.tubeModule.threshold_temp", PneumaticCraftUtils.roundNumberTo(getThreshold(), 1)));
+            curInfo.add(PneumaticCraftUtils.xlate("pneumaticcraft.waila.tubeModule.threshold_temp",
+                PneumaticCraftUtils.roundNumberTo(getThreshold(), 1)));
         }
         curInfo.add(PneumaticCraftUtils.xlate("pneumaticcraft.waila.thermostatModule.temperature", temperature));
         curInfo.add(PneumaticCraftUtils.xlate("pneumaticcraft.waila.thermostatModule.level", level));

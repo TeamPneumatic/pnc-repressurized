@@ -80,6 +80,8 @@ public class ThermostatModuleScreen extends AbstractTubeModuleScreen<ThermostatM
 
         addLabel(getTitle(), guiLeft + xSize / 2, guiTop + 5, WidgetLabel.Alignment.CENTRE);
 
+        int xStart = (width - xSize) / 2;
+        int yStart = (height - ySize) / 2;
         int x = guiLeft + 10;
         int y = guiTop + 22;
 
@@ -87,7 +89,11 @@ public class ThermostatModuleScreen extends AbstractTubeModuleScreen<ThermostatM
         addRenderableWidget(colorLabel = new WidgetLabel(x, y, xlate("pneumaticcraft.gui.tubeModule.channel")));
 
         x = guiLeft + 10 + colorLabel.getWidth() + 7;
-        colorSelector = new WidgetColorSelector(x, y-2, w -> color = w.getColor().getId())
+        colorSelector = new WidgetColorSelector(x, y-2, w -> {
+                color = w.getColor().getId();
+                module.setColorChannel(color);
+                NetworkHandler.sendToServer(new PacketSyncThermostatModuleToServer(module));
+        })
             .withInitialColor(DyeColor.byId(color));
         addRenderableWidget(colorSelector);
 
@@ -98,9 +104,6 @@ public class ThermostatModuleScreen extends AbstractTubeModuleScreen<ThermostatM
         }).setChecked(true);
         advancedMode.setTooltip(Tooltip.create(xlate("pneumaticcraft.gui.tubeModule.advancedConfig.tooltip")));
         addRenderableWidget(advancedMode);
-
-        int xStart = (width - xSize) / 2;
-        int yStart = (height - ySize) / 2;
 
         addLabel(Component.literal("lower"), guiLeft + 15, guiTop + 33);
         addLabel(Component.literal("°C"), guiLeft + 60, guiTop + 44);
@@ -151,7 +154,7 @@ public class ThermostatModuleScreen extends AbstractTubeModuleScreen<ThermostatM
 
         renderGraph(graphics);
 
-        // Update bounds and advanced state
+        // Update bounds and advancedConfig state
         NetworkHandler.sendToServer(new PacketUpdatePressureModule(module));
         // Update channel
         NetworkHandler.sendToServer(new PacketSyncThermostatModuleToServer(module));
@@ -192,29 +195,16 @@ public class ThermostatModuleScreen extends AbstractTubeModuleScreen<ThermostatM
             graphics.hLine(graphLeft - (longer ? 5 : 3), graphLeft + 3, graphHighY + (graphLowY - graphHighY) * (15 - i) / 15, 0xFF303030);
         }
 
-        int offset = 0; // offset = (temp + 273) * (100/2273)
-        String txt = String.valueOf(-273);
-        graphics.drawString(font, txt, graphLeft + (graphRight - graphLeft) * offset / 100f - font.width(txt) / 2f - 3, graphLowY + 6, 0xFF303030, false);
-        graphics.vLine(graphLeft + (graphRight - graphLeft) * offset / 100, graphHighY, graphLowY - 2, 0x33000000);
-        graphics.vLine(graphLeft + (graphRight - graphLeft) * offset / 100, graphLowY - 5, graphLowY + 3, 0xFF303030);
-
-        offset = 12;
-        txt = String.valueOf(0);
-        graphics.drawString(font, txt, graphLeft + (graphRight - graphLeft) * offset / 100f - font.width(txt) / 2f + 1, graphLowY + 6, 0xFF303030, false);
-        graphics.vLine(graphLeft + (graphRight - graphLeft) * offset / 100, graphHighY, graphLowY - 2, 0x33000000);
-        graphics.vLine(graphLeft + (graphRight - graphLeft) * offset / 100, graphLowY - 5, graphLowY + 3, 0xFF303030);
-
-        offset = 56;
-        txt = String.valueOf(1000);
-        graphics.drawString(font, txt, graphLeft + (graphRight - graphLeft) * offset / 100f - font.width(txt) / 2f + 1, graphLowY + 6, 0xFF303030, false);
-        graphics.vLine(graphLeft + (graphRight - graphLeft) * offset / 100, graphHighY, graphLowY - 2, 0x33000000);
-        graphics.vLine(graphLeft + (graphRight - graphLeft) * offset / 100, graphLowY - 5, graphLowY + 3, 0xFF303030);
-
-        offset = 100;
-        txt = String.valueOf(2000);
-        graphics.drawString(font, txt, graphLeft + (graphRight - graphLeft) * offset / 100f - font.width(txt) / 2f - 5, graphLowY + 6, 0xFF303030, false);
-        graphics.vLine(graphLeft + (graphRight - graphLeft) * offset / 100, graphHighY, graphLowY - 2, 0x33000000);
-        graphics.vLine(graphLeft + (graphRight - graphLeft) * offset / 100, graphLowY - 5, graphLowY + 3, 0xFF303030);
+        int[] temps = { ThermostatModule.MIN_VALUE, 0, 1000, ThermostatModule.MAX_VALUE };
+        int[] adjusts = { -3, 1, 1, -5 };
+        for (int i = 0; i < 4; i++) {
+            int offset = (int)((temps[i] - ThermostatModule.MIN_VALUE) * (100f / (ThermostatModule.MAX_VALUE - ThermostatModule.MIN_VALUE)));
+            String txt = String.valueOf(temps[i]);
+            graphics.drawString(font, txt, graphLeft + (graphRight - graphLeft) * offset / 100f - font.width(txt) / 2f + adjusts[i],
+                graphLowY + 6, 0xFF303030, false);
+            graphics.vLine(graphLeft + (graphRight - graphLeft) * offset / 100, graphHighY, graphLowY - 2, 0x33000000);
+            graphics.vLine(graphLeft + (graphRight - graphLeft) * offset / 100, graphLowY - 5, graphLowY + 3, 0xFF303030);
+        }
     }
 
     private void updateBoundFromTextfield(int fieldId) {
@@ -265,11 +255,11 @@ public class ThermostatModuleScreen extends AbstractTubeModuleScreen<ThermostatM
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int mouseButton) {
         if (!colorSelector.isExpanded() && lowerBoundArea.contains((int)mouseX, (int)mouseY)) {
-            module.lowerBound = xToTemperature(mouseX);
+            module.lowerBound = xToTemperature(mouseX - 7);
             grabLower = true;
             return true;
         } else if (!colorSelector.isExpanded() && higherBoundArea.contains((int)mouseX, (int)mouseY)) {
-            module.higherBound = xToTemperature(mouseX);
+            module.higherBound = xToTemperature(mouseX - 7);
             grabHigher = true;
             return true;
         }
@@ -279,10 +269,10 @@ public class ThermostatModuleScreen extends AbstractTubeModuleScreen<ThermostatM
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int clickedMouseButton, double dx, double dy) {
         if (grabLower) {
-            module.lowerBound = xToTemperature(mouseX);
+            module.lowerBound = xToTemperature(mouseX - 7);
             return true;
         } else if (grabHigher) {
-            module.higherBound = xToTemperature(mouseX);
+            module.higherBound = xToTemperature(mouseX - 7);
             return true;
         } else {
             return super.mouseDragged(mouseX, mouseY, clickedMouseButton, dx, dy);

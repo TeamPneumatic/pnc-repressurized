@@ -26,6 +26,7 @@
         "pneumaticcraft:tubes/charging_module",
         "pneumaticcraft:tubes/logistics_module",
         "pneumaticcraft:tubes/redstone_module",
+        "pneumaticcraft:tubes/thermostat_module",
         "pneumaticcraft:tubes/vacuum_module"
       ]
     }
