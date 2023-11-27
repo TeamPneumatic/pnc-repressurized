@@ -3,17 +3,21 @@
   "category": "misc",
   "key": {
     "D": {
-      "item": "minecraft:comparator"
-    },
-    "R": {
       "tag": "forge:dusts/redstone"
+    },
+    "H": {
+      "item": "pneumaticcraft:heat_pipe"
+    },
+    "M": {
+      "item": "pneumaticcraft:manometer"
     },
     "T": {
       "item": "pneumaticcraft:pressure_tube"
     }
   },
   "pattern": [
-    " R ",
+    " M ",
+    " H ",
     "TDT"
   ],
   "result": {
