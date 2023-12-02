@@ -15,6 +15,7 @@ Changes are in reverse chronological order; newest changes at the top.
 * Fixed crash in Assembly system caused by missing machine
 * Fixed Thermopneumatic Processing Plant comparator "has work" output
   * It wasn't taking fullness of the output into account - it does now
+* Fixed the Patchouli manual not working with latest Patchouli release (1.20.1-83)
 
 ## [6.0.11]
 
