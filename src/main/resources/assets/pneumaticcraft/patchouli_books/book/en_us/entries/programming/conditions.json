@@ -27,7 +27,7 @@
     {
       "type": "text",
       "title": "Measuring",
-      "text": "All $(thing)Condition/$ widget GUI's (except $(l:programming/condition_item_filter)Condition: Item Filter/$) have a $(thing)Measure/$ textfield, where you can enter the name of a $(l:programming/variables)variable/$. If a variable name is supplied here, any measurement made by the drone will be stored in the X field of the variable.$(p)This can then be later used like any other variable, e.g. you could measure the level of a fluid tank, and write it on a sign."
+      "text": "All $(thing)Condition/$ widget GUI's (except $(l:programming/condition_item)Condition: Item Filter/$) have a $(thing)Measure/$ textfield, where you can enter the name of a $(l:programming/variables)variable/$. If a variable name is supplied here, any measurement made by the drone will be stored in the X field of the variable.$(p)This can then be later used like any other variable, e.g. you could measure the level of a fluid tank, and write it on a sign."
     },
     {
       "type": "text",
@@ -50,7 +50,7 @@
         "pneumaticcraft:programming/condition_block",
         "pneumaticcraft:programming/condition_coordinate",
         "pneumaticcraft:programming/condition_entity",
-        "pneumaticcraft:programming/condition_item_filter",
+        "pneumaticcraft:programming/condition_item",
         "pneumaticcraft:programming/condition_item_inventory",
         "pneumaticcraft:programming/condition_liquid_inventory",
         "pneumaticcraft:programming/condition_pressure",
