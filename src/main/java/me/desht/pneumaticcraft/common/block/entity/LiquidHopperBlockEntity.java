@@ -269,8 +269,8 @@ public class LiquidHopperBlockEntity extends AbstractHopperBlockEntity<LiquidHop
 
         @Override
         protected void onContentsChanged(Fluid prevFluid, int prevAmount) {
-            super.onContentsChanged(prevFluid, prevAmount);
             comparatorValue = -1;
+            super.onContentsChanged(prevFluid, prevAmount);
         }
 
         @Override
