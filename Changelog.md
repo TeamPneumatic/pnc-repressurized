@@ -6,6 +6,12 @@ Changes are in reverse chronological order; newest changes at the top.
 
 # Minecraft 1.20.1
 
+## [6.0.13]
+
+### Fixed
+
+* Fixed Liquid Hopper not immediately updating comparator output level when fluid level changed
+
 ## [6.0.12]
 
 ### Added
