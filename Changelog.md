@@ -6,6 +6,12 @@ Changes are in reverse chronological order; newest changes at the top.
 
 # Minecraft 1.19.2
 
+## [4.3.13]
+
+### Fixed
+* Fixed Pneumatic Armor HUD stat panel forever-expanding if moved off the screen to the right
+  * Also added a "Reset" button to the stat-moving GUI; retrieve stat panels which you've moved off-screen this way
+
 ## [4.3.12]
 
 ### Fixed
