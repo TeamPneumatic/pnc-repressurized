@@ -152,6 +152,7 @@ public class JetBootsClientHandler extends IArmorUpgradeClientHandler.SimpleTogg
         if (armorPieceHasPressure && jbStat.isStatOpen()) {
             Font fr = Minecraft.getInstance().font;
             int xl = jbStat.getBaseX() + 5;
+            if (xl > Minecraft.getInstance().getWindow().getGuiScaledWidth()) return;
             int y = jbStat.getBaseY() + fr.lineHeight + 8;
             int xr = jbStat.getBaseX() + jbStat.getStatWidth() - 5;
             if (jbStat.isLeftSided()) {
