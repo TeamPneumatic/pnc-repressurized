@@ -11,6 +11,8 @@ Changes are in reverse chronological order; newest changes at the top.
 ### Fixed
 
 * Fixed Liquid Hopper not immediately updating comparator output level when fluid level changed
+* Fixed Pneumatic Armor HUD stat panel forever-expanding if moved off the screen to the right
+  * Also added a "Reset" button to the stat-moving GUI; retrieve stat panels which you've moved off-screen this way
 
 ## [6.0.12]
 
