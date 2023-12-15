@@ -161,6 +161,9 @@ public class JetBootsClientHandler extends IArmorUpgradeClientHandler.SimpleTogg
                 xl -= jbStat.getStatWidth();
                 xr -= jbStat.getStatWidth();
             }
+            if (xl >= Minecraft.getInstance().getWindow().getGuiScaledWidth() || xr <= 0) {
+                return;
+            }
 
             int color = suppressed ? 0x202020 : 0x404040;
             if (!suppressed || (Minecraft.getInstance().level.getGameTime() & 0xf) > 2) {

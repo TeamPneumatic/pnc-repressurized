@@ -20,9 +20,11 @@ package me.desht.pneumaticcraft.client.gui.pneumatic_armor;
 import com.mojang.blaze3d.platform.Window;
 import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IArmorUpgradeClientHandler;
+import me.desht.pneumaticcraft.api.client.pneumatic_helmet.StatPanelLayout;
 import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorUpgradeHandler;
 import me.desht.pneumaticcraft.client.gui.AbstractPneumaticCraftScreen;
 import me.desht.pneumaticcraft.client.gui.widget.PNCForgeSlider;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetCheckBox;
 import me.desht.pneumaticcraft.client.pneumatic_armor.ClientArmorRegistry;
 import me.desht.pneumaticcraft.client.pneumatic_armor.upgrade_handler.CoreComponentsClientHandler;
@@ -35,6 +37,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
 
@@ -110,6 +113,20 @@ public class ArmorStatMoveScreen extends AbstractPneumaticCraftScreen {
         gridSlider = new PNCForgeSlider(snapToGrid.getX(), snapToGrid.getY() + 12, snapToGrid.getWidth(), 10,
                 Component.empty(), Component.empty(), 1, 12, gridSize, true, null);
         addRenderableWidget(gridSlider);
+
+        MutableComponent msg = Component.translatable("pneumaticcraft.armor.gui.misc.reset");
+        addRenderableWidget(new WidgetButtonExtended(gridSlider.getX(), gridSlider.getY() + 12, font.width(msg) + 20, 20,
+                msg, b -> resetStatPosition()));
+    }
+
+    private void resetStatPosition() {
+        Window window = Objects.requireNonNull(minecraft).getWindow();
+        StatPanelLayout defLayout = renderHandler.getDefaultStatLayout();
+        movedStat.setBaseX((int) (defLayout.x() * window.getGuiScaledWidth()));
+        movedStat.setBaseY((int) (defLayout.y() * window.getGuiScaledHeight()));
+        movedStat.setLeftSided(defLayout.expandsLeft());
+        renderHandler.onResolutionChanged();  // force a stat reset
+        save();
     }
 
     @Override

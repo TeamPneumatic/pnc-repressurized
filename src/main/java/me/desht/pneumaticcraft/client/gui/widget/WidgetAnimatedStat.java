@@ -335,7 +335,7 @@ public class WidgetAnimatedStat extends AbstractWidget implements IGuiAnimatedSt
         } else {
             availableWidth = leftSided ? getX() : Minecraft.getInstance().getWindow().getGuiScaledWidth() - getX();
         }
-        return availableWidth - 5 - SCROLLBAR_MARGIN_WIDTH;  // leave at least 5 pixel margin from edge of screen
+        return Math.max(availableWidth - 5 - SCROLLBAR_MARGIN_WIDTH, 16);  // leave at least 5 pixel margin from edge of screen
     }
 
     private boolean needsDropShadow(FormattedCharSequence line) {
