@@ -23,8 +23,10 @@ import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSyncRedstoneModuleToClient;
 import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.thirdparty.ModdedWrenchUtils;
+import me.desht.pneumaticcraft.common.tubemodules.ThermostatModule;
 import me.desht.pneumaticcraft.common.util.ITranslatableEnum;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -107,6 +109,10 @@ public class RedstoneModule extends AbstractTubeModule implements INetworkedModu
                 if (module instanceof RedstoneModule mr) {
                     if (mr.getRedstoneDirection() == EnumRedstoneDirection.INPUT && mr.getInputLevel() > levels[mr.getColorChannel()])
                         levels[mr.getColorChannel()] = (byte) mr.inputLevel;
+                }
+                if (module instanceof ThermostatModule mr) {
+                    if (mr.getLevel() > levels[mr.getColorChannel()])
+                        levels[mr.getColorChannel()] = (byte) mr.getLevel();
                 }
             }
 

@@ -153,6 +153,10 @@ public class NetworkHandler {
 				handler -> handler.client(TubeModulePacket::handle));
 		registrar.play(PacketSyncRedstoneModuleToClient.ID, PacketSyncRedstoneModuleToClient::fromNetwork,
 				handler -> handler.client(TubeModulePacket::handle));
+		registrar.play(PacketSyncThermostatModuleToClient.ID, PacketSyncThermostatModuleToClient::fromNetwork,
+				handler -> handler.client(TubeModulePacket::handle));
+		registrar.play(PacketSyncThermostatModuleToServer.ID, PacketSyncThermostatModuleToServer::fromNetwork,
+				handler -> handler.server(TubeModulePacket::handle));
 
 		// amadron
 		registrar.play(PacketSyncAmadronOffers.ID, PacketSyncAmadronOffers::fromNetwork,

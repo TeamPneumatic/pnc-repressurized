@@ -1,0 +1,35 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_ingot_iron_compressed": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "pneumaticcraft:ingot_iron_compressed"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "pneumaticcraft:thermostat_module"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_ingot_iron_compressed",
+      "has_the_recipe"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "pneumaticcraft:thermostat_module"
+    ]
+  },
+  "sends_telemetry_event": false
+}

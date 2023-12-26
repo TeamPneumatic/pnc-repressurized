@@ -12,6 +12,7 @@ import me.desht.pneumaticcraft.client.gui.tubemodule.AirGrateModuleScreen;
 import me.desht.pneumaticcraft.client.gui.tubemodule.LogisticsModuleScreen;
 import me.desht.pneumaticcraft.client.gui.tubemodule.PressureGaugeModuleScreen;
 import me.desht.pneumaticcraft.client.gui.tubemodule.RedstoneModuleScreen;
+import me.desht.pneumaticcraft.client.gui.tubemodule.ThermostatModuleScreen;
 import me.desht.pneumaticcraft.client.gui.upgrademanager.*;
 import me.desht.pneumaticcraft.client.model.ModelMinigun;
 import me.desht.pneumaticcraft.client.model.PNCModelLayers;
@@ -208,6 +209,7 @@ public class ClientSetup {
         event.registerLayerDefinition(PNCModelLayers.REGULATOR_MODULE, RegulatorRenderer::createBodyLayer);
         event.registerLayerDefinition(PNCModelLayers.SAFETY_VALVE_MODULE, SafetyValveRenderer::createBodyLayer);
         event.registerLayerDefinition(PNCModelLayers.VACUUM_MODULE, VacuumRenderer::createBodyLayer);
+        event.registerLayerDefinition(PNCModelLayers.THERMOSTAT_MODULE, ThermostatRenderer::createBodyLayer);
     }
 
     private static void registerItemModelProperties() {
@@ -418,6 +420,7 @@ public class ClientSetup {
         TubeModuleClientRegistry.registerTubeModuleGUI(Names.MODULE_SAFETY_VALVE, PressureGaugeModuleScreen::createGUI);
         TubeModuleClientRegistry.registerTubeModuleGUI(Names.MODULE_REDSTONE, RedstoneModuleScreen::new);
         TubeModuleClientRegistry.registerTubeModuleGUI(Names.MODULE_LOGISTICS, LogisticsModuleScreen::new);
+        TubeModuleClientRegistry.registerTubeModuleGUI(Names.MODULE_THERMOSTAT, ThermostatModuleScreen::createGUI);
 
         TubeModuleClientRegistry.registerTubeModuleRenderer(Names.MODULE_AIR_GRATE, AirGrateRenderer::new);
         TubeModuleClientRegistry.registerTubeModuleRenderer(Names.MODULE_REDSTONE, RedstoneRenderer::new);
@@ -428,6 +431,7 @@ public class ClientSetup {
         TubeModuleClientRegistry.registerTubeModuleRenderer(Names.MODULE_FLOW_DETECTOR, FlowDetectorRenderer::new);
         TubeModuleClientRegistry.registerTubeModuleRenderer(Names.MODULE_LOGISTICS, LogisticsRenderer::new);
         TubeModuleClientRegistry.registerTubeModuleRenderer(Names.MODULE_VACUUM, VacuumRenderer::new);
+        TubeModuleClientRegistry.registerTubeModuleRenderer(Names.MODULE_THERMOSTAT, ThermostatRenderer::new);
     }
 
     private static void registerArmorClientUpgradeHandlers() {
