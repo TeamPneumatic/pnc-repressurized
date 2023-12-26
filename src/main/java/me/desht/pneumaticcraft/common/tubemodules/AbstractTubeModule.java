@@ -288,4 +288,8 @@ public abstract class AbstractTubeModule {
     public boolean isInlineAndFocused(PressureTubeBlock.TubeHitInfo hitInfo) {
         return false;
     }
+
+    public boolean canConnectTo(AbstractTubeModule other) {
+        return this.getClass() == other.getClass();
+    }
 }

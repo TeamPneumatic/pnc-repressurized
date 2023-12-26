@@ -648,6 +648,14 @@ public class ModRecipeProvider extends RecipeProvider {
                 'T', ModBlocks.PRESSURE_TUBE.get()
         ).save(consumer);
 
+        shaped(ModItems.THERMOSTAT_MODULE.get(), ModItems.COMPRESSED_IRON_INGOT.get(),
+                " M / H /TDT",
+                'M', ModItems.MANOMETER.get(),
+                'H', ModBlocks.HEAT_PIPE.get(),
+                'T', ModBlocks.PRESSURE_TUBE.get(),
+                'D', Tags.Items.DUSTS_REDSTONE
+        ).save(consumer);
+
         shaped(ModBlocks.PRESSURE_TUBE.get(), 8, ModItems.COMPRESSED_IRON_INGOT.get(),
                 "IGI",
                 'G', Tags.Items.GLASS,

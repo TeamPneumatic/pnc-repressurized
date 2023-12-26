@@ -143,6 +143,10 @@ public class NetworkHandler {
 				PacketSyncRedstoneModuleToClient::toBytes, PacketSyncRedstoneModuleToClient::new, PacketSyncRedstoneModuleToClient::handle, PLAY_TO_CLIENT);
 		registerMessage(PacketSyncRedstoneModuleToServer.class,
 				PacketSyncRedstoneModuleToServer::toBytes, PacketSyncRedstoneModuleToServer::new, PacketSyncRedstoneModuleToServer::handle, PLAY_TO_SERVER);
+		registerMessage(PacketSyncThermostatModuleToClient.class,
+				PacketSyncThermostatModuleToClient::toBytes, PacketSyncThermostatModuleToClient::new, PacketSyncThermostatModuleToClient::handle, PLAY_TO_CLIENT);
+		registerMessage(PacketSyncThermostatModuleToServer.class,
+				PacketSyncThermostatModuleToServer::toBytes, PacketSyncThermostatModuleToServer::new, PacketSyncThermostatModuleToServer::handle, PLAY_TO_SERVER);
 		registerMessage(PacketHackingBlockStart.class,
 				PacketHackingBlockStart::toBytes, PacketHackingBlockStart::new, PacketHackingBlockStart::handle);
 		registerMessage(PacketHackingBlockFinish.class,

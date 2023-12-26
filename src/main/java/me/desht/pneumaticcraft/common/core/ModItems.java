@@ -215,6 +215,8 @@ public class ModItems {
             () -> new TubeModuleItem(RedstoneModule::new));
     public static final RegistryObject<TubeModuleItem> VACUUM_MODULE = register("vacuum_module",
             () -> new TubeModuleItem(VacuumModule::new));
+    public static final RegistryObject<TubeModuleItem> THERMOSTAT_MODULE = register("thermostat_module",
+            () -> new TubeModuleItem(ThermostatModule::new));
 
     public static final RegistryObject<BucketItem> OIL_BUCKET = registerBucket("oil_bucket",
             ModFluids.OIL);

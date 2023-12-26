@@ -50,6 +50,10 @@ public class WidgetColorSelector extends WidgetButtonExtended implements IDrawAf
         return this;
     }
 
+    public boolean isExpanded() {
+        return expanded;
+    }
+
     public DyeColor getColor() {
         return color;
     }
