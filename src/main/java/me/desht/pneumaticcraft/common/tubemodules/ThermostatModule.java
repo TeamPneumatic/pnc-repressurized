@@ -113,7 +113,7 @@ public class ThermostatModule extends AbstractTubeModule implements INetworkedMo
 
     @Override
     public double getWidth() {
-        return 9D;
+        return 10D;
     }
 
     @Override
