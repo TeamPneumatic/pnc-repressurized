@@ -6,7 +6,7 @@
   "pages": [
     {
       "type": "text",
-      "text": "This tube module measures the temperature of the block it's facing and emits a redstone signal on configured channel if the temperature is higher than the set threshold."
+      "text": "This tube module measures the temperature of the block it's facing and provides a redstone signal on the configured channel (use a $(l:tubes/redstone_module)Redstone Module/$ in output mode to emit the signal) if the temperature is higher than the set threshold."
     },
     {
       "type": "spotlight",
