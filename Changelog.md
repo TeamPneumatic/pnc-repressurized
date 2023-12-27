@@ -6,6 +6,13 @@ Changes are in reverse chronological order; newest changes at the top.
 
 # Minecraft 1.19.2
 
+## [4.3.13]
+
+### Added
+* Added a new tube module: the Thermostat Module - thanks @johalun (coding) and @Ridanisaurus (texturing)
+  * Measures the temperature of the block it's facing and converts to a redstone signal
+  * Use a Redstone Module on the same colour channel to output the signal
+
 ## [4.3.12]
 
 ### Fixed
