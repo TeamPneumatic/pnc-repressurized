@@ -42,7 +42,13 @@ public class VacuumModule extends AbstractRedstoneReceivingModule implements IIn
         super(dir, pressureTube);
 
         this.neighbourCap = LazyOptional.empty();
-        this.neighbourCapInvalidationListener = l -> neighbourCap = LazyOptional.empty();
+        this.neighbourCapInvalidationListener = l -> {
+            if (l != this.neighbourCap) {
+                return;
+            }
+
+            neighbourCap = LazyOptional.empty();
+        };
     }
 
     @Override

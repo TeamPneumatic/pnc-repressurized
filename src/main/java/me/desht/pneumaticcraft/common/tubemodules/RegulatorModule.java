@@ -27,12 +27,23 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.common.util.NonNullConsumer;
 
 public class RegulatorModule extends AbstractRedstoneReceivingModule implements IInfluenceDispersing {
-    private LazyOptional<IAirHandlerMachine> neighbourCap = null;
+    private LazyOptional<IAirHandlerMachine> neighbourCap;
+    private final NonNullConsumer<LazyOptional<IAirHandlerMachine>> neighbourCapInvalidationListener;
 
     public RegulatorModule(Direction dir, PressureTubeBlockEntity pressureTube) {
         super(dir, pressureTube);
+
+        this.neighbourCap = LazyOptional.empty();
+        this.neighbourCapInvalidationListener = l -> {
+            if (l != this.neighbourCap) {
+                return;
+            }
+
+            neighbourCap = LazyOptional.empty();
+        };
     }
 
     @Override
@@ -60,7 +71,7 @@ public class RegulatorModule extends AbstractRedstoneReceivingModule implements 
     @Override
     public void onNeighborBlockUpdate() {
         super.onNeighborBlockUpdate();
-        neighbourCap = null;
+        neighbourCap = LazyOptional.empty();
     }
 
     @Override
@@ -70,11 +81,14 @@ public class RegulatorModule extends AbstractRedstoneReceivingModule implements 
     }
 
     private LazyOptional<IAirHandlerMachine> getCachedNeighbourAirHandler() {
-        if (neighbourCap == null) {
+        if (!neighbourCap.isPresent()) {
             BlockEntity neighborTE = pressureTube.nonNullLevel().getBlockEntity(pressureTube.getBlockPos().relative(dir));
             if (neighborTE != null) {
-                neighbourCap = neighborTE.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, dir.getOpposite());
-                if (neighbourCap.isPresent()) neighbourCap.addListener(l -> neighbourCap = null);
+                LazyOptional<IAirHandlerMachine> cap = neighborTE.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, dir.getOpposite());
+                if (cap.isPresent()) {
+                    neighbourCap = cap;
+                    cap.addListener(this.neighbourCapInvalidationListener);
+                }
             } else {
                 neighbourCap = LazyOptional.empty();
             }

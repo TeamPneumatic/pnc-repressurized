@@ -73,7 +73,13 @@ public class MachineAirHandler extends BasicAirHandler implements IAirHandlerMac
         this.tier = tier;
         for (Direction dir : DirectionUtil.VALUES) {
             this.neighbourAirHandlers.put(dir, LazyOptional.empty());
-            this.neighbourAirInvalidationListeners.put(dir, l -> this.neighbourAirHandlers.put(dir, LazyOptional.empty()));
+            this.neighbourAirInvalidationListeners.put(dir, l -> {
+                if (l != this.neighbourAirHandlers.get(dir)) {
+                    return;
+                }
+
+                this.neighbourAirHandlers.put(dir, LazyOptional.empty());
+            });
         }
     }
 
