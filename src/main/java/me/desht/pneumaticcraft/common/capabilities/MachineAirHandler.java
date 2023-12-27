@@ -42,6 +42,7 @@ import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.common.util.NonNullConsumer;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -59,6 +60,7 @@ public class MachineAirHandler extends BasicAirHandler implements IAirHandlerMac
     private Direction prevLeakDir = null;
     private int prevAir;
     private final Map<Direction, LazyOptional<IAirHandlerMachine>> neighbourAirHandlers = new EnumMap<>(Direction.class);
+    private final Map<Direction, NonNullConsumer<LazyOptional<IAirHandlerMachine>>> neighbourAirInvalidationListeners = new EnumMap<>(Direction.class);
 
     // note: leaks due to security upgrade are tracked separately from leaks due to disconnection
     private boolean safetyLeaking;   // is the handler venting right now?
@@ -71,6 +73,7 @@ public class MachineAirHandler extends BasicAirHandler implements IAirHandlerMac
         this.tier = tier;
         for (Direction dir : DirectionUtil.VALUES) {
             this.neighbourAirHandlers.put(dir, LazyOptional.empty());
+            this.neighbourAirInvalidationListeners.put(dir, l -> this.neighbourAirHandlers.put(dir, LazyOptional.empty()));
         }
     }
 
@@ -249,7 +252,7 @@ public class MachineAirHandler extends BasicAirHandler implements IAirHandlerMac
                 LazyOptional<IAirHandlerMachine> cap = te1.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, dir.getOpposite());
                 if (cap.isPresent()) {
                     neighbourAirHandlers.put(dir, cap);
-                    neighbourAirHandlers.get(dir).addListener(l -> neighbourAirHandlers.put(dir, LazyOptional.empty()));
+                    cap.addListener(neighbourAirInvalidationListeners.get(dir));
                 }
             } else {
                 neighbourAirHandlers.put(dir, LazyOptional.empty());

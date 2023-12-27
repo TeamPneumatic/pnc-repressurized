@@ -29,15 +29,19 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.common.util.NonNullConsumer;
 
 public class VacuumModule extends AbstractRedstoneReceivingModule implements IInfluenceDispersing {
     private LazyOptional<IAirHandlerMachine> neighbourCap = null;
+    private final NonNullConsumer<LazyOptional<IAirHandlerMachine>> neighbourCapInvalidationListener;
 
     public float rotation, oldRotation;
     private int lastAmount = 0;
 
     public VacuumModule(Direction dir, PressureTubeBlockEntity pressureTube) {
         super(dir, pressureTube);
+
+        this.neighbourCapInvalidationListener = l -> neighbourCap = null;
     }
 
     @Override
@@ -110,7 +114,7 @@ public class VacuumModule extends AbstractRedstoneReceivingModule implements IIn
             BlockEntity neighborTE = pressureTube.nonNullLevel().getBlockEntity(pressureTube.getBlockPos().relative(dir));
             if (neighborTE != null) {
                 neighbourCap = neighborTE.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, dir.getOpposite());
-                if (neighbourCap.isPresent()) neighbourCap.addListener(l -> neighbourCap = null);
+                if (neighbourCap.isPresent()) neighbourCap.addListener(this.neighbourCapInvalidationListener);
             } else {
                 neighbourCap = LazyOptional.empty();
             }
