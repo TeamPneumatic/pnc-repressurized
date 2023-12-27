@@ -48,13 +48,26 @@ import java.util.*;
 public abstract class AbstractAirHandlingBlockEntity extends AbstractTickingBlockEntity {
     @GuiSynced
     protected final IAirHandlerMachine airHandler;
-    private final LazyOptional<IAirHandlerMachine> airHandlerCap;
+    private LazyOptional<IAirHandlerMachine> airHandlerCap;
     private final Map<IAirHandlerMachine, List<Direction>> airHandlerMap = new IdentityHashMap<>();
 
     public AbstractAirHandlingBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state, PressureTier pressureTier, int volume, int upgradeSlots) {
         super(type, pos, state, upgradeSlots);
 
         this.airHandler = PneumaticRegistry.getInstance().getAirHandlerMachineFactory().createAirHandler(pressureTier, volume);
+        this.airHandlerCap = LazyOptional.of(() -> airHandler);
+    }
+
+    @Override
+    public void invalidateCaps() {
+        this.airHandlerCap.invalidate();
+        this.airHandlerCap = LazyOptional.empty();
+        super.invalidateCaps();
+    }
+
+    @Override
+    public void reviveCaps() {
+        super.reviveCaps();
         this.airHandlerCap = LazyOptional.of(() -> airHandler);
     }
 
