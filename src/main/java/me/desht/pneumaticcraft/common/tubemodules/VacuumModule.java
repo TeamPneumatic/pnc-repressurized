@@ -32,7 +32,7 @@ import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.common.util.NonNullConsumer;
 
 public class VacuumModule extends AbstractRedstoneReceivingModule implements IInfluenceDispersing {
-    private LazyOptional<IAirHandlerMachine> neighbourCap = null;
+    private LazyOptional<IAirHandlerMachine> neighbourCap;
     private final NonNullConsumer<LazyOptional<IAirHandlerMachine>> neighbourCapInvalidationListener;
 
     public float rotation, oldRotation;
@@ -41,7 +41,8 @@ public class VacuumModule extends AbstractRedstoneReceivingModule implements IIn
     public VacuumModule(Direction dir, PressureTubeBlockEntity pressureTube) {
         super(dir, pressureTube);
 
-        this.neighbourCapInvalidationListener = l -> neighbourCap = null;
+        this.neighbourCap = LazyOptional.empty();
+        this.neighbourCapInvalidationListener = l -> neighbourCap = LazyOptional.empty();
     }
 
     @Override
@@ -59,7 +60,7 @@ public class VacuumModule extends AbstractRedstoneReceivingModule implements IIn
     public void onNeighborBlockUpdate() {
         super.onNeighborBlockUpdate();
 
-        neighbourCap = null;
+        neighbourCap = LazyOptional.empty();
     }
 
     @Override
@@ -110,11 +111,14 @@ public class VacuumModule extends AbstractRedstoneReceivingModule implements IIn
     }
 
     private LazyOptional<IAirHandlerMachine> getCachedNeighbourAirHandler() {
-        if (neighbourCap == null) {
+        if (!neighbourCap.isPresent()) {
             BlockEntity neighborTE = pressureTube.nonNullLevel().getBlockEntity(pressureTube.getBlockPos().relative(dir));
             if (neighborTE != null) {
-                neighbourCap = neighborTE.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, dir.getOpposite());
-                if (neighbourCap.isPresent()) neighbourCap.addListener(this.neighbourCapInvalidationListener);
+                LazyOptional<IAirHandlerMachine> cap = neighborTE.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, dir.getOpposite());
+                if (cap.isPresent()) {
+                    neighbourCap = cap;
+                    cap.addListener(this.neighbourCapInvalidationListener);
+                }
             } else {
                 neighbourCap = LazyOptional.empty();
             }
