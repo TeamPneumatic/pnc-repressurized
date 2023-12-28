@@ -88,6 +88,8 @@ public class RegulatorModule extends AbstractRedstoneReceivingModule implements 
                 if (cap.isPresent()) {
                     neighbourCap = cap;
                     cap.addListener(this.neighbourCapInvalidationListener);
+                } else {
+                    neighbourCap = LazyOptional.empty();
                 }
             } else {
                 neighbourCap = LazyOptional.empty();

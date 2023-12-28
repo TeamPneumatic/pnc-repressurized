@@ -259,6 +259,8 @@ public class MachineAirHandler extends BasicAirHandler implements IAirHandlerMac
                 if (cap.isPresent()) {
                     neighbourAirHandlers.put(dir, cap);
                     cap.addListener(neighbourAirInvalidationListeners.get(dir));
+                } else {
+                    neighbourAirHandlers.put(dir, LazyOptional.empty());
                 }
             } else {
                 neighbourAirHandlers.put(dir, LazyOptional.empty());

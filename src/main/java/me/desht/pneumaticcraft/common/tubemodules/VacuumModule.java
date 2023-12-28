@@ -124,6 +124,8 @@ public class VacuumModule extends AbstractRedstoneReceivingModule implements IIn
                 if (cap.isPresent()) {
                     neighbourCap = cap;
                     cap.addListener(this.neighbourCapInvalidationListener);
+                } else {
+                    neighbourCap = LazyOptional.empty();
                 }
             } else {
                 neighbourCap = LazyOptional.empty();
