@@ -236,12 +236,14 @@ public class MachineAirHandler extends BasicAirHandler implements IAirHandlerMac
     }
 
     private LazyOptional<IAirHandlerMachine> getCachedNeighbourAirHandler(BlockEntity ownerTE, Direction dir) {
-        if (!connectedFaces.get(dir.get3DDataValue())) {
-            this.neighbouringAirHandlerCache.clear(dir);
-            return LazyOptional.empty();
+        if (!connectedFaces.get(dir.get3DDataValue())) return LazyOptional.empty();
+
+        LazyOptional<IAirHandlerMachine> cap = this.neighbouringAirHandlerCache.get(dir);
+        if (cap.isPresent()) {
+            return cap;
         }
 
-        return this.neighbouringAirHandlerCache.get(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, ownerTE, dir);
+        return this.neighbouringAirHandlerCache.set(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, ownerTE, dir);
     }
 
     private void disperseAir(BlockEntity ownerTE) {

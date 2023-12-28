@@ -23,6 +23,7 @@ import me.desht.pneumaticcraft.common.block.PressureTubeBlock;
 import me.desht.pneumaticcraft.common.block.entity.PressureTubeBlockEntity;
 import me.desht.pneumaticcraft.common.capabilities.CapabilityCache;
 import me.desht.pneumaticcraft.common.core.ModItems;
+import me.desht.pneumaticcraft.common.util.CapabilityUtils;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.Direction;
@@ -109,7 +110,12 @@ public class VacuumModule extends AbstractRedstoneReceivingModule implements IIn
     }
 
     private LazyOptional<IAirHandlerMachine> getCachedNeighbourAirHandler() {
-        return this.neighbourAirHandlerCache.getNeighbouring(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, pressureTube, dir);
+        LazyOptional<IAirHandlerMachine> cap = this.neighbourAirHandlerCache.get();
+        if (cap.isPresent()) {
+            return cap;
+        }
+
+        return this.neighbourAirHandlerCache.set(CapabilityUtils.getNeighbourCap(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, pressureTube, dir));
     }
 
     @Override
