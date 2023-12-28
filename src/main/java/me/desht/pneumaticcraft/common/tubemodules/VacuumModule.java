@@ -116,22 +116,33 @@ public class VacuumModule extends AbstractRedstoneReceivingModule implements IIn
         this.lastAmount = lastAmount;
     }
 
+    private LazyOptional<IAirHandlerMachine> getCurrentNeighbourAirHandler() {
+        BlockEntity neighborTE = pressureTube.nonNullLevel().getBlockEntity(pressureTube.getBlockPos().relative(dir));
+        if (neighborTE == null) return LazyOptional.empty();
+
+        LazyOptional<IAirHandlerMachine> cap = neighborTE.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, dir.getOpposite());
+        if (!cap.isPresent()) return LazyOptional.empty();
+
+        return cap;
+    }
+
     private LazyOptional<IAirHandlerMachine> getCachedNeighbourAirHandler() {
-        if (!neighbourCap.isPresent()) {
-            BlockEntity neighborTE = pressureTube.nonNullLevel().getBlockEntity(pressureTube.getBlockPos().relative(dir));
-            if (neighborTE != null) {
-                LazyOptional<IAirHandlerMachine> cap = neighborTE.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, dir.getOpposite());
-                if (cap.isPresent()) {
-                    neighbourCap = cap;
-                    cap.addListener(this.neighbourCapInvalidationListener);
-                } else {
-                    neighbourCap = LazyOptional.empty();
-                }
-            } else {
-                neighbourCap = LazyOptional.empty();
-            }
+        if (this.neighbourCap.isPresent()) {
+            return this.neighbourCap;
         }
-        return neighbourCap;
+
+        LazyOptional<IAirHandlerMachine> currentCap = getCurrentNeighbourAirHandler();
+        if (this.neighbourCap == currentCap) {
+            return this.neighbourCap;
+        }
+
+        this.neighbourCap = currentCap;
+
+        if (currentCap.isPresent()) {
+            currentCap.addListener(this.neighbourCapInvalidationListener);
+        }
+
+        return currentCap;
     }
 
     @Override

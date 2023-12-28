@@ -249,24 +249,36 @@ public class MachineAirHandler extends BasicAirHandler implements IAirHandlerMac
         return this.leakDir;
     }
 
-    private LazyOptional<IAirHandlerMachine> getNeighbourAirHandler(BlockEntity ownerTE, Direction dir) {
+    private LazyOptional<IAirHandlerMachine> getCurrentNeighbourAirHandler(BlockEntity ownerTE, Direction dir) {
         if (!connectedFaces.get(dir.get3DDataValue())) return LazyOptional.empty();
 
-        if (!neighbourAirHandlers.get(dir).isPresent()) {
-            BlockEntity te1 = Objects.requireNonNull(ownerTE.getLevel()).getBlockEntity(ownerTE.getBlockPos().relative(dir));
-            if (te1 != null) {
-                LazyOptional<IAirHandlerMachine> cap = te1.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, dir.getOpposite());
-                if (cap.isPresent()) {
-                    neighbourAirHandlers.put(dir, cap);
-                    cap.addListener(neighbourAirInvalidationListeners.get(dir));
-                } else {
-                    neighbourAirHandlers.put(dir, LazyOptional.empty());
-                }
-            } else {
-                neighbourAirHandlers.put(dir, LazyOptional.empty());
-            }
+        BlockEntity te1 = Objects.requireNonNull(ownerTE.getLevel()).getBlockEntity(ownerTE.getBlockPos().relative(dir));
+        if (te1 == null) return LazyOptional.empty();
+
+        LazyOptional<IAirHandlerMachine> cap = te1.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, dir.getOpposite());
+        if (!cap.isPresent()) return LazyOptional.empty();
+
+        return cap;
+    }
+
+    private LazyOptional<IAirHandlerMachine> getCachedNeighbourAirHandler(BlockEntity ownerTE, Direction dir) {
+        LazyOptional<IAirHandlerMachine> cachedCap = this.neighbourAirHandlers.get(dir);
+        if (cachedCap.isPresent()) {
+            return cachedCap;
         }
-        return neighbourAirHandlers.get(dir);
+
+        LazyOptional<IAirHandlerMachine> currentCap = getCurrentNeighbourAirHandler(ownerTE, dir);
+        if (cachedCap == currentCap) {
+            return cachedCap;
+        }
+
+        this.neighbourAirHandlers.put(dir, currentCap);
+
+        if (currentCap.isPresent()) {
+            currentCap.addListener(this.neighbourAirInvalidationListeners.get(dir));
+        }
+
+        return currentCap;
     }
 
     private void disperseAir(BlockEntity ownerTE) {
@@ -303,7 +315,7 @@ public class MachineAirHandler extends BasicAirHandler implements IAirHandlerMac
         List<IAirHandlerMachine.Connection> neighbours = new ArrayList<>();
         for (Direction dir : DirectionUtil.VALUES) {
             if (connectedFaces.get(dir.get3DDataValue())) {
-                getNeighbourAirHandler(ownerTE, dir).ifPresent(h -> {
+                getCachedNeighbourAirHandler(ownerTE, dir).ifPresent(h -> {
                     if ((!onlyLowerPressure || h.getPressure() < getPressure())) {
                         neighbours.add(new ConnectedAirHandler(dir, h));
                     }
