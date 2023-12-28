@@ -17,31 +17,24 @@
 
 package me.desht.pneumaticcraft.common.tubemodules;
 
+import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
 import me.desht.pneumaticcraft.common.block.PressureTubeBlock;
 import me.desht.pneumaticcraft.common.block.entity.PressureTubeBlockEntity;
+import me.desht.pneumaticcraft.common.capabilities.CapabilityCache;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.Item;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.common.util.NonNullConsumer;
 
-public class RegulatorModule extends AbstractRedstoneReceivingModule implements IInfluenceDispersing, NeighbourAirHandlerCache {
-    private LazyOptional<IAirHandlerMachine> neighbourCap;
-    private final NonNullConsumer<LazyOptional<IAirHandlerMachine>> neighbourCapInvalidationListener;
+public class RegulatorModule extends AbstractRedstoneReceivingModule implements IInfluenceDispersing {
+    private final CapabilityCache<IAirHandlerMachine> neighbourAirHandlerCache;
 
     public RegulatorModule(Direction dir, PressureTubeBlockEntity pressureTube) {
         super(dir, pressureTube);
 
-        this.neighbourCap = LazyOptional.empty();
-        this.neighbourCapInvalidationListener = l -> {
-            if (l != this.neighbourCap) {
-                return;
-            }
-
-            neighbourCap = LazyOptional.empty();
-        };
+        this.neighbourAirHandlerCache = new CapabilityCache<>();
     }
 
     @Override
@@ -51,7 +44,7 @@ public class RegulatorModule extends AbstractRedstoneReceivingModule implements 
 
     @Override
     public int getMaxDispersion() {
-        return getCachedNeighbourAirHandler(pressureTube, dir).map(h -> {
+        return getCachedNeighbourAirHandler().map(h -> {
             int maxDispersion = (int) ((getThreshold() - h.getPressure()) * h.getVolume());
             return Math.max(0, maxDispersion);
         }).orElse(0);
@@ -69,7 +62,8 @@ public class RegulatorModule extends AbstractRedstoneReceivingModule implements 
     @Override
     public void onNeighborBlockUpdate() {
         super.onNeighborBlockUpdate();
-        neighbourCap = LazyOptional.empty();
+
+        this.neighbourAirHandlerCache.clear();
     }
 
     @Override
@@ -78,24 +72,13 @@ public class RegulatorModule extends AbstractRedstoneReceivingModule implements 
         return upgraded ? super.getThreshold() : (PneumaticValues.DANGER_PRESSURE_TIER_ONE - 0.1f) * (15 - getReceivingRedstoneLevel()) / 15f;
     }
 
+    private LazyOptional<IAirHandlerMachine> getCachedNeighbourAirHandler() {
+        return this.neighbourAirHandlerCache.getNeighbouring(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, pressureTube, dir);
+    }
+
     @Override
     public boolean isInlineAndFocused(PressureTubeBlock.TubeHitInfo hitInfo) {
         // regulator module covers its end and the tube center
         return hitInfo.dir() == getDirection() || hitInfo == PressureTubeBlock.TubeHitInfo.CENTER;
-    }
-
-    @Override
-    public LazyOptional<IAirHandlerMachine> getNeighbourCap() {
-        return neighbourCap;
-    }
-
-    @Override
-    public void setNeighbourCap(LazyOptional<IAirHandlerMachine> cap) {
-        neighbourCap = cap;
-    }
-
-    @Override
-    public NonNullConsumer<LazyOptional<IAirHandlerMachine>> getNeighbourCapInvalidationListener() {
-        return neighbourCapInvalidationListener;
     }
 }

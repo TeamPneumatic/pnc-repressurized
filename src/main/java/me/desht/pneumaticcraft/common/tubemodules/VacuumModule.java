@@ -17,9 +17,11 @@
 
 package me.desht.pneumaticcraft.common.tubemodules;
 
+import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
 import me.desht.pneumaticcraft.common.block.PressureTubeBlock;
 import me.desht.pneumaticcraft.common.block.entity.PressureTubeBlockEntity;
+import me.desht.pneumaticcraft.common.capabilities.CapabilityCache;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
@@ -27,11 +29,9 @@ import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.Item;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.common.util.NonNullConsumer;
 
-public class VacuumModule extends AbstractRedstoneReceivingModule implements IInfluenceDispersing, NeighbourAirHandlerCache {
-    private LazyOptional<IAirHandlerMachine> neighbourCap;
-    private final NonNullConsumer<LazyOptional<IAirHandlerMachine>> neighbourCapInvalidationListener;
+public class VacuumModule extends AbstractRedstoneReceivingModule implements IInfluenceDispersing {
+    private final CapabilityCache<IAirHandlerMachine> neighbourAirHandlerCache;
 
     public float rotation, oldRotation;
     private int lastAmount = 0;
@@ -39,14 +39,7 @@ public class VacuumModule extends AbstractRedstoneReceivingModule implements IIn
     public VacuumModule(Direction dir, PressureTubeBlockEntity pressureTube) {
         super(dir, pressureTube);
 
-        this.neighbourCap = LazyOptional.empty();
-        this.neighbourCapInvalidationListener = l -> {
-            if (l != this.neighbourCap) {
-                return;
-            }
-
-            neighbourCap = LazyOptional.empty();
-        };
+        this.neighbourAirHandlerCache = new CapabilityCache<>();
     }
 
     @Override
@@ -64,7 +57,7 @@ public class VacuumModule extends AbstractRedstoneReceivingModule implements IIn
     public void onNeighborBlockUpdate() {
         super.onNeighborBlockUpdate();
 
-        neighbourCap = LazyOptional.empty();
+        this.neighbourAirHandlerCache.clear();
     }
 
     @Override
@@ -73,11 +66,12 @@ public class VacuumModule extends AbstractRedstoneReceivingModule implements IIn
 
         int prevLast = lastAmount;
         PressureTubeBlockEntity tube = getTube();
-        if (tube.getPressure() >= PneumaticValues.MIN_PRESSURE_VACUUM_PUMP && getCachedNeighbourAirHandler(pressureTube, dir).isPresent() && getReceivingRedstoneLevel() == 0) {
+        LazyOptional<IAirHandlerMachine> neighbourCap;
+        if (tube.getPressure() >= PneumaticValues.MIN_PRESSURE_VACUUM_PUMP && (neighbourCap = getCachedNeighbourAirHandler()).isPresent() && getReceivingRedstoneLevel() == 0) {
             int toAdd = (int) (-PneumaticValues.USAGE_VACUUM_PUMP * (upgraded ? 7.41f : 1));
             int toTake = (int) (-PneumaticValues.PRODUCTION_VACUUM_PUMP * (upgraded ? 5.06f : 1));
 
-            lastAmount = getCachedNeighbourAirHandler(pressureTube, dir).map(h -> {
+            lastAmount = neighbourCap.map(h -> {
                 int air = h.getAir();
                 float pressure = h.getPressure();
                 h.addAir(toTake);
@@ -114,6 +108,10 @@ public class VacuumModule extends AbstractRedstoneReceivingModule implements IIn
         this.lastAmount = lastAmount;
     }
 
+    private LazyOptional<IAirHandlerMachine> getCachedNeighbourAirHandler() {
+        return this.neighbourAirHandlerCache.getNeighbouring(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, pressureTube, dir);
+    }
+
     @Override
     public int getMaxDispersion() {
         // allow no air through
@@ -140,20 +138,5 @@ public class VacuumModule extends AbstractRedstoneReceivingModule implements IIn
     public boolean isInlineAndFocused(PressureTubeBlock.TubeHitInfo hitInfo) {
         // vacuum module is large and covers entire tube
         return true;
-    }
-
-    @Override
-    public LazyOptional<IAirHandlerMachine> getNeighbourCap() {
-        return neighbourCap;
-    }
-
-    @Override
-    public void setNeighbourCap(LazyOptional<IAirHandlerMachine> cap) {
-        neighbourCap = cap;
-    }
-
-    @Override
-    public NonNullConsumer<LazyOptional<IAirHandlerMachine>> getNeighbourCapInvalidationListener() {
-        return neighbourCapInvalidationListener;
     }
 }
