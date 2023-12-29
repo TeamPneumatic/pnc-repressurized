@@ -58,7 +58,7 @@ public class MachineAirHandler extends BasicAirHandler implements IAirHandlerMac
     private Direction leakDir = null;
     private Direction prevLeakDir = null;
     private int prevAir;
-    private final Map<Direction, LazyOptional<IAirHandlerMachine>> neighbourAirHandlers = new EnumMap<>(Direction.class);
+    private final NeighbouringCapabilityCache<IAirHandlerMachine> neighbouringAirHandlerCache;
 
     // note: leaks due to security upgrade are tracked separately from leaks due to disconnection
     private boolean safetyLeaking;   // is the handler venting right now?
@@ -69,9 +69,7 @@ public class MachineAirHandler extends BasicAirHandler implements IAirHandlerMac
         super(volume);
 
         this.tier = tier;
-        for (Direction dir : DirectionUtil.VALUES) {
-            this.neighbourAirHandlers.put(dir, LazyOptional.empty());
-        }
+        this.neighbouringAirHandlerCache = new NeighbouringCapabilityCache<>();
     }
 
     @Override
@@ -122,10 +120,7 @@ public class MachineAirHandler extends BasicAirHandler implements IAirHandlerMac
         connectedFaces.clear();
         sides.forEach(side -> connectedFaces.set(side.get3DDataValue()));
 
-        // invalidate cached neighbour data
-        for (Direction dir : DirectionUtil.VALUES) {
-            this.neighbourAirHandlers.put(dir, LazyOptional.empty());
-        }
+        this.neighbouringAirHandlerCache.clear();
     }
 
     @Override
@@ -240,22 +235,15 @@ public class MachineAirHandler extends BasicAirHandler implements IAirHandlerMac
         return this.leakDir;
     }
 
-    private LazyOptional<IAirHandlerMachine> getNeighbourAirHandler(BlockEntity ownerTE, Direction dir) {
+    private LazyOptional<IAirHandlerMachine> getCachedNeighbourAirHandler(BlockEntity ownerTE, Direction dir) {
         if (!connectedFaces.get(dir.get3DDataValue())) return LazyOptional.empty();
 
-        if (!neighbourAirHandlers.get(dir).isPresent()) {
-            BlockEntity te1 = Objects.requireNonNull(ownerTE.getLevel()).getBlockEntity(ownerTE.getBlockPos().relative(dir));
-            if (te1 != null) {
-                LazyOptional<IAirHandlerMachine> cap = te1.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, dir.getOpposite());
-                if (cap.isPresent()) {
-                    neighbourAirHandlers.put(dir, cap);
-                    neighbourAirHandlers.get(dir).addListener(l -> neighbourAirHandlers.put(dir, LazyOptional.empty()));
-                }
-            } else {
-                neighbourAirHandlers.put(dir, LazyOptional.empty());
-            }
+        LazyOptional<IAirHandlerMachine> cap = this.neighbouringAirHandlerCache.get(dir);
+        if (cap.isPresent()) {
+            return cap;
         }
-        return neighbourAirHandlers.get(dir);
+
+        return this.neighbouringAirHandlerCache.set(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, ownerTE, dir);
     }
 
     private void disperseAir(BlockEntity ownerTE) {
@@ -292,7 +280,7 @@ public class MachineAirHandler extends BasicAirHandler implements IAirHandlerMac
         List<IAirHandlerMachine.Connection> neighbours = new ArrayList<>();
         for (Direction dir : DirectionUtil.VALUES) {
             if (connectedFaces.get(dir.get3DDataValue())) {
-                getNeighbourAirHandler(ownerTE, dir).ifPresent(h -> {
+                getCachedNeighbourAirHandler(ownerTE, dir).ifPresent(h -> {
                     if ((!onlyLowerPressure || h.getPressure() < getPressure())) {
                         neighbours.add(new ConnectedAirHandler(dir, h));
                     }

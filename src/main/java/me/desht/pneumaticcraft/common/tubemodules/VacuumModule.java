@@ -21,23 +21,26 @@ import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
 import me.desht.pneumaticcraft.common.block.PressureTubeBlock;
 import me.desht.pneumaticcraft.common.block.entity.PressureTubeBlockEntity;
+import me.desht.pneumaticcraft.common.capabilities.CapabilityCache;
 import me.desht.pneumaticcraft.common.core.ModItems;
+import me.desht.pneumaticcraft.common.util.CapabilityUtils;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.common.util.LazyOptional;
 
 public class VacuumModule extends AbstractRedstoneReceivingModule implements IInfluenceDispersing {
-    private LazyOptional<IAirHandlerMachine> neighbourCap = null;
+    private final CapabilityCache<IAirHandlerMachine> neighbourAirHandlerCache;
 
     public float rotation, oldRotation;
     private int lastAmount = 0;
 
     public VacuumModule(Direction dir, PressureTubeBlockEntity pressureTube) {
         super(dir, pressureTube);
+
+        this.neighbourAirHandlerCache = new CapabilityCache<>();
     }
 
     @Override
@@ -55,7 +58,7 @@ public class VacuumModule extends AbstractRedstoneReceivingModule implements IIn
     public void onNeighborBlockUpdate() {
         super.onNeighborBlockUpdate();
 
-        neighbourCap = null;
+        this.neighbourAirHandlerCache.clear();
     }
 
     @Override
@@ -64,11 +67,12 @@ public class VacuumModule extends AbstractRedstoneReceivingModule implements IIn
 
         int prevLast = lastAmount;
         PressureTubeBlockEntity tube = getTube();
-        if (tube.getPressure() >= PneumaticValues.MIN_PRESSURE_VACUUM_PUMP && getCachedNeighbourAirHandler().isPresent() && getReceivingRedstoneLevel() == 0) {
+        LazyOptional<IAirHandlerMachine> neighbourCap;
+        if (tube.getPressure() >= PneumaticValues.MIN_PRESSURE_VACUUM_PUMP && (neighbourCap = getCachedNeighbourAirHandler()).isPresent() && getReceivingRedstoneLevel() == 0) {
             int toAdd = (int) (-PneumaticValues.USAGE_VACUUM_PUMP * (upgraded ? 7.41f : 1));
             int toTake = (int) (-PneumaticValues.PRODUCTION_VACUUM_PUMP * (upgraded ? 5.06f : 1));
 
-            lastAmount = getCachedNeighbourAirHandler().map(h -> {
+            lastAmount = neighbourCap.map(h -> {
                 int air = h.getAir();
                 float pressure = h.getPressure();
                 h.addAir(toTake);
@@ -106,16 +110,12 @@ public class VacuumModule extends AbstractRedstoneReceivingModule implements IIn
     }
 
     private LazyOptional<IAirHandlerMachine> getCachedNeighbourAirHandler() {
-        if (neighbourCap == null) {
-            BlockEntity neighborTE = pressureTube.nonNullLevel().getBlockEntity(pressureTube.getBlockPos().relative(dir));
-            if (neighborTE != null) {
-                neighbourCap = neighborTE.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, dir.getOpposite());
-                if (neighbourCap.isPresent()) neighbourCap.addListener(l -> neighbourCap = null);
-            } else {
-                neighbourCap = LazyOptional.empty();
-            }
+        LazyOptional<IAirHandlerMachine> cap = this.neighbourAirHandlerCache.get();
+        if (cap.isPresent()) {
+            return cap;
         }
-        return neighbourCap;
+
+        return this.neighbourAirHandlerCache.set(CapabilityUtils.getNeighbourCap(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, pressureTube, dir));
     }
 
     @Override

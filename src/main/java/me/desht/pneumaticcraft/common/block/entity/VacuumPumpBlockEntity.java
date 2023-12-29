@@ -54,7 +54,7 @@ public class VacuumPumpBlockEntity extends AbstractAirHandlingBlockEntity implem
         IRedstoneControl<VacuumPumpBlockEntity>, IManoMeasurable, MenuProvider {
     @GuiSynced
     private final IAirHandlerMachine vacuumHandler;
-    private final LazyOptional<IAirHandlerMachine> vacuumCap;
+    private LazyOptional<IAirHandlerMachine> vacuumCap;
     public int rotation;
     public int oldRotation;
     private int turnTimer = -1;
@@ -68,6 +68,19 @@ public class VacuumPumpBlockEntity extends AbstractAirHandlingBlockEntity implem
         super(ModBlockEntities.VACUUM_PUMP.get(), pos, state, PressureTier.TIER_ONE, PneumaticValues.VOLUME_VACUUM_PUMP, 4);
 
         this.vacuumHandler  = new MachineAirHandler(PressureTier.TIER_ONE, PneumaticValues.VOLUME_VACUUM_PUMP);
+        this.vacuumCap = LazyOptional.of(() -> vacuumHandler);
+    }
+
+    @Override
+    public void invalidateCaps() {
+        this.vacuumCap.invalidate();
+        this.vacuumCap = LazyOptional.empty();
+        super.invalidateCaps();
+    }
+
+    @Override
+    public void reviveCaps() {
+        super.reviveCaps();
         this.vacuumCap = LazyOptional.of(() -> vacuumHandler);
     }
 
