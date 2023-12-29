@@ -19,12 +19,25 @@ import org.jetbrains.annotations.Nullable;
 
 public class TubeJunctionBlockEntity extends AbstractAirHandlingBlockEntity {
     private final IAirHandlerMachine tube2Handler;
-    private final LazyOptional<IAirHandlerMachine> tube2Cap;
+    private LazyOptional<IAirHandlerMachine> tube2Cap;
 
     public TubeJunctionBlockEntity(BlockPos pPos, BlockState pState) {
         super(ModBlockEntities.TUBE_JUNCTION.get(), pPos, pState, PressureTier.TIER_TWO, 4000, 0);
 
         this.tube2Handler  = new MachineAirHandler(PressureTier.TIER_TWO, 4000);
+        this.tube2Cap = LazyOptional.of(() -> tube2Handler);
+    }
+
+    @Override
+    public void invalidateCaps() {
+        this.tube2Cap.invalidate();
+        this.tube2Cap = LazyOptional.empty();
+        super.invalidateCaps();
+    }
+
+    @Override
+    public void reviveCaps() {
+        super.reviveCaps();
         this.tube2Cap = LazyOptional.of(() -> tube2Handler);
     }
 

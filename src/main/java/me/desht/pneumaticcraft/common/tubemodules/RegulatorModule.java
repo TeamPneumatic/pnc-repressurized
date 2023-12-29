@@ -21,18 +21,21 @@ import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
 import me.desht.pneumaticcraft.common.block.PressureTubeBlock;
 import me.desht.pneumaticcraft.common.block.entity.PressureTubeBlockEntity;
+import me.desht.pneumaticcraft.common.capabilities.CapabilityCache;
 import me.desht.pneumaticcraft.common.core.ModItems;
+import me.desht.pneumaticcraft.common.util.CapabilityUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.common.util.LazyOptional;
 
 public class RegulatorModule extends AbstractRedstoneReceivingModule implements IInfluenceDispersing {
-    private LazyOptional<IAirHandlerMachine> neighbourCap = null;
+    private final CapabilityCache<IAirHandlerMachine> neighbourAirHandlerCache;
 
     public RegulatorModule(Direction dir, PressureTubeBlockEntity pressureTube) {
         super(dir, pressureTube);
+
+        this.neighbourAirHandlerCache = new CapabilityCache<>();
     }
 
     @Override
@@ -60,7 +63,8 @@ public class RegulatorModule extends AbstractRedstoneReceivingModule implements 
     @Override
     public void onNeighborBlockUpdate() {
         super.onNeighborBlockUpdate();
-        neighbourCap = null;
+
+        this.neighbourAirHandlerCache.clear();
     }
 
     @Override
@@ -70,16 +74,12 @@ public class RegulatorModule extends AbstractRedstoneReceivingModule implements 
     }
 
     private LazyOptional<IAirHandlerMachine> getCachedNeighbourAirHandler() {
-        if (neighbourCap == null) {
-            BlockEntity neighborTE = pressureTube.nonNullLevel().getBlockEntity(pressureTube.getBlockPos().relative(dir));
-            if (neighborTE != null) {
-                neighbourCap = neighborTE.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, dir.getOpposite());
-                if (neighbourCap.isPresent()) neighbourCap.addListener(l -> neighbourCap = null);
-            } else {
-                neighbourCap = LazyOptional.empty();
-            }
+        LazyOptional<IAirHandlerMachine> cap = this.neighbourAirHandlerCache.get();
+        if (cap.isPresent()) {
+            return cap;
         }
-        return neighbourCap;
+
+        return this.neighbourAirHandlerCache.set(CapabilityUtils.getNeighbourCap(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, pressureTube, dir));
     }
 
     @Override
