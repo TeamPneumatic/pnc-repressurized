@@ -17,6 +17,8 @@
 
 package me.desht.pneumaticcraft.common.tubemodules;
 
+import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
+import me.desht.pneumaticcraft.api.heat.TemperatureListener;
 import me.desht.pneumaticcraft.common.block.entity.PressureTubeBlockEntity;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.heat.HeatExchangerManager;
@@ -24,7 +26,6 @@ import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSyncThermostatModuleToClient;
 import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -33,12 +34,12 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
-import java.util.Objects;
+import java.util.Optional;
 
-public class ThermostatModule extends AbstractTubeModule implements INetworkedModule {
+public class ThermostatModule extends AbstractTubeModule implements INetworkedModule, TemperatureListener {
 
     public static final int MIN_VALUE = -273;
     public static final int MAX_VALUE = 2000;
@@ -151,8 +152,29 @@ public class ThermostatModule extends AbstractTubeModule implements INetworkedMo
         }
     }
 
+    @NotNull
+    private Optional<IHeatExchangerLogic> getHeatExchangerLogic() {
+        return HeatExchangerManager.getInstance().getLogic(pressureTube.getLevel(),
+                pressureTube.getBlockPos().relative(getDirection()),
+                getDirection().getOpposite());
+    }
+
+    @Override
+    public void onPlaced() {
+        getHeatExchangerLogic().ifPresent(logic -> logic.addTemperatureListener(this));
+    }
+
+    @Override
+    public void onRemoved() {
+        getHeatExchangerLogic().ifPresent(logic -> logic.removeTemperatureListener(this));
+    }
+
     @Override
     public void onNeighborBlockUpdate() {
+        getHeatExchangerLogic().ifPresent(logic -> {
+            logic.removeTemperatureListener(this);
+            logic.addTemperatureListener(this);
+        });
         updateInputLevel();
     }
 
@@ -178,11 +200,7 @@ public class ThermostatModule extends AbstractTubeModule implements INetworkedMo
     }
 
     public void updateInputLevel() {
-        Level world = Objects.requireNonNull(pressureTube.getLevel());
-        BlockPos pos = pressureTube.getBlockPos().relative(getDirection());
-
-        HeatExchangerManager.getInstance().getLogic(world, pos, null)
-            .ifPresent(logic -> setTemperature((int)logic.getTemperature() - 273));
+        getHeatExchangerLogic().ifPresent(logic -> setTemperature((int)logic.getTemperature() - 273));
 
         int level = 0;
         if (advancedConfig) {
@@ -224,4 +242,8 @@ public class ThermostatModule extends AbstractTubeModule implements INetworkedMo
         threshold = tag.getInt("threshold");
     }
 
+    @Override
+    public void onTemperatureChanged(double prevTemperature, double newTemperature) {
+        setUpdate(true);
+    }
 }
