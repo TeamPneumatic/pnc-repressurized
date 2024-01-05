@@ -27,6 +27,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.CapabilityToken;
 import net.minecraftforge.common.util.INBTSerializable;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
 import java.util.function.BiPredicate;
@@ -216,6 +217,23 @@ public interface IHeatExchangerLogic extends INBTSerializable<CompoundTag> {
      */
     boolean isSideConnected(Direction side);
 
+    /**
+     * Register a listener which will be called if the temperature of this heat exchanger changes. This is ignored
+     * for heat exchangers with constant temperature (i.e. ambient temperatures or non-block-entity blocks).
+     *
+     * @param listener a listener which receives the new temperature
+     */
+    default void addTemperatureListener(@NotNull TemperatureListener listener) {
+    }
+
+    /**
+     * Removed a registered temperture listener. This should be called when the listening object goes out of scope.
+     *
+     * @param listener the listener to remove
+     */
+    default void removeTemperatureListener(@NotNull TemperatureListener listener) {
+    }
+
     @Override
     default CompoundTag serializeNBT() { return new CompoundTag(); }
 
@@ -237,4 +255,5 @@ public interface IHeatExchangerLogic extends INBTSerializable<CompoundTag> {
     }
 
     BiPredicate<LevelAccessor,BlockPos> ALL_BLOCKS = (world, pos) -> true;
+
 }
