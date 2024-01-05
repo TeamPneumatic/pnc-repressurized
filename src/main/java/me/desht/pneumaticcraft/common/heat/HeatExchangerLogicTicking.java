@@ -19,6 +19,7 @@ package me.desht.pneumaticcraft.common.heat;
 
 import me.desht.pneumaticcraft.api.heat.HeatBehaviour;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
+import me.desht.pneumaticcraft.api.heat.TemperatureListener;
 import me.desht.pneumaticcraft.common.heat.behaviour.HeatBehaviourManager;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import net.minecraft.core.BlockPos;
@@ -46,6 +47,7 @@ public class HeatExchangerLogicTicking implements IHeatExchangerLogic {
     private double thermalResistance = 1;
     private double thermalCapacity = 1;
     private final BitSet connections = new BitSet(6);
+    private final List<TemperatureListener> temperatureCallbacks = new ArrayList<>();
 
     @Override
     public void initializeAsHull(Level world, BlockPos pos, BiPredicate<LevelAccessor,BlockPos> blockFilter, Direction... validSides) {
@@ -109,8 +111,14 @@ public class HeatExchangerLogicTicking implements IHeatExchangerLogic {
 
     @Override
     public void setTemperature(double temperature) {
-        this.temperature = temperature;
-        this.temperatureInt = (int) temperature;
+        if (temperature != this.temperature) {
+            double prevTemperature = this.temperature;
+            this.temperature = temperature;
+            this.temperatureInt = (int) temperature;
+            if (Math.abs(prevTemperature - temperature) > 0.001) {
+                temperatureCallbacks.forEach(l -> l.onTemperatureChanged(prevTemperature, temperature));
+            }
+        }
     }
 
     @Override
@@ -205,6 +213,16 @@ public class HeatExchangerLogicTicking implements IHeatExchangerLogic {
     @Override
     public double getAmbientTemperature() {
         return ambientTemperature;
+    }
+
+    @Override
+    public void addTemperatureListener(TemperatureListener listener) {
+        temperatureCallbacks.add(listener);
+    }
+
+    @Override
+    public void removeTemperatureListener(TemperatureListener listener) {
+        temperatureCallbacks.remove(listener);
     }
 
     public static void exchange(IHeatExchangerLogic logic, IHeatExchangerLogic logic2) {
