@@ -6,6 +6,11 @@ Changes are in reverse chronological order; newest changes at the top.
 
 # Minecraft 1.19.2
 
+## [4.3.14]
+
+### Fixed
+* Fixed issue where Thermostat Module didn't always pick up temperature changes in monitored block
+
 ## [4.3.13]
 
 ### Added
