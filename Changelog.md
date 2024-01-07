@@ -8,11 +8,17 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## [6.0.13]
 
+### Added
+* Added a new tube module: the Thermostat Module - thanks @johalun (coding) and @Ridanisaurus (texturing)
+  * Measures the temperature of the block it's facing and converts to a redstone signal
+  * Use a Redstone Module on the same colour channel to output the signal
+
 ### Fixed
 
 * Fixed Liquid Hopper not immediately updating comparator output level when fluid level changed
 * Fixed Pneumatic Armor HUD stat panel forever-expanding if moved off the screen to the right
   * Also added a "Reset" button to the stat-moving GUI; retrieve stat panels which you've moved off-screen this way
+* Some memory leak fixes and general improvements around handling and caching of air handlers capabilities - thanks @BlueAgent
 
 ## [6.0.12]
 
