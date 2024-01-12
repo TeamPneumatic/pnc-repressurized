@@ -255,7 +255,7 @@ public class PressureTubeBlock extends AbstractCamouflageBlock
     public void setPlacedBy(Level world, BlockPos pos, BlockState state, LivingEntity entity, ItemStack stack) {
         super.setPlacedBy(world, pos, state, entity, stack);
 
-        ModuleNetworkManager.getInstance(world).invalidateCache();
+        if (!world.isClientSide()) ModuleNetworkManager.getInstance(world).invalidateCache();
         // force BE to calculate its connections immediately so network manager rescanning works
         PressureTubeBlockEntity te = getPressureTube(world, pos);
         if (te != null) {
@@ -467,7 +467,7 @@ public class PressureTubeBlock extends AbstractCamouflageBlock
                 }
             }
         }
-        ModuleNetworkManager.getInstance(world).invalidateCache();
+        if (!world.isClientSide()) ModuleNetworkManager.getInstance(world).invalidateCache();
 
         return true;
     }
@@ -499,7 +499,7 @@ public class PressureTubeBlock extends AbstractCamouflageBlock
         if (newState.getBlock() != state.getBlock()) {
             getModuleDrops(getPressureTube(world, pos))
                     .forEach(drop -> world.addFreshEntity(new ItemEntity(world, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, drop)));
-            ModuleNetworkManager.getInstance(world).invalidateCache();
+            if (!world.isClientSide()) ModuleNetworkManager.getInstance(world).invalidateCache();
         }
         super.onRemove(state, world, pos, newState, isMoving);
     }
