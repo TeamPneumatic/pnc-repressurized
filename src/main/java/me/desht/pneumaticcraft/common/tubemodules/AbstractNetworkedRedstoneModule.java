@@ -151,4 +151,10 @@ public abstract class AbstractNetworkedRedstoneModule extends AbstractTubeModule
     public final boolean canConnectTo(AbstractTubeModule other) {
         return other instanceof AbstractNetworkedRedstoneModule;
     }
+
+    @Override
+    public void onPlaced() {
+        super.onPlaced();
+        updateOutput(null);
+    }
 }
