@@ -26,6 +26,7 @@ import me.desht.pneumaticcraft.common.block.entity.PressureTubeBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.item.TubeModuleItem;
+import me.desht.pneumaticcraft.common.tubemodules.AbstractNetworkedRedstoneModule;
 import me.desht.pneumaticcraft.common.tubemodules.AbstractTubeModule;
 import me.desht.pneumaticcraft.common.tubemodules.INetworkedModule;
 import me.desht.pneumaticcraft.common.tubemodules.ModuleNetworkManager;
@@ -255,11 +256,15 @@ public class PressureTubeBlock extends AbstractCamouflageBlock
     public void setPlacedBy(Level world, BlockPos pos, BlockState state, LivingEntity entity, ItemStack stack) {
         super.setPlacedBy(world, pos, state, entity, stack);
 
-        if (!world.isClientSide()) ModuleNetworkManager.getInstance(world).invalidateCache();
         // force BE to calculate its connections immediately so network manager rescanning works
         PressureTubeBlockEntity te = getPressureTube(world, pos);
-        if (te != null) {
-            te.onNeighborTileUpdate(null);
+        if (!world.isClientSide()) {
+            if (te != null) {
+                te.onNeighborTileUpdate(null);
+            }
+
+            ModuleNetworkManager.getInstance(world).invalidateCache();
+            AbstractNetworkedRedstoneModule.onNetworkReform(world, pos);
         }
     }
 
@@ -467,7 +472,10 @@ public class PressureTubeBlock extends AbstractCamouflageBlock
                 }
             }
         }
-        if (!world.isClientSide()) ModuleNetworkManager.getInstance(world).invalidateCache();
+        if (!world.isClientSide()) {
+            ModuleNetworkManager.getInstance(world).invalidateCache();
+            AbstractNetworkedRedstoneModule.onNetworkReform(world, pos);
+        }
 
         return true;
     }
@@ -497,9 +505,12 @@ public class PressureTubeBlock extends AbstractCamouflageBlock
     @Override
     public void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean isMoving) {
         if (newState.getBlock() != state.getBlock()) {
+            if (!world.isClientSide()) {
+                ModuleNetworkManager.getInstance(world).invalidateCache();
+                AbstractNetworkedRedstoneModule.onNetworkReform(world, pos);
+            }
             getModuleDrops(getPressureTube(world, pos))
                     .forEach(drop -> world.addFreshEntity(new ItemEntity(world, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, drop)));
-            if (!world.isClientSide()) ModuleNetworkManager.getInstance(world).invalidateCache();
         }
         super.onRemove(state, world, pos, newState, isMoving);
     }

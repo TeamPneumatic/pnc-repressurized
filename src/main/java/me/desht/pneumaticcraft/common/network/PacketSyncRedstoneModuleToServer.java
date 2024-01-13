@@ -106,7 +106,7 @@ public class PacketSyncRedstoneModuleToServer extends LocationIntPacket {
                             mr.setOperation(RedstoneModule.Operation.values()[op], otherColor, constantVal);
                         }
                         mr.updateNeighbors();
-                        mr.setInputLevel(-1);  // force recalc
+                        mr.updateInputLevel();
                     }
                 });
             }

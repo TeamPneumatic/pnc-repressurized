@@ -39,6 +39,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 
+import javax.annotation.Nullable;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
@@ -46,9 +47,8 @@ import java.util.Objects;
 import java.util.stream.IntStream;
 
 // since this is both a receiver and an emitter, we won't use either redstone superclass here
-public class RedstoneModule extends AbstractTubeModule implements INetworkedModule {
+public class RedstoneModule extends AbstractNetworkedRedstoneModule implements INetworkedModule {
     private EnumRedstoneDirection redstoneDirection = EnumRedstoneDirection.OUTPUT;
-    private int inputLevel = -1;
     private int outputLevel;
     private int colorChannel;
     private Operation operation = Operation.PASSTHROUGH;
@@ -97,32 +97,21 @@ public class RedstoneModule extends AbstractTubeModule implements INetworkedModu
     }
 
     @Override
-    public void tickServer() {
-        super.tickServer();
-
-        byte[] levels = new byte[16];
-
-        if (redstoneDirection == EnumRedstoneDirection.OUTPUT) {
-            for (AbstractTubeModule module : ModuleNetworkManager.getInstance(getTube().nonNullLevel()).getConnectedModules(this)) {
-                if (module instanceof RedstoneModule mr) {
-                    if (mr.getRedstoneDirection() == EnumRedstoneDirection.INPUT && mr.getInputLevel() > levels[mr.getColorChannel()])
-                        levels[mr.getColorChannel()] = (byte) mr.inputLevel;
-                }
-                if (module instanceof ThermostatModule mr) {
-                    if (mr.getLevel() > levels[mr.getColorChannel()])
-                        levels[mr.getColorChannel()] = (byte) mr.getLevel();
-                }
-            }
-
-            int out = computeOutputSignal(outputLevel, levels);
-            if (inverted) out = out > 0 ? 0 : 15;
-            if (setOutputLevel(out)) {
-                NetworkHandler.sendToAllTracking(new PacketSyncRedstoneModuleToClient(this), getTube());
-            }
-        } else {
-            if (inputLevel < 0) updateInputLevel();  // first update
+    protected void updateOutput(@Nullable byte[] levels) {
+        if (getTube().nonNullLevel().isClientSide()) return;
+        if (levels == null) levels = fetchNetworkInputLevels();
+        super.updateOutput(levels);
+        if (setOutputLevel(computeOutputSignal(outputLevel, levels))) {
+            NetworkHandler.sendToAllTracking(new PacketSyncRedstoneModuleToClient(this), getTube());
         }
         System.arraycopy(levels, 0, prevLevels, 0, 16);
+    }
+
+    @Override
+    protected boolean isWatchingChannel(int channel) {
+        return redstoneDirection == EnumRedstoneDirection.OUTPUT && (
+                colorChannel == channel || (operation.useOtherColor && otherColor == channel)
+                );
     }
 
     @Override
@@ -142,7 +131,9 @@ public class RedstoneModule extends AbstractTubeModule implements INetworkedModu
         byte s1prev = prevLevels[getColorChannel()];
         byte s2 = levels[otherColor];
 
-        return operation.signalFunction.compute(lastOutput, s1, s2, getTube().nonNullLevel().getGameTime(), constantVal, s1 > s1prev);
+        int out = operation.signalFunction.compute(lastOutput, s1, s2, getTube().nonNullLevel().getGameTime(), constantVal, s1 > s1prev);
+        if (inverted) out = out > 0 ? 0 : 15;
+        return out;
     }
 
     @Override
@@ -200,6 +191,7 @@ public class RedstoneModule extends AbstractTubeModule implements INetworkedModu
 
     public void setRedstoneDirection(EnumRedstoneDirection redstoneDirection) {
         this.redstoneDirection = redstoneDirection;
+        updateOutput(null);
         setChanged();
     }
 
@@ -209,23 +201,17 @@ public class RedstoneModule extends AbstractTubeModule implements INetworkedModu
     }
 
     public boolean setOutputLevel(int level) {
+        if (getTube().nonNullLevel().isClientSide()) {
+            outputLevel = level;
+            return false;
+        }
         level = Mth.clamp(level, 0, 15);
         if (level != outputLevel) {
             outputLevel = level;
             updateNeighbors();
             return true;
-        } else {
-            return false;
         }
-    }
-
-    public int getInputLevel() {
-        return inputLevel;
-    }
-
-    public void setInputLevel(int level) {
-        // used by clientside sync and also to invalidate the cached signal level (e.g. see pressure gauge)
-        inputLevel = level;
+        return false;
     }
 
     @Override
@@ -234,8 +220,14 @@ public class RedstoneModule extends AbstractTubeModule implements INetworkedModu
     }
 
     @Override
+    protected int getInputChannel() {
+        return redstoneDirection == EnumRedstoneDirection.INPUT ? colorChannel : -1;
+    }
+
+    @Override
     public void setColorChannel(int channel) {
         this.colorChannel = channel;
+        updateOutput(null);
         setChanged();
     }
 
@@ -245,6 +237,7 @@ public class RedstoneModule extends AbstractTubeModule implements INetworkedModu
 
     public void setInverted(boolean inverted) {
         this.inverted = inverted;
+        updateOutput(null);
         setChanged();
     }
 
@@ -254,6 +247,7 @@ public class RedstoneModule extends AbstractTubeModule implements INetworkedModu
 
     public void setComparatorInput(boolean comparatorInput) {
         this.comparatorInput = comparatorInput;
+        updateOutput(null);
         setChanged();
     }
 
@@ -261,7 +255,7 @@ public class RedstoneModule extends AbstractTubeModule implements INetworkedModu
     public void addInfo(List<Component> curInfo) {
         super.addInfo(curInfo);
         if (getRedstoneDirection() == EnumRedstoneDirection.INPUT) {
-            curInfo.add(PneumaticCraftUtils.xlate("pneumaticcraft.waila.redstoneModule.receiving", inputLevel));
+            curInfo.add(PneumaticCraftUtils.xlate("pneumaticcraft.waila.redstoneModule.receiving", getInputLevel()));
         } else {
             curInfo.add(PneumaticCraftUtils.xlate("pneumaticcraft.waila.redstoneModule.emitting", outputLevel));
             if (upgraded) addAdvancedInfo(curInfo);
@@ -303,21 +297,20 @@ public class RedstoneModule extends AbstractTubeModule implements INetworkedModu
         }
     }
 
-    private boolean updateInputLevel() {
+    @Override
+    protected int calculateInputLevel() {
         int newInputLevel = redstoneDirection == EnumRedstoneDirection.INPUT ? readInputLevel() : 0;
 
-        newInputLevel = Math.max(newInputLevel,  pressureTube.tubeModules()
+        return Math.max(newInputLevel,  pressureTube.tubeModules()
                 .filter(tm -> tm instanceof AbstractRedstoneEmittingModule)
                 .max(Comparator.comparingInt(AbstractTubeModule::getRedstoneLevel))
                 .map(AbstractTubeModule::getRedstoneLevel)
                 .orElse(0));
+    }
 
-        if (newInputLevel != inputLevel) {
-            inputLevel = newInputLevel;
-            NetworkHandler.sendToAllTracking(new PacketSyncRedstoneModuleToClient(this), getTube());
-            return true;
-        }
-        return false;
+    @Override
+    protected void onInputLevelChange(int level) {
+        NetworkHandler.sendToAllTracking(new PacketSyncRedstoneModuleToClient(this), getTube());
     }
 
     private int readInputLevel() {
@@ -351,6 +344,7 @@ public class RedstoneModule extends AbstractTubeModule implements INetworkedModu
         this.otherColor = otherColor;
         this.constantVal = constantVal;
 
+        updateOutput(null);
         setChanged();
     }
 
