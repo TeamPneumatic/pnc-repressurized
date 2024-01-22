@@ -19,6 +19,7 @@ package me.desht.pneumaticcraft.common.block.entity;
 
 import me.desht.pneumaticcraft.api.item.ISpawnerCoreStats;
 import me.desht.pneumaticcraft.api.pressure.PressureTier;
+import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.inventory.PressurizedSpawnerMenu;
@@ -168,7 +169,7 @@ public class PressurizedSpawnerBlockEntity extends AbstractAirHandlingBlockEntit
 
     @Override
     public float getMinWorkingPressure() {
-        return 10f;
+        return ConfigHelper.common().machines.pressurizedSpawnerMinPressure.get().floatValue();
     }
 
     @Override

@@ -61,6 +61,7 @@ public class CommonConfig {
         public ForgeConfigSpec.IntValue pneumaticEngineEfficiency;
         public ForgeConfigSpec.IntValue pneumaticGeneratorEfficiency;
         public ForgeConfigSpec.IntValue pneumaticPumpEfficiency;
+        public ForgeConfigSpec.DoubleValue pressurizedSpawnerMinPressure;
         public ForgeConfigSpec.DoubleValue speedUpgradeSpeedMultiplier;
         public ForgeConfigSpec.DoubleValue speedUpgradeUsageMultiplier;
         public ForgeConfigSpec.ConfigValue<List<String>> disenchantingBlacklist;
@@ -327,6 +328,10 @@ public class CommonConfig {
                 .comment("Changing this value will alter the hydraulic bar production of the Pneumatic Pump. The input, air, will stay the same")
                 .translation("pneumaticcraft.config.common.machine_properties.pneumatic_pump_efficiency")
                 .defineInRange("pneumatic_pump_efficiency", 40, 0, Integer.MAX_VALUE);
+        machines.pressurizedSpawnerMinPressure = builder
+                .comment("Minimum pressure required for the Pressurized Spawner to run")
+                .translation("pneumaticcraft.config.common.machine_properties.pressurized_spawner_min_pressure")
+                .defineInRange("pressurized_spawner_min_pressure", 10.0, 1.0, 20.0);
         machines.speedUpgradeSpeedMultiplier = builder
                 .comment("Speed multiplier per speed upgrade: speed mult = speedUpgradeSpeedMultiplier ^ num_of_speed_upgrades")
                 .translation("pneumaticcraft.config.common.machine_properties.speed_upgrade_speed_multiplier")
