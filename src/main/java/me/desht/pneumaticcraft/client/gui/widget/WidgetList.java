@@ -25,7 +25,6 @@ import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
-import org.lwjgl.opengl.GL11;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -142,8 +141,7 @@ public class WidgetList<T> extends AbstractWidget implements ITooltipProvider {
         int lines = height / lineHeight;
 
         matrixStack.pushPose();
-        GL11.glEnable(GL11.GL_SCISSOR_TEST);
-        GL11.glScissor(x * scale, (y + height) * scale, width * scale, height * scale);
+        enableScissor(x, y, x + width, y + height);
         if (inverseSelected && selected >= 0) {
             RenderSystem.disableTexture();
             fill(matrixStack, x, y + lineHeight * selected, x + width, y + lineHeight * (selected + 1), 0xFF000000 | selectedBg);
@@ -154,7 +152,7 @@ public class WidgetList<T> extends AbstractWidget implements ITooltipProvider {
         for (int i = 0; i < items.size() && i < lines; i++) {
             mc.font.draw(matrixStack, items.get(i).toString(), 0, i * lineHeight, i == selected ? selectedFg : fgColor);
         }
-        GL11.glDisable(GL11.GL_SCISSOR_TEST);
+        disableScissor();
         matrixStack.popPose();
     }
 
