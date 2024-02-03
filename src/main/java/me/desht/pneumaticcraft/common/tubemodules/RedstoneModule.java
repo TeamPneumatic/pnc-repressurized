@@ -56,6 +56,8 @@ public class RedstoneModule extends AbstractNetworkedRedstoneModule implements I
     private int otherColor = 0;   // for advanced modules
     private int constantVal = 0;  // for advanced modules
     private final byte[] prevLevels = new byte[16];
+    // Whether prevLevels have been updated since this module was created or loaded
+    private boolean updatedSinceLoaded = false;
 
     // for client-side rendering the redstone connector
     public float extension = 1.0f;
@@ -97,9 +99,18 @@ public class RedstoneModule extends AbstractNetworkedRedstoneModule implements I
     }
 
     @Override
+    public void tickServer() {
+        super.tickServer();
+        if (redstoneDirection == EnumRedstoneDirection.OUTPUT && operation.needTicking())
+            updateOutput(null);
+    }
+
+    @Override
     protected void updateOutput(@Nullable byte[] levels) {
         if (getTube().nonNullLevel().isClientSide()) return;
-        if (levels == null) levels = fetchNetworkInputLevels();
+        if (levels == null)
+            levels = updatedSinceLoaded ? prevLevels : fetchNetworkInputLevels();
+        updatedSinceLoaded = true;
         super.updateOutput(levels);
         if (setOutputLevel(computeOutputSignal(outputLevel, levels))) {
             NetworkHandler.sendToAllTracking(new PacketSyncRedstoneModuleToClient(this), getTube());
@@ -371,7 +382,7 @@ public class RedstoneModule extends AbstractNetworkedRedstoneModule implements I
         XOR(true, false, (lastOutput, s1, s2, timer, constant, s1rising) ->
                 s1 == 0 && s2 == 0 || s1 > 0 && s2 > 0 ? 0 : 15),
         CLOCK(false, true, (lastOutput, s1, s2, timer, constant, s1rising) ->
-                s1 == 0 && timer % constant < 2 ? 15 : 0, 4, Integer.MAX_VALUE),
+                s1 == 0 && timer % constant < 2 ? 15 : 0, 4, Integer.MAX_VALUE, true),
         COMPARATOR(true, false, (lastOutput, s1, s2, timer, constant, s1rising) ->
                 s1 > s2 ? 15 : 0),
         SUBTRACT(true, false, (lastOutput, s1, s2, timer, constant, s1rising) ->
@@ -390,17 +401,23 @@ public class RedstoneModule extends AbstractNetworkedRedstoneModule implements I
         private final int constMin;
         private final int constMax;
         private final SignalFunction signalFunction;
+        private final boolean needTicking;
 
         Operation(boolean useOtherColor, boolean useConst, SignalFunction signalFunction) {
-            this(useOtherColor, useConst, signalFunction, 0, 0);
+            this(useOtherColor, useConst, signalFunction, 0, 0, false);
         }
 
         Operation(boolean useOtherColor, boolean useConst, SignalFunction signalFunction, int constMin, int constMax) {
+            this(useOtherColor, useConst, signalFunction, constMin, constMax, false);
+        }
+
+        Operation(boolean useOtherColor, boolean useConst, SignalFunction signalFunction, int constMin, int constMax, boolean needTicking) {
             this.useOtherColor = useOtherColor;
             this.useConst = useConst;
             this.signalFunction = signalFunction;
             this.constMin = constMin;
             this.constMax = constMax;
+            this.needTicking = needTicking;
         }
 
         @Override
@@ -422,6 +439,10 @@ public class RedstoneModule extends AbstractNetworkedRedstoneModule implements I
 
         public int getConstMax() {
             return constMax;
+        }
+
+        public boolean needTicking() {
+            return needTicking;
         }
     }
 
