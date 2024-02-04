@@ -6,6 +6,12 @@ Changes are in reverse chronological order; newest changes at the top.
 
 # Minecraft 1.20.1
 
+## [6.0.14]
+
+### Added
+* Minimum pressure for the Pressurized Spawner is now configurable (default is 10 bar, as before)
+  * See `pressurized_spawner_min_pressure` config setting in common config
+
 ## [6.0.13]
 
 ### Added
