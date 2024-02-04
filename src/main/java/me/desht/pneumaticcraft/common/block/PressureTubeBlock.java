@@ -473,10 +473,6 @@ public class PressureTubeBlock extends AbstractCamouflageBlock
                 }
             }
         }
-//        if (!world.isClientSide()) {
-//            ModuleNetworkManager.getInstance(world).invalidateCache();
-//            AbstractNetworkedRedstoneModule.onNetworkReform(world, pos);
-//        }
 
         return true;
     }
@@ -506,10 +502,6 @@ public class PressureTubeBlock extends AbstractCamouflageBlock
     @Override
     public void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean isMoving) {
         if (newState.getBlock() != state.getBlock()) {
-//            if (!world.isClientSide()) {
-//                ModuleNetworkManager.getInstance(world).invalidateCache();
-//                AbstractNetworkedRedstoneModule.onNetworkReform(world, pos);
-//            }
             getModuleDrops(getPressureTube(world, pos))
                     .forEach(drop -> world.addFreshEntity(new ItemEntity(world, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, drop)));
         }
