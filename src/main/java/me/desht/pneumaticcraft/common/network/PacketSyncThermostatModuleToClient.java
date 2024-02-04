@@ -42,7 +42,7 @@ public class PacketSyncThermostatModuleToClient extends LocationIntPacket {
 
         this.channel = module.getColorChannel();
         this.side = module.getDirection();
-        this.level = module.getLevel();
+        this.level = module.getInputLevel();
         this.temperature = module.getTemperature();
     }
 
@@ -68,7 +68,7 @@ public class PacketSyncThermostatModuleToClient extends LocationIntPacket {
                 PneumaticCraftUtils.getTileEntityAt(ClientUtils.getClientLevel(), pos, PressureTubeBlockEntity.class).ifPresent(te -> {
                     if (te.getModule(side) instanceof ThermostatModule mr) {
                         mr.setColorChannel(channel);
-                        mr.setLevel(level);
+                        mr.setInputLevel(level);
                         mr.setTemperature(temperature);
                     }
                 }));

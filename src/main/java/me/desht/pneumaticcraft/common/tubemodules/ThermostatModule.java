@@ -39,14 +39,13 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public class ThermostatModule extends AbstractTubeModule implements INetworkedModule, TemperatureListener {
+public class ThermostatModule extends AbstractNetworkedRedstoneModule implements INetworkedModule, TemperatureListener {
 
     public static final int MIN_VALUE = -273;
     public static final int MAX_VALUE = 2000;
 
     private int colorChannel;
     private int temperature = 0;
-    private int level;
     private int threshold;
     private boolean update = true;
 
@@ -79,14 +78,6 @@ public class ThermostatModule extends AbstractTubeModule implements INetworkedMo
         this.threshold = threshold;
     }
 
-    public int getLevel() {
-        return this.level;
-    }
-
-    public void setLevel(int level) {
-        this.level = level;
-    }
-
     public void setUpdate(boolean update) {
         this.update = update;
     }
@@ -103,6 +94,11 @@ public class ThermostatModule extends AbstractTubeModule implements INetworkedMo
 
     @Override
     public int getColorChannel() {
+        return colorChannel;
+    }
+
+    @Override
+    protected int getInputChannel() {
         return colorChannel;
     }
 
@@ -133,7 +129,7 @@ public class ThermostatModule extends AbstractTubeModule implements INetworkedMo
                 PneumaticCraftUtils.roundNumberTo(getThreshold(), 1)));
         }
         curInfo.add(PneumaticCraftUtils.xlate("pneumaticcraft.waila.thermostatModule.temperature", temperature));
-        curInfo.add(PneumaticCraftUtils.xlate("pneumaticcraft.waila.thermostatModule.level", level));
+        curInfo.add(PneumaticCraftUtils.xlate("pneumaticcraft.waila.thermostatModule.level", getInputLevel()));
     }
 
     @Override
@@ -184,40 +180,33 @@ public class ThermostatModule extends AbstractTubeModule implements INetworkedMo
     }
 
     @Override
-    public boolean canConnectTo(AbstractTubeModule other) {
-        return true;
-    }
-
-    @Override
     public void tickServer() {
         super.tickServer();
 
-        // Forced recalc when client GUI updated
         if (this.update) {
             this.update = false;
             updateInputLevel();
         }
     }
 
-    public void updateInputLevel() {
+    @Override
+    protected int calculateInputLevel() {
         getHeatExchangerLogic().ifPresent(logic -> setTemperature((int)logic.getTemperature() - 273));
 
-        int level = 0;
         if (advancedConfig) {
             float temperatureRange = higherBound - lowerBound;
             float temperatureNormalized = (temperature - lowerBound) / temperatureRange;
-            level = (int)(15f * temperatureNormalized);
+            int level = (int)(15f * temperatureNormalized);
             level = Math.max(0, Math.min(15, level));
+            return level;
         } else {
-            if (temperature >= threshold) {
-                level = 15;
-            }
+            return temperature >= threshold ? 15 : 0;
         }
+    }
 
-        if (this.level != level) {
-            this.level = level;
-            NetworkHandler.sendToAllTracking(new PacketSyncThermostatModuleToClient(this), getTube());
-        }
+    @Override
+    protected void onInputLevelChange(int level) {
+        NetworkHandler.sendToAllTracking(new PacketSyncThermostatModuleToClient(this), getTube());
     }
 
     @Override
@@ -225,7 +214,6 @@ public class ThermostatModule extends AbstractTubeModule implements INetworkedMo
         super.writeToNBT(tag);
 
         tag.putByte("channel", (byte) colorChannel);
-        tag.putByte("level", (byte) level);
         tag.putInt("temperature", temperature);
         tag.putInt("threshold", threshold);
 
@@ -237,7 +225,6 @@ public class ThermostatModule extends AbstractTubeModule implements INetworkedMo
         super.readFromNBT(tag);
 
         colorChannel = tag.getByte("channel");
-        level = tag.getByte("level");
         temperature = tag.getInt("temperature");
         threshold = tag.getInt("threshold");
     }
