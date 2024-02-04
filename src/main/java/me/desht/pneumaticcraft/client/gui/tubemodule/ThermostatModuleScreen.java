@@ -159,7 +159,7 @@ public class ThermostatModuleScreen extends AbstractTubeModuleScreen<ThermostatM
         // Update channel
         NetworkHandler.sendToServer(PacketSyncThermostatModuleToServer.create(module));
 
-        graphics.hLine(graphLeft + 4, graphRight, graphHighY + (graphLowY - graphHighY) * (15 - module.getLevel()) / 15, 0xFFFF0000);
+        graphics.hLine(graphLeft + 4, graphRight, graphHighY + (graphLowY - graphHighY) * (15 - module.getInputLevel()) / 15, 0xFFFF0000);
         String status = I18n.get("pneumaticcraft.gui.tubeModule.simpleConfig.temperature")
             + " " + PneumaticCraftUtils.roundNumberTo(module.getTemperature(), 0) + " °C";
         graphics.drawString(font, status, guiLeft + xSize / 2f - font.width(status) / 2f, guiTop + 175, 0xFF404040, false);

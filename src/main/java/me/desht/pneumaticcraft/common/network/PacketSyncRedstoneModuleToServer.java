@@ -95,7 +95,7 @@ public record PacketSyncRedstoneModuleToServer(ModuleLocator locator, Operation 
                 module.setOperation(op, otherColor, constantVal);
             }
             module.updateNeighbors();
-            module.setInputLevel(-1);  // force recalc
+            module.updateInputLevel();
         }
     }
 }

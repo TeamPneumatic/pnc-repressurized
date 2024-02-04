@@ -17,7 +17,10 @@
 
 package me.desht.pneumaticcraft.common.network;
 
+import me.desht.pneumaticcraft.client.util.ClientUtils;
+import me.desht.pneumaticcraft.common.block.entity.PressureTubeBlockEntity;
 import me.desht.pneumaticcraft.common.tubemodules.ThermostatModule;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
@@ -35,7 +38,7 @@ public record PacketSyncThermostatModuleToClient(ModuleLocator locator, int chan
         return new PacketSyncThermostatModuleToClient(
                 ModuleLocator.forModule(module),
                 module.getColorChannel(),
-                module.getLevel(),
+                module.getInputLevel(),
                 module.getTemperature()
         );
     }
@@ -65,7 +68,7 @@ public record PacketSyncThermostatModuleToClient(ModuleLocator locator, int chan
     @Override
     public void onModuleUpdate(ThermostatModule module, Player player) {
         module.setColorChannel(channel);
-        module.setLevel(level);
+        module.setInputLevel(level);
         module.setTemperature(temperature);
     }
 }

@@ -26,6 +26,7 @@ import me.desht.pneumaticcraft.common.block.entity.PressureTubeBlockEntity;
 import me.desht.pneumaticcraft.common.item.TubeModuleItem;
 import me.desht.pneumaticcraft.common.registry.ModBlocks;
 import me.desht.pneumaticcraft.common.registry.ModItems;
+import me.desht.pneumaticcraft.common.tubemodules.AbstractNetworkedRedstoneModule;
 import me.desht.pneumaticcraft.common.tubemodules.AbstractTubeModule;
 import me.desht.pneumaticcraft.common.tubemodules.INetworkedModule;
 import me.desht.pneumaticcraft.common.tubemodules.ModuleNetworkManager;
@@ -160,6 +161,10 @@ public class PressureTubeBlock extends AbstractCamouflageBlock
     @Override
     public BlockState updateShape(BlockState stateIn, Direction facing, BlockState facingState, LevelAccessor worldIn, BlockPos currentPos, BlockPos facingPos) {
         BlockState newState = recalculateState(worldIn, currentPos, stateIn);
+        if (worldIn instanceof Level level) {
+            ModuleNetworkManager.getInstance(level).invalidateCache();
+            AbstractNetworkedRedstoneModule.onNetworkReform(level, currentPos);
+        }
         return newState == null ?
                 super.updateShape(stateIn, facing, facingState, worldIn, currentPos, facingPos) :
                 newState;
@@ -256,11 +261,12 @@ public class PressureTubeBlock extends AbstractCamouflageBlock
     public void setPlacedBy(Level world, BlockPos pos, BlockState state, LivingEntity entity, ItemStack stack) {
         super.setPlacedBy(world, pos, state, entity, stack);
 
-        ModuleNetworkManager.getInstance(world).invalidateCache();
         // force BE to calculate its connections immediately so network manager rescanning works
         PressureTubeBlockEntity te = getPressureTube(world, pos);
-        if (te != null) {
-            te.onNeighborTileUpdate(null);
+        if (!world.isClientSide()) {
+            if (te != null) {
+                te.onNeighborTileUpdate(null);
+            }
         }
     }
 
@@ -468,7 +474,6 @@ public class PressureTubeBlock extends AbstractCamouflageBlock
                 }
             }
         }
-        ModuleNetworkManager.getInstance(world).invalidateCache();
 
         return true;
     }
@@ -500,7 +505,6 @@ public class PressureTubeBlock extends AbstractCamouflageBlock
         if (newState.getBlock() != state.getBlock()) {
             getModuleDrops(getPressureTube(world, pos))
                     .forEach(drop -> world.addFreshEntity(new ItemEntity(world, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, drop)));
-            ModuleNetworkManager.getInstance(world).invalidateCache();
         }
         super.onRemove(state, world, pos, newState, isMoving);
     }
