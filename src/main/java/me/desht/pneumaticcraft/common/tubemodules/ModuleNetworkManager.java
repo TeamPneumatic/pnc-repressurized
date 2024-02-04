@@ -70,7 +70,7 @@ public class ModuleNetworkManager {
                     if (state1.getBlock() instanceof ITubeNetworkConnector nc1
                             && nc1.canConnectToNetwork(level, pos1, dir.getOpposite(), state1)
                             && nc.canConnectToNetwork(level, pos, dir, state)
-                        && traversedPositions.add(pos1)){
+                            && traversedPositions.add(pos1)){
                         pendingPositions.add(pos1);
                     }
                 }

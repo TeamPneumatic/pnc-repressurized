@@ -160,6 +160,10 @@ public class PressureTubeBlock extends AbstractCamouflageBlock
     @Override
     public BlockState updateShape(BlockState stateIn, Direction facing, BlockState facingState, LevelAccessor worldIn, BlockPos currentPos, BlockPos facingPos) {
         BlockState newState = recalculateState(worldIn, currentPos, stateIn);
+        if (worldIn instanceof Level level) {
+            ModuleNetworkManager.getInstance(level).invalidateCache();
+            AbstractNetworkedRedstoneModule.onNetworkReform(level, currentPos);
+        }
         return newState == null ?
                 super.updateShape(stateIn, facing, facingState, worldIn, currentPos, facingPos) :
                 newState;
@@ -262,9 +266,6 @@ public class PressureTubeBlock extends AbstractCamouflageBlock
             if (te != null) {
                 te.onNeighborTileUpdate(null);
             }
-
-            ModuleNetworkManager.getInstance(world).invalidateCache();
-            AbstractNetworkedRedstoneModule.onNetworkReform(world, pos);
         }
     }
 
@@ -472,10 +473,10 @@ public class PressureTubeBlock extends AbstractCamouflageBlock
                 }
             }
         }
-        if (!world.isClientSide()) {
-            ModuleNetworkManager.getInstance(world).invalidateCache();
-            AbstractNetworkedRedstoneModule.onNetworkReform(world, pos);
-        }
+//        if (!world.isClientSide()) {
+//            ModuleNetworkManager.getInstance(world).invalidateCache();
+//            AbstractNetworkedRedstoneModule.onNetworkReform(world, pos);
+//        }
 
         return true;
     }
@@ -505,10 +506,10 @@ public class PressureTubeBlock extends AbstractCamouflageBlock
     @Override
     public void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean isMoving) {
         if (newState.getBlock() != state.getBlock()) {
-            if (!world.isClientSide()) {
-                ModuleNetworkManager.getInstance(world).invalidateCache();
-                AbstractNetworkedRedstoneModule.onNetworkReform(world, pos);
-            }
+//            if (!world.isClientSide()) {
+//                ModuleNetworkManager.getInstance(world).invalidateCache();
+//                AbstractNetworkedRedstoneModule.onNetworkReform(world, pos);
+//            }
             getModuleDrops(getPressureTube(world, pos))
                     .forEach(drop -> world.addFreshEntity(new ItemEntity(world, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, drop)));
         }
