@@ -153,7 +153,11 @@ public class RedstoneModule extends AbstractNetworkedRedstoneModule implements I
 
         tag.putBoolean("input", redstoneDirection == EnumRedstoneDirection.INPUT);
         tag.putByte("channel", (byte) colorChannel);
-        tag.putByte("outputLevel", (byte) outputLevel);
+        if (redstoneDirection.isInput()) {
+            tag.putByte("inputLevel", (byte) getInputLevel());
+        } else {
+            tag.putByte("outputLevel", (byte) outputLevel);
+        }
         tag.putString("op", operation.toString());
         tag.putByte("color2", (byte) otherColor);
         tag.putInt("const", (byte) constantVal);
@@ -170,7 +174,11 @@ public class RedstoneModule extends AbstractNetworkedRedstoneModule implements I
 
         redstoneDirection = tag.getBoolean("input") ? EnumRedstoneDirection.INPUT : EnumRedstoneDirection.OUTPUT;
         colorChannel = tag.getByte("channel");
-        outputLevel = tag.getByte("outputLevel"); // for sync'ing to clients on login
+        if (redstoneDirection.isInput()) {
+            setInputLevel(tag.getByte("inputLevel")); // for sync'ing to clients on login
+        } else {
+            outputLevel = tag.getByte("outputLevel"); // for sync'ing to clients on login
+        }
         try {
             operation = tag.contains("op") ? Operation.valueOf(tag.getString("op")) : Operation.PASSTHROUGH;
         } catch (IllegalArgumentException e) {
@@ -364,6 +372,10 @@ public class RedstoneModule extends AbstractNetworkedRedstoneModule implements I
 
         public EnumRedstoneDirection toggle() {
             return this == INPUT ? OUTPUT : INPUT;
+        }
+
+        public boolean isInput() {
+            return this == INPUT;
         }
 
         @Override

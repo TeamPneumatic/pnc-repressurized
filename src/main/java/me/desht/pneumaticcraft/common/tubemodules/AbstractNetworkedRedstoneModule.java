@@ -40,11 +40,9 @@ public abstract class AbstractNetworkedRedstoneModule extends AbstractTubeModule
 
     /**
      * Should only be used on client side
+     * Called on client when a sync packet is received, and on server when saved data is loaded
      */
     public void setInputLevel(int inputLevel) {
-        if (!getTube().nonNullLevel().isClientSide()) {
-            throw new IllegalCallerException("AbstractNetworkedRedstoneModule.setInputLevel() may only be called on the client side.");
-        }
         this.inputLevel = inputLevel;
     }
 
