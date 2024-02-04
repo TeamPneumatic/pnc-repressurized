@@ -179,11 +179,6 @@ public class ThermostatModule extends AbstractNetworkedRedstoneModule implements
         updateInputLevel();
     }
 
-//    @Override
-//    public boolean canConnectTo(AbstractTubeModule other) {
-//        return true;
-//    }
-
     @Override
     public void tickServer() {
         super.tickServer();
@@ -219,7 +214,6 @@ public class ThermostatModule extends AbstractNetworkedRedstoneModule implements
         super.writeToNBT(tag);
 
         tag.putByte("channel", (byte) colorChannel);
-//        tag.putByte("level", (byte) level);
         tag.putInt("temperature", temperature);
         tag.putInt("threshold", threshold);
 
@@ -231,7 +225,6 @@ public class ThermostatModule extends AbstractNetworkedRedstoneModule implements
         super.readFromNBT(tag);
 
         colorChannel = tag.getByte("channel");
-//        level = tag.getByte("level");
         temperature = tag.getInt("temperature");
         threshold = tag.getInt("threshold");
     }
