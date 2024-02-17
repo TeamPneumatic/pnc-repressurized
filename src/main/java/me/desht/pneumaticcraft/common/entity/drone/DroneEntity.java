@@ -72,6 +72,7 @@ import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.mixin.accessors.EntityAccess;
 import net.minecraft.ChatFormatting;
+import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.BlockParticleOption;
@@ -374,7 +375,7 @@ public class DroneEntity extends AbstractDroneEntity implements
 
     @Override
     public void writeSpawnData(FriendlyByteBuf buffer) {
-        buffer.writeUUID(ownerUUID);
+        buffer.writeUUID(Objects.requireNonNullElse(ownerUUID, getUUID()));
         buffer.writeComponent(ownerName);
         buffer.writeVarInt(getUpgrades(ModUpgrades.SECURITY.get()));
     }
