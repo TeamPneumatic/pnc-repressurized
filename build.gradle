@@ -1,11 +1,7 @@
+import me.modmuss50.mpp.ReleaseType
+
 buildscript {
-//	repositories {
-//		maven { url = 'https://files.minecraftforge.net/maven' }
-//		maven { url = 'https://maven.parchmentmc.org' }
-//		mavenCentral()
-//	}
 	dependencies {
-//		classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
 		classpath 'org.parchmentmc:librarian:1.+'
 		classpath "org.jfrog.buildinfo:build-info-extractor-gradle:4+"
 		classpath 'org.spongepowered:mixingradle:0.7.+'
@@ -17,30 +13,24 @@ plugins {
 	id 'eclipse'
 	id 'idea'
 	id 'maven-publish'
-	id "com.modrinth.minotaur" version "2.+"
-	id 'com.matthewprenger.cursegradle' version '1.4.0'
+	id "me.modmuss50.mod-publish-plugin" version "0.5.1"
 	id('net.neoforged.gradle') version '[6.0.13, 6.2)'
 }
 apply plugin: 'org.parchmentmc.librarian.forgegradle'
 apply plugin: "com.jfrog.artifactory"
 apply plugin: "org.spongepowered.mixin"
 
-//adds the build number to the end of the version string if on a build server
-def build_number = System.getenv().BUILD_NUMBER
-if (build_number == null) {
-	build_number = 'CUSTOM'
-}
+ext.releaseTag = System.getenv('TAG') ?: ""
+ext.isAlpha = ext.releaseTag.contains("alpha")
+ext.isBeta = ext.releaseTag.contains("beta")
 
 def semver = "${mod_version_massive}.${mod_version_major}.${mod_version_minor}"
+def relType = ext.isAlpha ? "alpha" : (ext.isBeta ? "beta" : "release")
 
 // these two are required for the java plugin to generate jar files with a version
 version = "${semver}+mc${project.mc_version}"
 group = 'me.desht.pneumaticcraft' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "pneumaticcraft-repressurized"
-
-ext.releaseTag = System.getenv('TAG') ?: ""
-ext.isAlpha = ext.releaseTag.contains("alpha")
-ext.isBeta = ext.releaseTag.contains("beta")
 
 // All jar files from this folder will be added automatically as runtime mod dependencies
 def extraModsDir = "extra-mods-${project.mc_version}"
@@ -127,11 +117,6 @@ repositories {
 
 dependencies {
 	minecraft "net.neoforged:forge:${mc_version}-${forge_version}"
-//	minecraft([
-//			group  : "net.neoforged",
-//			name   : 'forge',
-//			version: "${project.mc_version}-${project.forge_version}"
-//	])
 
 	annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 
@@ -195,7 +180,6 @@ dependencies {
 
 minecraft {
 	mappings channel: 'parchment', version: "${project.mappings_version}-${project.mc_version}"
-//	mappings channel: 'official', version: "1.19"
 
 	accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
 
@@ -286,28 +270,6 @@ task getChangelogProperty(type: Exec) {
 		ext.changelog = standardOutput.toString()
 	}
 }
-
-//task makeChangelog(type: GitChangelogTask) {
-//	file = file('changelog.html')
-//	untaggedName = "Current release ${project.version}"
-//	fromCommit = '2fe051cf727adce1be210a46f778aa8fe031331e'
-//	toRef = 'HEAD'
-//	templateContent = file('changelog.mustache').getText('UTF-8')
-//}
-
-//curseforge {
-//	apiKey = project.findProperty('curseforge_apikey') ?: '0'
-//	project {
-//		id = curse_project_id
-//		changelog = file('changelog.html')
-//		changelogType = 'html'
-//		releaseType = 'beta'
-//	}
-//}
-
-//afterEvaluate {
-//	tasks.curseforge281849.dependsOn makeChangelog
-//}
 
 jar {
 	from sourceSets.main.output
@@ -430,53 +392,49 @@ idea {
 	}
 }
 
-def relType = "release"
-if (ext.isAlpha) {
-	relType = "alpha"
-} else if (ext.isBeta) {
-	relType = "beta"
-}
-
-modrinth {
-	token = System.getenv("MODRINTH_TOKEN")
-	projectId = "${project.modrinth_project_id}"
-	versionNumber = "${project.version}"
-	versionType = relType
-	uploadFile = jar // With Loom, this MUST be set to `remapJar` instead of `jar`!
-	additionalFiles = [ apiJar ]
-	gameVersions = ["${mc_version}"] // Must be an array, even with only one version
-	changelog = System.getenv("CHANGELOG")
-	dependencies { // A special DSL for creating dependencies
-		// scope.type
-		// The scope can be `required`, `optional`, or `incompatible`
-		// The type can either be `project` or `version`
-		required.project "nU0bVIaL"  // Patchouli
+Closure<ReleaseType> getReleaseType = { type ->
+	switch(type) {
+		case "alpha": return ReleaseType.ALPHA
+		case "beta": return ReleaseType.BETA
+		default: return ReleaseType.STABLE
 	}
 }
 
-if (System.getenv("CURSEFORGE_TOKEN")) {
+publishMods {
+	dryRun = providers.environmentVariable("CURSEFORGE_TOKEN").getOrNull() == null
+	changelog = providers.environmentVariable("CHANGELOG").orElse("dryrun")
+	version = semver
+	type = getReleaseType(relType)
+	file = jar.archiveFile
+	displayName = file.map { it.asFile.name }
+	modLoaders.add("forge")
+	modLoaders.add("neoforge")
+
 	curseforge {
-		apiKey = System.getenv("CURSEFORGE_TOKEN")
-		project {
-			id = project.curse_project_id
-			changelogType = "markdown"
-			changelog = System.getenv("CHANGELOG")
-			releaseType = relType
-			addGameVersion project.mc_version
-			addGameVersion "Forge"
-			mainArtifact(jar.archiveFile) {
-				displayName = "${project.archivesBaseName} ${project.version}"
-				relations {
-					requiredDependency "patchouli"
-				}
-			}
-			addArtifact(apiJar.archiveFile)
+		projectId = curse_project_id
+		accessToken = providers.environmentVariable("CURSEFORGE_TOKEN")
+		minecraftVersions.add(mc_version)
+		projectSlug = "modular-routers"
+		announcementTitle = "Download from Curseforge"
+		requires {
+			slug = "patchouli"
 		}
 	}
+
+	modrinth {
+		projectId = modrinth_project_id
+		accessToken = providers.environmentVariable("MODRINTH_TOKEN")
+		minecraftVersions.add(mc_version)
+		announcementTitle = "Download from Modrinth"
+		requires {
+			id = "nU0bVIaL"
+		}
+	}
+
+	discord {
+		webhookUrl = providers.environmentVariable("DISCORD_WEBHOOK").orElse("dryrun")
+		content = changelog.map { "# Version ${version} of PneumaticCraft: Repressurized has been released! \n" + it}
+//        setPlatforms(platforms.curseforge, platforms.modrinth)
+	}
 }
 
-//test {
-//	useJUnitPlatform()
-//	include 'mezz/jei/**'
-//	exclude 'mezz/jei/lib/**'
-//}
