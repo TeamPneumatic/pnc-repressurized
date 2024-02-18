@@ -414,7 +414,7 @@ publishMods {
 		projectId = curse_project_id
 		accessToken = providers.environmentVariable("CURSEFORGE_TOKEN")
 		minecraftVersions.add(mc_version)
-		projectSlug = "modular-routers"
+		projectSlug = "pneumaticcraft-repressurized"
 		announcementTitle = "Download from Curseforge"
 		requires {
 			slug = "patchouli"
@@ -433,7 +433,7 @@ publishMods {
 
 	discord {
 		webhookUrl = providers.environmentVariable("DISCORD_WEBHOOK").orElse("dryrun")
-		content = changelog.map { "# Version ${version} of PneumaticCraft: Repressurized has been released! \n" + it}
+		content = changelog.map { "# Version ${semver} of PneumaticCraft: Repressurized has been released! \n" + it}
 //        setPlatforms(platforms.curseforge, platforms.modrinth)
 	}
 }
