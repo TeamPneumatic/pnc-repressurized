@@ -12,6 +12,10 @@ Changes are in reverse chronological order; newest changes at the top.
 * Minimum pressure for the Pressurized Spawner is now configurable (default is 10 bar, as before)
   * See `pressurized_spawner_min_pressure` config setting in common config
 
+### Fixed
+* Fixed server crash if a drone is summoned via commands 
+  * Drones aren't supposed to be created this way, but also shouldn't crash completely
+
 ## [6.0.13]
 
 ### Added
