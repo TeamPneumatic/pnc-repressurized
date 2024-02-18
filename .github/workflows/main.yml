@@ -35,7 +35,6 @@ jobs:
       - name: Build JAR and Publish to Modmaven
         uses: gradle/gradle-build-action@v2
         env:
-          BUILD_NUMBER: ${{ github.run_number }}
           MODMAVEN_USER: ${{ secrets.MODMAVEN_USER }}
           MODMAVEN_PASSWORD: ${{ secrets.MODMAVEN_PASSWORD }}
         with:

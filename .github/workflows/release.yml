@@ -50,27 +50,13 @@ jobs:
           MODMAVEN_PASSWORD: ${{ secrets.MODMAVEN_PASSWORD }}
         with:
           arguments: publishMavenPublicationToModmavenRepository --no-daemon
-      - name: Publish to Modrinth
+      - name: Publish to Curseforge/Modrinth
         uses: gradle/gradle-build-action@v2
         env:
           CHANGELOG: ${{ github.event.release.body }}
           MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
-          BUILD_NUMBER: ${{ github.run_number }}
-        with:
-          arguments: modrinth --no-daemon
-      - name: Publish to Curseforge
-        uses: gradle/gradle-build-action@v2
-        env:
-          CHANGELOG: ${{ github.event.release.body }}
           CURSEFORGE_TOKEN: ${{ secrets.CURSEFORGE_TOKEN }}
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_RELEASE_WEBHOOK }}
           BUILD_NUMBER: ${{ github.run_number }}
         with:
-          arguments: curseforge --no-daemon
-      - name: Discord notification
-        uses: Ilshidur/action-discord@master
-        env:
-          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
-        if:
-          env.DISCORD_WEBHOOK != null
-        with:
-          args: 'Release ${{ github.event.release.tag_name }} done for project {{ EVENT_PAYLOAD.repository.full_name }} (Minecraft ${{ steps.mod_meta.outputs.mc_version}}): ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}.'
+          arguments: publishMods --no-daemon
