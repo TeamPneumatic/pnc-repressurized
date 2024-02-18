@@ -13,8 +13,11 @@ Changes are in reverse chronological order; newest changes at the top.
   * See `pressurized_spawner_min_pressure` config setting in common config
 
 ### Fixed
+* Overhauled Redstone Tube Module implementation, improving timing consistency and server performance
+  * Thanks @ShBLOCK
 * Fixed server crash if a drone is summoned via commands 
   * Drones aren't supposed to be created this way, but also shouldn't crash completely
+* Fixed right-clicking a tube module with a block in hand also wrongly placing the block
 
 ## [6.0.13]
 
