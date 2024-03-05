@@ -276,6 +276,7 @@ public class ModItems {
         registerUpgrade(ModUpgrades.ENDER_VISOR, BuiltinUpgrade.ENDER_VISOR);
         registerUpgrade(ModUpgrades.STOMP, BuiltinUpgrade.STOMP);
         registerUpgrade(ModUpgrades.ELYTRA, BuiltinUpgrade.ELYTRA);
+        registerUpgrade(ModUpgrades.CHUNKLOADER, BuiltinUpgrade.CHUNKLOADER);
     }
 
     /* -----------------------*/
