@@ -42,7 +42,8 @@ public class UpgradesDBSetup {
             .with(ModUpgrades.MINIGUN.get(), 1)
             .with(ModUpgrades.MAGNET.get(), 6)
             .with(ModUpgrades.ARMOR.get(), 15)
-            .with(ModUpgrades.RANGE.get(), 16);
+            .with(ModUpgrades.RANGE.get(), 16)
+            .with(ModUpgrades.CHUNKLOADER.get(), 3);
     
     private static final Builder BASIC_DRONE_UPGRADES = new Builder()
             .with(ModUpgrades.VOLUME.get(), MAX_VOLUME)

@@ -46,6 +46,7 @@ public class ModUpgrades {
     public static final RegistryObject<PNCUpgrade> ENDER_VISOR = register(BuiltinUpgrade.ENDER_VISOR);
     public static final RegistryObject<PNCUpgrade> STOMP = register(BuiltinUpgrade.STOMP);
     public static final RegistryObject<PNCUpgrade> ELYTRA = register(BuiltinUpgrade.ELYTRA);
+    public static final RegistryObject<PNCUpgrade> CHUNKLOADER = register(BuiltinUpgrade.CHUNKLOADER);
 
     private static RegistryObject<PNCUpgrade> register(BuiltinUpgrade upgrade) {
         return UPGRADES_DEFERRED.register(upgrade.name, () -> new PNCUpgrade(upgrade.maxTier, upgrade.depModIds));
@@ -80,7 +81,8 @@ public class ModUpgrades {
         GILDED("gilded"),
         ENDER_VISOR("ender_visor"),
         STOMP("stomp"),
-        ELYTRA("elytra");
+        ELYTRA("elytra"),
+        CHUNKLOADER("chunkloader");
 
         private final String name;
         private final int maxTier;
