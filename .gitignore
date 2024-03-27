@@ -27,6 +27,7 @@ conf
 *.pl
 extra-mods-*
 *.patch
+runs
 
 # datagen caches
 **/.cache
