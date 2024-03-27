@@ -17,17 +17,16 @@
 
 package me.desht.pneumaticcraft.common.entity.semiblock;
 
-import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.crafting.ingredient.FluidIngredient;
 import me.desht.pneumaticcraft.api.crafting.recipe.HeatFrameCoolingRecipe;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
-import me.desht.pneumaticcraft.common.core.ModRecipeTypes;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.common.heat.SyncedTemperature;
-import me.desht.pneumaticcraft.common.recipes.RecipeCache;
+import me.desht.pneumaticcraft.common.recipes.VanillaRecipeCache;
 import me.desht.pneumaticcraft.common.recipes.machine.HeatFrameCoolingRecipeImpl;
+import me.desht.pneumaticcraft.common.registry.ModRecipeTypes;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.ChatFormatting;
@@ -43,15 +42,11 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemHandlerHelper;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.ItemHandlerHelper;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.function.Consumer;
 
 public class HeatFrameEntity extends AbstractSemiblockEntity {
@@ -66,7 +61,7 @@ public class HeatFrameEntity extends AbstractSemiblockEntity {
 
     private final IHeatExchangerLogic logic = PneumaticRegistry.getInstance().getHeatRegistry().makeHeatExchangerLogic();
 
-    private final LazyOptional<IHeatExchangerLogic> heatCap;
+//    private final LazyOptional<IHeatExchangerLogic> heatCap;
     private int lastValidSlot; // cache the current cooking slot for performance boost
     private int cookingProgress;
 
@@ -77,7 +72,7 @@ public class HeatFrameEntity extends AbstractSemiblockEntity {
     public HeatFrameEntity(EntityType<?> entityTypeIn, Level worldIn) {
         super(entityTypeIn, worldIn);
 
-        heatCap = LazyOptional.of(() -> logic);
+//        heatCap = LazyOptional.of(() -> logic);
     }
 
     public IHeatExchangerLogic getHeatExchangerLogic() {
@@ -92,20 +87,21 @@ public class HeatFrameEntity extends AbstractSemiblockEntity {
         this.entityData.define(TEMPERATURE, 0);
     }
 
-    @Nonnull
-    @Override
-    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-        if (cap == PNCCapabilities.HEAT_EXCHANGER_CAPABILITY) {
-            return PNCCapabilities.HEAT_EXCHANGER_CAPABILITY.orEmpty(cap, heatCap);
-        }
-        return super.getCapability(cap, side);
-    }
+//    @Nonnull
+//    @Override
+//    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
+//        if (cap == PNCCapabilities.HEAT_EXCHANGER_BLOCK) {
+//            return PNCCapabilities.HEAT_EXCHANGER_BLOCK.orEmpty(cap, heatCap);
+//        }
+//        return super.getCapability(cap, side);
+//    }
 
     @Override
     public boolean canPlace(Direction facing) {
-        return getCachedTileEntity() != null
-                && getCachedTileEntity().getCapability(ForgeCapabilities.ITEM_HANDLER).isPresent()
-                && !getCachedTileEntity().getCapability(ForgeCapabilities.FLUID_HANDLER).isPresent();
+        BlockEntity te = getCachedTileEntity();
+        return te != null
+                && IOHelper.getInventoryForBlock(te).isPresent()
+                && IOHelper.getFluidHandlerForBlock(te).isEmpty();
     }
 
     private void setStatus(byte status) {
@@ -172,7 +168,7 @@ public class HeatFrameEntity extends AbstractSemiblockEntity {
             newStatus = COOKING;
         }
         if (cookingProgress >= 100) {
-            IOHelper.getInventoryForTE(getCachedTileEntity()).ifPresent(handler -> {
+            IOHelper.getInventoryForBlock(getCachedTileEntity()).ifPresent(handler -> {
                 if (!tryCookSlot(handler, lastValidSlot)) {
                     for (int i = 0; i < handler.getSlots(); i++) {
                         if (tryCookSlot(handler, i)) {
@@ -192,7 +188,7 @@ public class HeatFrameEntity extends AbstractSemiblockEntity {
         if (slot >= 0 & slot < handler.getSlots()) {
             ItemStack stack = handler.getStackInSlot(slot);
             if (!stack.isEmpty()) {
-                return RecipeCache.SMELTING.getCachedRecipe(level(), new SimpleContainer(stack)).map(recipe -> {
+                return VanillaRecipeCache.SMELTING.getCachedRecipe(level(), new SimpleContainer(stack)).map(recipe -> {
                     ItemStack result = recipe.getResultItem(level().registryAccess()).copy();
                     if (!result.isEmpty()) {
                         ItemStack remainder = ItemHandlerHelper.insertItem(handler, result, true);
@@ -220,7 +216,7 @@ public class HeatFrameEntity extends AbstractSemiblockEntity {
             newStatus = COOLING;
         }
         if (coolingProgress >= 100) {
-            IOHelper.getInventoryForTE(getCachedTileEntity()).ifPresent(handler -> {
+            IOHelper.getInventoryForBlock(getCachedTileEntity()).ifPresent(handler -> {
                 if (!tryCoolSlot(handler, lastValidSlot)) {
                     for (int i = 0; i < handler.getSlots(); i++) {
                         if (tryCoolSlot(handler, i)) {
@@ -241,13 +237,12 @@ public class HeatFrameEntity extends AbstractSemiblockEntity {
             ItemStack stack = handler.getStackInSlot(slot);
             if (stack.isEmpty()) return false;
 
-            HeatFrameCoolingRecipe recipe = ModRecipeTypes.HEAT_FRAME_COOLING.get().findFirst(level(), r -> r.matches(stack));
-
-            if (recipe != null) {
+            return ModRecipeTypes.HEAT_FRAME_COOLING.get().findFirst(level(), r -> r.matches(stack)).map(holder -> {
+                HeatFrameCoolingRecipe recipe = holder.value();
                 boolean extractedOK;
                 if (recipe.getInput() instanceof FluidIngredient fluidIngredient) {
                     if (stack.getCount() != 1) return false;  // fluid-containing items must not be stacked!
-                    extractedOK = stack.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).map(fluidHandler -> {
+                    extractedOK = IOHelper.getFluidHandlerForItem(stack).map(fluidHandler -> {
                         int toDrain = fluidIngredient.getAmount();
                         if (fluidHandler.drain(toDrain, IFluidHandler.FluidAction.EXECUTE).getAmount() == toDrain) {
                             ItemStack containerStack = fluidHandler.getContainer().copy();
@@ -266,7 +261,7 @@ public class HeatFrameEntity extends AbstractSemiblockEntity {
                     lastValidSlot = slot;
                 }
                 return extractedOK;
-            }
+            }).orElse(false);
         }
 
         return false;
@@ -312,4 +307,5 @@ public class HeatFrameEntity extends AbstractSemiblockEntity {
         if (cool != 0)
             curInfo.accept(PneumaticCraftUtils.xlate("pneumaticcraft.waila.heatFrame.cooling", cool).withStyle(ChatFormatting.GRAY));
     }
+
 }

@@ -26,12 +26,12 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetLabel;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
-import me.desht.pneumaticcraft.common.core.ModItems;
-import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.inventory.RemoteMenu;
 import me.desht.pneumaticcraft.common.item.RemoteItem;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdateRemoteLayout;
+import me.desht.pneumaticcraft.common.registry.ModItems;
+import me.desht.pneumaticcraft.common.registry.ModMenuTypes;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
@@ -142,7 +142,7 @@ public class RemoteEditorScreen extends RemoteScreen {
 
     @Override
     protected void renderBg(GuiGraphics graphics, float partialTicks, int x, int y) {
-        renderBackground(graphics);
+        renderBackground(graphics, x, y, partialTicks);
         graphics.blit(getGuiTexture(), leftPos, topPos, 0, 0, imageWidth, imageHeight, 320, 256);
     }
 

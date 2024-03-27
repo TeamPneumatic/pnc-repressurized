@@ -17,16 +17,14 @@
 
 package me.desht.pneumaticcraft.datagen.recipe;
 
-import me.desht.pneumaticcraft.common.core.ModRecipeSerializers;
-import net.minecraft.data.recipes.FinishedRecipe;
+import me.desht.pneumaticcraft.common.recipes.special.ShapedPressurizableRecipe;
 import net.minecraft.data.recipes.RecipeCategory;
-import net.minecraft.data.recipes.ShapedRecipeBuilder;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.minecraft.world.level.ItemLike;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.function.Consumer;
-
-public class ShapedPressurizableRecipeBuilder extends ShapedRecipeBuilder {
+public class ShapedPressurizableRecipeBuilder extends PNCShapedRecipeBuilder {
     public ShapedPressurizableRecipeBuilder(ItemLike resultIn, int countIn) {
         super(RecipeCategory.MISC, resultIn, countIn);
     }
@@ -39,8 +37,8 @@ public class ShapedPressurizableRecipeBuilder extends ShapedRecipeBuilder {
         return new ShapedPressurizableRecipeBuilder(resultIn, countIn);
     }
 
-    public void save(Consumer<FinishedRecipe> consumerIn, ResourceLocation id) {
-        Consumer<FinishedRecipe> c = (finishedRecipe) -> consumerIn.accept(new WrappedBuilderResult(finishedRecipe, ModRecipeSerializers.CRAFTING_SHAPED_PRESSURIZABLE));
-        super.save(c, id);
+    @Override
+    protected @NotNull ShapedRecipe makeRecipe(ResourceLocation id) {
+        return new ShapedPressurizableRecipe(super.makeRecipe(id));
     }
 }

@@ -18,9 +18,9 @@
 package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.common.block.entity.ProgrammerBlockEntity;
-import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
-import me.desht.pneumaticcraft.common.network.PacketProgrammerUpdate;
+import me.desht.pneumaticcraft.common.network.PacketProgrammerSync;
+import me.desht.pneumaticcraft.common.registry.ModBlocks;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.VoxelShapeUtils;
 import net.minecraft.core.BlockPos;
@@ -79,7 +79,7 @@ public class ProgrammerBlock extends AbstractPneumaticCraftBlock implements Pneu
         if (!world.isClientSide && !player.isShiftKeyDown()) {
             // FIXME this should be sync'd via the container as part of the openGui() call
             PneumaticCraftUtils.getTileEntityAt(world, pos, ProgrammerBlockEntity.class)
-                    .ifPresent(te -> NetworkHandler.sendToPlayer(new PacketProgrammerUpdate(te), (ServerPlayer) player));
+                    .ifPresent(te -> NetworkHandler.sendToPlayer(PacketProgrammerSync.forBlockEntity(te), (ServerPlayer) player));
         }
         return super.use(state, world, pos, player, hand, brtr);
     }

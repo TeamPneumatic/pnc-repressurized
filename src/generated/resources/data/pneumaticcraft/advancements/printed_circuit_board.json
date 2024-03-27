@@ -15,17 +15,14 @@
     }
   },
   "display": {
-    "announce_to_chat": true,
     "background": "pneumaticcraft:textures/gui/advancement_bg.png",
     "description": {
       "translate": "pneumaticcraft.advancement.printed_circuit_board.desc"
     },
     "frame": "goal",
-    "hidden": false,
     "icon": {
       "item": "pneumaticcraft:printed_circuit_board"
     },
-    "show_toast": true,
     "title": {
       "translate": "pneumaticcraft.advancement.printed_circuit_board"
     }

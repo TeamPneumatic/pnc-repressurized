@@ -19,15 +19,14 @@ package me.desht.pneumaticcraft.client.render.fluid;
 
 import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.common.block.entity.LiquidHopperBlockEntity;
+import me.desht.pneumaticcraft.common.util.IOHelper;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.AABB;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 public class RenderLiquidHopper extends AbstractFluidTER<LiquidHopperBlockEntity> {
@@ -55,8 +54,8 @@ public class RenderLiquidHopper extends AbstractFluidTER<LiquidHopperBlockEntity
 
         @Override
         public List<TankRenderInfo> getTanksToRender(ItemStack stack) {
-            IFluidHandler h = stack.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).orElseThrow(RuntimeException::new);
-            return Collections.singletonList(new TankRenderInfo(h.getFluidInTank(0), h.getTankCapacity(0), BOUNDS_UP).without(Direction.DOWN));
+            IFluidHandler h = IOHelper.getFluidHandlerForItem(stack).orElseThrow(RuntimeException::new);
+            return List.of(new TankRenderInfo(h.getFluidInTank(0), h.getTankCapacity(0), BOUNDS_UP).without(Direction.DOWN));
         }
     }
 }

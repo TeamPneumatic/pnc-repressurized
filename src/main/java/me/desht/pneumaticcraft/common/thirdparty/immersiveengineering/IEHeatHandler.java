@@ -19,49 +19,38 @@ package me.desht.pneumaticcraft.common.thirdparty.immersiveengineering;
 
 import blusunrize.immersiveengineering.api.tool.ExternalHeaterHandler;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
+import me.desht.pneumaticcraft.common.block.entity.IHeatExchangingTE;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
+import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
+import me.desht.pneumaticcraft.common.util.IOHelper;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
-import net.minecraftforge.common.util.LazyOptional;
+import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
-class IEHeatHandler {
-    public record Impl(BlockEntity blockEntity) implements ExternalHeaterHandler.IExternalHeatable {
-        @Override
-        public int doHeatTick(int energyAvailable, boolean redstone) {
-            return blockEntity.getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY).map(handler -> {
-                int rfPerTick = ConfigHelper.common().integration.ieExternalHeaterFEperTick.get();
-                double heatPerRF = ConfigHelper.common().integration.ieExternalHeaterHeatPerFE.get();
-                if (energyAvailable >= rfPerTick) {
-                    handler.addHeat(rfPerTick * heatPerRF);
-                    return rfPerTick;
-                }
-                return 0;
-            }).orElse(0);
-        }
+/**
+ * Allows PNC heat handling blocks to be heated by the IE External Heater
+ */
+record IEHeatHandler(BlockEntity blockEntity, Direction dir) implements ExternalHeaterHandler.IExternalHeatable {
+    public static ExternalHeaterHandler.IExternalHeatable maybe(BlockEntity obj, Direction dir) {
+        return obj instanceof IHeatExchangingTE ? new IEHeatHandler(obj, dir) : null;
     }
 
-    public static class Provider implements ICapabilityProvider {
-        private final Impl impl;
-        private final LazyOptional<ExternalHeaterHandler.IExternalHeatable> lazy;
+    public static void registerCap(RegisterCapabilitiesEvent event) {
+        ModBlockEntityTypes.streamBlockEntities()
+                .filter(be -> be instanceof IHeatExchangingTE)
+                .forEach(be -> event.registerBlockEntity(ExternalHeaterHandler.CAPABILITY, be.getType(), IEHeatHandler::maybe));
+    }
 
-        public Provider(BlockEntity blockEntity) {
-            this.impl = new Impl(blockEntity);
-            this.lazy = LazyOptional.of(() -> impl);
-        }
-
-        @Nonnull
-        @Override
-        public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-            return ExternalHeaterHandler.CAPABILITY.orEmpty(cap, lazy);
-        }
-
-        public void invalidate() {
-            lazy.invalidate();
-        }
+    @Override
+    public int doHeatTick(int energyAvailable, boolean redstone) {
+        return IOHelper.getCap(blockEntity, PNCCapabilities.HEAT_EXCHANGER_BLOCK, dir).map(handler -> {
+            int rfPerTick = ConfigHelper.common().integration.ieExternalHeaterFEperTick.get();
+            double heatPerRF = ConfigHelper.common().integration.ieExternalHeaterHeatPerFE.get();
+            if (energyAvailable >= rfPerTick) {
+                handler.addHeat(rfPerTick * heatPerRF);
+                return rfPerTick;
+            }
+            return 0;
+        }).orElse(0);
     }
 }

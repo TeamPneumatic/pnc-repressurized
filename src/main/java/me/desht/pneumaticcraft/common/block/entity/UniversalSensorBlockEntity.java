@@ -27,12 +27,12 @@ import me.desht.pneumaticcraft.api.upgrade.PNCUpgrade;
 import me.desht.pneumaticcraft.client.gui.UniversalSensorScreen;
 import me.desht.pneumaticcraft.common.block.entity.RedstoneController.EmittingRedstoneMode;
 import me.desht.pneumaticcraft.common.block.entity.RedstoneController.RedstoneMode;
-import me.desht.pneumaticcraft.common.core.ModBlockEntities;
-import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.inventory.UniversalSensorMenu;
 import me.desht.pneumaticcraft.common.item.GPSToolItem;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
+import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
+import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.sensor.SensorHandler;
 import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
 import me.desht.pneumaticcraft.common.thirdparty.computer_common.ComputerEventManager;
@@ -56,11 +56,10 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-import net.minecraftforge.eventbus.api.Event;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemStackHandler;
+import net.neoforged.bus.api.Event;
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.ItemStackHandler;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -102,14 +101,13 @@ public class UniversalSensorBlockEntity extends AbstractAirHandlingBlockEntity i
     private final Set<BlockPos> positions = new HashSet<>();
 
     private final ItemStackHandler itemHandler = new UniversalSensorItemHandler();
-    private final LazyOptional<IItemHandler> inventoryCap = LazyOptional.of(() -> itemHandler);
     @GuiSynced
     public int outOfRange;
     private final RangeManager rangeManager = new RangeManager(this, 0x605050D0);
     private UUID playerId;
 
     public UniversalSensorBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.UNIVERSAL_SENSOR.get(), pos, state, PressureTier.TIER_ONE, PneumaticValues.VOLUME_UNIVERSAL_SENSOR, 4);
+        super(ModBlockEntityTypes.UNIVERSAL_SENSOR.get(), pos, state, PressureTier.TIER_ONE, PneumaticValues.VOLUME_UNIVERSAL_SENSOR, 4);
     }
 
     @Override
@@ -179,7 +177,7 @@ public class UniversalSensorBlockEntity extends AbstractAirHandlingBlockEntity i
     private SensorStatus updateStatus(ISensorSetting sensor) {
         sensorStatus = SensorStatus.OK;
         if (sensor != null) {
-            if (sensor.needsGPSTool() && getPrimaryInventory().getStackInSlot(0).isEmpty()) {
+            if (sensor.needsGPSTool() && getItemHandler().getStackInSlot(0).isEmpty()) {
                 sensorStatus = SensorStatus.MISSING_GPS;
             } else {
                 for (PNCUpgrade upgrade: sensor.getRequiredUpgrades()) {
@@ -206,17 +204,20 @@ public class UniversalSensorBlockEntity extends AbstractAirHandlingBlockEntity i
         return side != Direction.UP;
     }
 
-    @Override
     public AABB getRenderBoundingBox() {
-        return rangeManager.shouldShowRange() ? rangeManager.getExtents() : super.getRenderBoundingBox();
+        return rangeManager.shouldShowRange() ? rangeManager.getExtentsAsAABB() : new AABB(getBlockPos());
     }
 
     public void onEvent(Event event) {
         ISensorSetting sensor = SensorHandler.getInstance().getSensorFromPath(sensorSetting);
-        if (sensor instanceof IEventSensorSetting && getPressure() >= getMinWorkingPressure()) {
-            int newRedstoneStrength = ((IEventSensorSetting) sensor).emitRedstoneOnEvent(event, this, getRange(), sensorGuiText);
-            if (newRedstoneStrength != 0) redstonePulseCounter = ((IEventSensorSetting) sensor).getRedstonePulseLength();
-            if (rsController.getCurrentMode() == RS_MODE_INVERTED) newRedstoneStrength = 15 - newRedstoneStrength;
+        if (sensor instanceof IEventSensorSetting evs && getPressure() >= getMinWorkingPressure()) {
+            int newRedstoneStrength = evs.emitRedstoneOnEvent(event, this, getRange(), sensorGuiText);
+            if (newRedstoneStrength != 0) {
+                redstonePulseCounter = evs.getRedstonePulseLength();
+            }
+            if (rsController.getCurrentMode() == RS_MODE_INVERTED) {
+                newRedstoneStrength = 15 - newRedstoneStrength;
+            }
             if (redstonePulseCounter > 0 && ThirdPartyManager.instance().isModTypeLoaded(ThirdPartyManager.ModType.COMPUTER)) {
                 if (event instanceof PlayerInteractEvent e) {
                     notifyComputers(newRedstoneStrength, e.getPos().getX(), e.getPos().getY(), e.getPos().getZ());
@@ -494,14 +495,8 @@ public class UniversalSensorBlockEntity extends AbstractAirHandlingBlockEntity i
     }
 
     @Override
-    public IItemHandler getPrimaryInventory() {
+    public IItemHandler getItemHandler(@Nullable Direction dir) {
         return itemHandler;
-    }
-
-    @Nonnull
-    @Override
-    protected LazyOptional<IItemHandler> getInventoryCap(Direction side) {
-        return inventoryCap;
     }
 
     @Override

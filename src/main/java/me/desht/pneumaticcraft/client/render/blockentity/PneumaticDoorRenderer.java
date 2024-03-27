@@ -33,6 +33,7 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.phys.AABB;
 
 public class PneumaticDoorRenderer extends AbstractBlockEntityModelRenderer<PneumaticDoorBlockEntity> {
     private static final String DOOR = "door";
@@ -100,5 +101,10 @@ public class PneumaticDoorRenderer extends AbstractBlockEntityModelRenderer<Pneu
             matrixStackIn.translate(0, 0, 6.5/16F);
         }
         door.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn, rgb[0], rgb[1], rgb[2], 1f);
+    }
+
+    @Override
+    public AABB getRenderBoundingBox(PneumaticDoorBlockEntity blockEntity) {
+        return blockEntity.getRenderBoundingBox();
     }
 }

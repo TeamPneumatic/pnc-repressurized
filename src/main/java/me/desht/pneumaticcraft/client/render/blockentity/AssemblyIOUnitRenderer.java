@@ -41,7 +41,7 @@ import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import org.apache.commons.lang3.tuple.Pair;
 
-public class AssemblyIOUnitRenderer extends AbstractBlockEntityModelRenderer<AssemblyIOUnitBlockEntity> {
+public class AssemblyIOUnitRenderer extends AbstractAssemblyRenderer<AssemblyIOUnitBlockEntity> {
     private final ModelPart baseTurn;
     private final ModelPart baseTurn2;
     private final ModelPart armBase;
@@ -141,7 +141,7 @@ public class AssemblyIOUnitRenderer extends AbstractBlockEntityModelRenderer<Ass
             angles[i] = te.oldAngles[i] + (te.angles[i] - te.oldAngles[i]) * partialTicks;
         }
 
-        ItemStack heldStack = te.getPrimaryInventory().getStackInSlot(0);
+        ItemStack heldStack = te.getItemHandler(null).getStackInSlot(0);
         VertexConsumer builder = bufferIn.getBuffer(RenderType.entityCutout(getTexture(te)));
         Pair<IAssemblyRenderOverriding, Float> clawTranslation = getClawTranslation(Mth.lerp(partialTicks, te.oldClawProgress, te.clawProgress), heldStack);
 

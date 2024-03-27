@@ -34,225 +34,218 @@
 
 package me.desht.pneumaticcraft.common.network;
 
+import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.network.NetworkDirection;
-import net.minecraftforge.network.NetworkEvent;
-import net.minecraftforge.network.NetworkRegistry;
-import net.minecraftforge.network.PacketDistributor;
-import net.minecraftforge.network.simple.SimpleChannel;
-import net.minecraftforge.server.ServerLifecycleHooks;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.network.PacketDistributor;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlerEvent;
+import net.neoforged.neoforge.network.registration.IPayloadRegistrar;
+import net.neoforged.neoforge.server.ServerLifecycleHooks;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Supplier;
 
-import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
-import static net.minecraftforge.network.NetworkDirection.PLAY_TO_CLIENT;
-import static net.minecraftforge.network.NetworkDirection.PLAY_TO_SERVER;
-
+@Mod.EventBusSubscriber(modid = PneumaticRegistry.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class NetworkHandler {
-    private static final String PROTOCOL_VERSION = "9";
-    private static final SimpleChannel NETWORK = NetworkRegistry.ChannelBuilder
-            .named(RL("main_channel"))
-            .clientAcceptedVersions(PROTOCOL_VERSION::equals)
-            .serverAcceptedVersions(PROTOCOL_VERSION::equals)
-            .networkProtocolVersion(() -> PROTOCOL_VERSION)
-            .simpleChannel();
-    private static int det = 0;
+    private static final String PROTOCOL_VERSION = "1";
 
-    private static int nextId() {
-        return det++;
-    }
+	@SubscribeEvent
+	public static void register(final RegisterPayloadHandlerEvent event) {
+		final IPayloadRegistrar registrar = event.registrar(PneumaticRegistry.MOD_ID)
+				.versioned(PROTOCOL_VERSION);
 
-    public static void init() {
-		registerMessage(PacketAphorismTileUpdate.class,
-				PacketAphorismTileUpdate::toBytes, PacketAphorismTileUpdate::new, PacketAphorismTileUpdate::handle, PLAY_TO_SERVER);
-		registerMessage(PacketChangeGPSToolCoordinate.class,
-				PacketChangeGPSToolCoordinate::toBytes, PacketChangeGPSToolCoordinate::new, PacketChangeGPSToolCoordinate::handle, PLAY_TO_SERVER);
-		registerMessage(PacketUpdateGPSAreaTool.class,
-				PacketUpdateGPSAreaTool::toBytes, PacketUpdateGPSAreaTool::new, PacketUpdateGPSAreaTool::handle, PLAY_TO_SERVER);
-		registerMessage(PacketDescription.class,
-				PacketDescription::toBytes, PacketDescription::new, PacketDescription::process, PLAY_TO_CLIENT);
-		registerMessage(PacketDescriptionPacketRequest.class,
-				PacketDescriptionPacketRequest::toBytes, PacketDescriptionPacketRequest::new, PacketDescriptionPacketRequest::handle, PLAY_TO_SERVER);
-		registerMessage(PacketGuiButton.class,
-				PacketGuiButton::toBytes, PacketGuiButton::new, PacketGuiButton::handle, PLAY_TO_SERVER);
-		registerMessage(PacketPlaySound.class,
-				PacketPlaySound::toBytes, PacketPlaySound::new, PacketPlaySound::handle, PLAY_TO_CLIENT);
-		registerMessage(PacketProgrammerUpdate.class,
-				PacketProgrammerUpdate::toBytes, PacketProgrammerUpdate::new, PacketProgrammerUpdate::handle);
-		registerMessage(PacketSendNBTPacket.class,
-				PacketSendNBTPacket::toBytes, PacketSendNBTPacket::new, PacketSendNBTPacket::handle, PLAY_TO_CLIENT);
-		registerMessage(PacketShowWireframe.class,
-				PacketShowWireframe::toBytes, PacketShowWireframe::new, PacketShowWireframe::handle);
-		registerMessage(PacketSpawnParticle.class,
-				PacketSpawnParticle::toBytes, PacketSpawnParticle::new, PacketSpawnParticle::handle, PLAY_TO_CLIENT);
-		registerMessage(PacketSpawnParticleTrail.class,
-				PacketSpawnParticleTrail::toBytes, PacketSpawnParticleTrail::new, PacketSpawnParticleTrail::handle, PLAY_TO_CLIENT);
-		registerMessage(PacketSpawnIndicatorParticles.class,
-				PacketSpawnIndicatorParticles::toBytes, PacketSpawnIndicatorParticles::new, PacketSpawnIndicatorParticles::handle, PLAY_TO_CLIENT);
-		registerMessage(PacketUpdateSearchItem.class,
-				PacketUpdateSearchItem::toBytes, PacketUpdateSearchItem::new, PacketUpdateSearchItem::handle, PLAY_TO_SERVER);
-		registerMessage(PacketUpdateTextfield.class,
-				PacketUpdateTextfield::toBytes, PacketUpdateTextfield::new, PacketUpdateTextfield::handle, PLAY_TO_SERVER);
-		registerMessage(PacketUpdatePressureModule.class,
-				PacketUpdatePressureModule::toBytes, PacketUpdatePressureModule::new, PacketUpdatePressureModule::handle, PLAY_TO_SERVER);
-		registerMessage(PacketUpdateAirGrateModule.class,
-				PacketUpdateAirGrateModule::toBytes, PacketUpdateAirGrateModule::new, PacketUpdateAirGrateModule::handle, PLAY_TO_SERVER);
-		registerMessage(PacketUpdateGui.class,
-				PacketUpdateGui::toBytes, PacketUpdateGui::new, PacketUpdateGui::handle, PLAY_TO_CLIENT);
-		registerMessage(PacketUpdateRemoteLayout.class,
-				PacketUpdateRemoteLayout::toBytes, PacketUpdateRemoteLayout::new, PacketUpdateRemoteLayout::handle, PLAY_TO_SERVER);
-		registerMessage(PacketSetGlobalVariable.class,
-				PacketSetGlobalVariable::toBytes, PacketSetGlobalVariable::new, PacketSetGlobalVariable::handle);
-		registerMessage(PacketServerTickTime.class,
-				PacketServerTickTime::toBytes, PacketServerTickTime::new, PacketServerTickTime::handle, PLAY_TO_CLIENT);
-		registerMessage(PacketUpdatePressureBlock.class,
-				PacketUpdatePressureBlock::toBytes, PacketUpdatePressureBlock::new, PacketUpdatePressureBlock::handle, PLAY_TO_CLIENT);
-		registerMessage(PacketSyncAmadronOffers.class,
-				PacketSyncAmadronOffers::toBytes, PacketSyncAmadronOffers::new, PacketSyncAmadronOffers::handle, PLAY_TO_CLIENT);
-		registerMessage(PacketAmadronOrderResponse.class,
-				PacketAmadronOrderResponse::toBytes, PacketAmadronOrderResponse::new, PacketAmadronOrderResponse::handle, PLAY_TO_CLIENT);
-		registerMessage(PacketAmadronOrderUpdate.class,
-				PacketAmadronOrderUpdate::toBytes, PacketAmadronOrderUpdate::new, PacketAmadronOrderUpdate::handle, PLAY_TO_SERVER);
-		registerMessage(PacketAmadronStockUpdate.class,
-				PacketAmadronStockUpdate::toBytes, PacketAmadronStockUpdate::new, PacketAmadronStockUpdate::handle, PLAY_TO_CLIENT);
-		registerMessage(PacketAmadronTradeAddCustom.class,
-				PacketAmadronTradeAddCustom::toBytes, PacketAmadronTradeAddCustom::new, PacketAmadronTradeAddCustom::handle);
-		registerMessage(PacketAmadronTradeNotifyDeal.class,
-				PacketAmadronTradeNotifyDeal::toBytes, PacketAmadronTradeNotifyDeal::new, PacketAmadronTradeNotifyDeal::handle, PLAY_TO_CLIENT);
-		registerMessage(PacketAmadronTradeRemoved.class,
-				PacketAmadronTradeRemoved::toBytes, PacketAmadronTradeRemoved::new, PacketAmadronTradeRemoved::handle, PLAY_TO_CLIENT);
-		registerMessage(PacketUpdateLogisticsModule.class,
-				PacketUpdateLogisticsModule::toBytes, PacketUpdateLogisticsModule::new, PacketUpdateLogisticsModule::handle, PLAY_TO_CLIENT);
-		registerMessage(PacketTubeModuleColor.class,
-				PacketTubeModuleColor::toBytes, PacketTubeModuleColor::new, PacketTubeModuleColor::handle, PLAY_TO_SERVER);
-		registerMessage(PacketSyncRedstoneModuleToClient.class,
-				PacketSyncRedstoneModuleToClient::toBytes, PacketSyncRedstoneModuleToClient::new, PacketSyncRedstoneModuleToClient::handle, PLAY_TO_CLIENT);
-		registerMessage(PacketSyncRedstoneModuleToServer.class,
-				PacketSyncRedstoneModuleToServer::toBytes, PacketSyncRedstoneModuleToServer::new, PacketSyncRedstoneModuleToServer::handle, PLAY_TO_SERVER);
-		registerMessage(PacketHackingBlockStart.class,
-				PacketHackingBlockStart::toBytes, PacketHackingBlockStart::new, PacketHackingBlockStart::handle);
-		registerMessage(PacketHackingBlockFinish.class,
-				PacketHackingBlockFinish::toBytes, PacketHackingBlockFinish::new, PacketHackingBlockFinish::handle, PLAY_TO_CLIENT);
-		registerMessage(PacketHackingEntityStart.class,
-				PacketHackingEntityStart::toBytes, PacketHackingEntityStart::new, PacketHackingEntityStart::handle);
-		registerMessage(PacketHackingEntityFinish.class,
-				PacketHackingEntityFinish::toBytes, PacketHackingEntityFinish::new, PacketHackingEntityFinish::handle, PLAY_TO_CLIENT);
-		registerMessage(PacketToggleArmorFeature.class,
-				PacketToggleArmorFeature::toBytes, PacketToggleArmorFeature::new, PacketToggleArmorFeature::handle);
-		registerMessage(PacketToggleArmorFeatureBulk.class,
-				PacketToggleArmorFeatureBulk::toBytes, PacketToggleArmorFeatureBulk::new, PacketToggleArmorFeatureBulk::handle, PLAY_TO_SERVER);
-		registerMessage(PacketUpdateDebuggingDrone.class,
-				PacketUpdateDebuggingDrone::toBytes, PacketUpdateDebuggingDrone::new, PacketUpdateDebuggingDrone::handle, PLAY_TO_SERVER);
-		registerMessage(PacketSendDroneDebugEntry.class,
-				PacketSendDroneDebugEntry::toBytes, PacketSendDroneDebugEntry::new, PacketSendDroneDebugEntry::handle, PLAY_TO_CLIENT);
-		registerMessage(PacketSyncDroneEntityProgWidgets.class,
-				PacketSyncDroneEntityProgWidgets::toBytes, PacketSyncDroneEntityProgWidgets::new, PacketSyncDroneEntityProgWidgets::handle, PLAY_TO_CLIENT);
-		registerMessage(PacketSpawnRing.class,
-				PacketSpawnRing::toBytes, PacketSpawnRing::new, PacketSpawnRing::handle, PLAY_TO_CLIENT);
-		registerMessage(PacketShowArea.class,
-				PacketShowArea::toBytes, PacketShowArea::new, PacketShowArea::handle, PLAY_TO_CLIENT);
-		registerMessage(PacketSetEntityMotion.class,
-				PacketSetEntityMotion::toBytes, PacketSetEntityMotion::new, PacketSetEntityMotion::handle, PLAY_TO_CLIENT);
-		registerMessage(PacketDebugBlock.class,
-				PacketDebugBlock::toBytes, PacketDebugBlock::new, PacketDebugBlock::handle, PLAY_TO_CLIENT);
-		registerMessage(PacketMultiHeader.class,
-				PacketMultiHeader::toBytes, PacketMultiHeader::new, PacketMultiHeader::handle);
-		registerMessage(PacketMultiPart.class,
-				PacketMultiPart::toBytes, PacketMultiPart::new, PacketMultiPart::handle);
-		registerMessage(PacketPneumaticKick.class,
-				PacketPneumaticKick::toBytes, PacketPneumaticKick::new, PacketPneumaticKick::handle, PLAY_TO_SERVER);
-		registerMessage(PacketJetBootsActivate.class,
-				PacketJetBootsActivate::toBytes, PacketJetBootsActivate::new, PacketJetBootsActivate::handle, PLAY_TO_SERVER);
-		registerMessage(PacketPlayMovingSound.class,
-				PacketPlayMovingSound::toBytes, PacketPlayMovingSound::new, PacketPlayMovingSound::handle, PLAY_TO_CLIENT);
-		registerMessage(PacketJetBootsStateSync.class,
-				PacketJetBootsStateSync::toBytes, PacketJetBootsStateSync::new, PacketJetBootsStateSync::handle, PLAY_TO_CLIENT);
-		registerMessage(PacketModWrenchBlock.class,
-				PacketModWrenchBlock::toBytes, PacketModWrenchBlock::new, PacketModWrenchBlock::handle, PLAY_TO_SERVER);
-		registerMessage(PacketUpdateArmorExtraData.class,
-				PacketUpdateArmorExtraData::toBytes, PacketUpdateArmorExtraData::new, PacketUpdateArmorExtraData::handle, PLAY_TO_SERVER);
-		registerMessage(PacketUpdateMicromissileSettings.class,
-				PacketUpdateMicromissileSettings::toBytes, PacketUpdateMicromissileSettings::new, PacketUpdateMicromissileSettings::handle, PLAY_TO_SERVER);
-		registerMessage(PacketSendArmorHUDMessage.class,
-				PacketSendArmorHUDMessage::toBytes, PacketSendArmorHUDMessage::new, PacketSendArmorHUDMessage::handle, PLAY_TO_CLIENT);
-		registerMessage(PacketChestplateLauncher.class,
-				PacketChestplateLauncher::toBytes, PacketChestplateLauncher::new, PacketChestplateLauncher::handle, PLAY_TO_SERVER);
-		registerMessage(PacketSyncSemiblock.class,
-				PacketSyncSemiblock::toBytes, PacketSyncSemiblock::new, PacketSyncSemiblock::handle);
-		registerMessage(PacketSyncSmartChest.class,
-				PacketSyncSmartChest::toBytes, PacketSyncSmartChest::new, PacketSyncSmartChest::handle);
-		registerMessage(PacketClearRecipeCache.class,
-				PacketClearRecipeCache::toBytes, PacketClearRecipeCache::new, PacketClearRecipeCache::handle, PLAY_TO_CLIENT);
-		registerMessage(PacketLeftClickEmpty.class,
-				PacketLeftClickEmpty::toBytes, PacketLeftClickEmpty::new, PacketLeftClickEmpty::handle, PLAY_TO_SERVER);
-		registerMessage(PacketShiftScrollWheel.class,
-				PacketShiftScrollWheel::toBytes, PacketShiftScrollWheel::new, PacketShiftScrollWheel::handle, PLAY_TO_SERVER);
-		registerMessage(PacketNotifyBlockUpdate.class,
-				PacketNotifyBlockUpdate::toBytes, PacketNotifyBlockUpdate::new, PacketNotifyBlockUpdate::handle, PLAY_TO_CLIENT);
-		registerMessage(PacketSyncHackSimulationUpdate.class,
-				PacketSyncHackSimulationUpdate::toBytes, PacketSyncHackSimulationUpdate::new, PacketSyncHackSimulationUpdate::handle, PLAY_TO_CLIENT);
-		registerMessage(PacketUpdateArmorColors.class,
-				PacketUpdateArmorColors::toBytes, PacketUpdateArmorColors::new, PacketUpdateArmorColors::handle, PLAY_TO_SERVER);
-		registerMessage(PacketMinigunStop.class,
-				PacketMinigunStop::toBytes, PacketMinigunStop::new, PacketMinigunStop::handle, PLAY_TO_CLIENT);
-		registerMessage(PacketSyncClassifyFilter.class,
-				PacketSyncClassifyFilter::toBytes, PacketSyncClassifyFilter::new, PacketSyncClassifyFilter::handle, PLAY_TO_SERVER);
-		registerMessage(PacketSyncEntityHacks.class,
-				PacketSyncEntityHacks::toBytes, PacketSyncEntityHacks::new, PacketSyncEntityHacks::handle, PLAY_TO_CLIENT);
-		registerMessage(PacketTeleportCommand.class,
-				PacketTeleportCommand::toBytes, PacketTeleportCommand::new, PacketTeleportCommand::handle, PLAY_TO_SERVER);
-    }
+		// misc serverbound
+		registrar.play(PacketAphorismTileUpdate.ID, PacketAphorismTileUpdate::fromNetwork,
+				handler -> handler.server(PacketAphorismTileUpdate::handle));
+		registrar.play(PacketChangeGPSToolCoordinate.ID, PacketChangeGPSToolCoordinate::new,
+				handler -> handler.server(PacketChangeGPSToolCoordinate::handle));
+		registrar.play(PacketUpdateGPSAreaTool.ID, PacketUpdateGPSAreaTool::new,
+				handler -> handler.server(PacketUpdateGPSAreaTool::handle));
+		registrar.play(PacketDescriptionPacketRequest.ID, PacketDescriptionPacketRequest::new,
+				handler -> handler.server(PacketDescriptionPacketRequest::handle));
+		registrar.play(PacketGuiButton.ID, PacketGuiButton::new,
+				handler -> handler.server(PacketGuiButton::handle));
+		registrar.play(PacketUpdateTextfield.ID, PacketUpdateTextfield::fromNetwork,
+				handler -> handler.server(PacketUpdateTextfield::handle));
+		registrar.play(PacketUpdateSearchItem.ID, PacketUpdateSearchItem::fromNetwork,
+				handler -> handler.server(PacketUpdateSearchItem::handle));
+		registrar.play(PacketUpdateRemoteLayout.ID, PacketUpdateRemoteLayout::fromNetwork,
+				handler -> handler.server(PacketUpdateRemoteLayout::handle));
+		registrar.play(PacketUpdateMicromissileSettings.ID, PacketUpdateMicromissileSettings::fromNetwork,
+				handler -> handler.server(PacketUpdateMicromissileSettings::handle));
+		registrar.play(PacketModWrenchBlock.ID, PacketModWrenchBlock::fromNetwork,
+				handler -> handler.server(PacketModWrenchBlock::handle));
+		registrar.play(PacketLeftClickEmpty.ID, PacketLeftClickEmpty::fromNetwork,
+				handler -> handler.server(PacketLeftClickEmpty::handle));
+		registrar.play(PacketShiftScrollWheel.ID, PacketShiftScrollWheel::fromNetwork,
+				handler -> handler.server(PacketShiftScrollWheel::handle));
+		registrar.play(PacketSyncClassifyFilter.ID, PacketSyncClassifyFilter::fromNetwork,
+				handler -> handler.server(PacketSyncClassifyFilter::handle));
+		registrar.play(PacketTeleportCommand.ID, PacketTeleportCommand::fromNetwork,
+				handler -> handler.server(PacketTeleportCommand::handle));
 
-	public static <MSG> void registerMessage(Class<MSG> messageType, BiConsumer<MSG, FriendlyByteBuf> encoder, Function<FriendlyByteBuf, MSG> decoder, BiConsumer<MSG, Supplier<NetworkEvent.Context>> messageConsumer) {
-		NETWORK.registerMessage(nextId(), messageType, encoder, decoder, messageConsumer);
+		// misc clientbound
+		registrar.play(PacketDescription.ID, PacketDescription::fromNetwork,
+				handler -> handler.client(PacketDescription::handle));
+		registrar.play(PacketPlaySound.ID, PacketPlaySound::new,
+				handler -> handler.client(PacketPlaySound::handle));
+		registrar.play(PacketSendNBTPacket.ID, PacketSendNBTPacket::fromNetwork,
+				handler -> handler.client(PacketSendNBTPacket::handle));
+		registrar.play(PacketSpawnParticle.ID, PacketSpawnParticle::fromNetwork,
+				handler -> handler.client(PacketSpawnParticle::handle));
+		registrar.play(PacketSpawnParticleTrail.ID, PacketSpawnParticleTrail::fromNetwork,
+				handler -> handler.client(PacketSpawnParticleTrail::handle));
+		registrar.play(PacketSpawnIndicatorParticles.ID, PacketSpawnIndicatorParticles::fromNetwork,
+				handler -> handler.client(PacketSpawnIndicatorParticles::handle));
+		registrar.play(PacketUpdatePressureBlock.ID, PacketUpdatePressureBlock::fromNetwork,
+				handler -> handler.client(PacketUpdatePressureBlock::handle));
+		registrar.play(PacketUpdateGui.ID, PacketUpdateGui::fromNetwork,
+				handler -> handler.client(PacketUpdateGui::handle));
+		registrar.play(PacketServerTickTime.ID, PacketServerTickTime::fromNetwork,
+				handler -> handler.client(PacketServerTickTime::handle));
+		registrar.play(PacketSpawnRing.ID, PacketSpawnRing::fromNetwork,
+				handler -> handler.client(PacketSpawnRing::handle));
+		registrar.play(PacketShowArea.ID, PacketShowArea::fromNetwork,
+				handler -> handler.client(PacketShowArea::handle));
+		registrar.play(PacketSetEntityMotion.ID, PacketSetEntityMotion::fromNetwork,
+				handler -> handler.client(PacketSetEntityMotion::handle));
+		registrar.play(PacketDebugBlock.ID, PacketDebugBlock::fromNetwork,
+				handler -> handler.client(PacketDebugBlock::handle));
+		registrar.play(PacketPlayMovingSound.ID, PacketPlayMovingSound::fromNetwork,
+				handler -> handler.client(PacketPlayMovingSound::handle));
+		registrar.play(PacketNotifyBlockUpdate.ID, PacketNotifyBlockUpdate::fromNetwork,
+				handler -> handler.client(PacketNotifyBlockUpdate::handle));
+		registrar.play(PacketMinigunStop.ID, PacketMinigunStop::fromNetwork,
+				handler -> handler.client(PacketMinigunStop::handle));
+		registrar.play(PacketClearRecipeCache.ID, PacketClearRecipeCache::fromNetwork,
+				handler -> handler.client(PacketClearRecipeCache::handle));
+
+
+		// misc bi-directional
+		registrar.play(PacketSetGlobalVariable.ID, PacketSetGlobalVariable::fromNetwork,
+				handler -> handler.client(PacketSetGlobalVariable::handle).server(PacketSetGlobalVariable::handle));
+		registrar.play(PacketSyncSemiblock.ID, PacketSyncSemiblock::fromNetwork,
+				handler -> handler.client(PacketSyncSemiblock::handle).server(PacketSyncSemiblock::handle));
+		registrar.play(PacketSyncSmartChest.ID, PacketSyncSmartChest::fromNetwork,
+				handler -> handler.client(PacketSyncSmartChest::handle).server(PacketSyncSmartChest::handle));
+
+		// tube modules
+		registrar.play(PacketUpdatePressureModule.ID, PacketUpdatePressureModule::fromNetwork,
+				handler -> handler.server(TubeModulePacket::handle));
+		registrar.play(PacketUpdateAirGrateModule.ID, PacketUpdateAirGrateModule::fromNetwork,
+				handler -> handler.server(TubeModulePacket::handle));
+		registrar.play(PacketTubeModuleColor.ID, PacketTubeModuleColor::fromNetwork,
+				handler -> handler.server(TubeModulePacket::handle));
+		registrar.play(PacketSyncRedstoneModuleToServer.ID, PacketSyncRedstoneModuleToServer::fromNetwork,
+				handler -> handler.server(TubeModulePacket::handle));
+		registrar.play(PacketUpdateLogisticsModule.ID, PacketUpdateLogisticsModule::fromNetwork,
+				handler -> handler.client(TubeModulePacket::handle));
+		registrar.play(PacketSyncRedstoneModuleToClient.ID, PacketSyncRedstoneModuleToClient::fromNetwork,
+				handler -> handler.client(TubeModulePacket::handle));
+
+		// amadron
+		registrar.play(PacketSyncAmadronOffers.ID, PacketSyncAmadronOffers::fromNetwork,
+				handler -> handler.client(PacketSyncAmadronOffers::handle));
+		registrar.play(PacketAmadronOrderResponse.ID, PacketAmadronOrderResponse::fromNetwork,
+				handler -> handler.client(PacketAmadronOrderResponse::handle));
+		registrar.play(PacketAmadronOrderUpdate.ID, PacketAmadronOrderUpdate::fromNetwork,
+				handler -> handler.server(PacketAmadronOrderUpdate::handle));
+		registrar.play(PacketAmadronStockUpdate.ID, PacketAmadronStockUpdate::fromNetwork,
+				handler -> handler.client(PacketAmadronStockUpdate::handle));
+		registrar.play(PacketAmadronTradeNotifyDeal.ID, PacketAmadronTradeNotifyDeal::fromNetwork,
+				handler -> handler.client(PacketAmadronTradeNotifyDeal::handle));
+		registrar.play(PacketAmadronTradeRemoved.ID, PacketAmadronTradeRemoved::fromNetwork,
+				handler -> handler.client(PacketAmadronTradeRemoved::handle));
+		registrar.play(PacketAmadronTradeAddCustom.ID, PacketAmadronTradeAddCustom::fromNetwork,
+				handler -> handler.client(PacketAmadronTradeAddCustom::handle)
+						.server(PacketAmadronTradeAddCustom::handle));
+
+		// hacking
+		registrar.play(PacketHackingBlockStart.ID, PacketHackingBlockStart::fromNetwork,
+				handler -> handler.client(PacketHackingBlockStart::handle).server(PacketHackingBlockStart::handle));
+		registrar.play(PacketHackingEntityStart.ID, PacketHackingEntityStart::fromNetwork,
+				handler -> handler.client(PacketHackingEntityStart::handle).server(PacketHackingEntityStart::handle));
+		registrar.play(PacketHackingBlockFinish.ID, PacketHackingBlockFinish::fromNetwork,
+				handler -> handler.client(PacketHackingBlockFinish::handle));
+		registrar.play(PacketHackingEntityFinish.ID, PacketHackingEntityFinish::fromNetwork,
+				handler -> handler.client(PacketHackingEntityFinish::handle));
+		registrar.play(PacketSyncHackSimulationUpdate.ID, PacketSyncHackSimulationUpdate::fromNetwork,
+				handler -> handler.client(PacketSyncHackSimulationUpdate::handle));
+		registrar.play(PacketSyncEntityHacks.ID, PacketSyncEntityHacks::fromNetwork,
+				handler -> handler.client(PacketSyncEntityHacks::handle));
+
+		// pneumatic armor
+		registrar.play(PacketToggleArmorFeature.ID, PacketToggleArmorFeature::fromNetwork,
+				handler -> handler.server(PacketToggleArmorFeature::handle).client(PacketToggleArmorFeature::handle));
+		registrar.play(PacketToggleArmorFeatureBulk.ID, PacketToggleArmorFeatureBulk::fromNetwork,
+				handler -> handler.server(PacketToggleArmorFeatureBulk::handle));
+		registrar.play(PacketPneumaticKick.ID, PacketPneumaticKick::fromNetwork,
+				handler -> handler.server(PacketPneumaticKick::handle));
+		registrar.play(PacketJetBootsActivate.ID, PacketJetBootsActivate::fromNetwork,
+				handler -> handler.server(PacketJetBootsActivate::handle));
+		registrar.play(PacketChestplateLauncher.ID, PacketChestplateLauncher::fromNetwork,
+				handler -> handler.server(PacketChestplateLauncher::handle));
+		registrar.play(PacketUpdateArmorColors.ID, PacketUpdateArmorColors::fromNetwork,
+				handler -> handler.server(PacketUpdateArmorColors::handle));
+		registrar.play(PacketUpdateArmorExtraData.ID, PacketUpdateArmorExtraData::fromNetwork,
+				handler -> handler.server(PacketUpdateArmorExtraData::handle));
+		registrar.play(PacketJetBootsStateSync.ID, PacketJetBootsStateSync::fromNetwork,
+				handler -> handler.client(PacketJetBootsStateSync::handle));
+		registrar.play(PacketSendArmorHUDMessage.ID, PacketSendArmorHUDMessage::fromNetwork,
+				handler -> handler.client(PacketSendArmorHUDMessage::handle));
+
+		// drones
+		registrar.play(PacketUpdateDebuggingDrone.ID, PacketUpdateDebuggingDrone::fromNetwork,
+				handler -> handler.server(DronePacket::handle));
+		registrar.play(PacketSendDroneDebugEntry.ID, PacketSendDroneDebugEntry::fromNetwork,
+				handler -> handler.client(DronePacket::handle));
+		registrar.play(PacketSyncDroneProgWidgets.ID, PacketSyncDroneProgWidgets::fromNetwork,
+				handler -> handler.client(DronePacket::handle));
+		registrar.play(PacketShowWireframe.ID, PacketShowWireframe::fromNetwork,
+				handler -> handler.client(PacketShowWireframe::handle));
+		registrar.play(PacketProgrammerSync.ID, PacketProgrammerSync::fromNetwork,
+				 handler -> handler.client(PacketProgrammerSync::handle).server(PacketProgrammerSync::handle));
 	}
 
-	public static <MSG> void registerMessage(Class<MSG> messageType, BiConsumer<MSG, FriendlyByteBuf> encoder, Function<FriendlyByteBuf, MSG> decoder, BiConsumer<MSG, Supplier<NetworkEvent.Context>> messageConsumer, NetworkDirection direction) {
-		NETWORK.registerMessage(nextId(), messageType, encoder, decoder, messageConsumer, Optional.of(direction));
-	}
-
-    public static void sendToAll(Object message) {
-		sendMessage(message, msg -> NETWORK.send(PacketDistributor.ALL.noArg(), msg));
+    public static void sendToAll(CustomPacketPayload message) {
+		sendMessage(message, msg -> PacketDistributor.ALL.noArg().send(msg));
     }
 
-    public static void sendToPlayer(Object message, ServerPlayer player) {
-		sendMessage(message, msg -> NETWORK.send(PacketDistributor.PLAYER.with(() -> player), msg));
+    public static void sendToPlayer(CustomPacketPayload message, ServerPlayer player) {
+		sendMessage(message, msg -> PacketDistributor.PLAYER.with(player).send(msg));
     }
 
-	public static void sendToAllTracking(Object message, Entity entity) {
-    	sendMessage(message, msg -> NETWORK.send(PacketDistributor.TRACKING_ENTITY.with(() -> entity), msg));
+	public static void sendToAllTracking(CustomPacketPayload message, Entity entity) {
+    	sendMessage(message, msg -> PacketDistributor.TRACKING_ENTITY.with(entity).send(msg));
 	}
 
-	public static void sendToAllTracking(Object message, Level world, BlockPos pos) {
-		sendMessage(message, msg -> NETWORK.send(PacketDistributor.TRACKING_CHUNK.with(() -> world.getChunkAt(pos)), msg));
+	public static void sendToAllTracking(CustomPacketPayload message, Level level, BlockPos pos) {
+		sendMessage(message, msg -> PacketDistributor.TRACKING_CHUNK.with(level.getChunkAt(pos)).send(msg));
 	}
 
-	public static void sendToAllTracking(Object message, BlockEntity te) {
+	public static void sendToAllTracking(CustomPacketPayload message, BlockEntity te) {
     	if (te.getLevel() != null) {
     		sendToAllTracking(message, te.getLevel(), te.getBlockPos());
 		}
     }
 
-	public static void sendToDimension(Object message, ResourceKey<Level> world) {
-		sendMessage(message, msg -> NETWORK.send(PacketDistributor.DIMENSION.with(() -> world), msg));
+	public static void sendToDimension(CustomPacketPayload message, ResourceKey<Level> level) {
+		sendMessage(message, msg -> PacketDistributor.DIMENSION.with(level).send(msg));
     }
 
-    public static void sendToServer(Object message) {
-		sendMessage(message, NETWORK::sendToServer);
+    public static void sendToServer(CustomPacketPayload message) {
+		sendMessage(message, msg -> PacketDistributor.SERVER.noArg().send(msg));
     }
 
 	/**
@@ -260,7 +253,7 @@ public class NetworkHandler {
 	 * server owner for an integrated server.
 	 * @param packet the packet to send
 	 */
-	public static void sendNonLocal(Object packet) {
+	public static void sendNonLocal(CustomPacketPayload packet) {
 		MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
 		if (server != null) {
 			if (server.isDedicatedServer()) {
@@ -280,20 +273,20 @@ public class NetworkHandler {
 	 * @param player the player
 	 * @param packet the packet to send
 	 */
-	public static void sendNonLocal(ServerPlayer player, Object packet) {
+	public static void sendNonLocal(ServerPlayer player, CustomPacketPayload packet) {
 		if (!player.server.isSingleplayerOwner(player.getGameProfile())) {
 			sendToPlayer(packet, player);
 		}
 	}
 
-	private static void sendMessage(Object message, Consumer<Object> consumer) {
+	private static void sendMessage(CustomPacketPayload message, Consumer<CustomPacketPayload> consumer) {
 		if (message instanceof ILargePayload) {
 			// see PacketMultiHeader#receivePayload for message reassembly
 			FriendlyByteBuf buf = ((ILargePayload) message).dumpToBuffer();
 			if (buf.writerIndex() < ILargePayload.MAX_PAYLOAD_SIZE) {
 				consumer.accept(message);
 			} else {
-				List<Object> messageParts = new ArrayList<>();
+				List<CustomPacketPayload> messageParts = new ArrayList<>();
 				messageParts.add(new PacketMultiHeader(buf.writerIndex(), message.getClass().getName()));
 				int offset = 0;
 				byte[] bytes = buf.array();

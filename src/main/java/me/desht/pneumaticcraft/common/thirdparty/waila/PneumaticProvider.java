@@ -23,6 +23,7 @@ import me.desht.pneumaticcraft.common.block.entity.IInfoForwarder;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.common.heat.TemperatureData;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
+import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -34,8 +35,8 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.fluids.FluidStack;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.fluids.FluidStack;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.IBlockComponentProvider;
 import snownee.jade.api.IServerDataProvider;
@@ -72,9 +73,9 @@ public class PneumaticProvider {
             }
             if (beInfo != null) {
                 Set<IAirHandlerMachine> set = new LinkedHashSet<>();
-                beInfo.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY).ifPresent(set::add);
-                for (Direction d : DirectionUtil.VALUES) {
-                    beInfo.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, d).ifPresent(set::add);
+                IOHelper.getCap(beInfo, PNCCapabilities.AIR_HANDLER_MACHINE, null).ifPresent(set::add);
+                for (Direction dir : DirectionUtil.VALUES) {
+                    IOHelper.getCap(beInfo, PNCCapabilities.AIR_HANDLER_MACHINE, dir).ifPresent(set::add);
                 }
                 ListTag l = new ListTag();
                 for (IAirHandlerMachine h : set) {
@@ -85,18 +86,17 @@ public class PneumaticProvider {
                 }
                 compoundTag.put("pressure", l);
 
-                if (beInfo.getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY).isPresent()) {
+                if (IOHelper.getCap(beInfo, PNCCapabilities.HEAT_EXCHANGER_BLOCK, null).isPresent()) {
                     compoundTag.put("heatData", new TemperatureData(beInfo).toNBT());
                 }
 
-                beInfo.getCapability(ForgeCapabilities.FLUID_HANDLER)
-                        .ifPresent(h -> {
-                            ListTag list = new ListTag();
-                            for (int i = 0; i < h.getTanks(); i++) {
-                                list.add(h.getFluidInTank(i).writeToNBT(new CompoundTag()));
-                            }
-                            compoundTag.put("tanks", list);
-                        });
+                IOHelper.getCap(beInfo, Capabilities.FluidHandler.BLOCK, null).ifPresent(h -> {
+                    ListTag list = new ListTag();
+                    for (int i = 0; i < h.getTanks(); i++) {
+                        list.add(h.getFluidInTank(i).writeToNBT(new CompoundTag()));
+                    }
+                    compoundTag.put("tanks", list);
+                });
             }
         }
     }

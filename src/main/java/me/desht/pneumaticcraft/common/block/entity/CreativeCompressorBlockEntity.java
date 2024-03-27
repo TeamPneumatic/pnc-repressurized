@@ -18,10 +18,11 @@
 package me.desht.pneumaticcraft.common.block.entity;
 
 import me.desht.pneumaticcraft.api.pressure.PressureTier;
-import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.inventory.CreativeCompressorMenu;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
+import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.MenuProvider;
@@ -29,7 +30,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.items.IItemHandler;
+import net.neoforged.neoforge.items.IItemHandler;
 
 import javax.annotation.Nullable;
 
@@ -38,7 +39,12 @@ public class CreativeCompressorBlockEntity extends AbstractAirHandlingBlockEntit
     private float pressureSetpoint;
 
     public CreativeCompressorBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.CREATIVE_COMPRESSOR.get(), pos, state, PressureTier.TIER_TWO, 50000, 0);
+        super(ModBlockEntityTypes.CREATIVE_COMPRESSOR.get(), pos, state, PressureTier.TIER_TWO, 50000, 0);
+    }
+
+    @Override
+    public boolean hasItemCapability() {
+        return false;
     }
 
     @Override
@@ -73,7 +79,7 @@ public class CreativeCompressorBlockEntity extends AbstractAirHandlingBlockEntit
     }
 
     @Override
-    public IItemHandler getPrimaryInventory() {
+    public IItemHandler getItemHandler(@org.jetbrains.annotations.Nullable Direction dir) {
         return null;
     }
 

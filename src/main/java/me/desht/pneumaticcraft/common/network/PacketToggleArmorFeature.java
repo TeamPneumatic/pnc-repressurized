@@ -22,11 +22,12 @@ import me.desht.pneumaticcraft.common.item.PneumaticArmorItem;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.network.NetworkEvent;
+import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 
-import java.util.function.Supplier;
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 /**
  * Received on: BOTH
@@ -34,44 +35,40 @@ import java.util.function.Supplier;
  * Sent by server to initiate the process on the client (client will send this packet back in response if the module
  *   was actually changed)
  */
-public class PacketToggleArmorFeature {
-    private final byte featureIndex;
-    private final boolean state;
-    private final EquipmentSlot slot;
+public record PacketToggleArmorFeature(EquipmentSlot slot, byte featureIndex, boolean state) implements CustomPacketPayload {
+    public static final ResourceLocation ID = RL("toggle_armor_feature");
 
-    public PacketToggleArmorFeature(EquipmentSlot slot, byte featureIndex, boolean state) {
-        this.featureIndex = featureIndex;
-        this.state = state;
-        this.slot = slot;
+    public static PacketToggleArmorFeature fromNetwork(FriendlyByteBuf buffer) {
+        return new PacketToggleArmorFeature(buffer.readEnum(EquipmentSlot.class), buffer.readByte(), buffer.readBoolean());
     }
 
-    PacketToggleArmorFeature(FriendlyByteBuf buffer) {
-        featureIndex = buffer.readByte();
-        state = buffer.readBoolean();
-        slot = EquipmentSlot.values()[buffer.readByte()];
-    }
-
-    public void toBytes(FriendlyByteBuf buf) {
+    @Override
+    public void write(FriendlyByteBuf buf) {
+        buf.writeEnum(slot);
         buf.writeByte(featureIndex);
         buf.writeBoolean(state);
-        buf.writeByte(slot.ordinal());
     }
 
-    public void handle(Supplier<NetworkEvent.Context> ctx) {
-        if (ctx.get().getSender() != null) {
-            // received on server
-            ctx.get().enqueueWork(() -> {
-                Player player = ctx.get().getSender();
-                if (player != null && featureIndex >= 0
+    @Override
+    public ResourceLocation id() {
+        return ID;
+    }
+
+    public static void handle(PacketToggleArmorFeature message, PlayPayloadContext ctx) {
+        ctx.player().ifPresent(player -> ctx.workHandler().submitAsync(() -> {
+            EquipmentSlot slot = message.slot();
+            byte featureIndex = message.featureIndex();
+            boolean state = message.state();
+
+            if (ctx.flow().isClientbound()) {
+                ClientUtils.setArmorUpgradeEnabled(slot, featureIndex, state);
+            } else {
+                if (featureIndex >= 0
                         && featureIndex < ArmorUpgradeRegistry.getInstance().getHandlersForSlot(slot).size()
                         && (PneumaticArmorItem.isPneumaticArmorPiece(player, slot) || slot == EquipmentSlot.HEAD && featureIndex == 0)) {
                     CommonArmorHandler.getHandlerForPlayer(player).setUpgradeEnabled(slot, featureIndex, state);
                 }
-            });
-        } else {
-            // received on client
-            ctx.get().enqueueWork(() -> ClientUtils.setArmorUpgradeEnabled(slot, featureIndex, state));
-        }
-        ctx.get().setPacketHandled(true);
+            }
+        }));
     }
 }

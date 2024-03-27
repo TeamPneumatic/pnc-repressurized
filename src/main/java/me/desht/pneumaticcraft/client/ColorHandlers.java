@@ -22,23 +22,21 @@ import me.desht.pneumaticcraft.client.util.TintColor;
 import me.desht.pneumaticcraft.common.block.AbstractCamouflageBlock;
 import me.desht.pneumaticcraft.common.block.entity.CamouflageableBlockEntity;
 import me.desht.pneumaticcraft.common.block.entity.IHeatTinted;
-import me.desht.pneumaticcraft.common.core.ModBlocks;
-import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.item.PneumaticCraftBucketItem;
+import me.desht.pneumaticcraft.common.registry.ModBlocks;
+import me.desht.pneumaticcraft.common.registry.ModItems;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.RegisterColorHandlersEvent;
-import net.minecraftforge.client.model.DynamicFluidContainerModel;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
+import net.neoforged.neoforge.client.model.DynamicFluidContainerModel;
 
 import javax.annotation.Nullable;
 
@@ -46,7 +44,7 @@ import javax.annotation.Nullable;
 public class ColorHandlers {
     @SubscribeEvent
     public static void registerItemColorHandlers(RegisterColorHandlersEvent.Item event) {
-        for (RegistryObject<Item> item : ModItems.ITEMS.getEntries()) {
+        for (var item : ModItems.ITEMS.getEntries()) {
             if (item.get() instanceof ITintableItem tintable) {
                 event.register(tintable::getTintColor, item.get());
             } else if (item.get() instanceof BlockItem bi) {
@@ -62,7 +60,7 @@ public class ColorHandlers {
 
     @SubscribeEvent
     public static void registerBlockColorHandlers(RegisterColorHandlersEvent.Block event) {
-        for (RegistryObject<Block> block : ModBlocks.BLOCKS.getEntries()) {
+        for (var block : ModBlocks.BLOCKS.getEntries()) {
             if (block.get() instanceof ITintableBlock tintable) {
                 event.register(tintable::getTintColor, block.get());
             } else if (block.get() instanceof AbstractCamouflageBlock) {

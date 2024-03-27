@@ -18,11 +18,11 @@
 package me.desht.pneumaticcraft.common.fluid;
 
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
-import me.desht.pneumaticcraft.common.core.ModBlocks;
-import me.desht.pneumaticcraft.common.core.ModFluids;
-import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.item.ICustomTooltipName;
 import me.desht.pneumaticcraft.common.item.PneumaticCraftBucketItem;
+import me.desht.pneumaticcraft.common.registry.ModBlocks;
+import me.desht.pneumaticcraft.common.registry.ModFluids;
+import me.desht.pneumaticcraft.common.registry.ModItems;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
@@ -30,18 +30,18 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.material.FluidState;
-import net.minecraftforge.fluids.ForgeFlowingFluid;
+import net.neoforged.neoforge.fluids.BaseFlowingFluid;
 
 public abstract class FluidPlastic {
     public static final PNCFluidRenderProps RENDER_PROPS = new PNCFluidRenderProps("plastic_still", "plastic_flow");
 
-    private static ForgeFlowingFluid.Properties props() {
-        return new ForgeFlowingFluid.Properties(
+    private static BaseFlowingFluid.Properties props() {
+        return new BaseFlowingFluid.Properties(
                 ModFluids.PLASTIC_FLUID_TYPE, ModFluids.PLASTIC, ModFluids.PLASTIC_FLOWING
         ).block(ModBlocks.PLASTIC).bucket(ModItems.PLASTIC_BUCKET).tickRate(10);
     }
 
-    public static class Source extends ForgeFlowingFluid.Source {
+    public static class Source extends BaseFlowingFluid.Source {
         public Source() {
             super(props());
         }
@@ -57,7 +57,7 @@ public abstract class FluidPlastic {
         }
     }
 
-    public static class Flowing extends ForgeFlowingFluid.Flowing {
+    public static class Flowing extends BaseFlowingFluid.Flowing {
         public Flowing() {
             super(props());
         }

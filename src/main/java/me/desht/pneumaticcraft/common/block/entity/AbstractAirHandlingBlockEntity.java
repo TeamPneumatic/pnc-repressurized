@@ -21,7 +21,6 @@ import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.lib.NBTKeys;
 import me.desht.pneumaticcraft.api.pressure.PressureTier;
-import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.thirdparty.computer_common.LuaConstant;
@@ -34,12 +33,11 @@ import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.util.LazyOptional;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.*;
+import java.util.EnumSet;
+import java.util.IdentityHashMap;
+import java.util.Map;
 
 /**
  * Base class for all PNC tile entities which handle air. Provides one default air handler; machines with multiple
@@ -48,14 +46,34 @@ import java.util.*;
 public abstract class AbstractAirHandlingBlockEntity extends AbstractTickingBlockEntity {
     @GuiSynced
     protected final IAirHandlerMachine airHandler;
-    private final LazyOptional<IAirHandlerMachine> airHandlerCap;
-    private final Map<IAirHandlerMachine, List<Direction>> airHandlerMap = new IdentityHashMap<>();
+    private final Map<IAirHandlerMachine, EnumSet<Direction>> airHandlerMap = new IdentityHashMap<>();
 
     public AbstractAirHandlingBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state, PressureTier pressureTier, int volume, int upgradeSlots) {
         super(type, pos, state, upgradeSlots);
 
         this.airHandler = PneumaticRegistry.getInstance().getAirHandlerMachineFactory().createAirHandler(pressureTier, volume);
-        this.airHandlerCap = LazyOptional.of(() -> airHandler);
+    }
+
+    /**
+     * Get the air handler on the given side of the block. Override in subclasses for blocks with more than one air
+     * handler.
+     *
+     * @param side the side to query
+     * @return the air handler on the given side
+     */
+    @Nullable
+    public IAirHandlerMachine getAirHandler(Direction side) {
+        return side == null || canConnectPneumatic(side) ? airHandler : null;
+    }
+
+    /**
+     * Checks if the given side of this BE can be pneumatically connected to.
+     *
+     * @param side the side to check
+     * @return true if connectable, false otherwise
+     */
+    public boolean canConnectPneumatic(Direction side) {
+        return true;
     }
 
     @Override
@@ -81,20 +99,8 @@ public abstract class AbstractAirHandlingBlockEntity extends AbstractTickingBloc
     }
 
     @Override
-    public void setRemoved() {
-        super.setRemoved();
-
-        airHandlerMap.forEach((handler, sides) -> {
-            if (!sides.isEmpty()) getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, sides.get(0)).invalidate();
-        });
-    }
-
-    @Override
     public void onUpgradesChanged() {
         super.onUpgradesChanged();
-
-        airHandler.setVolumeUpgrades(getUpgrades(ModUpgrades.VOLUME.get()));
-        handleSecurityUpgrade(airHandler);
 
         airHandlerMap.keySet().forEach(h -> {
             h.setVolumeUpgrades(getUpgrades(ModUpgrades.VOLUME.get()));
@@ -116,17 +122,8 @@ public abstract class AbstractAirHandlingBlockEntity extends AbstractTickingBloc
 
         // force a recalculation of where any possible leak might be coming from
         initializeHullAirHandlers();
-        airHandlerMap.keySet().forEach(h -> h.setSideLeaking(null));
-    }
 
-    @Nonnull
-    @Override
-    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-        if (cap == PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY ) {
-            return level != null && (side == null || canConnectPneumatic(side)) ? airHandlerCap.cast() : LazyOptional.empty();
-        } else {
-            return super.getCapability(cap, side);
-        }
+        airHandlerMap.keySet().forEach(h -> h.setSideLeaking(null));
     }
 
     @Override
@@ -148,21 +145,27 @@ public abstract class AbstractAirHandlingBlockEntity extends AbstractTickingBloc
     }
 
     public void initializeHullAirHandlers() {
+        invalidateCapabilities();
+
+//        Map<IAirHandlerMachine, EnumSet<Direction>> connections = new IdentityHashMap<>();
         airHandlerMap.clear();
         for (Direction side : DirectionUtil.VALUES) {
-            getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, side)
-                    .ifPresent(handler -> airHandlerMap.computeIfAbsent(handler, k -> new ArrayList<>()).add(side));
+            IAirHandlerMachine h = getAirHandler(side);
+            if (h != null) {
+                airHandlerMap.computeIfAbsent(h, k -> EnumSet.noneOf(Direction.class)).add(side);
+            }
         }
-        airHandlerMap.forEach(IAirHandlerMachine::setConnectedFaces);
+
+        airHandlerMap.forEach(IAirHandlerMachine::setConnectableFaces);
     }
 
     // called clientside when a PacketUpdatePressureBlock is received
     // this ensures the BE can tick this air handler for air leak sound and particle purposes
     public void initializeHullAirHandlerClient(Direction dir, IAirHandlerMachine handler) {
         airHandlerMap.clear();
-        List<Direction> l = Collections.singletonList(dir);
+        EnumSet<Direction> l = EnumSet.of(dir);
         airHandlerMap.put(handler, l);
-        handler.setConnectedFaces(l);
+        handler.setConnectableFaces(l);
     }
 
     @Override
@@ -195,8 +198,8 @@ public abstract class AbstractAirHandlingBlockEntity extends AbstractTickingBloc
                 if (args.length == 0) {
                     return new Object[]{airHandler.getPressure()};
                 } else {
-                    LazyOptional<IAirHandlerMachine> cap = getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, getDirForString((String) args[0]));
-                    return new Object[]{ cap.map(IAirHandler::getPressure).orElse(0f) };
+                    IAirHandlerMachine handler = level.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE, getBlockPos(), getDirForString((String) args[0]));
+                    return new Object[]{handler == null ? 0f : handler.getPressure()};
                 }
             }
         });
@@ -206,7 +209,7 @@ public abstract class AbstractAirHandlingBlockEntity extends AbstractTickingBloc
                 @Override
                 public Object[] call(Object[] args) {
                     requireNoArgs(args);
-                    return new Object[] { mwp.getMinWorkingPressure() };
+                    return new Object[]{mwp.getMinWorkingPressure()};
                 }
             });
         }
@@ -230,16 +233,6 @@ public abstract class AbstractAirHandlingBlockEntity extends AbstractTickingBloc
 
     public void addAir(int air) {
         airHandler.addAir(air);
-    }
-
-    /**
-     * Checks if the given side of this BE can be pneumatically connected to.
-     *
-     * @param side the side to check
-     * @return true if connected, false otherwise
-     */
-    public boolean canConnectPneumatic(Direction side) {
-        return true;
     }
 
     public int getDefaultVolume() {

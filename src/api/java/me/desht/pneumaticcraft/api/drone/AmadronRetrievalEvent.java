@@ -19,8 +19,8 @@ package me.desht.pneumaticcraft.api.drone;
 
 import net.minecraft.core.GlobalPos;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.eventbus.api.Event;
-import net.minecraftforge.fluids.FluidStack;
+import net.neoforged.bus.api.Event;
+import net.neoforged.neoforge.fluids.FluidStack;
 
 /**
  * Fired (on the MinecraftForge.EVENT_BUS) when

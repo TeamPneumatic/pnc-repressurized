@@ -28,7 +28,7 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.common.ForgeMod;
+import net.neoforged.neoforge.common.NeoForgeMod;
 
 import java.util.UUID;
 
@@ -60,9 +60,9 @@ public class ReachDistanceHandler extends BaseArmorUpgradeHandler<IArmorExtensio
     public void tick(ICommonArmorHandler commonArmorHandler, boolean enabled) {
         Player player = commonArmorHandler.getPlayer();
         if ((player.level().getGameTime() & 0xf) == 0) {
-            AttributeInstance attr = player.getAttribute(ForgeMod.BLOCK_REACH.get());
+            AttributeInstance attr = player.getAttribute(NeoForgeMod.BLOCK_REACH.value());
             if (attr != null) {
-                attr.removeModifier(REACH_DIST_BOOST);
+                attr.removeModifier(REACH_DIST_BOOST_ID);
                 if (enabled && commonArmorHandler.hasMinPressure(EquipmentSlot.CHEST) && commonArmorHandler.isArmorEnabled()) {
                     attr.addTransientModifier(REACH_DIST_BOOST);
                 }
@@ -73,9 +73,9 @@ public class ReachDistanceHandler extends BaseArmorUpgradeHandler<IArmorExtensio
     @Override
     public void onToggle(ICommonArmorHandler commonArmorHandler, boolean newState) {
         if (!newState) {
-            AttributeInstance attr = commonArmorHandler.getPlayer().getAttribute(ForgeMod.BLOCK_REACH.get());
+            AttributeInstance attr = commonArmorHandler.getPlayer().getAttribute(NeoForgeMod.BLOCK_REACH.value());
             if (attr != null) {
-                attr.removeModifier(ReachDistanceHandler.REACH_DIST_BOOST);
+                attr.removeModifier(ReachDistanceHandler.REACH_DIST_BOOST_ID);
             }
         }
     }

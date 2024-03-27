@@ -36,7 +36,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.client.ForgeHooksClient;
+import net.neoforged.neoforge.client.ClientHooks;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
@@ -69,7 +69,7 @@ public class PneumaticArmorLayer<E extends LivingEntity, M extends HumanoidModel
             model.prepareMobModel(entity, limbSwing, limbSwingAmount, partialTicks);
             model.setupAnim(entity, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
             this.setModelSlotVisible(model, slot);
-            Model model1 = ForgeHooksClient.getArmorModel(entity, stack, slot, model);
+            Model model1 = ClientHooks.getArmorModel(entity, stack, slot, model);
             boolean glint = stack.hasFoil();
 
             // secondary texture layer in all slots

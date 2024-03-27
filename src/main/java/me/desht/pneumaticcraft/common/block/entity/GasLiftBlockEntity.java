@@ -19,12 +19,12 @@ package me.desht.pneumaticcraft.common.block.entity;
 
 import com.google.common.collect.ImmutableMap;
 import me.desht.pneumaticcraft.api.pressure.PressureTier;
-import me.desht.pneumaticcraft.common.core.ModBlockEntities;
-import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.inventory.GasLiftMenu;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
+import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
+import me.desht.pneumaticcraft.common.registry.ModBlocks;
 import me.desht.pneumaticcraft.common.util.*;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.BlockPos;
@@ -42,15 +42,13 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.FluidType;
-import net.minecraftforge.fluids.IFluidTank;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.fluids.capability.IFluidHandler.FluidAction;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemStackHandler;
-import org.jetbrains.annotations.NotNull;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidType;
+import net.neoforged.neoforge.fluids.IFluidTank;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.ItemStackHandler;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -67,7 +65,6 @@ public class GasLiftBlockEntity extends AbstractAirHandlingBlockEntity implement
     @DescSynced
     @GuiSynced
     private final GasLiftFluidTank tank = new GasLiftFluidTank();
-    private final LazyOptional<IFluidHandler> fluidCap = LazyOptional.of(() -> tank);
 
     private final ItemStackHandler inventory = new BaseItemStackHandler(this, INVENTORY_SIZE) {
         @Override
@@ -75,7 +72,6 @@ public class GasLiftBlockEntity extends AbstractAirHandlingBlockEntity implement
             return itemStack.isEmpty() || itemStack.getItem() == ModBlocks.DRILL_PIPE.get().asItem();
         }
     };
-    private final LazyOptional<IItemHandler> inventoryCap = LazyOptional.of(() -> inventory);
 
     @GuiSynced
     public int currentDepth;
@@ -85,21 +81,31 @@ public class GasLiftBlockEntity extends AbstractAirHandlingBlockEntity implement
     public PumpMode pumpMode = PumpMode.PUMP_EMPTY;
     @GuiSynced
     public Status status = Status.IDLE;
-    private int workTimer;
+    private float workTimer;
     private Deque<BlockPos> pumpingLake = new ArrayDeque<>();
 
     public GasLiftBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.GAS_LIFT.get(), pos, state, PressureTier.TIER_ONE, 3000, 4);
+        super(ModBlockEntityTypes.GAS_LIFT.get(), pos, state, PressureTier.TIER_ONE, 3000, 4);
+    }
+
+    @Override
+    public boolean hasFluidCapability() {
+        return true;
+    }
+
+    @Override
+    public IItemHandler getItemHandler(@Nullable Direction dir) {
+        return inventory;
+    }
+
+    @Override
+    public IFluidHandler getFluidHandler(@Nullable Direction dir) {
+        return tank;
     }
 
     @Override
     public boolean canConnectPneumatic(Direction d) {
         return d != Direction.DOWN;
-    }
-
-    @Override
-    public IItemHandler getPrimaryInventory() {
-        return inventory;
     }
 
     @Override
@@ -128,8 +134,8 @@ public class GasLiftBlockEntity extends AbstractAirHandlingBlockEntity implement
 
         if (rsController.shouldRun() && getPressure() >= getMinWorkingPressure()) {
             workTimer += this.getSpeedMultiplierFromUpgrades();
-            while (workTimer > 20) {
-                workTimer -= 20;
+            while (workTimer > 20f) {
+                workTimer -= 20f;
                 status = Status.IDLE;
                 if (pumpMode == PumpMode.RETRACT) {
                     retractPipes();
@@ -234,7 +240,7 @@ public class GasLiftBlockEntity extends AbstractAirHandlingBlockEntity implement
             }
             if (curPos != null) {
                 // if pumpingLake isn't empty, we *must* have found a source block
-                FluidStack taken = FluidUtils.tryPickupFluid(fluidCap, level, curPos, false, FluidAction.EXECUTE);
+                FluidStack taken = FluidUtils.tryPickupFluid(tank, level, curPos, false, FluidAction.EXECUTE);
                 if (taken.getAmount() == FluidType.BUCKET_VOLUME) {
                     addAir(-100);
                     status = Status.PUMPING;
@@ -306,17 +312,6 @@ public class GasLiftBlockEntity extends AbstractAirHandlingBlockEntity implement
         inventory.deserializeNBT(tag.getCompound("Items"));
         if (tag.contains("mode")) pumpMode = PumpMode.valueOf(tag.getString("mode"));
         currentDepth = tag.getInt("currentDepth");
-    }
-
-    @Override
-    protected LazyOptional<IItemHandler> getInventoryCap(Direction side) {
-        return inventoryCap;
-    }
-
-    @NotNull
-    @Override
-    public LazyOptional<IFluidHandler> getFluidCap(Direction side) {
-        return fluidCap;
     }
 
     public IFluidTank getTank() {

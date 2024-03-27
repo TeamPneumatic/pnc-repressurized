@@ -28,10 +28,6 @@ import java.util.Locale;
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 public abstract class AssemblyRecipe extends PneumaticCraftRecipe {
-    protected AssemblyRecipe(ResourceLocation id) {
-        super(id);
-    }
-
     /**
      * Get the input ingredient.
      * @return the input ingredient

@@ -11,17 +11,17 @@ import me.desht.pneumaticcraft.client.render.ProgressBarRenderer;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.ArmorMessage;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
 import me.desht.pneumaticcraft.common.config.subconfig.ArmorHUDLayout;
-import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.item.PneumaticArmorItem;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
+import me.desht.pneumaticcraft.common.registry.ModSounds;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.client.gui.overlay.ForgeGui;
-import net.minecraftforge.client.gui.overlay.IGuiOverlay;
+import net.neoforged.neoforge.client.gui.overlay.ExtendedGui;
+import net.neoforged.neoforge.client.gui.overlay.IGuiOverlay;
 import org.lwjgl.opengl.GL11;
 
 import java.util.List;
@@ -38,7 +38,7 @@ public class PneumaticArmorHUDOverlay implements IGuiOverlay {
     private final boolean[] gaveLowPressureWarning = new boolean[4];  // per-slot
 
     @Override
-    public void render(ForgeGui gui, GuiGraphics graphics, float partialTicks, int width, int height) {
+    public void render(ExtendedGui gui, GuiGraphics graphics, float partialTicks, int width, int height) {
         Minecraft mc = Minecraft.getInstance();
         Player player = mc.player;
 

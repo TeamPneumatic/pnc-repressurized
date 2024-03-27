@@ -21,12 +21,12 @@ import com.google.common.collect.ImmutableMap;
 import me.desht.pneumaticcraft.common.block.AbstractPneumaticCraftBlock;
 import me.desht.pneumaticcraft.common.block.FluidTankBlock;
 import me.desht.pneumaticcraft.common.block.FluidTankBlock.ItemBlockFluidTank;
-import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.inventory.FluidTankMenu;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.network.LazySynced;
+import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PNCFluidTank;
@@ -41,14 +41,12 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.FluidUtil;
-import net.minecraftforge.fluids.IFluidTank;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemStackHandler;
-import org.jetbrains.annotations.NotNull;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidUtil;
+import net.neoforged.neoforge.fluids.IFluidTank;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.ItemStackHandler;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -65,7 +63,6 @@ public abstract class AbstractFluidTankBlockEntity extends AbstractTickingBlockE
     @DescSynced
     @GuiSynced
     private final StackableTank tank;
-    private final LazyOptional<IFluidHandler> fluidCap;
 
     private final ItemStackHandler inventory = new BaseItemStackHandler(this, INVENTORY_SIZE) {
         @Override
@@ -73,13 +70,11 @@ public abstract class AbstractFluidTankBlockEntity extends AbstractTickingBlockE
             return itemStack.isEmpty() || FluidUtil.getFluidHandler(itemStack).isPresent();
         }
     };
-    private final LazyOptional<IItemHandler> inventoryCap = LazyOptional.of(() -> inventory);
 
     AbstractFluidTankBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state, FluidTankBlock.Size tankSize) {
         super(type, pos, state, 4);
 
         this.tank = new StackableTank(tankSize.getCapacity());
-        this.fluidCap = LazyOptional.of(() -> tank);
     }
 
     @Override
@@ -111,7 +106,7 @@ public abstract class AbstractFluidTankBlockEntity extends AbstractTickingBlockE
 
         Direction ejectDir = getUpgradeCache().getEjectDirection();
         if (ejectDir != null && (ejectDir.getAxis() != Direction.Axis.Y || !getBlockState().getValue(AbstractPneumaticCraftBlock.connectionProperty(ejectDir)))) {
-            IOHelper.getFluidHandlerForTE(getCachedNeighbor(ejectDir), ejectDir.getOpposite()).ifPresent(h -> {
+            IOHelper.getFluidHandlerForBlock(getCachedNeighbor(ejectDir), ejectDir.getOpposite()).ifPresent(h -> {
                 int amount = BASE_EJECT_RATE << getUpgrades(ModUpgrades.SPEED.get());
                 FluidUtil.tryFluidTransfer(h, tank, amount, true);
             });
@@ -119,20 +114,18 @@ public abstract class AbstractFluidTankBlockEntity extends AbstractTickingBlockE
     }
 
     @Override
-    public IItemHandler getPrimaryInventory() {
+    public IItemHandler getItemHandler(@Nullable Direction dir) {
         return inventory;
     }
 
-    @Nonnull
     @Override
-    protected LazyOptional<IItemHandler> getInventoryCap(Direction side) {
-        return inventoryCap;
+    public boolean hasFluidCapability() {
+        return true;
     }
 
-    @NotNull
     @Override
-    public LazyOptional<IFluidHandler> getFluidCap(Direction side) {
-        return fluidCap;
+    public IFluidHandler getFluidHandler(@Nullable Direction dir) {
+        return tank;
     }
 
     @Nonnull
@@ -210,25 +203,25 @@ public abstract class AbstractFluidTankBlockEntity extends AbstractTickingBlockE
 
     public static class Small extends AbstractFluidTankBlockEntity {
         public Small(BlockPos pos, BlockState state) {
-            super(ModBlockEntities.TANK_SMALL.get(), pos, state, FluidTankBlock.Size.SMALL);
+            super(ModBlockEntityTypes.TANK_SMALL.get(), pos, state, FluidTankBlock.Size.SMALL);
         }
     }
 
     public static class Medium extends AbstractFluidTankBlockEntity {
         public Medium(BlockPos pos, BlockState state) {
-            super(ModBlockEntities.TANK_MEDIUM.get(), pos, state, FluidTankBlock.Size.MEDIUM);
+            super(ModBlockEntityTypes.TANK_MEDIUM.get(), pos, state, FluidTankBlock.Size.MEDIUM);
         }
     }
 
     public static class Large extends AbstractFluidTankBlockEntity {
         public Large(BlockPos pos, BlockState state) {
-            super(ModBlockEntities.TANK_LARGE.get(), pos, state, FluidTankBlock.Size.LARGE);
+            super(ModBlockEntityTypes.TANK_LARGE.get(), pos, state, FluidTankBlock.Size.LARGE);
         }
     }
 
     public static class Huge extends AbstractFluidTankBlockEntity {
         public Huge(BlockPos pos, BlockState state) {
-            super(ModBlockEntities.TANK_HUGE.get(), pos, state, FluidTankBlock.Size.HUGE);
+            super(ModBlockEntityTypes.TANK_HUGE.get(), pos, state, FluidTankBlock.Size.HUGE);
         }
     }
 }

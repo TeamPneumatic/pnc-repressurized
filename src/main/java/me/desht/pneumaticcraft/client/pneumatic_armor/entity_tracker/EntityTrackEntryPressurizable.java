@@ -14,12 +14,12 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 public class EntityTrackEntryPressurizable implements IEntityTrackEntry {
     @Override
     public boolean isApplicable(Entity entity) {
-        return entity.getCapability(PNCCapabilities.AIR_HANDLER_CAPABILITY).isPresent();
+        return PNCCapabilities.getAirHandler(entity).isPresent();
     }
 
     @Override
     public void addInfo(Entity entity, List<Component> curInfo, boolean isLookingAtTarget) {
-        float pressure = entity.getCapability(PNCCapabilities.AIR_HANDLER_CAPABILITY)
+        float pressure = PNCCapabilities.getAirHandler(entity)
                 .map(IAirHandler::getPressure)
                 .orElseThrow(IllegalStateException::new);
         curInfo.add(xlate("pneumaticcraft.gui.tooltip.pressure", PneumaticCraftUtils.roundNumberTo(pressure, 1)));

@@ -19,15 +19,15 @@ package me.desht.pneumaticcraft.common.inventory;
 
 import me.desht.pneumaticcraft.common.block.entity.EtchingTankBlockEntity;
 import me.desht.pneumaticcraft.common.block.entity.UVLightBoxBlockEntity;
-import me.desht.pneumaticcraft.common.core.ModItems;
-import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.inventory.slot.OutputOnlySlot;
+import me.desht.pneumaticcraft.common.registry.ModItems;
+import me.desht.pneumaticcraft.common.registry.ModMenuTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.SlotItemHandler;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.SlotItemHandler;
 
 import javax.annotation.Nonnull;
 
@@ -38,11 +38,11 @@ public class EtchingTankMenu extends AbstractPneumaticCraftMenu<EtchingTankBlock
         for (int i = 0; i < EtchingTankBlockEntity.ETCHING_SLOTS; i++) {
             int x = 8 + 18 * (i % 5);
             int y = 18 + 18 * (i / 5);
-            addSlot(new SlotPCB(te.getPrimaryInventory(), i, x, y));
+            addSlot(new SlotPCB(blockEntity.getItemHandler(), i, x, y));
         }
 
-        addSlot(new OutputOnlySlot(te.getOutputHandler(), 0, 104, 18));
-        addSlot(new OutputOnlySlot(te.getFailedHandler(), 0, 104, 90));
+        addSlot(new OutputOnlySlot(blockEntity.getOutputHandler(), 0, 104, 18));
+        addSlot(new OutputOnlySlot(blockEntity.getFailedHandler(), 0, 104, 90));
 
         addPlayerSlots(playerInv, 125);
 

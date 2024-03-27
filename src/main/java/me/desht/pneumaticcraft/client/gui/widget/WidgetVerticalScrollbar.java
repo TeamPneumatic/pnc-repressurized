@@ -54,9 +54,9 @@ public class WidgetVerticalScrollbar extends AbstractWidget implements ICanRende
     }
 
     @Override
-    public boolean mouseScrolled(double x, double y, double dir) {
+    public boolean mouseScrolled(double x, double y, double dirX, double dirY) {
         if (active && listening) {
-            double wheel = Mth.clamp(-dir, -1, 1);
+            double wheel = Mth.clamp(-dirY, -1, 1);
             currentScroll = Mth.clamp(currentScroll + (float) wheel / states,0f, 1);
             return true;
         }

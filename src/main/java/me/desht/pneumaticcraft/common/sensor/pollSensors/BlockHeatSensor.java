@@ -76,7 +76,7 @@ public class BlockHeatSensor implements IBlockAndCoordinatePollSensor {
             if (te != null) {
                 // possibly sided BE?
                 for (Direction side : DirectionUtil.VALUES) {
-                    temperature = Math.max(temperature, te.getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY, side)
+                    temperature = Math.max(temperature, PNCCapabilities.getHeatLogic(te, side)
                             .map(IHeatExchangerLogic::getTemperature).orElse(0d));
                 }
             }

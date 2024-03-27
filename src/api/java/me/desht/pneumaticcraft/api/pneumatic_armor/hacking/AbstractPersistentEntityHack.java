@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.api.pneumatic_armor.hacking;
 
-import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorRegistry;
 import net.minecraft.network.chat.Component;
@@ -58,7 +57,8 @@ public abstract class AbstractPersistentEntityHack<T extends Entity> implements 
 
     @Override
     public void onHackFinished(T entity, Player player) {
-        entity.getCapability(PNCCapabilities.HACKING_CAPABILITY).ifPresent(hacking -> hacking.addHackable(this));
+        PneumaticRegistry.getInstance().getMiscHelpers().getHackingForEntity(entity, true)
+                .ifPresent(hacking -> hacking.addHackable(this));
     }
 
     @Override

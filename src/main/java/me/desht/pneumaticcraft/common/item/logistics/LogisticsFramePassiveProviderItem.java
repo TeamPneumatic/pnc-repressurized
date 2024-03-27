@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.common.item.logistics;
 
-import me.desht.pneumaticcraft.common.core.ModMenuTypes;
+import me.desht.pneumaticcraft.common.registry.ModMenuTypes;
 import net.minecraft.world.inventory.MenuType;
 
 public class LogisticsFramePassiveProviderItem extends AbstractLogisticsFrameItem {

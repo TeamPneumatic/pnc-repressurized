@@ -20,11 +20,13 @@ package me.desht.pneumaticcraft.common.network;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
-import net.minecraftforge.network.NetworkEvent;
+import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 
-import java.util.function.Supplier;
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 /**
  * Received on: CLIENT
@@ -34,22 +36,27 @@ import java.util.function.Supplier;
  * This happens server-side (block updates are triggered on the server), but the client needs to know too so that
  * neighbouring cached block shapes (pressure tubes especially, but potentially anything) can be recalculated.
  */
-public class PacketNotifyBlockUpdate extends LocationIntPacket {
-    public PacketNotifyBlockUpdate(BlockPos pos) {
-        super(pos);
+public record PacketNotifyBlockUpdate(BlockPos pos) implements CustomPacketPayload {
+    public static final ResourceLocation ID = RL("notify_block_update");
+
+    public static PacketNotifyBlockUpdate fromNetwork(FriendlyByteBuf buffer) {
+        return new PacketNotifyBlockUpdate(buffer.readBlockPos());
     }
 
-    public PacketNotifyBlockUpdate(FriendlyByteBuf buffer) {
-        super(buffer);
+    @Override
+    public void write(FriendlyByteBuf buf) {
+        buf.writeBlockPos(pos);
     }
 
-    public void handle(Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> {
-            if (ctx.get().getSender() == null) {
-                Level w = ClientUtils.getClientLevel();
-                w.getBlockState(pos).updateNeighbourShapes(w, pos, Block.UPDATE_ALL);
-            }
+    @Override
+    public ResourceLocation id() {
+        return ID;
+    }
+
+    public static void handle(PacketNotifyBlockUpdate message, PlayPayloadContext ctx) {
+        ctx.workHandler().submitAsync(() -> {
+            Level w = ClientUtils.getClientLevel();
+            w.getBlockState(message.pos()).updateNeighbourShapes(w, message.pos(), Block.UPDATE_ALL);
         });
-        ctx.get().setPacketHandled(true);
     }
 }

@@ -1,24 +1,25 @@
 {
   "type": "pneumaticcraft:crafting_shaped_pressurizable",
-  "category": "misc",
-  "key": {
-    "A": {
-      "item": "pneumaticcraft:compressed_iron_chestplate"
+  "value": {
+    "category": "misc",
+    "key": {
+      "A": {
+        "item": "pneumaticcraft:compressed_iron_chestplate"
+      },
+      "C": {
+        "item": "pneumaticcraft:air_canister"
+      },
+      "P": {
+        "item": "pneumaticcraft:printed_circuit_board"
+      }
     },
-    "C": {
-      "item": "pneumaticcraft:air_canister"
-    },
-    "P": {
-      "item": "pneumaticcraft:printed_circuit_board"
+    "pattern": [
+      "CPC",
+      "CAC",
+      "CCC"
+    ],
+    "result": {
+      "item": "pneumaticcraft:pneumatic_chestplate"
     }
-  },
-  "pattern": [
-    "CPC",
-    "CAC",
-    "CCC"
-  ],
-  "result": {
-    "item": "pneumaticcraft:pneumatic_chestplate"
-  },
-  "show_notification": true
+  }
 }

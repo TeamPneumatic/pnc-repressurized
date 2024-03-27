@@ -23,14 +23,14 @@ import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.entity.semiblock.AbstractLogisticsFrameEntity;
 import me.desht.pneumaticcraft.common.inventory.slot.PhantomSlot;
 import mezz.jei.api.constants.VanillaTypes;
-import mezz.jei.api.forge.ForgeTypes;
 import mezz.jei.api.gui.handlers.IGhostIngredientHandler;
 import mezz.jei.api.ingredients.ITypedIngredient;
+import mezz.jei.api.neoforge.NeoForgeTypes;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.FluidUtil;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidUtil;
 
 import java.util.List;
 
@@ -51,7 +51,7 @@ public class LogisticsFilterGhost<S extends AbstractLogisticsScreen<T>, T extend
                     builder.add((Target<I>) new FluidStackItemTarget(i, gui));
                 }
             });
-        } else if (ingredient.getType() == ForgeTypes.FLUID_STACK) {
+        } else if (ingredient.getType() == NeoForgeTypes.FLUID_STACK) {
             for (int i = 0; i < AbstractLogisticsFrameEntity.FLUID_FILTER_SLOTS; i++) {
                 //noinspection unchecked
                 builder.add((Target<I>) new FluidStackTarget(i, gui));

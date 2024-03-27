@@ -24,25 +24,48 @@ import dan200.computercraft.api.lua.MethodResult;
 import dan200.computercraft.api.peripheral.IComputerAccess;
 import dan200.computercraft.api.peripheral.IDynamicPeripheral;
 import dan200.computercraft.api.peripheral.IPeripheral;
+import dan200.computercraft.api.peripheral.PeripheralCapability;
 import me.desht.pneumaticcraft.common.block.entity.ILuaMethodProvider;
+import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
 import me.desht.pneumaticcraft.common.thirdparty.computer_common.ComputerEventManager;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.CapabilityManager;
-import net.minecraftforge.common.capabilities.CapabilityToken;
+import net.neoforged.neoforge.capabilities.BlockCapability;
+import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-public class PneumaticTilePeripheral implements IDynamicPeripheral, ComputerEventManager.IComputerEventSender {
-    public static final Capability<IPeripheral> PERIPHERAL_CAPABILITY = CapabilityManager.get(new CapabilityToken<>() { });
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
+public class PneumaticTilePeripheral implements IDynamicPeripheral, ComputerEventManager.IComputerEventSender {
     private final ILuaMethodProvider provider;
     private final CopyOnWriteArrayList<IComputerAccess> attachedComputers = new CopyOnWriteArrayList<>();
 
-    PneumaticTilePeripheral(ILuaMethodProvider provider) {
+    private PneumaticTilePeripheral(ILuaMethodProvider provider) {
         this.provider = provider;
+    }
+
+    private static PneumaticTilePeripheral maybe(Object o, Direction dir) {
+        return o instanceof ILuaMethodProvider p ? new PneumaticTilePeripheral(p) : null;
+    }
+
+    static void attachPeripheralCap(RegisterCapabilitiesEvent event) {
+        if (ComputerCraft.available) {
+            ModBlockEntityTypes.streamBlockEntities().forEach(blockEntity -> {
+                if (blockEntity instanceof ILuaMethodProvider) {
+                    event.registerBlockEntity(PeripheralCapability.get(), blockEntity.getType(), PneumaticTilePeripheral::maybe);
+                }
+            });
+        }
+    }
+
+    static Optional<IPeripheral> getPeripheral(BlockEntity blockEntity) {
+        return Optional.ofNullable(blockEntity.getLevel().getCapability(PeripheralCapability.get(),
+                blockEntity.getBlockPos(), blockEntity.getBlockState(), blockEntity,  Direction.UP)); // direction doesn't matter
     }
 
     @Nonnull

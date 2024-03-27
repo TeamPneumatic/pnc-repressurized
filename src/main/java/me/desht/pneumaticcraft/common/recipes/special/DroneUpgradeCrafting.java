@@ -17,22 +17,23 @@
 
 package me.desht.pneumaticcraft.common.recipes.special;
 
-import me.desht.pneumaticcraft.common.core.ModItems;
-import me.desht.pneumaticcraft.common.core.ModRecipeSerializers;
 import me.desht.pneumaticcraft.common.item.DroneItem;
+import me.desht.pneumaticcraft.common.registry.ModItems;
+import me.desht.pneumaticcraft.common.registry.ModRecipeSerializers;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
-import net.minecraft.world.item.crafting.ShapelessRecipe;
+import net.minecraft.world.level.Level;
 
-public class DroneUpgradeCrafting extends ShapelessRecipe {
+import java.util.List;
+
+public class DroneUpgradeCrafting extends CustomPNCRecipe {
     // you'd think using Ingredient.fromTag(PneumaticCraftTags.Items.BASIC_DRONES) would work, but nope
     private static final Item[] DRONES = {
             ModItems.LOGISTICS_DRONE.get(),
@@ -41,28 +42,44 @@ public class DroneUpgradeCrafting extends ShapelessRecipe {
             ModItems.COLLECTOR_DRONE.get(),
     };
 
-    public DroneUpgradeCrafting(ResourceLocation idIn, CraftingBookCategory category) {
-        super(idIn, "", category, new ItemStack(ModItems.DRONE.get()), NonNullList.of(Ingredient.EMPTY,
-                    Ingredient.of(ModItems.PRINTED_CIRCUIT_BOARD.get()),
-                    Ingredient.of(DRONES))
-        );
+    public DroneUpgradeCrafting(CraftingBookCategory category) {
+        super(category);
+    }
+
+    @Override
+    public boolean matches(CraftingContainer container, Level level) {
+        List<ItemStack> stacks = findItems(container, List.of(
+                this::isBasicDrone,
+                stack -> stack.getItem() == ModItems.PRINTED_CIRCUIT_BOARD.get()
+        ));
+        return stacks.size() == 2;
     }
 
     @Override
     public ItemStack assemble(CraftingContainer inv, RegistryAccess registryAccess) {
-        ItemStack basicDrone = ItemStack.EMPTY;
-        for (int i = 0; i < inv.getContainerSize(); i++) {
-            ItemStack stack = inv.getItem(i);
-            if (isBasicDrone(stack)) {
-                basicDrone = stack.copy();
-                break;
-            }
+        List<ItemStack> basicDrone = findItems(inv, List.of(this::isBasicDrone));
+        if (basicDrone.isEmpty()) {
+            return ItemStack.EMPTY;
         }
-        if (basicDrone.isEmpty()) return ItemStack.EMPTY;
         ItemStack drone = new ItemStack(ModItems.DRONE.get());
-        CompoundTag droneTag = basicDrone.getOrCreateTag();
+        CompoundTag droneTag = basicDrone.get(0).getOrCreateTag();
         drone.setTag(droneTag);
         return drone;
+    }
+
+    @Override
+    public NonNullList<Ingredient> getIngredients() {
+        return NonNullList.of(Ingredient.EMPTY, Ingredient.of(ModItems.PRINTED_CIRCUIT_BOARD.get()), Ingredient.of(DRONES));
+    }
+
+    @Override
+    public ItemStack getResultItem(RegistryAccess p_267025_) {
+        return new ItemStack(ModItems.DRONE.get());
+    }
+
+    @Override
+    public boolean canCraftInDimensions(int w, int h) {
+        return w * h >= 2;
     }
 
     private boolean isBasicDrone(ItemStack stack) {

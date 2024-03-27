@@ -22,7 +22,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
-import me.desht.pneumaticcraft.common.core.ModProgWidgets;
+import me.desht.pneumaticcraft.common.registry.ModProgWidgets;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.resources.ResourceLocation;
 
@@ -39,7 +39,7 @@ public class ProgWidgetConfig extends AuxConfigJson {
     }
 
     public boolean isWidgetBlacklisted(ProgWidgetType<?> widgetType) {
-        ResourceLocation regName = PneumaticCraftUtils.getRegistryName(ModProgWidgets.PROG_WIDGETS.get(), widgetType).orElseThrow();
+        ResourceLocation regName = PneumaticCraftUtils.getRegistryName(ModProgWidgets.PROG_WIDGETS_REGISTRY, widgetType).orElseThrow();
         return blacklistedPieces.contains(regName);
     }
 
@@ -62,7 +62,7 @@ public class ProgWidgetConfig extends AuxConfigJson {
         json.add("blacklist", array);
 
         JsonArray allArray = new JsonArray();
-        for (ResourceLocation entry : ModProgWidgets.PROG_WIDGETS.get().getKeys()) {
+        for (ResourceLocation entry : ModProgWidgets.PROG_WIDGETS_REGISTRY.keySet()) {
             allArray.add(new JsonPrimitive(entry.toString()));
         }
         json.add("allWidgets", allArray);

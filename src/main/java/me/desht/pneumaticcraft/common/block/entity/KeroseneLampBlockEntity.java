@@ -24,12 +24,12 @@ import me.desht.pneumaticcraft.api.data.PneumaticCraftTags;
 import me.desht.pneumaticcraft.common.block.entity.RedstoneController.ReceivingRedstoneMode;
 import me.desht.pneumaticcraft.common.block.entity.RedstoneController.RedstoneMode;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
-import me.desht.pneumaticcraft.common.core.ModBlockEntities;
-import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.inventory.KeroseneLampMenu;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
+import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
+import me.desht.pneumaticcraft.common.registry.ModBlocks;
 import me.desht.pneumaticcraft.common.util.PNCFluidTank;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.core.BlockPos;
@@ -54,13 +54,11 @@ import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.util.FakePlayerFactory;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.fluids.FluidUtil;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemStackHandler;
-import org.jetbrains.annotations.NotNull;
+import net.neoforged.neoforge.common.util.FakePlayerFactory;
+import net.neoforged.neoforge.fluids.FluidUtil;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.ItemStackHandler;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -101,7 +99,7 @@ public class KeroseneLampBlockEntity extends AbstractTickingBlockEntity implemen
     @GuiSynced
     private final RedstoneController<KeroseneLampBlockEntity> rsController = new RedstoneController<>(this, REDSTONE_MODES);
     @GuiSynced
-    private int fuel;
+    private float fuel;
     private int checkingX, checkingY, checkingZ;
     private int rangeSq;
 
@@ -116,7 +114,7 @@ public class KeroseneLampBlockEntity extends AbstractTickingBlockEntity implemen
             }
         }
     };
-    private final LazyOptional<IFluidHandler> fluidCap = LazyOptional.of(() -> tank);
+//    private final LazyOptional<IFluidHandler> fluidCap = LazyOptional.of(() -> tank);
 
     @DescSynced
     private float fuelQuality = -1f; // the quality of the liquid currently in the tank; basically, its burn time
@@ -127,15 +125,15 @@ public class KeroseneLampBlockEntity extends AbstractTickingBlockEntity implemen
             return itemStack.isEmpty() || FluidUtil.getFluidHandler(itemStack).isPresent();
         }
     };
-    private final LazyOptional<IItemHandler> inventoryCap = LazyOptional.of(() -> inventory);
+//    private final LazyOptional<IItemHandler> inventoryCap = LazyOptional.of(() -> inventory);
 
     public KeroseneLampBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.KEROSENE_LAMP.get(), pos, state);
+        super(ModBlockEntityTypes.KEROSENE_LAMP.get(), pos, state);
     }
 
     @Override
-    protected LazyOptional<IItemHandler> getInventoryCap(Direction side) {
-        return inventoryCap;
+    public boolean hasFluidCapability() {
+        return true;
     }
 
     @Override
@@ -188,12 +186,12 @@ public class KeroseneLampBlockEntity extends AbstractTickingBlockEntity implemen
     }
 
     private void useFuel() {
-        if (fuelQuality == 0) return; // tank is empty or a non-burnable liquid in the tank
-        fuel -= rangeSq * 3;
+        if (fuelQuality == 0f) return; // tank is empty or a non-burnable liquid in the tank
+        fuel -= rangeSq * 3f;
         while (fuel <= 0 && !tank.drain(1, IFluidHandler.FluidAction.EXECUTE).isEmpty()) {
             fuel += fuelQuality;
         }
-        if (fuel < 0) fuel = 0;
+        if (fuel < 0f) fuel = 0f;
     }
 
     @Override
@@ -342,7 +340,7 @@ public class KeroseneLampBlockEntity extends AbstractTickingBlockEntity implemen
     }
 
     @Override
-    public IItemHandler getPrimaryInventory() {
+    public IItemHandler getItemHandler(@org.jetbrains.annotations.Nullable Direction dir) {
         return inventory;
     }
 
@@ -374,14 +372,8 @@ public class KeroseneLampBlockEntity extends AbstractTickingBlockEntity implemen
         return targetRange;
     }
 
-    public int getFuel() {
+    public float getFuel() {
         return fuel;
-    }
-
-    @NotNull
-    @Override
-    public LazyOptional<IFluidHandler> getFluidCap(Direction side) {
-        return fluidCap;
     }
 
     public float getFuelQuality() {

@@ -18,7 +18,6 @@
 package me.desht.pneumaticcraft.common.drone.ai;
 
 import me.desht.pneumaticcraft.api.semiblock.ISemiBlock;
-import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.common.drone.IDroneBase;
 import me.desht.pneumaticcraft.common.drone.LogisticsManager;
 import me.desht.pneumaticcraft.common.drone.LogisticsManager.LogisticsTask;
@@ -27,6 +26,7 @@ import me.desht.pneumaticcraft.common.drone.progwidgets.ILiquidFiltered;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetAreaItemBase;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetInventoryBase;
 import me.desht.pneumaticcraft.common.entity.semiblock.AbstractLogisticsFrameEntity;
+import me.desht.pneumaticcraft.common.registry.ModProgWidgets;
 import me.desht.pneumaticcraft.common.semiblock.SemiblockTracker;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.common.util.StreamUtils;
@@ -37,8 +37,7 @@ import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.material.Fluid;
-import net.minecraft.world.phys.AABB;
-import net.minecraftforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidStack;
 
 import javax.annotation.Nonnull;
 import java.util.HashSet;
@@ -62,8 +61,7 @@ public class DroneAILogistics extends Goal {
             // note: this is an expensive operation!  hence we cache the logistics manager object in the drone
             Set<BlockPos> area = widget.getCachedAreaSet();
             if (!area.isEmpty()) {
-                AABB aabb = widget.getAreaExtents();
-                Stream<ISemiBlock> semiBlocksInArea = SemiblockTracker.getInstance().getSemiblocksInArea(drone.world(), aabb);
+                Stream<ISemiBlock> semiBlocksInArea = SemiblockTracker.getInstance().getSemiblocksInArea(drone.world(), widget.getAreaExtents());
                 Stream<AbstractLogisticsFrameEntity> logisticFrames = StreamUtils.ofType(AbstractLogisticsFrameEntity.class, semiBlocksInArea);
                 LogisticsManager manager = new LogisticsManager();
                 logisticFrames.filter(frame -> area.contains(frame.getBlockPos())).forEach(manager::addLogisticFrame);

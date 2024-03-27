@@ -19,14 +19,14 @@ package me.desht.pneumaticcraft.common.inventory;
 
 import me.desht.pneumaticcraft.client.gui.SecurityStationInventoryScreen;
 import me.desht.pneumaticcraft.common.block.entity.SecurityStationBlockEntity;
-import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.inventory.slot.ItemFilteredSlot;
 import me.desht.pneumaticcraft.common.item.NetworkComponentItem;
+import me.desht.pneumaticcraft.common.registry.ModMenuTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.items.IItemHandler;
+import net.neoforged.neoforge.items.IItemHandler;
 
 import java.util.function.Predicate;
 
@@ -42,7 +42,7 @@ public class SecurityStationMainMenu extends AbstractPneumaticCraftMenu<Security
         //add the network slots
         for (int i = 0; i < SecurityStationBlockEntity.INV_ROWS; i++) {
             for (int j = 0; j < SecurityStationBlockEntity.INV_COLS; j++) {
-                addSlot(new SlotSecurityNode(te.getPrimaryInventory(), SecurityStationMainMenu::isSecStationComponent, j + i * 5, 17 + j * 18, 22 + i * 18));
+                addSlot(new SlotSecurityNode(blockEntity.getItemHandler(), SecurityStationMainMenu::isSecStationComponent, j + i * 5, 17 + j * 18, 22 + i * 18));
             }
         }
 
@@ -64,7 +64,7 @@ public class SecurityStationMainMenu extends AbstractPneumaticCraftMenu<Security
         public void setChanged() {
             super.setChanged();
 
-            if (te != null && te.nonNullLevel().isClientSide) SecurityStationInventoryScreen.reinitConnectionRendering();
+            if (blockEntity != null && blockEntity.nonNullLevel().isClientSide) SecurityStationInventoryScreen.reinitConnectionRendering();
         }
     }
 }

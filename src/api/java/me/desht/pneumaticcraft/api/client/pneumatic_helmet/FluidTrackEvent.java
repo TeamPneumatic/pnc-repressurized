@@ -19,10 +19,10 @@ package me.desht.pneumaticcraft.api.client.pneumatic_helmet;
 
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.eventbus.api.Cancelable;
-import net.minecraftforge.eventbus.api.Event;
-import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.neoforged.bus.api.Event;
+import net.neoforged.bus.api.ICancellableEvent;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 
 /**
  * Fired when a helmet Block Tracker is about to track a fluid tank. Can be canceled to prevent tracking.
@@ -33,8 +33,7 @@ import net.minecraftforge.fluids.capability.IFluidHandler;
  *
  * @author MineMaarten
  */
-@Cancelable
-public class FluidTrackEvent extends Event {
+public class FluidTrackEvent extends Event implements ICancellableEvent {
     private final BlockEntity te;
 
     public FluidTrackEvent(BlockEntity te) {
@@ -46,6 +45,6 @@ public class FluidTrackEvent extends Event {
     }
 
     public IFluidHandler getFluidHandler(Direction face) {
-        return te.getCapability(ForgeCapabilities.FLUID_HANDLER, face).map(iFluidHandler -> iFluidHandler).orElse(null);
+        return te.getLevel().getCapability(Capabilities.FluidHandler.BLOCK, te.getBlockPos(), te.getBlockState(), te, face);
     }
 }

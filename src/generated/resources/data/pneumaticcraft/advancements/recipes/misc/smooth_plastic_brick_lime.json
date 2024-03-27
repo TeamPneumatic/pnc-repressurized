@@ -22,14 +22,13 @@
   },
   "requirements": [
     [
-      "has_plastic",
-      "has_the_recipe"
+      "has_the_recipe",
+      "has_plastic"
     ]
   ],
   "rewards": {
     "recipes": [
       "pneumaticcraft:smooth_plastic_brick_lime"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }

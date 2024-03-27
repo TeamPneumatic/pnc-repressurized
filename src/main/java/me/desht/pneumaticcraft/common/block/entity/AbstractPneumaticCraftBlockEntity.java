@@ -17,7 +17,6 @@
 
 package me.desht.pneumaticcraft.common.block.entity;
 
-import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.api.lib.NBTKeys;
@@ -36,14 +35,17 @@ import me.desht.pneumaticcraft.common.upgrades.ApplicableUpgradesDB;
 import me.desht.pneumaticcraft.common.upgrades.IUpgradeHolder;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.upgrades.UpgradeCache;
+import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Nameable;
 import net.minecraft.world.entity.player.Player;
@@ -54,17 +56,15 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.client.model.data.ModelData;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.energy.IEnergyStorage;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.FluidUtil;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemHandlerHelper;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.capabilities.BlockCapabilityCache;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.client.model.data.ModelData;
+import net.neoforged.neoforge.energy.IEnergyStorage;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidUtil;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.ItemHandlerHelper;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -103,7 +103,10 @@ public abstract class AbstractPneumaticCraftBlockEntity extends BlockEntity
     }
 
     private String getBlockTranslationKey() {
-        return "block.pneumaticcraft." + ForgeRegistries.BLOCK_ENTITY_TYPES.getResourceKey(getType()).map(rk -> rk.location().getPath()).orElse("unknown");
+        String key = BuiltInRegistries.BLOCK_ENTITY_TYPE.getResourceKey(getType())
+                .map(rk -> rk.location().getPath())
+                .orElse("unknown");
+        return "block.pneumaticcraft." + key;
     }
 
     @Override
@@ -130,18 +133,18 @@ public abstract class AbstractPneumaticCraftBlockEntity extends BlockEntity
     @Override
     public CompoundTag getUpdateTag() {
         CompoundTag compound = super.getUpdateTag();
-        return new PacketDescription(this, true).writeNBT(compound);
+        return PacketDescription.create(this, true).writeNBT(compound);
     }
 
     // client side, chunk sending
     @Override
     public void handleUpdateTag(CompoundTag tag) {
-        new PacketDescription(tag).processPacket(this);
+        PacketDescription.fromNBT(tag).processPacket(this);
     }
 
     /***********
-       We don't override getUpdatePacket() or onDataPacket() because BE sync'ing is all handled
-       by our custom PacketDescription and the @DescSynced system
+     We don't override getUpdatePacket() or onDataPacket() because BE sync'ing is all handled
+     by our custom PacketDescription and the @DescSynced system
      ***********/
 
     @Override
@@ -173,7 +176,7 @@ public abstract class AbstractPneumaticCraftBlockEntity extends BlockEntity
     public final void sendDescriptionPacket() {
         if (level == null || level.isClientSide) return;
 
-        PacketDescription descPacket = new PacketDescription(this, forceFullSync);
+        PacketDescription descPacket = PacketDescription.create(this, forceFullSync);
         if (descPacket.hasData()) {
             NetworkHandler.sendToAllTracking(descPacket, this);
         }
@@ -214,15 +217,6 @@ public abstract class AbstractPneumaticCraftBlockEntity extends BlockEntity
                 sendDescriptionPacket();
             }
         }
-    }
-
-    @Override
-    public void setRemoved() {
-        super.setRemoved();
-
-        if (getInventoryCap(null).isPresent()) getInventoryCap(null).invalidate();
-        if (getHeatCap(null).isPresent()) getHeatCap(null).invalidate();
-        if (getFluidCap(null).isPresent()) getFluidCap(null).invalidate();
     }
 
     @Override
@@ -339,7 +333,7 @@ public abstract class AbstractPneumaticCraftBlockEntity extends BlockEntity
             IHeatExchangerLogic logic = he.getHeatExchanger();
             if (logic != null) logic.deserializeNBT(tag.getCompound(NBTKeys.NBT_HEAT_EXCHANGER));
         }
-        if (this instanceof IRedstoneControl rc) {
+        if (this instanceof IRedstoneControl<?> rc) {
             rc.getRedstoneController().deserialize(tag);
         }
         if (this instanceof ISerializableTanks st) {
@@ -441,7 +435,7 @@ public abstract class AbstractPneumaticCraftBlockEntity extends BlockEntity
      * @param outputSlot output slot
      */
     void processFluidItem(int inputSlot, int outputSlot) {
-        getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(itemHandler -> {
+        IOHelper.getInventoryForBlock(this).ifPresent(itemHandler -> {
             ItemStack inputStack = itemHandler.getStackInSlot(inputSlot);
             ItemStack outputStack = itemHandler.getStackInSlot(outputSlot);
             if (inputStack.getCount() != 1) return;
@@ -449,7 +443,7 @@ public abstract class AbstractPneumaticCraftBlockEntity extends BlockEntity
             FluidUtil.getFluidHandler(inputStack).ifPresent(fluidHandlerItem -> {
                 FluidStack itemContents = fluidHandlerItem.drain(1000, IFluidHandler.FluidAction.SIMULATE);
 
-                getCapability(ForgeCapabilities.FLUID_HANDLER).ifPresent(fluidHandler -> {
+                IOHelper.getFluidHandlerForBlock(this).ifPresent(fluidHandler -> {
                     if (!itemContents.isEmpty() && (outputStack.isEmpty() || ItemHandlerHelper.canItemStacksStack(inputStack.getItem().getCraftingRemainingItem(inputStack), outputStack))) {
                         // input item contains fluid: drain from input item into tank, move to output if empty
                         FluidStack transferred = FluidUtil.tryFluidTransfer(fluidHandler, fluidHandlerItem, itemContents.getAmount(), true);
@@ -503,49 +497,58 @@ public abstract class AbstractPneumaticCraftBlockEntity extends BlockEntity
 
     @Override
     public String getPeripheralType() {
-        return ForgeRegistries.BLOCK_ENTITY_TYPES.getResourceKey(getType()).map(rk -> rk.location().toString()).orElse("unknown");
+        return BuiltInRegistries.BLOCK_ENTITY_TYPE.getResourceKey(getType())
+                .map(rk -> rk.location().toString())
+                .orElse("unknown");
     }
 
-    public abstract IItemHandler getPrimaryInventory();
+    public boolean hasItemCapability() {
+        return true;
+    }
+
+    public boolean hasFluidCapability() {
+        return false;
+    }
+
+    public boolean hasEnergyCapability() {
+        return false;
+    }
+
+    public final IItemHandler getItemHandler() {
+        return getItemHandler(null);
+    }
+
+    public final IFluidHandler getFluidHandler() {
+        return getFluidHandler(null);
+    }
+
+    public IItemHandler getItemHandler(@Nullable Direction dir) {
+        return null;
+    }
+
+    public IFluidHandler getFluidHandler(@Nullable Direction dir) {
+        return null;
+    }
+
+    public IEnergyStorage getEnergyHandler(@Nullable Direction dir) {
+        return null;
+    }
 
     @Override
     public UpgradeHandler getUpgradeHandler() {
         return upgradeHandler;
     }
 
-    @Nonnull
-    @Override
-    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-        if (cap == ForgeCapabilities.ITEM_HANDLER) {
-            return getInventoryCap(side).cast();
-        } else if (cap == PNCCapabilities.HEAT_EXCHANGER_CAPABILITY) {
-            return getHeatCap(side).cast();
-        } else if (cap == ForgeCapabilities.FLUID_HANDLER) {
-            return getFluidCap(side).cast();
-        } else if (cap == ForgeCapabilities.ENERGY) {
-            return getEnergyCap(side).cast();
-        }
-        return super.getCapability(cap, side);
+    public BlockCapabilityCache<IItemHandler,Direction> createItemHandlerCache(Direction dir) {
+        return getLevel() instanceof ServerLevel serverLevel ?
+                BlockCapabilityCache.create(Capabilities.ItemHandler.BLOCK, serverLevel, getBlockPos().relative(dir), dir.getOpposite(), () -> !isRemoved(), () -> {}) :
+                null;
     }
 
-    @Nonnull
-    protected LazyOptional<IEnergyStorage> getEnergyCap(Direction side) {
-        return LazyOptional.empty();
-    }
-
-    @Nonnull
-    protected LazyOptional<IItemHandler> getInventoryCap(Direction side) {
-        return LazyOptional.empty();
-    }
-
-    @Nonnull
-    public LazyOptional<IHeatExchangerLogic> getHeatCap(Direction side) {
-        return LazyOptional.empty();
-    }
-
-    @Nonnull
-    public LazyOptional<IFluidHandler> getFluidCap(Direction side) {
-        return LazyOptional.empty();
+    public BlockCapabilityCache<IFluidHandler,Direction> createFluidHandlerCache(Direction dir) {
+        return getLevel() instanceof ServerLevel serverLevel ?
+                BlockCapabilityCache.create(Capabilities.FluidHandler.BLOCK, serverLevel, getBlockPos().relative(dir), dir.getOpposite(), () -> !isRemoved(), () -> {}) :
+                null;
     }
 
     /**
@@ -555,7 +558,7 @@ public abstract class AbstractPneumaticCraftBlockEntity extends BlockEntity
      * @param drops list in which to collect dropped items
      */
     public void getContentsToDrop(NonNullList<ItemStack> drops) {
-        PneumaticCraftUtils.collectNonEmptyItems(getPrimaryInventory(), drops);
+        PneumaticCraftUtils.collectNonEmptyItems(getItemHandler(), drops);
 
         if (!shouldPreserveStateOnBreak()) {
             UpgradeHandler uh = getUpgradeHandler();
@@ -630,7 +633,7 @@ public abstract class AbstractPneumaticCraftBlockEntity extends BlockEntity
     public int countPlayersUsing() {
         return (int) nonNullLevel().players().stream()
                 .filter(player -> player.containerMenu instanceof AbstractPneumaticCraftMenu)
-                .filter(player -> ((AbstractPneumaticCraftMenu<?>) player.containerMenu).te == this)
+                .filter(player -> ((AbstractPneumaticCraftMenu<?>) player.containerMenu).blockEntity == this)
                 .count();
     }
 

@@ -19,7 +19,6 @@ package me.desht.pneumaticcraft.client.gui.upgrademanager;
 
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorUpgradeHandler;
-import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.common.inventory.ChargingStationUpgradeManagerMenu;
 import me.desht.pneumaticcraft.common.item.PneumaticArmorItem;
@@ -98,9 +97,7 @@ public class PneumaticArmorUpgradeScreen extends AbstractUpgradeManagerScreen {
             text.add(Component.literal("0.0 mL/t").withStyle(black));
         }
         text.add(xlate("pneumaticcraft.gui.tab.info.pneumatic_armor.timeRemaining").withStyle(ChatFormatting.WHITE));
-        int airLeft = itemStack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY)
-                .map(IAirHandler::getAir)
-                .orElseThrow(RuntimeException::new);
+        int airLeft = PNCCapabilities.getAirHandler(itemStack).orElseThrow().getAir();
         if (totalUsage == 0) {
             if (airLeft > 0) text.add(Component.literal("∞").withStyle(black));
             else text.add(Component.literal("0s").withStyle(black));

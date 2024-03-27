@@ -21,11 +21,10 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntList;
-import net.minecraft.core.NonNullList;
-import net.minecraft.resources.ResourceLocation;
+import me.desht.pneumaticcraft.api.crafting.ingredient.StackedIngredient;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraftforge.items.IItemHandler;
+import net.neoforged.neoforge.items.IItemHandler;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -34,9 +33,11 @@ import java.util.Objects;
 import java.util.Set;
 
 public abstract class PressureChamberRecipe extends PneumaticCraftRecipe {
-    protected PressureChamberRecipe(ResourceLocation id) {
-        super(id);
-    }
+    public abstract float getPressure();
+
+    public abstract List<StackedIngredient> getInputs();
+
+    public abstract List<ItemStack> getOutputs();
 
     /**
      * Returns the minimum pressure required to craft the recipe. Negative pressures are also acceptable; in this
@@ -159,7 +160,7 @@ public abstract class PressureChamberRecipe extends PneumaticCraftRecipe {
      * @return the resulting items; these do not have to be copies, since the Pressure Chamber itself will insert copies of these items
      */
     @Nonnull
-    public abstract NonNullList<ItemStack> craftRecipe(@Nonnull IItemHandler chamberHandler, IntList ingredientSlots, boolean simulate);
+    public abstract List<ItemStack> craftRecipe(@Nonnull IItemHandler chamberHandler, IntList ingredientSlots, boolean simulate);
 
     /**
      * Return a translation key for a supplementary tooltip to be displayed on the ingredient or resulting item.  For

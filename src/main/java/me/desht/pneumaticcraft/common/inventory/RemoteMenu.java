@@ -18,10 +18,10 @@
 package me.desht.pneumaticcraft.common.inventory;
 
 import me.desht.pneumaticcraft.common.block.entity.AbstractPneumaticCraftBlockEntity;
-import me.desht.pneumaticcraft.common.core.ModItems;
-import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSetGlobalVariable;
+import me.desht.pneumaticcraft.common.registry.ModItems;
+import me.desht.pneumaticcraft.common.registry.ModMenuTypes;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableHelper;
 import me.desht.pneumaticcraft.common.variables.TextVariableParser;
@@ -125,7 +125,7 @@ public class RemoteMenu extends AbstractPneumaticCraftMenu<AbstractPneumaticCraf
                 lastValues[i] = newValue;
                 ServerPlayer serverPlayer = PneumaticCraftUtils.getPlayerFromId(playerId);
                 if (serverPlayer != null) {
-                    NetworkHandler.sendToPlayer(new PacketSetGlobalVariable(varName, newValue), serverPlayer);
+                    NetworkHandler.sendToPlayer(PacketSetGlobalVariable.forPos(varName, newValue), serverPlayer);
                 }
             }
         }

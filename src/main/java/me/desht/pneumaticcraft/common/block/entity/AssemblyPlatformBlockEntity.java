@@ -17,18 +17,20 @@
 
 package me.desht.pneumaticcraft.common.block.entity;
 
-import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.LazySynced;
 import me.desht.pneumaticcraft.common.recipes.assembly.AssemblyProgram;
+import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
 import me.desht.pneumaticcraft.lib.BlockEntityConstants;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.items.IItemHandler;
+import net.neoforged.neoforge.items.IItemHandler;
+import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnull;
 
@@ -45,7 +47,12 @@ public class AssemblyPlatformBlockEntity extends AbstractTickingBlockEntity impl
     private BlockPos controllerPos;
 
     public AssemblyPlatformBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.ASSEMBLY_PLATFORM.get(), pos, state);
+        super(ModBlockEntityTypes.ASSEMBLY_PLATFORM.get(), pos, state);
+    }
+
+    @Override
+    public boolean hasItemCapability() {
+        return false;  // the inventory is not exposed for capability purposes
     }
 
     @Override
@@ -137,7 +144,7 @@ public class AssemblyPlatformBlockEntity extends AbstractTickingBlockEntity impl
     }
 
     @Override
-    public IItemHandler getPrimaryInventory() {
+    public IItemHandler getItemHandler(@Nullable Direction dir) {
         return itemHandler;
     }
 

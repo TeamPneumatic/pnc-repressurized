@@ -22,12 +22,12 @@ import me.desht.pneumaticcraft.api.item.ItemVolumeModifier;
 import me.desht.pneumaticcraft.api.misc.Symbols;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.lib.ModIds;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
-import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.List;
 
@@ -37,7 +37,7 @@ public class HoldingEnchantableProvider {
 
     static void registerVolumeModifier() {
         // Gets if Holding enchantment has been registered
-        holdingEnchantment = ForgeRegistries.ENCHANTMENTS.getValue(new ResourceLocation(ModIds.COFH_CORE, "holding"));
+        holdingEnchantment = BuiltInRegistries.ENCHANTMENT.get(new ResourceLocation(ModIds.COFH_CORE, "holding"));
 
         // Registers the volume modifier for the Holding enchant if it's present and config-enabled
         if (holdingEnchantment != null && holdingEnabled) {

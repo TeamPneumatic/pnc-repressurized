@@ -40,10 +40,10 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.ForgeHooks;
-import net.minecraftforge.common.util.FakePlayer;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-import net.minecraftforge.eventbus.api.Event;
+import net.neoforged.bus.api.Event;
+import net.neoforged.neoforge.common.CommonHooks;
+import net.neoforged.neoforge.common.util.FakePlayer;
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -128,7 +128,7 @@ public class DroneAIRightClickBlock extends DroneAIBlockInteraction<ProgWidgetAr
             BlockHitResult brtr = doTrace(world, pos, fakePlayer);
             if (brtr == null) return false;
 
-            PlayerInteractEvent.RightClickBlock event = ForgeHooks.onRightClickBlock(fakePlayer, InteractionHand.MAIN_HAND, pos, brtr);
+            PlayerInteractEvent.RightClickBlock event = CommonHooks.onRightClickBlock(fakePlayer, InteractionHand.MAIN_HAND, pos, brtr);
             if (event.isCanceled() || event.getUseItem() == Event.Result.DENY) {
                 return false;
             }
@@ -155,7 +155,7 @@ public class DroneAIRightClickBlock extends DroneAIBlockInteraction<ProgWidgetAr
                     fakePlayer.setItemInHand(InteractionHand.MAIN_HAND, rightClickResult.getObject());
                 }
                 if (fakePlayer.getItemInHand(InteractionHand.MAIN_HAND).isEmpty()) {
-                    net.minecraftforge.event.ForgeEventFactory.onPlayerDestroyItem(fakePlayer, copyBeforeUse, InteractionHand.MAIN_HAND);
+                    net.neoforged.neoforge.event.EventHooks.onPlayerDestroyItem(fakePlayer, copyBeforeUse, InteractionHand.MAIN_HAND);
                 }
                 return true;
             }
@@ -172,7 +172,7 @@ public class DroneAIRightClickBlock extends DroneAIBlockInteraction<ProgWidgetAr
         BlockState state = world.getBlockState(pos);
         BlockHitResult brtr = doTrace(world, pos, fakePlayer);
         if (brtr != null) {
-            PlayerInteractEvent.RightClickBlock event = ForgeHooks.onRightClickBlock(fakePlayer, InteractionHand.MAIN_HAND, pos, brtr);
+            PlayerInteractEvent.RightClickBlock event = CommonHooks.onRightClickBlock(fakePlayer, InteractionHand.MAIN_HAND, pos, brtr);
             try {
                 if (!event.isCanceled() && event.getUseItem() != Event.Result.DENY && event.getUseBlock() != Event.Result.DENY) {
                     InteractionResult res = state.use(world, fakePlayer, InteractionHand.MAIN_HAND, brtr);

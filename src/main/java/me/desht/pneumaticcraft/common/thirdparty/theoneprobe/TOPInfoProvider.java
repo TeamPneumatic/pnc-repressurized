@@ -35,6 +35,7 @@ import me.desht.pneumaticcraft.common.heat.TemperatureData;
 import me.desht.pneumaticcraft.common.item.CamoApplicatorItem;
 import me.desht.pneumaticcraft.common.tubemodules.AbstractTubeModule;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
+import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Direction;
@@ -45,9 +46,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -67,14 +68,14 @@ public class TOPInfoProvider {
 
         if (te == null) return;
 
-        if (te.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY).isPresent()) {
+        if (IOHelper.getCap(te, PNCCapabilities.AIR_HANDLER_MACHINE, null).isPresent()) {
             handlePneumatic(mode, probeInfo, te, data);
         }
-        if (te.getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY).isPresent()) {
+        if (IOHelper.getCap(te, PNCCapabilities.HEAT_EXCHANGER_BLOCK, null).isPresent()) {
             handleHeat(mode, probeInfo, te);
         }
         if (ConfigHelper.client().general.topShowsFluids.get()) {
-            te.getCapability(ForgeCapabilities.FLUID_HANDLER, data.getSideHit())
+            IOHelper.getCap(te, Capabilities.FluidHandler.BLOCK, data.getSideHit())
                     .ifPresent(handler -> handleFluidTanks(mode, probeInfo, handler));
         }
         if (te instanceof IRedstoneControl) {
@@ -102,9 +103,9 @@ public class TOPInfoProvider {
 
     private static void handlePneumatic(ProbeMode mode, IProbeInfo probeInfo, BlockEntity pneumaticMachine, IProbeHitData data) {
         Set<IAirHandlerMachine> set = new LinkedHashSet<>();
-        pneumaticMachine.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY).ifPresent(set::add);
-        for (Direction d : DirectionUtil.VALUES) {
-            pneumaticMachine.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, d).ifPresent(set::add);
+        IOHelper.getCap(pneumaticMachine, PNCCapabilities.AIR_HANDLER_MACHINE, null).ifPresent(set::add);
+        for (Direction dir : DirectionUtil.VALUES) {
+            IOHelper.getCap(pneumaticMachine, PNCCapabilities.AIR_HANDLER_MACHINE, dir).ifPresent(set::add);
         }
         for (IAirHandlerMachine h : set) {
             addPressureInfo(mode, probeInfo, pneumaticMachine, h);

@@ -17,9 +17,9 @@
 
 package me.desht.pneumaticcraft.common.block.entity;
 
-import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.inventory.CreativeCompressedIronBlockMenu;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
+import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
@@ -37,7 +37,7 @@ public class CreativeCompressedIronBlockBlockEntity extends CompressedIronBlockB
     public int targetTemperature = -1;  // -1 = uninited
 
     public CreativeCompressedIronBlockBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.CREATIVE_COMPRESSED_IRON_BLOCK.get(), pos, state);
+        super(ModBlockEntityTypes.CREATIVE_COMPRESSED_IRON_BLOCK.get(), pos, state);
 
         heatExchanger.setThermalCapacity(1_000_000);
     }

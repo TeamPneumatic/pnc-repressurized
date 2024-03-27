@@ -17,19 +17,19 @@
 
 package me.desht.pneumaticcraft.common.block.entity;
 
-import me.desht.pneumaticcraft.common.core.ModBlockEntities;
-import me.desht.pneumaticcraft.common.core.ModRecipeTypes;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.LazySynced;
 import me.desht.pneumaticcraft.common.recipes.assembly.AssemblyProgram;
+import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
+import me.desht.pneumaticcraft.common.registry.ModRecipeTypes;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.BlockEntityConstants;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.items.IItemHandler;
 
 public class AssemblyDrillBlockEntity extends AbstractAssemblyRobotBlockEntity {
     @DescSynced
@@ -42,7 +42,7 @@ public class AssemblyDrillBlockEntity extends AbstractAssemblyRobotBlockEntity {
     private int drillStep;
 
     public AssemblyDrillBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.ASSEMBLY_DRILL.get(), pos, state);
+        super(ModBlockEntityTypes.ASSEMBLY_DRILL.get(), pos, state);
     }
 
     @Override
@@ -123,8 +123,8 @@ public class AssemblyDrillBlockEntity extends AbstractAssemblyRobotBlockEntity {
     }
 
     @Override
-    public IItemHandler getPrimaryInventory() {
-        return null;
+    public boolean hasItemCapability() {
+        return false;
     }
 
     @Override
@@ -152,6 +152,7 @@ public class AssemblyDrillBlockEntity extends AbstractAssemblyRobotBlockEntity {
 
     private ItemStack getDrilledOutputForItem(ItemStack input) {
         return ModRecipeTypes.ASSEMBLY_DRILL.get().stream(level)
+                .map(RecipeHolder::value)
                 .filter(recipe -> recipe.matches(input))
                 .findFirst()
                 .map(recipe -> recipe.getOutput().copy())

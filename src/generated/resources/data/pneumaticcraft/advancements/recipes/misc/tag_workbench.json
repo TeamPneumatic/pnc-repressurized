@@ -22,14 +22,13 @@
   },
   "requirements": [
     [
-      "has_display_table",
-      "has_the_recipe"
+      "has_the_recipe",
+      "has_display_table"
     ]
   ],
   "rewards": {
     "recipes": [
       "pneumaticcraft:tag_workbench"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }

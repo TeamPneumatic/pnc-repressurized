@@ -20,11 +20,11 @@ package me.desht.pneumaticcraft.common.block.entity;
 import com.google.common.collect.ImmutableMap;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
-import me.desht.pneumaticcraft.common.core.ModBlockEntities;
-import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.inventory.RefineryMenu;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
+import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
+import me.desht.pneumaticcraft.common.registry.ModBlocks;
 import me.desht.pneumaticcraft.common.util.PNCFluidTank;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.BlockPos;
@@ -35,12 +35,10 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.IFluidTank;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.items.IItemHandler;
-import org.jetbrains.annotations.NotNull;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.IFluidTank;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.items.IItemHandler;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -57,14 +55,22 @@ public class RefineryOutputBlockEntity extends AbstractTickingBlockEntity implem
 
     @GuiSynced
     private final IHeatExchangerLogic heatExchanger = PneumaticRegistry.getInstance().getHeatRegistry().makeHeatExchangerLogic();
-    private final LazyOptional<IHeatExchangerLogic> heatCap = LazyOptional.of(() -> heatExchanger);
 
-    private final LazyOptional<IFluidHandler> fluidCap = LazyOptional.of(() -> outputTank);
-    private final LazyOptional<IFluidHandler> fluidCapWrapped = LazyOptional.of(() -> new TankWrapper(outputTank));
+    private final IFluidHandler wrappedTank = new TankWrapper(outputTank);
     private final RedstoneController<RefineryOutputBlockEntity> rsController = new RedstoneController<>(this);
 
     public RefineryOutputBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.REFINERY_OUTPUT.get(), pos, state);
+        super(ModBlockEntityTypes.REFINERY_OUTPUT.get(), pos, state);
+    }
+
+    @Override
+    public boolean hasFluidCapability() {
+        return true;
+    }
+
+    @Override
+    public IFluidHandler getFluidHandler(@Nullable Direction dir) {
+        return dir == Direction.DOWN ? outputTank : wrappedTank;
     }
 
     @Override
@@ -98,7 +104,7 @@ public class RefineryOutputBlockEntity extends AbstractTickingBlockEntity implem
     }
 
     @Override
-    public IItemHandler getPrimaryInventory() {
+    public IItemHandler getItemHandler(@org.jetbrains.annotations.Nullable Direction dir) {
         return null;
     }
 
@@ -135,24 +141,6 @@ public class RefineryOutputBlockEntity extends AbstractTickingBlockEntity implem
 
     public IFluidTank getOutputTank() {
         return outputTank;
-    }
-
-    @NotNull
-    @Override
-    public LazyOptional<IFluidHandler> getFluidCap(Direction side) {
-        return side == Direction.DOWN ? fluidCap : fluidCapWrapped;
-    }
-
-    @Override
-    public void setRemoved() {
-        super.setRemoved();
-
-        fluidCap.invalidate();
-    }
-
-    @Override
-    public LazyOptional<IHeatExchangerLogic> getHeatCap(Direction side) {
-        return heatCap;
     }
 
     @Override

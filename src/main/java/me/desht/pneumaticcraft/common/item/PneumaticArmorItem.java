@@ -31,8 +31,6 @@ import me.desht.pneumaticcraft.common.block.entity.ChargingStationBlockEntity;
 import me.desht.pneumaticcraft.common.block.entity.ProgrammableControllerBlockEntity;
 import me.desht.pneumaticcraft.common.capabilities.AirHandlerItemStack;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
-import me.desht.pneumaticcraft.common.core.ModItems;
-import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.drone.IDroneBase;
 import me.desht.pneumaticcraft.common.entity.drone.AbstractDroneEntity;
 import me.desht.pneumaticcraft.common.entity.drone.DroneEntity;
@@ -42,6 +40,9 @@ import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
 import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.ElytraHandler;
 import me.desht.pneumaticcraft.common.recipes.special.OneProbeCrafting;
+import me.desht.pneumaticcraft.common.registry.ModAttachmentTypes;
+import me.desht.pneumaticcraft.common.registry.ModItems;
+import me.desht.pneumaticcraft.common.registry.ModMenuTypes;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.util.GlobalPosHelper;
 import me.desht.pneumaticcraft.common.util.NBTUtils;
@@ -52,6 +53,7 @@ import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.GlobalPos;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.nbt.Tag;
@@ -70,9 +72,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.client.extensions.common.IClientItemExtensions;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -122,12 +122,6 @@ public class PneumaticArmorItem extends ArmorItem implements
         super(PNEUMATIC_ARMOR_MATERIAL, equipmentSlotIn, ModItems.defaultProps());
     }
 
-    @Nullable
-    @Override
-    public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundTag nbt) {
-        return new AirHandlerItemStack(stack);
-    }
-
     @Override
     public void initializeClient(Consumer<IClientItemExtensions> consumer) {
         consumer.accept(new EnderVisorClientHandler.PumpkinOverlay());
@@ -162,8 +156,7 @@ public class PneumaticArmorItem extends ArmorItem implements
 
     @Override
     public int getAir(ItemStack stack) {
-        CompoundTag tag = stack.getTag();
-        return tag != null ? tag.getInt(AirHandlerItemStack.AIR_NBT_KEY) : 0;
+        return stack.getData(ModAttachmentTypes.AIR.get());
     }
 
     @Override
@@ -227,11 +220,11 @@ public class PneumaticArmorItem extends ArmorItem implements
         return multimap;
     }
 
-    @Nullable
-    @Override
-    public CompoundTag getShareTag(ItemStack stack) {
-        return ConfigHelper.common().advanced.nbtToClientModification.get() ? PressurizableItem.roundedPressure(stack) : super.getShareTag(stack);
-    }
+//    @Nullable
+//    @Override
+//    public CompoundTag getShareTag(ItemStack stack) {
+//        return ConfigHelper.common().advanced.nbtToClientModification.get() ? PressurizableItem.roundedPressure(stack) : super.getShareTag(stack);
+//    }
 
     /* ----------- Pneumatic Helmet helpers ---------- */
 
@@ -262,7 +255,7 @@ public class PneumaticArmorItem extends ArmorItem implements
     public static Item getSearchedItem(ItemStack helmetStack) {
         if (helmetStack.isEmpty() || !NBTUtils.hasTag(helmetStack, NBT_SEARCH_ITEM)) return null;
         String itemName = NBTUtils.getString(helmetStack, NBT_SEARCH_ITEM);
-        return itemName.isEmpty() ? null : ForgeRegistries.ITEMS.getValue(new ResourceLocation(itemName));
+        return itemName.isEmpty() ? null : BuiltInRegistries.ITEM.get(new ResourceLocation(itemName));
     }
 
     public static void setSearchedItem(ItemStack helmetStack, Item searchedItem) {
@@ -369,7 +362,7 @@ public class PneumaticArmorItem extends ArmorItem implements
 
     @Override
     public float getCustomDurability(ItemStack stack) {
-        return stack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY)
+        return PNCCapabilities.getAirHandler(stack)
                 .map(h -> h.getPressure() / h.maxPressure())
                 .orElseThrow(RuntimeException::new);
     }

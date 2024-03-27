@@ -22,14 +22,13 @@
   },
   "requirements": [
     [
-      "has_empty_pcb",
-      "has_the_recipe"
+      "has_the_recipe",
+      "has_empty_pcb"
     ]
   ],
   "rewards": {
     "recipes": [
       "pneumaticcraft:empty_pcb_from_failed_pcb"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }

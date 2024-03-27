@@ -23,11 +23,11 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetTextField;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetVerticalScrollbar;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetLiquidFilter;
 import me.desht.pneumaticcraft.lib.Textures;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.fluids.FluidStack;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -90,7 +90,7 @@ public class ProgWidgetLiquidFilterScreen extends AbstractProgWidgetScreen<ProgW
     }
 
     private void addValidFluids() {
-        List<Fluid> fluids = ForgeRegistries.FLUIDS.getValues().stream()
+        List<Fluid> fluids = BuiltInRegistries.FLUID.stream()
                 .filter(fluid -> matchSearch(searchField.getValue(), fluid))
                 .sorted(Comparator.comparing(f -> new FluidStack(f, 1).getDisplayName().getString()))
                 .toList();

@@ -6,10 +6,10 @@
       "item": "pneumaticcraft:pneumatic_cylinder"
     },
     "J": {
-      "type": "forge:nbt",
-      "count": 1,
+      "type": "neoforge:nbt",
       "item": "minecraft:potion",
-      "nbt": "{Potion:\"minecraft:leaping\"}"
+      "strict": true,
+      "tag": "{Potion:\"minecraft:leaping\"}"
     },
     "P": {
       "item": "minecraft:piston"
@@ -25,6 +25,5 @@
   ],
   "result": {
     "item": "pneumaticcraft:jumping_upgrade_3"
-  },
-  "show_notification": true
+  }
 }

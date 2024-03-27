@@ -36,7 +36,7 @@ public abstract class AbstractTubeModuleScreen<M extends AbstractTubeModule> ext
 
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-        renderBackground(graphics);
+        renderBackground(graphics, mouseX, mouseY, partialTicks);
 
         super.render(graphics, mouseX, mouseY, partialTicks);
     }

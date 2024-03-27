@@ -26,10 +26,10 @@ import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.block.entity.UniversalSensorBlockEntity;
 import me.desht.pneumaticcraft.common.block.entity.UniversalSensorBlockEntity.SensorStatus;
-import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.inventory.UniversalSensorMenu;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdateTextfield;
+import me.desht.pneumaticcraft.common.registry.ModBlocks;
 import me.desht.pneumaticcraft.common.sensor.SensorHandler;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
@@ -285,7 +285,7 @@ public class UniversalSensorScreen extends AbstractPneumaticCraftContainerScreen
         } else if (comboBox.isVisible()) {
             te.setText(0, comboBox.getValue());
         }
-        NetworkHandler.sendToServer(new PacketUpdateTextfield(te, 0));
+        NetworkHandler.sendToServer(PacketUpdateTextfield.create(te, 0));
     }
 
     @Override
@@ -334,7 +334,7 @@ public class UniversalSensorScreen extends AbstractPneumaticCraftContainerScreen
     protected void addWarnings(List<Component> curInfo) {
         super.addWarnings(curInfo);
 
-        if (!te.getPrimaryInventory().getStackInSlot(0).isEmpty() && te.outOfRange > 0) {
+        if (!te.getItemHandler().getStackInSlot(0).isEmpty() && te.outOfRange > 0) {
             curInfo.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.universalSensor.outOfRange", te.outOfRange));
         }
     }

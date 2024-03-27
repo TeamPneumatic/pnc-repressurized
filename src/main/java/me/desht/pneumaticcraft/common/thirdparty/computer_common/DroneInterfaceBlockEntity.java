@@ -24,9 +24,6 @@ import me.desht.pneumaticcraft.api.upgrade.IUpgradeRegistry;
 import me.desht.pneumaticcraft.api.upgrade.PNCUpgrade;
 import me.desht.pneumaticcraft.common.block.entity.AbstractTickingBlockEntity;
 import me.desht.pneumaticcraft.common.block.entity.ILuaMethodProvider;
-import me.desht.pneumaticcraft.common.core.ModBlockEntities;
-import me.desht.pneumaticcraft.common.core.ModEntityTypes;
-import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.common.drone.ai.DroneAIManager.WrappedGoal;
 import me.desht.pneumaticcraft.common.drone.progwidgets.IBlockOrdered.Ordering;
 import me.desht.pneumaticcraft.common.drone.progwidgets.IBlockRightClicker;
@@ -37,6 +34,9 @@ import me.desht.pneumaticcraft.common.entity.drone.DroneEntity;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketShowArea;
 import me.desht.pneumaticcraft.common.network.PacketSpawnRing;
+import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
+import me.desht.pneumaticcraft.common.registry.ModEntityTypes;
+import me.desht.pneumaticcraft.common.registry.ModProgWidgets;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -48,7 +48,7 @@ import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.items.IItemHandler;
+import net.neoforged.neoforge.items.IItemHandler;
 import org.apache.commons.lang3.Validate;
 
 import javax.annotation.Nullable;
@@ -71,7 +71,7 @@ public class DroneInterfaceBlockEntity extends AbstractTickingBlockEntity
     private int droneId; // track drone ID client-side
 
     public DroneInterfaceBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.DRONE_INTERFACE.get(), pos, state);
+        super(ModBlockEntityTypes.DRONE_INTERFACE.get(), pos, state);
     }
 
     @Override
@@ -101,14 +101,15 @@ public class DroneInterfaceBlockEntity extends AbstractTickingBlockEntity
             if (ringSendCooldown > 0) ringSendCooldown--;
             if (!ringSendQueue.isEmpty() && ringSendCooldown <= 0) {
                 ringSendCooldown = ringSendQueue.size() > 10 ? 1 : 5;
-                NetworkHandler.sendToAllTracking(new PacketSpawnRing(getBlockPos().getX() + 0.5, getBlockPos().getY() + 0.5, getBlockPos().getZ() + 0.5, drone, ringSendQueue.poll()), this);
+                Integer color = ringSendQueue.poll();
+                NetworkHandler.sendToAllTracking(PacketSpawnRing.create(getBlockPos(), drone, color), this);
             }
             if (!getBlockState().getValue(DroneInterfaceBlock.CONNECTED)) {
                 nonNullLevel().setBlockAndUpdate(worldPosition, getBlockState().setValue(DroneInterfaceBlock.CONNECTED, true));
             }
         } else {
             if (getBlockState().getValue(DroneInterfaceBlock.CONNECTED)) {
-                NetworkHandler.sendToAllTracking(new PacketShowArea(getBlockPos()), DroneInterfaceBlockEntity.this);
+                NetworkHandler.sendToAllTracking(PacketShowArea.forPos(getBlockPos()), DroneInterfaceBlockEntity.this);
                 nonNullLevel().setBlockAndUpdate(worldPosition, getBlockState().setValue(DroneInterfaceBlock.CONNECTED, false));
             }
         }
@@ -158,8 +159,7 @@ public class DroneInterfaceBlockEntity extends AbstractTickingBlockEntity
             public Object[] call(Object[] args) {
                 requireNoArgs(args);
                 return new Object[]{
-                        (double) validateAndGetDrone().getCapability(PNCCapabilities.AIR_HANDLER_CAPABILITY)
-                                .orElseThrow(RuntimeException::new).getPressure()
+                        (double) validateAndGetDrone().getCapability(PNCCapabilities.AIR_HANDLER_ENTITY).getPressure()
                 };
             }
         });
@@ -181,7 +181,7 @@ public class DroneInterfaceBlockEntity extends AbstractTickingBlockEntity
                 requireNoArgs(args);
                 List<String> actions = new ArrayList<>();
                 DroneEntity drone = ModEntityTypes.DRONE.get().create(nonNullLevel());
-                ModProgWidgets.PROG_WIDGETS.get().getEntries().forEach(entry -> {
+                ModProgWidgets.PROG_WIDGETS_REGISTRY.entrySet().forEach(entry -> {
                     IProgWidget widget = IProgWidget.create(entry.getValue());
                     if (widget.canBeRunByComputers(drone, getWidget())) {
                         actions.add(entry.getKey().location().toString());
@@ -281,7 +281,7 @@ public class DroneInterfaceBlockEntity extends AbstractTickingBlockEntity
                 requireNoArgs(args);
                 Set<BlockPos> area = new HashSet<>();
                 getWidget().getArea(area);
-                NetworkHandler.sendToAllTracking(new PacketShowArea(getBlockPos(), area), DroneInterfaceBlockEntity.this);
+                NetworkHandler.sendToAllTracking(PacketShowArea.forArea(getBlockPos(), area), DroneInterfaceBlockEntity.this);
                 return null;
             }
         });
@@ -290,7 +290,7 @@ public class DroneInterfaceBlockEntity extends AbstractTickingBlockEntity
             @Override
             public Object[] call(Object[] args) {
                 requireNoArgs(args);
-                NetworkHandler.sendToAllTracking(new PacketShowArea(getBlockPos()), DroneInterfaceBlockEntity.this);
+                NetworkHandler.sendToAllTracking(PacketShowArea.forPos(getBlockPos()), DroneInterfaceBlockEntity.this);
                 return null;
             }
         });
@@ -602,7 +602,7 @@ public class DroneInterfaceBlockEntity extends AbstractTickingBlockEntity
                 String widgetName = (String) args[0];
                 // allow a default namespace of 'pneumaticcraft' if omitted
                 ResourceLocation id = widgetName.contains(":") ? new ResourceLocation(widgetName) : RL(widgetName);
-                ProgWidgetType<?> type = ModProgWidgets.PROG_WIDGETS.get().getValue(id);
+                ProgWidgetType<?> type = ModProgWidgets.PROG_WIDGETS_REGISTRY.get(id);
 
                 Validate.notNull(type,
                         "No action with the name '" + widgetName + "'!");
@@ -628,7 +628,7 @@ public class DroneInterfaceBlockEntity extends AbstractTickingBlockEntity
                 requireNoArgs(args);
                 if (curAction != null) {
                     return new Object[] {
-                            PneumaticCraftUtils.getRegistryName(ModProgWidgets.PROG_WIDGETS.get(), curAction.getType())
+                            PneumaticCraftUtils.getRegistryName(ModProgWidgets.PROG_WIDGETS_REGISTRY, curAction.getType())
                                     .map(ResourceLocation::toString)
                                     .orElse("?")
                     };
@@ -809,7 +809,7 @@ public class DroneInterfaceBlockEntity extends AbstractTickingBlockEntity
     }
 
     @Override
-    public IItemHandler getPrimaryInventory() {
+    public IItemHandler getItemHandler(@org.jetbrains.annotations.Nullable Direction dir) {
         return null;
     }
 

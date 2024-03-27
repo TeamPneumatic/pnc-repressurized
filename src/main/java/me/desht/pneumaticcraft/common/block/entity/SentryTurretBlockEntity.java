@@ -18,7 +18,6 @@
 package me.desht.pneumaticcraft.common.block.entity;
 
 import com.mojang.authlib.GameProfile;
-import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.inventory.SentryTurretMenu;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.item.minigun.AbstractGunAmmoItem;
@@ -26,6 +25,7 @@ import me.desht.pneumaticcraft.common.minigun.Minigun;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.network.PacketPlayMovingSound.MovingSoundFocus;
+import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.util.EntityDistanceComparator;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -50,10 +50,9 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.util.FakePlayerFactory;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemStackHandler;
+import net.neoforged.neoforge.common.util.FakePlayerFactory;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.ItemStackHandler;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -66,7 +65,6 @@ public class SentryTurretBlockEntity extends AbstractTickingBlockEntity implemen
     public static final String NBT_ENTITY_FILTER = "entityFilter";
 
     private final ItemStackHandler inventory = new TurretItemStackHandler(this);
-    private final LazyOptional<IItemHandler> invCap = LazyOptional.of(() -> inventory);
 
     @GuiSynced
     private String entityFilter = "@mob";
@@ -90,7 +88,7 @@ public class SentryTurretBlockEntity extends AbstractTickingBlockEntity implemen
     private float idleYaw;
 
     public SentryTurretBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.SENTRY_TURRET.get(), pos, state, 4);
+        super(ModBlockEntityTypes.SENTRY_TURRET.get(), pos, state, 4);
     }
 
     @Override
@@ -101,7 +99,7 @@ public class SentryTurretBlockEntity extends AbstractTickingBlockEntity implemen
             getMinigun().setSweeping(true);
             if ((nonNullLevel().getGameTime() & 0xF) == 0) {
                 List<LivingEntity> entities = nonNullLevel().getEntitiesOfClass(LivingEntity.class, getTargetingBoundingBox(), entitySelector);
-                if (entities.size() > 0) {
+                if (!entities.isEmpty()) {
                     entities.sort(new EntityDistanceComparator(getBlockPos()));
                     getMinigun().setAttackTarget(entities.get(0));
                     targetEntityId = entities.get(0).getId();
@@ -162,12 +160,7 @@ public class SentryTurretBlockEntity extends AbstractTickingBlockEntity implemen
     }
 
     private AABB getTargetingBoundingBox() {
-        return new AABB(getBlockPos(), getBlockPos()).inflate(range);
-    }
-
-    @Override
-    public AABB getRenderBoundingBox() {
-        return super.getRenderBoundingBox().inflate(1);
+        return new AABB(getBlockPos()).inflate(range);
     }
 
     @Override
@@ -222,7 +215,7 @@ public class SentryTurretBlockEntity extends AbstractTickingBlockEntity implemen
     }
 
     @Override
-    public IItemHandler getPrimaryInventory() {
+    public IItemHandler getItemHandler(@Nullable Direction dir) {
         return inventory;
     }
 
@@ -273,11 +266,6 @@ public class SentryTurretBlockEntity extends AbstractTickingBlockEntity implemen
         }
         getMinigun().setAmmoStack(ammo);
         recalculateRange();
-    }
-
-    @Override
-    protected LazyOptional<IItemHandler> getInventoryCap(Direction side) {
-        return invCap;
     }
 
     @Override

@@ -17,100 +17,85 @@
 
 package me.desht.pneumaticcraft.common.network;
 
-import me.desht.pneumaticcraft.common.block.entity.PressureTubeBlockEntity;
 import me.desht.pneumaticcraft.common.tubemodules.RedstoneModule;
 import me.desht.pneumaticcraft.common.tubemodules.RedstoneModule.EnumRedstoneDirection;
+import me.desht.pneumaticcraft.common.tubemodules.RedstoneModule.Operation;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import net.minecraft.core.Direction;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.network.NetworkEvent;
 
-import java.util.function.Supplier;
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 /**
  * Received on: SERVER
  * Sent by client to update server-side settings when redstone module GUI is closed
  */
-public class PacketSyncRedstoneModuleToServer extends LocationIntPacket {
-    private final Direction side;
-    private final byte op;
-    private final byte ourColor;
-    private final byte otherColor;
-    private final int constantVal;
-    private final boolean invert;
-    private final boolean input;
-    private final boolean comparatorInput;
+public record PacketSyncRedstoneModuleToServer(ModuleLocator locator, Operation op,
+                                               byte ourColor, byte otherColor, int constantVal, boolean invert,
+                                               EnumRedstoneDirection redstoneDirection, boolean comparatorInput)
+        implements TubeModulePacket<RedstoneModule> {
+    public static final ResourceLocation ID = RL("sync_redstone_module_to_server");
 
-    public PacketSyncRedstoneModuleToServer(RedstoneModule module) {
-        super(module.getTube().getBlockPos());
-
-        this.input = module.getRedstoneDirection() == EnumRedstoneDirection.INPUT;
-        this.side = module.getDirection();
-        this.op = (byte) module.getOperation().ordinal();
-        this.ourColor = (byte) module.getColorChannel();
-        this.otherColor = (byte) module.getOtherColor();
-        this.constantVal = module.getConstantVal();
-        this.invert = module.isInverted();
-        this.comparatorInput = module.isComparatorInput();
+    public static PacketSyncRedstoneModuleToServer create(RedstoneModule module) {
+        return new PacketSyncRedstoneModuleToServer(
+                ModuleLocator.forModule(module),
+                module.getOperation(),
+                (byte) module.getColorChannel(),
+                (byte) module.getOtherColor(),
+                module.getConstantVal(),
+                module.isInverted(),
+                module.getRedstoneDirection(),
+                module.isComparatorInput()
+        );
     }
 
-    PacketSyncRedstoneModuleToServer(FriendlyByteBuf buffer) {
-        super(buffer);
-        side = buffer.readEnum(Direction.class);
-        input = buffer.readBoolean();
-        ourColor = buffer.readByte();
-        if (input) {
-            op = 0;
-            otherColor = 0;
-            constantVal = 0;
-            invert = false;
-            comparatorInput = buffer.readBoolean();
+    public static PacketSyncRedstoneModuleToServer fromNetwork(FriendlyByteBuf buffer) {
+        ModuleLocator loc = ModuleLocator.fromNetwork(buffer);
+        EnumRedstoneDirection redstoneDir = buffer.readEnum(EnumRedstoneDirection.class);
+        byte ourColor = buffer.readByte();
+        if (redstoneDir.isInput()) {
+            return new PacketSyncRedstoneModuleToServer(loc, Operation.PASSTHROUGH, ourColor,
+                    (byte) 0, 0, false, EnumRedstoneDirection.INPUT, buffer.readBoolean());
         } else {
-            op = buffer.readByte();
-            otherColor = buffer.readByte();
-            constantVal = buffer.readVarInt();
-            invert = buffer.readBoolean();
-            comparatorInput = false;
+            return new PacketSyncRedstoneModuleToServer(loc, buffer.readEnum(Operation.class), ourColor,
+                    buffer.readByte(), buffer.readVarInt(), buffer.readBoolean(), EnumRedstoneDirection.OUTPUT, false);
         }
     }
 
     @Override
-    public void toBytes(FriendlyByteBuf buf) {
-        super.toBytes(buf);
-        buf.writeEnum(side);
-        buf.writeBoolean(input);
+    public void write(FriendlyByteBuf buf) {
+        locator.write(buf);
+        buf.writeEnum(redstoneDirection);
         buf.writeByte(ourColor);
-        if (input) {
+        if (redstoneDirection.isInput()) {
             buf.writeBoolean(comparatorInput);
         } else {
-            buf.writeByte(op);
+            buf.writeEnum(op);
             buf.writeByte(otherColor);
             buf.writeVarInt(constantVal);
             buf.writeBoolean(invert);
         }
     }
 
-    public void handle(Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> {
-            Player player = ctx.get().getSender();
-            if (PneumaticCraftUtils.canPlayerReach(player, pos)) {
-                PneumaticCraftUtils.getTileEntityAt(player.level(), pos, PressureTubeBlockEntity.class).ifPresent(tube -> {
-                    if (tube.getModule(side) instanceof RedstoneModule mr) {
-                        mr.setRedstoneDirection(input ? EnumRedstoneDirection.INPUT : EnumRedstoneDirection.OUTPUT);
-                        mr.setColorChannel(ourColor);
-                        if (input) {
-                            mr.setComparatorInput(comparatorInput);
-                        } else {
-                            mr.setInverted(invert);
-                            mr.setOperation(RedstoneModule.Operation.values()[op], otherColor, constantVal);
-                        }
-                        mr.updateNeighbors();
-                        mr.setInputLevel(-1);  // force recalc
-                    }
-                });
+    @Override
+    public ResourceLocation id() {
+        return ID;
+    }
+
+    @Override
+    public void onModuleUpdate(RedstoneModule module, Player player) {
+        if (PneumaticCraftUtils.canPlayerReach(player, module.getTube().getBlockPos())) {
+            module.setRedstoneDirection(redstoneDirection);
+            module.setColorChannel(ourColor);
+            if (redstoneDirection.isInput()) {
+                module.setComparatorInput(comparatorInput);
+            } else {
+                module.setInverted(invert);
+                module.setOperation(op, otherColor, constantVal);
             }
-        });
-        ctx.get().setPacketHandled(true);
+            module.updateNeighbors();
+            module.setInputLevel(-1);  // force recalc
+        }
     }
 }

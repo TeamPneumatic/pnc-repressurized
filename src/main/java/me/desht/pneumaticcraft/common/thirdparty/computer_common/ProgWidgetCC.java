@@ -19,11 +19,11 @@ package me.desht.pneumaticcraft.common.thirdparty.computer_common;
 
 import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
-import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.common.drone.IDroneBase;
 import me.desht.pneumaticcraft.common.drone.progwidgets.*;
 import me.desht.pneumaticcraft.common.entity.drone.DroneEntity;
-import me.desht.pneumaticcraft.common.recipes.RecipeCache;
+import me.desht.pneumaticcraft.common.recipes.VanillaRecipeCache;
+import me.desht.pneumaticcraft.common.registry.ModProgWidgets;
 import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
 import me.desht.pneumaticcraft.common.util.DummyContainer;
 import me.desht.pneumaticcraft.common.util.LegacyAreaWidgetConverter;
@@ -31,6 +31,7 @@ import me.desht.pneumaticcraft.common.util.LegacyAreaWidgetConverter.EnumOldArea
 import me.desht.pneumaticcraft.common.util.StringFilterEntitySelector;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.ai.goal.Goal;
@@ -39,12 +40,12 @@ import net.minecraft.world.inventory.TransientCraftingContainer;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
-import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.*;
 import java.util.function.Predicate;
@@ -212,8 +213,8 @@ public class ProgWidgetCC extends ProgWidgetInventoryBase implements IBlockOrder
 
     private ProgWidgetItemFilter getItemFilter(String itemName, boolean useNBT, boolean useModSimilarity) throws IllegalArgumentException {
         if (!itemName.contains(":")) throw new IllegalArgumentException("Item/Block name doesn't contain a ':'!");
-        Item item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(itemName));
-        if (item == null) throw new IllegalArgumentException("Item not found for the name \"" + itemName + "\"!");
+        Item item = BuiltInRegistries.ITEM.get(new ResourceLocation(itemName));
+        if (item == Items.AIR) throw new IllegalArgumentException("Item not found for the name \"" + itemName + "\"!");
         ProgWidgetItemFilter itemFilter = new ProgWidgetItemFilter();
         itemFilter.setFilter(new ItemStack(item));
         itemFilter.useNBT = useNBT;
@@ -330,8 +331,8 @@ public class ProgWidgetCC extends ProgWidgetInventoryBase implements IBlockOrder
     }
 
     private ProgWidgetLiquidFilter getFilterForArgs(String fluidName) throws IllegalArgumentException {
-        Fluid fluid = ForgeRegistries.FLUIDS.getValue(new ResourceLocation(fluidName));
-        if (fluid == null || fluid == Fluids.EMPTY) throw new IllegalArgumentException("Can't find fluid for the name \"" + fluidName + "\"!");
+        Fluid fluid = BuiltInRegistries.FLUID.get(new ResourceLocation(fluidName));
+        if (fluid == Fluids.EMPTY) throw new IllegalArgumentException("Can't find fluid for the name \"" + fluidName + "\"!");
         return ProgWidgetLiquidFilter.withFilter(fluid);
     }
 
@@ -465,7 +466,7 @@ public class ProgWidgetCC extends ProgWidgetInventoryBase implements IBlockOrder
 
     @Override
     public Optional<CraftingRecipe> getRecipe(Level world, CraftingContainer grid) {
-        return RecipeCache.CRAFTING.getCachedRecipe(world, grid);
+        return VanillaRecipeCache.CRAFTING.getCachedRecipe(world, grid);
     }
 
     @Override

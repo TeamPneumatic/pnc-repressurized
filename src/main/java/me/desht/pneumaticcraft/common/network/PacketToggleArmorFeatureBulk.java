@@ -21,73 +21,57 @@ import me.desht.pneumaticcraft.common.item.PneumaticArmorItem;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.network.NetworkEvent;
+import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Supplier;
+
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 /**
  * Received on: SERVER
  * Sent by client to set the status of multiple armor features at once
  * (used in armor init and core components reset)
  */
-public class PacketToggleArmorFeatureBulk {
-    private final List<FeatureSetting> features;
+public record PacketToggleArmorFeatureBulk(List<FeatureSetting> features) implements CustomPacketPayload {
+    public static final ResourceLocation ID = RL("toggle_armor_feature_bulk");
 
-    public PacketToggleArmorFeatureBulk(List<FeatureSetting> features) {
-        this.features = features;
+    public static PacketToggleArmorFeatureBulk fromNetwork(FriendlyByteBuf buffer) {
+        return new PacketToggleArmorFeatureBulk(buffer.readList(FeatureSetting::fromNetwork));
     }
 
-    PacketToggleArmorFeatureBulk(FriendlyByteBuf buffer) {
-        this.features = new ArrayList<>();
-        int len = buffer.readVarInt();
-        for (int i = 0; i < len; i++) {
-            features.add(new FeatureSetting(buffer));
-        }
+    @Override
+    public void write(FriendlyByteBuf buf) {
+        buf.writeCollection(features, (b, feature) -> feature.toBytes(b));
     }
 
-    public void toBytes(FriendlyByteBuf buf) {
-        buf.writeVarInt(features.size());
-        features.forEach(f -> f.toBytes(buf));
+    @Override
+    public ResourceLocation id() {
+        return ID;
     }
 
-    public void handle(Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> {
-            Player player = ctx.get().getSender();
-            if (player != null) {
-                CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
-                features.forEach(f -> {
-                    if (f.featureIndex >= 0 && f.featureIndex < ArmorUpgradeRegistry.getInstance().getHandlersForSlot(f.slot).size()
+    public static void handle(PacketToggleArmorFeatureBulk message, PlayPayloadContext ctx) {
+        ctx.player().ifPresent(player -> ctx.workHandler().submitAsync(() -> {
+            CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
+            message.features().forEach(f -> {
+                if (f.featureIndex >= 0 && f.featureIndex < ArmorUpgradeRegistry.getInstance().getHandlersForSlot(f.slot).size()
                         && PneumaticArmorItem.isPneumaticArmorPiece(player, f.slot))
-                    {
-                        handler.setUpgradeEnabled(f.slot, f.featureIndex, f.state);
-                    }
-                });
-            }
-        });
-        ctx.get().setPacketHandled(true);
+                {
+                    handler.setUpgradeEnabled(f.slot, f.featureIndex, f.state);
+                }
+            });
+        }));
     }
 
-    public static class FeatureSetting {
-        private final EquipmentSlot slot;
-        private final byte featureIndex;
-        private final boolean state;
-
-        FeatureSetting(FriendlyByteBuf buffer) {
-            this(EquipmentSlot.values()[buffer.readByte()], buffer.readByte(), buffer.readBoolean());
-        }
-
-        public FeatureSetting(EquipmentSlot slot, byte featureIndex, boolean state) {
-            this.slot = slot;
-            this.featureIndex = featureIndex;
-            this.state = state;
+    public record FeatureSetting(EquipmentSlot slot, byte featureIndex, boolean state) {
+        static FeatureSetting fromNetwork(FriendlyByteBuf buffer) {
+            return new FeatureSetting(buffer.readEnum(EquipmentSlot.class), buffer.readByte(), buffer.readBoolean());
         }
 
         void toBytes(FriendlyByteBuf buffer) {
-            buffer.writeByte(slot.ordinal());
+            buffer.writeEnum(slot);
             buffer.writeByte(featureIndex);
             buffer.writeBoolean(state);
         }

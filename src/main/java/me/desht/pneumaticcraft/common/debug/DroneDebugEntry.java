@@ -51,7 +51,7 @@ public class DroneDebugEntry {
         receivedTime = System.currentTimeMillis();
     }
 
-    public void toBytes(FriendlyByteBuf buf) {
+    public void toNetwork(FriendlyByteBuf buf) {
         buf.writeUtf(message);
         buf.writeInt(pos.getX());
         buf.writeInt(pos.getY());

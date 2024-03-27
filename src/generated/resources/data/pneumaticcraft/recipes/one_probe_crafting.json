@@ -1,17 +1,10 @@
 {
-  "type": "forge:conditional",
-  "recipes": [
+  "neoforge:conditions": [
     {
-      "conditions": [
-        {
-          "type": "forge:mod_loaded",
-          "modid": "theoneprobe"
-        }
-      ],
-      "recipe": {
-        "type": "pneumaticcraft:one_probe_helmet_crafting",
-        "category": "misc"
-      }
+      "type": "neoforge:mod_loaded",
+      "modid": "theoneprobe"
     }
-  ]
+  ],
+  "type": "pneumaticcraft:one_probe_helmet_crafting",
+  "category": "misc"
 }

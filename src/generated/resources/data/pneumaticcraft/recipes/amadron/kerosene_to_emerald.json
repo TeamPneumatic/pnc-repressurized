@@ -1,16 +1,17 @@
 {
   "type": "pneumaticcraft:amadron",
-  "id": "pneumaticcraft:amadron/kerosene_to_emerald",
   "input": {
-    "type": "FLUID",
-    "amount": 3000,
-    "id": "pneumaticcraft:kerosene"
+    "resource": {
+      "Amount": 3000,
+      "FluidName": "pneumaticcraft:kerosene"
+    }
   },
   "level": 0,
+  "offer_id": "pneumaticcraft:amadron/kerosene_to_emerald",
   "output": {
-    "type": "ITEM",
-    "amount": 1,
-    "id": "minecraft:emerald"
-  },
-  "static": true
+    "resource": {
+      "Count": 1,
+      "id": "minecraft:emerald"
+    }
+  }
 }

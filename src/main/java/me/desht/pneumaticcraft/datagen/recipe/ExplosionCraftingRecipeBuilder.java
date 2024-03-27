@@ -17,42 +17,27 @@
 
 package me.desht.pneumaticcraft.datagen.recipe;
 
-import com.google.gson.JsonObject;
-import me.desht.pneumaticcraft.api.crafting.PneumaticCraftRecipeTypes;
+import me.desht.pneumaticcraft.common.recipes.machine.ExplosionCraftingRecipeImpl;
+import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 
-import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
+import java.util.List;
 
-public class ExplosionCraftingRecipeBuilder extends PneumaticCraftRecipeBuilder<ExplosionCraftingRecipeBuilder> {
+public class ExplosionCraftingRecipeBuilder extends AbstractPNCRecipeBuilder {
     private final Ingredient input;
     private final int lossRate;
-    private final ItemStack[] outputs;
+    private final List<ItemStack> outputs;
 
     public ExplosionCraftingRecipeBuilder(Ingredient input, int lossRate, ItemStack... outputs) {
-        super(RL(PneumaticCraftRecipeTypes.EXPLOSION_CRAFTING));
-
         this.input = input;
         this.lossRate = lossRate;
-        this.outputs = outputs;
+        this.outputs = List.of(outputs);
     }
 
     @Override
-    protected RecipeResult getResult(ResourceLocation id) {
-        return new ExplosionCraftingRecipeResult(id);
-    }
-
-    public class ExplosionCraftingRecipeResult extends RecipeResult {
-        ExplosionCraftingRecipeResult(ResourceLocation id) {
-            super(id);
-        }
-
-        @Override
-        public void serializeRecipeData(JsonObject json) {
-            json.add("input", input.toJson());
-            json.add("results", SerializerHelper.serializeItemStacks(outputs));
-            json.addProperty("loss_rate", lossRate);
-        }
+    public void save(RecipeOutput recipeOutput, ResourceLocation id) {
+        recipeOutput.accept(id, new ExplosionCraftingRecipeImpl(input, lossRate, outputs), null);
     }
 }

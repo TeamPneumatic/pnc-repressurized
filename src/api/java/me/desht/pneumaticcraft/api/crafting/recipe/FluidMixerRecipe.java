@@ -18,15 +18,10 @@
 package me.desht.pneumaticcraft.api.crafting.recipe;
 
 import me.desht.pneumaticcraft.api.crafting.ingredient.FluidIngredient;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidStack;
 
 public abstract class FluidMixerRecipe extends PneumaticCraftRecipe {
-    protected FluidMixerRecipe(ResourceLocation id) {
-        super(id);
-    }
-
     public abstract boolean matches(FluidStack fluid1, FluidStack fluid2);
 
     public abstract FluidIngredient getInput1();

@@ -1,6 +1,6 @@
 {
 	"credit": "Made with Blockbench",
-	"parent": "forge:block/default",
+	"parent": "neoforge:block/default",
 	"textures": {
 		"particle": "pneumaticcraft:pnc_model/display_table_side",
 		"leg": "pneumaticcraft:pnc_model/display_table_leg"

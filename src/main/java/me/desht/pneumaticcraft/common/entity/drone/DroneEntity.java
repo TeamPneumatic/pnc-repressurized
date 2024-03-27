@@ -28,7 +28,6 @@ import me.desht.pneumaticcraft.api.lib.NBTKeys;
 import me.desht.pneumaticcraft.api.pneumatic_armor.hacking.IHackableEntity;
 import me.desht.pneumaticcraft.api.pressure.PressureHelper;
 import me.desht.pneumaticcraft.api.semiblock.SemiblockEvent;
-import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.api.tileentity.IManoMeasurable;
 import me.desht.pneumaticcraft.api.upgrade.PNCUpgrade;
 import me.desht.pneumaticcraft.client.util.ProgressingLine;
@@ -36,10 +35,6 @@ import me.desht.pneumaticcraft.common.block.entity.PneumaticEnergyStorage;
 import me.desht.pneumaticcraft.common.block.entity.ProgrammerBlockEntity;
 import me.desht.pneumaticcraft.common.capabilities.BasicAirHandler;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
-import me.desht.pneumaticcraft.common.core.ModBlocks;
-import me.desht.pneumaticcraft.common.core.ModEntityTypes;
-import me.desht.pneumaticcraft.common.core.ModItems;
-import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.debug.DroneDebugger;
 import me.desht.pneumaticcraft.common.drone.*;
 import me.desht.pneumaticcraft.common.drone.ai.DroneAIManager;
@@ -55,12 +50,17 @@ import me.desht.pneumaticcraft.common.item.GPSToolItem;
 import me.desht.pneumaticcraft.common.item.ItemRegistry;
 import me.desht.pneumaticcraft.common.item.minigun.AbstractGunAmmoItem;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
+import me.desht.pneumaticcraft.common.network.DronePacket;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketPlayMovingSound.MovingSoundFocus;
 import me.desht.pneumaticcraft.common.network.PacketShowWireframe;
-import me.desht.pneumaticcraft.common.network.PacketSyncDroneEntityProgWidgets;
+import me.desht.pneumaticcraft.common.network.PacketSyncDroneProgWidgets;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
+import me.desht.pneumaticcraft.common.registry.ModBlocks;
+import me.desht.pneumaticcraft.common.registry.ModEntityTypes;
+import me.desht.pneumaticcraft.common.registry.ModItems;
+import me.desht.pneumaticcraft.common.registry.ModSounds;
 import me.desht.pneumaticcraft.common.thirdparty.RadiationSourceCheck;
 import me.desht.pneumaticcraft.common.upgrades.IUpgradeHolder;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
@@ -77,6 +77,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -85,8 +86,6 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ServerboundPlayerActionPacket;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -126,24 +125,18 @@ import net.minecraft.world.level.pathfinder.Node;
 import net.minecraft.world.level.pathfinder.Path;
 import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.FakePlayer;
-import net.minecraftforge.common.util.ITeleporter;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.energy.IEnergyStorage;
-import net.minecraftforge.entity.IEntityAdditionalSpawnData;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fluids.FluidUtil;
-import net.minecraftforge.fluids.IFluidTank;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.fluids.capability.templates.FluidTank;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.IItemHandlerModifiable;
-import net.minecraftforge.items.ItemStackHandler;
-import net.minecraftforge.network.NetworkHooks;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.common.util.FakePlayer;
+import net.neoforged.neoforge.common.util.ITeleporter;
+import net.neoforged.neoforge.energy.IEnergyStorage;
+import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
+import net.neoforged.neoforge.fluids.FluidType;
+import net.neoforged.neoforge.fluids.FluidUtil;
+import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.IItemHandlerModifiable;
+import net.neoforged.neoforge.items.ItemStackHandler;
 import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.NotNull;
 
@@ -155,7 +148,7 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class DroneEntity extends AbstractDroneEntity implements
-        IManoMeasurable, IPneumaticWrenchable, IEntityAdditionalSpawnData,
+        IManoMeasurable, IPneumaticWrenchable, IEntityWithComplexSpawn,
         IHackableEntity<DroneEntity>, IDroneBase, FlyingAnimal, IUpgradeHolder {
 
     private static final float LASER_EXTEND_SPEED = 0.05F;
@@ -188,19 +181,15 @@ public class DroneEntity extends AbstractDroneEntity implements
     }
 
     private final EntityDroneItemHandler droneItemHandler = new EntityDroneItemHandler(this);
-    private final LazyOptional<IItemHandlerModifiable> droneItemHandlerCap = LazyOptional.of(() -> droneItemHandler);
 
     private final FluidTank fluidTank = new FluidTank(Integer.MAX_VALUE);
-    private final LazyOptional<IFluidHandler> fluidCap = LazyOptional.of(() -> fluidTank);
 
     private final PneumaticEnergyStorage energy = new PneumaticEnergyStorage(100000);
-    private final LazyOptional<IEnergyStorage> energyCap = LazyOptional.of(() -> energy);
 
     private final ItemStackHandler upgradeInventory = new ItemStackHandler(9);
     private final UpgradeCache upgradeCache = new UpgradeCache(this);
 
     private BasicAirHandler airHandler;
-    private final LazyOptional<IAirHandler> airCap = LazyOptional.of(this::getAirHandler);
 
     private final Map<Direction,Integer> emittingRedstoneValues = new EnumMap<>(Direction.class);
     private float propSpeed;
@@ -261,7 +250,6 @@ public class DroneEntity extends AbstractDroneEntity implements
         this(ModEntityTypes.DRONE.get(), world, player);
     }
 
-    @SubscribeEvent
     public void onSemiblockEvent(SemiblockEvent event) {
         if (!event.getWorld().isClientSide && event.getWorld() == getCommandSenderWorld()
                 && event.getSemiblock() instanceof AbstractLogisticsFrameEntity) {
@@ -296,7 +284,7 @@ public class DroneEntity extends AbstractDroneEntity implements
             // https://github.com/EnigmaticaModpacks/Enigmatica6/issues/5167
             ench.keySet().removeIf(e -> !droneStack.getItem().canApplyAtEnchantingTable(droneStack, e));
             stackEnchants.putAll(ench);
-            int air = droneStack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).orElseThrow(RuntimeException::new).getAir();
+            int air = droneStack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM).getAir();
             getAirHandler().addAir(air);
             DroneItem droneItem = (DroneItem) droneStack.getItem();
             if (droneItem.canProgram(droneStack)) {
@@ -332,7 +320,7 @@ public class DroneEntity extends AbstractDroneEntity implements
         UpgradableItemUtils.setUpgrades(droneStack, upgradeInventory);
         EnchantmentHelper.setEnchantments(stackEnchants, droneStack);
 
-        droneStack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).orElseThrow(RuntimeException::new).addAir(getAirHandler().getAir());
+        droneStack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM).addAir(getAirHandler().getAir());
 
         if (hasCustomName()) droneStack.setHoverName(getCustomName());
     }
@@ -364,25 +352,25 @@ public class DroneEntity extends AbstractDroneEntity implements
                 .add(Attributes.FOLLOW_RANGE, 75.0D);
     }
 
-    @Nonnull
-    @Override
-    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> capability, Direction facing) {
-        if (capability == ForgeCapabilities.ITEM_HANDLER) {
-            return droneItemHandlerCap.cast();
-        } else if (capability == ForgeCapabilities.FLUID_HANDLER) {
-            return fluidCap.cast();
-        } else if (capability == ForgeCapabilities.ENERGY) {
-            return energyCap.cast();
-        } else if (capability == PNCCapabilities.AIR_HANDLER_CAPABILITY) {
-            return airCap.cast();
-        }
-        return super.getCapability(capability, facing);
-    }
+//    @Nonnull
+//    @Override
+//    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> capability, Direction facing) {
+//        if (capability == Capabilities.ITEM_HANDLER) {
+//            return droneItemHandlerCap.cast();
+//        } else if (capability == Capabilities.FLUID_HANDLER) {
+//            return fluidCap.cast();
+//        } else if (capability == Capabilities.ENERGY) {
+//            return energyCap.cast();
+//        } else if (capability == PNCCapabilities.AIR_HANDLER_ENTITY) {
+//            return airCap.cast();
+//        }
+//        return super.getCapability(capability, facing);
+//    }
 
-    @Override
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return NetworkHooks.getEntitySpawningPacket(this);
-    }
+//    @Override
+//    public Packet<ClientGamePacketListener> getAddEntityPacket() {
+//        return NetworkHooks.getEntitySpawningPacket(this);
+//    }
 
     @Override
     public void writeSpawnData(FriendlyByteBuf buffer) {
@@ -529,7 +517,7 @@ public class DroneEntity extends AbstractDroneEntity implements
                 aiManager.onUpdateTasks();
                 if (getActiveAIManager() != prevActive) {
                     // active AI has changed (started or stopped using External Program) - resync widget list to debugging players
-                    getDebugger().getDebuggingPlayers().forEach(p -> NetworkHandler.sendToPlayer(new PacketSyncDroneEntityProgWidgets(this), p));
+                    getDebugger().getDebuggingPlayers().forEach(p -> NetworkHandler.sendToPlayer(PacketSyncDroneProgWidgets.create(this), p));
                 }
             }
             handleRedstoneEmission();
@@ -538,7 +526,7 @@ public class DroneEntity extends AbstractDroneEntity implements
 
     private void onFirstTick() {
         if (!level().isClientSide) {
-            MinecraftForge.EVENT_BUS.register(this);
+            NeoForge.EVENT_BUS.addListener(this::onSemiblockEvent);
 
             double newDroneSpeed = 0.15f + Math.min(10, getUpgrades(ModUpgrades.SPEED.get())) * 0.015f;
             if (getUpgrades(ModUpgrades.ARMOR.get()) > 6) {
@@ -596,8 +584,8 @@ public class DroneEntity extends AbstractDroneEntity implements
     }
 
     @Override
-    public boolean canBreatheUnderwater() {
-        return securityUpgradeCount > 0;
+    public boolean canDrownInFluidType(FluidType type) {
+        return securityUpgradeCount == 0;
     }
 
     @Override
@@ -793,9 +781,9 @@ public class DroneEntity extends AbstractDroneEntity implements
                 }).orElse(InteractionResult.PASS);
             }
             return InteractionResult.SUCCESS;
-        } else if (stack.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).isPresent()) {
-            if (player.level().isClientSide) return InteractionResult.CONSUME;
-            return stack.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).map(handler -> {
+        } else if (IOHelper.getFluidHandlerForItem(stack).isPresent()) {
+            if (player.level().isClientSide) return InteractionResult.SUCCESS;
+            return IOHelper.getFluidHandlerForItem(stack).map(handler -> {
                 if (handler.getFluidInTank(0).isEmpty()) {
                     boolean ok = player.level().isClientSide || FluidUtil.interactWithFluidHandler(player, hand, fluidTank);
                     return ok ? InteractionResult.CONSUME : InteractionResult.PASS;
@@ -903,7 +891,7 @@ public class DroneEntity extends AbstractDroneEntity implements
 
         setCustomName(Component.empty());  // keep other mods (like CoFH Core) quiet about death message broadcasts
 
-        MinecraftForge.EVENT_BUS.unregister(this);
+        NeoForge.EVENT_BUS.unregister(this);
     }
 
     private void reportDroneDeath(Player owner, DamageSource damageSource) {
@@ -923,9 +911,9 @@ public class DroneEntity extends AbstractDroneEntity implements
     }
 
     private Item getDroneItem() {
-        // return the item which has the same name as our entity type
-        return PneumaticCraftUtils.getRegistryName(ForgeRegistries.ENTITY_TYPES, getType())
-                .map(ForgeRegistries.ITEMS::getValue)
+        // return the item which has the same registry ID as our entity type
+        return PneumaticCraftUtils.getRegistryName(BuiltInRegistries.ENTITY_TYPE, getType())
+                .map(BuiltInRegistries.ITEM::get)
                 .orElseThrow();
     }
 
@@ -965,7 +953,7 @@ public class DroneEntity extends AbstractDroneEntity implements
         return canDroneBePickedUp() && super.startRiding(entity, force);
     }
 
-    protected BasicAirHandler getAirHandler() {
+    public BasicAirHandler getAirHandler() {
         if (airHandler == null) {
             int vol = PressureHelper.getUpgradedVolume(PneumaticValues.DRONE_VOLUME, getUpgrades(ModUpgrades.VOLUME.get()));
             ItemStack stack = new ItemStack(getDroneItem());
@@ -1026,7 +1014,8 @@ public class DroneEntity extends AbstractDroneEntity implements
         if (!stackEnchants.isEmpty()) {
             CompoundTag eTag = new CompoundTag();
             stackEnchants.forEach((ench, lvl) ->
-                    PneumaticCraftUtils.getRegistryName(ForgeRegistries.ENCHANTMENTS, ench).ifPresent(regName -> eTag.putInt(regName.toString(), lvl)));
+                    PneumaticCraftUtils.getRegistryName(BuiltInRegistries.ENCHANTMENT, ench)
+                            .ifPresent(regName -> eTag.putInt(regName.toString(), lvl)));
             tag.put("stackEnchants", eTag);
         }
 
@@ -1079,7 +1068,7 @@ public class DroneEntity extends AbstractDroneEntity implements
         if (tag.contains("stackEnchants", Tag.TAG_COMPOUND)) {
             CompoundTag eTag = tag.getCompound("stackEnchants");
             for (String name : eTag.getAllKeys()) {
-                Enchantment e = ForgeRegistries.ENCHANTMENTS.getValue(new ResourceLocation(name));
+                Enchantment e = BuiltInRegistries.ENCHANTMENT.get(new ResourceLocation(name));
                 if (e != null) {
                     stackEnchants.put(e, eTag.getInt(name));
                 }
@@ -1133,7 +1122,7 @@ public class DroneEntity extends AbstractDroneEntity implements
         if (minigun == null) {
             minigun = new MinigunDrone(level().isClientSide ? null : getFakePlayer())
                     .setWorld(level())
-                    .setAirHandler(this.getCapability(PNCCapabilities.AIR_HANDLER_CAPABILITY), PneumaticValues.DRONE_USAGE_ATTACK)
+                    .setAirHandler(this.getCapability(PNCCapabilities.AIR_HANDLER_ENTITY), PneumaticValues.DRONE_USAGE_ATTACK)
                     .setInfiniteAmmo(getUpgrades(ModUpgrades.CREATIVE.get()) > 0);
         }
         return minigun;
@@ -1237,7 +1226,7 @@ public class DroneEntity extends AbstractDroneEntity implements
 
     @Override
     public void sendWireframeToClient(BlockPos pos) {
-        NetworkHandler.sendToAllTracking(new PacketShowWireframe(this, pos), this);
+        NetworkHandler.sendToAllTracking(PacketShowWireframe.create(this, pos), this);
     }
 
     /**
@@ -1329,8 +1318,13 @@ public class DroneEntity extends AbstractDroneEntity implements
     }
 
     @Override
-    public IFluidTank getFluidTank() {
+    public FluidTank getFluidTank() {
         return fluidTank;
+    }
+
+    @Override
+    public IEnergyStorage getEnergyStorage() {
+        return energy;
     }
 
     @Override
@@ -1549,7 +1543,7 @@ public class DroneEntity extends AbstractDroneEntity implements
         if (fluid.getFluidType().getTemperature() > 373) {
             return false;
         } else {
-            return canBreatheUnderwater();
+            return !canDrownInFluidType(fluid.getFluidType());
         }
     }
 
@@ -1589,7 +1583,12 @@ public class DroneEntity extends AbstractDroneEntity implements
 
     @Override
     public float getDronePressure() {
-        return getCapability(PNCCapabilities.AIR_HANDLER_CAPABILITY).orElseThrow(RuntimeException::new).getPressure();
+        return getAirHandler().getPressure();
+    }
+
+    @Override
+    public DronePacket.DroneTarget getPacketTarget() {
+        return DronePacket.DroneTarget.forEntity(getId());
     }
 
     public void setDroneSpeed(double droneSpeed) {

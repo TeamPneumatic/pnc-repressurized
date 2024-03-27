@@ -19,18 +19,19 @@ package me.desht.pneumaticcraft.common.util;
 
 import me.desht.pneumaticcraft.api.item.ILaunchBehaviour;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
-import me.desht.pneumaticcraft.common.core.ModItems;
-import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.entity.projectile.MicromissileEntity;
 import me.desht.pneumaticcraft.common.entity.projectile.TumblingBlockEntity;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSetEntityMotion;
 import me.desht.pneumaticcraft.common.network.PacketSpawnParticle;
 import me.desht.pneumaticcraft.common.particle.AirParticleData;
+import me.desht.pneumaticcraft.common.registry.ModItems;
+import me.desht.pneumaticcraft.common.registry.ModSounds;
 import me.desht.pneumaticcraft.mixin.accessors.BoatItemAccess;
 import me.desht.pneumaticcraft.mixin.accessors.MinecartItemAccess;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -39,7 +40,6 @@ import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.item.PrimedTnt;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.*;
 import net.minecraft.world.entity.vehicle.AbstractMinecart;
 import net.minecraft.world.entity.vehicle.Boat;
@@ -76,7 +76,7 @@ public class ItemLaunching {
             launchedEntity.setPos(initialPos.x, initialPos.y, initialPos.z);
         }
 
-        NetworkHandler.sendToAllTracking(new PacketSetEntityMotion(launchedEntity, velocity), world, trackPos);
+        NetworkHandler.sendToAllTracking(PacketSetEntityMotion.create(launchedEntity, velocity), world, trackPos);
 
         if (launchedEntity instanceof Fireball fireball) {
             // fireball velocity is handled a little differently...
@@ -113,7 +113,7 @@ public class ItemLaunching {
      * @param fallingBlocks true if block items should be spawned as falling block entities rather than item entities
      * @return the entity to launch
      */
-    public static Entity getEntityToLaunch(Level world, ItemStack stack, Player player, boolean dispenserLike, boolean fallingBlocks) {
+    public static Entity getEntityToLaunch(Level world, ItemStack stack, ServerPlayer player, boolean dispenserLike, boolean fallingBlocks) {
         Item item = stack.getItem();
 
         // Checks if item has a special launch behavior, returning the corresponding entity to launch if so
@@ -145,7 +145,7 @@ public class ItemLaunching {
     public static void registerDefaultBehaviours() {
         registerBehaviour((stack, player) -> {
             Item item = stack.getItem();
-            Level level = player.level();
+            ServerLevel level = (ServerLevel) player.level();  // player is a ServerPlayer, this is ok
             float playerYaw = player.getRotationVector().y;
             float playerPitch = player.getRotationVector().x;
 
@@ -159,7 +159,7 @@ public class ItemLaunching {
 
             } else if (item instanceof BoatItem boatItem) {
                 HitResult dummyHitResult = new EntityHitResult(player, new Vec3(0, 0, 0));
-                Boat boat = ((BoatItemAccess) boatItem).invokeGetBoat(level, dummyHitResult);
+                Boat boat = ((BoatItemAccess) boatItem).invokeGetBoat(level, dummyHitResult, stack, player);
                 boat.setYRot(playerYaw);
                 return boat;
 
@@ -187,9 +187,9 @@ public class ItemLaunching {
             } else if (item == Items.SNOWBALL) {
                 return new Snowball(level, player);
 
-            } else if (item instanceof SpawnEggItem egg && level instanceof ServerLevel serverLevel) {
+            } else if (item instanceof SpawnEggItem egg) {
                 EntityType<?> type = egg.getType(stack.getTag());
-                Entity e = type.spawn(serverLevel, stack, player, player.blockPosition(), MobSpawnType.SPAWN_EGG, false, false);
+                Entity e = type.spawn(level, stack, player, player.blockPosition(), MobSpawnType.SPAWN_EGG, false, false);
 
                 if (e instanceof LivingEntity && stack.hasCustomHoverName()) {
                     e.setCustomName(stack.getHoverName());
@@ -198,7 +198,7 @@ public class ItemLaunching {
                 return e;
 
             } else if (item instanceof MinecartItem mi) {
-                AbstractMinecart minecart = Minecart.createMinecart(level, 0, 0, 0, ((MinecartItemAccess) mi).getType());
+                AbstractMinecart minecart = Minecart.createMinecart(level, 0, 0, 0, ((MinecartItemAccess) mi).getType(), stack, player);
                 minecart.setYRot(playerYaw);
                 return minecart;
 

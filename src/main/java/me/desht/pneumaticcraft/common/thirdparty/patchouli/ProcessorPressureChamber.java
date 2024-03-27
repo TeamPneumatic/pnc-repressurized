@@ -19,8 +19,9 @@ package me.desht.pneumaticcraft.common.thirdparty.patchouli;
 
 import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.api.crafting.recipe.PressureChamberRecipe;
-import me.desht.pneumaticcraft.common.core.ModRecipeTypes;
+import me.desht.pneumaticcraft.common.registry.ModRecipeTypes;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.resources.ResourceLocation;
@@ -40,7 +41,9 @@ public class ProcessorPressureChamber implements IComponentProcessor {
     @Override
     public void setup(Level level, IVariableProvider iVariableProvider) {
         ResourceLocation recipeId = new ResourceLocation(iVariableProvider.get("recipe").asString());
-        this.recipe = ModRecipeTypes.PRESSURE_CHAMBER.get().getRecipe(Minecraft.getInstance().level, recipeId);
+        ModRecipeTypes.PRESSURE_CHAMBER.get().getRecipe(Minecraft.getInstance().level, recipeId)
+                .ifPresentOrElse(h -> recipe = h.value(),
+                        () -> Log.warning("Missing pressure chamber recipe: " + recipeId));
         this.header = iVariableProvider.has("header") ? iVariableProvider.get("header").asString() : "";
     }
 

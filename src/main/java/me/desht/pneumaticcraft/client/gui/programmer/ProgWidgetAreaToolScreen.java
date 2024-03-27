@@ -40,7 +40,7 @@ public class ProgWidgetAreaToolScreen extends ProgWidgetAreaScreen {
     public void removed() {
         super.removed();
 
-        NetworkHandler.sendToServer(new PacketUpdateGPSAreaTool(progWidget, hand));
+        NetworkHandler.sendToServer(new PacketUpdateGPSAreaTool(progWidget.toNbt(), hand));
     }
 
     @Override

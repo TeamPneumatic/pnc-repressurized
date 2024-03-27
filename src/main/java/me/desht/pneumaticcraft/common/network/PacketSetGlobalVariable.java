@@ -20,79 +20,83 @@ package me.desht.pneumaticcraft.common.network;
 import com.mojang.datafixers.util.Either;
 import me.desht.pneumaticcraft.client.gui.RemoteScreen;
 import me.desht.pneumaticcraft.client.render.area.AreaRenderManager;
-import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableHelper;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.world.entity.player.Player;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.network.NetworkDirection;
-import net.minecraftforge.network.NetworkEvent;
+import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 
 import javax.annotation.Nonnull;
-import java.util.Objects;
-import java.util.function.Supplier;
+import javax.annotation.Nullable;
+
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 /**
  * Received on: BOTH
  * Sync's global variable data between server and client
  */
-public class PacketSetGlobalVariable {
-    private final String varName;
-    private final Either<BlockPos, ItemStack> value;
+public record PacketSetGlobalVariable(String varName, Either<BlockPos, ItemStack> value) implements CustomPacketPayload {
+    public static final ResourceLocation ID = RL("set_global_variable");
 
-    public PacketSetGlobalVariable(String varName, BlockPos value) {
+    public static PacketSetGlobalVariable forPos(String varName, @Nullable BlockPos value) {
         if (!GlobalVariableHelper.hasPrefix(varName)) varName = "#" + varName;
-        this.value = Either.left(value);
-        this.varName = varName.startsWith("#") ? varName.substring(1) : varName;
+        varName = varName.startsWith("#") ? varName.substring(1) : varName;
+
+        return new PacketSetGlobalVariable(varName, Either.left(value));
     }
 
-    public PacketSetGlobalVariable(String varName, @Nonnull ItemStack stack) {
+    public static PacketSetGlobalVariable forItem(String varName, @Nonnull ItemStack stack) {
         if (!GlobalVariableHelper.hasPrefix(varName)) varName = "#" + varName;
-        this.value = Either.right(stack);
-        this.varName = varName;
+
+        return new PacketSetGlobalVariable(varName, Either.right(stack));
     }
 
-    public PacketSetGlobalVariable(String varName, int value) {
-        this(varName, new BlockPos(value, 0, 0));
+    public static PacketSetGlobalVariable forInt(String varName, int value) {
+        return forPos(varName, new BlockPos(value, 0, 0));
     }
 
-    public PacketSetGlobalVariable(String varName, boolean value) {
-        this(varName, value ? 1 : 0);
+    public static PacketSetGlobalVariable forBool(String varName, boolean value) {
+        return forInt(varName, value ? 1 : 0);
     }
 
-    public PacketSetGlobalVariable(FriendlyByteBuf buf) {
+    public static PacketSetGlobalVariable fromNetwork(FriendlyByteBuf buf) {
+        String varName = buf.readUtf(GlobalVariableManager.MAX_VARIABLE_LEN);
         if (buf.readBoolean()) {
-            this.value = Either.left(buf.readBoolean() ? buf.readBlockPos() : null);
+            return new PacketSetGlobalVariable(varName, Either.left(buf.readNullable(FriendlyByteBuf::readBlockPos)));
         } else {
-            this.value = Either.right(buf.readItem());
+            return new PacketSetGlobalVariable(varName, Either.right(buf.readItem()));
         }
-        this.varName = buf.readUtf(GlobalVariableManager.MAX_VARIABLE_LEN);
     }
 
-    public void toBytes(FriendlyByteBuf buf) {
+    @Override
+    public void write(FriendlyByteBuf buf) {
         value.ifLeft(pos -> {
             buf.writeBoolean(true);
-            buf.writeBoolean(pos != null);
-            if (pos != null) buf.writeBlockPos(pos);
+            buf.writeNullable(pos, FriendlyByteBuf::writeBlockPos);
         }).ifRight(stack -> {
             buf.writeBoolean(false);
-            buf.writeItemStack(stack, true);
+            buf.writeItem(stack);
         });
         buf.writeUtf(varName);
     }
 
-    public void handle(Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> {
-            Player p = ctx.get().getDirection() == NetworkDirection.PLAY_TO_CLIENT ? ClientUtils.getClientPlayer() : Objects.requireNonNull(ctx.get().getSender());
-            value.ifLeft(pos -> GlobalVariableHelper.setPos(p.getUUID(), varName, pos))
-                    .ifRight(stack -> GlobalVariableHelper.setStack(p.getUUID(), varName, stack));
-            if (ctx.get().getDirection() == NetworkDirection.PLAY_TO_CLIENT) {
-                RemoteScreen.maybeHandleVariableChange(varName);
+    @Override
+    public ResourceLocation id() {
+        return ID;
+    }
+
+    public static void handle(PacketSetGlobalVariable message, PlayPayloadContext ctx) {
+        ctx.player().ifPresent(player -> ctx.workHandler().submitAsync(() -> {
+            message.value()
+                    .ifLeft(pos -> GlobalVariableHelper.setPos(player.getUUID(), message.varName(), pos))
+                    .ifRight(stack -> GlobalVariableHelper.setStack(player.getUUID(), message.varName(), stack));
+            if (ctx.flow().isClientbound()) {
+                RemoteScreen.maybeHandleVariableChange(message.varName());
                 AreaRenderManager.getInstance().clearPosProviderCache();
             }
-        });
-        ctx.get().setPacketHandled(true);
+        }));
     }
 }

@@ -22,14 +22,13 @@ import me.desht.pneumaticcraft.api.pressure.PressureTier;
 import me.desht.pneumaticcraft.common.block.UVLightBoxBlock;
 import me.desht.pneumaticcraft.common.block.entity.RedstoneController.ReceivingRedstoneMode;
 import me.desht.pneumaticcraft.common.block.entity.RedstoneController.RedstoneMode;
-import me.desht.pneumaticcraft.common.core.ModBlockEntities;
-import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.inventory.UVLightBoxMenu;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.item.EmptyPCBItem;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
+import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
+import me.desht.pneumaticcraft.common.registry.ModBlocks;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
-import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -42,13 +41,13 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemHandlerHelper;
-import net.minecraftforge.items.ItemStackHandler;
+import net.neoforged.neoforge.capabilities.BlockCapabilityCache;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.ItemHandlerHelper;
+import net.neoforged.neoforge.items.ItemStackHandler;
 import org.apache.commons.lang3.Validate;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -85,13 +84,14 @@ public class UVLightBoxBlockEntity extends AbstractAirHandlingBlockEntity implem
     private final UVInputHandler inputHandler = new UVInputHandler();
     private final ItemStackHandler outputHandler = new BaseItemStackHandler(this, INVENTORY_SIZE);
     private final UVInvWrapper inventoryExt = new UVInvWrapper();
-    private final LazyOptional<IItemHandler> invCap = LazyOptional.of(() -> inventoryExt);
-    private LazyOptional<IItemHandler> cachedEjectHandler = LazyOptional.empty();
+//    private final LazyOptional<IItemHandler> invCap = LazyOptional.of(() -> inventoryExt);
+    private BlockCapabilityCache<IItemHandler,Direction> ejectionCache;
+//    private LazyOptional<IItemHandler> cachedEjectHandler = LazyOptional.empty();
 
     public int ticksExisted;
 
     public UVLightBoxBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.UV_LIGHT_BOX.get(), pos, state, PressureTier.TIER_ONE, PneumaticValues.VOLUME_UV_LIGHTBOX, 4);
+        super(ModBlockEntityTypes.UV_LIGHT_BOX.get(), pos, state, PressureTier.TIER_ONE, PneumaticValues.VOLUME_UV_LIGHTBOX, 4);
     }
 
     @Override
@@ -160,25 +160,21 @@ public class UVLightBoxBlockEntity extends AbstractAirHandlingBlockEntity implem
     private void tryEject() {
         Direction dir = getUpgradeCache().getEjectDirection();
         if (dir != null) {
-            getEjectionHandler().ifPresent(handler -> {
+            IItemHandler dstHandler = getEjectionCache(dir).getCapability();
+            if (dstHandler != null) {
                 ItemStack stack = outputHandler.extractItem(0, 1, true);
-                if (!stack.isEmpty() && ItemHandlerHelper.insertItem(handler, stack, false).isEmpty()) {
+                if (!stack.isEmpty() && ItemHandlerHelper.insertItem(dstHandler, stack, false).isEmpty()) {
                     outputHandler.extractItem(0, 1, false);
                 }
-            });
+            }
         }
     }
 
-    private LazyOptional<IItemHandler> getEjectionHandler() {
-        if (!cachedEjectHandler.isPresent()) {
-            Direction dir = getUpgradeCache().getEjectDirection();
-            BlockEntity te = nonNullLevel().getBlockEntity(worldPosition.relative(dir));
-            cachedEjectHandler = IOHelper.getInventoryForTE(te, dir.getOpposite());
-            if (cachedEjectHandler.isPresent()) {
-                cachedEjectHandler.addListener(l -> cachedEjectHandler = LazyOptional.empty());
-            }
+    private BlockCapabilityCache<IItemHandler,Direction> getEjectionCache(@NotNull Direction dir) {
+        if (ejectionCache == null || ejectionCache.context() != dir) {
+            ejectionCache = createItemHandlerCache(dir);
         }
-        return cachedEjectHandler;
+        return ejectionCache;
     }
 
     @Override
@@ -254,17 +250,12 @@ public class UVLightBoxBlockEntity extends AbstractAirHandlingBlockEntity implem
     }
 
     @Override
-    public IItemHandler getPrimaryInventory() {
-        return inputHandler;
+    public IItemHandler getItemHandler(@Nullable Direction dir) {
+        return inventoryExt;
     }
 
     public IItemHandler getOutputInventory() {
         return outputHandler;
-    }
-
-    @Override
-    protected LazyOptional<IItemHandler> getInventoryCap(Direction side) {
-        return invCap;
     }
 
     @Override

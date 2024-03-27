@@ -4,9 +4,9 @@ import com.google.common.collect.Maps;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.ModIds;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
-import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.Map;
 
@@ -41,9 +41,6 @@ public class ThermalLocomotionMinecartLaunching {
     private static void register(String itemIDString) {
         ResourceLocation itemId = new ResourceLocation(ModIds.THERMAL, itemIDString);
         ResourceLocation entityId = new ResourceLocation(ModIds.THERMAL, itemIDString);
-        EntityType<?> entityType = ForgeRegistries.ENTITY_TYPES.getValue(entityId);
-        if (entityType != null) {
-            launchMap.put(itemId, entityType);
-        }
+        BuiltInRegistries.ENTITY_TYPE.getOptional(entityId).ifPresent(entityType -> launchMap.put(itemId, entityType));
     }
 }

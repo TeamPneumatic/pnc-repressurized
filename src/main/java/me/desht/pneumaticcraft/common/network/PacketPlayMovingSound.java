@@ -22,41 +22,42 @@ import me.desht.pneumaticcraft.client.sound.MovingSounds;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.network.NetworkEvent;
+import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 
 import java.util.function.Function;
-import java.util.function.Supplier;
+
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 /**
  * Received on: CLIENT
  * Sent by server to start a new MovingSound playing
  */
-public class PacketPlayMovingSound {
-    private final MovingSounds.Sound sound;
-    private final MovingSoundFocus source;
+public record PacketPlayMovingSound(MovingSounds.Sound sound, MovingSoundFocus source) implements CustomPacketPayload {
+    public static final ResourceLocation ID = RL("play_moving_sound");
 
-    public PacketPlayMovingSound(MovingSounds.Sound sound, MovingSoundFocus source) {
-        this.sound = sound;
-        this.source = source;
+    public static PacketPlayMovingSound fromNetwork(FriendlyByteBuf buffer) {
+        return new PacketPlayMovingSound(buffer.readEnum(MovingSounds.Sound.class), MovingSoundFocus.fromNetwork(buffer));
     }
 
-    public PacketPlayMovingSound(FriendlyByteBuf buffer) {
-        sound = buffer.readEnum(MovingSounds.Sound.class);
-        source = MovingSoundFocus.fromBytes(buffer);
-    }
-
-    public void toBytes(FriendlyByteBuf buffer) {
+    @Override
+    public void write(FriendlyByteBuf buffer) {
         buffer.writeEnum(sound);
-        source.toBytes(buffer);
+        source.toNetwork(buffer);
     }
 
-    public void handle(Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> {
-            if (source != null) source.handle(sound);
+    @Override
+    public ResourceLocation id() {
+        return ID;
+    }
+
+    public static void handle(PacketPlayMovingSound message, PlayPayloadContext ctx) {
+        ctx.workHandler().submitAsync(() -> {
+            if (message.source() != null) message.source().handle(message.sound());
         });
-        ctx.get().setPacketHandled(true);
     }
 
     private enum SourceType {
@@ -74,13 +75,7 @@ public class PacketPlayMovingSound {
         }
     }
 
-    public static class MovingSoundFocus {
-        private final Either<Entity,BlockPos> entityOrPos;
-
-        private MovingSoundFocus(Either<Entity, BlockPos> entityOrPos) {
-            this.entityOrPos = entityOrPos;
-        }
-
+    public record MovingSoundFocus(Either<Entity,BlockPos> entityOrPos) {
         public static MovingSoundFocus of(Entity e) {
             return new MovingSoundFocus(Either.left(e));
         }
@@ -98,12 +93,12 @@ public class PacketPlayMovingSound {
             return new MovingSoundFocus(Either.right(te.getBlockPos()));
         }
 
-        public static MovingSoundFocus fromBytes(FriendlyByteBuf buf) {
+        public static MovingSoundFocus fromNetwork(FriendlyByteBuf buf) {
             SourceType type = buf.readEnum(SourceType.class);
             return type.getSource(buf);
         }
 
-        void toBytes(FriendlyByteBuf buf) {
+        void toNetwork(FriendlyByteBuf buf) {
             entityOrPos.ifLeft(id -> {
                 buf.writeEnum(SourceType.ENTITY);
                 buf.writeInt(id.getId());
@@ -119,8 +114,8 @@ public class PacketPlayMovingSound {
                     .ifRight(pos -> MovingSounds.playMovingSound(sound, pos));
         }
 
-        public Either<Entity,BlockPos> asEntityOrPos() {
-            return entityOrPos;
-        }
+//        public Either<Entity,BlockPos> asEntityOrPos() {
+//            return entityOrPos;
+//        }
     }
 }

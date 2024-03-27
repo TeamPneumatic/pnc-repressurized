@@ -55,14 +55,14 @@ public class AphorismTileRenderer implements BlockEntityRenderer<AphorismTileBlo
 
         int fh = font.lineHeight;
 
-        AphorismTileScreen editor = Minecraft.getInstance().screen instanceof AphorismTileScreen g && g.tile == te ? g : null;
+        AphorismTileScreen editor = Minecraft.getInstance().screen instanceof AphorismTileScreen g && g.blockEntity == te ? g : null;
 
         String[] textLines = te.getTextLines();
         int lineWidth = te.getMaxLineWidth(editor != null);
         float lineHeight = (fh * textLines.length) * (1 + (te.getMarginSize() + 1) * 0.075f);
         float textScale = Math.min(14 / 16F / lineWidth, 14 / 16F / lineHeight);
         matrixStack.scale(textScale, textScale, textScale);
-        matrixStack.mulPose(Axis.ZP.rotationDegrees(te.textRotation * 90));
+        matrixStack.mulPose(Axis.ZP.rotationDegrees(te.getTextRotation() * 90));
 
         int editedLine = editor == null ? -1 : editor.cursorY;
         boolean showCursor = editor != null && (editor.updateCounter & 0xf) < 8;

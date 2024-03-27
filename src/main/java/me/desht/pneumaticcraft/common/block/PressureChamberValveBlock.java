@@ -18,10 +18,10 @@
 package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.api.block.PNCBlockStateProperties;
-import me.desht.pneumaticcraft.common.advancements.AdvancementTriggers;
 import me.desht.pneumaticcraft.common.block.entity.PressureChamberValveBlockEntity;
-import me.desht.pneumaticcraft.common.core.ModBlockEntities;
-import me.desht.pneumaticcraft.common.core.ModBlocks;
+import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
+import me.desht.pneumaticcraft.common.registry.ModBlocks;
+import me.desht.pneumaticcraft.common.registry.ModCriterionTriggers;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
@@ -36,7 +36,6 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.Nullable;
 
 public class PressureChamberValveBlock extends AbstractPneumaticCraftBlock implements IBlockPressureChamber, PneumaticCraftEntityBlock {
@@ -46,10 +45,11 @@ public class PressureChamberValveBlock extends AbstractPneumaticCraftBlock imple
     }
 
     @Override
-    public void setPlacedBy(Level par1World, BlockPos pos, BlockState state, LivingEntity par5EntityLiving, ItemStack iStack) {
-        super.setPlacedBy(par1World, pos, state, par5EntityLiving, iStack);
-        if (!par1World.isClientSide && PressureChamberValveBlockEntity.checkIfProperlyFormed(par1World, pos)) {
-            AdvancementTriggers.PRESSURE_CHAMBER.trigger((ServerPlayer) par5EntityLiving);
+    public void setPlacedBy(Level level, BlockPos pos, BlockState state, LivingEntity livingEntity, ItemStack iStack) {
+        super.setPlacedBy(level, pos, state, livingEntity, iStack);
+
+        if (livingEntity instanceof ServerPlayer sp && PressureChamberValveBlockEntity.checkIfProperlyFormed(level, pos)) {
+            ModCriterionTriggers.PRESSURE_CHAMBER.get().trigger(sp);
         }
     }
 
@@ -74,28 +74,29 @@ public class PressureChamberValveBlock extends AbstractPneumaticCraftBlock imple
         if (player.isShiftKeyDown()) {
             return InteractionResult.PASS;
         }
-        if (world.isClientSide) {
-            return world.getBlockEntity(pos, ModBlockEntities.PRESSURE_CHAMBER_VALVE.get())
+        if (player instanceof ServerPlayer sp) {
+            return world.getBlockEntity(pos, ModBlockEntityTypes.PRESSURE_CHAMBER_VALVE.get()).map(te -> {
+                if (te.multiBlockSize > 0) {
+                    sp.openMenu(te, pos);
+                } else if (!te.accessoryValves.isEmpty()) {
+                    // when this isn't the core valve, track down the core valve
+                    for (PressureChamberValveBlockEntity valve : te.accessoryValves) {
+                        if (valve.multiBlockSize > 0) {
+                            sp.openMenu(valve, valve.getBlockPos());
+                            break;
+                        }
+                    }
+                } else {
+                    return InteractionResult.PASS;
+                }
+                return InteractionResult.SUCCESS;
+            }).orElse(InteractionResult.SUCCESS);
+        } else {
+            return world.getBlockEntity(pos, ModBlockEntityTypes.PRESSURE_CHAMBER_VALVE.get())
                     .filter(te -> te.multiBlockSize > 0)
                     .map(te -> InteractionResult.SUCCESS)
                     .orElse(InteractionResult.PASS);
         }
-        return world.getBlockEntity(pos, ModBlockEntities.PRESSURE_CHAMBER_VALVE.get()).map(te -> {
-            if (te.multiBlockSize > 0) {
-                NetworkHooks.openScreen((ServerPlayer) player, te, pos);
-            } else if (te.accessoryValves.size() > 0) {
-                // when this isn't the core valve, track down the core valve
-                for (PressureChamberValveBlockEntity valve : te.accessoryValves) {
-                    if (valve.multiBlockSize > 0) {
-                        NetworkHooks.openScreen((ServerPlayer) player, valve, valve.getBlockPos());
-                        break;
-                    }
-                }
-            } else {
-                return InteractionResult.PASS;
-            }
-            return InteractionResult.SUCCESS;
-        }).orElse(InteractionResult.SUCCESS);
     }
 
     @Override

@@ -17,34 +17,42 @@
 
 package me.desht.pneumaticcraft.common.network;
 
+import net.minecraft.Util;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 
-import java.util.function.Supplier;
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 /**
  * Received on: SERVER
  * Part of a multipart message from client (whole message too big to send at once)
  */
-public class PacketMultiPart {
-    private final byte[] payload;
+public record PacketMultiPart(byte[] payload) implements CustomPacketPayload {
+    public static final ResourceLocation ID = RL("multipart");
 
-    PacketMultiPart(byte[] payload) {
-        this.payload = payload;
+    public static PacketMultiPart fromNetwork(FriendlyByteBuf buf) {
+        int len = buf.readInt();
+        byte[] payload = Util.make(new byte[len], buf::readBytes);
+
+        return new PacketMultiPart(payload);
     }
 
-    PacketMultiPart(FriendlyByteBuf buf) {
-        payload = new byte[buf.readInt()];
-        buf.readBytes(payload);
-    }
-
-    public void toBytes(FriendlyByteBuf buf) {
+    @Override
+    public void write(FriendlyByteBuf buf) {
         buf.writeInt(payload.length);
         buf.writeBytes(payload);
     }
 
-    public void handle(Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> PacketMultiHeader.receivePayload(ctx.get().getSender(), payload));
-        ctx.get().setPacketHandled(true);
+    @Override
+    public ResourceLocation id() {
+        return ID;
+    }
+
+    public static void handle(PacketMultiPart message, PlayPayloadContext ctx) {
+        ctx.player().ifPresent(player -> ctx.workHandler().submitAsync(() ->
+                PacketMultiHeader.receivePayload(player, message.payload())
+        ));
     }
 }

@@ -19,8 +19,8 @@ package me.desht.pneumaticcraft.common.item.minigun;
 
 import me.desht.pneumaticcraft.common.PNCDamageSource;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
-import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
+import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.damagesource.DamageSource;

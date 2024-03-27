@@ -17,35 +17,45 @@
 
 package me.desht.pneumaticcraft.common.thirdparty.immersiveengineering;
 
+import blusunrize.immersiveengineering.api.tool.ExternalHeaterHandler;
 import me.desht.pneumaticcraft.common.block.entity.IHeatExchangingTE;
-import me.desht.pneumaticcraft.common.core.ModHarvestHandlers;
+import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
+import me.desht.pneumaticcraft.common.registry.ModHarvestHandlers;
 import me.desht.pneumaticcraft.common.thirdparty.IThirdParty;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.AttachCapabilitiesEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
+import net.neoforged.neoforge.common.NeoForge;
 
-import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
+import java.util.function.Supplier;
 
 public class ImmersiveEngineering implements IThirdParty {
     @SuppressWarnings("unused")
-    public static final RegistryObject<HempHarvestHandler> HEMP_HARVEST = ModHarvestHandlers.register("ie_hemp", HempHarvestHandler::new);
+    public static final Supplier<HempHarvestHandler> HEMP_HARVEST
+            = ModHarvestHandlers.register("ie_hemp", HempHarvestHandler::new);
 
     @Override
-    public void preInit() {
-        MinecraftForge.EVENT_BUS.register(ElectricAttackHandler.class);
-        MinecraftForge.EVENT_BUS.register(ExternalHeatCapListener.class);
+    public void preInit(IEventBus modBus) {
+        NeoForge.EVENT_BUS.addListener(ElectricAttackHandler::onElectricalAttack);
+        NeoForge.EVENT_BUS.addListener(IEHeatHandler::registerCap);
     }
 
     public static class ExternalHeatCapListener {
         @SubscribeEvent
-        public static void attachExternalHeatHandler(AttachCapabilitiesEvent<BlockEntity> event) {
-            if (event.getObject() instanceof IHeatExchangingTE) {
-                IEHeatHandler.Provider provider = new IEHeatHandler.Provider(event.getObject());
-                event.addCapability(RL("ie_external_heatable"), provider);
-                event.addListener(provider::invalidate);
-            }
+        public static void registerCap(RegisterCapabilitiesEvent event) {
+            ModBlockEntityTypes.streamBlockEntities()
+                    .filter(be -> be instanceof IHeatExchangingTE)
+                    .forEach(be -> event.registerBlockEntity(ExternalHeaterHandler.CAPABILITY, be.getType(), IEHeatHandler::maybe));
         }
+
+        //        @SubscribeEvent
+//        public static void attachExternalHeatHandler(AttachCapabilitiesEvent<BlockEntity> event) {
+//            if (event.getObject() instanceof IHeatExchangingTE) {
+//                IEHeatHandler.Provider provider = new IEHeatHandler.Provider(event.getObject());
+//                event.addCapability(RL("ie_external_heatable"), provider);
+//                event.addListener(provider::invalidate);
+//            }
+//        }
+//    }
     }
 }

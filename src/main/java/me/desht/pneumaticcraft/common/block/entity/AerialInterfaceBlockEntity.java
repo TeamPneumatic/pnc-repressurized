@@ -26,22 +26,24 @@ import me.desht.pneumaticcraft.common.XPFluidManager;
 import me.desht.pneumaticcraft.common.block.entity.RedstoneController.EmittingRedstoneMode;
 import me.desht.pneumaticcraft.common.block.entity.RedstoneController.RedstoneMode;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
-import me.desht.pneumaticcraft.common.core.ModBlockEntities;
-import me.desht.pneumaticcraft.common.core.ModBlocks;
-import me.desht.pneumaticcraft.common.core.ModItems;
-import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.inventory.AerialInterfaceMenu;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketPlaySound;
+import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
+import me.desht.pneumaticcraft.common.registry.ModBlocks;
+import me.desht.pneumaticcraft.common.registry.ModItems;
+import me.desht.pneumaticcraft.common.registry.ModSounds;
 import me.desht.pneumaticcraft.common.thirdparty.curios.Curios;
 import me.desht.pneumaticcraft.common.thirdparty.curios.CuriosUtils;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.util.*;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
+import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -61,22 +63,19 @@ import net.minecraft.world.level.block.entity.SkullBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.energy.IEnergyStorage;
-import net.minecraftforge.event.ForgeEventFactory;
-import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.wrapper.InvWrapper;
-import net.minecraftforge.items.wrapper.PlayerArmorInvWrapper;
-import net.minecraftforge.items.wrapper.PlayerMainInvWrapper;
-import net.minecraftforge.items.wrapper.PlayerOffhandInvWrapper;
-import net.minecraftforge.registries.ForgeRegistries;
-import org.jetbrains.annotations.NotNull;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.energy.IEnergyStorage;
+import net.neoforged.neoforge.event.EventHooks;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.wrapper.InvWrapper;
+import net.neoforged.neoforge.items.wrapper.PlayerArmorInvWrapper;
+import net.neoforged.neoforge.items.wrapper.PlayerMainInvWrapper;
+import net.neoforged.neoforge.items.wrapper.PlayerOffhandInvWrapper;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -125,11 +124,8 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
     private final SideConfigurator<IItemHandler> itemHandlerSideConfigurator;
 
     private final PlayerExperienceHandler playerExperienceHandler = new PlayerExperienceHandler();
-    private final LazyOptional<IFluidHandler> playerExpCap = LazyOptional.of(() -> playerExperienceHandler);
     private final PlayerFoodHandler playerFoodHandler = new PlayerFoodHandler();
-    private final LazyOptional<IItemHandler> playerFoodCap = LazyOptional.of(() -> playerFoodHandler);
     private final PneumaticEnergyStorage energyStorage = new PneumaticEnergyStorage(ENERGY_CAPACITY);
-    private final LazyOptional<IEnergyStorage> energyCap = LazyOptional.of(() -> energyStorage);
 
     private WeakReference<Player> playerRef = new WeakReference<>(null);
 
@@ -141,7 +137,7 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
     private boolean validatePlayerNow;
 
     public AerialInterfaceBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.AERIAL_INTERFACE.get(), pos, state, PressureTier.TIER_TWO, PneumaticValues.VOLUME_AERIAL_INTERFACE, 4);
+        super(ModBlockEntityTypes.AERIAL_INTERFACE.get(), pos, state, PressureTier.TIER_TWO, PneumaticValues.VOLUME_AERIAL_INTERFACE, 4);
 
         PlayerMainInvHandler playerMainInvHandler = new PlayerMainInvHandler();
         PlayerArmorInvHandler playerArmorInvHandler = new PlayerArmorInvHandler();
@@ -150,15 +146,15 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
 
         itemHandlerSideConfigurator = new SideConfigurator<>("items", this);
         itemHandlerSideConfigurator.registerHandler("mainInv", new ItemStack(Blocks.CHEST),
-                ForgeCapabilities.ITEM_HANDLER, () -> playerMainInvHandler,
+                Capabilities.ItemHandler.BLOCK, () -> playerMainInvHandler,
                 SideConfigurator.RelativeFace.FRONT, SideConfigurator.RelativeFace.BACK, SideConfigurator.RelativeFace.LEFT, SideConfigurator.RelativeFace.RIGHT);
         itemHandlerSideConfigurator.registerHandler("armorInv", new ItemStack(ModItems.PNEUMATIC_CHESTPLATE.get()),
-                ForgeCapabilities.ITEM_HANDLER, () -> playerArmorInvHandler,
+                Capabilities.ItemHandler.BLOCK, () -> playerArmorInvHandler,
                 SideConfigurator.RelativeFace.TOP, SideConfigurator.RelativeFace.BOTTOM);
         itemHandlerSideConfigurator.registerHandler("offhandInv", new ItemStack(Items.SHIELD),
-                ForgeCapabilities.ITEM_HANDLER, () -> playerOffhandInvHandler);
+                Capabilities.ItemHandler.BLOCK, () -> playerOffhandInvHandler);
         itemHandlerSideConfigurator.registerHandler("enderInv", new ItemStack(Blocks.ENDER_CHEST),
-                ForgeCapabilities.ITEM_HANDLER, () -> playerEnderInvHandler);
+                Capabilities.ItemHandler.BLOCK, () -> playerEnderInvHandler);
 
         invHandlers.add(playerMainInvHandler);
         invHandlers.add(playerArmorInvHandler);
@@ -187,21 +183,21 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
 
         GlobalBlockEntityCacheManager.getInstance(getLevel()).getAerialInterfaces().add(this);
 
-        MinecraftForge.EVENT_BUS.register(this);
+        NeoForge.EVENT_BUS.register(this);
     }
 
     @Override
     public void setRemoved() {
         super.setRemoved();
 
-        MinecraftForge.EVENT_BUS.unregister(this);
+        NeoForge.EVENT_BUS.unregister(this);
 
         GlobalBlockEntityCacheManager.getInstance(getLevel()).getAerialInterfaces().remove(this);
 
-        itemHandlerSideConfigurator.invalidateCaps();
-        playerExpCap.invalidate();
-        playerFoodCap.invalidate();
-        energyCap.invalidate();
+//        itemHandlerSideConfigurator.invalidateCaps();
+//        playerExpCap.invalidate();
+//        playerFoodCap.invalidate();
+//        energyCap.invalidate();
     }
 
     @SubscribeEvent
@@ -242,7 +238,9 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
         if (playerName.isEmpty()) {
             gameProfileClient = null;
         } else {
-            SkullBlockEntity.updateGameprofile(new GameProfile(null, playerName), profile -> gameProfileClient = profile);
+            CompoundTag tag = Util.make(new CompoundTag(), t -> t.putString("SkullOwner", playerName));
+            SkullBlockEntity.resolveGameProfile(tag);
+//            SkullBlockEntity.resolveGameProfile(new GameProfile(null, playerName), profile -> gameProfileClient = profile);
         }
     }
 
@@ -334,33 +332,53 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
         setChanged();
     }
 
-    @Override
-    public IItemHandler getPrimaryInventory() {
-        return null;
-    }
-
     private Optional<Player> getPlayer() {
         Player player = playerRef.get();
         return player != null && player.isAlive() ? Optional.of(player) : Optional.empty();
     }
 
-    @NotNull
     @Override
-    protected LazyOptional<IItemHandler> getInventoryCap(Direction side) {
-        return dispenserUpgradeInserted ? playerFoodCap : itemHandlerSideConfigurator.getHandler(side);
+    public boolean hasFluidCapability() {
+        return true;
     }
 
-    @NotNull
     @Override
-    public LazyOptional<IFluidHandler> getFluidCap(Direction side) {
-        return dispenserUpgradeInserted && curXpFluid != Fluids.EMPTY ? playerExpCap : super.getFluidCap(side);
+    public boolean hasEnergyCapability() {
+        return true;
     }
 
-    @NotNull
     @Override
-    protected LazyOptional<IEnergyStorage> getEnergyCap(Direction side) {
-        return energyCap;
+    public IItemHandler getItemHandler(@Nullable Direction dir) {
+        return dispenserUpgradeInserted ? playerFoodHandler : itemHandlerSideConfigurator.getHandler(dir);
     }
+
+    @Override
+    public IFluidHandler getFluidHandler(@org.jetbrains.annotations.Nullable Direction dir) {
+        return dispenserUpgradeInserted && curXpFluid != Fluids.EMPTY ? playerExperienceHandler : null;
+    }
+
+    @Override
+    public IEnergyStorage getEnergyHandler(@org.jetbrains.annotations.Nullable Direction dir) {
+        return energyStorage;
+    }
+
+    //    @NotNull
+//    @Override
+//    protected LazyOptional<IItemHandler> getInventoryCap(Direction side) {
+//        return dispenserUpgradeInserted ? playerFoodCap : itemHandlerSideConfigurator.getHandler(side);
+//    }
+//
+//    @NotNull
+//    @Override
+//    public LazyOptional<IFluidHandler> getFluidCap(Direction side) {
+//        return dispenserUpgradeInserted && curXpFluid != Fluids.EMPTY ? playerExpCap : super.getFluidCap(side);
+//    }
+//
+//    @NotNull
+//    @Override
+//    protected LazyOptional<IEnergyStorage> getEnergyCap(Direction side) {
+//        return energyCap;
+//    }
 
     @Override
     public void load(CompoundTag tag) {
@@ -368,7 +386,7 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
 
         playerUUID = UUID.fromString(tag.getString("playerUUID"));
         feedMode = FeedMode.valueOf(tag.getString("feedMode"));
-        curXpFluid = tag.contains("curXpFluid") ? ForgeRegistries.FLUIDS.getValue(new ResourceLocation(tag.getString("curXpFluid"))) : Fluids.EMPTY;
+        curXpFluid = tag.contains("curXpFluid") ? BuiltInRegistries.FLUID.get(new ResourceLocation(tag.getString("curXpFluid"))) : Fluids.EMPTY;
         curXpRatio = XPFluidManager.getInstance().getXPRatio(curXpFluid);
         energyStorage.readFromNBT(tag);
 
@@ -402,7 +420,7 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
         chargeableSlots.clear();
         Inventory inv = player.getInventory();
         for (int i = 0; i < inv.getContainerSize(); i++) {
-            if (inv.getItem(i).getCapability(ForgeCapabilities.ENERGY).isPresent()) {
+            if (IOHelper.getEnergyStorageForItem(inv.getItem(i)).isPresent()) {
                 chargeableSlots.add(i);
             }
         }
@@ -413,7 +431,7 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
             Inventory inv = player.getInventory();
             for (int slot : chargeableSlots) {
                 ItemStack stack = inv.getItem(slot);
-                int energyLeft = stack.getCapability(ForgeCapabilities.ENERGY).map(receivingStorage -> {
+                int energyLeft = IOHelper.getEnergyStorageForItem(stack).map(receivingStorage -> {
                     int stored = energyStorage.getEnergyStored();
                     if (stored > 0) {
                         energyStorage.extractEnergy(receivingStorage.receiveEnergy(Math.min(stored, RF_PER_TICK), false), false);
@@ -612,7 +630,7 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
                 ItemStack copy = stack.copy();
                 while (stack.getCount() > 0) {
                     remainingItem = stack.finishUsingItem(player.level(), player);
-                    remainingItem = ForgeEventFactory.onItemUseFinish(player, stack, 0, remainingItem);
+                    remainingItem = EventHooks.onItemUseFinish(player, stack, 0, remainingItem);
                     if (remainingItem.getCount() > 0 && (remainingItem != stack || remainingItem.getCount() != startValue)) {
                         if (!player.getInventory().add(remainingItem) && remainingItem.getCount() > 0) {
                             player.drop(remainingItem, false);

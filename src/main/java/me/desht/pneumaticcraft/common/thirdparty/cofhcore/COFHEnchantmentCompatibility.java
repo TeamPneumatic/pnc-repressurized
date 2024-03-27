@@ -5,9 +5,9 @@ import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.thirdparty.PneumaticcraftIMC;
 import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.ModIds;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.Item;
-import net.minecraftforge.fml.InterModComms;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.fml.InterModComms;
 
 import java.util.function.Supplier;
 
@@ -20,7 +20,7 @@ public class COFHEnchantmentCompatibility {
         boolean holdingEnabled = ConfigHelper.common().integration.cofhHoldingMultiplier.get() > 0;
 
         // Goes through all items in the item registry
-        for (Item item : ForgeRegistries.ITEMS.getValues()) {
+        for (Item item : BuiltInRegistries.ITEM) {
             // Allow any pressurizable items to take the CoFH holding enchantment
             if (item instanceof IPressurizableItem) {
                 Log.info("Making item: " + item + " compatible with Holding enchantment.");

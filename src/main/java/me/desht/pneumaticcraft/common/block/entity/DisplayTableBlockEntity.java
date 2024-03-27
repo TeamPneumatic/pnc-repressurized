@@ -17,26 +17,23 @@
 
 package me.desht.pneumaticcraft.common.block.entity;
 
-import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
+import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.IItemHandler;
-
-import javax.annotation.Nonnull;
+import net.neoforged.neoforge.items.IItemHandler;
+import org.jetbrains.annotations.Nullable;
 
 public class DisplayTableBlockEntity extends AbstractPneumaticCraftBlockEntity implements IComparatorSupport {
     private final DisplayItemHandler inventory = new DisplayItemHandler(this, 1);
-    private final LazyOptional<IItemHandler> invCap = LazyOptional.of(() -> inventory);
     public ItemStack displayedStack = ItemStack.EMPTY;
 
     public DisplayTableBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.DISPLAY_TABLE.get(), pos, state);
+        super(ModBlockEntityTypes.DISPLAY_TABLE.get(), pos, state);
     }
 
     DisplayTableBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
@@ -44,14 +41,8 @@ public class DisplayTableBlockEntity extends AbstractPneumaticCraftBlockEntity i
     }
 
     @Override
-    public IItemHandler getPrimaryInventory() {
+    public IItemHandler getItemHandler(@Nullable Direction dir) {
         return inventory;
-    }
-
-    @Nonnull
-    @Override
-    protected LazyOptional<IItemHandler> getInventoryCap(Direction side) {
-        return invCap;
     }
 
     @Override

@@ -20,8 +20,8 @@ package me.desht.pneumaticcraft.common.drone.progwidgets;
 import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
-import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.common.drone.ai.DroneAIManager;
+import me.desht.pneumaticcraft.common.registry.ModProgWidgets;
 import me.desht.pneumaticcraft.common.util.ChunkCache;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -30,7 +30,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.CollisionGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.AABB;
+import net.minecraft.world.level.levelgen.structure.BoundingBox;
 
 import java.util.*;
 import java.util.function.Predicate;
@@ -44,7 +44,7 @@ public abstract class ProgWidgetAreaItemBase extends ProgWidget
         implements IAreaProvider, IEntityProvider, IItemFiltering, IVariableWidget {
     private List<BlockPos> areaListCache;
     private Set<BlockPos> areaSetCache;
-    private AABB areaExtents;
+    private BoundingBox areaExtents;
     private Map<String, BlockPos> areaVariableStates;
     protected DroneAIManager aiManager;
     private boolean canCache = true;
@@ -83,19 +83,19 @@ public abstract class ProgWidgetAreaItemBase extends ProgWidget
     }
 
     public CollisionGetter getChunkCache(Level world) {
-        AABB aabb = getAreaExtents();
-        return new ChunkCache(world, BlockPos.containing(aabb.minX, aabb.minY, aabb.minZ), BlockPos.containing(aabb.maxX, aabb.maxY, aabb.maxZ));
+        BoundingBox box = getAreaExtents();
+        return new ChunkCache(world, BlockPos.containing(box.minX(), box.minY(), box.minZ()), BlockPos.containing(box.maxX(), box.maxY(), box.maxZ()));
     }
 
-    public AABB getAreaExtents() {
+    public BoundingBox getAreaExtents() {
         if (areaExtents == null) {
             areaExtents = calculateExtents(getCachedAreaSet());
         }
         return areaExtents;
     }
 
-    private static AABB calculateExtents(Collection<BlockPos> areaSet) {
-        if (areaSet.isEmpty()) return new AABB(BlockPos.ZERO, BlockPos.ZERO);
+    private static BoundingBox calculateExtents(Collection<BlockPos> areaSet) {
+        if (areaSet.isEmpty()) return new BoundingBox(BlockPos.ZERO);
 
         int minX = Integer.MAX_VALUE, maxX = Integer.MIN_VALUE;
         int minY = Integer.MAX_VALUE, maxY = Integer.MIN_VALUE;
@@ -109,7 +109,7 @@ public abstract class ProgWidgetAreaItemBase extends ProgWidget
             maxZ = Math.max(maxZ, pos.getZ());
         }
 
-        return new AABB(new BlockPos(minX, minY, minZ), new BlockPos(maxX, maxY, maxZ));
+        return new BoundingBox(minX, minY, minZ, maxX, maxY, maxZ);
     }
 
     public List<BlockPos> getCachedAreaList() {

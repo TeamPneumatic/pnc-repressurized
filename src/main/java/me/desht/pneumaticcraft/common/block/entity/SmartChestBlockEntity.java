@@ -19,8 +19,6 @@ package me.desht.pneumaticcraft.common.block.entity;
 
 import me.desht.pneumaticcraft.api.lib.NBTKeys;
 import me.desht.pneumaticcraft.client.render.area.AreaRenderManager;
-import me.desht.pneumaticcraft.common.core.ModBlockEntities;
-import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.inventory.SmartChestMenu;
 import me.desht.pneumaticcraft.common.inventory.handler.ComparatorItemStackHandler;
 import me.desht.pneumaticcraft.common.item.ItemRegistry;
@@ -29,6 +27,8 @@ import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSpawnParticle;
 import me.desht.pneumaticcraft.common.network.PacketSyncSmartChest;
 import me.desht.pneumaticcraft.common.particle.AirParticleData;
+import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
+import me.desht.pneumaticcraft.common.registry.ModBlocks;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.ITranslatableEnum;
@@ -50,9 +50,8 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemHandlerHelper;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.ItemHandlerHelper;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nonnull;
@@ -65,7 +64,6 @@ public class SmartChestBlockEntity extends AbstractTickingBlockEntity
     private static final String NBT_ITEMS = "Items";
 
     private final SmartChestItemHandler inventory = new SmartChestItemHandler(this, CHEST_SIZE);
-    private final LazyOptional<IItemHandler> inventoryCap = LazyOptional.of(() -> inventory);
     @GuiSynced
     private final RedstoneController<SmartChestBlockEntity> rsController = new RedstoneController<>(this);
     @GuiSynced
@@ -78,7 +76,7 @@ public class SmartChestBlockEntity extends AbstractTickingBlockEntity
     private final EnumMap<Direction,Integer> pushSlots = new EnumMap<>(Direction.class);
 
     public SmartChestBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.SMART_CHEST.get(), pos, state, 4);
+        super(ModBlockEntityTypes.SMART_CHEST.get(), pos, state, 4);
     }
 
     @Override
@@ -113,7 +111,7 @@ public class SmartChestBlockEntity extends AbstractTickingBlockEntity
             return tryDispense(dir);
         }
 
-        return IOHelper.getInventoryForTE(te, dir.getOpposite()).map(dstHandler -> {
+        return IOHelper.getInventoryForBlock(te, dir.getOpposite()).map(dstHandler -> {
             validateCachedSlot(pushSlots, dir, dstHandler);
 
             ItemStack toPush = findNextItem(inventory, pushSlots, dir);
@@ -157,7 +155,7 @@ public class SmartChestBlockEntity extends AbstractTickingBlockEntity
             return tryMagnet(dir);
         }
 
-        return IOHelper.getInventoryForTE(getCachedNeighbor(dir), dir.getOpposite()).map(srcHandler -> {
+        return IOHelper.getInventoryForBlock(getCachedNeighbor(dir), dir.getOpposite()).map(srcHandler -> {
             validateCachedSlot(pullSlots, dir, srcHandler);
 
             ItemStack toPull = findNextItem(srcHandler, pullSlots, dir);
@@ -280,21 +278,15 @@ public class SmartChestBlockEntity extends AbstractTickingBlockEntity
     }
 
     @Override
-    public IItemHandler getPrimaryInventory() {
+    public IItemHandler getItemHandler(@Nullable Direction dir) {
         return inventory;
-    }
-
-    @Nonnull
-    @Override
-    protected LazyOptional<IItemHandler> getInventoryCap(Direction side) {
-        return inventoryCap;
     }
 
     @Nullable
     @Override
     public AbstractContainerMenu createMenu(int windowId, Inventory inv, Player player) {
         if (player instanceof ServerPlayer) {
-            NetworkHandler.sendToPlayer(new PacketSyncSmartChest(this), (ServerPlayer) player);
+            NetworkHandler.sendToPlayer(PacketSyncSmartChest.forBlockEntity(this), (ServerPlayer) player);
         }
         return new SmartChestMenu(windowId, inv, getBlockPos());
     }

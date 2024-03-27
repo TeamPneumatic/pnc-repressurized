@@ -19,7 +19,7 @@ package me.desht.pneumaticcraft.api;
 
 import me.desht.pneumaticcraft.api.client.IClientRegistry;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IClientArmorRegistry;
-import me.desht.pneumaticcraft.api.crafting.IPneumaticRecipeRegistry;
+import me.desht.pneumaticcraft.api.crafting.ingredient.CustomIngredientTypes;
 import me.desht.pneumaticcraft.api.drone.IDroneRegistry;
 import me.desht.pneumaticcraft.api.fuel.IFuelRegistry;
 import me.desht.pneumaticcraft.api.heat.IHeatRegistry;
@@ -32,7 +32,7 @@ import me.desht.pneumaticcraft.api.universal_sensor.ISensorRegistry;
 import me.desht.pneumaticcraft.api.upgrade.IUpgradeRegistry;
 import me.desht.pneumaticcraft.api.wrench.IWrenchRegistry;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.fml.ModLoadingContext;
+import net.neoforged.fml.ModLoadingContext;
 
 /**
  * This class can be used to register and access various things to and from the mod.  All access is via
@@ -77,8 +77,6 @@ public final class PneumaticRegistry {
      * Retrieve an instance of this via {@link PneumaticRegistry#getInstance()}
      */
     public interface IPneumaticCraftInterface {
-        IPneumaticRecipeRegistry getRecipeRegistry();
-
         IAirHandlerMachineFactory getAirHandlerMachineFactory();
 
         IClientArmorRegistry getClientArmorRegistry();
@@ -104,5 +102,7 @@ public final class PneumaticRegistry {
         IMiscHelpers getMiscHelpers();
 
         DamageSources getDamageSources();
+
+        CustomIngredientTypes getCustomIngredientTypes();
     }
 }

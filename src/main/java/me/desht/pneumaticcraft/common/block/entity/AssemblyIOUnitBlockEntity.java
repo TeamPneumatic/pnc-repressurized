@@ -18,12 +18,12 @@
 package me.desht.pneumaticcraft.common.block.entity;
 
 import me.desht.pneumaticcraft.api.crafting.recipe.AssemblyRecipe;
-import me.desht.pneumaticcraft.common.core.ModBlockEntities;
-import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.LazySynced;
 import me.desht.pneumaticcraft.common.recipes.assembly.AssemblyProgram;
+import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
+import me.desht.pneumaticcraft.common.registry.ModBlocks;
 import me.desht.pneumaticcraft.common.util.CountedItemStacks;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.common.util.IOHelper;
@@ -35,9 +35,9 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemHandlerHelper;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.ItemHandlerHelper;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 
@@ -66,7 +66,12 @@ public class AssemblyIOUnitBlockEntity extends AbstractAssemblyRobotBlockEntity 
     private byte tickCounter = 0;
 
     public AssemblyIOUnitBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.ASSEMBLY_IO_UNIT.get(), pos, state);
+        super(ModBlockEntityTypes.ASSEMBLY_IO_UNIT.get(), pos, state);
+    }
+
+    @Override
+    public boolean hasItemCapability() {
+        return false;  // the inventory is not exposed for capability purposes
     }
 
     @Override
@@ -214,7 +219,7 @@ public class AssemblyIOUnitBlockEntity extends AbstractAssemblyRobotBlockEntity 
     }
 
     private ItemStack searchImportInventory(BlockEntity te) {
-        CountedItemStacks counted = IOHelper.getInventoryForTE(te, Direction.UP)
+        CountedItemStacks counted = IOHelper.getInventoryForBlock(te, Direction.UP)
                 .map(CountedItemStacks::new)
                 .orElse(null);
         if (counted != null) {
@@ -270,7 +275,7 @@ public class AssemblyIOUnitBlockEntity extends AbstractAssemblyRobotBlockEntity 
             if (searchedItemStack.isEmpty()) { // we don't know what we're supposed to pick up
                 reset();
             } else {
-                extracted = tile.getCapability(ForgeCapabilities.ITEM_HANDLER, Direction.UP).map(sourceInv -> {
+                extracted = IOHelper.getInventoryForBlock(tile, Direction.UP).map(sourceInv -> {
                     ItemStack heldStack = itemHandler.getStackInSlot(0);
                     int initialHeldAmount = heldStack.getCount();
                     boolean foundIt = false;
@@ -450,7 +455,7 @@ public class AssemblyIOUnitBlockEntity extends AbstractAssemblyRobotBlockEntity 
     private static int getPlacementSlot(ItemStack exportedItem, BlockEntity te) {
         if (te == null || te instanceof AbstractAssemblyRobotBlockEntity) return -1;
 
-        return te.getCapability(ForgeCapabilities.ITEM_HANDLER, Direction.UP).map(handler -> {
+        return IOHelper.getInventoryForBlock(te, Direction.UP).map(handler -> {
             for (int slot = 0; slot < handler.getSlots(); slot++) {
                 ItemStack excess = handler.insertItem(slot, exportedItem, true);
                 if (excess.getCount() < exportedItem.getCount()) {
@@ -472,7 +477,7 @@ public class AssemblyIOUnitBlockEntity extends AbstractAssemblyRobotBlockEntity 
     }
 
     @Override
-    public IItemHandler getPrimaryInventory() {
+    public IItemHandler getItemHandler(@Nullable Direction dir) {
         return itemHandler;
     }
 

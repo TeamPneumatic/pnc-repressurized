@@ -64,7 +64,7 @@ public abstract class AbstractUpgradeManagerScreen extends AbstractPneumaticCraf
 
     AbstractUpgradeManagerScreen(ChargingStationUpgradeManagerMenu container, Inventory inv, Component displayString) {
         super(container, inv, displayString);
-        itemStack = te.getPrimaryInventory().getStackInSlot(ChargingStationBlockEntity.CHARGE_INVENTORY_INDEX);
+        itemStack = te.getItemHandler().getStackInSlot(ChargingStationBlockEntity.CHARGE_INVENTORY_INDEX);
 
         imageHeight = 182;
     }
@@ -87,8 +87,7 @@ public abstract class AbstractUpgradeManagerScreen extends AbstractPneumaticCraf
     @Override
     protected void addPressureStatInfo(List<Component> pressureStatText) {
         int upgrades = UpgradableItemUtils.getUpgradeCount(itemStack, ModUpgrades.VOLUME.get());
-        int volume = itemStack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY)
-                .map(IAirHandler::getVolume).orElse(getDefaultVolume());
+        int volume = PNCCapabilities.getAirHandler(itemStack).map(IAirHandler::getVolume).orElse(getDefaultVolume());
         float curPressure = te.chargingItemPressure;
         addPressureInfo(pressureStatText, curPressure, volume, getDefaultVolume(), upgrades);
     }
@@ -127,8 +126,9 @@ public abstract class AbstractUpgradeManagerScreen extends AbstractPneumaticCraf
         int gaugeX = imageWidth * 3 / 4 + 10;
         int gaugeY = imageHeight / 4 + 10;
 
-        itemStack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY)
-                .ifPresent(h -> PressureGaugeRenderer2D.drawPressureGauge(graphics, font, 0, h.maxPressure(), h.maxPressure(), 0, te.chargingItemPressure, gaugeX, gaugeY));
+        PNCCapabilities.getAirHandler(itemStack).ifPresent(h ->
+                PressureGaugeRenderer2D.drawPressureGauge(graphics, font, 0, h.maxPressure(), h.maxPressure(),
+                        0, te.chargingItemPressure, gaugeX, gaugeY));
 
         graphics.pose().pushPose();
         graphics.pose().scale(2f, 2f, 2f);

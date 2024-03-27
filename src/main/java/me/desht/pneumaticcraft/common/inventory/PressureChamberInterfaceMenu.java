@@ -18,8 +18,8 @@
 package me.desht.pneumaticcraft.common.inventory;
 
 import me.desht.pneumaticcraft.common.block.entity.PressureChamberInterfaceBlockEntity;
-import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.inventory.slot.UntouchableSlot;
+import me.desht.pneumaticcraft.common.registry.ModMenuTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
@@ -34,7 +34,7 @@ public class PressureChamberInterfaceMenu extends AbstractPneumaticCraftMenu<Pre
         super(ModMenuTypes.PRESSURE_CHAMBER_INTERFACE.get(), windowId, playerInventory, pos);
 
         // add the transfer slot
-        addSlot(new UntouchableSlot(te.getPrimaryInventory(), 0, 66, 35));
+        addSlot(new UntouchableSlot(blockEntity.getItemHandler(), 0, 66, 35));
 
         addUpgradeSlots(20, 31);
 

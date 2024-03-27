@@ -21,24 +21,23 @@ import me.desht.pneumaticcraft.client.ColorHandlers;
 import me.desht.pneumaticcraft.client.render.fluid.IFluidItemRenderInfoProvider;
 import me.desht.pneumaticcraft.client.render.fluid.RenderLiquidHopper;
 import me.desht.pneumaticcraft.common.block.entity.LiquidHopperBlockEntity;
-import me.desht.pneumaticcraft.common.capabilities.FluidItemWrapper;
-import me.desht.pneumaticcraft.common.core.ModItems;
+import me.desht.pneumaticcraft.common.capabilities.FluidHandlerSavedItemStack;
+import me.desht.pneumaticcraft.common.item.IFluidCapProvider;
 import me.desht.pneumaticcraft.common.item.IFluidRendered;
+import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
-import net.minecraftforge.fluids.FluidUtil;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-
-import javax.annotation.Nullable;
+import net.neoforged.neoforge.fluids.FluidUtil;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
+import net.neoforged.neoforge.fluids.capability.templates.FluidHandlerItemStack;
 
 public class LiquidHopperBlock extends OmnidirectionalHopperBlock implements PneumaticCraftEntityBlock {
     public LiquidHopperBlock() {
@@ -51,7 +50,7 @@ public class LiquidHopperBlock extends OmnidirectionalHopperBlock implements Pne
         return new LiquidHopperBlockEntity(pPos, pState);
     }
 
-    public static class ItemBlockLiquidHopper extends BlockItem implements ColorHandlers.ITintableItem, IFluidRendered {
+    public static class ItemBlockLiquidHopper extends BlockItem implements ColorHandlers.ITintableItem, IFluidRendered, IFluidCapProvider {
         public static final String TANK_NAME = "Tank";
         RenderLiquidHopper.ItemRenderInfoProvider renderInfoProvider = null;
 
@@ -74,12 +73,6 @@ public class LiquidHopperBlock extends OmnidirectionalHopperBlock implements Pne
             }).orElseThrow(RuntimeException::new);
         }
 
-        @Nullable
-        @Override
-        public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundTag nbt) {
-            return new FluidItemWrapper(stack, TANK_NAME, PneumaticValues.NORMAL_TANK_CAPACITY);
-        }
-
         @Override
         public int getTintColor(ItemStack stack, int tintIndex) {
             int n = UpgradableItemUtils.getUpgradeCount(stack, ModUpgrades.CREATIVE.get());
@@ -90,6 +83,11 @@ public class LiquidHopperBlock extends OmnidirectionalHopperBlock implements Pne
         public IFluidItemRenderInfoProvider getFluidItemRenderer() {
             if (renderInfoProvider == null) renderInfoProvider = new RenderLiquidHopper.ItemRenderInfoProvider();
             return renderInfoProvider;
+        }
+
+        @Override
+        public IFluidHandlerItem provideFluidCapability(ItemStack stack) {
+            return new FluidHandlerSavedItemStack(stack, TANK_NAME, PneumaticValues.NORMAL_TANK_CAPACITY);
         }
     }
 }

@@ -90,7 +90,7 @@ public class JetBootsOptions extends AbstractSliderOptions<JetBootsClientHandler
             CompoundTag tag = new CompoundTag();
             tag.putBoolean(flagName, cb.isChecked());
             JetBootsHandler upgradeHandler = getClientUpgradeHandler().getCommonHandler();
-            NetworkHandler.sendToServer(new PacketUpdateArmorExtraData(EquipmentSlot.FEET, tag, upgradeHandler.getID()));
+            NetworkHandler.sendToServer(new PacketUpdateArmorExtraData(EquipmentSlot.FEET, upgradeHandler.getID(), tag));
             upgradeHandler.onDataFieldUpdated(CommonArmorHandler.getHandlerForPlayer(), flagName, tag.get(flagName));
             ResourceLocation ownerId = upgradeHandler.getID();
             HUDHandler.getInstance().addFeatureToggleMessage(IArmorUpgradeHandler.getStringKey(ownerId), IArmorUpgradeHandler.getStringKey(cb.getUpgradeId()), cb.isChecked());

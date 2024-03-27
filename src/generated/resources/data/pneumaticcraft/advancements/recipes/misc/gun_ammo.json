@@ -22,14 +22,13 @@
   },
   "requirements": [
     [
-      "has_minigun",
-      "has_the_recipe"
+      "has_the_recipe",
+      "has_minigun"
     ]
   ],
   "rewards": {
     "recipes": [
       "pneumaticcraft:gun_ammo"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }

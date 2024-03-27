@@ -2,20 +2,19 @@ package me.desht.pneumaticcraft.datagen;
 
 import me.desht.pneumaticcraft.api.lib.Names;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.RegistrySetBuilder;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.PackOutput;
-import net.minecraftforge.common.data.BlockTagsProvider;
-import net.minecraftforge.common.data.DatapackBuiltinEntriesProvider;
-import net.minecraftforge.common.data.ExistingFileHelper;
-import net.minecraftforge.data.event.GatherDataEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraft.data.registries.RegistryPatchGenerator;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.common.data.BlockTagsProvider;
+import net.neoforged.neoforge.common.data.DatapackBuiltinEntriesProvider;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
+import net.neoforged.neoforge.data.event.GatherDataEvent;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
 import java.util.List;
 import java.util.Set;
@@ -41,6 +40,7 @@ public class DataGenerators {
         generator.addProvider(event.includeServer(), new ModGLMProvider(generator));
         generator.addProvider(event.includeServer(), new ModPoiTypeTagsProvider(generator, lookupProvider, existingFileHelper));
         generator.addProvider(event.includeServer(), new ModStructureTagsProvider(generator, lookupProvider, event.getExistingFileHelper()));
+//        generator.addProvider(event.includeServer(), new ModDamageTypeTagsProvider(generator.getPackOutput(), lookupProvider, event.getExistingFileHelper()));
 
         makeProviders(generator.getPackOutput(), lookupProvider, existingFileHelper)
                 .forEach(p -> generator.addProvider(event.includeServer(), p));
@@ -50,16 +50,15 @@ public class DataGenerators {
         RegistrySetBuilder builder = new RegistrySetBuilder()
                 .add(Registries.CONFIGURED_FEATURE, ModWorldGenProvider.ConfiguredFeatures::bootstrap)
                 .add(Registries.PLACED_FEATURE, ModWorldGenProvider.PlacedFeatures::bootstrap)
-                .add(ForgeRegistries.Keys.BIOME_MODIFIERS, ModWorldGenProvider.BiomeModifiers::bootstrap)
+                .add(NeoForgeRegistries.Keys.BIOME_MODIFIERS, ModWorldGenProvider.BiomeModifiers::bootstrap)
                 .add(Registries.DAMAGE_TYPE, ModDamageTypeProvider::bootstrap);
         return List.of(
                 new DatapackBuiltinEntriesProvider(output, vanillaRegistries, builder, Set.of(Names.MOD_ID)),
-                new ModDamageTypeTagsProvider(output, vanillaRegistries.thenApply(provider -> append(provider, builder)), efh)
+                new ModDamageTypeTagsProvider(output, append(vanillaRegistries, builder), efh)
         );
     }
 
-    private static HolderLookup.Provider append(HolderLookup.Provider original, RegistrySetBuilder builder) {
-        return builder.buildPatch(RegistryAccess.fromRegistryOfRegistries(BuiltInRegistries.REGISTRY), original);
+    private static CompletableFuture<HolderLookup.Provider> append(CompletableFuture<HolderLookup.Provider> original, RegistrySetBuilder builder) {
+        return RegistryPatchGenerator.createLookup(original, builder).thenApply(RegistrySetBuilder.PatchedRegistries::full);
     }
-
 }

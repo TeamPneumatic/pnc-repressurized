@@ -26,7 +26,7 @@ import me.desht.pneumaticcraft.common.entity.drone.DroneEntity;
 import me.desht.pneumaticcraft.common.item.PneumaticArmorItem;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSendDroneDebugEntry;
-import me.desht.pneumaticcraft.common.network.PacketSyncDroneEntityProgWidgets;
+import me.desht.pneumaticcraft.common.network.PacketSyncDroneProgWidgets;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
@@ -36,9 +36,9 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.level.pathfinder.Path;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.event.entity.living.LivingEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.event.entity.living.LivingEvent;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -68,7 +68,7 @@ public class DroneDebugger {
         addEntry(entry);
 
         // add the entry client-side
-        PacketSendDroneDebugEntry packet = new PacketSendDroneDebugEntry(entry, drone);
+        PacketSendDroneDebugEntry packet = PacketSendDroneDebugEntry.create(drone, entry);
         for (ServerPlayer player : debuggingPlayers) {
             NetworkHandler.sendToPlayer(packet, player);
         }
@@ -79,10 +79,10 @@ public class DroneDebugger {
     }
 
     public void trackAsDebugged(ServerPlayer player) {
-        NetworkHandler.sendToPlayer(new PacketSyncDroneEntityProgWidgets(drone), player);
+        NetworkHandler.sendToPlayer(PacketSyncDroneProgWidgets.create(drone), player);
 
         for (DroneDebugEntry entry : debugList.getAll()) {
-            NetworkHandler.sendToPlayer(new PacketSendDroneDebugEntry(entry, drone), player);
+            NetworkHandler.sendToPlayer(PacketSendDroneDebugEntry.create(drone, entry), player);
         }
 
         debuggingPlayers.add(player);

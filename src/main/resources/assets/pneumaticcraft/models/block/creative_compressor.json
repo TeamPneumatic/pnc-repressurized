@@ -1,6 +1,6 @@
 {
 	"credit": "Made with Blockbench",
-	"parent": "forge:block/default",
+	"parent": "neoforge:block/default",
 	"textures": {
 		"0": "pneumaticcraft:pnc_model/creative_compressor",
 		"particle": "pneumaticcraft:pnc_model/creative_compressor"

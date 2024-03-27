@@ -1,9 +1,7 @@
 {
-  "type": "pneumaticcraft:heat_properties",
-  "block": "quark:blaze_lantern",
-  "temperature": 773,
-  "heatCapacity": 9675,
-  "transformCold": {
-    "block": "minecraft:glowstone"
-  }
+   "block" : "quark:blaze_lantern",
+   "type" : "pneumaticcraft:heat_properties",
+   "transformCold" : "minecraft:glowstone",
+   "heatCapacity" : 9675,
+   "temperature" : 773
 }

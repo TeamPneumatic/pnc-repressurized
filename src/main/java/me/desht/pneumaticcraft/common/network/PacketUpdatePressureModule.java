@@ -19,37 +19,41 @@ package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.common.tubemodules.AbstractTubeModule;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 
-public class PacketUpdatePressureModule extends PacketUpdateTubeModule {
-    private final float lower;
-    private final float higher;
-    private final boolean advanced;
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
-    public PacketUpdatePressureModule(AbstractTubeModule module) {
-        super(module);
-        this.lower = module.lowerBound;
-        this.higher = module.higherBound;
-        this.advanced = module.advancedConfig;
+/**
+ * Received on: SERVER
+ * Sent by client when module settings updated via GUI
+ */
+public record PacketUpdatePressureModule(ModuleLocator locator, float lower, float higher, boolean advanced) implements TubeModulePacket<AbstractTubeModule> {
+    public static final ResourceLocation ID = RL("update_pressure_module");
+
+    public static PacketUpdatePressureModule create(AbstractTubeModule module) {
+        return new PacketUpdatePressureModule(ModuleLocator.forModule(module), module.lowerBound, module.higherBound, module.advancedConfig);
     }
 
-    public PacketUpdatePressureModule(FriendlyByteBuf buffer) {
-        super(buffer);
-        this.lower = buffer.readFloat();
-        this.higher = buffer.readFloat();
-        this.advanced = buffer.readBoolean();
+    public static PacketUpdatePressureModule fromNetwork(FriendlyByteBuf buffer) {
+        return new PacketUpdatePressureModule(ModuleLocator.fromNetwork(buffer), buffer.readFloat(), buffer.readFloat(), buffer.readBoolean());
     }
 
     @Override
-    public void toBytes(FriendlyByteBuf buffer) {
-        super.toBytes(buffer);
+    public void write(FriendlyByteBuf buffer) {
+        locator.write(buffer);
         buffer.writeFloat(lower);
         buffer.writeFloat(higher);
         buffer.writeBoolean(advanced);
     }
 
     @Override
-    protected void onModuleUpdate(AbstractTubeModule module, Player player) {
+    public ResourceLocation id() {
+        return ID;
+    }
+
+    @Override
+    public void onModuleUpdate(AbstractTubeModule module, Player player) {
         module.lowerBound = lower;
         module.higherBound = higher;
         module.advancedConfig = advanced;

@@ -23,15 +23,14 @@ import me.desht.pneumaticcraft.common.drone.IDroneBase;
 import me.desht.pneumaticcraft.common.drone.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetExternalProgram;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
-import me.desht.pneumaticcraft.common.network.PacketSyncDroneEntityProgWidgets;
+import me.desht.pneumaticcraft.common.network.PacketSyncDroneProgWidgets;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.items.IItemHandler;
+import net.neoforged.neoforge.items.IItemHandler;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -70,14 +69,14 @@ public class DroneAIExternalProgram extends DroneAIBlockInteraction<ProgWidgetEx
         if (traversedPositions.add(pos)) {
             curSlot = 0;
             BlockEntity te = drone.world().getBlockEntity(pos);
-            return te != null && te.getCapability(ForgeCapabilities.ITEM_HANDLER).isPresent();
+            return te != null && IOHelper.getInventoryForBlock(te).isPresent();
         }
         return false;
     }
 
     @Override
     protected boolean doBlockInteraction(BlockPos pos, double squareDistToBlock) {
-        return IOHelper.getInventoryForTE(drone.world().getBlockEntity(pos)).map(this::handleInv).orElse(false);
+        return IOHelper.getInventoryForBlock(drone.world().getBlockEntity(pos)).map(this::handleInv).orElse(false);
     }
 
     private boolean handleInv(IItemHandler inv) {
@@ -93,7 +92,7 @@ public class DroneAIExternalProgram extends DroneAIBlockInteraction<ProgWidgetEx
                 } else {
                     curProgramTag = null;
                     subAI.setWidgets(new ArrayList<>());
-                    drone.getDebugger().getDebuggingPlayers().forEach(p -> NetworkHandler.sendToPlayer(new PacketSyncDroneEntityProgWidgets(drone), p));
+                    drone.getDebugger().getDebuggingPlayers().forEach(p -> NetworkHandler.sendToPlayer(PacketSyncDroneProgWidgets.create(drone), p));
                 }
             }
             return true;
@@ -109,7 +108,7 @@ public class DroneAIExternalProgram extends DroneAIBlockInteraction<ProgWidgetEx
                             if (progWidget.shareVariables) mainAI.connectVariables(subAI);
                             subAI.getDrone().getAIManager().setLabel("Main");
                             subAI.setWidgets(widgets);
-                            drone.getDebugger().getDebuggingPlayers().forEach(p -> NetworkHandler.sendToPlayer(new PacketSyncDroneEntityProgWidgets(drone), p));
+                            drone.getDebugger().getDebuggingPlayers().forEach(p -> NetworkHandler.sendToPlayer(PacketSyncDroneProgWidgets.create(drone), p));
                             curProgramTag = stack.getTag();
                             if (!subAI.isIdling()) {
                                 return true;

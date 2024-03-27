@@ -20,32 +20,39 @@ package me.desht.pneumaticcraft.common.network;
 import me.desht.pneumaticcraft.common.debug.DroneDebugEntry;
 import me.desht.pneumaticcraft.common.drone.IDroneBase;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
+
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 /**
  * Received on: CLIENT
  * Sent by server to add a debug message to a debugged drone.
  */
-public class PacketSendDroneDebugEntry extends PacketDroneDebugBase {
-    private final DroneDebugEntry entry;
+public record PacketSendDroneDebugEntry(DroneTarget droneTarget, DroneDebugEntry entry) implements DronePacket {
+    public static final ResourceLocation ID = RL("send_drone_debug_entry");
 
-    public PacketSendDroneDebugEntry(DroneDebugEntry entry, IDroneBase drone) {
-        super(drone);
-        this.entry = entry;
+    public static PacketSendDroneDebugEntry create(IDroneBase drone, DroneDebugEntry entry) {
+        return new PacketSendDroneDebugEntry(drone.getPacketTarget(), entry);
     }
 
-    public PacketSendDroneDebugEntry(FriendlyByteBuf buffer) {
-        super(buffer);
-        entry = new DroneDebugEntry(buffer);
-    }
-
-    public void toBytes(FriendlyByteBuf buf) {
-        super.toBytes(buf);
-        entry.toBytes(buf);
+    public static PacketSendDroneDebugEntry fromNetwork(FriendlyByteBuf buffer) {
+        return new PacketSendDroneDebugEntry(DroneTarget.fromNetwork(buffer), new DroneDebugEntry(buffer));
     }
 
     @Override
-    void handle(Player player, IDroneBase drone) {
+    public void write(FriendlyByteBuf buf) {
+        droneTarget.toNetwork(buf);
+        entry.toNetwork(buf);
+    }
+
+    @Override
+    public ResourceLocation id() {
+        return ID;
+    }
+
+    @Override
+    public void handle(Player player, IDroneBase drone) {
         drone.getDebugger().addEntry(entry);
     }
 }

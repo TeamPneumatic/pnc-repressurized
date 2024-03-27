@@ -20,10 +20,10 @@ package me.desht.pneumaticcraft.common.drone.ai;
 import me.desht.pneumaticcraft.common.drone.IDroneBase;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetInventoryBase;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
+import me.desht.pneumaticcraft.common.util.IOHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
 
 public class DroneAIEnergyImport extends DroneAIImExBase<ProgWidgetInventoryBase> {
     public DroneAIEnergyImport(IDroneBase drone, ProgWidgetInventoryBase widget) {
@@ -58,7 +58,7 @@ public class DroneAIEnergyImport extends DroneAIImExBase<ProgWidgetInventoryBase
     }
 
     private boolean tryImportFromSide(BlockEntity te, Direction face, boolean simulate) {
-        return te.getCapability(ForgeCapabilities.ENERGY, face).map(tileHandler -> {
+        return IOHelper.getEnergyStorageForBlock(te, face).map(tileHandler -> {
             int toExtract = tileHandler.extractEnergy(useCount() ? getRemainingCount() : Integer.MAX_VALUE, true);
             int toTransfer = insertToDrone(toExtract, true);
             if (toTransfer > 0) {
@@ -74,14 +74,10 @@ public class DroneAIEnergyImport extends DroneAIImExBase<ProgWidgetInventoryBase
     }
 
     private int insertToDrone(int maxTransfer, boolean simulate) {
-        return drone.getCapability(ForgeCapabilities.ENERGY)
-                .map(h -> h.receiveEnergy(maxTransfer, simulate))
-                .orElseThrow(RuntimeException::new);
+        return drone.getEnergyStorage().receiveEnergy(maxTransfer, simulate);
     }
 
     private boolean droneIsFull() {
-        return drone.getCapability(ForgeCapabilities.ENERGY)
-                .map(h -> h.getEnergyStored() == h.getMaxEnergyStored())
-                .orElseThrow(RuntimeException::new);
+        return drone.getEnergyStorage().getEnergyStored() >= drone.getEnergyStorage().getMaxEnergyStored();
     }
 }

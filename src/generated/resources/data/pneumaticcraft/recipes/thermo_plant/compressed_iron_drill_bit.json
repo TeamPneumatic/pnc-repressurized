@@ -1,9 +1,7 @@
 {
   "type": "pneumaticcraft:thermo_plant",
   "air_use_multiplier": 5.0,
-  "exothermic": false,
   "fluid_input": {
-    "type": "pneumaticcraft:fluid",
     "amount": 4000,
     "tag": "forge:lubricant"
   },
@@ -11,11 +9,12 @@
     "tag": "forge:ingots/compressed_iron"
   },
   "item_output": {
-    "item": "pneumaticcraft:drill_bit_compressed_iron"
+    "Count": 1,
+    "id": "pneumaticcraft:drill_bit_compressed_iron"
   },
   "pressure": 4.0,
   "speed": 0.25,
   "temperature": {
-    "min_temp": 573
+    "min": 573
   }
 }

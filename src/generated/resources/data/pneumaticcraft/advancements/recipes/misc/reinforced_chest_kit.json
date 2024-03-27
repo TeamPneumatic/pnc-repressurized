@@ -22,14 +22,13 @@
   },
   "requirements": [
     [
-      "has_reinforced_chest",
-      "has_the_recipe"
+      "has_the_recipe",
+      "has_reinforced_chest"
     ]
   ],
   "rewards": {
     "recipes": [
       "pneumaticcraft:reinforced_chest_kit"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }

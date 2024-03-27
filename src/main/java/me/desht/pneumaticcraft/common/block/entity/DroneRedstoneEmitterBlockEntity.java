@@ -17,16 +17,22 @@
 
 package me.desht.pneumaticcraft.common.block.entity;
 
-import me.desht.pneumaticcraft.common.core.ModBlockEntities;
+import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.items.IItemHandler;
+import net.neoforged.neoforge.items.IItemHandler;
+import org.jetbrains.annotations.Nullable;
 
 public class DroneRedstoneEmitterBlockEntity extends AbstractTickingBlockEntity {
     public DroneRedstoneEmitterBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.DRONE_REDSTONE_EMITTER.get(), pos, state);
+        super(ModBlockEntityTypes.DRONE_REDSTONE_EMITTER.get(), pos, state);
+    }
+
+    @Override
+    public boolean hasItemCapability() {
+        return false;
     }
 
     @Override
@@ -43,7 +49,7 @@ public class DroneRedstoneEmitterBlockEntity extends AbstractTickingBlockEntity 
     }
 
     @Override
-    public IItemHandler getPrimaryInventory() {
+    public IItemHandler getItemHandler(@Nullable Direction dir) {
         return null;
     }
 }

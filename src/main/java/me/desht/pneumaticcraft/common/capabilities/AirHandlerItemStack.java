@@ -17,23 +17,16 @@
 
 package me.desht.pneumaticcraft.common.capabilities;
 
-import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.pressure.IPressurizableItem;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerItem;
-import net.minecraft.core.Direction;
+import me.desht.pneumaticcraft.common.registry.ModAttachmentTypes;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.util.LazyOptional;
 import org.apache.commons.lang3.Validate;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.Objects;
 
-public class AirHandlerItemStack extends IAirHandlerItem.Provider {
+public class AirHandlerItemStack implements IAirHandlerItem {
     public static final String AIR_NBT_KEY = "pneumaticcraft:air";
-
-    private final LazyOptional<IAirHandlerItem> holder = LazyOptional.of(() -> this);
 
     private final ItemStack container;
     private final IPressurizableItem pressurizable;
@@ -78,15 +71,9 @@ public class AirHandlerItemStack extends IAirHandlerItem.Provider {
         int currentAir = getAir();
         int newAir = currentAir + amount;
         if (newAir != 0) {
-            container.getOrCreateTag().putInt(AIR_NBT_KEY, currentAir + amount);
+            container.setData(ModAttachmentTypes.AIR.get(),currentAir + amount);
         } else {
-            // no air in item: clean up NBT for item stackability purposes
-            if (container.hasTag()) {
-                Objects.requireNonNull(container.getTag()).remove(AIR_NBT_KEY);
-                if (container.getTag().isEmpty()) {
-                    container.setTag(null);
-                }
-            }
+            container.removeData(ModAttachmentTypes.AIR.get());
         }
     }
 
@@ -108,11 +95,5 @@ public class AirHandlerItemStack extends IAirHandlerItem.Provider {
     @Override
     public float maxPressure() {
         return maxPressure;
-    }
-
-    @Nonnull
-    @Override
-    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-        return PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY.orEmpty(cap, holder);
     }
 }

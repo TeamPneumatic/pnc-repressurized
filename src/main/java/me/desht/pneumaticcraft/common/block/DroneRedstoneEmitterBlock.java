@@ -32,11 +32,11 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 
 import javax.annotation.Nullable;
-import java.util.List;
+import java.util.Comparator;
 
 public class DroneRedstoneEmitterBlock extends AirBlock implements EntityBlock {
     public DroneRedstoneEmitterBlock() {
-        super(Block.Properties.copy(Blocks.AIR));
+        super(Block.Properties.ofFullCopy(Blocks.AIR));
     }
 
     @Override
@@ -52,12 +52,10 @@ public class DroneRedstoneEmitterBlock extends AirBlock implements EntityBlock {
     @Override
     public int getSignal(BlockState state, BlockGetter blockAccess, BlockPos pos, Direction side) {
         if (blockAccess instanceof EntityGetter entityGetter) {
-            List<DroneEntity> drones = entityGetter.getEntitiesOfClass(DroneEntity.class, new AABB(pos, pos.offset(1, 1, 1)));
-            int signal = 0;
-            for (DroneEntity drone : drones) {
-                signal = Math.max(signal, drone.getEmittingRedstone(side.getOpposite()));
-            }
-            return signal;
+            return entityGetter.getEntitiesOfClass(DroneEntity.class, new AABB(pos)).stream()
+                    .map(drone -> drone.getEmittingRedstone(side.getOpposite()))
+                    .max(Comparator.naturalOrder())
+                    .orElse(0);
         } else {
             return 0;
         }

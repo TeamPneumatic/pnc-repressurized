@@ -69,7 +69,7 @@ public class AirCompressorScreen extends AbstractPneumaticCraftContainerScreen<A
     @Override
     protected void addProblems(List<Component> textList) {
         super.addProblems(textList);
-        if (te.burnTime <= te.curFuelUsage && !FurnaceBlockEntity.isFuel(te.getPrimaryInventory().getStackInSlot(0))) {
+        if (te.burnTime <= te.curFuelUsage && !FurnaceBlockEntity.isFuel(te.getItemHandler().getStackInSlot(0))) {
             textList.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.airCompressor.noFuel"));
         }
 

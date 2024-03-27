@@ -26,9 +26,8 @@ import me.desht.pneumaticcraft.common.util.IOHelper;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.pathfinder.PathComputationType;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -115,7 +114,7 @@ public class LogisticsManager {
         if (provider.getCachedTileEntity() == null) return;
 
         if (tryItems) {
-            provider.getCachedTileEntity().getCapability(ForgeCapabilities.ITEM_HANDLER, provider.getSide()).ifPresent(itemHandler -> {
+            IOHelper.getInventoryForBlock(provider.getCachedTileEntity(), provider.getSide()).ifPresent(itemHandler -> {
                 if (requester instanceof IProvidingInventoryListener)
                     ((IProvidingInventoryListener) requester).notify(new TileEntityAndFace(provider.getCachedTileEntity(), provider.getSide()));
                 for (int i = 0; i < itemHandler.getSlots(); i++) {
@@ -138,7 +137,7 @@ public class LogisticsManager {
         }
 
         if (tryFluids) {
-            provider.getCachedTileEntity().getCapability(ForgeCapabilities.FLUID_HANDLER, provider.getSide()).ifPresent(fluidHandler -> {
+            IOHelper.getFluidHandlerForBlock(provider.getCachedTileEntity(), provider.getSide()).ifPresent(fluidHandler -> {
                 FluidStack providingStack = fluidHandler.drain(16000, IFluidHandler.FluidAction.SIMULATE);
                 if (!providingStack.isEmpty()) {
                     boolean canDrain = IntStream.range(0, fluidHandler.getTanks()).anyMatch(i -> fluidHandler.isFluidValid(i, providingStack));
@@ -185,7 +184,7 @@ public class LogisticsManager {
         if (requestedAmount < providingStack.getAmount()) providingStack.setAmount(requestedAmount);
         FluidStack remainder = providingStack.copy();
         remainder.grow(requester.getIncomingFluid(remainder.getFluid()));
-        te.getCapability(ForgeCapabilities.FLUID_HANDLER, requester.getSide()).ifPresent(fluidHandler -> {
+        IOHelper.getFluidHandlerForBlock(te, requester.getSide()).ifPresent(fluidHandler -> {
             int fluidFilled = fluidHandler.fill(remainder, IFluidHandler.FluidAction.SIMULATE);
             if (fluidFilled > 0) {
                 remainder.shrink(fluidFilled);

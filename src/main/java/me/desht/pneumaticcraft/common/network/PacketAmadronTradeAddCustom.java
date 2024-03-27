@@ -17,21 +17,22 @@
 
 package me.desht.pneumaticcraft.common.network;
 
-import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.amadron.AmadronOfferManager;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
-import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.inventory.AmadronAddTradeMenu;
 import me.desht.pneumaticcraft.common.item.AmadronTabletItem;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronPlayerOffer;
+import me.desht.pneumaticcraft.common.registry.ModItems;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraft.world.entity.player.Player;
+import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 
-import java.util.function.Supplier;
-
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 /**
@@ -39,29 +40,45 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
  * Sent by Amadron GUI when player is adding a custom player->player trade.
  * Sent by server to all clients to notify them of a trade addition
  */
-public class PacketAmadronTradeAddCustom extends PacketAbstractAmadronTrade {
-    public PacketAmadronTradeAddCustom(AmadronPlayerOffer offer) {
-        super(offer);
+public record PacketAmadronTradeAddCustom(AmadronPlayerOffer offer) implements CustomPacketPayload {
+    public static final ResourceLocation ID = RL("amadron_add_custom_trade");
+
+    public static PacketAmadronTradeAddCustom fromNetwork(FriendlyByteBuf buffer) {
+        return new PacketAmadronTradeAddCustom(AmadronPlayerOffer.playerOfferFromBuf(buffer));
     }
 
-    public PacketAmadronTradeAddCustom(FriendlyByteBuf buffer) {
-        super(buffer);
-    }
-
-    public void handle(Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> {
-            ServerPlayer player = ctx.get().getSender();
-            AmadronPlayerOffer offer = getOffer();
-            if (player == null) {
-                handleClientSide(offer);
-            } else {
-                handleServerSide(player, offer);
+    public static void handle(PacketAmadronTradeAddCustom message, PlayPayloadContext ctx) {
+        ctx.player().ifPresent(player -> ctx.workHandler().submitAsync(() -> {
+            if (ctx.flow().isClientbound()) {
+                message.handleClientSide(player);
+            } else if (player instanceof ServerPlayer sp) {
+                message.handleServerSide(sp);
             }
-        });
-        ctx.get().setPacketHandled(true);
+        }));
     }
 
-    private void handleServerSide(ServerPlayer player, AmadronPlayerOffer offer) {
+    @Override
+    public void write(FriendlyByteBuf buf) {
+        offer.write(buf);
+    }
+
+    @Override
+    public ResourceLocation id() {
+        return ID;
+    }
+
+    private void handleClientSide(Player player) {
+        if (ConfigHelper.common().amadron.notifyOfTradeAddition.get()) {
+            player.displayClientMessage(
+                    Component.translatable("pneumaticcraft.message.amadron.playerAddedTrade",
+                            offer.getVendorName(),
+                            offer.getOutput().toString(),
+                            offer.getInput().toString()
+                    ), false);
+        }
+    }
+
+    private void handleServerSide(ServerPlayer player) {
         if (player.containerMenu instanceof AmadronAddTradeMenu) {
             offer.updatePlayerId();
             if (AmadronOfferManager.getInstance().hasSimilarPlayerOffer(offer.getReversedOffer())) {
@@ -78,17 +95,6 @@ public class PacketAmadronTradeAddCustom extends PacketAbstractAmadronTrade {
             } else {
                 player.displayClientMessage(xlate("pneumaticcraft.message.amadron.duplicateOffer"), false);
             }
-        }
-    }
-
-    private void handleClientSide(AmadronPlayerOffer offer) {
-        if (ConfigHelper.common().amadron.notifyOfTradeAddition.get()) {
-            ClientUtils.getClientPlayer().displayClientMessage(
-                    Component.translatable("pneumaticcraft.message.amadron.playerAddedTrade",
-                            offer.getVendorName(),
-                            offer.getOutput().toString(),
-                            offer.getInput().toString()
-                    ), false);
         }
     }
 }

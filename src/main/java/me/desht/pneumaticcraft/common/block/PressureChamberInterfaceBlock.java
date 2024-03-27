@@ -1,11 +1,11 @@
 package me.desht.pneumaticcraft.common.block;
 
-import me.desht.pneumaticcraft.common.advancements.AdvancementTriggers;
 import me.desht.pneumaticcraft.common.block.entity.PressureChamberInterfaceBlockEntity;
 import me.desht.pneumaticcraft.common.block.entity.PressureChamberValveBlockEntity;
 import me.desht.pneumaticcraft.common.block.entity.PressureChamberWallBlockEntity;
-import me.desht.pneumaticcraft.common.core.ModBlockEntities;
-import me.desht.pneumaticcraft.common.core.ModBlocks;
+import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
+import me.desht.pneumaticcraft.common.registry.ModBlocks;
+import me.desht.pneumaticcraft.common.registry.ModCriterionTriggers;
 import me.desht.pneumaticcraft.common.util.VoxelShapeUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -66,7 +66,7 @@ public class PressureChamberInterfaceBlock extends AbstractPneumaticCraftBlock
         Direction dir = getRotation(state);
         VoxelShape main = SHAPES.get(dir.getAxis());
 
-        return worldIn.getBlockEntity(pos, ModBlockEntities.PRESSURE_CHAMBER_INTERFACE.get()).map(teI -> {
+        return worldIn.getBlockEntity(pos, ModBlockEntityTypes.PRESSURE_CHAMBER_INTERFACE.get()).map(teI -> {
             if (teI.outputProgress < PressureChamberInterfaceBlockEntity.MAX_PROGRESS) {
                 return Shapes.join(main, DOORS.get(dir), BooleanOp.OR);
             } else if (teI.inputProgress < PressureChamberInterfaceBlockEntity.MAX_PROGRESS) {
@@ -94,14 +94,14 @@ public class PressureChamberInterfaceBlock extends AbstractPneumaticCraftBlock
     public void setPlacedBy(Level par1World, BlockPos pos, BlockState state, LivingEntity par5EntityLiving, ItemStack iStack) {
         super.setPlacedBy(par1World, pos, state, par5EntityLiving, iStack);
         if (!par1World.isClientSide && PressureChamberValveBlockEntity.checkIfProperlyFormed(par1World, pos)) {
-            AdvancementTriggers.PRESSURE_CHAMBER.trigger((ServerPlayer) par5EntityLiving);
+            ModCriterionTriggers.PRESSURE_CHAMBER.get().trigger((ServerPlayer) par5EntityLiving);
         }
     }
 
     @Override
     public void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean isMoving) {
         if (state.getBlock() != newState.getBlock() && !world.isClientSide) {
-            world.getBlockEntity(pos, ModBlockEntities.PRESSURE_CHAMBER_INTERFACE.get())
+            world.getBlockEntity(pos, ModBlockEntityTypes.PRESSURE_CHAMBER_INTERFACE.get())
                     .ifPresent(PressureChamberWallBlockEntity::onBlockBreak);
         }
         super.onRemove(state, world, pos, newState, isMoving);

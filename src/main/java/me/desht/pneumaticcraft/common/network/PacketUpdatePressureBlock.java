@@ -20,12 +20,15 @@ package me.desht.pneumaticcraft.common.network;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.block.entity.AbstractAirHandlingBlockEntity;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.network.NetworkEvent;
+import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 
-import java.util.function.Supplier;
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 /**
  * Received on: CLIENT
@@ -34,51 +37,43 @@ import java.util.function.Supplier;
  * - For air grate modules, when the pressure changes enough to modify the range
  * - For machine air handlers which are currently leaking
  */
-public class PacketUpdatePressureBlock extends LocationIntPacket {
-    private static final byte NO_DIRECTION = 127;
+public record PacketUpdatePressureBlock(BlockPos pos, Direction handlerDir, Direction leakDir, int currentAir) implements CustomPacketPayload {
+    public static final ResourceLocation ID = RL("update_pressure_block");
 
-    private final Direction leakDir;
-    private final Direction handlerDir;
-    private final int currentAir;
-
-    public PacketUpdatePressureBlock(BlockEntity te, Direction handlerDir, Direction leakDir, int currentAir) {
-        super(te.getBlockPos());
-
-        this.handlerDir = handlerDir;
-        this.leakDir = leakDir;
-        this.currentAir = currentAir;
-    }
-
-    public PacketUpdatePressureBlock(FriendlyByteBuf buffer) {
-        super(buffer);
-        this.currentAir = buffer.readInt();
-        byte idx = buffer.readByte();
-        this.handlerDir = idx >= 0 && idx < 6 ? Direction.from3DDataValue(idx) : null;
-        idx = buffer.readByte();
-        this.leakDir = idx >= 0 && idx < 6 ? Direction.from3DDataValue(idx) : null;
+    public static PacketUpdatePressureBlock fromNetwork(FriendlyByteBuf buffer) {
+        return new PacketUpdatePressureBlock(
+                buffer.readBlockPos(),
+                buffer.readNullable(buf -> buf.readEnum(Direction.class)),
+                buffer.readNullable(buf -> buf.readEnum(Direction.class)),
+                buffer.readInt()
+        );
     }
 
     @Override
-    public void toBytes(FriendlyByteBuf buf) {
-        super.toBytes(buf);
+    public void write(FriendlyByteBuf buf) {
+        buf.writeBlockPos(pos);
+        buf.writeNullable(handlerDir, FriendlyByteBuf::writeEnum);
+        buf.writeNullable(leakDir, FriendlyByteBuf::writeEnum);
         buf.writeInt(currentAir);
-        buf.writeByte(handlerDir == null ? NO_DIRECTION : handlerDir.get3DDataValue());
-        buf.writeByte(leakDir == null ? NO_DIRECTION : leakDir.get3DDataValue());
     }
 
-    public void handle(Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> {
-            BlockEntity te = ClientUtils.getBlockEntity(pos);
-            if (te != null) {
-                te.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, handlerDir).ifPresent(handler -> {
-                    handler.setSideLeaking(leakDir);
-                    handler.addAir(currentAir - handler.getAir());
-                    if (handlerDir != null && te instanceof AbstractAirHandlingBlockEntity) {
-                        ((AbstractAirHandlingBlockEntity) te).initializeHullAirHandlerClient(handlerDir, handler);
+    @Override
+    public ResourceLocation id() {
+        return ID;
+    }
+
+    public static void handle(PacketUpdatePressureBlock message, PlayPayloadContext ctx) {
+        ctx.workHandler().submitAsync(() -> {
+            BlockEntity blockEntity = ClientUtils.getBlockEntity(message.pos());
+            if (blockEntity != null) {
+                PNCCapabilities.getAirHandler(blockEntity, message.handlerDir()).ifPresent(handler -> {
+                    handler.setSideLeaking(message.leakDir());
+                    handler.addAir(message.currentAir() - handler.getAir());
+                    if (message.handlerDir() != null && blockEntity instanceof AbstractAirHandlingBlockEntity aah) {
+                        aah.initializeHullAirHandlerClient(message.handlerDir(), handler);
                     }
                 });
             }
         });
-        ctx.get().setPacketHandled(true);
     }
 }

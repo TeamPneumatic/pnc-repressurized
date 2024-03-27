@@ -30,10 +30,10 @@ import me.desht.pneumaticcraft.common.block.entity.RangeManager;
 import me.desht.pneumaticcraft.common.block.entity.SideConfigurator.RelativeFace;
 import me.desht.pneumaticcraft.common.block.entity.SmartChestBlockEntity;
 import me.desht.pneumaticcraft.common.block.entity.SmartChestBlockEntity.PushPullMode;
-import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.inventory.SmartChestMenu;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSyncSmartChest;
+import me.desht.pneumaticcraft.common.registry.ModBlocks;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
@@ -50,8 +50,7 @@ import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.phys.AABB;
-import net.minecraftforge.items.ItemHandlerHelper;
+import net.neoforged.neoforge.items.ItemHandlerHelper;
 import org.apache.commons.lang3.tuple.Pair;
 import org.lwjgl.glfw.GLFW;
 
@@ -88,7 +87,8 @@ public class SmartChestScreen extends AbstractPneumaticCraftContainerScreen<Smar
 
         addPushPullTab();
 
-        showRangeButton = new WidgetButtonExtended(leftPos + 196, topPos + 189, 12, 12, "A", b -> previewRange());
+        showRangeButton = new WidgetButtonExtended(leftPos + 196, topPos + 189, 12, 12, "A", b -> previewRange())
+                .withCustomTooltip(this::makeRangeButtonTooltip);
         addRenderableWidget(showRangeButton);
     }
 
@@ -103,7 +103,7 @@ public class SmartChestScreen extends AbstractPneumaticCraftContainerScreen<Smar
                     if (te.getPushPullMode(face) == PushPullMode.PULL) {
                         Direction dir = te.getAbsoluteFacing(face, te.getRotation());
                         BlockPos pos = te.getBlockPos().relative(dir, range + 1);
-                        posSet.addAll(RangeManager.getFrame(new AABB(pos, pos).inflate(range)));
+                        posSet.addAll(RangeManager.getFrame(pos, range));
                     }
                 }
                 AreaRenderManager.getInstance().showArea(posSet, 0x4000FFFF, te, false);
@@ -123,16 +123,17 @@ public class SmartChestScreen extends AbstractPneumaticCraftContainerScreen<Smar
 
         if (te.getUpgrades(ModUpgrades.MAGNET.get()) > 0) {
             showRangeButton.setVisible(true);
-            if (AreaRenderManager.getInstance().isShowing(te)) {
-                showRangeButton.setMessage(Component.literal("R").withStyle(ChatFormatting.AQUA));
-                showRangeButton.setTooltipText(xlate("pneumaticcraft.gui.programmer.button.stopShowingArea"));
-            } else {
-                showRangeButton.setMessage(Component.literal("R").withStyle(ChatFormatting.GRAY));
-                showRangeButton.setTooltipText(xlate("pneumaticcraft.gui.programmer.button.showArea"));
-            }
+            showRangeButton.setMessage(Component.literal("R")
+                    .withStyle(AreaRenderManager.getInstance().isShowing(te) ? ChatFormatting.AQUA : ChatFormatting.GRAY));
         } else {
             showRangeButton.setVisible(false);
         }
+    }
+
+    private List<Component> makeRangeButtonTooltip() {
+        return AreaRenderManager.getInstance().isShowing(te) ?
+                List.of(xlate("pneumaticcraft.gui.programmer.button.stopShowingArea")) :
+                List.of(xlate("pneumaticcraft.gui.programmer.button.showArea"));
     }
 
     private void addPushPullTab() {
@@ -287,7 +288,7 @@ public class SmartChestScreen extends AbstractPneumaticCraftContainerScreen<Smar
                     }
                     this.filter = te.getFilter();
                 }
-                NetworkHandler.sendToServer(new PacketSyncSmartChest(this.te));
+                NetworkHandler.sendToServer(PacketSyncSmartChest.forBlockEntity(this.te));
             } else {
                 // alt-click an item - toggle filtering for it
                 if (te.getFilter(slotId).isEmpty()) {
@@ -296,7 +297,7 @@ public class SmartChestScreen extends AbstractPneumaticCraftContainerScreen<Smar
                     te.setFilter(slotId, ItemStack.EMPTY);
                 }
                 this.filter = te.getFilter();
-                NetworkHandler.sendToServer(new PacketSyncSmartChest(this.te));
+                NetworkHandler.sendToServer(PacketSyncSmartChest.forBlockEntity(this.te));
             }
         } else {
             super.slotClicked(slotIn, slotId, mouseButton, type);
@@ -304,14 +305,14 @@ public class SmartChestScreen extends AbstractPneumaticCraftContainerScreen<Smar
     }
 
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double dir) {
+    public boolean mouseScrolled(double mouseX, double mouseY, double dirX, double dirY) {
         Slot s = getSlotUnderMouse();
         if (Screen.hasAltDown() && s != null && s.index < CHEST_SIZE) {
             ItemStack stack = te.getFilter(s.index);
             if (!stack.isEmpty()) {
                 int newSize = hasShiftDown() ?
-                        (dir > 0 ? stack.getCount() * 2 : stack.getCount() / 2) :
-                        stack.getCount() + (int) dir;
+                        (dirY > 0 ? stack.getCount() * 2 : stack.getCount() / 2) :
+                        stack.getCount() + (int) dirY;
                 newSize = Mth.clamp(newSize, 1, stack.getMaxStackSize());
                 if (newSize != stack.getCount()) {
                     te.setFilter(s.index, ItemHandlerHelper.copyStackWithSize(stack, newSize));
@@ -321,7 +322,7 @@ public class SmartChestScreen extends AbstractPneumaticCraftContainerScreen<Smar
             }
             return true;
         }
-        return super.mouseScrolled(mouseX, mouseY, dir);
+        return super.mouseScrolled(mouseX, mouseY, dirX, dirY);
     }
 
     @Override
@@ -349,6 +350,6 @@ public class SmartChestScreen extends AbstractPneumaticCraftContainerScreen<Smar
 
     @Override
     protected void doDelayedAction() {
-        NetworkHandler.sendToServer(new PacketSyncSmartChest(this.te));
+        NetworkHandler.sendToServer(PacketSyncSmartChest.forBlockEntity(this.te));
     }
 }

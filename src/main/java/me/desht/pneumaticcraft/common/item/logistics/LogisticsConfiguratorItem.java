@@ -20,8 +20,8 @@ package me.desht.pneumaticcraft.common.item.logistics;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.semiblock.IDirectionalSemiblock;
 import me.desht.pneumaticcraft.api.semiblock.ISemiBlock;
-import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.item.PressurizableItem;
+import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.semiblock.SemiblockTracker;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.BlockPos;
@@ -52,7 +52,7 @@ public class LogisticsConfiguratorItem extends PressurizableItem {
             return InteractionResult.SUCCESS;
         }
 
-        if (player != null && stack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).map(h -> h.getPressure() > 0.1).orElseThrow(RuntimeException::new)) {
+        if (player != null && PNCCapabilities.getAirHandler(stack).map(h -> h.getPressure() > 0.1).orElseThrow(RuntimeException::new)) {
             Stream<ISemiBlock> semiBlocks = SemiblockTracker.getInstance().getAllSemiblocks(world, pos, side);
 
             boolean didWork = false;
@@ -67,7 +67,7 @@ public class LogisticsConfiguratorItem extends PressurizableItem {
             }
             if (didWork) {
                 if (!player.isCreative()) {
-                    stack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY)
+                    PNCCapabilities.getAirHandler(stack)
                             .ifPresent(h -> h.addAir(-PneumaticValues.USAGE_LOGISTICS_CONFIGURATOR));
                 }
                 return InteractionResult.SUCCESS;

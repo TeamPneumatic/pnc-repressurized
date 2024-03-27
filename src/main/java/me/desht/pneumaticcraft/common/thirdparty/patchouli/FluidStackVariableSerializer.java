@@ -19,10 +19,10 @@ package me.desht.pneumaticcraft.common.thirdparty.patchouli;
 
 import com.google.gson.JsonElement;
 import me.desht.pneumaticcraft.common.recipes.ModCraftingHelper;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.material.Fluid;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.fluids.FluidStack;
 import vazkii.patchouli.api.IVariableSerializer;
 
 public class FluidStackVariableSerializer implements IVariableSerializer<FluidStack> {
@@ -53,10 +53,10 @@ public class FluidStackVariableSerializer implements IVariableSerializer<FluidSt
             count = Integer.parseInt(split[1]);
         }
         ResourceLocation fluidId = new ResourceLocation(id);
-        if (!ForgeRegistries.FLUIDS.containsKey(fluidId)) {
+        if (!BuiltInRegistries.FLUID.containsKey(fluidId)) {
             throw new RuntimeException("Unknown fluid: " + id);
         }
-        Fluid f = ForgeRegistries.FLUIDS.getValue(fluidId);
+        Fluid f = BuiltInRegistries.FLUID.get(fluidId);
         return new FluidStack(f, count);
     }
 }

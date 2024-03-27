@@ -17,27 +17,24 @@
 
 package me.desht.pneumaticcraft.common.recipes.machine;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import me.desht.pneumaticcraft.api.crafting.recipe.AssemblyRecipe;
-import me.desht.pneumaticcraft.common.core.ModRecipeSerializers;
-import me.desht.pneumaticcraft.common.core.ModRecipeTypes;
+import me.desht.pneumaticcraft.common.registry.ModRecipeSerializers;
+import me.desht.pneumaticcraft.common.registry.ModRecipeTypes;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
-import net.minecraft.world.item.crafting.ShapedRecipe;
-import org.apache.commons.lang3.Validate;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.Locale;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
@@ -46,9 +43,7 @@ public class AssemblyRecipeImpl extends AssemblyRecipe {
     private final ItemStack output;
     private final AssemblyProgramType program;
 
-    public AssemblyRecipeImpl(ResourceLocation id, @Nonnull Ingredient input, @Nonnull ItemStack output, AssemblyProgramType program) {
-        super(id);
-
+    public AssemblyRecipeImpl(@Nonnull Ingredient input, @Nonnull ItemStack output, AssemblyProgramType program) {
         this.input = input;
         this.output = output;
         this.program = program;
@@ -80,13 +75,6 @@ public class AssemblyRecipeImpl extends AssemblyRecipe {
     }
 
     @Override
-    public void write(FriendlyByteBuf buffer) {
-        input.toNetwork(buffer);
-        buffer.writeItem(output);
-        buffer.writeVarInt(program.ordinal());
-    }
-
-    @Override
     public RecipeSerializer<?> getSerializer() {
         return switch (getProgramType()) {
             case LASER -> ModRecipeSerializers.ASSEMBLY_LASER.get();
@@ -113,17 +101,22 @@ public class AssemblyRecipeImpl extends AssemblyRecipe {
      * @param laserRecipes all known laser recipes
      * @return a map (recipeId -> recipe) of all synthetic laser/drill recipes
      */
-    public static Map<ResourceLocation, AssemblyRecipe> calculateAssemblyChain(Collection<AssemblyRecipe> drillRecipes, Collection<AssemblyRecipe> laserRecipes) {
-        Map<ResourceLocation, AssemblyRecipe> drillLaser = new HashMap<>();
-        for (AssemblyRecipe r1 : drillRecipes) {
-            for (AssemblyRecipe r2 : laserRecipes) {
+    public static Map<ResourceLocation, RecipeHolder<AssemblyRecipe>> calculateAssemblyChain(
+            List<RecipeHolder<AssemblyRecipe>> drillRecipes,
+            List<RecipeHolder<AssemblyRecipe>> laserRecipes
+    ) {
+        Map<ResourceLocation, RecipeHolder<AssemblyRecipe>> drillLaser = new HashMap<>();
+        for (RecipeHolder<AssemblyRecipe> h1 : drillRecipes) {
+            for (RecipeHolder<AssemblyRecipe> h2 : laserRecipes) {
+                AssemblyRecipe r1 = h1.value();
+                AssemblyRecipe r2 = h2.value();
                 if (r2.getInput().test(r1.getOutput())
                         && r1.getOutput().getCount() % r2.getInputAmount() == 0
                         && r2.getOutput().getMaxStackSize() >= r2.getOutput().getCount() * (r1.getOutput().getCount() / r2.getInputAmount())) {
                     ItemStack output = r2.getOutput().copy();
                     output.setCount(output.getCount() * (r1.getOutput().getCount() / r2.getInputAmount()));
-                    ResourceLocation id = RL(r1.getId().getPath() + "_" + r2.getId().getPath());
-                    drillLaser.put(id, new AssemblyRecipeImpl(id, r1.getInput(), output, AssemblyProgramType.DRILL_LASER));
+                    ResourceLocation id = RL(h1.id().getPath() + "_" + h2.id().getPath());
+                    drillLaser.put(id, new RecipeHolder<>(id, new AssemblyRecipeImpl(r1.getInput(), output, AssemblyProgramType.DRILL_LASER)));
                 }
             }
         }
@@ -132,41 +125,41 @@ public class AssemblyRecipeImpl extends AssemblyRecipe {
 
     public static class Serializer<T extends AssemblyRecipe> implements RecipeSerializer<T> {
         private final IFactory<T> factory;
+        private final Codec<T> codec;
 
         public Serializer(IFactory<T> factory) {
             this.factory = factory;
+
+            this.codec = RecordCodecBuilder.create(inst -> inst.group(
+                    Ingredient.CODEC.fieldOf("input").forGetter(AssemblyRecipe::getInput),
+                    ItemStack.ADVANCEMENT_ICON_CODEC.fieldOf("result").forGetter(AssemblyRecipe::getOutput),
+                    Codec.STRING.xmap(str -> Objects.requireNonNull(AssemblyProgramType.valueOf(str)), AssemblyProgramType::name)
+                            .fieldOf("program").forGetter(AssemblyRecipe::getProgramType)
+            ).apply(inst, factory::create));
         }
 
         @Override
-        public T fromJson(ResourceLocation recipeId, JsonObject json) {
-            Ingredient input = Ingredient.fromJson(json.get("input"));
-            ItemStack result = ShapedRecipe.itemStackFromJson(GsonHelper.getAsJsonObject(json, "result"));
-            String program = GsonHelper.getAsString(json, "program").toUpperCase(Locale.ROOT);
-            try {
-                AssemblyProgramType programType = AssemblyProgramType.valueOf(program);
-                Validate.isTrue(programType != AssemblyProgramType.DRILL_LASER, "'drill_laser' may not be used in recipe JSON!");
-                return factory.create(recipeId, input, result, programType);
-            } catch (IllegalArgumentException e) {
-                throw new JsonParseException(e.getMessage());
-            }
+        public Codec<T> codec() {
+            return codec;
         }
 
-        @Nullable
         @Override
-        public T fromNetwork(ResourceLocation recipeId, FriendlyByteBuf buffer) {
+        public T fromNetwork(FriendlyByteBuf buffer) {
             Ingredient input = Ingredient.fromNetwork(buffer);
             ItemStack out = buffer.readItem();
-            AssemblyProgramType program = AssemblyProgramType.values()[buffer.readVarInt()];
-            return factory.create(recipeId, input, out, program);
+            AssemblyProgramType program = buffer.readEnum(AssemblyProgramType.class);
+            return factory.create(input, out, program);
         }
 
         @Override
         public void toNetwork(FriendlyByteBuf buffer, T recipe) {
-            recipe.write(buffer);
+            recipe.getInput().toNetwork(buffer);
+            buffer.writeItem(recipe.getOutput());
+            buffer.writeEnum(recipe.getProgramType());
         }
 
         public interface IFactory<T extends AssemblyRecipe> {
-            T create(ResourceLocation id, @Nonnull Ingredient input, @Nonnull ItemStack output, AssemblyProgramType program);
+            T create(@Nonnull Ingredient input, @Nonnull ItemStack output, AssemblyProgramType program);
         }
     }
 }

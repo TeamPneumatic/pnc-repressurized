@@ -22,14 +22,13 @@
   },
   "requirements": [
     [
-      "has_turbine_blade",
-      "has_the_recipe"
+      "has_the_recipe",
+      "has_turbine_blade"
     ]
   ],
   "rewards": {
     "recipes": [
       "pneumaticcraft:flow_detector_module"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }

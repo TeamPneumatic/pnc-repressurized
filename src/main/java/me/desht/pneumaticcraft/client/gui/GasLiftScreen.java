@@ -24,8 +24,8 @@ import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.block.entity.GasLiftBlockEntity;
 import me.desht.pneumaticcraft.common.block.entity.GasLiftBlockEntity.PumpMode;
-import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.inventory.GasLiftMenu;
+import me.desht.pneumaticcraft.common.registry.ModBlocks;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.components.Tooltip;
@@ -111,14 +111,14 @@ public class GasLiftScreen extends AbstractPneumaticCraftContainerScreen<GasLift
             if (te.getTank().getCapacity() - te.getTank().getFluidAmount() < 1000) {
                 curInfo.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.gasLift.noLiquidSpace"));
             }
-            if (te.getPrimaryInventory().getStackInSlot(0).isEmpty()) {
+            if (te.getItemHandler().getStackInSlot(0).isEmpty()) {
                 curInfo.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.gasLift.noTubes"));
             }
             if (te.status == GasLiftBlockEntity.Status.STUCK) {
                 curInfo.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.gasLift.stuck"));
             }
         } else {
-            if (te.getPrimaryInventory().getStackInSlot(0).getCount() == 64) {
+            if (te.getItemHandler().getStackInSlot(0).getCount() == 64) {
                 curInfo.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.gasLift.noTubeSpace"));
             }
         }

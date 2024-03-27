@@ -24,7 +24,6 @@ import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.common.block.ChargingStationBlock;
 import me.desht.pneumaticcraft.common.block.entity.RedstoneController.EmittingRedstoneMode;
 import me.desht.pneumaticcraft.common.block.entity.RedstoneController.RedstoneMode;
-import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.inventory.ChargingStationMenu;
 import me.desht.pneumaticcraft.common.inventory.ChargingStationUpgradeManagerMenu;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
@@ -32,6 +31,7 @@ import me.desht.pneumaticcraft.common.inventory.handler.ChargeableItemHandler;
 import me.desht.pneumaticcraft.common.item.IChargeableContainerProvider;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
+import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.util.GlobalBlockEntityCacheManager;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -51,9 +51,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.network.NetworkHooks;
+import net.neoforged.neoforge.items.IItemHandler;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -76,7 +74,7 @@ public class ChargingStationBlockEntity extends AbstractAirHandlingBlockEntity i
     private ItemStack chargingStackSynced = ItemStack.EMPTY;  // the item being charged, minus any nbt - for client display purposes
 
     private ChargingStationHandler itemHandler = new ChargingStationHandler();  // holds the item being charged
-    private final LazyOptional<IItemHandler> inventoryCap = LazyOptional.of(() -> itemHandler);
+//    private final LazyOptional<IItemHandler> inventoryCap = LazyOptional.of(() -> itemHandler);
 
     private ChargeableItemHandler chargeableInventory;  // inventory of the item being charged
 
@@ -96,7 +94,7 @@ public class ChargingStationBlockEntity extends AbstractAirHandlingBlockEntity i
     public boolean upgradeOnly = false;
 
     public ChargingStationBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.CHARGING_STATION.get(), pos, state, PressureTier.TIER_TWO, PneumaticValues.VOLUME_CHARGING_STATION, 4);
+        super(ModBlockEntityTypes.CHARGING_STATION.get(), pos, state, PressureTier.TIER_TWO, PneumaticValues.VOLUME_CHARGING_STATION, 4);
     }
 
     @Nonnull
@@ -173,7 +171,7 @@ public class ChargingStationBlockEntity extends AbstractAirHandlingBlockEntity i
         List<IAirHandler> res = new ArrayList<>();
 
         if (getChargingStack().getCount() == 1) {
-            getChargingStack().getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).ifPresent(h -> {
+            PNCCapabilities.getAirHandler(getChargingStack()).ifPresent(h -> {
                 res.add(h);
                 chargingItemPressure = h.getPressure();
             });
@@ -183,17 +181,17 @@ public class ChargingStationBlockEntity extends AbstractAirHandlingBlockEntity i
             List<Entity> entitiesOnPad = nonNullLevel().getEntitiesOfClass(Entity.class, new AABB(getBlockPos().above()));
             for (Entity entity : entitiesOnPad) {
                 if (entity instanceof ItemEntity ie) {
-                    ie.getItem().getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).ifPresent(res::add);
+                    PNCCapabilities.getAirHandler(ie.getItem()).ifPresent(res::add);
                 } else if (entity instanceof Player p) {
                     Inventory inv = p.getInventory();
                     for (int i = 0; i < inv.getContainerSize(); i++) {
                         ItemStack stack = inv.getItem(i);
                         if (stack.getCount() == 1) {
-                            stack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).ifPresent(res::add);
+                            PNCCapabilities.getAirHandler(stack).ifPresent(res::add);
                         }
                     }
                 } else {
-                    entity.getCapability(PNCCapabilities.AIR_HANDLER_CAPABILITY).ifPresent(res::add);
+                    PNCCapabilities.getAirHandler(entity).ifPresent(res::add);
                 }
             }
         }
@@ -214,11 +212,11 @@ public class ChargingStationBlockEntity extends AbstractAirHandlingBlockEntity i
             case "open_upgrades":
                 if (getChargingStack().getItem() instanceof IChargeableContainerProvider) {
                     MenuProvider provider = ((IChargeableContainerProvider) getChargingStack().getItem()).getContainerProvider(this);
-                    NetworkHooks.openScreen(player, provider, getBlockPos());
+                    player.openMenu(provider, getBlockPos());
                 }
                 break;
             case "close_upgrades":
-                NetworkHooks.openScreen(player, this, getBlockPos());
+                player.openMenu(this, getBlockPos());
                 break;
             case "toggle_upgrade_only":
                 upgradeOnly = !upgradeOnly;
@@ -227,28 +225,18 @@ public class ChargingStationBlockEntity extends AbstractAirHandlingBlockEntity i
     }
 
     @Override
-    public IItemHandler getPrimaryInventory() {
+    public IItemHandler getItemHandler(@Nullable Direction dir) {
         return itemHandler;
     }
 
     private boolean isIdle() {
         return !charging && !discharging &&
                 !getChargingStack().isEmpty() &&
-                getChargingStack().getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).isPresent();
-    }
-
-    @Override
-    public AABB getRenderBoundingBox() {
-        return new AABB(getBlockPos().getX(), getBlockPos().getY(), getBlockPos().getZ(), getBlockPos().getX() + 1, getBlockPos().getY() + 1, getBlockPos().getZ() + 1);
+                PNCCapabilities.getAirHandler(getChargingStack()).isPresent();
     }
 
     public ChargeableItemHandler getChargeableInventory() {
         return nonNullLevel().isClientSide ? new ChargeableItemHandler(this) : chargeableInventory;
-    }
-
-    @Override
-    protected LazyOptional<IItemHandler> getInventoryCap(Direction side) {
-        return inventoryCap;
     }
 
     @Override
@@ -356,7 +344,7 @@ public class ChargingStationBlockEntity extends AbstractAirHandlingBlockEntity i
         @Override
         public boolean isItemValid(int slot, ItemStack itemStack) {
             return slot == CHARGE_INVENTORY_INDEX
-                    && (itemStack.isEmpty() || itemStack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).isPresent());
+                    && (itemStack.isEmpty() || PNCCapabilities.getAirHandler(itemStack).isPresent());
         }
 
         @Override
@@ -380,8 +368,8 @@ public class ChargingStationBlockEntity extends AbstractAirHandlingBlockEntity i
             for (Player player : teCS.nonNullLevel().players()) {
                 if (player instanceof ServerPlayer sp
                         && player.containerMenu instanceof ChargingStationUpgradeManagerMenu manager
-                        && manager.te == te) {
-                    NetworkHooks.openScreen(sp, ChargingStationBlockEntity.this, getBlockPos());
+                        && manager.blockEntity == te) {
+                    sp.openMenu(ChargingStationBlockEntity.this, getBlockPos());
                 }
             }
         }

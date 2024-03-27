@@ -20,17 +20,16 @@ package me.desht.pneumaticcraft.common.thirdparty;
 import me.desht.pneumaticcraft.common.config.subconfig.ThirdPartyConfig;
 import me.desht.pneumaticcraft.common.thirdparty.botania.Botania;
 import me.desht.pneumaticcraft.common.thirdparty.cofhcore.CoFHCore;
-import me.desht.pneumaticcraft.common.thirdparty.computercraft.ComputerCraft;
 import me.desht.pneumaticcraft.common.thirdparty.create.Create;
 import me.desht.pneumaticcraft.common.thirdparty.curios.Curios;
 import me.desht.pneumaticcraft.common.thirdparty.gamestages.Gamestages;
 import me.desht.pneumaticcraft.common.thirdparty.immersiveengineering.ImmersiveEngineering;
-import me.desht.pneumaticcraft.common.thirdparty.mekanism.Mekanism;
 import me.desht.pneumaticcraft.common.thirdparty.patchouli.Patchouli;
 import me.desht.pneumaticcraft.common.thirdparty.theoneprobe.TheOneProbe;
 import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.ModIds;
-import net.minecraftforge.fml.ModList;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.ModList;
 
 import java.util.*;
 import java.util.function.Supplier;
@@ -58,7 +57,7 @@ public enum ThirdPartyManager {
     private void discoverMods() {
         Map<String, Supplier<? extends IThirdParty>> thirdPartyClasses = new HashMap<>();
         try {
-            thirdPartyClasses.put(ModIds.COMPUTERCRAFT, ComputerCraft::new);
+//            thirdPartyClasses.put(ModIds.COMPUTERCRAFT, ComputerCraft::new);
             thirdPartyClasses.put(ModIds.WAILA, () -> IMPLICIT_INIT);
             thirdPartyClasses.put(ModIds.TOP, TheOneProbe::new);
             thirdPartyClasses.put(ModIds.CURIOS, Curios::new);
@@ -66,7 +65,7 @@ public enum ThirdPartyManager {
             thirdPartyClasses.put(ModIds.PATCHOULI, Patchouli::new);
             thirdPartyClasses.put(ModIds.JEI, () -> IMPLICIT_INIT);
             thirdPartyClasses.put(ModIds.IMMERSIVE_ENGINEERING, ImmersiveEngineering::new);
-            thirdPartyClasses.put(ModIds.MEKANISM, Mekanism::new);
+//            thirdPartyClasses.put(ModIds.MEKANISM, Mekanism::new);
             thirdPartyClasses.put(ModIds.AE2, () -> IMPLICIT_INIT);
             thirdPartyClasses.put(ModIds.COFH_CORE, CoFHCore::new);
             thirdPartyClasses.put(ModIds.CRAFTTWEAKER, () -> IMPLICIT_INIT);
@@ -107,13 +106,13 @@ public enum ThirdPartyManager {
         Log.info("Thirdparty integration activated for [" + String.join(",", modNames) + "]");
     }
 
-    public void preInit() {
+    public void preInit(IEventBus modBus) {
         discoverMods();
 
-        GENERIC.preInit();
+        GENERIC.preInit(modBus);
         for (IThirdParty thirdParty : thirdPartyMods) {
             try {
-                thirdParty.preInit();
+                thirdParty.preInit(modBus);
             } catch (Throwable e) {
                 logError(e, thirdParty.getClass(), "PreInit");
             }
@@ -138,6 +137,17 @@ public enum ThirdPartyManager {
                 thirdParty.postInit();
             } catch (Throwable e) {
                 logError(e, thirdParty.getClass(), "PostInit");
+            }
+        }
+    }
+
+    public void clientPreInit(IEventBus modBus) {
+        GENERIC.clientPreInit(modBus);
+        for (IThirdParty thirdParty : thirdPartyMods) {
+            try {
+                thirdParty.clientPreInit(modBus);
+            } catch (Throwable e) {
+                logError(e, thirdParty.getClass(), "PreInit");
             }
         }
     }

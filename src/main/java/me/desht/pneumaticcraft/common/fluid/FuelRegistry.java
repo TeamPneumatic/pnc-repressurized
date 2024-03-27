@@ -19,10 +19,10 @@ package me.desht.pneumaticcraft.common.fluid;
 
 import me.desht.pneumaticcraft.api.crafting.recipe.FuelQualityRecipe;
 import me.desht.pneumaticcraft.api.fuel.IFuelRegistry;
-import me.desht.pneumaticcraft.common.core.ModRecipeTypes;
+import me.desht.pneumaticcraft.common.registry.ModRecipeTypes;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.material.Fluid;
-import net.minecraftforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidStack;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -61,7 +61,7 @@ public enum FuelRegistry implements IFuelRegistry {
     public Collection<Fluid> registeredFuels(Level level) {
         Set<Fluid> res = new HashSet<>(hotFluids.keySet());
 
-        for (FuelQualityRecipe recipe : ModRecipeTypes.getRecipes(level, ModRecipeTypes.FUEL_QUALITY)) {
+        for (FuelQualityRecipe recipe : ModRecipeTypes.FUEL_QUALITY.get().allRecipes(level)) {
             res.addAll(recipe.getFuel().getFluidStacks().stream()
                     .map(FluidStack::getFluid)
                     .filter(f -> f.isSource(f.defaultFluidState()))
@@ -76,13 +76,13 @@ public enum FuelRegistry implements IFuelRegistry {
         cachedFuels.clear();
     }
 
-    private FuelRecord findEntry(Level world, Fluid fluid) {
+    private FuelRecord findEntry(Level level, Fluid fluid) {
         // special case for high-temperature fluids
         FuelRecord fe = hotFluids.get(fluid);
         if (fe != null) return fe;
 
         // stuff from datapacks (override default registered stuff)
-        for (FuelQualityRecipe recipe : ModRecipeTypes.getRecipes(world, ModRecipeTypes.FUEL_QUALITY)) {
+        for (FuelQualityRecipe recipe : ModRecipeTypes.FUEL_QUALITY.get().allRecipes(level)) {
             if (recipe.matchesFluid(fluid)) {
                 return new FuelRecord(recipe.getAirPerBucket(), recipe.getBurnRate());
             }

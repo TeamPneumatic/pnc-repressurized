@@ -23,9 +23,7 @@ import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorExtensionData;
 import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorHandler;
 import me.desht.pneumaticcraft.api.upgrade.PNCUpgrade;
 import me.desht.pneumaticcraft.client.sound.MovingSounds;
-import me.desht.pneumaticcraft.common.advancements.AdvancementTriggers;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
-import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.item.PneumaticArmorItem;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketPlayMovingSound;
@@ -33,6 +31,8 @@ import me.desht.pneumaticcraft.common.network.PacketPlayMovingSound.MovingSoundF
 import me.desht.pneumaticcraft.common.network.PacketSpawnParticle;
 import me.desht.pneumaticcraft.common.particle.AirParticleData;
 import me.desht.pneumaticcraft.common.pneumatic_armor.JetBootsStateTracker;
+import me.desht.pneumaticcraft.common.registry.ModCriterionTriggers;
+import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.core.BlockPos;
@@ -149,7 +149,7 @@ public class JetBootsHandler extends BaseArmorUpgradeHandler<JetBootsHandler.Jet
             if (jbLocal.getPrevJetBootsAirUsage() == 0) {
                 // jet boots starting up
                 NetworkHandler.sendToAllTracking(new PacketPlayMovingSound(MovingSounds.Sound.JET_BOOTS, MovingSoundFocus.of(player)), player.level(), player.blockPosition());
-                AdvancementTriggers.FLIGHT.trigger((ServerPlayer) player);
+                ModCriterionTriggers.FLIGHT.get().trigger((ServerPlayer) player);
             }
             if (player.horizontalCollision) {
                 double vel = player.getDeltaMovement().length();
@@ -161,7 +161,7 @@ public class JetBootsHandler extends BaseArmorUpgradeHandler<JetBootsHandler.Jet
                 if (vel > 2) {
                     player.playSound(vel > 2.5 ? SoundEvents.GENERIC_BIG_FALL : SoundEvents.GENERIC_SMALL_FALL, 1.0F, 1.0F);
                     player.hurt(player.damageSources().flyIntoWall(), (float) vel);
-                    AdvancementTriggers.FLY_INTO_WALL.trigger((ServerPlayer) player);
+                    ModCriterionTriggers.FLY_INTO_WALL.get().trigger((ServerPlayer) player);
                 }
             }
             commonArmorHandler.addAir(EquipmentSlot.FEET, -jetbootsAirUsage);

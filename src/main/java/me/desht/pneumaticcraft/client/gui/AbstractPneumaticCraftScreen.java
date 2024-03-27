@@ -57,10 +57,6 @@ public abstract class AbstractPneumaticCraftScreen extends Screen {
 
     @Override
     public void render(GuiGraphics graphics, int x, int y, float partialTicks) {
-        if (getTexture() != null) {
-            graphics.blit(getTexture(), guiLeft, guiTop, 0, 0, xSize, ySize);
-        }
-
         super.render(graphics, x, y, partialTicks);
 
         drawForeground(graphics, x, y, partialTicks);
@@ -75,6 +71,15 @@ public abstract class AbstractPneumaticCraftScreen extends Screen {
 //            int max = Math.min(xSize * 4 / 3, width / 3);
 //            renderTooltip(graphics, GuiUtils.wrapTextComponentList(tooltip, max, font), x, y);
 //        }
+    }
+
+    @Override
+    public void renderBackground(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        super.renderBackground(graphics, mouseX, mouseY, partialTick);
+
+        if (getTexture() != null) {
+            graphics.blit(getTexture(), guiLeft, guiTop, 0, 0, xSize, ySize);
+        }
     }
 
     /**

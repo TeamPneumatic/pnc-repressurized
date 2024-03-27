@@ -18,13 +18,13 @@
 package me.desht.pneumaticcraft.common.block.entity;
 
 import me.desht.pneumaticcraft.api.pressure.PressureTier;
-import me.desht.pneumaticcraft.common.core.ModBlockEntities;
+import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.state.BlockState;
 
 public class AdvancedPressureTubeBlockEntity extends PressureTubeBlockEntity {
     public AdvancedPressureTubeBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.ADVANCED_PRESSURE_TUBE.get(), pos, state, PressureTier.TIER_TWO, PneumaticValues.VOLUME_ADVANCED_PRESSURE_TUBE);
+        super(ModBlockEntityTypes.ADVANCED_PRESSURE_TUBE.get(), pos, state, PressureTier.TIER_TWO, PneumaticValues.VOLUME_ADVANCED_PRESSURE_TUBE);
     }
 }

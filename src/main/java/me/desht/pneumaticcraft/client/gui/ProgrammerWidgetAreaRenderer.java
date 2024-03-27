@@ -25,10 +25,10 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetVerticalScrollbar;
 import me.desht.pneumaticcraft.client.render.ProgWidgetRenderer;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
-import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.common.drone.progwidgets.IJump;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ILabel;
 import me.desht.pneumaticcraft.common.drone.progwidgets.IProgWidget;
+import me.desht.pneumaticcraft.common.registry.ModProgWidgets;
 import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.ChatFormatting;
@@ -150,7 +150,7 @@ public class ProgrammerWidgetAreaRenderer {
         }
         ThirdPartyManager.instance().getDocsProvider().addTooltip(tooltip, false);
         if (Minecraft.getInstance().options.advancedItemTooltips) {
-            PneumaticCraftUtils.getRegistryName(ModProgWidgets.PROG_WIDGETS.get(), widget.getType())
+            PneumaticCraftUtils.getRegistryName(ModProgWidgets.PROG_WIDGETS_REGISTRY, widget.getType())
                             .ifPresent(regName -> tooltip.add(Component.literal(regName.toString()).withStyle(ChatFormatting.DARK_GRAY)));
         }
     }
@@ -243,8 +243,8 @@ public class ProgrammerWidgetAreaRenderer {
         return false;
     }
 
-    public boolean mouseScrolled(double mouseX, double mouseY, double dir) {
-        return scaleScroll.mouseScrolled(mouseX, mouseY, dir);
+    public boolean mouseScrolled(double mouseX, double mouseY, double dirX, double dirY) {
+        return scaleScroll.mouseScrolled(mouseX, mouseY, dirX, dirY);
     }
 
     protected void renderAdditionally(GuiGraphics graphics) {

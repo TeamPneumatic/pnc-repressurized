@@ -63,7 +63,7 @@ public class AmadronPlayerOffers extends AuxConfigJson {
     protected void writeToJson(JsonObject json) {
         JsonArray array = new JsonArray();
         for (AmadronPlayerOffer offer : playerOffers.values()) {
-            array.add(offer.toJson(new JsonObject()));
+            array.add(offer.toJson());
         }
         json.addProperty("description", DESC);
         json.add("offers", array);
@@ -76,7 +76,7 @@ public class AmadronPlayerOffers extends AuxConfigJson {
         for (JsonElement element : array) {
             try {
                 AmadronPlayerOffer offer = AmadronPlayerOffer.fromJson((JsonObject) element);
-                if (offer != null) playerOffers.put(offer.getId(), offer);
+                if (offer != null) playerOffers.put(offer.getOfferId(), offer);
             } catch (JsonSyntaxException e) {
                 e.printStackTrace();
             }

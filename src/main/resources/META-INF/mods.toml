@@ -1,6 +1,6 @@
 license="GNU GPLv3"
 modLoader="javafml"
-loaderVersion="[47,)"
+loaderVersion="${loader_version_range}"
 issueTrackerURL="https://github.com/TeamPneumatic/pnc-repressurized/issues"
 displayURL="https://minecraft.curseforge.com/projects/pneumaticcraft-repressurized"
 logoFile="pncr_logo.png"
@@ -9,33 +9,36 @@ authors="desht, MineMaarten"
 
 [[mods]]
     modId="pneumaticcraft"
-    version="${version}"
+    version="${mod_version}"
     displayName="PneumaticCraft: Repressurized"
-    updateJSONURL="https://raw.githubusercontent.com/TeamPneumatic/pnc-repressurized/${mc_version}/release_info.json" #optional
+    updateJSONURL="https://raw.githubusercontent.com/TeamPneumatic/pnc-repressurized/${minecraft_version}/release_info.json" #optional
     description='''
 PneumaticCraft: Repressurized: doing cool stuff with compressed air.'''
 
 [[dependencies.pneumaticcraft]]
-    modId="forge" #mandatory
-    mandatory=true #mandatory
-    versionRange="${forge_version_range}" #mandatory
+    modId="neoforge" #mandatory
+    type="required" #mandatory
+    versionRange="${neo_version_range}" #mandatory
     ordering="NONE"
     side="BOTH"
 [[dependencies.pneumaticcraft]]
     modId="minecraft"
-    mandatory=true
-    versionRange="${mc_version_range}"
+    type="required"
+    versionRange="${minecraft_version_range}"
     ordering="NONE"
     side="BOTH"
 [[dependencies.pneumaticcraft]]
     modId="patchouli"
-    mandatory=false
-    versionRange="[1.20.1-80,)"
+    type="optional"
+    versionRange="[1.20.4-85,)"
     ordering="NONE"
     side="BOTH"
 [[dependencies.pneumaticcraft]]
     modId="jei"
-    mandatory=false
-    versionRange="[13.1.0,)"
+    type="optional"
+    versionRange="[17.3.0,)"
     ordering="NONE"
     side="BOTH"
+
+[[mixins]]
+    config = "mixins.pneumaticcraft.json"

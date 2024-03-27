@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.common.upgrades;
 
-import net.minecraftforge.items.IItemHandler;
+import net.neoforged.neoforge.items.IItemHandler;
 
 @FunctionalInterface
 public interface IUpgradeHolder {

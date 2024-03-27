@@ -1,23 +1,14 @@
 {
-  "type": "forge:conditional",
-  "recipes": [
+  "neoforge:conditions": [
     {
-      "conditions": [
-        {
-          "type": "pneumaticcraft:fluid_tag_present",
-          "tag": "forge:ethene"
-        }
-      ],
-      "recipe": {
-        "type": "pneumaticcraft:fuel_quality",
-        "air_per_bucket": 1800000,
-        "burn_rate": 1.25,
-        "fluid": {
-          "type": "pneumaticcraft:fluid",
-          "amount": 1000,
-          "tag": "forge:ethene"
-        }
-      }
+      "type": "pneumaticcraft:fluid_tag_present",
+      "tag": "forge:ethene"
     }
-  ]
+  ],
+  "type": "pneumaticcraft:fuel_quality",
+  "air_per_bucket": 1800800,
+  "burn_rate": 1.25,
+  "fluid": {
+    "tag": "forge:ethene"
+  }
 }

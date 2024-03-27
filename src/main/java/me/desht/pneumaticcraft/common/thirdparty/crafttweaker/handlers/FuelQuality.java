@@ -24,10 +24,11 @@ import com.blamejared.crafttweaker.api.fluid.CTFluidIngredient;
 import com.blamejared.crafttweaker.api.recipe.manager.base.IRecipeManager;
 import com.blamejared.crafttweaker_annotations.annotations.Document;
 import me.desht.pneumaticcraft.api.crafting.recipe.FuelQualityRecipe;
-import me.desht.pneumaticcraft.common.core.ModRecipeTypes;
 import me.desht.pneumaticcraft.common.recipes.other.FuelQualityRecipeImpl;
+import me.desht.pneumaticcraft.common.registry.ModRecipeTypes;
 import me.desht.pneumaticcraft.common.thirdparty.crafttweaker.CTUtils;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeType;
 import org.openzen.zencode.java.ZenCodeType;
 
@@ -38,10 +39,12 @@ public class FuelQuality implements IRecipeManager<FuelQualityRecipe> {
     @ZenCodeType.Method
     public void addRecipe(String name, CTFluidIngredient ingredient, int airPerBucket, @ZenCodeType.OptionalFloat(1f) float burnRate) {
         CraftTweakerAPI.apply(new ActionAddRecipe<>(this,
-                new FuelQualityRecipeImpl(new ResourceLocation("crafttweaker", fixRecipeName(name)),
-                        CTUtils.toFluidIngredient(ingredient),
-                        airPerBucket,
-                        burnRate)
+                new RecipeHolder<>(new ResourceLocation("crafttweaker", fixRecipeName(name)),
+                        new FuelQualityRecipeImpl(
+                                CTUtils.toFluidIngredient(ingredient),
+                                airPerBucket,
+                                burnRate)
+                )
         ));
     }
 

@@ -22,14 +22,13 @@
   },
   "requirements": [
     [
-      "has_glycerol",
-      "has_the_recipe"
+      "has_the_recipe",
+      "has_glycerol"
     ]
   ],
   "rewards": {
     "recipes": [
       "pneumaticcraft:bandage"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }

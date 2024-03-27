@@ -20,7 +20,7 @@ package me.desht.pneumaticcraft.common.capabilities;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraftforge.common.util.INBTSerializable;
+import net.neoforged.neoforge.common.util.INBTSerializable;
 
 /**
  * A reference implementation.  Subclass this or implement your own.

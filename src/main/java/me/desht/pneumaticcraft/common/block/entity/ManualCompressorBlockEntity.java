@@ -2,9 +2,9 @@ package me.desht.pneumaticcraft.common.block.entity;
 
 import me.desht.pneumaticcraft.api.pressure.PressureTier;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
-import me.desht.pneumaticcraft.common.core.ModBlockEntities;
-import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.network.DescSynced;
+import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
+import me.desht.pneumaticcraft.common.registry.ModSounds;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -12,7 +12,8 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.items.IItemHandler;
+import net.neoforged.neoforge.items.IItemHandler;
+import org.jetbrains.annotations.Nullable;
 
 public class ManualCompressorBlockEntity extends AbstractAirHandlingBlockEntity {
     public static final int TICKS_PER_PUMP_STEP = 4; // Should be multiple of 4 to match hold-right click frequency
@@ -39,7 +40,12 @@ public class ManualCompressorBlockEntity extends AbstractAirHandlingBlockEntity 
     }
 
     public ManualCompressorBlockEntity(BlockPos pos, BlockState state) {
-        this(ModBlockEntities.MANUAL_COMPRESSOR.get(), pos, state, PressureTier.TIER_ONE, PneumaticValues.VOLUME_MANUAL_COMPRESSOR);
+        this(ModBlockEntityTypes.MANUAL_COMPRESSOR.get(), pos, state, PressureTier.TIER_ONE, PneumaticValues.VOLUME_MANUAL_COMPRESSOR);
+    }
+
+    @Override
+    public boolean hasItemCapability() {
+        return false;
     }
 
     @Override
@@ -160,7 +166,7 @@ public class ManualCompressorBlockEntity extends AbstractAirHandlingBlockEntity 
     }
 
     @Override
-    public IItemHandler getPrimaryInventory() {
+    public IItemHandler getItemHandler(@Nullable Direction dir) {
         return null;
     }
 

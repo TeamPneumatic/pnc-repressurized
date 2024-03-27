@@ -143,7 +143,7 @@ public class GPSToolScreen extends AbstractPneumaticCraftScreen {
 
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-        renderBackground(graphics);
+        renderBackground(graphics, mouseX, mouseY, partialTicks);
         super.render(graphics, mouseX, mouseY, partialTicks);
 
         int xMiddle = width / 2;

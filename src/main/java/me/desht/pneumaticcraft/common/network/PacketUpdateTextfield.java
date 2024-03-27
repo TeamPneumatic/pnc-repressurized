@@ -19,42 +19,46 @@ package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.common.block.entity.IGUITextFieldSensitive;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.network.NetworkEvent;
+import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 
-import java.util.function.Supplier;
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 /**
  * Received on: SERVER
  * Sent by client GUI's to update a IGUITextFieldSensitive block entity server-side
  */
-public class PacketUpdateTextfield {
-    private final int textFieldID;
-    private final String text;
+public record PacketUpdateTextfield(int textFieldID, String text) implements CustomPacketPayload {
+    public static final ResourceLocation ID = RL("update_textfield");
 
-    public PacketUpdateTextfield(BlockEntity te, int textfieldID) {
-        textFieldID = textfieldID;
-        text = ((IGUITextFieldSensitive) te).getText(textfieldID);
+    public static PacketUpdateTextfield create(IGUITextFieldSensitive sensitive, int id) {
+        return new PacketUpdateTextfield(id, sensitive.getText(id));
     }
 
-    public PacketUpdateTextfield(FriendlyByteBuf buffer) {
-        textFieldID = buffer.readInt();
-        text = buffer.readUtf(32767);
+    public static PacketUpdateTextfield fromNetwork(FriendlyByteBuf buffer) {
+        return new PacketUpdateTextfield(buffer.readVarInt(), buffer.readUtf());
     }
 
-    public void toBytes(FriendlyByteBuf buffer) {
-        buffer.writeInt(textFieldID);
+    @Override
+    public void write(FriendlyByteBuf buffer) {
+        buffer.writeVarInt(textFieldID);
         buffer.writeUtf(text);
     }
 
-    public void handle(Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> {
-            PacketUtil.getBlockEntity(ctx.get().getSender(), BlockEntity.class).ifPresent(te -> {
-                if (te instanceof IGUITextFieldSensitive) {
-                    ((IGUITextFieldSensitive) te).setText(textFieldID, text);
-                }
-            });
-        });
-        ctx.get().setPacketHandled(true);
+    @Override
+    public ResourceLocation id() {
+        return ID;
+    }
+
+    public static void handle(PacketUpdateTextfield message, PlayPayloadContext ctx) {
+        ctx.player().ifPresent(player -> ctx.workHandler().submitAsync(() ->
+                PacketUtil.getBlockEntity(player, BlockEntity.class).ifPresent(te -> {
+                    if (te instanceof IGUITextFieldSensitive sensitive) {
+                        sensitive.setText(message.textFieldID(), message.text());
+                    }
+                })
+        ));
     }
 }

@@ -22,14 +22,18 @@ import me.desht.pneumaticcraft.common.block.entity.SecurityStationBlockEntity;
 import me.desht.pneumaticcraft.common.hacking.secstation.HackSimulation;
 import me.desht.pneumaticcraft.common.hacking.secstation.ISimulationController;
 import me.desht.pneumaticcraft.common.hacking.secstation.ISimulationController.HackingSide;
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.network.NetworkEvent;
+import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Supplier;
+
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 /**
  * Received on: CLIENT
@@ -38,70 +42,52 @@ import java.util.function.Supplier;
  * to keep the client up-to-date.  Client also runs the simulation (dead reckoning), but needs to be updated by the
  * server every so often to keep the display accurate.
  */
-public class PacketSyncHackSimulationUpdate extends LocationIntPacket {
-    private final List<HackSimulation.ConnectionEntry> playerConns;
-    private final List<HackSimulation.ConnectionEntry> aiConns;
-    private final List<Pair<Integer, Integer>> fortification;
-    private final boolean aiAwake;
-    private final boolean aiStopWormed;
-    private final boolean aiWon;
-    private final boolean playerWon;
+public record PacketSyncHackSimulationUpdate(BlockPos pos, List<HackSimulation.ConnectionEntry> playerConns,
+                                             List<HackSimulation.ConnectionEntry> aiConns,
+                                             List<Pair<Integer, Integer>> fortification,
+                                             boolean aiAwake, boolean aiStopWormed,
+                                             boolean aiWon, boolean playerWon)
+        implements CustomPacketPayload {
+    public static final ResourceLocation ID = RL("sync_hack_simulation");
 
-    public PacketSyncHackSimulationUpdate(SecurityStationBlockEntity te) {
-        super(te.getBlockPos());
-
+    public static PacketSyncHackSimulationUpdate forSecurityStation(SecurityStationBlockEntity te) {
         HackSimulation aiSim = te.getSimulationController().getSimulation(HackingSide.AI);
         HackSimulation playerSim = te.getSimulationController().getSimulation(HackingSide.PLAYER);
 
-        playerConns = te.getSimulationController().getSimulation(HackingSide.PLAYER).allConnections;
-        aiConns = aiSim.allConnections;
-        fortification = new ArrayList<>();
+        var playerConns = te.getSimulationController().getSimulation(HackingSide.PLAYER).allConnections;
+        var aiConns = aiSim.allConnections;
+        List<Pair<Integer,Integer>> fortification = new ArrayList<>();
         for (int i = 0; i < HackSimulation.GRID_SIZE; i++) {
             if (aiSim.getNodeAt(i) != null && aiSim.getNodeAt(i).getFortification() > 0) {
                 fortification.add(Pair.of(i, aiSim.getNodeAt(i).getFortification()));
             }
         }
-        aiAwake = aiSim.isAwake();
-        aiStopWormed = aiSim.isStopWormed();
-        aiWon = aiSim.isHackComplete();
-        playerWon = playerSim.isHackComplete();
+
+        return new PacketSyncHackSimulationUpdate(te.getBlockPos(), playerConns, aiConns, fortification,
+                aiSim.isAwake(), aiSim.isStopWormed(), aiSim.isHackComplete(), playerSim.isHackComplete());
     }
 
-    public PacketSyncHackSimulationUpdate(FriendlyByteBuf buffer) {
-        super(buffer);
+    public static PacketSyncHackSimulationUpdate fromNetwork(FriendlyByteBuf buffer) {
+        BlockPos pos = buffer.readBlockPos();
+        List<HackSimulation.ConnectionEntry> playerConns = buffer.readList(HackSimulation.ConnectionEntry::readFromNetwork);
+        List<HackSimulation.ConnectionEntry> aiConns = buffer.readList(HackSimulation.ConnectionEntry::readFromNetwork);
+        List<Pair<Integer,Integer>> fortification = buffer.readList(buf -> Pair.of(buf.readVarInt(), buf.readVarInt()));
+        boolean aiAwake = buffer.readBoolean();
+        boolean aiStopWormed = buffer.readBoolean();
+        boolean aiWon = buffer.readBoolean();
+        boolean playerWon = buffer.readBoolean();
 
-        playerConns = new ArrayList<>();
-        int np = buffer.readVarInt();
-        for (int i = 0; i < np; i++) {
-            playerConns.add(HackSimulation.ConnectionEntry.readFromNetwork(buffer));
-        }
-        aiConns = new ArrayList<>();
-        int na = buffer.readVarInt();
-        for (int i = 0; i < na; i++) {
-            aiConns.add(HackSimulation.ConnectionEntry.readFromNetwork(buffer));
-        }
-        fortification = new ArrayList<>();
-        int nf = buffer.readVarInt();
-        for (int i = 0; i < nf; i++) {
-            fortification.add(Pair.of(buffer.readVarInt(), buffer.readVarInt()));
-        }
-        aiAwake = buffer.readBoolean();
-        aiStopWormed = buffer.readBoolean();
-        aiWon = buffer.readBoolean();
-        playerWon = buffer.readBoolean();
+        return new PacketSyncHackSimulationUpdate(pos, playerConns, aiConns, fortification, aiAwake, aiStopWormed, aiWon, playerWon);
     }
 
-    public void toBytes(FriendlyByteBuf buffer) {
-        super.toBytes(buffer);
-
-        buffer.writeVarInt(playerConns.size());
-        playerConns.forEach(conn -> conn.write(buffer));
-        buffer.writeVarInt(aiConns.size());
-        aiConns.forEach(conn -> conn.write(buffer));
-        buffer.writeVarInt(fortification.size());
-        fortification.forEach(pair -> {
-            buffer.writeVarInt(pair.getLeft());
-            buffer.writeVarInt(pair.getRight());
+    @Override
+    public void write(FriendlyByteBuf buffer) {
+        buffer.writeBlockPos(pos);
+        buffer.writeCollection(playerConns, (buf, connectionEntry) -> connectionEntry.write(buf));
+        buffer.writeCollection(aiConns, (buf, connectionEntry) -> connectionEntry.write(buf));
+        buffer.writeCollection(fortification, (buf, pair) -> {
+            buf.writeVarInt(pair.getLeft());
+            buf.writeVarInt(pair.getRight());
         });
         buffer.writeBoolean(aiAwake);
         buffer.writeBoolean(aiStopWormed);
@@ -109,24 +95,28 @@ public class PacketSyncHackSimulationUpdate extends LocationIntPacket {
         buffer.writeBoolean(playerWon);
     }
 
-    public void handle(Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> {
-            BlockEntity te = ClientUtils.getBlockEntity(pos);
-            if (te instanceof SecurityStationBlockEntity) {
-                ISimulationController controller = ((SecurityStationBlockEntity) te).getSimulationController();
+    @Override
+    public ResourceLocation id() {
+        return ID;
+    }
+
+    public static void handle(PacketSyncHackSimulationUpdate message, PlayPayloadContext ctx) {
+        ctx.workHandler().submitAsync(() -> {
+            BlockEntity te = ClientUtils.getBlockEntity(message.pos());
+            if (te instanceof SecurityStationBlockEntity secStation) {
+                ISimulationController controller = secStation.getSimulationController();
                 if (controller != null) {
                     HackSimulation aiSim = controller.getSimulation(HackingSide.AI);
                     HackSimulation playerSim = controller.getSimulation(HackingSide.PLAYER);
-                    playerSim.syncFromServer(playerConns);
-                    aiSim.syncFromServer(aiConns);
-                    aiSim.updateFortification(fortification);
-                    if (aiAwake) aiSim.wakeUp();
-                    aiSim.applyStopWorm(aiStopWormed ? 100 : 0);
-                    if (aiWon) aiSim.setHackComplete();
-                    if (playerWon) playerSim.setHackComplete();
+                    playerSim.syncFromServer(message.playerConns());
+                    aiSim.syncFromServer(message.aiConns());
+                    aiSim.updateFortification(message.fortification());
+                    if (message.aiAwake()) aiSim.wakeUp();
+                    aiSim.applyStopWorm(message.aiStopWormed() ? 100 : 0);
+                    if (message.aiWon()) aiSim.setHackComplete();
+                    if (message.playerWon()) playerSim.setHackComplete();
                 }
             }
         });
-        ctx.get().setPacketHandled(true);
     }
 }

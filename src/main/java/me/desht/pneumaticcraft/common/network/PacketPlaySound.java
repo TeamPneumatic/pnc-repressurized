@@ -19,61 +19,55 @@ package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
-import net.minecraftforge.network.NetworkEvent;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 
-import java.util.function.Supplier;
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 /**
  * Received on: CLIENT
  * Sent by server to play a sound at a specific location
  */
-public class PacketPlaySound extends LocationDoublePacket {
-    private final SoundEvent soundEvent;
-    private final SoundSource category;
-    private final float volume;
-    private final float pitch;
-    private final boolean distanceDelay;
-
-    public PacketPlaySound(SoundEvent soundEvent, SoundSource category, double x, double y, double z, float volume, float pitch, boolean distanceDelay) {
-        super(x, y, z);
-        this.soundEvent = soundEvent;
-        this.category = category;
-        this.volume = volume;
-        this.pitch = pitch;
-        this.distanceDelay = distanceDelay;
-    }
+public record PacketPlaySound(SoundEvent soundEvent, SoundSource category, float x, float y, float z, float volume, float pitch, boolean distanceDelay) implements CustomPacketPayload {
+    public static final ResourceLocation ID = RL("play_sound");
 
     public PacketPlaySound(SoundEvent soundEvent, SoundSource category, BlockPos pos, float volume, float pitch, boolean distanceDelay) {
         this(soundEvent, category, pos.getX(), pos.getY(), pos.getZ(), volume, pitch, distanceDelay);
     }
 
     public PacketPlaySound(FriendlyByteBuf buffer) {
-        super(buffer);
-//        soundEvent = ForgeRegistries.SOUND_EVENTS.getValue(buffer.readResourceLocation());
-        soundEvent = buffer.readRegistryIdSafe(SoundEvent.class);
-        category = SoundSource.values()[buffer.readInt()];
-        volume = buffer.readFloat();
-        pitch = buffer.readFloat();
-        distanceDelay = buffer.readBoolean();
+        this(buffer.readById(BuiltInRegistries.SOUND_EVENT), buffer.readEnum(SoundSource.class),
+                buffer.readFloat(), buffer.readFloat(), buffer.readFloat(),
+                buffer.readFloat(), buffer.readFloat(), buffer.readBoolean());
     }
 
     @Override
-    public void toBytes(FriendlyByteBuf buffer) {
-        super.toBytes(buffer);
-        buffer.writeRegistryId(ForgeRegistries.SOUND_EVENTS, soundEvent);
-//        buffer.writeResourceLocation(Objects.requireNonNull(soundEvent.getRegistryName()));
-        buffer.writeInt(category.ordinal());
+    public void write(FriendlyByteBuf buffer) {
+        buffer.writeId(BuiltInRegistries.SOUND_EVENT, soundEvent);
+        buffer.writeEnum(category);
+        buffer.writeFloat(x);
+        buffer.writeFloat(y);
+        buffer.writeFloat(z);
         buffer.writeFloat(volume);
         buffer.writeFloat(pitch);
         buffer.writeBoolean(distanceDelay);
     }
 
-    public void handle(Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> ClientUtils.getClientLevel().playLocalSound(x, y, z, soundEvent, category, volume, pitch, distanceDelay));
-        ctx.get().setPacketHandled(true);
+    @Override
+    public ResourceLocation id() {
+        return ID;
+    }
+
+    public static void handle(PacketPlaySound message, PlayPayloadContext ctx) {
+        ctx.workHandler().submitAsync(() -> ClientUtils.getClientLevel().playLocalSound(
+                message.x, message.y, message.z,
+                message.soundEvent, message.category,
+                message.volume, message.pitch, message.distanceDelay
+        ));
     }
 }

@@ -20,8 +20,9 @@ package me.desht.pneumaticcraft.common.block.entity;
 import me.desht.pneumaticcraft.api.block.PressureChamberWallState;
 import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.api.tileentity.IManoMeasurable;
-import me.desht.pneumaticcraft.common.core.ModBlockEntities;
+import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.chat.Component;
@@ -30,10 +31,11 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.items.IItemHandler;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.event.TickEvent;
+import net.neoforged.neoforge.items.IItemHandler;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
@@ -47,11 +49,16 @@ public class PressureChamberWallBlockEntity extends AbstractTickingBlockEntity i
     private BlockPos valvePos;  // only used for serialization to/from NBT
 
     public PressureChamberWallBlockEntity(BlockPos pos, BlockState state) {
-        this(ModBlockEntities.PRESSURE_CHAMBER_WALL.get(), pos, state, 0);
+        this(ModBlockEntityTypes.PRESSURE_CHAMBER_WALL.get(), pos, state, 0);
     }
 
     PressureChamberWallBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state, int upgradeSize) {
         super(type, pos, state, upgradeSize);
+    }
+
+    @Override
+    public boolean hasItemCapability() {
+        return false;
     }
 
     public PressureChamberValveBlockEntity getPrimaryValve() {
@@ -139,7 +146,7 @@ public class PressureChamberWallBlockEntity extends AbstractTickingBlockEntity i
     }
 
     @Override
-    public IItemHandler getPrimaryInventory() {
+    public IItemHandler getItemHandler(@Nullable Direction dir) {
         return null;
     }
 

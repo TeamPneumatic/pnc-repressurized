@@ -14,17 +14,13 @@
     }
   },
   "display": {
-    "announce_to_chat": true,
     "background": "pneumaticcraft:textures/gui/advancement_bg.png",
     "description": {
       "translate": "pneumaticcraft.advancement.root.desc"
     },
-    "frame": "task",
-    "hidden": false,
     "icon": {
       "item": "pneumaticcraft:ingot_iron_compressed"
     },
-    "show_toast": true,
     "title": {
       "translate": "pneumaticcraft.advancement.root"
     }

@@ -22,14 +22,13 @@
   },
   "requirements": [
     [
-      "has_gun_ammo",
-      "has_the_recipe"
+      "has_the_recipe",
+      "has_gun_ammo"
     ]
   ],
   "rewards": {
     "recipes": [
       "pneumaticcraft:gun_ammo_weighted"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }

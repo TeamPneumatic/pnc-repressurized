@@ -22,14 +22,13 @@
   },
   "requirements": [
     [
-      "has_capacitor",
-      "has_the_recipe"
+      "has_the_recipe",
+      "has_capacitor"
     ]
   ],
   "rewards": {
     "recipes": [
       "pneumaticcraft:network_io_port"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }

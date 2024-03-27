@@ -23,9 +23,10 @@ import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.block.entity.LiquidCompressorBlockEntity;
-import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.fluid.FuelRegistry;
 import me.desht.pneumaticcraft.common.inventory.LiquidCompressorMenu;
+import me.desht.pneumaticcraft.common.registry.ModItems;
+import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
@@ -33,7 +34,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.List;
@@ -97,14 +97,10 @@ public class LiquidCompressorScreen extends AbstractPneumaticCraftContainerScree
     public void addProblems(List<Component> curInfo) {
         super.addProblems(curInfo);
 
-        if (te.getCapability(ForgeCapabilities.FLUID_HANDLER).isPresent()) {
-            te.getCapability(ForgeCapabilities.FLUID_HANDLER).ifPresent(fluidHandler -> {
-                if (!te.isActive() && fluidHandler.getFluidInTank(0).isEmpty()) {
-                    curInfo.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.liquidCompressor.noFuel"));
-                }
-            });
-        } else {
-            curInfo.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.liquidCompressor.noFuel"));
-        }
+        IOHelper.getFluidHandlerForBlock(te).ifPresentOrElse(fluidHandler -> {
+            if (!te.isActive() && fluidHandler.getFluidInTank(0).isEmpty()) {
+                curInfo.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.liquidCompressor.noFuel"));
+            }
+        }, () -> curInfo.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.liquidCompressor.noFuel")));
     }
 }

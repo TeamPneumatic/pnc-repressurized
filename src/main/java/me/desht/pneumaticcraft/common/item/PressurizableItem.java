@@ -21,15 +21,14 @@ import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.pressure.IPressurizableItem;
 import me.desht.pneumaticcraft.common.capabilities.AirHandlerItemStack;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
+import me.desht.pneumaticcraft.common.registry.ModAttachmentTypes;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Vanishable;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
 
-import javax.annotation.Nullable;
 import java.util.Objects;
 
 public class PressurizableItem extends Item implements IPressurizableItem, Vanishable {
@@ -54,8 +53,8 @@ public class PressurizableItem extends Item implements IPressurizableItem, Vanis
     }
 
     @Override
-    public int getBarWidth(ItemStack pStack) {
-        return pStack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY)
+    public int getBarWidth(ItemStack stack) {
+        return PNCCapabilities.getAirHandler(stack)
                 .map(h -> Math.round(h.getPressure() / h.maxPressure() * 13F))
                 .orElse(0);
     }
@@ -66,7 +65,7 @@ public class PressurizableItem extends Item implements IPressurizableItem, Vanis
     }
 
     static int getPressureDurabilityColor(ItemStack stack) {
-        return stack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).map(airHandler -> {
+        return PNCCapabilities.getAirHandler(stack).map(airHandler -> {
             float f = airHandler.getPressure() / airHandler.maxPressure();
             int c = (int) (64 + 191 * f);
             return 0x40 << 16 | c << 8 | 0xFF;
@@ -74,7 +73,7 @@ public class PressurizableItem extends Item implements IPressurizableItem, Vanis
     }
 
     static boolean shouldShowPressureDurability(ItemStack stack) {
-        return stack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY)
+        return PNCCapabilities.getAirHandler(stack)
                 .map(airHandler -> airHandler.getPressure() < airHandler.maxPressure())
                 .orElse(false);
     }
@@ -91,19 +90,19 @@ public class PressurizableItem extends Item implements IPressurizableItem, Vanis
 //        }
 //    }
 
-    @Nullable
-    @Override
-    public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundTag nbt) {
-        return stack.getItem() instanceof PressurizableItem ?
-                new AirHandlerItemStack(stack) :
-                super.initCapabilities(stack, nbt);
-    }
+//    @Nullable
+//    @Override
+//    public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundTag nbt) {
+//        return stack.getItem() instanceof PressurizableItem ?
+//                new AirHandlerItemStack(stack) :
+//                super.initCapabilities(stack, nbt);
+//    }
 
-    @Nullable
-    @Override
-    public CompoundTag getShareTag(ItemStack stack) {
-        return ConfigHelper.common().advanced.nbtToClientModification.get() ? roundedPressure(stack) : super.getShareTag(stack);
-    }
+//    @Nullable
+//    @Override
+//    public CompoundTag getShareTag(ItemStack stack) {
+//        return ConfigHelper.common().advanced.nbtToClientModification.get() ? roundedPressure(stack) : super.getShareTag(stack);
+//    }
 
     @Override
     public int getBaseVolume() {
@@ -117,8 +116,7 @@ public class PressurizableItem extends Item implements IPressurizableItem, Vanis
 
     @Override
     public int getAir(ItemStack stack) {
-        CompoundTag tag = stack.getTag();
-        return tag != null ? tag.getInt(AirHandlerItemStack.AIR_NBT_KEY) : 0;
+        return stack.getData(ModAttachmentTypes.AIR.get());
     }
 
     @Override

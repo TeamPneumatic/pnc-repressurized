@@ -1,10 +1,10 @@
 {
-  "type": "pneumaticcraft:heat_properties",
-  "description": "pneumaticcraft.gui.jei.description.create_blaze_burner.kindled",
-  "block": "create:blaze_burner",
-  "statePredicate": {
-    "blaze": "kindled"
-  },
-  "temperature": 1700,
-  "thermalResistance": 500
+   "statePredicate" : {
+      "blaze" : "kindled"
+   },
+   "temperature" : 1700,
+   "description" : "pneumaticcraft.gui.jei.description.create_blaze_burner.kindled",
+   "thermalResistance" : 500,
+   "type" : "pneumaticcraft:heat_properties",
+   "block" : "create:blaze_burner"
 }

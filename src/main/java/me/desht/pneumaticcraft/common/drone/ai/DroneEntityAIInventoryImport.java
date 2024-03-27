@@ -26,7 +26,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.items.IItemHandler;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.ItemHandlerHelper;
 
 public class DroneEntityAIInventoryImport extends DroneAIImExBase<ProgWidgetInventoryBase> {
 
@@ -49,7 +50,7 @@ public class DroneEntityAIInventoryImport extends DroneAIImExBase<ProgWidgetInve
         boolean imported = false;
         for (Direction dir : DirectionUtil.VALUES) {
             if (progWidget.isSideSelected(dir)) {
-                imported = IOHelper.getInventoryForTE(te, dir).map(inv -> tryImport(inv, pos, simulate)).orElse(false);
+                imported = IOHelper.getInventoryForBlock(te, dir).map(inv -> tryImport(inv, pos, simulate)).orElse(false);
                 if (imported) break;
             }
         }
@@ -69,7 +70,7 @@ public class DroneEntityAIInventoryImport extends DroneAIImExBase<ProgWidgetInve
                     if (progWidget.useCount()) {
                         importedStack.setCount(Math.min(importedStack.getCount(), getRemainingCount()));
                     }
-                    ItemStack remainder = IOHelper.insert(drone, importedStack, Direction.UP, simulate);
+                    ItemStack remainder = ItemHandlerHelper.insertItem(drone.getInv(), importedStack, simulate);
                     int removedItems = importedStack.getCount() - remainder.getCount();
                     if (!simulate) {
                         inv.extractItem(i, removedItems, false);

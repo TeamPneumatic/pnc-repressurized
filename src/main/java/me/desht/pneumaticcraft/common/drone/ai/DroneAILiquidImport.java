@@ -22,18 +22,18 @@ import me.desht.pneumaticcraft.common.drone.progwidgets.ILiquidFiltered;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetInventoryBase;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetLiquidImport;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
+import me.desht.pneumaticcraft.common.util.IOHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.BucketPickup;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.FluidState;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.fluids.capability.IFluidHandler.FluidAction;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction;
 
-import static net.minecraftforge.fluids.FluidType.BUCKET_VOLUME;
+import static net.neoforged.neoforge.fluids.FluidType.BUCKET_VOLUME;
 
 public class DroneAILiquidImport<W extends ProgWidgetInventoryBase & ILiquidFiltered> extends DroneAIImExBase<W> {
 
@@ -66,7 +66,7 @@ public class DroneAILiquidImport<W extends ProgWidgetInventoryBase & ILiquidFilt
                 boolean didWork = false;
                 for (Direction side : DirectionUtil.VALUES) {
                     if (progWidget.isSideSelected(side)) {
-                        didWork = te.getCapability(ForgeCapabilities.FLUID_HANDLER, side)
+                        didWork = IOHelper.getFluidHandlerForBlock(te, side)
                                 .map(handler -> tryImportFluid(handler, simulate)).orElse(false);
                         if (didWork) break;
                     }
@@ -84,7 +84,7 @@ public class DroneAILiquidImport<W extends ProgWidgetInventoryBase & ILiquidFilt
                     if (shouldVoidExcess() || drone.getFluidTank().fill(stack, FluidAction.SIMULATE) == BUCKET_VOLUME) {
                         if (!simulate) {
                             if (blockState.getBlock() instanceof BucketPickup pickup) {
-                                pickup.pickupBlock(drone.world(), pos, blockState);
+                                pickup.pickupBlock(drone.getFakePlayer(), drone.world(), pos, blockState);
                                 decreaseCount(BUCKET_VOLUME);
                                 drone.getFluidTank().fill(stack, FluidAction.EXECUTE);
                                 return true;

@@ -25,22 +25,23 @@ import me.desht.pneumaticcraft.common.util.NBTUtils;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.network.NetworkEvent;
+import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 
 import java.util.*;
-import java.util.function.Supplier;
+
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 /**
  * Received on: SERVER
  * General packet for updating various pneumatic armor settings from client GUI
  */
-public class PacketUpdateArmorExtraData {
+public record PacketUpdateArmorExtraData(EquipmentSlot slot, ResourceLocation upgradeID, CompoundTag data) implements CustomPacketPayload {
+    public static final ResourceLocation ID = RL("update_armor_extradata");
     private static final List<Map<String, Integer>> VALID_KEYS = new ArrayList<>();
-    private final ResourceLocation upgradeID;
 
     private static void addKey(EquipmentSlot slot, String key, int nbtType) {
         VALID_KEYS.get(slot.getIndex()).put(key, nbtType);
@@ -61,47 +62,40 @@ public class PacketUpdateArmorExtraData {
         addKey(EquipmentSlot.FEET, PneumaticArmorItem.NBT_SMART_HOVER, Tag.TAG_BYTE);
     }
 
-    private final EquipmentSlot slot;
-    private final CompoundTag data;
-
-    public PacketUpdateArmorExtraData(EquipmentSlot slot, CompoundTag data, ResourceLocation upgradeID) {
-        this.slot = slot;
-        this.data = data;
-        this.upgradeID = upgradeID;
+    public static PacketUpdateArmorExtraData fromNetwork(FriendlyByteBuf buffer) {
+        return new PacketUpdateArmorExtraData(buffer.readEnum(EquipmentSlot.class), buffer.readResourceLocation(), buffer.readNbt());
     }
 
-    PacketUpdateArmorExtraData(FriendlyByteBuf buffer) {
-        slot = buffer.readEnum(EquipmentSlot.class);
-        data = buffer.readNbt();
-        upgradeID = buffer.readResourceLocation();
-    }
-
-    public void toBytes(FriendlyByteBuf buf) {
+    @Override
+    public void write(FriendlyByteBuf buf) {
         buf.writeEnum(slot);
-        buf.writeNbt(data);
         buf.writeResourceLocation(upgradeID);
+        buf.writeNbt(data);
     }
 
-    public void handle(Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> {
-            ServerPlayer player = Objects.requireNonNull(ctx.get().getSender());
-            ItemStack stack = player.getItemBySlot(slot);
+    @Override
+    public ResourceLocation id() {
+        return ID;
+    }
+
+    public static void handle(PacketUpdateArmorExtraData message, PlayPayloadContext ctx) {
+        ctx.player().ifPresent(player -> ctx.workHandler().submitAsync(() -> {
+            ItemStack stack = player.getItemBySlot(message.slot());
             if (stack.getItem() instanceof PneumaticArmorItem) {
                 CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
                 NBTUtils.initNBTTagCompound(stack);
-                for (String key : data.getAllKeys()) {
-                    Tag dataTag = data.get(key);
-                    if (isKeyOKForSlot(key, slot, Objects.requireNonNull(dataTag).getId())) {
+                for (String key : message.data().getAllKeys()) {
+                    Tag dataTag = message.data().get(key);
+                    if (isKeyOKForSlot(key, message.slot(), Objects.requireNonNull(dataTag).getId())) {
                         Objects.requireNonNull(stack.getTag()).put(key, dataTag);
-                        IArmorUpgradeHandler<?> upgradeHandler = ArmorUpgradeRegistry.getInstance().getUpgradeEntry(upgradeID);
+                        IArmorUpgradeHandler<?> upgradeHandler = ArmorUpgradeRegistry.getInstance().getUpgradeEntry(message.upgradeID());
                         if (upgradeHandler != null) {
                             upgradeHandler.onDataFieldUpdated(handler, key, dataTag);
                         }
                     }
                 }
             }
-        });
-        ctx.get().setPacketHandled(true);
+        }));
     }
 
     private static boolean isKeyOKForSlot(String key, EquipmentSlot slot, int nbtType) {

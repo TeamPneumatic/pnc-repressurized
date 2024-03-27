@@ -35,7 +35,7 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraftforge.items.ItemStackHandler;
+import net.neoforged.neoforge.items.ItemStackHandler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -87,7 +87,7 @@ public class UpgradableItemUtils {
         Objects.requireNonNull(stack.getTag()).put(NBT_UPGRADE_CACHE_TAG, cache.toNBT());
 
         // in case volume upgrade count has changed...
-        stack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).ifPresent(h -> {
+        PNCCapabilities.getAirHandler(stack).ifPresent(h -> {
             if (h.getPressure() > h.maxPressure()) {
                 int maxAir = (int)(h.getVolume() * h.maxPressure());
                 h.addAir(maxAir - h.getAir());

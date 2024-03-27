@@ -19,7 +19,7 @@ package me.desht.pneumaticcraft.common.inventory;
 
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.common.block.entity.ChargingStationBlockEntity;
-import me.desht.pneumaticcraft.common.core.ModMenuTypes;
+import me.desht.pneumaticcraft.common.registry.ModMenuTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
@@ -27,7 +27,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.items.SlotItemHandler;
+import net.neoforged.neoforge.items.SlotItemHandler;
 
 import javax.annotation.Nonnull;
 
@@ -40,7 +40,7 @@ public class ChargingStationMenu extends AbstractPneumaticCraftMenu<ChargingStat
     public ChargingStationMenu(int i, Inventory inventoryPlayer, BlockPos pos) {
         super(ModMenuTypes.CHARGING_STATION.get(), i, inventoryPlayer, pos);
 
-        addSlot(new SlotItemHandler(te.getPrimaryInventory(), 0, 91, 45) {
+        addSlot(new SlotItemHandler(blockEntity.getItemHandler(), 0, 91, 45) {
             @Override
             public int getMaxStackSize() {
                 return 1;
@@ -68,7 +68,7 @@ public class ChargingStationMenu extends AbstractPneumaticCraftMenu<ChargingStat
             if (!moveItemStackTo(srcStack, 5, 9, false)
                     && !moveItemStackToHotbarOrInventory(srcStack, playerSlotsStart))
                 return ItemStack.EMPTY;
-        } else if (slot >= 5 && slot < 9 && srcStack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).isPresent()) {
+        } else if (slot >= 5 && slot < 9 && PNCCapabilities.getAirHandler(srcStack).isPresent()) {
             // armor slots - try to move to the charging slot if possible
             if (!moveItemStackTo(srcStack, 0, 1, false)
                     && !moveItemStackTo(srcStack, playerSlotsStart, playerSlotsStart + 36, false))

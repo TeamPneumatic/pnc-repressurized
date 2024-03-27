@@ -17,9 +17,9 @@
 
 package me.desht.pneumaticcraft.common.block.entity;
 
-import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.LazySynced;
+import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.BlockEntityConstants;
@@ -30,7 +30,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.AABB;
 
 import javax.annotation.Nonnull;
 
@@ -67,7 +66,7 @@ public abstract class AbstractAssemblyRobotBlockEntity extends AbstractTickingBl
         super.onNeighborBlockUpdate(fromPos);
 
         if (controllerPos != null) {
-            nonNullLevel().getBlockEntity(controllerPos, ModBlockEntities.ASSEMBLY_CONTROLLER.get())
+            nonNullLevel().getBlockEntity(controllerPos, ModBlockEntityTypes.ASSEMBLY_CONTROLLER.get())
                     .ifPresent(AssemblyControllerBlockEntity::invalidateAssemblySystem);
         }
     }
@@ -257,14 +256,6 @@ public abstract class AbstractAssemblyRobotBlockEntity extends AbstractTickingBl
     }
 
     @Override
-    public AABB getRenderBoundingBox() {
-        return new AABB(
-                getBlockPos().getX() - 1, getBlockPos().getY() - 1, getBlockPos().getZ() - 1,
-                getBlockPos().getX() + 2, getBlockPos().getY() + 2, getBlockPos().getZ() + 2
-        );
-    }
-
-    @Override
     public void setSpeed(float speed) {
         this.speed = speed;
     }
@@ -321,8 +312,8 @@ public abstract class AbstractAssemblyRobotBlockEntity extends AbstractTickingBl
         static TargetDirections readNBT(CompoundTag tag) {
             if (!tag.contains("targetDir1")) return null;
             return new TargetDirections(
-                    DirectionUtil.VALUES[tag.getInt("targetDir1")],
-                    tag.contains("targetDir2") ? DirectionUtil.VALUES[tag.getInt("targetDir2")] : null
+                    Direction.from3DDataValue(tag.getInt("targetDir1")),
+                    tag.contains("targetDir2") ? Direction.from3DDataValue(tag.getInt("targetDir2")) : null
             );
         }
 

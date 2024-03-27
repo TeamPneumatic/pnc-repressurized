@@ -15,17 +15,13 @@
     }
   },
   "display": {
-    "announce_to_chat": true,
     "background": "pneumaticcraft:textures/gui/advancement_bg.png",
     "description": {
       "translate": "pneumaticcraft.advancement.etchacid_bucket.desc"
     },
-    "frame": "task",
-    "hidden": false,
     "icon": {
       "item": "pneumaticcraft:etching_acid_bucket"
     },
-    "show_toast": true,
     "title": {
       "translate": "pneumaticcraft.advancement.etchacid_bucket"
     }

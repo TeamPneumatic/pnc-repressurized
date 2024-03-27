@@ -22,9 +22,9 @@ import me.desht.pneumaticcraft.api.pneumatic_armor.hacking.AbstractPersistentEnt
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.monster.Ghast;
 import net.minecraft.world.entity.projectile.Fireball;
-import net.minecraftforge.event.entity.EntityJoinLevelEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 

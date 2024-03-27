@@ -21,12 +21,12 @@ import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.api.upgrade.PNCUpgrade;
 import me.desht.pneumaticcraft.client.sound.MovingSounds;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
-import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.entity.drone.DroneEntity;
 import me.desht.pneumaticcraft.common.item.minigun.AbstractGunAmmoItem;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketPlayMovingSound;
 import me.desht.pneumaticcraft.common.network.PacketPlayMovingSound.MovingSoundFocus;
+import me.desht.pneumaticcraft.common.registry.ModSounds;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.RayTraceUtils;
@@ -40,17 +40,16 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.TamableAnimal;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.util.LazyOptional;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Optional;
 
 public abstract class Minigun {
     public static final float MAX_GUN_SPEED = 0.4f;
@@ -72,7 +71,7 @@ public abstract class Minigun {
 
     private boolean gunAimedAtTarget;
 
-    private LazyOptional<? extends IAirHandler> airCapability = LazyOptional.empty();
+    private IAirHandler airCapability = null;
     private int airUsage;
     private ItemStack ammoStack = ItemStack.EMPTY;
     protected final Player player;
@@ -86,7 +85,7 @@ public abstract class Minigun {
         this.requiresTarget = requiresTarget;
     }
 
-    public Minigun setAirHandler(LazyOptional<? extends IAirHandler> airHandler, int airUsage) {
+    public Minigun setAirHandler(IAirHandler airHandler, int airUsage) {
         this.airCapability = airHandler;
         this.airUsage = airUsage;
         return this;
@@ -153,8 +152,8 @@ public abstract class Minigun {
         return stack.getItem() instanceof AbstractGunAmmoItem a ? a.getAmmoColor(stack) : 0xFF313131;
     }
 
-    public LazyOptional<? extends IAirHandler> getAirCapability() {
-        return airCapability;
+    public Optional<? extends IAirHandler> getAirCapability() {
+        return Optional.ofNullable(airCapability);
     }
 
     /**
@@ -238,7 +237,7 @@ public abstract class Minigun {
 
     public boolean tryFireMinigun(Entity target) {
         boolean lastShotOfAmmo = false;
-        if (!ammoStack.isEmpty() && ammoStack.getDamageValue() < ammoStack.getMaxDamage() && airCapability.map(h -> h.getPressure() > 0).orElse(true)) {
+        if (!ammoStack.isEmpty() && ammoStack.getDamageValue() < ammoStack.getMaxDamage() && airCapability.getPressure() > 0) {
             setMinigunTriggerTimeOut(10);
             if (!world.isClientSide && getMinigunSpeed() == MAX_GUN_SPEED && (!requiresTarget || gunAimedAtTarget)) {
                 HitResult rtr = null;
@@ -247,16 +246,16 @@ public abstract class Minigun {
                     rtr = RayTraceUtils.getMouseOverServer(player, getRange());
                     target = rtr instanceof EntityHitResult e ? e.getEntity() : null;
                 }
-                airCapability.ifPresent(airHandler -> {
+                if (airCapability != null) {
                     int usage = (int) Math.ceil(airUsage * ammoItem.getAirUsageMultiplier(this, ammoStack));
                     usage += getUpgrades(ModUpgrades.RANGE.get());
                     if (getUpgrades(ModUpgrades.SPEED.get()) > 0) {
                         usage *= getUpgrades(ModUpgrades.SPEED.get()) + 1;
                     }
                     if (getPlayer() != null && !getPlayer().isCreative()) {
-                        airHandler.addAir(-usage);
+                        airCapability.addAir(-usage);
                     }
-                });
+                }
                 int roundsUsed = 1;
                 if (target != null) {
                     if (getUpgrades(ModUpgrades.SECURITY.get()) == 0 || !securityProtectedTarget(target)) {
@@ -269,7 +268,7 @@ public abstract class Minigun {
                 int ammoCost = roundsUsed * ammoItem.getAmmoCost(ammoStack);
                 if (!isInfiniteAmmo()) {
                     lastShotOfAmmo = ammoStack.hurt(ammoCost, rand, player instanceof ServerPlayer ? (ServerPlayer) player : null)
-                            && EnchantmentHelper.getItemEnchantmentLevel(Enchantments.UNBREAKING, ammoStack) == 0;
+                            && ammoStack.getEnchantmentLevel(Enchantments.UNBREAKING) == 0;
                 }
             }
         }

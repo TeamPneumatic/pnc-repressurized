@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.api.misc;
 
-import com.google.gson.JsonElement;
+import com.mojang.serialization.Codec;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
@@ -38,13 +38,9 @@ public interface IPlayerMatcher extends Predicate<Player> {
      * Serialize this matcher object to a packet buffer, for sync'ing to clients
      * @param buffer a packet buffer
      */
-    void toBytes(FriendlyByteBuf buffer);
+    void toNetwork(FriendlyByteBuf buffer);
 
-    /**
-     * Serialize this matcher object to JSON, for data generation.
-     * @return a JSON element
-     */
-    JsonElement toJson();
+    MatcherType<?> getType();
 
     /**
      * Add this matcher's information to a tooltip.  This is used for example by the Amadron Tablet GUI to show
@@ -82,16 +78,16 @@ public interface IPlayerMatcher extends Predicate<Player> {
     }
 
     /**
-     * Implement this and register it via
-     * {@link IMiscHelpers#registerPlayerMatcher(ResourceLocation, MatcherFactory)}.
-     * <p>
-     * This factory creates instances of a player matcher from JSON and packet buffer data, matching data written by
-     * {@link me.desht.pneumaticcraft.api.misc.IPlayerMatcher#toJson()} and
-     * {@link me.desht.pneumaticcraft.api.misc.IPlayerMatcher#toBytes(FriendlyByteBuf)}.
-     * @param <T> the matcher type
+     * The type of a matcher object, which supplies a codec for serialization, as well as a factory method to construct
+     * a matcher from a byte buffer (which may one day become part of the codec...)
+     *
+     * @param <P> the matcher type
      */
-    interface MatcherFactory<T extends IPlayerMatcher> {
-        T fromJson(JsonElement json);
-        T fromBytes(FriendlyByteBuf buffer);
+    interface MatcherType<P extends IPlayerMatcher> {
+        ResourceLocation getId();
+
+        P fromNetwork(FriendlyByteBuf buf);
+
+        Codec<P> codec();
     }
 }

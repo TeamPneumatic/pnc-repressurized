@@ -34,10 +34,10 @@ public interface IHeatRegistry {
     IHeatExchangerLogic makeHeatExchangerLogic();
 
     /**
-     * Register a heat behaviour instance. This can be called from a {@link net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent}
-     * handler; do not use {@link net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent#enqueueWork(Runnable)}.
+     * Register a heat behaviour instance. This can be called from a {@link net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent}
+     * handler; do not use {@link net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent#enqueueWork(Runnable)}.
      * Alternatively, if you need to override in-built behaviour (e.g. to disable automatic furnace fueling), you can
-     * register a handler in a {@link net.minecraftforge.event.server.ServerAboutToStartEvent} handler.
+     * register a handler in a {@link net.neoforged.neoforge.event.server.ServerAboutToStartEvent} handler.
      * <p>
      * This is intended to add custom behaviours to certain block entities, similar to how the vanilla furnace is handled.
      * For general blockstate transitions (on excess heat added/removed), the correct way to do this is with datapack

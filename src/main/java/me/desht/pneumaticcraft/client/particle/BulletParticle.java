@@ -12,6 +12,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.shapes.CollisionContext;
 
 public class BulletParticle extends TextureSheetParticle {
     public BulletParticle(ClientLevel level, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed, SpriteSet spriteSet) {
@@ -45,7 +46,8 @@ public class BulletParticle extends TextureSheetParticle {
         BlockState state = level.getBlockState(pos);
         if (!state.getCollisionShape(level, pos).isEmpty() || onGround) {
             if (level.random.nextBoolean()) {
-                ClipContext ctx = new ClipContext(new Vec3(x, y, z), new Vec3(x + xd, y + yd, z + zd), ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, null);
+                ClipContext ctx = new ClipContext(new Vec3(x, y, z), new Vec3(x + xd, y + yd, z + zd),
+                        ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, CollisionContext.empty());
                 BlockHitResult res = level.clip(ctx);
                 if (res.getType() == HitResult.Type.BLOCK) {
                     Direction face = res.getDirection();

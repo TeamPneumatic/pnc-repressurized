@@ -22,14 +22,13 @@
   },
   "requirements": [
     [
-      "has_pressure_chamber_glass",
-      "has_the_recipe"
+      "has_the_recipe",
+      "has_pressure_chamber_glass"
     ]
   ],
   "rewards": {
     "recipes": [
       "pneumaticcraft:spawner_core_shell"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }

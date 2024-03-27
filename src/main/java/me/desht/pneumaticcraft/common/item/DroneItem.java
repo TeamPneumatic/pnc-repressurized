@@ -19,12 +19,12 @@ package me.desht.pneumaticcraft.common.item;
 
 import me.desht.pneumaticcraft.api.item.IProgrammable;
 import me.desht.pneumaticcraft.client.ColorHandlers;
-import me.desht.pneumaticcraft.common.advancements.AdvancementTriggers;
 import me.desht.pneumaticcraft.common.block.entity.ChargingStationBlockEntity;
 import me.desht.pneumaticcraft.common.block.entity.ProgrammerBlockEntity;
-import me.desht.pneumaticcraft.common.core.ModItems;
-import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.entity.drone.DroneEntity;
+import me.desht.pneumaticcraft.common.registry.ModCriterionTriggers;
+import me.desht.pneumaticcraft.common.registry.ModItems;
+import me.desht.pneumaticcraft.common.registry.ModMenuTypes;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.ChatFormatting;
@@ -45,8 +45,8 @@ import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.templates.FluidTank;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -72,10 +72,10 @@ public class DroneItem extends PressurizableItem
     public InteractionResult useOn(UseOnContext ctx) {
         Level world = ctx.getLevel();
         BlockPos pos = ctx.getClickedPos();
-        if (world instanceof ServerLevelAccessor) {
-            ItemStack iStack = ctx.getPlayer().getItemInHand(ctx.getHand());
+        if (ctx.getPlayer() instanceof ServerPlayer sp) {
+            ItemStack iStack = sp.getItemInHand(ctx.getHand());
             if (iStack.getItem() == ModItems.LOGISTICS_DRONE.get()) {
-                AdvancementTriggers.LOGISTICS_DRONE_DEPLOYED.trigger((ServerPlayer) ctx.getPlayer());
+                ModCriterionTriggers.LOGISTICS_DRONE_DEPLOYED.get().trigger(sp);
             }
             BlockState state = world.getBlockState(pos);
             BlockPos placePos = state.getCollisionShape(world, pos).isEmpty() ? pos : pos.relative(ctx.getClickedFace());

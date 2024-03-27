@@ -38,6 +38,7 @@ import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
 import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.BlockTrackerHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.SearchHandler;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
+import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.gui.GuiGraphics;
@@ -51,8 +52,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.items.IItemHandler;
+import net.neoforged.neoforge.items.IItemHandler;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -194,7 +194,7 @@ public class SearchClientHandler extends IArmorUpgradeClientHandler.AbstractHand
         if (WidgetKeybindCheckBox.isHandlerEnabled(CommonUpgradeHandlers.searchHandler)) {
             Item searchedItem = PneumaticArmorItem.getSearchedItem(ClientUtils.getWornArmor(EquipmentSlot.HEAD));
             if (searchedItem != null) {
-                blockEntity.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(handler -> {
+                IOHelper.getInventoryForBlock(blockEntity).ifPresent(handler -> {
                     if (checkForItems(handler, searchedItem)) {
                         trackedInventories.put(blockEntity, new RenderSearchItemBlock(blockEntity.getLevel(), blockEntity.getBlockPos()));
                     }

@@ -19,9 +19,9 @@ package me.desht.pneumaticcraft.common.tubemodules;
 
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.common.block.entity.PressureTubeBlockEntity;
-import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdatePressureBlock;
+import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.thirdparty.ModdedWrenchUtils;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -50,9 +50,9 @@ public class PressureGaugeModule extends AbstractRedstoneEmittingModule {
         super.tickServer();
 
         if (pressureTube.nonNullLevel().getGameTime() % 20 == 0) {
-            pressureTube.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY).ifPresent(h -> {
-                NetworkHandler.sendToAllTracking(new PacketUpdatePressureBlock(pressureTube, null, h.getSideLeaking(), h.getAir()), pressureTube);
-            });
+            PNCCapabilities.getAirHandler(pressureTube).ifPresent(handler ->
+                    NetworkHandler.sendToAllTracking(new PacketUpdatePressureBlock(pressureTube.getBlockPos(), null,
+                            handler.getSideLeaking(), handler.getAir()), pressureTube));
         }
         if (setRedstone(getRedstone(pressureTube.getPressure()))) {
             // force a recalc on next tick

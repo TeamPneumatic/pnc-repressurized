@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.common.thirdparty.patchouli;
 
 import me.desht.pneumaticcraft.api.crafting.recipe.AmadronRecipe;
-import me.desht.pneumaticcraft.common.core.ModRecipeTypes;
+import me.desht.pneumaticcraft.common.registry.ModRecipeTypes;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.language.I18n;
@@ -36,10 +36,9 @@ public class ProcessorAmadronTrade implements IComponentProcessor {
     @Override
     public void setup(Level level, IVariableProvider iVariableProvider) {
         ResourceLocation recipeId = new ResourceLocation(iVariableProvider.get("recipe").asString());
-        recipe = ModRecipeTypes.AMADRON.get().getRecipe(Minecraft.getInstance().level, recipeId);
-        if (recipe == null) {
-            Log.warning("Missing amadron offer recipe: " + recipeId);
-        }
+        ModRecipeTypes.AMADRON.get().getRecipe(Minecraft.getInstance().level, recipeId)
+                .ifPresentOrElse(holder -> recipe = holder.value(),
+                        () -> Log.warning("Missing amadron offer recipe: " + recipeId));
 
         text = iVariableProvider.has("text") ? iVariableProvider.get("text").asString() : null;
     }

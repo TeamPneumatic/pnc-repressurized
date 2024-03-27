@@ -23,7 +23,6 @@ import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorExtensionData;
 import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorUpgradeHandler;
 import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorHandler;
-import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerItem;
 import me.desht.pneumaticcraft.api.upgrade.PNCUpgrade;
 import me.desht.pneumaticcraft.client.pneumatic_armor.ClientArmorRegistry;
@@ -40,14 +39,13 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.entity.EntityJoinLevelEvent;
-import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
+import net.neoforged.neoforge.event.TickEvent;
+import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 
 import java.util.*;
 
@@ -66,7 +64,7 @@ public class CommonArmorHandler implements ICommonArmorHandler {
     private final boolean[][] upgradeRenderersInserted = new boolean[4][];
     private final boolean[][] upgradeRenderersEnabled = new boolean[4][];
     private final int[] ticksSinceEquip = new int[4];
-    private final List<LazyOptional<IAirHandlerItem>> airHandlers = new ArrayList<>();
+    private final List<IAirHandlerItem> airHandlers = new ArrayList<>();
     private final List<Map<PNCUpgrade, Integer>> upgradeMatrix = new ArrayList<>();
     private final int[] startupTimes = new int[4];
     private final IArmorExtensionData[][] extensionData = new IArmorExtensionData[4][];
@@ -80,7 +78,7 @@ public class CommonArmorHandler implements ICommonArmorHandler {
             upgradeRenderersInserted[slot.getIndex()] = new boolean[upgradeHandlers.size()];
             upgradeRenderersEnabled[slot.getIndex()] = new boolean[upgradeHandlers.size()];
             upgradeMatrix.add(new HashMap<>());
-            airHandlers.add(LazyOptional.empty());
+            airHandlers.add(null);
             extensionData[slot.getIndex()] = new IArmorExtensionData[upgradeHandlers.size()];
             for (IArmorUpgradeHandler<?> handler : upgradeHandlers) {
                 extensionData[slot.getIndex()][handler.getIndex()] = handler.extensionData().get();
@@ -106,7 +104,7 @@ public class CommonArmorHandler implements ICommonArmorHandler {
         // called from LivingEntityMixin when a piece of pneumatic armor is equipped, replacing existing pneumatic armor
         // need to reset the init counter to force rescan of upgrades etc.
         if (ticksSinceEquip[slot.getIndex()] > 0) {
-            airHandlers.set(slot.getIndex(), LazyOptional.empty());
+            airHandlers.set(slot.getIndex(), null);
             if (ticksSinceEquip[slot.getIndex()] > 1) {
                 onArmorRemoved(slot);
             }
@@ -178,7 +176,7 @@ public class CommonArmorHandler implements ICommonArmorHandler {
         ItemStack armorStack = player.getItemBySlot(slot);
         boolean armorActive = false;
         if (armorStack.getItem() instanceof PneumaticArmorItem) {
-            airHandlers.set(slot.getIndex(), armorStack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY));
+            airHandlers.set(slot.getIndex(), armorStack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM));
             if (ticksSinceEquip[slot.getIndex()] == 0) {
                 initArmorInventory(slot);
             }
@@ -195,7 +193,7 @@ public class CommonArmorHandler implements ICommonArmorHandler {
                 doArmorActions(slot);
             }
         } else {
-            airHandlers.set(slot.getIndex(), LazyOptional.empty());
+            airHandlers.set(slot.getIndex(), null);
         }
         if (!armorActive) {
             if (ticksSinceEquip[slot.getIndex()] > 1) {
@@ -231,7 +229,8 @@ public class CommonArmorHandler implements ICommonArmorHandler {
     public float addAir(EquipmentSlot slot, int airAmount) {
         float oldPressure = getArmorPressure(slot);
         if ((!player.isCreative() || airAmount > 0) && getUpgradeCount(slot, ModUpgrades.CREATIVE.get()) == 0) {
-            airHandlers.get(slot.getIndex()).ifPresent(h -> h.addAir(airAmount));
+            IAirHandlerItem handler = airHandlers.get(slot.getIndex());
+            if (handler != null) handler.addAir(airAmount);
         }
         return oldPressure;
     }
@@ -357,12 +356,14 @@ public class CommonArmorHandler implements ICommonArmorHandler {
 
     @Override
     public float getArmorPressure(EquipmentSlot slot) {
-        return airHandlers.get(slot.getIndex()).map(IAirHandler::getPressure).orElse(0F);
+        IAirHandlerItem handler = airHandlers.get(slot.getIndex());
+        return handler == null ? 0F : handler.getPressure();
     }
 
     @Override
     public int getAir(EquipmentSlot slot) {
-        return airHandlers.get(slot.getIndex()).map(IAirHandler::getAir).orElse(0);
+        IAirHandlerItem handler = airHandlers.get(slot.getIndex());
+        return handler == null ? 0 : handler.getAir();
     }
 
     @Override

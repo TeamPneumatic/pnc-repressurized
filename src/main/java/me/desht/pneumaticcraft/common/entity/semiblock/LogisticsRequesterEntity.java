@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.common.entity.semiblock;
 
-import me.desht.pneumaticcraft.common.core.ModMenuTypes;
+import me.desht.pneumaticcraft.common.registry.ModMenuTypes;
 import me.desht.pneumaticcraft.common.semiblock.IProvidingInventoryListener;
 import me.desht.pneumaticcraft.common.semiblock.ISpecificRequester;
 import me.desht.pneumaticcraft.common.thirdparty.ae2.AE2Integration;
@@ -34,8 +34,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidStack;
 
 public class LogisticsRequesterEntity extends AbstractLogisticsFrameEntity implements ISpecificRequester, IProvidingInventoryListener {
     private static final EntityDataAccessor<Boolean> AE2_ENABLED = SynchedEntityData.defineId(LogisticsRequesterEntity.class, EntityDataSerializers.BOOLEAN);
@@ -166,7 +165,7 @@ public class LogisticsRequesterEntity extends AbstractLogisticsFrameEntity imple
     public int amountRequested(ItemStack stack) {
         int totalRequestingAmount = getTotalRequestedAmount(stack);
         if (totalRequestingAmount > 0) {
-            return IOHelper.getInventoryForTE(getCachedTileEntity(), getSide()).map(itemHandler -> {
+            return IOHelper.getInventoryForBlock(getCachedTileEntity(), getSide()).map(itemHandler -> {
                 int count = 0;
                 for (int i = 0; i < itemHandler.getSlots(); i++) {
                     ItemStack s = itemHandler.getStackInSlot(i);
@@ -187,7 +186,7 @@ public class LogisticsRequesterEntity extends AbstractLogisticsFrameEntity imple
     public int amountRequested(FluidStack stack) {
         int totalRequestingAmount = getTotalRequestedAmount(stack);
         if (totalRequestingAmount > 0) {
-            return getCachedTileEntity().getCapability(ForgeCapabilities.FLUID_HANDLER, getSide()).map(fluidHandler -> {
+            return IOHelper.getFluidHandlerForBlock(getCachedTileEntity(), getSide()).map(fluidHandler -> {
                 int count = 0;
                 for (int i = 0; i < fluidHandler.getTanks(); i++) {
                     FluidStack contents = fluidHandler.getFluidInTank(i);

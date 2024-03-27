@@ -23,12 +23,12 @@ import me.desht.pneumaticcraft.api.block.IPneumaticWrenchable;
 import me.desht.pneumaticcraft.api.lib.NBTKeys;
 import me.desht.pneumaticcraft.api.misc.IPneumaticCraftProbeable;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
-import me.desht.pneumaticcraft.common.advancements.AdvancementTriggers;
 import me.desht.pneumaticcraft.common.block.entity.AbstractAirHandlingBlockEntity;
 import me.desht.pneumaticcraft.common.block.entity.AbstractPneumaticCraftBlockEntity;
 import me.desht.pneumaticcraft.common.block.entity.IComparatorSupport;
 import me.desht.pneumaticcraft.common.block.entity.IHeatExchangingTE;
-import me.desht.pneumaticcraft.common.core.ModItems;
+import me.desht.pneumaticcraft.common.registry.ModCriterionTriggers;
+import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.thirdparty.ModdedWrenchUtils;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.common.util.FluidUtils;
@@ -69,12 +69,11 @@ import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.util.FakePlayer;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.templates.FluidTank;
-import net.minecraftforge.network.NetworkHooks;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.common.util.FakePlayer;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -103,8 +102,8 @@ public abstract class AbstractPneumaticCraftBlock extends Block
     }
 
     @Override
-    public boolean canPlaceLiquid(BlockGetter pLevel, BlockPos pPos, BlockState pState, Fluid pFluid) {
-        return pState.hasProperty(WATERLOGGED) && SimpleWaterloggedBlock.super.canPlaceLiquid(pLevel, pPos, pState, pFluid);
+    public boolean canPlaceLiquid(Player player, BlockGetter pLevel, BlockPos pPos, BlockState pState, Fluid pFluid) {
+        return pState.hasProperty(WATERLOGGED) && SimpleWaterloggedBlock.super.canPlaceLiquid(player, pLevel, pPos, pState, pFluid);
     }
 
     @Override
@@ -113,8 +112,8 @@ public abstract class AbstractPneumaticCraftBlock extends Block
     }
 
     @Override
-    public ItemStack pickupBlock(LevelAccessor pLevel, BlockPos pPos, BlockState pState) {
-        return pState.hasProperty(WATERLOGGED) ? SimpleWaterloggedBlock.super.pickupBlock(pLevel, pPos, pState) : ItemStack.EMPTY;
+    public ItemStack pickupBlock(Player player, LevelAccessor pLevel, BlockPos pPos, BlockState pState) {
+        return pState.hasProperty(WATERLOGGED) ? SimpleWaterloggedBlock.super.pickupBlock(player, pLevel, pPos, pState) : ItemStack.EMPTY;
     }
 
     @Override
@@ -162,7 +161,7 @@ public abstract class AbstractPneumaticCraftBlock extends Block
      * @param te the block entity, which is known to be an INamedContainerProvider
      */
     protected void doOpenGui(ServerPlayer player, BlockEntity te) {
-        NetworkHooks.openScreen(player, (MenuProvider) te, te.getBlockPos());
+        player.openMenu((MenuProvider) te, te.getBlockPos());
     }
 
     @Nullable
@@ -174,8 +173,8 @@ public abstract class AbstractPneumaticCraftBlock extends Block
                 if (state.hasProperty(connectionProperty(facing))) {
                     // handle pneumatic connections to neighbouring air handlers
                     BlockEntity neighbourBE = ctx.getLevel().getBlockEntity(ctx.getClickedPos().relative(facing));
-                    boolean b = neighbourBE != null && neighbourBE.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, facing.getOpposite()).isPresent();
-                    state = state.setValue(connectionProperty(facing), b);
+                    boolean isConnected = neighbourBE != null && PNCCapabilities.getAirHandler(neighbourBE, facing.getOpposite()).isPresent();
+                    state = state.setValue(connectionProperty(facing), isConnected);
                 }
             }
             if (isRotatable()) {
@@ -192,7 +191,7 @@ public abstract class AbstractPneumaticCraftBlock extends Block
 
     /**
      * Does the block face the same way as the player when placed, or opposite?
-     * @return whether or not the block should be rotated 180 degrees on placement
+     * @return whether the block should be rotated 180 degrees on placement
      */
     protected boolean reversePlacementRotation() {
         return false;
@@ -423,10 +422,10 @@ public abstract class AbstractPneumaticCraftBlock extends Block
         }
         if (stateIn.hasProperty(connectionProperty(facing))) {
             BlockEntity ourTE = worldIn.getBlockEntity(currentPos);
-            if (ourTE != null && ourTE.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, facing).isPresent()) {
+            if (ourTE != null && PNCCapabilities.getAirHandler(ourTE, facing).isPresent()) {
                 // handle pneumatic connections to neighbouring air handlers
                 BlockEntity te = worldIn.getBlockEntity(currentPos.relative(facing));
-                boolean b = te != null && te.getCapability (PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, facing.getOpposite()).isPresent();
+                boolean b = te != null && PNCCapabilities.getAirHandler(te, facing.getOpposite()).isPresent();
                 stateIn = stateIn.setValue(connectionProperty(facing), b);
             } else {
                 stateIn = stateIn.setValue(connectionProperty(facing), false);
@@ -453,7 +452,7 @@ public abstract class AbstractPneumaticCraftBlock extends Block
     public void playerDestroy(Level worldIn, Player player, BlockPos pos, BlockState state, @Nullable BlockEntity te, ItemStack stack) {
         if (player instanceof ServerPlayer sp && !(player instanceof FakePlayer)
                 && te instanceof AbstractPneumaticCraftBlockEntity base && !base.shouldPreserveStateOnBreak()) {
-            AdvancementTriggers.MACHINE_VANDAL.trigger(sp);
+            ModCriterionTriggers.MACHINE_VANDAL.get().trigger(sp);
         }
         super.playerDestroy(worldIn, player, pos, state, te, stack);
     }

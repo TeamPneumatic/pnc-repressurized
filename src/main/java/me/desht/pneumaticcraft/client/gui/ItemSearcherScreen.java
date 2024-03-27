@@ -20,8 +20,8 @@ package me.desht.pneumaticcraft.client.gui;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.ArmorMainScreen;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTextField;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
-import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.inventory.ItemSearcherMenu;
+import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -43,8 +43,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag.Default;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentInstance;
-import net.minecraftforge.items.IItemHandlerModifiable;
-import net.minecraftforge.items.ItemStackHandler;
+import net.neoforged.neoforge.items.IItemHandlerModifiable;
+import net.neoforged.neoforge.items.ItemStackHandler;
 import org.apache.commons.lang3.StringUtils;
 import org.lwjgl.glfw.GLFW;
 
@@ -221,15 +221,15 @@ public class ItemSearcherScreen extends AbstractContainerScreen<ItemSearcherMenu
     }
 
     @Override
-    public boolean mouseScrolled(double x, double y, double dir) {
-        if (dir != 0 && needsScrollBars()) {
+    public boolean mouseScrolled(double x, double y, double dirX, double dirY) {
+        if (dirY != 0 && needsScrollBars()) {
             int j = menu.itemList.size() / 9 - 5 + 1;
-            float i = dir > 0 ? 1f : -1f;
+            float i = dirY > 0 ? 1f : -1f;
             currentScroll = Mth.clamp(currentScroll - i / j, 0.0, 1.0);
             menu.scrollTo(currentScroll);
             return true;
         }
-        return super.mouseScrolled(x, y, dir);
+        return super.mouseScrolled(x, y, dirX, dirY);
     }
 
     @Override
@@ -266,7 +266,7 @@ public class ItemSearcherScreen extends AbstractContainerScreen<ItemSearcherMenu
 
     @Override
     public void render(GuiGraphics graphics, int x, int y, float partialTicks) {
-        renderBackground(graphics);
+        renderBackground(graphics, x, y, partialTicks);
 
         super.render(graphics, x, y, partialTicks);
 

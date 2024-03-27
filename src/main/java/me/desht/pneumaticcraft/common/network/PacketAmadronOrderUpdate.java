@@ -19,46 +19,41 @@ package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.common.inventory.AmadronMenu;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.network.NetworkEvent;
+import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 
-import java.util.function.Supplier;
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 /**
  * Received on: SERVER
  * Sent from client when an offer widget is clicked in the Amadron GUI to update the server-side order amount
  */
-public class PacketAmadronOrderUpdate {
-    private final ResourceLocation orderId;
-    private final int mouseButton;
-    private final boolean sneaking;
+public record PacketAmadronOrderUpdate(ResourceLocation orderId, int mouseButton, boolean sneaking) implements CustomPacketPayload {
+    public static final ResourceLocation ID = RL("amadron_order_update");
 
-    public PacketAmadronOrderUpdate(ResourceLocation orderId, int mouseButton, boolean sneaking) {
-        this.orderId = orderId;
-        this.mouseButton = mouseButton;
-        this.sneaking = sneaking;
+    public static PacketAmadronOrderUpdate fromNetwork(FriendlyByteBuf buffer) {
+        return new PacketAmadronOrderUpdate(buffer.readResourceLocation(), buffer.readByte(), buffer.readBoolean());
     }
 
-    public PacketAmadronOrderUpdate(FriendlyByteBuf buffer) {
-        orderId = buffer.readResourceLocation();
-        mouseButton = buffer.readByte();
-        sneaking = buffer.readBoolean();
-    }
-
-    public void toBytes(FriendlyByteBuf buf) {
+    @Override
+    public void write(FriendlyByteBuf buf) {
         buf.writeResourceLocation(orderId);
         buf.writeByte(mouseButton);
         buf.writeBoolean(sneaking);
     }
 
-    public void handle(Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> {
-            ServerPlayer player = ctx.get().getSender();
-            if (player != null && player.containerMenu instanceof AmadronMenu a) {
-                a.clickOffer(orderId, mouseButton, sneaking, player);
+    @Override
+    public ResourceLocation id() {
+        return ID;
+    }
+
+    public static void handle(PacketAmadronOrderUpdate message, PlayPayloadContext ctx) {
+        ctx.player().ifPresent(player -> ctx.workHandler().submitAsync(() -> {
+            if (player instanceof ServerPlayer sp && player.containerMenu instanceof AmadronMenu menu) {
+                menu.clickOffer(message.orderId(), message.mouseButton(), message.sneaking(), sp);
             }
-        });
-        ctx.get().setPacketHandled(true);
+        }));
     }
 }

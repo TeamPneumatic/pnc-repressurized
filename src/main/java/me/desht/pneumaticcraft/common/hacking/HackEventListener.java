@@ -17,19 +17,15 @@
 
 package me.desht.pneumaticcraft.common.hacking;
 
-import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.pneumatic_armor.hacking.IHackableEntity;
-import me.desht.pneumaticcraft.common.capabilities.CapabilityHacking;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSyncEntityHacks;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.Entity;
-import net.minecraftforge.event.AttachCapabilitiesEvent;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.entity.EntityJoinLevelEvent;
-import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.event.TickEvent;
+import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 
 import java.util.List;
 
@@ -48,25 +44,20 @@ public enum HackEventListener {
     }
 
     @SubscribeEvent
-    public void onEntityConstruction(AttachCapabilitiesEvent<Entity> event) {
-        event.addCapability(CapabilityHacking.ID, new CapabilityHacking.Provider());
-    }
-
-    @SubscribeEvent
     public void onEntityJoining(EntityJoinLevelEvent event) {
         // re-add any entity with hacks on it (i.e. before the last server restart) to the tracker
-        event.getEntity().getCapability(PNCCapabilities.HACKING_CAPABILITY)
-                .ifPresent(hacking -> hacking.getCurrentHacks()
-                        .forEach(hack -> HackTickTracker.getInstance(event.getLevel()).trackEntity(event.getEntity(), hack)));
+        HackManager.getActiveHacks(event.getEntity()).ifPresent(hacking ->
+                hacking.getCurrentHacks().forEach(hack ->
+                        HackTickTracker.getInstance(event.getLevel()).trackEntity(event.getEntity(), hack)));
     }
 
     @SubscribeEvent
     public void onEntityTracking(PlayerEvent.StartTracking event) {
         if (event.getEntity() instanceof ServerPlayer sp) {
-            event.getTarget().getCapability(PNCCapabilities.HACKING_CAPABILITY).ifPresent(hacking -> {
+            HackManager.getActiveHacks(event.getEntity()).ifPresent(hacking -> {
                 List<ResourceLocation> ids = hacking.getCurrentHacks().stream().map(IHackableEntity::getHackableId).toList();
                 if (!ids.isEmpty()) {
-                    NetworkHandler.sendToPlayer(new PacketSyncEntityHacks(event.getTarget(), ids), sp);
+                    NetworkHandler.sendToPlayer(PacketSyncEntityHacks.create(event.getTarget(), ids), sp);
                 }
             });
         }

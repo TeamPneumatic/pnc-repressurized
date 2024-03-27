@@ -15,17 +15,14 @@
     }
   },
   "display": {
-    "announce_to_chat": true,
     "background": "pneumaticcraft:textures/gui/advancement_bg.png",
     "description": {
       "translate": "pneumaticcraft.advancement.biodiesel.desc"
     },
     "frame": "goal",
-    "hidden": false,
     "icon": {
       "item": "pneumaticcraft:biodiesel_bucket"
     },
-    "show_toast": true,
     "title": {
       "translate": "pneumaticcraft.advancement.biodiesel"
     }

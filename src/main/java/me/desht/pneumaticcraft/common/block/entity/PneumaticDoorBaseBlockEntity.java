@@ -22,10 +22,10 @@ import com.google.common.math.IntMath;
 import me.desht.pneumaticcraft.api.pressure.PressureTier;
 import me.desht.pneumaticcraft.common.block.entity.RedstoneController.ReceivingRedstoneMode;
 import me.desht.pneumaticcraft.common.block.entity.RedstoneController.RedstoneMode;
-import me.desht.pneumaticcraft.common.core.ModBlockEntities;
-import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.inventory.PneumaticDoorBaseMenu;
 import me.desht.pneumaticcraft.common.network.*;
+import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
+import me.desht.pneumaticcraft.common.registry.ModSounds;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.BlockEntityConstants;
@@ -45,7 +45,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.items.IItemHandler;
+import net.neoforged.neoforge.items.IItemHandler;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -97,7 +97,12 @@ public class PneumaticDoorBaseBlockEntity extends AbstractAirHandlingBlockEntity
     private int rangeSq;
 
     public PneumaticDoorBaseBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.PNEUMATIC_DOOR_BASE.get(), pos, state, PressureTier.TIER_ONE, PneumaticValues.VOLUME_PNEUMATIC_DOOR, 4);
+        super(ModBlockEntityTypes.PNEUMATIC_DOOR_BASE.get(), pos, state, PressureTier.TIER_ONE, PneumaticValues.VOLUME_PNEUMATIC_DOOR, 4);
+    }
+
+    @Override
+    public boolean hasItemCapability() {
+        return false;
     }
 
     @Override
@@ -222,7 +227,7 @@ public class PneumaticDoorBaseBlockEntity extends AbstractAirHandlingBlockEntity
     }
 
     private PneumaticDoorBlockEntity getDoor() {
-        return nonNullLevel().getBlockEntity(getBlockPos().relative(getRotation()).below(), ModBlockEntities.PNEUMATIC_DOOR.get()).map(teDoor -> {
+        return nonNullLevel().getBlockEntity(getBlockPos().relative(getRotation()).below(), ModBlockEntityTypes.PNEUMATIC_DOOR.get()).map(teDoor -> {
             if (getRotation().getClockWise() == teDoor.getRotation() && !teDoor.rightGoing) {
                 return teDoor;
             } else if (getRotation().getCounterClockWise() == teDoor.getRotation() && teDoor.rightGoing) {
@@ -278,7 +283,7 @@ public class PneumaticDoorBaseBlockEntity extends AbstractAirHandlingBlockEntity
     }
 
     @Override
-    public IItemHandler getPrimaryInventory() {
+    public IItemHandler getItemHandler(@org.jetbrains.annotations.Nullable Direction dir) {
         return null;
     }
 

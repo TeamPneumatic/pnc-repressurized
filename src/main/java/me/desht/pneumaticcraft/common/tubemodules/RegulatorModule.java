@@ -21,18 +21,30 @@ import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
 import me.desht.pneumaticcraft.common.block.PressureTubeBlock;
 import me.desht.pneumaticcraft.common.block.entity.PressureTubeBlockEntity;
-import me.desht.pneumaticcraft.common.core.ModItems;
+import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.Direction;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.common.util.LazyOptional;
+import net.neoforged.neoforge.capabilities.BlockCapabilityCache;
+
+import java.util.Optional;
 
 public class RegulatorModule extends AbstractRedstoneReceivingModule implements IInfluenceDispersing {
-    private LazyOptional<IAirHandlerMachine> neighbourCap = null;
+    private BlockCapabilityCache<IAirHandlerMachine,Direction> airHandlerCache;
 
     public RegulatorModule(Direction dir, PressureTubeBlockEntity pressureTube) {
         super(dir, pressureTube);
+    }
+
+    @Override
+    public void onPlaced() {
+        super.onPlaced();
+
+        airHandlerCache = pressureTube.getLevel() instanceof ServerLevel level ?
+                BlockCapabilityCache.create(PNCCapabilities.AIR_HANDLER_MACHINE, level, pressureTube.getBlockPos().relative(dir), dir.getOpposite(),
+                        () -> !pressureTube.isRemoved(), () -> {}) :
+                null;
     }
 
     @Override
@@ -57,11 +69,6 @@ public class RegulatorModule extends AbstractRedstoneReceivingModule implements 
         return true;
     }
 
-    @Override
-    public void onNeighborBlockUpdate() {
-        super.onNeighborBlockUpdate();
-        neighbourCap = null;
-    }
 
     @Override
     public float getThreshold() {
@@ -69,17 +76,8 @@ public class RegulatorModule extends AbstractRedstoneReceivingModule implements 
         return upgraded ? super.getThreshold() : (PneumaticValues.DANGER_PRESSURE_TIER_ONE - 0.1f) * (15 - getReceivingRedstoneLevel()) / 15f;
     }
 
-    private LazyOptional<IAirHandlerMachine> getCachedNeighbourAirHandler() {
-        if (neighbourCap == null) {
-            BlockEntity neighborTE = pressureTube.nonNullLevel().getBlockEntity(pressureTube.getBlockPos().relative(dir));
-            if (neighborTE != null) {
-                neighbourCap = neighborTE.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, dir.getOpposite());
-                if (neighbourCap.isPresent()) neighbourCap.addListener(l -> neighbourCap = null);
-            } else {
-                neighbourCap = LazyOptional.empty();
-            }
-        }
-        return neighbourCap;
+    private Optional<IAirHandlerMachine> getCachedNeighbourAirHandler() {
+        return airHandlerCache == null ? Optional.empty() : Optional.ofNullable(airHandlerCache.getCapability());
     }
 
     @Override

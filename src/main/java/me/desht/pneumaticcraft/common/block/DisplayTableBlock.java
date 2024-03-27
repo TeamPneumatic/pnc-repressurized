@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.common.block.entity.DisplayTableBlockEntity;
-import me.desht.pneumaticcraft.common.core.ModBlocks;
+import me.desht.pneumaticcraft.common.registry.ModBlocks;
 import me.desht.pneumaticcraft.common.thirdparty.ModdedWrenchUtils;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.core.BlockPos;
@@ -163,13 +163,13 @@ public class DisplayTableBlock extends AbstractPneumaticCraftBlock implements Pn
         } else if (te instanceof DisplayTableBlockEntity) {
             if (!world.isClientSide) {
                 DisplayTableBlockEntity teDT = (DisplayTableBlockEntity) te;
-                if (teDT.getPrimaryInventory().getStackInSlot(0).isEmpty()) {
+                if (teDT.getItemHandler().getStackInSlot(0).isEmpty()) {
                     // try to put the player's held item onto the table
-                    ItemStack excess = teDT.getPrimaryInventory().insertItem(0, player.getItemInHand(hand), false);
+                    ItemStack excess = teDT.getItemHandler().insertItem(0, player.getItemInHand(hand), false);
                     if (!player.isCreative()) player.setItemInHand(hand, excess);
                 } else {
                     // try to remove whatever is on the table
-                    ItemStack stack = teDT.getPrimaryInventory().extractItem(0, 64, false);
+                    ItemStack stack = teDT.getItemHandler().extractItem(0, 64, false);
                     PneumaticCraftUtils.dropItemOnGroundPrecisely(stack, world, pos.getX() + 0.5, pos.getY() + getTableHeight() + 0.1, pos.getZ() + 0.5);
                 }
             }

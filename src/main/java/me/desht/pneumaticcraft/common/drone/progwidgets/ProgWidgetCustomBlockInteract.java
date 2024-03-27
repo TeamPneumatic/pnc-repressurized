@@ -20,9 +20,9 @@ package me.desht.pneumaticcraft.common.drone.progwidgets;
 import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.api.drone.ICustomBlockInteract;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
-import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.common.drone.IDroneBase;
 import me.desht.pneumaticcraft.common.drone.ai.DroneAICustomBlockInteract;
+import me.desht.pneumaticcraft.common.registry.ModProgWidgets;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.item.DyeColor;
@@ -48,7 +48,7 @@ public class ProgWidgetCustomBlockInteract extends ProgWidgetInventoryBase {
     @Override
     public ProgWidgetType<?> getType() {
         if (customType == null) {
-            customType = ModProgWidgets.PROG_WIDGETS.get().getValue(RL(interactor.getID()));
+            customType = ModProgWidgets.PROG_WIDGETS_REGISTRY.get(RL(interactor.getID()));
             Validate.notNull(customType);
         }
         return customType;

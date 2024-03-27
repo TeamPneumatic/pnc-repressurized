@@ -17,28 +17,21 @@
 
 package me.desht.pneumaticcraft.common.recipes.machine;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import me.desht.pneumaticcraft.api.crafting.PneumaticCraftRecipeTypes;
 import me.desht.pneumaticcraft.api.crafting.recipe.ExplosionCraftingRecipe;
-import me.desht.pneumaticcraft.common.core.ModRecipeSerializers;
-import me.desht.pneumaticcraft.common.core.ModRecipeTypes;
+import me.desht.pneumaticcraft.common.registry.ModRecipeSerializers;
+import me.desht.pneumaticcraft.common.registry.ModRecipeTypes;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
-import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 
-import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
@@ -50,11 +43,9 @@ public class ExplosionCraftingRecipeImpl extends ExplosionCraftingRecipe {
     private final List<ItemStack> outputs;
     private final int lossRate;
 
-    public ExplosionCraftingRecipeImpl(ResourceLocation id, Ingredient input, int lossRate, ItemStack... outputs) {
-        super(id);
-
+    public ExplosionCraftingRecipeImpl(Ingredient input, int lossRate, List<ItemStack> outputs) {
         this.input = input;
-        this.outputs = Arrays.asList(outputs);
+        this.outputs = outputs;
         this.lossRate = lossRate;
     }
 
@@ -84,8 +75,10 @@ public class ExplosionCraftingRecipeImpl extends ExplosionCraftingRecipe {
     }
 
     public static NonNullList<ItemStack> tryToCraft(Level world, ItemStack stack) {
-        ExplosionCraftingRecipe recipe = ModRecipeTypes.EXPLOSION_CRAFTING.get().findFirst(world, r -> r.matches(stack));
-        return recipe == null || recipe.getAmount() == 0 ? EMPTY_RESULT : createOutput(recipe, stack);
+        return ModRecipeTypes.EXPLOSION_CRAFTING.get().findFirst(world, r -> r.matches(stack)).map(holder -> {
+            ExplosionCraftingRecipe recipe = holder.value();
+            return recipe.getAmount() == 0 ? EMPTY_RESULT : createOutput(recipe, stack);
+        }).orElse(EMPTY_RESULT);
     }
 
     /**
@@ -115,14 +108,6 @@ public class ExplosionCraftingRecipeImpl extends ExplosionCraftingRecipe {
     }
 
     @Override
-    public void write(FriendlyByteBuf buffer) {
-        input.toNetwork(buffer);
-        buffer.writeVarInt(outputs.size());
-        outputs.forEach(buffer::writeItem);
-        buffer.writeVarInt(lossRate);
-    }
-
-    @Override
     public RecipeSerializer<?> getSerializer() {
         return ModRecipeSerializers.EXPLOSION_CRAFTING.get();
     }
@@ -143,44 +128,40 @@ public class ExplosionCraftingRecipeImpl extends ExplosionCraftingRecipe {
     }
 
     public static class Serializer<T extends ExplosionCraftingRecipe> implements RecipeSerializer<T> {
+        private final Codec<T> codec;
         private final IFactory<T> factory;
 
         public Serializer(IFactory<T> factory) {
             this.factory = factory;
+            this.codec = RecordCodecBuilder.create(builder -> builder.group(
+                    Ingredient.CODEC.fieldOf("input").forGetter(ExplosionCraftingRecipe::getInput),
+                    Codec.INT.fieldOf("loss_rate").forGetter(ExplosionCraftingRecipe::getLossRate),
+                    ItemStack.CODEC.listOf().fieldOf("results").forGetter(ExplosionCraftingRecipe::getOutputs)
+            ).apply(builder, factory::create));
         }
 
         @Override
-        public T fromJson(ResourceLocation recipeId, JsonObject json) {
-            Ingredient input = Ingredient.fromJson(json.get("input"));
-            int loss_rate = GsonHelper.getAsInt(json,"loss_rate", 0);
-            JsonArray outputs = json.get("results").getAsJsonArray();
-            NonNullList<ItemStack> results = NonNullList.create();
-            for (JsonElement e : outputs) {
-                results.add(ShapedRecipe.itemStackFromJson(e.getAsJsonObject()));
-            }
-            return factory.create(recipeId, input, loss_rate, results.toArray(new ItemStack[0]));
+        public Codec<T> codec() {
+            return codec;
         }
 
-        @Nullable
         @Override
-        public T fromNetwork(ResourceLocation recipeId, FriendlyByteBuf buffer) {
+        public T fromNetwork(FriendlyByteBuf buffer) {
             Ingredient input = Ingredient.fromNetwork(buffer);
-            int nOutputs = buffer.readVarInt();
-            List<ItemStack> l = new ArrayList<>();
-            for (int i = 0; i < nOutputs; i++) {
-                l.add(buffer.readItem());
-            }
+            List<ItemStack> l = buffer.readList(FriendlyByteBuf::readItem);
             int lossRate = buffer.readVarInt();
-            return factory.create(recipeId, input, lossRate, l.toArray(new ItemStack[0]));
+            return factory.create(input, lossRate, l);
         }
 
         @Override
         public void toNetwork(FriendlyByteBuf buffer, T recipe) {
-            recipe.write(buffer);
+            recipe.getInput().toNetwork(buffer);
+            buffer.writeCollection(recipe.getOutputs(), FriendlyByteBuf::writeItem);
+            buffer.writeVarInt(recipe.getLossRate());
         }
 
         public interface IFactory<T extends ExplosionCraftingRecipe> {
-            T create(ResourceLocation id, Ingredient input, int lossRate, ItemStack... result);
+            T create(Ingredient input, int lossRate, List<ItemStack> result);
         }
     }
 }

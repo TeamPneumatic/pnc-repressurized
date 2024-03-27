@@ -5,9 +5,9 @@ import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.api.lib.NBTKeys;
 import me.desht.pneumaticcraft.api.pressure.PressureTier;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
-import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.inventory.SolarCompressorMenu;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
+import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
 import me.desht.pneumaticcraft.common.util.BoundingBlockEntityData;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.BlockPos;
@@ -26,8 +26,6 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.IItemHandler;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -54,12 +52,11 @@ public class SolarCompressorBlockEntity extends AbstractAirHandlingBlockEntity i
     @GuiSynced
     private boolean canSeeSunlight = false;
     @GuiSynced
-    private IHeatExchangerLogic heatExchanger = PneumaticRegistry.getInstance().getHeatRegistry().makeHeatExchangerLogic();
-    private final LazyOptional<IHeatExchangerLogic> heatCap = LazyOptional.of(() -> heatExchanger);
+    private final IHeatExchangerLogic heatExchanger = PneumaticRegistry.getInstance().getHeatRegistry().makeHeatExchangerLogic();
     private final BoundingBlockEntityData boundingBlockEntityData = new BoundingBlockEntityData();
 
     public SolarCompressorBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.SOLAR_COMPRESSOR.get(), pos, state, PressureTier.TIER_TWO, PneumaticValues.VOLUME_SOLAR_COMPRESSOR, 4);
+        super(ModBlockEntityTypes.SOLAR_COMPRESSOR.get(), pos, state, PressureTier.TIER_TWO, PneumaticValues.VOLUME_SOLAR_COMPRESSOR, 4);
 
         // Nullifies the heat component of the bounding blocks
         // Might not be necessary but doesn't hurt anything
@@ -71,6 +68,11 @@ public class SolarCompressorBlockEntity extends AbstractAirHandlingBlockEntity i
         else {
             heatExchanger.setThermalCapacity(100);
         }
+    }
+
+    @Override
+    public boolean hasItemCapability() {
+        return false;
     }
 
     @NotNull
@@ -279,24 +281,6 @@ public class SolarCompressorBlockEntity extends AbstractAirHandlingBlockEntity i
         return !isBounding(this) && (side == getRotation() || side == getRotation().getOpposite());
     }
 
-    @Override
-    public IItemHandler getPrimaryInventory() {
-        return null;
-    }
-
-    @Override
-    public LazyOptional<IHeatExchangerLogic> getHeatCap(Direction side) {
-        // Returns null for the bounding blocks
-        if(isBounding(this)) {
-            return LazyOptional.empty();
-        }
-
-        // Returns the heat exchanger for the main block
-        else {
-            return heatCap;
-        }
-    }
-
     public float getAirRate() {
         // Returns 0 for the air rate if the compressor is broken
         if (isBroken) {
@@ -321,18 +305,10 @@ public class SolarCompressorBlockEntity extends AbstractAirHandlingBlockEntity i
         }
     }
 
-    @org.jetbrains.annotations.Nullable
     @Override
     public IHeatExchangerLogic getHeatExchanger(Direction dir) {
-        // Returns null for the bounding blocks
-        if (isBounding(this)) {
-            return null;
-        }
-
-        // Returns the heat exchanger for the main block
-        else {
-            return heatExchanger;
-        }
+        // Only the main block has a heat exchanger
+        return isBounding(this) ? null : heatExchanger;
     }
 
     @Override

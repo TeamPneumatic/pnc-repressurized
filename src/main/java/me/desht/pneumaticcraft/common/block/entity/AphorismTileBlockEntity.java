@@ -20,9 +20,10 @@ package me.desht.pneumaticcraft.common.block.entity;
 import me.desht.pneumaticcraft.api.lib.NBTKeys;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.block.AphorismTileBlock;
-import me.desht.pneumaticcraft.common.core.ModBlockEntities;
+import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
@@ -30,12 +31,9 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.DyeColor;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.Arrays;
@@ -59,7 +57,7 @@ public class AphorismTileBlockEntity extends AbstractPneumaticCraftBlockEntity {
     private ItemStack[] icons = new ItemStack[]{ItemStack.EMPTY};
     private BitSet rsLines = new BitSet(1);
 
-    public int textRotation;
+    private int textRotation;
     private int borderColor = DyeColor.BLUE.getId();
     private int backgroundColor = DyeColor.WHITE.getId();
     private int maxLineWidth = -1;  // cached width for rendering purposes
@@ -70,12 +68,12 @@ public class AphorismTileBlockEntity extends AbstractPneumaticCraftBlockEntity {
     public int cursorX = -1, cursorY = -1; // stored in client BE only to remember last editor cursor pos
 
     public AphorismTileBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.APHORISM_TILE.get(), pos, state);
+        super(ModBlockEntityTypes.APHORISM_TILE.get(), pos, state);
     }
 
     @Override
-    public IItemHandler getPrimaryInventory() {
-        return null;
+    public boolean hasItemCapability() {
+        return false;
     }
 
     @Override
@@ -138,6 +136,14 @@ public class AphorismTileBlockEntity extends AbstractPneumaticCraftBlockEntity {
         setTextLines(textLines, true);
     }
 
+    public int getTextRotation() {
+        return textRotation;
+    }
+
+    public void setTextRotation(int textRotation) {
+        this.textRotation = textRotation;
+    }
+
     public void setTextLines(String[] textLines, boolean notifyClient) {
         this.textLines = textLines;
         this.maxLineWidth = -1; // force recalc
@@ -156,8 +162,7 @@ public class AphorismTileBlockEntity extends AbstractPneumaticCraftBlockEntity {
         for (int i = 0; i < textLines.length; i++) {
             Matcher m = ITEM_PAT.matcher(textLines[i]);
             if (m.matches()) {
-                Item item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(m.group(1)));
-                icons[i] = new ItemStack(item);
+                icons[i] = new ItemStack(BuiltInRegistries.ITEM.get(new ResourceLocation(m.group(1))));
             } else {
                 icons[i] = ItemStack.EMPTY;
                 if (textLines[i].contains("{redstone}")) {

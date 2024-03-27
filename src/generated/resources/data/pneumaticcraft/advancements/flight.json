@@ -2,22 +2,21 @@
   "parent": "pneumaticcraft:pneumatic_armor",
   "criteria": {
     "0": {
-      "conditions": {},
+      "conditions": {
+        "id": "pneumaticcraft:flight"
+      },
       "trigger": "pneumaticcraft:flight"
     }
   },
   "display": {
-    "announce_to_chat": true,
     "background": "pneumaticcraft:textures/gui/advancement_bg.png",
     "description": {
       "translate": "pneumaticcraft.advancement.flight.desc"
     },
     "frame": "challenge",
-    "hidden": false,
     "icon": {
       "item": "pneumaticcraft:jet_boots_upgrade_1"
     },
-    "show_toast": true,
     "title": {
       "translate": "pneumaticcraft.advancement.flight"
     }

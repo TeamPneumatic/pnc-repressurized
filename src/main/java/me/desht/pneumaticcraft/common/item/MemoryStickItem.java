@@ -20,17 +20,17 @@ package me.desht.pneumaticcraft.common.item;
 import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.client.ColorHandlers;
 import me.desht.pneumaticcraft.common.XPFluidManager;
-import me.desht.pneumaticcraft.common.capabilities.FluidItemWrapper;
-import me.desht.pneumaticcraft.common.core.ModFluids;
-import me.desht.pneumaticcraft.common.core.ModItems;
+import me.desht.pneumaticcraft.common.capabilities.PNCFluidHandlerItemStack;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketLeftClickEmpty;
+import me.desht.pneumaticcraft.common.registry.ModFluids;
+import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.thirdparty.curios.Curios;
 import me.desht.pneumaticcraft.common.thirdparty.curios.CuriosUtils;
 import me.desht.pneumaticcraft.common.util.EnchantmentUtils;
+import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.ChatFormatting;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -43,24 +43,21 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-import net.minecraftforge.event.entity.player.PlayerXpEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.fml.common.Mod;
-import org.apache.commons.lang3.Validate;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerXpEvent;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 
-public class MemoryStickItem extends Item implements ColorHandlers.ITintableItem, ILeftClickableItem {
-    private static final String TANK_NAME = "Tank";
+public class MemoryStickItem extends Item implements ColorHandlers.ITintableItem, ILeftClickableItem, IFluidCapProvider {
+    public static final String TANK_NAME = "Tank";
+    public static final int XP_FLUID_CAPACITY = 512000;
     private static final String NBT_ABSORB_ORBS = "AbsorbXPOrbs";
-    private static final int XP_FLUID_CAPACITY = 512000;
     private static final int[] TINT_COLORS = new int[] {
                 0xf7ffbf,
                 0xf2ff99,
@@ -80,7 +77,7 @@ public class MemoryStickItem extends Item implements ColorHandlers.ITintableItem
         if (stack.getCount() != 1) return InteractionResultHolder.pass(stack);
 
         if (!worldIn.isClientSide) {
-            stack.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).ifPresent(handler -> {
+            IOHelper.getFluidHandlerForItem(stack).ifPresent(handler -> {
                 int ratio = XPFluidManager.getInstance().getXPRatio(ModFluids.MEMORY_ESSENCE.get());
                 int playerXp = EnchantmentUtils.getPlayerXP(playerIn);
                 if (playerIn.isShiftKeyDown()) {
@@ -112,7 +109,7 @@ public class MemoryStickItem extends Item implements ColorHandlers.ITintableItem
                 }
             });
         } else {
-            stack.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).ifPresent(handler -> {
+            IOHelper.getFluidHandlerForItem(stack).ifPresent(handler -> {
                 int amount = handler.getFluidInTank(0).getAmount();
                 if (EnchantmentUtils.getPlayerXP(playerIn) > 0 && amount < handler.getTankCapacity(0) && !playerIn.isShiftKeyDown()
                         || handler.getFluidInTank(0).getAmount() > 0 && playerIn.isShiftKeyDown()) {
@@ -129,7 +126,7 @@ public class MemoryStickItem extends Item implements ColorHandlers.ITintableItem
         super.appendHoverText(stack, worldIn, tooltip, flagIn);
 
         if (worldIn != null) {
-            stack.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).ifPresent(handler -> {
+            IOHelper.getFluidHandlerForItem(stack).ifPresent(handler -> {
                 int ratio = XPFluidManager.getInstance().getXPRatio(ModFluids.MEMORY_ESSENCE.get());
                 if (ratio > 0) {  // could be 0 if queried too early, e.g. JEI item scanning
                     FluidStack fluidStack = handler.getFluidInTank(0);
@@ -144,8 +141,8 @@ public class MemoryStickItem extends Item implements ColorHandlers.ITintableItem
     }
 
     @Override
-    public int getBarWidth(ItemStack pStack) {
-        return pStack.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).map(handler -> {
+    public int getBarWidth(ItemStack stack) {
+        return IOHelper.getFluidHandlerForItem(stack).map(handler -> {
             FluidStack fluidStack = handler.getFluidInTank(0);
             return Math.round((float)fluidStack.getAmount() / (float) handler.getTankCapacity(0) * 13F);
         }).orElse(0);
@@ -154,12 +151,6 @@ public class MemoryStickItem extends Item implements ColorHandlers.ITintableItem
     @Override
     public boolean isBarVisible(ItemStack pStack) {
         return true;
-    }
-
-    @Nullable
-    @Override
-    public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundTag nbt) {
-        return new FluidItemWrapper(stack, TANK_NAME, XP_FLUID_CAPACITY, fluid -> fluid == ModFluids.MEMORY_ESSENCE.get());
     }
 
     public static boolean shouldAbsorbXPOrbs(ItemStack stack) {
@@ -177,7 +168,7 @@ public class MemoryStickItem extends Item implements ColorHandlers.ITintableItem
     @Override
     public int getTintColor(ItemStack stack, int tintIndex) {
         return switch (tintIndex) {
-            case 1 -> stack.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).map(handler -> {
+            case 1 -> IOHelper.getFluidHandlerForItem(stack).map(handler -> {
                 FluidStack fluidStack = handler.getFluidInTank(0);
                 if (fluidStack.isEmpty()) return 0xFFFFFF;
                 float f = (float) fluidStack.getAmount() / (float) handler.getTankCapacity(0);
@@ -201,7 +192,7 @@ public class MemoryStickItem extends Item implements ColorHandlers.ITintableItem
     }
 
     public static boolean isRoomInStick(ItemStack stick) {
-        return stick.getItem() instanceof MemoryStickItem && stick.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM)
+        return stick.getItem() instanceof MemoryStickItem && IOHelper.getFluidHandlerForItem(stick)
                 .map(h -> h.getFluidInTank(0).getAmount() < h.getTankCapacity(0))
                 .orElseThrow(RuntimeException::new);
     }
@@ -211,12 +202,17 @@ public class MemoryStickItem extends Item implements ColorHandlers.ITintableItem
             boolean absorb = shouldAbsorbXPOrbs(stack);
             setAbsorbXPOrbs(stack, !absorb);
             player.displayClientMessage(Component.translatable("pneumaticcraft.message.memory_stick.absorb." + !absorb).withStyle(ChatFormatting.YELLOW), true);
-            player.getCommandSenderWorld().playSound(null, player.blockPosition(), SoundEvents.NOTE_BLOCK_CHIME.get(), SoundSource.PLAYERS, 1f, absorb ? 1.5f : 2f);
+            player.getCommandSenderWorld().playSound(null, player.blockPosition(), SoundEvents.NOTE_BLOCK_CHIME.value(), SoundSource.PLAYERS, 1f, absorb ? 1.5f : 2f);
         }
     }
 
     public static void cacheMemoryStickLocation(Player entityIn, MemoryStickLocator locator) {
         Listener.memoryStickCache.computeIfAbsent(entityIn.getUUID(), k -> new HashSet<>()).add(locator);
+    }
+
+    @Override
+    public IFluidHandlerItem provideFluidCapability(ItemStack stack) {
+        return new PNCFluidHandlerItemStack(stack, XP_FLUID_CAPACITY, fluid -> fluid == ModFluids.MEMORY_ESSENCE.get());
     }
 
     @Mod.EventBusSubscriber(modid = Names.MOD_ID)
@@ -243,7 +239,7 @@ public class MemoryStickItem extends Item implements ColorHandlers.ITintableItem
         public static void onLeftClickEmpty(PlayerInteractEvent.LeftClickEmpty event) {
             // client only event, but let's be paranoid...
             if (event.getLevel().isClientSide && event.getItemStack().getItem() instanceof MemoryStickItem) {
-                NetworkHandler.sendToServer(new PacketLeftClickEmpty());
+                NetworkHandler.sendToServer(PacketLeftClickEmpty.INSTANCE);
             }
         }
 
@@ -251,7 +247,7 @@ public class MemoryStickItem extends Item implements ColorHandlers.ITintableItem
         public static void onXpOrbPickup(PlayerXpEvent.PickupXp event) {
             ItemStack stack = findMemoryStick(event.getEntity());
             if (!stack.isEmpty()) {
-                stack.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).ifPresent(handler -> {
+                IOHelper.getFluidHandlerForItem(stack).ifPresent(handler -> {
                     if (PneumaticCraftUtils.fillTankWithOrb(handler, event.getOrb(), IFluidHandler.FluidAction.EXECUTE)) {
                         // orb's xp can fit in the memory stick: remove the entity, cancel the event
                         stack.setTag(handler.getContainer().getTag());
@@ -277,17 +273,7 @@ public class MemoryStickItem extends Item implements ColorHandlers.ITintableItem
         }
     }
 
-    public static class MemoryStickLocator {
-        final String invName; // empty string for player inv, curio inv identifier for curios inv
-        final int slot;
-
-        private MemoryStickLocator(@Nonnull String invName, int slot) {
-            Validate.notNull(invName);
-            Validate.isTrue(slot >= 0);
-            this.invName = invName;
-            this.slot = slot;
-        }
-
+    public record MemoryStickLocator(String invName, int slot) {
         public static MemoryStickLocator playerInv(int slot) {
             return new MemoryStickLocator("", slot);
         }

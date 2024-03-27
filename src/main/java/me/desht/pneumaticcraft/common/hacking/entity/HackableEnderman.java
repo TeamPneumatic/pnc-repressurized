@@ -21,8 +21,9 @@ import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.api.pneumatic_armor.hacking.AbstractPersistentEntityHack;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.monster.EnderMan;
-import net.minecraftforge.event.entity.EntityTeleportEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.event.entity.EntityTeleportEvent;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
@@ -45,7 +46,8 @@ public class HackableEnderman extends AbstractPersistentEntityHack<EnderMan> {
 
     @Mod.EventBusSubscriber(modid = Names.MOD_ID)
     public static class Listener {
-        public void onEnderTeleport(EntityTeleportEvent.EnderEntity event) {
+        @SubscribeEvent
+        public static void onEnderTeleport(EntityTeleportEvent.EnderEntity event) {
             if (event.getEntityLiving() instanceof EnderMan enderMan && hasPersistentHack(enderMan, HackableEnderman.class)) {
                 event.setCanceled(true);
             }

@@ -18,18 +18,13 @@
 package me.desht.pneumaticcraft.api.crafting.recipe;
 
 import me.desht.pneumaticcraft.api.crafting.ingredient.FluidIngredient;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraftforge.fluids.capability.IFluidHandlerItem;
+import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
 
 import java.util.concurrent.ThreadLocalRandom;
 
 public abstract class HeatFrameCoolingRecipe extends PneumaticCraftRecipe {
-    protected HeatFrameCoolingRecipe(ResourceLocation id) {
-        super(id);
-    }
-
     /**
      * Get the input ingredient. Fluid ingredients ({@link FluidIngredient}) are
      * acceptable and will be matching by an item containing that fluid, and which provides an {@link IFluidHandlerItem}

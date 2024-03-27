@@ -29,12 +29,12 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.saveddata.SavedData;
-import net.minecraftforge.event.server.ServerAboutToStartEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.LogicalSide;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.util.thread.EffectiveSide;
-import net.minecraftforge.server.ServerLifecycleHooks;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.LogicalSide;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.util.thread.EffectiveSide;
+import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;
+import net.neoforged.neoforge.server.ServerLifecycleHooks;
 
 import java.util.*;
 
@@ -58,7 +58,7 @@ public class GlobalVariableManager extends SavedData {
         if (EffectiveSide.get() == LogicalSide.CLIENT) {
             return CLIENT_INSTANCE;
         } else {
-            return getOverworld().getDataStorage().computeIfAbsent(GlobalVariableManager::load, GlobalVariableManager::new, DATA_KEY);
+            return getOverworld().getDataStorage().computeIfAbsent(new Factory<>(GlobalVariableManager::new, GlobalVariableManager::load), DATA_KEY);
         }
     }
 

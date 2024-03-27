@@ -29,10 +29,11 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
-import net.minecraftforge.common.util.FakePlayer;
-import net.minecraftforge.fluids.IFluidTank;
-import net.minecraftforge.items.IItemHandlerModifiable;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.common.util.FakePlayer;
+import net.neoforged.neoforge.energy.IEnergyStorage;
+import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
+import net.neoforged.neoforge.items.IItemHandlerModifiable;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -45,7 +46,7 @@ import java.util.UUID;
  * {@link DroneConstructingEvent}, {@link DroneSuicideEvent}), and via {@code getDrone(...)} methods in
  * {@link IDroneRegistry}.
  */
-public interface IDrone extends ICapabilityProvider {
+public interface IDrone {
     /**
      * Get a count of the installed upgrades of the given type.
      *
@@ -63,17 +64,23 @@ public interface IDrone extends ICapabilityProvider {
 
     /**
      * Get the drone's fluid tank.  Note that this is also accessible via the
-     * {@link net.minecraftforge.common.capabilities.ForgeCapabilities#FLUID_HANDLER}
-     * capability, which should be used in preference.
+     * {@link Capabilities.FluidHandler} ENTITY capability, which should be used in preference.
      *
      * @return a fluid tank
      */
-    IFluidTank getFluidTank();
+    FluidTank getFluidTank();
+
+    /**
+     * Get the drone's energy storage.  Note that this is also accessible via the
+     * {@link Capabilities.EnergyStorage} ENTITY capability, which should be used in preference.
+     *
+     * @return an energy storage
+     */
+    IEnergyStorage getEnergyStorage();
 
     /**
      * Get the drone's inventory.  Note that this is also accessible via the
-     * {@link net.minecraftforge.common.capabilities.ForgeCapabilities#ITEM_HANDLER} capability,
-     * which should be used in preference.
+     * {@link Capabilities.ItemHandler} ENTITY capability, which should be used in preference.
      *
      * @return an inventory
      */

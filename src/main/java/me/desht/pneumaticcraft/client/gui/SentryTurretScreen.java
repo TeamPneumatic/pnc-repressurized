@@ -92,7 +92,7 @@ public class SentryTurretScreen extends AbstractPneumaticCraftContainerScreen<Se
     @Override
     protected void doDelayedAction() {
         te.setText(0, entityFilter.getValue());
-        NetworkHandler.sendToServer(new PacketUpdateTextfield(te, 0));
+        NetworkHandler.sendToServer(PacketUpdateTextfield.create(te, 0));
     }
 
     @Override
@@ -127,8 +127,8 @@ public class SentryTurretScreen extends AbstractPneumaticCraftContainerScreen<Se
         super.addProblems(curInfo);
 
         boolean hasAmmo = false;
-        for (int i = 0; i < te.getPrimaryInventory().getSlots(); i++) {
-            if (!te.getPrimaryInventory().getStackInSlot(i).isEmpty()) {
+        for (int i = 0; i < te.getItemHandler().getSlots(); i++) {
+            if (!te.getItemHandler().getStackInSlot(i).isEmpty()) {
                 hasAmmo = true;
                 break;
             }

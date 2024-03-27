@@ -19,48 +19,52 @@ package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.client.pneumatic_armor.block_tracker.TrackerBlacklistManager;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
+import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.network.NetworkEvent;
+import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 
-import java.util.function.Supplier;
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 /**
  * Received on: CLIENT
  * Sent by server to give a clientside BE a copy of its NBT data
  */
-public class PacketSendNBTPacket extends LocationIntPacket {
-    private final CompoundTag tag;
+public record PacketSendNBTPacket(BlockPos pos, CompoundTag tag) implements CustomPacketPayload {
+    public static final ResourceLocation ID = RL("send_nbt_packet");
 
-    public PacketSendNBTPacket(BlockEntity te) {
-        super(te.getBlockPos());
-
-        tag = te.saveWithFullMetadata();
+    public static PacketSendNBTPacket forBlockEntity(BlockEntity te) {
+        return new PacketSendNBTPacket(te.getBlockPos(), te.saveWithFullMetadata());
     }
 
-    public PacketSendNBTPacket(FriendlyByteBuf buffer) {
-        super(buffer);
-        tag = buffer.readNbt();
+    public static PacketSendNBTPacket fromNetwork(FriendlyByteBuf buffer) {
+        return new PacketSendNBTPacket(buffer.readBlockPos(), buffer.readNbt());
     }
 
     @Override
-    public void toBytes(FriendlyByteBuf buffer) {
-        super.toBytes(buffer);
+    public void write(FriendlyByteBuf buffer) {
+        buffer.writeBlockPos(pos);
         buffer.writeNbt(tag);
     }
 
-    public void handle(Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> {
-            BlockEntity te = ClientUtils.getBlockEntity(pos);
+    @Override
+    public ResourceLocation id() {
+        return ID;
+    }
+
+    public static void handle(PacketSendNBTPacket message, PlayPayloadContext ctx) {
+        ctx.workHandler().submitAsync(() -> {
+            BlockEntity te = ClientUtils.getBlockEntity(message.pos());
             if (te != null) {
                 try {
-                    te.load(tag);
+                    te.load(message.tag());
                 } catch (Throwable e) {
                     TrackerBlacklistManager.addInventoryTEToBlacklist(te, e);
                 }
             }
         });
-        ctx.get().setPacketHandled(true);
     }
 }

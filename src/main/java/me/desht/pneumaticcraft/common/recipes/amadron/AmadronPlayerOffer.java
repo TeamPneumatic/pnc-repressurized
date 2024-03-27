@@ -18,20 +18,23 @@
 package me.desht.pneumaticcraft.common.recipes.amadron;
 
 import com.google.gson.JsonObject;
+import com.google.gson.JsonSyntaxException;
+import com.mojang.serialization.JsonOps;
 import me.desht.pneumaticcraft.api.crafting.AmadronTradeResource;
 import me.desht.pneumaticcraft.api.crafting.recipe.AmadronRecipe;
 import me.desht.pneumaticcraft.common.amadron.AmadronOfferManager;
 import me.desht.pneumaticcraft.common.amadron.AmadronUtil;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
-import me.desht.pneumaticcraft.common.core.ModRecipeSerializers;
 import me.desht.pneumaticcraft.common.drone.DroneRegistry;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketAmadronTradeNotifyDeal;
 import me.desht.pneumaticcraft.common.network.PacketUtil;
+import me.desht.pneumaticcraft.common.registry.ModRecipeSerializers;
 import me.desht.pneumaticcraft.common.util.GlobalPosHelper;
 import me.desht.pneumaticcraft.common.util.IOHelper;
-import me.desht.pneumaticcraft.common.util.PlayerFilter;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.common.util.playerfilter.PlayerFilter;
+import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.core.GlobalPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
@@ -57,7 +60,7 @@ public class AmadronPlayerOffer extends AmadronOffer {
     private BlockEntity cachedInput, cachedOutput;
 
     private AmadronPlayerOffer(ResourceLocation id, AmadronTradeResource input, AmadronTradeResource output, String playerName, UUID playerId, PlayerFilter whitelist, PlayerFilter blacklist) {
-        super(id, input, output, true, 0, -1, 0, whitelist, blacklist);
+        super(id, input, output, true, false, 0, -1, -1, whitelist, blacklist);
         offeringPlayerName = playerName;
         offeringPlayerId = playerId;
         inStock = 0;
@@ -92,7 +95,7 @@ public class AmadronPlayerOffer extends AmadronOffer {
      * @return a new Amadron offer with the input and output swapped
      */
     public AmadronPlayerOffer getReversedOffer() {
-        ResourceLocation reversedId = getReversedId(getId());
+        ResourceLocation reversedId = getReversedId(getOfferId());
         AmadronPlayerOffer reversed = new AmadronPlayerOffer(reversedId, getOutput(), getInput(), offeringPlayerName, offeringPlayerId, whitelist, blacklist);
         reversed.providingPos = providingPos;
         reversed.returningPos = returningPos;
@@ -144,8 +147,8 @@ public class AmadronPlayerOffer extends AmadronOffer {
         if (pendingPayments > 0) {
             final int pay0 = Math.min(pendingPayments, 50);
             int paying = getInput().apply(
-                    itemStack -> getInput().findSpaceInItemOutput(IOHelper.getInventoryForTE(returning), pay0),
-                    fluidStack -> getInput().findSpaceInFluidOutput(IOHelper.getFluidHandlerForTE(returning), pay0)
+                    itemStack -> IOHelper.getInventoryForBlock(returning).map(h -> getInput().findSpaceInItemOutput(h, pay0)).orElse(0),
+                    fluidStack -> IOHelper.getFluidHandlerForBlock(returning).map(h -> getInput().findSpaceInFluidOutput(h, pay0)).orElse(0)
             );
             if (paying > 0) {
                 pendingPayments -= paying;
@@ -213,11 +216,11 @@ public class AmadronPlayerOffer extends AmadronOffer {
         buf.writeVarInt(pendingPayments);
     }
 
-    public static AmadronPlayerOffer playerOfferFromBuf(ResourceLocation id, FriendlyByteBuf buf) {
-        AmadronRecipe recipe = ModRecipeSerializers.AMADRON_OFFERS.get().fromNetwork(id, buf);
+    public static AmadronPlayerOffer playerOfferFromBuf(FriendlyByteBuf buf) {
+        AmadronRecipe recipe = ModRecipeSerializers.AMADRON_OFFERS.get().fromNetwork(buf);
 
         if (recipe instanceof AmadronOffer offer) {
-            AmadronPlayerOffer playerOffer = new AmadronPlayerOffer(offer.getId(),
+            AmadronPlayerOffer playerOffer = new AmadronPlayerOffer(offer.getOfferId(),
                     offer.getInput(), offer.getOutput(), buf.readUtf(100), buf.readUUID(),
                     offer.whitelist, offer.blacklist);
             if (buf.readBoolean()) {
@@ -233,9 +236,12 @@ public class AmadronPlayerOffer extends AmadronOffer {
         return null;  // shouldn't happen
     }
 
-    @Override
-    public JsonObject toJson(JsonObject json) {
-        super.toJson(json);
+    public JsonObject toJson() {
+        JsonObject json = ModRecipeSerializers.AMADRON_OFFERS.get().codec().encodeStart(JsonOps.INSTANCE, this)
+                .getOrThrow(false, s -> Log.error("can't create json: " + s))
+                .getAsJsonObject();
+
+//        super.toJson(json);
         json.addProperty("offeringPlayerName", offeringPlayerName);
         json.addProperty("offeringPlayerId", offeringPlayerId.toString());
         json.addProperty("inStock", inStock);
@@ -251,23 +257,28 @@ public class AmadronPlayerOffer extends AmadronOffer {
 
     public static AmadronPlayerOffer fromJson(JsonObject json) {
         ResourceLocation id = new ResourceLocation(GsonHelper.getAsString(json, "id"));
-        AmadronRecipe recipe = ModRecipeSerializers.AMADRON_OFFERS.get().fromJson(id, json);
-        if (recipe instanceof AmadronOffer offer) {
-            AmadronPlayerOffer playerOffer = new AmadronPlayerOffer(offer.getId(), offer.getInput(), offer.getOutput(),
-                    json.get("offeringPlayerName").getAsString(), UUID.fromString(json.get("offeringPlayerId").getAsString()),
-                    offer.whitelist, offer.blacklist);
 
-            playerOffer.inStock = json.get("inStock").getAsInt();
-            playerOffer.pendingPayments = json.get("pendingPayments").getAsInt();
-            if (json.has("providingPos")) {
-                playerOffer.providingPos = GlobalPosHelper.fromJson(json.get("providingPos").getAsJsonObject());
-            }
-            if (json.has("returningPos")) {
-                playerOffer.returningPos = GlobalPosHelper.fromJson(json.get("returningPos").getAsJsonObject());
-            }
-            return playerOffer;
+        AmadronOffer offer = ModRecipeSerializers.AMADRON_OFFERS.get().codec().parse(JsonOps.INSTANCE, json)
+                .result()
+                .orElseThrow(() -> new JsonSyntaxException("invalid json syntax"));
+
+//        AmadronRecipe recipe = ModRecipeSerializers.AMADRON_OFFERS.get().fromJson(id, json);
+//        if (recipe instanceof AmadronOffer offer) {
+        AmadronPlayerOffer playerOffer = new AmadronPlayerOffer(offer.getOfferId(), offer.getInput(), offer.getOutput(),
+                json.get("offeringPlayerName").getAsString(), UUID.fromString(json.get("offeringPlayerId").getAsString()),
+                offer.whitelist, offer.blacklist);
+
+        playerOffer.inStock = json.get("inStock").getAsInt();
+        playerOffer.pendingPayments = json.get("pendingPayments").getAsInt();
+        if (json.has("providingPos")) {
+            playerOffer.providingPos = GlobalPosHelper.fromJson(json.get("providingPos").getAsJsonObject());
         }
-        return null;
+        if (json.has("returningPos")) {
+            playerOffer.returningPos = GlobalPosHelper.fromJson(json.get("returningPos").getAsJsonObject());
+        }
+        return playerOffer;
+//        }
+//        return null;
     }
 
     @Override

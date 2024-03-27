@@ -20,52 +20,47 @@ package me.desht.pneumaticcraft.common.network;
 import me.desht.pneumaticcraft.common.block.AphorismTileBlock;
 import me.desht.pneumaticcraft.common.block.entity.AphorismTileBlockEntity;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.network.NetworkEvent;
+import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 
 import java.util.Arrays;
-import java.util.Objects;
-import java.util.function.Supplier;
+
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 /**
  * Received on: SERVER
  * Sent by the client after editing an Aphorism Tile
  */
-public class PacketAphorismTileUpdate extends LocationIntPacket {
-
+public record PacketAphorismTileUpdate(BlockPos pos, String[] text, int textRotation, byte margin, boolean invis) implements CustomPacketPayload {
+    public static final ResourceLocation ID = RL("aphorism_tile_update");
     private static final int MAX_LENGTH = 1024;
-    private final String[] text;
-    private final int textRotation;
-    private final byte margin;
-    private final boolean invis;
 
-    public PacketAphorismTileUpdate(FriendlyByteBuf buffer) {
-        super(buffer);
-
-        textRotation = buffer.readByte();
+    public static PacketAphorismTileUpdate fromNetwork(FriendlyByteBuf buffer) {
+        BlockPos pos = buffer.readBlockPos();
+        int textRotation = buffer.readByte();
         int lines = buffer.readVarInt();
-        text = new String[lines];
+        String[] text = new String[lines];
         for (int i = 0; i < lines; i++) {
             text[i] = buffer.readUtf(MAX_LENGTH);
         }
-        margin = buffer.readByte();
-        invis = buffer.readBoolean();
+        byte margin = buffer.readByte();
+        boolean invis = buffer.readBoolean();
+
+        return new PacketAphorismTileUpdate(pos, text, textRotation, margin, invis);
     }
 
-    public PacketAphorismTileUpdate(AphorismTileBlockEntity tile) {
-        super(tile.getBlockPos());
-
-        text = tile.getTextLines();
-        textRotation = tile.textRotation;
-        margin = tile.getMarginSize();
-        invis = tile.getBlockState().getValue(AphorismTileBlock.INVISIBLE);
+    public static PacketAphorismTileUpdate forBlockEntity(AphorismTileBlockEntity blockEntity) {
+        return new PacketAphorismTileUpdate(blockEntity.getBlockPos(), blockEntity.getTextLines(), blockEntity.getTextRotation(),
+                blockEntity.getMarginSize(), blockEntity.getBlockState().getValue(AphorismTileBlock.INVISIBLE));
     }
 
     @Override
-    public void toBytes(FriendlyByteBuf buffer) {
-        super.toBytes(buffer);
-
+    public void write(FriendlyByteBuf buffer) {
+        buffer.writeBlockPos(pos);
         buffer.writeByte(textRotation);
         buffer.writeVarInt(text.length);
         Arrays.stream(text).forEach(s -> buffer.writeUtf(s, MAX_LENGTH));
@@ -73,19 +68,22 @@ public class PacketAphorismTileUpdate extends LocationIntPacket {
         buffer.writeBoolean(invis);
     }
 
-    public void handle(Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> {
-            Player player = Objects.requireNonNull(ctx.get().getSender());
-            if (PneumaticCraftUtils.canPlayerReach(player, pos)) {
-                PneumaticCraftUtils.getTileEntityAt(player.level(), pos, AphorismTileBlockEntity.class).ifPresent(te -> {
-                    te.setTextLines(text, false);
-                    te.textRotation = textRotation;
-                    te.setMarginSize(margin);
-                    te.setInvisible(invis);
+    @Override
+    public ResourceLocation id() {
+        return ID;
+    }
+
+    public static void handle(PacketAphorismTileUpdate message, PlayPayloadContext ctx) {
+        ctx.workHandler().submitAsync(() -> {
+            Player player = ctx.player().orElseThrow();
+            if (PneumaticCraftUtils.canPlayerReach(player, message.pos())) {
+                PneumaticCraftUtils.getTileEntityAt(player.level(), message.pos(), AphorismTileBlockEntity.class).ifPresent(te -> {
+                    te.setTextLines(message.text(), false);
+                    te.setTextRotation(message.textRotation());
+                    te.setMarginSize(message.margin());
+                    te.setInvisible(message.invis());
                 });
             }
         });
-        ctx.get().setPacketHandled(true);
     }
-
 }

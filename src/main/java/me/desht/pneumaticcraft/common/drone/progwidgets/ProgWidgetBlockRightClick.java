@@ -18,9 +18,9 @@
 package me.desht.pneumaticcraft.common.drone.progwidgets;
 
 import me.desht.pneumaticcraft.client.util.ClientUtils;
-import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.common.drone.IDroneBase;
 import me.desht.pneumaticcraft.common.drone.ai.DroneAIRightClickBlock;
+import me.desht.pneumaticcraft.common.registry.ModProgWidgets;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;

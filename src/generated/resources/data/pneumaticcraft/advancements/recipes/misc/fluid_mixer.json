@@ -22,14 +22,13 @@
   },
   "requirements": [
     [
-      "has_small_tank",
-      "has_the_recipe"
+      "has_the_recipe",
+      "has_small_tank"
     ]
   ],
   "rewards": {
     "recipes": [
       "pneumaticcraft:fluid_mixer"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }

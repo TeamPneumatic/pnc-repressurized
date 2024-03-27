@@ -22,11 +22,11 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetList;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.block.entity.TagWorkbenchBlockEntity;
-import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.inventory.TagWorkbenchMenu;
 import me.desht.pneumaticcraft.common.item.TagFilterItem;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketGuiButton;
+import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
@@ -36,7 +36,6 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.List;
 import java.util.Set;
@@ -120,8 +119,7 @@ public class TagWorkbenchScreen extends AbstractPneumaticCraftContainerScreen<Ta
         ItemStack stack = menu.getSlot(0).getItem();
         if (stack.getItem() != lastItem) {
             availableList.clear();
-            ForgeRegistries.ITEMS.getHolder(stack.getItem()).orElseThrow().tags()
-                    .forEach(tagKey -> availableList.add(tagKey.location()));
+            stack.getItem().builtInRegistryHolder().tags().forEach(tagKey -> availableList.add(tagKey.location()));
             availableList.unselectAll();
             lastItem = stack.getItem();
         }

@@ -17,45 +17,48 @@
 
 package me.desht.pneumaticcraft.common.network;
 
-import me.desht.pneumaticcraft.client.util.ClientUtils;
-import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.item.minigun.MinigunItem;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
+import me.desht.pneumaticcraft.common.registry.ModSounds;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.world.entity.player.Player;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.network.NetworkEvent;
+import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 
-import java.util.function.Supplier;
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 /**
  * Received on: CLIENT
  * Sent by server when player switches away from a held minigun which is active (i.e. spinning)
  */
-public class PacketMinigunStop {
-    private final ItemStack stack;
+public record PacketMinigunStop(ItemStack stack) implements CustomPacketPayload {
+    public static final ResourceLocation ID = RL("packetminigunstop");
 
-    public PacketMinigunStop(ItemStack stack) {
-        this.stack = stack;
+    public static PacketMinigunStop fromNetwork(FriendlyByteBuf buf) {
+        return new PacketMinigunStop(buf.readItem());
     }
 
-    public PacketMinigunStop(FriendlyByteBuf buf) {
-        this.stack = buf.readItem();
-    }
-
-    public void toBytes(FriendlyByteBuf buf) {
+    @Override
+    public void write(FriendlyByteBuf buf) {
         buf.writeItem(stack);
     }
 
-    public void handle(Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> {
-            Player player = ClientUtils.getClientPlayer();
-            Minigun minigun = ((MinigunItem) stack.getItem()).getMinigun(stack, player);
-            minigun.setMinigunSpeed(0);
-            minigun.setMinigunActivated(false);
-            minigun.setMinigunTriggerTimeOut(0);
-            player.playSound(ModSounds.MINIGUN_STOP.get(), 1f, 1f);
-        });
-        ctx.get().setPacketHandled(true);
+    @Override
+    public ResourceLocation id() {
+        return ID;
+    }
+
+    public static void handle(PacketMinigunStop message, PlayPayloadContext ctx) {
+        ctx.player().ifPresent(player -> ctx.workHandler().submitAsync(() -> {
+            ItemStack stack = message.stack();
+            if (stack.getItem() instanceof MinigunItem mgItem) {
+                Minigun minigun = mgItem.getMinigun(stack, player);
+                minigun.setMinigunSpeed(0);
+                minigun.setMinigunActivated(false);
+                minigun.setMinigunTriggerTimeOut(0);
+                player.playSound(ModSounds.MINIGUN_STOP.get(), 1f, 1f);
+            }
+        }));
     }
 }

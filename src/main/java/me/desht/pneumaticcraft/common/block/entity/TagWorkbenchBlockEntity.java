@@ -17,10 +17,10 @@
 
 package me.desht.pneumaticcraft.common.block.entity;
 
-import me.desht.pneumaticcraft.common.core.ModBlockEntities;
-import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.inventory.TagWorkbenchMenu;
 import me.desht.pneumaticcraft.common.item.TagFilterItem;
+import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
+import me.desht.pneumaticcraft.common.registry.ModItems;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.Registries;
@@ -36,8 +36,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.IItemHandler;
+import net.neoforged.neoforge.items.IItemHandler;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -48,24 +47,17 @@ public class TagWorkbenchBlockEntity extends DisplayTableBlockEntity implements 
     public static final int OUTPUT_SLOT = 2;
 
     private final TagMatcherItemHandler inventory = new TagMatcherItemHandler();
-    private final LazyOptional<IItemHandler> invCap = LazyOptional.of(() -> inventory);
 
     public int paperItemId;
     public int outputItemId;
 
     public TagWorkbenchBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.TAG_WORKBENCH.get(), pos, state);
+        super(ModBlockEntityTypes.TAG_WORKBENCH.get(), pos, state);
     }
 
     @Override
-    public IItemHandler getPrimaryInventory() {
+    public IItemHandler getItemHandler(@Nullable Direction dir) {
         return inventory;
-    }
-
-    @Nonnull
-    @Override
-    protected LazyOptional<IItemHandler> getInventoryCap(Direction side) {
-        return invCap;
     }
 
     @Override

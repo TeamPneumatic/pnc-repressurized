@@ -19,7 +19,7 @@ package me.desht.pneumaticcraft.client.sound;
 
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
-import me.desht.pneumaticcraft.common.core.ModSounds;
+import me.desht.pneumaticcraft.common.registry.ModSounds;
 import net.minecraft.client.resources.sounds.AbstractTickableSoundInstance;
 import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.core.Direction;
@@ -47,7 +47,7 @@ public class MovingSoundAirLeak extends AbstractTickableSoundInstance {
 
     @Override
     public void tick() {
-        te.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, dir).ifPresent(handler -> {
+        PNCCapabilities.getAirHandler(te, dir).ifPresent(handler -> {
             targetPitch = Mth.clamp(1.0f + ((handler.getPressure() - 3) / 20), 0.8f, 1.6f);
             if (pitch > targetPitch) pitch -= 0.005F;
             else if (pitch < targetPitch) pitch += 0.005F;
@@ -56,7 +56,7 @@ public class MovingSoundAirLeak extends AbstractTickableSoundInstance {
 
     @Override
     public boolean isStopped() {
-        return te.isRemoved() || te.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, dir)
+        return te.isRemoved() || PNCCapabilities.getAirHandler(te, dir)
                 .map(h -> h.getSideLeaking() == null || h.getAir() == 0)
                 .orElse(true);
     }

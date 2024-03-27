@@ -23,8 +23,6 @@ import me.desht.pneumaticcraft.client.gui.ProgrammerScreen;
 import me.desht.pneumaticcraft.client.gui.widget.*;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
-import me.desht.pneumaticcraft.common.core.ModItems;
-import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.drone.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetArea;
 import me.desht.pneumaticcraft.common.drone.progwidgets.area.AreaType;
@@ -32,6 +30,8 @@ import me.desht.pneumaticcraft.common.drone.progwidgets.area.AreaType.AreaTypeWi
 import me.desht.pneumaticcraft.common.drone.progwidgets.area.AreaType.AreaTypeWidgetEnum;
 import me.desht.pneumaticcraft.common.drone.progwidgets.area.AreaType.AreaTypeWidgetInteger;
 import me.desht.pneumaticcraft.common.item.GPSToolItem;
+import me.desht.pneumaticcraft.common.registry.ModItems;
+import me.desht.pneumaticcraft.common.registry.ModMenuTypes;
 import me.desht.pneumaticcraft.common.util.ITranslatableEnum;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;

@@ -19,8 +19,8 @@ package me.desht.pneumaticcraft.common.recipes.assembly;
 
 import me.desht.pneumaticcraft.api.crafting.recipe.AssemblyRecipe;
 import me.desht.pneumaticcraft.common.block.entity.AssemblyControllerBlockEntity;
-import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.item.AssemblyProgramItem;
+import me.desht.pneumaticcraft.common.registry.ModBlocks;
 import me.desht.pneumaticcraft.common.util.ITranslatableEnum;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
@@ -28,7 +28,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.registries.DeferredBlock;
 
 import java.util.Collection;
 import java.util.List;
@@ -47,9 +47,9 @@ public abstract class AssemblyProgram {
         IO_UNIT_IMPORT(ModBlocks.ASSEMBLY_IO_UNIT_IMPORT),
         CONTROLLER(ModBlocks.ASSEMBLY_CONTROLLER);
 
-        private final RegistryObject<? extends Block> blockSupplier;
+        private final DeferredBlock<? extends Block> blockSupplier;
 
-        EnumMachine(RegistryObject<? extends Block> blockSupplier) {
+        EnumMachine(DeferredBlock<? extends Block> blockSupplier) {
             this.blockSupplier = blockSupplier;
         }
 

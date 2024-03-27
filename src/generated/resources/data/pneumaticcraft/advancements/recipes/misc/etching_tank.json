@@ -22,14 +22,13 @@
   },
   "requirements": [
     [
-      "has_etching_acid_bucket",
-      "has_the_recipe"
+      "has_the_recipe",
+      "has_etching_acid_bucket"
     ]
   ],
   "rewards": {
     "recipes": [
       "pneumaticcraft:etching_tank"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }

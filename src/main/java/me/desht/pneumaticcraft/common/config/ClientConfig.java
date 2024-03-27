@@ -20,58 +20,58 @@ package me.desht.pneumaticcraft.common.config;
 import me.desht.pneumaticcraft.client.pneumatic_armor.ComponentInit;
 import me.desht.pneumaticcraft.common.drone.progwidgets.IProgWidget.WidgetDifficulty;
 import me.desht.pneumaticcraft.common.util.ITranslatableEnum;
-import net.minecraftforge.common.ForgeConfigSpec;
+import net.neoforged.neoforge.common.ModConfigSpec;
 
 import java.util.Locale;
 
 public class ClientConfig {
     public static class General {
-        public ForgeConfigSpec.BooleanValue aphorismDrama;
-        public ForgeConfigSpec.EnumValue<WidgetDifficulty> programmerDifficulty;
-        public ForgeConfigSpec.BooleanValue topShowsFluids;
-        public ForgeConfigSpec.BooleanValue logisticsGuiTint;
-        public ForgeConfigSpec.BooleanValue semiBlockLighting;
-        public ForgeConfigSpec.BooleanValue guiBevel;
-        public ForgeConfigSpec.BooleanValue alwaysShowPressureDurabilityBar;
-        public ForgeConfigSpec.BooleanValue tubeModuleRedstoneParticles;
-        public ForgeConfigSpec.BooleanValue guiRemoteGridSnap;
-        public ForgeConfigSpec.BooleanValue programmerGuiPauses;
-        public ForgeConfigSpec.BooleanValue notifyAmadronOfferUpdates;
-        public ForgeConfigSpec.BooleanValue pressureChamberParticles;
-        public ForgeConfigSpec.BooleanValue jackHammerHud;
+        public ModConfigSpec.BooleanValue aphorismDrama;
+        public ModConfigSpec.EnumValue<WidgetDifficulty> programmerDifficulty;
+        public ModConfigSpec.BooleanValue topShowsFluids;
+        public ModConfigSpec.BooleanValue logisticsGuiTint;
+        public ModConfigSpec.BooleanValue semiBlockLighting;
+        public ModConfigSpec.BooleanValue guiBevel;
+        public ModConfigSpec.BooleanValue alwaysShowPressureDurabilityBar;
+        public ModConfigSpec.BooleanValue tubeModuleRedstoneParticles;
+        public ModConfigSpec.BooleanValue guiRemoteGridSnap;
+        public ModConfigSpec.BooleanValue programmerGuiPauses;
+        public ModConfigSpec.BooleanValue notifyAmadronOfferUpdates;
+        public ModConfigSpec.BooleanValue pressureChamberParticles;
+        public ModConfigSpec.BooleanValue jackHammerHud;
     }
 
     public static class Armor {
-        public ForgeConfigSpec.IntValue blockTrackerMaxTimePerTick;
-        public ForgeConfigSpec.DoubleValue leggingsFOVFactor;
-        public ForgeConfigSpec.BooleanValue fancyArmorModels;
-        public ForgeConfigSpec.BooleanValue pathEnabled;
-        public ForgeConfigSpec.BooleanValue wirePath;
-        public ForgeConfigSpec.BooleanValue xRayEnabled;
-        public ForgeConfigSpec.EnumValue<PathUpdateSetting> pathUpdateSetting;
-        public ForgeConfigSpec.BooleanValue showPressureNumerically;
-        public ForgeConfigSpec.BooleanValue showEnchantGlint;
-        public ForgeConfigSpec.IntValue maxJetBootsFlightRoll;
-        public ForgeConfigSpec.EnumValue<ComponentInit> componentInitMessages;
+        public ModConfigSpec.IntValue blockTrackerMaxTimePerTick;
+        public ModConfigSpec.DoubleValue leggingsFOVFactor;
+        public ModConfigSpec.BooleanValue fancyArmorModels;
+        public ModConfigSpec.BooleanValue pathEnabled;
+        public ModConfigSpec.BooleanValue wirePath;
+        public ModConfigSpec.BooleanValue xRayEnabled;
+        public ModConfigSpec.EnumValue<PathUpdateSetting> pathUpdateSetting;
+        public ModConfigSpec.BooleanValue showPressureNumerically;
+        public ModConfigSpec.BooleanValue showEnchantGlint;
+        public ModConfigSpec.IntValue maxJetBootsFlightRoll;
+        public ModConfigSpec.EnumValue<ComponentInit> componentInitMessages;
     }
 
     public static class Sound {
-        public ForgeConfigSpec.DoubleValue elevatorVolumeRunning;
-        public ForgeConfigSpec.DoubleValue elevatorVolumeStartStop;
-        public ForgeConfigSpec.DoubleValue airLeakVolume;
-        public ForgeConfigSpec.DoubleValue minigunVolumeHeld;
-        public ForgeConfigSpec.DoubleValue minigunVolumeDrone;
-        public ForgeConfigSpec.DoubleValue minigunVolumeSentryTurret;
-        public ForgeConfigSpec.DoubleValue jetbootsVolume;
-        public ForgeConfigSpec.DoubleValue jetbootsVolumeBuilderMode;
-        public ForgeConfigSpec.DoubleValue jackhammerVolume;
+        public ModConfigSpec.DoubleValue elevatorVolumeRunning;
+        public ModConfigSpec.DoubleValue elevatorVolumeStartStop;
+        public ModConfigSpec.DoubleValue airLeakVolume;
+        public ModConfigSpec.DoubleValue minigunVolumeHeld;
+        public ModConfigSpec.DoubleValue minigunVolumeDrone;
+        public ModConfigSpec.DoubleValue minigunVolumeSentryTurret;
+        public ModConfigSpec.DoubleValue jetbootsVolume;
+        public ModConfigSpec.DoubleValue jetbootsVolumeBuilderMode;
+        public ModConfigSpec.DoubleValue jackhammerVolume;
     }
 
     public final ClientConfig.General general = new General();
     public final ClientConfig.Armor armor = new Armor();
     public final ClientConfig.Sound sound = new Sound();
 
-    ClientConfig(ForgeConfigSpec.Builder builder) {
+    ClientConfig(ModConfigSpec.Builder builder) {
         builder.push("general");
         general.aphorismDrama = builder
                 .comment("Enable Aphorism Tile Drama!  http://mc-drama.herokuapp.com/")

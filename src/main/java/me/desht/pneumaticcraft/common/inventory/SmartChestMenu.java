@@ -18,11 +18,11 @@
 package me.desht.pneumaticcraft.common.inventory;
 
 import me.desht.pneumaticcraft.common.block.entity.SmartChestBlockEntity;
-import me.desht.pneumaticcraft.common.core.ModMenuTypes;
+import me.desht.pneumaticcraft.common.registry.ModMenuTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
-import net.minecraftforge.items.SlotItemHandler;
+import net.neoforged.neoforge.items.SlotItemHandler;
 
 public class SmartChestMenu extends AbstractPneumaticCraftMenu<SmartChestBlockEntity> {
     public static final int N_COLS = 12;
@@ -31,7 +31,7 @@ public class SmartChestMenu extends AbstractPneumaticCraftMenu<SmartChestBlockEn
         super(ModMenuTypes.SMART_CHEST.get(), windowId, inv, pos);
 
         for (int i = 0; i < SmartChestBlockEntity.CHEST_SIZE; i++) {
-            addSlot(new SlotItemHandler(te.getPrimaryInventory(), i, 8 + (i % N_COLS) * 18, 18 + (i / N_COLS) * 18));
+            addSlot(new SlotItemHandler(blockEntity.getItemHandler(), i, 8 + (i % N_COLS) * 18, 18 + (i / N_COLS) * 18));
         }
 
         addUpgradeSlots(187, 148);

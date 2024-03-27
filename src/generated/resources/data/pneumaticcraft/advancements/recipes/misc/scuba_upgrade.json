@@ -22,14 +22,13 @@
   },
   "requirements": [
     [
-      "has_pneumatic_helmet",
-      "has_the_recipe"
+      "has_the_recipe",
+      "has_pneumatic_helmet"
     ]
   ],
   "rewards": {
     "recipes": [
       "pneumaticcraft:scuba_upgrade"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }

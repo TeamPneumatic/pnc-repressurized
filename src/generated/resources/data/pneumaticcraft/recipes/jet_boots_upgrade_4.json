@@ -9,10 +9,10 @@
       "item": "minecraft:nether_star"
     },
     "P": {
-      "type": "forge:nbt",
-      "count": 1,
+      "type": "neoforge:nbt",
       "item": "minecraft:potion",
-      "nbt": "{Potion:\"minecraft:long_slow_falling\"}"
+      "strict": true,
+      "tag": "{Potion:\"minecraft:long_slow_falling\"}"
     },
     "U": {
       "item": "pneumaticcraft:jet_boots_upgrade_3"
@@ -28,6 +28,5 @@
   ],
   "result": {
     "item": "pneumaticcraft:jet_boots_upgrade_4"
-  },
-  "show_notification": true
+  }
 }

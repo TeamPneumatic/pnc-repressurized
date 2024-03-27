@@ -20,12 +20,12 @@ package me.desht.pneumaticcraft.common.item;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.misc.Symbols;
 import me.desht.pneumaticcraft.api.tileentity.IManoMeasurable;
-import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.heat.HeatExchangerLogicAmbient;
 import me.desht.pneumaticcraft.common.heat.HeatExchangerManager;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.common.heat.TemperatureData;
 import me.desht.pneumaticcraft.common.heat.behaviour.HeatBehaviourTransition;
+import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.ChatFormatting;
@@ -45,7 +45,7 @@ import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
-import net.minecraftforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidStack;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -66,7 +66,7 @@ public class ManometerItem extends PressurizableItem {
 
         if (world.isClientSide) return InteractionResult.SUCCESS;
 
-        return stack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).map(h -> {
+        return PNCCapabilities.getAirHandler(stack).map(h -> {
             if (h.getAir() < PneumaticValues.USAGE_ITEM_MANOMETER) {
                 player.displayClientMessage(xlate("pneumaticcraft.message.misc.outOfAir", stack.getHoverName()).withStyle(ChatFormatting.RED), true);
                 return InteractionResult.FAIL;
@@ -88,13 +88,10 @@ public class ManometerItem extends PressurizableItem {
                     curInfo.add(xlate(te.getBlockState().getBlock().getDescriptionId()).withStyle(ChatFormatting.AQUA));
                 }
 
-                if (te.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY).isPresent()) {
-                    te.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY)
-                            .ifPresent(teAirHandler -> teAirHandler.printManometerMessage(player, curInfo));
-                } else {
-                    te.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, side)
-                            .ifPresent(teAirHandler -> teAirHandler.printManometerMessage(player, curInfo));
-                }
+                PNCCapabilities.getAirHandler(te).ifPresentOrElse(
+                        handler -> handler.printManometerMessage(player, curInfo),
+                        () -> PNCCapabilities.getAirHandler(te, side)
+                                .ifPresent(handler -> handler.printManometerMessage(player, curInfo)));
 
                 if (te instanceof IManoMeasurable) {
                     ((IManoMeasurable) te).printManometerMessage(player, curInfo);
@@ -145,18 +142,16 @@ public class ManometerItem extends PressurizableItem {
         for (Direction d : DirectionUtil.VALUES) {
             BlockEntity te1 = world.getBlockEntity(pos.relative(d));
             if (te1 != null) {
-                te1.getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY, d.getOpposite())
-                        .ifPresent(handler -> handler.getHeatBehaviour(pos, HeatBehaviourTransition.class)
-                                .ifPresent(behaviour -> {
-                                            double progress = behaviour.getExtractionProgress();
-                                            if (progress != 0) {
-                                                String key = "pneumaticcraft.waila.temperature" + (progress < 0 ? "Gain" : "Loss");
-                                                int pct = progress < 0 ? (int) (progress * -100) : (int) (progress * 100);
-                                                curInfo.add(Component.translatable(key, pct));
-                                            }
-                                        }
-                                )
-                        );
+                PNCCapabilities.getHeatLogic(te1, d.getOpposite())
+                        .flatMap(handler -> handler.getHeatBehaviour(pos, HeatBehaviourTransition.class))
+                        .ifPresent(behaviour -> {
+                            double progress = behaviour.getExtractionProgress();
+                            if (progress != 0) {
+                                String key = "pneumaticcraft.waila.temperature" + (progress < 0 ? "Gain" : "Loss");
+                                int pct = progress < 0 ? (int) (progress * -100) : (int) (progress * 100);
+                                curInfo.add(Component.translatable(key, pct));
+                            }
+                        });
             }
         }
     }
@@ -165,7 +160,7 @@ public class ManometerItem extends PressurizableItem {
     public InteractionResultHolder<ItemStack> use(Level worldIn, Player playerIn, InteractionHand handIn) {
         ItemStack stack = playerIn.getItemInHand(handIn);
         if (worldIn.isClientSide) return InteractionResultHolder.success(stack);
-        return stack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).map(h -> {
+        return PNCCapabilities.getAirHandler(stack).map(h -> {
             if (h.getPressure() >= 0.1f) {
                 double temp = HeatExchangerLogicAmbient.getAmbientTemperature(worldIn, playerIn.blockPosition());
                 playerIn.displayClientMessage(ItemStack.EMPTY.getHoverName().copy().withStyle(ChatFormatting.AQUA), false);
@@ -179,7 +174,7 @@ public class ManometerItem extends PressurizableItem {
     @Override
     public InteractionResult interactLivingEntity(ItemStack iStack, Player player, LivingEntity entity, InteractionHand hand) {
         if (!player.level().isClientSide) {
-            return iStack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).map(h -> {
+            return PNCCapabilities.getAirHandler(iStack).map(h -> {
                 if (h.getAir() < PneumaticValues.USAGE_ITEM_MANOMETER) {
                     player.displayClientMessage(xlate("pneumaticcraft.message.misc.outOfAir", iStack.getHoverName()).withStyle(ChatFormatting.RED), true);
                     return InteractionResult.FAIL;
@@ -190,7 +185,7 @@ public class ManometerItem extends PressurizableItem {
                 } else {
                     curInfo.add(entity.getDisplayName().copy().withStyle(ChatFormatting.AQUA));
                 }
-                if (curInfo.size() > 0) {
+                if (!curInfo.isEmpty()) {
                     h.addAir(-PneumaticValues.USAGE_ITEM_MANOMETER);
                     for (int i = 1; i < curInfo.size(); i++) {
                         curInfo.set(i, Symbols.bullet().append(curInfo.get(i)));

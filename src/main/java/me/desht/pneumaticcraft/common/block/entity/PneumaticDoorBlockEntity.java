@@ -18,9 +18,9 @@
 package me.desht.pneumaticcraft.common.block.entity;
 
 import me.desht.pneumaticcraft.common.block.PneumaticDoorBlock;
-import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.LazySynced;
+import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -29,7 +29,8 @@ import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.block.DoorBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
-import net.minecraftforge.items.IItemHandler;
+import net.neoforged.neoforge.items.IItemHandler;
+import org.jetbrains.annotations.Nullable;
 
 public class PneumaticDoorBlockEntity extends AbstractTickingBlockEntity {
     @DescSynced
@@ -42,7 +43,12 @@ public class PneumaticDoorBlockEntity extends AbstractTickingBlockEntity {
     public int color = DyeColor.WHITE.getId();
 
     public PneumaticDoorBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.PNEUMATIC_DOOR.get(), pos, state);
+        super(ModBlockEntityTypes.PNEUMATIC_DOOR.get(), pos, state);
+    }
+
+    @Override
+    public boolean hasItemCapability() {
+        return false;
     }
 
     public void setRotationAngle(float rotationAngle) {
@@ -71,7 +77,7 @@ public class PneumaticDoorBlockEntity extends AbstractTickingBlockEntity {
     public boolean setColor(DyeColor dyeColor) {
         if (color != dyeColor.getId() && !getBlockState().getValue(PneumaticDoorBlock.TOP_DOOR)) {
             color = (byte) dyeColor.getId();
-            nonNullLevel().getBlockEntity(getBlockPos(), ModBlockEntities.PNEUMATIC_DOOR.get()).ifPresent(topHalf -> {
+            nonNullLevel().getBlockEntity(getBlockPos(), ModBlockEntityTypes.PNEUMATIC_DOOR.get()).ifPresent(topHalf -> {
                 topHalf.color = color;
                 if (!nonNullLevel().isClientSide) {
                     setChanged();
@@ -113,19 +119,18 @@ public class PneumaticDoorBlockEntity extends AbstractTickingBlockEntity {
     }
 
     @Override
-    public IItemHandler getPrimaryInventory() {
+    public IItemHandler getItemHandler(@Nullable Direction dir) {
         return null;
-    }
-
-    @Override
-    public AABB getRenderBoundingBox() {
-        return new AABB(getBlockPos().getX(), getBlockPos().getY(), getBlockPos().getZ(),
-                getBlockPos().getX() + 1, getBlockPos().getY() + 2, getBlockPos().getZ() + 1);
     }
 
     @Override
     public boolean shouldPreserveStateOnBreak() {
         // keep color even if pickaxed
         return true;
+    }
+
+    public AABB getRenderBoundingBox() {
+        return new AABB(getBlockPos().getX(), getBlockPos().getY(), getBlockPos().getZ(),
+                getBlockPos().getX() + 1, getBlockPos().getY() + 2, getBlockPos().getZ() + 1);
     }
 }

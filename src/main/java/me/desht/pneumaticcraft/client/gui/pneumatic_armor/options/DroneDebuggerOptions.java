@@ -204,8 +204,8 @@ public class DroneDebuggerOptions extends IOptionPage.SimpleOptionPage<DroneDebu
     }
 
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double mouseButton) {
-        return isDroneValid() && programmerUnit.getScrollBar().mouseScrolled(mouseX, mouseY, mouseButton);
+    public boolean mouseScrolled(double mouseX, double mouseY, double dirX, double dirY) {
+        return isDroneValid() && programmerUnit.getScrollBar().mouseScrolled(mouseX, mouseY, dirX, dirY);
     }
 
     @Override

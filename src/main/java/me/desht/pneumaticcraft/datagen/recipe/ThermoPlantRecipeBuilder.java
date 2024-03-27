@@ -17,23 +17,19 @@
 
 package me.desht.pneumaticcraft.datagen.recipe;
 
-import com.google.gson.JsonObject;
-import me.desht.pneumaticcraft.api.crafting.PneumaticCraftRecipeTypes;
 import me.desht.pneumaticcraft.api.crafting.TemperatureRange;
 import me.desht.pneumaticcraft.api.crafting.ingredient.FluidIngredient;
-import me.desht.pneumaticcraft.common.recipes.ModCraftingHelper;
+import me.desht.pneumaticcraft.common.recipes.machine.ThermoPlantRecipeImpl;
+import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraftforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidStack;
 
-import javax.annotation.Nullable;
+import java.util.Optional;
 
-import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
-
-public class ThermoPlantRecipeBuilder extends PneumaticCraftRecipeBuilder<ThermoPlantRecipeBuilder> {
+public class ThermoPlantRecipeBuilder extends AbstractPNCRecipeBuilder {
     private final FluidIngredient inputFluid;
-    @Nullable
     private final Ingredient inputItem;
     private final FluidStack outputFluid;
     private final ItemStack outputItem;
@@ -43,11 +39,9 @@ public class ThermoPlantRecipeBuilder extends PneumaticCraftRecipeBuilder<Thermo
     private final float airUseMultiplier;
     private final boolean exothermic;
 
-    public ThermoPlantRecipeBuilder(FluidIngredient inputFluid, @Nullable Ingredient inputItem,
+    public ThermoPlantRecipeBuilder(FluidIngredient inputFluid, Ingredient inputItem,
                                     FluidStack outputFluid, ItemStack outputItem, TemperatureRange operatingTemperature, float requiredPressure,
                                     float recipeSpeed, float airUseMultiplier, boolean exothermic) {
-        super(RL(PneumaticCraftRecipeTypes.THERMO_PLANT));
-
         this.inputFluid = inputFluid;
         this.inputItem = inputItem;
         this.outputFluid = outputFluid;
@@ -60,26 +54,9 @@ public class ThermoPlantRecipeBuilder extends PneumaticCraftRecipeBuilder<Thermo
     }
 
     @Override
-    protected RecipeResult getResult(ResourceLocation id) {
-        return new ThermoPlantRecipeResult(id);
-    }
-
-    public class ThermoPlantRecipeResult extends RecipeResult {
-        ThermoPlantRecipeResult(ResourceLocation id) {
-            super(id);
-        }
-
-        @Override
-        public void serializeRecipeData(JsonObject json) {
-            if (inputItem != Ingredient.EMPTY) json.add("item_input", inputItem.toJson());
-            if (inputFluid != FluidIngredient.EMPTY) json.add("fluid_input", inputFluid.toJson());
-            if (!outputItem.isEmpty()) json.add("item_output", SerializerHelper.serializeOneItemStack(outputItem));
-            if (!outputFluid.isEmpty()) json.add("fluid_output", ModCraftingHelper.fluidStackToJson(outputFluid));
-            if (!operatingTemperature.isAny()) json.add("temperature", operatingTemperature.toJson());
-            if (requiredPressure != 0f) json.addProperty("pressure", requiredPressure);
-            if (recipeSpeed != 1.0f) json.addProperty("speed", recipeSpeed);
-            if (airUseMultiplier != 1.0f) json.addProperty("air_use_multiplier", airUseMultiplier);
-            json.addProperty("exothermic", exothermic);
-        }
+    public void save(RecipeOutput output, ResourceLocation id) {
+        output.accept(id, new ThermoPlantRecipeImpl(Optional.ofNullable(inputFluid), Optional.ofNullable(inputItem),
+                outputFluid, outputItem,
+                operatingTemperature, requiredPressure, recipeSpeed, airUseMultiplier, exothermic), null);
     }
 }

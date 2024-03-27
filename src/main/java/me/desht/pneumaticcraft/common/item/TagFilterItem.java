@@ -20,9 +20,10 @@ package me.desht.pneumaticcraft.common.item;
 import com.google.common.collect.Sets;
 import me.desht.pneumaticcraft.api.item.IFilteringItem;
 import me.desht.pneumaticcraft.api.misc.Symbols;
-import me.desht.pneumaticcraft.common.core.ModItems;
+import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
@@ -34,7 +35,6 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.commons.lang3.Validate;
 
 import javax.annotation.Nullable;
@@ -69,7 +69,7 @@ public class TagFilterItem extends Item implements IFilteringItem {
             ListTag l = nbt.getList(NBT_TAG_LIST, Tag.TAG_STRING);
             Set<TagKey<Item>> res = new HashSet<>();
             for (int i = 0; i < l.size(); i++) {
-                res.add(TagKey.create(ForgeRegistries.ITEMS.getRegistryKey(), new ResourceLocation(l.getString(i))));
+                res.add(TagKey.create(Registries.ITEM, new ResourceLocation(l.getString(i))));
             }
             return res;
         } else {

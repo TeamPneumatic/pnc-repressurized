@@ -18,10 +18,10 @@
 package me.desht.pneumaticcraft.common.upgrades;
 
 import me.desht.pneumaticcraft.api.upgrade.IUpgradeRegistry.Builder;
-import me.desht.pneumaticcraft.common.core.ModBlockEntities;
-import me.desht.pneumaticcraft.common.core.ModEntityTypes;
-import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
+import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
+import me.desht.pneumaticcraft.common.registry.ModEntityTypes;
+import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.sensor.SensorHandler;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -142,7 +142,7 @@ public class UpgradesDBSetup {
     private static void initTileEntities() {
         ApplicableUpgradesDB db = ApplicableUpgradesDB.getInstance();
 
-        db.addApplicableUpgrades(ModBlockEntities.AIR_CANNON.get(), new Builder()
+        db.addApplicableUpgrades(ModBlockEntityTypes.AIR_CANNON.get(), new Builder()
                 .with(ModUpgrades.SECURITY.get(), 1)
                 .with(ModUpgrades.VOLUME.get(), MAX_VOLUME)
                 .with(ModUpgrades.RANGE.get(), 8)
@@ -151,139 +151,139 @@ public class UpgradesDBSetup {
                 .with(ModUpgrades.BLOCK_TRACKER.get(), 1)
                 .with(ModUpgrades.DISPENSER.get(), 1)
                 .with(ModUpgrades.SPEED.get(), 10));
-        db.addApplicableUpgrades(ModBlockEntities.AIR_COMPRESSOR.get(), new Builder()
+        db.addApplicableUpgrades(ModBlockEntityTypes.AIR_COMPRESSOR.get(), new Builder()
                 .with(ModUpgrades.SECURITY.get(), 1)
                 .with(ModUpgrades.VOLUME.get(), MAX_VOLUME)
                 .with(ModUpgrades.SPEED.get(), 10));
-        db.addApplicableUpgrades(ModBlockEntities.ADVANCED_AIR_COMPRESSOR.get(), new Builder()
+        db.addApplicableUpgrades(ModBlockEntityTypes.ADVANCED_AIR_COMPRESSOR.get(), new Builder()
                 .with(ModUpgrades.SECURITY.get(), 1)
                 .with(ModUpgrades.VOLUME.get(), MAX_VOLUME)
                 .with(ModUpgrades.SPEED.get(), 10));
-        db.addApplicableUpgrades(ModBlockEntities.ASSEMBLY_CONTROLLER.get(), new Builder()
+        db.addApplicableUpgrades(ModBlockEntityTypes.ASSEMBLY_CONTROLLER.get(), new Builder()
                 .with(ModUpgrades.SECURITY.get(), 1)
                 .with(ModUpgrades.VOLUME.get(), MAX_VOLUME)
                 .with(ModUpgrades.SPEED.get(), 10));
-        db.addApplicableUpgrades(ModBlockEntities.CHARGING_STATION.get(), new Builder()
+        db.addApplicableUpgrades(ModBlockEntityTypes.CHARGING_STATION.get(), new Builder()
                 .with(ModUpgrades.SECURITY.get(), 1)
                 .with(ModUpgrades.VOLUME.get(), MAX_VOLUME)
                 .with(ModUpgrades.SPEED.get(), 10)
                 .with(ModUpgrades.DISPENSER.get(), 1));
-        db.addApplicableUpgrades(ModBlockEntities.ELEVATOR_BASE.get(), new Builder()
+        db.addApplicableUpgrades(ModBlockEntityTypes.ELEVATOR_BASE.get(), new Builder()
                 .with(ModUpgrades.SECURITY.get(), 1)
                 .with(ModUpgrades.VOLUME.get(), MAX_VOLUME)
                 .with(ModUpgrades.SPEED.get(), 10)
                 .with(ModUpgrades.CHARGING.get(), 4));
-        db.addApplicableUpgrades(ModBlockEntities.PNEUMATIC_DOOR_BASE.get(), new Builder()
+        db.addApplicableUpgrades(ModBlockEntityTypes.PNEUMATIC_DOOR_BASE.get(), new Builder()
                 .with(ModUpgrades.SECURITY.get(), 1)
                 .with(ModUpgrades.VOLUME.get(), MAX_VOLUME)
                 .with(ModUpgrades.SPEED.get(), 10)
                 .with(ModUpgrades.RANGE.get(), 8));
-        db.addApplicableUpgrades(ModBlockEntities.PRESSURE_CHAMBER_INTERFACE.get(), new Builder()
+        db.addApplicableUpgrades(ModBlockEntityTypes.PRESSURE_CHAMBER_INTERFACE.get(), new Builder()
                 .with(ModUpgrades.SPEED.get(), 10)
                 .with(ModUpgrades.DISPENSER.get(), 1));
-        db.addApplicableUpgrades(ModBlockEntities.PRESSURE_CHAMBER_VALVE.get(), new Builder()
+        db.addApplicableUpgrades(ModBlockEntityTypes.PRESSURE_CHAMBER_VALVE.get(), new Builder()
                 .with(ModUpgrades.SECURITY.get(), 1)
                 .with(ModUpgrades.VOLUME.get(), MAX_VOLUME));
-        db.addApplicableUpgrades(ModBlockEntities.VACUUM_PUMP.get(), new Builder()
+        db.addApplicableUpgrades(ModBlockEntityTypes.VACUUM_PUMP.get(), new Builder()
                 .with(ModUpgrades.SECURITY.get(), 1)
                 .with(ModUpgrades.VOLUME.get(), MAX_VOLUME)
                 .with(ModUpgrades.SPEED.get(), 10));
-        db.addApplicableUpgrades(ModBlockEntities.UV_LIGHT_BOX.get(), new Builder()
+        db.addApplicableUpgrades(ModBlockEntityTypes.UV_LIGHT_BOX.get(), new Builder()
                 .with(ModUpgrades.SECURITY.get(), 1)
                 .with(ModUpgrades.VOLUME.get(), MAX_VOLUME)
                 .with(ModUpgrades.DISPENSER.get(), 1)
                 .with(ModUpgrades.SPEED.get(), 10));
-        db.addApplicableUpgrades(ModBlockEntities.SECURITY_STATION.get(), new Builder()
+        db.addApplicableUpgrades(ModBlockEntityTypes.SECURITY_STATION.get(), new Builder()
                 .with(ModUpgrades.ENTITY_TRACKER.get(), 12)
                 .with(ModUpgrades.SECURITY.get(), 64)
                 .with(ModUpgrades.RANGE.get(), 14));
-        db.addApplicableUpgrades(ModBlockEntities.AERIAL_INTERFACE.get(), new Builder()
+        db.addApplicableUpgrades(ModBlockEntityTypes.AERIAL_INTERFACE.get(), new Builder()
                 .with(ModUpgrades.SECURITY.get(), 1)
                 .with(ModUpgrades.VOLUME.get(), MAX_VOLUME)
                 .with(ModUpgrades.DISPENSER.get(), 1));
-        db.addApplicableUpgrades(ModBlockEntities.ELECTROSTATIC_COMPRESSOR.get(), new Builder()
+        db.addApplicableUpgrades(ModBlockEntityTypes.ELECTROSTATIC_COMPRESSOR.get(), new Builder()
                 .with(ModUpgrades.SECURITY.get(), 1)
                 .with(ModUpgrades.VOLUME.get(), MAX_VOLUME));
-        db.addApplicableUpgrades(ModBlockEntities.OMNIDIRECTIONAL_HOPPER.get(), new Builder()
+        db.addApplicableUpgrades(ModBlockEntityTypes.OMNIDIRECTIONAL_HOPPER.get(), new Builder()
                 .with(ModUpgrades.SPEED.get(), 11)
                 .with(ModUpgrades.CREATIVE.get(), 1)
                 .with(ModUpgrades.ENTITY_TRACKER.get(), 1)
                 .with(ModUpgrades.DISPENSER.get(), 1));
-        db.addApplicableUpgrades(ModBlockEntities.LIQUID_HOPPER.get(), new Builder()
+        db.addApplicableUpgrades(ModBlockEntityTypes.LIQUID_HOPPER.get(), new Builder()
                 .with(ModUpgrades.SPEED.get(), 11)
                 .with(ModUpgrades.CREATIVE.get(), 1)
                 .with(ModUpgrades.ENTITY_TRACKER.get(), 1)
                 .with(ModUpgrades.DISPENSER.get(), 1));
-        db.addApplicableUpgrades(ModBlockEntities.LIQUID_COMPRESSOR.get(), new Builder()
+        db.addApplicableUpgrades(ModBlockEntityTypes.LIQUID_COMPRESSOR.get(), new Builder()
                 .with(ModUpgrades.SECURITY.get(), 1)
                 .with(ModUpgrades.VOLUME.get(), MAX_VOLUME)
                 .with(ModUpgrades.SPEED.get(), 10));
-        db.addApplicableUpgrades(ModBlockEntities.ADVANCED_LIQUID_COMPRESSOR.get(), new Builder()
+        db.addApplicableUpgrades(ModBlockEntityTypes.ADVANCED_LIQUID_COMPRESSOR.get(), new Builder()
                 .with(ModUpgrades.SECURITY.get(), 1)
                 .with(ModUpgrades.VOLUME.get(), MAX_VOLUME)
                 .with(ModUpgrades.SPEED.get(), 10));
-        db.addApplicableUpgrades(ModBlockEntities.PROGRAMMABLE_CONTROLLER.get(), new Builder()
+        db.addApplicableUpgrades(ModBlockEntityTypes.PROGRAMMABLE_CONTROLLER.get(), new Builder()
                 .with(ModUpgrades.SECURITY.get(), 1)
                 .with(ModUpgrades.MAGNET.get(), 6)
                 .with(ModUpgrades.VOLUME.get(), MAX_VOLUME)
                 .with(ModUpgrades.SPEED.get(), 10)
                 .with(ModUpgrades.INVENTORY.get(), 35));
-        db.addApplicableUpgrades(ModBlockEntities.GAS_LIFT.get(), new Builder()
+        db.addApplicableUpgrades(ModBlockEntityTypes.GAS_LIFT.get(), new Builder()
                 .with(ModUpgrades.SECURITY.get(), 1)
                 .with(ModUpgrades.VOLUME.get(), MAX_VOLUME)
                 .with(ModUpgrades.SPEED.get(), 10)
                 .with(ModUpgrades.DISPENSER.get(), 1));
-        db.addApplicableUpgrades(ModBlockEntities.THERMOPNEUMATIC_PROCESSING_PLANT.get(), new Builder()
+        db.addApplicableUpgrades(ModBlockEntityTypes.THERMOPNEUMATIC_PROCESSING_PLANT.get(), new Builder()
                 .with(ModUpgrades.SECURITY.get(), 1)
                 .with(ModUpgrades.VOLUME.get(), MAX_VOLUME)
                 .with(ModUpgrades.DISPENSER.get(), 1));
-        db.addApplicableUpgrades(ModBlockEntities.SENTRY_TURRET.get(), new Builder()
+        db.addApplicableUpgrades(ModBlockEntityTypes.SENTRY_TURRET.get(), new Builder()
                 .with(ModUpgrades.CREATIVE.get(), 1)
                 .with(ModUpgrades.RANGE.get(), 16));
-        db.addApplicableUpgrades(ModBlockEntities.FLUX_COMPRESSOR.get(), new Builder()
+        db.addApplicableUpgrades(ModBlockEntityTypes.FLUX_COMPRESSOR.get(), new Builder()
                 .with(ModUpgrades.SECURITY.get(), 1)
                 .with(ModUpgrades.VOLUME.get(), MAX_VOLUME)
                 .with(ModUpgrades.SPEED.get(), 10));
-        db.addApplicableUpgrades(ModBlockEntities.PNEUMATIC_DYNAMO.get(), new Builder()
+        db.addApplicableUpgrades(ModBlockEntityTypes.PNEUMATIC_DYNAMO.get(), new Builder()
                 .with(ModUpgrades.SECURITY.get(), 1)
                 .with(ModUpgrades.VOLUME.get(), MAX_VOLUME)
                 .with(ModUpgrades.SPEED.get(), 10));
-        db.addApplicableUpgrades(ModBlockEntities.THERMAL_COMPRESSOR.get(), new Builder()
+        db.addApplicableUpgrades(ModBlockEntityTypes.THERMAL_COMPRESSOR.get(), new Builder()
                 .with(ModUpgrades.SECURITY.get(), 1)
                 .with(ModUpgrades.VOLUME.get(), MAX_VOLUME));
-        db.addApplicableUpgrades(ModBlockEntities.TANK_SMALL.get(), new Builder()
+        db.addApplicableUpgrades(ModBlockEntityTypes.TANK_SMALL.get(), new Builder()
                 .with(ModUpgrades.SPEED.get(), 7)
                 .with(ModUpgrades.DISPENSER.get(), 1));
-        db.addApplicableUpgrades(ModBlockEntities.TANK_MEDIUM.get(), new Builder()
+        db.addApplicableUpgrades(ModBlockEntityTypes.TANK_MEDIUM.get(), new Builder()
                 .with(ModUpgrades.SPEED.get(), 7)
                 .with(ModUpgrades.DISPENSER.get(), 1));
-        db.addApplicableUpgrades(ModBlockEntities.TANK_LARGE.get(), new Builder()
+        db.addApplicableUpgrades(ModBlockEntityTypes.TANK_LARGE.get(), new Builder()
                 .with(ModUpgrades.SPEED.get(), 7)
                 .with(ModUpgrades.DISPENSER.get(), 1));
-        db.addApplicableUpgrades(ModBlockEntities.TANK_HUGE.get(), new Builder()
+        db.addApplicableUpgrades(ModBlockEntityTypes.TANK_HUGE.get(), new Builder()
                 .with(ModUpgrades.SPEED.get(), 7)
                 .with(ModUpgrades.DISPENSER.get(), 1));
-        db.addApplicableUpgrades(ModBlockEntities.SMART_CHEST.get(), new Builder()
+        db.addApplicableUpgrades(ModBlockEntityTypes.SMART_CHEST.get(), new Builder()
                 .with(ModUpgrades.SPEED.get(), 9)
                 .with(ModUpgrades.DISPENSER.get(), 1)
                 .with(ModUpgrades.MAGNET.get(), 1)
                 .with(ModUpgrades.RANGE.get(), 4));
-        db.addApplicableUpgrades(ModBlockEntities.FLUID_MIXER.get(), new Builder()
+        db.addApplicableUpgrades(ModBlockEntityTypes.FLUID_MIXER.get(), new Builder()
                 .with(ModUpgrades.VOLUME.get(), MAX_VOLUME)
                 .with(ModUpgrades.SECURITY.get(), 1)
                 .with(ModUpgrades.DISPENSER.get(), 1));
-        db.addApplicableUpgrades(ModBlockEntities.VACUUM_TRAP.get(), new Builder()
+        db.addApplicableUpgrades(ModBlockEntityTypes.VACUUM_TRAP.get(), new Builder()
                 .with(ModUpgrades.VOLUME.get(), MAX_VOLUME)
                 .with(ModUpgrades.RANGE.get(), 6)
                 .with(ModUpgrades.SECURITY.get(), 1));
-        db.addApplicableUpgrades(ModBlockEntities.SPAWNER_EXTRACTOR.get(), new Builder()
+        db.addApplicableUpgrades(ModBlockEntityTypes.SPAWNER_EXTRACTOR.get(), new Builder()
                 .with(ModUpgrades.VOLUME.get(), MAX_VOLUME));
-        db.addApplicableUpgrades(ModBlockEntities.PRESSURIZED_SPAWNER.get(), new Builder()
+        db.addApplicableUpgrades(ModBlockEntityTypes.PRESSURIZED_SPAWNER.get(), new Builder()
                 .with(ModUpgrades.VOLUME.get(), MAX_VOLUME)
                 .with(ModUpgrades.RANGE.get(), 6)
                 .with(ModUpgrades.SPEED.get(), 10)
                 .with(ModUpgrades.SECURITY.get(), 1));
-        db.addApplicableUpgrades(ModBlockEntities.SOLAR_COMPRESSOR.get(), new Builder()
+        db.addApplicableUpgrades(ModBlockEntityTypes.SOLAR_COMPRESSOR.get(), new Builder()
                 .with(ModUpgrades.SECURITY.get(), 1)
                 .with(ModUpgrades.VOLUME.get(), MAX_VOLUME)
                 .with(ModUpgrades.SPEED.get(), 10));
@@ -292,7 +292,7 @@ public class UpgradesDBSetup {
         Builder sensorBuilder = new Builder();
         SensorHandler.getInstance().getUniversalSensorUpgrades().forEach(upgrade -> sensorBuilder.with(upgrade, 1));
         sensorBuilder.with(ModUpgrades.RANGE.get(), 64).with(ModUpgrades.SECURITY.get(), 1).with(ModUpgrades.VOLUME.get(), MAX_VOLUME);
-        db.addApplicableUpgrades(ModBlockEntities.UNIVERSAL_SENSOR.get(), sensorBuilder);
+        db.addApplicableUpgrades(ModBlockEntityTypes.UNIVERSAL_SENSOR.get(), sensorBuilder);
     }
 
 }

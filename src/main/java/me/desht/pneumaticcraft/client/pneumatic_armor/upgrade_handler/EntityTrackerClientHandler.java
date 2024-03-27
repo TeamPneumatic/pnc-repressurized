@@ -47,8 +47,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.vehicle.AbstractMinecart;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.AABB;
-import net.minecraftforge.client.event.InputEvent;
-import net.minecraftforge.common.MinecraftForge;
+import net.neoforged.neoforge.client.event.InputEvent;
+import net.neoforged.neoforge.common.NeoForge;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -214,12 +214,13 @@ public class EntityTrackerClientHandler extends IArmorUpgradeClientHandler.Abstr
 
         @Override
         public boolean test(Entity entity) {
-            return entity != player
-                    && (entity instanceof LivingEntity || entity instanceof HangingEntity || entity instanceof AbstractMinecart)
-                    && entity.isAlive()
-                    && player.distanceTo(entity) < threshold
-                    && !MinecraftForge.EVENT_BUS.post(new EntityTrackEvent(entity))
-                    && super.test(entity);
+            if (entity == player
+                    || !(entity instanceof LivingEntity || entity instanceof HangingEntity || entity instanceof AbstractMinecart)
+                    || !entity.isAlive()
+                    || player.distanceTo(entity) > threshold)
+                return false;
+            EntityTrackEvent event = NeoForge.EVENT_BUS.post(new EntityTrackEvent(entity));
+            return !event.isCanceled() && super.test(entity);
         }
     }
 

@@ -67,7 +67,7 @@ public class ActionWidgetCheckBox extends ActionWidgetVariable<WidgetCheckBox> i
 
     @Override
     public void onActionPerformed() {
-        if (!getVariableName().isEmpty()) NetworkHandler.sendToServer(new PacketSetGlobalVariable(getVariableName(), widget.checked));
+        if (!getVariableName().isEmpty()) NetworkHandler.sendToServer(PacketSetGlobalVariable.forBool(getVariableName(), widget.checked));
     }
 
     @Override

@@ -20,7 +20,7 @@ import java.util.Map;
  * Get an instance of it via {@link me.desht.pneumaticcraft.api.PneumaticRegistry.IPneumaticCraftInterface#getUpgradeRegistry()}.
  * <p>
  * The {@code addApplicableUpgrades()} methods should be called from your
- * {@link net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent} handler.
+ * {@link net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent} handler.
  */
 public interface IUpgradeRegistry {
     /**
@@ -176,22 +176,6 @@ public interface IUpgradeRegistry {
      * @return an immutable map of (upgrade->count)
      */
     Map<PNCUpgrade,Integer> getUpgradesInItem(ItemStack stack);
-
-    /**
-     * Get the registry name for the corresponding item for this upgrade, given a tier. Do not use this before the
-     * upgrade itself has been registered!
-     * <p>
-     * The default naming strategy is to take the upgrade's registry name and simply append "_upgrade" to it (along with
-     * the tier number if it's a multitier upgrade). You can override this strategy by extending this class and
-     * overriding this method if you need to.
-     *
-     * @param upgrade the upgrade in question
-     * @param tier tier of the upgrade (ignored if the upgrade has only one tier)
-     * @return an item registry name
-     * @deprecated just use {@link PNCUpgrade#getItemRegistryName()} or {@link PNCUpgrade#getItemRegistryName(int)}
-     */
-    @Deprecated(forRemoval = true)
-    ResourceLocation getItemRegistryName(PNCUpgrade upgrade, int tier);
 
     /**
      * Helper class to collect a list of upgrades for adding to an object via one of the {@code addApplicableUpgrades()}

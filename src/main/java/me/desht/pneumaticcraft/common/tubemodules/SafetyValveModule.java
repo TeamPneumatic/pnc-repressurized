@@ -19,7 +19,7 @@ package me.desht.pneumaticcraft.common.tubemodules;
 
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.common.block.entity.PressureTubeBlockEntity;
-import me.desht.pneumaticcraft.common.core.ModItems;
+import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.Item;
@@ -41,8 +41,8 @@ public class SafetyValveModule extends AbstractRedstoneReceivingModule {
         super.tickServer();
 
         if (!inited) {
-            pressureTube.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY).orElseThrow(RuntimeException::new)
-                    .enableSafetyVenting(p -> p > getThreshold(), getDirection());
+            PNCCapabilities.getAirHandler(pressureTube).ifPresent(h ->
+                    h.enableSafetyVenting(pressure -> pressure > getThreshold(), getDirection()));
             inited = true;
         }
     }
@@ -59,7 +59,7 @@ public class SafetyValveModule extends AbstractRedstoneReceivingModule {
     @Override
     public void onRemoved() {
         if (!pressureTube.nonNullLevel().isClientSide) {
-            pressureTube.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY).ifPresent(h -> {
+            PNCCapabilities.getAirHandler(pressureTube).ifPresent(h -> {
                 h.disableSafetyVenting();
                 h.setSideLeaking(null);
             });

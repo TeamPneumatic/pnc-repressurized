@@ -25,9 +25,10 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.util.INBTSerializable;
+import net.neoforged.neoforge.common.util.INBTSerializable;
 
 import javax.annotation.Nullable;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -122,9 +123,9 @@ public interface IAirHandlerMachine extends IAirHandler, IManoMeasurable, INBTSe
      * <p>
      * This also invalidates any cached neighbour data.
      *
-     * @param sides a list of sides on which this air handler should be offered as a capability
+     * @param sides the sides of the machine on which this air handler should be offered as a capability
      */
-    void setConnectedFaces(List<Direction> sides);
+    void setConnectableFaces(Collection<Direction> sides);
 
     /**
      * Represents a connection to a neighbouring air handler.

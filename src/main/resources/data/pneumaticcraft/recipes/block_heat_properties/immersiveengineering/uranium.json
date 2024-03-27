@@ -1,10 +1,8 @@
 {
-  "type": "pneumaticcraft:heat_properties",
-  "block": "immersiveengineering:storage_uranium",
-  "temperature": 438,
-  "thermalResistance": 500,
-  "transformCold": {
-    "block": "immersiveengineering:storage_lead"
-  },
-  "heatCapacity": 500000
+   "heatCapacity" : 500000,
+   "transformCold" : "immersiveengineering:storage_lead",
+   "thermalResistance" : 500,
+   "temperature" : 438,
+   "block" : "immersiveengineering:storage_uranium",
+   "type" : "pneumaticcraft:heat_properties"
 }

@@ -6,9 +6,10 @@
       "tag": "forge:gems/diamond"
     },
     "M": {
-      "type": "forge:nbt",
-      "count": 1,
-      "item": "pneumaticcraft:medium_tank"
+      "type": "neoforge:nbt",
+      "item": "pneumaticcraft:medium_tank",
+      "strict": true,
+      "tag": "{}"
     },
     "P": {
       "tag": "pneumaticcraft:plastic_sheets"
@@ -24,6 +25,5 @@
   ],
   "result": {
     "item": "pneumaticcraft:large_tank"
-  },
-  "show_notification": true
+  }
 }

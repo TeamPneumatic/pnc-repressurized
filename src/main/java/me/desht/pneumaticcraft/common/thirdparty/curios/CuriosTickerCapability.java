@@ -19,21 +19,13 @@ package me.desht.pneumaticcraft.common.thirdparty.curios;
 
 import me.desht.pneumaticcraft.common.item.MemoryStickItem;
 import me.desht.pneumaticcraft.common.item.MemoryStickItem.MemoryStickLocator;
-import net.minecraft.core.Direction;
-import net.minecraft.world.entity.LivingEntity;
+import me.desht.pneumaticcraft.common.registry.ModItems;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.event.AttachCapabilitiesEvent;
+import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import top.theillusivec4.curios.api.CuriosCapability;
+import top.theillusivec4.curios.api.SlotContext;
 import top.theillusivec4.curios.api.type.capability.ICurio;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
-import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 /**
  * Allows us to intercept ticks for memory stick(s) in a Curios inventory handler
@@ -41,33 +33,22 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
  * XP orb absorption.
  */
 public class CuriosTickerCapability {
-    public static void addCuriosCap(AttachCapabilitiesEvent<ItemStack> event) {
-        event.addCapability(RL("curio_ticker"), new CuriosTickerProvider(new ICurio() {
-            @Override
-            public ItemStack getStack() {
-                return event.getObject();
-            }
-
-            @Override
-            public void curioTick(String identifier, int index, LivingEntity livingEntity) {
-                if (MemoryStickItem.shouldAbsorbXPOrbs(event.getObject()) && livingEntity instanceof Player) {
-                    MemoryStickItem.cacheMemoryStickLocation((Player) livingEntity, MemoryStickLocator.namedInv(identifier, index));
-                }
-            }
-        }));
+    public static void register(RegisterCapabilitiesEvent event) {
+        event.registerItem(CuriosCapability.ITEM, (stack, context) -> new MemoryCurio(stack), ModItems.MEMORY_STICK.get());
     }
 
-    private static class CuriosTickerProvider implements ICapabilityProvider {
-        final LazyOptional<ICurio> capability;
-
-        CuriosTickerProvider(ICurio curio) {
-            this.capability = LazyOptional.of(() -> curio);
+    private record MemoryCurio(ItemStack stack) implements ICurio {
+        @Override
+        public ItemStack getStack() {
+            return stack;
         }
 
         @Override
-        @Nonnull
-        public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-            return CuriosCapability.ITEM.orEmpty(cap, this.capability);
+        public void curioTick(SlotContext slotContext) {
+            if (MemoryStickItem.shouldAbsorbXPOrbs(stack) && slotContext.entity() instanceof Player player) {
+                MemoryStickItem.cacheMemoryStickLocation(player, MemoryStickLocator.namedInv(slotContext.identifier(), slotContext.index()));
+            }
+            ICurio.super.curioTick(slotContext);
         }
     }
 }

@@ -18,7 +18,6 @@
 package me.desht.pneumaticcraft.api.item;
 
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerItem;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
 
 import javax.annotation.Nonnull;
@@ -85,24 +84,22 @@ public interface IItemRegistry {
     ISpawnerCoreStats getSpawnerCoreStats(ItemStack stack);
 
     /**
-     * Create an instance of PneumaticCraft's default item air handler provider, suitable for returning
-     * from {@link net.minecraft.world.item.Item#initCapabilities(ItemStack, CompoundTag)}.
+     * Create an instance of PneumaticCraft's default item air handler implementation, suitable for registering an air
+     * handler item capability.
      * <p>
-     * You can use this method for your own air-handling items, <em>provided that</em> your item implements
-     * {@link me.desht.pneumaticcraft.api.pressure.IPressurizableItem}. If you want to avoid a hard dependency on
-     * PneumaticCraft, then create your own custom implementation of {@link IAirHandlerItem},
-     * and attach that implementation to your item via {@link net.minecraftforge.event.AttachCapabilitiesEvent}.
+     * You can use this method to register an air-handling capability for your items
+     * via {@link net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent}.
      *
      * @param stack the ItemStack, whose item must implement {@link me.desht.pneumaticcraft.api.pressure.IPressurizableItem}
      * @return an implementation of IAirHandler
      * @implNote this air handler stores the item's air amount in the {@code}pneumaticcraft:air{@code} integer NBT tag
      * @throws IllegalArgumentException if the stack's item does not implement {@link me.desht.pneumaticcraft.api.pressure.IPressurizableItem}
      */
-    IAirHandlerItem.Provider makeItemAirHandlerProvider(ItemStack stack);
+    IAirHandlerItem makeItemAirHandler(ItemStack stack);
 
     /**
      * Register an item launch behaviour for use by the Air Cannon and Pneumatic Chestplate Item Launcher (Dispenser
-     * upgrade). Call this from a {@link net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent} listener; no
+     * upgrade). Call this from a {@link net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent} listener; no
      * {@code enqueueWork()} required.
      *
      * @param behaviour the launch behaviour to register

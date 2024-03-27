@@ -51,7 +51,7 @@ public class BasicRemoteOptionScreen<A extends ActionWidget<?>> extends Abstract
 
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-        renderBackground(graphics);
+        renderBackground(graphics, mouseX, mouseY, partialTicks);
         super.render(graphics, mouseX, mouseY, partialTicks);
     }
 

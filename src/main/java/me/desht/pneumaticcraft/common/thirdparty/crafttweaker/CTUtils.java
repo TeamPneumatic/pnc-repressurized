@@ -18,38 +18,39 @@
 package me.desht.pneumaticcraft.common.thirdparty.crafttweaker;
 
 import com.blamejared.crafttweaker.api.fluid.CTFluidIngredient;
-import com.blamejared.crafttweaker.api.fluid.IFluidStack;
+import com.blamejared.crafttweaker.api.fluid.MCFluidStack;
 import com.blamejared.crafttweaker.api.ingredient.IIngredientWithAmount;
 import com.blamejared.crafttweaker.api.item.IItemStack;
 import me.desht.pneumaticcraft.api.crafting.ingredient.FluidIngredient;
 import me.desht.pneumaticcraft.api.crafting.ingredient.StackedIngredient;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraftforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidStack;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class CTUtils {
-    public static Ingredient toStackedIngredient(IIngredientWithAmount ingredient) {
+    public static StackedIngredient toStackedIngredient(IIngredientWithAmount ingredient) {
         return StackedIngredient.fromIngredient(ingredient.getAmount(), ingredient.getIngredient().asVanillaIngredient());
     }
 
-    public static List<Ingredient> toStackedIngredientList(IIngredientWithAmount[] ingredients) {
-        return Arrays.stream(ingredients).map(CTUtils::toStackedIngredient).collect(Collectors.toList());
+    public static List<StackedIngredient> toStackedIngredientList(IIngredientWithAmount[] ingredients) {
+        return Arrays.stream(ingredients).map(CTUtils::toStackedIngredient).toList();
     }
 
-    public static ItemStack[] toItemStacks(IItemStack[] stacks) {
-        return Arrays.stream(stacks).map(IItemStack::getInternal).toArray(ItemStack[]::new);
+    public static List<ItemStack> toItemStacks(IItemStack[] stacks) {
+        return Arrays.stream(stacks).map(IItemStack::getInternal).toList();
     }
 
-    public static FluidStack[] toFluidStacks(IFluidStack[] stacks) {
-        return Arrays.stream(stacks).map(IFluidStack::getImmutableInternal).toArray(FluidStack[]::new);
+    public static List<FluidStack> toFluidStacks(MCFluidStack[] stacks) {
+        return Arrays.stream(stacks).map(MCFluidStack::getImmutableInternal).toList();
     }
 
     public static FluidIngredient toFluidIngredient(CTFluidIngredient ingredient) {
-        // TODO is this OK?
-        return ingredient.mapTo(fStack -> FluidIngredient.of((FluidStack) fStack.getImmutableInternal()), (tag, amount) -> FluidIngredient.of(amount, tag), FluidIngredient::ofFluidStream);
+        return ingredient.mapTo(
+                fStack -> FluidIngredient.of((int) fStack.getAmount(), fStack.getFluid()),
+                (tag, amount) -> FluidIngredient.of(amount, tag),
+                FluidIngredient::ofFluidStream
+        );
     }
 }

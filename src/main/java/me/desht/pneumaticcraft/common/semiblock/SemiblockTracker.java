@@ -24,10 +24,10 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.AABB;
-import net.minecraftforge.event.server.ServerStoppingEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.minecraft.world.level.levelgen.structure.BoundingBox;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 
 import java.lang.ref.Reference;
 import java.lang.ref.WeakReference;
@@ -152,20 +152,18 @@ public enum SemiblockTracker {
      * @param aabb a bounding box which contains all the wanted semiblocks
      * @return a stream of semiblock in the area
      */
-    public Stream<ISemiBlock> getSemiblocksInArea(Level world, AABB aabb) {
+    public Stream<ISemiBlock> getSemiblocksInArea(Level world, BoundingBox aabb) {
         Map<BlockPos, SemiblockCollection> map = semiblockMap.computeIfAbsent(getKey(world), k -> new HashMap<>());
 
         return map.entrySet().stream()
-                .filter(e -> aabbContainsBlockPos(aabb, e.getKey()))
+                .filter(e -> boxContainsBlockPos(aabb, e.getKey()))
                 .flatMap(e -> e.getValue().getAll());
     }
 
-    private boolean aabbContainsBlockPos(AABB aabb, BlockPos pos) {
-        // like AABB#contains() but works with blockpos instead of vec3
-        // and works for AABB's with min == max
-        return pos.getX() >= aabb.minX && pos.getX() <= aabb.maxX
-                && pos.getY() >= aabb.minY && pos.getY() <= aabb.maxY
-                && pos.getZ() >= aabb.minZ && pos.getZ() <= aabb.maxZ;
+    private boolean boxContainsBlockPos(BoundingBox aabb, BlockPos pos) {
+        return pos.getX() >= aabb.minX() && pos.getX() <= aabb.maxX()
+                && pos.getY() >= aabb.minY() && pos.getY() <= aabb.maxY()
+                && pos.getZ() >= aabb.minZ() && pos.getZ() <= aabb.maxZ();
     }
 
     private ResourceLocation getKey(Level world) {

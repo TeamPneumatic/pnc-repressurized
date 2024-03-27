@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.common.hacking;
 
-import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.pneumatic_armor.hacking.IHackableBlock;
 import me.desht.pneumaticcraft.api.pneumatic_armor.hacking.IHackableEntity;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorRegistry;
@@ -40,7 +39,7 @@ public class HackTickTracker extends SavedData {
 
     public static HackTickTracker getInstance(Level level) {
         return level instanceof ServerLevel s ?
-                s.getDataStorage().computeIfAbsent(HackTickTracker::load, HackTickTracker::new, DATA_NAME) :
+                s.getDataStorage().computeIfAbsent(new Factory<>(HackTickTracker::new, HackTickTracker::load), DATA_NAME) :
                 clientInstance;
     }
 
@@ -85,12 +84,12 @@ public class HackTickTracker extends SavedData {
         }
 
         // IHacking#tick() will remove any no-longer-applicable hacks from the entity
-        hackedEntities.forEach(entity -> entity.getCapability(PNCCapabilities.HACKING_CAPABILITY).ifPresent(hacking -> {
+        hackedEntities.forEach(entity -> HackManager.getActiveHacks(entity).ifPresent(hacking -> {
             if (entity.isAlive() && !hacking.getCurrentHacks().isEmpty()) hacking.tick(entity);
         }));
         // Remove the entity from the tracker if it has no more applicable hacks
         hackedEntities.removeIf(e -> !e.isAlive() ||
-                e.getCapability(PNCCapabilities.HACKING_CAPABILITY).map(hacking -> hacking.getCurrentHacks().isEmpty()).orElse(true)
+                HackManager.getActiveHacks(e).map(hacking -> hacking.getCurrentHacks().isEmpty()).orElse(true)
         );
     }
 
@@ -100,7 +99,7 @@ public class HackTickTracker extends SavedData {
     }
 
     public void trackEntity(Entity entity, IHackableEntity<?> iHackable) {
-        entity.getCapability(PNCCapabilities.HACKING_CAPABILITY).ifPresent(hacking -> {
+        HackManager.getActiveHacks(entity).ifPresent(hacking -> {
             hacking.addHackable(iHackable);
             hackedEntities.add(entity);
         });

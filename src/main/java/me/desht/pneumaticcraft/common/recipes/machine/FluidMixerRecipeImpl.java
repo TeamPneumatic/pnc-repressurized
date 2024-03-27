@@ -17,23 +17,18 @@
 
 package me.desht.pneumaticcraft.common.recipes.machine;
 
-import com.google.gson.JsonObject;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import me.desht.pneumaticcraft.api.crafting.ingredient.FluidIngredient;
 import me.desht.pneumaticcraft.api.crafting.recipe.FluidMixerRecipe;
-import me.desht.pneumaticcraft.common.core.ModRecipeSerializers;
-import me.desht.pneumaticcraft.common.core.ModRecipeTypes;
-import me.desht.pneumaticcraft.common.recipes.ModCraftingHelper;
+import me.desht.pneumaticcraft.common.registry.ModRecipeSerializers;
+import me.desht.pneumaticcraft.common.registry.ModRecipeTypes;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
-import net.minecraft.world.item.crafting.ShapedRecipe;
-import net.minecraftforge.fluids.FluidStack;
-
-import javax.annotation.Nullable;
+import net.neoforged.neoforge.fluids.FluidStack;
 
 public class FluidMixerRecipeImpl extends FluidMixerRecipe {
     private final FluidIngredient input1;
@@ -43,8 +38,7 @@ public class FluidMixerRecipeImpl extends FluidMixerRecipe {
     private final float pressure;
     private final int processingTime;
 
-    public FluidMixerRecipeImpl(ResourceLocation id, FluidIngredient input1, FluidIngredient input2, FluidStack outputFluid, ItemStack outputItem, float pressure, int processingTime) {
-        super(id);
+    public FluidMixerRecipeImpl(FluidIngredient input1, FluidIngredient input2, FluidStack outputFluid, ItemStack outputItem, float pressure, int processingTime) {
         this.input1 = input1;
         this.input2 = input2;
         this.outputFluid = outputFluid;
@@ -90,16 +84,6 @@ public class FluidMixerRecipeImpl extends FluidMixerRecipe {
     }
 
     @Override
-    public void write(FriendlyByteBuf buffer) {
-        input1.toNetwork(buffer);
-        input2.toNetwork(buffer);
-        outputFluid.writeToPacket(buffer);
-        buffer.writeItem(outputItem);
-        buffer.writeFloat(pressure);
-        buffer.writeVarInt(processingTime);
-    }
-
-    @Override
     public RecipeSerializer<?> getSerializer() {
         return ModRecipeSerializers.FLUID_MIXER.get();
     }
@@ -111,30 +95,28 @@ public class FluidMixerRecipeImpl extends FluidMixerRecipe {
 
     public static class Serializer<T extends FluidMixerRecipe> implements RecipeSerializer<T> {
         private final IFactory<T> factory;
+        private final Codec<T> codec;
 
-        public Serializer(FluidMixerRecipeImpl.Serializer.IFactory<T> factory) {
+        public Serializer(IFactory<T> factory) {
             this.factory = factory;
+
+            codec = RecordCodecBuilder.create(builder -> builder.group(
+                    FluidIngredient.FLUID_CODEC.fieldOf("input1").forGetter(FluidMixerRecipe::getInput1),
+                    FluidIngredient.FLUID_CODEC.fieldOf("input2").forGetter(FluidMixerRecipe::getInput2),
+                    FluidStack.CODEC.fieldOf("fluid_output").forGetter(FluidMixerRecipe::getOutputFluid),
+                    ItemStack.CODEC.fieldOf("item_output").forGetter(FluidMixerRecipe::getOutputItem),
+                    Codec.FLOAT.fieldOf("pressure").forGetter(FluidMixerRecipe::getRequiredPressure),
+                    Codec.INT.fieldOf("time").forGetter(FluidMixerRecipe::getProcessingTime)
+            ).apply(builder, factory::create));
         }
 
         @Override
-        public T fromJson(ResourceLocation recipeId, JsonObject json) {
-            Ingredient input1 = FluidIngredient.fromJson(json.get("input1"));
-            Ingredient input2 = FluidIngredient.fromJson(json.get("input2"));
-            FluidStack outputFluid = json.has("fluid_output") ?
-                    ModCraftingHelper.fluidStackFromJson(json.getAsJsonObject("fluid_output")):
-                    FluidStack.EMPTY;
-            ItemStack outputItem = json.has("item_output") ?
-                    ShapedRecipe.itemStackFromJson(GsonHelper.getAsJsonObject(json, "item_output")) :
-                    ItemStack.EMPTY;
-            float pressure = GsonHelper.getAsFloat(json, "pressure");
-            int processingTime = GsonHelper.getAsInt(json, "time", 200);
-
-            return factory.create(recipeId, (FluidIngredient) input1, (FluidIngredient) input2, outputFluid, outputItem, pressure, processingTime);
+        public Codec<T> codec() {
+            return codec;
         }
 
-        @Nullable
         @Override
-        public T fromNetwork(ResourceLocation recipeId, FriendlyByteBuf buffer) {
+        public T fromNetwork(FriendlyByteBuf buffer) {
             FluidIngredient input1 = (FluidIngredient) Ingredient.fromNetwork(buffer);
             FluidIngredient input2 = (FluidIngredient) Ingredient.fromNetwork(buffer);
             FluidStack outputFluid = FluidStack.readFromPacket(buffer);
@@ -142,16 +124,21 @@ public class FluidMixerRecipeImpl extends FluidMixerRecipe {
             float pressure = buffer.readFloat();
             int processingTime = buffer.readVarInt();
 
-            return factory.create(recipeId, input1, input2, outputFluid, outputItem, pressure, processingTime);
+            return factory.create(input1, input2, outputFluid, outputItem, pressure, processingTime);
         }
 
         @Override
         public void toNetwork(FriendlyByteBuf buffer, T recipe) {
-            recipe.write(buffer);
+            recipe.getInput1().toNetwork(buffer);
+            recipe.getInput2().toNetwork(buffer);
+            recipe.getOutputFluid().writeToPacket(buffer);
+            buffer.writeItem(recipe.getOutputItem());
+            buffer.writeFloat(recipe.getRequiredPressure());
+            buffer.writeVarInt(recipe.getProcessingTime());
         }
 
-        public interface IFactory <T extends FluidMixerRecipe> {
-            T create(ResourceLocation id, FluidIngredient input1, FluidIngredient input2,
+        public interface IFactory<T extends FluidMixerRecipe> {
+            T create(FluidIngredient input1, FluidIngredient input2,
                      FluidStack outputFluid, ItemStack outputItem, float pressure, int processingTime);
         }
     }

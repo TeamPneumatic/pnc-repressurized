@@ -18,26 +18,30 @@
 package me.desht.pneumaticcraft.api.crafting.ingredient;
 
 import com.google.common.collect.Lists;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
+import com.mojang.datafixers.util.Either;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import me.desht.pneumaticcraft.api.PneumaticRegistry;
+import net.minecraft.core.Holder;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
-import net.minecraft.util.GsonHelper;
+import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraftforge.common.crafting.IIngredientSerializer;
-import net.minecraftforge.items.ItemHandlerHelper;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.common.crafting.IngredientType;
+import net.neoforged.neoforge.items.ItemHandlerHelper;
 
 import javax.annotation.Nullable;
 import java.util.*;
+import java.util.function.BiFunction;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 /**
@@ -45,25 +49,48 @@ import java.util.stream.Stream;
  * can take multiples of an input item.
  */
 public class StackedIngredient extends Ingredient {
-    public static final StackedIngredient EMPTY = new StackedIngredient(Stream.empty());
+    public static final StackedIngredient EMPTY = new StackedIngredient(new Value[0]);
 
-    private StackedIngredient(Stream<? extends Value> itemLists) {
-        super(itemLists);
+    public static final Codec<StackedIngredient> CODEC = codec(true);
+    public static final Codec<StackedIngredient> CODEC_NONEMPTY = codec(false);
+
+    public final StackedIngredient.Value[] stackedValues;
+    @Nullable
+    private ItemStack[] itemStacks;
+
+    private StackedIngredient(Stream<? extends Value> values) {
+        this(values, PneumaticRegistry.getInstance().getCustomIngredientTypes().stackedItemType());
     }
 
-    public static Ingredient fromTag(TagKey<Item> tag, int count) {
-        return StackedIngredient.fromItemListStream(Stream.of(new StackedTagList(tag, count)));
+    private StackedIngredient(StackedIngredient.Value[] values) {
+        this(values, PneumaticRegistry.getInstance().getCustomIngredientTypes().stackedItemType());
     }
 
-    public static Ingredient fromStacks(ItemStack... stacks) {
-        return fromItemListStream(Arrays.stream(stacks).map(StackedItemList::new));
+    protected StackedIngredient(Stream<? extends StackedIngredient.Value> values, Supplier<? extends IngredientType<?>> type) {
+        super(Stream.of(), type);
+
+        stackedValues = values.toArray(Value[]::new);
     }
 
-    public static Ingredient fromItems(int count, ItemLike... itemsIn) {
-        return fromItemListStream(Arrays.stream(itemsIn).map((itemProvider) -> new StackedItemList(new ItemStack(itemProvider, count))));
+    private StackedIngredient(StackedIngredient.Value[] values, Supplier<? extends IngredientType<?>> type) {
+        super(Stream.of(values), type);
+
+        stackedValues = values;
     }
 
-    public static Ingredient fromIngredient(int count, Ingredient wrappedIngredient) {
+    public static StackedIngredient fromTag(int count, TagKey<Item> tag) {
+        return StackedIngredient.fromItemListStream(Stream.of(new StackedTagValue(tag, count)));
+    }
+
+    public static StackedIngredient fromStacks(ItemStack... stacks) {
+        return fromItemListStream(Arrays.stream(stacks).map(StackedItemValue::new));
+    }
+
+    public static StackedIngredient fromItems(int count, ItemLike... itemsIn) {
+        return fromItemListStream(Arrays.stream(itemsIn).map((itemProvider) -> new StackedItemValue(new ItemStack(itemProvider, count))));
+    }
+
+    public static StackedIngredient fromIngredient(int count, Ingredient wrappedIngredient) {
         List<ItemStack> l = new ArrayList<>();
         for (ItemStack stack : wrappedIngredient.getItems()) {
             l.add(ItemHandlerHelper.copyStackWithSize(stack, count));
@@ -71,14 +98,9 @@ public class StackedIngredient extends Ingredient {
         return fromStacks(l.toArray(new ItemStack[0]));
     }
 
-    public static StackedIngredient fromItemListStream(Stream<? extends Ingredient.Value> stream) {
+    private static StackedIngredient fromItemListStream(Stream<? extends StackedIngredient.Value> stream) {
         StackedIngredient ingredient = new StackedIngredient(stream);
         return ingredient.isEmpty() ? StackedIngredient.EMPTY : ingredient;
-    }
-
-    @Override
-    public IIngredientSerializer<? extends Ingredient> getSerializer() {
-        return Serializer.INSTANCE;
     }
 
     @Override
@@ -91,69 +113,106 @@ public class StackedIngredient extends Ingredient {
         }
     }
 
-    private static Ingredient.Value deserializeItemListWithCount(JsonObject json) {
-        if (json.has("item") && json.has("tag")) {
-            throw new JsonParseException("An ingredient entry is either a tag or an item, not both");
-        } else if (json.has("item")) {
-            Item item = ShapedRecipe.itemFromJson(json);
-            int count = json.has("count") ? GsonHelper.getAsInt(json, "count") : 1;
-            return new Ingredient.ItemValue(new ItemStack(item, count));
-        } else if (json.has("tag")) {
-            ResourceLocation resourcelocation = new ResourceLocation(GsonHelper.getAsString(json, "tag"));
-            TagKey<Item> tagKey = TagKey.create(Registries.ITEM, resourcelocation);
-            int count = json.has("count") ? GsonHelper.getAsInt(json, "count") : 1;
-            return new StackedTagList(tagKey, count);
-        } else {
-            throw new JsonParseException("An ingredient entry needs either a tag or an item");
+    @Override
+    public ItemStack[] getItems() {
+        if (this.itemStacks == null) {
+            this.itemStacks = Arrays.stream(this.stackedValues)
+                    .flatMap(value -> value.getItems().stream())
+                    .distinct()
+                    .toArray(ItemStack[]::new);
         }
+
+        return this.itemStacks;
     }
 
-    public static class Serializer implements IIngredientSerializer<StackedIngredient> {
-        public static final Serializer INSTANCE  = new Serializer();
-        public static final ResourceLocation ID = new ResourceLocation("pneumaticcraft:stacked_item");
-
-        @Override
-        public StackedIngredient parse(FriendlyByteBuf buffer) {
-            return fromItemListStream(Stream.generate(() -> new Ingredient.ItemValue(buffer.readItem())).limit(buffer.readVarInt()));
-        }
-
-        @Override
-        public StackedIngredient parse(JsonObject json) {
-            return fromItemListStream(Stream.of(deserializeItemListWithCount(json)));
-        }
-
-        @Override
-        public void write(FriendlyByteBuf buffer, StackedIngredient ingredient) {
-            ItemStack[] items = ingredient.getItems();
-            buffer.writeVarInt(items.length);
-
-            for (ItemStack stack : items)
-                buffer.writeItem(stack);
-        }
+    @Override
+    public boolean isEmpty() {
+        return stackedValues.length == 0 || Arrays.stream(getItems()).allMatch(ItemStack::isEmpty);
     }
 
-    public record StackedItemList(ItemStack itemStack) implements Value {
+    @Override
+    public boolean equals(Object o) {
+        return o instanceof StackedIngredient ingredient && Arrays.equals(this.stackedValues, ingredient.stackedValues);
+    }
+
+    public static StackedIngredient fromNetwork(FriendlyByteBuf buf) {
+        var size = buf.readVarInt();
+        if (size == -1) {
+            return buf.readWithCodecTrusted(net.minecraft.nbt.NbtOps.INSTANCE, CODEC);
+        }
+        return new StackedIngredient(Stream.generate(() -> new StackedIngredient.StackedItemValue(buf.readItem())).limit(size));
+    }
+
+    private static Codec<StackedIngredient> codec(boolean allowEmpty) {
+        Codec<StackedIngredient.Value[]> codec = Codec.list(StackedIngredient.Value.CODEC).comapFlatMap(
+                values -> !allowEmpty && values.isEmpty() ?
+                        DataResult.error(() -> "Item array cannot be empty, at least one item must be defined") :
+                        DataResult.success(values.toArray(new Value[0])), List::of);
+
+        return ExtraCodecs.either(codec, StackedIngredient.Value.CODEC).flatComapMap(
+                either -> either.map(StackedIngredient::new, value -> new StackedIngredient(new Value[]{value})),
+                ingredient -> {
+                    if (ingredient.stackedValues.length == 1) {
+                        return DataResult.success(Either.right(ingredient.stackedValues[0]));
+                    } else {
+                        return ingredient.stackedValues.length == 0 && !allowEmpty ?
+                                DataResult.error(() -> "Item array cannot be empty, at least one item must be defined") :
+                                DataResult.success(Either.left(ingredient.stackedValues));
+                    }
+                });
+    }
+
+    public interface Value extends Ingredient.Value {
+        Codec<StackedIngredient.Value> CODEC = ExtraCodecs.xor(StackedItemValue.CODEC, StackedTagValue.CODEC)
+                .xmap(either -> either.map(itemValue -> itemValue, tagValue -> tagValue), val -> {
+                    if (val instanceof StackedIngredient.StackedTagValue tagValue) {
+                        return Either.right(tagValue);
+                    } else if (val instanceof StackedIngredient.StackedItemValue itemValue) {
+                        return Either.left(itemValue);
+                    } else {
+                        throw new UnsupportedOperationException("This is neither an item value nor a tag value.");
+                    }
+                });
+
+//        Collection<ItemStack> getItems();
+    }
+
+    public record StackedItemValue(ItemStack itemStack, BiFunction<ItemStack, ItemStack, Boolean> comparator) implements Value {
+        static final Codec<StackedItemValue> CODEC = RecordCodecBuilder.create(builder -> builder.group(
+                        ItemStack.ITEM_WITH_COUNT_CODEC.fieldOf("item").forGetter(val -> val.itemStack)
+                ).apply(builder, StackedItemValue::new)
+        );
+
+        public StackedItemValue(ItemStack itemStack) {
+            this(itemStack, StackedItemValue::areStacksEqual);
+        }
+
+        private static boolean areStacksEqual(ItemStack left, ItemStack right) {
+            return left.getItem().equals(right.getItem()) && left.getCount() == right.getCount();
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            return o instanceof StackedItemValue s && comparator.apply(s.itemStack, this.itemStack);
+        }
+
         @Override
         public Collection<ItemStack> getItems() {
             return Collections.singletonList(itemStack);
         }
-
-        @Override
-        public JsonObject serialize() {
-            JsonObject json = new JsonObject();
-            json.addProperty("type", Serializer.ID.toString());
-            ResourceLocation rl = ForgeRegistries.ITEMS.getKey(itemStack.getItem());
-            json.addProperty("item", rl == null ? "" : rl.toString());
-            json.addProperty("count", itemStack.getCount());
-            return json;
-        }
     }
 
-    public static class StackedTagList implements Value {
+    public static class StackedTagValue implements Value {
+        static final Codec<StackedIngredient.StackedTagValue> CODEC = RecordCodecBuilder.create(builder -> builder.group(
+                        TagKey.codec(Registries.ITEM).fieldOf("tag").forGetter(val -> val.tagKey),
+                        Codec.INT.fieldOf("count").forGetter(val -> val.count)
+                ).apply(builder, StackedIngredient.StackedTagValue::new)
+        );
+
         private final TagKey<Item> tagKey;
         private final int count;
 
-        public StackedTagList(TagKey<Item> tagIn, int count) {
+        public StackedTagValue(TagKey<Item> tagIn, int count) {
             this.tagKey = tagIn;
             this.count = count;
         }
@@ -162,21 +221,14 @@ public class StackedIngredient extends Ingredient {
         public Collection<ItemStack> getItems() {
             List<ItemStack> list = Lists.newArrayList();
 
-            Objects.requireNonNull(ForgeRegistries.ITEMS.tags()).getTag(tagKey).forEach(item -> list.add(new ItemStack(item, count)));
+            for (Holder<Item> holder : BuiltInRegistries.ITEM.getTagOrEmpty(this.tagKey)) {
+                list.add(new ItemStack(holder, count));
+            }
 
             if (list.isEmpty()) {
                 list.add(new ItemStack(Blocks.BARRIER).setHoverName(Component.literal("Empty Tag: " + tagKey.location())));
             }
             return list;
-        }
-
-        @Override
-        public JsonObject serialize() {
-            JsonObject json = new JsonObject();
-            json.addProperty("type", Serializer.ID.toString());
-            json.addProperty("tag", tagKey.location().toString());
-            json.addProperty("count", count);
-            return json;
         }
     }
 }

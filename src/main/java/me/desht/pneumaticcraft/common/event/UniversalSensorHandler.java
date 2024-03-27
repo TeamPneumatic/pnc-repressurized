@@ -20,15 +20,20 @@ package me.desht.pneumaticcraft.common.event;
 import me.desht.pneumaticcraft.common.block.entity.UniversalSensorBlockEntity;
 import me.desht.pneumaticcraft.common.util.GlobalBlockEntityCacheManager;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.event.entity.player.AttackEntityEvent;
-import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-import net.minecraftforge.eventbus.api.Event;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.neoforged.bus.api.Event;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.event.entity.player.AttackEntityEvent;
+import net.neoforged.neoforge.event.entity.player.EntityItemPickupEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 
 public class UniversalSensorHandler {
     @SubscribeEvent
-    public void onInteraction(PlayerInteractEvent event) {
+    public void onInteraction(PlayerInteractEvent.RightClickBlock event) {
+        sendEventToSensors(event.getEntity().level(), event);
+    }
+
+    @SubscribeEvent
+    public void onInteraction(PlayerInteractEvent.RightClickItem event) {
         sendEventToSensors(event.getEntity().level(), event);
     }
 

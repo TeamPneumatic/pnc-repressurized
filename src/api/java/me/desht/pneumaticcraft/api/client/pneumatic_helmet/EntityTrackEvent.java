@@ -18,8 +18,8 @@
 package me.desht.pneumaticcraft.api.client.pneumatic_helmet;
 
 import net.minecraft.world.entity.Entity;
-import net.minecraftforge.eventbus.api.Cancelable;
-import net.minecraftforge.eventbus.api.Event;
+import net.neoforged.bus.api.Event;
+import net.neoforged.bus.api.ICancellableEvent;
 
 /**
  * Fired when a helmet Block Tracker is about to track an entity. Can be canceled to prevent tracking.
@@ -27,8 +27,7 @@ import net.minecraftforge.eventbus.api.Event;
  *
  * @author MineMaarten
  */
-@Cancelable
-public class EntityTrackEvent extends Event {
+public class EntityTrackEvent extends Event implements ICancellableEvent {
     public final Entity trackingEntity;
 
     public EntityTrackEvent(Entity trackingEntity) {

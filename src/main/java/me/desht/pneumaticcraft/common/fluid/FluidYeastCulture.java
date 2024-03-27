@@ -18,9 +18,9 @@
 package me.desht.pneumaticcraft.common.fluid;
 
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
-import me.desht.pneumaticcraft.common.core.ModBlocks;
-import me.desht.pneumaticcraft.common.core.ModFluids;
-import me.desht.pneumaticcraft.common.core.ModItems;
+import me.desht.pneumaticcraft.common.registry.ModBlocks;
+import me.desht.pneumaticcraft.common.registry.ModFluids;
+import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -32,20 +32,20 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.AABB;
-import net.minecraftforge.fluids.ForgeFlowingFluid;
+import net.neoforged.neoforge.fluids.BaseFlowingFluid;
 
 import java.util.List;
 
 public class FluidYeastCulture {
     public static final PNCFluidRenderProps RENDER_PROPS = PNCFluidRenderProps.genericFuel(0xFFE2D2B8);
 
-    private static ForgeFlowingFluid.Properties props() {
-        return new ForgeFlowingFluid.Properties(
+    private static BaseFlowingFluid.Properties props() {
+        return new BaseFlowingFluid.Properties(
                 ModFluids.YEAST_CULTURE_FLUID_TYPE, ModFluids.YEAST_CULTURE, ModFluids.YEAST_CULTURE_FLOWING
         ).block(ModBlocks.YEAST_CULTURE).bucket(ModItems.YEAST_CULTURE_BUCKET).tickRate(30);
     }
 
-    public static class Source extends ForgeFlowingFluid.Source {
+    public static class Source extends BaseFlowingFluid.Source {
         public Source() {
             super(props());
         }
@@ -73,7 +73,7 @@ public class FluidYeastCulture {
         }
     }
 
-    public static class Flowing extends ForgeFlowingFluid.Flowing {
+    public static class Flowing extends BaseFlowingFluid.Flowing {
         public Flowing() {
             super(props());
         }

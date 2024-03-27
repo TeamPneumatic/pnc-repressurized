@@ -17,17 +17,12 @@
 
 package me.desht.pneumaticcraft.api.crafting.recipe;
 
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 
 import java.util.List;
 
 public abstract class ExplosionCraftingRecipe extends PneumaticCraftRecipe {
-    protected ExplosionCraftingRecipe(ResourceLocation id) {
-        super(id);
-    }
-
     /**
      * Get the input ingredient for this recipe.
      *

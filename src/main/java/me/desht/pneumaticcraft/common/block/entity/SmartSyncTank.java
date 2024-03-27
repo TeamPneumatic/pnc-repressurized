@@ -24,7 +24,7 @@ import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.util.PNCFluidTank;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.material.Fluid;
-import net.minecraftforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidStack;
 
 import java.lang.ref.WeakReference;
 
@@ -137,7 +137,7 @@ public class SmartSyncTank extends PNCFluidTank {
     protected void onContentsChanged(Fluid prevFluid, int prevAmount) {
         BlockEntity be = owner.get();
         if (be != null && be.getLevel() != null && !be.getLevel().isClientSide()) {
-            owner.get().setChanged();
+            be.setChanged();
         }
     }
 

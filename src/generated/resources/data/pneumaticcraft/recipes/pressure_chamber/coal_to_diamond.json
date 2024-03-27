@@ -2,7 +2,6 @@
   "type": "pneumaticcraft:pressure_chamber",
   "inputs": [
     {
-      "type": "pneumaticcraft:stacked_item",
       "count": 8,
       "tag": "forge:storage_blocks/coal"
     }

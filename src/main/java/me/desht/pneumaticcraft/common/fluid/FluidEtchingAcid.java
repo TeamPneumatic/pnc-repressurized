@@ -17,29 +17,29 @@
 
 package me.desht.pneumaticcraft.common.fluid;
 
-import me.desht.pneumaticcraft.common.core.ModBlocks;
-import me.desht.pneumaticcraft.common.core.ModFluids;
-import me.desht.pneumaticcraft.common.core.ModItems;
+import me.desht.pneumaticcraft.common.registry.ModBlocks;
+import me.desht.pneumaticcraft.common.registry.ModFluids;
+import me.desht.pneumaticcraft.common.registry.ModItems;
 import net.minecraft.world.level.material.MapColor;
-import net.minecraftforge.fluids.ForgeFlowingFluid;
+import net.neoforged.neoforge.fluids.BaseFlowingFluid;
 
 public abstract class FluidEtchingAcid {
     public static final PNCFluidRenderProps RENDER_PROPS = new PNCFluidRenderProps
             ("minecraft:block/water_still", "minecraft:block/water_flow", MapColor.EMERALD.col | 0xFF000000);
 
-    private static ForgeFlowingFluid.Properties props() {
-        return new ForgeFlowingFluid.Properties(
+    private static BaseFlowingFluid.Properties props() {
+        return new BaseFlowingFluid.Properties(
                 ModFluids.ETCHING_ACID_FLUID_TYPE, ModFluids.ETCHING_ACID, ModFluids.ETCHING_ACID_FLOWING
         ).block(ModBlocks.ETCHING_ACID).bucket(ModItems.ETCHING_ACID_BUCKET);
     }
 
-    public static class Source extends ForgeFlowingFluid.Source {
+    public static class Source extends BaseFlowingFluid.Source {
         public Source() {
             super(props());
         }
     }
 
-    public static class Flowing extends ForgeFlowingFluid.Flowing {
+    public static class Flowing extends BaseFlowingFluid.Flowing {
         public Flowing() {
             super(props());
         }

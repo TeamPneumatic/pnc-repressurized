@@ -2,11 +2,11 @@ package me.desht.pneumaticcraft.common.upgrades;
 
 import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.api.upgrade.PNCUpgrade;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.fml.ModList;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.fml.ModList;
 import org.apache.commons.lang3.Validate;
 
 import java.util.List;
@@ -62,7 +62,7 @@ public class PNCUpgradeImpl implements PNCUpgrade {
 
     @Override
     public final Item getItem(int tier) {
-        return ForgeRegistries.ITEMS.getValue(getItemRegistryName(tier));
+        return BuiltInRegistries.ITEM.get(getItemRegistryName(tier));
     }
 
     @Override

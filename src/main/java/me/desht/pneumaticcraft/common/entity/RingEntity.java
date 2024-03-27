@@ -18,16 +18,13 @@
 package me.desht.pneumaticcraft.common.entity;
 
 import me.desht.pneumaticcraft.client.util.ProgressingLine;
-import me.desht.pneumaticcraft.common.core.ModEntityTypes;
+import me.desht.pneumaticcraft.common.registry.ModEntityTypes;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.network.NetworkHooks;
 
 public class RingEntity extends Entity {
     public ProgressingLine ring, oldRing;
@@ -65,10 +62,10 @@ public class RingEntity extends Entity {
         }
     }
 
-    @Override
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return NetworkHooks.getEntitySpawningPacket(this);
-    }
+//    @Override
+//    public Packet<ClientGamePacketListener> getAddEntityPacket() {
+//        return NetworkHooks.getEntitySpawningPacket(this);
+//    }
 
     @Override
     public void tick() {

@@ -41,12 +41,12 @@ public class WidgetTextField extends EditBox {
         int oldCursorPos = getCursorPosition();
         if (passwordBox) {
             setValue(StringUtils.repeat('*', oldText.length()));
-            moveCursorTo(oldCursorPos);
+            moveCursorTo(oldCursorPos, false);
         }
         super.renderWidget(graphics, mouseX, mouseY, partialTick);
         if (passwordBox) {
             setValue(oldText);
-            moveCursorTo(oldCursorPos);
+            moveCursorTo(oldCursorPos, false);
         }
     }
 

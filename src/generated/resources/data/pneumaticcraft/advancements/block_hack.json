@@ -2,22 +2,20 @@
   "parent": "pneumaticcraft:pneumatic_armor",
   "criteria": {
     "0": {
-      "conditions": {},
+      "conditions": {
+        "id": "pneumaticcraft:block_hack"
+      },
       "trigger": "pneumaticcraft:block_hack"
     }
   },
   "display": {
-    "announce_to_chat": true,
     "background": "pneumaticcraft:textures/gui/advancement_bg.png",
     "description": {
       "translate": "pneumaticcraft.advancement.block_hack.desc"
     },
-    "frame": "task",
-    "hidden": false,
     "icon": {
       "item": "pneumaticcraft:block_tracker_upgrade"
     },
-    "show_toast": true,
     "title": {
       "translate": "pneumaticcraft.advancement.block_hack"
     }

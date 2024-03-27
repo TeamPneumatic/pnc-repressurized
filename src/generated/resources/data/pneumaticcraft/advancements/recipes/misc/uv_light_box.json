@@ -22,14 +22,13 @@
   },
   "requirements": [
     [
-      "has_pcb_blueprint",
-      "has_the_recipe"
+      "has_the_recipe",
+      "has_pcb_blueprint"
     ]
   ],
   "rewards": {
     "recipes": [
       "pneumaticcraft:uv_light_box"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }

@@ -19,40 +19,37 @@ package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.common.amadron.AmadronOfferManager;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.network.NetworkEvent;
+import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 
-import java.util.function.Supplier;
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 /**
  * Received on: CLIENT
  * Sent by server when an order is purchased by someone, to update remaining stock levels as seen on clients.
  */
-public class PacketAmadronStockUpdate {
-    private final ResourceLocation id;
-    private final int stock;
+public record PacketAmadronStockUpdate(ResourceLocation id, int stock) implements CustomPacketPayload {
+    public static final ResourceLocation ID = RL("amadron_stock_update");
 
-    public PacketAmadronStockUpdate(ResourceLocation id, int stock) {
-        this.id = id;
-        this.stock = stock;
+    public static PacketAmadronStockUpdate fromNetwork(FriendlyByteBuf buffer) {
+        return new PacketAmadronStockUpdate(buffer.readResourceLocation(), buffer.readVarInt());
     }
 
-    public PacketAmadronStockUpdate(FriendlyByteBuf buffer) {
-        this.id = buffer.readResourceLocation();
-        this.stock = buffer.readVarInt();
-    }
-
-    public void toBytes(FriendlyByteBuf buf) {
+    @Override
+    public void write(FriendlyByteBuf buf) {
         buf.writeResourceLocation(id);
         buf.writeVarInt(stock);
     }
 
-    public void handle(Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> {
-            if (ctx.get().getSender() == null) {
-                AmadronOfferManager.getInstance().updateStock(id, stock);
-            }
-        });
-        ctx.get().setPacketHandled(true);
+    @Override
+    public ResourceLocation id() {
+        return ID;
+    }
+
+    public static void handle(PacketAmadronStockUpdate message, PlayPayloadContext ctx) {
+        ctx.workHandler().submitAsync(() ->
+                AmadronOfferManager.getInstance().updateStock(message.id(), message.stock())
+        );
     }
 }

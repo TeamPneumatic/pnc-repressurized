@@ -1,16 +1,17 @@
 {
   "type": "pneumaticcraft:amadron",
-  "id": "pneumaticcraft:amadron/assembly_program_laser",
   "input": {
-    "type": "ITEM",
-    "amount": 8,
-    "id": "minecraft:emerald"
+    "resource": {
+      "Count": 8,
+      "id": "minecraft:emerald"
+    }
   },
   "level": 0,
+  "offer_id": "pneumaticcraft:amadron/assembly_program_laser",
   "output": {
-    "type": "ITEM",
-    "amount": 1,
-    "id": "pneumaticcraft:assembly_program_laser"
-  },
-  "static": true
+    "resource": {
+      "Count": 1,
+      "id": "pneumaticcraft:assembly_program_laser"
+    }
+  }
 }

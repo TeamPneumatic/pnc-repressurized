@@ -21,8 +21,6 @@ import com.google.common.collect.ImmutableMap;
 import me.desht.pneumaticcraft.api.crafting.recipe.FluidMixerRecipe;
 import me.desht.pneumaticcraft.api.pressure.PressureTier;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
-import me.desht.pneumaticcraft.common.core.ModBlockEntities;
-import me.desht.pneumaticcraft.common.core.ModRecipeTypes;
 import me.desht.pneumaticcraft.common.inventory.FluidMixerMenu;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.inventory.handler.OutputItemHandler;
@@ -30,11 +28,15 @@ import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketPlaySound;
+import me.desht.pneumaticcraft.common.recipes.RecipeCaches;
+import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
+import me.desht.pneumaticcraft.common.registry.ModRecipeTypes;
 import me.desht.pneumaticcraft.common.util.PNCFluidTank;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -43,16 +45,15 @@ import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.FluidUtil;
-import net.minecraftforge.fluids.IFluidTank;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemStackHandler;
-import org.jetbrains.annotations.NotNull;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidUtil;
+import net.neoforged.neoforge.fluids.IFluidTank;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.ItemStackHandler;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -62,12 +63,12 @@ public class FluidMixerBlockEntity extends AbstractAirHandlingBlockEntity implem
         IMinWorkingPressure, IRedstoneControl<FluidMixerBlockEntity>, MenuProvider,
         ISerializableTanks, IAutoFluidEjecting
 {
-    // Maps a fluid to all of the other fluids it can combine with
+    // Maps a fluid to all the other fluids it can combine with
     private static final Map<Fluid, Set<Fluid>> FLUID_MATCHES = new HashMap<>();
 
     private final ItemStackHandler outputInv = new BaseItemStackHandler(this, 1);
     private final OutputItemHandler outputInvWrapper = new OutputItemHandler(outputInv);
-    private final LazyOptional<IItemHandler> invCap = LazyOptional.of(() -> outputInvWrapper);
+//    private final LazyOptional<IItemHandler> invCap = LazyOptional.of(() -> outputInvWrapper);
 
     @GuiSynced
     @DescSynced
@@ -81,7 +82,7 @@ public class FluidMixerBlockEntity extends AbstractAirHandlingBlockEntity implem
     @GuiSynced
     private float requiredPressure;
     @GuiSynced
-    public int craftingProgress = 0;
+    public float craftingProgress = 0;
     @GuiSynced
     public int maxProgress; // 0 when no recipe, recipe's process time * 100 when there is a recipe
     @DescSynced
@@ -95,12 +96,17 @@ public class FluidMixerBlockEntity extends AbstractAirHandlingBlockEntity implem
     private FluidMixerRecipe currentRecipe = null;
     private boolean searchRecipes = true;
     private final MixerFluidHandler fluidHandler = new MixerFluidHandler();
-    private final LazyOptional<IFluidHandler> fluidCap = LazyOptional.of(() -> fluidHandler);
+//    private final LazyOptional<IFluidHandler> fluidCap = LazyOptional.of(() -> fluidHandler);
 
     private final SmartSyncTank[] tanks = new SmartSyncTank[] { inputTank1, inputTank2, outputTank };
 
     public FluidMixerBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.FLUID_MIXER.get(), pos, state, PressureTier.TIER_ONE, PneumaticValues.VOLUME_FLUID_MIXER, 4);
+        super(ModBlockEntityTypes.FLUID_MIXER.get(), pos, state, PressureTier.TIER_ONE, PneumaticValues.VOLUME_FLUID_MIXER, 4);
+    }
+
+    @Override
+    public boolean hasFluidCapability() {
+        return true;
     }
 
     @Override
@@ -127,10 +133,17 @@ public class FluidMixerBlockEntity extends AbstractAirHandlingBlockEntity implem
 
         didWork = false;
         if (searchRecipes) {
-            currentRecipe = findApplicableRecipe();
-            currentRecipeIdSynced = currentRecipe == null ? "" : currentRecipe.getId().toString();
-            requiredPressure = currentRecipe != null ? currentRecipe.getRequiredPressure() : 0f;
-            maxProgress = currentRecipe != null ? currentRecipe.getProcessingTime() * 100 : 0;
+            RecipeCaches.FLUID_MIXER.getCachedRecipe(this::findApplicableRecipe, this::genIngredientHash).ifPresentOrElse(holder -> {
+                currentRecipe = holder.value();
+                currentRecipeIdSynced = holder.id().toString();
+                requiredPressure = currentRecipe.getRequiredPressure();
+                maxProgress = currentRecipe.getProcessingTime() * 100;
+            }, () -> {
+                currentRecipe = null;
+                currentRecipeIdSynced = "";
+                requiredPressure = 0f;
+                maxProgress = 0;
+            });
             searchRecipes = false;
         }
         if (rsController.shouldRun() && currentRecipe != null && getPressure() >= requiredPressure && hasOutputSpace()) {
@@ -194,30 +207,23 @@ public class FluidMixerBlockEntity extends AbstractAirHandlingBlockEntity implem
                 || outputTank.fill(currentRecipe.getOutputFluid(), IFluidHandler.FluidAction.SIMULATE) >= currentRecipe.getOutputFluid().getAmount();
     }
 
-    private FluidMixerRecipe findApplicableRecipe() {
-        for (FluidMixerRecipe recipe : ModRecipeTypes.getRecipes(level, ModRecipeTypes.FLUID_MIXER)) {
-            if (recipe.matches(inputTank1.getFluid(), inputTank2.getFluid())) {
-                return recipe;
+    private Optional<RecipeHolder<FluidMixerRecipe>> findApplicableRecipe() {
+        for (RecipeHolder<FluidMixerRecipe> holder : ModRecipeTypes.getRecipes(level, ModRecipeTypes.FLUID_MIXER)) {
+            if (holder.value().matches(inputTank1.getFluid(), inputTank2.getFluid())) {
+                return Optional.of(holder);
             }
         }
-        return null;
+        return Optional.empty();
     }
 
     @Override
-    public IItemHandler getPrimaryInventory() {
+    public IItemHandler getItemHandler(@Nullable Direction dir) {
         return outputInvWrapper;
     }
 
-    @Nonnull
     @Override
-    protected LazyOptional<IItemHandler> getInventoryCap(Direction side) {
-        return invCap;
-    }
-
-    @NotNull
-    @Override
-    public LazyOptional<IFluidHandler> getFluidCap(Direction side) {
-        return fluidCap.cast();
+    public IFluidHandler getFluidHandler(@org.jetbrains.annotations.Nullable Direction dir) {
+        return fluidHandler;
     }
 
     @Override
@@ -326,6 +332,20 @@ public class FluidMixerBlockEntity extends AbstractAirHandlingBlockEntity implem
 
     public float getCraftingPercentage() {
         return maxProgress > 0 ? (float)craftingProgress / maxProgress : 0;
+    }
+
+    public int genIngredientHash() {
+        FluidStack f1 = inputTank1.getFluid();
+        FluidStack f2 = inputTank2.getFluid();
+        int n1 = f1.hasTag() ? f1.getTag().hashCode() : 0;
+        int n2 = f2.hasTag() ? f2.getTag().hashCode() : 0;
+
+        return Objects.hash(
+                BuiltInRegistries.FLUID.getId(f1.getFluid()),
+                n1,
+                BuiltInRegistries.FLUID.getId(f2.getFluid()),
+                n2
+        );
     }
 
     private class MixerFluidHandler implements IFluidHandler {

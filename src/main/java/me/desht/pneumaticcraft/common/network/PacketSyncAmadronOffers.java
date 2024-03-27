@@ -17,57 +17,65 @@
 
 package me.desht.pneumaticcraft.common.network;
 
-import me.desht.pneumaticcraft.api.crafting.recipe.AmadronRecipe;
 import me.desht.pneumaticcraft.common.amadron.AmadronOfferManager;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOffer;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronPlayerOffer;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.function.Supplier;
+import java.util.List;
+
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 /**
  * Received on: CLIENT
  * Sent by server to sync up current Amadron offer list when the offer list changes (due to a shuffle or reload),
  * or when a player logs in
  */
-public class PacketSyncAmadronOffers {
-    private final Collection<AmadronRecipe> activeOffers;
-    private final boolean notifyPlayer;
+public record PacketSyncAmadronOffers(Collection<AmadronOffer> activeOffers, boolean notifyPlayer) implements CustomPacketPayload {
+    public static final ResourceLocation ID = RL("sync_amadron_offers");
 
-    public PacketSyncAmadronOffers(boolean notifyPlayer) {
-        this.notifyPlayer = notifyPlayer;
-        this.activeOffers = AmadronOfferManager.getInstance().getActiveOffers();
+    public static PacketSyncAmadronOffers create(boolean notifyPlayer) {
+        return new PacketSyncAmadronOffers(AmadronOfferManager.getInstance().getActiveOffers(), notifyPlayer);
     }
 
-    public PacketSyncAmadronOffers(FriendlyByteBuf buf) {
-        this.notifyPlayer = buf.readBoolean();
-        this.activeOffers = new ArrayList<>();
+    public static PacketSyncAmadronOffers fromNetwork(FriendlyByteBuf buf) {
+        boolean notifyPlayer = buf.readBoolean();
+        List<AmadronOffer>  activeOffers = new ArrayList<>();
         int offerCount = buf.readVarInt();
         for (int i = 0; i < offerCount; i++) {
             if (buf.readBoolean()) {
-                activeOffers.add(AmadronPlayerOffer.playerOfferFromBuf(buf.readResourceLocation(), buf));
+                activeOffers.add(AmadronPlayerOffer.playerOfferFromBuf(buf));
             } else {
                 activeOffers.add(AmadronOffer.offerFromBuf(buf.readResourceLocation(), buf));
             }
         }
+        return new PacketSyncAmadronOffers(activeOffers, notifyPlayer);
     }
 
-    public void toBytes(FriendlyByteBuf buf) {
+    @Override
+    public void write(FriendlyByteBuf buf) {
         buf.writeBoolean(notifyPlayer);
         buf.writeVarInt(activeOffers.size());
-        for (AmadronRecipe offer : activeOffers) {
+        for (AmadronOffer offer : activeOffers) {
             buf.writeBoolean(offer instanceof AmadronPlayerOffer);
-            buf.writeResourceLocation(offer.getId());
             offer.write(buf);
         }
     }
 
-    public void handle(Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> AmadronOfferManager.getInstance().syncOffers(activeOffers, notifyPlayer));
-        ctx.get().setPacketHandled(true);
+    @Override
+    public ResourceLocation id() {
+        return ID;
+    }
+
+    public static void handle(PacketSyncAmadronOffers message, PlayPayloadContext ctx) {
+        ctx.workHandler().submitAsync(() ->
+                AmadronOfferManager.getInstance().syncOffers(message.activeOffers(), message.notifyPlayer())
+        );
     }
 
 }

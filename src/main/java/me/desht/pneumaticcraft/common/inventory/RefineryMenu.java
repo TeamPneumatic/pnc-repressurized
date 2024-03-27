@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.common.inventory;
 
 import me.desht.pneumaticcraft.common.block.entity.RefineryControllerBlockEntity;
-import me.desht.pneumaticcraft.common.core.ModMenuTypes;
+import me.desht.pneumaticcraft.common.registry.ModMenuTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.FriendlyByteBuf;
@@ -38,7 +38,7 @@ public class RefineryMenu extends AbstractPneumaticCraftMenu<RefineryControllerB
     public RefineryMenu(int i, Inventory playerInventory, BlockPos pos) {
         super(ModMenuTypes.REFINERY.get(), i, playerInventory, pos);
 
-        RefineryControllerBlockEntity refinery = te;
+        RefineryControllerBlockEntity refinery = blockEntity;
         refinery.incPlayersUsing();
         refinery.onNeighborTileUpdate(null);
         while (refinery.getCachedNeighbor(Direction.UP) instanceof RefineryControllerBlockEntity) {
@@ -54,12 +54,12 @@ public class RefineryMenu extends AbstractPneumaticCraftMenu<RefineryControllerB
     public void removed(Player pPlayer) {
         super.removed(pPlayer);
 
-        te.decPlayersUsing();
+        blockEntity.decPlayersUsing();
     }
 
     @Override
     public boolean stillValid(Player player) {
-        return te.isGuiUseableByPlayer(player);
+        return blockEntity.isGuiUseableByPlayer(player);
     }
 
     @Nonnull

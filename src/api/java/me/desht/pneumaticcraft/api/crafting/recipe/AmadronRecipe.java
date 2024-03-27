@@ -18,6 +18,7 @@
 package me.desht.pneumaticcraft.api.crafting.recipe;
 
 import me.desht.pneumaticcraft.api.crafting.AmadronTradeResource;
+import me.desht.pneumaticcraft.api.misc.IPlayerFilter;
 import me.desht.pneumaticcraft.api.misc.IPlayerMatcher;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -32,16 +33,6 @@ import java.util.List;
  * not appear in JEI), but are still represented by instances of this class and displayed in the Amadron tablet.
  */
 public abstract class AmadronRecipe extends PneumaticCraftRecipe {
-    /**
-     * Construct a new offer.  The ID must be unique; for offers loaded from datapack, it is derived from the mod
-     * and JSON filename; for offers added by players, it is "pneumaticcraft:{playername}_{timestamp}"; for villager
-     * trades, it is "{modname}:{profession}_{level}_{index}"
-     * @param id the unique recipe ID
-     */
-    protected AmadronRecipe(ResourceLocation id) {
-        super(id);
-    }
-
     /**
      * Get the offer's input, i.e. what the Amadrone will collect from the player's Amadron inventory.
      * @return the input
@@ -113,6 +104,12 @@ public abstract class AmadronRecipe extends PneumaticCraftRecipe {
     public boolean isRemovableBy(Player player) {
         return false;
     }
+
+    public abstract boolean isVillagerTrade();
+
+    public abstract IPlayerFilter getWhitelist();
+
+    public abstract IPlayerFilter getBlacklist();
 
     /**
      * Is this offer available to the given player?  By default, all offers are available, but offers can be

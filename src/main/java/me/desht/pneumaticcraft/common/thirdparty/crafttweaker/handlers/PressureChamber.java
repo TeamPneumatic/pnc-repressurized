@@ -28,10 +28,11 @@ import com.blamejared.crafttweaker.api.item.MCItemStack;
 import com.blamejared.crafttweaker.api.recipe.manager.base.IRecipeManager;
 import com.blamejared.crafttweaker_annotations.annotations.Document;
 import me.desht.pneumaticcraft.api.crafting.recipe.PressureChamberRecipe;
-import me.desht.pneumaticcraft.common.core.ModRecipeTypes;
 import me.desht.pneumaticcraft.common.recipes.machine.PressureChamberRecipeImpl;
+import me.desht.pneumaticcraft.common.registry.ModRecipeTypes;
 import me.desht.pneumaticcraft.common.thirdparty.crafttweaker.CTUtils;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeType;
 import org.openzen.zencode.java.ZenCodeType;
 
@@ -44,10 +45,12 @@ public class PressureChamber implements IRecipeManager<PressureChamberRecipe> {
     @ZenCodeType.Method
     public void addRecipe(String name, IIngredientWithAmount[] inputs, IItemStack[] outputs, float pressure) {
         CraftTweakerAPI.apply(new ActionAddRecipe<>(this,
-                new PressureChamberRecipeImpl(new ResourceLocation("crafttweaker", fixRecipeName(name)),
+                new RecipeHolder<>(new ResourceLocation("crafttweaker", fixRecipeName(name)),
+                new PressureChamberRecipeImpl(
                         CTUtils.toStackedIngredientList(inputs),
                         pressure,
                         CTUtils.toItemStacks(outputs))
+                )
         ));
     }
 
@@ -55,7 +58,7 @@ public class PressureChamber implements IRecipeManager<PressureChamberRecipe> {
     public void remove(IIngredient output) {
         CraftTweakerAPI.apply(new ActionRemoveRecipe<>(this, iRecipe -> {
             if (iRecipe != null) {
-                return iRecipe.getResultsForDisplay().stream()
+                return iRecipe.value().getResultsForDisplay().stream()
                         .flatMap(Collection::stream)
                         .anyMatch(stack -> output.matches(new MCItemStack(stack)));
             }

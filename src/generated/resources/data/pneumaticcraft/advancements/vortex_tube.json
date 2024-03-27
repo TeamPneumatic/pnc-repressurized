@@ -15,17 +15,13 @@
     }
   },
   "display": {
-    "announce_to_chat": true,
     "background": "pneumaticcraft:textures/gui/advancement_bg.png",
     "description": {
       "translate": "pneumaticcraft.advancement.vortex_tube.desc"
     },
-    "frame": "task",
-    "hidden": false,
     "icon": {
       "item": "pneumaticcraft:vortex_tube"
     },
-    "show_toast": true,
     "title": {
       "translate": "pneumaticcraft.advancement.vortex_tube"
     }

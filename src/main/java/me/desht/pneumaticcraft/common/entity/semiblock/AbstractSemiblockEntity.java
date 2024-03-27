@@ -23,7 +23,7 @@ import me.desht.pneumaticcraft.api.semiblock.IDirectionalSemiblock;
 import me.desht.pneumaticcraft.api.semiblock.ISemiBlock;
 import me.desht.pneumaticcraft.api.semiblock.SemiblockEvent;
 import me.desht.pneumaticcraft.common.block.entity.IGUIButtonSensitive;
-import me.desht.pneumaticcraft.common.core.ModItems;
+import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.semiblock.SemiblockTracker;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Log;
@@ -31,11 +31,10 @@ import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -64,11 +63,11 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.network.NetworkHooks;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.capabilities.EntityCapability;
+import net.neoforged.neoforge.common.NeoForge;
 
 import java.util.Collection;
+import java.util.Optional;
 
 public abstract class AbstractSemiblockEntity extends Entity implements ISemiBlock, IGUIButtonSensitive {
     private static final EntityDataAccessor<Integer> TIME_SINCE_HIT = SynchedEntityData.defineId(AbstractSemiblockEntity.class, EntityDataSerializers.INT);
@@ -155,7 +154,7 @@ public abstract class AbstractSemiblockEntity extends Entity implements ISemiBlo
                 return InteractionResult.SUCCESS;
             } else {
                 if (onRightClickWithConfigurator(player, brtr.getDirection())) {
-                    player.getItemInHand(hand).getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY)
+                    PNCCapabilities.getAirHandler(player.getItemInHand(hand))
                             .ifPresent(h -> h.addAir(-PneumaticValues.USAGE_LOGISTICS_CONFIGURATOR));
                     return InteractionResult.SUCCESS;
                 } else {
@@ -230,7 +229,7 @@ public abstract class AbstractSemiblockEntity extends Entity implements ISemiBlo
      * @return the dropped item, or null if nothing should be dropped
      */
     protected Item getDroppedItem() {
-        return ForgeRegistries.ITEMS.getValue(getSemiblockId());
+        return BuiltInRegistries.ITEM.get(getSemiblockId());
     }
 
     @Override
@@ -290,13 +289,13 @@ public abstract class AbstractSemiblockEntity extends Entity implements ISemiBlo
 
     @Override
     public ResourceLocation getSemiblockId() {
-        return PneumaticCraftUtils.getRegistryName(ForgeRegistries.ENTITY_TYPES, getType()).orElseThrow();
+        return PneumaticCraftUtils.getRegistryName(BuiltInRegistries.ENTITY_TYPE, getType()).orElseThrow();
     }
 
-    @Override
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return NetworkHooks.getEntitySpawningPacket(this);
-    }
+//    @Override
+//    public Packet<ClientGamePacketListener> getAddEntityPacket() {
+//        return NetworkHooks.getEntitySpawningPacket(this);
+//    }
 
     @Override
     public CompoundTag serializeNBT(CompoundTag tag) {
@@ -324,7 +323,7 @@ public abstract class AbstractSemiblockEntity extends Entity implements ISemiBlo
         Level level = level();
         if (!level.isClientSide) {
             if (SemiblockTracker.getInstance().putSemiblock(level, blockPos, this)) {
-                MinecraftForge.EVENT_BUS.post(new SemiblockEvent.PlaceEvent(level, blockPos, this));
+                NeoForge.EVENT_BUS.post(new SemiblockEvent.PlaceEvent(level, blockPos, this));
                 level.markAndNotifyBlock(blockPos, level.getChunkAt(blockPos), getBlockState(), getBlockState(), Block.UPDATE_ALL, 512);
             } else {
                 Direction dir = this instanceof IDirectionalSemiblock d ? d.getSide() : null;
@@ -340,7 +339,7 @@ public abstract class AbstractSemiblockEntity extends Entity implements ISemiBlo
             Direction dir = this instanceof IDirectionalSemiblock d ? d.getSide() : null;
             SemiblockTracker.getInstance().clearSemiblock(level, blockPos, dir);
 
-            MinecraftForge.EVENT_BUS.post(new SemiblockEvent.BreakEvent(level, blockPos, this));
+            NeoForge.EVENT_BUS.post(new SemiblockEvent.BreakEvent(level, blockPos, this));
 
             if (beingRemoved) {
                 getDrops().forEach(this::dropItem);
@@ -444,5 +443,15 @@ public abstract class AbstractSemiblockEntity extends Entity implements ISemiBlo
 
     @Override
     public void readFromBuf(FriendlyByteBuf payload) {
+    }
+
+    @Override
+    public <T> Optional<T> getSemiblockCapability(EntityCapability<T, Direction> capability, Direction direction) {
+        return Optional.ofNullable(getCapability(capability, direction));
+    }
+
+    @Override
+    public <T> Optional<T> getSemiblockCapability(EntityCapability<T, Void> capability) {
+        return Optional.ofNullable(getCapability(capability));
     }
 }

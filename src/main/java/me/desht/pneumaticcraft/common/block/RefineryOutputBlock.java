@@ -3,8 +3,8 @@ package me.desht.pneumaticcraft.common.block;
 import me.desht.pneumaticcraft.api.crafting.recipe.RefineryRecipe;
 import me.desht.pneumaticcraft.common.block.entity.RefineryControllerBlockEntity;
 import me.desht.pneumaticcraft.common.block.entity.RefineryOutputBlockEntity;
-import me.desht.pneumaticcraft.common.core.ModBlockEntities;
-import me.desht.pneumaticcraft.common.core.ModBlocks;
+import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
+import me.desht.pneumaticcraft.common.registry.ModBlocks;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.VoxelShapeUtils;
 import net.minecraft.core.BlockPos;
@@ -23,11 +23,10 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.FluidUtil;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.items.ItemHandlerHelper;
-import net.minecraftforge.network.NetworkHooks;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidUtil;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.items.ItemHandlerHelper;
 import org.jetbrains.annotations.Nullable;
 
 public class RefineryOutputBlock extends AbstractPneumaticCraftBlock
@@ -91,7 +90,7 @@ public class RefineryOutputBlock extends AbstractPneumaticCraftBlock
 
     @Override
     public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult brtr) {
-        return world.getBlockEntity(pos, ModBlockEntities.REFINERY_OUTPUT.get()).map(te -> {
+        return world.getBlockEntity(pos, ModBlockEntityTypes.REFINERY_OUTPUT.get()).map(te -> {
             // normally, activating any refinery output block would open the controller BE's gui, but if we
             // activate with a fluid tank in hand (which can actually transfer fluid out),
             // then we must activate the actual refinery output that was clicked
@@ -102,10 +101,10 @@ public class RefineryOutputBlock extends AbstractPneumaticCraftBlock
                     .orElse(false);
             if (canTransferFluid) {
                 return super.use(state, world, pos, player, hand, brtr);
-            } else if (!world.isClientSide) {
+            } else if (player instanceof ServerPlayer sp) {
                 RefineryControllerBlockEntity master = te.getRefineryController();
                 if (master != null) {
-                    NetworkHooks.openScreen((ServerPlayer) player, master, master.getBlockPos());
+                    sp.openMenu(master, master.getBlockPos());
                 }
             }
             return InteractionResult.SUCCESS;
@@ -147,7 +146,7 @@ public class RefineryOutputBlock extends AbstractPneumaticCraftBlock
     private void recache(LevelAccessor world, BlockPos pos) {
         PneumaticCraftUtils.getTileEntityAt(world, pos, RefineryOutputBlockEntity.class).ifPresent(te -> {
             RefineryControllerBlockEntity teC = te.getRefineryController();
-            if (teC != null) teC.cacheRefineryOutputs();
+            if (teC != null) teC.clearOutputCache();
         });
     }
 

@@ -23,6 +23,7 @@ import me.desht.pneumaticcraft.common.debug.DroneDebugger;
 import me.desht.pneumaticcraft.common.drone.ai.DroneAIExternalProgram;
 import me.desht.pneumaticcraft.common.drone.ai.DroneAIManager;
 import me.desht.pneumaticcraft.common.drone.progwidgets.IProgWidget;
+import me.desht.pneumaticcraft.common.network.DronePacket;
 import me.desht.pneumaticcraft.common.util.fakeplayer.DroneItemHandler;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvent;
@@ -105,4 +106,6 @@ public interface IDroneBase extends IDrone {
     }
 
     float getDronePressure();
+
+    DronePacket.DroneTarget getPacketTarget();
 }

@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.common.item;
 
 import me.desht.pneumaticcraft.api.data.PneumaticCraftTags;
-import me.desht.pneumaticcraft.common.core.ModItems;
+import me.desht.pneumaticcraft.common.registry.ModItems;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -57,7 +57,7 @@ public class SeismicSensorItem extends Item {
                                 ChatFormatting.GREEN + depthStr,
                                 ChatFormatting.GREEN.toString() + result.lakeSize()),
                         false);
-                player.playSound(SoundEvents.NOTE_BLOCK_CHIME.get(), 1f, 1f);
+                player.playSound(SoundEvents.NOTE_BLOCK_CHIME.value(), 1f, 1f);
             }, () -> {
                 player.displayClientMessage(Component.translatable("pneumaticcraft.message.seismicSensor.noOilFound"), false);
             });

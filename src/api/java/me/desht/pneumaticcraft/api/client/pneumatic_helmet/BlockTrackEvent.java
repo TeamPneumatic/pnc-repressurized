@@ -20,8 +20,8 @@ package me.desht.pneumaticcraft.api.client.pneumatic_helmet;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.eventbus.api.Cancelable;
-import net.minecraftforge.eventbus.api.Event;
+import net.neoforged.bus.api.Event;
+import net.neoforged.bus.api.ICancellableEvent;
 
 /**
  * Fired when a helmet Block Tracker is about to track a block. Can be canceled to prevent tracking.
@@ -29,8 +29,7 @@ import net.minecraftforge.eventbus.api.Event;
  *
  * @author MineMaarten
  */
-@Cancelable
-public class BlockTrackEvent extends Event {
+public class BlockTrackEvent extends Event implements ICancellableEvent {
 
     public final Level world;
     public final BlockPos pos;

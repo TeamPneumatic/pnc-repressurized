@@ -18,61 +18,60 @@
 package me.desht.pneumaticcraft.common.network;
 
 import io.netty.buffer.Unpooled;
-import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.network.NetworkEvent;
+import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 
+import javax.annotation.Nonnull;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-import java.util.function.Supplier;
+
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 /**
  * Received on: SERVER
- * First part of a following multi-part message from the client
+ * First part of a following multipart message from the client
  */
-public class PacketMultiHeader {
-    private final int length;
-    private final String className;
+public record PacketMultiHeader(int length, String className) implements CustomPacketPayload {
+    public static final ResourceLocation ID = RL("multi_header");
     private static final Map<UUID, PayloadBuffer> payloadBuffers = new HashMap<>();
 
-    PacketMultiHeader(int length, String className) {
-        this.length = length;
-        this.className = className;
+    public static PacketMultiHeader fromNetwork(FriendlyByteBuf buffer) {
+        return new PacketMultiHeader(buffer.readInt(), buffer.readUtf());
     }
 
-    PacketMultiHeader(FriendlyByteBuf buffer) {
-        length = buffer.readInt();
-        className = buffer.readUtf(32767);
-    }
-
-    public void toBytes(FriendlyByteBuf buf) {
+    @Override
+    public void write(FriendlyByteBuf buf) {
         buf.writeInt(length);
         buf.writeUtf(className);
     }
 
-    public void handle(Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> {
+    @Override
+    public ResourceLocation id() {
+        return ID;
+    }
+
+    public static void handle(PacketMultiHeader message, PlayPayloadContext ctx) {
+        ctx.player().ifPresent(player -> ctx.workHandler().submitAsync(() -> {
             try {
                 ClassLoader cl = Thread.currentThread().getContextClassLoader();
                 if (cl == null) cl = PacketMultiHeader.class.getClassLoader(); // fallback
-                Class<?> clazz = cl.loadClass(className);
-                UUID id = ctx.get().getSender() == null ? ClientUtils.getClientPlayer().getUUID() : ctx.get().getSender().getUUID();
-                payloadBuffers.put(id, new PayloadBuffer(clazz.asSubclass(ILargePayload.class), length));
+                Class<?> clazz = cl.loadClass(message.className());
+                payloadBuffers.put(player.getUUID(), new PayloadBuffer(clazz.asSubclass(ILargePayload.class), message.length()));
             } catch (ClassNotFoundException|ClassCastException e) {
                 e.printStackTrace();
             }
-        });
-        ctx.get().setPacketHandled(true);
+        }));
     }
 
-    static void receivePayload(Player player, byte[] payload) {
-        UUID id = player == null ? ClientUtils.getClientPlayer().getUUID() : player.getUUID();
-        PayloadBuffer buffer = payloadBuffers.get(id);
+    static void receivePayload(@Nonnull Player player, byte[] payload) {
+        PayloadBuffer buffer = payloadBuffers.get(player.getUUID());
         if (buffer != null) {
             System.arraycopy(payload, 0, buffer.payload, buffer.offset, payload.length);
             buffer.offset += ILargePayload.MAX_PAYLOAD_SIZE;
@@ -82,7 +81,7 @@ public class PacketMultiHeader {
                     Constructor<? extends ILargePayload> ctor = buffer.clazz.getConstructor(FriendlyByteBuf.class);
                     ILargePayload packet = ctor.newInstance(new FriendlyByteBuf(Unpooled.wrappedBuffer(buffer.payload)));
                     packet.handleLargePayload(player);
-                    payloadBuffers.remove(id);
+                    payloadBuffers.remove(player.getUUID());
                 } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
                     e.printStackTrace();
                 }

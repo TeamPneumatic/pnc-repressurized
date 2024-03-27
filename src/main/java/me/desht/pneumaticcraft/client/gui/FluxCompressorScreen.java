@@ -25,13 +25,13 @@ import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.block.entity.FluxCompressorBlockEntity;
 import me.desht.pneumaticcraft.common.inventory.FluxCompressorMenu;
+import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,7 +51,8 @@ public class FluxCompressorScreen extends AbstractPneumaticCraftContainerScreen<
         super.init();
 
         inputStat = addAnimatedStat(Component.literal("Input"), Textures.GUI_BUILDCRAFT_ENERGY, 0xFF555555, false);
-        te.getCapability(ForgeCapabilities.ENERGY).ifPresent(storage -> addRenderableWidget(new WidgetEnergy(leftPos + 20, topPos + 20, storage)));
+        IOHelper.getEnergyStorageForBlock(te).ifPresent(storage ->
+                addRenderableWidget(new WidgetEnergy(leftPos + 20, topPos + 20, storage)));
         addRenderableWidget(tempWidget = new WidgetTemperature(leftPos + 97, topPos + 20, TemperatureRange.of(223, 673), 273, 50)
                 .setOperatingRange(TemperatureRange.of(323, 625)).setShowOperatingRange(false));
     }

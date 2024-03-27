@@ -1,6 +1,6 @@
 {
-  "type": "pneumaticcraft:heat_properties",
-  "block": "minecraft:torch",
-  "temperature": 1700,
-  "thermalResistance": 100000
+   "thermalResistance" : 100000,
+   "temperature" : 1700,
+   "block" : "minecraft:torch",
+   "type" : "pneumaticcraft:heat_properties"
 }

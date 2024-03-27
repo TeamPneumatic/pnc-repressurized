@@ -26,10 +26,10 @@ import me.desht.pneumaticcraft.common.thirdparty.ModNameCache;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import mezz.jei.api.constants.VanillaTypes;
-import mezz.jei.api.forge.ForgeTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
+import mezz.jei.api.neoforge.NeoForgeTypes;
 import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
@@ -47,7 +47,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidStack;
 
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -98,13 +98,13 @@ public class JEIBlockHeatPropertiesCategory extends AbstractPNCCategory<HeatProp
 
         List<ItemStack> items = new ArrayList<>();
         List<FluidStack> fluids = new ArrayList<>();
-        collectOutputs(recipe.getTransformCold(), items, fluids);
-        collectOutputs(recipe.getTransformHot(), items, fluids);
+        collectOutputs(recipe.getTransformCold().orElse(null), items, fluids);
+        collectOutputs(recipe.getTransformHot().orElse(null), items, fluids);
 
         for (int idx = 0; idx < 2; idx++) {
             if (!fluids.get(idx).isEmpty()) {
                 builder.addSlot(RecipeIngredientRole.OUTPUT, OUTPUT_AREAS[idx].getX() + 2, OUTPUT_AREAS[idx].getY() - 1)
-                        .addIngredient(ForgeTypes.FLUID_STACK, fluids.get(idx));
+                        .addIngredient(NeoForgeTypes.FLUID_STACK, fluids.get(idx));
             } else if (!items.get(idx).isEmpty()) {
                 builder.addInvisibleIngredients(RecipeIngredientRole.OUTPUT)
                         .addItemStack(items.get(idx));
@@ -136,7 +136,7 @@ public class JEIBlockHeatPropertiesCategory extends AbstractPNCCategory<HeatProp
         if (block instanceof LiquidBlock l) {
             FluidStack stack = new FluidStack(l.getFluid(), 1000);
             builder.addSlot(RecipeIngredientRole.INPUT, INPUT_AREA.getX() + 2, INPUT_AREA.getY() - 1)
-                            .addIngredient(ForgeTypes.FLUID_STACK, stack);
+                            .addIngredient(NeoForgeTypes.FLUID_STACK, stack);
         } else {
             // items are rendered as blocks by renderBlock()
             builder.addInvisibleIngredients(RecipeIngredientRole.INPUT).addItemStack(new ItemStack(block));
@@ -157,28 +157,32 @@ public class JEIBlockHeatPropertiesCategory extends AbstractPNCCategory<HeatProp
         Component temp = xlate("pneumaticcraft.waila.temperature").append(Component.literal((recipe.getTemperature() - 273) + "°C"));
         graphics.drawString(fontRenderer, temp, 0, h * 2, 0x404040, false);
 
-        String res = NumberFormat.getNumberInstance(Locale.getDefault()).format(recipe.getThermalResistance());
-        graphics.drawString(fontRenderer, xlate("pneumaticcraft.gui.jei.thermalResistance").append(res), 0, h * 3, 0x404040, false);
+        recipe.getThermalResistance().ifPresent(resistance -> {
+            String res = NumberFormat.getNumberInstance(Locale.getDefault()).format(resistance);
+            graphics.drawString(fontRenderer, xlate("pneumaticcraft.gui.jei.thermalResistance").append(res), 0, h * 3, 0x404040, false);
+        });
 
         boolean showCapacity = false;
-        if (recipe.getTransformCold() != null) {
+        if (recipe.getTransformCold().isPresent()) {
             coldArea.draw(graphics, INPUT_AREA.getX() - coldArea.getWidth() - 5, 42);
             showCapacity = true;
         }
-        if (recipe.getTransformHot() != null) {
+        if (recipe.getTransformHot().isPresent()) {
             hotArea.draw(graphics, HOT_AREA.getX() - hotArea.getWidth() - 5, 42);
             showCapacity = true;
         }
 
         renderBlock(recipe.getBlockState(), graphics, INPUT_AREA.getX() + 9, INPUT_AREA.getY() + 1);
-        renderBlock(recipe.getTransformCold(), graphics, COLD_AREA.getX() + 9, COLD_AREA.getY() + 1);
-        renderBlock(recipe.getTransformHot(), graphics, HOT_AREA.getX() + 9, HOT_AREA.getY() + 1);
+        recipe.getTransformCold().ifPresent(state -> renderBlock(state, graphics, COLD_AREA.getX() + 9, COLD_AREA.getY() + 1));
+        recipe.getTransformHot().ifPresent(state -> renderBlock(state, graphics, HOT_AREA.getX() + 9, HOT_AREA.getY() + 1));
 
         if (showCapacity) {
-            graphics.drawString(fontRenderer, xlate("pneumaticcraft.gui.jei.heatCapacity",
-                    NumberFormat.getNumberInstance(Locale.getDefault()).format(recipe.getHeatCapacity())),
-                    0, getBackground().getHeight() - h, 0x404040, false
-            );
+            recipe.getHeatCapacity().ifPresent(heatCapacity -> {
+                graphics.drawString(fontRenderer, xlate("pneumaticcraft.gui.jei.heatCapacity",
+                                NumberFormat.getNumberInstance(Locale.getDefault()).format(heatCapacity)),
+                        0, getBackground().getHeight() - h, 0x404040, false
+                );
+            });
         }
     }
 
@@ -189,10 +193,10 @@ public class JEIBlockHeatPropertiesCategory extends AbstractPNCCategory<HeatProp
             IFocus<?> focus = null;
             if (INPUT_AREA.contains((int) mouseX, (int) mouseY)) {
                 focus = makeFocus(recipe.getBlock(), mouseButton == 0 ? RecipeIngredientRole.OUTPUT : RecipeIngredientRole.INPUT);
-            } else if (recipe.getTransformCold() != null && COLD_AREA.contains((int) mouseX, (int) mouseY)) {
-                focus = makeFocus(recipe.getTransformCold().getBlock(), mouseButton == 0 ? RecipeIngredientRole.OUTPUT : RecipeIngredientRole.INPUT);
-            } else if (recipe.getTransformHot() != null && HOT_AREA.contains((int) mouseX, (int) mouseY)) {
-                focus = makeFocus(recipe.getTransformHot().getBlock(), mouseButton == 0 ? RecipeIngredientRole.OUTPUT : RecipeIngredientRole.INPUT);
+            } else if (recipe.getTransformCold().isPresent() && COLD_AREA.contains((int) mouseX, (int) mouseY)) {
+                focus = makeFocus(recipe.getTransformCold().get().getBlock(), mouseButton == 0 ? RecipeIngredientRole.OUTPUT : RecipeIngredientRole.INPUT);
+            } else if (recipe.getTransformHot().isPresent() && HOT_AREA.contains((int) mouseX, (int) mouseY)) {
+                focus = makeFocus(recipe.getTransformHot().get().getBlock(), mouseButton == 0 ? RecipeIngredientRole.OUTPUT : RecipeIngredientRole.INPUT);
             }
             if (focus != null) {
                 JEIPlugin.recipesGui.show(focus);
@@ -202,35 +206,18 @@ public class JEIBlockHeatPropertiesCategory extends AbstractPNCCategory<HeatProp
         return false;
     }
 
-//    @Override
-//    public boolean handleClick(HeatPropertiesRecipe recipe, double mouseX, double mouseY, int mouseButton) {
-//        IFocus<?> focus = null;
-//        if (INPUT_AREA.contains((int)mouseX, (int)mouseY)) {
-//            focus = makeFocus(recipe.getBlock(), mouseButton == 0 ? RecipeIngredientRole.OUTPUT : RecipeIngredientRole.INPUT);
-//        } else if (recipe.getTransformCold() != null && COLD_AREA.contains((int)mouseX, (int)mouseY)) {
-//            focus = makeFocus(recipe.getTransformCold().getBlock(), mouseButton == 0 ? RecipeIngredientRole.OUTPUT : RecipeIngredientRole.INPUT);
-//        } else if (recipe.getTransformHot() != null && HOT_AREA.contains((int)mouseX, (int)mouseY)) {
-//            focus = makeFocus(recipe.getTransformHot().getBlock(), mouseButton == 0 ? RecipeIngredientRole.OUTPUT : RecipeIngredientRole.INPUT);
-//        }
-//        if (focus != null) {
-//            JEIPlugin.recipesGui.show(focus);
-//            return true;
-//        }
-//        return false;
-//    }
-
     @Override
     public List<Component> getTooltipStrings(HeatPropertiesRecipe recipe, IRecipeSlotsView recipeSlotsView, double mouseX, double mouseY) {
         List<Component> l = new ArrayList<>();
         if (INPUT_AREA.contains((int)mouseX, (int)mouseY)) {
             addTooltip(recipe.getBlock(), l);
-        } else if (recipe.getTransformCold() != null && COLD_AREA.contains((int)mouseX, (int)mouseY)) {
-            addTooltip(recipe.getTransformCold().getBlock(), l);
-        } else if (recipe.getTransformHot() != null && HOT_AREA.contains((int)mouseX, (int)mouseY)) {
-            addTooltip(recipe.getTransformHot().getBlock(), l);
+        } else if (recipe.getTransformCold().isPresent() && COLD_AREA.contains((int)mouseX, (int)mouseY)) {
+            addTooltip(recipe.getTransformCold().get().getBlock(), l);
+        } else if (recipe.getTransformHot().isPresent() && HOT_AREA.contains((int)mouseX, (int)mouseY)) {
+            addTooltip(recipe.getTransformHot().get().getBlock(), l);
         } else if (mouseY > 20 && mouseY < 30) {
             l.add(xlate("pneumaticcraft.gui.jei.tooltip.thermalResistance"));
-        } else if (recipe.getHeatCapacity() != 0 && mouseY > 62) {
+        } else if (recipe.getHeatCapacity().isPresent() && mouseY > 62) {
             l.add(xlate("pneumaticcraft.gui.jei.tooltip.heatCapacity"));
         }
         return l;

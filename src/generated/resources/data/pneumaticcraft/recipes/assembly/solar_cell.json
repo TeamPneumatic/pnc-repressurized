@@ -3,7 +3,7 @@
   "input": {
     "item": "pneumaticcraft:solar_wafer"
   },
-  "program": "drill",
+  "program": "DRILL",
   "result": {
     "item": "pneumaticcraft:solar_cell"
   }

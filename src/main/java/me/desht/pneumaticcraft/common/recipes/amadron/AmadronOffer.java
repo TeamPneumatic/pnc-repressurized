@@ -17,27 +17,25 @@
 
 package me.desht.pneumaticcraft.common.recipes.amadron;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonSyntaxException;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import me.desht.pneumaticcraft.api.crafting.AmadronTradeResource;
 import me.desht.pneumaticcraft.api.crafting.recipe.AmadronRecipe;
-import me.desht.pneumaticcraft.common.core.ModRecipeSerializers;
-import me.desht.pneumaticcraft.common.core.ModRecipeTypes;
-import me.desht.pneumaticcraft.common.util.PlayerFilter;
+import me.desht.pneumaticcraft.common.registry.ModRecipeSerializers;
+import me.desht.pneumaticcraft.common.registry.ModRecipeTypes;
+import me.desht.pneumaticcraft.common.util.playerfilter.PlayerFilter;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.GsonHelper;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.item.trading.MerchantOffer;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Objects;
 
@@ -45,33 +43,52 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class AmadronOffer extends AmadronRecipe {
     @Nonnull
+    private final ResourceLocation offerId;
+    @Nonnull
     protected final AmadronTradeResource input;
     @Nonnull
     protected final AmadronTradeResource output;
     protected final PlayerFilter whitelist;
     protected final PlayerFilter blacklist;
-    private final boolean isStaticOffer;
+    private final boolean staticOffer;
+    private final boolean villagerTrade;
     private final int tradeLevel;  // determines rarity of periodic offers (1 = common, 5 = very rare)
     private final int maxStock; // max number of trades available; negative number indicates unlimited trades (or a player trade)
 
     protected int inStock; // current number of trades available; gets reset to max when offer is shuffled in (except for player trades)
-    private boolean isVillagerTrade = false;
 
-    public AmadronOffer(ResourceLocation id, @Nonnull AmadronTradeResource input, @Nonnull AmadronTradeResource output, boolean isStaticOffer,
+    public AmadronOffer(@Nonnull ResourceLocation offerId, @Nonnull AmadronTradeResource input, @Nonnull AmadronTradeResource output,
+                        boolean staticOffer, boolean villagerTrade,
                         int tradeLevel, int maxStock, int inStock, PlayerFilter whitelist, PlayerFilter blacklist) {
-        super(id);
+        this.offerId = offerId;
         this.input = Objects.requireNonNull(input).validate();
         this.output = Objects.requireNonNull(output).validate();
-        this.isStaticOffer = isStaticOffer;
+        this.staticOffer = staticOffer;
+        this.villagerTrade = villagerTrade;
         this.tradeLevel = tradeLevel;
         this.maxStock = maxStock;
         this.inStock = inStock;
         this.whitelist = whitelist;
         this.blacklist = blacklist;
+
     }
 
-    public AmadronOffer(ResourceLocation id, @Nonnull AmadronTradeResource input, @Nonnull AmadronTradeResource output, boolean isStaticOffer, int tradeLevel, int maxStock) {
-        this(id, input, output, isStaticOffer, tradeLevel, maxStock, maxStock, PlayerFilter.YES, PlayerFilter.NO);
+    public static AmadronOffer villagerTrade(ResourceLocation offerId, MerchantOffer merchantOffer, int level) {
+        return new AmadronOffer(offerId,
+                AmadronTradeResource.of(merchantOffer.getBaseCostA()),
+                AmadronTradeResource.of(merchantOffer.getResult()),
+                false,
+                true,
+                level,
+                merchantOffer.getMaxUses(),
+                merchantOffer.getMaxUses(),
+                PlayerFilter.YES,
+                PlayerFilter.NO
+        );
+    }
+
+    public ResourceLocation getOfferId() {
+        return offerId;
     }
 
     @Override
@@ -88,17 +105,12 @@ public class AmadronOffer extends AmadronRecipe {
 
     @Override
     public boolean isStaticOffer() {
-        return isStaticOffer;
+        return staticOffer;
     }
 
     @Override
     public int getTradeLevel() {
         return tradeLevel;
-    }
-
-    public AmadronOffer setVillagerTrade() {
-        isVillagerTrade = true;
-        return this;
     }
 
     public boolean equivalentTo(AmadronPlayerOffer offer) {
@@ -107,7 +119,7 @@ public class AmadronOffer extends AmadronRecipe {
 
     @Override
     public Component getVendorName() {
-        return xlate(isVillagerTrade ? "pneumaticcraft.gui.amadron.villager" : "pneumaticcraft.gui.amadron");
+        return xlate(villagerTrade ? "pneumaticcraft.gui.amadron.villager" : "pneumaticcraft.gui.amadron");
     }
 
     @Override
@@ -127,38 +139,13 @@ public class AmadronOffer extends AmadronRecipe {
     public void onTrade(int tradingAmount, String buyingPlayer) {
     }
 
-    @Override
-    public void write(FriendlyByteBuf buf) {
-        input.writeToBuf(buf);
-        output.writeToBuf(buf);
-        buf.writeBoolean(isStaticOffer);
-        buf.writeByte(tradeLevel);
-        buf.writeVarInt(maxStock);
-        buf.writeVarInt(inStock);
-        whitelist.toBytes(buf);
-        blacklist.toBytes(buf);
-    }
-
-    public static AmadronRecipe offerFromBuf(ResourceLocation id, FriendlyByteBuf buf) {
-        return ModRecipeSerializers.AMADRON_OFFERS.get().fromNetwork(id, buf);
-    }
-
-    public JsonObject toJson(JsonObject json) {
-        json.addProperty("id", getId().toString());
-        json.add("input", input.toJson());
-        json.add("output", output.toJson());
-        json.addProperty("static", isStaticOffer);
-        json.addProperty("level", tradeLevel);
-        if (maxStock > 0) json.addProperty("maxStock", maxStock);
-        if (whitelist.isReal()) json.add("whitelist", whitelist.toJson());
-        if (blacklist.isReal()) json.add("blacklist", blacklist.toJson());
-
-        return json;
+    public static AmadronOffer offerFromBuf(ResourceLocation id, FriendlyByteBuf buf) {
+        return ModRecipeSerializers.AMADRON_OFFERS.get().fromNetwork(buf);
     }
 
     @Override
     public String toString() {
-        return String.format("[id = %s, in = %s, out = %s, level = %d, maxStock = %d]", getId().toString(), input, output, tradeLevel, maxStock);
+        return String.format("[in = %s, out = %s, level = %d, maxStock = %d]", input, output, tradeLevel, maxStock);
     }
 
     /**
@@ -197,6 +184,21 @@ public class AmadronOffer extends AmadronRecipe {
     }
 
     @Override
+    public boolean isVillagerTrade() {
+        return villagerTrade;
+    }
+
+    @Override
+    public PlayerFilter getWhitelist() {
+        return whitelist;
+    }
+
+    @Override
+    public PlayerFilter getBlacklist() {
+        return blacklist;
+    }
+
+    @Override
     public boolean isUsableByPlayer(Player player) {
         return whitelist.test(player) && !blacklist.test(player);
     }
@@ -220,53 +222,69 @@ public class AmadronOffer extends AmadronRecipe {
         return whitelist.isReal() || blacklist.isReal();
     }
 
-    public static class Serializer<T extends AmadronRecipe> implements RecipeSerializer<T> {
+    public void write(FriendlyByteBuf buf) {
+        ModRecipeSerializers.AMADRON_OFFERS.get().toNetwork(buf, this);
+    }
+
+    public static class Serializer<T extends AmadronOffer> implements RecipeSerializer<T> {
         private final IFactory<T> factory;
+        private final Codec<T> codec;
 
         public Serializer(IFactory<T> factory) {
             this.factory = factory;
+
+            codec = RecordCodecBuilder.create(inst -> inst.group(
+                    ResourceLocation.CODEC.fieldOf("offer_id").forGetter(AmadronOffer::getOfferId),
+                    AmadronTradeResource.CODEC.fieldOf("input").forGetter(AmadronOffer::getInput),
+                    AmadronTradeResource.CODEC.fieldOf("output").forGetter(AmadronOffer::getOutput),
+                    Codec.BOOL.optionalFieldOf("static", true).forGetter(AmadronOffer::isStaticOffer),
+                    Codec.BOOL.optionalFieldOf("villager_trade", false).forGetter(AmadronOffer::isVillagerTrade),
+                    Codec.INT.optionalFieldOf("level", 1).forGetter(AmadronOffer::getTradeLevel),
+                    Codec.INT.optionalFieldOf("maxStock", -1).forGetter(AmadronOffer::getMaxStock),
+                    Codec.INT.optionalFieldOf("inStock", -1).forGetter(AmadronOffer::getStock),
+                    PlayerFilter.CODEC.optionalFieldOf("whitelist", PlayerFilter.YES).forGetter(AmadronOffer::getWhitelist),
+                    PlayerFilter.CODEC.optionalFieldOf("blacklist", PlayerFilter.NO).forGetter(AmadronOffer::getBlacklist)
+            ).apply(inst, factory::create));
         }
 
         @Override
-        public T fromJson(ResourceLocation recipeId, JsonObject json) {
-            try {
-                int maxStock = GsonHelper.getAsInt(json, "maxStock", -1);
-                return factory.create(recipeId,
-                        AmadronTradeResource.fromJson(json.getAsJsonObject("input")),
-                        AmadronTradeResource.fromJson(json.getAsJsonObject("output")),
-                        GsonHelper.getAsBoolean(json, "static", true),
-                        GsonHelper.getAsInt(json, "level", 1),
-                        maxStock, maxStock,
-                        json.has("whitelist") ? PlayerFilter.fromJson(json.getAsJsonObject("whitelist")) : PlayerFilter.YES,
-                        json.has("blacklist") ? PlayerFilter.fromJson(json.getAsJsonObject("blacklist")) : PlayerFilter.NO
-                );
-            } catch (CommandSyntaxException e) {
-                throw new JsonSyntaxException(e.getMessage());
-            }
+        public Codec<T> codec() {
+            return codec;
         }
 
-        @Nullable
         @Override
-        public T fromNetwork(ResourceLocation recipeId, FriendlyByteBuf buffer) {
-            return factory.create(recipeId,
-                    AmadronTradeResource.fromPacketBuf(buffer),
-                    AmadronTradeResource.fromPacketBuf(buffer),
+        public T fromNetwork(FriendlyByteBuf buffer) {
+            return factory.create(
+                    buffer.readResourceLocation(),
+                    AmadronTradeResource.fromNetwork(buffer),
+                    AmadronTradeResource.fromNetwork(buffer),
+                    buffer.readBoolean(),
                     buffer.readBoolean(),
                     buffer.readByte(),
                     buffer.readVarInt(),
                     buffer.readVarInt(),
-                    PlayerFilter.fromBytes(buffer),
-                    PlayerFilter.fromBytes(buffer)
+                    PlayerFilter.fromNetwork(buffer),
+                    PlayerFilter.fromNetwork(buffer)
             );
         }
 
         @Override
-        public void toNetwork(FriendlyByteBuf buffer, T recipe) {
-            recipe.write(buffer);
+        public void toNetwork(FriendlyByteBuf buf, T recipe) {
+            buf.writeResourceLocation(recipe.getOfferId());
+            recipe.getInput().toNetwork(buf);
+            recipe.getOutput().toNetwork(buf);
+            buf.writeBoolean(recipe.isStaticOffer());
+            buf.writeBoolean(recipe.isVillagerTrade());
+            buf.writeByte(recipe.getTradeLevel());
+            buf.writeVarInt(recipe.getMaxStock());
+            buf.writeVarInt(recipe.getStock());
+            recipe.getWhitelist().toNetwork(buf);
+            recipe.getBlacklist().toNetwork(buf);
         }
 
         public interface IFactory<T extends AmadronRecipe> {
-            T create(ResourceLocation id, AmadronTradeResource input, AmadronTradeResource output, boolean isStaticOffer, int level, int maxStock, int inStock, PlayerFilter whitelist, PlayerFilter blacklist);
+            T create(ResourceLocation offerId, AmadronTradeResource input, AmadronTradeResource output, boolean isStaticOffer,
+                     boolean villagerTrade, int level, int maxStock, int inStock, PlayerFilter whitelist, PlayerFilter blacklist);
         }
     }
 }

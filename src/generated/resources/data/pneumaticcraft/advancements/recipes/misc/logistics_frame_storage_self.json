@@ -22,14 +22,13 @@
   },
   "requirements": [
     [
-      "has_logistics_frame_storage",
-      "has_the_recipe"
+      "has_the_recipe",
+      "has_logistics_frame_storage"
     ]
   ],
   "rewards": {
     "recipes": [
       "pneumaticcraft:logistics_frame_storage_self"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }

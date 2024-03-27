@@ -6,7 +6,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.phys.AABB;
 
 import java.util.Collection;
-import java.util.Collections;
+import java.util.List;
 
 public class RenderRefineryOutput extends AbstractFluidTER<RefineryOutputBlockEntity> {
     private static final AABB TANK_BOUNDS = new AABB(4.1 / 16f, 1 / 16f, 0.1 / 16f, 11.9 / 16f, 13.9 / 16f, 3 / 16f);
@@ -26,8 +26,6 @@ public class RenderRefineryOutput extends AbstractFluidTER<RefineryOutputBlockEn
 
     @Override
     Collection<TankRenderInfo> getTanksToRender(RefineryOutputBlockEntity te) {
-        return Collections.singletonList(new TankRenderInfo(te.getOutputTank(), BOUNDS[te.getRotation().get2DDataValue()]).without(Direction.DOWN));
+        return List.of(new TankRenderInfo(te.getOutputTank(), BOUNDS[te.getRotation().get2DDataValue()]).without(Direction.DOWN));
     }
-
-
 }

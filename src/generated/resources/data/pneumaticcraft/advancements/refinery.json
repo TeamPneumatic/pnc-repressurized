@@ -26,17 +26,14 @@
     }
   },
   "display": {
-    "announce_to_chat": true,
     "background": "pneumaticcraft:textures/gui/advancement_bg.png",
     "description": {
       "translate": "pneumaticcraft.advancement.refinery.desc"
     },
     "frame": "goal",
-    "hidden": false,
     "icon": {
       "item": "pneumaticcraft:refinery"
     },
-    "show_toast": true,
     "title": {
       "translate": "pneumaticcraft.advancement.refinery"
     }

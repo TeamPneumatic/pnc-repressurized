@@ -20,38 +20,41 @@ package me.desht.pneumaticcraft.common.network;
 import me.desht.pneumaticcraft.common.tubemodules.AbstractTubeModule;
 import me.desht.pneumaticcraft.common.tubemodules.INetworkedModule;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
+
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 /**
  * Received on: SERVER
  * Sent by client when logistics module colour is updated via GUI
  */
-public class PacketTubeModuleColor extends PacketUpdateTubeModule {
-    private final int color;
+public record PacketTubeModuleColor<T extends AbstractTubeModule & INetworkedModule>(ModuleLocator locator, int color) implements TubeModulePacket<T> {
+    public static final ResourceLocation ID = RL("tube_module_color");
 
-    public PacketTubeModuleColor(AbstractTubeModule module) {
-        super(module);
-
-        this.color = ((INetworkedModule) module).getColorChannel();
+    public static <T extends AbstractTubeModule & INetworkedModule> PacketTubeModuleColor<T> create(T module) {
+        return new PacketTubeModuleColor<>(ModuleLocator.forModule(module), module.getColorChannel());
     }
 
-    PacketTubeModuleColor(FriendlyByteBuf buffer) {
-        super(buffer);
-
-        this.color = buffer.readByte();
+    public static <T extends AbstractTubeModule & INetworkedModule> PacketTubeModuleColor<T> fromNetwork(FriendlyByteBuf buffer) {
+        return new PacketTubeModuleColor<>(ModuleLocator.fromNetwork(buffer), buffer.readByte());
     }
 
     @Override
-    public void toBytes(FriendlyByteBuf buf) {
-        super.toBytes(buf);
-
+    public void write(FriendlyByteBuf buf) {
+        locator.write(buf);
         buf.writeByte(color);
     }
 
     @Override
-    protected void onModuleUpdate(AbstractTubeModule module, Player player) {
+    public void onModuleUpdate(AbstractTubeModule module, Player player) {
         if (module instanceof INetworkedModule net) {
             net.setColorChannel(color);
         }
+    }
+
+    @Override
+    public ResourceLocation id() {
+        return ID;
     }
 }

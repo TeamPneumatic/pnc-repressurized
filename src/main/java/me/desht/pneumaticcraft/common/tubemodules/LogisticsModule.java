@@ -23,12 +23,12 @@ import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.semiblock.ISemiBlock;
 import me.desht.pneumaticcraft.common.block.entity.PressureTubeBlockEntity;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
-import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.drone.LogisticsManager;
 import me.desht.pneumaticcraft.common.drone.LogisticsManager.LogisticsTask;
 import me.desht.pneumaticcraft.common.entity.semiblock.AbstractLogisticsFrameEntity;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdateLogisticsModule;
+import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.semiblock.SemiblockTracker;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -40,11 +40,10 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemHandlerHelper;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.ItemHandlerHelper;
 
 import java.util.List;
 import java.util.PriorityQueue;
@@ -144,7 +143,7 @@ public class LogisticsModule extends AbstractTubeModule implements INetworkedMod
             int colorId = color.getId();
             if (!player.level().isClientSide) {
                 setColorChannel(colorId);
-                NetworkHandler.sendToAllTracking(new PacketUpdateLogisticsModule(this, 0), getTube());
+                NetworkHandler.sendToAllTracking(PacketUpdateLogisticsModule.create(this, 0), getTube());
                 if (ConfigHelper.common().general.useUpDyesWhenColoring.get() && !player.isCreative()) {
                     heldStack.shrink(1);
                 }
@@ -167,7 +166,7 @@ public class LogisticsModule extends AbstractTubeModule implements INetworkedMod
 
         if (powered != getTube().getPressure() >= ConfigHelper.common().logistics.minPressure.get()) {
             powered = !powered;
-            NetworkHandler.sendToAllTracking(new PacketUpdateLogisticsModule(this, 0), getTube());
+            NetworkHandler.sendToAllTracking(PacketUpdateLogisticsModule.create(this, 0), getTube());
         }
         if (--ticksUntilNextCycle <= 0) {
             LogisticsManager manager = new LogisticsManager();
@@ -215,12 +214,12 @@ public class LogisticsModule extends AbstractTubeModule implements INetworkedMod
     }
 
     private void handleItems(LogisticsModule providingModule, LogisticsModule requestingModule, LogisticsTask task) {
-        IOHelper.getInventoryForTE(task.requester.getCachedTileEntity(), requestingModule.dir.getOpposite()).ifPresent(requestingHandler -> {
+        IOHelper.getInventoryForBlock(task.requester.getCachedTileEntity(), requestingModule.dir.getOpposite()).ifPresent(requestingHandler -> {
             ItemStack remainder = ItemHandlerHelper.insertItem(requestingHandler, task.transportingItem, true);
             if (remainder.getCount() != task.transportingItem.getCount()) {
                 ItemStack toBeExtracted = task.transportingItem.copy();
                 toBeExtracted.shrink(remainder.getCount());
-                IOHelper.getInventoryForTE(task.provider.getCachedTileEntity(), providingModule.dir.getOpposite())
+                IOHelper.getInventoryForBlock(task.provider.getCachedTileEntity(), providingModule.dir.getOpposite())
                         .ifPresent(providingHandler -> tryItemTransfer(providingModule, requestingModule, providingHandler, requestingHandler, toBeExtracted));
             }
         });
@@ -230,7 +229,7 @@ public class LogisticsModule extends AbstractTubeModule implements INetworkedMod
         ItemStack extractedStack = IOHelper.extract(providingHandler, toTransfer, IOHelper.ExtractCount.UP_TO, true, requestingModule.getFrame().isMatchNBT());
         if (extractedStack.isEmpty()) return;
 
-        requestingModule.getTube().getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY).ifPresent(receiverAirHandler -> {
+        PNCCapabilities.getAirHandler(requestingModule.getTube()).ifPresent(receiverAirHandler -> {
             int airUsed = (int) (ConfigHelper.common().logistics.itemTransportCost.get() * extractedStack.getCount() * PneumaticCraftUtils.distBetween(providingModule.getTube().getBlockPos(), requestingModule.getTube().getBlockPos()));
 
             if (airUsed > receiverAirHandler.getAir()) {
@@ -255,12 +254,12 @@ public class LogisticsModule extends AbstractTubeModule implements INetworkedMod
     }
 
     private void handleFluids(LogisticsModule providingModule, LogisticsModule requestingModule, LogisticsTask task) {
-        task.requester.getCachedTileEntity().getCapability(ForgeCapabilities.FLUID_HANDLER, requestingModule.dir.getOpposite()).ifPresent(requestingHandler -> {
+        IOHelper.getFluidHandlerForBlock(task.requester.getCachedTileEntity(), requestingModule.dir.getOpposite()).ifPresent(requestingHandler -> {
             int amountFilled = requestingHandler.fill(task.transportingFluid, IFluidHandler.FluidAction.SIMULATE);
             if (amountFilled > 0) {
                 FluidStack drainingFluid = task.transportingFluid.copy();
                 drainingFluid.setAmount(amountFilled);
-                task.provider.getCachedTileEntity().getCapability(ForgeCapabilities.FLUID_HANDLER, providingModule.dir.getOpposite())
+                IOHelper.getFluidHandlerForBlock(task.provider.getCachedTileEntity(), providingModule.dir.getOpposite())
                         .ifPresent(providingHandler -> tryFluidTransfer(providingModule, providingHandler, requestingModule, requestingHandler, drainingFluid));
             }
         });
@@ -270,7 +269,7 @@ public class LogisticsModule extends AbstractTubeModule implements INetworkedMod
         FluidStack extractedFluid = providingHandler.drain(toTransfer, IFluidHandler.FluidAction.SIMULATE);
         if (extractedFluid.isEmpty()) return;
 
-        requestingModule.getTube().getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY).ifPresent(receiverAirHandler -> {
+        PNCCapabilities.getAirHandler(requestingModule.getTube()).ifPresent(receiverAirHandler -> {
             double airUsed = (ConfigHelper.common().logistics.fluidTransportCost.get() * extractedFluid.getAmount() * PneumaticCraftUtils.distBetween(providingModule.getTube().getBlockPos(), requestingModule.getTube().getBlockPos()));
             if (airUsed > receiverAirHandler.getAir()) {
                 // not enough air to move it all - scale back the amount of fluid to be moved
@@ -292,7 +291,7 @@ public class LogisticsModule extends AbstractTubeModule implements INetworkedMod
     }
 
     private void sendModuleUpdate(LogisticsModule module, boolean enoughAir) {
-        NetworkHandler.sendToAllTracking(new PacketUpdateLogisticsModule(module, enoughAir ? 1 : 2), module.getTube());
+        NetworkHandler.sendToAllTracking(PacketUpdateLogisticsModule.create(module, enoughAir ? 1 : 2), module.getTube());
     }
 
     @Override

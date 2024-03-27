@@ -23,6 +23,7 @@ import me.desht.pneumaticcraft.client.model.PNCModelLayers;
 import me.desht.pneumaticcraft.common.block.entity.SentryTurretBlockEntity;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.world.phys.AABB;
 
 public class SentryTurretRenderer extends AbstractBlockEntityModelRenderer<SentryTurretBlockEntity> {
     private final ModelMinigun model;
@@ -37,5 +38,10 @@ public class SentryTurretRenderer extends AbstractBlockEntityModelRenderer<Sentr
     void renderModel(SentryTurretBlockEntity te, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
         matrixStackIn.translate(0, -13 / 16F, 0);
         model.renderMinigun(matrixStackIn, bufferIn, combinedLightIn, combinedOverlayIn, te.getMinigun(), partialTicks, false);
+    }
+
+    @Override
+    public AABB getRenderBoundingBox(SentryTurretBlockEntity blockEntity) {
+        return new AABB(blockEntity.getBlockPos()).inflate(1);
     }
 }

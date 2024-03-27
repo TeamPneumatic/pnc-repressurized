@@ -19,8 +19,8 @@ package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.common.block.entity.ElevatorBaseBlockEntity;
 import me.desht.pneumaticcraft.common.block.entity.ElevatorFrameBlockEntity;
-import me.desht.pneumaticcraft.common.core.ModBlockEntities;
-import me.desht.pneumaticcraft.common.core.ModBlocks;
+import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
+import me.desht.pneumaticcraft.common.registry.ModBlocks;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -206,7 +206,7 @@ public class ElevatorFrameBlock extends AbstractPneumaticCraftBlock
     static Optional<ElevatorBaseBlockEntity> getElevatorBase(BlockGetter world, BlockPos pos) {
         // caching the elevator base in the frame BE - this should be safe from a caching point of view,
         // since if the base (or any frame below us) is broken, all frames above it - including us - will also break
-        return world.getBlockEntity(pos, ModBlockEntities.ELEVATOR_FRAME.get())
+        return world.getBlockEntity(pos, ModBlockEntityTypes.ELEVATOR_FRAME.get())
                 .map(ElevatorFrameBlockEntity::getElevatorBase);
     }
 

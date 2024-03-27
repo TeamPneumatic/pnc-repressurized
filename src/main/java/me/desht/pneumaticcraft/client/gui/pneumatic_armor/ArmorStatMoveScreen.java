@@ -193,7 +193,7 @@ public class ArmorStatMoveScreen extends AbstractPneumaticCraftScreen {
 
     @Override
     public void render(GuiGraphics graphics, int x, int y, float partialTicks) {
-        renderBackground(graphics);
+        renderBackground(graphics, x, y, partialTicks);
 
         Rect2i bounds = GuiUtils.showPopupHelpScreen(graphics,this, font, helpText);
         snapToGrid.setY(bounds.getY() + bounds.getHeight() + 15);

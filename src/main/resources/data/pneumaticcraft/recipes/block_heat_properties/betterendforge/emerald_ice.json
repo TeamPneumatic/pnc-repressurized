@@ -1,13 +1,9 @@
 {
-  "type": "pneumaticcraft:heat_properties",
-  "block": "betterendforge:emerald_ice",
-  "temperature": 253,
-  "thermalResistance": 250,
-  "heatCapacity": 7500,
-  "transformHot": {
-    "fluid": "minecraft:water"
-  },
-  "transformCold": {
-    "block": "betterendforge:dense_emerald_ice"
-  }
+   "transformHot" : "minecraft:water",
+   "heatCapacity" : 7500,
+   "type" : "pneumaticcraft:heat_properties",
+   "block" : "betterendforge:emerald_ice",
+   "temperature" : 253,
+   "transformCold" : "betterendforge:dense_emerald_ice",
+   "thermalResistance" : 250
 }

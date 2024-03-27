@@ -1,6 +1,6 @@
 {
 	"credit": "Made with Blockbench",
-	"parent": "forge:block/default",
+	"parent": "neoforge:block/default",
 	"texture_size": [64, 64],
 	"textures": {
 		"0": "pneumaticcraft:pnc_model/etching_tank",
@@ -52,10 +52,10 @@
 		}
 	],
 
-	"loader": "forge:composite",
+	"loader": "neoforge:composite",
 	"children": {
 		"translucent": {
-			"parent": "forge:block/default",
+			"parent": "neoforge:block/default",
 			"textures": {
 				"0": "pneumaticcraft:pnc_model/etching_tank",
 				"particle": "pneumaticcraft:pnc_model/etching_tank"
@@ -115,7 +115,7 @@
 			]
 		},
 		"solid": {
-			"parent": "forge:block/default",
+			"parent": "neoforge:block/default",
 			"textures": {
 				"0": "pneumaticcraft:pnc_model/etching_tank",
 				"particle": "pneumaticcraft:pnc_model/etching_tank"

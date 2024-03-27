@@ -1,5 +1,5 @@
 {
-  "type": "pneumaticcraft:crafting_shaped_no_mirror",
+  "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
     "B": {
@@ -22,6 +22,5 @@
   ],
   "result": {
     "item": "pneumaticcraft:assembly_io_unit_import"
-  },
-  "show_notification": true
+  }
 }

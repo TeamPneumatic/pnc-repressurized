@@ -9,9 +9,10 @@
       "item": "pneumaticcraft:reinforced_air_canister"
     },
     "T": {
-      "type": "forge:nbt",
-      "count": 1,
-      "item": "pneumaticcraft:large_tank"
+      "type": "neoforge:nbt",
+      "item": "pneumaticcraft:large_tank",
+      "strict": true,
+      "tag": "{}"
     }
   },
   "pattern": [
@@ -21,6 +22,5 @@
   ],
   "result": {
     "item": "pneumaticcraft:huge_tank"
-  },
-  "show_notification": true
+  }
 }

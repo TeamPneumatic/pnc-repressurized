@@ -48,7 +48,7 @@ public enum ItemRegistry implements IItemRegistry {
 
     @Override
     public void registerInventoryItem(@Nonnull IInventoryItem handler) {
-        Validate.notNull(handler);
+        Validate.notNull(handler, "handler must not be null!");
         inventoryItems.add(handler);
     }
 
@@ -74,7 +74,7 @@ public enum ItemRegistry implements IItemRegistry {
     }
 
     @Override
-    public IAirHandlerItem.Provider makeItemAirHandlerProvider(ItemStack stack) {
+    public IAirHandlerItem makeItemAirHandler(ItemStack stack) {
         return new AirHandlerItemStack(stack);
     }
 

@@ -23,7 +23,7 @@ import me.desht.pneumaticcraft.client.model.PNCModelLayers;
 import me.desht.pneumaticcraft.client.render.fluid.AbstractFluidTER;
 import me.desht.pneumaticcraft.client.render.fluid.TankRenderInfo;
 import me.desht.pneumaticcraft.common.block.entity.SpawnerExtractorBlockEntity;
-import me.desht.pneumaticcraft.common.core.ModFluids;
+import me.desht.pneumaticcraft.common.registry.ModFluids;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
@@ -32,8 +32,9 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.texture.TextureAtlas;
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.AABB;
-import net.minecraftforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidStack;
 
 public class SpawnerExtractorRenderer extends AbstractBlockEntityModelRenderer<SpawnerExtractorBlockEntity> {
     private static final AABB FLUID_BB = new AABB(6/16D, 0, 6/16D, 10/16D, 1, 10/16D);
@@ -85,5 +86,11 @@ public class SpawnerExtractorRenderer extends AbstractBlockEntityModelRenderer<S
             AbstractFluidTER.renderFluid(builder, info, matrixStack.last().pose(), combinedLightIn, combinedOverlayIn);
             matrixStack.popPose();
         }
+    }
+
+    @Override
+    public AABB getRenderBoundingBox(SpawnerExtractorBlockEntity blockEntity) {
+        BlockPos pos = blockEntity.getBlockPos();
+        return new AABB(pos.getX(), pos.getY(), pos.getZ(), pos.getX() + 1, pos.getY() + 2, pos.getZ() + 1);
     }
 }

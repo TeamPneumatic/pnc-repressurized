@@ -32,14 +32,14 @@ import me.desht.pneumaticcraft.common.block.IBlockPressureChamber;
 import me.desht.pneumaticcraft.common.block.PressureChamberGlassBlock;
 import me.desht.pneumaticcraft.common.block.PressureChamberValveBlock;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
-import me.desht.pneumaticcraft.common.core.ModBlockEntities;
-import me.desht.pneumaticcraft.common.core.ModRecipeTypes;
 import me.desht.pneumaticcraft.common.inventory.PressureChamberValveMenu;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSpawnParticle;
 import me.desht.pneumaticcraft.common.particle.AirParticleData;
+import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
+import me.desht.pneumaticcraft.common.registry.ModRecipeTypes;
 import me.desht.pneumaticcraft.common.util.CountedItemStacks;
 import me.desht.pneumaticcraft.common.util.ItemStackHandlerIterable;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -64,16 +64,18 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.phys.AABB;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemHandlerHelper;
-import net.minecraftforge.items.ItemStackHandler;
-import net.minecraftforge.items.wrapper.CombinedInvWrapper;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.ItemHandlerHelper;
+import net.neoforged.neoforge.items.ItemStackHandler;
+import net.neoforged.neoforge.items.wrapper.CombinedInvWrapper;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -129,9 +131,14 @@ public class PressureChamberValveBlockEntity extends AbstractAirHandlingBlockEnt
     private int savedMultiblockSize = 0;
 
     public PressureChamberValveBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.PRESSURE_CHAMBER_VALVE.get(), pos, state, PressureTier.TIER_ONE, PneumaticValues.VOLUME_PRESSURE_CHAMBER_PER_EMPTY, 4);
+        super(ModBlockEntityTypes.PRESSURE_CHAMBER_VALVE.get(), pos, state, PressureTier.TIER_ONE, PneumaticValues.VOLUME_PRESSURE_CHAMBER_PER_EMPTY, 4);
         accessoryValves = new ArrayList<>();
         nbtValveList = new ArrayList<>();
+    }
+
+    @Override
+    public boolean hasItemCapability() {
+        return false;
     }
 
     @Override
@@ -197,7 +204,7 @@ public class PressureChamberValveBlockEntity extends AbstractAirHandlingBlockEnt
             applicableRecipes.clear();
             final SizeLimitedItemHandlerWrapper h = new SizeLimitedItemHandlerWrapper(itemsInChamber);
             if (h.getSlots() > 0) {
-                ModRecipeTypes.PRESSURE_CHAMBER.get().stream(level).forEach(recipe -> {
+                ModRecipeTypes.PRESSURE_CHAMBER.get().stream(level).map(RecipeHolder::value).forEach(recipe -> {
                     IntCollection slots = recipe.findIngredients(h);
                     if (!slots.isEmpty()) {
                         applicableRecipes.add(new ApplicableRecipe(recipe, slots));
@@ -263,22 +270,7 @@ public class PressureChamberValveBlockEntity extends AbstractAirHandlingBlockEnt
     }
 
     private void checkForAirLeak() {
-        BitSet disconnected = new BitSet(6);
-
-        switch (getRotation().getAxis()) {
-            case X -> {
-                disconnected.set(Direction.WEST.get3DDataValue());
-                disconnected.set(Direction.EAST.get3DDataValue());
-            }
-            case Y -> {
-                disconnected.set(Direction.UP.get3DDataValue());
-                disconnected.set(Direction.DOWN.get3DDataValue());
-            }
-            case Z -> {
-                disconnected.set(Direction.NORTH.get3DDataValue());
-                disconnected.set(Direction.SOUTH.get3DDataValue());
-            }
-        }
+        BitSet disconnected = getDisconnectedSides();
 
         List<IAirHandlerMachine.Connection> l = airHandler.getConnectedAirHandlers(this);
         for (IAirHandlerMachine.Connection c : l) {
@@ -323,6 +315,27 @@ public class PressureChamberValveBlockEntity extends AbstractAirHandlingBlockEnt
             }
         }
         airHandler.setSideLeaking(disconnected.isEmpty() ? null : getRotation());
+    }
+
+    @NotNull
+    private BitSet getDisconnectedSides() {
+        BitSet disconnected = new BitSet(6);
+
+        switch (getRotation().getAxis()) {
+            case X -> {
+                disconnected.set(Direction.WEST.get3DDataValue());
+                disconnected.set(Direction.EAST.get3DDataValue());
+            }
+            case Y -> {
+                disconnected.set(Direction.UP.get3DDataValue());
+                disconnected.set(Direction.DOWN.get3DDataValue());
+            }
+            case Z -> {
+                disconnected.set(Direction.NORTH.get3DDataValue());
+                disconnected.set(Direction.SOUTH.get3DDataValue());
+            }
+        }
+        return disconnected;
     }
 
     private void processApplicableRecipes() {
@@ -384,7 +397,7 @@ public class PressureChamberValveBlockEntity extends AbstractAirHandlingBlockEnt
      * @param simulate true to simulate insertion
      * @return true if all can be (were) inserted, false if not
      */
-    private boolean giveOutput(NonNullList<ItemStack> stacks, boolean simulate) {
+    private boolean giveOutput(List<ItemStack> stacks, boolean simulate) {
         if (stacks.isEmpty()) return false;
         for (ItemStack stack : stacks) {
             stack = stack.copy();
@@ -513,7 +526,7 @@ public class PressureChamberValveBlockEntity extends AbstractAirHandlingBlockEnt
     }
 
     @Override
-    public IItemHandler getPrimaryInventory() {
+    public IItemHandler getItemHandler(@org.jetbrains.annotations.Nullable Direction dir) {
         return null;
     }
 
@@ -636,8 +649,8 @@ public class PressureChamberValveBlockEntity extends AbstractAirHandlingBlockEnt
                         world.setBlock(be.getBlockPos(), state.setValue(PNCBlockStateProperties.FORMED, v.isPrimaryValve()), Block.UPDATE_CLIENTS);
                     }
                     if (be != null) {
-                        double dx = x == 0 ? -0.1 : 0.1;
-                        double dz = z == 0 ? -0.1 : 0.1;
+                        float dx = x == 0 ? -0.1f : 0.1f;
+                        float dz = z == 0 ? -0.1f : 0.1f;
                         NetworkHandler.sendToAllTracking(
                                 new PacketSpawnParticle(ParticleTypes.POOF,
                                         be.getBlockPos().getX() + 0.5, be.getBlockPos().getY() + 0.5, be.getBlockPos().getZ() + 0.5,
@@ -679,7 +692,7 @@ public class PressureChamberValveBlockEntity extends AbstractAirHandlingBlockEnt
         return multiBlockSize > 0;
     }
 
-    private AABB getChamberAABB() {
+    public AABB getChamberAABB() {
         return new AABB(multiBlockX, multiBlockY, multiBlockZ,
                 multiBlockX + multiBlockSize, multiBlockY + multiBlockSize, multiBlockZ + multiBlockSize);
     }
@@ -692,11 +705,6 @@ public class PressureChamberValveBlockEntity extends AbstractAirHandlingBlockEnt
             if (excess.isEmpty()) item.discard();
             else item.setItem(excess);
         }
-    }
-
-    @Override
-    public AABB getRenderBoundingBox(){
-        return getChamberAABB();
     }
 
     @Override

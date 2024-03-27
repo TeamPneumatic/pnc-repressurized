@@ -1,13 +1,13 @@
 package me.desht.pneumaticcraft.datagen;
 
 import me.desht.pneumaticcraft.api.lib.Names;
-import me.desht.pneumaticcraft.common.core.ModVillagers;
+import me.desht.pneumaticcraft.common.registry.ModVillagers;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.tags.PoiTypeTagsProvider;
 import net.minecraft.tags.PoiTypeTags;
-import net.minecraftforge.common.data.ExistingFileHelper;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.concurrent.CompletableFuture;
@@ -20,7 +20,7 @@ public class ModPoiTypeTagsProvider extends PoiTypeTagsProvider {
     @Override
     protected void addTags(HolderLookup.Provider pProvider) {
         var appender = tag(PoiTypeTags.ACQUIRABLE_JOB_SITE);
-        ModVillagers.POI.getEntries().stream().map(RegistryObject::getKey).forEach(appender::add);
+        ModVillagers.POI.getEntries().stream().map(DeferredHolder::getKey).forEach(appender::add);
     }
 
     @Override

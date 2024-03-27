@@ -21,13 +21,13 @@ import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.api.pressure.PressureTier;
 import me.desht.pneumaticcraft.client.util.TintColor;
-import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.heat.HeatExchangerLogicAmbient;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.common.heat.SyncedTemperature;
 import me.desht.pneumaticcraft.common.inventory.ThermalCompressorMenu;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
+import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -39,12 +39,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.IItemHandler;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.stream.IntStream;
 
 public class ThermalCompressorBlockEntity extends AbstractAirHandlingBlockEntity
@@ -56,7 +52,6 @@ public class ThermalCompressorBlockEntity extends AbstractAirHandlingBlockEntity
 
     @GuiSynced
     private final IHeatExchangerLogic[] heatExchangers = new IHeatExchangerLogic[4];
-    private final List<LazyOptional<IHeatExchangerLogic>> heatCaps = new ArrayList<>(4);
     private final IHeatExchangerLogic connector1;
     private final IHeatExchangerLogic connector2;
 
@@ -69,12 +64,11 @@ public class ThermalCompressorBlockEntity extends AbstractAirHandlingBlockEntity
     private final RedstoneController<ThermalCompressorBlockEntity> rsController = new RedstoneController<>(this);
 
     public ThermalCompressorBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.THERMAL_COMPRESSOR.get(), pos, state, PressureTier.TIER_ONE_HALF, PneumaticValues.VOLUME_THERMAL_COMPRESSOR, 4);
+        super(ModBlockEntityTypes.THERMAL_COMPRESSOR.get(), pos, state, PressureTier.TIER_ONE_HALF, PneumaticValues.VOLUME_THERMAL_COMPRESSOR, 4);
 
         IntStream.range(0, heatExchangers.length).forEach(i -> {
             heatExchangers[i] = PneumaticRegistry.getInstance().getHeatRegistry().makeHeatExchangerLogic();
             heatExchangers[i].setThermalCapacity(2);
-            heatCaps.add(LazyOptional.of(() -> heatExchangers[i]));
         });
 
         for (int i = 0; i < syncedTemperatures.length; i++) {
@@ -87,17 +81,17 @@ public class ThermalCompressorBlockEntity extends AbstractAirHandlingBlockEntity
         dummyExchanger = PneumaticRegistry.getInstance().getHeatRegistry().makeHeatExchangerLogic();
     }
 
+    @Override
+    public boolean hasItemCapability() {
+        return false;
+    }
+
     private IHeatExchangerLogic makeConnector(Direction side) {
         IHeatExchangerLogic connector = PneumaticRegistry.getInstance().getHeatRegistry().makeHeatExchangerLogic();
         connector.setThermalResistance(200);
         connector.addConnectedExchanger(getHeatExchanger(side));
         connector.addConnectedExchanger(getHeatExchanger(side.getOpposite()));
         return connector;
-    }
-
-    @Override
-    public IItemHandler getPrimaryInventory() {
-        return null;
     }
 
     @Override
@@ -123,7 +117,7 @@ public class ThermalCompressorBlockEntity extends AbstractAirHandlingBlockEntity
 
     @Override
     public IHeatExchangerLogic getHeatExchanger(Direction side) {
-        if (side == null) return null;
+        if (side == null) return dummyExchanger;
         return side.getAxis() == Direction.Axis.Y ? null : heatExchangers[side.get2DDataValue()];
     }
 
@@ -226,14 +220,5 @@ public class ThermalCompressorBlockEntity extends AbstractAirHandlingBlockEntity
     @Override
     public AbstractContainerMenu createMenu(int i, Inventory playerInventory, Player playerEntity) {
         return new ThermalCompressorMenu(i, playerInventory, getBlockPos());
-    }
-
-    @Override
-    public LazyOptional<IHeatExchangerLogic> getHeatCap(Direction side) {
-        if (side == null) {
-            return LazyOptional.of(() -> dummyExchanger);
-        } else {
-            return side.getAxis() == Direction.Axis.Y ? LazyOptional.empty() : heatCaps.get(side.get2DDataValue());
-        }
     }
 }

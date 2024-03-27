@@ -3,9 +3,10 @@
   "category": "misc",
   "key": {
     "B": {
-      "type": "forge:nbt",
-      "count": 1,
-      "item": "pneumaticcraft:small_tank"
+      "type": "neoforge:nbt",
+      "item": "pneumaticcraft:small_tank",
+      "strict": true,
+      "tag": "{}"
     },
     "G": {
       "tag": "forge:glass_panes"
@@ -21,6 +22,5 @@
   ],
   "result": {
     "item": "pneumaticcraft:kerosene_lamp"
-  },
-  "show_notification": true
+  }
 }

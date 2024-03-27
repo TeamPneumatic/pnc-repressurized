@@ -24,10 +24,6 @@ import me.desht.pneumaticcraft.common.PNCDamageSource;
 import me.desht.pneumaticcraft.common.block.entity.RedstoneController.EmittingRedstoneMode;
 import me.desht.pneumaticcraft.common.block.entity.RedstoneController.RedstoneMode;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
-import me.desht.pneumaticcraft.common.core.ModBlockEntities;
-import me.desht.pneumaticcraft.common.core.ModBlocks;
-import me.desht.pneumaticcraft.common.core.ModItems;
-import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.hacking.secstation.HackSimulation;
 import me.desht.pneumaticcraft.common.hacking.secstation.ISimulationController;
 import me.desht.pneumaticcraft.common.hacking.secstation.ISimulationController.HackingSide;
@@ -40,6 +36,10 @@ import me.desht.pneumaticcraft.common.item.NetworkComponentItem.NetworkComponent
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketPlaySound;
+import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
+import me.desht.pneumaticcraft.common.registry.ModBlocks;
+import me.desht.pneumaticcraft.common.registry.ModItems;
+import me.desht.pneumaticcraft.common.registry.ModSounds;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.util.GlobalBlockEntityCacheManager;
 import me.desht.pneumaticcraft.common.util.ITranslatableEnum;
@@ -47,6 +47,7 @@ import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.BlockEntityConstants;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.ChatFormatting;
+import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -73,17 +74,16 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
-import net.minecraftforge.common.util.BlockSnapshot;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.event.entity.player.PlayerContainerEvent;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-import net.minecraftforge.event.level.BlockEvent;
-import net.minecraftforge.event.level.ExplosionEvent;
-import net.minecraftforge.eventbus.api.EventPriority;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.network.NetworkHooks;
+import net.neoforged.bus.api.Event;
+import net.neoforged.bus.api.EventPriority;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.common.util.BlockSnapshot;
+import net.neoforged.neoforge.event.entity.player.PlayerContainerEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import net.neoforged.neoforge.event.level.BlockEvent;
+import net.neoforged.neoforge.event.level.ExplosionEvent;
+import net.neoforged.neoforge.items.IItemHandler;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -106,7 +106,6 @@ public class SecurityStationBlockEntity extends AbstractTickingBlockEntity imple
     private static final int INVENTORY_SIZE = INV_ROWS * INV_COLS;
 
     private final SecurityStationHandler inventory = new SecurityStationHandler();
-    private final LazyOptional<IItemHandler> invCap = LazyOptional.of(() -> inventory);
     public final List<GameProfile> hackedUsers = new ArrayList<>(); // Stores all the users that have hacked this Security Station.
     public final List<GameProfile> sharedUsers = new ArrayList<>(); // Stores all the users that have been allowed by the stationOwner.
     @GuiSynced
@@ -119,7 +118,7 @@ public class SecurityStationBlockEntity extends AbstractTickingBlockEntity imple
     private ISimulationController simulationController = null;
 
     public SecurityStationBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.SECURITY_STATION.get(), pos, state, 4);
+        super(ModBlockEntityTypes.SECURITY_STATION.get(), pos, state, 4);
     }
 
     @Override
@@ -183,11 +182,6 @@ public class SecurityStationBlockEntity extends AbstractTickingBlockEntity imple
     }
 
     @Override
-    protected LazyOptional<IItemHandler> getInventoryCap(Direction side) {
-        return invCap;
-    }
-
-    @Override
     public void handleGUIButtonPress(String tag, boolean shiftHeld, ServerPlayer player) {
         if (rsController.parseRedstoneMode(tag)) return;
 
@@ -205,11 +199,11 @@ public class SecurityStationBlockEntity extends AbstractTickingBlockEntity imple
                 removeTrustedUser(name);
             } else if (tag.startsWith("add:") && isOwner(player)) {
                 String name = tag.split(":", 2)[1];
-                addTrustedUser(new GameProfile(null, name));
+                PneumaticCraftUtils.getProfileForName(player.getServer(), name).ifPresent(this::addTrustedUser);
             }
         } else if (player.containerMenu instanceof SecurityStationHackingMenu && isPlayerHacking(player)) {
             if (tag.equals("end_test") && simulationController.isJustTesting()) {
-                NetworkHooks.openScreen(player, this, getBlockPos());
+                player.openMenu(this, getBlockPos());
             } else if (tag.startsWith("nuke:")) {
                 tryNukeVirus(tag, player);
             } else if (tag.equals("stop_worm")) {
@@ -284,7 +278,7 @@ public class SecurityStationBlockEntity extends AbstractTickingBlockEntity imple
         }
     }
 
-    public HackingContainerProvider getHackingContainerProvider() {
+    private HackingContainerProvider getHackingContainerProvider() {
         return new HackingContainerProvider();
     }
 
@@ -322,13 +316,8 @@ public class SecurityStationBlockEntity extends AbstractTickingBlockEntity imple
         return !hackedUsers.isEmpty();
     }
 
-    @Override
-    public AABB getRenderBoundingBox() {
-        return rangeManager.shouldShowRange() ? getSecurityCoverage() : super.getRenderBoundingBox();
-    }
-
     public AABB getSecurityCoverage() {
-        return rangeManager.getExtents();
+        return rangeManager.getExtentsAsAABB();
     }
 
     @Override
@@ -369,10 +358,10 @@ public class SecurityStationBlockEntity extends AbstractTickingBlockEntity imple
     private ListTag toNBTList(Collection<GameProfile> profiles) {
         ListTag res = new ListTag();
         for (GameProfile profile : profiles) {
-            CompoundTag tagCompound = new CompoundTag();
-            tagCompound.putString("name", profile.getName());
-            if (profile.getId() != null) tagCompound.putString("uuid", profile.getId().toString());
-            res.add(tagCompound);
+            res.add(Util.make(new CompoundTag(), t -> {
+                t.putString("name", profile.getName());
+                t.putString("uuid", profile.getId().toString());
+            }));
         }
         return res;
     }
@@ -381,7 +370,7 @@ public class SecurityStationBlockEntity extends AbstractTickingBlockEntity imple
         ImmutableList.Builder<GameProfile> builder = ImmutableList.builder();
         for (int i = 0; i < list.size(); ++i) {
             CompoundTag tagCompound = list.getCompound(i);
-            builder.add(new GameProfile(tagCompound.contains("uuid") ? UUID.fromString(tagCompound.getString("uuid")) : null, tagCompound.getString("name")));
+            builder.add(new GameProfile(UUID.fromString(tagCompound.getString("uuid")), tagCompound.getString("name")));
         }
         return builder.build();
     }
@@ -469,13 +458,13 @@ public class SecurityStationBlockEntity extends AbstractTickingBlockEntity imple
         return new SecurityStationMainMenu(i, playerInventory, getBlockPos());
     }
 
-    public void initiateHacking(Player hacker) {
+    public void initiateHacking(ServerPlayer hacker) {
         // will only get here if the BE has a valid node network
         if (simulationController != null) {
             hacker.displayClientMessage(xlate("pneumaticcraft.message.securityStation.hackInProgress").withStyle(ChatFormatting.GOLD), false);
         } else {
             simulationController = new SimulationController(this, hacker, isPlayerOnWhiteList(hacker));
-            NetworkHooks.openScreen((ServerPlayer) hacker, getHackingContainerProvider(), buf -> simulationController.toBytes(buf));
+            hacker.openMenu(getHackingContainerProvider(), buf -> simulationController.toBytes(buf));
         }
     }
 
@@ -591,7 +580,7 @@ public class SecurityStationBlockEntity extends AbstractTickingBlockEntity imple
     }
 
     @Override
-    public IItemHandler getPrimaryInventory() {
+    public IItemHandler getItemHandler(@Nullable Direction dir) {
         return inventory;
     }
 
@@ -660,12 +649,9 @@ public class SecurityStationBlockEntity extends AbstractTickingBlockEntity imple
     }
 
     private static boolean isPlayerExempt(Player player) {
-        // can player ignore security stations entirely? server ops and creative mode players
-        // note : player.createCommandSourceStack() will throw NPE if player is a fakeplayer with a null id
-        //  and will also throw NPE on integrated server if the fakeplayer has a null name -
-        //  https://github.com/TeamPneumatic/pnc-repressurized/issues/922
+        // can player ignore security stations entirely? server ops and possibly creative mode players
         return player.isCreative() && ConfigHelper.common().machines.securityStationCreativePlayersExempt.get()
-                || player.getGameProfile().isComplete() && player.createCommandSourceStack().hasPermission(2);
+                || player.hasPermissions(2);
     }
 
     private class SecurityStationHandler extends BaseItemStackHandler {
@@ -702,30 +688,35 @@ public class SecurityStationBlockEntity extends AbstractTickingBlockEntity imple
     @Mod.EventBusSubscriber(modid = Names.MOD_ID)
     public static class Listener {
         @SubscribeEvent(priority = EventPriority.HIGHEST)
-        public static void onPlayerInteract(PlayerInteractEvent event) {
-            if (event instanceof PlayerInteractEvent.RightClickEmpty
-                    || event.getLevel().isClientSide
-                    || !event.getLevel().isLoaded(event.getPos())) {
+        public static void onPlayerInteract(PlayerInteractEvent.RightClickBlock event) {
+            handleInteraction(event);
+        }
+
+        @SubscribeEvent(priority = EventPriority.HIGHEST)
+        public static void onPlayerInteract(PlayerInteractEvent.LeftClickBlock event) {
+            handleInteraction(event);
+        }
+
+        private static void handleInteraction(PlayerInteractEvent event) {
+            if (!(event.getEntity() instanceof ServerPlayer player) || !event.getLevel().isLoaded(event.getPos())) {
                 return;
             }
-
-            Player player = event.getEntity();
-            if (isPlayerExempt(player)) return;
 
             ItemStack heldItem = player.getItemInHand(event.getHand());
             BlockState interactedBlockState = event.getLevel().getBlockState(event.getPos());
             Block interactedBlock = interactedBlockState.getBlock();
 
+            // FIXME this looks wrong!
             if (interactedBlock != ModBlocks.SECURITY_STATION.get() || event instanceof PlayerInteractEvent.LeftClickBlock) {
-                boolean tryingToPlaceSecurityStation = heldItem.getItem() instanceof BlockItem && ((BlockItem) heldItem.getItem()).getBlock() == ModBlocks.SECURITY_STATION.get();
+                boolean tryingToPlaceSecurityStation = heldItem.getItem() instanceof BlockItem bi && bi.getBlock() == ModBlocks.SECURITY_STATION.get();
                 if (SecurityStationBlockEntity.isProtectedFromPlayer(player, event.getPos(), tryingToPlaceSecurityStation)) {
-                    event.setCanceled(true);
+                    event.setResult(Event.Result.DENY);
                     player.displayClientMessage(xlate(tryingToPlaceSecurityStation ?
                             "pneumaticcraft.message.securityStation.stationPlacementPrevented" :
                             "pneumaticcraft.message.securityStation.accessPrevented"
                     ).withStyle(ChatFormatting.RED), true);
-                    if (player instanceof ServerPlayer && heldItem.getItem() instanceof BlockItem) {
-                        ((ServerPlayer) player).connection.send(new ClientboundContainerSetSlotPacket(-2, 0, player.getInventory().selected, heldItem));
+                    if (heldItem.getItem() instanceof BlockItem) {
+                        player.connection.send(new ClientboundContainerSetSlotPacket(-2, 0, player.getInventory().selected, heldItem));
                     }
                 }
             }
@@ -758,9 +749,9 @@ public class SecurityStationBlockEntity extends AbstractTickingBlockEntity imple
         }
 
         @SubscribeEvent(priority = EventPriority.HIGHEST)
-        public static void onBlockExplode(ExplosionEvent event) {
+        public static void onBlockExplode(ExplosionEvent.Start event) {
             final Player player = getPlayerForExplosion(event);
-            if (player != null && !isPlayerExempt(player) && event.getLevel() != null && !event.getLevel().isClientSide) {
+            if (player != null && !isPlayerExempt(player) && !event.getLevel().isClientSide) {
                 event.getExplosion().getToBlow().removeIf(pos -> isProtectedFromPlayer(player, pos, false));
             }
         }
@@ -786,14 +777,13 @@ public class SecurityStationBlockEntity extends AbstractTickingBlockEntity imple
         @SubscribeEvent
         public static void onContainerClose(PlayerContainerEvent.Close event) {
             // reopen the main secstation window if closing a test-mode hacking window
-            if (event.getEntity() instanceof ServerPlayer && event.getContainer() instanceof SecurityStationHackingMenu) {
-                SecurityStationBlockEntity teSS = ((SecurityStationHackingMenu) event.getContainer()).te;
+            if (event.getEntity() instanceof ServerPlayer player && event.getContainer() instanceof SecurityStationHackingMenu menu) {
+                SecurityStationBlockEntity teSS = menu.blockEntity;
                 if (teSS.getSimulationController() != null && teSS.getSimulationController().isJustTesting()) {
-                    ServerPlayer player = (ServerPlayer) event.getEntity();
                     MinecraftServer server = player.getServer();
                     if (server != null) {
                         // deferring is important to avoid infinite close/open loop
-                        server.tell(new TickTask(server.getTickCount(), () -> NetworkHooks.openScreen(player, teSS, teSS.getBlockPos())));
+                        server.tell(new TickTask(server.getTickCount(), () -> player.openMenu(teSS, teSS.getBlockPos())));
                     }
                 }
             }

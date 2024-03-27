@@ -19,7 +19,7 @@ package me.desht.pneumaticcraft.common.inventory.handler;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.items.ItemHandlerHelper;
+import net.neoforged.neoforge.items.ItemHandlerHelper;
 
 /**
  * An ItemStackHandler which also supports comparator signal level calculation.

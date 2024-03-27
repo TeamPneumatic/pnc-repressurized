@@ -2,22 +2,21 @@
   "parent": "pneumaticcraft:root",
   "criteria": {
     "0": {
-      "conditions": {},
+      "conditions": {
+        "id": "pneumaticcraft:pressure_chamber"
+      },
       "trigger": "pneumaticcraft:pressure_chamber"
     }
   },
   "display": {
-    "announce_to_chat": true,
     "background": "pneumaticcraft:textures/gui/advancement_bg.png",
     "description": {
       "translate": "pneumaticcraft.advancement.pressure_chamber.desc"
     },
     "frame": "goal",
-    "hidden": false,
     "icon": {
       "item": "pneumaticcraft:pressure_chamber_wall"
     },
-    "show_toast": true,
     "title": {
       "translate": "pneumaticcraft.advancement.pressure_chamber"
     }

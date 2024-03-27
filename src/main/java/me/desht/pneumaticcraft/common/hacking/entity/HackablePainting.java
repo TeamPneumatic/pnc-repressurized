@@ -18,15 +18,14 @@
 package me.desht.pneumaticcraft.common.hacking.entity;
 
 import me.desht.pneumaticcraft.api.pneumatic_armor.hacking.IHackableEntity;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.decoration.Painting;
 import net.minecraft.world.entity.decoration.PaintingVariant;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
@@ -65,14 +64,10 @@ public class HackablePainting implements IHackableEntity<Painting> {
     @Override
     public void onHackFinished(Painting entity, Player player) {
         PaintingVariant art = entity.getVariant().value();
-        List<PaintingVariant> candidate = new ArrayList<>();
-        for (PaintingVariant a : ForgeRegistries.PAINTING_VARIANTS.getValues()) {
-            if (a.getHeight() == art.getHeight() && a.getWidth() == art.getWidth()) {
-                candidate.add(a);
-            }
-        }
 
-        // FIXME painting variants
-//        ((Painting) entity).setv = candidate.get(entity.level.random.nextInt(candidate.size()));
+        var candidates = BuiltInRegistries.PAINTING_VARIANT.holders()
+                .filter(h -> h.value().getHeight() == art.getHeight() && h.value().getWidth() == art.getWidth())
+                .toList();
+        entity.setVariant(candidates.get(entity.level().random.nextInt(candidates.size())));
     }
 }

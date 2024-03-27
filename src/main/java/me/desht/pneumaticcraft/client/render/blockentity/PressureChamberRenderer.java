@@ -31,6 +31,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.AABB;
 
 import java.util.List;
 
@@ -78,5 +79,10 @@ public class PressureChamberRenderer implements BlockEntityRenderer<PressureCham
             }
             matrixStackIn.popPose();
         }
+    }
+
+    @Override
+    public AABB getRenderBoundingBox(PressureChamberValveBlockEntity blockEntity) {
+        return blockEntity.getChamberAABB();
     }
 }

@@ -683,14 +683,14 @@ public class WidgetAnimatedStat extends AbstractWidget implements IGuiAnimatedSt
     }
 
     @Override
-    public boolean mouseScrolled(double x, double y, double dir) {
+    public boolean mouseScrolled(double x, double y, double dirX, double dirY) {
         Rect2i bounds = getBounds();
         for (AbstractWidget widget : subWidgets) {
-            if (widget.isFocused() && widget.mouseScrolled(x - bounds.getX(), y - bounds.getY(), dir)) {
+            if (widget.isFocused() && widget.mouseScrolled(x - bounds.getX(), y - bounds.getY(), dirX, dirY)) {
                 return true;
             }
         }
-        return scrollBar != null && scrollBar.mouseScrolled(x, y, dir);
+        return scrollBar != null && scrollBar.mouseScrolled(x, y, dirX, dirY);
     }
 
     @Override

@@ -22,14 +22,13 @@
   },
   "requirements": [
     [
-      "has_gas_lift",
-      "has_the_recipe"
+      "has_the_recipe",
+      "has_gas_lift"
     ]
   ],
   "rewards": {
     "recipes": [
       "pneumaticcraft:drill_pipe"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }

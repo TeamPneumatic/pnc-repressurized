@@ -18,23 +18,23 @@
 package me.desht.pneumaticcraft.common.util;
 
 import com.google.common.base.Splitter;
+import com.mojang.authlib.GameProfile;
 import me.desht.pneumaticcraft.api.item.IFilteringItem;
 import me.desht.pneumaticcraft.api.item.IInventoryItem;
 import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.api.misc.Symbols;
 import me.desht.pneumaticcraft.common.XPFluidManager;
-import me.desht.pneumaticcraft.common.core.ModFluids;
 import me.desht.pneumaticcraft.common.item.ItemRegistry;
+import me.desht.pneumaticcraft.common.registry.ModFluids;
 import net.minecraft.ChatFormatting;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import net.minecraft.core.NonNullList;
-import net.minecraft.core.Vec3i;
+import net.minecraft.core.*;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.Entity;
@@ -57,18 +57,16 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.ForgeMod;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.BlockSnapshot;
-import net.minecraftforge.event.ForgeEventFactory;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.fluids.capability.IFluidHandler.FluidAction;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemStackHandler;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.IForgeRegistry;
-import net.minecraftforge.server.ServerLifecycleHooks;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.common.NeoForgeMod;
+import net.neoforged.neoforge.common.util.BlockSnapshot;
+import net.neoforged.neoforge.event.EventHooks;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.ItemStackHandler;
+import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import org.apache.commons.lang3.math.NumberUtils;
 
 import javax.annotation.Nonnull;
@@ -425,7 +423,7 @@ public class PneumaticCraftUtils {
     @SuppressWarnings("UnusedReturnValue")
     public static boolean tryPlaceBlock(Level w, BlockPos pos, Player player, Direction face, BlockState newState) {
         BlockSnapshot snapshot = BlockSnapshot.create(w.dimension(), w, pos);
-        if (!ForgeEventFactory.onBlockPlace(player, snapshot, face)) {
+        if (!EventHooks.onBlockPlace(player, snapshot, face)) {
             w.setBlockAndUpdate(pos, newState);
             return true;
         }
@@ -499,22 +497,23 @@ public class PneumaticCraftUtils {
         int toConsume = stack.getCount();
         for (int i = 0; i < inv.items.size(); ++i) {
             ItemStack invStack = inv.items.get(i);
-            int consumed;
+            int consumed = 0;
             if (ItemStack.isSameItem(invStack, stack)) {
                 consumed = Math.min(invStack.getCount(), stack.getCount());
                 invStack.shrink(consumed);
             } else {
-                consumed = invStack.getCapability(ForgeCapabilities.ITEM_HANDLER).map(h -> {
-                    for (int j = 0; j < h.getSlots(); j++) {
-                        ItemStack invStack2 = h.getStackInSlot(j);
+                IItemHandler handler = invStack.getCapability(Capabilities.ItemHandler.ITEM);
+                if (handler != null) {
+                    for (int j = 0; j < handler.getSlots(); j++) {
+                        ItemStack invStack2 = handler.getStackInSlot(j);
                         if (ItemStack.isSameItem(invStack2, stack)) {
                             int extracted = Math.min(invStack2.getCount(), stack.getCount());
-                            ItemStack s = h.extractItem(j, extracted, false);
-                            return s.getCount();
+                            ItemStack s = handler.extractItem(j, extracted, false);
+                            consumed = s.getCount();
+                            break;
                         }
                     }
-                    return 0;
-                }).orElse(0);
+                }
             }
             toConsume -= consumed;
             if (toConsume <= 0) return true;
@@ -595,7 +594,7 @@ public class PneumaticCraftUtils {
 
     public static double getPlayerReachDistance(Player player) {
         if (player != null) {
-            AttributeInstance attr = player.getAttribute(ForgeMod.BLOCK_REACH.get());
+            AttributeInstance attr = player.getAttribute(NeoForgeMod.BLOCK_REACH.value());
             if (attr != null) return attr.getValue() + 1D;
         }
         return 4.5D;
@@ -692,28 +691,26 @@ public class PneumaticCraftUtils {
     }
 
     public static Set<TagKey<Item>> itemTags(Item item) {
-        return ForgeRegistries.ITEMS.tags().getReverseTag(item)
-                .map(reverseTag -> reverseTag.getTagKeys().collect(Collectors.toSet()))
-                .orElse(Set.of());
+        return item.builtInRegistryHolder().tags().collect(Collectors.toSet());
     }
 
     public static Optional<ResourceLocation> getRegistryName(Item item) {
-        return getRegistryName(ForgeRegistries.ITEMS, item);
+        return getRegistryName(BuiltInRegistries.ITEM, item);
     }
 
     public static Optional<ResourceLocation> getRegistryName(Block block) {
-        return getRegistryName(ForgeRegistries.BLOCKS, block);
+        return getRegistryName(BuiltInRegistries.BLOCK, block);
     }
 
     public static Optional<ResourceLocation> getRegistryName(Fluid fluid) {
-        return getRegistryName(ForgeRegistries.FLUIDS, fluid);
+        return getRegistryName(BuiltInRegistries.FLUID, fluid);
     }
 
     public static Optional<ResourceLocation> getRegistryName(Entity entity) {
-        return getRegistryName(ForgeRegistries.ENTITY_TYPES, entity.getType());
+        return getRegistryName(BuiltInRegistries.ENTITY_TYPE, entity.getType());
     }
 
-    public static <T> Optional<ResourceLocation> getRegistryName(IForgeRegistry<T> registry, T object) {
+    public static <T> Optional<ResourceLocation> getRegistryName(Registry<T> registry, T object) {
         return Optional.ofNullable(registry.getKey(object));
     }
 
@@ -733,5 +730,10 @@ public class PneumaticCraftUtils {
 
     public static Component combineComponents(List<Component> components) {
         return components.stream().reduce((c1, c2) -> c1.copy().append("\n").append(c2)).orElse(Component.empty());
+    }
+
+    public static Optional<GameProfile> getProfileForName(MinecraftServer server, String playerName) {
+        if (server == null || server.getProfileCache() == null) return Optional.empty();
+        return server.getProfileCache().get(playerName);
     }
 }

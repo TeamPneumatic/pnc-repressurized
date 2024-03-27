@@ -19,10 +19,10 @@ package me.desht.pneumaticcraft.common.item;
 
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerItem;
-import me.desht.pneumaticcraft.common.core.ModEntityTypes;
-import me.desht.pneumaticcraft.common.core.ModItems;
-import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.entity.projectile.VortexEntity;
+import me.desht.pneumaticcraft.common.registry.ModEntityTypes;
+import me.desht.pneumaticcraft.common.registry.ModItems;
+import me.desht.pneumaticcraft.common.registry.ModSounds;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -43,8 +43,7 @@ public class VortexCannonItem extends PressurizableItem {
     public InteractionResultHolder<ItemStack> use(Level world, Player playerIn, InteractionHand handIn) {
         ItemStack iStack = playerIn.getItemInHand(handIn);
 
-        IAirHandlerItem airHandler = iStack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY)
-                .orElseThrow(RuntimeException::new);
+        IAirHandlerItem airHandler = PNCCapabilities.getAirHandler(iStack).orElseThrow(RuntimeException::new);
         float factor = 0.2F * airHandler.getPressure();
 
         if (world.isClientSide) {

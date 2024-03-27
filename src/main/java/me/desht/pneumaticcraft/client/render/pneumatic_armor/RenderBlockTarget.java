@@ -48,7 +48,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.client.event.InputEvent;
+import net.neoforged.neoforge.client.event.InputEvent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -276,7 +276,7 @@ public class RenderBlockTarget {
     }
 
     public boolean scroll(InputEvent.MouseScrollingEvent event) {
-        return isInitialized() && isPlayerLookingAtTarget() && stat.mouseScrolled(event.getMouseX(), event.getMouseY(), event.getScrollDelta());
+        return isInitialized() && isPlayerLookingAtTarget() && stat.mouseScrolled(event.getMouseX(), event.getMouseY(), event.getScrollDeltaX(), event.getScrollDeltaY());
     }
 
     public void updateColor(int color) {

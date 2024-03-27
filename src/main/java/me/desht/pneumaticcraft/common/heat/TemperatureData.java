@@ -20,19 +20,20 @@ package me.desht.pneumaticcraft.common.heat;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
+import me.desht.pneumaticcraft.common.util.IOHelper;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
-import net.minecraftforge.common.util.INBTSerializable;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.neoforged.neoforge.common.util.INBTSerializable;
 
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
 public class TemperatureData implements INBTSerializable<CompoundTag> {
-    private final Double[] temp = new Double[7];
+    private final Double[] temp = new Double[7];  // 6 faces plus null "face"
 
     private boolean isMultisided;
 
@@ -46,23 +47,23 @@ public class TemperatureData implements INBTSerializable<CompoundTag> {
         isMultisided = false;
     }
 
-    public TemperatureData(ICapabilityProvider provider) {
+    public TemperatureData(BlockEntity provider) {
         Arrays.fill(temp, null);
 
         Set<IHeatExchangerLogic> heatExchangers = new HashSet<>();
         for (Direction face : DirectionUtil.VALUES) {
-            provider.getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY, face).ifPresent(heatExchangers::add);
+            IOHelper.getCap(provider, PNCCapabilities.HEAT_EXCHANGER_BLOCK, face).ifPresent(heatExchangers::add);
         }
 
         if (heatExchangers.size() > 1) {
             isMultisided = true;
             for (Direction face : DirectionUtil.VALUES) {
-                provider.getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY, face)
+                IOHelper.getCap(provider, PNCCapabilities.HEAT_EXCHANGER_BLOCK, face)
                         .ifPresent(h -> temp[face.get3DDataValue()] = h.getTemperature());
             }
         } else if (heatExchangers.size() == 1) {
             isMultisided = false;
-            provider.getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY)
+            IOHelper.getCap(provider, PNCCapabilities.HEAT_EXCHANGER_BLOCK, null)
                     .ifPresent(h -> temp[6] = h.getTemperature());
         } else {
             isMultisided = false;

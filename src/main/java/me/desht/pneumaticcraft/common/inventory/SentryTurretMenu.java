@@ -18,11 +18,11 @@
 package me.desht.pneumaticcraft.common.inventory;
 
 import me.desht.pneumaticcraft.common.block.entity.SentryTurretBlockEntity;
-import me.desht.pneumaticcraft.common.core.ModMenuTypes;
+import me.desht.pneumaticcraft.common.registry.ModMenuTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
-import net.minecraftforge.items.SlotItemHandler;
+import net.neoforged.neoforge.items.SlotItemHandler;
 
 public class SentryTurretMenu extends AbstractPneumaticCraftMenu<SentryTurretBlockEntity> {
 
@@ -35,7 +35,7 @@ public class SentryTurretMenu extends AbstractPneumaticCraftMenu<SentryTurretBlo
 
         // Add the hopper slots.
         for (int i = 0; i < 4; i++)
-            addSlot(new SlotItemHandler(te.getPrimaryInventory(), i, 80 + i * 18, 29));
+            addSlot(new SlotItemHandler(blockEntity.getItemHandler(), i, 80 + i * 18, 29));
 
         addUpgradeSlots(23, 29);
 

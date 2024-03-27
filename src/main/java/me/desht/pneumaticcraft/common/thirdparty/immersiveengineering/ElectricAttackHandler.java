@@ -19,19 +19,19 @@ package me.desht.pneumaticcraft.common.thirdparty.immersiveengineering;
 
 import blusunrize.immersiveengineering.api.Lib;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
-import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.entity.drone.DroneEntity;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSpawnParticle;
 import me.desht.pneumaticcraft.common.particle.AirParticleData;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
+import me.desht.pneumaticcraft.common.registry.ModSounds;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.event.entity.living.LivingHurtEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.event.entity.living.LivingHurtEvent;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -40,14 +40,13 @@ import java.util.UUID;
 public class ElectricAttackHandler {
     private static final Map<UUID, Long> sounds = new HashMap<>();
 
-    @SubscribeEvent
     public static void onElectricalAttack(LivingHurtEvent event) {
         if (!event.getSource().is(Lib.DamageTypes.WIRE_SHOCK)) return;
 
         if (event.getEntity() instanceof DroneEntity drone) {
             if (drone.getUpgrades(ModUpgrades.SECURITY.get()) > 0) {
                 float dmg = event.getAmount();
-                drone.getCapability(PNCCapabilities.AIR_HANDLER_CAPABILITY).orElseThrow(RuntimeException::new).addAir((int)(-50 * dmg));
+                drone.getCapability(PNCCapabilities.AIR_HANDLER_ENTITY).addAir((int)(-50 * dmg));
                 double dy = Math.min(dmg / 4, 0.5);
                 NetworkHandler.sendToAllTracking(new PacketSpawnParticle(AirParticleData.DENSE, drone.getX(), drone.getY(), drone.getZ(),
                             0, -dy, 0, (int) (dmg), 0, 0, 0), drone);

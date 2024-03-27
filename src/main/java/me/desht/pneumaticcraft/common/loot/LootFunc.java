@@ -17,12 +17,13 @@
 
 package me.desht.pneumaticcraft.common.loot;
 
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonObject;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.lib.NBTKeys;
+import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
 import me.desht.pneumaticcraft.common.block.entity.*;
-import me.desht.pneumaticcraft.common.core.ModLootFunctions;
+import me.desht.pneumaticcraft.common.registry.ModLootFunctions;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.util.NBTUtils;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
@@ -38,6 +39,7 @@ import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 
+import java.util.List;
 import java.util.Objects;
 
 import static me.desht.pneumaticcraft.api.lib.NBTKeys.NBT_AIR_AMOUNT;
@@ -50,7 +52,10 @@ public class LootFunc {
      * by {@link net.minecraft.world.item.BlockItem#updateCustomBlockEntityTag(Level, Player, BlockPos, ItemStack)}
      */
     public static class BlockEntitySerializerFunction extends LootItemConditionalFunction {
-        private BlockEntitySerializerFunction(LootItemCondition[] conditionsIn) {
+        public static final Codec<BlockEntitySerializerFunction> CODEC
+                = RecordCodecBuilder.create(instance -> commonFields(instance).apply(instance, BlockEntitySerializerFunction::new));
+
+        private BlockEntitySerializerFunction(List<LootItemCondition> conditionsIn) {
             super(conditionsIn);
         }
 
@@ -59,7 +64,7 @@ public class LootFunc {
             return applyBEdata(stack, context.getParamOrNull(LootContextParams.BLOCK_ENTITY));
         }
 
-        public static Builder<?> builder() {
+        public static net.minecraft.world.level.storage.loot.functions.LootItemConditionalFunction.Builder<?> builder() {
             return simpleBuilder(BlockEntitySerializerFunction::new);
         }
 
@@ -85,7 +90,7 @@ public class LootFunc {
             }
 
             // redstone mode
-            if (te instanceof IRedstoneControl rc) {
+            if (te instanceof IRedstoneControl<?> rc) {
                 rc.getRedstoneController().serialize(subTag);
             }
 
@@ -107,11 +112,10 @@ public class LootFunc {
                     }
 
                     // saved air (only when wrenched)
-                    te.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY).ifPresent(h -> {
-                        if (h.getPressure() != 0f) {
-                            subTag.putInt(NBT_AIR_AMOUNT, h.getAir());
-                        }
-                    });
+                    IAirHandlerMachine handler = te.getLevel().getCapability(PNCCapabilities.AIR_HANDLER_MACHINE, te.getBlockPos(), te.getBlockState(), te, null);
+                    if (handler != null && handler.getPressure() != 0f) {
+                        subTag.putInt(NBT_AIR_AMOUNT, handler.getAir());
+                    }
                 }
 
                 teB.serializeExtraItemData(subTag, teB.shouldPreserveStateOnBreak());
@@ -131,13 +135,6 @@ public class LootFunc {
         @Override
         public LootItemFunctionType getType() {
             return ModLootFunctions.TE_SERIALIZER.get();
-        }
-
-        public static class Serializer extends LootItemConditionalFunction.Serializer<BlockEntitySerializerFunction> {
-            @Override
-            public BlockEntitySerializerFunction deserialize(JsonObject object, JsonDeserializationContext deserializationContext, LootItemCondition[] conditionsIn) {
-                return new BlockEntitySerializerFunction(conditionsIn);
-            }
         }
     }
 }

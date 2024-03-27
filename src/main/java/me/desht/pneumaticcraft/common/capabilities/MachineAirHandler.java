@@ -26,10 +26,10 @@ import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
 import me.desht.pneumaticcraft.api.tileentity.IAirListener;
 import me.desht.pneumaticcraft.api.tileentity.IManoMeasurable;
 import me.desht.pneumaticcraft.client.sound.MovingSounds;
-import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdatePressureBlock;
 import me.desht.pneumaticcraft.common.particle.AirParticleData;
+import me.desht.pneumaticcraft.common.registry.ModSounds;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
@@ -37,11 +37,12 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.common.util.LazyOptional;
+import net.neoforged.neoforge.capabilities.BlockCapabilityCache;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -53,11 +54,12 @@ import java.util.*;
 public class MachineAirHandler extends BasicAirHandler implements IAirHandlerMachine, IManoMeasurable {
     private final PressureTier tier;
     private int volumeUpgrades = 0;
-    private final BitSet connectedFaces = new BitSet(6);
+    private final BitSet connectableFaces = new BitSet(6);
     private Direction leakDir = null;
     private Direction prevLeakDir = null;
     private int prevAir;
-    private final Map<Direction, LazyOptional<IAirHandlerMachine>> neighbourAirHandlers = new EnumMap<>(Direction.class);
+
+    private final Map<Direction, BlockCapabilityCache<IAirHandlerMachine,Direction>> neighbourAirHandlers = new EnumMap<>(Direction.class);
 
     // note: leaks due to security upgrade are tracked separately from leaks due to disconnection
     private boolean safetyLeaking;   // is the handler venting right now?
@@ -68,9 +70,6 @@ public class MachineAirHandler extends BasicAirHandler implements IAirHandlerMac
         super(volume);
 
         this.tier = tier;
-        for (Direction dir : DirectionUtil.VALUES) {
-            this.neighbourAirHandlers.put(dir, LazyOptional.empty());
-        }
     }
 
     @Override
@@ -106,24 +105,24 @@ public class MachineAirHandler extends BasicAirHandler implements IAirHandlerMac
 
     @Override
     public void enableSafetyVenting(FloatPredicate pressureCheck, Direction dir) {
-        this.safetyLeakDir = dir;
         this.safetyPredicate = pressureCheck;
+        this.safetyLeakDir = dir;
     }
 
     @Override
     public void disableSafetyVenting() {
-        this.safetyLeakDir = null;
         this.safetyPredicate = null;
+        this.safetyLeakDir = null;
     }
 
     @Override
-    public void setConnectedFaces(List<Direction> sides) {
-        connectedFaces.clear();
-        sides.forEach(side -> connectedFaces.set(side.get3DDataValue()));
+    public void setConnectableFaces(Collection<Direction> sides) {
+        connectableFaces.clear();
+        sides.forEach(side -> connectableFaces.set(side.get3DDataValue()));
 
         // invalidate cached neighbour data
         for (Direction dir : DirectionUtil.VALUES) {
-            this.neighbourAirHandlers.put(dir, LazyOptional.empty());
+            this.neighbourAirHandlers.put(dir, null);
         }
     }
 
@@ -157,7 +156,7 @@ public class MachineAirHandler extends BasicAirHandler implements IAirHandlerMac
             if (prevLeakDir != actualLeakDir || actualLeakDir != null && (world.getGameTime() & 0x1f) == 0) {
                 // if leak status changes, sync pressure & leak dir to the client
                 // OR if already leaking, periodically sync pressure & leak dir to the client
-                NetworkHandler.sendToAllTracking(new PacketUpdatePressureBlock(ownerTE, anyConnectedFace(), actualLeakDir, getAir()), ownerTE);
+                NetworkHandler.sendToAllTracking(new PacketUpdatePressureBlock(ownerTE.getBlockPos(), anyConnectableFace(), actualLeakDir, getAir()), ownerTE);
             }
 
             prevAir = getAir();
@@ -169,9 +168,9 @@ public class MachineAirHandler extends BasicAirHandler implements IAirHandlerMac
         }
     }
 
-    private Direction anyConnectedFace() {
+    private Direction anyConnectableFace() {
         for (Direction d : DirectionUtil.VALUES) {
-            if (connectedFaces.get(d.get3DDataValue())) return d;
+            if (connectableFaces.get(d.get3DDataValue())) return d;
         }
         return null;
     }
@@ -224,7 +223,7 @@ public class MachineAirHandler extends BasicAirHandler implements IAirHandlerMac
             } else if (getAir() < 0 && world.random.nextBoolean()) {
                 world.addParticle(AirParticleData.DENSE, pos.getX() + 0.5D + mx, pos.getY() + 0.5D + my, pos.getZ() + 0.5D + mz, mx * speed, my * speed, mz * speed);
             }
-            MovingSounds.playMovingSound(MovingSounds.Sound.AIR_LEAK, ownerTE.getBlockPos(), anyConnectedFace());
+            MovingSounds.playMovingSound(MovingSounds.Sound.AIR_LEAK, ownerTE.getBlockPos(), anyConnectableFace());
         }
     }
 
@@ -239,22 +238,27 @@ public class MachineAirHandler extends BasicAirHandler implements IAirHandlerMac
         return this.leakDir;
     }
 
-    private LazyOptional<IAirHandlerMachine> getNeighbourAirHandler(BlockEntity ownerTE, Direction dir) {
-        if (!connectedFaces.get(dir.get3DDataValue())) return LazyOptional.empty();
-
-        if (!neighbourAirHandlers.get(dir).isPresent()) {
-            BlockEntity te1 = Objects.requireNonNull(ownerTE.getLevel()).getBlockEntity(ownerTE.getBlockPos().relative(dir));
-            if (te1 != null) {
-                LazyOptional<IAirHandlerMachine> cap = te1.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, dir.getOpposite());
-                if (cap.isPresent()) {
-                    neighbourAirHandlers.put(dir, cap);
-                    neighbourAirHandlers.get(dir).addListener(l -> neighbourAirHandlers.put(dir, LazyOptional.empty()));
-                }
-            } else {
-                neighbourAirHandlers.put(dir, LazyOptional.empty());
-            }
+    private Optional<IAirHandlerMachine> getNeighbourAirHandler(BlockEntity ownerTE, Direction dir) {
+        if (!connectableFaces.get(dir.get3DDataValue())) {
+            return Optional.empty();
         }
-        return neighbourAirHandlers.get(dir);
+
+        if (ownerTE.getLevel() instanceof ServerLevel level) {
+            if (neighbourAirHandlers.get(dir) == null) {
+                neighbourAirHandlers.put(dir, BlockCapabilityCache.create(PNCCapabilities.AIR_HANDLER_MACHINE,
+                        level,
+                        ownerTE.getBlockPos().relative(dir),
+                        dir.getOpposite(),
+                        () -> !ownerTE.isRemoved(),
+                        () -> neighbourAirHandlers.put(dir, null)
+                ));
+            }
+            return Optional.ofNullable(neighbourAirHandlers.get(dir).getCapability());
+        } else {
+            // no block cap cache on the client
+            BlockEntity be = ownerTE.getLevel().getBlockEntity(ownerTE.getBlockPos().relative(dir));
+            return be == null ? Optional.empty() : PNCCapabilities.getAirHandler(be, dir.getOpposite());
+        }
     }
 
     private void disperseAir(BlockEntity ownerTE) {
@@ -290,7 +294,7 @@ public class MachineAirHandler extends BasicAirHandler implements IAirHandlerMac
     private List<Connection> getConnectedAirHandlers(BlockEntity ownerTE, boolean onlyLowerPressure) {
         List<IAirHandlerMachine.Connection> neighbours = new ArrayList<>();
         for (Direction dir : DirectionUtil.VALUES) {
-            if (connectedFaces.get(dir.get3DDataValue())) {
+            if (connectableFaces.get(dir.get3DDataValue())) {
                 getNeighbourAirHandler(ownerTE, dir).ifPresent(h -> {
                     if ((!onlyLowerPressure || h.getPressure() < getPressure())) {
                         neighbours.add(new ConnectedAirHandler(dir, h));
@@ -324,24 +328,21 @@ public class MachineAirHandler extends BasicAirHandler implements IAirHandlerMac
     }
 
     private List<IAirHandlerMachine> addExtraConnectedHandlers(BlockEntity ownerTE) {
-        if (ownerTE instanceof IAirListener) {
-            return ((IAirListener) ownerTE).addConnectedPneumatics(new ArrayList<>());
-        }
-        return Collections.emptyList();
+        return ownerTE instanceof IAirListener l ?
+                l.addConnectedPneumatics(new ArrayList<>()) :
+                List.of();
     }
 
     private void onAirDispersion(BlockEntity ownerTE, Direction dir, int airDispersed) {
-        if (ownerTE instanceof IAirListener) {
-            ((IAirListener) ownerTE).onAirDispersion(this, dir, airDispersed);
+        if (ownerTE instanceof IAirListener l) {
+            l.onAirDispersion(this, dir, airDispersed);
         }
     }
 
     private int getMaxDispersion(BlockEntity ownerTE, Direction dir) {
-        if (ownerTE instanceof IAirListener) {
-            return ((IAirListener) ownerTE).getMaxDispersion(this, dir);
-        } else {
-            return Integer.MAX_VALUE;
-        }
+        return ownerTE instanceof IAirListener l ?
+                l.getMaxDispersion(this, dir) :
+                Integer.MAX_VALUE;
     }
 
     @Override
@@ -351,12 +352,12 @@ public class MachineAirHandler extends BasicAirHandler implements IAirHandlerMac
     }
 
     private static class ConnectedAirHandler implements IAirHandlerMachine.Connection {
-        final Direction direction; // may be null
+        final @Nullable Direction direction;
         final IAirHandlerMachine airHandler;
         int maxDispersion;
         int toDisperse;
 
-        ConnectedAirHandler(Direction direction, IAirHandlerMachine airHandler) {
+        ConnectedAirHandler(@Nullable Direction direction, IAirHandlerMachine airHandler) {
             this.direction = direction;
             this.airHandler = airHandler;
         }
@@ -366,6 +367,7 @@ public class MachineAirHandler extends BasicAirHandler implements IAirHandlerMac
         }
 
         @Override
+        @Nullable
         public Direction getDirection() {
             return direction;
         }

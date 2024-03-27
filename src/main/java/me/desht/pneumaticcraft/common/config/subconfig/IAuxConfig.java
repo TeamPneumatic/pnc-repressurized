@@ -40,7 +40,7 @@ public interface IAuxConfig {
 
     /**
      * Called during the post-init phase; on the server, after the server has finished loading, and on the client,
-     * during the player connection process ({@link net.minecraftforge.event.entity.player.PlayerEvent.PlayerLoggedInEvent}).
+     * during the player connection process ({@link net.neoforged.neoforge.event.entity.player.PlayerEvent.PlayerLoggedInEvent}).
      *
      * @param file the config file name
      * @throws IOException if there is a problem reading/writing any files

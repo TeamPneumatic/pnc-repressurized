@@ -52,7 +52,7 @@ public class RenderSearchItemBlock {
         // this gets called every frame from the render methods, so some caching is desirable...
         if (world.getGameTime() - lastCheck >= 20) {
             cachedAmount = 0;
-            IOHelper.getInventoryForTE(world.getBlockEntity(pos)).ifPresent(handler -> {
+            IOHelper.getInventoryForBlock(world.getBlockEntity(pos)).ifPresent(handler -> {
                 int itemCount = 0;
                 Item searchedItem = PneumaticArmorItem.getSearchedItem(ClientUtils.getWornArmor(EquipmentSlot.HEAD));
                 if (searchedItem != null) {

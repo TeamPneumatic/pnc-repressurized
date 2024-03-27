@@ -21,25 +21,21 @@ import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.api.pressure.PressureTier;
 import me.desht.pneumaticcraft.client.util.TintColor;
-import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.heat.HeatExchangerLogicAmbient;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.common.heat.SyncedTemperature;
 import me.desht.pneumaticcraft.common.network.DescSynced;
+import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.IItemHandler;
 
 public class VortexTubeBlockEntity extends AbstractAirHandlingBlockEntity implements IHeatTinted, IHeatExchangingTE {
     // hot side heat exchanger is also the default
     private final IHeatExchangerLogic hotHeatExchanger = PneumaticRegistry.getInstance().getHeatRegistry().makeHeatExchangerLogic();
-    private final LazyOptional<IHeatExchangerLogic> hotHeatCap = LazyOptional.of(() -> hotHeatExchanger);
     private final IHeatExchangerLogic coldHeatExchanger = PneumaticRegistry.getInstance().getHeatRegistry().makeHeatExchangerLogic();
-    private final LazyOptional<IHeatExchangerLogic> coldHeatCap = LazyOptional.of(() -> coldHeatExchanger);
     private final IHeatExchangerLogic connectingExchanger = PneumaticRegistry.getInstance().getHeatRegistry().makeHeatExchangerLogic();
 
     @DescSynced
@@ -48,7 +44,7 @@ public class VortexTubeBlockEntity extends AbstractAirHandlingBlockEntity implem
     private final SyncedTemperature syncCold = new SyncedTemperature(coldHeatExchanger);
 
     public VortexTubeBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.VORTEX_TUBE.get(), pos, state, PressureTier.TIER_TWO, 2000, 0);
+        super(ModBlockEntityTypes.VORTEX_TUBE.get(), pos, state, PressureTier.TIER_TWO, 2000, 0);
         coldHeatExchanger.setThermalResistance(0.01);
         hotHeatExchanger.setThermalResistance(0.01);
         connectingExchanger.setThermalResistance(100);
@@ -57,19 +53,8 @@ public class VortexTubeBlockEntity extends AbstractAirHandlingBlockEntity implem
     }
 
     @Override
-    public LazyOptional<IHeatExchangerLogic> getHeatCap(Direction side) {
-        if (side == null || side == getRotation().getOpposite()) {
-            return hotHeatCap;
-        } else if (side == getRotation()) {
-            return coldHeatCap;
-        } else {
-            return LazyOptional.empty();
-        }
-    }
-
-    @Override
-    public IItemHandler getPrimaryInventory() {
-        return null;
+    public boolean hasItemCapability() {
+        return false;
     }
 
     @Override

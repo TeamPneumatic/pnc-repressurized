@@ -18,7 +18,6 @@
 package me.desht.pneumaticcraft.common.block.entity;
 
 import me.desht.pneumaticcraft.api.pressure.PressureTier;
-import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.inventory.AssemblyControllerMenu;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.item.AssemblyProgramItem;
@@ -26,6 +25,7 @@ import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.recipes.assembly.AssemblyProgram;
 import me.desht.pneumaticcraft.common.recipes.assembly.AssemblyProgram.EnumMachine;
+import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.BlockPos;
@@ -38,10 +38,8 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.AABB;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemStackHandler;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.ItemStackHandler;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -57,7 +55,6 @@ public class AssemblyControllerBlockEntity extends AbstractAirHandlingBlockEntit
             return itemStack.isEmpty() || itemStack.getItem() instanceof AssemblyProgramItem;
         }
     };
-    private final LazyOptional<IItemHandler> inventoryCap = LazyOptional.of(() -> itemHandler);
 
     public AssemblyProgram curProgram;
     @GuiSynced
@@ -76,16 +73,11 @@ public class AssemblyControllerBlockEntity extends AbstractAirHandlingBlockEntit
     private AssemblySystem assemblySystem = null;
 
     public AssemblyControllerBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.ASSEMBLY_CONTROLLER.get(),  pos, state, PressureTier.TIER_ONE, PneumaticValues.VOLUME_ASSEMBLY_CONTROLLER, 4);
+        super(ModBlockEntityTypes.ASSEMBLY_CONTROLLER.get(),  pos, state, PressureTier.TIER_ONE, PneumaticValues.VOLUME_ASSEMBLY_CONTROLLER, 4);
     }
 
     @Override
-    protected LazyOptional<IItemHandler> getInventoryCap(Direction side) {
-        return inventoryCap;
-    }
-
-    @Override
-    public IItemHandler getPrimaryInventory() {
+    public IItemHandler getItemHandler(@Nullable Direction dir) {
         return itemHandler;
     }
 
@@ -207,11 +199,6 @@ public class AssemblyControllerBlockEntity extends AbstractAirHandlingBlockEntit
     @Override
     public boolean canConnectPneumatic(Direction side) {
         return side != Direction.UP;
-    }
-
-    @Override
-    public AABB getRenderBoundingBox() {
-        return new AABB(getBlockPos().getX(), getBlockPos().getY(), getBlockPos().getZ(), getBlockPos().getX() + 1, getBlockPos().getY() + 1, getBlockPos().getZ() + 1);
     }
 
     @Override

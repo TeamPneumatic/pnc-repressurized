@@ -2,20 +2,23 @@
   "type": "pneumaticcraft:pressure_chamber",
   "inputs": [
     {
-      "item": "pneumaticcraft:plastic_bucket"
+      "item": {
+        "item": "pneumaticcraft:plastic_bucket"
+      }
     },
     {
-      "type": "pneumaticcraft:stacked_item",
-      "count": 2,
-      "item": "minecraft:rotten_flesh"
+      "item": {
+        "count": 2,
+        "item": "minecraft:rotten_flesh"
+      }
     },
     {
-      "type": "pneumaticcraft:stacked_item",
-      "count": 2,
-      "item": "minecraft:spider_eye"
+      "item": {
+        "count": 2,
+        "item": "minecraft:spider_eye"
+      }
     },
     {
-      "type": "pneumaticcraft:stacked_item",
       "count": 2,
       "tag": "forge:gunpowder"
     }

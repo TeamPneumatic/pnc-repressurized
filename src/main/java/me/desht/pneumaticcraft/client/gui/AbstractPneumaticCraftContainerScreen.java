@@ -35,12 +35,12 @@ import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.block.entity.*;
 import me.desht.pneumaticcraft.common.block.entity.SideConfigurator.RelativeFace;
-import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.inventory.AbstractPneumaticCraftMenu;
 import me.desht.pneumaticcraft.common.item.ICustomTooltipName;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketGuiButton;
 import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
+import me.desht.pneumaticcraft.common.registry.ModBlocks;
 import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
 import me.desht.pneumaticcraft.common.upgrades.ApplicableUpgradesDB;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
@@ -58,14 +58,15 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.client.renderer.texture.Tickable;
 import net.minecraft.client.resources.language.I18n;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fml.ModList;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraft.world.item.crafting.RecipeHolder;
+import net.neoforged.fml.ModList;
+import net.neoforged.neoforge.fluids.FluidStack;
 
 import javax.annotation.Nonnull;
 import java.util.*;
@@ -86,7 +87,7 @@ public abstract class AbstractPneumaticCraftContainerScreen<C extends AbstractPn
 
     public AbstractPneumaticCraftContainerScreen(C container, Inventory inv, Component displayString) {
         super(container, inv, displayString);
-        this.te = container.te;
+        this.te = container.blockEntity;
     }
 
     @Override
@@ -204,7 +205,7 @@ public abstract class AbstractPneumaticCraftContainerScreen<C extends AbstractPn
     }
 
     protected String upgradeCategory() {
-        ResourceLocation regName = PneumaticCraftUtils.getRegistryName(ForgeRegistries.BLOCK_ENTITY_TYPES, te.getType()).orElseThrow();
+        ResourceLocation regName = PneumaticCraftUtils.getRegistryName(BuiltInRegistries.BLOCK_ENTITY_TYPE, te.getType()).orElseThrow();
         return PneumaticCraftUtils.modDefaultedString(regName);
     }
 
@@ -362,7 +363,7 @@ public abstract class AbstractPneumaticCraftContainerScreen<C extends AbstractPn
 
     @Override
     public void render(GuiGraphics graphics, int x, int y, float partialTick) {
-        renderBackground(graphics);
+        renderBackground(graphics, x, y, partialTick);
         super.render(graphics, x, y, partialTick);
         renderTooltip(graphics, x, y);
     }
@@ -439,7 +440,7 @@ public abstract class AbstractPneumaticCraftContainerScreen<C extends AbstractPn
     }
 
     protected void addPressureStatInfo(List<Component> pressureStatText) {
-        te.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY).ifPresent(airHandler -> {
+        PNCCapabilities.getAirHandler(te).ifPresent(airHandler -> {
             float curPressure = airHandler.getPressure();
             int volume = airHandler.getVolume();
             int upgrades = te.getUpgrades(ModUpgrades.VOLUME.get());
@@ -571,10 +572,10 @@ public abstract class AbstractPneumaticCraftContainerScreen<C extends AbstractPn
         return Collections.emptyList();
     }
 
-    <R extends PneumaticCraftRecipe> Optional<R> getCurrentRecipe(PneumaticCraftRecipeType<R> type) {
+    <R extends PneumaticCraftRecipe> Optional<RecipeHolder<R>> getCurrentRecipe(PneumaticCraftRecipeType<R> type) {
         String id = te.getCurrentRecipeIdSynced();
         return id.isEmpty() ? Optional.empty() :
-                Optional.ofNullable(type.getRecipe(ClientUtils.getClientLevel(), new ResourceLocation(id)));
+                type.getRecipe(ClientUtils.getClientLevel(), new ResourceLocation(id));
     }
 
     private static class SideConfiguratorButton extends WidgetButtonExtended {

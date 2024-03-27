@@ -1,10 +1,10 @@
 {
-  "type": "pneumaticcraft:heat_properties",
-  "description": "pneumaticcraft.gui.jei.description.create_blaze_burner.fading",
-  "block": "create:blaze_burner",
-  "statePredicate": {
-    "blaze": "fading"
-  },
-  "temperature": 1700,
-  "thermalResistance": 1000
+   "statePredicate" : {
+      "blaze" : "fading"
+   },
+   "block" : "create:blaze_burner",
+   "type" : "pneumaticcraft:heat_properties",
+   "thermalResistance" : 1000,
+   "description" : "pneumaticcraft.gui.jei.description.create_blaze_burner.fading",
+   "temperature" : 1700
 }

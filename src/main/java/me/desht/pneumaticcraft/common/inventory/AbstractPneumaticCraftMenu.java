@@ -19,6 +19,7 @@ package me.desht.pneumaticcraft.common.inventory;
 
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
+import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.common.block.entity.AbstractPneumaticCraftBlockEntity;
 import me.desht.pneumaticcraft.common.block.entity.IGUIButtonSensitive;
 import me.desht.pneumaticcraft.common.inventory.slot.IPhantomSlot;
@@ -33,20 +34,21 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.ClickType;
-import net.minecraft.world.inventory.MenuType;
-import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.inventory.*;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.server.ServerLifecycleHooks;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.event.entity.player.PlayerContainerEvent;
+import net.neoforged.neoforge.server.ServerLifecycleHooks;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
 public abstract class AbstractPneumaticCraftMenu<T extends AbstractPneumaticCraftBlockEntity> extends AbstractContainerMenu implements IGUIButtonSensitive {
-    public final T te;
+    public final T blockEntity;
     private final List<SyncedField<?>> syncedFields = new ArrayList<>();
     private boolean firstTick = true;
     int playerSlotsStart;
@@ -65,13 +67,13 @@ public abstract class AbstractPneumaticCraftMenu<T extends AbstractPneumaticCraf
             BlockEntity te0 = invPlayer.player.level().getBlockEntity(tilePos);
             if (te0 instanceof AbstractPneumaticCraftBlockEntity) {
                 //noinspection unchecked
-                te = (T) te0;  // should be safe: T extends AbstractPneumaticCraftBlockEntity, and we're doing an instanceof
-                addSyncedFields(te);
+                blockEntity = (T) te0;  // should be safe: T extends AbstractPneumaticCraftBlockEntity, and we're doing an instanceof
+                addSyncedFields(blockEntity);
             } else {
-                te = null;
+                blockEntity = null;
             }
         } else {
-            te = null;
+            blockEntity = null;
         }
     }
 
@@ -96,36 +98,48 @@ public abstract class AbstractPneumaticCraftMenu<T extends AbstractPneumaticCraf
 
     public void updateField(int index, Object value) {
         syncedFields.get(index).setValue(value);
-        if (te != null) te.onGuiUpdate();
+        if (blockEntity != null) blockEntity.onGuiUpdate();
     }
 
     @Override
     public boolean stillValid(Player player) {
-        return te.isGuiUseableByPlayer(player);
+        return blockEntity.isGuiUseableByPlayer(player);
     }
 
     @Override
     public void broadcastChanges() {
         super.broadcastChanges();
+
+        syncGuiFieldsToPlayers(null);
+    }
+
+    /**
+     * When player is null, it's a sync to all players with the menu already open
+     * When player is not null, it's a sync to the player who is currently opening the menu
+     * @param player the player to sync to (or null)
+     */
+    private void syncGuiFieldsToPlayers(@Nullable ServerPlayer player) {
         IntList toUpdate = new IntArrayList();
         for (int i = 0; i < syncedFields.size(); i++) {
-            if (syncedFields.get(i).update() || firstTick) {
+            if (syncedFields.get(i).update() || player != null || firstTick) {
                 toUpdate.add(i);
             }
         }
+        firstTick = false;
         if (!toUpdate.isEmpty()) {
-            final AbstractPneumaticCraftMenu<?> self = this;
-            List<ServerPlayer> players = ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayers().stream()
-                    .filter(p -> p.containerMenu == self)
-                    .toList();
+            List<ServerPlayer> players = player == null ?
+                    ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayers().stream()
+                            .filter(p -> p.containerMenu == AbstractPneumaticCraftMenu.this)
+                            .toList() :
+                    List.of(player);
             if (!players.isEmpty()) {
-                toUpdate.forEach(idx ->
-                        players.forEach(player ->
-                                NetworkHandler.sendToPlayer(new PacketUpdateGui(idx, syncedFields.get(idx)), player))
+                toUpdate.forEach(idx -> {
+                            PacketUpdateGui message = PacketUpdateGui.create(idx, syncedFields.get(idx));
+                            players.forEach(p -> NetworkHandler.sendToPlayer(message, p));
+                        }
                 );
             }
         }
-        firstTick = false;
     }
 
     protected void addPlayerSlots(Inventory inventoryPlayer, int yOffset) {
@@ -149,8 +163,8 @@ public abstract class AbstractPneumaticCraftMenu<T extends AbstractPneumaticCraf
     }
 
     protected void addUpgradeSlots(int xBase, int yBase) {
-        for (int i = 0; i < te.getUpgradeHandler().getSlots(); i++) {
-            addSlot(new UpgradeSlot(te, i, xBase + (i % 2) * 18, yBase + (i / 2) * 18));
+        for (int i = 0; i < blockEntity.getUpgradeHandler().getSlots(); i++) {
+            addSlot(new UpgradeSlot(blockEntity, i, xBase + (i % 2) * 18, yBase + (i / 2) * 18));
         }
     }
 
@@ -376,8 +390,18 @@ public abstract class AbstractPneumaticCraftMenu<T extends AbstractPneumaticCraf
 
     @Override
     public void handleGUIButtonPress(String tag, boolean shiftHeld, ServerPlayer player) {
-        if (te != null) {
-            te.handleGUIButtonPress(tag, shiftHeld, player);
+        if (blockEntity != null) {
+            blockEntity.handleGUIButtonPress(tag, shiftHeld, player);
+        }
+    }
+
+    @Mod.EventBusSubscriber(modid = PneumaticRegistry.MOD_ID)
+    public static class Listener {
+        @SubscribeEvent
+        public static void onMenuOpen(PlayerContainerEvent.Open event) {
+            if (event.getContainer() instanceof AbstractPneumaticCraftMenu<?> pncMenu && event.getEntity() instanceof ServerPlayer sp) {
+                pncMenu.syncGuiFieldsToPlayers(sp);
+            }
         }
     }
 }

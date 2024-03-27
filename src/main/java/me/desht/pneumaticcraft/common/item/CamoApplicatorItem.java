@@ -20,10 +20,10 @@ package me.desht.pneumaticcraft.common.item;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerItem;
 import me.desht.pneumaticcraft.common.block.entity.CamouflageableBlockEntity;
-import me.desht.pneumaticcraft.common.core.ModItems;
-import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketPlaySound;
+import me.desht.pneumaticcraft.common.registry.ModItems;
+import me.desht.pneumaticcraft.common.registry.ModSounds;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.ChatFormatting;
@@ -100,7 +100,7 @@ public class CamoApplicatorItem extends PressurizableItem {
                 } else {
                     // right-click camo block: try to apply (or remove) camo
 
-                    IAirHandlerItem airHandler = stack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).orElseThrow(RuntimeException::new);
+                    IAirHandlerItem airHandler = PNCCapabilities.getAirHandler(stack).orElseThrow(RuntimeException::new);
                     if (!player.isCreative() && airHandler.getPressure() < 0.1F) {
                         // not enough pressure
                         return InteractionResult.FAIL;

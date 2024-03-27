@@ -18,14 +18,17 @@
 package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.common.block.entity.SmartChestBlockEntity;
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.network.NetworkEvent;
+import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 import org.apache.commons.lang3.tuple.Pair;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Supplier;
+
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 /**
  * Received on: BOTH
@@ -33,49 +36,42 @@ import java.util.function.Supplier;
  * Sent by server when smart chest GUI is being opened to sync filter settings to client
  * Sent by client GUI to sync changed filter settings to server
  */
-public class PacketSyncSmartChest extends LocationIntPacket {
-    private final int lastSlot;
-    private final List<Pair<Integer, ItemStack>> filter;
+public record PacketSyncSmartChest(BlockPos pos, int lastSlot, List<Pair<Integer, ItemStack>> filter) implements CustomPacketPayload {
+    public static final ResourceLocation ID = RL("sync_smart_chest");
 
-    public PacketSyncSmartChest(SmartChestBlockEntity te) {
-        super(te.getBlockPos());
-
-        lastSlot = te.getLastSlot();
-        filter = te.getFilter();
+    public static PacketSyncSmartChest forBlockEntity(SmartChestBlockEntity te) {
+        return new PacketSyncSmartChest(te.getBlockPos(), te.getLastSlot(), te.getFilter());
     }
 
-    PacketSyncSmartChest(FriendlyByteBuf buffer) {
-        super(buffer);
+    public static PacketSyncSmartChest fromNetwork(FriendlyByteBuf buffer) {
+        BlockPos pos = buffer.readBlockPos();
+        int lastSlot = buffer.readVarInt();
+        var filter = buffer.readList(buf -> Pair.of(buf.readVarInt(), buf.readItem()));
 
-        lastSlot = buffer.readVarInt();
-        int nFilters = buffer.readVarInt();
-        filter = new ArrayList<>();
-        for (int i = 0; i < nFilters; i++) {
-            int slot = buffer.readVarInt();
-            ItemStack stack = buffer.readItem();
-            filter.add(Pair.of(slot, stack));
-        }
+        return new PacketSyncSmartChest(pos, lastSlot, filter);
     }
 
     @Override
-    public void toBytes(FriendlyByteBuf buf) {
-        super.toBytes(buf);
-
+    public void write(FriendlyByteBuf buf) {
+        buf.writeBlockPos(pos);
         buf.writeVarInt(lastSlot);
-        buf.writeVarInt(filter.size());
-        for (Pair<Integer,ItemStack> p: filter) {
-            buf.writeVarInt(p.getLeft());
-            buf.writeItemStack(p.getRight(), true);
-        }
+        buf.writeCollection(filter, (b, pair) -> {
+            b.writeVarInt(pair.getLeft());
+            b.writeItem(pair.getRight());
+        });
     }
 
-    public void handle(Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> {
-            PacketUtil.getBlockEntity(ctx.get().getSender(), pos, SmartChestBlockEntity.class).ifPresent(te -> {
-                te.setLastSlot(lastSlot);
-                te.setFilter(filter);
+    @Override
+    public ResourceLocation id() {
+        return ID;
+    }
+
+    public static void handle(PacketSyncSmartChest message, PlayPayloadContext ctx) {
+        ctx.player().ifPresent(player -> ctx.workHandler().submitAsync(() -> {
+            PacketUtil.getBlockEntity(player, message.pos(), SmartChestBlockEntity.class).ifPresent(te -> {
+                te.setLastSlot(message.lastSlot());
+                te.setFilter(message.filter());
             });
-        });
-        ctx.get().setPacketHandled(true);
+        }));
     }
 }

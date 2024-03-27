@@ -17,28 +17,21 @@
 
 package me.desht.pneumaticcraft.common.thirdparty.curios;
 
-import me.desht.pneumaticcraft.common.item.MemoryStickItem;
 import me.desht.pneumaticcraft.common.thirdparty.IThirdParty;
-import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.AttachCapabilitiesEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
+import net.neoforged.neoforge.common.NeoForge;
 
 public class Curios implements IThirdParty {
     public static boolean available = false;
 
     @Override
-    public void preInit() {
+    public void preInit(IEventBus modBus) {
         available = true;
-        MinecraftForge.EVENT_BUS.register(CuriosCapabilityListener.class);
+        modBus.addListener(this::register);
     }
 
-    public static class CuriosCapabilityListener {
-        @SubscribeEvent
-        public static void attachCurioInvTicker(AttachCapabilitiesEvent<ItemStack> event) {
-            if (event.getObject().getItem() instanceof MemoryStickItem) {
-                CuriosTickerCapability.addCuriosCap(event);
-            }
-        }
+    private void register(RegisterCapabilitiesEvent event) {
+        CuriosTickerCapability.register(event);
     }
 }

@@ -21,12 +21,12 @@ import com.google.common.collect.ImmutableMap;
 import me.desht.pneumaticcraft.api.block.PNCBlockStateProperties;
 import me.desht.pneumaticcraft.api.pressure.PressureTier;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
-import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.fluid.FuelRegistry;
 import me.desht.pneumaticcraft.common.inventory.LiquidCompressorMenu;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
+import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
 import me.desht.pneumaticcraft.common.util.PNCFluidTank;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.BlockPos;
@@ -41,14 +41,12 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.FluidUtil;
-import net.minecraftforge.fluids.IFluidTank;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemStackHandler;
-import org.jetbrains.annotations.NotNull;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidUtil;
+import net.neoforged.neoforge.fluids.IFluidTank;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.ItemStackHandler;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -73,11 +71,11 @@ public class LiquidCompressorBlockEntity extends AbstractAirHandlingBlockEntity 
     private final ItemStackHandler itemHandler = new BaseItemStackHandler(this, INVENTORY_SIZE) {
         @Override
         public boolean isItemValid(int slot, ItemStack itemStack) {
-            return itemStack.isEmpty() || FluidUtil.getFluidHandler(itemStack) != null;
+            return itemStack.isEmpty() || FluidUtil.getFluidHandler(itemStack).isPresent();
         }
     };
-    private final LazyOptional<IItemHandler> inventoryCap = LazyOptional.of(() -> itemHandler);
-    private final LazyOptional<IFluidHandler> fluidCap = LazyOptional.of(() -> tank);
+//    private final LazyOptional<IItemHandler> inventoryCap = LazyOptional.of(() -> itemHandler);
+//    private final LazyOptional<IFluidHandler> fluidCap = LazyOptional.of(() -> tank);
 
     private double internalFuelBuffer;
     private float burnMultiplier = 1f;  // how fast this fuel burns (and produces pressure)
@@ -88,11 +86,21 @@ public class LiquidCompressorBlockEntity extends AbstractAirHandlingBlockEntity 
     private float airBuffer;
 
     public LiquidCompressorBlockEntity(BlockPos pos, BlockState state) {
-        this(ModBlockEntities.LIQUID_COMPRESSOR.get(), pos, state,PressureTier.TIER_ONE, 5000);
+        this(ModBlockEntityTypes.LIQUID_COMPRESSOR.get(), pos, state,PressureTier.TIER_ONE, 5000);
     }
 
     LiquidCompressorBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state, PressureTier tier, int volume) {
         super(type, pos, state, tier, volume, 4);
+    }
+
+    @Override
+    public boolean hasFluidCapability() {
+        return true;
+    }
+
+    @Override
+    public IFluidHandler getFluidHandler(@org.jetbrains.annotations.Nullable Direction dir) {
+        return tank;
     }
 
     public IFluidTank getTank() {
@@ -204,25 +212,13 @@ public class LiquidCompressorBlockEntity extends AbstractAirHandlingBlockEntity 
     }
 
     @Override
-    public IItemHandler getPrimaryInventory() {
+    public IItemHandler getItemHandler(@Nullable Direction dir) {
         return itemHandler;
     }
 
     @Override
     public RedstoneController<LiquidCompressorBlockEntity> getRedstoneController() {
         return rsController;
-    }
-
-    @Nonnull
-    @Override
-    protected LazyOptional<IItemHandler> getInventoryCap(Direction side) {
-        return inventoryCap;
-    }
-
-    @NotNull
-    @Override
-    public LazyOptional<IFluidHandler> getFluidCap(Direction side) {
-        return fluidCap;
     }
 
     @Nonnull

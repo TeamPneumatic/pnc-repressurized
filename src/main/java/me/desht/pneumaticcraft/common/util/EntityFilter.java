@@ -24,6 +24,7 @@ import me.desht.pneumaticcraft.common.drone.progwidgets.IEntityProvider;
 import me.desht.pneumaticcraft.common.drone.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetText;
 import me.desht.pneumaticcraft.common.entity.drone.DroneEntity;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
@@ -42,8 +43,7 @@ import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.scores.PlayerTeam;
-import net.minecraftforge.common.IForgeShearable;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.common.IShearable;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 
@@ -186,6 +186,10 @@ public class EntityFilter implements Predicate<Entity> {
         }
     }
 
+    public boolean isNone() {
+        return this == deny() || rawFilter.equals("@nothing");
+    }
+
     private enum Modifier implements BiPredicate<Entity,String> {
         AGE(ImmutableSet.of("adult", "baby"),
                 Modifier::testAge
@@ -211,11 +215,11 @@ public class EntityFilter implements Predicate<Entity> {
         COLOR(DYE_COLORS,
                 Modifier::hasColor
         ),
-        HOLDING((item) -> ForgeRegistries.ITEMS.containsKey(new ResourceLocation(item)),
+        HOLDING((item) -> BuiltInRegistries.ITEM.containsKey(new ResourceLocation(item)),
                 "any valid item ID, e.g. 'minecraft:cobblestone'",
                 (entity, val) -> isHeldItem(entity, val, true)
         ),
-        HOLDING_OFFHAND((item) -> ForgeRegistries.ITEMS.containsKey(new ResourceLocation(item)),
+        HOLDING_OFFHAND((item) -> BuiltInRegistries.ITEM.containsKey(new ResourceLocation(item)),
                 "any valid item ID, e.g. 'minecraft:cobblestone'",
                 (entity, val) -> isHeldItem(entity, val, false)
         ),
@@ -252,7 +256,7 @@ public class EntityFilter implements Predicate<Entity> {
         }
 
         private static boolean testShearable(Entity entity, String val) {
-            return entity instanceof IForgeShearable s
+            return entity instanceof IShearable s
                     && s.isShearable(new ItemStack(Items.SHEARS), entity.getCommandSenderWorld(), entity.blockPosition()) ?
                     val.equalsIgnoreCase("yes") : val.equalsIgnoreCase("no");
         }
@@ -285,8 +289,9 @@ public class EntityFilter implements Predicate<Entity> {
         }
 
         private static boolean testTeamName(Entity entity, String val) {
-            return entity.getTeam() instanceof PlayerTeam t
-                    && (t.getName().equalsIgnoreCase(val) || t.getDisplayName().getString().equalsIgnoreCase(val));
+            PlayerTeam team = entity.getTeam();
+            return team != null
+                    && (team.getName().equalsIgnoreCase(val) || team.getDisplayName().getString().equalsIgnoreCase(val));
         }
 
         boolean isValid(String s) {

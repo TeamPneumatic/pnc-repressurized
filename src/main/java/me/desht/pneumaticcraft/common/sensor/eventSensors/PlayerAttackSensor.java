@@ -18,8 +18,8 @@
 package me.desht.pneumaticcraft.common.sensor.eventSensors;
 
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.event.entity.player.AttackEntityEvent;
-import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.event.entity.player.AttackEntityEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 
 public class PlayerAttackSensor extends PlayerEventSensor {
 

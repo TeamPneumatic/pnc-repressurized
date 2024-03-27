@@ -18,17 +18,13 @@
     }
   },
   "display": {
-    "announce_to_chat": true,
     "background": "pneumaticcraft:textures/gui/advancement_bg.png",
     "description": {
       "translate": "pneumaticcraft.advancement.pneumatic_wrench.desc"
     },
-    "frame": "task",
-    "hidden": false,
     "icon": {
       "item": "pneumaticcraft:pneumatic_wrench"
     },
-    "show_toast": true,
     "title": {
       "translate": "pneumaticcraft.advancement.pneumatic_wrench"
     }

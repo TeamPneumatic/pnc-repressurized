@@ -18,9 +18,9 @@
 package me.desht.pneumaticcraft.common.inventory;
 
 import me.desht.pneumaticcraft.common.block.entity.KeroseneLampBlockEntity;
-import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.inventory.slot.FluidContainerSlot;
 import me.desht.pneumaticcraft.common.inventory.slot.OutputOnlySlot;
+import me.desht.pneumaticcraft.common.registry.ModMenuTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
@@ -35,14 +35,14 @@ public class KeroseneLampMenu extends AbstractPneumaticCraftMenu<KeroseneLampBlo
     public KeroseneLampMenu(int i, Inventory playerInventory, BlockPos pos) {
         super(ModMenuTypes.KEROSENE_LAMP.get(), i, playerInventory, pos);
 
-        addSlot(new FluidContainerSlot(te.getPrimaryInventory(), 0, 132, 22));
-        addSlot(new OutputOnlySlot(te.getPrimaryInventory(), 1, 132, 55));
+        addSlot(new FluidContainerSlot(blockEntity.getItemHandler(), 0, 132, 22));
+        addSlot(new OutputOnlySlot(blockEntity.getItemHandler(), 1, 132, 55));
 
         addPlayerSlots(playerInventory, 84);
     }
 
     @Override
     public boolean stillValid(Player player) {
-        return te.isGuiUseableByPlayer(player);
+        return blockEntity.isGuiUseableByPlayer(player);
     }
 }

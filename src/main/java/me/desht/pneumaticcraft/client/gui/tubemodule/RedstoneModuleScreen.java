@@ -21,9 +21,9 @@ import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.api.misc.Symbols;
 import me.desht.pneumaticcraft.client.gui.widget.*;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
-import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSyncRedstoneModuleToServer;
+import me.desht.pneumaticcraft.common.registry.ModSounds;
 import me.desht.pneumaticcraft.common.tubemodules.RedstoneModule;
 import me.desht.pneumaticcraft.common.tubemodules.RedstoneModule.EnumRedstoneDirection;
 import me.desht.pneumaticcraft.common.tubemodules.RedstoneModule.Operation;
@@ -214,7 +214,7 @@ public class RedstoneModuleScreen extends AbstractTubeModuleScreen<RedstoneModul
         } else {
             module.setComparatorInput(comparatorInputCheckBox.checked);
         }
-        NetworkHandler.sendToServer(new PacketSyncRedstoneModuleToServer(module));
+        NetworkHandler.sendToServer(PacketSyncRedstoneModuleToServer.create(module));
     }
 
     private void toggleRedstoneDirection() {

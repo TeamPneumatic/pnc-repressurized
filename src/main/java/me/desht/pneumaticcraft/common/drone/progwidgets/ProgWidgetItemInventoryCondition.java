@@ -19,9 +19,9 @@ package me.desht.pneumaticcraft.common.drone.progwidgets;
 
 import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
-import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.common.drone.IDroneBase;
 import me.desht.pneumaticcraft.common.drone.ai.DroneAIBlockCondition;
+import me.desht.pneumaticcraft.common.registry.ModProgWidgets;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.core.BlockPos;
@@ -29,7 +29,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.items.IItemHandler;
+import net.neoforged.neoforge.items.IItemHandler;
 
 import java.util.HashSet;
 import java.util.List;
@@ -61,7 +61,7 @@ public class ProgWidgetItemInventoryCondition extends ProgWidgetCondition {
                 Set<IItemHandler> handlers = new HashSet<>();
                 for (int sideIdx = 0; sideIdx < sides.length; sideIdx++) {
                     if (sides[sideIdx]) {
-                        IOHelper.getInventoryForTE(te, Direction.from3DDataValue(sideIdx)).ifPresent(handlers::add);
+                        IOHelper.getInventoryForBlock(te, Direction.from3DDataValue(sideIdx)).ifPresent(handlers::add);
                     }
                 }
 

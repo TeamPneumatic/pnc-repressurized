@@ -43,14 +43,14 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.client.extensions.common.IClientFluidTypeExtensions;
-import net.minecraftforge.client.model.IDynamicBakedModel;
-import net.minecraftforge.client.model.data.ModelData;
-import net.minecraftforge.client.model.geometry.IGeometryBakingContext;
-import net.minecraftforge.client.model.geometry.IGeometryLoader;
-import net.minecraftforge.client.model.geometry.IUnbakedGeometry;
-import net.minecraftforge.client.model.pipeline.QuadBakingVertexConsumer;
-import net.minecraftforge.fluids.IFluidTank;
+import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
+import net.neoforged.neoforge.client.model.IDynamicBakedModel;
+import net.neoforged.neoforge.client.model.data.ModelData;
+import net.neoforged.neoforge.client.model.geometry.IGeometryBakingContext;
+import net.neoforged.neoforge.client.model.geometry.IGeometryLoader;
+import net.neoforged.neoforge.client.model.geometry.IUnbakedGeometry;
+import net.neoforged.neoforge.client.model.pipeline.QuadBakingVertexConsumer;
+import net.neoforged.neoforge.fluids.IFluidTank;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -84,12 +84,12 @@ public class FluidItemModel implements IDynamicBakedModel {
             int color = renderProps.getTintColor(tank.getFluid());
             float[] cols = new float[]{(color >> 24 & 0xFF) / 255F, (color >> 16 & 0xFF) / 255F, (color >> 8 & 0xFF) / 255F, (color & 0xFF) / 255F};
             AABB bounds = getRenderBounds(tank, info.getBounds());
-            float bx1 = (float) (bounds.minX * 16);
-            float bx2 = (float) (bounds.maxX * 16);
-            float by1 = (float) (bounds.minY * 16);
-            float by2 = (float) (bounds.maxY * 16);
-            float bz1 = (float) (bounds.minZ * 16);
-            float bz2 = (float) (bounds.maxZ * 16);
+            float bx1 = (float) bounds.minX;
+            float bx2 = (float) bounds.maxX;
+            float by1 = (float) bounds.minY;
+            float by2 = (float) bounds.maxY;
+            float bz1 = (float) bounds.minZ;
+            float bz2 = (float) bounds.maxZ;
 
             if (info.shouldRender(Direction.DOWN)) {
                 List<Vec3> vecs = ImmutableList.of(new Vec3(bounds.maxX, bounds.minY, bounds.minZ), new Vec3(bounds.maxX, bounds.minY, bounds.maxZ), new Vec3(bounds.minX, bounds.minY, bounds.maxZ), new Vec3(bounds.minX, bounds.minY, bounds.minZ));

@@ -23,6 +23,6 @@ import net.minecraft.world.level.block.Blocks;
 
 public class KeroseneLampLightBlock extends AirBlock {
     public KeroseneLampLightBlock() {
-        super(Block.Properties.copy(Blocks.AIR).lightLevel(blockstate -> 15));
+        super(Block.Properties.ofFullCopy(Blocks.AIR).lightLevel(blockstate -> 15));
     }
 }

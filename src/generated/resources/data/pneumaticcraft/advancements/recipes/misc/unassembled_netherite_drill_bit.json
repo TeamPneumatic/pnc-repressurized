@@ -22,14 +22,13 @@
   },
   "requirements": [
     [
-      "has_drill_bit_diamond",
-      "has_the_recipe"
+      "has_the_recipe",
+      "has_drill_bit_diamond"
     ]
   ],
   "rewards": {
     "recipes": [
       "pneumaticcraft:unassembled_netherite_drill_bit"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }

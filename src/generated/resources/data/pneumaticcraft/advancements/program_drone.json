@@ -2,22 +2,21 @@
   "parent": "pneumaticcraft:programming_puzzle",
   "criteria": {
     "0": {
-      "conditions": {},
+      "conditions": {
+        "id": "pneumaticcraft:program_drone"
+      },
       "trigger": "pneumaticcraft:program_drone"
     }
   },
   "display": {
-    "announce_to_chat": true,
     "background": "pneumaticcraft:textures/gui/advancement_bg.png",
     "description": {
       "translate": "pneumaticcraft.advancement.program_drone.desc"
     },
     "frame": "challenge",
-    "hidden": false,
     "icon": {
       "item": "pneumaticcraft:drone"
     },
-    "show_toast": true,
     "title": {
       "translate": "pneumaticcraft.advancement.program_drone"
     }

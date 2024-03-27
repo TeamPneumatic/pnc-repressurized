@@ -18,9 +18,9 @@
 package me.desht.pneumaticcraft.common.item;
 
 import me.desht.pneumaticcraft.common.block.entity.SecurityStationBlockEntity;
-import me.desht.pneumaticcraft.common.core.ModItems;
-import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.inventory.RemoteMenu;
+import me.desht.pneumaticcraft.common.registry.ModItems;
+import me.desht.pneumaticcraft.common.registry.ModMenuTypes;
 import me.desht.pneumaticcraft.common.util.GlobalPosHelper;
 import me.desht.pneumaticcraft.common.util.NBTUtils;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
@@ -45,9 +45,8 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.network.NetworkHooks;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
@@ -115,10 +114,10 @@ public class RemoteItem extends Item {
     private void openGui(ServerPlayer player, ItemStack remote, InteractionHand hand) {
         if (player.isCrouching()) {
             if (isAllowedToEdit(player, remote)) {
-                NetworkHooks.openScreen(player, new RemoteEditorContainerProvider(remote, hand), buf -> toBytes(buf, player, hand, true));
+                player.openMenu(new RemoteEditorContainerProvider(remote, hand), buf -> toBytes(buf, player, hand, true));
             }
         } else {
-            NetworkHooks.openScreen(player, new RemoteContainerProvider(remote, hand), buf -> toBytes(buf, player, hand, false));
+            player.openMenu(new RemoteContainerProvider(remote, hand), buf -> toBytes(buf, player, hand, false));
         }
     }
 

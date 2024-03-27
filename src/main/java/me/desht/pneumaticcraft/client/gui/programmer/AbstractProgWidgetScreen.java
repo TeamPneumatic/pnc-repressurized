@@ -22,7 +22,7 @@ import me.desht.pneumaticcraft.client.gui.ProgrammerScreen;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.drone.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
-import me.desht.pneumaticcraft.common.network.PacketProgrammerUpdate;
+import me.desht.pneumaticcraft.common.network.PacketProgrammerSync;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
@@ -54,7 +54,7 @@ public abstract class AbstractProgWidgetScreen<P extends IProgWidget> extends Ab
 
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-        renderBackground(graphics);
+        renderBackground(graphics, mouseX, mouseY, partialTicks);
 
         super.render(graphics, mouseX, mouseY, partialTicks);
     }
@@ -70,7 +70,7 @@ public abstract class AbstractProgWidgetScreen<P extends IProgWidget> extends Ab
         // progwidget BEFORE calling super.close() !
 
         if (guiProgrammer != null) {
-            NetworkHandler.sendToServer(new PacketProgrammerUpdate(guiProgrammer.te));
+            NetworkHandler.sendToServer(PacketProgrammerSync.forBlockEntity(guiProgrammer.te));
         } else {
             super.removed();
         }

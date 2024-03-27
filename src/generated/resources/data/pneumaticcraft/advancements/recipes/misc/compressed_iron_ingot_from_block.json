@@ -22,14 +22,13 @@
   },
   "requirements": [
     [
-      "has_compressed_iron_block",
-      "has_the_recipe"
+      "has_the_recipe",
+      "has_compressed_iron_block"
     ]
   ],
   "rewards": {
     "recipes": [
       "pneumaticcraft:compressed_iron_ingot_from_block"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }

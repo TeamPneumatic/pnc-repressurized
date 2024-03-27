@@ -18,6 +18,7 @@
 package me.desht.pneumaticcraft.client.pneumatic_armor.block_tracker;
 
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IBlockTrackEntry;
+import me.desht.pneumaticcraft.common.util.IOHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
@@ -26,7 +27,7 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
+import net.neoforged.neoforge.capabilities.Capabilities;
 
 import java.util.Collections;
 import java.util.List;
@@ -41,7 +42,7 @@ public class BlockTrackEntryEnergy implements IBlockTrackEntry {
     public boolean shouldTrackWithThisEntry(BlockGetter world, BlockPos pos, BlockState state, BlockEntity te) {
         return te != null
                 && !TrackerBlacklistManager.isEnergyBlacklisted(te)
-                && IBlockTrackEntry.hasCapabilityOnAnyFace(te, ForgeCapabilities.ENERGY);
+                && IBlockTrackEntry.hasCapabilityOnAnyFace(te, Capabilities.EnergyStorage.BLOCK);
     }
 
     @Override
@@ -60,7 +61,7 @@ public class BlockTrackEntryEnergy implements IBlockTrackEntry {
             infoList.add(xlate("pneumaticcraft.blockTracker.info.rf"));
             // FIXME: getting capabilities client-side is not a reliable way to do this
             // Need a more formal framework for sync'ing server-side data to the client
-            te.getCapability(ForgeCapabilities.ENERGY, face)
+            IOHelper.getEnergyStorageForBlock(te, face)
                     .ifPresent(storage -> infoList.add(Component.literal(storage.getEnergyStored() + " / " + storage.getMaxEnergyStored() + " RF")));
         } catch (Throwable e) {
             TrackerBlacklistManager.addEnergyTEToBlacklist(te, e);

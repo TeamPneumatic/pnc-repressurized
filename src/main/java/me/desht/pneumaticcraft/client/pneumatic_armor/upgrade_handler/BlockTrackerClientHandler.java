@@ -36,6 +36,7 @@ import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
 import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.BlockTrackerHandler;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
+import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -53,9 +54,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.client.event.InputEvent;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
+import net.neoforged.neoforge.client.event.InputEvent;
+import net.neoforged.neoforge.common.NeoForge;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -111,8 +111,10 @@ public class BlockTrackerClientHandler extends IArmorUpgradeClientHandler.Abstra
 
             BlockEntity te = world.getBlockEntity(pos);
 
-            if (!MinecraftForge.EVENT_BUS.post(new BlockTrackEvent(world, pos, te))) {
-                if (te != null && te.getCapability(ForgeCapabilities.ITEM_HANDLER).isPresent()) {
+            BlockTrackEvent event = NeoForge.EVENT_BUS.post(new BlockTrackEvent(world, pos, te));
+
+            if (!event.isCanceled()) {
+                if (te != null && IOHelper.getInventoryForBlock(te).isPresent()) {
                     searcher.onBlockTrackStart(te);
                 }
                 List<IBlockTrackEntry> entries = BlockTrackHandler.getInstance().getEntriesForCoordinate(world, pos, te);
@@ -352,7 +354,7 @@ public class BlockTrackerClientHandler extends IArmorUpgradeClientHandler.Abstra
     public boolean scroll(InputEvent.MouseScrollingEvent event) {
         for (RenderBlockTarget target : blockTargets.values()) {
             if (target.scroll(event)) {
-                getAnimatedStat().mouseScrolled(event.getMouseX(), event.getMouseY(), event.getScrollDelta());
+                getAnimatedStat().mouseScrolled(event.getMouseX(), event.getMouseY(), event.getScrollDeltaX(), event.getScrollDeltaY());
                 return true;
             }
         }

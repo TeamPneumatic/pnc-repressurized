@@ -46,10 +46,10 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.material.FogType;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.*;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.client.event.*;
 
 import java.util.List;
 
@@ -183,8 +183,8 @@ public class ClientEventHandler {
     private static boolean tryHand(InputEvent.MouseScrollingEvent event, InteractionHand hand) {
         ItemStack stack = ClientUtils.getClientPlayer().getItemInHand(hand);
         if (stack.getItem() instanceof IShiftScrollable s) {
-            NetworkHandler.sendToServer(new PacketShiftScrollWheel(event.getScrollDelta() > 0, InteractionHand.MAIN_HAND));
-            s.onShiftScrolled(ClientUtils.getClientPlayer(), event.getScrollDelta() > 0, InteractionHand.MAIN_HAND);
+            NetworkHandler.sendToServer(new PacketShiftScrollWheel(event.getScrollDeltaY() > 0, InteractionHand.MAIN_HAND));
+            s.onShiftScrolled(ClientUtils.getClientPlayer(), event.getScrollDeltaY() > 0, InteractionHand.MAIN_HAND);
             event.setCanceled(true);
             return true;
         }

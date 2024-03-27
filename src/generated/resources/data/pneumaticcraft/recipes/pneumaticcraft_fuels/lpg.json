@@ -3,8 +3,6 @@
   "air_per_bucket": 1800000,
   "burn_rate": 1.25,
   "fluid": {
-    "type": "pneumaticcraft:fluid",
-    "amount": 1000,
     "tag": "forge:lpg"
   }
 }

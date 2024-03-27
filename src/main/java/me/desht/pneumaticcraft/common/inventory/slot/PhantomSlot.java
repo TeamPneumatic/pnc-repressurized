@@ -18,8 +18,8 @@
 package me.desht.pneumaticcraft.common.inventory.slot;
 
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.SlotItemHandler;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.SlotItemHandler;
 
 /**
  * @author CovertJaguar <http://www.railcraft.info>

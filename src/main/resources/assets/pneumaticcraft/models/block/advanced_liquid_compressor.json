@@ -1,6 +1,6 @@
 {
 	"credit": "Made with Blockbench",
-	"parent": "forge:block/default",
+	"parent": "neoforge:block/default",
 	"texture_size": [64, 64],
 	"textures": {
 		"2": "pneumaticcraft:pnc_model/advanced_liquid_compressor",

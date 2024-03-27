@@ -19,43 +19,43 @@ package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.pneumatic_armor.JetBootsStateTracker;
+import me.desht.pneumaticcraft.common.pneumatic_armor.JetBootsStateTracker.JetBootsState;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 
 import java.util.UUID;
-import java.util.function.Supplier;
+
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 /**
  * Received on: CLIENT
  * Sent from server so that all clients know the jet boots state (enabled/active) of all other clients.
  * Allows us to play particles, do rotations, etc. with minimum traffic.
  */
-public class PacketJetBootsStateSync {
-    private final UUID playerId;
-    private final JetBootsStateTracker.JetBootsState state;
+public record PacketJetBootsStateSync(UUID playerId, JetBootsState state) implements CustomPacketPayload {
+    public static final ResourceLocation ID = RL("jetboots_state_sync");
 
-    public PacketJetBootsStateSync(Player player, JetBootsStateTracker.JetBootsState state) {
-        this.playerId = player.getUUID();
-        this.state = state;
+    public static PacketJetBootsStateSync fromNetwork(FriendlyByteBuf buf) {
+        return new PacketJetBootsStateSync(buf.readUUID(), JetBootsState.fromNetwork(buf));
     }
 
-    PacketJetBootsStateSync(FriendlyByteBuf buf) {
-        playerId = new UUID(buf.readLong(), buf.readLong());
-        state = new JetBootsStateTracker.JetBootsState(buf.readBoolean(), buf.readBoolean(), buf.readBoolean());
+    @Override
+    public void write(FriendlyByteBuf buf) {
+        buf.writeUUID(playerId);
+        state.toNetwork(buf);
     }
 
-    public void toBytes(FriendlyByteBuf buf) {
-        buf.writeLong(playerId.getMostSignificantBits());
-        buf.writeLong(playerId.getLeastSignificantBits());
-        buf.writeBoolean(state.isEnabled());
-        buf.writeBoolean(state.isActive());
-        buf.writeBoolean(state.isBuilderMode());
+    @Override
+    public ResourceLocation id() {
+        return ID;
     }
 
-    public void handle(Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> JetBootsStateTracker.getTracker(ClientUtils.getClientPlayer()).setJetBootsState(playerId, state));
-        ctx.get().setPacketHandled(true);
+    public static void handle(PacketJetBootsStateSync message, PlayPayloadContext ctx) {
+        ctx.workHandler().submitAsync(() ->
+                JetBootsStateTracker.getTracker(ClientUtils.getClientPlayer())
+                        .syncFromServer(message.playerId(), message.state()));
     }
 
 }

@@ -18,11 +18,11 @@
 package me.desht.pneumaticcraft.common.inventory;
 
 import me.desht.pneumaticcraft.common.block.entity.OmnidirectionalHopperBlockEntity;
-import me.desht.pneumaticcraft.common.core.ModMenuTypes;
+import me.desht.pneumaticcraft.common.registry.ModMenuTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
-import net.minecraftforge.items.SlotItemHandler;
+import net.neoforged.neoforge.items.SlotItemHandler;
 
 public class OmnidirectionalHopperMenu extends AbstractPneumaticCraftMenu<OmnidirectionalHopperBlockEntity> {
 
@@ -36,7 +36,7 @@ public class OmnidirectionalHopperMenu extends AbstractPneumaticCraftMenu<Omnidi
         addUpgradeSlots(23, 29);
 
         for (int i = 0; i < OmnidirectionalHopperBlockEntity.INVENTORY_SIZE; i++) {
-            addSlot(new SlotItemHandler(te.getPrimaryInventory(), i, 68 + i * 18, 36));
+            addSlot(new SlotItemHandler(blockEntity.getItemHandler(), i, 68 + i * 18, 36));
         }
 
         addPlayerSlots(playerInventory, 84);

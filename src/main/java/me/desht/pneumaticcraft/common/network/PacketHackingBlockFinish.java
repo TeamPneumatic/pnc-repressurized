@@ -18,43 +18,54 @@
 package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.api.pneumatic_armor.hacking.IHackableBlock;
-import me.desht.pneumaticcraft.client.util.ClientUtils;
-import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.hacking.HackManager;
 import me.desht.pneumaticcraft.common.hacking.HackTickTracker;
 import me.desht.pneumaticcraft.common.hacking.WorldAndCoord;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
+import me.desht.pneumaticcraft.common.registry.ModSounds;
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 
-import java.util.function.Supplier;
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 /**
  * Received on: CLIENT
  * Sent by server when a block hack has completed.
  */
-public class PacketHackingBlockFinish extends LocationIntPacket {
-    public PacketHackingBlockFinish(WorldAndCoord gPos) {
-        super(gPos.pos);
+public record PacketHackingBlockFinish(BlockPos pos) implements CustomPacketPayload {
+    public static final ResourceLocation ID = RL("hack_block_finish");
+
+    public static PacketHackingBlockFinish create(WorldAndCoord gPos) {
+        return new PacketHackingBlockFinish(gPos.pos);
     }
 
-    public PacketHackingBlockFinish(FriendlyByteBuf buffer) {
-        super(buffer);
+    public static PacketHackingBlockFinish fromNetwork(FriendlyByteBuf buffer) {
+        return new PacketHackingBlockFinish(buffer.readBlockPos());
     }
 
-    public void handle(Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> {
-            Player player = ClientUtils.getClientPlayer();
-            IHackableBlock hackableBlock = HackManager.getHackableForBlock(player.level(), pos, player);
+    @Override
+    public void write(FriendlyByteBuf buf) {
+        buf.writeBlockPos(pos);
+    }
+
+    @Override
+    public ResourceLocation id() {
+        return ID;
+    }
+
+    public static void handle(PacketHackingBlockFinish message, PlayPayloadContext ctx) {
+        ctx.player().ifPresent(player -> ctx.workHandler().submitAsync(() -> {
+            IHackableBlock hackableBlock = HackManager.getHackableForBlock(player.level(), message.pos(), player);
             if (hackableBlock != null) {
-                hackableBlock.onHackComplete(player.level(), pos, player);
-                HackTickTracker.getInstance(player.level()).trackBlock(pos, hackableBlock);
+                hackableBlock.onHackComplete(player.level(), message.pos(), player);
+                HackTickTracker.getInstance(player.level()).trackBlock(message.pos(), hackableBlock);
                 CommonArmorHandler.getHandlerForPlayer(player).getExtensionData(CommonUpgradeHandlers.hackHandler).setHackedBlockPos(null);
                 player.playSound(ModSounds.HELMET_HACK_FINISH.get(), 1.0F, 1.0F);
             }
-        });
-        ctx.get().setPacketHandled(true);
+        }));
     }
 }

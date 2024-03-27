@@ -31,15 +31,14 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.material.Fluid;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.items.IItemHandler;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.items.IItemHandler;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Optional;
 
 public class ShoppingBasket implements Iterable<ResourceLocation> {
     private final Map<ResourceLocation, Integer> basket;
@@ -120,8 +119,8 @@ public class ShoppingBasket implements Iterable<ResourceLocation> {
     public EnumProblemState validate(ItemStack tablet, boolean allOffers) {
         if (basket.isEmpty()) return EnumProblemState.NO_PROBLEMS;  // simple case
 
-        LazyOptional<IItemHandler> itemCap = AmadronTabletItem.getItemCapability(tablet);
-        LazyOptional<IFluidHandler> fluidCap = AmadronTabletItem.getFluidCapability(tablet);
+        Optional<IItemHandler> itemCap = AmadronTabletItem.getItemCapability(tablet);
+        Optional<IFluidHandler> fluidCap = AmadronTabletItem.getFluidCapability(tablet);
 
         // make sure the inventory and/or tank are actually present for each available offer
         if (basket.keySet().removeIf(offerId -> {
@@ -133,7 +132,7 @@ public class ShoppingBasket implements Iterable<ResourceLocation> {
 
 
         CountedItemStacks itemAmounts = itemCap.map(CountedItemStacks::new).orElse(new CountedItemStacks());
-        Map<Fluid, Integer> fluidAmounts = countFluids(fluidCap);
+        Map<Fluid, Integer> fluidAmounts = fluidCap.map(handler -> countFluids(handler)).orElse(Map.of());
 
         EnumProblemState problem = EnumProblemState.NO_PROBLEMS;
         for (ResourceLocation offerId : basket.keySet()) {
@@ -183,7 +182,7 @@ public class ShoppingBasket implements Iterable<ResourceLocation> {
             // check there's enough space for the returned item/fluid in the output inventory/tank
             problem = problem.addProblem(offer.getOutput().apply(
                     itemStack -> {
-                        int availableSpace = offer.getOutput().findSpaceInItemOutput(itemCap, units);
+                        int availableSpace = itemCap.map(h -> offer.getOutput().findSpaceInItemOutput(h, units)).orElse(0);
                         if (availableSpace < units) {
                             setUnits(offerId, availableSpace);
                             return EnumProblemState.NOT_ENOUGH_ITEM_SPACE;
@@ -191,10 +190,8 @@ public class ShoppingBasket implements Iterable<ResourceLocation> {
                         return EnumProblemState.NO_PROBLEMS;
                     },
                     fluidStack -> {
-                        int availableTrades = Math.min(
-                                AmadronMenu.HARD_MAX_MB / fluidStack.getAmount(),
-                                offer.getOutput().findSpaceInFluidOutput(fluidCap, units)
-                        );
+                        int space = fluidCap.map(h -> offer.getOutput().findSpaceInFluidOutput(h, units)).orElse(0);
+                        int availableTrades = Math.min(AmadronMenu.HARD_MAX_MB / fluidStack.getAmount(), space);
                         if (availableTrades < units) {
                             setUnits(offerId, availableTrades);
                             return EnumProblemState.NOT_ENOUGH_FLUID_SPACE;
@@ -239,14 +236,12 @@ public class ShoppingBasket implements Iterable<ResourceLocation> {
         return basket.values().stream().noneMatch(amount -> amount > 0);
     }
 
-    private static Map<Fluid, Integer> countFluids(LazyOptional<IFluidHandler> fluidCap) {
-        return fluidCap.map(handler -> {
-            Map<Fluid,Integer> result = new HashMap<>();
-            for (int i = 0; i < handler.getTanks(); i++) {
-                FluidStack stack = handler.getFluidInTank(i);
-                result.merge(stack.getFluid(), stack.getAmount(), Integer::sum);
-            }
-            return result;
-        }).orElse(Collections.emptyMap());
+    private static Map<Fluid, Integer> countFluids(IFluidHandler handler) {
+        Map<Fluid,Integer> result = new HashMap<>();
+        for (int i = 0; i < handler.getTanks(); i++) {
+            FluidStack stack = handler.getFluidInTank(i);
+            result.merge(stack.getFluid(), stack.getAmount(), Integer::sum);
+        }
+        return result;
     }
 }

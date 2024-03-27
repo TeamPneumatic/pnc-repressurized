@@ -17,27 +17,27 @@
 
 package me.desht.pneumaticcraft.common.fluid;
 
-import me.desht.pneumaticcraft.common.core.ModBlocks;
-import me.desht.pneumaticcraft.common.core.ModFluids;
-import me.desht.pneumaticcraft.common.core.ModItems;
-import net.minecraftforge.fluids.ForgeFlowingFluid;
+import me.desht.pneumaticcraft.common.registry.ModBlocks;
+import me.desht.pneumaticcraft.common.registry.ModFluids;
+import me.desht.pneumaticcraft.common.registry.ModItems;
+import net.neoforged.neoforge.fluids.BaseFlowingFluid;
 
 public abstract class FluidLPG {
     public static final PNCFluidRenderProps RENDER_PROPS = PNCFluidRenderProps.genericFuel(0xD0ECD71C);
 
-    private static ForgeFlowingFluid.Properties props() {
-        return new ForgeFlowingFluid.Properties(
+    private static BaseFlowingFluid.Properties props() {
+        return new BaseFlowingFluid.Properties(
                 ModFluids.LPG_FLUID_TYPE, ModFluids.LPG, ModFluids.LPG_FLOWING
         ).block(ModBlocks.LPG).bucket(ModItems.LPG_BUCKET).tickRate(2);
     }
 
-    public static class Source extends ForgeFlowingFluid.Source {
+    public static class Source extends BaseFlowingFluid.Source {
         public Source() {
             super(props());
         }
     }
 
-    public static class Flowing extends ForgeFlowingFluid.Flowing {
+    public static class Flowing extends BaseFlowingFluid.Flowing {
         public Flowing() {
             super(props());
         }

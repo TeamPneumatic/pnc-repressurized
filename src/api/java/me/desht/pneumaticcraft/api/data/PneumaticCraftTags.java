@@ -28,9 +28,6 @@ import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.material.Fluid;
-import net.minecraftforge.registries.ForgeRegistries;
-
-import java.util.Objects;
 
 public class PneumaticCraftTags {
     public static class Blocks extends PneumaticCraftTags {
@@ -56,7 +53,7 @@ public class PneumaticCraftTags {
         public static final TagKey<Block> STORAGE_BLOCKS_COMPRESSED_IRON = forgeTag("storage_blocks/compressed_iron");
 
         static TagKey<Block> tag(String modid, String name) {
-            return ForgeRegistries.BLOCKS.tags().createTagKey(new ResourceLocation(modid, name));
+            return TagKey.create(Registries.BLOCK, new ResourceLocation(modid, name));
         }
 
         static TagKey<Block> modTag(String name) {
@@ -103,7 +100,7 @@ public class PneumaticCraftTags {
         public static final TagKey<Item> WRENCHES = forgeTag("tools/wrench");
 
         static TagKey<Item> tag(String modid, String name) {
-            return Objects.requireNonNull(ForgeRegistries.ITEMS.tags()).createTagKey(new ResourceLocation(modid, name));
+            return TagKey.create(Registries.ITEM, new ResourceLocation(modid, name));
         }
 
         static TagKey<Item> modTag(String name) {
@@ -134,7 +131,7 @@ public class PneumaticCraftTags {
         public static final TagKey<Fluid> SEISMIC = modTag("seismic_sensor_interesting");
 
         static TagKey<Fluid> tag(String modid, String name) {
-            return Objects.requireNonNull(ForgeRegistries.FLUIDS.tags()).createTagKey(new ResourceLocation(modid, name));
+            return TagKey.create(Registries.FLUID, new ResourceLocation(modid, name));
         }
 
         static TagKey<Fluid> modTag(String name) {
@@ -152,7 +149,7 @@ public class PneumaticCraftTags {
         public static final TagKey<EntityType<?>> OMNIHOPPER_BLACKLISTED = modTag("omnihopper_blacklisted");
 
         static TagKey<EntityType<?>> tag(String modid, String name) {
-            return Objects.requireNonNull(ForgeRegistries.ENTITY_TYPES.tags()).createTagKey(new ResourceLocation(modid, name));
+            return TagKey.create(Registries.ENTITY_TYPE, new ResourceLocation(modid, name));
         }
 
         static TagKey<EntityType<?>> modTag(String name) {
@@ -165,7 +162,7 @@ public class PneumaticCraftTags {
         public static final TagKey<Biome> OIL_LAKES_UNDERGROUND = modTag("has_underground_oil_lakes");
 
         static TagKey<Biome> tag(String modid, String name) {
-            return TagKey.create(ForgeRegistries.BIOMES.getRegistryKey(), new ResourceLocation(modid, name));
+            return TagKey.create(Registries.BIOME, new ResourceLocation(modid, name));
         }
 
         static TagKey<Biome> modTag(String name) {

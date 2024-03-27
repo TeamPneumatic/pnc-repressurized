@@ -56,14 +56,12 @@ public class VacuumPumpScreen extends AbstractPneumaticCraftContainerScreen<Vacu
         graphics.drawString(font, "+", 32, 47, 0xFF00AA00, false);
         graphics.drawString(font, "-", 138, 47, 0xFFFF0000, false);
 
-        float pressure = te.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, te.getInputSide())
-                .orElseThrow(RuntimeException::new).getPressure();
+        float pressure = PNCCapabilities.getAirHandler(te, te.getInputSide()).orElseThrow().getPressure();
         PressureGaugeRenderer2D.drawPressureGauge(graphics, font, -1, PneumaticValues.MAX_PRESSURE_VACUUM_PUMP,
                 PneumaticValues.DANGER_PRESSURE_VACUUM_PUMP, PneumaticValues.MIN_PRESSURE_VACUUM_PUMP, pressure,
                 imageWidth / 5, imageHeight / 5 + 4);
 
-        float vacPressure = te.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, te.getVacuumSide())
-                .orElseThrow(RuntimeException::new).getPressure();
+        float vacPressure = PNCCapabilities.getAirHandler(te, te.getVacuumSide()).orElseThrow(RuntimeException::new).getPressure();
         PressureGaugeRenderer2D.drawPressureGauge(graphics, font, -1, PneumaticValues.MAX_PRESSURE_VACUUM_PUMP,
                 PneumaticValues.DANGER_PRESSURE_VACUUM_PUMP, -1, vacPressure,
                 imageWidth * 4 / 5, imageHeight / 5 + 4);
@@ -76,10 +74,8 @@ public class VacuumPumpScreen extends AbstractPneumaticCraftContainerScreen<Vacu
 
     @Override
     protected void addPressureStatInfo(List<Component> pressureStatText) {
-        IAirHandlerMachine inputAirHandler = te.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, te.getInputSide())
-                .orElseThrow(RuntimeException::new);
-        IAirHandlerMachine vacuumHandler = te.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, te.getVacuumSide())
-                .orElseThrow(RuntimeException::new);
+        IAirHandlerMachine inputAirHandler = PNCCapabilities.getAirHandler(te, te.getInputSide()).orElseThrow();
+        IAirHandlerMachine vacuumHandler = PNCCapabilities.getAirHandler(te, te.getVacuumSide()).orElseThrow();
 
         pressureStatText.add(xlate("pneumaticcraft.gui.tab.status.vacuumPump.inputPressure",
                 PneumaticCraftUtils.roundNumberTo(inputAirHandler.getPressure(), 2)));
@@ -110,8 +106,7 @@ public class VacuumPumpScreen extends AbstractPneumaticCraftContainerScreen<Vacu
     @Override
     protected void addProblems(List<Component> textList) {
         super.addProblems(textList);
-        float pressure = te.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, te.getInputSide())
-                .map(IAirHandlerMachine::getPressure).orElseThrow(RuntimeException::new);
+        float pressure = PNCCapabilities.getAirHandler(te, te.getInputSide()).orElseThrow().getPressure();
         if (pressure < PneumaticValues.MIN_PRESSURE_VACUUM_PUMP) {
             textList.add(xlate("pneumaticcraft.gui.tab.problems.notEnoughPressure"));
             textList.add(xlate("pneumaticcraft.gui.tab.problems.applyPressure", PneumaticValues.MIN_PRESSURE_VACUUM_PUMP).withStyle(ChatFormatting.BLACK));

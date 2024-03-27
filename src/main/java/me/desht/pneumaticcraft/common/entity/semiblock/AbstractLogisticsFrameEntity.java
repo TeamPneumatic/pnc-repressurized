@@ -21,15 +21,16 @@ import me.desht.pneumaticcraft.api.lib.NBTKeys;
 import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.api.semiblock.IDirectionalSemiblock;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
-import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.inventory.LogisticsMenu;
 import me.desht.pneumaticcraft.common.item.TagFilterItem;
 import me.desht.pneumaticcraft.common.item.logistics.AbstractLogisticsFrameItem;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSyncSemiblock;
+import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.semiblock.ISpecificRequester;
 import me.desht.pneumaticcraft.common.semiblock.SemiblockItem;
 import me.desht.pneumaticcraft.common.semiblock.SemiblockTracker;
+import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -56,14 +57,12 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.phys.AABB;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.INBTSerializable;
-import net.minecraftforge.event.entity.player.AttackEntityEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.items.ItemStackHandler;
-import net.minecraftforge.network.NetworkHooks;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.common.util.INBTSerializable;
+import net.neoforged.neoforge.event.entity.player.AttackEntityEvent;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.items.ItemStackHandler;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -143,8 +142,7 @@ public abstract class AbstractLogisticsFrameEntity extends AbstractSemiblockEnti
     public boolean canPlace(Direction facing) {
         BlockEntity te = getCachedTileEntity();
         return te != null &&
-                (te.getCapability(ForgeCapabilities.ITEM_HANDLER, facing).isPresent()
-                        || te.getCapability(ForgeCapabilities.FLUID_HANDLER, facing).isPresent());
+                (IOHelper.getInventoryForBlock(te, facing).isPresent() || IOHelper.getFluidHandlerForBlock(te, facing).isPresent());
     }
 
     @Override
@@ -413,7 +411,7 @@ public abstract class AbstractLogisticsFrameEntity extends AbstractSemiblockEnti
 
     @Override
     public boolean onRightClickWithConfigurator(Player player, Direction side) {
-        if (!player.level().isClientSide) {
+        if (player instanceof ServerPlayer sp) {
             if (side != getSide()) {
                 return false;
             }
@@ -429,8 +427,8 @@ public abstract class AbstractLogisticsFrameEntity extends AbstractSemiblockEnti
                 }
             };
 
-            NetworkHandler.sendToPlayer(new PacketSyncSemiblock(this, false), (ServerPlayer) player);
-            NetworkHooks.openScreen((ServerPlayer) player, provider, buffer -> buffer.writeVarInt(getId()));
+            NetworkHandler.sendToPlayer(PacketSyncSemiblock.create(this, false), sp);
+            sp.openMenu(provider, buffer -> buffer.writeVarInt(getId()));
         }
         return true;
     }

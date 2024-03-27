@@ -19,36 +19,42 @@ package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.common.item.ILeftClickableItem;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
+import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 
-import java.util.function.Supplier;
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 /**
  * Received on: SERVER
  * Sent by client when certain items are left-clicked in the air (which is a client-only event)
  */
-public class PacketLeftClickEmpty {
-    public PacketLeftClickEmpty() {
+public enum PacketLeftClickEmpty implements CustomPacketPayload {
+    INSTANCE;
+
+    public static final ResourceLocation ID = RL("left_click_empty");
+
+    @SuppressWarnings("EmptyMethod")
+    public static PacketLeftClickEmpty fromNetwork(@SuppressWarnings("unused") FriendlyByteBuf buf) {
+        return INSTANCE;
     }
 
     @SuppressWarnings("EmptyMethod")
-    public PacketLeftClickEmpty(@SuppressWarnings("unused") FriendlyByteBuf buf) {
+    @Override
+    public void write(@SuppressWarnings("unused") FriendlyByteBuf buf) {
     }
 
-    @SuppressWarnings("EmptyMethod")
-    public void toBytes(@SuppressWarnings("unused") FriendlyByteBuf buf) {
+    @Override
+    public ResourceLocation id() {
+        return ID;
     }
 
-    public void handle(Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> {
-            if (ctx.get().getSender() != null) {
-                ItemStack stack = ctx.get().getSender().getMainHandItem();
-                if (stack.getItem() instanceof ILeftClickableItem) {
-                    ((ILeftClickableItem) stack.getItem()).onLeftClickEmpty(ctx.get().getSender());
-                }
+    public static void handle(@SuppressWarnings("unused") PacketLeftClickEmpty message, PlayPayloadContext ctx) {
+        ctx.player().ifPresent(player -> ctx.workHandler().submitAsync(() -> {
+            if (player instanceof ServerPlayer sp && sp.getMainHandItem().getItem() instanceof ILeftClickableItem lc) {
+                lc.onLeftClickEmpty(sp);
             }
-        });
-        ctx.get().setPacketHandled(true);
+        }));
     }
 }

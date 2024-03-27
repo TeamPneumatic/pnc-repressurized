@@ -19,8 +19,8 @@ package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.common.block.entity.ElevatorBaseBlockEntity;
 import me.desht.pneumaticcraft.common.block.entity.ElevatorCallerBlockEntity;
-import me.desht.pneumaticcraft.common.core.ModBlockEntities;
-import me.desht.pneumaticcraft.common.core.ModBlocks;
+import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
+import me.desht.pneumaticcraft.common.registry.ModBlocks;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -123,7 +123,7 @@ public class ElevatorCallerBlock extends AbstractCamouflageBlock implements Pneu
         if (block == ModBlocks.ELEVATOR_FRAME.get()) {
             return ElevatorFrameBlock.getElevatorBase(world, pos);
         } else if (block == ModBlocks.ELEVATOR_BASE.get()) {
-            return world.getBlockEntity(pos, ModBlockEntities.ELEVATOR_BASE.get())
+            return world.getBlockEntity(pos, ModBlockEntityTypes.ELEVATOR_BASE.get())
                     .filter(ElevatorBaseBlockEntity::isCoreElevator);
         }
         return Optional.empty();
@@ -141,7 +141,7 @@ public class ElevatorCallerBlock extends AbstractCamouflageBlock implements Pneu
 
     @Override
     public int getSignal(BlockState state, BlockGetter pLevel, BlockPos pos, Direction side) {
-        return pLevel.getBlockEntity(pos, ModBlockEntities.ELEVATOR_CALLER.get())
+        return pLevel.getBlockEntity(pos, ModBlockEntityTypes.ELEVATOR_CALLER.get())
                 .map(teEc -> teEc.getEmittingRedstone() ? 15 : 0)
                 .orElse(0);
     }

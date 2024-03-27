@@ -40,8 +40,8 @@ import net.minecraft.world.level.block.entity.ChestBlockEntity;
 import net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.ChestType;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.common.NeoForge;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -62,13 +62,18 @@ public class BlockTrackEntryInventory implements IBlockTrackEntry {
 
         return te != null
                 && !TrackerBlacklistManager.isInventoryBlacklisted(te)
-                && (te instanceof RandomizableContainerBlockEntity || IBlockTrackEntry.hasCapabilityOnAnyFace(te, ForgeCapabilities.ITEM_HANDLER))
-                && !MinecraftForge.EVENT_BUS.post(new InventoryTrackEvent(te));
+                && (te instanceof RandomizableContainerBlockEntity || IBlockTrackEntry.hasCapabilityOnAnyFace(te, Capabilities.ItemHandler.BLOCK))
+                && postTrackEvent(te);
+    }
+
+    private boolean postTrackEvent(BlockEntity te) {
+        InventoryTrackEvent event = NeoForge.EVENT_BUS.post(new InventoryTrackEvent(te));
+        return !event.isCanceled();
     }
 
     @Override
     public List<BlockPos> getServerUpdatePositions(BlockEntity te) {
-        if (te instanceof RandomizableContainerBlockEntity && !IBlockTrackEntry.hasCapabilityOnAnyFace(te, ForgeCapabilities.ITEM_HANDLER)) {
+        if (te instanceof RandomizableContainerBlockEntity && !IBlockTrackEntry.hasCapabilityOnAnyFace(te, Capabilities.ItemHandler.BLOCK)) {
             // lootr chests can be like this
             return Collections.emptyList();
         }
@@ -93,7 +98,7 @@ public class BlockTrackEntryInventory implements IBlockTrackEntry {
             return;
         }
         try {
-            IOHelper.getInventoryForTE(te, face).ifPresent(inventory -> {
+            IOHelper.getInventoryForBlock(te, face).ifPresent(inventory -> {
                 List<ItemStack> inventoryStacks = new ArrayList<>(inventory.getSlots());
                 for (int i = 0; i < inventory.getSlots(); i++) {
                     ItemStack iStack = inventory.getStackInSlot(i);

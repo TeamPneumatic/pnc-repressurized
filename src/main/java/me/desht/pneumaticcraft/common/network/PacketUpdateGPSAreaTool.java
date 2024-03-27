@@ -17,57 +17,45 @@
 
 package me.desht.pneumaticcraft.common.network;
 
-import me.desht.pneumaticcraft.common.core.ModItems;
-import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetArea;
+import me.desht.pneumaticcraft.common.registry.ModItems;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.network.NetworkEvent;
+import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 
-import java.util.function.Supplier;
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 /**
  * Received on: SERVER
  * Sent by client from area tool GUI to update stored settings
  */
-public class PacketUpdateGPSAreaTool {
-    private CompoundTag areaWidgetData;
-    private InteractionHand hand;
-
-    public PacketUpdateGPSAreaTool(ProgWidgetArea area, InteractionHand hand) {
-        this.hand = hand;
-        this.areaWidgetData = new CompoundTag();
-        area.writeToNBT(areaWidgetData);
-    }
+public record PacketUpdateGPSAreaTool(CompoundTag areaWidgetData, InteractionHand hand) implements CustomPacketPayload {
+    public static final ResourceLocation ID = RL("update_gps_area_tool");
 
     public PacketUpdateGPSAreaTool(FriendlyByteBuf buffer) {
-        try {
-            areaWidgetData = buffer.readNbt();
-            hand = buffer.readBoolean() ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        this(buffer.readNbt(), buffer.readEnum(InteractionHand.class));
     }
 
-    public void toBytes(FriendlyByteBuf buffer) {
-        try {
-            buffer.writeNbt(areaWidgetData);
-            buffer.writeBoolean(hand == InteractionHand.MAIN_HAND);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    public void write(FriendlyByteBuf buffer) {
+        buffer.writeNbt(areaWidgetData);
+        buffer.writeEnum(InteractionHand.MAIN_HAND);
     }
 
-    public void handle(Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> {
-            if (ctx.get().getSender() != null) {
-                ItemStack stack = ctx.get().getSender().getItemInHand(hand);
+    public static void handle(PacketUpdateGPSAreaTool message, PlayPayloadContext ctx) {
+        ctx.player().ifPresent(player -> ctx.workHandler().submitAsync(() -> {
+                ItemStack stack = player.getItemInHand(message.hand);
                 if (stack.getItem() == ModItems.GPS_AREA_TOOL.get()) {
-                    stack.setTag(areaWidgetData);
+                    stack.setTag(message.areaWidgetData);
                 }
-            }
-        });
-        ctx.get().setPacketHandled(true);
+            })
+        );
+    }
+
+    @Override
+    public ResourceLocation id() {
+        return ID;
     }
 }

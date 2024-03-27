@@ -18,8 +18,8 @@
 package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.common.block.entity.ProgrammableControllerBlockEntity;
-import me.desht.pneumaticcraft.common.core.ModBlockEntities;
-import me.desht.pneumaticcraft.common.core.ModBlocks;
+import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
+import me.desht.pneumaticcraft.common.registry.ModBlocks;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -58,7 +58,7 @@ public class ProgrammableControllerBlock extends AbstractPneumaticCraftBlock imp
      */
     @Override
     public int getSignal(BlockState state, BlockGetter blockReader, BlockPos pos, Direction side) {
-        return blockReader.getBlockEntity(pos, ModBlockEntities.PROGRAMMABLE_CONTROLLER.get())
+        return blockReader.getBlockEntity(pos, ModBlockEntityTypes.PROGRAMMABLE_CONTROLLER.get())
                 .map(te -> te.getEmittingRedstone(side.getOpposite())).orElse(0);
     }
 

@@ -1,11 +1,11 @@
 package me.desht.pneumaticcraft.client.gui.widget;
 
 import net.minecraft.network.chat.Component;
-import net.minecraftforge.client.gui.widget.ForgeSlider;
+import net.neoforged.neoforge.client.gui.widget.ExtendedSlider;
 
 import java.util.function.Consumer;
 
-public class PNCForgeSlider extends ForgeSlider {
+public class PNCForgeSlider extends ExtendedSlider {
     private final Consumer<PNCForgeSlider> onApply;
 
     public PNCForgeSlider(int x, int y, int width, int height, Component prefix, Component suffix, double minValue, double maxValue, double currentValue, double stepSize, int precision, boolean drawString, Consumer<PNCForgeSlider> onApply) {

@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.common.semiblock;
 
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidStack;
 
 public interface ISpecificRequester {
     String NBT_MIN_ITEMS = "minItems";

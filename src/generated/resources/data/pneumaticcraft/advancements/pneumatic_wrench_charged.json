@@ -2,24 +2,22 @@
   "parent": "pneumaticcraft:pneumatic_wrench",
   "criteria": {
     "0": {
-      "conditions": {},
+      "conditions": {
+        "id": "pneumaticcraft:charged_wrench"
+      },
       "trigger": "pneumaticcraft:charged_wrench"
     }
   },
   "display": {
-    "announce_to_chat": true,
     "background": "pneumaticcraft:textures/gui/advancement_bg.png",
     "description": {
-      "translate": "pneumaticcraft.advancement.pneumatic_wrench_charged.desc"
+      "translate": "pneumaticcraft.advancement.charged_wrench.desc"
     },
-    "frame": "task",
-    "hidden": false,
     "icon": {
       "item": "pneumaticcraft:pneumatic_wrench"
     },
-    "show_toast": true,
     "title": {
-      "translate": "pneumaticcraft.advancement.pneumatic_wrench_charged"
+      "translate": "pneumaticcraft.advancement.charged_wrench"
     }
   },
   "requirements": [

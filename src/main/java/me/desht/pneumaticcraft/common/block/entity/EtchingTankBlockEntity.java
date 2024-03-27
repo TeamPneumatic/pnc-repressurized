@@ -21,13 +21,13 @@ import com.google.common.collect.ImmutableMap;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.data.PneumaticCraftTags;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
-import me.desht.pneumaticcraft.common.core.ModBlockEntities;
-import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.inventory.EtchingTankMenu;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.item.EmptyPCBItem;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
+import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
+import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.util.PNCFluidTank;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.core.BlockPos;
@@ -42,12 +42,10 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.IFluidTank;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.items.IItemHandler;
-import org.jetbrains.annotations.NotNull;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.IFluidTank;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.items.IItemHandler;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -58,30 +56,35 @@ public class EtchingTankBlockEntity extends AbstractTickingBlockEntity
     public static final int ETCHING_SLOTS = 25;
 
     private final EtchingTankHandler itemHandler = new EtchingTankHandler();
-    private final LazyOptional<IItemHandler> itemCap = LazyOptional.of(() -> itemHandler);
 
     private final OutputItemHandler outputHandler = new OutputItemHandler();
     private final FailedItemHandler failedHandler = new FailedItemHandler();
 
     private final WrappedInvHandler sideHandler = new WrappedInvHandler(outputHandler);
-    private final LazyOptional<IItemHandler> sideCap = LazyOptional.of(() -> sideHandler);
     private final WrappedInvHandler endHandler = new WrappedInvHandler(failedHandler);
-    private final LazyOptional<IItemHandler> endCap = LazyOptional.of(() -> endHandler);
 
     @DescSynced
     @GuiSynced
     private final EtchingFluidTank acidTank = new EtchingFluidTank();
-    private final LazyOptional<IFluidHandler> fluidCap = LazyOptional.of(() -> acidTank);
 
     @GuiSynced
     private final IHeatExchangerLogic heatExchanger = PneumaticRegistry.getInstance().getHeatRegistry().makeHeatExchangerLogic();
-    private final LazyOptional<IHeatExchangerLogic> heatCap = LazyOptional.of(() -> heatExchanger);
 
     public EtchingTankBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.ETCHING_TANK.get(), pos, state);
+        super(ModBlockEntityTypes.ETCHING_TANK.get(), pos, state);
 
         heatExchanger.setThermalResistance(10);
         heatExchanger.setThermalCapacity(5);
+    }
+
+    @Override
+    public boolean hasFluidCapability() {
+        return true;
+    }
+
+    @Override
+    public IFluidHandler getFluidHandler(@Nullable Direction dir) {
+        return acidTank;
     }
 
     @Override
@@ -158,43 +161,26 @@ public class EtchingTankBlockEntity extends AbstractTickingBlockEntity
     }
 
     @Override
-    public IItemHandler getPrimaryInventory() {
-        return itemHandler;
+    public IItemHandler getItemHandler(@Nullable Direction dir) {
+        if (dir == null) {
+            return itemHandler;
+        } else if (dir.getAxis() == Direction.Axis.Y) {
+            return endHandler;
+        } else {
+            return sideHandler;
+        }
     }
 
-    public OutputItemHandler getOutputHandler() {
+    public IItemHandler getOutputHandler() {
         return outputHandler;
     }
 
-    public FailedItemHandler getFailedHandler() {
+    public IItemHandler getFailedHandler() {
         return failedHandler;
     }
 
     public IFluidTank getAcidTank() {
         return acidTank;
-    }
-
-    @Nonnull
-    @Override
-    protected LazyOptional<IItemHandler> getInventoryCap(Direction side) {
-        if (side == null) {
-            return itemCap;
-        } else if (side.getAxis() == Direction.Axis.Y) {
-            return endCap;
-        } else {
-            return sideCap;
-        }
-    }
-
-    @Override
-    public LazyOptional<IHeatExchangerLogic> getHeatCap(Direction side) {
-        return heatCap;
-    }
-
-    @NotNull
-    @Override
-    public LazyOptional<IFluidHandler> getFluidCap(Direction side) {
-        return fluidCap;
     }
 
     @Override

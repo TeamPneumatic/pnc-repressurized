@@ -44,7 +44,7 @@ public class KickClientHandler extends IArmorUpgradeClientHandler.SimpleToggleab
     @Override
     public void onTriggered(ICommonArmorHandler armorHandler) {
         if (armorHandler.upgradeUsable(CommonUpgradeHandlers.kickHandler, false)) {
-            NetworkHandler.sendToServer(new PacketPneumaticKick());
+            NetworkHandler.sendToServer(PacketPneumaticKick.INSTANCE);
         }
     }
 

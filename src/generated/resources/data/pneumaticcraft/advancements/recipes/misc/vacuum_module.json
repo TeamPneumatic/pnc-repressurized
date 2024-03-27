@@ -22,14 +22,13 @@
   },
   "requirements": [
     [
-      "has_vacuum_pump",
-      "has_the_recipe"
+      "has_the_recipe",
+      "has_vacuum_pump"
     ]
   ],
   "rewards": {
     "recipes": [
       "pneumaticcraft:vacuum_module"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }

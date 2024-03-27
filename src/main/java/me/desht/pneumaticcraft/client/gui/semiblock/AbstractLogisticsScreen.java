@@ -26,14 +26,15 @@ import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.client.util.TintColor;
 import me.desht.pneumaticcraft.common.block.entity.AbstractPneumaticCraftBlockEntity;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
-import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.entity.semiblock.AbstractLogisticsFrameEntity;
 import me.desht.pneumaticcraft.common.entity.semiblock.LogisticsRequesterEntity;
 import me.desht.pneumaticcraft.common.inventory.LogisticsMenu;
 import me.desht.pneumaticcraft.common.inventory.slot.PhantomSlot;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSyncSemiblock;
+import me.desht.pneumaticcraft.common.registry.ModMenuTypes;
 import me.desht.pneumaticcraft.common.semiblock.ISpecificRequester;
+import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
@@ -43,8 +44,7 @@ import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidStack;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -207,7 +207,7 @@ public class AbstractLogisticsScreen<L extends AbstractLogisticsFrameEntity> ext
     }
 
     private void syncToServer() {
-        NetworkHandler.sendToServer(new PacketSyncSemiblock(logistics, menu.isItemContainer()));
+        NetworkHandler.sendToServer(PacketSyncSemiblock.create(logistics, menu.isItemContainer()));
     }
 
     private void fluidClicked(WidgetFluidStack widget, int idx) {
@@ -216,9 +216,8 @@ public class AbstractLogisticsScreen<L extends AbstractLogisticsFrameEntity> ext
             logistics.setFluidFilter(idx, widget.getFluidStack().copy());
             syncToServer();
             return;
-        } else if (menu.getCarried().getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).isPresent()) {
-            FluidStack f = menu.getCarried().getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM)
-                    .map(h -> h.getFluidInTank(0)).orElse(FluidStack.EMPTY);
+        } else if (IOHelper.getFluidHandlerForItem(menu.getCarried()).isPresent()) {
+            FluidStack f = IOHelper.getFluidHandlerForItem(menu.getCarried()).orElseThrow().getFluidInTank(0);
             logistics.setFluidFilter(idx, f.isEmpty() ? FluidStack.EMPTY : new FluidStack(f, 1000));
             widget.setFluid(f.getFluid());
             syncToServer();

@@ -52,8 +52,8 @@ public class ChargingStationScreen extends AbstractPneumaticCraftContainerScreen
     private WidgetButtonExtended upgradeOnlyButton;
     private float renderAirProgress;
 
-    private static final Component UPGRADE_ONLY_ON = Component.literal("\u2b06").withStyle(ChatFormatting.AQUA);
-    private static final Component UPGRADE_ONLY_OFF = Component.literal("\u2b06").withStyle(ChatFormatting.GRAY);
+    private static final Component UPGRADE_ONLY_ON = Component.literal("⬆").withStyle(ChatFormatting.AQUA);
+    private static final Component UPGRADE_ONLY_OFF = Component.literal("⬆").withStyle(ChatFormatting.GRAY);
 
     public ChargingStationScreen(ChargingStationMenu container, Inventory inv, Component displayString) {
         super(container, inv, displayString);
@@ -99,9 +99,10 @@ public class ChargingStationScreen extends AbstractPneumaticCraftContainerScreen
     public void containerTick() {
         super.containerTick();
 
-        ItemStack stack = te.getPrimaryInventory().getStackInSlot(ChargingStationBlockEntity.CHARGE_INVENTORY_INDEX);
+        ItemStack stack = te.getItemHandler().getStackInSlot(ChargingStationBlockEntity.CHARGE_INVENTORY_INDEX);
+        boolean wasVisible = guiSelectButton.visible;
         guiSelectButton.visible = stack.getItem() instanceof IChargeableContainerProvider;
-        if (guiSelectButton.visible) {
+        if (guiSelectButton.visible && !wasVisible) {
             guiSelectButton.setTooltipText(xlate("pneumaticcraft.gui.tooltip.charging_station.manageUpgrades", stack.getHoverName()));
         }
 
@@ -140,8 +141,8 @@ public class ChargingStationScreen extends AbstractPneumaticCraftContainerScreen
     @Override
     protected void addProblems(List<Component> textList) {
         super.addProblems(textList);
-        ItemStack chargeStack  = te.getPrimaryInventory().getStackInSlot(ChargingStationBlockEntity.CHARGE_INVENTORY_INDEX);
-        if (!chargeStack.isEmpty() && !chargeStack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).isPresent()) {
+        ItemStack chargeStack  = te.getItemHandler().getStackInSlot(ChargingStationBlockEntity.CHARGE_INVENTORY_INDEX);
+        if (!chargeStack.isEmpty() && PNCCapabilities.getAirHandler(chargeStack).isEmpty()) {
             // shouldn't ever happen - I can't be bothered to add a translation
             textList.add(Component.literal(ChatFormatting.RED + "Non-pneumatic item in the charge slot!?"));
         }
@@ -150,11 +151,11 @@ public class ChargingStationScreen extends AbstractPneumaticCraftContainerScreen
     @Override
     protected void addWarnings(List<Component> curInfo) {
         super.addWarnings(curInfo);
-        ItemStack chargeStack  = te.getPrimaryInventory().getStackInSlot(ChargingStationBlockEntity.CHARGE_INVENTORY_INDEX);
+        ItemStack chargeStack  = te.getItemHandler().getStackInSlot(ChargingStationBlockEntity.CHARGE_INVENTORY_INDEX);
         if (chargeStack.isEmpty()) {
             curInfo.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.charging_station.no_item"));
         } else if (!te.upgradeOnly) {
-            chargeStack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).ifPresent(h -> {
+            PNCCapabilities.getAirHandler(chargeStack).ifPresent(h -> {
                 String name = chargeStack.getHoverName().getString();
                 if (h.getPressure() > te.getPressure() + 0.01F && h.getPressure() <= 0) {
                     curInfo.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.charging_station.item_empty", name));

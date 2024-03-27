@@ -1,10 +1,8 @@
 {
-  "type": "pneumaticcraft:heat_properties",
-  "block": "minecraft:blue_ice",
-  "temperature": 233,
-  "thermalResistance": 200,
-  "heatCapacity": 10000,
-  "transformHot": {
-    "block": "minecraft:packed_ice"
-  }
+   "thermalResistance" : 200,
+   "temperature" : 233,
+   "block" : "minecraft:blue_ice",
+   "type" : "pneumaticcraft:heat_properties",
+   "heatCapacity" : 10000,
+   "transformHot" : "minecraft:packed_ice"
 }

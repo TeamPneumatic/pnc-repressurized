@@ -17,34 +17,38 @@
 
 package me.desht.pneumaticcraft.api.crafting.ingredient;
 
-import com.google.common.collect.ImmutableList;
-import com.google.gson.*;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.google.common.collect.Lists;
+import com.mojang.datafixers.util.Either;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
+import net.minecraft.core.Holder;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
-import net.minecraft.nbt.TagParser;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
-import net.minecraft.util.GsonHelper;
+import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.crafting.IIngredientSerializer;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.FluidUtil;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidUtil;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
 
 import javax.annotation.Nullable;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 /**
@@ -52,151 +56,64 @@ import java.util.stream.Stream;
  * desired fluid.
  */
 public class FluidIngredient extends Ingredient {
-    private List<Fluid> fluids;
+    private List<FluidEntry> fluids;
     private ItemStack[] cachedStacks;
-    private final int amount;
-    private final ResourceLocation fluidId;
-    private final TagKey<Fluid> fluidTagKey;
-    private final CompoundTag nbt;
-    private final boolean fuzzyNBT;
+    private final Value[] fluidValues;
 
-    public static final FluidIngredient EMPTY = new FluidIngredient(Collections.emptyList(), 0, null, null, null, false);
+    public static final Codec<FluidIngredient> FLUID_CODEC = codec(true);
+    public static final Codec<FluidIngredient> FLUID_CODEC_NON_EMPTY = codec(false);
 
-    protected FluidIngredient(List<Fluid> fluids, int amount, ResourceLocation fluidId, TagKey<Fluid> fluidTagKey, CompoundTag nbt, boolean fuzzyNBT) {
-        super(Stream.empty());
-        this.fluids = fluids;
-        this.amount = amount;
-        this.fluidId = fluidId;
-        this.fluidTagKey = fluidTagKey;
-        this.nbt = nbt;
-        this.fuzzyNBT = fuzzyNBT;
+    public static final FluidIngredient EMPTY = FluidIngredient.empty();
+
+    private static FluidIngredient empty() {
+        FluidIngredient ingr = new FluidIngredient(new Value[0]);
+        ingr.fluids = List.of();
+        ingr.cachedStacks = new ItemStack[0];
+        return ingr;
     }
 
-    /**
-     * Create a fluid ingredient from the given FluidStack. If the FluidStack has any NBT, this will also be required
-     * as an ingredient match, in a non-fuzzy way (exact match of all fields required).
-     * @param fluidStack the fluidstack to match against
-     * @return the fluid ingredient
-     */
-    public static FluidIngredient of(FluidStack fluidStack) {
-        return of(fluidStack.getAmount(), fluidStack.getTag(), false, fluidStack.getFluid());
+    private FluidIngredient(Value[] fluidValues) {
+        super(Stream.empty(), PneumaticRegistry.getInstance().getCustomIngredientTypes().fluidType());
+        this.fluidValues = fluidValues;
     }
 
-    /**
-     * Create a fluid ingredient from the given list of fluids
-     * @param amount the amount, in mB
-     * @param nbt the NBT, or null for no NBT matching
-     * @param fuzzyNBT true for a fuzzy match (only fields in the ingredient will be matched), false for an exact match.
-     *                Ignored if the nbt parameter is null.
-     * @param fluids the list of fluids
-     * @return the fluid ingredient
-     */
-    public static FluidIngredient of(int amount, @Nullable CompoundTag nbt, boolean fuzzyNBT, Fluid... fluids) {
-        return new FluidIngredient(Arrays.asList(fluids), amount, null, null, nbt, fuzzyNBT);
+    private FluidIngredient(Stream<Value> fluidValues) {
+        this(fluidValues.toArray(Value[]::new));
     }
 
-    /**
-     * Create a fluid ingredient from the given list of fluids
-     * @param amount the amount, in mB
-     * @param fluids the list of fluids
-     * @return the fluid ingredient
-     */
     public static FluidIngredient of(int amount, Fluid... fluids) {
-        return of(amount, null, false, fluids);
+        return new FluidIngredient(Arrays.stream(fluids).map(f -> new FluidValue(new FluidStack(f, amount), true)));
     }
 
-    /**
-     * Create a fluid ingredient from the given fluid tag
-     * @param amount the amount, in mB
-     * @param nbt the NBT, or null for no NBT matching
-     * @param fuzzyNBT true for a fuzzy match (only fields in the ingredient will be matched), false for an exact match.
-     *                Ignored if the nbt parameter is null.
-     * @param fluidTag the fluid tag
-     * @return the fluid ingredient
-     */
-    public static FluidIngredient of(int amount, @Nullable CompoundTag nbt, boolean fuzzyNBT, TagKey<Fluid> fluidTag) {
-        return new FluidIngredient(null, amount, null, fluidTag, nbt, fuzzyNBT);
+    public static FluidIngredient of(int amount, TagKey<Fluid> tag) {
+        return new FluidIngredient(Stream.of(new FluidTagValue(tag, amount, true)));
     }
 
-    /**
-     * Create a fluid ingredient from the given fluid tag
-     * @param amount the amount, in mB
-     * @param fluidTag the fluid tag
-     * @return the fluid ingredient
-     */
-    public static FluidIngredient of(int amount, TagKey<Fluid> fluidTag) {
-        return of(amount, null, false, fluidTag);
+    public static FluidIngredient ofFluidStream(Stream<FluidIngredient> fluidIngredientStream) {
+        return new FluidIngredient(fluidIngredientStream
+                .flatMap(fluidIngredient -> Arrays.stream(fluidIngredient.fluidValues)));
     }
 
-    /**
-     * Create a fluid ingredient from the given fluid registry ID. Use this if the fluid might not exist at runtime
-     * (e.g. it's from another mod which may or may not be loaded). If the fluid does not exist at runtime, this
-     * ingredient will never match anything.
-     *
-     * @param amount the amount, in mB
-     * @param nbt the NBT, or null for no NBT matching
-     * @param fuzzyNBT true for a fuzzy match (only fields in the ingredient will be matched), false for an exact match.
-     *                Ignored if the nbt parameter is null.
-     * @param fluidId the fluid's registry ID
-     * @return the fluid ingredient
-     */
-    public static FluidIngredient of(int amount, @Nullable CompoundTag nbt, boolean fuzzyNBT, ResourceLocation fluidId) {
-        return new FluidIngredient(null, amount, fluidId, null, nbt, fuzzyNBT);
-    }
-
-    /**
-     * Create a fluid ingredient from the given fluid registry ID. Use this if the fluid might not exist at runtime
-     * (e.g. it's from another mod which may or may not be loaded). If the fluid does not exist at runtime, this
-     * ingredient will never match anything.
-     *
-     * @param amount the amount, in mB
-     * @param fluidId the fluid's registry ID
-     * @return the fluid ingredient
-     */
-    public static FluidIngredient of(int amount, ResourceLocation fluidId) {
-        return of(amount, null, false, fluidId);
-    }
-
-    /**
-     * Create a fluid ingredient from the given stream of other fluid ingredients. This new compound ingredient is
-     * effectively a logical OR of all the constituent ingredients.
-     * @param stream a stream of ingredients
-     * @return the fluid ingredient
-     * @apiNote this method is called "ofFluidStream" rather than "of" to avoid confusion with {@link Ingredient#of(Stream)}
-     */
-    public static FluidIngredient ofFluidStream(Stream<FluidIngredient> stream) {
-        return new CompoundFluidIngredient(stream);
-    }
-
-    protected Collection<Fluid> getFluidList() {
+    protected List<FluidEntry> getFluidEntryList() {
         if (fluids == null) {
-            if (fluidId != null) {
-                if (ForgeRegistries.FLUIDS.containsKey(fluidId)) {
-                    fluids = Collections.singletonList(ForgeRegistries.FLUIDS.getValue(fluidId));
-                } else {
-                    fluids = Collections.emptyList();
-                }
-            } else if (fluidTagKey != null) {
-                ImmutableList.Builder<Fluid> builder = ImmutableList.builder();
-                Objects.requireNonNull(ForgeRegistries.FLUIDS.tags()).getTag(fluidTagKey).forEach(builder::add);
-                fluids = builder.build();
-            } else {
-                throw new IllegalStateException("no fluid ID or fluid tag is available?");
-            }
+            fluids = Arrays.stream(fluidValues)
+                    .flatMap(val -> val.getFluids().stream())
+                    .distinct()
+                    .toList();
         }
         return fluids;
     }
 
     @Override
     public boolean isEmpty() {
-        return getFluidList().isEmpty() || getFluidList().stream().allMatch(f -> f == Fluids.EMPTY);
+        return getFluidEntryList().isEmpty() || getFluidEntryList().stream().allMatch(entry -> entry.fluidStack.isEmpty() || entry.fluidStack.getFluid() == Fluids.EMPTY);
     }
 
     /**
      * Test the given item against this ingredient. The item must be a fluid container item (providing the
-     * {@link ForgeCapabilities#FLUID_HANDLER_ITEM} capability) containing fluid which matches
+     * {@link Capabilities.FluidHandler} ITEM capability) containing fluid which matches
      * this ingredient, AND it must be a container item
-     * ({@link net.minecraftforge.common.extensions.IForgeItem#hasCraftingRemainingItem(ItemStack)} must return true).
+     * ({@link net.neoforged.neoforge.common.extensions.IItemExtension#hasCraftingRemainingItem(ItemStack)} must return true).
      *
      * @param stack the itemstack to test
      * @return true if the fluid in the given itemstack matches this ingredient
@@ -210,13 +127,13 @@ public class FluidIngredient extends Ingredient {
     public ItemStack[] getItems() {
         if (cachedStacks == null) {
             List<ItemStack> tankList = new ArrayList<>();
-            for (Fluid f : getFluidList()) {
-                FluidStack fluidStack = new FluidStack(f, 1000);
+            for (FluidEntry entry : getFluidEntryList()) {
+                FluidStack fluidStack = new FluidStack(entry.fluidStack(), 1000);
                 ItemStack bucket = FluidUtil.getFilledBucket(fluidStack);
                 if (!bucket.isEmpty()) tankList.add(bucket);
                 Stream.of("small", "medium", "large", "huge")
-                        .map(tankName -> ForgeRegistries.BLOCKS.getValue(PneumaticRegistry.RL(tankName + "_tank")))
-                        .filter(tankBlock -> tankBlock != null && tankBlock != Blocks.AIR)
+                        .map(tankName -> BuiltInRegistries.BLOCK.get(PneumaticRegistry.RL(tankName + "_tank")))
+                        .filter(tankBlock -> tankBlock != Blocks.AIR)
                         .forEach(tankBlock -> maybeAddTank(tankList, tankBlock, fluidStack));
             }
             cachedStacks = tankList.toArray(new ItemStack[0]);
@@ -224,18 +141,27 @@ public class FluidIngredient extends Ingredient {
         return cachedStacks;
     }
 
+    private void maybeAddTank(List<ItemStack> l, Block tankBlock, FluidStack stack) {
+        ItemStack tank = new ItemStack(tankBlock);
+        IFluidHandlerItem handler = tank.getCapability(Capabilities.FluidHandler.ITEM);
+        if (handler != null) {
+            handler.fill(stack, IFluidHandler.FluidAction.EXECUTE);
+            l.add(handler.getContainer());
+        }
+    }
+
     /**
      * Test the given fluid stack against this ingredient. The fluid must match, and the fluid stack amount must be at
      * least as large. In addition, if the ingredient specifies any NBT, that must also match.
      *
-     * @param fluidStack the fluid stack to test
+     * @param toMatch the fluid stack to test
      * @return true if the fluid stack matches, false otherwise
      */
-    public boolean testFluid(FluidStack fluidStack) {
-        return getFluidList().stream().anyMatch(f ->
-                fluidStack.getFluid() == f &&
-                        fluidStack.getAmount() >= getAmount() &&
-                        matchNBT(fluidStack)
+    public boolean testFluid(FluidStack toMatch) {
+        return getFluidEntryList().stream().anyMatch(entry ->
+                toMatch.getFluid() == entry.fluidStack().getFluid()
+                        && toMatch.getAmount() >= entry.fluidStack().getAmount()
+                        && matchNBT(toMatch, entry.fluidStack, entry.strictNbt)
         );
     }
 
@@ -246,132 +172,118 @@ public class FluidIngredient extends Ingredient {
      * @return true if the fluid matches, false otherwise
      */
     public boolean testFluid(Fluid fluid) {
-        return getFluidList().stream().anyMatch(f -> f == fluid);
+        return fluid == Fluids.EMPTY ?
+                getFluidEntryList().isEmpty() :
+                getFluidEntryList().stream().anyMatch(entry -> entry.fluidStack().getFluid() == fluid);
     }
 
-    private void maybeAddTank(List<ItemStack> l, Block tankBlock, FluidStack stack) {
-        ItemStack tank = new ItemStack(tankBlock);
-        tank.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).ifPresent(h -> {
-            h.fill(stack, IFluidHandler.FluidAction.EXECUTE);
-            l.add(h.getContainer());
-        });
-    }
+    private boolean matchNBT(FluidStack toTest, FluidStack stack, boolean strictNbt) {
+        if (!toTest.hasTag()) {
+            return !strictNbt || !stack.hasTag();
+        }
 
-    private boolean matchNBT(FluidStack fluidStack) {
-        if (nbt == null) return true;  // null means "don't care" in this context
-        if (fluidStack.getTag() == null) return false;
-
-        if (fuzzyNBT) {
-            // match only the fields which are actually present in the ingredient
-            return nbt.getAllKeys().stream().allMatch(key -> NbtUtils.compareNbt(nbt.get(key), fluidStack.getTag().get(key), true));
-        } else {
+        if (strictNbt) {
             // exact match of all fields is required
-            return NbtUtils.compareNbt(nbt, fluidStack.getTag(), true);
-        }
-    }
-
-    @Override
-    public JsonElement toJson() {
-        JsonObject json = new JsonObject();
-        json.addProperty("type", Serializer.ID.toString());
-        if (fluidTagKey != null) {
-            json.addProperty("tag", fluidTagKey.location().toString());
-        } else if (fluidId != null) {
-            json.addProperty("fluid", fluidId.toString());
-        } else if (!fluids.isEmpty()) {
-            ResourceLocation rl = ForgeRegistries.FLUIDS.getKey(fluids.get(0));
-            if (rl != null)  json.addProperty("fluid", rl.toString());
+            return NbtUtils.compareNbt(stack.getTag(), toTest.getTag(), true);
         } else {
-            throw new IllegalStateException("ingredient has no ID, tag or fluid!");
+            // match only the fields which are actually present in the ingredient
+            CompoundTag nbt = stack.getTag();
+            return nbt != null && nbt.getAllKeys().stream().allMatch(key -> NbtUtils.compareNbt(nbt.get(key), toTest.getTag().get(key), true));
         }
-        json.addProperty("amount", getAmount());
-        if (nbt != null) {
-            json.addProperty("nbt", nbt.toString());
-            json.addProperty("fuzzyNBT", fuzzyNBT);
-        }
-        return json;
-    }
-
-    @Override
-    public IIngredientSerializer<? extends Ingredient> getSerializer() {
-        return Serializer.INSTANCE;
     }
 
     public int getAmount() {
-        return amount;
+        return getFluidEntryList().isEmpty() ? 0 : getFluidEntryList().get(0).fluidStack().getAmount();
     }
 
     public List<FluidStack> getFluidStacks() {
-        return getFluidList().stream().map(f -> new FluidStack(f, getAmount())).collect(Collectors.toList());
+        return getFluidEntryList().stream().map(entry -> new FluidStack(entry.fluidStack(), getAmount())).toList();
     }
 
-    public static class Serializer implements IIngredientSerializer<FluidIngredient> {
-        public static final Serializer INSTANCE = new Serializer();
-        public static final ResourceLocation ID = new ResourceLocation("pneumaticcraft:fluid");
-        private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
-
-        @Override
-        public FluidIngredient parse(FriendlyByteBuf buffer) {
-            int nFluids = buffer.readVarInt();
-            int amount = buffer.readVarInt();
-            Set<Fluid> fluids = new HashSet<>();
-            for (int i = 0; i < nFluids; i++) {
-                fluids.add(buffer.readRegistryIdSafe(Fluid.class));
-            }
-            if (buffer.readBoolean()) {
-                return FluidIngredient.of(amount, buffer.readNbt(), buffer.readBoolean(), fluids.toArray(new Fluid[0]));
-            } else {
-                return FluidIngredient.of(amount, fluids.toArray(new Fluid[0]));
-            }
-        }
-
-        @Override
-        public FluidIngredient parse(JsonObject json) {
-            int amount = GsonHelper.getAsInt(json, "amount", 1000);
-            FluidIngredient result;
-            CompoundTag nbt = possibleNBT(json);
-            boolean fuzzyNBT = GsonHelper.getAsBoolean(json, "fuzzyNBT", false);
-            if (json.has("tag")) {
-                ResourceLocation rl = new ResourceLocation(GsonHelper.getAsString(json, "tag"));
-                result = FluidIngredient.of(amount, nbt, fuzzyNBT, TagKey.create(Registries.FLUID, rl));
-            } else if (json.has("fluid")) {
-                ResourceLocation fluidId = new ResourceLocation(GsonHelper.getAsString(json, "fluid"));
-                Fluid fluid = ForgeRegistries.FLUIDS.getValue(fluidId);
-                if (fluid == null || fluid == Fluids.EMPTY) throw new JsonSyntaxException("Unknown fluid '" + fluidId + "'");
-                result = FluidIngredient.of(amount, nbt, fuzzyNBT, fluid);
-            } else {
-                throw new JsonSyntaxException("fluid ingredient must have 'fluid' or 'tag' field!");
-            }
-            return result;
-        }
-
-        private CompoundTag possibleNBT(JsonObject json) {
-            if (json.has("nbt")) {
-                JsonElement element = json.get("nbt");
-                try {
-                    if (element.isJsonObject())
-                        return TagParser.parseTag(GSON.toJson(element));
-                    else
-                        return TagParser.parseTag(GsonHelper.convertToString(element, "nbt"));
-                } catch (CommandSyntaxException e) {
-                    throw new JsonSyntaxException(e);
+    private static Codec<FluidIngredient> codec(boolean allowEmpty) {
+        Codec<FluidIngredient.Value[]> codec = Codec.list(FluidIngredient.Value.CODEC).comapFlatMap(
+                values -> !allowEmpty && values.isEmpty() ?
+                        DataResult.error(() -> "Fluid array cannot be empty, at least one fluid must be defined") :
+                        DataResult.success(values.toArray(new FluidIngredient.Value[0])),
+                List::of
+        );
+        return ExtraCodecs.either(codec, FluidIngredient.Value.CODEC).flatComapMap(
+                either -> either.map(FluidIngredient::new, fluidValue -> new FluidIngredient(new FluidIngredient.Value[]{fluidValue})),
+                fluidIngredient -> {
+                    if (fluidIngredient.fluidValues.length == 1) {
+                        return DataResult.success(Either.right(fluidIngredient.fluidValues[0]));
+                    } else {
+                        return fluidIngredient.fluidValues.length == 0 && !allowEmpty ?
+                                DataResult.error(() -> "Fluid array cannot be empty, at least one fluid must be defined") :
+                                DataResult.success(Either.left(fluidIngredient.fluidValues));
+                    }
                 }
-            }
-            return null;
+        );
+    }
+
+    public interface Value {
+        Codec<Value> CODEC = ExtraCodecs.xor(FluidIngredient.FluidValue.CODEC, FluidIngredient.FluidTagValue.CODEC)
+                .xmap(either -> either.map(fluidValue -> fluidValue, fluidTagValue -> fluidTagValue), value -> {
+                    if (value instanceof FluidIngredient.FluidTagValue fluidTagValue) {
+                        return Either.right(fluidTagValue);
+                    } else if (value instanceof FluidIngredient.FluidValue fluidValue) {
+                        return Either.left(fluidValue);
+                    } else {
+                        throw new UnsupportedOperationException("This is neither an fluid value nor a tag value.");
+                    }
+                });
+
+        Collection<FluidEntry> getFluids();
+    }
+
+    public record FluidValue(FluidStack fluidStack, BiFunction<FluidStack,FluidStack,Boolean> comparator, boolean strictNbt) implements Value {
+        static final Codec<FluidIngredient.FluidValue> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+                        FluidStack.CODEC.fieldOf("fluid").forGetter(FluidValue::fluidStack),
+                        Codec.BOOL.optionalFieldOf("strict", true).forGetter(FluidValue::strictNbt)
+                ).apply(instance, FluidIngredient.FluidValue::new)
+        );
+
+        public FluidValue(FluidStack fluidStack, boolean strictNbt) {
+            this(fluidStack, (f1, f2) -> f1.isFluidEqual(f2) && f1.getAmount() == f2.getAmount(), strictNbt);
         }
 
         @Override
-        public void write(FriendlyByteBuf buffer, FluidIngredient ingredient) {
-            buffer.writeVarInt(ingredient.getFluidList().size());
-            buffer.writeVarInt(ingredient.getAmount());
-            ingredient.getFluidList().forEach(fluid -> buffer.writeRegistryId(ForgeRegistries.FLUIDS, fluid));
-            if (ingredient.nbt != null) {
-                buffer.writeBoolean(true);
-                buffer.writeNbt(ingredient.nbt);
-                buffer.writeBoolean(ingredient.fuzzyNBT);
-            } else {
-                buffer.writeBoolean(false);
-            }
+        public Collection<FluidEntry> getFluids() {
+            return List.of(new FluidEntry(fluidStack, strictNbt));
         }
+
+        @Override
+        public boolean equals(Object o) {
+            return o instanceof FluidValue val && comparator().apply(this.fluidStack, val.fluidStack);
+        }
+    }
+
+    public record FluidTagValue(TagKey<Fluid> tag, int amount, boolean strictNbt) implements Value {
+        static final Codec<FluidIngredient.FluidTagValue> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+                        TagKey.codec(Registries.FLUID).fieldOf("tag").forGetter(val -> val.tag),
+                        Codec.INT.optionalFieldOf("amount", 1000).forGetter(val -> val.amount),
+                        Codec.BOOL.optionalFieldOf("strict", true).forGetter(FluidTagValue::strictNbt)
+                ).apply(instance, FluidIngredient.FluidTagValue::new)
+        );
+
+        @Override
+        public Collection<FluidEntry> getFluids() {
+            List<FluidEntry> list = Lists.newArrayList();
+            for (Holder<Fluid> holder : BuiltInRegistries.FLUID.getTagOrEmpty(this.tag)) {
+                list.add(new FluidEntry(new FluidStack(holder, amount), strictNbt));
+            }
+            if (list.isEmpty()) {
+                list.add(new FluidEntry(new FluidStack(Fluids.EMPTY, 0), true));
+            }
+            return list;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            return o instanceof FluidTagValue tagValue && tagValue.tag.location().equals(this.tag.location());
+        }
+    }
+
+    public record FluidEntry(FluidStack fluidStack, boolean strictNbt) {
     }
 }

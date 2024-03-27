@@ -25,16 +25,14 @@ import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.capabilities.CapabilityToken;
-import net.minecraftforge.common.util.INBTSerializable;
+import net.neoforged.neoforge.common.util.INBTSerializable;
 
 import java.util.Optional;
 import java.util.function.BiPredicate;
 
 /**
  * Represents a heat exchanger owned by a block entity. Retrieve instances of this via capability lookup; you
- * can use {@link me.desht.pneumaticcraft.api.PNCCapabilities#HEAT_EXCHANGER_CAPABILITY} or get your own
- * instance with {@link net.minecraftforge.common.capabilities.CapabilityManager#get(CapabilityToken)}.
+ * can use {@link me.desht.pneumaticcraft.api.PNCCapabilities#HEAT_EXCHANGER_BLOCK}.
  * <p>
  * If you are implementing a block entity with a heat exchanger, you should <strong>not</strong> implement this
  * interface yourself; get an instance of it via {@link IHeatRegistry#makeHeatExchangerLogic()}, store it as field

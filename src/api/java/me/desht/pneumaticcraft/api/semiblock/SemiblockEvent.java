@@ -20,7 +20,7 @@ package me.desht.pneumaticcraft.api.semiblock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.eventbus.api.Event;
+import net.neoforged.bus.api.Event;
 
 public class SemiblockEvent extends Event {
     private final Level world;

@@ -82,7 +82,7 @@ public class ChargingHandler extends BaseArmorUpgradeHandler<IArmorExtensionData
 
     private void tryPressurize(ICommonArmorHandler commonArmorHandler, int airAmount, ItemStack destStack) {
         if (destStack.getCount() == 1) {
-            destStack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).ifPresent(destHandler -> {
+            PNCCapabilities.getAirHandler(destStack).ifPresent(destHandler -> {
                 float pressure = destHandler.getPressure();
                 if (pressure < destHandler.maxPressure() && pressure < commonArmorHandler.getArmorPressure(EquipmentSlot.CHEST)) {
                     int currentAir = destHandler.getAir();// pressure * destHandler.getVolume();

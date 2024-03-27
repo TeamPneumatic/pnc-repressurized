@@ -18,8 +18,8 @@
 package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.common.block.entity.PneumaticDoorBaseBlockEntity;
-import me.desht.pneumaticcraft.common.core.ModBlockEntities;
-import me.desht.pneumaticcraft.common.core.ModBlocks;
+import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
+import me.desht.pneumaticcraft.common.registry.ModBlocks;
 import me.desht.pneumaticcraft.common.util.VoxelShapeUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -69,12 +69,12 @@ public class PneumaticDoorBaseBlock extends AbstractCamouflageBlock implements P
     public void setPlacedBy(Level world, BlockPos pos, BlockState state, LivingEntity entity, ItemStack stack) {
         super.setPlacedBy(world, pos, state, entity, stack);
 
-        world.getBlockEntity(pos, ModBlockEntities.PNEUMATIC_DOOR_BASE.get()).ifPresent(this::updateDoorSide);
+        world.getBlockEntity(pos, ModBlockEntityTypes.PNEUMATIC_DOOR_BASE.get()).ifPresent(this::updateDoorSide);
     }
 
     @Override
     public void neighborChanged(BlockState state, Level world, BlockPos pos, Block block, BlockPos fromPos, boolean isMoving) {
-        world.getBlockEntity(pos, ModBlockEntities.PNEUMATIC_DOOR_BASE.get()).ifPresent(teDoorBase -> {
+        world.getBlockEntity(pos, ModBlockEntityTypes.PNEUMATIC_DOOR_BASE.get()).ifPresent(teDoorBase -> {
             updateDoorSide(teDoorBase);
             teDoorBase.onNeighborBlockUpdate(fromPos);
             BlockPos doorPos = pos.relative(teDoorBase.getRotation());
@@ -86,7 +86,7 @@ public class PneumaticDoorBaseBlock extends AbstractCamouflageBlock implements P
     }
 
     private void updateDoorSide(PneumaticDoorBaseBlockEntity doorBase) {
-        doorBase.nonNullLevel().getBlockEntity(doorBase.getBlockPos().relative(doorBase.getRotation()), ModBlockEntities.PNEUMATIC_DOOR.get())
+        doorBase.nonNullLevel().getBlockEntity(doorBase.getBlockPos().relative(doorBase.getRotation()), ModBlockEntityTypes.PNEUMATIC_DOOR.get())
                 .ifPresent(teDoor -> {
                     if (doorBase.getRotation().getClockWise() == teDoor.getRotation() && teDoor.rightGoing
                             || doorBase.getRotation().getCounterClockWise() == teDoor.getRotation() && !teDoor.rightGoing) {
@@ -114,7 +114,7 @@ public class PneumaticDoorBaseBlock extends AbstractCamouflageBlock implements P
 
     @Override
     public int getSignal(BlockState blockState, BlockGetter blockAccess, BlockPos pos, Direction side) {
-        return blockAccess.getBlockEntity(pos, ModBlockEntities.PNEUMATIC_DOOR_BASE.get())
+        return blockAccess.getBlockEntity(pos, ModBlockEntityTypes.PNEUMATIC_DOOR_BASE.get())
                 .map(te -> te.shouldPassSignalToDoor() && side == te.getRotation().getOpposite() ? te.getCurrentRedstonePower() : 0)
                 .orElse(0);
     }

@@ -18,9 +18,11 @@
 package me.desht.pneumaticcraft.common.network;
 
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 
-import java.util.function.Supplier;
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 /**
  * Received on: CLIENT
@@ -28,25 +30,26 @@ import java.util.function.Supplier;
  * Helps keep systems which use dead reckoning (right now, just Elevator) to stay as much in sync with the server
  * as possible
  */
-public class PacketServerTickTime {
+public record PacketServerTickTime(double tickTime) implements CustomPacketPayload {
+    public static final ResourceLocation ID = RL("server_tick_time");
+
     public static double tickTimeMultiplier = 1;
 
-    private final double tickTime;
-
-    public PacketServerTickTime(double tickTime) {
-        this.tickTime = tickTime;
+    public static PacketServerTickTime fromNetwork(FriendlyByteBuf buffer) {
+        return new PacketServerTickTime(buffer.readDouble());
     }
 
-    public PacketServerTickTime(FriendlyByteBuf buffer) {
-        this.tickTime = buffer.readDouble();
-    }
-
-    public void toBytes(FriendlyByteBuf buffer) {
+    @Override
+    public void write(FriendlyByteBuf buffer) {
         buffer.writeDouble(tickTime);
     }
 
-    public void handle(Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> tickTimeMultiplier = Math.min(1, 50D / Math.max(tickTime, 0.01)));
-        ctx.get().setPacketHandled(true);
+    @Override
+    public ResourceLocation id() {
+        return ID;
+    }
+
+    public static void handle(PacketServerTickTime message, PlayPayloadContext ctx) {
+        ctx.workHandler().submitAsync(() -> tickTimeMultiplier = Math.min(1, 50D / Math.max(message.tickTime(), 0.01)));
     }
 }

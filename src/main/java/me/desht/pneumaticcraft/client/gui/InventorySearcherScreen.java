@@ -35,8 +35,8 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.items.ItemHandlerHelper;
-import net.minecraftforge.items.ItemStackHandler;
+import net.neoforged.neoforge.items.ItemHandlerHelper;
+import net.neoforged.neoforge.items.ItemStackHandler;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -149,8 +149,8 @@ public class InventorySearcherScreen extends AbstractContainerScreen<InventorySe
     }
 
     @Override
-    protected void renderBg(GuiGraphics graphics, float par1, int par2, int par3) {
-        renderBackground(graphics);
+    protected void renderBg(GuiGraphics graphics, float partialTicks, int x, int y) {
+        renderBackground(graphics, x, y, partialTicks);
         int xStart = (width - imageWidth) / 2;
         int yStart = (height - imageHeight) / 2;
         graphics.blit(Textures.GUI_INVENTORY_SEARCHER, xStart, yStart, 0, 0, imageWidth, imageHeight);

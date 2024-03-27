@@ -1,13 +1,11 @@
 {
-  "type": "pneumaticcraft:heat_properties",
-  "block": "byg:cryptic_campfire",
-  "statePredicate": {
-    "lit": "true"
-  },
-  "temperature": 1700,
-  "thermalResistance": 2500,
-  "heatCapacity": 10000,
-  "transformCold": {
-    "block": "byg:cryptic_campfire[lit=false]"
-  }
+   "block" : "byg:cryptic_campfire",
+   "type" : "pneumaticcraft:heat_properties",
+   "transformCold" : "byg:cryptic_campfire[lit=false]",
+   "thermalResistance" : 2500,
+   "temperature" : 1700,
+   "heatCapacity" : 10000,
+   "statePredicate" : {
+      "lit" : "true"
+   }
 }

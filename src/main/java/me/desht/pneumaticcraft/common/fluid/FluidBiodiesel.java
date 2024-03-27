@@ -17,27 +17,27 @@
 
 package me.desht.pneumaticcraft.common.fluid;
 
-import me.desht.pneumaticcraft.common.core.ModBlocks;
-import me.desht.pneumaticcraft.common.core.ModFluids;
-import me.desht.pneumaticcraft.common.core.ModItems;
-import net.minecraftforge.fluids.ForgeFlowingFluid;
+import me.desht.pneumaticcraft.common.registry.ModBlocks;
+import me.desht.pneumaticcraft.common.registry.ModFluids;
+import me.desht.pneumaticcraft.common.registry.ModItems;
+import net.neoforged.neoforge.fluids.BaseFlowingFluid;
 
 public class FluidBiodiesel {
     public static final PNCFluidRenderProps RENDER_PROPS = PNCFluidRenderProps.genericFuel(0xD09BA307);
 
-    private static ForgeFlowingFluid.Properties props() {
-        return new ForgeFlowingFluid.Properties(
+    private static BaseFlowingFluid.Properties props() {
+        return new BaseFlowingFluid.Properties(
                 ModFluids.BIODIESEL_FLUID_TYPE, ModFluids.BIODIESEL, ModFluids.BIODIESEL_FLOWING
         ).block(ModBlocks.BIODIESEL).bucket(ModItems.BIODIESEL_BUCKET);
     }
 
-    public static class Source extends ForgeFlowingFluid.Source {
+    public static class Source extends BaseFlowingFluid.Source {
         public Source() {
             super(props());
         }
     }
 
-    public static class Flowing extends ForgeFlowingFluid.Flowing {
+    public static class Flowing extends BaseFlowingFluid.Flowing {
         public Flowing() {
             super(props());
         }

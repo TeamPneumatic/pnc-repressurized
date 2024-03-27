@@ -20,10 +20,10 @@ package me.desht.pneumaticcraft.common.block.entity;
 import me.desht.pneumaticcraft.api.data.PneumaticCraftTags;
 import me.desht.pneumaticcraft.common.block.OmnidirectionalHopperBlock;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
-import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.inventory.OmnidirectionalHopperMenu;
 import me.desht.pneumaticcraft.common.inventory.handler.ComparatorItemStackHandler;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
+import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -43,10 +43,9 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemHandlerHelper;
+import net.neoforged.neoforge.capabilities.BlockCapabilityCache;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.ItemHandlerHelper;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -55,24 +54,41 @@ public class OmnidirectionalHopperBlockEntity extends AbstractHopperBlockEntity<
     public static final int INVENTORY_SIZE = 5;
 
     private final ComparatorItemStackHandler itemHandler = new ComparatorItemStackHandler(this, getInvSize());
-    private final LazyOptional<IItemHandler> invCap = LazyOptional.of(() -> itemHandler);
+//    private final LazyOptional<IItemHandler> invCap = LazyOptional.of(() -> itemHandler);
     @GuiSynced
     public boolean roundRobin;
     private int rrSlot;
     @GuiSynced
     private final RedstoneController<OmnidirectionalHopperBlockEntity> rsController = new RedstoneController<>(this);
 
+    private BlockCapabilityCache<IItemHandler,Direction> inputCache, outputCache;
+
     public OmnidirectionalHopperBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.OMNIDIRECTIONAL_HOPPER.get(), pos, state);
+        super(ModBlockEntityTypes.OMNIDIRECTIONAL_HOPPER.get(), pos, state);
     }
 
     protected int getInvSize() {
         return INVENTORY_SIZE;
     }
 
+    private BlockCapabilityCache<IItemHandler,Direction> getInputCache() {
+        if (inputCache == null) {
+            inputCache = createItemHandlerCache(inputDir);
+        }
+        return inputCache;
+    }
+
+    private BlockCapabilityCache<IItemHandler,Direction> getOutputCache() {
+        if (outputCache == null) {
+            outputCache = createItemHandlerCache(getRotation());
+        }
+        return outputCache;
+    }
+
     @Override
-    protected LazyOptional<IItemHandler> getInventoryCap(Direction side) {
-        return invCap;
+    public void onBlockRotated() {
+        super.onBlockRotated();
+        inputCache = outputCache = null;
     }
 
     protected int getComparatorValueInternal() {
@@ -82,11 +98,11 @@ public class OmnidirectionalHopperBlockEntity extends AbstractHopperBlockEntity<
     protected boolean doExport(final int maxItems) {
         Direction outputDir = getRotation();
 
-        // TODO cache the capability rather than the BE?
-        LazyOptional<IItemHandler> inv = IOHelper.getInventoryForTE(getCachedNeighbor(outputDir), outputDir.getOpposite());
+        IItemHandler destInv = getOutputCache().getCapability();
+
         int notExported = maxItems;
-        if (inv.isPresent()) {
-            notExported = inv.map(h -> exportToInventory(h, maxItems)).orElse(maxItems);
+        if (destInv != null) {
+            notExported = exportToInventory(destInv, maxItems);
         } else if (getUpgrades(ModUpgrades.ENTITY_TRACKER.get()) > 0) {
             notExported = tryEntityExport(maxItems, outputDir.getOpposite());
         }
@@ -99,7 +115,7 @@ public class OmnidirectionalHopperBlockEntity extends AbstractHopperBlockEntity<
     private int tryEntityExport(int maxItems, Direction dir) {
         for (Entity e : cachedOutputEntities) {
             if (!e.isAlive()) continue;
-            int notExported = e.getCapability(ForgeCapabilities.ITEM_HANDLER, dir).map(h -> exportToInventory(h, maxItems)).orElse(maxItems);
+            int notExported = IOHelper.getInventoryForEntity(e, dir).map(h -> exportToInventory(h, maxItems)).orElse(maxItems);
             if (notExported < maxItems) return notExported;
         }
         return maxItems;
@@ -148,10 +164,11 @@ public class OmnidirectionalHopperBlockEntity extends AbstractHopperBlockEntity<
             return false;
         }
 
+        IItemHandler srcInv = getInputCache().getCapability();
+
         // Suck from input inventory
-        LazyOptional<IItemHandler> cap = IOHelper.getInventoryForTE(getCachedNeighbor(inputDir), inputDir.getOpposite());
-        if (cap.isPresent()) {
-            int imported = cap.map(otherHandler -> importFromInventory(otherHandler, maxItems, false)).orElse(0);
+        if (srcInv != null) {
+            int imported = importFromInventory(srcInv, maxItems, false);
             return imported > 0;
         } else if (getUpgrades(ModUpgrades.ENTITY_TRACKER.get()) > 0 && tryEntityImport(maxItems) > 0) {
             return true;
@@ -184,7 +201,9 @@ public class OmnidirectionalHopperBlockEntity extends AbstractHopperBlockEntity<
             if (e.isAlive() && !e.getType().is(PneumaticCraftTags.EntityTypes.OMNIHOPPER_BLACKLISTED)) {
                 final int r = remaining;
                 boolean playerArmor = e instanceof Player && dir.getAxis().isHorizontal();
-                int imported = e.getCapability(ForgeCapabilities.ITEM_HANDLER, dir).map(h -> importFromInventory(h, r, playerArmor)).orElse(0);
+                int imported = IOHelper.getInventoryForEntity(e, dir)
+                        .map(h -> importFromInventory(h, r, playerArmor))
+                        .orElse(0);
                 remaining -= imported;
                 if (remaining <= 0) return maxItems - remaining;
             }
@@ -241,7 +260,7 @@ public class OmnidirectionalHopperBlockEntity extends AbstractHopperBlockEntity<
             return false;
         }
         BlockEntity te = getCachedNeighbor(dir);
-        return te == null || !te.getCapability(ForgeCapabilities.ITEM_HANDLER, dir.getOpposite()).isPresent();
+        return te == null || IOHelper.getInventoryForBlock(te, dir.getOpposite()).isEmpty();
     }
 
     @Override
@@ -267,7 +286,7 @@ public class OmnidirectionalHopperBlockEntity extends AbstractHopperBlockEntity<
     }
 
     @Override
-    public IItemHandler getPrimaryInventory() {
+    public IItemHandler getItemHandler(@org.jetbrains.annotations.Nullable Direction dir) {
         return itemHandler;
     }
 

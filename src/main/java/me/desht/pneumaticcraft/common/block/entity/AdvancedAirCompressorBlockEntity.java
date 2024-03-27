@@ -20,10 +20,10 @@ package me.desht.pneumaticcraft.common.block.entity;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.api.pressure.PressureTier;
-import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.common.inventory.AdvancedAirCompressorMenu;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
+import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -31,18 +31,15 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.util.LazyOptional;
 
 import javax.annotation.Nullable;
 
 public class AdvancedAirCompressorBlockEntity extends AirCompressorBlockEntity implements IHeatExchangingTE {
-
     @GuiSynced
     private final IHeatExchangerLogic heatExchanger = PneumaticRegistry.getInstance().getHeatRegistry().makeHeatExchangerLogic();
-    private final LazyOptional<IHeatExchangerLogic> heatCap = LazyOptional.of(() -> heatExchanger);
 
     public AdvancedAirCompressorBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.ADVANCED_AIR_COMPRESSOR.get(), pos, state, PressureTier.TIER_TWO, PneumaticValues.VOLUME_ADVANCED_AIR_COMPRESSOR);
+        super(ModBlockEntityTypes.ADVANCED_AIR_COMPRESSOR.get(), pos, state, PressureTier.TIER_TWO, PneumaticValues.VOLUME_ADVANCED_AIR_COMPRESSOR);
         heatExchanger.setThermalCapacity(100);
     }
 
@@ -65,11 +62,6 @@ public class AdvancedAirCompressorBlockEntity extends AirCompressorBlockEntity i
     @Override
     public AbstractContainerMenu createMenu(int i, Inventory playerInventory, Player playerEntity) {
         return new AdvancedAirCompressorMenu(i, playerInventory, getBlockPos());
-    }
-
-    @Override
-    public LazyOptional<IHeatExchangerLogic> getHeatCap(Direction side) {
-        return heatCap;
     }
 
     @Override

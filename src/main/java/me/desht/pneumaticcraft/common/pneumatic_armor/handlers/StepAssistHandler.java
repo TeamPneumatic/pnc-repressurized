@@ -28,7 +28,7 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.common.ForgeMod;
+import net.neoforged.neoforge.common.NeoForgeMod;
 
 import java.util.UUID;
 
@@ -58,7 +58,7 @@ public class StepAssistHandler extends BaseArmorUpgradeHandler<IArmorExtensionDa
     @Override
     public void tick(ICommonArmorHandler commonArmorHandler, boolean enabled) {
         Player player = commonArmorHandler.getPlayer();
-        AttributeInstance attributeInstance = player.getAttribute(ForgeMod.STEP_HEIGHT_ADDITION.get());
+        AttributeInstance attributeInstance = player.getAttribute(NeoForgeMod.STEP_HEIGHT.value());
         if (attributeInstance != null) {
             AttributeModifier currentModifier = attributeInstance.getModifier(STEP_ASSIST_MODIFIER_ID);
             double stepBoost = enabled && commonArmorHandler.hasMinPressure(EquipmentSlot.FEET) && !player.isShiftKeyDown() ? 0.6 : 0f;
@@ -66,7 +66,7 @@ public class StepAssistHandler extends BaseArmorUpgradeHandler<IArmorExtensionDa
                 if (PneumaticCraftUtils.epsilonEquals(currentModifier.getAmount(), stepBoost)) {
                     return;  // already good
                 }
-                attributeInstance.removeModifier(currentModifier);
+                attributeInstance.removeModifier(currentModifier.getId());
             }
             if (stepBoost > 0) {
                 attributeInstance.addTransientModifier(new AttributeModifier(STEP_ASSIST_MODIFIER_ID, "Step Assist", stepBoost, AttributeModifier.Operation.ADDITION));
@@ -77,20 +77,16 @@ public class StepAssistHandler extends BaseArmorUpgradeHandler<IArmorExtensionDa
     @Override
     public void onToggle(ICommonArmorHandler commonArmorHandler, boolean newState) {
         if (!newState) {
-            AttributeInstance attributeInstance = commonArmorHandler.getPlayer().getAttribute(ForgeMod.STEP_HEIGHT_ADDITION.get());
-            if (attributeInstance != null) {
-                AttributeModifier currentModifier = attributeInstance.getModifier(STEP_ASSIST_MODIFIER_ID);
-                if (currentModifier != null) attributeInstance.removeModifier(currentModifier);
-            }
+            onShutdown(commonArmorHandler);
         }
     }
 
     @Override
     public void onShutdown(ICommonArmorHandler commonArmorHandler) {
-        AttributeInstance attributeInstance = commonArmorHandler.getPlayer().getAttribute(ForgeMod.STEP_HEIGHT_ADDITION.get());
+        AttributeInstance attributeInstance = commonArmorHandler.getPlayer().getAttribute(NeoForgeMod.STEP_HEIGHT.value());
         if (attributeInstance != null) {
             AttributeModifier currentModifier = attributeInstance.getModifier(STEP_ASSIST_MODIFIER_ID);
-            if (currentModifier != null) attributeInstance.removeModifier(currentModifier);
+            if (currentModifier != null) attributeInstance.removeModifier(currentModifier.getId());
         }
     }
 }

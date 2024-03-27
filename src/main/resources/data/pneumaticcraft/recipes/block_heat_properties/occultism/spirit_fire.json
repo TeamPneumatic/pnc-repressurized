@@ -1,10 +1,8 @@
 {
-  "type": "pneumaticcraft:heat_properties",
-  "block": "occultism:spirit_fire",
-  "temperature": 1700,
-  "thermalResistance": 1000,
-  "transformCold": {
-    "block": "minecraft:air"
-  },
-  "heatCapacity": 5000
+   "temperature" : 1700,
+   "thermalResistance" : 1000,
+   "transformCold" : "minecraft:air",
+   "type" : "pneumaticcraft:heat_properties",
+   "block" : "occultism:spirit_fire",
+   "heatCapacity" : 5000
 }

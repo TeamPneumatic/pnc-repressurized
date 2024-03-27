@@ -25,11 +25,11 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetLabel;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
-import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.item.PneumaticArmorItem;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdateArmorColors;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
+import me.desht.pneumaticcraft.common.registry.ModSounds;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -129,7 +129,7 @@ public class ArmorColoringScreen extends AbstractPneumaticCraftScreen {
 
     private void saveChanges() {
         ClientUtils.getClientPlayer().playSound(ModSounds.HUD_INIT_COMPLETE.get(), 1f, 1f);
-        NetworkHandler.sendToServer(new PacketUpdateArmorColors());
+        NetworkHandler.sendToServer(PacketUpdateArmorColors.create());
         needSave = false;
     }
 
@@ -195,21 +195,24 @@ public class ArmorColoringScreen extends AbstractPneumaticCraftScreen {
     }
 
     @Override
-    public void render(GuiGraphics graphics, int x, int y, float partialTicks) {
-        renderBackground(graphics);
-        super.render(graphics, x, y, partialTicks);
+    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+        super.render(graphics, mouseX, mouseY, partialTicks);
+
         double scaleFactor = Minecraft.getInstance().getWindow().getGuiScale();
         int scale = (int) (Minecraft.getInstance().getWindow().getScreenHeight() / (scaleFactor * 3));
-        InventoryScreen.renderEntityInInventoryFollowsMouse(graphics, width * 2 / 3, height * 3 / 4, scale,
-                width * 2 / 3f - x, height / 4f - y,
+        InventoryScreen.renderEntityInInventoryFollowsMouse(graphics,
+                width / 2, 0,
+                width, height,
+                scale, 0.0625F,
+                mouseX, mouseY,
                 ClientUtils.getClientPlayer());
     }
 
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
+    public boolean mouseScrolled(double mouseX, double mouseY, double deltaX, double deltaY) {
         for (RGBSlider slider : rgbSliders.values()) {
             if (slider.isHoveredOrFocused()) {
-                double val = Math.signum(delta);
+                double val = Math.signum(deltaY);
                 if (Screen.hasShiftDown()) val *= 10;
                 int newVal = Mth.clamp((int) (slider.getValueInt() + val), 0, 255);
                 if (slider.getValueInt() != newVal) {

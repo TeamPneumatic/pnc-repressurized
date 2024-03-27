@@ -21,9 +21,9 @@ import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
-import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.common.drone.IDroneBase;
 import me.desht.pneumaticcraft.common.drone.ai.DroneAIBlockCondition;
+import me.desht.pneumaticcraft.common.registry.ModProgWidgets;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.core.BlockPos;
@@ -53,9 +53,9 @@ public class ProgWidgetPressureCondition extends ProgWidgetCondition {
                 BlockEntity te = drone.world().getBlockEntity(pos);
                 if (te != null) {
                     float pressure = Float.MIN_VALUE;
-                    for (Direction d : DirectionUtil.VALUES) {
-                        if (getSides()[d.ordinal()]) {
-                            float p = te.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, d)
+                    for (Direction dir : DirectionUtil.VALUES) {
+                        if (getSides()[dir.get3DDataValue()]) {
+                            float p = PNCCapabilities.getAirHandler(te, dir)
                                     .map(IAirHandlerMachine::getPressure)
                                     .orElse(0f);
                             pressure = Math.max(pressure, p);

@@ -22,14 +22,13 @@
   },
   "requirements": [
     [
-      "has_chips",
-      "has_the_recipe"
+      "has_the_recipe",
+      "has_chips"
     ]
   ],
   "rewards": {
     "recipes": [
       "pneumaticcraft:cod_n_chips"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }

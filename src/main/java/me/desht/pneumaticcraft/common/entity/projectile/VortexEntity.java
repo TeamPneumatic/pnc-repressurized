@@ -18,8 +18,6 @@
 package me.desht.pneumaticcraft.common.entity.projectile;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -36,8 +34,7 @@ import net.minecraft.world.level.block.WebBlock;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
-import net.minecraftforge.common.IPlantable;
-import net.minecraftforge.network.NetworkHooks;
+import net.neoforged.neoforge.common.IPlantable;
 
 public class VortexEntity extends ThrowableProjectile {
     private int hitCounter = 0;
@@ -51,10 +48,10 @@ public class VortexEntity extends ThrowableProjectile {
         super(type, world);
     }
 
-    @Override
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return NetworkHooks.getEntitySpawningPacket(this);
-    }
+//    @Override
+//    public Packet<ClientGamePacketListener> getAddEntityPacket() {
+//        return NetworkHooks.getEntitySpawningPacket(this);
+//    }
 
     @Override
     public void tick() {

@@ -22,14 +22,13 @@
   },
   "requirements": [
     [
-      "has_paper",
-      "has_the_recipe"
+      "has_the_recipe",
+      "has_paper"
     ]
   ],
   "rewards": {
     "recipes": [
       "pneumaticcraft:paper_from_tag_filter"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }

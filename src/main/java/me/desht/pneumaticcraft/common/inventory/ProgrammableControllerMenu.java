@@ -18,14 +18,15 @@
 package me.desht.pneumaticcraft.common.inventory;
 
 import me.desht.pneumaticcraft.common.block.entity.ProgrammableControllerBlockEntity;
-import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.network.SyncedField;
+import me.desht.pneumaticcraft.common.registry.ModMenuTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.energy.EnergyStorage;
-import net.minecraftforge.items.SlotItemHandler;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.energy.EnergyStorage;
+import net.neoforged.neoforge.energy.IEnergyStorage;
+import net.neoforged.neoforge.items.SlotItemHandler;
 
 public class ProgrammableControllerMenu extends AbstractPneumaticCraftMenu<ProgrammableControllerBlockEntity> {
 
@@ -36,18 +37,19 @@ public class ProgrammableControllerMenu extends AbstractPneumaticCraftMenu<Progr
     public ProgrammableControllerMenu(int i, Inventory playerInventory, BlockPos pos) {
         super(ModMenuTypes.PROGRAMMABLE_CONTROLLER.get(), i, playerInventory, pos);
 
-        addSlot(new SlotItemHandler(te.getPrimaryInventory(), 0, 89, 36));
+        addSlot(new SlotItemHandler(blockEntity.getItemHandler(), 0, 89, 36));
 
         addUpgradeSlots(39, 29);
 
         addPlayerSlots(playerInventory, 84);
 
-        te.getCapability(ForgeCapabilities.ENERGY).ifPresent(handler -> {
+        IEnergyStorage storage = blockEntity.getLevel().getCapability(Capabilities.EnergyStorage.BLOCK, blockEntity.getBlockPos(), blockEntity.getBlockState(), blockEntity, null);
+        if (storage != null) {
             try {
-                addSyncedField(new SyncedField.SyncedInt(handler, EnergyStorage.class.getDeclaredField("energy")));
+                addSyncedField(new SyncedField.SyncedInt(storage, EnergyStorage.class.getDeclaredField("energy")));
             } catch (NoSuchFieldException e) {
                 e.printStackTrace();
             }
-        });
+        }
     }
 }

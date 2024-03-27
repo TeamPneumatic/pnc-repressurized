@@ -19,6 +19,7 @@ package me.desht.pneumaticcraft.common.pneumatic_armor;
 
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketJetBootsStateSync;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Player;
 
 import java.util.HashMap;
@@ -63,7 +64,9 @@ public class JetBootsStateTracker {
             state.enabled = enabled;
             state.active = active;
             state.builderMode = builderMode;
-            if (sendPacket) NetworkHandler.sendToAllTracking(new PacketJetBootsStateSync(player, state), player.level(), player.blockPosition());
+            if (sendPacket) {
+                NetworkHandler.sendToAllTracking(new PacketJetBootsStateSync(player.getUUID(), state), player.level(), player.blockPosition());
+            }
         }
     }
 
@@ -73,7 +76,7 @@ public class JetBootsStateTracker {
      * @param playerId a player's UUID (not necessarily the client player; could be another player in this dimension)
      * @param state full jet boots state
      */
-    public void setJetBootsState(UUID playerId, JetBootsState state) {
+    public void syncFromServer(UUID playerId, JetBootsState state) {
         stateMap.put(playerId, state);
     }
 
@@ -93,6 +96,16 @@ public class JetBootsStateTracker {
             this.enabled = enabled;
             this.active = active;
             this.builderMode = builderMode;
+        }
+
+        public static JetBootsState fromNetwork(FriendlyByteBuf buf) {
+            return new JetBootsState(buf.readBoolean(), buf.readBoolean(), buf.readBoolean());
+        }
+
+        public void toNetwork(FriendlyByteBuf buf) {
+            buf.writeBoolean(enabled);
+            buf.writeBoolean(active);
+            buf.writeBoolean(builderMode);
         }
 
         public boolean isEnabled() {

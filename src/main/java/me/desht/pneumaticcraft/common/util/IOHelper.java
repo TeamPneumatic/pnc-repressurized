@@ -20,19 +20,24 @@ package me.desht.pneumaticcraft.common.util;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import net.minecraft.core.Direction;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemHandlerHelper;
+import net.neoforged.neoforge.capabilities.BlockCapability;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.capabilities.EntityCapability;
+import net.neoforged.neoforge.capabilities.ItemCapability;
+import net.neoforged.neoforge.energy.IEnergyStorage;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.ItemHandlerHelper;
 
 import javax.annotation.Nonnull;
+import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.IntStream;
 
@@ -74,20 +79,44 @@ public class IOHelper {
         UP_TO
     }
 
-    public static LazyOptional<IItemHandler> getInventoryForTE(BlockEntity te, Direction facing) {
-        return te == null ? LazyOptional.empty() : te.getCapability(ForgeCapabilities.ITEM_HANDLER, facing);
+    public static Optional<IItemHandler> getInventoryForBlock(BlockEntity te, Direction facing) {
+        return getCap(te, Capabilities.ItemHandler.BLOCK, facing);
     }
 
-    public static LazyOptional<IItemHandler> getInventoryForTE(BlockEntity te) {
-        return getInventoryForTE(te, null);
+    public static Optional<IItemHandler> getInventoryForBlock(BlockEntity te) {
+        return getInventoryForBlock(te, null);
     }
 
-    public static LazyOptional<IFluidHandler> getFluidHandlerForTE(BlockEntity te, Direction facing) {
-        return te == null ? LazyOptional.empty() : te.getCapability(ForgeCapabilities.FLUID_HANDLER, facing);
+    public static Optional<IItemHandler> getInventoryForEntity(Entity entity, Direction dir) {
+        return Optional.ofNullable(entity.getCapability(Capabilities.ItemHandler.ENTITY_AUTOMATION, dir));
     }
 
-    public static LazyOptional<IFluidHandler> getFluidHandlerForTE(BlockEntity te) {
-        return getFluidHandlerForTE(te, null);
+    public static Optional<IFluidHandler> getFluidHandlerForBlock(BlockEntity te, Direction facing) {
+        return getCap(te, Capabilities.FluidHandler.BLOCK, facing);
+    }
+
+    public static Optional<IFluidHandler> getFluidHandlerForBlock(BlockEntity te) {
+        return getFluidHandlerForBlock(te, null);
+    }
+
+    public static Optional<IFluidHandlerItem> getFluidHandlerForItem(ItemStack stack) {
+        return Optional.ofNullable(stack.getCapability(Capabilities.FluidHandler.ITEM));
+    }
+
+    public static Optional<IFluidHandler> getFluidHandlerForEntity(Entity entity, Direction dir) {
+        return Optional.ofNullable(entity.getCapability(Capabilities.FluidHandler.ENTITY, dir));
+    }
+
+    public static Optional<IEnergyStorage> getEnergyStorageForBlock(BlockEntity te, Direction side) {
+        return getCap(te, Capabilities.EnergyStorage.BLOCK, side);
+    }
+
+    public static Optional<IEnergyStorage> getEnergyStorageForBlock(BlockEntity te) {
+        return getCap(te, Capabilities.EnergyStorage.BLOCK, null);
+    }
+
+    public static Optional<IEnergyStorage> getEnergyStorageForItem(ItemStack item) {
+        return Optional.ofNullable(item.getCapability(Capabilities.EnergyStorage.ITEM));
     }
 
     /**
@@ -148,7 +177,7 @@ public class IOHelper {
     @Nonnull
     public static ItemStack insert(BlockEntity tile, ItemStack itemStack, boolean simulate) {
         for (Direction side : Direction.values()) {
-            ItemStack inserted = getInventoryForTE(tile, side)
+            ItemStack inserted = getInventoryForBlock(tile, side)
                     .map(handler -> ItemHandlerHelper.insertItem(handler, itemStack.copy(), simulate))
                     .orElse(ItemStack.EMPTY);
             if (inserted.getCount() < itemStack.getCount()) return inserted;
@@ -158,15 +187,15 @@ public class IOHelper {
 
     @Nonnull
     public static ItemStack insert(BlockEntity tile, ItemStack itemStack, Direction side, boolean simulate) {
-        return getInventoryForTE(tile, side).map(handler -> ItemHandlerHelper.insertItem(handler, itemStack, simulate)).orElse(itemStack);
+        return getInventoryForBlock(tile, side).map(handler -> ItemHandlerHelper.insertItem(handler, itemStack, simulate)).orElse(itemStack);
     }
 
-    @Nonnull
-    public static ItemStack insert(ICapabilityProvider provider, ItemStack itemStack, Direction side, boolean simulate) {
-        return provider.getCapability(ForgeCapabilities.ITEM_HANDLER, side)
-                .map(handler -> ItemHandlerHelper.insertItem(handler, itemStack, simulate))
-                .orElse(itemStack);
-    }
+//    @Nonnull
+//    public static ItemStack insert(ICapabilityProvider provider, ItemStack itemStack, Direction side, boolean simulate) {
+//        return provider.getCapability(Capabilities.ITEM_HANDLER, side)
+//                .map(handler -> ItemHandlerHelper.insertItem(handler, itemStack, simulate))
+//                .orElse(itemStack);
+//    }
 
     /**
      * Try to transfer a single item between two item handlers
@@ -213,12 +242,30 @@ public class IOHelper {
      * @param pred a matching predicate
      * @return the number of matching items
      */
-    public static int countItems(LazyOptional<IItemHandler> cap, Predicate<ItemStack> pred) {
-        return cap.map(handler -> IntStream.range(0, handler.getSlots())
-                .mapToObj(handler::getStackInSlot)
-                .filter(pred)
-                .mapToInt(ItemStack::getCount)
-                .sum())
-                .orElse(0);
+    public static int countItems(IItemHandler cap, Predicate<ItemStack> pred) {
+        return IntStream.range(0, cap.getSlots())
+                .filter(i -> pred.test(cap.getStackInSlot(i)))
+                .map(i -> cap.getStackInSlot(i).getCount())
+                .sum();
+    }
+
+
+
+    public static <T> Optional<T> getCap(BlockEntity te, BlockCapability<T,Direction> cap, Direction face) {
+        return te == null || te.getLevel() == null ?
+                Optional.empty() :
+                Optional.ofNullable(te.getLevel().getCapability(cap, te.getBlockPos(), te.getBlockState(), te, face));
+    }
+
+    public static <T> Optional<T> getCap(ItemStack stack, ItemCapability<T, Void> cap) {
+        return Optional.ofNullable(stack.getCapability(cap));
+    }
+
+    public static <T> Optional<T> getCapV(Entity entity, EntityCapability<T, Void> cap) {
+        return Optional.ofNullable(entity.getCapability(cap, null));
+    }
+
+    public static <T> Optional<T> getCap(Entity entity, EntityCapability<T, Direction> cap) {
+        return Optional.ofNullable(entity.getCapability(cap, null));
     }
 }

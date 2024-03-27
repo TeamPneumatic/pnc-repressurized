@@ -22,14 +22,13 @@
   },
   "requirements": [
     [
-      "has_wheat_flour",
-      "has_the_recipe"
+      "has_the_recipe",
+      "has_wheat_flour"
     ]
   ],
   "rewards": {
     "recipes": [
       "pneumaticcraft:sourdough"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }

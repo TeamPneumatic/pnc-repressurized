@@ -17,13 +17,12 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 
 import java.util.EnumSet;
-import java.util.Set;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class ClassifyFilterScreen extends AbstractPneumaticCraftScreen {
     private final InteractionHand handIn;
-    private final Set<FilterCondition> conditions = EnumSet.noneOf(FilterCondition.class);
+    private final EnumSet<FilterCondition> conditions = EnumSet.noneOf(FilterCondition.class);
     private boolean matchAll;
     private WidgetButtonExtended matchButton;
 
@@ -91,7 +90,7 @@ public class ClassifyFilterScreen extends AbstractPneumaticCraftScreen {
 
     @Override
     public void render(GuiGraphics graphics, int x, int y, float partialTicks) {
-        renderBackground(graphics);
+        renderBackground(graphics, x, y, partialTicks);
 
         super.render(graphics, x, y, partialTicks);
     }

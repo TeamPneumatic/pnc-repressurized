@@ -21,8 +21,8 @@ import me.desht.pneumaticcraft.client.ColorHandlers;
 import me.desht.pneumaticcraft.client.gui.AphorismTileScreen;
 import me.desht.pneumaticcraft.common.block.entity.AphorismTileBlockEntity;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
-import me.desht.pneumaticcraft.common.core.ModBlocks;
-import me.desht.pneumaticcraft.common.core.ModItems;
+import me.desht.pneumaticcraft.common.registry.ModBlocks;
+import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -55,7 +55,7 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.common.Tags;
+import net.neoforged.neoforge.common.Tags;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -223,7 +223,7 @@ public class AphorismTileBlock extends AbstractPneumaticCraftBlock implements Co
     public boolean onWrenched(Level world, Player player, BlockPos pos, Direction face, InteractionHand hand) {
         if (player != null && player.isShiftKeyDown()) {
             return PneumaticCraftUtils.getTileEntityAt(world, pos, AphorismTileBlockEntity.class).map(teAt -> {
-                if (++teAt.textRotation > 3) teAt.textRotation = 0;
+                teAt.setTextRotation((teAt.getTextRotation() + 1) % 4);
                 teAt.sendDescriptionPacket();
                 return true;
             }).orElse(false);

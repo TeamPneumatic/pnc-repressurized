@@ -18,38 +18,30 @@
 package me.desht.pneumaticcraft.api.crafting.recipe;
 
 import net.minecraft.core.RegistryAccess;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.player.StackedContents;
+import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.CraftingBookCategory;
+import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.level.Level;
+
+import java.util.List;
 
 /**
  * Base class for all PneumaticCraft machine recipes, which are registered in the vanilla RecipeManager.
  */
-public abstract class PneumaticCraftRecipe implements Recipe<PneumaticCraftRecipe.DummyIInventory> {
-    private final ResourceLocation id;
-
-    protected PneumaticCraftRecipe(ResourceLocation id) {
-        this.id = id;
+public abstract class PneumaticCraftRecipe implements CraftingRecipe {
+    protected PneumaticCraftRecipe() {
     }
 
-    /**
-     * Writes this recipe to a PacketBuffer.
-     *
-     * @param buffer The buffer to write to.
-     */
-    public abstract void write(FriendlyByteBuf buffer);
-
     @Override
-    public boolean matches(DummyIInventory inv, Level worldIn) {
+    public boolean matches(CraftingContainer container, Level level) {
         return true;
     }
 
     @Override
-    public ItemStack assemble(DummyIInventory inv, RegistryAccess registryAccess) {
+    public ItemStack assemble(CraftingContainer container, RegistryAccess registryAccess) {
         return ItemStack.EMPTY;
     }
 
@@ -64,19 +56,18 @@ public abstract class PneumaticCraftRecipe implements Recipe<PneumaticCraftRecip
     }
 
     @Override
-    public ResourceLocation getId() {
-        return id;
-    }
-
-    @Override
     public boolean isSpecial() {
         return true;
     }
 
-    /**
+    @Override
+    public CraftingBookCategory category() {
+        return CraftingBookCategory.MISC;
+    }
+/**
      * Just to keep vanilla happy...
      */
-    public static class DummyIInventory implements Container {
+    public static class DummyIInventory implements CraftingContainer {
         private static final DummyIInventory INSTANCE = new DummyIInventory();
 
         public static DummyIInventory getInstance() {
@@ -123,6 +114,26 @@ public abstract class PneumaticCraftRecipe implements Recipe<PneumaticCraftRecip
 
         @Override
         public void clearContent() {
+        }
+
+        @Override
+        public int getWidth() {
+            return 3;
+        }
+
+        @Override
+        public int getHeight() {
+            return 3;
+        }
+
+        @Override
+        public List<ItemStack> getItems() {
+            return List.of();
+        }
+
+        @Override
+        public void fillStackedContents(StackedContents p_40281_) {
+
         }
     }
 }

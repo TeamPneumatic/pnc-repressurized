@@ -22,32 +22,50 @@ import me.desht.pneumaticcraft.common.drone.IDroneBase;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
 import me.desht.pneumaticcraft.common.util.NBTUtils;
-import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
+
 /**
  * Received on: SERVER
  * Sent by client when the drone debug key is pressed, for a valid entity or programmable controller target
  */
-public class PacketUpdateDebuggingDrone extends PacketDroneDebugBase {
-    public PacketUpdateDebuggingDrone(int entityId) {
-        super(entityId, null);
+public record PacketUpdateDebuggingDrone(DroneTarget droneTarget) implements DronePacket {
+    public static final ResourceLocation ID = RL("update_debugging_drone");
+
+    public static PacketUpdateDebuggingDrone create(IDroneBase drone) {
+        return new PacketUpdateDebuggingDrone(drone == null ? DroneTarget.none() : drone.getPacketTarget());
     }
 
-    public PacketUpdateDebuggingDrone(BlockPos controllerPos) {
-        super(-1, controllerPos);
-    }
+//    public PacketUpdateDebuggingDrone(int entityId) {
+//        super(entityId, null);
+//    }
+//
+//    public PacketUpdateDebuggingDrone(BlockPos controllerPos) {
+//        super(-1, controllerPos);
+//    }
 
-    public PacketUpdateDebuggingDrone(FriendlyByteBuf buf) {
-        super(buf);
+    public static PacketUpdateDebuggingDrone fromNetwork(FriendlyByteBuf buf) {
+        return new PacketUpdateDebuggingDrone(DroneTarget.fromNetwork(buf));
     }
 
     @Override
-    void handle(Player player, IDroneBase droneBase) {
+    public void write(FriendlyByteBuf buf) {
+        droneTarget.toNetwork(buf);
+    }
+
+    @Override
+    public ResourceLocation id() {
+        return ID;
+    }
+
+    @Override
+    public void handle(Player player, IDroneBase droneBase) {
         if (player instanceof ServerPlayer) {
             CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
             if (handler.upgradeUsable(CommonUpgradeHandlers.droneDebugHandler, false)) {

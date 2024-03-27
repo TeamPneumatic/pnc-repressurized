@@ -21,7 +21,7 @@ import me.desht.pneumaticcraft.common.drone.IDroneBase;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ILiquidFiltered;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.world.entity.ai.goal.Goal;
-import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 
 public class DroneAIVoidLiquid extends Goal {
     private final IDroneBase drone;

@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.common.inventory;
 
 import me.desht.pneumaticcraft.common.block.entity.PressurizedSpawnerBlockEntity;
-import me.desht.pneumaticcraft.common.core.ModMenuTypes;
+import me.desht.pneumaticcraft.common.registry.ModMenuTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
@@ -31,7 +31,7 @@ public class PressurizedSpawnerMenu extends AbstractPneumaticCraftMenu<Pressuriz
     public PressurizedSpawnerMenu(int windowId, Inventory invPlayer, BlockPos pos) {
         super(ModMenuTypes.PRESSURIZED_SPAWNER.get(), windowId, invPlayer, pos);
 
-        addSlot(new VacuumTrapMenu.SlotSpawnerCore(te.getPrimaryInventory(), 0, 62, 38));
+        addSlot(new VacuumTrapMenu.SlotSpawnerCore(blockEntity.getItemHandler(), 0, 62, 38));
 
         addUpgradeSlots(8, 29);
 

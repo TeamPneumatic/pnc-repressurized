@@ -20,41 +20,43 @@ package me.desht.pneumaticcraft.common.network;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.block.entity.IGUIButtonSensitive;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.network.NetworkEvent;
+import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 
-import java.util.function.Supplier;
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 /**
  * Received on: SERVER
  * Sent when a GUI button is clicked.
  */
-public class PacketGuiButton {
-    private final String tag;
-    private final boolean shiftHeld;
+public record PacketGuiButton(String tag, boolean shiftHeld) implements CustomPacketPayload {
+    public static final ResourceLocation ID = RL("gui_button");
 
     public PacketGuiButton(String tag) {
-        this.tag = tag;
-        this.shiftHeld = ClientUtils.hasShiftDown();
+        this(tag, ClientUtils.hasShiftDown());
     }
 
     public PacketGuiButton(FriendlyByteBuf buffer) {
-        tag = buffer.readUtf(1024);
-        shiftHeld = buffer.readBoolean();
+        this(buffer.readUtf(1024), buffer.readBoolean());
     }
 
-    public void toBytes(FriendlyByteBuf buffer) {
+    public void write(FriendlyByteBuf buffer) {
         buffer.writeUtf(tag);
         buffer.writeBoolean(shiftHeld);
     }
 
-    public void handle(Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> {
-            ServerPlayer player = ctx.get().getSender();
-            if (player != null && player.containerMenu instanceof IGUIButtonSensitive) {
-                ((IGUIButtonSensitive) player.containerMenu).handleGUIButtonPress(tag, shiftHeld, player);
+    @Override
+    public ResourceLocation id() {
+        return ID;
+    }
+
+    public static void handle(PacketGuiButton message, PlayPayloadContext ctx) {
+        ctx.player().ifPresent(player -> ctx.workHandler().submitAsync(() -> {
+            if (player instanceof ServerPlayer sp && sp.containerMenu instanceof IGUIButtonSensitive gbs) {
+                gbs.handleGUIButtonPress(message.tag, message.shiftHeld, sp);
             }
-        });
-        ctx.get().setPacketHandled(true);
+        }));
     }
 }

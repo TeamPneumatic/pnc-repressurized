@@ -20,7 +20,7 @@ public class EnderVisorClientHandler extends IArmorUpgradeClientHandler.SimpleTo
         super(CommonUpgradeHandlers.enderVisorHandler);
     }
 
-    public static class PumpkinOverlay implements net.minecraftforge.client.extensions.common.IClientItemExtensions {
+    public static class PumpkinOverlay implements net.neoforged.neoforge.client.extensions.common.IClientItemExtensions {
         private static final ResourceLocation PUMPKIN_OVERLAY = new ResourceLocation("textures/misc/pumpkinblur.png");
 
         @Override

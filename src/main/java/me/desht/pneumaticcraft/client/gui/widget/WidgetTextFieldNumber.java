@@ -86,14 +86,14 @@ public class WidgetTextFieldNumber extends WidgetTextField {
     }
 
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
+    public boolean mouseScrolled(double mouseX, double mouseY, double deltaX, double deltaY) {
         double adj = ClientUtils.hasShiftDown() ? coarseAdjust : fineAdjust;
         if (decimals > 0) {
-            setValue(getDoubleValue() + (delta > 0 ? adj : -adj));
+            setValue(getDoubleValue() + (deltaY > 0 ? adj : -adj));
         } else {
             int curVal = getIntValue();
             if (curVal == 1 && adj % 10 == 0) adj--;  // little kludge to make adjusting from 1 behave in a user-friendly way
-            setValue(curVal + (delta > 0 ? adj : -adj));
+            setValue(curVal + (deltaY > 0 ? adj : -adj));
         }
         return true;
     }

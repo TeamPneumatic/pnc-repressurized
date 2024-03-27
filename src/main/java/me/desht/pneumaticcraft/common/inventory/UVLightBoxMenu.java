@@ -18,17 +18,17 @@
 package me.desht.pneumaticcraft.common.inventory;
 
 import me.desht.pneumaticcraft.common.block.entity.UVLightBoxBlockEntity;
-import me.desht.pneumaticcraft.common.core.ModItems;
-import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.inventory.slot.OutputOnlySlot;
 import me.desht.pneumaticcraft.common.inventory.slot.UpgradeSlot;
 import me.desht.pneumaticcraft.common.item.EmptyPCBItem;
+import me.desht.pneumaticcraft.common.registry.ModItems;
+import me.desht.pneumaticcraft.common.registry.ModMenuTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.SlotItemHandler;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.SlotItemHandler;
 
 import javax.annotation.Nonnull;
 
@@ -41,12 +41,12 @@ public class UVLightBoxMenu extends AbstractPneumaticCraftMenu<UVLightBoxBlockEn
     public UVLightBoxMenu(int windowId, Inventory playerInventory, BlockPos pos) {
         super(ModMenuTypes.UV_LIGHT_BOX.get(), windowId, playerInventory, pos);
 
-        addSlot(new SlotPCB(te.getPrimaryInventory(), 0, 11, 22));
-        addSlot(new OutputOnlySlot(te.getOutputInventory(), 0, 49, 22));
+        addSlot(new SlotPCB(blockEntity.getItemHandler(), 0, 11, 22));
+        addSlot(new OutputOnlySlot(blockEntity.getOutputInventory(), 0, 49, 22));
 
         // add upgrade slots
         for (int i = 0; i < 4; i++) {
-            addSlot(new UpgradeSlot(te, i, 98 + i * 18, 90));
+            addSlot(new UpgradeSlot(blockEntity, i, 98 + i * 18, 90));
         }
 
         addPlayerSlots(playerInventory, 114);

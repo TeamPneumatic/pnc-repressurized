@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.common.entity.drone;
 
-import me.desht.pneumaticcraft.common.core.ModEntityTypes;
+import me.desht.pneumaticcraft.common.registry.ModEntityTypes;
 import me.desht.pneumaticcraft.common.drone.progwidgets.IBlockOrdered.Ordering;
 import me.desht.pneumaticcraft.common.drone.progwidgets.*;
 import me.desht.pneumaticcraft.common.util.DroneProgramBuilder;
@@ -45,7 +45,7 @@ public class HarvestingDroneEntity extends AbstractBasicDroneEntity {
     public boolean addProgram(BlockPos clickPos, Direction facing, BlockPos pos, ItemStack droneStack, List<IProgWidget> widgets) {
         BlockEntity te = level().getBlockEntity(clickPos);
         ProgWidgetHarvest harvestPiece = new ProgWidgetHarvest();
-        harvestPiece.setRequiresTool(IOHelper.getInventoryForTE(te, facing).isPresent());
+        harvestPiece.setRequiresTool(IOHelper.getInventoryForBlock(te, facing).isPresent());
         harvestPiece.setOrder(Ordering.HIGH_TO_LOW);
         
         DroneProgramBuilder builder = new DroneProgramBuilder();

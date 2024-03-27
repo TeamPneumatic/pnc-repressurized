@@ -19,15 +19,16 @@ package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.common.block.entity.SecurityStationBlockEntity;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
-import me.desht.pneumaticcraft.common.core.ModBlockEntities;
-import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
+import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
+import me.desht.pneumaticcraft.common.registry.ModBlocks;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.VoxelShapeUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -85,7 +86,7 @@ public class SecurityStationBlock extends AbstractPneumaticCraftBlock implements
     @Override
     public void setPlacedBy(Level world, BlockPos pos, BlockState state, LivingEntity entityLiving, ItemStack iStack) {
         if (entityLiving instanceof Player p) {
-            world.getBlockEntity(pos, ModBlockEntities.SECURITY_STATION.get())
+            world.getBlockEntity(pos, ModBlockEntityTypes.SECURITY_STATION.get())
                     .ifPresent(teSS -> teSS.sharedUsers.add(p.getGameProfile()));
         }
 
@@ -101,30 +102,26 @@ public class SecurityStationBlock extends AbstractPneumaticCraftBlock implements
     public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult brtr) {
         if (player.isShiftKeyDown()) {
             return InteractionResult.PASS;
-        } else {
-            if (!world.isClientSide) {
-                BlockEntity te = world.getBlockEntity(pos);
-                if (te instanceof SecurityStationBlockEntity teSS) {
-                    if (teSS.isPlayerOnWhiteList(player)) {
-                        return super.use(state, world, pos, player, hand, brtr);
-                    } else if (!teSS.hasValidNetwork()) {
-                        player.displayClientMessage(PneumaticCraftUtils.xlate("pneumaticcraft.message.securityStation.outOfOrder").withStyle(ChatFormatting.RED), false);
-                    } else if (teSS.hasPlayerHacked(player)) {
-                        player.displayClientMessage(PneumaticCraftUtils.xlate("pneumaticcraft.message.securityStation.alreadyHacked").withStyle(ChatFormatting.GOLD), false);
-                    } else if (getPlayerHackLevel(player) < teSS.getSecurityLevel()) {
-                        player.displayClientMessage(PneumaticCraftUtils.xlate("pneumaticcraft.message.securityStation.cantHack").withStyle(ChatFormatting.GOLD), false);
-                        player.hurt(player.damageSources().fellOutOfWorld(), 1f);
-                    } else {
-                        if (ConfigHelper.common().machines.securityStationAllowHacking.get()) {
-                            teSS.initiateHacking(player);
-                        } else {
-                            player.displayClientMessage(PneumaticCraftUtils.xlate("pneumaticcraft.message.securityStation.hackDisabled").withStyle(ChatFormatting.GOLD), false);
-                        }
-                    }
+        }
+        if (player instanceof ServerPlayer sp && world.getBlockEntity(pos) instanceof SecurityStationBlockEntity secStation) {
+            if (secStation.isPlayerOnWhiteList(player)) {
+                return super.use(state, world, pos, player, hand, brtr);
+            } else if (!secStation.hasValidNetwork()) {
+                player.displayClientMessage(PneumaticCraftUtils.xlate("pneumaticcraft.message.securityStation.outOfOrder").withStyle(ChatFormatting.RED), false);
+            } else if (secStation.hasPlayerHacked(player)) {
+                player.displayClientMessage(PneumaticCraftUtils.xlate("pneumaticcraft.message.securityStation.alreadyHacked").withStyle(ChatFormatting.GOLD), false);
+            } else if (getPlayerHackLevel(player) < secStation.getSecurityLevel()) {
+                player.displayClientMessage(PneumaticCraftUtils.xlate("pneumaticcraft.message.securityStation.cantHack").withStyle(ChatFormatting.GOLD), false);
+                player.hurt(player.damageSources().fellOutOfWorld(), 1f);
+            } else {
+                if (ConfigHelper.common().machines.securityStationAllowHacking.get()) {
+                    secStation.initiateHacking(sp);
+                } else {
+                    player.displayClientMessage(PneumaticCraftUtils.xlate("pneumaticcraft.message.securityStation.hackDisabled").withStyle(ChatFormatting.GOLD), false);
                 }
             }
-            return InteractionResult.SUCCESS;
         }
+        return InteractionResult.SUCCESS;
     }
 
     private int getPlayerHackLevel(Player player) {
@@ -140,7 +137,7 @@ public class SecurityStationBlock extends AbstractPneumaticCraftBlock implements
 
     @Override
     public int getSignal(BlockState blockState, BlockGetter blockAccess, BlockPos pos, Direction side) {
-        return blockAccess.getBlockEntity(pos, ModBlockEntities.SECURITY_STATION.get())
+        return blockAccess.getBlockEntity(pos, ModBlockEntityTypes.SECURITY_STATION.get())
                 .map(teSS -> teSS.getRedstoneController().shouldEmit() ? 15 : 0).orElse(0);
     }
 

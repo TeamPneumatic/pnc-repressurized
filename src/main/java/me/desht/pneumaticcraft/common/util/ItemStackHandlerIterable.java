@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.common.util;
 
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.items.IItemHandlerModifiable;
+import net.neoforged.neoforge.items.IItemHandlerModifiable;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;

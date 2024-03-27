@@ -4,7 +4,8 @@ import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.api.item.IFilteringItem;
 import me.desht.pneumaticcraft.api.misc.Symbols;
 import me.desht.pneumaticcraft.client.gui.ClassifyFilterScreen;
-import me.desht.pneumaticcraft.common.core.ModItems;
+import me.desht.pneumaticcraft.common.registry.ModItems;
+import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.ITranslatableEnum;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
@@ -24,9 +25,8 @@ import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraftforge.common.ForgeHooks;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.server.ServerLifecycleHooks;
+import net.neoforged.neoforge.common.CommonHooks;
+import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.Nullable;
 
@@ -123,16 +123,16 @@ public class ClassifyFilterItem extends Item implements IFilteringItem {
     }
 
     public enum FilterCondition implements ITranslatableEnum, Predicate<ItemStack> {
-        FUEL_ITEM(Items.COAL, s -> ForgeHooks.getBurnTime(s, RecipeType.SMELTING) > 0),
-        EDIBLE(Items.BREAD, s -> s.isEdible()),
+        FUEL_ITEM(Items.COAL, s -> CommonHooks.getBurnTime(s, RecipeType.SMELTING) > 0),
+        EDIBLE(Items.BREAD, ItemStack::isEdible),
         PLACEABLE(Items.STONE, s -> s.getItem() instanceof BlockItem),
-        FLUID_CONTAINER(Items.BUCKET, s -> s.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).isPresent()),
+        FLUID_CONTAINER(Items.BUCKET, s -> IOHelper.getFluidHandlerForItem(s).isPresent()),
         UNSTACKABLE(Items.WRITABLE_BOOK, s -> s.getMaxStackSize() == 1),
         WEARABLE(Items.LEATHER_HELMET, s -> s.getItem() instanceof ArmorItem),
         TOOL(Items.IRON_PICKAXE, s -> s.getItem() instanceof TieredItem),
         WEAPON(Items.IRON_SWORD, s -> s.getItem() instanceof SwordItem || s.getItem() instanceof AxeItem || s.getItem() instanceof ProjectileWeaponItem),
         ENCHANTABLE(Items.BOOK, s -> s.isEnchantable() && !s.isEnchanted()),
-        ENCHANTED(Items.ENCHANTED_BOOK, s -> s.isEnchanted()),
+        ENCHANTED(Items.ENCHANTED_BOOK, ItemStack::isEnchanted),
         SMELTABLE(Blocks.FURNACE, s -> isCookable(RecipeType.SMELTING, s)),
         BLASTABLE(Blocks.BLAST_FURNACE, s -> isCookable(RecipeType.BLASTING, s)),
         SMOKABLE(Blocks.SMOKER, s -> isCookable(RecipeType.SMOKING, s)),

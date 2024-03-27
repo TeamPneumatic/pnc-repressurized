@@ -19,9 +19,9 @@ package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.api.block.PNCBlockStateProperties;
 import me.desht.pneumaticcraft.api.block.PressureChamberWallState;
-import me.desht.pneumaticcraft.common.advancements.AdvancementTriggers;
 import me.desht.pneumaticcraft.common.block.entity.PressureChamberValveBlockEntity;
 import me.desht.pneumaticcraft.common.block.entity.PressureChamberWallBlockEntity;
+import me.desht.pneumaticcraft.common.registry.ModCriterionTriggers;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
@@ -34,7 +34,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.Nullable;
 
 import static me.desht.pneumaticcraft.api.block.PNCBlockStateProperties.FORMED;
@@ -55,24 +54,25 @@ public abstract class AbstractPressureWallBlock extends AbstractPneumaticCraftBl
     public void setPlacedBy(Level par1World, BlockPos pos, BlockState state, LivingEntity par5EntityLiving, ItemStack iStack) {
         super.setPlacedBy(par1World, pos, state, par5EntityLiving, iStack);
         if (!par1World.isClientSide && PressureChamberValveBlockEntity.checkIfProperlyFormed(par1World, pos)) {
-            AdvancementTriggers.PRESSURE_CHAMBER.trigger((ServerPlayer) par5EntityLiving);
+            ModCriterionTriggers.PRESSURE_CHAMBER.get().trigger((ServerPlayer) par5EntityLiving);
         }
     }
 
     @Override
     public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult brtr) {
-        if (world.isClientSide) {
+        if (player instanceof ServerPlayer sp) {
+            // forward activation to the pressure chamber valve, which will open the GUI
+            return PneumaticCraftUtils.getTileEntityAt(world, pos, PressureChamberWallBlockEntity.class).map(te -> {
+                PressureChamberValveBlockEntity valve = te.getPrimaryValve();
+                if (valve != null) {
+                    sp.openMenu(valve, valve.getBlockPos());
+                    return InteractionResult.CONSUME;
+                }
+                return InteractionResult.FAIL;
+            }).orElse(InteractionResult.FAIL);
+        } else {
             return isFormed(state) ? InteractionResult.SUCCESS : InteractionResult.PASS;
         }
-        // forward activation to the pressure chamber valve, which will open the GUI
-        return PneumaticCraftUtils.getTileEntityAt(world, pos, PressureChamberWallBlockEntity.class).map(te -> {
-            PressureChamberValveBlockEntity valve = te.getPrimaryValve();
-            if (valve != null) {
-                NetworkHooks.openScreen((ServerPlayer) player, valve, valve.getBlockPos());
-                return InteractionResult.CONSUME;
-            }
-            return InteractionResult.FAIL;
-        }).orElse(InteractionResult.FAIL);
     }
 
     private boolean isFormed(BlockState state) {

@@ -7,13 +7,13 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.client.gui.overlay.ForgeGui;
-import net.minecraftforge.client.gui.overlay.IGuiOverlay;
+import net.neoforged.neoforge.client.gui.overlay.ExtendedGui;
+import net.neoforged.neoforge.client.gui.overlay.IGuiOverlay;
 import org.lwjgl.opengl.GL11;
 
 public class JackhammerOverlay implements IGuiOverlay {
     @Override
-    public void render(ForgeGui gui, GuiGraphics graphics, float partialTicks, int width, int height) {
+    public void render(ExtendedGui gui, GuiGraphics graphics, float partialTicks, int width, int height) {
         Player player = Minecraft.getInstance().player;
         if (player == null || !(player.getMainHandItem().getItem() instanceof JackHammerItem)
                 || !Minecraft.getInstance().options.getCameraType().isFirstPerson())

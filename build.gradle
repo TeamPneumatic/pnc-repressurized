@@ -1,73 +1,33 @@
+import me.modmuss50.mpp.ReleaseType
+
 buildscript {
-//	repositories {
-//		maven { url = 'https://files.minecraftforge.net/maven' }
-//		maven { url = 'https://maven.parchmentmc.org' }
-//		mavenCentral()
-//	}
 	dependencies {
-//		classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
 		classpath 'org.parchmentmc:librarian:1.+'
 		classpath "org.jfrog.buildinfo:build-info-extractor-gradle:4+"
-		classpath 'org.spongepowered:mixingradle:0.7.+'
+//		classpath 'net.neoforged.gradle.mixin' version '[7.0.5,)'
 	}
 }
 
 plugins {
-	id 'java'
-	id 'eclipse'
-	id 'idea'
-	id 'maven-publish'
-	id "com.modrinth.minotaur" version "2.+"
-	id 'com.matthewprenger.cursegradle' version '1.4.0'
-	id('net.neoforged.gradle') version '[6.0.13, 6.2)'
-}
-apply plugin: 'org.parchmentmc.librarian.forgegradle'
-apply plugin: "com.jfrog.artifactory"
-apply plugin: "org.spongepowered.mixin"
-
-//adds the build number to the end of the version string if on a build server
-def build_number = System.getenv().BUILD_NUMBER
-if (build_number == null) {
-	build_number = 'CUSTOM'
+    id 'java-library'
+    id 'eclipse'
+    id 'idea'
+    id 'maven-publish'
+    id 'net.neoforged.gradle.userdev' version '7.0.101'
+	id 'net.neoforged.gradle.mixin' version '[7.0.5,)'
+	id "me.modmuss50.mod-publish-plugin" version "0.4.5"
 }
 
-def semver = "${mod_version_massive}.${mod_version_major}.${mod_version_minor}"
+//version = "${mod_version}+mc${minecraft_version}"
+//group = mod_group_id
 
-// these two are required for the java plugin to generate jar files with a version
-version = "${semver}+mc${project.mc_version}"
-group = 'me.desht.pneumaticcraft' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-archivesBaseName = "pneumaticcraft-repressurized"
-
-ext.releaseTag = System.getenv('TAG') ?: ""
+ext.releaseTag = providers.environmentVariable("TAG").orElse("").toString()
 ext.isAlpha = ext.releaseTag.contains("alpha")
 ext.isBeta = ext.releaseTag.contains("beta")
+def relType = ext.isAlpha ? "alpha" : (ext.isBeta ? "beta" : "release")
 
-// All jar files from this folder will be added automatically as runtime mod dependencies
-def extraModsDir = "extra-mods-${project.mc_version}"
-
-sourceSets {
-	api
-	main {
-		compileClasspath += sourceSets.api.output
-		runtimeClasspath += sourceSets.api.output
-		resources {
-			srcDir 'src/generated/resources'
-		}
-		ext.refMap = "mixins.pneumaticcraft.refmap.json"
-	}
-	test {
-		compileClasspath += sourceSets.api.output
-		runtimeClasspath += sourceSets.api.output
-	}
-}
-
-configurations {
-//	apiImplementation.extendsFrom(implementation)
-//	apiRuntimeOnly.extendsFrom(runtimeOnly)
-	apiImplementation.extendsFrom(minecraft)
-}
-
-java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+// All jar files from this folder will be added automatically as runtime-only mod dependencies
+def extraModsDir = "extra-mods-${minecraft_version}"
 
 repositories {
 	mavenCentral()
@@ -88,7 +48,7 @@ repositories {
 		name 'CC: Tweaked'
 		url 'https://squiddev.cc/maven/'
 		content {
-			includeGroup "org.squiddev"
+			includeGroup("cc.tweaked")
 		}
 	}
 	maven {
@@ -125,57 +85,114 @@ repositories {
 	}
 }
 
-dependencies {
-	minecraft "net.neoforged:forge:${mc_version}-${forge_version}"
-//	minecraft([
-//			group  : "net.neoforged",
-//			name   : 'forge',
-//			version: "${project.mc_version}-${project.forge_version}"
-//	])
+base {
+    archivesName = "${archive_base_name}-${mod_version}+mc${minecraft_version}"
+}
 
-	annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
+java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+
+sourceSets {
+	api {
+		compileClasspath = main.compileClasspath
+		resources.srcDirs = []
+	}
+	main {
+		compileClasspath += api.output
+		runtimeClasspath += api.output
+		resources {
+			srcDir 'src/generated/resources'
+		}
+//		ext.refMap = "mixins.pneumaticcraft.refmap.json"
+	}
+	test {
+		resources.srcDirs = []
+		compileClasspath += api.output
+		runtimeClasspath += api.output
+	}
+}
+
+runs {
+    // applies to all the run configs below
+    configureEach {
+        systemProperty 'forge.logging.markers', 'REGISTRIES'
+        systemProperty 'forge.logging.console.level', 'debug'
+
+        modSource project.sourceSets.api
+        modSource project.sourceSets.main
+    }
+
+    client {
+        systemProperty 'forge.enabledGameTestNamespaces', project.mod_id
+    }
+
+    server {
+        systemProperty 'forge.enabledGameTestNamespaces', project.mod_id
+        programArgument '--nogui'
+    }
+
+    // This run config launches GameTestServer and runs all registered gametests, then exits.
+    // By default, the server will crash when no gametests are provided.
+    // The gametest system is also enabled by default for other run configs under the /test command.
+    gameTestServer {
+        systemProperty 'forge.enabledGameTestNamespaces', project.mod_id
+    }
+
+    data {
+        // Specify the modid for data generation, where to output the resulting resource, and where to look for existing resources.
+        programArguments.addAll '--mod', project.mod_id, '--all', '--output', file('src/generated/resources/').getAbsolutePath(), '--existing', file('src/main/resources/').getAbsolutePath()
+    }
+}
+
+dependencies {
+	implementation "net.neoforged:neoforge:${neo_version}"
+	apiImplementation "net.neoforged:neoforge:${neo_version}"
 
 	testImplementation "org.junit.jupiter:junit-jupiter-api:5.7.2"
 	testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.7.2"
 
-	implementation fg.deobf("mcjty.theoneprobe:theoneprobe:${top_version}") {
+	implementation("mcjty.theoneprobe:theoneprobe:${top_version}") {
 		exclude group: "net.minecraftforge", module: "forge"
 	}
-	// compile against the JEI API but do not include it at runtime
-	compileOnly fg.deobf("mezz.jei:jei-${mc_version}-common-api:${jei_version}")
-	compileOnly fg.deobf("mezz.jei:jei-${mc_version}-forge-api:${jei_version}")
-	// at runtime, use the full JEI
-	runtimeOnly fg.deobf("mezz.jei:jei-${mc_version}-common:${jei_version}")
-	runtimeOnly fg.deobf("mezz.jei:jei-${mc_version}-forge:${jei_version}")
-//	compileOnly fg.deobf("top.theillusivec4.curios:curios-forge:${curios_version}:api")
-	implementation fg.deobf("top.theillusivec4.curios:curios-forge:${curios_version}")
-	compileOnly fg.deobf("vazkii.botania:Botania:${botania_version}:api")
-	//runtimeOnly fg.deobf("vazkii.botania:Botania:${botania_version}-FORGE")
-	compileOnly fg.deobf("vazkii.patchouli:Patchouli:${patchouli_version}:api")
-	runtimeOnly fg.deobf("vazkii.patchouli:Patchouli:${patchouli_version}")
-	compileOnly fg.deobf("org.squiddev:cc-tweaked-1.19.2:${cc_tweaked_version}")
-	implementation fg.deobf("blusunrize.immersiveengineering:ImmersiveEngineering:${immersive_engineering_version}")
-	compileOnly fg.deobf("mekanism:Mekanism:${mekanism_version}:api")
-	//runtimeOnly fg.deobf("mekanism:Mekanism:${mekanism_version}")
-	implementation fg.deobf("com.simibubi.create:create-1.20.1:${create_version}:slim") { transitive = false }
-	implementation fg.deobf("com.jozufozu.flywheel:flywheel-forge-1.20.1:${flywheel_version}")
-	implementation fg.deobf("com.tterrag.registrate:Registrate:${registrate_version}")
-//	implementation fg.deobf("curse.maven:create-328085:${create_curse_id}")
-	implementation fg.deobf("curse.maven:jade-324717:${jade_curse_id}")
-	compileOnly fg.deobf("curse.maven:cofh_core-69162:${cofh_core_curse_id}")
-	compileOnly fg.deobf("curse.maven:thermal_cultivation-271835:${thermal_cultivation_curse_id}")
-	compileOnly fg.deobf("curse.maven:thermal_expansion-69163:${thermal_expansion_curse_id}")
-	compileOnly fg.deobf("curse.maven:thermal_foundation-222880:${thermal_foundation_curse_id}")
-	compileOnly fg.deobf("curse.maven:thermal_innovation-291737:${thermal_innovation_curse_id}")
-	compileOnly fg.deobf("curse.maven:thermal_locomotion-406959:${thermal_locomotion_curse_id}")
 
-	compileOnly fg.deobf("com.blamejared.crafttweaker:CraftTweaker-forge-1.20.1:${crafttweaker_version}")
-	compileOnly fg.deobf("net.darkhax.gamestages:GameStages-Forge-1.20.1:${gamestages_version}")
+	compileOnly("mezz.jei:jei-${minecraft_version}-common-api:${jei_version}")
+	compileOnly("mezz.jei:jei-${minecraft_version}-neoforge-api:${jei_version}")
+	runtimeOnly("mezz.jei:jei-${minecraft_version}-common:${jei_version}")
+	runtimeOnly("mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}")
 
-	//compileOnly fg.deobf("appeng:appliedenergistics2:${ae2_version}:api")
-	//runtimeOnly fg.deobf("appeng:appliedenergistics2:${ae2_version}")
-	//compileOnly fg.deobf("team.chisel.ctm:CTM:MC1.16.1-${ctm_version}")
-	//runtimeOnly fg.deobf("team.chisel.ctm:CTM:MC1.16.1-${ctm_version}")
+	compileOnly("top.theillusivec4.curios:curios-neoforge:${curios_version}:api")
+	runtimeOnly("top.theillusivec4.curios:curios-neoforge:${curios_version}")
+
+	compileOnly("vazkii.botania:Botania:${botania_version}:api")
+	//runtimeOnly("vazkii.botania:Botania:${botania_version}")
+
+	compileOnly("vazkii.patchouli:Patchouli:${patchouli_version}:api")
+	runtimeOnly("vazkii.patchouli:Patchouli:${patchouli_version}")
+
+	compileOnly("cc.tweaked:cc-tweaked-${minecraft_version}-forge-api:${cc_tweaked_version}")
+	runtimeOnly("cc.tweaked:cc-tweaked-${minecraft_version}-forge:${cc_tweaked_version}")
+
+	compileOnly("blusunrize.immersiveengineering:ImmersiveEngineering:${immersive_engineering_version}")
+
+	compileOnly("mekanism:Mekanism:${mekanism_version}:api")
+	runtimeOnly("mekanism:Mekanism:${mekanism_version}")
+
+	compileOnly("com.simibubi.create:create-1.20.1:${create_version}:slim") { transitive = false }
+//	compileOnly("com.jozufozu.flywheel:flywheel-forge-1.20.1:${flywheel_version}")
+//	compileOnly("com.tterrag.registrate:Registrate:${registrate_version}")
+//	implementation("curse.maven:create-328085:${create_curse_id}")
+
+	implementation("curse.maven:jade-324717:${jade_curse_id}")
+
+	compileOnly("com.blamejared.crafttweaker:CraftTweaker-neoforge-${minecraft_version}:${crafttweaker_version}")
+
+	compileOnly("curse.maven:cofh_core-69162:${cofh_core_curse_id}")
+	compileOnly("curse.maven:thermal_cultivation-271835:${thermal_cultivation_curse_id}")
+	compileOnly("curse.maven:thermal_expansion-69163:${thermal_expansion_curse_id}")
+	compileOnly("curse.maven:thermal_foundation-222880:${thermal_foundation_curse_id}")
+	compileOnly("curse.maven:thermal_innovation-291737:${thermal_innovation_curse_id}")
+	compileOnly("curse.maven:thermal_locomotion-406959:${thermal_locomotion_curse_id}")
+
+	compileOnly("net.darkhax.gamestages:GameStages-Forge-1.20.1:${gamestages_version}")
 
 	// Locally sourced extra mods for runtime (i.e. testing) - thanks AE2 for this idea
 	for (extraModJar in fileTree(dir: extraModsDir, include: '*.jar')) {
@@ -184,92 +201,66 @@ dependencies {
 		assert versionSep != -1
 		def artifactId = basename.substring(0, versionSep)
 		def version = basename.substring(versionSep + 1)
-		runtimeOnly fg.deobf("extra-mods:$artifactId:$version")
-	}
-
-//    compileOnly "li.cil.oc:OpenComputers:MC1.12.2-${oc_version}:api"
-//    compileOnly "net.industrial-craft:industrialcraft-2:2.8.27-ex112:api"
-//    compileOnly "thaumcraft:Thaumcraft:${thaumcraft_version}"
-//    compileOnly "team.chisel.ctm:CTM:${ctm_version}:api"
-}
-
-minecraft {
-	mappings channel: 'parchment', version: "${project.mappings_version}-${project.mc_version}"
-//	mappings channel: 'official', version: "1.19"
-
-	accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
-
-	runs {
-		client {
-			property 'forge.logging.console.level', 'debug'
-			workingDirectory file('run')
-			property 'mixin.env.remapRefMap', 'true'
-			property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
-			ideaModule "${project.name}.main"
-			mods {
-				pneumaticcraft.sources((SourceSet[]) [sourceSets.main, sourceSets.api])
-			}
-		}
-		server {
-			property 'forge.logging.console.level', 'debug'
-			workingDirectory file('run')
-			property 'mixin.env.remapRefMap', 'true'
-			property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
-			ideaModule "${project.name}.main"
-			mods {
-				pneumaticcraft.sources((SourceSet[]) [sourceSets.main, sourceSets.api])
-			}
-		}
-		data {
-			property 'forge.logging.console.level', 'debug'
-			property 'fml.earlyprogresswindow', 'false'
-			property 'mixin.env.remapRefMap', 'true'
-			property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
-			workingDirectory file('run')
-			ideaModule "${project.name}.main"
-			args '--mod', 'pneumaticcraft', '--all', '--output', file('src/generated/resources/'), '--existing', sourceSets.main.resources.srcDirs[0]
-			mods {
-				pneumaticcraft.sources((SourceSet[]) [sourceSets.main, sourceSets.api])
-			}
-		}
+		runtimeOnly("extra-mods:$artifactId:$version")
 	}
 }
 
-mixin {
-	// Refmaps for each SourceSet
-	add sourceSets.main, 'mixins.pneumaticcraft.refmap.json'
+tasks.withType(ProcessResources).configureEach {
+    var replaceProperties = [
+            minecraft_version   : minecraft_version, minecraft_version_range: minecraft_version_range,
+            neo_version         : neo_version, neo_version_range: neo_version_range,
+            loader_version_range: loader_version_range,
+            mod_id              : mod_id, mod_name: mod_name, mod_license: mod_license, mod_version: mod_version,
+            mod_authors         : mod_authors, mod_description: mod_description, pack_format_number: pack_format_number,
+    ]
+    inputs.properties replaceProperties
 
-	// Configs to add to runs and jars
-	config 'mixins.pneumaticcraft.json'
-
-	// Specify options for dev run configs
-	debug.verbose = true
-	debug.export = true
-	dumpTargetOnFailure = true
-
-	// Options for the Annotation Processor
-	quiet
+    filesMatching(['META-INF/mods.toml', 'pack.mcmeta']) {
+        expand replaceProperties + [project: project]
+    }
 }
 
-def replaceResources = tasks.register("replaceResources", Copy) {
-	it.outputs.upToDateWhen { false }
-	//Copy it into the build dir
-	it.from(sourceSets.main.resources) {
-		include "META-INF/mods.toml"
-		expand 'version': version, 'mc_version': mc_version, 'mc_version_range': minecraft_version_range, 'forge_version_range': forge_version_range
-	}
-	it.into "$buildDir/resources/main/"
-}
+//configurations {
+//	apiImplementation.extendsFrom(implementation)
+//}
 
-processResources {
-	duplicatesStrategy(DuplicatesStrategy.FAIL)
-	exclude('META-INF/mods.toml')
-	configure { finalizedBy(replaceResources) }
-}
+//configurations {
+//	//Make sure all our sub source set stuff extends the proper base methods so that
+//	// they can see all the dependencies we have in dependencies including forge
+//	extendConfigurations(implementation, apiImplementation, testImplementation)
+//	extendConfigurations(compileOnly, apiCompileOnly, testCompileOnly)
+//	extendConfigurations(runtimeOnly, apiRuntimeOnly)
+//}
+//static void extendConfigurations(Configuration base, Configuration... configurations) {
+//	for (def configuration : configurations) {
+//		configuration.extendsFrom(base)
+//	}
+//}
 
-classes.configure {
-	dependsOn(replaceResources)
-}
+//configurations {
+////	apiImplementation.extendsFrom(implementation)
+////	apiRuntimeOnly.extendsFrom(runtimeOnly)
+//	api {
+//		extendsFrom = implementation
+//	}
+////	apiImplementation.extendsFrom(minecraft)
+//}
+
+//mixin {
+//	// Refmaps for each SourceSet
+//	add sourceSets.main, 'mixins.pneumaticcraft.refmap.json'
+//
+//	// Configs to add to runs and jars
+//	config 'mixins.pneumaticcraft.json'
+//
+//	// Specify options for dev run configs
+//	debug.verbose = true
+//	debug.export = true
+//	dumpTargetOnFailure = true
+//
+//	// Options for the Annotation Processor
+//	quiet
+//}
 
 javadoc {
 	source = [sourceSets.main.allJava, sourceSets.api.allJava]
@@ -279,204 +270,77 @@ javadoc {
 			.tags("apiNote:a:API Note:", "implSpec:a:Implementation Requirements:", "implNote:a:Implementation Note:")
 }
 
-task getChangelogProperty(type: Exec) {
-	standardOutput = new ByteArrayOutputStream()
-	commandLine 'bash', './scripts/extract_changes.sh', "${semver}"
-	doLast {
-		ext.changelog = standardOutput.toString()
-	}
-}
 
-//task makeChangelog(type: GitChangelogTask) {
-//	file = file('changelog.html')
-//	untaggedName = "Current release ${project.version}"
-//	fromCommit = '2fe051cf727adce1be210a46f778aa8fe031331e'
-//	toRef = 'HEAD'
-//	templateContent = file('changelog.mustache').getText('UTF-8')
-//}
-
-//curseforge {
-//	apiKey = project.findProperty('curseforge_apikey') ?: '0'
-//	project {
-//		id = curse_project_id
-//		changelog = file('changelog.html')
-//		changelogType = 'html'
-//		releaseType = 'beta'
-//	}
-//}
-
-//afterEvaluate {
-//	tasks.curseforge281849.dependsOn makeChangelog
-//}
-
-jar {
-	from sourceSets.main.output
-	from sourceSets.api.output
-
-	manifest.attributes([
-			'FMLAT': 'accesstransformer.cfg',
-			"Specification-Title": "PneumaticCraft: Repressurized",
-			"Specification-Vendor": "desht",
-			"Specification-Version": "${semver}",
-			"Implementation-Title": project.name,
-			"Implementation-Version": "${project.version}",
-			"Implementation-Vendor" :"desht",
-			"Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
-			'TweakClass': 'org.spongepowered.asm.launch.MixinTweaker',
-			'MixinConfigs': 'mixins.pneumaticcraft.json',
-			'FMLCorePluginContainsFMLMod': 'true',
-	])
-
-	finalizedBy 'reobfJar'
-}
-
-task javadocJar(type: Jar, dependsOn: javadoc) {
-	duplicatesStrategy(DuplicatesStrategy.FAIL)
-	archiveClassifier.set('javadoc')
-	from javadoc.destinationDir
-}
-
-task sourcesJar(type: Jar) {
-	duplicatesStrategy(DuplicatesStrategy.FAIL)
-	archiveClassifier.set('sources')
-	from sourceSets.main.allJava
-	from sourceSets.api.allJava
-}
-
-task apiJar(type: Jar, dependsOn: apiClasses) {
-	duplicatesStrategy(DuplicatesStrategy.FAIL)
-	archiveClassifier.set('api')
-	from sourceSets.api.output
-	afterEvaluate { finalizedBy reobfApiJar }
-}
-
-task deobfJar(type: Jar) {
-	duplicatesStrategy(DuplicatesStrategy.FAIL)
-	archiveClassifier.set('deobf')
-	from sourceSets.main.output
-	from sourceSets.api.output
-}
-
-artifacts {
-	archives javadocJar
-	archives sourcesJar
-	archives apiJar
-	archives deobfJar
-}
-
-reobf {
-	apiJar { libraries.from(sourceSets.api.compileClasspath) }
-	jar { libraries.from(sourceSets.main.compileClasspath) }
-}
-
-task reobf {
-	dependsOn reobfJar
-	dependsOn reobfApiJar
-}
-
-tasks.withType(GenerateModuleMetadata) {
-	enabled = false
-}
-
-// with thanks to AE2
-def mavenVer = ext.releaseTag == "" ? "${version}-SNAPSHOT" : "${version}"
 publishing {
-	publications {
-		mavenCommon(MavenPublication) {
-			artifactId = rootProject.archivesBaseName
-			from components.java
-		}
-	}
-	repositories {
-		mavenLocal()
-	}
-	if (System.getenv("MODMAVEN_USER") != null) {
-		publications {
-			maven(MavenPublication) {
-				groupId = project.group
-				artifactId = project.archivesBaseName
-				version = mavenVer
-
-				// ForgeGradle will generate wild dependency definitions, see https://github.com/MinecraftForge/ForgeGradle/issues/584
-				// Since we don't actually depend on anything, just remove the entire node.
-				pom.withXml {
-					asNode().remove(asNode().dependencies)
-				}
-
-				from components.java
-				artifact sourcesJar
-				artifact javadocJar
-				artifact apiJar
-			}
-		}
-		repositories {
-			maven {
-				name = "modmaven"
-				credentials {
-					username System.getenv("MODMAVEN_USER")
-					password System.getenv("MODMAVEN_PASSWORD")
-				}
-				url = "https://modmaven.dev/artifactory/local-releases/"
-			}
-		}
-	}
+    publications {
+        register('mavenJava', MavenPublication) {
+            from components.java
+        }
+    }
+    repositories {
+        maven {
+            url "file://${project.projectDir}/repo"
+        }
+        if (System.getenv("MODMAVEN_USER") != null) {
+            maven {
+                name = "modmaven"
+                credentials {
+                    username System.getenv("MODMAVEN_USER")
+                    password System.getenv("MODMAVEN_PASSWORD")
+                }
+                url = "https://modmaven.dev/artifactory/local-releases/"
+            }
+        }
+    }
 }
 
-idea {
-	module {
-		for (String exclude in ['run', 'out', 'logs']) {
-			excludeDirs += file(exclude)
-		}
-	}
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
 }
 
-def relType = "release"
-if (ext.isAlpha) {
-	relType = "alpha"
-} else if (ext.isBeta) {
-	relType = "beta"
+Closure<ReleaseType> getReleaseType = { type ->
+    switch(type) {
+        case "alpha": return ReleaseType.ALPHA
+        case "beta": return ReleaseType.BETA
+        default: return ReleaseType.STABLE
+    }
 }
 
-modrinth {
-	token = System.getenv("MODRINTH_TOKEN")
-	projectId = "${project.modrinth_project_id}"
-	versionNumber = "${project.version}"
-	versionType = relType
-	uploadFile = jar // With Loom, this MUST be set to `remapJar` instead of `jar`!
-	additionalFiles = [ apiJar ]
-	gameVersions = ["${mc_version}"] // Must be an array, even with only one version
-	changelog = System.getenv("CHANGELOG")
-	dependencies { // A special DSL for creating dependencies
-		// scope.type
-		// The scope can be `required`, `optional`, or `incompatible`
-		// The type can either be `project` or `version`
-		required.project "nU0bVIaL"  // Patchouli
-	}
+publishMods {
+    dryRun = providers.environmentVariable("CURSEFORGE_TOKEN").getOrNull() == null
+    changelog = providers.environmentVariable("CHANGELOG").orElse("dryrun")
+    version = mod_version
+    type = getReleaseType(relType)
+    file = jar.archiveFile
+    displayName = "${mod_name} ${mod_version} MC-${minecraft_version}"
+    modLoaders.add("neoforge")
+
+    curseforge {
+        projectId = curse_project_id
+        accessToken = providers.environmentVariable("CURSEFORGE_TOKEN")
+        minecraftVersions.add(minecraft_version)
+        projectSlug = "pneumaticcraft-repressurized"
+        announcementTitle = "Download from Curseforge"
+//        optional {
+//            slug = "patchouli"
+//        }
+    }
+
+    modrinth {
+        projectId = modrinth_project_id
+        accessToken = providers.environmentVariable("MODRINTH_TOKEN")
+        minecraftVersions.add(minecraft_version)
+        announcementTitle = "Download from Modrinth"
+//        optional {
+//            id = "nU0bVIaL"
+//            slug = "patchouli"
+//        }
+    }
+
+    discord {
+        webhookUrl = providers.environmentVariable("DISCORD_WEBHOOK").orElse("dryrun")
+        content = changelog.map { "# A new version of PneumaticCraft: Repressurized has been released! \n" + it}
+//        setPlatforms(platforms.curseforge, platforms.modrinth)
+    }
 }
 
-if (System.getenv("CURSEFORGE_TOKEN")) {
-	curseforge {
-		apiKey = System.getenv("CURSEFORGE_TOKEN")
-		project {
-			id = project.curse_project_id
-			changelogType = "markdown"
-			changelog = System.getenv("CHANGELOG")
-			releaseType = relType
-			addGameVersion project.mc_version
-			addGameVersion "Forge"
-			mainArtifact(jar.archiveFile) {
-				displayName = "${project.archivesBaseName} ${project.version}"
-				relations {
-					requiredDependency "patchouli"
-				}
-			}
-			addArtifact(apiJar.archiveFile)
-		}
-	}
-}
-
-//test {
-//	useJUnitPlatform()
-//	include 'mezz/jei/**'
-//	exclude 'mezz/jei/lib/**'
-//}

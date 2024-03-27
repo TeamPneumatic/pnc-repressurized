@@ -22,14 +22,13 @@
   },
   "requirements": [
     [
-      "has_pressure_gauge",
-      "has_the_recipe"
+      "has_the_recipe",
+      "has_pressure_gauge"
     ]
   ],
   "rewards": {
     "recipes": [
       "pneumaticcraft:safety_tube_module"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }

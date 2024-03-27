@@ -18,14 +18,14 @@
 package me.desht.pneumaticcraft.common.inventory;
 
 import me.desht.pneumaticcraft.common.block.entity.VacuumTrapBlockEntity;
-import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.item.SpawnerCoreItem;
+import me.desht.pneumaticcraft.common.registry.ModMenuTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.SlotItemHandler;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.SlotItemHandler;
 
 import javax.annotation.Nonnull;
 
@@ -37,7 +37,7 @@ public class VacuumTrapMenu extends AbstractPneumaticCraftMenu<VacuumTrapBlockEn
     public VacuumTrapMenu(int windowId, Inventory invPlayer, BlockPos pos) {
         super(ModMenuTypes.VACUUM_TRAP.get(), windowId, invPlayer, pos);
 
-        addSlot(new SlotSpawnerCore(te.getPrimaryInventory(), 0, 62, 38));
+        addSlot(new SlotSpawnerCore(blockEntity.getItemHandler(), 0, 62, 38));
 
         addUpgradeSlots(8, 29);
 

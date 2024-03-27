@@ -18,9 +18,9 @@
 package me.desht.pneumaticcraft.common.inventory;
 
 import me.desht.pneumaticcraft.common.block.entity.AbstractFluidTankBlockEntity;
-import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.inventory.slot.FluidContainerSlot;
 import me.desht.pneumaticcraft.common.inventory.slot.OutputOnlySlot;
+import me.desht.pneumaticcraft.common.registry.ModMenuTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
@@ -33,8 +33,8 @@ public class FluidTankMenu extends AbstractPneumaticCraftMenu<AbstractFluidTankB
     public FluidTankMenu(int windowId, Inventory inv, BlockPos pos) {
         super(ModMenuTypes.FLUID_TANK.get(), windowId, inv, pos);
 
-        addSlot(new FluidContainerSlot(te.getPrimaryInventory(), 0, 132, 22));
-        addSlot(new OutputOnlySlot(te.getPrimaryInventory(), 1, 132, 55));
+        addSlot(new FluidContainerSlot(blockEntity.getItemHandler(), 0, 132, 22));
+        addSlot(new OutputOnlySlot(blockEntity.getItemHandler(), 1, 132, 55));
 
         addUpgradeSlots(23, 29);
 

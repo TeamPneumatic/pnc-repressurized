@@ -155,11 +155,6 @@ public enum ApplicableUpgradesDB implements IUpgradeRegistry {
         return UpgradableItemUtils.getUpgrades(stack);
     }
 
-    @Override
-    public ResourceLocation getItemRegistryName(PNCUpgrade upgrade, int tier) {
-        return upgrade.getItemRegistryName(tier);
-    }
-
     public Collection<Item> getItemsWhichAccept(PNCUpgrade upgrade) {
         return acceptedUpgrades.getOrDefault(upgrade, Collections.emptySet());
     }

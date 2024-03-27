@@ -26,8 +26,8 @@ import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 
 import java.util.Collections;
 import java.util.List;
@@ -76,7 +76,7 @@ public interface IClientArmorRegistry {
 
     /**
      * Registers the client handler for a Pneumatic Armor upgrade. This must be called from a {@link FMLClientSetupEvent}
-     * handler; do <strong>not</strong> use {@link net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent#enqueueWork(Runnable)}.
+     * handler; do <strong>not</strong> use {@link net.neoforged.fml.event.lifecycle.FMLClientSetupEvent#enqueueWork(Runnable)}.
      * This also registers any keybindings referenced by the render handler
      * (see {@link IArmorUpgradeClientHandler#getInitialKeyBinding()} and {@link IArmorUpgradeClientHandler#getSubKeybinds()}.
      *

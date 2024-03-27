@@ -38,8 +38,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.fluids.FluidUtil;
+import net.neoforged.neoforge.fluids.FluidUtil;
 
 import java.util.Locale;
 import java.util.function.Consumer;
@@ -124,8 +123,7 @@ public class TransferGadgetEntity extends AbstractSemiblockEntity implements IDi
     public boolean canPlace(Direction facing) {
         BlockEntity te = getCachedTileEntity();
         return te != null &&
-                (te.getCapability(ForgeCapabilities.ITEM_HANDLER, facing).isPresent()
-                        || te.getCapability(ForgeCapabilities.FLUID_HANDLER, facing).isPresent());
+                (IOHelper.getInventoryForBlock(te, facing).isPresent() || IOHelper.getFluidHandlerForBlock(te, facing).isPresent());
     }
 
     @Override
@@ -207,14 +205,14 @@ public class TransferGadgetEntity extends AbstractSemiblockEntity implements IDi
     }
 
     private void tryTransferItem(BlockEntity inputTE, BlockEntity outputTE, Direction side, Direction otherSide) {
-        inputTE.getCapability(ForgeCapabilities.ITEM_HANDLER, side)
-                .ifPresent(input -> outputTE.getCapability(ForgeCapabilities.ITEM_HANDLER, otherSide)
+        IOHelper.getInventoryForBlock(inputTE, side)
+                .ifPresent(input -> IOHelper.getInventoryForBlock(outputTE, otherSide)
                         .ifPresent(output -> IOHelper.transferOneItem(input, output)));
     }
 
     private void tryTransferFluid(BlockEntity inputTE, BlockEntity outputTE, Direction side, Direction otherSide) {
-        inputTE.getCapability(ForgeCapabilities.FLUID_HANDLER, side)
-                .ifPresent(input -> outputTE.getCapability(ForgeCapabilities.FLUID_HANDLER, otherSide)
+        IOHelper.getFluidHandlerForBlock(inputTE, side)
+                .ifPresent(input -> IOHelper.getFluidHandlerForBlock(outputTE, otherSide)
                         .ifPresent(output -> FluidUtil.tryFluidTransfer(output, input, 100, true)));
     }
 

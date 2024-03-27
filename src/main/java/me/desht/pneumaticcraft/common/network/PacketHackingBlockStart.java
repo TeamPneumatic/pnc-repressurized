@@ -20,55 +20,60 @@ package me.desht.pneumaticcraft.common.network;
 import me.desht.pneumaticcraft.client.pneumatic_armor.ClientArmorRegistry;
 import me.desht.pneumaticcraft.client.pneumatic_armor.upgrade_handler.BlockTrackerClientHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.RenderBlockTarget;
-import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.hacking.WorldAndCoord;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.network.NetworkEvent;
+import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 
-import java.util.function.Supplier;
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 /**
  * Received on: BOTH
  * Sent by client when player initiates a hack, and from server back to client to confirm initiation
  */
-public class PacketHackingBlockStart extends LocationIntPacket {
-    public PacketHackingBlockStart(BlockPos pos) {
-        super(pos);
+public record PacketHackingBlockStart(BlockPos pos) implements CustomPacketPayload {
+    public static final ResourceLocation ID = RL("hack_block_start");
+
+    public static PacketHackingBlockStart fromNetwork(FriendlyByteBuf buffer) {
+        return new PacketHackingBlockStart(buffer.readBlockPos());
     }
 
-    public PacketHackingBlockStart(FriendlyByteBuf buffer) {
-        super(buffer);
+    @Override
+    public void write(FriendlyByteBuf buf) {
+        buf.writeBlockPos(pos);
     }
 
-    public void handle(Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> {
-            ServerPlayer player = ctx.get().getSender();
-            if (player == null) {
+    @Override
+    public ResourceLocation id() {
+        return ID;
+    }
+
+    public static void handle(PacketHackingBlockStart message, PlayPayloadContext ctx) {
+        ctx.player().ifPresent(player -> ctx.workHandler().submitAsync(() -> {
+            if (ctx.flow().isClientbound()) {
                 // client
-                Player cPlayer = ClientUtils.getClientPlayer();
                 CommonArmorHandler.getHandlerForPlayer()
                         .getExtensionData(CommonUpgradeHandlers.hackHandler)
-                        .setHackedBlockPos(new WorldAndCoord(cPlayer.level(), pos));
+                        .setHackedBlockPos(new WorldAndCoord(player.level(), message.pos()));
 
                 RenderBlockTarget target = ClientArmorRegistry.getInstance()
                         .getClientHandler(CommonUpgradeHandlers.blockTrackerHandler, BlockTrackerClientHandler.class)
-                        .getTargetForCoord(pos);
+                        .getTargetForCoord(message.pos());
                 if (target != null) target.onHackConfirmServer();
-            } else {
+            } else if (player instanceof ServerPlayer sp) {
                 // server
                 CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
                 if (handler.upgradeUsable(CommonUpgradeHandlers.blockTrackerHandler, true)) {
                     handler.getExtensionData(CommonUpgradeHandlers.hackHandler)
-                            .setHackedBlockPos(new WorldAndCoord(player.level(), pos));
-                    NetworkHandler.sendToPlayer(this, player);
+                            .setHackedBlockPos(new WorldAndCoord(player.level(), message.pos()));
+                    NetworkHandler.sendToPlayer(message, sp);
                 }
             }
-        });
-        ctx.get().setPacketHandled(true);
+        }));
     }
 }

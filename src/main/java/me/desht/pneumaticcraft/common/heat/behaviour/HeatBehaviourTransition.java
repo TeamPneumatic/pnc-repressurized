@@ -29,12 +29,13 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.common.util.LazyOptional;
+
+import java.util.Optional;
 
 public abstract class HeatBehaviourTransition extends HeatBehaviourLiquid {
     private double maxExchangedHeat;
     private double blockTemp = -1;  // -1 = not yet init'd (init on first tick)
-    private LazyOptional<IHeatExchangerLogic> logic;
+    private Optional<IHeatExchangerLogic> logic;
     private HeatExtractionTracker tracker;
 
     @Override

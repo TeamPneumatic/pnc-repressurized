@@ -26,7 +26,6 @@ import me.desht.pneumaticcraft.api.drone.DroneConstructingEvent;
 import me.desht.pneumaticcraft.api.item.IPositionProvider;
 import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.api.semiblock.ISemiBlock;
-import me.desht.pneumaticcraft.common.advancements.AdvancementTriggers;
 import me.desht.pneumaticcraft.common.block.entity.ProgrammerBlockEntity;
 import me.desht.pneumaticcraft.common.block.entity.VacuumTrapBlockEntity;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
@@ -42,6 +41,7 @@ import me.desht.pneumaticcraft.common.network.PacketPlaySound;
 import me.desht.pneumaticcraft.common.network.PacketServerTickTime;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorRegistry;
 import me.desht.pneumaticcraft.common.recipes.machine.ExplosionCraftingRecipeImpl;
+import me.desht.pneumaticcraft.common.registry.ModCriterionTriggers;
 import me.desht.pneumaticcraft.common.semiblock.SemiblockTracker;
 import me.desht.pneumaticcraft.common.thirdparty.ModdedWrenchUtils;
 import me.desht.pneumaticcraft.common.tubemodules.ModuleNetworkManager;
@@ -61,25 +61,25 @@ import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.event.ServerChatEvent;
-import net.minecraftforge.event.TagsUpdatedEvent;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.entity.EntityEvent;
-import net.minecraftforge.event.entity.EntityMountEvent;
-import net.minecraftforge.event.entity.living.LivingEquipmentChangeEvent;
-import net.minecraftforge.event.entity.living.MobSpawnEvent;
-import net.minecraftforge.event.entity.player.FillBucketEvent;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-import net.minecraftforge.event.furnace.FurnaceFuelBurnTimeEvent;
-import net.minecraftforge.event.level.ExplosionEvent;
-import net.minecraftforge.event.level.LevelEvent;
-import net.minecraftforge.eventbus.api.EventPriority;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fluids.FluidUtil;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.server.ServerLifecycleHooks;
+import net.neoforged.bus.api.EventPriority;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.ServerChatEvent;
+import net.neoforged.neoforge.event.TagsUpdatedEvent;
+import net.neoforged.neoforge.event.TickEvent;
+import net.neoforged.neoforge.event.entity.EntityEvent;
+import net.neoforged.neoforge.event.entity.EntityMountEvent;
+import net.neoforged.neoforge.event.entity.living.LivingEquipmentChangeEvent;
+import net.neoforged.neoforge.event.entity.living.MobSpawnEvent;
+import net.neoforged.neoforge.event.entity.player.FillBucketEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import net.neoforged.neoforge.event.furnace.FurnaceFuelBurnTimeEvent;
+import net.neoforged.neoforge.event.level.ExplosionEvent;
+import net.neoforged.neoforge.event.level.LevelEvent;
+import net.neoforged.neoforge.fluids.FluidUtil;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
 
 import java.util.Iterator;
 
@@ -90,7 +90,8 @@ public class MiscEventHandler {
             DroneClaimManager.getInstance(event.level).tick();
 
             if (event.level.getGameTime() % 100 == 0) {
-                double tickTime = PneumaticCraftUtils.average(ServerLifecycleHooks.getCurrentServer().tickTimes) * 1.0E-6D;
+                double tickTime = event.level.getServer().getAverageTickTimeNanos();
+                        //PneumaticCraftUtils.average(ServerLifecycleHooks.getCurrentServer().tickTimes) * 1.0E-6D;
                 // In case world are going to get their own thread: MinecraftServer.getServer().worldTickTimes.get(event.world.provider.getDimension())
                 NetworkHandler.sendToDimension(new PacketServerTickTime(tickTime), event.level.dimension());
             }
@@ -119,10 +120,12 @@ public class MiscEventHandler {
     }
 
     private int amountTaken(int origAmount, ItemStack stack) {
-        int newAmount = stack.getCraftingRemainingItem().getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM)
-                .map(handler -> handler.drain(Integer.MAX_VALUE, IFluidHandler.FluidAction.SIMULATE).getAmount())
-                .orElse(0);
-        return origAmount - newAmount;
+        IFluidHandlerItem handler = stack.getCraftingRemainingItem().getCapability(Capabilities.FluidHandler.ITEM);
+        if (handler != null) {
+            int newAmount = handler.drain(Integer.MAX_VALUE, IFluidHandler.FluidAction.SIMULATE).getAmount();
+            return origAmount - newAmount;
+        }
+        return origAmount;
     }
 
     @SubscribeEvent
@@ -157,7 +160,7 @@ public class MiscEventHandler {
     @SubscribeEvent
     public void onEntityConstruction(EntityEvent.EntityConstructing event) {
         if (event.getEntity() instanceof IDroneBase d) {
-            MinecraftForge.EVENT_BUS.post(new DroneConstructingEvent(d));
+            NeoForge.EVENT_BUS.post(new DroneConstructingEvent(d));
         }
     }
 
@@ -168,7 +171,7 @@ public class MiscEventHandler {
                 && l.getFluid().is(PneumaticCraftTags.Fluids.CRUDE_OIL)
                 && event.getEntity() instanceof ServerPlayer sp)
         {
-            AdvancementTriggers.OIL_BUCKET.trigger(sp);
+            ModCriterionTriggers.OIL_BUCKET.get().trigger(sp);
         }
     }
 
@@ -180,7 +183,7 @@ public class MiscEventHandler {
                 event.setCanceled(true);
             } else if (ModdedWrenchUtils.getInstance().isModdedWrench(event.getEntity().getItemInHand(event.getHand()))) {
                 if (event.getLevel().isClientSide) {
-                    NetworkHandler.sendToServer(new PacketModWrenchBlock(event.getPos(), event.getFace(), event.getHand()));
+                    NetworkHandler.sendToServer(PacketModWrenchBlock.forSide(event.getPos(), event.getHand(), event.getFace()));
                 }
                 event.setCanceled(true);
             }
@@ -194,7 +197,7 @@ public class MiscEventHandler {
                 event.setCanceled(true);
             } else if (ModdedWrenchUtils.getInstance().isModdedWrench(event.getEntity().getItemInHand(event.getHand()))) {
                 if (event.getLevel().isClientSide) {
-                    NetworkHandler.sendToServer(new PacketModWrenchBlock(event.getPos(), event.getHand(), event.getTarget().getId()));
+                    NetworkHandler.sendToServer(PacketModWrenchBlock.forEntity(event.getPos(), event.getHand(), event.getTarget().getId()));
                 }
                 event.setCanceled(true);
             }
@@ -205,9 +208,10 @@ public class MiscEventHandler {
     public void quetziMoo(ServerChatEvent event) {
         String username = event.getUsername();
         ServerPlayer player = event.getPlayer();
-        if (player != null && username != null && username.equals("Quetzz") && event.getMessage().equals("m00")) {
+        if (username.equals("Quetzz") && event.getMessage().getString().equals("m00")) {
             for (int i = 0; i < 4; i++) {
-                NetworkHandler.sendToPlayer(new PacketPlaySound(SoundEvents.COW_AMBIENT, SoundSource.NEUTRAL, player.getX(), player.getY(), player.getZ(), 1, 1, true), player);
+                NetworkHandler.sendToPlayer(new PacketPlaySound(SoundEvents.COW_AMBIENT, SoundSource.NEUTRAL,
+                        (float) player.getX(), (float) player.getY(), (float) player.getZ(), 1, 1, true), player);
             }
         }
     }
@@ -243,7 +247,7 @@ public class MiscEventHandler {
                         return;
                     }
                 }
-                AdvancementTriggers.PNEUMATIC_ARMOR.trigger(player);
+                ModCriterionTriggers.PNEUMATIC_ARMOR.get().trigger(player);
             }
         }
     }

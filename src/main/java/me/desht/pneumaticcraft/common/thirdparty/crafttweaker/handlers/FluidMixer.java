@@ -26,10 +26,11 @@ import com.blamejared.crafttweaker.api.item.IItemStack;
 import com.blamejared.crafttweaker.api.recipe.manager.base.IRecipeManager;
 import com.blamejared.crafttweaker_annotations.annotations.Document;
 import me.desht.pneumaticcraft.api.crafting.recipe.FluidMixerRecipe;
-import me.desht.pneumaticcraft.common.core.ModRecipeTypes;
 import me.desht.pneumaticcraft.common.recipes.machine.FluidMixerRecipeImpl;
+import me.desht.pneumaticcraft.common.registry.ModRecipeTypes;
 import me.desht.pneumaticcraft.common.thirdparty.crafttweaker.CTUtils;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeType;
 import org.openzen.zencode.java.ZenCodeType;
 
@@ -40,13 +41,15 @@ public class FluidMixer implements IRecipeManager<FluidMixerRecipe> {
     @ZenCodeType.Method
     public void addRecipe(String name, CTFluidIngredient input1, CTFluidIngredient input2, IFluidStack outputFluid, IItemStack outputItem, float pressure, int processingTime) {
         CraftTweakerAPI.apply(new ActionAddRecipe<>(this,
-                new FluidMixerRecipeImpl(new ResourceLocation("crafttweaker", fixRecipeName(name)),
+                new RecipeHolder<>(new ResourceLocation("crafttweaker", fixRecipeName(name)),
+                new FluidMixerRecipeImpl(
                         CTUtils.toFluidIngredient(input1),
                         CTUtils.toFluidIngredient(input2),
                         outputFluid.getImmutableInternal(),
                         outputItem.getImmutableInternal(),
                         pressure,
                         processingTime)
+                )
         ));
     }
 

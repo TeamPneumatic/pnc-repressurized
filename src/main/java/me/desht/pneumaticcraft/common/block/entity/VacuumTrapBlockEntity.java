@@ -22,13 +22,13 @@ import me.desht.pneumaticcraft.api.data.PneumaticCraftTags;
 import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.api.pressure.PressureTier;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
-import me.desht.pneumaticcraft.common.core.ModBlockEntities;
-import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.entity.drone.DroneEntity;
 import me.desht.pneumaticcraft.common.inventory.VacuumTrapMenu;
 import me.desht.pneumaticcraft.common.item.SpawnerCoreItem.SpawnerCoreItemHandler;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
+import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
+import me.desht.pneumaticcraft.common.registry.ModBlocks;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.util.ITranslatableEnum;
 import me.desht.pneumaticcraft.common.util.PNCFluidTank;
@@ -53,14 +53,11 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.material.Fluids;
-import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.IFluidTank;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.items.IItemHandler;
-import org.jetbrains.annotations.NotNull;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.IFluidTank;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.items.IItemHandler;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -75,7 +72,6 @@ public class VacuumTrapBlockEntity extends AbstractAirHandlingBlockEntity implem
     public static final int MEMORY_ESSENCE_AMOUNT = 100;
 
     private final SpawnerCoreItemHandler inv = new SpawnerCoreItemHandler(this);
-    private final LazyOptional<IItemHandler> invCap = LazyOptional.of(() -> inv);
 
     private final List<Mob> targetEntities = new ArrayList<>();
 
@@ -83,7 +79,6 @@ public class VacuumTrapBlockEntity extends AbstractAirHandlingBlockEntity implem
 
     @GuiSynced
     private final SmartSyncTank xpTank = new XPTank();
-    private final LazyOptional<IFluidHandler> fluidCap = LazyOptional.of(() -> xpTank);
 
     @DescSynced
     private boolean isCoreLoaded;
@@ -91,7 +86,12 @@ public class VacuumTrapBlockEntity extends AbstractAirHandlingBlockEntity implem
     public Problems problem = Problems.OK;
 
     public VacuumTrapBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.VACUUM_TRAP.get(), pos, state, PressureTier.TIER_ONE, PneumaticValues.VOLUME_VACUUM_TRAP, 4);
+        super(ModBlockEntityTypes.VACUUM_TRAP.get(), pos, state, PressureTier.TIER_ONE, PneumaticValues.VOLUME_VACUUM_TRAP, 4);
+    }
+
+    @Override
+    public boolean hasFluidCapability() {
+        return true;
     }
 
     @Override
@@ -163,7 +163,7 @@ public class VacuumTrapBlockEntity extends AbstractAirHandlingBlockEntity implem
 
     private void scanForEntities() {
         targetEntities.clear();
-        targetEntities.addAll(nonNullLevel().getEntitiesOfClass(Mob.class, rangeManager.getExtents(), this::isApplicable));
+        targetEntities.addAll(nonNullLevel().getEntitiesOfClass(Mob.class, rangeManager.getExtentsAsAABB(), this::isApplicable));
     }
 
     private boolean isApplicable(LivingEntity e) {
@@ -175,10 +175,9 @@ public class VacuumTrapBlockEntity extends AbstractAirHandlingBlockEntity implem
                 && !e.getType().is(PneumaticCraftTags.EntityTypes.VACUUM_TRAP_BLACKLISTED);
     }
 
-    @NotNull
     @Override
-    public LazyOptional<IFluidHandler> getFluidCap(Direction side) {
-        return fluidCap;
+    public IFluidHandler getFluidHandler(@org.jetbrains.annotations.Nullable Direction dir) {
+        return xpTank;
     }
 
     public IFluidTank getFluidTank() {
@@ -192,14 +191,8 @@ public class VacuumTrapBlockEntity extends AbstractAirHandlingBlockEntity implem
     }
 
     @Override
-    public IItemHandler getPrimaryInventory() {
+    public IItemHandler getItemHandler(@Nullable Direction dir) {
         return inv;
-    }
-
-    @Nonnull
-    @Override
-    protected LazyOptional<IItemHandler> getInventoryCap(Direction side) {
-        return invCap;
     }
 
     @Override
@@ -257,11 +250,6 @@ public class VacuumTrapBlockEntity extends AbstractAirHandlingBlockEntity implem
     @Override
     public RangeManager getRangeManager() {
         return rangeManager;
-    }
-
-    @Override
-    public AABB getRenderBoundingBox() {
-        return rangeManager.shouldShowRange() ? rangeManager.getExtents() : super.getRenderBoundingBox();
     }
 
     public enum Problems implements ITranslatableEnum {

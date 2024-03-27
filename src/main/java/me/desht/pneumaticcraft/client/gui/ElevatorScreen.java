@@ -23,10 +23,10 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetLabel;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTextField;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.block.entity.ElevatorBaseBlockEntity;
-import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.inventory.ElevatorMenu;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdateTextfield;
+import me.desht.pneumaticcraft.common.registry.ModBlocks;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
@@ -94,7 +94,7 @@ public class ElevatorScreen extends AbstractPneumaticCraftContainerScreen<Elevat
 
     @Override
     protected void doDelayedAction() {
-        NetworkHandler.sendToServer(new PacketUpdateTextfield(te, currentEditedFloor));
+        NetworkHandler.sendToServer(PacketUpdateTextfield.create(te, currentEditedFloor));
     }
 
     @Override

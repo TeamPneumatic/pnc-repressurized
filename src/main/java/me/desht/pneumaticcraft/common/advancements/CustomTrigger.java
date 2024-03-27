@@ -17,13 +17,14 @@
 
 package me.desht.pneumaticcraft.common.advancements;
 
-import com.google.gson.JsonObject;
-import net.minecraft.advancements.critereon.AbstractCriterionTriggerInstance;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.advancements.critereon.ContextAwarePredicate;
-import net.minecraft.advancements.critereon.DeserializationContext;
 import net.minecraft.advancements.critereon.SimpleCriterionTrigger;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+
+import java.util.Optional;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
@@ -43,27 +44,37 @@ public class CustomTrigger extends SimpleCriterionTrigger<CustomTrigger.Instance
         this.trigger(parPlayer, Instance::test);
     }
 
-    @Override
-    public ResourceLocation getId() {
-        return triggerID;
-    }
-
-    @Override
-    protected Instance createInstance(JsonObject jsonIn, ContextAwarePredicate predicate, DeserializationContext context) {
-        return new CustomTrigger.Instance(this.getId());
-    }
+//    @Override
+//    public ResourceLocation getId() {
+//        return triggerID;
+//    }
+//
+//    @Override
+//    protected Instance createInstance(JsonObject jsonIn, ContextAwarePredicate predicate, DeserializationContext context) {
+//        return new CustomTrigger.Instance(this.getId());
+//    }
 
     public Instance getInstance() {
-        return new CustomTrigger.Instance(this.getId());
+        return new CustomTrigger.Instance(triggerID);
     }
 
-    public static class Instance extends AbstractCriterionTriggerInstance {
-        public Instance(ResourceLocation parID) {
-            super(parID, ContextAwarePredicate.ANY);
-        }
+    @Override
+    public Codec<Instance> codec() {
+        return Instance.CODEC;
+    }
+
+    public record Instance(ResourceLocation id) implements SimpleCriterionTrigger.SimpleInstance {
+        public static final Codec<Instance> CODEC = RecordCodecBuilder.create(inst -> inst.group(
+                ResourceLocation.CODEC.fieldOf("id").forGetter(Instance::id)
+        ).apply(inst, Instance::new));
 
         public boolean test() {
             return true;
+        }
+
+        @Override
+        public Optional<ContextAwarePredicate> player() {
+            return Optional.empty();
         }
     }
 }

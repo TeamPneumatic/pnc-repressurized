@@ -19,48 +19,54 @@ package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.network.NetworkEvent;
+import net.neoforged.neoforge.network.handling.PlayPayloadContext;
+import org.joml.Vector3f;
 
-import java.util.function.Supplier;
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 /**
  * Received on: CLIENT
  * Sent by server when an immediate update is needed to a client-side entity's motion
  */
-public class PacketSetEntityMotion extends LocationDoublePacket {
-    private final int entityId;
+public record PacketSetEntityMotion(Vector3f vec, int entityId) implements CustomPacketPayload {
+    public static final ResourceLocation ID = RL("set_entity_motion");
 
-    public PacketSetEntityMotion(Entity entity, Vec3 motion) {
-        super(motion);
-        entityId = entity.getId();
+    public static PacketSetEntityMotion create(Entity entity, Vec3 motion) {
+        return new PacketSetEntityMotion(motion.toVector3f(), entity.getId());
     }
 
-    PacketSetEntityMotion(FriendlyByteBuf buffer) {
-        super(buffer);
-        entityId = buffer.readInt();
+    public static PacketSetEntityMotion fromNetwork(FriendlyByteBuf buffer) {
+        return new PacketSetEntityMotion(PacketUtil.readVec3f(buffer), buffer.readInt());
     }
 
     @Override
-    public void toBytes(FriendlyByteBuf buf) {
-        super.toBytes(buf);
+    public void write(FriendlyByteBuf buf) {
+        PacketUtil.writeVec3f(vec, buf);
         buf.writeInt(entityId);
     }
 
-    public void handle(Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> {
-            Entity entity = ClientUtils.getClientLevel().getEntity(entityId);
+    @Override
+    public ResourceLocation id() {
+        return ID;
+    }
+
+    public static void handle(PacketSetEntityMotion message, PlayPayloadContext ctx) {
+        ctx.workHandler().submitAsync(() -> {
+            Entity entity = ClientUtils.getClientLevel().getEntity(message.entityId());
             if (entity != null) {
-                entity.setDeltaMovement(x, y, z);
+                entity.setDeltaMovement(new Vec3(message.vec()));
                 entity.setOnGround(false);
-//                entity.collided = false;
                 entity.horizontalCollision = false;
                 entity.verticalCollision = false;
-                if (entity instanceof LivingEntity) ((LivingEntity) entity).setJumping(true);
+                if (entity instanceof LivingEntity l) {
+                    l.setJumping(true);
+                }
             }
         });
-        ctx.get().setPacketHandled(true);
     }
 }

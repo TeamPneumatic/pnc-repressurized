@@ -22,14 +22,13 @@
   },
   "requirements": [
     [
-      "has_lapis_lazuli",
-      "has_the_recipe"
+      "has_the_recipe",
+      "has_lapis_lazuli"
     ]
   ],
   "rewards": {
     "recipes": [
       "pneumaticcraft:speed_upgrade_from_glycerol"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }

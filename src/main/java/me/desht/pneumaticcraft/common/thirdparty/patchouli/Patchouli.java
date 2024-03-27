@@ -24,12 +24,12 @@ import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.client.event.ScreenEvent;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.event.config.ModConfigEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.event.config.ModConfigEvent;
+import net.neoforged.neoforge.client.event.ScreenEvent;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.TickEvent;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
@@ -40,10 +40,14 @@ public class Patchouli implements IThirdParty, IDocsProvider {
     private static Screen bookGui;
 
     @Override
-    public void clientInit() {
-        MinecraftForge.EVENT_BUS.register(ScreenListener.class);
-        FMLJavaModLoadingContext.get().getModEventBus().register(ConfigListener.class);
+    public void clientPreInit(IEventBus modBus) {
+        NeoForge.EVENT_BUS.register(ScreenListener.class);
 
+        modBus.register(ConfigListener.class);
+    }
+
+    @Override
+    public void clientInit() {
         PatchouliAccess.setup();
     }
 

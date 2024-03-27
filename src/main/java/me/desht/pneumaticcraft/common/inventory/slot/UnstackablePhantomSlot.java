@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.common.inventory.slot;
 
-import net.minecraftforge.items.IItemHandler;
+import net.neoforged.neoforge.items.IItemHandler;
 
 public class UnstackablePhantomSlot extends PhantomSlot {
 

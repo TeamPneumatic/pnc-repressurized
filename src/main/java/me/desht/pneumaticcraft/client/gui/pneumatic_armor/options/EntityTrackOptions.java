@@ -103,7 +103,7 @@ public class EntityTrackOptions extends IOptionPage.SimpleOptionPage<EntityTrack
         if (sendTimer > 0 && --sendTimer == 0) {
             CompoundTag tag = new CompoundTag();
             tag.putString(PneumaticArmorItem.NBT_ENTITY_FILTER, textField.getValue());
-            NetworkHandler.sendToServer(new PacketUpdateArmorExtraData(EquipmentSlot.HEAD, tag, getClientUpgradeHandler().getID()));
+            NetworkHandler.sendToServer(new PacketUpdateArmorExtraData(EquipmentSlot.HEAD, getClientUpgradeHandler().getID(), tag));
         }
     }
 

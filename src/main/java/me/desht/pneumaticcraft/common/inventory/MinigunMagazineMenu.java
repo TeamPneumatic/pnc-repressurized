@@ -18,9 +18,9 @@
 package me.desht.pneumaticcraft.common.inventory;
 
 import me.desht.pneumaticcraft.common.block.entity.AbstractPneumaticCraftBlockEntity;
-import me.desht.pneumaticcraft.common.core.ModItems;
-import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.item.minigun.MinigunItem;
+import me.desht.pneumaticcraft.common.registry.ModItems;
+import me.desht.pneumaticcraft.common.registry.ModMenuTypes;
 import me.desht.pneumaticcraft.common.util.NBTUtils;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.sounds.SoundEvents;
@@ -29,7 +29,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.items.SlotItemHandler;
+import net.neoforged.neoforge.items.SlotItemHandler;
 
 public class MinigunMagazineMenu extends AbstractPneumaticCraftMenu<AbstractPneumaticCraftBlockEntity> {
     private final MinigunItem.MagazineHandler gunInv;
@@ -77,7 +77,7 @@ public class MinigunMagazineMenu extends AbstractPneumaticCraftMenu<AbstractPneu
                     NBTUtils.setInteger(gunStack, MinigunItem.NBT_LOCKED_SLOT, slotId);
                 }
                 if (player.level().isClientSide) {
-                    player.playSound(SoundEvents.UI_BUTTON_CLICK.get(), 0.5f, 1.0f);
+                    player.playSound(SoundEvents.UI_BUTTON_CLICK.value(), 0.5f, 1.0f);
                 }
             }
         } else {

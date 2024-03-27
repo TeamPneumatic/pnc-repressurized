@@ -17,38 +17,36 @@
 
 package me.desht.pneumaticcraft.common.thirdparty.toughasnails;
 
-import io.netty.buffer.ByteBuf;
 import me.desht.pneumaticcraft.client.pneumatic_armor.upgrade_handler.AirConClientHandler;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 
-import java.util.function.Supplier;
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 /**
  * Received on: CLIENT
  * Sent by server when air conditioning level changes so client can update the HUD gauge
  */
-public class PacketPlayerTemperatureDelta {
-    private int deltaTemp;
+public record PacketPlayerTemperatureDelta(int deltaTemp) implements CustomPacketPayload {
+    private static final ResourceLocation ID = RL("player_temperature_delta");
 
-    public PacketPlayerTemperatureDelta() {
-        // empty
+    public static PacketPlayerTemperatureDelta fromNetwork(FriendlyByteBuf buffer) {
+        return new PacketPlayerTemperatureDelta(buffer.readByte());
     }
 
-    PacketPlayerTemperatureDelta(int deltaTemp) {
-        this.deltaTemp = deltaTemp;
-    }
-
-    PacketPlayerTemperatureDelta(FriendlyByteBuf buffer) {
-        deltaTemp = buffer.readByte();
-    }
-
-    public void toBytes(ByteBuf buf) {
+    @Override
+    public void write(FriendlyByteBuf buf) {
         buf.writeByte(deltaTemp);
     }
 
-    public void handle(Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> AirConClientHandler.deltaTemp = deltaTemp);
-        ctx.get().setPacketHandled(true);
+    @Override
+    public ResourceLocation id() {
+        return ID;
+    }
+
+    public static void handle(PacketPlayerTemperatureDelta message, PlayPayloadContext ctx) {
+        ctx.workHandler().submitAsync(() -> AirConClientHandler.deltaTemp = message.deltaTemp());
     }
 }

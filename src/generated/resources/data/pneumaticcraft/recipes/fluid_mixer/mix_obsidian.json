@@ -1,17 +1,24 @@
 {
   "type": "pneumaticcraft:fluid_mixer",
+  "fluid_output": {
+    "Amount": 0,
+    "FluidName": "minecraft:empty"
+  },
   "input1": {
-    "type": "pneumaticcraft:fluid",
-    "amount": 1000,
-    "fluid": "minecraft:water"
+    "fluid": {
+      "Amount": 1000,
+      "FluidName": "minecraft:water"
+    }
   },
   "input2": {
-    "type": "pneumaticcraft:fluid",
-    "amount": 1000,
-    "fluid": "minecraft:lava"
+    "fluid": {
+      "Amount": 1000,
+      "FluidName": "minecraft:lava"
+    }
   },
   "item_output": {
-    "item": "minecraft:obsidian"
+    "Count": 1,
+    "id": "minecraft:obsidian"
   },
   "pressure": 0.5,
   "time": 40

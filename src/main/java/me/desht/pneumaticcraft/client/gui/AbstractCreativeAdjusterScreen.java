@@ -88,12 +88,10 @@ public abstract class AbstractCreativeAdjusterScreen<C extends AbstractPneumatic
         graphics.drawCenteredString(font, xlate("pneumaticcraft.gui.misc.holdShiftFastAdjust"), width / 2 - leftPos, height / 2 - topPos + 20, 0x808080);
     }
 
-    @Override
-    protected void renderBg(GuiGraphics graphics, float partialTicks, int i, int j){
-        renderBackground(graphics);
-
-        super.renderBg(graphics, partialTicks, i, j);
-    }
+//    @Override
+//    protected void renderBg(GuiGraphics graphics, float partialTicks, int i, int j){
+//        super.renderBg(graphics, partialTicks, i, j);
+//    }
 
     @Override
     protected ResourceLocation getGuiTexture() {

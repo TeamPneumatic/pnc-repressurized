@@ -18,8 +18,9 @@
 package me.desht.pneumaticcraft.common.item;
 
 import me.desht.pneumaticcraft.common.block.entity.AbstractPneumaticCraftBlockEntity;
-import me.desht.pneumaticcraft.common.core.ModBlocks;
-import me.desht.pneumaticcraft.common.core.ModItems;
+import me.desht.pneumaticcraft.common.registry.ModBlocks;
+import me.desht.pneumaticcraft.common.registry.ModItems;
+import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -36,9 +37,8 @@ import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraftforge.common.Tags;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.items.IItemHandler;
+import net.neoforged.neoforge.common.Tags;
+import net.neoforged.neoforge.items.IItemHandler;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.function.Predicate;
@@ -75,7 +75,7 @@ public abstract class AbstractChestUpgradeKitItem extends Item {
                 BlockEntity te = world.getBlockEntity(pos);
                 NonNullList<ItemStack> inv = NonNullList.create();
                 if (te != null) {
-                    te.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(handler -> {
+                    IOHelper.getInventoryForBlock(te).ifPresent(handler -> {
                         Pair<Integer,Integer> range = getInvRange(state, handler);
                         for (int i = range.getLeft(); i < range.getRight(); i++) {
                             inv.add(handler.extractItem(i, Integer.MAX_VALUE, false));
@@ -93,7 +93,7 @@ public abstract class AbstractChestUpgradeKitItem extends Item {
 
                 // 3. fill the upgraded chest with the copied inventory
                 PneumaticCraftUtils.getTileEntityAt(world, pos, AbstractPneumaticCraftBlockEntity.class).ifPresent(teRC -> {
-                    IItemHandler chestInv = teRC.getPrimaryInventory();
+                    IItemHandler chestInv = teRC.getItemHandler();
                     for (int i = 0; i < inv.size(); i++) {
                         if (i < chestInv.getSlots()) {
                             chestInv.insertItem(i, inv.get(i), false);

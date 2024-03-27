@@ -19,9 +19,9 @@ package me.desht.pneumaticcraft.common.tubemodules;
 
 import me.desht.pneumaticcraft.common.block.entity.PressureTubeBlockEntity;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
-import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSyncRedstoneModuleToClient;
+import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.thirdparty.ModdedWrenchUtils;
 import me.desht.pneumaticcraft.common.util.ITranslatableEnum;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -113,7 +113,7 @@ public class RedstoneModule extends AbstractTubeModule implements INetworkedModu
             int out = computeOutputSignal(outputLevel, levels);
             if (inverted) out = out > 0 ? 0 : 15;
             if (setOutputLevel(out)) {
-                NetworkHandler.sendToAllTracking(new PacketSyncRedstoneModuleToClient(this), getTube());
+                NetworkHandler.sendToAllTracking(PacketSyncRedstoneModuleToClient.create(this), getTube());
             }
         } else {
             if (inputLevel < 0) updateInputLevel();  // first update
@@ -291,7 +291,7 @@ public class RedstoneModule extends AbstractTubeModule implements INetworkedModu
             redstoneDirection = redstoneDirection == EnumRedstoneDirection.INPUT ? EnumRedstoneDirection.OUTPUT : EnumRedstoneDirection.INPUT;
             updateNeighbors();
             if (!updateInputLevel()) {
-                NetworkHandler.sendToAllTracking(new PacketSyncRedstoneModuleToClient(this), getTube());
+                NetworkHandler.sendToAllTracking(PacketSyncRedstoneModuleToClient.create(this), getTube());
             }
             return true;
         } else {
@@ -310,7 +310,7 @@ public class RedstoneModule extends AbstractTubeModule implements INetworkedModu
 
         if (newInputLevel != inputLevel) {
             inputLevel = newInputLevel;
-            NetworkHandler.sendToAllTracking(new PacketSyncRedstoneModuleToClient(this), getTube());
+            NetworkHandler.sendToAllTracking(PacketSyncRedstoneModuleToClient.create(this), getTube());
             return true;
         }
         return false;
@@ -360,6 +360,10 @@ public class RedstoneModule extends AbstractTubeModule implements INetworkedModu
         @Override
         public String getTranslationKey() {
             return "pneumaticcraft.gui.redstoneModule." + toString().toLowerCase(Locale.ROOT);
+        }
+
+        public boolean isInput() {
+            return this == INPUT;
         }
     }
 

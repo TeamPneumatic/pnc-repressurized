@@ -17,18 +17,16 @@
 
 package me.desht.pneumaticcraft.datagen.recipe;
 
-import com.google.gson.JsonObject;
-import me.desht.pneumaticcraft.api.crafting.PneumaticCraftRecipeTypes;
+import me.desht.pneumaticcraft.common.recipes.machine.HeatFrameCoolingRecipeImpl;
+import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 
-import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
-
-public class HeatFrameCoolingRecipeBuilder extends PneumaticCraftRecipeBuilder<HeatFrameCoolingRecipeBuilder> {
+public class HeatFrameCoolingRecipeBuilder extends AbstractPNCRecipeBuilder {
     private final Ingredient input;
     private final int temperature;
-    private final ItemStack output;
+    private final ItemStack outputItem;
     private final float bonusMultiplier;
     private final float bonusLimit;
 
@@ -37,36 +35,15 @@ public class HeatFrameCoolingRecipeBuilder extends PneumaticCraftRecipeBuilder<H
     }
 
     public HeatFrameCoolingRecipeBuilder(Ingredient input, int temperature, ItemStack output, float bonusMultiplier, float bonusLimit) {
-        super(RL(PneumaticCraftRecipeTypes.HEAT_FRAME_COOLING));
-
         this.input = input;
         this.temperature = temperature;
-        this.output = output;
+        this.outputItem = output;
         this.bonusMultiplier = bonusMultiplier;
         this.bonusLimit = bonusLimit;
     }
 
     @Override
-    protected RecipeResult getResult(ResourceLocation id) {
-        return new HeatFrameCoolingRecipeResult(id);
-    }
-
-    public class HeatFrameCoolingRecipeResult extends RecipeResult {
-        HeatFrameCoolingRecipeResult(ResourceLocation id) {
-            super(id);
-        }
-
-        @Override
-        public void serializeRecipeData(JsonObject json) {
-            json.add("input", input.toJson());
-            json.addProperty("max_temp", temperature);
-            json.add("result", SerializerHelper.serializeOneItemStack(output));
-            if (bonusMultiplier > 0f || bonusLimit > 0f) {
-                JsonObject bonus = new JsonObject();
-                bonus.addProperty("multiplier", bonusMultiplier);
-                bonus.addProperty("limit", bonusLimit);
-                json.add("bonus_output", bonus);
-            }
-        }
+    public void save(RecipeOutput output, ResourceLocation id) {
+        output.accept(id, new HeatFrameCoolingRecipeImpl(input, temperature, outputItem, bonusMultiplier, bonusLimit), null);
     }
 }

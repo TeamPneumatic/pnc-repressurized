@@ -22,14 +22,13 @@
   },
   "requirements": [
     [
-      "has_compressed_stone",
-      "has_the_recipe"
+      "has_the_recipe",
+      "has_compressed_stone"
     ]
   ],
   "rewards": {
     "recipes": [
       "pneumaticcraft:compressed_brick_tile_from_bricks_stonecutting"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }

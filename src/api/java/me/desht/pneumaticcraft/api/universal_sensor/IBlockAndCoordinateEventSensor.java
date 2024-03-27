@@ -19,7 +19,7 @@ package me.desht.pneumaticcraft.api.universal_sensor;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.eventbus.api.Event;
+import net.neoforged.bus.api.Event;
 
 import java.util.Set;
 

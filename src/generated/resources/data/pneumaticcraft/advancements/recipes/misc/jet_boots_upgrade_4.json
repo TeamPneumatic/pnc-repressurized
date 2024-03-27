@@ -22,14 +22,13 @@
   },
   "requirements": [
     [
-      "has_pneumatic_boots",
-      "has_the_recipe"
+      "has_the_recipe",
+      "has_pneumatic_boots"
     ]
   ],
   "rewards": {
     "recipes": [
       "pneumaticcraft:jet_boots_upgrade_4"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }

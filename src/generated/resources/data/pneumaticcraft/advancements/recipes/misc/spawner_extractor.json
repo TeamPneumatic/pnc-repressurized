@@ -22,14 +22,13 @@
   },
   "requirements": [
     [
-      "has_spawner_agitator",
-      "has_the_recipe"
+      "has_the_recipe",
+      "has_spawner_agitator"
     ]
   ],
   "rewards": {
     "recipes": [
       "pneumaticcraft:spawner_extractor"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }

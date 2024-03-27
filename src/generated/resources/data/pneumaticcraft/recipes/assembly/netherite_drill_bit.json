@@ -3,7 +3,7 @@
   "input": {
     "item": "pneumaticcraft:unassembled_netherite_drill_bit"
   },
-  "program": "drill",
+  "program": "DRILL",
   "result": {
     "item": "pneumaticcraft:drill_bit_netherite"
   }

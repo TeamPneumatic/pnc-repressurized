@@ -33,6 +33,10 @@ public class HeatExtractionTracker extends SavedData {
 
     private final Map<BlockPos, Double> extracted = new HashMap<>();
 
+    public static SavedData.Factory<HeatExtractionTracker> factory() {
+        return new SavedData.Factory<>(HeatExtractionTracker::new, HeatExtractionTracker::load, null);
+    }
+
     private HeatExtractionTracker() {
     }
 
@@ -41,7 +45,7 @@ public class HeatExtractionTracker extends SavedData {
     }
 
     public static HeatExtractionTracker getInstance(Level world) {
-        return ((ServerLevel) world).getDataStorage().computeIfAbsent(HeatExtractionTracker::load, HeatExtractionTracker::new, DATA_NAME);
+        return ((ServerLevel) world).getDataStorage().computeIfAbsent(HeatExtractionTracker.factory(), DATA_NAME);
     }
 
     public double getHeatExtracted(BlockPos pos) {

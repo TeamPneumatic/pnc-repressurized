@@ -22,14 +22,13 @@
   },
   "requirements": [
     [
-      "has_charging_station",
-      "has_the_recipe"
+      "has_the_recipe",
+      "has_charging_station"
     ]
   ],
   "rewards": {
     "recipes": [
       "pneumaticcraft:charging_module"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }

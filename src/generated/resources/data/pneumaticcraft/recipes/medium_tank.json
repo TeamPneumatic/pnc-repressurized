@@ -9,9 +9,10 @@
       "tag": "pneumaticcraft:plastic_sheets"
     },
     "S": {
-      "type": "forge:nbt",
-      "count": 1,
-      "item": "pneumaticcraft:small_tank"
+      "type": "neoforge:nbt",
+      "item": "pneumaticcraft:small_tank",
+      "strict": true,
+      "tag": "{}"
     },
     "T": {
       "item": "pneumaticcraft:pressure_tube"
@@ -24,6 +25,5 @@
   ],
   "result": {
     "item": "pneumaticcraft:medium_tank"
-  },
-  "show_notification": true
+  }
 }

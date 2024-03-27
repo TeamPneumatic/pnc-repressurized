@@ -15,17 +15,14 @@
     }
   },
   "display": {
-    "announce_to_chat": true,
     "background": "pneumaticcraft:textures/gui/advancement_bg.png",
     "description": {
       "translate": "pneumaticcraft.advancement.drill_bit_netherite.desc"
     },
     "frame": "challenge",
-    "hidden": false,
     "icon": {
       "item": "pneumaticcraft:drill_bit_netherite"
     },
-    "show_toast": true,
     "title": {
       "translate": "pneumaticcraft.advancement.drill_bit_netherite"
     }

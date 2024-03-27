@@ -22,14 +22,13 @@
   },
   "requirements": [
     [
-      "has_turbine_rotor",
-      "has_the_recipe"
+      "has_the_recipe",
+      "has_turbine_rotor"
     ]
   ],
   "rewards": {
     "recipes": [
       "pneumaticcraft:electrostatic_compressor"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }

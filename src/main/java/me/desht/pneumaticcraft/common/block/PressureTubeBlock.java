@@ -23,9 +23,9 @@ import me.desht.pneumaticcraft.api.block.ITubeNetworkConnector;
 import me.desht.pneumaticcraft.api.block.PNCBlockStateProperties;
 import me.desht.pneumaticcraft.api.block.PressureTubeConnection;
 import me.desht.pneumaticcraft.common.block.entity.PressureTubeBlockEntity;
-import me.desht.pneumaticcraft.common.core.ModBlocks;
-import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.item.TubeModuleItem;
+import me.desht.pneumaticcraft.common.registry.ModBlocks;
+import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.tubemodules.AbstractTubeModule;
 import me.desht.pneumaticcraft.common.tubemodules.INetworkedModule;
 import me.desht.pneumaticcraft.common.tubemodules.ModuleNetworkManager;
@@ -46,6 +46,7 @@ import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -146,7 +147,7 @@ public class PressureTubeBlock extends AbstractCamouflageBlock
         List<Direction> l = new ArrayList<>();
         for (Direction dir : DirectionUtil.VALUES) {
             BlockEntity te = ctx.getLevel().getBlockEntity(ctx.getClickedPos().relative(dir));
-            if (te != null && te.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, dir.getOpposite()).isPresent()) {
+            if (te != null && PNCCapabilities.getAirHandler(te, dir.getOpposite()).isPresent()) {
                 state = setSide(state, dir, CONNECTED);
                 l.add(dir);
                 if (l.size() > 1) break;
@@ -177,7 +178,7 @@ public class PressureTubeBlock extends AbstractCamouflageBlock
                     type = PressureTubeConnection.CLOSED;
                 } else if (tePT.canConnectPneumatic(dir)) {
                     BlockEntity neighbourTE = tePT.getCachedNeighbor(dir); //worldIn.getBlockEntity(currentPos.relative(dir));
-                    if (neighbourTE != null && neighbourTE.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, dir.getOpposite()).isPresent()) {
+                    if (neighbourTE != null && PNCCapabilities.getAirHandler(neighbourTE, dir.getOpposite()).isPresent()) {
                         type = CONNECTED;
                     }
                 }
@@ -405,7 +406,7 @@ public class PressureTubeBlock extends AbstractCamouflageBlock
     }
 
     @Override
-    public ItemStack getCloneItemStack(BlockState state, HitResult target, BlockGetter world, BlockPos pos, Player player) {
+    public ItemStack getCloneItemStack(BlockState state, HitResult target, LevelReader world, BlockPos pos, Player player) {
         Pair<Vec3, Vec3> vecs = RayTraceUtils.getStartAndEndLookVec(player, PneumaticCraftUtils.getPlayerReachDistance(player));
         BlockHitInfo rayTraceResult = doTrace(state, world, pos, vecs.getLeft(), vecs.getRight());
         TubeHitInfo tubeHitInfo = rayTraceResult.tubeHitInfo();

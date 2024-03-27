@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.common.entity.drone;
 
-import me.desht.pneumaticcraft.common.core.ModEntityTypes;
+import me.desht.pneumaticcraft.common.registry.ModEntityTypes;
 import me.desht.pneumaticcraft.common.drone.progwidgets.*;
 import me.desht.pneumaticcraft.common.util.DroneProgramBuilder;
 import net.minecraft.core.BlockPos;

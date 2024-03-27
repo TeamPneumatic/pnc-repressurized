@@ -83,7 +83,7 @@ public abstract class AbstractSliderOptions<T extends IArmorUpgradeClientHandler
             CompoundTag tag = new CompoundTag();
             tag.putInt(getTagName(), pendingVal);
             IArmorUpgradeHandler<?> upgradeHandler = getClientUpgradeHandler().getCommonHandler();
-            NetworkHandler.sendToServer(new PacketUpdateArmorExtraData(getSlot(), tag, upgradeHandler.getID()));
+            NetworkHandler.sendToServer(new PacketUpdateArmorExtraData(getSlot(), upgradeHandler.getID(), tag));
             // also update the clientside handler
             upgradeHandler.onDataFieldUpdated(CommonArmorHandler.getHandlerForPlayer(), getTagName(), tag.get(getTagName()));
             pendingVal = null;

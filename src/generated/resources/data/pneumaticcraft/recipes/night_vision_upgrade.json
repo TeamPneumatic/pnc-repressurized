@@ -9,10 +9,10 @@
       "tag": "pneumaticcraft:upgrade_components"
     },
     "N": {
-      "type": "forge:nbt",
-      "count": 1,
+      "type": "neoforge:nbt",
       "item": "minecraft:potion",
-      "nbt": "{Potion:\"minecraft:long_night_vision\"}"
+      "strict": true,
+      "tag": "{Potion:\"minecraft:long_night_vision\"}"
     }
   },
   "pattern": [
@@ -22,6 +22,5 @@
   ],
   "result": {
     "item": "pneumaticcraft:night_vision_upgrade"
-  },
-  "show_notification": true
+  }
 }

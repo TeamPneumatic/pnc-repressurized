@@ -65,7 +65,7 @@ public class BlockTrackEntryMobSpawner implements IBlockTrackEntry {
         // FIXME translations
         if (te instanceof SpawnerBlockEntity spawnerBlockEntity) {
             BaseSpawner spawner = spawnerBlockEntity.getSpawner();
-            Entity e = spawner.getOrCreateDisplayEntity(world, world.getRandom(), spawnerBlockEntity.getBlockPos());
+            Entity e = spawner.getOrCreateDisplayEntity(world, spawnerBlockEntity.getBlockPos());
             if (e == null) {
                 // seems to happen with enderman spawners, possibly related to EndermanEntity#readAdditional() doing a bad world cast
                 // certainly spams a lot a vanilla-related errors

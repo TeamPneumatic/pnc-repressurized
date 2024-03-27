@@ -17,16 +17,15 @@
 
 package me.desht.pneumaticcraft.common.block.entity;
 
-import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
-import me.desht.pneumaticcraft.common.core.ModBlockEntities;
-import me.desht.pneumaticcraft.common.core.ModRecipeTypes;
-import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.inventory.PressureChamberInterfaceMenu;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.network.LazySynced;
+import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
+import me.desht.pneumaticcraft.common.registry.ModRecipeTypes;
+import me.desht.pneumaticcraft.common.registry.ModSounds;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.util.AcceptabilityCache;
 import me.desht.pneumaticcraft.common.util.IOHelper;
@@ -44,14 +43,15 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.IItemHandler;
+import net.neoforged.neoforge.items.IItemHandler;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Locale;
+import java.util.Objects;
 
 public class PressureChamberInterfaceBlockEntity extends PressureChamberWallBlockEntity
         implements IRedstoneControl<PressureChamberInterfaceBlockEntity>, MenuProvider {
@@ -60,12 +60,10 @@ public class PressureChamberInterfaceBlockEntity extends PressureChamberWallBloc
     private static final int MIN_SOUND_INTERVAL = 400;  // ticks - the sound effect is ~2.5s long
 
     // cache items we know are accepted to reduce recipe searching
-//    private static final Set<Item> acceptedItemCache = new HashSet<>();
     private static final AcceptabilityCache<Item> acceptedItemCache = new AcceptabilityCache<>();
 
     @DescSynced
     private final PressureChamberInterfaceHandler inventory = new PressureChamberInterfaceHandler();
-    private final LazyOptional<IItemHandler> invCap = LazyOptional.of(() -> inventory);
     @DescSynced
     private float doorSpeed = 1f;
     @DescSynced
@@ -102,7 +100,7 @@ public class PressureChamberInterfaceBlockEntity extends PressureChamberWallBloc
     }
 
     public PressureChamberInterfaceBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.PRESSURE_CHAMBER_INTERFACE.get(), pos, state, 4);
+        super(ModBlockEntityTypes.PRESSURE_CHAMBER_INTERFACE.get(), pos, state, 4);
     }
 
     public static void clearCachedItems() {
@@ -216,8 +214,7 @@ public class PressureChamberInterfaceBlockEntity extends PressureChamberWallBloc
             }
             ItemStack stackInInterface = inventory.getStackInSlot(0);
             if ((stackInInterface.isEmpty() || ItemStack.isSameItem(stackInInterface, chamberStack))) {
-                IAirHandlerMachine coreAirHandler = core.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY)
-                        .orElseThrow(RuntimeException::new);
+                IAirHandlerMachine coreAirHandler = Objects.requireNonNull(core.getAirHandler(null));
                 int maxAllowedItems = Math.abs(coreAirHandler.getAir()) / PneumaticValues.USAGE_CHAMBER_INTERFACE;
                 if (maxAllowedItems > 0) {
                     maxAllowedItems = Math.min(maxAllowedItems, chamberStack.getMaxStackSize() - stackInInterface.getCount());
@@ -245,8 +242,7 @@ public class PressureChamberInterfaceBlockEntity extends PressureChamberWallBloc
         PressureChamberValveBlockEntity valve = getPrimaryValve();
         if (valve != null) {
             ItemStack inputStack = inventory.getStackInSlot(0);
-            IAirHandlerMachine valveAirHandler = valve.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY)
-                    .orElseThrow(RuntimeException::new);
+            IAirHandlerMachine valveAirHandler = Objects.requireNonNull(valve.getAirHandler(null));
             enoughAir = Math.abs(valveAirHandler.getAir()) > inputStack.getCount() * PneumaticValues.USAGE_CHAMBER_INTERFACE;
             if (enoughAir) {
                 ItemStack excess = valve.insertItemToChamber(inputStack);
@@ -313,7 +309,7 @@ public class PressureChamberInterfaceBlockEntity extends PressureChamberWallBloc
     }
 
     @Override
-    public IItemHandler getPrimaryInventory() {
+    public IItemHandler getItemHandler(@Nullable Direction dir) {
         return inventory;
     }
 
@@ -330,11 +326,6 @@ public class PressureChamberInterfaceBlockEntity extends PressureChamberWallBloc
     @Override
     public RedstoneController<PressureChamberInterfaceBlockEntity> getRedstoneController() {
         return rsController;
-    }
-
-    @Override
-    protected LazyOptional<IItemHandler> getInventoryCap(Direction side) {
-        return invCap;
     }
 
     private class PressureChamberInterfaceHandler extends BaseItemStackHandler {
@@ -358,6 +349,7 @@ public class PressureChamberInterfaceBlockEntity extends PressureChamberWallBloc
             if (PressureChamberInterfaceBlockEntity.this.interfaceMode == InterfaceDirection.IMPORT) {
                 return acceptedItemCache.isAcceptable(stack.getItem(), () ->
                         ModRecipeTypes.PRESSURE_CHAMBER.get().stream(level)
+                                .map(RecipeHolder::value)
                                 .anyMatch(recipe -> recipe.isValidInputItem(stack))
                 );
             } else return PressureChamberInterfaceBlockEntity.this.interfaceMode == InterfaceDirection.EXPORT;

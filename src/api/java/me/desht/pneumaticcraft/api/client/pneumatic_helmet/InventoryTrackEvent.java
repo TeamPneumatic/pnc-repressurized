@@ -18,11 +18,10 @@
 package me.desht.pneumaticcraft.api.client.pneumatic_helmet;
 
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.eventbus.api.Cancelable;
-import net.minecraftforge.eventbus.api.Event;
-import net.minecraftforge.items.IItemHandler;
+import net.neoforged.bus.api.Event;
+import net.neoforged.bus.api.ICancellableEvent;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.items.IItemHandler;
 
 /**
  * Fired when a helmet Block Tracker is about to track an inventory. Can be canceled to prevent tracking.
@@ -33,8 +32,7 @@ import net.minecraftforge.items.IItemHandler;
  *
  * @author MineMaarten
  */
-@Cancelable
-public class InventoryTrackEvent extends Event {
+public class InventoryTrackEvent extends Event implements ICancellableEvent {
     private final BlockEntity te;
 
     public InventoryTrackEvent(BlockEntity te) {
@@ -45,7 +43,7 @@ public class InventoryTrackEvent extends Event {
         return te;
     }
 
-    public LazyOptional<IItemHandler> getInventory() {
-        return te.getCapability(ForgeCapabilities.ITEM_HANDLER, null);
+    public IItemHandler getInventory() {
+        return te.getLevel().getCapability(Capabilities.ItemHandler.BLOCK, te.getBlockPos(), te.getBlockState(), te, null);
     }
 }

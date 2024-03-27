@@ -21,19 +21,19 @@ import com.google.common.collect.ImmutableList;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntList;
-import me.desht.pneumaticcraft.common.core.ModRecipeSerializers;
+import me.desht.pneumaticcraft.common.registry.ModRecipeSerializers;
 import net.minecraft.core.NonNullList;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemHandlerHelper;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.ItemHandlerHelper;
 
 import javax.annotation.Nonnull;
 import java.util.*;
@@ -43,8 +43,8 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 public class PressureEnchantingRecipe extends PressureChamberRecipeImpl {
     public static final ResourceLocation ID = RL("pressure_chamber_enchanting");
 
-    public PressureEnchantingRecipe(ResourceLocation id) {
-        super(id, Collections.emptyList(), 2F);
+    public PressureEnchantingRecipe(CraftingBookCategory category) {
+        super(Collections.emptyList(), 2F, List.of());
     }
 
     @Override
@@ -146,11 +146,8 @@ public class PressureEnchantingRecipe extends PressureChamberRecipeImpl {
     }
 
     @Override
-    public void write(FriendlyByteBuf buffer) {
-    }
-
-    @Override
     public RecipeSerializer<?> getSerializer() {
         return ModRecipeSerializers.PRESSURE_CHAMBER_ENCHANTING.get();
     }
+
 }

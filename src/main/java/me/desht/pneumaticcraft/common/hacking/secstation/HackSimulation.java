@@ -374,9 +374,9 @@ public class HackSimulation {
             if (controller != null && isHacked() && !wasHacked) {
                 if (isStarted) {
                     if (side == HackingSide.AI && isAwake()) {
-                        controller.getHacker().playSound(SoundEvents.NOTE_BLOCK_BASEDRUM.get(), 1f, 1f);
+                        controller.getHacker().playSound(SoundEvents.NOTE_BLOCK_BASEDRUM.value(), 1f, 1f);
                     } else if (side == HackingSide.PLAYER) {
-                        controller.getHacker().playSound(SoundEvents.NOTE_BLOCK_FLUTE.get(), 1f, 1f);
+                        controller.getHacker().playSound(SoundEvents.NOTE_BLOCK_FLUTE.value(), 1f, 1f);
                     }
                 }
                 if (notifyController) controller.onNodeHacked(HackSimulation.this, pos);

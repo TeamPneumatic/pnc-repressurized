@@ -18,58 +18,54 @@
 package me.desht.pneumaticcraft.common.recipes.other;
 
 import com.google.common.collect.ImmutableMap;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonSyntaxException;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import me.desht.pneumaticcraft.api.crafting.recipe.HeatPropertiesRecipe;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
-import me.desht.pneumaticcraft.common.config.ConfigHelper;
-import me.desht.pneumaticcraft.common.core.ModRecipeSerializers;
-import me.desht.pneumaticcraft.common.core.ModRecipeTypes;
 import me.desht.pneumaticcraft.common.heat.HeatExchangerLogicConstant;
 import me.desht.pneumaticcraft.common.network.PacketUtil;
+import me.desht.pneumaticcraft.common.registry.ModRecipeSerializers;
+import me.desht.pneumaticcraft.common.registry.ModRecipeTypes;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.commands.arguments.blocks.BlockStateParser;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.GsonHelper;
+import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Property;
-import net.minecraft.world.level.material.Fluid;
-import net.minecraft.world.level.material.Fluids;
-import net.minecraftforge.fml.ModList;
-import net.minecraftforge.registries.ForgeRegistries;
 
-import javax.annotation.Nullable;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
+// codecs mean optional fields and params!
+@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
 public class HeatPropertiesRecipeImpl extends HeatPropertiesRecipe {
     private final Block block;
     private final BlockState inputState;
-    private final BlockState transformHot;
-    private final BlockState transformHotFlowing;
-    private final BlockState transformCold;
-    private final BlockState transformColdFlowing;
+    private final Optional<BlockState> transformHot;
+    private final Optional<BlockState> transformHotFlowing;
+    private final Optional<BlockState> transformCold;
+    private final Optional<BlockState> transformColdFlowing;
     private final Map<String, String> predicates;
-    private final IHeatExchangerLogic logic;
-    private final int heatCapacity;
+    private final Optional<Integer> heatCapacity;
     private final int temperature;
-    private final double thermalResistance;
+    private final Optional<Double> thermalResistance;
     private final String descriptionKey;
+    private final HeatExchangerLogicConstant logic;
 
-    public HeatPropertiesRecipeImpl(ResourceLocation id, Block block,
-                                    BlockState transformHot, BlockState transformHotFlowing,
-                                    BlockState transformCold, BlockState transformColdFlowing,
-                                    int heatCapacity, int temperature, double thermalResistance,
+    public HeatPropertiesRecipeImpl(Block block,
+                                    Optional<BlockState> transformHot, Optional<BlockState> transformHotFlowing,
+                                    Optional<BlockState> transformCold, Optional<BlockState> transformColdFlowing,
+                                    Optional<Integer> heatCapacity, int temperature, Optional<Double> thermalResistance,
                                     Map<String, String> predicates, String descriptionKey)
     {
-        super(id);
+        super();
 
         this.block = block;
         this.transformHot = transformHot;
@@ -81,12 +77,8 @@ public class HeatPropertiesRecipeImpl extends HeatPropertiesRecipe {
         this.temperature = temperature;
         this.thermalResistance = thermalResistance;
         this.descriptionKey = descriptionKey;
-        this.logic = new HeatExchangerLogicConstant(temperature, thermalResistance);
+        this.logic = new HeatExchangerLogicConstant(temperature, thermalResistance.orElse(0.0));
         this.inputState = makeInputState();
-    }
-
-    public HeatPropertiesRecipeImpl(ResourceLocation id, Block block, int temperature, double thermalResistance) {
-        this(id, block, null, null, null, null, 0, temperature, thermalResistance, Collections.emptyMap(), "");
     }
 
     private BlockState makeInputState() {
@@ -108,7 +100,7 @@ public class HeatPropertiesRecipeImpl extends HeatPropertiesRecipe {
     }
 
     @Override
-    public int getHeatCapacity() {
+    public Optional<Integer> getHeatCapacity() {
         return heatCapacity;
     }
 
@@ -118,7 +110,7 @@ public class HeatPropertiesRecipeImpl extends HeatPropertiesRecipe {
     }
 
     @Override
-    public double getThermalResistance() {
+    public Optional<Double> getThermalResistance() {
         return thermalResistance;
     }
 
@@ -133,42 +125,28 @@ public class HeatPropertiesRecipeImpl extends HeatPropertiesRecipe {
     }
 
     @Override
-    public BlockState getTransformHot() {
+    public Optional<BlockState> getTransformHot() {
         return transformHot;
     }
 
     @Override
-    public BlockState getTransformCold() {
+    public Optional<BlockState> getTransformCold() {
         return transformCold;
     }
 
     @Override
-    public BlockState getTransformHotFlowing() {
+    public Optional<BlockState> getTransformHotFlowing() {
         return transformHotFlowing;
     }
 
     @Override
-    public BlockState getTransformColdFlowing() {
+    public Optional<BlockState> getTransformColdFlowing() {
         return transformColdFlowing;
     }
 
     @Override
     public IHeatExchangerLogic getLogic() {
         return logic;
-    }
-
-    @Override
-    public void write(FriendlyByteBuf buffer) {
-        buffer.writeRegistryId(ForgeRegistries.BLOCKS, block);
-        PacketUtil.writeNullableBlockState(buffer, transformHot);
-        PacketUtil.writeNullableBlockState(buffer, transformCold);
-        PacketUtil.writeNullableBlockState(buffer, transformHotFlowing);
-        PacketUtil.writeNullableBlockState(buffer, transformColdFlowing);
-        buffer.writeMap(predicates, FriendlyByteBuf::writeUtf, FriendlyByteBuf::writeUtf);
-        buffer.writeInt(temperature);
-        buffer.writeInt(heatCapacity);
-        buffer.writeDouble(thermalResistance);
-        buffer.writeUtf(descriptionKey);
     }
 
     @Override
@@ -209,116 +187,146 @@ public class HeatPropertiesRecipeImpl extends HeatPropertiesRecipe {
     }
 
     public static class Serializer<T extends HeatPropertiesRecipe> implements RecipeSerializer<T> {
+        private static final Codec<Map<String,String>> PREDICATES = Codec.unboundedMap(Codec.STRING, Codec.STRING);
+        private static final Codec<BlockState> BLOCKSTATE_STRING = Codec.STRING.comapFlatMap(
+                str -> {
+                    try {
+                        var result = BlockStateParser.parseForBlock(BuiltInRegistries.BLOCK.asLookup(), str, false);
+                        return DataResult.success(result.blockState());
+                    } catch (CommandSyntaxException e) {
+                        return DataResult.error(() -> "can't parse blockstate " + str + ": " + e.getMessage());
+                    }
+                },
+                BlockStateParser::serialize
+        );
+
         private final IFactory<T> factory;
+        private final Codec<T> codec;
 
         public Serializer(IFactory<T> factory) {
             this.factory = factory;
+            this.codec = RecordCodecBuilder.create(builder -> builder.group(
+                    BuiltInRegistries.BLOCK.byNameCodec().fieldOf("block").forGetter(HeatPropertiesRecipe::getBlock),
+                    BLOCKSTATE_STRING.optionalFieldOf("transformHot").forGetter(HeatPropertiesRecipe::getTransformHot),
+                    BLOCKSTATE_STRING.optionalFieldOf("transformHotFlowing").forGetter(HeatPropertiesRecipe::getTransformHotFlowing),
+                    BLOCKSTATE_STRING.optionalFieldOf("transformCold").forGetter(HeatPropertiesRecipe::getTransformCold),
+                    BLOCKSTATE_STRING.optionalFieldOf("transformColdFlowing").forGetter(HeatPropertiesRecipe::getTransformColdFlowing),
+                    ExtraCodecs.NON_NEGATIVE_INT.optionalFieldOf("heatCapacity").forGetter(HeatPropertiesRecipe::getHeatCapacity),
+                    ExtraCodecs.NON_NEGATIVE_INT.optionalFieldOf("temperature", 0).forGetter(HeatPropertiesRecipe::getTemperature),
+                    Codec.DOUBLE.optionalFieldOf("thermalResistance").forGetter(HeatPropertiesRecipe::getThermalResistance),
+                    PREDICATES.optionalFieldOf("predicates", Map.of()).forGetter(HeatPropertiesRecipe::getBlockStatePredicates),
+                    Codec.STRING.optionalFieldOf("description", "").forGetter(HeatPropertiesRecipe::getDescriptionKey)
+            ).apply(builder, factory::create));
         }
 
         @Override
-        public T fromJson(ResourceLocation recipeId, JsonObject json) {
-            BlockState transformHot = null;
-            BlockState transformHotFlowing = null;
-            BlockState transformCold = null;
-            BlockState transformColdFlowing = null;
-            Map<String, String> predicates = new HashMap<>();
-
-            Block block;
-            Fluid fluid;
-
-            if (json.has("block") && json.has("fluid")) {
-                throw new JsonSyntaxException("heat properties entry must have only one of \"block\" or \"fluid\" fields!");
-            }
-            if (json.has("block")) {
-                ResourceLocation blockId = new ResourceLocation(GsonHelper.getAsString(json, "block"));
-                if (blockId.toString().equals("minecraft:air")) {
-                    throw new JsonSyntaxException("minecraft:air block heat properties may not be changed!");
-                }
-                block = ForgeRegistries.BLOCKS.getValue(blockId);
-                if (!validateBlock(blockId, block)) {
-                    return null;
-                }
-                fluid = Objects.requireNonNull(block).defaultBlockState().getFluidState().getType();  // ok if this is absent
-            } else if (json.has("fluid")) {
-                ResourceLocation fluidId = new ResourceLocation(GsonHelper.getAsString(json, "fluid"));
-                fluid = ForgeRegistries.FLUIDS.getValue(fluidId);
-                if (!validateFluid(fluidId, fluid)) {
-                    return null;
-                }
-                block = Objects.requireNonNull(fluid).defaultFluidState().createLegacyBlock().getBlock();  // not ok if this is absent!
-                if (!validateBlock(fluidId, block)) {
-                    return null;
-                }
-            } else {
-                throw new JsonSyntaxException("heat properties entry must have a \"block\" or \"fluid\" field!");
-            }
-
-            // blocks with a total heat capacity will transform into something else if too much heat is added/removed
-            int totalHeat = 0;
-            if (json.has("heatCapacity")) {
-                totalHeat = json.get("heatCapacity").getAsInt();
-            } else if (fluid != Fluids.EMPTY) {
-                totalHeat = ConfigHelper.common().heat.defaultFluidHeatCapacity.get();
-            }
-            if (totalHeat != 0) {
-                transformHot = maybeGetBlockState(block, json, "transformHot");
-                transformHotFlowing = maybeGetBlockState(block, json, "transformHotFlowing");
-                transformCold = maybeGetBlockState(block, json, "transformCold");
-                transformColdFlowing = maybeGetBlockState(block, json, "transformColdFlowing");
-            }
-
-            int temperature;
-            if (json.has("temperature")) {
-                temperature = GsonHelper.getAsInt(json, "temperature");
-            } else {
-                if (fluid == Fluids.EMPTY) {
-                    throw new JsonSyntaxException(block + ": Non-fluid definitions must have a 'temperature' field!");
-                } else {
-                    temperature = fluid.getFluidType().getTemperature();
-                }
-            }
-
-            double thermalResistance;
-            if (json.has("thermalResistance")) {
-                thermalResistance = json.get("thermalResistance").getAsDouble();
-            } else if (fluid == Fluids.EMPTY) {
-                thermalResistance = ConfigHelper.common().heat.blockThermalResistance.get();
-            } else {
-                thermalResistance = ConfigHelper.common().heat.fluidThermalResistance.get();
-            }
-
-            if (json.has("statePredicate")) {
-                json.getAsJsonObject("statePredicate").entrySet().forEach(entry -> {
-                    if (block.getStateDefinition().getProperty(entry.getKey()) == null) {
-                        throw new JsonSyntaxException("unknown blockstate property " + entry.getKey() + " for block" + block);
-                    }
-                    predicates.put(entry.getKey(), entry.getValue().getAsString());
-                });
-            }
-
-            String descriptionKey = GsonHelper.getAsString(json, "description", "");
-
-            return factory.create(recipeId, block,
-                    transformHot, transformHotFlowing, transformCold, transformColdFlowing,
-                    totalHeat, temperature, thermalResistance, predicates, descriptionKey
-            );
+        public Codec<T> codec() {
+            return codec;
         }
 
-        @Nullable
+//        @Override
+//        public T fromJson(ResourceLocation recipeId, JsonObject json) {
+//            BlockState transformHot = null;
+//            BlockState transformHotFlowing = null;
+//            BlockState transformCold = null;
+//            BlockState transformColdFlowing = null;
+//            Map<String, String> predicates = new HashMap<>();
+//
+//            Block block;
+//            Fluid fluid;
+//
+//            if (json.has("block") && json.has("fluid")) {
+//                throw new JsonSyntaxException("heat properties entry must have only one of \"block\" or \"fluid\" fields!");
+//            }
+//            if (json.has("block")) {
+//                ResourceLocation blockId = new ResourceLocation(GsonHelper.getAsString(json, "block"));
+//                if (blockId.toString().equals("minecraft:air")) {
+//                    throw new JsonSyntaxException("minecraft:air block heat properties may not be changed!");
+//                }
+//                block = ForgeRegistries.BLOCKS.getValue(blockId);
+//                if (!validateBlock(blockId, block)) {
+//                    return null;
+//                }
+//                fluid = Objects.requireNonNull(block).defaultBlockState().getFluidState().getType();  // ok if this is absent
+//            } else if (json.has("fluid")) {
+//                ResourceLocation fluidId = new ResourceLocation(GsonHelper.getAsString(json, "fluid"));
+//                fluid = ForgeRegistries.FLUIDS.getValue(fluidId);
+//                if (!validateFluid(fluidId, fluid)) {
+//                    return null;
+//                }
+//                block = Objects.requireNonNull(fluid).defaultFluidState().createLegacyBlock().getBlock();  // not ok if this is absent!
+//                if (!validateBlock(fluidId, block)) {
+//                    return null;
+//                }
+//            } else {
+//                throw new JsonSyntaxException("heat properties entry must have a \"block\" or \"fluid\" field!");
+//            }
+//
+//            // blocks with a total heat capacity will transform into something else if too much heat is added/removed
+//            int totalHeat = 0;
+//            if (json.has("heatCapacity")) {
+//                totalHeat = json.get("heatCapacity").getAsInt();
+//            } else if (fluid != Fluids.EMPTY) {
+//                totalHeat = ConfigHelper.common().heat.defaultFluidHeatCapacity.get();
+//            }
+//            if (totalHeat != 0) {
+//                transformHot = maybeGetBlockState(block, json, "transformHot");
+//                transformHotFlowing = maybeGetBlockState(block, json, "transformHotFlowing");
+//                transformCold = maybeGetBlockState(block, json, "transformCold");
+//                transformColdFlowing = maybeGetBlockState(block, json, "transformColdFlowing");
+//            }
+//
+//            int temperature;
+//            if (json.has("temperature")) {
+//                temperature = GsonHelper.getAsInt(json, "temperature");
+//            } else {
+//                if (fluid == Fluids.EMPTY) {
+//                    throw new JsonSyntaxException(block + ": Non-fluid definitions must have a 'temperature' field!");
+//                } else {
+//                    temperature = fluid.getFluidType().getTemperature();
+//                }
+//            }
+//
+//            double thermalResistance;
+//            if (json.has("thermalResistance")) {
+//                thermalResistance = json.get("thermalResistance").getAsDouble();
+//            } else if (fluid == Fluids.EMPTY) {
+//                thermalResistance = ConfigHelper.common().heat.blockThermalResistance.get();
+//            } else {
+//                thermalResistance = ConfigHelper.common().heat.fluidThermalResistance.get();
+//            }
+//
+//            if (json.has("statePredicate")) {
+//                json.getAsJsonObject("statePredicate").entrySet().forEach(entry -> {
+//                    if (block.getStateDefinition().getProperty(entry.getKey()) == null) {
+//                        throw new JsonSyntaxException("unknown blockstate property " + entry.getKey() + " for block" + block);
+//                    }
+//                    predicates.put(entry.getKey(), entry.getValue().getAsString());
+//                });
+//            }
+//
+//            String descriptionKey = GsonHelper.getAsString(json, "description", "");
+//
+//            return factory.create(recipeId, block,
+//                    transformHot, transformHotFlowing, transformCold, transformColdFlowing,
+//                    totalHeat, temperature, thermalResistance, predicates, descriptionKey
+//            );
+//        }
+
         @Override
-        public T fromNetwork(ResourceLocation recipeId, FriendlyByteBuf buffer) {
-            Block block = buffer.readRegistryIdSafe(Block.class);
-            BlockState transformHot = PacketUtil.readNullableBlockState(buffer);
-            BlockState transformCold = PacketUtil.readNullableBlockState(buffer);
-            BlockState transformHotFlowing = PacketUtil.readNullableBlockState(buffer);
-            BlockState transformColdFlowing = PacketUtil.readNullableBlockState(buffer);
-            Map<String,String> predicates = buffer.readMap(FriendlyByteBuf::readUtf, FriendlyByteBuf::readUtf);
+        public T fromNetwork(FriendlyByteBuf buffer) {
+            Block block = buffer.readById(BuiltInRegistries.BLOCK);
+            Optional<BlockState> transformHot = PacketUtil.readOptionalBlockState(buffer);
+            Optional<BlockState> transformCold = PacketUtil.readOptionalBlockState(buffer);
+            Optional<BlockState> transformHotFlowing = PacketUtil.readOptionalBlockState(buffer);
+            Optional<BlockState> transformColdFlowing = PacketUtil.readOptionalBlockState(buffer);
+            Map<String,String> predicates = buffer.readMap(FriendlyByteBuf::readUtf, (FriendlyByteBuf.Reader<String>) FriendlyByteBuf::readUtf);
             int temperature = buffer.readInt();
-            int heatCapacity = buffer.readInt();
-            double thermalResistance = buffer.readDouble();
+            Optional<Integer> heatCapacity = buffer.readOptional(FriendlyByteBuf::readInt);
+            Optional<Double> thermalResistance = buffer.readOptional(FriendlyByteBuf::readDouble);
             String descriptionKey = buffer.readUtf();
 
-            return factory.create(recipeId, block,
+            return factory.create(block,
                     transformHot, transformHotFlowing, transformCold, transformColdFlowing,
                     heatCapacity, temperature, thermalResistance, predicates, descriptionKey
             );
@@ -326,66 +334,23 @@ public class HeatPropertiesRecipeImpl extends HeatPropertiesRecipe {
 
         @Override
         public void toNetwork(FriendlyByteBuf buffer, T recipe) {
-            recipe.write(buffer);
-        }
-
-        private boolean validateFluid(ResourceLocation fluidId, Fluid fluid) {
-            if (fluid == null || fluid == Fluids.EMPTY) {
-                if (!ModList.get().isLoaded(fluidId.getNamespace())) {
-                    Log.info("ignoring heat properties for fluid %s: mod not loaded", fluidId);
-                } else {
-                    throw new JsonSyntaxException("unknown fluid id: " + fluidId);
-                }
-                return false;
-            }
-            return true;
-        }
-
-        @SuppressWarnings("BooleanMethodIsAlwaysInverted")
-        private boolean validateBlock(ResourceLocation blockId, Block block) {
-            if (block == null || block == Blocks.AIR) {
-                if (!ModList.get().isLoaded(blockId.getNamespace())) {
-                    Log.info("ignoring heat properties for block %s: mod not loaded", blockId);
-                } else {
-                    throw new JsonSyntaxException("unknown block id: " + blockId);
-                }
-                return false;
-            }
-            return true;
-        }
-
-        private BlockState parseBlockState(String str) {
-            try {
-                return BlockStateParser.parseForBlock(BuiltInRegistries.BLOCK.asLookup(), str, false).blockState();
-            } catch (CommandSyntaxException e) {
-                throw new JsonSyntaxException(String.format("invalid blockstate [%s] - %s", str, e.getMessage()));
-            }
-        }
-
-        private BlockState maybeGetBlockState(Block b, JsonObject json, String field) {
-            if (!json.has(field)) return null;
-
-            JsonObject sub = json.get(field).getAsJsonObject();
-            if (sub.has("block")) {
-                return parseBlockState(GsonHelper.getAsString(sub, "block"));
-            } else if (sub.has("fluid")) {
-                ResourceLocation fluidId = new ResourceLocation(GsonHelper.getAsString(sub, "fluid"));
-                if (ForgeRegistries.FLUIDS.containsKey(fluidId)) {
-                    //noinspection ConstantConditions
-                    return ForgeRegistries.FLUIDS.getValue(fluidId).defaultFluidState().createLegacyBlock();
-                } else {
-                    throw new JsonSyntaxException(String.format("unknown fluid '%s' for field '%s' in block '%s'", fluidId, field, b));
-                }
-            } else {
-                throw new JsonSyntaxException(String.format("block %s must have either a 'block' or 'fluid' section!", b));
-            }
+            buffer.writeId(BuiltInRegistries.BLOCK, recipe.getBlock());
+            PacketUtil.writeOptionalBlockState(buffer, recipe.getTransformHot());
+            PacketUtil.writeOptionalBlockState(buffer, recipe.getTransformCold());
+            PacketUtil.writeOptionalBlockState(buffer, recipe.getTransformHotFlowing());
+            PacketUtil.writeOptionalBlockState(buffer, recipe.getTransformColdFlowing());
+            buffer.writeMap(recipe.getBlockStatePredicates(), FriendlyByteBuf::writeUtf, (FriendlyByteBuf.Writer<String>) FriendlyByteBuf::writeUtf);
+            buffer.writeInt(recipe.getTemperature());
+            buffer.writeOptional(recipe.getHeatCapacity(), FriendlyByteBuf::writeInt);
+            buffer.writeOptional(recipe.getThermalResistance(), FriendlyByteBuf::writeDouble);
+            buffer.writeUtf(recipe.getDescriptionKey());
         }
 
         public interface IFactory <T extends HeatPropertiesRecipe> {
-            T create(ResourceLocation id, Block block,
-                     BlockState transformHot, BlockState transformHotFlowing,
-                     BlockState transformCold, BlockState transformColdFlowing,
-                     int heatCapacity, int temperature, double thermalResistance,
+            T create(Block block,
+                     Optional<BlockState> transformHot, Optional<BlockState> transformHotFlowing,
+                     Optional<BlockState> transformCold, Optional<BlockState> transformColdFlowing,
+                     Optional<Integer> heatCapacity, int temperature, Optional<Double> thermalResistance,
                      Map<String, String> predicates, String descriptionKey);
         }
     }

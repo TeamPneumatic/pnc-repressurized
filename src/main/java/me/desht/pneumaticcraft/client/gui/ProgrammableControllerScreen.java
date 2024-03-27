@@ -24,9 +24,10 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetCheckBox;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetEnergy;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.block.entity.ProgrammableControllerBlockEntity;
-import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.drone.IDroneBase;
 import me.desht.pneumaticcraft.common.inventory.ProgrammableControllerMenu;
+import me.desht.pneumaticcraft.common.registry.ModItems;
+import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.gui.components.Tooltip;
@@ -38,7 +39,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
 
 import java.util.Collections;
 import java.util.List;
@@ -69,7 +69,8 @@ public class ProgrammableControllerScreen extends AbstractPneumaticCraftContaine
     public void init() {
         super.init();
 
-        te.getCapability(ForgeCapabilities.ENERGY).ifPresent(handler -> addRenderableWidget(new WidgetEnergy(leftPos + 12, topPos + 20, handler)));
+        IOHelper.getEnergyStorageForBlock(te).ifPresent(handler ->
+                addRenderableWidget(new WidgetEnergy(leftPos + 12, topPos + 20, handler)));
 
         List<Component> exc = ProgrammableControllerBlockEntity.BLACKLISTED_WIDGETS.stream()
                 .map(s -> Symbols.BULLET + " " + I18n.get("programmingPuzzle." + s.getNamespace() + "." + s.getPath() + ".name"))
@@ -126,7 +127,7 @@ public class ProgrammableControllerScreen extends AbstractPneumaticCraftContaine
     protected void addProblems(List<Component> curInfo) {
         super.addProblems(curInfo);
 
-        if (te.getPrimaryInventory().getStackInSlot(0).isEmpty()) {
+        if (te.getItemHandler().getStackInSlot(0).isEmpty()) {
             curInfo.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.programmableController.noProgram"));
         }
     }

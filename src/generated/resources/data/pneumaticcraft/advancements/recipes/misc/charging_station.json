@@ -22,14 +22,13 @@
   },
   "requirements": [
     [
-      "has_pressure_tube",
-      "has_the_recipe"
+      "has_the_recipe",
+      "has_pressure_tube"
     ]
   ],
   "rewards": {
     "recipes": [
       "pneumaticcraft:charging_station"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }

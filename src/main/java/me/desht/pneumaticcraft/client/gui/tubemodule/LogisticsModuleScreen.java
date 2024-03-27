@@ -62,6 +62,6 @@ public class LogisticsModuleScreen extends AbstractTubeModuleScreen<LogisticsMod
         super.removed();
 
         module.setColorChannel(ourColor);
-        NetworkHandler.sendToServer(new PacketTubeModuleColor(module));
+        NetworkHandler.sendToServer(PacketTubeModuleColor.create(module));
     }
 }

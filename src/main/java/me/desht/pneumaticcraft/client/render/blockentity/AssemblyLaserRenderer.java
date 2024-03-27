@@ -31,7 +31,7 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.util.Mth;
 
-public class AssemblyLaserRenderer extends AbstractBlockEntityModelRenderer<AssemblyLaserBlockEntity> {
+public class AssemblyLaserRenderer extends AbstractAssemblyRenderer<AssemblyLaserBlockEntity> {
     private final ModelPart baseTurn;
     private final ModelPart baseTurn2;
     private final ModelPart armBase;

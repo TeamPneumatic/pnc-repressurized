@@ -101,7 +101,7 @@ public class PressureGaugeModuleScreen extends AbstractTubeModuleScreen<Abstract
 
         WidgetCheckBox advancedMode = new WidgetCheckBox(guiLeft + 6, guiTop + 20, 0xFF404040, xlate("pneumaticcraft.gui.tubeModule.advancedConfig"), b -> {
             module.advancedConfig = b.checked;
-            NetworkHandler.sendToServer(new PacketUpdatePressureModule(module));
+            NetworkHandler.sendToServer(PacketUpdatePressureModule.create(module));
         }).setChecked(true);
         advancedMode.setTooltip(Tooltip.create(xlate("pneumaticcraft.gui.tubeModule.advancedConfig.tooltip")));
         addRenderableWidget(advancedMode);
@@ -182,14 +182,14 @@ public class PressureGaugeModuleScreen extends AbstractTubeModuleScreen<Abstract
                     prev = module.lowerBound;
                     module.lowerBound = Mth.clamp(Float.parseFloat(lowerBoundField.getValue()), -1, AbstractTubeModule.MAX_VALUE);
                     if (!Mth.equal(module.lowerBound, prev)) {
-                        NetworkHandler.sendToServer(new PacketUpdatePressureModule(module));
+                        NetworkHandler.sendToServer(PacketUpdatePressureModule.create(module));
                     }
                 }
                 case 1 -> {
                     prev = module.higherBound;
                     module.higherBound = Mth.clamp(Float.parseFloat(higherBoundField.getValue()), -1, AbstractTubeModule.MAX_VALUE);
                     if (!Mth.equal(module.higherBound, prev)) {
-                        NetworkHandler.sendToServer(new PacketUpdatePressureModule(module));
+                        NetworkHandler.sendToServer(PacketUpdatePressureModule.create(module));
                     }
                 }
                 default -> throw new IllegalArgumentException("unknown field id " + fieldId);
@@ -232,11 +232,11 @@ public class PressureGaugeModuleScreen extends AbstractTubeModuleScreen<Abstract
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int state) {
         if (grabLower) {
-            NetworkHandler.sendToServer(new PacketUpdatePressureModule(module));
+            NetworkHandler.sendToServer(PacketUpdatePressureModule.create(module));
             grabLower = false;
             return true;
         } else if (grabHigher) {
-            NetworkHandler.sendToServer(new PacketUpdatePressureModule(module));
+            NetworkHandler.sendToServer(PacketUpdatePressureModule.create(module));
             grabHigher = false;
             return true;
         } else {

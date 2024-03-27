@@ -26,6 +26,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.entity.EntityTypeTest;
+import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.phys.AABB;
 
 import java.util.List;
@@ -45,7 +46,7 @@ abstract class EntityPollSensor implements IPollSensorSetting {
 
     @Override
     public int getRedstoneValue(Level level, BlockPos pos, int sensorRange, String textBoxText) {
-        AABB aabb = new AABB(pos.offset(-sensorRange, -sensorRange, -sensorRange), pos.offset(1 + sensorRange, 1 + sensorRange, 1 + sensorRange));
+        AABB aabb = AABB.of(new BoundingBox(pos).inflatedBy(sensorRange));
         return getRedstoneValue(level.getEntities(EntityTypeTest.forClass(getEntityTracked()), aabb, Entity::isAlive), textBoxText);
     }
 

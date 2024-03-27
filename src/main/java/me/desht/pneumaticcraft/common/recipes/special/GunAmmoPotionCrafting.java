@@ -17,12 +17,12 @@
 
 package me.desht.pneumaticcraft.common.recipes.special;
 
-import me.desht.pneumaticcraft.common.core.ModItems;
-import me.desht.pneumaticcraft.common.core.ModRecipeSerializers;
 import me.desht.pneumaticcraft.common.item.minigun.StandardGunAmmoItem;
+import me.desht.pneumaticcraft.common.registry.ModItems;
+import me.desht.pneumaticcraft.common.registry.ModRecipeSerializers;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.RegistryAccess;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -33,42 +33,60 @@ import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
-import net.minecraft.world.item.crafting.ShapelessRecipe;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraft.world.level.Level;
 
 import javax.annotation.Nullable;
+import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-public class GunAmmoPotionCrafting extends ShapelessRecipe {
-    public GunAmmoPotionCrafting(ResourceLocation idIn, CraftingBookCategory category) {
-        super(idIn, "", category, new ItemStack(ModItems.GUN_AMMO.get()),
-                NonNullList.of(Ingredient.EMPTY, Ingredient.of(ModItems.GUN_AMMO.get()), new PotionIngredient()));
+public class GunAmmoPotionCrafting extends CustomPNCRecipe {
+    private static final List<Predicate<ItemStack>> ITEM_PREDICATE = List.of(
+            stack -> stack.getItem() instanceof PotionItem,
+            stack -> stack.getItem() instanceof StandardGunAmmoItem
+    );
+
+    public GunAmmoPotionCrafting(CraftingBookCategory category) {
+        super(category);
+    }
+
+    @Override
+    public boolean matches(CraftingContainer container, Level level) {
+        return findItems(container, ITEM_PREDICATE).size() == 2;
     }
 
     @Override
     public ItemStack assemble(CraftingContainer inv, RegistryAccess registryAccess) {
-        ItemStack potion = ItemStack.EMPTY;
-        ItemStack ammo = ItemStack.EMPTY;
-        for (int i = 0; i < inv.getContainerSize(); i++) {
-            ItemStack stack = inv.getItem(i);
-            if (stack.getItem() instanceof PotionItem) {
-                potion = stack;
-            } else if (stack.getItem() == ModItems.GUN_AMMO.get()) {
-                ammo = stack;
-            } else if (!stack.isEmpty()) {
-                return ItemStack.EMPTY;
+        List<ItemStack> stacks = findItems(inv, ITEM_PREDICATE);
+        if (stacks.size() == 2) {
+            ItemStack potion = stacks.get(0);
+            ItemStack ammo = stacks.get(1).copy();
+            if (!ammo.isEmpty() && !potion.isEmpty()) {
+                StandardGunAmmoItem.setPotion(ammo, potion);
+                return ammo;
             }
         }
-        if (ammo.isEmpty() || potion.isEmpty()) return ItemStack.EMPTY;
+        return ItemStack.EMPTY;
+    }
 
-        ammo = ammo.copy();
-        StandardGunAmmoItem.setPotion(ammo, potion);
-        return ammo;
+    @Override
+    public boolean canCraftInDimensions(int w, int h) {
+        return w * h >= 2;
     }
 
     @Override
     public RecipeSerializer<?> getSerializer() {
         return ModRecipeSerializers.GUN_AMMO_POTION_CRAFTING.get();
+    }
+
+    @Override
+    public ItemStack getResultItem(RegistryAccess access) {
+        return new ItemStack(ModItems.GUN_AMMO.get());
+    }
+
+    @Override
+    public NonNullList<Ingredient> getIngredients() {
+        return NonNullList.of(Ingredient.EMPTY, Ingredient.of(ModItems.GUN_AMMO.get()), new PotionIngredient());
     }
 
     private static class PotionIngredient extends Ingredient {
@@ -79,7 +97,7 @@ public class GunAmmoPotionCrafting extends ShapelessRecipe {
         @Override
         public ItemStack[] getItems() {
             NonNullList<ItemStack> potions = NonNullList.create();
-            for (Potion p : ForgeRegistries.POTIONS.getValues()) {
+            for (Potion p : BuiltInRegistries.POTION) {
                 if (p != Potions.EMPTY) potions.add(PotionUtils.setPotion(new ItemStack(Items.POTION), p));
             }
 

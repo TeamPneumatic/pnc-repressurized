@@ -18,18 +18,18 @@
 package me.desht.pneumaticcraft.common.inventory;
 
 import me.desht.pneumaticcraft.common.block.entity.ReinforcedChestBlockEntity;
-import me.desht.pneumaticcraft.common.core.ModMenuTypes;
+import me.desht.pneumaticcraft.common.registry.ModMenuTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
-import net.minecraftforge.items.SlotItemHandler;
+import net.neoforged.neoforge.items.SlotItemHandler;
 
 public class ReinforcedChestMenu extends AbstractPneumaticCraftMenu<ReinforcedChestBlockEntity> {
     public ReinforcedChestMenu(int windowId, Inventory invPlayer, BlockPos pos) {
         super(ModMenuTypes.REINFORCED_CHEST.get(), windowId, invPlayer, pos);
 
         for (int i = 0; i < ReinforcedChestBlockEntity.CHEST_SIZE; i++) {
-            addSlot(new SlotItemHandler(te.getPrimaryInventory(), i, 8 + (i % 9) * 18, 18 + (i / 9) * 18));
+            addSlot(new SlotItemHandler(blockEntity.getItemHandler(), i, 8 + (i % 9) * 18, 18 + (i / 9) * 18));
         }
         addPlayerSlots(invPlayer, 104);
     }

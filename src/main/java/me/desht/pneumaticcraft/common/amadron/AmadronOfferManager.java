@@ -19,13 +19,11 @@ package me.desht.pneumaticcraft.common.amadron;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-import me.desht.pneumaticcraft.api.crafting.AmadronTradeResource;
 import me.desht.pneumaticcraft.api.crafting.recipe.AmadronRecipe;
 import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.config.subconfig.AmadronPlayerOffers;
-import me.desht.pneumaticcraft.common.core.ModRecipeTypes;
 import me.desht.pneumaticcraft.common.entity.drone.AmadroneEntity;
 import me.desht.pneumaticcraft.common.inventory.AmadronMenu;
 import me.desht.pneumaticcraft.common.item.AmadronTabletItem;
@@ -33,6 +31,7 @@ import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSyncAmadronOffers;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOffer;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronPlayerOffer;
+import me.desht.pneumaticcraft.common.registry.ModRecipeTypes;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.resources.ResourceLocation;
@@ -46,13 +45,13 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.trading.MerchantOffer;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.items.wrapper.CombinedInvWrapper;
-import net.minecraftforge.items.wrapper.PlayerMainInvWrapper;
-import net.minecraftforge.items.wrapper.PlayerOffhandInvWrapper;
-import net.minecraftforge.server.ServerLifecycleHooks;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.items.wrapper.CombinedInvWrapper;
+import net.neoforged.neoforge.items.wrapper.PlayerMainInvWrapper;
+import net.neoforged.neoforge.items.wrapper.PlayerOffhandInvWrapper;
+import net.neoforged.neoforge.server.ServerLifecycleHooks;
 
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
@@ -64,17 +63,17 @@ public enum AmadronOfferManager {
     INSTANCE;
 
     // static trades, always available: loaded from recipes datapack
-    private final List<AmadronRecipe> staticOffers = new ArrayList<>();
+    private final List<AmadronOffer> staticOffers = new ArrayList<>();
     // periodic trades, randomly appear: loaded from recipes datapack
-    private final Int2ObjectMap<List<AmadronRecipe>> periodicOffers = new Int2ObjectOpenHashMap<>();  // a list due to random access needs
+    private final Int2ObjectMap<List<AmadronOffer>> periodicOffers = new Int2ObjectOpenHashMap<>();  // a list due to random access needs
     // maps villager profession/level to list of trades
-    private final Map<String,List<AmadronRecipe>> villagerTrades = new HashMap<>();
+    private final Map<String,List<AmadronOffer>> villagerTrades = new HashMap<>();
     // villager professions which actually have some trades
     private final List<VillagerProfession> validProfessions = new ArrayList<>();
     // A complete collection of all known offers
-    private final Map<ResourceLocation, AmadronRecipe> allOffers = new HashMap<>();
+    private final Map<ResourceLocation, AmadronOffer> allOffers = new HashMap<>();
     // And these are the offers which are actually available via the Amadron Tablet (and shown in JEI) at this time
-    private final Map<ResourceLocation, AmadronRecipe> activeOffers = new LinkedHashMap<>();
+    private final Map<ResourceLocation, AmadronOffer> activeOffers = new LinkedHashMap<>();
     // rebuild offers?  true initially and after a /reload
     private boolean rebuildRequired = true;
 
@@ -82,11 +81,11 @@ public enum AmadronOfferManager {
         return INSTANCE;
     }
 
-    public AmadronRecipe getOffer(ResourceLocation offerId) {
+    public AmadronOffer getOffer(ResourceLocation offerId) {
         return allOffers.get(offerId);
     }
 
-    public Collection<AmadronRecipe> getActiveOffers() {
+    public Collection<AmadronOffer> getActiveOffers() {
         return activeOffers.values();
     }
 
@@ -100,21 +99,21 @@ public enum AmadronOfferManager {
         if (hasSimilarPlayerOffer(offer)) return false;
         if (offer.getInput().isEmpty() || offer.getOutput().isEmpty()) return false;
 
-        getPlayerOffers().put(offer.getId(), offer);
+        getPlayerOffers().put(offer.getOfferId(), offer);
         addOffer(activeOffers, offer);
         addOffer(allOffers, offer);
         addOffer(allOffers, offer.getReversedOffer());
-        NetworkHandler.sendNonLocal(new PacketSyncAmadronOffers(true));
+        NetworkHandler.sendNonLocal(PacketSyncAmadronOffers.create(true));
         saveAll();
         return true;
     }
 
     public boolean removePlayerOffer(AmadronPlayerOffer offer) {
-        if (getPlayerOffers().remove(offer.getId()) != null) {
-            activeOffers.remove(offer.getId());
-            allOffers.remove(offer.getId());
-            allOffers.remove(AmadronPlayerOffer.getReversedId(offer.getId()));
-            NetworkHandler.sendNonLocal(new PacketSyncAmadronOffers(true));
+        if (getPlayerOffers().remove(offer.getOfferId()) != null) {
+            activeOffers.remove(offer.getOfferId());
+            allOffers.remove(offer.getOfferId());
+            allOffers.remove(AmadronPlayerOffer.getReversedId(offer.getOfferId()));
+            NetworkHandler.sendNonLocal(PacketSyncAmadronOffers.create(true));
             saveAll();
             return true;
         } else {
@@ -135,7 +134,7 @@ public enum AmadronOfferManager {
      * @param newOffers the new offers
      * @param notifyPlayer true to notify players of new offers
      */
-    public void syncOffers(Collection<AmadronRecipe> newOffers, boolean notifyPlayer) {
+    public void syncOffers(Collection<AmadronOffer> newOffers, boolean notifyPlayer) {
         activeOffers.clear();
         newOffers.forEach(offer -> addOffer(activeOffers, offer));
 
@@ -195,14 +194,14 @@ public enum AmadronOfferManager {
             AmadronPlayerOffer reversed = offer.getReversedOffer();
             BlockEntity provider = offer.getProvidingTileEntity();
             int possiblePickups = offer.getOutput().apply(
-                    itemStack -> offer.getOutput().countTradesInInventory(IOHelper.getInventoryForTE(provider)),
-                    fluidStack -> offer.getOutput().countTradesInTank(IOHelper.getFluidHandlerForTE(provider))
+                    itemStack -> IOHelper.getInventoryForBlock(provider).map(h -> offer.getOutput().countTradesInInventory(h)).orElse(0),
+                    fluidStack -> IOHelper.getFluidHandlerForBlock(provider).map(h -> offer.getOutput().countTradesInTank(h)).orElse(0)
             );
             if (possiblePickups > 0) {
                 AmadroneEntity drone = AmadronMenu.retrieveOrder(null, offer.getReversedOffer(), possiblePickups,
                         offer.getProvidingPos(), offer.getProvidingPos());
                 if (drone != null) {
-                    drone.setHandlingOffer(reversed.getId(), possiblePickups, ItemStack.EMPTY,
+                    drone.setHandlingOffer(reversed.getOfferId(), possiblePickups, ItemStack.EMPTY,
                             "Restock", AmadroneEntity.AmadronAction.RESTOCKING);
                 }
             }
@@ -218,8 +217,8 @@ public enum AmadronOfferManager {
         AmadronPlayerOffers.save();
     }
 
-    private <T extends AmadronRecipe> void addOffer(Map<ResourceLocation, T> map, T offer) {
-        map.put(offer.getId(), offer);
+    private <T extends AmadronOffer> void addOffer(Map<ResourceLocation, T> map, T offer) {
+        map.put(offer.getOfferId(), offer);
     }
 
     /**
@@ -242,7 +241,7 @@ public enum AmadronOfferManager {
         periodicOffers.values().forEach(offers -> offers.forEach(offer -> addOffer(allOffers, offer)));
         int nPeriodics = allOffers.size() - s1;
         for (int i = 0; i < Math.min(nPeriodics, ConfigHelper.common().amadron.numPeriodicOffers.get()); i++) {
-            AmadronRecipe offer = pickRandomPeriodicTrade(rand);
+            AmadronOffer offer = pickRandomPeriodicTrade(rand);
             if (offer != null) addOffer(activeOffers, offer);
         }
 
@@ -266,7 +265,7 @@ public enum AmadronOfferManager {
         }
 
         // send active list to all clients (but not the local player for an integrated server)
-        NetworkHandler.sendNonLocal(new PacketSyncAmadronOffers(true));
+        NetworkHandler.sendNonLocal(PacketSyncAmadronOffers.create(true));
         maybeNotifyLocalPlayerOfUpdates();
         Log.debug(activeOffers.size() + " active Amadron offers to sync to clients");
     }
@@ -279,10 +278,10 @@ public enum AmadronOfferManager {
         });
     }
 
-    private AmadronRecipe pickRandomPeriodicTrade(Random rand) {
+    private AmadronOffer pickRandomPeriodicTrade(Random rand) {
         int level = getWeightedTradeLevel(rand);
         do {
-            List<AmadronRecipe> offers = periodicOffers.get(level);
+            List<AmadronOffer> offers = periodicOffers.get(level);
             if (offers != null && !offers.isEmpty()) {
                 int idx = rand.nextInt(offers.size());
                 return offers.get(idx);
@@ -294,11 +293,11 @@ public enum AmadronOfferManager {
         return null;
     }
 
-    private Optional<AmadronRecipe> pickRandomVillagerTrade(VillagerProfession profession, Random rand) {
+    private Optional<AmadronOffer> pickRandomVillagerTrade(VillagerProfession profession, Random rand) {
         int level = getWeightedTradeLevel(rand);
         do {
             String key = profession.toString() + "_" + level;
-            List<AmadronRecipe> offers = villagerTrades.get(key);
+            List<AmadronOffer> offers = villagerTrades.get(key);
             if (offers != null && !offers.isEmpty()) {
                 int idx = rand.nextInt(offers.size());
                 return Optional.ofNullable(offers.get(idx));
@@ -336,13 +335,8 @@ public enum AmadronOfferManager {
                     if (offer != null && !offer.getBaseCostA().isEmpty() && !offer.getResult().isEmpty()) {
                         ResourceLocation offerId = new ResourceLocation(profession + "_" + level + "_" + i);
                         String key = profession.toString() + "_" + level;
-                        villagerTrades.computeIfAbsent(key, k -> new ArrayList<>()).add(new AmadronOffer(offerId,
-                                AmadronTradeResource.of(offer.getBaseCostA()),
-                                AmadronTradeResource.of(offer.getResult()),
-                                false,
-                                level,
-                                offer.getMaxUses()
-                        ).setVillagerTrade());
+                        villagerTrades.computeIfAbsent(key, k ->
+                                new ArrayList<>()).add(AmadronOffer.villagerTrade(offerId, offer, level));
                         validSet.add(profession);
                     }
                 });
@@ -366,18 +360,20 @@ public enum AmadronOfferManager {
         rebuildRequired = true;
     }
 
-    public void checkForFullRebuild(Level world) {
+    public void checkForFullRebuild(Level level) {
         if (rebuildRequired) {
             Log.debug("Rebuilding Amadron offer list");
 
             staticOffers.clear();
             periodicOffers.clear();
 
-            ModRecipeTypes.AMADRON.get().getRecipes(world).values().forEach(offer -> {
-                if (offer.isStaticOffer()) {
-                    staticOffers.add(offer);
-                } else {
-                    periodicOffers.computeIfAbsent(offer.getTradeLevel(), l -> new ArrayList<>()).add(offer);
+            ModRecipeTypes.AMADRON.get().allRecipeHolders(level).forEach(recipe -> {
+                if (recipe.value() instanceof AmadronOffer offer) {
+                    if (offer.isStaticOffer()) {
+                        staticOffers.add(offer);
+                    } else {
+                        periodicOffers.computeIfAbsent(offer.getTradeLevel(), l -> new ArrayList<>()).add(offer);
+                    }
                 }
             });
 
@@ -392,12 +388,11 @@ public enum AmadronOfferManager {
         return activeOffers.containsKey(offerId);
     }
 
-
     @Mod.EventBusSubscriber(modid = Names.MOD_ID)
     public static class EventListener {
         @SubscribeEvent
         public static void serverLogin(PlayerEvent.PlayerLoggedInEvent evt) {
-            NetworkHandler.sendNonLocal((ServerPlayer) evt.getEntity(), new PacketSyncAmadronOffers(false));
+            NetworkHandler.sendNonLocal((ServerPlayer) evt.getEntity(), PacketSyncAmadronOffers.create(false));
         }
     }
 }

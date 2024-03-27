@@ -17,66 +17,59 @@
 
 package me.desht.pneumaticcraft.common.network;
 
-import me.desht.pneumaticcraft.client.util.ClientUtils;
-import me.desht.pneumaticcraft.common.block.entity.PressureTubeBlockEntity;
 import me.desht.pneumaticcraft.common.tubemodules.RedstoneModule;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import net.minecraft.core.Direction;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Player;
 
-import java.util.function.Supplier;
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 /**
  * Received on: CLIENT
  * Sent by server to sync up the settings of a redstone module
  */
-public class PacketSyncRedstoneModuleToClient extends LocationIntPacket {
-    private final RedstoneModule.EnumRedstoneDirection dir;
-    private final int outputLevel;
-    private final int inputLevel;
-    private final int channel;
-    private final Direction side;
+public record PacketSyncRedstoneModuleToClient(ModuleLocator locator, RedstoneModule.EnumRedstoneDirection dir, int outputLevel, int inputLevel, int channel) implements TubeModulePacket<RedstoneModule> {
+    public static final ResourceLocation ID = RL("sync_redstone_module_to_client");
 
-    public PacketSyncRedstoneModuleToClient(RedstoneModule module) {
-        super(module.getTube().getBlockPos());
-
-        this.dir = module.getRedstoneDirection();
-        this.outputLevel = module.getRedstoneLevel();
-        this.inputLevel = module.getInputLevel();
-        this.channel = module.getColorChannel();
-        this.side = module.getDirection();
+    public static PacketSyncRedstoneModuleToClient create(RedstoneModule module) {
+        return new PacketSyncRedstoneModuleToClient(
+                ModuleLocator.forModule(module),
+                module.getRedstoneDirection(),
+                module.getRedstoneLevel(),
+                module.getInputLevel(),
+                module.getColorChannel()
+        );
     }
 
-    PacketSyncRedstoneModuleToClient(FriendlyByteBuf buffer) {
-        super(buffer);
-        dir = RedstoneModule.EnumRedstoneDirection.values()[buffer.readByte()];
-        side = buffer.readEnum(Direction.class);
-        outputLevel = buffer.readByte();
-        inputLevel = buffer.readByte();
-        channel = buffer.readByte();
+    public static PacketSyncRedstoneModuleToClient fromNetwork(FriendlyByteBuf buffer) {
+        return new PacketSyncRedstoneModuleToClient(
+                ModuleLocator.fromNetwork(buffer),
+                buffer.readEnum(RedstoneModule.EnumRedstoneDirection.class),
+                buffer.readByte(),
+                buffer.readByte(),
+                buffer.readByte()
+        );
     }
 
     @Override
-    public void toBytes(FriendlyByteBuf buf) {
-        super.toBytes(buf);
-        buf.writeByte(dir.ordinal());
-        buf.writeEnum(side);
+    public void write(FriendlyByteBuf buf) {
+        locator.write(buf);
+        buf.writeEnum(dir);
         buf.writeByte(outputLevel);
         buf.writeByte(inputLevel);
         buf.writeByte(channel);
     }
 
-    public void handle(Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() ->
-                PneumaticCraftUtils.getTileEntityAt(ClientUtils.getClientLevel(), pos, PressureTubeBlockEntity.class).ifPresent(te -> {
-                    if (te.getModule(side) instanceof RedstoneModule mr) {
-                        mr.setColorChannel(channel);
-                        mr.setRedstoneDirection(dir);
-                        mr.setOutputLevel(outputLevel);
-                        mr.setInputLevel(inputLevel);
-                    }
-                }));
-        ctx.get().setPacketHandled(true);
+    @Override
+    public ResourceLocation id() {
+        return ID;
+    }
+
+    @Override
+    public void onModuleUpdate(RedstoneModule module, Player player) {
+        module.setColorChannel(channel);
+        module.setRedstoneDirection(dir);
+        module.setOutputLevel(outputLevel);
+        module.setInputLevel(inputLevel);
     }
 }

@@ -19,7 +19,7 @@ package me.desht.pneumaticcraft.common.harvesting;
 
 import me.desht.pneumaticcraft.api.drone.IDrone;
 import me.desht.pneumaticcraft.api.harvesting.HarvestHandler;
-import me.desht.pneumaticcraft.common.core.ModHarvestHandlers.TreePart;
+import me.desht.pneumaticcraft.common.registry.ModHarvestHandlers.TreePart;
 import net.minecraft.core.BlockPos;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.entity.item.ItemEntity;

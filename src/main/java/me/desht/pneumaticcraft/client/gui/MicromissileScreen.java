@@ -29,11 +29,11 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetTooltipArea;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
-import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.item.MicromissilesItem;
 import me.desht.pneumaticcraft.common.item.MicromissilesItem.FireMode;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdateMicromissileSettings;
+import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.util.EntityFilter;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
@@ -164,7 +164,7 @@ public class MicromissileScreen extends AbstractPneumaticCraftScreen {
 
     @Override
     public void render(GuiGraphics graphics, int x, int y, float partialTicks) {
-        renderBackground(graphics);
+        renderBackground(graphics, x, y, partialTicks);
 
         super.render(graphics, x, y, partialTicks);
 

@@ -26,7 +26,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
-import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -34,6 +33,8 @@ import net.minecraft.util.Mth;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.List;
+import java.util.Optional;
 import java.util.function.Supplier;
 
 import static me.desht.pneumaticcraft.api.crafting.TemperatureRange.TemperatureScale.CELSIUS;
@@ -42,7 +43,7 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 public class WidgetTemperature extends AbstractWidget {
     private int temperature;
     private int tickInterval;
-    private final Supplier<Tooltip> tooltipSupplier;
+    private final Supplier<List<Component>> tooltipSupplier;
     private TemperatureRange totalRange;
     private TemperatureRange operatingRange;
     private boolean drawText = true;
@@ -52,7 +53,7 @@ public class WidgetTemperature extends AbstractWidget {
         this(xIn, yIn, totalRange, initialTemp, tickInterval, null);
     }
 
-    public WidgetTemperature(int xIn, int yIn, TemperatureRange totalRange, int initialTemp, int tickInterval, Supplier<Tooltip> tooltipSupplier) {
+    public WidgetTemperature(int xIn, int yIn, TemperatureRange totalRange, int initialTemp, int tickInterval, Supplier<List<Component>> tooltipSupplier) {
         super(xIn, yIn, 13, 50, Component.empty());
         this.totalRange = totalRange;
         this.temperature = initialTemp;
@@ -116,18 +117,21 @@ public class WidgetTemperature extends AbstractWidget {
 
             // operating temp markers, if necessary
             drawOperatingTempMarkers(graphics);
-        }
 
-        setTooltip(tooltipSupplier.get());
+            if (isHovered) {
+                graphics.renderTooltip(Minecraft.getInstance().font, tooltipSupplier.get(), Optional.empty(), mouseX, mouseY);
+            }
+        }
     }
 
-    private Tooltip defaultTooltip() {
+    private List<Component> defaultTooltip() {
         MutableComponent c = HeatUtil.formatHeatString(temperature).copy();
         if (operatingRange != null && showOperatingRange) {
             ChatFormatting tf = operatingRange.inRange(temperature) ? ChatFormatting.GREEN : ChatFormatting.GOLD;
-            c.append("\n").append(xlate("pneumaticcraft.gui.misc.requiredTemperatureString", operatingRange.asString(CELSIUS)).withStyle(tf));
+            return List.of(c, xlate("pneumaticcraft.gui.misc.requiredTemperatureString", operatingRange.asString(CELSIUS)).withStyle(tf));
+        } else {
+            return List.of(c);
         }
-        return Tooltip.create(c);
     }
 
     public void drawTicks(GuiGraphics graphics) {

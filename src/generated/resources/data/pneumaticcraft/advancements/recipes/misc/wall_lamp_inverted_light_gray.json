@@ -22,14 +22,13 @@
   },
   "requirements": [
     [
-      "has_ingot_iron_compressed",
-      "has_the_recipe"
+      "has_the_recipe",
+      "has_ingot_iron_compressed"
     ]
   ],
   "rewards": {
     "recipes": [
       "pneumaticcraft:wall_lamp_inverted_light_gray"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }

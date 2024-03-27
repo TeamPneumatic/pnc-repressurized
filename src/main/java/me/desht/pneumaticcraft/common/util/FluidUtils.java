@@ -40,22 +40,20 @@ import net.minecraft.world.level.material.FlowingFluid;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
-import net.minecraftforge.common.SoundActions;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.fluids.FluidActionResult;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.FluidUtil;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.fluids.capability.templates.FluidTank;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemHandlerHelper;
-import net.minecraftforge.items.wrapper.PlayerInvWrapper;
+import net.neoforged.neoforge.common.SoundActions;
+import net.neoforged.neoforge.fluids.FluidActionResult;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidUtil;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.ItemHandlerHelper;
+import net.neoforged.neoforge.items.wrapper.PlayerInvWrapper;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import static net.minecraftforge.fluids.FluidType.BUCKET_VOLUME;
+import static net.neoforged.neoforge.fluids.FluidType.BUCKET_VOLUME;
 
 public class FluidUtils {
     /**
@@ -127,10 +125,10 @@ public class FluidUtils {
     private static boolean doFluidInteraction(BlockEntity te, Direction face, Player player, InteractionHand hand, boolean isInserting) {
         ItemStack stack = player.getItemInHand(hand);
         return FluidUtil.getFluidHandler(stack).map(stackHandler -> {
-            if (te.getCapability(ForgeCapabilities.FLUID_HANDLER, face).isPresent()) {
+            if (IOHelper.getFluidHandlerForBlock(te, face).isPresent()) {
                 if (stackHandler.getTanks() == 0) return false;
                 int capacity = stackHandler.getTankCapacity(0);
-                return te.getCapability(ForgeCapabilities.FLUID_HANDLER, face).map(handler -> {
+                return IOHelper.getFluidHandlerForBlock(te, face).map(handler -> {
                     PlayerInvWrapper invWrapper = new PlayerInvWrapper(player.getInventory());
                     FluidActionResult result = isInserting ?
                             FluidUtils.tryEmptyContainerAndStow(player.getItemInHand(hand), handler, invWrapper, capacity, player, true) :
@@ -202,9 +200,9 @@ public class FluidUtils {
      * @param action whether to simulate the action
      * @return the fluidstack which was picked up, or FluidStack.EMPTY
      */
-    public static FluidStack tryPickupFluid(LazyOptional<IFluidHandler> fluidCap, Level world, BlockPos pos, boolean playSound, IFluidHandler.FluidAction action) {
+    public static FluidStack tryPickupFluid(IFluidHandler fluidCap, Level world, BlockPos pos, boolean playSound, IFluidHandler.FluidAction action) {
         BlockState state = world.getBlockState(pos);
-        if (!(state.getBlock() instanceof BucketPickup)) {
+        if (!(state.getBlock() instanceof BucketPickup pickup)) {
             return FluidStack.EMPTY;
         }
 
@@ -215,12 +213,11 @@ public class FluidUtils {
         }
         FluidTank tank = new FluidTank(BUCKET_VOLUME);
         tank.setFluid(new FluidStack(fluid, BUCKET_VOLUME));
-        FluidStack maybeSent = fluidCap.map(
-                h -> FluidUtil.tryFluidTransfer(h, tank, BUCKET_VOLUME, false)
-        ).orElse(FluidStack.EMPTY);
+        FluidStack maybeSent = FluidUtil.tryFluidTransfer(fluidCap, tank, BUCKET_VOLUME, false);
         if (maybeSent.getAmount() != BUCKET_VOLUME) {
             return FluidStack.EMPTY;
         }
+
         // actually do the pickup & transfer now
         boolean removeBlock = true;
         if (fluid == Fluids.WATER && ConfigHelper.common().advanced.dontUpdateInfiniteWaterSources.get()) {
@@ -233,32 +230,31 @@ public class FluidUtils {
             }
         }
         if (removeBlock && action.execute()) {
-            ((BucketPickup) state.getBlock()).pickupBlock(world, pos, state);
+            pickup.pickupBlock(null, world, pos, state);
         }
-        FluidStack transferred = fluidCap.map(h ->
-                FluidUtil.tryFluidTransfer(h, tank, BUCKET_VOLUME, action.execute()))
-                .orElse(FluidStack.EMPTY);
-        if (!transferred.isEmpty() && playSound) {
+        FluidStack transferred = FluidUtil.tryFluidTransfer(fluidCap, tank, BUCKET_VOLUME, action.execute());
+
+        if (!transferred.isEmpty() && action.execute() && playSound) {
             playFillSound(world, pos, fluid);
         }
+
         return transferred;
     }
 
     /**
      * Try to pour 1000mB (one bucket) of fluid into the world at the given position.
      *
-     * @param fluidCap the fluid capability
+     * @param handler the fluid handler to extract from
      * @param world the world
      * @param pos block to pour fluid at
      * @param playSound true to play a bucket-empty sound
      * @param force if true, fluid will be poured out even if the block space is not completely empty
      * @return true if fluid was poured, false otherwise
      */
-    public static boolean tryPourOutFluid(LazyOptional<IFluidHandler> fluidCap, Level world, BlockPos pos, boolean playSound, boolean force, IFluidHandler.FluidAction action) {
+    public static boolean tryPourOutFluid(IFluidHandler handler, Level world, BlockPos pos, boolean playSound, boolean force, IFluidHandler.FluidAction action) {
         // code partially lifted from BucketItem
 
         BlockState blockstate = world.getBlockState(pos);
-//        Material material = blockstate.getMaterial();
         boolean isReplaceable = blockstate.canBeReplaced();
         boolean isNotSolid = !blockstate.isSolid(); //!material.isSolid();
 
@@ -268,15 +264,14 @@ public class FluidUtils {
         if (!force && (isSourceFluidBlock(world, pos) || !isReplaceable && !(blockstate.getBlock() instanceof LiquidBlockContainer)))
             return false;
 
-        boolean didWork = fluidCap.map(handler -> {
-            FluidStack toPlace = handler.drain(BUCKET_VOLUME, IFluidHandler.FluidAction.SIMULATE);
-            if (toPlace.getAmount() < BUCKET_VOLUME) {
-                return false;  // must be a full bucket's worth to place in the world
-            }
+        boolean didWork = false;
+        FluidStack toPlace = handler.drain(BUCKET_VOLUME, IFluidHandler.FluidAction.SIMULATE);
+        if (toPlace.getAmount() >= BUCKET_VOLUME) {
+            // must be a full bucket's worth to place in the world
             Fluid fluid = toPlace.getFluid();
             Block block = blockstate.getBlock();
             if (world.isEmptyBlock(pos) || isNotSolid || isReplaceable
-                    || block instanceof LiquidBlockContainer && ((LiquidBlockContainer)block).canPlaceLiquid(world, pos, blockstate, toPlace.getFluid())) {
+                    || block instanceof LiquidBlockContainer lbc && lbc.canPlaceLiquid(null, world, pos, blockstate, toPlace.getFluid())) {
                 if (action.execute()) {
                     if (world.dimensionType().ultraWarm() && fluid.is(FluidTags.WATER)) {
                         // no pouring water in the nether!
@@ -298,14 +293,14 @@ public class FluidUtils {
                         world.setBlock(pos, fluid.defaultFluidState().createLegacyBlock(), Block.UPDATE_ALL);
                     }
                 }
-                return true;
+                didWork = true;
             }
-            return false;
-        }).orElse(false);
+        }
 
         if (didWork && action.execute()) {
-            fluidCap.ifPresent(handler -> handler.drain(BUCKET_VOLUME, IFluidHandler.FluidAction.EXECUTE));
+            handler.drain(BUCKET_VOLUME, IFluidHandler.FluidAction.EXECUTE);
         }
+
         return didWork;
     }
 

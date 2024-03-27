@@ -19,15 +19,13 @@ package me.desht.pneumaticcraft.common.block.entity;
 
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
-import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.heat.HeatExchangerLogicAmbient;
+import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
 import me.desht.pneumaticcraft.lib.BlockEntityConstants;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.AABB;
-import net.minecraftforge.common.util.LazyOptional;
 
 public class HeatSinkBlockEntity extends CompressedIronBlockBlockEntity {
     private final IHeatExchangerLogic airExchanger = PneumaticRegistry.getInstance().getHeatRegistry().makeHeatExchangerLogic();
@@ -35,16 +33,11 @@ public class HeatSinkBlockEntity extends CompressedIronBlockBlockEntity {
     private double ambientTemp;
 
     public HeatSinkBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.HEAT_SINK.get(), pos, state);
+        super(ModBlockEntityTypes.HEAT_SINK.get(), pos, state);
 
         heatExchanger.setThermalCapacity(5);
         airExchanger.addConnectedExchanger(heatExchanger);
         airExchanger.setThermalResistance(BlockEntityConstants.HEAT_SINK_THERMAL_RESISTANCE);
-    }
-
-    @Override
-    protected boolean shouldRerenderChunkOnDescUpdate() {
-        return true;
     }
 
     @Override
@@ -84,15 +77,7 @@ public class HeatSinkBlockEntity extends CompressedIronBlockBlockEntity {
     }
 
     @Override
-    public AABB getRenderBoundingBox() {
-        return new AABB(
-                getBlockPos().getX(), getBlockPos().getY(), getBlockPos().getZ(),
-                getBlockPos().getX() + 1, getBlockPos().getY() + 1, getBlockPos().getZ() + 1
-        );
-    }
-
-    @Override
-    public LazyOptional<IHeatExchangerLogic> getHeatCap(Direction side) {
-        return side == null || side == getRotation() ? super.getHeatCap(side) : LazyOptional.empty();
+    public IHeatExchangerLogic getHeatExchanger(Direction dir) {
+        return dir == null || dir == getRotation() ? super.getHeatExchanger(dir) : null;
     }
 }

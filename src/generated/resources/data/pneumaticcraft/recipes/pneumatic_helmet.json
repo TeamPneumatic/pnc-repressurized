@@ -1,24 +1,25 @@
 {
   "type": "pneumaticcraft:crafting_shaped_pressurizable",
-  "category": "misc",
-  "key": {
-    "A": {
-      "item": "pneumaticcraft:compressed_iron_helmet"
+  "value": {
+    "category": "misc",
+    "key": {
+      "A": {
+        "item": "pneumaticcraft:compressed_iron_helmet"
+      },
+      "C": {
+        "item": "pneumaticcraft:air_canister"
+      },
+      "P": {
+        "item": "pneumaticcraft:printed_circuit_board"
+      }
     },
-    "C": {
-      "item": "pneumaticcraft:air_canister"
-    },
-    "P": {
-      "item": "pneumaticcraft:printed_circuit_board"
+    "pattern": [
+      "CPC",
+      "CAC",
+      "CCC"
+    ],
+    "result": {
+      "item": "pneumaticcraft:pneumatic_helmet"
     }
-  },
-  "pattern": [
-    "CPC",
-    "CAC",
-    "CCC"
-  ],
-  "result": {
-    "item": "pneumaticcraft:pneumatic_helmet"
-  },
-  "show_notification": true
+  }
 }

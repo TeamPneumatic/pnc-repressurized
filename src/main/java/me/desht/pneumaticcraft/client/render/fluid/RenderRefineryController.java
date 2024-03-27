@@ -6,7 +6,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.phys.AABB;
 
 import java.util.Collection;
-import java.util.Collections;
+import java.util.List;
 
 public class RenderRefineryController extends AbstractFluidTER<RefineryControllerBlockEntity> {
     private static final AABB[] BOUNDS = new AABB[4];
@@ -24,10 +24,8 @@ public class RenderRefineryController extends AbstractFluidTER<RefineryControlle
     @Override
     Collection<TankRenderInfo> getTanksToRender(RefineryControllerBlockEntity te) {
         int rot = te.getRotation().get2DDataValue();
-        if (rot >= 0 && rot < 4) {
-            return Collections.singletonList(new TankRenderInfo(te.getInputTank(), BOUNDS[te.getRotation().get2DDataValue()]).without(Direction.DOWN));
-        } else {
-            return Collections.emptyList();
-        }
+        return rot >= 0 && rot < 4 ?
+                List.of(new TankRenderInfo(te.getInputTank(), BOUNDS[te.getRotation().get2DDataValue()]).without(Direction.DOWN)) :
+                List.of();
     }
 }

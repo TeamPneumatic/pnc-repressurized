@@ -22,14 +22,13 @@
   },
   "requirements": [
     [
-      "has_transistor",
-      "has_the_recipe"
+      "has_the_recipe",
+      "has_transistor"
     ]
   ],
   "rewards": {
     "recipes": [
       "pneumaticcraft:remote"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }

@@ -19,11 +19,11 @@ package me.desht.pneumaticcraft.common.drone.ai;
 
 import me.desht.pneumaticcraft.api.harvesting.HarvestHandler;
 import me.desht.pneumaticcraft.api.harvesting.HoeHandler;
-import me.desht.pneumaticcraft.common.core.ModHarvestHandlers;
-import me.desht.pneumaticcraft.common.core.ModHoeHandlers;
 import me.desht.pneumaticcraft.common.drone.IDroneBase;
 import me.desht.pneumaticcraft.common.drone.progwidgets.IToolUser;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetAreaItemBase;
+import me.desht.pneumaticcraft.common.registry.ModHarvestHandlers;
+import me.desht.pneumaticcraft.common.registry.ModHoeHandlers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -62,7 +62,7 @@ public class DroneAIHarvest<W extends ProgWidgetAreaItemBase & IToolUser> extend
 
     private Optional<HarvestHandler> getApplicableHandler(BlockPos pos) {
         BlockState state = worldCache.getBlockState(pos);
-        return ModHarvestHandlers.HARVEST_HANDLERS.get().getValues().stream()
+        return ModHarvestHandlers.HARVEST_HANDLER_REGISTRY.stream()
                 .filter(handler -> handler.canHarvest(drone.world(), worldCache, pos, state, drone) &&
                         hasApplicableItemFilters(handler, pos, state))
                 .findFirst();
@@ -100,7 +100,7 @@ public class DroneAIHarvest<W extends ProgWidgetAreaItemBase & IToolUser> extend
     private Consumer<Player> getDamageableHoe() {
         for (int i = 0; i < drone.getInv().getSlots(); i++) {
             ItemStack stack = drone.getInv().getStackInSlot(i);
-            HoeHandler handler = ModHoeHandlers.HOE_HANDLERS.get().getValues().stream()
+            HoeHandler handler = ModHoeHandlers.HOE_HANDLER_REGISTRY.stream()
                     .filter(hoeHandler -> hoeHandler.test(stack))
                     .findFirst().orElse(null);
             if (handler != null) return handler.getConsumer(stack);

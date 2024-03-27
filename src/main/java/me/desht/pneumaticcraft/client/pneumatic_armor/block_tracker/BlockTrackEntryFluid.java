@@ -19,6 +19,7 @@ package me.desht.pneumaticcraft.client.pneumatic_armor.block_tracker;
 
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.FluidTrackEvent;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IBlockTrackEntry;
+import me.desht.pneumaticcraft.common.util.IOHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
@@ -27,9 +28,9 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.fluids.FluidStack;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.fluids.FluidStack;
 
 import java.util.Collections;
 import java.util.List;
@@ -44,8 +45,8 @@ public class BlockTrackEntryFluid implements IBlockTrackEntry {
     public boolean shouldTrackWithThisEntry(BlockGetter world, BlockPos pos, BlockState state, BlockEntity te) {
         return te != null
                 && !TrackerBlacklistManager.isFluidBlacklisted(te)
-                && IBlockTrackEntry.hasCapabilityOnAnyFace(te, ForgeCapabilities.FLUID_HANDLER)
-                && !MinecraftForge.EVENT_BUS.post(new FluidTrackEvent(te));
+                && IBlockTrackEntry.hasCapabilityOnAnyFace(te, Capabilities.FluidHandler.BLOCK)
+                && !NeoForge.EVENT_BUS.post(new FluidTrackEvent(te)).isCanceled();
     }
 
     @Override
@@ -61,7 +62,7 @@ public class BlockTrackEntryFluid implements IBlockTrackEntry {
     @Override
     public void addInformation(Level world, BlockPos pos, BlockEntity te, Direction face, List<Component> infoList) {
         try {
-            te.getCapability(ForgeCapabilities.FLUID_HANDLER, face).ifPresent(handler -> {
+            IOHelper.getFluidHandlerForBlock(te, face).ifPresent(handler -> {
                 for (int i = 0; i < handler.getTanks(); i++) {
                     FluidStack stack = handler.getFluidInTank(i);
                     if (stack.isEmpty()) {

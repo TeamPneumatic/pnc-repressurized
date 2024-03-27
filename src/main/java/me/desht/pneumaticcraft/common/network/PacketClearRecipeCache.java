@@ -19,27 +19,36 @@ package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 
-import java.util.function.Supplier;
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 /**
  * Received on: CLIENT
  * Sent by server when recipes are reloaded; clear our local cache of machine recipes
  */
-public class PacketClearRecipeCache {
-    public PacketClearRecipeCache() {
-    }
+public enum PacketClearRecipeCache implements CustomPacketPayload {
+    INSTANCE;
 
-    public PacketClearRecipeCache(@SuppressWarnings("unused") FriendlyByteBuf buffer) {
+    public static final ResourceLocation ID = RL("clear_recipe_cache");
+
+    public static PacketClearRecipeCache fromNetwork(@SuppressWarnings("unused") FriendlyByteBuf buffer) {
+        return INSTANCE;
     }
 
     @SuppressWarnings("EmptyMethod")
-    public void toBytes(@SuppressWarnings("unused") FriendlyByteBuf buf) {
+    @Override
+    public void write(@SuppressWarnings("unused") FriendlyByteBuf buf) {
     }
 
-    public void handle(Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().setPacketHandled(true);
-        ctx.get().enqueueWork(PneumaticCraftRecipeType::clearCachedRecipes);
+    @Override
+    public ResourceLocation id() {
+        return ID;
+    }
+
+    public static void handle(@SuppressWarnings("unused") PacketClearRecipeCache message, PlayPayloadContext ctx) {
+        ctx.workHandler().submitAsync(() -> PneumaticCraftRecipeType.clearCachedRecipes());
     }
 }

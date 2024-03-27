@@ -17,57 +17,43 @@
 
 package me.desht.pneumaticcraft.common.network;
 
-import me.desht.pneumaticcraft.common.block.entity.PressureTubeBlockEntity;
-import me.desht.pneumaticcraft.common.tubemodules.AbstractTubeModule;
 import me.desht.pneumaticcraft.common.tubemodules.LogisticsModule;
-import net.minecraft.core.Direction;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Player;
 
-import java.util.function.Supplier;
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 /**
  * Received on: CLIENT
  * Sent by server when the status or colour of a logistics module is updated
  */
-public class PacketUpdateLogisticsModule extends LocationIntPacket {
-    private final int side;
-    private final int colorIndex;
-    private final int status;
+public record PacketUpdateLogisticsModule(ModuleLocator locator, int colorIndex, int status) implements TubeModulePacket<LogisticsModule> {
+    public static final ResourceLocation ID = RL("update_logsistics_module");
 
-    public PacketUpdateLogisticsModule(LogisticsModule logisticsModule, int action) {
-        super(logisticsModule.getTube().getBlockPos());
-        side = logisticsModule.getDirection().ordinal();
-        colorIndex = logisticsModule.getColorChannel();
-        if (action > 0) {
-            status = 1 + action;
-        } else {
-            status = logisticsModule.hasPower() ? 1 : 0;
-        }
+    public static PacketUpdateLogisticsModule create(LogisticsModule module, int action) {
+        int status = action > 0 ? 1 + action : module.hasPower() ? 1 : 0;
+        return new PacketUpdateLogisticsModule(ModuleLocator.forModule(module), module.getColorChannel(), status);
     }
 
-    public PacketUpdateLogisticsModule(FriendlyByteBuf buffer) {
-        super(buffer);
-        side = buffer.readByte();
-        colorIndex = buffer.readByte();
-        status = buffer.readByte();
+    public static PacketUpdateLogisticsModule fromNetwork(FriendlyByteBuf buffer) {
+        return new PacketUpdateLogisticsModule(ModuleLocator.fromNetwork(buffer), buffer.readByte(), buffer.readByte());
     }
 
     @Override
-    public void toBytes(FriendlyByteBuf buf) {
-        super.toBytes(buf);
-        buf.writeByte(side);
+    public void write(FriendlyByteBuf buf) {
+        locator.write(buf);
         buf.writeByte(colorIndex);
         buf.writeByte(status);
     }
 
-    public void handle(Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> PacketUtil.getBlockEntity(ctx.get().getSender(), pos, PressureTubeBlockEntity.class).ifPresent(te -> {
-            AbstractTubeModule module = te.getModule(Direction.from3DDataValue(side));
-            if (module instanceof LogisticsModule) {
-                ((LogisticsModule) module).onUpdatePacket(status, colorIndex);
-            }
-        }));
-        ctx.get().setPacketHandled(true);
+    @Override
+    public ResourceLocation id() {
+        return ID;
+    }
+
+    @Override
+    public void onModuleUpdate(LogisticsModule module, Player player) {
+        module.onUpdatePacket(status, colorIndex);
     }
 }

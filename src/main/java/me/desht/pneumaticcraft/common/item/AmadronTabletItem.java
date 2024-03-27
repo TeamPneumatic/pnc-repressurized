@@ -20,10 +20,10 @@ package me.desht.pneumaticcraft.common.item;
 import me.desht.pneumaticcraft.api.item.IPositionProvider;
 import me.desht.pneumaticcraft.common.amadron.ShoppingBasket;
 import me.desht.pneumaticcraft.common.block.entity.ChargingStationBlockEntity;
-import me.desht.pneumaticcraft.common.core.ModItems;
-import me.desht.pneumaticcraft.common.core.ModMenuTypes;
-import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.inventory.AmadronMenu;
+import me.desht.pneumaticcraft.common.registry.ModItems;
+import me.desht.pneumaticcraft.common.registry.ModMenuTypes;
+import me.desht.pneumaticcraft.common.registry.ModSounds;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.common.util.GlobalPosHelper;
 import me.desht.pneumaticcraft.common.util.IOHelper;
@@ -47,18 +47,12 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.network.NetworkHooks;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.items.IItemHandler;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
@@ -70,10 +64,10 @@ public class AmadronTabletItem extends PressurizableItem
 
     @Override
     public InteractionResultHolder<ItemStack> use(Level worldIn, Player playerIn, InteractionHand handIn) {
-        if (!worldIn.isClientSide) {
-            openGui(playerIn, handIn);
+        if (playerIn instanceof ServerPlayer sp) {
+            openGui(sp, handIn);
         }
-        return InteractionResultHolder.success(playerIn.getItemInHand(handIn));
+        return InteractionResultHolder.sidedSuccess(playerIn.getItemInHand(handIn), playerIn.level().isClientSide);
     }
 
     @Override
@@ -86,13 +80,13 @@ public class AmadronTabletItem extends PressurizableItem
         BlockEntity te = worldIn.getBlockEntity(pos);
         if (te == null || player == null) return InteractionResult.PASS;
 
-        if (te.getCapability(ForgeCapabilities.FLUID_HANDLER, facing).isPresent()) {
+        if (IOHelper.getFluidHandlerForBlock(te, facing).isPresent()) {
             if (!worldIn.isClientSide) {
                 setFluidProvidingLocation(player.getItemInHand(ctx.getHand()), GlobalPosHelper.makeGlobalPos(worldIn, pos));
             } else {
                 player.playSound(ModSounds.CHIRP.get(), 1.0f, 1.5f);
             }
-        } else if (te.getCapability(ForgeCapabilities.ITEM_HANDLER, facing).isPresent()) {
+        } else if (IOHelper.getInventoryForBlock(te, facing).isPresent()) {
             if (!worldIn.isClientSide) {
                 setItemProvidingLocation(player.getItemInHand(ctx.getHand()), GlobalPosHelper.makeGlobalPos(worldIn, pos));
             } else {
@@ -122,16 +116,16 @@ public class AmadronTabletItem extends PressurizableItem
         }
     }
 
-    public static LazyOptional<IItemHandler> getItemCapability(ItemStack tablet) {
+    public static Optional<IItemHandler> getItemCapability(ItemStack tablet) {
         GlobalPos pos = getItemProvidingLocation(tablet);
         if (pos != null) {
             BlockEntity te = GlobalPosHelper.getTileEntity(pos);
             for (Direction dir : DirectionUtil.VALUES) {
-                LazyOptional<IItemHandler> lazy = IOHelper.getInventoryForTE(te, dir);
-                if (lazy.isPresent()) return lazy;
+                Optional<IItemHandler> cap = IOHelper.getInventoryForBlock(te, dir);
+                if (cap.isPresent()) return cap;
             }
         }
-        return LazyOptional.empty();
+        return Optional.empty();
     }
 
     public static GlobalPos getItemProvidingLocation(ItemStack tablet) {
@@ -144,16 +138,16 @@ public class AmadronTabletItem extends PressurizableItem
         NBTUtils.setCompoundTag(tablet, "itemPos", GlobalPosHelper.toNBT(globalPos));
     }
 
-    public static LazyOptional<IFluidHandler> getFluidCapability(ItemStack tablet) {
+    public static Optional<IFluidHandler> getFluidCapability(ItemStack tablet) {
         GlobalPos pos = getFluidProvidingLocation(tablet);
         if (pos != null) {
             BlockEntity te = GlobalPosHelper.getTileEntity(pos);
             for (Direction dir : DirectionUtil.VALUES) {
-                LazyOptional<IFluidHandler> lazy = IOHelper.getFluidHandlerForTE(te, dir);
-                if (lazy.isPresent()) return lazy;
+                Optional<IFluidHandler> cap = IOHelper.getFluidHandlerForBlock(te, dir);
+                if (cap.isPresent()) return cap;
             }
         }
-        return LazyOptional.empty();
+        return Optional.empty();
     }
 
     public static GlobalPos getFluidProvidingLocation(ItemStack tablet) {
@@ -195,8 +189,8 @@ public class AmadronTabletItem extends PressurizableItem
         };
     }
 
-    public static void openGui(Player playerIn, InteractionHand handIn) {
-        NetworkHooks.openScreen((ServerPlayer) playerIn, new MenuProvider() {
+    public static void openGui(ServerPlayer playerIn, InteractionHand handIn) {
+        playerIn.openMenu(new MenuProvider() {
             @Override
             public Component getDisplayName() {
                 return playerIn.getItemInHand(handIn).getHoverName();

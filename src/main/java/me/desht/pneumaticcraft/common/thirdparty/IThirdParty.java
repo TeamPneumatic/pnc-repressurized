@@ -17,11 +17,13 @@
 
 package me.desht.pneumaticcraft.common.thirdparty;
 
+import net.neoforged.bus.api.IEventBus;
+
 public interface IThirdParty {
     /**
      * Called on both client and server after mods have loaded but before registry events, in the mod creation thread.
      */
-    default void preInit() {}
+    default void preInit(IEventBus modBus) {}
 
     /**
      * Called on both client and server after any registry objects are created, in the mod creation thread.
@@ -33,6 +35,12 @@ public interface IThirdParty {
      * execution thread).
      */
     default void postInit() {}
+
+    /**
+     * Called client-side after at mod construction time, in the mod creation thread. Suitable for registering
+     * client-only event handlers.
+     */
+    default void clientPreInit(IEventBus modBus) {}
 
     /**
      * Called client-side after registry objects are created, in the mod creation thread.

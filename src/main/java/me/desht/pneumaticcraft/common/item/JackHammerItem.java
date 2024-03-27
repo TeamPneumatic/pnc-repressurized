@@ -26,8 +26,6 @@ import me.desht.pneumaticcraft.client.ColorHandlers;
 import me.desht.pneumaticcraft.client.sound.MovingSounds;
 import me.desht.pneumaticcraft.common.block.entity.ChargingStationBlockEntity;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
-import me.desht.pneumaticcraft.common.core.ModItems;
-import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.inventory.AbstractPneumaticCraftMenu;
 import me.desht.pneumaticcraft.common.inventory.JackhammerSetupMenu;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
@@ -35,6 +33,8 @@ import me.desht.pneumaticcraft.common.item.DrillBitItem.DrillBitType;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketPlayMovingSound;
 import me.desht.pneumaticcraft.common.network.PacketPlayMovingSound.MovingSoundFocus;
+import me.desht.pneumaticcraft.common.registry.ModItems;
+import me.desht.pneumaticcraft.common.registry.ModMenuTypes;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.util.*;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
@@ -65,12 +65,11 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
-import net.minecraftforge.common.ForgeHooks;
-import net.minecraftforge.common.TierSortingRegistry;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.network.NetworkHooks;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.common.CommonHooks;
+import net.neoforged.neoforge.common.TierSortingRegistry;
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import org.apache.commons.lang3.mutable.MutableBoolean;
 
 import javax.annotation.Nonnull;
@@ -141,7 +140,7 @@ public class JackHammerItem extends PressurizableItem
         ItemStack stack = playerIn.getItemInHand(handIn);
         if (!playerIn.isCrouching() || stack.getCount() != 1) return InteractionResultHolder.pass(stack);
         if (playerIn instanceof ServerPlayer sp) {
-            NetworkHooks.openScreen(sp, new MenuProvider() {
+            sp.openMenu(new MenuProvider() {
                 @Override
                 public Component getDisplayName() {
                     return stack.getHoverName();
@@ -170,7 +169,7 @@ public class JackHammerItem extends PressurizableItem
 
             HitResult hitResult = RayTraceUtils.getEntityLookedObject(player, PneumaticCraftUtils.getPlayerReachDistance(player));
             if (hitResult instanceof BlockHitResult blockHitResult) {
-                itemstack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).ifPresent(airHandler -> {
+                PNCCapabilities.getAirHandler(itemstack).ifPresent(airHandler -> {
                     DigMode digMode = JackHammerItem.getDigMode(itemstack);
 
                     IntList upgrades = UpgradableItemUtils.getUpgradeList(itemstack, ModUpgrades.SPEED.get(), ModUpgrades.MAGNET.get());
@@ -202,7 +201,7 @@ public class JackHammerItem extends PressurizableItem
                             BlockState state1 = level.getBlockState(pos1);
                             if (state1.getDestroySpeed(level, pos1) < 0) continue;
 
-                            int exp = ForgeHooks.onBlockBreakEvent(serverPlayer.level(), serverPlayer.gameMode.getGameModeForPlayer(), serverPlayer, pos1);
+                            int exp = CommonHooks.onBlockBreakEvent(serverPlayer.level(), serverPlayer.gameMode.getGameModeForPlayer(), serverPlayer, pos1);
                             if (exp == -1) {
                                 continue;
                             }

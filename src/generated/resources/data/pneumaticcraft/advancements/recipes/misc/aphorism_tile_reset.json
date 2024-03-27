@@ -22,14 +22,13 @@
   },
   "requirements": [
     [
-      "has_aphorism_tile",
-      "has_the_recipe"
+      "has_the_recipe",
+      "has_aphorism_tile"
     ]
   ],
   "rewards": {
     "recipes": [
       "pneumaticcraft:aphorism_tile_reset"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }

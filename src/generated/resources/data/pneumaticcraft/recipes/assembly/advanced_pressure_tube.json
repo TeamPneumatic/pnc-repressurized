@@ -1,13 +1,16 @@
 {
   "type": "pneumaticcraft:assembly_laser",
   "input": {
-    "type": "pneumaticcraft:stacked_item",
-    "count": 20,
-    "item": "pneumaticcraft:pressure_chamber_valve"
+    "type": "pneumaticcraft:stacked",
+    "value": {
+      "item": {
+        "count": 20,
+        "item": "pneumaticcraft:pressure_chamber_valve"
+      }
+    }
   },
-  "program": "laser",
+  "program": "LASER",
   "result": {
-    "count": 8,
     "item": "pneumaticcraft:advanced_pressure_tube"
   }
 }

@@ -77,7 +77,7 @@ public class AssemblyPlatformRenderer extends AbstractBlockEntityModelRenderer<A
 
     @Override
     public void renderModel(AssemblyPlatformBlockEntity te, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
-        ItemStack heldStack = te.getPrimaryInventory().getStackInSlot(0);
+        ItemStack heldStack = te.getItemHandler(null).getStackInSlot(0);
         Pair<IAssemblyRenderOverriding, Float> clawTranslation = getClawTranslation(Mth.lerp(partialTicks, te.oldClawProgress, te.clawProgress), heldStack);
         VertexConsumer builder = bufferIn.getBuffer(RenderType.entityCutout(Textures.MODEL_ASSEMBLY_PLATFORM));
 

@@ -19,16 +19,16 @@ package me.desht.pneumaticcraft.common.thirdparty.jei;
 
 import me.desht.pneumaticcraft.api.crafting.recipe.FluidMixerRecipe;
 import me.desht.pneumaticcraft.client.render.pressure_gauge.PressureGaugeRenderer2D;
-import me.desht.pneumaticcraft.common.core.ModBlocks;
+import me.desht.pneumaticcraft.common.registry.ModBlocks;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
 import mezz.jei.api.constants.VanillaTypes;
-import mezz.jei.api.forge.ForgeTypes;
 import mezz.jei.api.gui.ITickTimer;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawableAnimated;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
+import mezz.jei.api.neoforge.NeoForgeTypes;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import net.minecraft.ChatFormatting;
@@ -36,7 +36,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidStack;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -73,17 +73,17 @@ public class JEIFluidMixerCategory extends AbstractPNCCategory<FluidMixerRecipe>
         int outH = Math.min(64, outF.getAmount() * 64 / max);
 
         builder.addSlot(RecipeIngredientRole.INPUT, 5, 3 + (64 - inH1))
-                .addIngredients(ForgeTypes.FLUID_STACK, recipe.getInput1().getFluidStacks())
+                .addIngredients(NeoForgeTypes.FLUID_STACK, recipe.getInput1().getFluidStacks())
                 .setFluidRenderer(in1.getAmount(), false, 16, inH1)
                 .setOverlay(Helpers.makeTankOverlay(inH1), 0, 0);
         builder.addSlot(RecipeIngredientRole.INPUT, 28, 3 + (64 - inH2))
-                .addIngredients(ForgeTypes.FLUID_STACK, recipe.getInput2().getFluidStacks())
+                .addIngredients(NeoForgeTypes.FLUID_STACK, recipe.getInput2().getFluidStacks())
                 .setFluidRenderer(in2.getAmount(), false, 16, inH2)
                 .setOverlay(Helpers.makeTankOverlay(inH2), 0, 0);
 
         if (!recipe.getOutputFluid().isEmpty()) {
             builder.addSlot(RecipeIngredientRole.OUTPUT, 90, 3 + (64 - outH))
-                    .addIngredients(ForgeTypes.FLUID_STACK, Collections.singletonList(outF))
+                    .addIngredients(NeoForgeTypes.FLUID_STACK, Collections.singletonList(outF))
                     .setFluidRenderer(outF.getAmount(), false, 16, outH)
                     .setOverlay(Helpers.makeTankOverlay(outH), 0, 0);
         }

@@ -31,11 +31,11 @@ import me.desht.pneumaticcraft.client.pneumatic_armor.ClientArmorRegistry;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.config.subconfig.ArmorFeatureStatus;
 import me.desht.pneumaticcraft.common.config.subconfig.ArmorHUDLayout;
-import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.item.PneumaticArmorItem;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.CoreComponentsHandler;
+import me.desht.pneumaticcraft.common.registry.ModItems;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -200,7 +200,6 @@ public class ArmorMainScreen extends AbstractPneumaticCraftScreen implements IGu
 
     @Override
     public void render(GuiGraphics graphics, int x, int y, float partialTicks) {
-        renderBackground(graphics);
         IOptionPage optionPage = getCurrentOptionsPage().page;
         optionPage.renderPre(graphics, x, y, partialTicks);
         graphics.drawCenteredString(font, getCurrentOptionsPage().page.getPageName().copy().withStyle(TITLE_PREFIX), 100, 12, 0xFFFFFFFF);
@@ -238,9 +237,9 @@ public class ArmorMainScreen extends AbstractPneumaticCraftScreen implements IGu
     }
 
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double dir) {
-        return getCurrentOptionsPage().page.mouseScrolled(mouseX, mouseY, dir)
-                || super.mouseScrolled(mouseX, mouseY, dir);
+    public boolean mouseScrolled(double mouseX, double mouseY, double dirX, double dirY) {
+        return getCurrentOptionsPage().page.mouseScrolled(mouseX, mouseY, dirX, dirY)
+                || super.mouseScrolled(mouseX, mouseY, dirX, dirY);
     }
 
     @Override

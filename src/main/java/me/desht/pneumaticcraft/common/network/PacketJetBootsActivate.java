@@ -23,44 +23,45 @@ import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
 import me.desht.pneumaticcraft.common.pneumatic_armor.JetBootsStateTracker;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraftforge.network.NetworkEvent;
+import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 
-import java.util.function.Supplier;
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 /**
  * Received on: SERVER
  * Sent from client to tell the server the player is activating/deactivating jet boots.  Toggled when
  * Jump key is pressed or released.
  */
-public class PacketJetBootsActivate {
-    private final boolean state;
+public record PacketJetBootsActivate(boolean state) implements CustomPacketPayload {
+    public static final ResourceLocation ID = RL("jetboots_activate");
 
-    public PacketJetBootsActivate(boolean state) {
-        this.state = state;
+    public static PacketJetBootsActivate fromNetwork(FriendlyByteBuf buffer) {
+        return new PacketJetBootsActivate(buffer.readBoolean());
     }
 
-    PacketJetBootsActivate(FriendlyByteBuf buffer) {
-        state = buffer.readBoolean();
-    }
-
-    public void toBytes(FriendlyByteBuf buf) {
+    @Override
+    public void write(FriendlyByteBuf buf) {
         buf.writeBoolean(state);
     }
 
-    public void handle(Supplier<NetworkEvent.Context> ctx) {
-        ServerPlayer player = ctx.get().getSender();
-        ctx.get().enqueueWork(() -> {
+    @Override
+    public ResourceLocation id() {
+        return ID;
+    }
+
+    public static void handle(PacketJetBootsActivate message, PlayPayloadContext ctx) {
+        ctx.player().ifPresent(player -> ctx.workHandler().submitAsync(() -> {
             if (PneumaticArmorItem.isPneumaticArmorPiece(player, EquipmentSlot.FEET)) {
                 CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
                 JetBootsStateTracker.JetBootsState jbState = JetBootsStateTracker.getTracker(player).getJetBootsState(player);
                 if (handler.getUpgradeCount(EquipmentSlot.FEET, ModUpgrades.JET_BOOTS.get()) > 0
-                        && (!state || jbState.isEnabled())) {
-                    CommonUpgradeHandlers.jetBootsHandler.setJetBootsActive(handler, state);
+                        && (!message.state() || jbState.isEnabled())) {
+                    CommonUpgradeHandlers.jetBootsHandler.setJetBootsActive(handler, message.state());
                 }
             }
-        });
-        ctx.get().setPacketHandled(true);
+        }));
     }
 }

@@ -21,54 +21,44 @@ import me.desht.pneumaticcraft.common.item.IGPSToolSync;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.network.NetworkEvent;
+import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 
-import java.util.function.Supplier;
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 /**
  * Received on: SERVER
  * Send when the GPS Tool GUI is closed, to update the held GPS tool settings
  */
-public class PacketChangeGPSToolCoordinate extends LocationIntPacket {
-    private final InteractionHand hand;
-    private final String variable;
-    private final int index;
-
-    public PacketChangeGPSToolCoordinate(BlockPos pos, InteractionHand hand, String variable, int index) {
-        super(pos);
-        this.hand = hand;
-        this.variable = variable;
-        this.index = index;
-    }
+public record PacketChangeGPSToolCoordinate(BlockPos pos, InteractionHand hand, String variable, int index) implements CustomPacketPayload {
+    public static final ResourceLocation ID = RL("change_gps_tool_coord");
 
     public PacketChangeGPSToolCoordinate(FriendlyByteBuf buf) {
-        super(buf);
-        variable = buf.readUtf(GlobalVariableManager.MAX_VARIABLE_LEN);
-        index = buf.readByte();
-        hand = buf.readBoolean() ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND;
+        this(buf.readBlockPos(), buf.readEnum(InteractionHand.class), buf.readUtf(GlobalVariableManager.MAX_VARIABLE_LEN), buf.readByte());
     }
 
     @Override
-    public void toBytes(FriendlyByteBuf buf) {
-        super.toBytes(buf);
+    public void write(FriendlyByteBuf buf) {
+        buf.writeBlockPos(pos);
+        buf.writeEnum(hand);
         buf.writeUtf(variable);
         buf.writeByte(index);
-        buf.writeBoolean(hand == InteractionHand.MAIN_HAND);
     }
 
-    public void handle(Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> {
-            ServerPlayer player = ctx.get().getSender();
-            if (player != null) {
-                ItemStack stack = player.getItemInHand(hand);
-                if (stack.getItem() instanceof IGPSToolSync sync) {
-                    sync.syncFromClient(player, stack, index, pos, variable);
-                }
+    @Override
+    public ResourceLocation id() {
+        return ID;
+    }
+
+    public static void handle(PacketChangeGPSToolCoordinate message, PlayPayloadContext ctx) {
+        ctx.player().ifPresent(player -> ctx.workHandler().submitAsync(() -> {
+            ItemStack stack = player.getItemInHand(message.hand);
+            if (stack.getItem() instanceof IGPSToolSync sync) {
+                sync.syncFromClient(player, stack, message.index, message.pos, message.variable);
             }
-        });
-        ctx.get().setPacketHandled(true);
+        }));
     }
 }

@@ -30,6 +30,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -57,46 +58,36 @@ public class HeatBehaviourCustomTransition extends HeatBehaviourTransition {
 
     @Override
     public boolean isApplicable() {
-        return super.isApplicable() && heatEntry != null && heatEntry.getHeatCapacity() > 0;
+        return super.isApplicable() && heatEntry != null && heatEntry.getHeatCapacity().orElse(0) > 0;
     }
 
     @Override
     protected int getMaxExchangedHeat() {
-        return getHeatEntry().getHeatCapacity();
+        return heatEntry.getHeatCapacity().orElse(0);
     }
 
     @Override
     protected boolean transformBlockHot() {
-        BlockState hot = getHeatEntry().getTransformHot();
-        if (hot != null) {
+        return heatEntry.getTransformHot().map(hot -> {
             if (getFluid() != null) {
-                transformFluidBlocks(hot, getHeatEntry().getTransformHotFlowing());
+                transformFluidBlocks(hot, heatEntry.getTransformHotFlowing().orElse(Blocks.AIR.defaultBlockState()));
                 return true;
             } else {
                 return getWorld().setBlockAndUpdate(getPos(), hot);
             }
-        } else {
-            return false;
-        }
+        }).orElse(false);
     }
 
     @Override
     protected boolean transformBlockCold() {
-        BlockState cold = getHeatEntry().getTransformCold();
-        if (cold != null) {
+        return heatEntry.getTransformCold().map(cold -> {
             if (getFluid() != null) {
-                transformFluidBlocks(cold, getHeatEntry().getTransformColdFlowing());
+                transformFluidBlocks(cold, heatEntry.getTransformColdFlowing().orElse(Blocks.AIR.defaultBlockState()));
                 return true;
             } else {
                 return getWorld().setBlockAndUpdate(getPos(), cold);
             }
-        } else {
-            return false;
-        }
-    }
-
-    private HeatPropertiesRecipe getHeatEntry() {
-        return heatEntry;
+        }).orElse(false);
     }
 
     /**
@@ -106,13 +97,12 @@ public class HeatBehaviourCustomTransition extends HeatBehaviourTransition {
      * @param turningBlockSource blockstate to transform the source block to
      * @param turningBlockFlowing blockstate to transform any flowing blocks to
      */
-    private void transformFluidBlocks(BlockState turningBlockSource, BlockState turningBlockFlowing) {
+    private void transformFluidBlocks(@NotNull BlockState turningBlockSource, @NotNull BlockState turningBlockFlowing) {
         if (FluidUtils.isSourceFluidBlock(getWorld(), getPos())) {
             getWorld().setBlockAndUpdate(getPos(), turningBlockSource);
             onTransition(getPos());
         } else {
             // a flowing block: follow it back to the source
-            if (turningBlockFlowing == null) turningBlockFlowing = Blocks.AIR.defaultBlockState();
             Set<BlockPos> traversed = new HashSet<>();
             Stack<BlockPos> pending = new Stack<>();
             pending.push(getPos());

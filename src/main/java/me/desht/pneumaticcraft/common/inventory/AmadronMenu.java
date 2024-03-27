@@ -25,15 +25,16 @@ import me.desht.pneumaticcraft.common.amadron.ShoppingBasket;
 import me.desht.pneumaticcraft.common.block.entity.AbstractPneumaticCraftBlockEntity;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.config.subconfig.AmadronPlayerOffers;
-import me.desht.pneumaticcraft.common.core.ModItems;
-import me.desht.pneumaticcraft.common.core.ModMenuTypes;
-import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.drone.DroneRegistry;
 import me.desht.pneumaticcraft.common.entity.drone.AmadroneEntity;
 import me.desht.pneumaticcraft.common.entity.drone.AmadroneEntity.AmadronAction;
 import me.desht.pneumaticcraft.common.item.AmadronTabletItem;
 import me.desht.pneumaticcraft.common.network.*;
+import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOffer;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronPlayerOffer;
+import me.desht.pneumaticcraft.common.registry.ModItems;
+import me.desht.pneumaticcraft.common.registry.ModMenuTypes;
+import me.desht.pneumaticcraft.common.registry.ModSounds;
 import me.desht.pneumaticcraft.common.util.ITranslatableEnum;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Log;
@@ -50,8 +51,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.network.NetworkHooks;
+import net.neoforged.neoforge.fluids.FluidStack;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -63,7 +63,7 @@ public class AmadronMenu extends AbstractPneumaticCraftMenu<AbstractPneumaticCra
     public static final int HARD_MAX_MB = 576_000;
 
     // this will remain valid, because Amadron offers don't get reshuffled if anyone has a tablet GUI open
-    public final List<AmadronRecipe> activeOffers = new ArrayList<>(AmadronOfferManager.getInstance().getActiveOffers());
+    public final List<AmadronOffer> activeOffers = new ArrayList<>(AmadronOfferManager.getInstance().getActiveOffers());
     private final ShoppingBasket shoppingBasket = new ShoppingBasket();
     private final InteractionHand hand;
 
@@ -118,11 +118,11 @@ public class AmadronMenu extends AbstractPneumaticCraftMenu<AbstractPneumaticCra
             ShoppingBasket savedBasket = AmadronTabletItem.loadShoppingCart(tablet);
 
             ShoppingBasket availableOffers = new ShoppingBasket();
-            activeOffers.forEach(offer -> availableOffers.setUnits(offer.getId(), Math.max(savedBasket.getUnits(offer.getId()), 1)));
+            activeOffers.forEach(offer -> availableOffers.setUnits(offer.getOfferId(), Math.max(savedBasket.getUnits(offer.getOfferId()), 1)));
             availableOffers.validate(tablet, false);
 
             for (int i = 0; i < activeOffers.size(); i++) {
-                ResourceLocation offerId = activeOffers.get(i).getId();
+                ResourceLocation offerId = activeOffers.get(i).getOfferId();
 
                 int wantedUnits = savedBasket.getUnits(offerId);
                 int availableUnits = availableOffers.getUnits(offerId);
@@ -164,7 +164,7 @@ public class AmadronMenu extends AbstractPneumaticCraftMenu<AbstractPneumaticCra
     @Override
     public boolean stillValid(Player player) {
         if (player.getItemInHand(hand).getItem() == ModItems.AMADRON_TABLET.get()) {
-            return player.getItemInHand(hand).getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).map(h -> {
+            return PNCCapabilities.getAirHandler(player.getItemInHand(hand)).map(h -> {
                 h.addAir(-1);
                 if (h.getPressure() > 0) {
                     return true;
@@ -227,7 +227,7 @@ public class AmadronMenu extends AbstractPneumaticCraftMenu<AbstractPneumaticCra
         if (tag.equals("order")) {
             if (takeOrder(player, player.getItemInHand(hand))) {
                 NetworkHandler.sendToPlayer(new PacketPlaySound(ModSounds.CHIRP.get(), SoundSource.PLAYERS,
-                        player.getX(), player.getY(), player.getZ(), 0.2f, 1.0f, false), player);
+                        player.blockPosition(), 0.2f, 1.0f, false), player);
             }
         } else if (tag.equals("addPlayerTrade")) {
             openTradeGui(player);
@@ -247,13 +247,13 @@ public class AmadronMenu extends AbstractPneumaticCraftMenu<AbstractPneumaticCra
         for (ResourceLocation offerId : shoppingBasket) {
             int amount = shoppingBasket.getUnits(offerId);
             if (AmadronOfferManager.getInstance().isActive(offerId) && amount > 0) {
-                AmadronRecipe offer = AmadronOfferManager.getInstance().getOffer(offerId);
+                AmadronOffer offer = AmadronOfferManager.getInstance().getOffer(offerId);
                 if (offer.isUsableByPlayer(player)) {
                     GlobalPos itemGPos = AmadronTabletItem.getItemProvidingLocation(amadronTablet);
                     GlobalPos fluidGPos = AmadronTabletItem.getFluidProvidingLocation(amadronTablet);
                     AmadroneEntity drone = retrieveOrder(playerName, offer, amount, itemGPos, fluidGPos);
                     if (drone != null) {
-                        drone.setHandlingOffer(offer.getId(), amount, amadronTablet, playerName, AmadronAction.TAKING_PAYMENT);
+                        drone.setHandlingOffer(offer.getOfferId(), amount, amadronTablet, playerName, AmadronAction.TAKING_PAYMENT);
                         orderPlaced = true;
                     }
                 }
@@ -268,7 +268,7 @@ public class AmadronMenu extends AbstractPneumaticCraftMenu<AbstractPneumaticCra
     }
 
     private void openTradeGui(ServerPlayer player) {
-        NetworkHooks.openScreen(player, new MenuProvider() {
+        player.openMenu(new MenuProvider() {
             @Override
             public Component getDisplayName() {
                 return Component.empty();
@@ -291,7 +291,7 @@ public class AmadronMenu extends AbstractPneumaticCraftMenu<AbstractPneumaticCra
         }
     }
 
-    public static AmadroneEntity retrieveOrder(String playerName, AmadronRecipe offer, int units, GlobalPos itemGPos, GlobalPos liquidGPos) {
+    public static AmadroneEntity retrieveOrder(String playerName, AmadronOffer offer, int units, GlobalPos itemGPos, GlobalPos liquidGPos) {
         final boolean isAmadronRestock = playerName == null;
         return offer.getInput().apply(
                 itemStack -> retrieveOrderItems(playerName, offer, units, itemGPos, isAmadronRestock),
@@ -299,7 +299,7 @@ public class AmadronMenu extends AbstractPneumaticCraftMenu<AbstractPneumaticCra
         );
     }
 
-    private static AmadroneEntity retrieveOrderItems(String playerName, AmadronRecipe offer, int units, GlobalPos itemGPos, boolean isAmadronRestock) {
+    private static AmadroneEntity retrieveOrderItems(String playerName, AmadronOffer offer, int units, GlobalPos itemGPos, boolean isAmadronRestock) {
         if (itemGPos == null || !validateStockLevel(playerName, offer, units, isAmadronRestock)) return null;
 
         ItemStack queryingItems = offer.getInput().getItem();
@@ -314,7 +314,7 @@ public class AmadronMenu extends AbstractPneumaticCraftMenu<AbstractPneumaticCra
         return (AmadroneEntity) DroneRegistry.getInstance().retrieveItemsAmazonStyle(itemGPos, stacks);
     }
 
-    private static AmadroneEntity retrieveOrderFluid(String playerName, AmadronRecipe offer, int units, GlobalPos liquidGPos, boolean isAmadronRestock) {
+    private static AmadroneEntity retrieveOrderFluid(String playerName, AmadronOffer offer, int units, GlobalPos liquidGPos, boolean isAmadronRestock) {
         if (liquidGPos == null || !validateStockLevel(playerName, offer, units, isAmadronRestock)) return null;
 
         FluidStack queryingFluid = AmadronUtil.buildFluidStack(offer.getInput().getFluid(), units);
@@ -323,18 +323,18 @@ public class AmadronMenu extends AbstractPneumaticCraftMenu<AbstractPneumaticCra
         return (AmadroneEntity) DroneRegistry.getInstance().retrieveFluidAmazonStyle(liquidGPos, queryingFluid);
     }
 
-    private static void reduceStockLevel(AmadronRecipe offer, int units, boolean isAmadronRestock) {
+    private static void reduceStockLevel(AmadronOffer offer, int units, boolean isAmadronRestock) {
         // Reduce stock here; if the order fails (e.g. player takes items out of the chest before the Amadron can get them),
         // we'll restore the stock level, in EventHandlerAmadron#onAmadronFailure().
         if (!isAmadronRestock && (offer instanceof AmadronPlayerOffer || offer.getMaxStock() >= 0)) {
             offer.setStock(offer.getStock() - units);
             if (offer instanceof AmadronPlayerOffer) AmadronPlayerOffers.save();
-            NetworkHandler.sendNonLocal(new PacketAmadronStockUpdate(offer.getId(), offer.getStock()));
+            NetworkHandler.sendNonLocal(new PacketAmadronStockUpdate(offer.getOfferId(), offer.getStock()));
         }
     }
 
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
-    public static boolean validateStockLevel(String playerName, AmadronRecipe offer, int units, boolean isAmadronRestock) {
+    public static boolean validateStockLevel(String playerName, AmadronOffer offer, int units, boolean isAmadronRestock) {
         if (!isAmadronRestock && offer.getStock() >= 0 && units > offer.getStock()) {
             // shouldn't happen normally, but could as result of a player trying to spoof the system
             // by bypassing stock checks in the Amadron GUI (e.g. hacked client)

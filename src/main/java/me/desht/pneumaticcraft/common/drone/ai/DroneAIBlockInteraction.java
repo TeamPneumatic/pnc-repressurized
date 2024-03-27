@@ -38,8 +38,8 @@ import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.level.CollisionGetter;
 import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.level.pathfinder.PathComputationType;
-import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.ArrayList;
@@ -79,10 +79,10 @@ public abstract class DroneAIBlockInteraction<W extends ProgWidgetAreaItemBase> 
         area = progWidget.getCachedAreaList();
         worldCache = progWidget.getChunkCache(drone.world());
 
-        AABB extents = progWidget.getAreaExtents();
-        if (area.size() > 0) {
-            minY = (int) extents.minY;
-            maxY = (int) extents.maxY;
+        if (!area.isEmpty()) {
+            BoundingBox extents = progWidget.getAreaExtents();
+            minY = extents.minY();
+            maxY = extents.maxY();
             if (order == Ordering.HIGH_TO_LOW) {
                 curY = maxY;
             } else if (order == Ordering.LOW_TO_HIGH) {
@@ -295,7 +295,7 @@ public abstract class DroneAIBlockInteraction<W extends ProgWidgetAreaItemBase> 
                     CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
                     if (handler.upgradeUsable(CommonUpgradeHandlers.entityTrackerHandler, true)
                             && handler.getUpgradeCount(EquipmentSlot.HEAD, ModUpgrades.DISPENSER.get()) > 0) {
-                        NetworkHandler.sendToPlayer(new PacketSpawnIndicatorParticles(pos, progWidget.getColor()), player);
+                        NetworkHandler.sendToPlayer(PacketSpawnIndicatorParticles.create(pos, progWidget.getColor()), player);
                     }
                 }
             }

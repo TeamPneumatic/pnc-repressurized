@@ -18,20 +18,20 @@
 package me.desht.pneumaticcraft.common.thirdparty.jei;
 
 import me.desht.pneumaticcraft.api.crafting.ingredient.FluidIngredient;
-import me.desht.pneumaticcraft.common.core.ModFluids;
-import me.desht.pneumaticcraft.common.core.ModItems;
+import me.desht.pneumaticcraft.common.registry.ModFluids;
+import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.lib.Textures;
 import mezz.jei.api.constants.VanillaTypes;
-import mezz.jei.api.forge.ForgeTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
+import mezz.jei.api.neoforge.NeoForgeTypes;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.material.Fluids;
-import net.minecraftforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidStack;
 
 import java.util.Collections;
 import java.util.List;
@@ -53,10 +53,10 @@ public class JEIYeastCraftingCategory extends AbstractPNCCategory<JEIYeastCrafti
         List<FluidStack> waterStack = Collections.singletonList(new FluidStack(Fluids.WATER, 1000));
 
         builder.addSlot(RecipeIngredientRole.INPUT, 1, 1).addItemStack(recipe.itemInput);
-        builder.addSlot(RecipeIngredientRole.CATALYST, 16, 16).addIngredients(ForgeTypes.FLUID_STACK, yeastStack);
-        builder.addSlot(RecipeIngredientRole.INPUT, 32, 16).addIngredients(ForgeTypes.FLUID_STACK, waterStack);
-        builder.addSlot(RecipeIngredientRole.OUTPUT, 80, 16).addIngredients(ForgeTypes.FLUID_STACK, yeastStack);
-        builder.addSlot(RecipeIngredientRole.OUTPUT, 96, 16).addIngredients(ForgeTypes.FLUID_STACK, yeastStack);
+        builder.addSlot(RecipeIngredientRole.CATALYST, 16, 16).addIngredients(NeoForgeTypes.FLUID_STACK, yeastStack);
+        builder.addSlot(RecipeIngredientRole.INPUT, 32, 16).addIngredients(NeoForgeTypes.FLUID_STACK, waterStack);
+        builder.addSlot(RecipeIngredientRole.OUTPUT, 80, 16).addIngredients(NeoForgeTypes.FLUID_STACK, yeastStack);
+        builder.addSlot(RecipeIngredientRole.OUTPUT, 96, 16).addIngredients(NeoForgeTypes.FLUID_STACK, yeastStack);
     }
 
     public static List<YeastCraftingRecipe> getAllRecipes() {

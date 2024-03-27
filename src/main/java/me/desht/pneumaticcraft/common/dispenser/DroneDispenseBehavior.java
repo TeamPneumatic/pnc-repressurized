@@ -17,11 +17,11 @@
 
 package me.desht.pneumaticcraft.common.dispenser;
 
-import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.item.DroneItem;
+import me.desht.pneumaticcraft.common.registry.ModItems;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.BlockSource;
 import net.minecraft.core.Direction;
+import net.minecraft.core.dispenser.BlockSource;
 import net.minecraft.core.dispenser.DefaultDispenseItemBehavior;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.DispenserBlock;
@@ -39,11 +39,11 @@ public class DroneDispenseBehavior extends DefaultDispenseItemBehavior {
 
     @Override
     protected ItemStack execute(BlockSource source, ItemStack stack) {
-        Direction facing = source.getBlockState().getValue(DispenserBlock.FACING);
-        BlockPos placePos = source.getPos().relative(facing);
+        Direction facing = source.state().getValue(DispenserBlock.FACING);
+        BlockPos placePos = source.pos().relative(facing);
         // set the "click" pos to a possible block 2 blocks in front of the dispenser
         // allows drones to pull items from chest where needed (e.g. guard drone get ammo, harvest drone get hoe...)
-        ((DroneItem)stack.getItem()).spawnDrone(null, source.getLevel(), source.getPos().relative(facing, 2), facing.getOpposite(), placePos, stack);
+        ((DroneItem)stack.getItem()).spawnDrone(null, source.level(), source.pos().relative(facing, 2), facing.getOpposite(), placePos, stack);
         
         stack.shrink(1);
         return stack;

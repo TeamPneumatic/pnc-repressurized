@@ -17,33 +17,31 @@
 
 package me.desht.pneumaticcraft.common.recipes.machine;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonSyntaxException;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import me.desht.pneumaticcraft.api.crafting.TemperatureRange;
 import me.desht.pneumaticcraft.api.crafting.ingredient.FluidIngredient;
 import me.desht.pneumaticcraft.api.crafting.recipe.ThermoPlantRecipe;
 import me.desht.pneumaticcraft.api.lib.Names;
-import me.desht.pneumaticcraft.common.core.ModBlocks;
-import me.desht.pneumaticcraft.common.core.ModRecipeSerializers;
-import me.desht.pneumaticcraft.common.core.ModRecipeTypes;
-import me.desht.pneumaticcraft.common.recipes.ModCraftingHelper;
+import me.desht.pneumaticcraft.common.registry.ModBlocks;
+import me.desht.pneumaticcraft.common.registry.ModRecipeSerializers;
+import me.desht.pneumaticcraft.common.registry.ModRecipeTypes;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
-import net.minecraft.world.item.crafting.ShapedRecipe;
-import net.minecraftforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidStack;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import java.util.Optional;
 
+// yeah yeah codecs
+@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
 public class ThermoPlantRecipeImpl extends ThermoPlantRecipe {
-    private final FluidIngredient inputFluid;
+    private final Optional<FluidIngredient> inputFluid;
     private final FluidStack outputFluid;
-    private final Ingredient inputItem;
+    private final Optional<Ingredient> inputItem;
     private final float requiredPressure;
     private final float recipeSpeed;
     private final boolean exothermic;
@@ -52,12 +50,10 @@ public class ThermoPlantRecipeImpl extends ThermoPlantRecipe {
     private final float airUseMultiplier;
 
     public ThermoPlantRecipeImpl(
-            ResourceLocation id, @Nonnull FluidIngredient inputFluid, @Nonnull Ingredient inputItem,
+            Optional<FluidIngredient> inputFluid, Optional<Ingredient> inputItem,
             FluidStack outputFluid, ItemStack outputItem, TemperatureRange operatingTemperature, float requiredPressure,
             float recipeSpeed, float airUseMultiplier, boolean exothermic)
     {
-        super(id);
-
         this.inputItem = inputItem;
         this.inputFluid = inputFluid;
         this.outputFluid = outputFluid;
@@ -71,8 +67,13 @@ public class ThermoPlantRecipeImpl extends ThermoPlantRecipe {
 
     @Override
     public boolean matches(FluidStack fluidStack, @Nonnull ItemStack itemStack) {
-        return (inputFluid.isEmpty() && fluidStack.isEmpty() || inputFluid.testFluid(fluidStack.getFluid()))
-                && (inputItem.isEmpty() && itemStack.isEmpty() || inputItem.test(itemStack));
+        boolean itemOK = inputItem.map(ingr -> ingr.test(itemStack)).orElse(itemStack.isEmpty());
+        boolean fluidOK = inputFluid.map(ingr -> ingr.testFluid(fluidStack.getFluid())).orElse(fluidStack.isEmpty());
+
+        return itemOK && fluidOK;
+
+//        return (inputFluid.isEmpty() && fluidStack.isEmpty() || inputFluid.testFluid(fluidStack.getFluid()))
+//                && (inputItem.isEmpty() && itemStack.isEmpty() || inputItem.test(itemStack));
     }
 
     @Override
@@ -86,13 +87,13 @@ public class ThermoPlantRecipeImpl extends ThermoPlantRecipe {
     }
 
     @Override
-    public FluidIngredient getInputFluid() {
+    public Optional<FluidIngredient> getInputFluid() {
         return inputFluid;
     }
 
     @Nonnull
     @Override
-    public Ingredient getInputItem() {
+    public Optional<Ingredient> getInputItem() {
         return inputItem;
     }
 
@@ -122,19 +123,6 @@ public class ThermoPlantRecipeImpl extends ThermoPlantRecipe {
     }
 
     @Override
-    public void write(FriendlyByteBuf buffer) {
-        operatingTemperature.write(buffer);
-        buffer.writeFloat(requiredPressure);
-        inputItem.toNetwork(buffer);
-        inputFluid.toNetwork(buffer);
-        outputFluid.writeToPacket(buffer);
-        buffer.writeItem(outputItem);
-        buffer.writeFloat(recipeSpeed);
-        buffer.writeFloat(airUseMultiplier);
-        buffer.writeBoolean(exothermic);
-    }
-
-    @Override
     public RecipeSerializer<?> getSerializer() {
         return ModRecipeSerializers.THERMO_PLANT.get();
     }
@@ -156,71 +144,66 @@ public class ThermoPlantRecipeImpl extends ThermoPlantRecipe {
 
     public static class Serializer<T extends ThermoPlantRecipe> implements RecipeSerializer<T> {
         private final IFactory<T> factory;
+        private final Codec<T> codec;
 
         public Serializer(IFactory<T> factory) {
             this.factory = factory;
+            this.codec = RecordCodecBuilder.create(inst -> inst.group(
+                    FluidIngredient.FLUID_CODEC.optionalFieldOf("fluid_input")
+                            .forGetter(ThermoPlantRecipe::getInputFluid),
+                    Ingredient.CODEC.optionalFieldOf("item_input")
+                            .forGetter(ThermoPlantRecipe::getInputItem),
+                    FluidStack.CODEC.optionalFieldOf("fluid_output", FluidStack.EMPTY)
+                            .forGetter(ThermoPlantRecipe::getOutputFluid),
+                    ItemStack.CODEC.optionalFieldOf("item_output", ItemStack.EMPTY)
+                            .forGetter(ThermoPlantRecipe::getOutputItem),
+                    TemperatureRange.CODEC.optionalFieldOf("temperature", TemperatureRange.any())
+                            .forGetter(ThermoPlantRecipe::getOperatingTemperature),
+                    Codec.FLOAT.optionalFieldOf("pressure", 0f)
+                            .forGetter(ThermoPlantRecipe::getRequiredPressure),
+                    Codec.FLOAT.optionalFieldOf("speed", 1f)
+                            .forGetter(ThermoPlantRecipe::getRecipeSpeed),
+                    Codec.FLOAT.optionalFieldOf("air_use_multiplier", 1f)
+                            .forGetter(ThermoPlantRecipe::getAirUseMultiplier),
+                    Codec.BOOL.optionalFieldOf("exothermic", false)
+                            .forGetter(ThermoPlantRecipe::isExothermic)
+            ).apply(inst, factory::create));
         }
 
         @Override
-        public T fromJson(ResourceLocation recipeId, JsonObject json) {
-            if (!json.has("item_input") && !json.has("fluid_input")) {
-                throw new JsonSyntaxException("Must have at least one of item_input and/or fluid_input!");
-            }
-            if (!json.has("item_output") && !json.has("fluid_output")) {
-                throw new JsonSyntaxException("Must have at least one of item_output and/or fluid_output!");
-            }
-
-            Ingredient itemInput = json.has("item_input") ?
-                    Ingredient.fromJson(json.get("item_input")) :
-                    Ingredient.EMPTY;
-            Ingredient fluidInput = json.has("fluid_input") ?
-                    FluidIngredient.fromJson(json.get("fluid_input")) :
-                    FluidIngredient.EMPTY;
-
-            FluidStack fluidOutput = json.has("fluid_output") ?
-                    ModCraftingHelper.fluidStackFromJson(json.getAsJsonObject("fluid_output")):
-                    FluidStack.EMPTY;
-            ItemStack itemOutput = json.has("item_output") ?
-                    ShapedRecipe.itemStackFromJson(GsonHelper.getAsJsonObject(json, "item_output")) :
-                    ItemStack.EMPTY;
-
-            TemperatureRange range = json.has("temperature") ?
-                    TemperatureRange.fromJson(json.getAsJsonObject("temperature")) :
-                    TemperatureRange.any();
-
-            float pressure = GsonHelper.getAsFloat(json, "pressure", 0f);
-
-            boolean exothermic = GsonHelper.getAsBoolean(json, "exothermic", false);
-
-            float recipeSpeed = GsonHelper.getAsFloat(json, "speed", 1.0f);
-
-            float airUseMultiplier = GsonHelper.getAsFloat(json, "air_use_multiplier", 1.0f);
-
-            return factory.create(recipeId, (FluidIngredient) fluidInput, itemInput, fluidOutput, itemOutput, range, pressure, recipeSpeed, airUseMultiplier, exothermic);
+        public Codec<T> codec() {
+            return codec;
         }
 
-        @Nullable
         @Override
-        public T fromNetwork(ResourceLocation recipeId, FriendlyByteBuf buffer) {
+        public T fromNetwork(FriendlyByteBuf buffer) {
             TemperatureRange range = TemperatureRange.read(buffer);
             float pressure = buffer.readFloat();
-            Ingredient input = Ingredient.fromNetwork(buffer);
-            FluidIngredient fluidIn = (FluidIngredient) Ingredient.fromNetwork(buffer);
-            FluidStack fluidOut = FluidStack.readFromPacket(buffer);
+            Optional<Ingredient> input = buffer.readOptional(Ingredient::fromNetwork);
+            Optional<FluidIngredient> fluidIn = buffer.readOptional(buf -> (FluidIngredient) Ingredient.fromNetwork(buf));
             ItemStack itemOutput = buffer.readItem();
+            FluidStack fluidOut = FluidStack.readFromPacket(buffer);
             float recipeSpeed = buffer.readFloat();
             float airUseMultiplier = buffer.readFloat();
             boolean exothermic = buffer.readBoolean();
-            return factory.create(recipeId, fluidIn, input, fluidOut, itemOutput, range, pressure, recipeSpeed, airUseMultiplier, exothermic);
+            return factory.create(fluidIn, input, fluidOut, itemOutput, range, pressure, recipeSpeed, airUseMultiplier, exothermic);
         }
 
         @Override
         public void toNetwork(FriendlyByteBuf buffer, T recipe) {
-            recipe.write(buffer);
+            recipe.getOperatingTemperature().write(buffer);
+            buffer.writeFloat(recipe.getRequiredPressure());
+            buffer.writeOptional(recipe.getInputItem(), (b, ingredient) -> ingredient.toNetwork(b));
+            buffer.writeOptional(recipe.getInputFluid(), (b, ingredient) -> ingredient.toNetwork(b));
+            buffer.writeItem(recipe.getOutputItem());
+            recipe.getOutputFluid().writeToPacket(buffer);
+            buffer.writeFloat(recipe.getRecipeSpeed());
+            buffer.writeFloat(recipe.getAirUseMultiplier());
+            buffer.writeBoolean(recipe.isExothermic());
         }
 
         public interface IFactory <T extends ThermoPlantRecipe> {
-            T create(ResourceLocation id, @Nonnull FluidIngredient inputFluid, @Nullable Ingredient inputItem,
+            T create(Optional<FluidIngredient> inputFluid, Optional<Ingredient> inputItem,
                      FluidStack outputFluid, ItemStack outputItem, TemperatureRange operatingTemperature, float requiredPressure,
                      float recipeSpeed, float airUseMultiplier, boolean exothermic);
         }

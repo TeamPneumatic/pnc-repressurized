@@ -22,12 +22,11 @@ import me.desht.pneumaticcraft.client.render.area.AreaRenderManager;
 import me.desht.pneumaticcraft.common.block.entity.HeatSinkBlockEntity;
 import me.desht.pneumaticcraft.common.block.entity.PressureTubeBlockEntity;
 import me.desht.pneumaticcraft.common.block.entity.RangeManager;
-import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.entity.semiblock.AbstractSemiblockEntity;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdatePressureBlock;
 import me.desht.pneumaticcraft.common.particle.AirParticleData;
-import me.desht.pneumaticcraft.common.util.DirectionUtil;
+import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.util.EntityFilter;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
@@ -36,6 +35,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.entity.MoverType;
@@ -47,14 +47,15 @@ import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemHandlerHelper;
+import net.neoforged.neoforge.capabilities.BlockCapabilityCache;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.ItemHandlerHelper;
 
 import javax.annotation.Nonnull;
 import java.util.*;
@@ -70,8 +71,8 @@ public class AirGrateModule extends AbstractTubeModule {
     private EntityFilter entityFilter = EntityFilter.allow();
     private final Map<BlockPos,Boolean> traceabilityCache = new HashMap<>();
 
-    private LazyOptional<IItemHandler> itemInsertionCap = null; // null = "unknown", LazyOptional.empty() = "known absent"
-    private LazyOptional<IFluidHandler> fluidInsertionCap = null;
+    private BlockCapabilityCache<IItemHandler,Direction> itemInsertionCache;
+    private BlockCapabilityCache<IFluidHandler,Direction> fluidInsertionCache;
 
     public AirGrateModule(Direction dir, PressureTubeBlockEntity pressureTube) {
         super(dir, pressureTube);
@@ -106,11 +107,12 @@ public class AirGrateModule extends AbstractTubeModule {
 
     private void onGrateRangeChanged() {
         if (!pressureTube.nonNullLevel().isClientSide) {
-            getTube().getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY)
-                    .ifPresent(h -> NetworkHandler.sendToAllTracking(new PacketUpdatePressureBlock(getTube(), null, h.getSideLeaking(), h.getAir()), getTube()));
+            PNCCapabilities.getAirHandler(getTube()).ifPresent(h ->
+                    NetworkHandler.sendToAllTracking(new PacketUpdatePressureBlock(getTube().getBlockPos(), null,
+                            h.getSideLeaking(), h.getAir()), getTube()));
         } else {
             if (showRange) {
-                AreaRenderManager.getInstance().showArea(RangeManager.getFrame(getAffectedAABB()), 0x60FFC060, pressureTube, false);
+                AreaRenderManager.getInstance().showArea(RangeManager.getFrame(getAffectedBoundingBox()), 0x60FFC060, pressureTube, false);
             }
         }
     }
@@ -122,15 +124,9 @@ public class AirGrateModule extends AbstractTubeModule {
         coolHeatSinks();
     }
 
-    @Override
-    public void onNeighborBlockUpdate() {
-        itemInsertionCap = null;
-        fluidInsertionCap = null;
-    }
-
-    private AABB getAffectedAABB() {
+    private BoundingBox getAffectedBoundingBox() {
         BlockPos pos = pressureTube.getBlockPos().relative(getDirection(), grateRange + 1);
-        return new AABB(pos).inflate(grateRange);
+        return new BoundingBox(pos).inflatedBy(grateRange);
     }
 
     private int calculateRange() {
@@ -141,8 +137,9 @@ public class AirGrateModule extends AbstractTubeModule {
     }
 
     private void pushEntities(Level world, BlockPos pos, Vec3 traceVec) {
-        AABB bbBox = getAffectedAABB();
-        List<Entity> entities = world.getEntitiesOfClass(Entity.class, bbBox, entityFilter);
+        if (entityFilter.isNone()) return;
+
+        List<Entity> entities = world.getEntitiesOfClass(Entity.class, AABB.of(getAffectedBoundingBox()), entityFilter);
         double d0 = grateRange * 3;
         int entitiesMoved = 0;
         for (Entity entity : entities) {
@@ -236,41 +233,12 @@ public class AirGrateModule extends AbstractTubeModule {
         });
     }
 
-    private LazyOptional<IItemHandler> getItemInsertionCap() {
-        if (itemInsertionCap == null) {
-            for (Direction dir : DirectionUtil.VALUES) {
-                BlockEntity te = pressureTube.nonNullLevel().getBlockEntity(pressureTube.getBlockPos().relative(dir));
-                if (te != null) {
-                    LazyOptional<IItemHandler> cap = te.getCapability(ForgeCapabilities.ITEM_HANDLER, dir.getOpposite());
-                    // bit of a kludge: exclude BE's which also offer a fluid capability on this side
-                    if (cap.isPresent() && !te.getCapability(ForgeCapabilities.FLUID_HANDLER, dir.getOpposite()).isPresent()) {
-                        itemInsertionCap = cap;
-                        itemInsertionCap.addListener(l -> itemInsertionCap = null);
-                        break;
-                    }
-                }
-            }
-            if (itemInsertionCap == null) itemInsertionCap = LazyOptional.empty();
-        }
-        return itemInsertionCap;
+    private Optional<IItemHandler> getItemInsertionCap() {
+        return itemInsertionCache == null ? Optional.empty() : Optional.ofNullable(itemInsertionCache.getCapability());
     }
 
-    private LazyOptional<IFluidHandler> getFluidInsertionCap() {
-        if (fluidInsertionCap == null) {
-            for (Direction dir : DirectionUtil.VALUES) {
-                BlockEntity te = pressureTube.nonNullLevel().getBlockEntity(pressureTube.getBlockPos().relative(dir));
-                if (te != null) {
-                    LazyOptional<IFluidHandler> cap = te.getCapability(ForgeCapabilities.FLUID_HANDLER, dir.getOpposite());
-                    if (cap.isPresent()) {
-                        fluidInsertionCap = cap;
-                        fluidInsertionCap.addListener(l -> fluidInsertionCap = null);
-                        break;
-                    }
-                }
-            }
-            if (fluidInsertionCap == null) fluidInsertionCap = LazyOptional.empty();
-        }
-        return fluidInsertionCap;
+    private Optional<IFluidHandler> getFluidInsertionCap() {
+        return fluidInsertionCache == null ? Optional.empty() : Optional.ofNullable(fluidInsertionCache.getCapability());
     }
 
     private void coolHeatSinks() {
@@ -359,7 +327,7 @@ public class AirGrateModule extends AbstractTubeModule {
     public void setShowRange(boolean showRange) {
         this.showRange = showRange;
         if (showRange) {
-            AreaRenderManager.getInstance().showArea(RangeManager.getFrame(getAffectedAABB()), 0x60FFC060, pressureTube, false);
+            AreaRenderManager.getInstance().showArea(RangeManager.getFrame(getAffectedBoundingBox()), 0x60FFC060, pressureTube, false);
         } else {
             AreaRenderManager.getInstance().removeHandlers(pressureTube);
         }
@@ -370,6 +338,16 @@ public class AirGrateModule extends AbstractTubeModule {
     public void onRemoved() {
         if (pressureTube.nonNullLevel().isClientSide) {
             AreaRenderManager.getInstance().removeHandlers(pressureTube);
+        }
+    }
+
+    @Override
+    public void onPlaced() {
+        if (pressureTube.getLevel() instanceof ServerLevel level) {
+            itemInsertionCache = BlockCapabilityCache.create(Capabilities.ItemHandler.BLOCK, level, pressureTube.getBlockPos().relative(dir), dir.getOpposite(),
+                    () -> !getTube().isRemoved(), () -> {});
+            fluidInsertionCache = BlockCapabilityCache.create(Capabilities.FluidHandler.BLOCK, level, pressureTube.getBlockPos().relative(dir), dir.getOpposite(),
+                    () -> !getTube().isRemoved(), () -> {});
         }
     }
 }

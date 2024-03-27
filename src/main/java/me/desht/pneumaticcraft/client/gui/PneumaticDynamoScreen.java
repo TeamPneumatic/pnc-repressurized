@@ -25,12 +25,12 @@ import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.block.entity.PneumaticDynamoBlockEntity;
 import me.desht.pneumaticcraft.common.inventory.PneumaticDynamoMenu;
+import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,7 +50,8 @@ public class PneumaticDynamoScreen extends AbstractPneumaticCraftContainerScreen
         super.init();
         inputStat = addAnimatedStat(Component.literal("Output"), Textures.GUI_BUILDCRAFT_ENERGY, 0xFF555555, false);
 
-        te.getCapability(ForgeCapabilities.ENERGY).ifPresent(storage -> addRenderableWidget(new WidgetEnergy(leftPos + 20, topPos + 20, storage)));
+        IOHelper.getEnergyStorageForBlock(te).ifPresent(storage ->
+                addRenderableWidget(new WidgetEnergy(leftPos + 20, topPos + 20, storage)));
         addRenderableWidget(tempWidget = new WidgetTemperature(leftPos + 97, topPos + 20, TemperatureRange.of(273, 673), 273, 50)
                 .setOperatingRange(TemperatureRange.of(323, 625)).setShowOperatingRange(false));
     }

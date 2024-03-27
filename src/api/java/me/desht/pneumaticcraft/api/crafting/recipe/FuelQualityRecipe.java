@@ -18,14 +18,9 @@
 package me.desht.pneumaticcraft.api.crafting.recipe;
 
 import me.desht.pneumaticcraft.api.crafting.ingredient.FluidIngredient;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.material.Fluid;
 
 public abstract class FuelQualityRecipe extends PneumaticCraftRecipe {
-    protected FuelQualityRecipe(ResourceLocation id) {
-        super(id);
-    }
-
     /**
      * Does the given fluid match this recipe?
      * @param inputFluid the fluid to test

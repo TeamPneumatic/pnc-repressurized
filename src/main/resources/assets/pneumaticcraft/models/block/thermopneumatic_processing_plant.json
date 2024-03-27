@@ -1,6 +1,6 @@
 {
 	"credit": "Made with Blockbench",
-	"parent": "forge:block/default",
+	"parent": "neoforge:block/default",
 	"texture_size": [64, 64],
 	"textures": {
 		"1": "pneumaticcraft:pnc_model/thermopneumatic_processing_plant",

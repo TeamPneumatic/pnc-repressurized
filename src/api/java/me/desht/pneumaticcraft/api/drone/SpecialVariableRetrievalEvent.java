@@ -19,7 +19,7 @@ package me.desht.pneumaticcraft.api.drone;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.eventbus.api.Event;
+import net.neoforged.bus.api.Event;
 
 import javax.annotation.Nullable;
 

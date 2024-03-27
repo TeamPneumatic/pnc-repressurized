@@ -22,11 +22,12 @@ import me.desht.pneumaticcraft.api.misc.Symbols;
 import me.desht.pneumaticcraft.client.ColorHandlers;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.TintColor;
-import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
+import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.resources.language.I18n;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -46,7 +47,7 @@ import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.registries.ForgeRegistries;
+import org.apache.commons.lang3.mutable.MutableInt;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -102,7 +103,7 @@ public class SpawnerCoreItem extends Item implements ColorHandlers.ITintableItem
             Level world = context.getLevel();
             EntityType<?> type = stats.pickEntity(false);
             if (type == null) return false;
-            return PneumaticCraftUtils.getRegistryName(ForgeRegistries.ENTITY_TYPES, type).map(regName -> {
+            return PneumaticCraftUtils.getRegistryName(BuiltInRegistries.ENTITY_TYPE, type).map(regName -> {
                 Vec3 vec = context.getClickLocation();
                 if (world.noCollision(type.getAABB(vec.x(), vec.y(), vec.z()))) {
                     ServerLevel serverworld = (ServerLevel)world;
@@ -147,19 +148,18 @@ public class SpawnerCoreItem extends Item implements ColorHandlers.ITintableItem
 
         private SpawnerCoreStats(ItemStack stack) {
             CompoundTag nbt0 = stack.getTag();
-            int total = 0;
+            MutableInt total = new MutableInt(0);
             if (nbt0 != null && nbt0.contains(NBT_SPAWNER_CORE)) {
                 CompoundTag nbt = nbt0.getCompound(NBT_SPAWNER_CORE);
                 for (String k : nbt.getAllKeys()) {
-                    EntityType<?> type = ForgeRegistries.ENTITY_TYPES.getValue(new ResourceLocation(k));
-                    if (type != null) {
+                    BuiltInRegistries.ENTITY_TYPE.getOptional(new ResourceLocation(k)).ifPresent(type -> {
                         int amount = nbt.getInt(k);
                         entityCounts.put(type, amount);
-                        total += amount;
-                    }
+                        total.add(amount);
+                    });
                 }
             }
-            unused = Math.max(0, 100 - total);
+            unused = Math.max(0, 100 - total.intValue());
         }
 
         static SpawnerCoreStats forItemStack(ItemStack stack) {
@@ -174,7 +174,7 @@ public class SpawnerCoreItem extends Item implements ColorHandlers.ITintableItem
                     if (tag != null) tag.remove(NBT_SPAWNER_CORE);
                 } else {
                     CompoundTag subTag = stack.getOrCreateTagElement(NBT_SPAWNER_CORE);
-                    entityCounts.forEach((type, amount) -> PneumaticCraftUtils.getRegistryName(ForgeRegistries.ENTITY_TYPES, type).ifPresent(regName -> {
+                    entityCounts.forEach((type, amount) -> PneumaticCraftUtils.getRegistryName(BuiltInRegistries.ENTITY_TYPE, type).ifPresent(regName -> {
                         if (amount > 0) {
                             subTag.putInt(regName.toString(), amount);
                         } else {

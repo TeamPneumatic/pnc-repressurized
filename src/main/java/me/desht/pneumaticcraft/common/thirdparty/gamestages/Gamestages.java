@@ -19,12 +19,12 @@ package me.desht.pneumaticcraft.common.thirdparty.gamestages;
 
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.common.thirdparty.IThirdParty;
-
-import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
+import net.neoforged.bus.api.IEventBus;
 
 public class Gamestages implements IThirdParty {
     @Override
-    public void preInit() {
-        PneumaticRegistry.getInstance().getMiscHelpers().registerPlayerMatcher(RL("gamestages"), new GamestagesMatcher.Factory());
+    public void preInit(IEventBus modBus) {
+        PneumaticRegistry.getInstance().getMiscHelpers()
+                .registerPlayerMatcher(GamestagesMatcher.GamestagesMatcherType.INSTANCE);
     }
 }

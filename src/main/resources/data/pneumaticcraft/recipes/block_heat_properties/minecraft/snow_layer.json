@@ -1,10 +1,8 @@
 {
-  "type": "pneumaticcraft:heat_properties",
-  "block": "minecraft:snow",
-  "temperature": 268,
-  "thermalResistance": 300,
-  "heatCapacity": 250,
-  "transformHot": {
-    "block": "minecraft:water[level=1]"
-  }
+   "block" : "minecraft:snow",
+   "type" : "pneumaticcraft:heat_properties",
+   "thermalResistance" : 300,
+   "temperature" : 268,
+   "transformHot" : "minecraft:water[level=1]",
+   "heatCapacity" : 250
 }

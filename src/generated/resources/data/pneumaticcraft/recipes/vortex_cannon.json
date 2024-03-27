@@ -1,27 +1,28 @@
 {
   "type": "pneumaticcraft:crafting_shaped_pressurizable",
-  "category": "misc",
-  "key": {
-    "C": {
-      "item": "pneumaticcraft:air_canister"
+  "value": {
+    "category": "misc",
+    "key": {
+      "C": {
+        "item": "pneumaticcraft:air_canister"
+      },
+      "D": {
+        "tag": "forge:dyes/yellow"
+      },
+      "I": {
+        "tag": "forge:ingots/compressed_iron"
+      },
+      "L": {
+        "item": "minecraft:lever"
+      }
     },
-    "D": {
-      "tag": "forge:dyes/yellow"
-    },
-    "I": {
-      "tag": "forge:ingots/compressed_iron"
-    },
-    "L": {
-      "item": "minecraft:lever"
+    "pattern": [
+      "IDI",
+      "C  ",
+      "ILI"
+    ],
+    "result": {
+      "item": "pneumaticcraft:vortex_cannon"
     }
-  },
-  "pattern": [
-    "IDI",
-    "C  ",
-    "ILI"
-  ],
-  "result": {
-    "item": "pneumaticcraft:vortex_cannon"
-  },
-  "show_notification": true
+  }
 }

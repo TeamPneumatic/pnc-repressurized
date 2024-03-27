@@ -21,11 +21,11 @@ import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.block.IPneumaticWrenchable;
 import me.desht.pneumaticcraft.api.pressure.IPressurizableItem;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
-import me.desht.pneumaticcraft.common.advancements.AdvancementTriggers;
-import me.desht.pneumaticcraft.common.core.ModItems;
-import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketPlaySound;
+import me.desht.pneumaticcraft.common.registry.ModCriterionTriggers;
+import me.desht.pneumaticcraft.common.registry.ModItems;
+import me.desht.pneumaticcraft.common.registry.ModSounds;
 import me.desht.pneumaticcraft.common.thirdparty.ModdedWrenchUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.BlockPos;
@@ -60,7 +60,7 @@ public class PneumaticWrenchItem extends PressurizableItem {
                 if (res == InteractionResult.SUCCESS) playWrenchSound(world, pos);
                 return res;
             }
-            IAirHandler airHandler = stack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).orElseThrow(RuntimeException::new);
+            IAirHandler airHandler = PNCCapabilities.getAirHandler(stack).orElseThrow(RuntimeException::new);
             boolean didWork = false;
             float pressure = airHandler.getPressure();
             IPneumaticWrenchable wrenchable = IPneumaticWrenchable.forBlock(state.getBlock());
@@ -101,7 +101,7 @@ public class PneumaticWrenchItem extends PressurizableItem {
         if (player.level().isClientSide) {
             return InteractionResult.SUCCESS;
         } else if (target.isAlive() && target instanceof IPneumaticWrenchable) {
-            return iStack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).map(h -> {
+            return PNCCapabilities.getAirHandler(iStack).map(h -> {
                 if (!player.isCreative() && h.getAir() < PneumaticValues.USAGE_PNEUMATIC_WRENCH) {
                     return InteractionResult.FAIL;
                 }
@@ -123,7 +123,7 @@ public class PneumaticWrenchItem extends PressurizableItem {
     public void inventoryTick(ItemStack stack, Level worldIn, Entity entityIn, int itemSlot, boolean isSelected) {
         if (entityIn instanceof ServerPlayer && stack.getItem() instanceof IPressurizableItem
                 && ((IPressurizableItem) stack.getItem()).getPressure(stack) >= 3f) {
-            AdvancementTriggers.CHARGED_WRENCH.trigger((ServerPlayer) entityIn);
+            ModCriterionTriggers.CHARGED_WRENCH.get().trigger((ServerPlayer) entityIn);
         }
     }
 }

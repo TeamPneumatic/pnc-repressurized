@@ -1,16 +1,16 @@
 {
   "type": "pneumaticcraft:heat_frame_cooling",
-  "bonus_output": {
-    "limit": 0.5,
-    "multiplier": 0.025
-  },
+  "bonusLimit": 0.5,
+  "bonusMultiplier": 0.025,
   "input": {
     "type": "pneumaticcraft:fluid",
-    "amount": 1000,
-    "tag": "minecraft:lava"
+    "value": {
+      "tag": "minecraft:lava"
+    }
   },
-  "max_temp": 273,
-  "result": {
-    "item": "minecraft:obsidian"
-  }
+  "output": {
+    "Count": 1,
+    "id": "minecraft:obsidian"
+  },
+  "temperature": 273
 }

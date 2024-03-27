@@ -19,15 +19,13 @@ package me.desht.pneumaticcraft.common.block.entity;
 
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
-import me.desht.pneumaticcraft.common.core.ModBlockEntities;
+import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.IItemHandler;
 
 import java.util.function.BiPredicate;
 
@@ -36,22 +34,16 @@ public class HeatPipeBlockEntity extends AbstractTickingBlockEntity implements C
             (world, pos) -> !world.isEmptyBlock(pos) && !(world.getBlockState(pos).getBlock() instanceof LiquidBlock);
 
     private final IHeatExchangerLogic heatExchanger = PneumaticRegistry.getInstance().getHeatRegistry().makeHeatExchangerLogic();
-    private final LazyOptional<IHeatExchangerLogic> heatCap = LazyOptional.of(() -> heatExchanger);
 
     private BlockState camoState;
 
     public HeatPipeBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.HEAT_PIPE.get(), pos, state);
+        super(ModBlockEntityTypes.HEAT_PIPE.get(), pos, state);
     }
 
     @Override
-    public IItemHandler getPrimaryInventory() {
-        return null;
-    }
-
-    @Override
-    public LazyOptional<IHeatExchangerLogic> getHeatCap(Direction side) {
-        return heatCap;
+    public boolean hasItemCapability() {
+        return false;
     }
 
     @Override

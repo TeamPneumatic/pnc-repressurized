@@ -17,13 +17,12 @@
 
 package me.desht.pneumaticcraft.common.block.entity;
 
-import me.desht.pneumaticcraft.common.core.ModBlockEntities;
-import me.desht.pneumaticcraft.common.core.ModBlocks;
+import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
+import me.desht.pneumaticcraft.common.registry.ModBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.items.IItemHandler;
 
 import java.lang.ref.WeakReference;
 
@@ -31,12 +30,12 @@ public class ElevatorFrameBlockEntity extends AbstractPneumaticCraftBlockEntity 
     private WeakReference<ElevatorBaseBlockEntity> baseRef = null;
 
     public ElevatorFrameBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.ELEVATOR_FRAME.get(), pos, state);
+        super(ModBlockEntityTypes.ELEVATOR_FRAME.get(), pos, state);
     }
 
     @Override
-    public IItemHandler getPrimaryInventory() {
-        return null;
+    public boolean hasItemCapability() {
+        return false;
     }
 
     public ElevatorBaseBlockEntity getElevatorBase() {

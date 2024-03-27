@@ -19,55 +19,55 @@ package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.entity.RingEntity;
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.network.handling.PlayPayloadContext;
+import org.joml.Vector3f;
 
-import java.util.Arrays;
-import java.util.function.Supplier;
+import java.util.Objects;
+
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 /**
  * Received on: CLIENT
  * Sent by server to get the client to spawn a new client-side ring entity
  */
-public class PacketSpawnRing extends LocationDoublePacket {
-    private final int[] colors;
-    private final int targetEntityId;
+public record PacketSpawnRing(Vector3f vec, int targetEntityId, int color) implements CustomPacketPayload {
+    public static final ResourceLocation ID = RL("spawn_ring");
 
-    public PacketSpawnRing(double x, double y, double z, Entity targetEntity, int... colors) {
-        super(x, y, z);
-        targetEntityId = targetEntity.getId();
-        this.colors = colors;
+    public static PacketSpawnRing create(BlockPos pos, Entity targetEntity, Integer color) {
+        return new PacketSpawnRing(Vec3.atCenterOf(pos).toVector3f(), targetEntity.getId(), Objects.requireNonNullElse(color, 0xFFFFFFFF));
     }
 
-    public PacketSpawnRing(FriendlyByteBuf buffer) {
-        super(buffer);
-        targetEntityId = buffer.readInt();
-        colors = new int[buffer.readVarInt()];
-        for (int i = 0; i < colors.length; i++) {
-            colors[i] = buffer.readInt();
-        }
+    public static PacketSpawnRing fromNetwork(FriendlyByteBuf buffer) {
+        return new PacketSpawnRing(PacketUtil.readVec3f(buffer), buffer.readInt(), buffer.readInt());
     }
 
     @Override
-    public void toBytes(FriendlyByteBuf buffer) {
-        super.toBytes(buffer);
+    public void write(FriendlyByteBuf buffer) {
+        PacketUtil.writeVec3f(vec, buffer);
         buffer.writeInt(targetEntityId);
-        buffer.writeVarInt(colors.length);
-        Arrays.stream(colors).forEach(buffer::writeInt);
+        buffer.writeInt(color);
     }
 
-    public void handle(Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> {
-            Level world = ClientUtils.getClientLevel();
-            Entity entity = world.getEntity(targetEntityId);
+    @Override
+    public ResourceLocation id() {
+        return ID;
+    }
+
+    public static void handle(PacketSpawnRing message, PlayPayloadContext ctx) {
+        ctx.workHandler().submitAsync(() -> {
+            Level level = ClientUtils.getClientLevel();
+            Entity entity = level.getEntity(message.targetEntityId());
             if (entity != null) {
-                for (int color : colors) {
-                    ClientUtils.spawnEntityClientside(new RingEntity(world, x, y, z, entity, color));
-                }
+                Vector3f vec = message.vec();
+                ClientUtils.spawnEntityClientside(new RingEntity(level, vec.x, vec.y, vec.z, entity, message.color()));
             }
         });
-        ctx.get().setPacketHandled(true);
     }
 }

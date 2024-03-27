@@ -25,14 +25,9 @@ import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ArmorMaterial;
 import net.minecraft.world.item.crafting.Ingredient;
 
-class CompressedIronArmorMaterial implements ArmorMaterial {
-    static final int[] DMG_REDUCTION = new int[]{2, 5, 6, 2};
+record CompressedIronArmorMaterial(float knockbackResistance) implements ArmorMaterial {
+    private static final int[] DMG_REDUCTION = new int[]{2, 5, 6, 2};
     private static final int[] MAX_DAMAGE_ARRAY = new int[]{13, 15, 16, 11};
-    private final float knockbackResistance;
-
-    public CompressedIronArmorMaterial(float knockbackResistance) {
-        this.knockbackResistance = knockbackResistance;
-    }
 
     @Override
     public int getDurabilityForType(ArmorItem.Type type) {

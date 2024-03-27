@@ -3,7 +3,7 @@ package me.desht.pneumaticcraft.common.worldgen;
 import com.mojang.serialization.Codec;
 import me.desht.pneumaticcraft.api.data.PneumaticCraftTags;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
-import me.desht.pneumaticcraft.common.core.ModPlacementModifierTypes;
+import me.desht.pneumaticcraft.common.registry.ModPlacementModifierTypes;
 import me.desht.pneumaticcraft.common.util.WildcardedRLMatcher;
 import me.desht.pneumaticcraft.mixin.accessors.WorldGenRegionAccess;
 import net.minecraft.core.BlockPos;

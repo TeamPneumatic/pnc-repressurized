@@ -2,15 +2,17 @@
   "type": "pneumaticcraft:pressure_chamber",
   "inputs": [
     {
-      "type": "pneumaticcraft:stacked_item",
       "count": 2,
       "tag": "pneumaticcraft:wiring"
     },
     {
+      "count": 1,
       "tag": "forge:slimeballs"
     },
     {
-      "item": "pneumaticcraft:plastic"
+      "item": {
+        "item": "pneumaticcraft:plastic"
+      }
     }
   ],
   "pressure": 1.0,

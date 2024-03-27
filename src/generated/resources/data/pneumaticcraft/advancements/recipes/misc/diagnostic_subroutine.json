@@ -22,14 +22,13 @@
   },
   "requirements": [
     [
-      "has_capacitor",
-      "has_the_recipe"
+      "has_the_recipe",
+      "has_capacitor"
     ]
   ],
   "rewards": {
     "recipes": [
       "pneumaticcraft:diagnostic_subroutine"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }

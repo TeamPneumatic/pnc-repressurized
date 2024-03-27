@@ -18,7 +18,6 @@
 package me.desht.pneumaticcraft.common.block.entity;
 
 import net.minecraft.core.Direction;
-import net.minecraftforge.common.capabilities.Capability;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -43,10 +42,10 @@ public interface ISideConfigurable {
      * Check if the given handler is OK for the given face
      *
      * @param face relative face of the block
-     * @param cap the capability to check, may be null to indicate no connectivity on this face
+     * @param handler the capability to check, may be null to indicate no connectivity on this face
      * @return true if this handler is allowed on this side, false otherwise
      */
-    default boolean isValid(SideConfigurator.RelativeFace face, @Nullable Capability<?> cap) {
+    default boolean isValid(SideConfigurator.RelativeFace face, @Nullable Object handler) {
         return true;
     }
 

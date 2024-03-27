@@ -22,7 +22,7 @@ import net.minecraft.nbt.CompoundTag;
 
 /**
  * Use this interface to get instances of air handlers for your tile entities.  You can then expose those air handler
- * instances via the {@link IAirHandlerMachine} capability interface; {@link me.desht.pneumaticcraft.api.PNCCapabilities#AIR_HANDLER_MACHINE_CAPABILITY} can be used for this.
+ * instances via the {@link IAirHandlerMachine} capability interface; {@link me.desht.pneumaticcraft.api.PNCCapabilities#AIR_HANDLER_MACHINE} can be used for this.
  * <p>
  * Get an instance of this factory with
  * {@link me.desht.pneumaticcraft.api.PneumaticRegistry.IPneumaticCraftInterface#getAirHandlerMachineFactory()}.
@@ -50,7 +50,7 @@ public interface IAirHandlerMachineFactory {
      * <strong>provided that you take the following steps:</strong>
      * <ul>
      *     <li>Storing this object in your block entity</li>
-     *     <li>Providing access to it via {@link net.minecraftforge.common.util.LazyOptional} and the {@link me.desht.pneumaticcraft.api.PNCCapabilities#AIR_HANDLER_MACHINE_CAPABILITY} capability</li>
+     *     <li>Providing access to it via {@link net.neoforged.neoforge.common.util.LazyOptional} and the {@link me.desht.pneumaticcraft.api.PNCCapabilities#AIR_HANDLER_MACHINE} capability</li>
      *     <li>Loading and saving the air handler in {@link net.minecraft.world.level.block.entity.BlockEntity#load(CompoundTag)}
      *     and {@link net.minecraft.world.level.block.entity.BlockEntity#saveAdditional(CompoundTag)}</li>
      *     <li>Ticking the air handler in your block entity's server-side tick implementation (your block entity <strong>must</strong> be ticked)</li>

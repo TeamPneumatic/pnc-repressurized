@@ -22,14 +22,13 @@
   },
   "requirements": [
     [
-      "has_compressed_stone",
-      "has_the_recipe"
+      "has_the_recipe",
+      "has_compressed_stone"
     ]
   ],
   "rewards": {
     "recipes": [
       "pneumaticcraft:compressed_stone_slab_from_stone_stonecutting"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }

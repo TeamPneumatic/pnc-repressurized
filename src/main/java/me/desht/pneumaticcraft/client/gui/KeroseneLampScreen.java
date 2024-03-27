@@ -24,14 +24,14 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetTank;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.block.entity.KeroseneLampBlockEntity;
-import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.inventory.KeroseneLampMenu;
+import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.client.gui.widget.ForgeSlider;
+import net.neoforged.neoforge.client.gui.widget.ExtendedSlider;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.List;
@@ -41,7 +41,7 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 public class KeroseneLampScreen extends AbstractPneumaticCraftContainerScreen<KeroseneLampMenu,KeroseneLampBlockEntity> {
 
     private WidgetLabel rangeLabel;
-    private ForgeSlider slider;
+    private ExtendedSlider slider;
     private WidgetAnimatedStat fuelTab;
     private int prevRange;
 

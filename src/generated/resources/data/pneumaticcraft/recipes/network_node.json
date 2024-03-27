@@ -20,6 +20,5 @@
   "result": {
     "count": 16,
     "item": "pneumaticcraft:network_node"
-  },
-  "show_notification": true
+  }
 }

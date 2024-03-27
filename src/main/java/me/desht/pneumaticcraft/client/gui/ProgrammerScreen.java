@@ -34,8 +34,6 @@ import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.block.entity.ProgrammerBlockEntity;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
-import me.desht.pneumaticcraft.common.core.ModItems;
-import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.common.drone.progwidgets.*;
 import me.desht.pneumaticcraft.common.drone.progwidgets.IProgWidget.WidgetDifficulty;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetCoordinateOperator.EnumOperator;
@@ -44,8 +42,10 @@ import me.desht.pneumaticcraft.common.item.GPSAreaToolItem;
 import me.desht.pneumaticcraft.common.item.GPSToolItem;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketGuiButton;
-import me.desht.pneumaticcraft.common.network.PacketProgrammerUpdate;
+import me.desht.pneumaticcraft.common.network.PacketProgrammerSync;
 import me.desht.pneumaticcraft.common.network.PacketUpdateTextfield;
+import me.desht.pneumaticcraft.common.registry.ModItems;
+import me.desht.pneumaticcraft.common.registry.ModProgWidgets;
 import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
@@ -135,7 +135,7 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
                 te.readProgWidgetsFromNBT(pastebinGui.outputTag);
             }
             pastebinGui = null;
-            NetworkHandler.sendToServer(new PacketProgrammerUpdate(te));
+            NetworkHandler.sendToServer(PacketProgrammerSync.forBlockEntity(te));
             te.recentreStartPiece = true;
         }
 
@@ -281,8 +281,8 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
         maxPage = 0;
         visibleSpawnWidgets.clear();
         int idx = 0;
-        int nWidgets = ModProgWidgets.PROG_WIDGETS.get().getValues().size();
-        for (ProgWidgetType<?> type : ModProgWidgets.PROG_WIDGETS.get().getValues()) {
+        int nWidgets = ModProgWidgets.PROG_WIDGETS_REGISTRY.size();
+        for (ProgWidgetType<?> type : ModProgWidgets.PROG_WIDGETS_REGISTRY) {
             IProgWidget widget = IProgWidget.create(type);
             if (widget.isAvailable() && widget.isDifficultyOK(difficulty)) {
                 widget.setY(y + 40);
@@ -342,7 +342,7 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
 
     @Override
     protected void doDelayedAction() {
-        NetworkHandler.sendToServer(new PacketUpdateTextfield(te, 0));
+        NetworkHandler.sendToServer(PacketUpdateTextfield.create(te, 0));
     }
 
     private void adjustPage(int dir) {
@@ -387,7 +387,7 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
     private void clear() {
         te.progWidgets.forEach(w -> removingWidgets.add(new RemovingWidget(w)));
         te.progWidgets.clear();
-        NetworkHandler.sendToServer(new PacketProgrammerUpdate(te));
+        NetworkHandler.sendToServer(PacketProgrammerSync.forBlockEntity(te));
     }
 
     private void convertToRelative() {
@@ -439,7 +439,7 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
                 widget.getTooltip(tooltip);
                 ThirdPartyManager.instance().getDocsProvider().addTooltip(tooltip, showingAllWidgets);
                 if (Minecraft.getInstance().options.advancedItemTooltips) {
-                    ResourceLocation id = ModProgWidgets.PROG_WIDGETS.get().getKey(widget.getType());
+                    ResourceLocation id = ModProgWidgets.PROG_WIDGETS_REGISTRY.getKey(widget.getType());
                     if (id != null) tooltip.add(Component.literal(id.toString()).withStyle(ChatFormatting.DARK_GRAY));
                 }
                 if (!tooltip.isEmpty()) {
@@ -454,7 +454,7 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
         lastMouseX = mouseX;
         lastMouseY = mouseY;
 
-        renderBackground(graphics);
+        renderBackground(graphics, mouseX, mouseY, partialTicks);
         int xStart = (width - imageWidth) / 2;
         int yStart = (height - imageHeight) / 2;
         graphics.blit(getGuiTexture(), xStart, yStart, 0, 0, imageWidth, imageHeight, imageWidth, imageHeight);
@@ -573,7 +573,7 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
                     if (widget != null) {
                         removingWidgets.add(new RemovingWidget(widget));
                         te.progWidgets.remove(widget);
-                        NetworkHandler.sendToServer(new PacketProgrammerUpdate(te));
+                        NetworkHandler.sendToServer(PacketProgrammerSync.forBlockEntity(te));
                     }
                 }
                 return true;
@@ -1020,7 +1020,7 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
                 prevOperator = operator;
             }
             if (!simulate) {
-                NetworkHandler.sendToServer(new PacketProgrammerUpdate(te));
+                NetworkHandler.sendToServer(PacketProgrammerSync.forBlockEntity(te));
                 ProgrammerBlockEntity.updatePuzzleConnections(te.progWidgets);
             }
         }
@@ -1055,7 +1055,7 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
             }
         }
         if (changed) {
-            NetworkHandler.sendToServer(new PacketProgrammerUpdate(te));
+            NetworkHandler.sendToServer(PacketProgrammerSync.forBlockEntity(te));
         }
     }
 
@@ -1127,7 +1127,7 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
                 tag.putInt("x", hovered.getX());
                 tag.putInt("y", hovered.getY());
                 hovered.readFromNBT(tag);
-                NetworkHandler.sendToServer(new PacketProgrammerUpdate(te));
+                NetworkHandler.sendToServer(PacketProgrammerSync.forBlockEntity(te));
             } else if (heldItem.getItem() == ModItems.GPS_TOOL.get()) {
                 if (hovered instanceof ProgWidgetCoordinate) {
                     ((ProgWidgetCoordinate) hovered).loadFromGPSTool(heldItem);
@@ -1139,7 +1139,7 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
                     areaHovered.setVarName(0, GPSToolItem.getVariable(heldItem));
                     areaHovered.setVarName(1, GPSToolItem.getVariable(heldItem));
                 }
-                NetworkHandler.sendToServer(new PacketProgrammerUpdate(te));
+                NetworkHandler.sendToServer(PacketProgrammerSync.forBlockEntity(te));
             }
         } else {
             // clicked on an empty area: create a new area or coordinate widget(s)
@@ -1171,7 +1171,7 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
                 }
             }
             if (te.progWidgets.size() > n) {
-                NetworkHandler.sendToServer(new PacketProgrammerUpdate(te));
+                NetworkHandler.sendToServer(PacketProgrammerSync.forBlockEntity(te));
             }
         }
         return true;
@@ -1187,11 +1187,11 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
             if (!programmerUnit.isOutsideProgrammingArea(p)) {
                 te.progWidgets.add(p);
             }
-            NetworkHandler.sendToServer(new PacketProgrammerUpdate(te));
+            NetworkHandler.sendToServer(PacketProgrammerSync.forBlockEntity(te));
             return true;
         } else if (hovered instanceof ProgWidgetItemFilter p) {
             p.setFilter(heldItem.copy());
-            NetworkHandler.sendToServer(new PacketProgrammerUpdate(te));
+            NetworkHandler.sendToServer(PacketProgrammerSync.forBlockEntity(te));
             return true;
         }
         return false;
@@ -1245,7 +1245,7 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
                         deleteConnectingWidgets(draggingWidget);
                 }
             }
-            NetworkHandler.sendToServer(new PacketProgrammerUpdate(te));
+            NetworkHandler.sendToServer(PacketProgrammerSync.forBlockEntity(te));
             ProgrammerBlockEntity.updatePuzzleConnections(te.progWidgets);
             draggingWidget = null;
         }
@@ -1253,8 +1253,8 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
     }
 
     @Override
-    public boolean mouseScrolled(double p_mouseScrolled_1_, double p_mouseScrolled_3_, double p_mouseScrolled_5_) {
-        return programmerUnit.mouseScrolled(p_mouseScrolled_1_, p_mouseScrolled_3_, p_mouseScrolled_5_);
+    public boolean mouseScrolled(double pMouseX, double pMouseY, double pScrollX, double pScrollY) {
+        return programmerUnit.mouseScrolled(pMouseX, pMouseY, pScrollX, pScrollY);
     }
 
     @Override

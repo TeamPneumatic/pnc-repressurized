@@ -20,27 +20,25 @@ package me.desht.pneumaticcraft.common.block.entity;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.client.util.TintColor;
-import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.common.heat.SyncedTemperature;
 import me.desht.pneumaticcraft.common.network.DescSynced;
+import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.IItemHandler;
+import net.neoforged.neoforge.items.IItemHandler;
+import org.jetbrains.annotations.Nullable;
 
 public class CompressedIronBlockBlockEntity extends AbstractTickingBlockEntity implements IComparatorSupport, IHeatTinted, IHeatExchangingTE {
-
     protected final IHeatExchangerLogic heatExchanger = PneumaticRegistry.getInstance().getHeatRegistry().makeHeatExchangerLogic();
-    private final LazyOptional<IHeatExchangerLogic> heatCap = LazyOptional.of(() -> heatExchanger);
     private int comparatorOutput = 0;
     @DescSynced
     protected final SyncedTemperature syncedTemperature = new SyncedTemperature(heatExchanger);
 
     public CompressedIronBlockBlockEntity(BlockPos pos, BlockState state) {
-        this(ModBlockEntities.COMPRESSED_IRON_BLOCK.get(), pos, state);
+        this(ModBlockEntityTypes.COMPRESSED_IRON_BLOCK.get(), pos, state);
     }
 
     CompressedIronBlockBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
@@ -50,8 +48,8 @@ public class CompressedIronBlockBlockEntity extends AbstractTickingBlockEntity i
     }
 
     @Override
-    public LazyOptional<IHeatExchangerLogic> getHeatCap(Direction side) {
-        return heatCap;
+    public boolean hasItemCapability() {
+        return false;
     }
 
     @Override
@@ -73,7 +71,7 @@ public class CompressedIronBlockBlockEntity extends AbstractTickingBlockEntity i
     }
 
     @Override
-    public IItemHandler getPrimaryInventory() {
+    public IItemHandler getItemHandler(@Nullable Direction dir) {
         return null;
     }
 

@@ -23,8 +23,9 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.MenuType;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.energy.EnergyStorage;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.energy.EnergyStorage;
+import net.neoforged.neoforge.energy.IEnergyStorage;
 
 public abstract class AbstractForgeEnergyMenu<T extends AbstractPneumaticCraftBlockEntity> extends Abstract4SlotMenu<T> {
 
@@ -35,15 +36,15 @@ public abstract class AbstractForgeEnergyMenu<T extends AbstractPneumaticCraftBl
     public AbstractForgeEnergyMenu(MenuType type, int i, Inventory playerInventory, BlockPos tilePos) {
         super(type, i, playerInventory, tilePos);
 
-        if (!te.getCapability(ForgeCapabilities.ENERGY).isPresent()) {
-            throw new IllegalStateException("block entity must support ForgeCapabilities.ENERGY on face null!");
-        }
-        te.getCapability(ForgeCapabilities.ENERGY).ifPresent(h -> {
+        IEnergyStorage storage = blockEntity.getLevel().getCapability(Capabilities.EnergyStorage.BLOCK, blockEntity.getBlockPos(), blockEntity.getBlockState(), blockEntity, null);
+        if (storage != null) {
             try {
-                addSyncedField(new SyncedField.SyncedInt(h, EnergyStorage.class.getDeclaredField("energy")));
+                addSyncedField(new SyncedField.SyncedInt(storage, EnergyStorage.class.getDeclaredField("energy")));
             } catch (NoSuchFieldException e) {
                 e.printStackTrace();
             }
-        });
+        } else {
+            throw new IllegalStateException("block entity must support Capabilities.EnergyStorage.BLOCK on face null!");
+        }
     }
 }

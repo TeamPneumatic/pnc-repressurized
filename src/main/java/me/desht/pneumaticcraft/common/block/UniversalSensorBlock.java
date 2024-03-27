@@ -1,8 +1,8 @@
 package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.common.block.entity.UniversalSensorBlockEntity;
-import me.desht.pneumaticcraft.common.core.ModBlockEntities;
-import me.desht.pneumaticcraft.common.core.ModBlocks;
+import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
+import me.desht.pneumaticcraft.common.registry.ModBlocks;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -21,8 +21,7 @@ import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.common.util.FakePlayer;
-import net.minecraftforge.network.NetworkHooks;
+import net.neoforged.neoforge.common.util.FakePlayer;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
@@ -56,7 +55,7 @@ public class UniversalSensorBlock extends AbstractPneumaticCraftBlock implements
 
     @Override
     public void setPlacedBy(Level world, BlockPos pos, BlockState state, LivingEntity entity, ItemStack stack) {
-        world.getBlockEntity(pos, ModBlockEntities.UNIVERSAL_SENSOR.get()).ifPresent(teUS -> {
+        world.getBlockEntity(pos, ModBlockEntityTypes.UNIVERSAL_SENSOR.get()).ifPresent(teUS -> {
             if (entity instanceof Player && !(entity instanceof FakePlayer)) {
                 teUS.setPlayerId(entity.getUUID());
             }
@@ -74,14 +73,14 @@ public class UniversalSensorBlock extends AbstractPneumaticCraftBlock implements
 
     @Override
     public int getDirectSignal(BlockState blockState, BlockGetter blockAccess, BlockPos pos, Direction side) {
-        return blockAccess.getBlockEntity(pos, ModBlockEntities.UNIVERSAL_SENSOR.get())
+        return blockAccess.getBlockEntity(pos, ModBlockEntityTypes.UNIVERSAL_SENSOR.get())
                 .map(te -> side == Direction.UP ? te.redstoneStrength : 0)
                 .orElse(0);
     }
 
     @Override
     public int getSignal(BlockState blockState, BlockGetter blockAccess, BlockPos pos, Direction side) {
-        return blockAccess.getBlockEntity(pos, ModBlockEntities.UNIVERSAL_SENSOR.get())
+        return blockAccess.getBlockEntity(pos, ModBlockEntityTypes.UNIVERSAL_SENSOR.get())
                 .map(te -> te.redstoneStrength).orElse(0);
     }
 
@@ -98,7 +97,7 @@ public class UniversalSensorBlock extends AbstractPneumaticCraftBlock implements
 
     @Override
     protected void doOpenGui(ServerPlayer player, BlockEntity te) {
-        NetworkHooks.openScreen(player, (MenuProvider) te, buf -> {
+        player.openMenu((MenuProvider) te, buf -> {
             buf.writeBlockPos(te.getBlockPos());
             Collection<String> vars = GlobalVariableManager.getInstance().getAllActiveVariableNames(player);
             buf.writeVarInt(vars.size());

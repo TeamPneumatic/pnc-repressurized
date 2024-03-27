@@ -23,8 +23,8 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetTank;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.block.entity.FluidMixerBlockEntity;
-import me.desht.pneumaticcraft.common.core.ModRecipeTypes;
 import me.desht.pneumaticcraft.common.inventory.FluidMixerMenu;
+import me.desht.pneumaticcraft.common.registry.ModRecipeTypes;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
@@ -34,7 +34,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidStack;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -118,14 +118,14 @@ public class FluidMixerScreen extends AbstractPneumaticCraftContainerScreen<Flui
     @Override
     public Collection<ItemStack> getTargetItems() {
         return getCurrentRecipe(ModRecipeTypes.FLUID_MIXER.get())
-                .map(recipe -> Collections.singletonList(recipe.getOutputItem()))
+                .map(recipe -> Collections.singletonList(recipe.value().getOutputItem()))
                 .orElse(Collections.emptyList());
     }
 
     @Override
     public Collection<FluidStack> getTargetFluids() {
         return getCurrentRecipe(ModRecipeTypes.FLUID_MIXER.get())
-                .map(recipe -> Collections.singletonList(recipe.getOutputFluid()))
+                .map(recipe -> Collections.singletonList(recipe.value().getOutputFluid()))
                 .orElse(Collections.emptyList());
     }
 }

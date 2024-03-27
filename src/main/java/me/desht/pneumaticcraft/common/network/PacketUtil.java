@@ -32,9 +32,9 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import org.joml.Vector3f;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -48,6 +48,16 @@ public class PacketUtil {
         ResourceKey<Level> worldKey = ResourceKey.create(Registries.DIMENSION, buf.readResourceLocation());
         BlockPos pos = buf.readBlockPos();
         return GlobalPos.of(worldKey, pos);
+    }
+
+    public static void writeVec3f(Vector3f vec, FriendlyByteBuf buf) {
+        buf.writeFloat(vec.x);
+        buf.writeFloat(vec.y);
+        buf.writeFloat(vec.z);
+    }
+
+    public static Vector3f readVec3f(FriendlyByteBuf buf) {
+        return new Vector3f(buf.readFloat(), buf.readFloat(), buf.readFloat());
     }
 
     /**
@@ -66,14 +76,14 @@ public class PacketUtil {
      */
     @Nonnull
     public static <T extends BlockEntity> Optional<T> getBlockEntity(Player player, BlockPos pos, Class<T> cls) {
-        if (player == null) {
+        if (player == null || player.level().isClientSide) {
             // client-side: we trust the blockpos the server sends
             return ClientUtils.getOptionalClientLevel().flatMap(level -> PneumaticCraftUtils.getTileEntityAt(level, pos, cls));
         } else {
             // server-side: don't trust the blockpos the client sent us
             // instead get the BE from the player's open container
-            if (player.containerMenu instanceof AbstractPneumaticCraftMenu pncMenu) {
-                BlockEntity te = pncMenu.te;
+            if (player.containerMenu instanceof AbstractPneumaticCraftMenu<?> pncMenu) {
+                BlockEntity te = pncMenu.blockEntity;
                 if (te != null && cls.isAssignableFrom(te.getClass()) && (pos == null || te.getBlockPos().equals(pos))) {
                     //noinspection unchecked
                     return Optional.of((T) te);
@@ -97,31 +107,23 @@ public class PacketUtil {
     }
 
     /**
-     * Write a blockstate, which may be null, to the network
+     * Write an optional blockstate to the network
      * @param buf the packet buffer
      * @param state the state to write
      */
-    public static void writeNullableBlockState(FriendlyByteBuf buf, @Nullable BlockState state) {
-        if (state == null) {
-            buf.writeBoolean(false);
-        } else {
-            buf.writeBoolean(true);
-            buf.writeNbt(NbtUtils.writeBlockState(state));
-        }
+    public static void writeOptionalBlockState(FriendlyByteBuf buf, @SuppressWarnings("OptionalUsedAsFieldOrParameterType") Optional<BlockState> state) {
+        buf.writeOptional(state, (b, state1) -> b.writeNbt(NbtUtils.writeBlockState(state1)));
     }
 
     /**
-     * Read a (possibly null) blockstate from the network
+     * Read an optional blockstate from the network
      * @param buf the packet buffer
      * @return the blockstate, may be null
      */
-    @Nullable
-    public static BlockState readNullableBlockState(FriendlyByteBuf buf) {
-        if (buf.readBoolean()) {
-            CompoundTag tag = buf.readNbt();
+    public static Optional<BlockState> readOptionalBlockState(FriendlyByteBuf buf) {
+        return buf.readOptional(b -> {
+            CompoundTag tag = b.readNbt();
             return NbtUtils.readBlockState(BuiltInRegistries.BLOCK.asLookup(), Objects.requireNonNull(tag));
-        } else {
-            return null;
-        }
+        });
     }
 }

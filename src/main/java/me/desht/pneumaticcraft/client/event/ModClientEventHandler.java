@@ -23,25 +23,25 @@ import me.desht.pneumaticcraft.client.model.custom.CamouflageModel;
 import me.desht.pneumaticcraft.client.model.custom.FluidItemModel;
 import me.desht.pneumaticcraft.client.model.custom.RenderedItemModel;
 import me.desht.pneumaticcraft.common.block.AbstractCamouflageBlock;
-import me.desht.pneumaticcraft.common.core.ModBlocks;
+import me.desht.pneumaticcraft.common.registry.ModBlocks;
 import net.minecraft.client.renderer.block.BlockModelShaper;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.ModelResourceLocation;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.ModelEvent;
-import net.minecraftforge.client.event.ModelEvent.RegisterGeometryLoaders;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.client.event.ModelEvent;
+import net.neoforged.neoforge.client.event.ModelEvent.RegisterGeometryLoaders;
+
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 @Mod.EventBusSubscriber(modid = Names.MOD_ID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class ModClientEventHandler {
     @SubscribeEvent
     public static void onModelBaking(ModelEvent.ModifyBakingResult event) {
         // set up camo models for camouflageable blocks
-        for (RegistryObject<Block> block : ModBlocks.BLOCKS.getEntries()) {
+        for (var block : ModBlocks.BLOCKS.getEntries()) {
             if (block.get() instanceof AbstractCamouflageBlock) {
                 for (BlockState state : block.get().getStateDefinition().getPossibleStates()) {
                     ModelResourceLocation loc = BlockModelShaper.stateToModelLocation(state);
@@ -56,8 +56,8 @@ public class ModClientEventHandler {
 
     @SubscribeEvent
     public static void onModelRegistry(RegisterGeometryLoaders event) {
-        event.register("camouflaged", CamouflageModel.Loader.INSTANCE);
-        event.register("fluid_container_item", FluidItemModel.Loader.INSTANCE);
-        event.register("rendered_item", RenderedItemModel.Loader.INSTANCE);
+        event.register(RL("camouflaged"), CamouflageModel.Loader.INSTANCE);
+        event.register(RL("fluid_container_item"), FluidItemModel.Loader.INSTANCE);
+        event.register(RL("rendered_item"), RenderedItemModel.Loader.INSTANCE);
     }
 }

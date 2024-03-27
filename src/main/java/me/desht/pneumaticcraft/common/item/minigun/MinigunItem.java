@@ -25,8 +25,6 @@ import me.desht.pneumaticcraft.api.upgrade.PNCUpgrade;
 import me.desht.pneumaticcraft.client.render.MinigunItemRenderer;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.block.entity.ChargingStationBlockEntity;
-import me.desht.pneumaticcraft.common.core.ModItems;
-import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.inventory.AbstractPneumaticCraftMenu;
 import me.desht.pneumaticcraft.common.inventory.MinigunMagazineMenu;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
@@ -38,6 +36,8 @@ import me.desht.pneumaticcraft.common.minigun.MinigunPlayerTracker;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketMinigunStop;
 import me.desht.pneumaticcraft.common.network.PacketPlaySound;
+import me.desht.pneumaticcraft.common.registry.ModItems;
+import me.desht.pneumaticcraft.common.registry.ModMenuTypes;
 import me.desht.pneumaticcraft.common.upgrades.ApplicableUpgradesDB;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.util.NBTUtils;
@@ -66,11 +66,10 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.client.extensions.common.IClientItemExtensions;
-import net.minecraftforge.event.entity.living.LivingAttackEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.network.NetworkHooks;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
+import net.neoforged.neoforge.event.entity.living.LivingAttackEvent;
 import org.apache.commons.lang3.Validate;
 
 import javax.annotation.Nonnull;
@@ -182,7 +181,7 @@ public class MinigunItem extends PressurizableItem implements
         boolean isCreative = UpgradableItemUtils.getUpgradeCount(stack, ModUpgrades.CREATIVE.get()) > 0;
         return new ItemMinigunImpl(player, stack)
                 .setAmmoStack(ammo)
-                .setAirHandler(stack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY), isCreative ? 0 : PneumaticValues.USAGE_ITEM_MINIGUN)
+                .setAirHandler(stack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM), isCreative ? 0 : PneumaticValues.USAGE_ITEM_MINIGUN)
                 .setWorld(player.level())
                 .setInfiniteAmmo(isCreative);
     }
@@ -195,8 +194,8 @@ public class MinigunItem extends PressurizableItem implements
     public InteractionResultHolder<ItemStack> use(Level world, Player player, InteractionHand handIn) {
         ItemStack stack = player.getItemInHand(handIn);
         if (player.isShiftKeyDown()) {
-            if (!world.isClientSide && stack.getCount() == 1) {
-                NetworkHooks.openScreen((ServerPlayer) player, new MenuProvider() {
+            if (player instanceof ServerPlayer sp && stack.getCount() == 1) {
+                sp.openMenu(new MenuProvider() {
                     @Override
                     public Component getDisplayName() {
                         return stack.getHoverName();

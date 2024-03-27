@@ -22,14 +22,13 @@
   },
   "requirements": [
     [
-      "has_turbine_blade",
-      "has_the_recipe"
+      "has_the_recipe",
+      "has_turbine_blade"
     ]
   ],
   "rewards": {
     "recipes": [
       "pneumaticcraft:turbine_rotor"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }

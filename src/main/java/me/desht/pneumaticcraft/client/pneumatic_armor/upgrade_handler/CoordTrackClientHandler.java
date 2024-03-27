@@ -30,8 +30,6 @@ import me.desht.pneumaticcraft.client.render.pneumatic_armor.RenderNavigator;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.config.ClientConfig;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
-import me.desht.pneumaticcraft.common.core.ModEntityTypes;
-import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.drone.EntityPathNavigateDrone;
 import me.desht.pneumaticcraft.common.entity.drone.DroneEntity;
 import me.desht.pneumaticcraft.common.item.PneumaticArmorItem;
@@ -40,6 +38,8 @@ import me.desht.pneumaticcraft.common.network.PacketUpdateArmorExtraData;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
 import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.CoordTrackerHandler;
+import me.desht.pneumaticcraft.common.registry.ModEntityTypes;
+import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.util.GlobalPosHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -57,10 +57,10 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.pathfinder.Node;
 import net.minecraft.world.level.pathfinder.Path;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 
 import java.util.Collections;
 
@@ -214,7 +214,7 @@ public class CoordTrackClientHandler extends IArmorUpgradeClientHandler.Abstract
                     PneumaticArmorItem.setCoordTrackerPos(helmetStack, gPos);
                     CompoundTag tag = new CompoundTag();
                     tag.put(PneumaticArmorItem.NBT_COORD_TRACKER, GlobalPosHelper.toNBT(gPos));
-                    NetworkHandler.sendToServer(new PacketUpdateArmorExtraData(EquipmentSlot.HEAD, tag, handler.getID()));
+                    NetworkHandler.sendToServer(new PacketUpdateArmorExtraData(EquipmentSlot.HEAD, handler.getID(), tag));
                     HUDHandler.getInstance().addMessage(xlate("pneumaticcraft.armor.gui.coordinateTracker.selectedTarget", PneumaticCraftUtils.posToString(gPos.pos())), Collections.emptyList(), 60, 0x8000AA00);
                 }
             }

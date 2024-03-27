@@ -1,5 +1,5 @@
 {
-  "type": "pneumaticcraft:crafting_shaped_no_mirror",
+  "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
     "B": {
@@ -9,19 +9,18 @@
       "item": "pneumaticcraft:pneumatic_cylinder"
     },
     "H": {
-      "item": "minecraft:hopper"
+      "item": "minecraft:dropper"
     },
     "I": {
       "tag": "forge:ingots/compressed_iron"
     }
   },
   "pattern": [
-    "CCH",
-    "C  ",
+    "HCC",
+    "  C",
     "IBI"
   ],
   "result": {
     "item": "pneumaticcraft:assembly_io_unit_export"
-  },
-  "show_notification": true
+  }
 }

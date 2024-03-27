@@ -9,9 +9,10 @@
       "item": "pneumaticcraft:reinforced_stone_slab"
     },
     "T": {
-      "type": "forge:nbt",
-      "count": 1,
-      "item": "pneumaticcraft:small_tank"
+      "type": "neoforge:nbt",
+      "item": "pneumaticcraft:small_tank",
+      "strict": true,
+      "tag": "{}"
     }
   },
   "pattern": [
@@ -21,6 +22,5 @@
   ],
   "result": {
     "item": "pneumaticcraft:refinery"
-  },
-  "show_notification": true
+  }
 }

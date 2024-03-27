@@ -25,10 +25,10 @@ import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.block.entity.AphorismTileBlockEntity;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
-import me.desht.pneumaticcraft.common.core.ModBlocks;
-import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketAphorismTileUpdate;
+import me.desht.pneumaticcraft.common.registry.ModBlocks;
+import me.desht.pneumaticcraft.common.registry.ModMenuTypes;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.drama.DramaGenerator;
 import net.minecraft.SharedConstants;
@@ -48,7 +48,7 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class AphorismTileScreen extends Screen {
     private static final int PANEL_HEIGHT = 88;
-    public final AphorismTileBlockEntity tile;
+    public final AphorismTileBlockEntity blockEntity;
     private String[] textLines;
     public int cursorY;
     public int cursorX;
@@ -56,20 +56,20 @@ public class AphorismTileScreen extends Screen {
     private ItemSearcherScreen itemSearchGui;
     private int panelWidth;
 
-    public AphorismTileScreen(AphorismTileBlockEntity tile, boolean placing) {
+    public AphorismTileScreen(AphorismTileBlockEntity blockEntity, boolean placing) {
         super(new ItemStack(ModBlocks.APHORISM_TILE.get()).getHoverName());
 
-        this.tile = tile;
-        textLines = tile.getTextLines();
-        tile.needMaxLineWidthRecalc();
+        this.blockEntity = blockEntity;
+        textLines = blockEntity.getTextLines();
+        blockEntity.needMaxLineWidthRecalc();
         if (ConfigHelper.client().general.aphorismDrama.get() && placing && textLines.length == 1 && textLines[0].isEmpty()) {
             List<String> l = PneumaticCraftUtils.splitString(DramaGenerator.generateDrama(), 20);
-            tile.setTextLines(l.toArray(new String[0]));
-            textLines = tile.getTextLines();
-            NetworkHandler.sendToServer(new PacketAphorismTileUpdate(tile));
+            blockEntity.setTextLines(l.toArray(new String[0]));
+            textLines = blockEntity.getTextLines();
+            NetworkHandler.sendToServer(PacketAphorismTileUpdate.forBlockEntity(blockEntity));
         }
 
-        Pair<Integer,Integer> cursor = tile.getCursorPos();
+        Pair<Integer,Integer> cursor = blockEntity.getCursorPos();
         cursorX = cursor.getLeft();
         cursorY = cursor.getRight();
     }
@@ -78,13 +78,13 @@ public class AphorismTileScreen extends Screen {
     public void init() {
         int yPos = (height - PANEL_HEIGHT) / 2;
         addRenderableWidget(new PNCForgeSlider(5, yPos, 90, 16,  Component.literal("Margin: "), Component.empty(),
-                0, 9, tile.getMarginSize(), true, slider -> tile.setMarginSize(slider.getValueInt())));
+                0, 9, blockEntity.getMarginSize(), true, slider -> blockEntity.setMarginSize(slider.getValueInt())));
 
         WidgetCheckBox cb;
         WidgetButtonExtended itemButton, rsButton;
 
-        addRenderableWidget(cb = new WidgetCheckBox(5, yPos + 22, 0xFFFFFF, xlate("pneumaticcraft.gui.logistics_frame.invisible"), b -> tile.setInvisible(b.checked))
-                .setChecked(tile.isInvisible()));
+        addRenderableWidget(cb = new WidgetCheckBox(5, yPos + 22, 0xFFFFFF, xlate("pneumaticcraft.gui.logistics_frame.invisible"), b -> blockEntity.setInvisible(b.checked))
+                .setChecked(blockEntity.isInvisible()));
 
         addRenderableWidget(new WidgetLabel(5, yPos + 38, xlate("pneumaticcraft.gui.aphorismTile.insert"), 0xFFFFFF80));
 
@@ -94,7 +94,7 @@ public class AphorismTileScreen extends Screen {
         txt = xlate("pneumaticcraft.gui.redstone");
         addRenderableWidget(rsButton = new WidgetButtonExtended(10, yPos + 70, font.width(txt) + 10, 18, txt, b -> {
             textLines[cursorY] = textLines[cursorY] + "{redstone}";
-            tile.setTextLines(textLines);
+            blockEntity.setTextLines(textLines);
         }));
 
         panelWidth = Math.max(100, Math.max(cb.getWidth(), Math.max(rsButton.getWidth(), itemButton.getWidth()))) + 5;
@@ -103,7 +103,7 @@ public class AphorismTileScreen extends Screen {
             String text = "{item:" + regName + "}";
             textLines[cursorY] = text;
             cursorX = text.length();
-            tile.setTextLines(textLines);
+            blockEntity.setTextLines(textLines);
             itemSearchGui = null;
         }
     }
@@ -146,7 +146,7 @@ public class AphorismTileScreen extends Screen {
         float p = curLine.isEmpty() ? 0f : (float)cursorX / curLine.length();
 
         switch (keyCode) {
-            case GLFW.GLFW_KEY_ESCAPE -> NetworkHandler.sendToServer(new PacketAphorismTileUpdate(tile));
+            case GLFW.GLFW_KEY_ESCAPE -> NetworkHandler.sendToServer(PacketAphorismTileUpdate.forBlockEntity(blockEntity));
             case GLFW.GLFW_KEY_UP -> {
                 cursorY--;
                 if (cursorY < 0) cursorY = textLines.length - 1;
@@ -237,8 +237,8 @@ public class AphorismTileScreen extends Screen {
                 updateTE = true;
             }
         }
-        tile.setCursorPos(cursorX, cursorY);
-        if (updateTE) tile.setTextLines(textLines);
+        blockEntity.setCursorPos(cursorX, cursorY);
+        if (updateTE) blockEntity.setTextLines(textLines);
         return super.keyPressed(keyCode, scanCode, modifiers);
     }
 
@@ -254,14 +254,14 @@ public class AphorismTileScreen extends Screen {
                 textLines[cursorY] = textLines[cursorY].substring(0, cursorX) + ch + textLines[cursorY].substring(cursorX);
                 cursorX++;
             }
-            tile.setTextLines(textLines);
+            blockEntity.setTextLines(textLines);
         }
         return super.charTyped(ch, keyCode);
     }
 
     @Override
     public void removed() {
-        tile.needMaxLineWidthRecalc();
+        blockEntity.needMaxLineWidthRecalc();
         super.removed();
     }
 

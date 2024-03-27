@@ -20,42 +20,45 @@ package me.desht.pneumaticcraft.common.network;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.inventory.AbstractPneumaticCraftMenu;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 
-import java.util.function.Supplier;
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 /**
  * Received on: CLIENT
- *
  * The primary mechanism for sync'ing BE fields to an open GUI.  BE fields annotated with @GuiSynced will be synced
  * in this packet, via {@link AbstractPneumaticCraftMenu#broadcastChanges()}.
  */
-public class PacketUpdateGui {
-    private final int syncId;
-    private final Object value;
-    private final byte type;
+public record PacketUpdateGui(int syncId, Object value, byte type) implements CustomPacketPayload {
+    public static final ResourceLocation ID = RL("update_gui");
 
-    public PacketUpdateGui(int syncId, SyncedField<?> syncField) {
-        this.syncId = syncId;
-        value = syncField.getValue();
-        type = SyncedField.getType(syncField);
+    public static PacketUpdateGui create(int syncId, SyncedField<?> syncField) {
+        return new PacketUpdateGui(syncId, syncField.getValue(), SyncedField.getType(syncField));
     }
 
-    public PacketUpdateGui(FriendlyByteBuf buf) {
-        syncId = buf.readVarInt();
-        type = buf.readByte();
-        value = SyncedField.fromBytes(buf, type);
+    public static PacketUpdateGui fromNetwork(FriendlyByteBuf buf) {
+        int syncId = buf.readVarInt();
+        byte type = buf.readByte();
+        Object value = SyncedField.fromBytes(buf, type);
+
+        return new PacketUpdateGui(syncId, value, type);
     }
 
-    public void toBytes(FriendlyByteBuf buf) {
+    @Override
+    public void write(FriendlyByteBuf buf) {
         buf.writeVarInt(syncId);
         buf.writeByte(type);
         SyncedField.toBytes(buf, value, type);
     }
 
-    public void handle(Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> ClientUtils.syncViaOpenContainerScreen(syncId, value));
-        ctx.get().setPacketHandled(true);
+    @Override
+    public ResourceLocation id() {
+        return ID;
     }
 
+    public static void handle(PacketUpdateGui message, PlayPayloadContext ctx) {
+        ctx.workHandler().submitAsync(() -> ClientUtils.syncViaOpenContainerScreen(message.syncId(), message.value()));
+    }
 }

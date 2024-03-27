@@ -18,11 +18,11 @@
 package me.desht.pneumaticcraft.client.gui.widget;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import me.desht.pneumaticcraft.api.crafting.recipe.AmadronRecipe;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketGuiButton;
+import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOffer;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import me.desht.pneumaticcraft.mixin.accessors.TooltipAccess;
@@ -47,14 +47,14 @@ import java.util.List;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class WidgetAmadronOffer extends AbstractWidget {
-    private final AmadronRecipe offer;
+    private final AmadronOffer offer;
     private final List<AbstractWidget> subWidgets = new ArrayList<>();
     private int shoppingAmount;
     private boolean canBuy;
     private final Rect2i[] tooltipRectangles = new Rect2i[2];
     private boolean renderBackground = true;
 
-    public WidgetAmadronOffer(int x, int y, AmadronRecipe offer) {
+    public WidgetAmadronOffer(int x, int y, AmadronOffer offer) {
         super(x, y, 73, 35, Component.empty());
         this.offer = offer;
 
@@ -71,7 +71,7 @@ public class WidgetAmadronOffer extends AbstractWidget {
             List<Component> l = new ArrayList<>(GuiUtils.xlateAndSplit("pneumaticcraft.gui.amadron.amadronWidget.sneakRightClickToRemove"));
             l.add(Component.empty());
             WidgetButtonExtended btn = new WidgetButtonExtended(x + 57, y + 1, 11, 11, Component.literal(ChatFormatting.RED + "x"),
-                    b -> NetworkHandler.sendToServer(new PacketGuiButton("remove:" + offer.getId())));
+                    b -> NetworkHandler.sendToServer(new PacketGuiButton("remove:" + offer.getOfferId())));
             btn.setTooltip(Tooltip.create(PneumaticCraftUtils.combineComponents(l)));
             subWidgets.add(btn);
         }
@@ -80,10 +80,38 @@ public class WidgetAmadronOffer extends AbstractWidget {
     }
 
     @Override
-    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-        super.render(graphics, mouseX, mouseY, partialTicks);
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        return subWidgets.stream().anyMatch(w -> w.mouseClicked(mouseX, mouseY, button));
+    }
 
-        subWidgets.forEach(w -> w.render(graphics, mouseX, mouseY, partialTicks));
+    @Override
+    public void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        Font fr = Minecraft.getInstance().font;
+        if (renderBackground) {
+            graphics.blit(Textures.WIDGET_AMADRON_OFFER, getX(), getY(), 0, 0, width, height, 256, 256);
+        }
+        FormattedCharSequence r = fr.split(offer.getVendorName(), 73).get(0);
+        graphics.drawString(fr, r, getX() + 2, getY() + 2, 0xFF000000, false);
+        if (shoppingAmount > 0) {
+            String str = Integer.toString(shoppingAmount);
+            graphics.drawString(fr, str, getX() + 36 - fr.width(str) / 2f, getY() + (offer.getStock() >= 0 ? 15 : 20), 0xFF000000, false);
+        }
+        if (offer.getStock() >= 0) {
+            String str = ChatFormatting.DARK_BLUE.toString() + offer.getStock();
+            graphics.drawString(fr, str, getX() + 36 - fr.width(str) / 2f, getY() + 25, 0xFF000000, false);
+        }
+        boolean availableHere = offer.isUsableByPlayer(ClientUtils.getClientPlayer());
+        if (offer.isLocationLimited()) {
+            RenderSystem.enableBlend();
+            RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+            graphics.blit(availableHere ? Textures.GUI_OK_LOCATION : Textures.GUI_BAD_LOCATION, getX() + width - 15, getY() - 1, 0, 0, 16, 16);
+            RenderSystem.disableBlend();
+        }
+        if (!canBuy || !availableHere) {
+            graphics.fill(getX(), getY(), getX() + width, getY() + height, 0xC0804040);
+        }
+
+        subWidgets.forEach(w -> w.render(graphics, mouseX, mouseY, partialTick));
 
         List<Component> tooltip = new ArrayList<>();
         for (AbstractWidget widget : subWidgets) {
@@ -99,41 +127,6 @@ public class WidgetAmadronOffer extends AbstractWidget {
         }
 
         setTooltip(Tooltip.create(PneumaticCraftUtils.combineComponents(tooltip)));
-    }
-
-    @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        return subWidgets.stream().anyMatch(w -> w.mouseClicked(mouseX, mouseY, button));
-    }
-
-    @Override
-    public void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        if (visible) {
-            Font fr = Minecraft.getInstance().font;
-            if (renderBackground) {
-                graphics.blit(Textures.WIDGET_AMADRON_OFFER, getX(), getY(), 0, 0, width, height, 256, 256);
-            }
-            FormattedCharSequence r = fr.split(offer.getVendorName(), 73).get(0);
-            graphics.drawString(fr, r, getX() + 2, getY() + 2, 0xFF000000, false);
-            if (shoppingAmount > 0) {
-                String str = Integer.toString(shoppingAmount);
-                graphics.drawString(fr, str, getX() + 36 - fr.width(str) / 2f, getY() + (offer.getStock() >= 0 ? 15 : 20), 0xFF000000, false);
-            }
-            if (offer.getStock() >= 0) {
-                String str = ChatFormatting.DARK_BLUE.toString() + offer.getStock();
-                graphics.drawString(fr, str, getX() + 36 - fr.width(str) / 2f, getY() + 25, 0xFF000000, false);
-            }
-            boolean availableHere = offer.isUsableByPlayer(ClientUtils.getClientPlayer());
-            if (offer.isLocationLimited()) {
-                RenderSystem.enableBlend();
-                RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-                graphics.blit(availableHere ? Textures.GUI_OK_LOCATION : Textures.GUI_BAD_LOCATION, getX() + width - 15, getY() - 1, 0, 0, 16, 16);
-                RenderSystem.disableBlend();
-            }
-            if (!canBuy || !availableHere) {
-                graphics.fill(getX(), getY(), getX() + width, getY() + height, 0xC0804040);
-            }
-        }
     }
 
     public WidgetAmadronOffer setDrawBackground(boolean drawBackground) {
@@ -164,7 +157,7 @@ public class WidgetAmadronOffer extends AbstractWidget {
 //        }
 //    }
 
-    public AmadronRecipe getOffer() {
+    public AmadronOffer getOffer() {
         return offer;
     }
 
@@ -172,7 +165,7 @@ public class WidgetAmadronOffer extends AbstractWidget {
         shoppingAmount = amount;
     }
 
-    public static List<Component> makeTooltip(AmadronRecipe offer, int shoppingAmount) {
+    public static List<Component> makeTooltip(AmadronOffer offer, int shoppingAmount) {
         List<Component> tooltip = new ArrayList<>();
         tooltip.add(xlate("pneumaticcraft.gui.amadron.amadronWidget.vendor",
                 offer.getVendorName().copy().withStyle(ChatFormatting.WHITE))
@@ -198,7 +191,7 @@ public class WidgetAmadronOffer extends AbstractWidget {
         }
         offer.addAvailabilityData(ClientUtils.getClientPlayer(), tooltip);
         if (Minecraft.getInstance().options.advancedItemTooltips) {
-            tooltip.add(Component.literal(offer.getId().toString()).withStyle(ChatFormatting.DARK_GRAY));
+            tooltip.add(Component.literal(offer.getOfferId().toString()).withStyle(ChatFormatting.DARK_GRAY));
         }
         return tooltip;
     }

@@ -27,8 +27,7 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
+import net.neoforged.neoforge.capabilities.BlockCapability;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -107,10 +106,12 @@ public interface IBlockTrackEntry {
      * @param cap the capability
      * @return true if the provider provides the capability on any face, including the null "face"
      */
-    static boolean hasCapabilityOnAnyFace(ICapabilityProvider provider, Capability<?> cap) {
+    static boolean hasCapabilityOnAnyFace(BlockEntity provider, BlockCapability<?,Direction> cap) {
         for (Direction face : Direction.values()) {
-            if (provider.getCapability(cap, face).isPresent()) return true;
+            if (provider.getLevel().getCapability(cap, provider.getBlockPos(), provider.getBlockState(), provider, face) != null) {
+                return true;
+            }
         }
-        return provider.getCapability(cap).isPresent();
+        return provider.getLevel().getCapability(cap, provider.getBlockPos(), provider.getBlockState(), provider, null) != null;
     }
 }

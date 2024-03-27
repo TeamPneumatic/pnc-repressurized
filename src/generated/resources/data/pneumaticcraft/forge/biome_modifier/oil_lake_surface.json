@@ -1,6 +1,0 @@
-{
-  "type": "forge:add_features",
-  "biomes": "#pneumaticcraft:has_surface_oil_lakes",
-  "features": "pneumaticcraft:oil_lake_surface",
-  "step": "lakes"
-}

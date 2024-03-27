@@ -19,12 +19,13 @@ package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.common.item.IShiftScrollable;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.network.NetworkEvent;
+import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 
-import java.util.function.Supplier;
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 /**
  * Received on: SERVER
@@ -32,35 +33,30 @@ import java.util.function.Supplier;
  * Sent by client when player shift-scrolls the mouse wheel while holding an item implementing the
  * {@link me.desht.pneumaticcraft.common.item.IShiftScrollable} interface.
  */
-public class PacketShiftScrollWheel {
-    private final boolean forward;
-    private final boolean mainHand;
+public record PacketShiftScrollWheel(boolean forward, InteractionHand hand) implements CustomPacketPayload {
+    public static final ResourceLocation ID = RL("shift_scroll_wheel");
 
-    public PacketShiftScrollWheel(boolean forward, InteractionHand mainHand) {
-        this.forward = forward;
-        this.mainHand = mainHand == InteractionHand.MAIN_HAND;
+    public static PacketShiftScrollWheel fromNetwork(FriendlyByteBuf buf) {
+        return new PacketShiftScrollWheel(buf.readBoolean(), buf.readEnum(InteractionHand.class));
     }
 
-    public PacketShiftScrollWheel(FriendlyByteBuf buf) {
-        this.forward = buf.readBoolean();
-        this.mainHand = buf.readBoolean();
-    }
-
-    public void toBytes(FriendlyByteBuf buf) {
+    @Override
+    public void write(FriendlyByteBuf buf) {
         buf.writeBoolean(forward);
-        buf.writeBoolean(mainHand);
+        buf.writeEnum(hand);
     }
 
-    public void handle(Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> {
-            ServerPlayer player = ctx.get().getSender();
-            if (player != null) {
-                ItemStack stack = player.getMainHandItem();
-                if (stack.getItem() instanceof IShiftScrollable) {
-                    ((IShiftScrollable) stack.getItem()).onShiftScrolled(player, forward, mainHand ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND);
-                }
+    @Override
+    public ResourceLocation id() {
+        return ID;
+    }
+
+    public static void handle(PacketShiftScrollWheel message, PlayPayloadContext ctx) {
+        ctx.player().ifPresent(player -> ctx.workHandler().submitAsync(() -> {
+            ItemStack stack = player.getMainHandItem();
+            if (stack.getItem() instanceof IShiftScrollable ss) {
+                ss.onShiftScrolled(player, message.forward(), message.hand());
             }
-        });
-        ctx.get().setPacketHandled(true);
+        }));
     }
 }

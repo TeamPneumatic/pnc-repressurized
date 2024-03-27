@@ -22,14 +22,13 @@
   },
   "requirements": [
     [
-      "has_printed_circuit_board",
-      "has_the_recipe"
+      "has_the_recipe",
+      "has_printed_circuit_board"
     ]
   ],
   "rewards": {
     "recipes": [
       "pneumaticcraft:assembly_program_drill_laser"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }

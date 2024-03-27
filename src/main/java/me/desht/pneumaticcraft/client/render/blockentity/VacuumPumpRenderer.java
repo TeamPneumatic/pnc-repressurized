@@ -43,7 +43,6 @@ public class VacuumPumpRenderer extends AbstractBlockEntityModelRenderer<VacuumP
         return LayerDefinition.create(meshdefinition, 32, 32);
     }
 
-
     @Override
     public void renderModel(VacuumPumpBlockEntity te, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
         VertexConsumer builder = bufferIn.getBuffer(RenderType.entityTranslucent(Textures.MODEL_VACUUM_PUMP));

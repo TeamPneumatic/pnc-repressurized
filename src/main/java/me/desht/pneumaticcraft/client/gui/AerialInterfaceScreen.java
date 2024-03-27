@@ -28,13 +28,13 @@ import me.desht.pneumaticcraft.common.block.entity.AerialInterfaceBlockEntity.Fe
 import me.desht.pneumaticcraft.common.block.entity.AerialInterfaceBlockEntity.OperatingProblem;
 import me.desht.pneumaticcraft.common.inventory.AerialInterfaceMenu;
 import me.desht.pneumaticcraft.common.thirdparty.ModNameCache;
+import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.ComponentContents;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
@@ -43,9 +43,8 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.FluidUtil;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidUtil;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -70,12 +69,12 @@ public class AerialInterfaceScreen extends AbstractPneumaticCraftContainerScreen
                 Textures.GUI_BUILDCRAFT_ENERGY, 0xFFA02222, false)
                 .setText(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.info.aerialInterface.interfacingRF.info"));
 
-        te.getCapability(ForgeCapabilities.ENERGY).ifPresent(storage -> addRenderableWidget(new WidgetEnergy(leftPos + 20, topPos + 20, storage)));
+        IOHelper.getEnergyStorageForBlock(te).ifPresent(storage -> addRenderableWidget(new WidgetEnergy(leftPos + 20, topPos + 20, storage)));
 
         if (te.dispenserUpgradeInserted) {
             // Experience Tab
             List<Fluid> availableXp = XPFluidManager.getInstance().getAvailableLiquidXPs();
-            if (availableXp.size() > 0) {
+            if (!availableXp.isEmpty()) {
                 WidgetAnimatedStat xpStat = addAnimatedStat(xlate("pneumaticcraft.gui.tab.info.aerialInterface.liquidXp.info.title"),
                         new ItemStack(Items.EXPERIENCE_BOTTLE), 0xFF55FF55, false);
                 xpStat.setText(getLiquidXPText()).setForegroundColor(0xFF000000);
@@ -105,7 +104,9 @@ public class AerialInterfaceScreen extends AbstractPneumaticCraftContainerScreen
                 WidgetButtonExtended button = new WidgetButtonExtended(5 + 25 * i, 20, 20, 20)
                         .withTag(mode.toString())
                         .setRenderStacks(mode.getIconStack());
-                if (combined.getContents() != ComponentContents.EMPTY) button.setTooltip(Tooltip.create(combined));
+                if (!combined.getString().isEmpty()) {
+                    button.setTooltip(Tooltip.create(combined));
+                }
 
                 feedModeTab.addSubWidget(button);
                 modeButtons[i] = button;

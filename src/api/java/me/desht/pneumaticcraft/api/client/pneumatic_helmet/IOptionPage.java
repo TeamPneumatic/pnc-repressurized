@@ -109,10 +109,11 @@ public interface IOptionPage {
      *
      * @param x mouse X
      * @param y mouse Y
-     * @param dir scroll direction
+     * @param dirX X scroll direction
+     * @param dirY Y scroll direction
      * @return true if the event has been handled, false otherwise
      */
-    boolean mouseScrolled(double x, double y, double dir);
+    boolean mouseScrolled(double x, double y, double dirX, double dirY);
 
     /**
      * Called when the mouse is dragged across the GUI
@@ -230,7 +231,7 @@ public interface IOptionPage {
         }
 
         @Override
-        public boolean mouseScrolled(double x, double y, double dir) {
+        public boolean mouseScrolled(double x, double y, double dirX, double dirY) {
             return false;
         }
 

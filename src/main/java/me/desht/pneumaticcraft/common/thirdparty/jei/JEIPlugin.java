@@ -26,12 +26,12 @@ import me.desht.pneumaticcraft.client.gui.semiblock.AbstractLogisticsScreen;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.block.entity.UVLightBoxBlockEntity;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
-import me.desht.pneumaticcraft.common.core.ModBlocks;
-import me.desht.pneumaticcraft.common.core.ModItems;
-import me.desht.pneumaticcraft.common.core.ModRecipeTypes;
 import me.desht.pneumaticcraft.common.item.ICustomTooltipName;
 import me.desht.pneumaticcraft.common.item.PressurizableItem;
 import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
+import me.desht.pneumaticcraft.common.registry.ModBlocks;
+import me.desht.pneumaticcraft.common.registry.ModItems;
+import me.desht.pneumaticcraft.common.registry.ModRecipeTypes;
 import me.desht.pneumaticcraft.common.thirdparty.jei.ghost.AmadronAddTradeGhost;
 import me.desht.pneumaticcraft.common.thirdparty.jei.ghost.LogisticsFilterGhost;
 import me.desht.pneumaticcraft.common.thirdparty.jei.ghost.ProgWidgetItemFilterGhost;
@@ -52,11 +52,9 @@ import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.common.NeoForge;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
@@ -71,11 +69,11 @@ public class JEIPlugin implements IModPlugin {
 
     @Override
     public void registerItemSubtypes(ISubtypeRegistration registration) {
-        for (RegistryObject<Item> item: ModItems.ITEMS.getEntries()) {
+        for (var item: ModItems.ITEMS.getEntries()) {
             if (item.get() instanceof PressurizableItem) {
                 registration.registerSubtypeInterpreter(VanillaTypes.ITEM_STACK, item.get(),
-                        (s, ctx) -> s.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY)
-                                .map(h2 -> String.valueOf(h2.getPressure()))
+                        (stack, ctx) -> PNCCapabilities.getAirHandler(stack)
+                                .map(airHandler -> String.valueOf(airHandler.getPressure()))
                                 .orElse(IIngredientSubtypeInterpreter.NONE)
                 );
             }
@@ -140,13 +138,13 @@ public class JEIPlugin implements IModPlugin {
         // so we can pull extra entries from the BlockHeatProperties manager (auto-registered fluids etc.)
         registration.addRecipes(RecipeTypes.HEAT_PROPERTIES, JEIBlockHeatPropertiesCategory.getAllRecipes());
 
-        for (RegistryObject<Item> item: ModItems.ITEMS.getEntries()) {
+        for (var item: ModItems.ITEMS.getEntries()) {
             addStackInfo(registration, new ItemStack(item.get()));
         }
     }
 
     private <T extends PneumaticCraftRecipe> void addRecipeType(IRecipeRegistration registration, PneumaticCraftRecipeType<T> type, RecipeType<T> recipeType) {
-        registration.addRecipes(recipeType, ImmutableList.copyOf(type.getRecipes(Minecraft.getInstance().level).values()));
+        registration.addRecipes(recipeType, ImmutableList.copyOf(type.allRecipes(Minecraft.getInstance().level)));
     }
 
     private void addStackInfo(IRecipeRegistration registry, ItemStack stack) {
@@ -184,7 +182,7 @@ public class JEIPlugin implements IModPlugin {
         registration.addRecipeClickArea(AssemblyControllerScreen.class, 110, 10, 50, 50, RecipeTypes.ASSEMBLY);
         registration.addRecipeClickArea(PressureChamberScreen.class, 100, 7, 60, 60, RecipeTypes.PRESSURE_CHAMBER);
         CustomRecipeClickArea.add(registration, RefineryControllerScreen.class, 47, 33, 27, 47, RecipeTypes.REFINERY);
-        CustomRecipeClickArea.add(registration, ThermopneumaticProcessingPlantScreen.class, 30, 36, 48, 30, RecipeTypes.THERMO_PLANT);
+        CustomRecipeClickArea.add(registration, ThermoPlantScreen.class, 30, 36, 48, 30, RecipeTypes.THERMO_PLANT);
         CustomRecipeClickArea.add(registration, FluidMixerScreen.class, 50, 40, 47, 24, RecipeTypes.FLUID_MIXER);
 
         registration.addGenericGuiContainerHandler(AbstractPneumaticCraftContainerScreen.class, new GuiTabHandler());
@@ -201,7 +199,7 @@ public class JEIPlugin implements IModPlugin {
         recipeManager = jeiRuntime.getRecipeManager();
         recipesGui = jeiRuntime.getRecipesGui();
 
-        MinecraftForge.EVENT_BUS.register(ProgrammerTransferHandler.Listener.class);
+        NeoForge.EVENT_BUS.register(ProgrammerTransferHandler.Listener.class);
     }
 
     @Override

@@ -23,13 +23,13 @@ import me.desht.pneumaticcraft.api.item.IPositionProvider;
 import me.desht.pneumaticcraft.api.pressure.PressureTier;
 import me.desht.pneumaticcraft.common.block.entity.RedstoneController.ReceivingRedstoneMode;
 import me.desht.pneumaticcraft.common.block.entity.RedstoneController.RedstoneMode;
-import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.entity.projectile.MicromissileEntity;
 import me.desht.pneumaticcraft.common.inventory.AirCannonMenu;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.network.LazySynced;
+import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
 import me.desht.pneumaticcraft.common.thirdparty.computer_common.LuaMethod;
 import me.desht.pneumaticcraft.common.thirdparty.computer_common.LuaMethodRegistry;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
@@ -67,11 +67,10 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.entity.EntityTypeTest;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.util.FakePlayer;
-import net.minecraftforge.common.util.FakePlayerFactory;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemHandlerHelper;
+import net.neoforged.neoforge.common.util.FakePlayer;
+import net.neoforged.neoforge.common.util.FakePlayerFactory;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.ItemHandlerHelper;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -95,7 +94,6 @@ public class AirCannonBlockEntity extends AbstractAirHandlingBlockEntity
     );
 
     private final AirCannonStackHandler itemHandler = new AirCannonStackHandler(this);
-    private final LazyOptional<IItemHandler> inventory = LazyOptional.of(() -> itemHandler);
 
     @DescSynced
     @LazySynced
@@ -140,7 +138,7 @@ public class AirCannonBlockEntity extends AbstractAirHandlingBlockEntity
     private static final int GPS_SLOT = 1;
 
     public AirCannonBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.AIR_CANNON.get(), pos, state, PressureTier.TIER_ONE, PneumaticValues.VOLUME_AIR_CANNON, 4);
+        super(ModBlockEntityTypes.AIR_CANNON.get(), pos, state, PressureTier.TIER_ONE, PneumaticValues.VOLUME_AIR_CANNON, 4);
     }
 
     @Override
@@ -284,7 +282,7 @@ public class AirCannonBlockEntity extends AbstractAirHandlingBlockEntity
                     BlockPos pos = entry.getKey();
                     BlockEntity te = getLevel().getBlockEntity(pos);
                     if (te == null) continue;
-                    boolean inserted = IOHelper.getInventoryForTE(te, entry.getValue()).map(inv -> {
+                    boolean inserted = IOHelper.getInventoryForBlock(te, entry.getValue()).map(inv -> {
                         ItemStack remainder = ItemHandlerHelper.insertItem(inv, item.getItem(), false);
                         if (!remainder.isEmpty()) {
                             item.setItem(remainder);
@@ -582,7 +580,7 @@ public class AirCannonBlockEntity extends AbstractAirHandlingBlockEntity
             return true;
 
         BlockEntity te = nonNullLevel().getBlockEntity(lastInsertingInventory);
-        return IOHelper.getInventoryForTE(te, lastInsertingInventorySide).map(inv -> {
+        return IOHelper.getInventoryForBlock(te, lastInsertingInventorySide).map(inv -> {
             ItemStack remainder = ItemHandlerHelper.insertItem(inv, itemHandler.getStackInSlot(CANNON_SLOT).copy(), true);
             insertingInventoryHasSpace = remainder.isEmpty();
             return insertingInventoryHasSpace;
@@ -651,7 +649,7 @@ public class AirCannonBlockEntity extends AbstractAirHandlingBlockEntity
         return e;
     }
 
-    private Player getFakePlayer() {
+    private FakePlayer getFakePlayer() {
         if (fakePlayer == null) {
             fakePlayer = FakePlayerFactory.get((ServerLevel) getLevel(), new GameProfile(FP_UUID, FP_NAME));
             fakePlayer.setPos(getBlockPos().getX() + 0.5, getBlockPos().getY() + 0.5, getBlockPos().getZ() + 0.5);
@@ -735,12 +733,7 @@ public class AirCannonBlockEntity extends AbstractAirHandlingBlockEntity
     }
 
     @Override
-    protected LazyOptional<IItemHandler> getInventoryCap(Direction side) {
-        return inventory;
-    }
-
-    @Override
-    public IItemHandler getPrimaryInventory() {
+    public IItemHandler getItemHandler(@Nullable Direction dir) {
         return itemHandler;
     }
 

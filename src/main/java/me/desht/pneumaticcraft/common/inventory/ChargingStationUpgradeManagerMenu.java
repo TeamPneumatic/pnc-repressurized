@@ -19,15 +19,15 @@ package me.desht.pneumaticcraft.common.inventory;
 
 import me.desht.pneumaticcraft.api.upgrade.PNCUpgrade;
 import me.desht.pneumaticcraft.common.block.entity.ChargingStationBlockEntity;
-import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.inventory.handler.ChargeableItemHandler;
+import me.desht.pneumaticcraft.common.registry.ModMenuTypes;
 import me.desht.pneumaticcraft.common.upgrades.ApplicableUpgradesDB;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.items.SlotItemHandler;
+import net.neoforged.neoforge.items.SlotItemHandler;
 
 import javax.annotation.Nonnull;
 
@@ -42,7 +42,7 @@ public class ChargingStationUpgradeManagerMenu extends AbstractPneumaticCraftMen
 
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
-                addSlot(new UpgradeSlot(te, i * 3 + j, 44 + j * 18, 34 + i * 18));
+                addSlot(new UpgradeSlot(blockEntity, i * 3 + j, 44 + j * 18, 34 + i * 18));
             }
         }
 
@@ -76,7 +76,7 @@ public class ChargingStationUpgradeManagerMenu extends AbstractPneumaticCraftMen
 
         @Override
         public int getMaxStackSize(@Nonnull ItemStack stack) {
-            return ApplicableUpgradesDB.getInstance().getMaxUpgrades(te.getChargingStack().getItem(), PNCUpgrade.from(stack));
+            return ApplicableUpgradesDB.getInstance().getMaxUpgrades(blockEntity.getChargingStack().getItem(), PNCUpgrade.from(stack));
         }
 
         @Override

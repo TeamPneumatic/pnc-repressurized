@@ -18,23 +18,15 @@
 package me.desht.pneumaticcraft;
 
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
-import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.api.lib.Names;
-import me.desht.pneumaticcraft.api.pneumatic_armor.hacking.IHacking;
-import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
-import me.desht.pneumaticcraft.api.tileentity.IAirHandlerItem;
-import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
-import me.desht.pneumaticcraft.api.upgrade.IUpgradeItem;
 import me.desht.pneumaticcraft.client.ClientSetup;
 import me.desht.pneumaticcraft.common.PneumaticCraftAPIHandler;
-import me.desht.pneumaticcraft.common.advancements.AdvancementTriggers;
 import me.desht.pneumaticcraft.common.amadron.AmadronEventListener;
 import me.desht.pneumaticcraft.common.amadron.AmadronOfferManager;
 import me.desht.pneumaticcraft.common.commands.ModCommands;
 import me.desht.pneumaticcraft.common.config.ConfigHolder;
 import me.desht.pneumaticcraft.common.config.subconfig.AuxConfigHandler;
 import me.desht.pneumaticcraft.common.config.subconfig.IAuxConfig;
-import me.desht.pneumaticcraft.common.core.*;
 import me.desht.pneumaticcraft.common.dispenser.DroneDispenseBehavior;
 import me.desht.pneumaticcraft.common.drone.DroneSpecialVariableHandler;
 import me.desht.pneumaticcraft.common.event.MiscEventHandler;
@@ -50,56 +42,58 @@ import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.BlockTrackLootable;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
 import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
+import me.desht.pneumaticcraft.common.registry.*;
 import me.desht.pneumaticcraft.common.sensor.SensorHandler;
 import me.desht.pneumaticcraft.common.thirdparty.ModNameCache;
 import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
 import me.desht.pneumaticcraft.common.upgrades.UpgradesDBSetup;
 import me.desht.pneumaticcraft.common.util.ItemLaunching;
-import me.desht.pneumaticcraft.common.util.PlayerFilter;
 import me.desht.pneumaticcraft.common.util.Reflections;
+import me.desht.pneumaticcraft.common.util.playerfilter.PlayerMatcherTypes;
 import me.desht.pneumaticcraft.common.villages.VillageStructures;
 import me.desht.pneumaticcraft.lib.Log;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
-import net.minecraftforge.event.AddReloadListenerEvent;
-import net.minecraftforge.event.RegisterCommandsEvent;
-import net.minecraftforge.event.server.ServerStartedEvent;
-import net.minecraftforge.event.server.ServerStoppingEvent;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.event.lifecycle.FMLConstructModEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.fml.loading.FMLEnvironment;
+import net.neoforged.bus.api.Event;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.fml.event.lifecycle.FMLConstructModEvent;
+import net.neoforged.fml.loading.FMLEnvironment;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.AddReloadListenerEvent;
+import net.neoforged.neoforge.event.RegisterCommandsEvent;
+import net.neoforged.neoforge.event.server.ServerStartedEvent;
+import net.neoforged.neoforge.event.server.ServerStoppingEvent;
+import net.neoforged.neoforge.registries.NewRegistryEvent;
 
 @Mod(Names.MOD_ID)
 public class PneumaticCraftRepressurized {
-    public PneumaticCraftRepressurized() {
-        IEventBus forgeBus = MinecraftForge.EVENT_BUS;
-        IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
+    public PneumaticCraftRepressurized(IEventBus modBus) {
+        IEventBus forgeBus = NeoForge.EVENT_BUS;
 
         PneumaticRegistry.init(PneumaticCraftAPIHandler.getInstance());
 
-        ConfigHolder.init();
+        ConfigHolder.init(modBus);
         AuxConfigHandler.preInit();
 
         if (FMLEnvironment.dist.isClient()) {
-            ClientSetup.onModConstruction();
+            ClientSetup.onModConstruction(modBus);
         }
+
+        ThirdPartyManager.instance().preInit(modBus);
+        Reflections.init();
 
         modBus.addListener(this::modConstructSetup);
         modBus.addListener(this::commonSetup);
+        modBus.addListener(this::newRegistries);
+        modBus.addListener(ForcedChunks.INSTANCE::registerTicketController);
+        modBus.addListener(CapabilitySetup::registerCaps);
+
+        registerAllDeferredRegistryObjects(modBus);
 
         forgeBus.addListener(this::serverStarted);
         forgeBus.addListener(this::serverStopping);
         forgeBus.addListener(this::addReloadListeners);
         forgeBus.addListener(this::registerCommands);
-        forgeBus.addListener(this::registerCapabilities);
-
-        Reflections.init();
-
-        registerAllDeferredRegistryObjects(modBus);
-
         forgeBus.register(new MiscEventHandler());
         forgeBus.register(new AmadronEventListener());
         forgeBus.register(new PneumaticArmorHandler());
@@ -110,17 +104,25 @@ public class PneumaticCraftRepressurized {
         forgeBus.addListener(VillageStructures::addMechanicHouse);
     }
 
+    private void newRegistries(NewRegistryEvent event) {
+        event.register(ModHoeHandlers.HOE_HANDLER_REGISTRY);
+        event.register(ModHarvestHandlers.HARVEST_HANDLER_REGISTRY);
+        event.register(ModProgWidgets.PROG_WIDGETS_REGISTRY);
+    }
+
     private void registerAllDeferredRegistryObjects(IEventBus modBus) {
         ModBlocks.BLOCKS.register(modBus);
         ModItems.ITEMS.register(modBus);
         ModFluids.FLUIDS.register(modBus);
         ModFluids.FLUID_TYPES.register(modBus);
         ModSounds.SOUNDS.register(modBus);
-        ModBlockEntities.BLOCK_ENTITIES.register(modBus);
+        ModBlockEntityTypes.BLOCK_ENTITY_TYPES.register(modBus);
         ModEntityTypes.ENTITY_TYPES.register(modBus);
         ModMenuTypes.MENU_TYPES.register(modBus);
         ModParticleTypes.PARTICLES.register(modBus);
         ModRecipeSerializers.RECIPE_SERIALIZERS.register(modBus);
+        ModConditionSerializers.CONDITIONS.register(modBus);
+        ModIngredientTypes.INGREDIENT_TYPES.register(modBus);
         ModRecipeTypes.RECIPE_TYPES.register(modBus);
         ModVillagers.POI.register(modBus);
         ModVillagers.PROFESSIONS.register(modBus);
@@ -128,6 +130,8 @@ public class PneumaticCraftRepressurized {
         ModCommands.COMMAND_ARGUMENT_TYPES.register(modBus);
         ModLootFunctions.LOOT_FUNCTIONS.register(modBus);
         ModPlacementModifierTypes.PLACEMENT_MODIFIERS.register(modBus);
+        ModCriterionTriggers.CRITERION_TRIGGERS.register(modBus);
+        ModAttachmentTypes.ATTACHMENT_TYPES.register(modBus);
 
         // custom registries
         ModHarvestHandlers.HARVEST_HANDLERS_DEFERRED.register(modBus);
@@ -138,41 +142,39 @@ public class PneumaticCraftRepressurized {
     }
 
     private void modConstructSetup(FMLConstructModEvent event) {
-        ThirdPartyManager.instance().preInit();
     }
 
     private void commonSetup(FMLCommonSetupEvent event) {
         Log.info(Names.MOD_NAME + " is loading!");
 
         ThirdPartyManager.instance().init();
-        NetworkHandler.init();
         FluidSetup.init();
         CommonUpgradeHandlers.init();
         HackManager.addDefaultEntries();
         SensorHandler.getInstance().init();
         ModNameCache.init();
         HeatBehaviourManager.getInstance().registerDefaultBehaviours();
-        PlayerFilter.registerDefaultMatchers();
+        PlayerMatcherTypes.registerDefaultMatchers();
+//        PlayerFilter.registerDefaultMatchers();
         BlockTrackLootable.INSTANCE.addDefaultEntries();
         ItemLaunching.registerDefaultBehaviours();
 
         event.enqueueWork(() -> {
             ArmorUpgradeRegistry.getInstance().freeze();
             UpgradesDBSetup.init();
-            AdvancementTriggers.registerTriggers();
             DroneDispenseBehavior.registerDrones();
             ThirdPartyManager.instance().postInit();
         });
     }
 
-    private void registerCapabilities(RegisterCapabilitiesEvent event) {
-        event.register(IAirHandler.class);
-        event.register(IAirHandlerItem.class);
-        event.register(IAirHandlerMachine.class);
-        event.register(IHeatExchangerLogic.class);
-        event.register(IHacking.class);
-        event.register(IUpgradeItem.class);
-    }
+//    private void registerCapabilities(RegisterCapabilitiesEvent event) {
+//        event.register(IAirHandler.class);
+//        event.register(IAirHandlerItem.class);
+//        event.register(IAirHandlerMachine.class);
+//        event.register(IHeatExchangerLogic.class);
+//        event.register(IHacking.class);
+//        event.register(IUpgradeItem.class);
+//    }
 
     private void addReloadListeners(AddReloadListenerEvent event) {
         event.addListener(PneumaticCraftRecipeType.getCacheReloadListener());

@@ -18,29 +18,24 @@
 package me.desht.pneumaticcraft.common.recipes.machine;
 
 import com.google.common.collect.ImmutableList;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonSyntaxException;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import me.desht.pneumaticcraft.api.crafting.TemperatureRange;
 import me.desht.pneumaticcraft.api.crafting.ingredient.FluidIngredient;
 import me.desht.pneumaticcraft.api.crafting.recipe.RefineryRecipe;
 import me.desht.pneumaticcraft.api.lib.Names;
-import me.desht.pneumaticcraft.common.core.ModBlocks;
-import me.desht.pneumaticcraft.common.core.ModRecipeSerializers;
-import me.desht.pneumaticcraft.common.core.ModRecipeTypes;
-import me.desht.pneumaticcraft.common.recipes.ModCraftingHelper;
+import me.desht.pneumaticcraft.common.registry.ModBlocks;
+import me.desht.pneumaticcraft.common.registry.ModRecipeSerializers;
+import me.desht.pneumaticcraft.common.registry.ModRecipeTypes;
+import me.desht.pneumaticcraft.common.util.CodecUtil;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
-import net.minecraftforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidStack;
 import org.apache.commons.lang3.Validate;
 
-import javax.annotation.Nullable;
-import java.util.ArrayList;
 import java.util.List;
 
 public class RefineryRecipeImpl extends RefineryRecipe {
@@ -48,11 +43,11 @@ public class RefineryRecipeImpl extends RefineryRecipe {
 	public final List<FluidStack> outputs;
 	private final TemperatureRange operatingTemp;
 
-	public RefineryRecipeImpl(ResourceLocation id, FluidIngredient input, TemperatureRange operatingTemp, FluidStack... outputs) {
-		super(id);
+	public RefineryRecipeImpl(FluidIngredient input, TemperatureRange operatingTemp, List<FluidStack> outputs) {
+		super();
 
 		this.operatingTemp = operatingTemp;
-		Validate.isTrue(outputs.length >= 2 && outputs.length <= MAX_OUTPUTS,
+		Validate.isTrue(outputs.size() >= 2 && outputs.size() <= MAX_OUTPUTS,
 				"Recipe must have between 2 and " + MAX_OUTPUTS + " (inclusive) outputs");
 		this.input = input;
 		this.outputs = ImmutableList.copyOf(outputs);
@@ -71,14 +66,6 @@ public class RefineryRecipeImpl extends RefineryRecipe {
 	@Override
 	public TemperatureRange getOperatingTemp() {
 		return operatingTemp;
-	}
-
-	@Override
-	public void write(FriendlyByteBuf buffer) {
-		input.toNetwork(buffer);
-		operatingTemp.write(buffer);
-		buffer.writeVarInt(outputs.size());
-		outputs.forEach(fluidStack -> fluidStack.writeToPacket(buffer));
 	}
 
 	@Override
@@ -102,52 +89,46 @@ public class RefineryRecipeImpl extends RefineryRecipe {
 	}
 
 	public static class Serializer<T extends RefineryRecipe> implements RecipeSerializer<T> {
+		private final Codec<T> codec;
 		private final IFactory<T> factory;
 
 		public Serializer(IFactory<T> factory) {
 			this.factory = factory;
+			this.codec = RecordCodecBuilder.create(builder -> builder.group(
+					FluidIngredient.FLUID_CODEC_NON_EMPTY
+							.fieldOf("input")
+							.forGetter(RefineryRecipe::getInput),
+					TemperatureRange.CODEC
+							.optionalFieldOf("temperature", TemperatureRange.min(373))
+							.forGetter(RefineryRecipe::getOperatingTemp),
+					CodecUtil.listWithSizeBound(FluidStack.CODEC.listOf(), 2, RefineryRecipe.MAX_OUTPUTS)
+							.fieldOf("outputs")
+							.forGetter(RefineryRecipe::getOutputs)
+			).apply(builder, factory::create));
 		}
 
 		@Override
-        public T fromJson(ResourceLocation recipeId, JsonObject json) {
-        	Ingredient input = FluidIngredient.fromJson(json.get("input"));
-        	TemperatureRange tempRange;
-        	if (json.has("temperature")) {
-				tempRange = TemperatureRange.fromJson(json.getAsJsonObject("temperature"));
-			} else {
-        		tempRange = TemperatureRange.min(373);
-			}
-        	JsonArray outputs = json.get("results").getAsJsonArray();
-        	if (outputs.size() < 2 || outputs.size() > RefineryRecipe.MAX_OUTPUTS) {
-        		throw new JsonSyntaxException("must be between 2 and 4 (inclusive) output fluids!");
-			}
-        	List<FluidStack> results = new ArrayList<>();
-        	for (JsonElement element : outputs) {
-        		results.add(ModCraftingHelper.fluidStackFromJson(element.getAsJsonObject()));
-			}
-            return factory.create(recipeId, (FluidIngredient) input, tempRange, results.toArray(new FluidStack[0]));
-        }
+		public Codec<T> codec() {
+			return codec;
+		}
 
-        @Nullable
-        @Override
-        public T fromNetwork(ResourceLocation recipeId, FriendlyByteBuf buffer) {
+		@Override
+        public T fromNetwork(FriendlyByteBuf buffer) {
             FluidIngredient input = (FluidIngredient) Ingredient.fromNetwork(buffer);
             TemperatureRange range = TemperatureRange.read(buffer);
-            int nOutputs = buffer.readVarInt();
-            FluidStack[] outputs = new FluidStack[nOutputs];
-            for (int i = 0; i < nOutputs; i++) {
-                outputs[i] = FluidStack.readFromPacket(buffer);
-            }
-            return factory.create(recipeId, input, range, outputs);
+			List<FluidStack> outputs = buffer.readList(FluidStack::readFromPacket);
+            return factory.create(input, range, outputs);
         }
 
         @Override
         public void toNetwork(FriendlyByteBuf buffer, T recipe) {
-        	recipe.write(buffer);
+			recipe.getInput().toNetwork(buffer);
+			recipe.getOperatingTemp().write(buffer);
+			buffer.writeCollection(recipe.getOutputs(), (buf, fluidStack) -> fluidStack.writeToPacket(buf));
         }
 
         public interface IFactory<T extends RefineryRecipe> {
-        	T create(ResourceLocation id, FluidIngredient input, TemperatureRange operatingTemp, FluidStack... outputs);
+        	T create(FluidIngredient input, TemperatureRange operatingTemp, List<FluidStack> outputs);
 		}
     }
 }

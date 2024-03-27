@@ -27,9 +27,9 @@ import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.inventory.TransientCraftingContainer;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.ForgeEventFactory;
-import net.minecraftforge.event.entity.player.PlayerDestroyItemEvent;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.EventHooks;
+import net.neoforged.neoforge.event.entity.player.PlayerDestroyItemEvent;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -131,7 +131,7 @@ public class DroneAICrafting extends Goal {
             }
         }
 
-        ForgeEventFactory.firePlayerCraftingEvent(drone.getFakePlayer(), craftedStack, craftMatrix);
+        EventHooks.firePlayerCraftingEvent(drone.getFakePlayer(), craftedStack, craftMatrix);
 
         for (int i = 0; i < craftMatrix.getContainerSize(); ++i) {
             ItemStack stack = craftMatrix.getItem(i);
@@ -140,7 +140,7 @@ public class DroneAICrafting extends Goal {
                 if (stack.getItem().hasCraftingRemainingItem(stack)) {
                     ItemStack containerItem = stack.getItem().getCraftingRemainingItem(stack);
                     if (!containerItem.isEmpty() && containerItem.isDamageableItem() && containerItem.getDamageValue() > containerItem.getMaxDamage()) {
-                        MinecraftForge.EVENT_BUS.post(new PlayerDestroyItemEvent(drone.getFakePlayer(), containerItem, InteractionHand.MAIN_HAND));
+                        NeoForge.EVENT_BUS.post(new PlayerDestroyItemEvent(drone.getFakePlayer(), containerItem, InteractionHand.MAIN_HAND));
                         continue;
                     }
                     IOHelper.insertOrDrop(drone.world(), containerItem, drone.getInv(), drone.getDronePos(), false);

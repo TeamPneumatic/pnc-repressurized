@@ -20,14 +20,14 @@ package me.desht.pneumaticcraft.common.block.entity;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.api.item.IProgrammable;
 import me.desht.pneumaticcraft.client.render.area.AreaRenderManager;
-import me.desht.pneumaticcraft.common.advancements.AdvancementTriggers;
-import me.desht.pneumaticcraft.common.core.ModBlockEntities;
-import me.desht.pneumaticcraft.common.core.ModItems;
-import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.drone.progwidgets.*;
 import me.desht.pneumaticcraft.common.inventory.ProgrammerMenu;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.network.*;
+import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
+import me.desht.pneumaticcraft.common.registry.ModCriterionTriggers;
+import me.desht.pneumaticcraft.common.registry.ModItems;
+import me.desht.pneumaticcraft.common.registry.ModSounds;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.NBTUtils;
@@ -47,11 +47,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemHandlerHelper;
-import net.minecraftforge.items.wrapper.PlayerMainInvWrapper;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.ItemHandlerHelper;
+import net.neoforged.neoforge.items.wrapper.PlayerMainInvWrapper;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -64,7 +62,6 @@ public class ProgrammerBlockEntity extends AbstractTickingBlockEntity implements
     public final List<IProgWidget> progWidgets = new ArrayList<>();
 
     private final ProgrammerItemHandler inventory = new ProgrammerItemHandler();
-    private final LazyOptional<IItemHandler> invCap = LazyOptional.of(() -> inventory);
 
     // Client side variables that are used to prevent resetting.
     public double translatedX;
@@ -89,7 +86,7 @@ public class ProgrammerBlockEntity extends AbstractTickingBlockEntity implements
     private int historyIndex;
 
     public ProgrammerBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.PROGRAMMER.get(), pos, state);
+        super(ModBlockEntityTypes.PROGRAMMER.get(), pos, state);
 
         saveToHistory();
     }
@@ -269,12 +266,7 @@ public class ProgrammerBlockEntity extends AbstractTickingBlockEntity implements
     }
 
     @Override
-    protected LazyOptional<IItemHandler> getInventoryCap(Direction side) {
-        return invCap;
-    }
-
-    @Override
-    public IItemHandler getPrimaryInventory() {
+    public IItemHandler getItemHandler(@Nullable Direction dir) {
         return inventory;
     }
 
@@ -321,9 +313,9 @@ public class ProgrammerBlockEntity extends AbstractTickingBlockEntity implements
             }
             ItemStack stack = inventory.getStackInSlot(PROGRAM_SLOT);
             writeProgWidgetsToNBT(stack.getOrCreateTag());
-            if (player instanceof ServerPlayer) {
-                NetworkHandler.sendToPlayer(new PacketPlaySound(ModSounds.HUD_INIT_COMPLETE.get(), SoundSource.BLOCKS, getBlockPos(), 1.0f, 1.0f, false), (ServerPlayer) player);
-                AdvancementTriggers.PROGRAM_DRONE.trigger((ServerPlayer) player);
+            if (player instanceof ServerPlayer sp) {
+                NetworkHandler.sendToPlayer(new PacketPlaySound(ModSounds.HUD_INIT_COMPLETE.get(), SoundSource.BLOCKS, getBlockPos(), 1.0f, 1.0f, false), sp);
+                ModCriterionTriggers.PROGRAM_DRONE.get().trigger(sp);
             }
         }
     }
@@ -344,7 +336,7 @@ public class ProgrammerBlockEntity extends AbstractTickingBlockEntity implements
             if (te != null) {
                 while (count > 0) {
                     int toInsert = Math.min(count, stack.getMaxStackSize());
-                    int inserted = te.getCapability(ForgeCapabilities.ITEM_HANDLER, d.getOpposite()).map(h -> {
+                    int inserted = IOHelper.getInventoryForBlock(te, d.getOpposite()).map(h -> {
                         ItemStack excess = ItemHandlerHelper.insertItem(h, ItemHandlerHelper.copyStackWithSize(stack, toInsert), false);
                         return toInsert - excess.getCount();
                     }).orElse(0);
@@ -416,7 +408,7 @@ public class ProgrammerBlockEntity extends AbstractTickingBlockEntity implements
             BlockEntity te = getCachedNeighbor(d);
             if (te != null) {
                 final int r = required - found;
-                found += te.getCapability(ForgeCapabilities.ITEM_HANDLER, d.getOpposite())
+                found += IOHelper.getInventoryForBlock(te, d.getOpposite())
                         .map(h -> extractPuzzlePieces(h, r, simulate))
                         .orElse(0);
                 if (found >= required) return true;
@@ -459,8 +451,9 @@ public class ProgrammerBlockEntity extends AbstractTickingBlockEntity implements
             for (Direction dir : DirectionUtil.VALUES) {
                 BlockEntity te = getCachedNeighbor(dir);
                 if (te != null) {
-                    total += IOHelper.countItems(te.getCapability(ForgeCapabilities.ITEM_HANDLER, dir.getOpposite()),
-                            stack -> stack.getItem() == ModItems.PROGRAMMING_PUZZLE.get());
+                    total += IOHelper.getInventoryForBlock(te, dir.getOpposite())
+                            .map(handler -> IOHelper.countItems(handler, stack -> stack.getItem() == ModItems.PROGRAMMING_PUZZLE.get()))
+                            .orElse(0);
                 }
             }
             availablePuzzlePieces = total;
@@ -549,7 +542,7 @@ public class ProgrammerBlockEntity extends AbstractTickingBlockEntity implements
             List<ServerPlayer> players = nonNullLevel().getEntitiesOfClass(ServerPlayer.class, new AABB(worldPosition).inflate(5));
             for (ServerPlayer player : players) {
                 if (player != updatingPlayer && player.containerMenu instanceof ProgrammerMenu) {
-                    NetworkHandler.sendToPlayer(new PacketProgrammerUpdate(this), player);
+                    NetworkHandler.sendToPlayer(PacketProgrammerSync.forBlockEntity(this), player);
                 }
             }
         }

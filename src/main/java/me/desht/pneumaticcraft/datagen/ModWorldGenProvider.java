@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.datagen;
 
 import me.desht.pneumaticcraft.api.data.PneumaticCraftTags;
-import me.desht.pneumaticcraft.common.core.ModBlocks;
+import me.desht.pneumaticcraft.common.registry.ModBlocks;
 import me.desht.pneumaticcraft.common.worldgen.OilLakeFilter;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -22,9 +22,8 @@ import net.minecraft.world.level.levelgen.feature.LakeFeature;
 import net.minecraft.world.level.levelgen.feature.stateproviders.BlockStateProvider;
 import net.minecraft.world.level.levelgen.heightproviders.UniformHeight;
 import net.minecraft.world.level.levelgen.placement.*;
-import net.minecraftforge.common.world.BiomeModifier;
-import net.minecraftforge.common.world.ForgeBiomeModifiers;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.common.world.BiomeModifier;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
 import java.util.List;
 
@@ -38,9 +37,9 @@ public class ModWorldGenProvider {
     public static final ResourceKey<PlacedFeature> OIL_LAKE_UNDERGROUND
             = ResourceKey.create(Registries.PLACED_FEATURE, RL("oil_lake_underground"));
     public static final ResourceKey<BiomeModifier> OIL_LAKE_SURFACE_BM
-            = ResourceKey.create(ForgeRegistries.Keys.BIOME_MODIFIERS, RL("oil_lake_surface"));
+            = ResourceKey.create(NeoForgeRegistries.Keys.BIOME_MODIFIERS, RL("oil_lake_surface"));
     public static final ResourceKey<BiomeModifier> OIL_LAKE_UNDERGROUND_BM
-            = ResourceKey.create(ForgeRegistries.Keys.BIOME_MODIFIERS, RL("oil_lake_underground"));
+            = ResourceKey.create(NeoForgeRegistries.Keys.BIOME_MODIFIERS, RL("oil_lake_underground"));
 
 
     static class ConfiguredFeatures {
@@ -87,14 +86,14 @@ public class ModWorldGenProvider {
             var biomeReg = ctx.lookup(Registries.BIOME);
 
             ctx.register(OIL_LAKE_SURFACE_BM,
-                    new ForgeBiomeModifiers.AddFeaturesBiomeModifier(
+                    new net.neoforged.neoforge.common.world.BiomeModifiers.AddFeaturesBiomeModifier(
                             biomeReg.getOrThrow(PneumaticCraftTags.Biomes.OIL_LAKES_SURFACE),
                             HolderSet.direct(placedFeatures.getOrThrow(OIL_LAKE_SURFACE)),
                             GenerationStep.Decoration.LAKES
                     )
             );
             ctx.register(OIL_LAKE_UNDERGROUND_BM,
-                    new ForgeBiomeModifiers.AddFeaturesBiomeModifier(
+                    new net.neoforged.neoforge.common.world.BiomeModifiers.AddFeaturesBiomeModifier(
                             biomeReg.getOrThrow(PneumaticCraftTags.Biomes.OIL_LAKES_UNDERGROUND),
                             HolderSet.direct(placedFeatures.getOrThrow(OIL_LAKE_UNDERGROUND)),
                             GenerationStep.Decoration.LAKES

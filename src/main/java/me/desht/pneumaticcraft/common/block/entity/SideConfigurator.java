@@ -26,14 +26,13 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.util.INBTSerializable;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.common.util.NonNullSupplier;
+import net.neoforged.neoforge.capabilities.BaseCapability;
+import net.neoforged.neoforge.common.util.INBTSerializable;
 import org.apache.commons.lang3.Validate;
 
 import java.util.*;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
@@ -47,10 +46,11 @@ public class SideConfigurator<T> implements INBTSerializable<CompoundTag> {
     private final String id;
     private final ISideConfigurable sideConfigurable;
     private final Map<String, Integer> idxMap = new HashMap<>();
-    private LazyOptional<T> nullFaceCap = LazyOptional.empty();
+    private Supplier<T> nullFaceHandler;
 
     // each value here is an index into the 'entries' list
     private final byte[] faces = new byte[RelativeFace.values().length];
+
     // default face configuration, used to decide if NBT needs to be saved
     private final byte[] defaultFaces = new byte[RelativeFace.values().length];
 
@@ -71,13 +71,13 @@ public class SideConfigurator<T> implements INBTSerializable<CompoundTag> {
         setupFacingMatrix();
     }
 
-    public int registerHandler(String id, ItemStack textureStack, Capability<T> cap, NonNullSupplier<T> handler, RelativeFace... defaultRelativeFaces) {
+    public int registerHandler(String id, ItemStack textureStack, BaseCapability<T,?> cap, Supplier<T> handler, RelativeFace... defaultRelativeFaces) {
         entries.add(new ConnectionEntry<>(id, textureStack, cap, handler));
         idxMap.put(id, entries.size() - 1);
         return setDefaultSides(defaultRelativeFaces);
     }
 
-    public int registerHandler(String id, ResourceLocation texture, Capability<T> cap, NonNullSupplier<T> handler, RelativeFace... defaultRelativeFaces) {
+    public int registerHandler(String id, ResourceLocation texture, BaseCapability<T,?> cap, Supplier<T> handler, RelativeFace... defaultRelativeFaces) {
         entries.add(new ConnectionEntry<>(id, texture, cap, handler));
         idxMap.put(id, entries.size() - 1);
         return setDefaultSides(defaultRelativeFaces);
@@ -100,11 +100,11 @@ public class SideConfigurator<T> implements INBTSerializable<CompoundTag> {
         }
     }
 
-    public void invalidateCaps() {
-        for (ConnectionEntry<T> e : entries) {
-            if (e != null && e.lazy != null) e.lazy.invalidate();
-        }
-    }
+//    public void invalidateCaps() {
+//        for (ConnectionEntry<T> e : entries) {
+//            if (e != null && e.lazy != null) e.lazy.invalidate();
+//        }
+//    }
 
     private int setDefaultSides(RelativeFace... defaultRelativeFaces) {
         Validate.isTrue(entries.size() <= Byte.MAX_VALUE, "No more than " + Byte.MAX_VALUE + " entries allowed");
@@ -117,15 +117,16 @@ public class SideConfigurator<T> implements INBTSerializable<CompoundTag> {
     }
 
     void setNullFaceHandler(String id) {
-        if (nullFaceCap.isPresent()) nullFaceCap.invalidate();
-        nullFaceCap = LazyOptional.of(entries.get(idxMap.get(id)).handler);
+//        if (nullFaceCap.isPresent()) nullFaceCap.invalidate();
+
+        nullFaceHandler = entries.get(idxMap.get(id)).handler;
     }
 
     private boolean shouldSaveNBT() {
         return !Arrays.equals(faces, defaultFaces);
     }
 
-    void updateHandler(String id, NonNullSupplier<T> handler) {
+    void updateHandler(String id, Supplier<T> handler) {
         int idx = idxMap.get(id);
         ConnectionEntry<T> e = entries.get(idx);
         entries.set(idx, new ConnectionEntry<>(e.id, e.texture, e.cap, handler));
@@ -170,7 +171,7 @@ public class SideConfigurator<T> implements INBTSerializable<CompoundTag> {
                 }
             }
             ConnectionEntry<T> c = entries.get(faces[idx]);
-            if (sideConfigurable.isValid(relativeFace, c == null ? null : c.cap)) return;
+            if (sideConfigurable.isValid(relativeFace, c == null ? null : c.handler.get())) return;
         }
     }
 
@@ -182,11 +183,10 @@ public class SideConfigurator<T> implements INBTSerializable<CompoundTag> {
         return "pneumaticcraft.gui.sideConfigurator.title." + id;
     }
 
-
-    LazyOptional<T> getHandler(Direction facing) {
-        if (facing == null) return nullFaceCap;
+    T getHandler(Direction facing) {
+        if (facing == null) return nullFaceHandler.get();
         ConnectionEntry<T> c = entries.get(faces[getRelativeFace(facing).ordinal()]);
-        return c == null ? LazyOptional.empty() : c.lazy;
+        return c == null ? null : c.handler.get();
     }
 
     void setupFacingMatrix() {
@@ -288,16 +288,16 @@ public class SideConfigurator<T> implements INBTSerializable<CompoundTag> {
     public static class ConnectionEntry<T> {
         private final String id;
         private final Object texture;
-        private final Capability<T> cap;
-        private final NonNullSupplier<T> handler;
-        private final LazyOptional<T> lazy;
+        private final BaseCapability<T,?> cap;
+        private final Supplier<T> handler;
+//        private final LazyOptional<T> lazy;
 
-        private ConnectionEntry(String id, Object texture, Capability<T> cap, NonNullSupplier<T> handler) {
+        private ConnectionEntry(String id, Object texture, BaseCapability<T,?> cap, Supplier<T> handler) {
             this.id = id;
             this.texture = texture;
             this.cap = cap;
             this.handler = handler;
-            this.lazy = LazyOptional.of(handler);
+//            this.lazy = LazyOptional.of(handler);
         }
 
         public Object getTexture() {

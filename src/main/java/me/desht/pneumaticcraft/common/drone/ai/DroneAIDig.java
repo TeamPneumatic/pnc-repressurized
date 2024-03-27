@@ -34,8 +34,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.ForgeHooks;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import net.neoforged.neoforge.common.CommonHooks;
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 
 import java.util.List;
 
@@ -122,7 +122,7 @@ public class DroneAIDig<W extends ProgWidgetAreaItemBase & IToolUser> extends Dr
                     drone.setDugBlock(null);
                     return false;
                 }
-                PlayerInteractEvent.LeftClickBlock event = ForgeHooks.onLeftClickBlock(drone.getFakePlayer(), pos, Direction.UP, ServerboundPlayerActionPacket.Action.START_DESTROY_BLOCK);
+                PlayerInteractEvent.LeftClickBlock event = CommonHooks.onLeftClickBlock(drone.getFakePlayer(), pos, Direction.UP, ServerboundPlayerActionPacket.Action.START_DESTROY_BLOCK);
                 if (!event.isCanceled()) {
                     int limit = drone.world().getMaxBuildHeight();
                     manager.handleBlockBreakAction(pos, ServerboundPlayerActionPacket.Action.START_DESTROY_BLOCK, Direction.DOWN, limit, 0);

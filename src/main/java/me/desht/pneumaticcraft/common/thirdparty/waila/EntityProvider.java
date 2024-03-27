@@ -20,6 +20,7 @@ package me.desht.pneumaticcraft.common.thirdparty.waila;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.semiblock.ISemiBlock;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
+import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -46,9 +47,9 @@ public class EntityProvider {
 
         @Override
         public void appendServerData(CompoundTag compoundTag, EntityAccessor accessor) {
-            accessor.getEntity().getCapability(PNCCapabilities.AIR_HANDLER_CAPABILITY)
+            IOHelper.getCapV(accessor.getEntity(), PNCCapabilities.AIR_HANDLER_ENTITY)
                     .ifPresent(h -> compoundTag.putFloat("Pressure", h.getPressure()));
-            accessor.getEntity().getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY)
+            IOHelper.getCapV(accessor.getEntity(), PNCCapabilities.HEAT_EXCHANGER_ENTITY)
                     .ifPresent(h -> compoundTag.putFloat("Temperature", h.getTemperatureAsInt()));
             if (accessor instanceof ISemiBlock s) {
                 s.serializeNBT(compoundTag);

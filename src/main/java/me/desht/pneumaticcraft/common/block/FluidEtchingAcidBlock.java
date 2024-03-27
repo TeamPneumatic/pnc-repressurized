@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.common.PNCDamageSource;
-import me.desht.pneumaticcraft.common.core.ModFluids;
+import me.desht.pneumaticcraft.common.registry.ModFluids;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;

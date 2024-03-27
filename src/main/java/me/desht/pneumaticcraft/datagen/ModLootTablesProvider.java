@@ -18,9 +18,10 @@
 package me.desht.pneumaticcraft.datagen;
 
 import me.desht.pneumaticcraft.common.block.PneumaticCraftEntityBlock;
-import me.desht.pneumaticcraft.common.core.ModBlocks;
-import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.loot.LootFunc;
+import me.desht.pneumaticcraft.common.registry.ModBlocks;
+import me.desht.pneumaticcraft.common.registry.ModItems;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.loot.BlockLootSubProvider;
 import net.minecraft.data.loot.LootTableProvider;
@@ -47,8 +48,6 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.predicates.ExplosionCondition;
 import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
 import net.minecraft.world.level.storage.loot.providers.number.UniformGenerator;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -80,10 +79,10 @@ public class ModLootTablesProvider extends LootTableProvider {
 
         @Override
         protected void generate() {
-            for (RegistryObject<Block> ro: ModBlocks.BLOCKS.getEntries()) {
-                Block b = ro.get();
-                if (b instanceof PneumaticCraftEntityBlock && ForgeRegistries.ITEMS.containsKey(ro.getId())) {
-                    addStandardSerializedDrop(b, ro.getId());
+            for (var holder: ModBlocks.BLOCKS.getEntries()) {
+                Block b = holder.get();
+                if (b instanceof PneumaticCraftEntityBlock && BuiltInRegistries.ITEM.containsKey(holder.getId())) {
+                    addStandardSerializedDrop(b, holder.getId());
                 } else if (b instanceof SlabBlock) {
                     add(b, this::createSlabItemTable);
                 } else if (b.asItem() != Items.AIR) {
@@ -95,9 +94,9 @@ public class ModLootTablesProvider extends LootTableProvider {
         @Override
         protected Iterable<Block> getKnownBlocks() {
             List<Block> l = new ArrayList<>();
-            for (RegistryObject<Block> ro: ModBlocks.BLOCKS.getEntries()) {
-                if (ForgeRegistries.ITEMS.containsKey(ro.getId())) {
-                    l.add(ro.get());
+            for (var holder: ModBlocks.BLOCKS.getEntries()) {
+                if (BuiltInRegistries.ITEM.containsKey(holder.getId())) {
+                    l.add(holder.get());
                 }
             }
             return l;

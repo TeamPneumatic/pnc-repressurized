@@ -21,69 +21,78 @@ import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.network.NetworkEvent;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 
-import java.util.function.Supplier;
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 /**
  * Received on: CLIENT
  * Sent by server to play a trail of particles between two points
  */
-public class PacketSpawnParticleTrail extends LocationDoublePacket {
-    private final ParticleOptions particle;
-    private final double x2;
-    private final double y2;
-    private final double z2;
+public record PacketSpawnParticleTrail(ParticleOptions particle, float x, float y, float z, float x2, float y2, float z2) implements CustomPacketPayload {
+    public static final ResourceLocation ID = RL("particle_trail");
 
-    public PacketSpawnParticleTrail(ParticleOptions particle, double x1, double y1, double z1, double x2, double y2, double z2) {
-        super(x1, y1, z1);
-        this.particle = particle;
-        this.x2 = x2;
-        this.y2 = y2;
-        this.z2 = z2;
+    public PacketSpawnParticleTrail(ParticleOptions particle, double x, double y, double z, double x2, double y2, double z2) {
+        this(particle, (float) x, (float) y, (float) z, (float) x2, (float) y2, (float) z2);
     }
 
-    public PacketSpawnParticleTrail(FriendlyByteBuf buffer) {
-        super(buffer);
-        ParticleType<?> type = buffer.readRegistryIdSafe(ParticleType.class);
+    public static PacketSpawnParticleTrail fromNetwork(FriendlyByteBuf buffer) {
+        ParticleType<?> type = buffer.readById(BuiltInRegistries.PARTICLE_TYPE);
         assert type != null;
-        x2 = buffer.readDouble();
-        y2 = buffer.readDouble();
-        z2 = buffer.readDouble();
-        particle = readParticle(type, buffer);
+        float x = buffer.readFloat();
+        float y = buffer.readFloat();
+        float z = buffer.readFloat();
+        float x2 = buffer.readFloat();
+        float y2 = buffer.readFloat();
+        float z2 = buffer.readFloat();
+        ParticleOptions particle = readParticle(type, buffer);
+
+        return new PacketSpawnParticleTrail(particle, x, y, z, x2, y2, z2);
     }
 
     @Override
-    public void toBytes(FriendlyByteBuf buffer) {
-        super.toBytes(buffer);
-        buffer.writeRegistryId(ForgeRegistries.PARTICLE_TYPES, particle.getType());
-        buffer.writeDouble(x2);
-        buffer.writeDouble(y2);
-        buffer.writeDouble(z2);
+    public void write(FriendlyByteBuf buffer) {
+        buffer.writeId(BuiltInRegistries.PARTICLE_TYPE, particle.getType());
+        buffer.writeFloat(x);
+        buffer.writeFloat(y);
+        buffer.writeFloat(z);
+        buffer.writeFloat(x2);
+        buffer.writeFloat(y2);
+        buffer.writeFloat(z2);
         particle.writeToNetwork(new FriendlyByteBuf(buffer));
     }
 
-    private <T extends ParticleOptions> T readParticle(ParticleType<T> type, FriendlyByteBuf buffer) {
+    private static <T extends ParticleOptions> T readParticle(ParticleType<T> type, FriendlyByteBuf buffer) {
         return type.getDeserializer().fromNetwork(type, buffer);
     }
 
-    public void handle(Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> {
+    @Override
+    public ResourceLocation id() {
+        return ID;
+    }
+
+    public static void handle(PacketSpawnParticleTrail message, PlayPayloadContext ctx) {
+        ctx.workHandler().submitAsync(() -> {
             Level world = ClientUtils.getClientLevel();
-            int numParticles = (int) PneumaticCraftUtils.distBetween(x, y, z, x2, y2, z2) * 25;
+            int numParticles = (int) PneumaticCraftUtils.distBetween(message.x(), message.y(), message.z(), message.x2(), message.y2(), message.z2()) * 25;
             if (numParticles == 0) numParticles = 1;
             for (int i = 0; i <= numParticles; i++) {
                 double pct = (double) i / numParticles;
-                double px = Mth.lerp(pct, x, x2);
-                double py = Mth.lerp(pct, y, y2);
-                double pz = Mth.lerp(pct, z, z2);
-                world.addParticle(particle, px + world.random.nextDouble() * 0.2 - 0.1, py + world.random.nextDouble() * 0.2 - 0.1, pz + world.random.nextDouble() * 0.2 - 0.1, 0, 0, 0);
+                double px = Mth.lerp(pct, message.x(), message.x2());
+                double py = Mth.lerp(pct, message.y(), message.y2());
+                double pz = Mth.lerp(pct, message.z(), message.z2());
+                world.addParticle(message.particle(),
+                        px + world.random.nextDouble() * 0.2 - 0.1,
+                        py + world.random.nextDouble() * 0.2 - 0.1,
+                        pz + world.random.nextDouble() * 0.2 - 0.1,
+                        0, 0, 0);
             }
         });
-        ctx.get().setPacketHandled(true);
     }
 }

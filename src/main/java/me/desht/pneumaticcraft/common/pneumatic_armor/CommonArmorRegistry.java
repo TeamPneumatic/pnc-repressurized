@@ -19,13 +19,14 @@ package me.desht.pneumaticcraft.common.pneumatic_armor;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
-import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorUpgradeHandler;
 import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorHandler;
 import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorRegistry;
+import me.desht.pneumaticcraft.api.pneumatic_armor.hacking.IActiveEntityHacks;
 import me.desht.pneumaticcraft.api.pneumatic_armor.hacking.IHackableBlock;
 import me.desht.pneumaticcraft.api.pneumatic_armor.hacking.IHackableEntity;
-import me.desht.pneumaticcraft.api.pneumatic_armor.hacking.IHacking;
+import me.desht.pneumaticcraft.common.hacking.HackManager;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.Entity;
@@ -33,10 +34,12 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.commons.lang3.Validate;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
@@ -104,7 +107,9 @@ public enum CommonArmorRegistry implements ICommonArmorRegistry {
 
     @Override
     public Collection<IHackableEntity<?>> getCurrentEntityHacks(Entity entity) {
-        return entity.getCapability(PNCCapabilities.HACKING_CAPABILITY).map(IHacking::getCurrentHacks).orElse(Collections.emptyList());
+        return HackManager.getActiveHacks(entity)
+                .map(IActiveEntityHacks::getCurrentHacks)
+                .orElse(List.of());
     }
 
     @Override
@@ -125,9 +130,8 @@ public enum CommonArmorRegistry implements ICommonArmorRegistry {
     public void resolveBlockTags() {
         hackableTaggedBlocks.clear();
 
-        pendingBlockTags.forEach((tagKey, hackable) -> Objects.requireNonNull(ForgeRegistries.BLOCKS.tags())
-                .getTag(tagKey)
-                .forEach(block -> hackableTaggedBlocks.put(block, hackable)));
+        pendingBlockTags.forEach((tagKey, hackable) -> BuiltInRegistries.BLOCK.getTagOrEmpty(tagKey)
+                .forEach(block -> hackableTaggedBlocks.put(block.value(), hackable)));
     }
 
     public IHackableBlock getHackable(Block block) {

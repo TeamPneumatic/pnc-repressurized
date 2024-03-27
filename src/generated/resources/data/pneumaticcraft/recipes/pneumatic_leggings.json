@@ -1,27 +1,28 @@
 {
   "type": "pneumaticcraft:crafting_shaped_pressurizable",
-  "category": "misc",
-  "key": {
-    "A": {
-      "item": "pneumaticcraft:compressed_iron_leggings"
+  "value": {
+    "category": "misc",
+    "key": {
+      "A": {
+        "item": "pneumaticcraft:compressed_iron_leggings"
+      },
+      "C": {
+        "item": "pneumaticcraft:air_canister"
+      },
+      "I": {
+        "tag": "forge:ingots/compressed_iron"
+      },
+      "P": {
+        "item": "pneumaticcraft:printed_circuit_board"
+      }
     },
-    "C": {
-      "item": "pneumaticcraft:air_canister"
-    },
-    "I": {
-      "tag": "forge:ingots/compressed_iron"
-    },
-    "P": {
-      "item": "pneumaticcraft:printed_circuit_board"
+    "pattern": [
+      "CPC",
+      "CAC",
+      "I I"
+    ],
+    "result": {
+      "item": "pneumaticcraft:pneumatic_leggings"
     }
-  },
-  "pattern": [
-    "CPC",
-    "CAC",
-    "I I"
-  ],
-  "result": {
-    "item": "pneumaticcraft:pneumatic_leggings"
-  },
-  "show_notification": true
+  }
 }

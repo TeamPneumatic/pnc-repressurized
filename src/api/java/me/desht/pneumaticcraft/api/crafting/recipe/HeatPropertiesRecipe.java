@@ -19,24 +19,20 @@ package me.desht.pneumaticcraft.api.crafting.recipe;
 
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidStack;
 
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Recipes which define the heat properties of a block; its temperature, thermal resistance, heat capacity, and the
  * blocks it can turn into when too much heat is added or removed via the PneumaticCraft heat system.
  */
 public abstract class HeatPropertiesRecipe extends PneumaticCraftRecipe {
-    protected HeatPropertiesRecipe(ResourceLocation id) {
-        super(id);
-    }
-
     /**
      * Get the block, which is effectively the input for this recipe
      * @return the block
@@ -57,7 +53,7 @@ public abstract class HeatPropertiesRecipe extends PneumaticCraftRecipe {
      *
      * @return the heat capacity, or 0 if this never transforms
      */
-    public abstract int getHeatCapacity();
+    public abstract Optional<Integer> getHeatCapacity();
 
     /**
      * The block's temperature.  For fluid blocks, this will be temperature of the fluid, which is defined by the
@@ -73,7 +69,7 @@ public abstract class HeatPropertiesRecipe extends PneumaticCraftRecipe {
      *
      * @return the thermal resistance
      */
-    public abstract double getThermalResistance();
+    public abstract Optional<Double> getThermalResistance();
 
     /**
      * Get the blockstate which the input will transform to if too much heat is added to it. This may be null if there
@@ -81,7 +77,7 @@ public abstract class HeatPropertiesRecipe extends PneumaticCraftRecipe {
      *
      * @return a new blockstate
      */
-    public abstract BlockState getTransformHot();
+    public abstract Optional<BlockState> getTransformHot();
 
     /**
      * Get the blockstate which the input will transform to if too much heat is removed from it. This may be null if
@@ -89,21 +85,21 @@ public abstract class HeatPropertiesRecipe extends PneumaticCraftRecipe {
      *
      * @return a new blockstate
      */
-    public abstract BlockState getTransformCold();
+    public abstract Optional<BlockState> getTransformCold();
 
     /**
      * Same as {@link #getTransformHot()} but for flowing variants of the input block, when it is a fluid.
      *
      * @return a new blockstate
      */
-    public abstract BlockState getTransformHotFlowing();
+    public abstract Optional<BlockState> getTransformHotFlowing();
 
     /**
      * Same as {@link #getTransformCold()} but for flowing variants of the input block, when it is a fluid.
      *
      * @return a new blockstate
      */
-    public abstract BlockState getTransformColdFlowing();
+    public abstract Optional<BlockState> getTransformColdFlowing();
 
     /**
      * Get a heat exchanger logic object for this recipe. This is mainly a convenience to get the associated temperature

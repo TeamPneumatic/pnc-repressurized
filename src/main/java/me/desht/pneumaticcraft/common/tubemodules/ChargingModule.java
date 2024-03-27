@@ -20,15 +20,16 @@ package me.desht.pneumaticcraft.common.tubemodules;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.common.block.entity.AdvancedPressureTubeBlockEntity;
 import me.desht.pneumaticcraft.common.block.entity.PressureTubeBlockEntity;
-import me.desht.pneumaticcraft.common.core.ModItems;
+import me.desht.pneumaticcraft.common.registry.ModItems;
+import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.IItemHandler;
+import net.neoforged.neoforge.items.IItemHandler;
+
+import java.util.Optional;
 
 public class ChargingModule extends AbstractTubeModule {
     private BlockEntity neighbourTE = null;
@@ -52,11 +53,11 @@ public class ChargingModule extends AbstractTubeModule {
             // times 8 because we only run every 8 ticks
             int advMul = pressureTube instanceof AdvancedPressureTubeBlockEntity ? 4 : 1;
             int transferLimit = 8 * PneumaticValues.CHARGING_STATION_CHARGE_RATE * (upgraded ? 10 : 1) * advMul;
-            pressureTube.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY).ifPresent(airHandler -> {
+            PNCCapabilities.getAirHandler(pressureTube).ifPresent(airHandler -> {
                 for (int slot = 0; slot < itemHandler.getSlots(); slot++) {
                     ItemStack chargedItem = itemHandler.getStackInSlot(slot);
                     if (chargedItem.getCount() != 1) continue;
-                    chargedItem.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).ifPresent(airHandlerItem -> {
+                    PNCCapabilities.getAirHandler(chargedItem).ifPresent(airHandlerItem -> {
                         float itemPressure = airHandlerItem.getPressure();
                         float modulePressure = airHandler.getPressure();
                         float delta = Math.abs(modulePressure - itemPressure) / 2.0F;
@@ -81,10 +82,10 @@ public class ChargingModule extends AbstractTubeModule {
         });
     }
 
-    private LazyOptional<IItemHandler> getConnectedInventory() {
+    private Optional<IItemHandler> getConnectedInventory() {
         if (neighbourTE == null || neighbourTE.isRemoved()) {
             neighbourTE = pressureTube.nonNullLevel().getBlockEntity(pressureTube.getBlockPos().relative(dir));
         }
-        return neighbourTE == null ? LazyOptional.empty() : neighbourTE.getCapability(ForgeCapabilities.ITEM_HANDLER, dir.getOpposite());
+        return neighbourTE == null ? Optional.empty() : IOHelper.getInventoryForBlock(neighbourTE, dir.getOpposite());
     }
 }

@@ -32,8 +32,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.phys.AABB;
-import net.minecraftforge.client.extensions.common.IClientFluidTypeExtensions;
-import net.minecraftforge.fluids.IFluidTank;
+import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
+import net.neoforged.neoforge.fluids.IFluidTank;
 import org.joml.Matrix4f;
 
 import java.util.Collection;
@@ -71,18 +71,12 @@ public abstract class AbstractFluidTER<T extends AbstractPneumaticCraftBlockEnti
         float y2 = (float) bounds.maxY;
         float z1 = (float) bounds.minZ;
         float z2 = (float) bounds.maxZ;
-        double bx1 = bounds.minX * 16;
-        double bx2 = bounds.maxX * 16;
-        double by1 = bounds.minY * 16;
-        double by2 = bounds.maxY * 16;
-        double bz1 = bounds.minZ * 16;
-        double bz2 = bounds.maxZ * 16;
         
         if (tankRenderInfo.shouldRender(Direction.DOWN)) {
-            float u1 = still.getU(bx1);
-            float u2 = still.getU(bx2);
-            float v1 = still.getV(bz1);
-            float v2 = still.getV(bz2);
+            float u1 = still.getU(x1);
+            float u2 = still.getU(x2);
+            float v1 = still.getV(z1);
+            float v2 = still.getV(z2);
             builder.vertex(posMat, x1, y1, z2).color(cols[1], cols[2], cols[3], cols[0]).uv(u1, v2).overlayCoords(combinedOverlay).uv2(combinedLight).normal(0f, -1f, 0f).endVertex();
             builder.vertex(posMat, x1, y1, z1).color(cols[1], cols[2], cols[3], cols[0]).uv(u1, v1).overlayCoords(combinedOverlay).uv2(combinedLight).normal(0f, -1f, 0f).endVertex();
             builder.vertex(posMat, x2, y1, z1).color(cols[1], cols[2], cols[3], cols[0]).uv(u2, v1).overlayCoords(combinedOverlay).uv2(combinedLight).normal(0f, -1f, 0f).endVertex();
@@ -90,10 +84,10 @@ public abstract class AbstractFluidTER<T extends AbstractPneumaticCraftBlockEnti
         }
 
         if (tankRenderInfo.shouldRender(Direction.UP)) {
-            float u1 = still.getU(bx1);
-            float u2 = still.getU(bx2);
-            float v1 = still.getV(bz1);
-            float v2 = still.getV(bz2);
+            float u1 = still.getU(x1);
+            float u2 = still.getU(x2);
+            float v1 = still.getV(z1);
+            float v2 = still.getV(z2);
             builder.vertex(posMat, x1, y2, z2).color(cols[1], cols[2], cols[3], cols[0]).uv(u1, v2).overlayCoords(combinedOverlay).uv2(combinedLight).normal(0f, 1f, 0f).endVertex();
             builder.vertex(posMat, x2, y2, z2).color(cols[1], cols[2], cols[3], cols[0]).uv(u2, v2).overlayCoords(combinedOverlay).uv2(combinedLight).normal(0f, 1f, 0f).endVertex();
             builder.vertex(posMat, x2, y2, z1).color(cols[1], cols[2], cols[3], cols[0]).uv(u2, v1).overlayCoords(combinedOverlay).uv2(combinedLight).normal(0f, 1f, 0f).endVertex();
@@ -101,10 +95,10 @@ public abstract class AbstractFluidTER<T extends AbstractPneumaticCraftBlockEnti
         }
 
         if (tankRenderInfo.shouldRender(Direction.NORTH)) {
-            float u1 = still.getU(bx1);
-            float u2 = still.getU(bx2);
-            float v1 = still.getV(by1);
-            float v2 = still.getV(by2);
+            float u1 = still.getU(x1);
+            float u2 = still.getU(x2);
+            float v1 = still.getV(y1);
+            float v2 = still.getV(y2);
             builder.vertex(posMat, x1, y1, z1).color(cols[1], cols[2], cols[3], cols[0]).uv(u1, v1).overlayCoords(combinedOverlay).uv2(combinedLight).normal(0f, 0f, -1f).endVertex();
             builder.vertex(posMat, x1, y2, z1).color(cols[1], cols[2], cols[3], cols[0]).uv(u1, v2).overlayCoords(combinedOverlay).uv2(combinedLight).normal(0f, 0f, -1f).endVertex();
             builder.vertex(posMat, x2, y2, z1).color(cols[1], cols[2], cols[3], cols[0]).uv(u2, v2).overlayCoords(combinedOverlay).uv2(combinedLight).normal(0f, 0f, -1f).endVertex();
@@ -112,10 +106,10 @@ public abstract class AbstractFluidTER<T extends AbstractPneumaticCraftBlockEnti
         }
 
         if (tankRenderInfo.shouldRender(Direction.SOUTH)) {
-            float u1 = still.getU(bx1);
-            float u2 = still.getU(bx2);
-            float v1 = still.getV(by1);
-            float v2 = still.getV(by2);
+            float u1 = still.getU(x1);
+            float u2 = still.getU(x2);
+            float v1 = still.getV(y1);
+            float v2 = still.getV(y2);
             builder.vertex(posMat, x2, y1, z2).color(cols[1], cols[2], cols[3], cols[0]).uv(u2, v1).overlayCoords(combinedOverlay).uv2(combinedLight).normal(0f, 0f, 1f).endVertex();
             builder.vertex(posMat, x2, y2, z2).color(cols[1], cols[2], cols[3], cols[0]).uv(u2, v2).overlayCoords(combinedOverlay).uv2(combinedLight).normal(0f, 0f, 1f).endVertex();
             builder.vertex(posMat, x1, y2, z2).color(cols[1], cols[2], cols[3], cols[0]).uv(u1, v2).overlayCoords(combinedOverlay).uv2(combinedLight).normal(0f, 0f, 1f).endVertex();
@@ -123,10 +117,10 @@ public abstract class AbstractFluidTER<T extends AbstractPneumaticCraftBlockEnti
         }
 
         if (tankRenderInfo.shouldRender(Direction.WEST)) {
-            float u1 = still.getU(by1);
-            float u2 = still.getU(by2);
-            float v1 = still.getV(bz1);
-            float v2 = still.getV(bz2);
+            float u1 = still.getU(y1);
+            float u2 = still.getU(y2);
+            float v1 = still.getV(z1);
+            float v2 = still.getV(z2);
             builder.vertex(posMat, x1, y1, z2).color(cols[1], cols[2], cols[3], cols[0]).uv(u1, v2).overlayCoords(combinedOverlay).uv2(combinedLight).normal(-1f, 0f, 0f).endVertex();
             builder.vertex(posMat, x1, y2, z2).color(cols[1], cols[2], cols[3], cols[0]).uv(u2, v2).overlayCoords(combinedOverlay).uv2(combinedLight).normal(-1f, 0f, 0f).endVertex();
             builder.vertex(posMat, x1, y2, z1).color(cols[1], cols[2], cols[3], cols[0]).uv(u2, v1).overlayCoords(combinedOverlay).uv2(combinedLight).normal(-1f, 0f, 0f).endVertex();
@@ -134,10 +128,10 @@ public abstract class AbstractFluidTER<T extends AbstractPneumaticCraftBlockEnti
         }
 
         if (tankRenderInfo.shouldRender(Direction.EAST)) {
-            float u1 = still.getU(by1);
-            float u2 = still.getU(by2);
-            float v1 = still.getV(bz1);
-            float v2 = still.getV(bz2);
+            float u1 = still.getU(y1);
+            float u2 = still.getU(y2);
+            float v1 = still.getV(z1);
+            float v2 = still.getV(z2);
             builder.vertex(posMat, x2, y1, z1).color(cols[1], cols[2], cols[3], cols[0]).uv(u1, v1).overlayCoords(combinedOverlay).uv2(combinedLight).normal(1f, 0f, 0f).endVertex();
             builder.vertex(posMat, x2, y2, z1).color(cols[1], cols[2], cols[3], cols[0]).uv(u2, v1).overlayCoords(combinedOverlay).uv2(combinedLight).normal(1f, 0f, 0f).endVertex();
             builder.vertex(posMat, x2, y2, z2).color(cols[1], cols[2], cols[3], cols[0]).uv(u2, v2).overlayCoords(combinedOverlay).uv2(combinedLight).normal(1f, 0f, 0f).endVertex();

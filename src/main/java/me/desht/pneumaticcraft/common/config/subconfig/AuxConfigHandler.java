@@ -20,8 +20,8 @@ package me.desht.pneumaticcraft.common.config.subconfig;
 import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.world.level.storage.LevelResource;
-import net.minecraftforge.fml.loading.FMLPaths;
-import net.minecraftforge.server.ServerLifecycleHooks;
+import net.neoforged.fml.loading.FMLPaths;
+import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;

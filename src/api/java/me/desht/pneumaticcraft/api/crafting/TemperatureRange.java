@@ -18,6 +18,8 @@
 package me.desht.pneumaticcraft.api.crafting;
 
 import com.google.gson.JsonObject;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.util.GsonHelper;
 import org.apache.commons.lang3.Validate;
@@ -27,6 +29,11 @@ import org.apache.commons.lang3.Validate;
  * so negative values are not accepted.
  */
 public class TemperatureRange {
+    public static final Codec<TemperatureRange> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+            Codec.INT.optionalFieldOf("min", 0).forGetter(TemperatureRange::getMin),
+            Codec.INT.optionalFieldOf("max", Integer.MAX_VALUE).forGetter(TemperatureRange::getMax)
+    ).apply(instance, TemperatureRange::of));
+
     private static final TemperatureRange INVALID = new TemperatureRange(0, 1) {
         @Override
         public boolean inRange(int temp) {

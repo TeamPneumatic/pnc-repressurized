@@ -19,18 +19,17 @@ package me.desht.pneumaticcraft.common.block.entity;
 
 import com.google.common.collect.ImmutableSet;
 import com.mojang.authlib.GameProfile;
+import me.desht.pneumaticcraft.ForcedChunks;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.drone.DroneConstructingEvent;
 import me.desht.pneumaticcraft.api.drone.IPathNavigator;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.api.item.IProgrammable;
 import me.desht.pneumaticcraft.api.lib.NBTKeys;
-import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.api.pressure.PressureTier;
 import me.desht.pneumaticcraft.api.semiblock.SemiblockEvent;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
-import me.desht.pneumaticcraft.common.core.*;
 import me.desht.pneumaticcraft.common.debug.DroneDebugger;
 import me.desht.pneumaticcraft.common.drone.IDroneBase;
 import me.desht.pneumaticcraft.common.drone.LogisticsManager;
@@ -41,6 +40,7 @@ import me.desht.pneumaticcraft.common.entity.semiblock.AbstractLogisticsFrameEnt
 import me.desht.pneumaticcraft.common.inventory.ProgrammableControllerMenu;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.network.*;
+import me.desht.pneumaticcraft.common.registry.*;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.common.util.IOHelper;
@@ -74,24 +74,20 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
-import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.common.world.ForgeChunkManager;
-import net.minecraftforge.energy.IEnergyStorage;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fluids.IFluidTank;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.fluids.capability.templates.FluidTank;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.IItemHandlerModifiable;
-import net.minecraftforge.items.ItemHandlerHelper;
-import net.minecraftforge.items.ItemStackHandler;
-import org.jetbrains.annotations.NotNull;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.common.world.chunk.TicketController;
+import net.neoforged.neoforge.energy.IEnergyStorage;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.IItemHandlerModifiable;
+import net.neoforged.neoforge.items.ItemHandlerHelper;
+import net.neoforged.neoforge.items.ItemStackHandler;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -119,13 +115,13 @@ public class ProgrammableControllerBlockEntity extends AbstractAirHandlingBlockE
     private static final double BASE_SPEED = 0.15;
 
     private final ProgrammableItemStackHandler inventory = new ProgrammableItemStackHandler(this);
-    private final LazyOptional<IItemHandler> invCap = LazyOptional.of(() -> inventory);
+//    private final LazyOptional<IItemHandler> invCap = LazyOptional.of(() -> inventory);
 
     private final FluidTank tank = new FluidTank(16000);
-    private final LazyOptional<IFluidHandler> tankCap = LazyOptional.of(() -> tank);
+//    private final LazyOptional<IFluidHandler> tankCap = LazyOptional.of(() -> tank);
 
     private final PneumaticEnergyStorage energy = new PneumaticEnergyStorage(MAX_ENERGY);
-    private final LazyOptional<IEnergyStorage> energyCap = LazyOptional.of(() -> energy);
+//    private final LazyOptional<IEnergyStorage> energyCap = LazyOptional.of(() -> energy);
 
     private final DroneItemHandler droneItemHandler = new DroneItemHandler(this, 1);
 
@@ -178,20 +174,44 @@ public class ProgrammableControllerBlockEntity extends AbstractAirHandlingBlockE
     private int activeWidgetIndex;
 
     public ProgrammableControllerBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.PROGRAMMABLE_CONTROLLER.get(), pos, state, PressureTier.TIER_TWO, 10000, 4);
+        super(ModBlockEntityTypes.PROGRAMMABLE_CONTROLLER.get(), pos, state, PressureTier.TIER_TWO, 10000, 4);
 
-        MinecraftForge.EVENT_BUS.post(new DroneConstructingEvent(this));
+        NeoForge.EVENT_BUS.post(new DroneConstructingEvent(this));
 
-        MinecraftForge.EVENT_BUS.register(this);
+        NeoForge.EVENT_BUS.register(this);
 
         itemHandlerSideConfigurator = new SideConfigurator<>("items", this);
         itemHandlerSideConfigurator.registerHandler("droneInv", new ItemStack(ModItems.DRONE.get()),
-                ForgeCapabilities.ITEM_HANDLER, () -> droneItemHandler,
+                Capabilities.ItemHandler.BLOCK, () -> droneItemHandler,
                 SideConfigurator.RelativeFace.TOP, SideConfigurator.RelativeFace.FRONT, SideConfigurator.RelativeFace.BACK, SideConfigurator.RelativeFace.LEFT, SideConfigurator.RelativeFace.RIGHT);
         itemHandlerSideConfigurator.registerHandler("programmableInv", new ItemStack(ModItems.NETWORK_API.get()),
-                ForgeCapabilities.ITEM_HANDLER, () -> inventory,
+                Capabilities.ItemHandler.BLOCK, () -> inventory,
                 SideConfigurator.RelativeFace.BOTTOM);
         itemHandlerSideConfigurator.setNullFaceHandler("droneInv");
+    }
+
+    private TicketController ticketController() {
+        return ForcedChunks.INSTANCE.getPcController();
+    }
+
+    @Override
+    public boolean hasFluidCapability() {
+        return true;
+    }
+
+    @Override
+    public boolean hasEnergyCapability() {
+        return true;
+    }
+
+    @Override
+    public IFluidHandler getFluidHandler(@Nullable Direction dir) {
+        return tank;
+    }
+
+    @Override
+    public IEnergyStorage getEnergyHandler(@Nullable Direction dir) {
+        return energy;
     }
 
     @SubscribeEvent
@@ -270,7 +290,7 @@ public class ProgrammableControllerBlockEntity extends AbstractAirHandlingBlockE
             aiManager.onUpdateTasks();
             if (getActiveAIManager() != prevActive) {
                 // active AI has changed (started or stopped using External Program) - resync widget list to debugging players
-                getDebugger().getDebuggingPlayers().forEach(p -> NetworkHandler.sendToPlayer(new PacketSyncDroneEntityProgWidgets(this), p));
+                getDebugger().getDebuggingPlayers().forEach(p -> NetworkHandler.sendToPlayer(PacketSyncDroneProgWidgets.create(this), p));
             }
             maybeChargeHeldItem();
         }
@@ -294,7 +314,7 @@ public class ProgrammableControllerBlockEntity extends AbstractAirHandlingBlockE
             ChunkPos cp = iter.next();
             boolean load = shouldLoadChunk(cp);
 //            Log.info("chunkload " + cp + "? " + load);
-            ForgeChunkManager.forceChunk((ServerLevel) nonNullLevel(), Names.MOD_ID, worldPosition, cp.x, cp.z, load, false);
+            ticketController().forceChunk((ServerLevel) nonNullLevel(), worldPosition, cp.x, cp.z, load, false);
             if (!load) {
                 iter.remove();
             }
@@ -315,14 +335,14 @@ public class ProgrammableControllerBlockEntity extends AbstractAirHandlingBlockE
         ItemStack held = droneItemHandler.getStackInSlot(0);
 
         if (energy.getEnergyStored() > 100) {
-            held.getCapability(ForgeCapabilities.ENERGY).ifPresent(handler -> {
+            IOHelper.getEnergyStorageForItem(held).ifPresent(handler -> {
                 if (handler.getMaxEnergyStored() - handler.getEnergyStored() > 250) {
                     handler.receiveEnergy(energy.extractEnergy(250, false), false);
                 }
             });
         }
 
-        held.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).ifPresent(handler -> {
+        PNCCapabilities.getAirHandler(held).ifPresent(handler -> {
             if (getPressure() > handler.getPressure() && handler.getPressure() < handler.maxPressure()) {
                 int maxAir = (int) (handler.maxPressure() * handler.getVolume());
                 int toAdd = Math.min(250, maxAir - handler.getAir());
@@ -342,10 +362,9 @@ public class ProgrammableControllerBlockEntity extends AbstractAirHandlingBlockE
         super.setRemoved();
 
         if (level instanceof ServerLevel) {
-            loadedChunks.forEach(cp -> ForgeChunkManager.forceChunk((ServerLevel) level, Names.MOD_ID, worldPosition, cp.x, cp.z, false, false));
+            loadedChunks.forEach(cp -> ticketController().forceChunk((ServerLevel) level, worldPosition, cp.x, cp.z, false, false));
         }
-        MinecraftForge.EVENT_BUS.unregister(this);
-        itemHandlerSideConfigurator.invalidateCaps();
+        NeoForge.EVENT_BUS.unregister(this);
     }
 
     @Override
@@ -380,8 +399,8 @@ public class ProgrammableControllerBlockEntity extends AbstractAirHandlingBlockE
     }
 
     @Override
-    public IItemHandler getPrimaryInventory() {
-        return inventory;
+    public IItemHandler getItemHandler(@Nullable Direction dir) {
+        return itemHandlerSideConfigurator.getHandler(dir);
     }
 
     public void setOwner(Player ownerID) {
@@ -504,23 +523,6 @@ public class ProgrammableControllerBlockEntity extends AbstractAirHandlingBlockE
     }
 
     @Override
-    protected LazyOptional<IItemHandler> getInventoryCap(Direction side) {
-        return itemHandlerSideConfigurator.getHandler(side);
-    }
-
-    @NotNull
-    @Override
-    public LazyOptional<IFluidHandler> getFluidCap(Direction side) {
-        return tankCap;
-    }
-
-    @NotNull
-    @Override
-    protected LazyOptional<IEnergyStorage> getEnergyCap(Direction side) {
-        return energyCap;
-    }
-
-    @Override
     public void onLoad() {
         super.onLoad();
 
@@ -534,7 +536,7 @@ public class ProgrammableControllerBlockEntity extends AbstractAirHandlingBlockE
 
         if (chunkloadSelf) {
             ChunkPos cp = new ChunkPos(worldPosition);
-            ForgeChunkManager.forceChunk((ServerLevel) nonNullLevel(), Names.MOD_ID, worldPosition, cp.x, cp.z, true, false);
+            ticketController().forceChunk((ServerLevel) nonNullLevel(), worldPosition, cp.x, cp.z, true, false);
             loadedChunks.add(cp);
         }
     }
@@ -553,18 +555,18 @@ public class ProgrammableControllerBlockEntity extends AbstractAirHandlingBlockE
     }
 
     @Override
-    public AABB getRenderBoundingBox() {
-        return INFINITE_EXTENT_AABB;
-    }
-
-    @Override
     public Level world() {
         return getLevel();
     }
 
     @Override
-    public IFluidTank getFluidTank() {
+    public FluidTank getFluidTank() {
         return tank;
+    }
+
+    @Override
+    public IEnergyStorage getEnergyStorage() {
+        return energy;
     }
 
     @Override
@@ -660,7 +662,7 @@ public class ProgrammableControllerBlockEntity extends AbstractAirHandlingBlockE
 
     @Override
     public boolean isProgramApplicable(ProgWidgetType<?> widgetType) {
-        return PneumaticCraftUtils.getRegistryName(ModProgWidgets.PROG_WIDGETS.get(), widgetType)
+        return PneumaticCraftUtils.getRegistryName(ModProgWidgets.PROG_WIDGETS_REGISTRY, widgetType)
                 .map(regName -> !BLACKLISTED_WIDGETS.contains(regName))
                 .orElseThrow();
     }
@@ -733,7 +735,7 @@ public class ProgrammableControllerBlockEntity extends AbstractAirHandlingBlockE
             nonNullLevel().playSound(null, worldPosition, ModSounds.DRONE_DEATH.get(), SoundSource.BLOCKS, 1f, 1f);
         }
         NetworkHandler.sendToAllTracking(new PacketSpawnParticle(ParticleTypes.SMOKE,
-                getBlockPos().getX() - 0.5, getBlockPos().getY() + 1, getBlockPos().getZ() - 0.5,
+                getBlockPos().getX() - 0.5f, getBlockPos().getY() + 1, getBlockPos().getZ() - 0.5f,
                 0, 0, 0, 10, 1, 1, 1), this);
     }
 
@@ -793,6 +795,11 @@ public class ProgrammableControllerBlockEntity extends AbstractAirHandlingBlockE
     }
 
     @Override
+    public DronePacket.DroneTarget getPacketTarget() {
+        return DronePacket.DroneTarget.forPos(getBlockPos());
+    }
+
+    @Override
     public int getActiveWidgetIndex() {
         return activeWidgetIndex;
     }
@@ -836,19 +843,19 @@ public class ProgrammableControllerBlockEntity extends AbstractAirHandlingBlockE
         return chunkloadWorkingChunk3x3;
     }
 
-    private LazyOptional<IItemHandler> findEjectionDest() {
+    private Optional<IItemHandler> findEjectionDest() {
         Direction dir = null;
         for (Direction d : DirectionUtil.VALUES) {
-            if (getCapability(ForgeCapabilities.ITEM_HANDLER, d).map(h -> h == inventory).orElse(false)) {
+            if (IOHelper.getInventoryForBlock(this, d).map(h -> h == inventory).orElse(false)) {
                 dir = d;
                 break;
             }
         }
         if (dir != null) {
             BlockEntity te = nonNullLevel().getBlockEntity(worldPosition.relative(dir));
-            return IOHelper.getInventoryForTE(te, dir.getOpposite());
+            return IOHelper.getInventoryForBlock(te, dir.getOpposite());
         }
-        return LazyOptional.empty();
+        return Optional.empty();
     }
 
     private class ProgrammableItemStackHandler extends BaseItemStackHandler {

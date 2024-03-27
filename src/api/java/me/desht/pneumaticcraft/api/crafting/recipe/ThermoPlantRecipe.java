@@ -19,16 +19,13 @@ package me.desht.pneumaticcraft.api.crafting.recipe;
 
 import me.desht.pneumaticcraft.api.crafting.TemperatureRange;
 import me.desht.pneumaticcraft.api.crafting.ingredient.FluidIngredient;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraftforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidStack;
+
+import java.util.Optional;
 
 public abstract class ThermoPlantRecipe extends PneumaticCraftRecipe {
-    protected ThermoPlantRecipe(ResourceLocation id) {
-        super(id);
-    }
-
     /**
      * Check if this recipe matches the given input fluid and item.  This does not take any required temperature and
      * pressure into account.  It will also match if the input fluid matches but is insufficient.
@@ -90,9 +87,9 @@ public abstract class ThermoPlantRecipe extends PneumaticCraftRecipe {
         return (int) (50 * getRequiredPressure());
     }
 
-    public abstract Ingredient getInputItem();
+    public abstract Optional<Ingredient> getInputItem();
 
-    public abstract FluidIngredient getInputFluid();
+    public abstract Optional<FluidIngredient> getInputFluid();
 
     public abstract FluidStack getOutputFluid();
 
@@ -109,4 +106,16 @@ public abstract class ThermoPlantRecipe extends PneumaticCraftRecipe {
      * @return true if this is an exothermic recipe.
      */
     public abstract boolean isExothermic();
+
+    public final int getInputFluidAmount() {
+        return getInputFluid().map(FluidIngredient::getAmount).orElse(0);
+    }
+
+    public final boolean testFluid(FluidStack fluid) {
+        return getInputFluid().map(i -> i.testFluid(fluid)).orElse(false);
+    }
+
+    public final boolean testItem(ItemStack stack) {
+        return getInputItem().map(i -> i.test(stack)).orElse(false);
+    }
 }

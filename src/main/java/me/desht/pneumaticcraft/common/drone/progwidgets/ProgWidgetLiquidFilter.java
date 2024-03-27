@@ -19,10 +19,11 @@ package me.desht.pneumaticcraft.common.drone.progwidgets;
 
 import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
-import me.desht.pneumaticcraft.common.core.ModProgWidgets;
+import me.desht.pneumaticcraft.common.registry.ModProgWidgets;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
@@ -30,8 +31,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.fluids.FluidStack;
 
 import java.util.Collections;
 import java.util.List;
@@ -81,7 +81,7 @@ public class ProgWidgetLiquidFilter extends ProgWidget {
     public void readFromNBT(CompoundTag tag) {
         super.readFromNBT(tag);
         fluid = tag.contains("fluid") ?
-                ForgeRegistries.FLUIDS.getValue(new ResourceLocation(tag.getString("fluid"))) :
+                BuiltInRegistries.FLUID.get(new ResourceLocation(tag.getString("fluid"))) :
                 Fluids.EMPTY;
     }
 

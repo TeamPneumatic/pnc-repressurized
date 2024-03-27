@@ -29,8 +29,8 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.client.settings.KeyConflictContext;
-import net.minecraftforge.client.settings.KeyModifier;
+import net.neoforged.neoforge.client.settings.KeyConflictContext;
+import net.neoforged.neoforge.client.settings.KeyModifier;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.Collection;
@@ -64,7 +64,7 @@ public interface IArmorUpgradeClientHandler<T extends IArmorUpgradeHandler<?>> {
     }
 
     /**
-     * This is called when a {@link net.minecraftforge.fml.event.config.ModConfigEvent} is received for the mod.
+     * This is called when a {@link net.neoforged.fml.event.config.ModConfigEvent} is received for the mod.
      */
     default void initConfig() {}
 
@@ -82,7 +82,7 @@ public interface IArmorUpgradeClientHandler<T extends IArmorUpgradeHandler<?>> {
     void tickClient(ICommonArmorHandler armorHandler, boolean isEnabled);
 
     /**
-     * Called in the 3D render stage (via {@link net.minecraftforge.client.event.RenderLevelStageEvent})
+     * Called in the 3D render stage (via {@link net.neoforged.neoforge.client.event.RenderLevelStageEvent})
      *
      * @param matrixStack the matrix stack
      * @param buffer the render type buffer
@@ -91,7 +91,7 @@ public interface IArmorUpgradeClientHandler<T extends IArmorUpgradeHandler<?>> {
     void render3D(PoseStack matrixStack, MultiBufferSource buffer, float partialTicks);
 
     /**
-     * Called in the 2D render stage (via Forge's {@link net.minecraftforge.client.gui.overlay.IGuiOverlay} system).
+     * Called in the 2D render stage (via Forge's {@link net.neoforged.neoforge.client.gui.overlay.IGuiOverlay} system).
      *
      * @param graphics              the matrix stack
      * @param partialTicks          partial ticks since last world tick

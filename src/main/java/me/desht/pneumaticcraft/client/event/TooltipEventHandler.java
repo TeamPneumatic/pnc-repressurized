@@ -27,10 +27,10 @@ import me.desht.pneumaticcraft.api.misc.Symbols;
 import me.desht.pneumaticcraft.client.gui.IGuiDrone;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.block.entity.ProgrammerBlockEntity;
-import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.common.drone.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.item.ICustomTooltipName;
 import me.desht.pneumaticcraft.common.item.MicromissilesItem;
+import me.desht.pneumaticcraft.common.registry.ModProgWidgets;
 import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
@@ -43,12 +43,12 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.RenderTooltipEvent;
-import net.minecraftforge.event.entity.player.ItemTooltipEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fluids.FluidUtil;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.client.event.RenderTooltipEvent;
+import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
+import net.neoforged.neoforge.fluids.FluidUtil;
 
 import java.util.*;
 
@@ -101,7 +101,7 @@ public class TooltipEventHandler {
     }
 
     private static void addPressureTooltip(ItemStack stack, List<Component> textList) {
-        stack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).ifPresent(airHandler -> {
+        PNCCapabilities.getAirHandler(stack).ifPresent(airHandler -> {
             float f = airHandler.getPressure() / airHandler.maxPressure();
             ChatFormatting color;
             if (f < 0.1f) {
@@ -124,7 +124,7 @@ public class TooltipEventHandler {
             Map<ResourceLocation, Integer> widgetMap = getPuzzleSummary(widgets);
             for (Map.Entry<ResourceLocation, Integer> entry : widgetMap.entrySet()) {
                 ChatFormatting[] prefix = new ChatFormatting[0];
-                ProgWidgetType<?> widgetType = ModProgWidgets.PROG_WIDGETS.get().getValue(entry.getKey());
+                ProgWidgetType<?> widgetType = ModProgWidgets.PROG_WIDGETS_REGISTRY.get(entry.getKey());
                 if (widgetType != null) {
                     Screen curScreen = Minecraft.getInstance().screen;
                     if (curScreen instanceof IGuiDrone) {

@@ -20,11 +20,10 @@ package me.desht.pneumaticcraft.common.drone.ai;
 import me.desht.pneumaticcraft.common.drone.IDroneBase;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetInventoryBase;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
+import me.desht.pneumaticcraft.common.util.IOHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.energy.IEnergyStorage;
 
 public class DroneAIEnergyExport extends DroneAIImExBase<ProgWidgetInventoryBase> {
     public DroneAIEnergyExport(IDroneBase drone, ProgWidgetInventoryBase widget) {
@@ -43,7 +42,7 @@ public class DroneAIEnergyExport extends DroneAIImExBase<ProgWidgetInventoryBase
 
     private boolean exportEnergy(BlockPos pos, boolean simulate) {
         boolean didWork = false;
-        int energy = drone.getCapability(ForgeCapabilities.ENERGY).map(IEnergyStorage::getEnergyStored).orElseThrow(RuntimeException::new);
+        int energy = drone.getEnergyStorage().getEnergyStored();
         if (energy == 0) {
             abort();
         } else {
@@ -61,7 +60,7 @@ public class DroneAIEnergyExport extends DroneAIImExBase<ProgWidgetInventoryBase
     }
 
     private boolean tryExportToSide(BlockEntity te, Direction face, boolean simulate) {
-        return te.getCapability(ForgeCapabilities.ENERGY, face).map(tileHandler -> {
+        return IOHelper.getEnergyStorageForBlock(te, face).map(tileHandler -> {
             int receivable = tileHandler.receiveEnergy(progWidget.useCount() ? getRemainingCount() : Integer.MAX_VALUE, true);
             int toTransfer = extractFromDrone(receivable, true);
             if (toTransfer > 0) {
@@ -77,8 +76,6 @@ public class DroneAIEnergyExport extends DroneAIImExBase<ProgWidgetInventoryBase
     }
 
     private int extractFromDrone(int maxEnergy, boolean simulate) {
-        return drone.getCapability(ForgeCapabilities.ENERGY)
-                .map(h -> h.extractEnergy(maxEnergy, simulate))
-                .orElseThrow(RuntimeException::new);
+        return drone.getEnergyStorage().extractEnergy(maxEnergy, simulate);
     }
 }

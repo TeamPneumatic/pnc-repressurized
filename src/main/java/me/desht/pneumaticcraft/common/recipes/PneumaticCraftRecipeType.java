@@ -17,31 +17,31 @@
 
 package me.desht.pneumaticcraft.common.recipes;
 
-import me.desht.pneumaticcraft.api.crafting.recipe.AssemblyRecipe;
 import me.desht.pneumaticcraft.api.crafting.recipe.FluidMixerRecipe;
 import me.desht.pneumaticcraft.api.crafting.recipe.PneumaticCraftRecipe;
 import me.desht.pneumaticcraft.common.amadron.AmadronOfferManager;
 import me.desht.pneumaticcraft.common.block.entity.FluidMixerBlockEntity;
 import me.desht.pneumaticcraft.common.block.entity.PressureChamberInterfaceBlockEntity;
-import me.desht.pneumaticcraft.common.block.entity.ThermopneumaticProcessingPlantBlockEntity;
-import me.desht.pneumaticcraft.common.core.ModRecipeTypes;
+import me.desht.pneumaticcraft.common.block.entity.RefineryControllerBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.ThermoPlantBlockEntity;
 import me.desht.pneumaticcraft.common.fluid.FuelRegistry;
 import me.desht.pneumaticcraft.common.heat.BlockHeatProperties;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketClearRecipeCache;
 import me.desht.pneumaticcraft.common.recipes.machine.AssemblyRecipeImpl;
 import me.desht.pneumaticcraft.common.recipes.machine.HeatFrameCoolingRecipeImpl;
+import me.desht.pneumaticcraft.common.registry.ModRecipeTypes;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.profiling.ProfilerFiller;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.registries.RegistryObject;
-import net.minecraftforge.server.ServerLifecycleHooks;
+import net.neoforged.neoforge.server.ServerLifecycleHooks;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -54,7 +54,7 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 public class PneumaticCraftRecipeType<T extends PneumaticCraftRecipe> implements RecipeType<T> {
     private static CacheReloadListener cacheReloadListener;
 
-    private final Map<ResourceLocation, T> cachedRecipes = new HashMap<>();
+    private final Map<ResourceLocation, RecipeHolder<T>> cachedRecipes = new HashMap<>();
     private final String typeName;
 
     public PneumaticCraftRecipeType(String name) {
@@ -66,14 +66,14 @@ public class PneumaticCraftRecipeType<T extends PneumaticCraftRecipe> implements
         return typeName;
     }
 
-    public Map<ResourceLocation, T> getRecipes(Level world) {
-        if (world == null) {
+    public Map<ResourceLocation, RecipeHolder<T>> getRecipeMap(Level level) {
+        if (level == null) {
             // we should pretty much always have a world, but use the overworld as a fallback
             MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
             if (server != null) {
-                world = server.getLevel(Level.OVERWORLD);
+                level = server.getLevel(Level.OVERWORLD);
             }
-            if (world == null) {
+            if (level == null) {
                 // still no world?  oh well
                 Log.error("detected someone trying to get recipes for %s with no world available - returning empty recipe list", this);
                 return Collections.emptyMap();
@@ -81,17 +81,22 @@ public class PneumaticCraftRecipeType<T extends PneumaticCraftRecipe> implements
         }
 
         if (cachedRecipes.isEmpty()) {
-            RecipeManager recipeManager = world.getRecipeManager();
-            List<T> recipes = recipeManager.getRecipesFor(this, PneumaticCraftRecipe.DummyIInventory.getInstance(), world);
-            recipes.forEach(recipe -> cachedRecipes.put(recipe.getId(), recipe));
+            RecipeManager recipeManager = level.getRecipeManager();
+            List<RecipeHolder<T>> recipes = recipeManager.getRecipesFor(this, PneumaticCraftRecipe.DummyIInventory.getInstance(), level);
+            recipes.forEach(recipe -> cachedRecipes.put(recipe.id(), recipe));
 
             if (this == ModRecipeTypes.ASSEMBLY_DRILL_LASER.get()) {
-                Collection<AssemblyRecipe> drillRecipes = ModRecipeTypes.getRecipes(world, ModRecipeTypes.ASSEMBLY_DRILL);
-                Collection<AssemblyRecipe> laserRecipes = ModRecipeTypes.getRecipes(world, ModRecipeTypes.ASSEMBLY_LASER);
+
+                var drillRecipes = level.getRecipeManager().getAllRecipesFor(ModRecipeTypes.ASSEMBLY_DRILL.get());
+                var laserRecipes = level.getRecipeManager().getAllRecipesFor(ModRecipeTypes.ASSEMBLY_LASER.get());
                 //noinspection unchecked
-                AssemblyRecipeImpl.calculateAssemblyChain(drillRecipes, laserRecipes).forEach((id, recipe) -> cachedRecipes.put(id, (T) recipe));
+                AssemblyRecipeImpl.calculateAssemblyChain(drillRecipes, laserRecipes)
+                        .forEach((id, recipe) -> cachedRecipes.put(id, (RecipeHolder<T>) recipe));
             } else if (this == ModRecipeTypes.FLUID_MIXER.get()) {
-                List<FluidMixerRecipe> l = recipes.stream().filter(r -> r instanceof FluidMixerRecipe).map(r -> (FluidMixerRecipe)r).toList();
+                List<FluidMixerRecipe> l = recipes.stream()
+                        .filter(r -> r.value() instanceof FluidMixerRecipe)
+                        .map(r -> (FluidMixerRecipe)r.value())
+                        .toList();
                 FluidMixerBlockEntity.cacheRecipeFluids(l);
             }
         }
@@ -99,18 +104,27 @@ public class PneumaticCraftRecipeType<T extends PneumaticCraftRecipe> implements
         return cachedRecipes;
     }
 
-    public Stream<T> stream(Level world) {
-        return getRecipes(world).values().stream();
+    public Collection<RecipeHolder<T>> allRecipeHolders(Level level) {
+        return Collections.unmodifiableCollection(getRecipeMap(level).values());
     }
 
-    public T findFirst(Level world, Predicate<T> predicate) {
-        return stream(world).filter(predicate).findFirst().orElse(null);
+    public Collection<T> allRecipes(Level level) {
+        return getRecipeMap(level).values().stream().map(RecipeHolder::value).toList();
     }
 
-    public T getRecipe(Level world, ResourceLocation recipeId) {
-        return getRecipes(world).get(recipeId);
+    public Stream<RecipeHolder<T>> stream(Level level) {
+        return getRecipeMap(level).values().stream();
     }
 
+    public Optional<RecipeHolder<T>> findFirst(Level level, Predicate<T> predicate) {
+        return stream(level)
+                .filter(holder -> predicate.test(holder.value()))
+                .findFirst();
+    }
+
+    public Optional<RecipeHolder<T>> getRecipe(Level level, ResourceLocation recipeId) {
+        return Optional.ofNullable(getRecipeMap(level).get(recipeId));
+    }
 
     public static CacheReloadListener getCacheReloadListener() {
         if (cacheReloadListener == null) {
@@ -120,7 +134,7 @@ public class PneumaticCraftRecipeType<T extends PneumaticCraftRecipe> implements
     }
 
     public static void clearCachedRecipes() {
-        for (RegistryObject<RecipeType<?>> type : ModRecipeTypes.RECIPE_TYPES.getEntries()) {
+        for (var type : ModRecipeTypes.RECIPE_TYPES.getEntries()) {
             if (type.get() instanceof PneumaticCraftRecipeType<?> pncrType) {
                 pncrType.cachedRecipes.clear();
             }
@@ -129,11 +143,13 @@ public class PneumaticCraftRecipeType<T extends PneumaticCraftRecipe> implements
         HeatFrameCoolingRecipeImpl.cacheMaxThresholdTemp(Collections.emptyList());  // clear the cached temp
         FluidMixerBlockEntity.clearCachedFluids();
         PressureChamberInterfaceBlockEntity.clearCachedItems();
-        ThermopneumaticProcessingPlantBlockEntity.clearCachedItemsAndFluids();
+        ThermoPlantBlockEntity.clearCachedItemsAndFluids();
+        RefineryControllerBlockEntity.clearCachedFluids();
         AmadronOfferManager.getInstance().rebuildRequired();
         FuelRegistry.getInstance().clearCachedFuelFluids();
         BlockHeatProperties.getInstance().clear();
-        RecipeCache.clearAll();
+        VanillaRecipeCache.clearAll();
+        RecipeCaches.clearAll();
     }
 
     public static class CacheReloadListener implements PreparableReloadListener {
@@ -142,7 +158,7 @@ public class PneumaticCraftRecipeType<T extends PneumaticCraftRecipe> implements
             return CompletableFuture.runAsync(() -> {
                 clearCachedRecipes();
                 if (ServerLifecycleHooks.getCurrentServer() != null) {
-                    NetworkHandler.sendToAll(new PacketClearRecipeCache());
+                    NetworkHandler.sendToAll(PacketClearRecipeCache.INSTANCE);
                 }
             }, gameExecutor).thenCompose(stage::wait);
         }

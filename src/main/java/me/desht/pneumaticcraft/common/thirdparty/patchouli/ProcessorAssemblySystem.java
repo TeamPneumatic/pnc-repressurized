@@ -18,8 +18,8 @@
 package me.desht.pneumaticcraft.common.thirdparty.patchouli;
 
 import me.desht.pneumaticcraft.api.crafting.recipe.AssemblyRecipe;
-import me.desht.pneumaticcraft.common.core.ModRecipeTypes;
 import me.desht.pneumaticcraft.common.item.AssemblyProgramItem;
+import me.desht.pneumaticcraft.common.registry.ModRecipeTypes;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -37,13 +37,13 @@ public class ProcessorAssemblySystem implements IComponentProcessor {
     @Override
     public void setup(Level level, IVariableProvider iVariableProvider) {
         ResourceLocation recipeId = new ResourceLocation(iVariableProvider.get("recipe").asString());
-        this.recipe = ModRecipeTypes.ASSEMBLY_DRILL_LASER.get().getRecipe(Minecraft.getInstance().level, recipeId);
-        if (recipe == null) {
-            this.recipe = ModRecipeTypes.ASSEMBLY_DRILL.get().getRecipe(Minecraft.getInstance().level, recipeId);
-            if (recipe == null) {
-                this.recipe = ModRecipeTypes.ASSEMBLY_LASER.get().getRecipe(Minecraft.getInstance().level, recipeId);
-            }
-        }
+
+        ModRecipeTypes.ASSEMBLY_DRILL_LASER.get().getRecipe(Minecraft.getInstance().level, recipeId)
+                .ifPresentOrElse(h -> recipe = h.value(),
+                        () -> ModRecipeTypes.ASSEMBLY_DRILL.get().getRecipe(Minecraft.getInstance().level, recipeId)
+                                .ifPresentOrElse(h -> recipe = h.value(),
+                                        () -> ModRecipeTypes.ASSEMBLY_LASER.get().getRecipe(Minecraft.getInstance().level, recipeId)
+                                                .ifPresent(h -> recipe = h.value())));
     }
 
     @Override

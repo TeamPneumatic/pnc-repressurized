@@ -22,13 +22,13 @@ import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.common.drone.IDroneBase;
 import me.desht.pneumaticcraft.common.drone.progwidgets.IItemPickupWidget;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetAreaItemBase;
-import me.desht.pneumaticcraft.common.util.IOHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.items.ItemHandlerHelper;
 
 import java.util.EnumSet;
 import java.util.List;
@@ -70,7 +70,7 @@ public class DroneEntityAIPickupItems extends Goal {
             }
             ItemStack stack = ((ItemEntity) ent).getItem();
             if (itemPickupWidget.isItemValidForFilters(stack)) {
-                if (IOHelper.insert(drone, stack, null, true).isEmpty()) {
+                if (ItemHandlerHelper.insertItem(drone.getInv(), stack, true).isEmpty()) {
                     return tryMoveToItem(ent);
                 } else {
                     drone.getDebugger().addEntry("pneumaticcraft.gui.progWidget.inventoryImport.debug.filledToMax");
@@ -131,7 +131,7 @@ public class DroneEntityAIPickupItems extends Goal {
         ItemStack stack = itemEntity.getItem();
         int stackSize = stack.getCount();
 
-        ItemStack remainder = IOHelper.insert(drone, stack, null, false);
+        ItemStack remainder = ItemHandlerHelper.insertItem(drone.getInv(), stack, false);
         int collected = stackSize - remainder.getCount();
         if (collected > 0) {
             drone.onItemPickupEvent(itemEntity, collected);

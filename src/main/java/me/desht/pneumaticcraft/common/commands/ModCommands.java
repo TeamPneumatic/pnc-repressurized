@@ -60,8 +60,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.DeferredRegister;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
@@ -77,7 +77,7 @@ import static net.minecraft.commands.arguments.coordinates.BlockPosArgument.getL
 public class ModCommands {
     public static final DeferredRegister<ArgumentTypeInfo<?, ?>> COMMAND_ARGUMENT_TYPES
             = DeferredRegister.create(Registries.COMMAND_ARGUMENT_TYPE, Names.MOD_ID);
-    private static final RegistryObject<SingletonArgumentInfo<ModCommands.VarnameType>> VARNAME_COMMAND_ARGUMENT_TYPE
+    private static final DeferredHolder<ArgumentTypeInfo<?, ?>, SingletonArgumentInfo<VarnameType>> VARNAME_COMMAND_ARGUMENT_TYPE
             = COMMAND_ARGUMENT_TYPES.register("varname",
             () -> ArgumentTypeInfos.registerByClass(ModCommands.VarnameType.class, SingletonArgumentInfo.contextFree(VarnameType::new)));
     private static final ResourceLocation UNKNOWN_ITEM = RL("unknown");
@@ -187,12 +187,12 @@ public class ModCommands {
     private static int amadroneDeliver(CommandSourceStack source, BlockPos toPos, BlockPos fromPos) {
         BlockEntity te = source.getLevel().getBlockEntity(fromPos);
 
-        int status = IOHelper.getInventoryForTE(te).map(inv -> {
+        int status = IOHelper.getInventoryForBlock(te).map(inv -> {
             List<ItemStack> deliveredStacks = new ArrayList<>();
             for (int i = 0; i < inv.getSlots() && deliveredStacks.size() < 36; i++) {
                 if (!inv.getStackInSlot(i).isEmpty()) deliveredStacks.add(inv.getStackInSlot(i));
             }
-            if (deliveredStacks.size() > 0) {
+            if (!deliveredStacks.isEmpty()) {
                 GlobalPos gPos = GlobalPosHelper.makeGlobalPos(source.getLevel(), toPos);
                 PneumaticRegistry.getInstance().getDroneRegistry().deliverItemsAmazonStyle(gPos, deliveredStacks.toArray(new ItemStack[0]));
                 source.sendSuccess(() -> xlate("pneumaticcraft.command.deliverAmazon.success", PneumaticCraftUtils.posToString(fromPos), PneumaticCraftUtils.posToString(toPos)), false);
@@ -296,8 +296,8 @@ public class ModCommands {
                 if (id != null) {
                     PneumaticRegistry.getInstance().getMiscHelpers().syncGlobalVariable(ctx.getSource().getPlayerOrException(), varName);
                 } else {
-                    NetworkHandler.sendToAll(new PacketSetGlobalVariable(varName, (BlockPos) null));
-                    NetworkHandler.sendToAll(new PacketSetGlobalVariable(varName, ItemStack.EMPTY));
+                    NetworkHandler.sendToAll(PacketSetGlobalVariable.forPos(varName, null));
+                    NetworkHandler.sendToAll(PacketSetGlobalVariable.forItem(varName, ItemStack.EMPTY));
                 }
                 source.sendSuccess(() -> xlate("pneumaticcraft.command.globalVariable.delete", varName), true);
             }

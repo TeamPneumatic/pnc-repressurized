@@ -20,12 +20,12 @@ package me.desht.pneumaticcraft.common.block.entity;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.item.ISpawnerCoreStats;
 import me.desht.pneumaticcraft.api.pressure.PressureTier;
-import me.desht.pneumaticcraft.common.core.ModBlockEntities;
-import me.desht.pneumaticcraft.common.core.ModBlocks;
-import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.inventory.SpawnerExtractorMenu;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
+import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
+import me.desht.pneumaticcraft.common.registry.ModBlocks;
+import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.mixin.accessors.BaseSpawnerAccess;
 import net.minecraft.core.BlockPos;
@@ -58,9 +58,9 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.entity.SpawnerBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
-import net.minecraftforge.common.util.FakePlayer;
-import net.minecraftforge.event.ForgeEventFactory;
-import net.minecraftforge.items.IItemHandler;
+import net.neoforged.neoforge.common.util.FakePlayer;
+import net.neoforged.neoforge.event.EventHooks;
+import net.neoforged.neoforge.items.IItemHandler;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -89,7 +89,12 @@ public class SpawnerExtractorBlockEntity extends AbstractAirHandlingBlockEntity 
     private int spawnFailures;
 
     public SpawnerExtractorBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.SPAWNER_EXTRACTOR.get(), pos, state, PressureTier.TIER_ONE, PneumaticValues.VOLUME_SPAWNER_EXTRACTOR, 4);
+        super(ModBlockEntityTypes.SPAWNER_EXTRACTOR.get(), pos, state, PressureTier.TIER_ONE, PneumaticValues.VOLUME_SPAWNER_EXTRACTOR, 4);
+    }
+
+    @Override
+    public boolean hasItemCapability() {
+        return false;
     }
 
     @Override
@@ -193,7 +198,7 @@ public class SpawnerExtractorBlockEntity extends AbstractAirHandlingBlockEntity 
             entity.moveTo(entity.getX(), entity.getY(), entity.getZ(), level.random.nextFloat() * 360.0F, 0.0F);
             if (entity instanceof Mob mobentity) {
                 if (nbt.size() == 1 && nbt.contains("id", Tag.TAG_STRING)) {
-                    ForgeEventFactory.onFinalizeSpawn(mobentity, serverworld, serverworld.getCurrentDifficultyAt(getPosition()), MobSpawnType.SPAWNER, null, null);
+                    EventHooks.onFinalizeSpawn(mobentity, serverworld, serverworld.getCurrentDifficultyAt(getPosition()), MobSpawnType.SPAWNER, null, null);
                     // note: "pneumaticcraft:defender" tag is added in TileEntityVacuumTrap.Listener.onMobSpawn()
                     if (level.getDifficulty() == Difficulty.HARD) {
                         getRandomEffects(level.random).forEach(effect -> mobentity.addEffect(new MobEffectInstance(effect, Integer.MAX_VALUE, 2)));
@@ -304,7 +309,7 @@ public class SpawnerExtractorBlockEntity extends AbstractAirHandlingBlockEntity 
     }
 
     @Override
-    public IItemHandler getPrimaryInventory() {
+    public IItemHandler getItemHandler(@org.jetbrains.annotations.Nullable Direction dir) {
         return null;
     }
 
@@ -322,11 +327,6 @@ public class SpawnerExtractorBlockEntity extends AbstractAirHandlingBlockEntity 
     @Override
     public AbstractContainerMenu createMenu(int windowId, Inventory inv, Player player) {
         return new SpawnerExtractorMenu(windowId, inv, worldPosition);
-    }
-
-    @Override
-    public AABB getRenderBoundingBox() {
-        return new AABB(worldPosition.getX(), worldPosition.getY(), worldPosition.getZ(), worldPosition.getX() + 1, worldPosition.getY() + 2, worldPosition.getZ() + 1);
     }
 
     public void updateMode() {

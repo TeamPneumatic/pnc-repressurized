@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.common.thirdparty.botania;
 
-import me.desht.pneumaticcraft.common.core.ModBlocks;
+import me.desht.pneumaticcraft.common.registry.ModBlocks;
 import net.minecraft.world.item.DyeColor;
 import vazkii.botania.api.BotaniaAPI;
 

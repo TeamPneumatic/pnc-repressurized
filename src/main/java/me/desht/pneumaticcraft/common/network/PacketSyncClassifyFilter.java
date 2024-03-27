@@ -3,57 +3,45 @@ package me.desht.pneumaticcraft.common.network;
 import me.desht.pneumaticcraft.common.item.ClassifyFilterItem;
 import me.desht.pneumaticcraft.common.item.ClassifyFilterItem.FilterCondition;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.network.NetworkEvent;
+import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 
 import java.util.EnumSet;
-import java.util.Set;
-import java.util.function.Supplier;
+
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 /**
  * Received on: SERVER
  * Sent by Processing Filter GUI to update the filter settings on a held Processing Filter item
  */
-public class PacketSyncClassifyFilter {
-    private final boolean matchAll;
-    private final Set<FilterCondition> conditions;
-    private final InteractionHand handIn;
+public record PacketSyncClassifyFilter(boolean matchAll, EnumSet<FilterCondition> conditions, InteractionHand hand) implements CustomPacketPayload {
+    public static final ResourceLocation ID = RL("sync_classify_filter");
 
-    public PacketSyncClassifyFilter(boolean matchAll, Set<FilterCondition> conditions, InteractionHand handIn) {
-        this.matchAll = matchAll;
-        this.conditions = conditions;
-        this.handIn = handIn;
+    public static PacketSyncClassifyFilter fromNetwork(FriendlyByteBuf buf) {
+        return new PacketSyncClassifyFilter(buf.readBoolean(), buf.readEnumSet(FilterCondition.class), buf.readEnum(InteractionHand.class));
     }
 
-    public PacketSyncClassifyFilter(FriendlyByteBuf buf) {
-        this.matchAll = buf.readBoolean();
-        int n = buf.readVarInt();
-        this.conditions = EnumSet.noneOf(FilterCondition.class);
-        for (int i = 0; i < n; i++) {
-            conditions.add(buf.readEnum(FilterCondition.class));
-        }
-        this.handIn = buf.readBoolean() ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND;
-    }
-
-    public void toBytes(FriendlyByteBuf buf) {
+    @Override
+    public void write(FriendlyByteBuf buf) {
         buf.writeBoolean(matchAll);
-        buf.writeVarInt(conditions.size());
-        conditions.forEach(buf::writeEnum);
-        buf.writeBoolean(handIn == InteractionHand.MAIN_HAND);
+        buf.writeEnumSet(conditions, FilterCondition.class);
+        buf.writeEnum(hand);
     }
 
-    public void handle(Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> {
-            ServerPlayer player = ctx.get().getSender();
-            if (player != null) {
-                ItemStack stack = player.getItemInHand(handIn);
+    @Override
+    public ResourceLocation id() {
+        return ID;
+    }
+
+    public static void handle(PacketSyncClassifyFilter message, PlayPayloadContext ctx) {
+        ctx.player().ifPresent(player -> ctx.workHandler().submitAsync(() -> {
+                ItemStack stack = player.getItemInHand(message.hand());
                 if (stack.getItem() instanceof ClassifyFilterItem) {
-                    new ClassifyFilterItem.FilterSettings(matchAll, conditions).save(stack);
+                    new ClassifyFilterItem.FilterSettings(message.matchAll(), message.conditions()).save(stack);
                 }
-            }
-        });
-        ctx.get().setPacketHandled(true);
+        }));
     }
 }

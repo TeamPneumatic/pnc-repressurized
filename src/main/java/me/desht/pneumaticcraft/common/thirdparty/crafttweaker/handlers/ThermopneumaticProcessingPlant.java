@@ -28,23 +28,30 @@ import com.blamejared.crafttweaker.api.recipe.manager.base.IRecipeManager;
 import com.blamejared.crafttweaker_annotations.annotations.Document;
 import me.desht.pneumaticcraft.api.crafting.TemperatureRange;
 import me.desht.pneumaticcraft.api.crafting.recipe.ThermoPlantRecipe;
-import me.desht.pneumaticcraft.common.core.ModRecipeTypes;
 import me.desht.pneumaticcraft.common.recipes.machine.ThermoPlantRecipeImpl;
+import me.desht.pneumaticcraft.common.registry.ModRecipeTypes;
 import me.desht.pneumaticcraft.common.thirdparty.crafttweaker.CTUtils;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeType;
 import org.openzen.zencode.java.ZenCodeType;
+
+import java.util.Optional;
 
 @Document("mods/PneumaticCraft/ThermopneumaticProcessingPlant")
 @ZenCodeType.Name("mods.pneumaticcraft.thermopneumaticprocessingplant")
 @ZenRegister
 public class ThermopneumaticProcessingPlant implements IRecipeManager<ThermoPlantRecipe> {
     @ZenCodeType.Method
-    public void addRecipe(String name, CTFluidIngredient inputFluid, IIngredient inputItem, IFluidStack outputFluid, IItemStack outputItem, float pressure, int minTemp, @ZenCodeType.OptionalInt(Integer.MAX_VALUE) int maxTemp, @ZenCodeType.OptionalFloat(1f) float recipeSpeed, @ZenCodeType.OptionalFloat(1f) float airUseMultiplier, @ZenCodeType.OptionalBoolean() boolean exothermic) {
+    public void addRecipe(String name, CTFluidIngredient inputFluid, IIngredient inputItem, IFluidStack outputFluid, IItemStack outputItem,
+                          float pressure, int minTemp, @ZenCodeType.OptionalInt(Integer.MAX_VALUE) int maxTemp,
+                          @ZenCodeType.OptionalFloat(1f) float recipeSpeed, @ZenCodeType.OptionalFloat(1f) float airUseMultiplier,
+                          @ZenCodeType.OptionalBoolean() boolean exothermic) {
         CraftTweakerAPI.apply(new ActionAddRecipe<>(this,
-                new ThermoPlantRecipeImpl(new ResourceLocation("crafttweaker", fixRecipeName(name)),
-                        CTUtils.toFluidIngredient(inputFluid),
-                        inputItem.asVanillaIngredient(),
+                new RecipeHolder<>(new ResourceLocation("crafttweaker", fixRecipeName(name)),
+                new ThermoPlantRecipeImpl(
+                        Optional.ofNullable(CTUtils.toFluidIngredient(inputFluid)),
+                        Optional.ofNullable(inputItem.asVanillaIngredient()),
                         outputFluid.getImmutableInternal(),
                         outputItem.getImmutableInternal(),
                         TemperatureRange.of(minTemp, maxTemp),
@@ -52,6 +59,7 @@ public class ThermopneumaticProcessingPlant implements IRecipeManager<ThermoPlan
                         recipeSpeed,
                         airUseMultiplier,
                         exothermic)
+                )
         ));
     }
 

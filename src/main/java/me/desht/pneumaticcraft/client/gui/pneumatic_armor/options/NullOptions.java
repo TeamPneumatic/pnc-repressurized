@@ -84,7 +84,7 @@ public class NullOptions implements IOptionPage {
     }
 
     @Override
-    public boolean mouseScrolled(double x, double y, double dir) {
+    public boolean mouseScrolled(double x, double y, double dirX, double dirY) {
         return false;
     }
 

@@ -1,6 +1,6 @@
 {
 	"credit": "Made with Blockbench",
-	"parent": "forge:block/default",
+	"parent": "neoforge:block/default",
 	"texture_size": [32, 32],
 	"textures": {
 		"2": "pneumaticcraft:pnc_model/uv_light_box",
@@ -49,10 +49,10 @@
 			"children": [19, 20, 21, 22]
 		}
 	],
-	"loader": "forge:composite",
+	"loader": "neoforge:composite",
 	"children": {
 		"cutout_mipped": {
-			"parent": "forge:block/default",
+			"parent": "neoforge:block/default",
 			"textures": {
 				"2": "pneumaticcraft:pnc_model/uv_light_box",
 				"particle": "pneumaticcraft:pnc_model/uv_light_box"
@@ -278,7 +278,7 @@
 			]
 		},
 		"translucent": {
-			"parent": "forge:block/default",
+			"parent": "neoforge:block/default",
 			"textures": {
 				"2": "pneumaticcraft:pnc_model/uv_light_box",
 				"particle": "pneumaticcraft:pnc_model/uv_light_box"

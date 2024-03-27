@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.common.fluid;
 
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.client.extensions.common.IClientFluidTypeExtensions;
+import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 

@@ -19,7 +19,7 @@ package me.desht.pneumaticcraft.common.thirdparty.cofhcore;
 
 import me.desht.pneumaticcraft.common.thirdparty.IThirdParty;
 import me.desht.pneumaticcraft.lib.ModIds;
-import net.minecraftforge.fml.ModList;
+import net.neoforged.fml.ModList;
 
 public class CoFHCore implements IThirdParty {
     @Override

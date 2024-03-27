@@ -18,22 +18,22 @@
 package me.desht.pneumaticcraft.common.thirdparty.jei;
 
 import me.desht.pneumaticcraft.common.block.entity.UVLightBoxBlockEntity;
-import me.desht.pneumaticcraft.common.core.ModBlocks;
-import me.desht.pneumaticcraft.common.core.ModFluids;
-import me.desht.pneumaticcraft.common.core.ModItems;
+import me.desht.pneumaticcraft.common.registry.ModBlocks;
+import me.desht.pneumaticcraft.common.registry.ModFluids;
+import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.lib.Textures;
 import mezz.jei.api.constants.VanillaTypes;
-import mezz.jei.api.forge.ForgeTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawableAnimated;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
+import mezz.jei.api.neoforge.NeoForgeTypes;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraftforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidStack;
 
 import java.util.Collections;
 import java.util.List;
@@ -58,7 +58,7 @@ public class JEIEtchingTankCategory extends AbstractPNCCategory<JEIEtchingTankCa
         builder.addSlot(RecipeIngredientRole.INPUT, 1, 13)
                 .addIngredients(recipe.input);
         builder.addSlot(RecipeIngredientRole.INPUT, 26, 13)
-                .addIngredients(ForgeTypes.FLUID_STACK, Collections.singletonList(new FluidStack(ModFluids.ETCHING_ACID.get(), 1000)));
+                .addIngredients(NeoForgeTypes.FLUID_STACK, Collections.singletonList(new FluidStack(ModFluids.ETCHING_ACID.get(), 1000)));
         builder.addSlot(RecipeIngredientRole.OUTPUT, 66, 1)
                 .addItemStack(recipe.output);
         builder.addSlot(RecipeIngredientRole.OUTPUT, 66, 25)
@@ -85,6 +85,6 @@ public class JEIEtchingTankCategory extends AbstractPNCCategory<JEIEtchingTankCa
     }
 
     // pseudo-recipe
-    record EtchingTankRecipe(Ingredient input, ItemStack output, ItemStack failed) {
+    public record EtchingTankRecipe(Ingredient input, ItemStack output, ItemStack failed) {
     }
 }

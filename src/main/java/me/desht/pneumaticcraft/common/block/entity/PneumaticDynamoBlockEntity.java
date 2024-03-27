@@ -22,10 +22,11 @@ import me.desht.pneumaticcraft.api.block.PNCBlockStateProperties;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.api.pressure.PressureTier;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
-import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.common.inventory.PneumaticDynamoMenu;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
+import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
+import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -38,11 +39,8 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.energy.IEnergyStorage;
-import net.minecraftforge.items.IItemHandler;
-import org.jetbrains.annotations.NotNull;
+import net.neoforged.neoforge.energy.IEnergyStorage;
+import net.neoforged.neoforge.items.IItemHandler;
 
 import javax.annotation.Nullable;
 
@@ -51,7 +49,6 @@ public class PneumaticDynamoBlockEntity extends AbstractAirHandlingBlockEntity i
         MenuProvider, IHeatExchangingTE {
 
     private final PneumaticEnergyStorage energy = new PneumaticEnergyStorage(100000);
-    private final LazyOptional<IEnergyStorage> energyCap = LazyOptional.of(() -> energy);
 
     @GuiSynced
     private int rfPerTick;
@@ -62,10 +59,9 @@ public class PneumaticDynamoBlockEntity extends AbstractAirHandlingBlockEntity i
     private final RedstoneController<PneumaticDynamoBlockEntity> rsController = new RedstoneController<>(this);
     @GuiSynced
     private final IHeatExchangerLogic heatExchanger = PneumaticRegistry.getInstance().getHeatRegistry().makeHeatExchangerLogic();
-    private final LazyOptional<IHeatExchangerLogic> heatCap = LazyOptional.of(() -> heatExchanger);
 
     public PneumaticDynamoBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.PNEUMATIC_DYNAMO.get(), pos, state, PressureTier.TIER_TWO, PneumaticValues.VOLUME_PNEUMATIC_DYNAMO, 4);
+        super(ModBlockEntityTypes.PNEUMATIC_DYNAMO.get(), pos, state, PressureTier.TIER_TWO, PneumaticValues.VOLUME_PNEUMATIC_DYNAMO, 4);
     }
 
     public int getEfficiency() {
@@ -100,7 +96,7 @@ public class PneumaticDynamoBlockEntity extends AbstractAirHandlingBlockEntity i
 
         BlockEntity receiver = getCachedNeighbor(getRotation());
         if (receiver != null) {
-            receiver.getCapability(ForgeCapabilities.ENERGY, getRotation().getOpposite()).ifPresent(neighborStorage -> {
+            IOHelper.getEnergyStorageForBlock(receiver, getRotation().getOpposite()).ifPresent(neighborStorage -> {
                 int extracted = energy.extractEnergy(rfPerTick * 2, true);
                 int energyPushed = neighborStorage.receiveEnergy(extracted, true);
                 if (energyPushed > 0) {
@@ -126,7 +122,7 @@ public class PneumaticDynamoBlockEntity extends AbstractAirHandlingBlockEntity i
     }
 
     @Override
-    public IItemHandler getPrimaryInventory() {
+    public IItemHandler getItemHandler(@org.jetbrains.annotations.Nullable Direction dir) {
         return null;
     }
 
@@ -138,11 +134,6 @@ public class PneumaticDynamoBlockEntity extends AbstractAirHandlingBlockEntity i
     @Override
     public float getMinWorkingPressure() {
         return PneumaticValues.MIN_PRESSURE_PNEUMATIC_DYNAMO;
-    }
-
-    @Override
-    public LazyOptional<IHeatExchangerLogic> getHeatCap(Direction side) {
-        return heatCap;
     }
 
     public int getRFRate(){
@@ -157,10 +148,9 @@ public class PneumaticDynamoBlockEntity extends AbstractAirHandlingBlockEntity i
         return energy.getEnergyStored();
     }
 
-    @NotNull
     @Override
-    protected LazyOptional<IEnergyStorage> getEnergyCap(Direction side) {
-        return side == getRotation() || side == null ? energyCap : super.getEnergyCap(side);
+    public IEnergyStorage getEnergyHandler(@Nullable Direction dir) {
+        return dir == getRotation() || dir == null ? energy : null;
     }
 
     @Override

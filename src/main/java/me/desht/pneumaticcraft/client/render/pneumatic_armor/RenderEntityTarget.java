@@ -31,7 +31,6 @@ import me.desht.pneumaticcraft.client.render.ModRenderTypes;
 import me.desht.pneumaticcraft.client.render.ProgressBarRenderer;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
-import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.entity.drone.AbstractDroneEntity;
 import me.desht.pneumaticcraft.common.entity.drone.DroneEntity;
 import me.desht.pneumaticcraft.common.entity.drone.ProgrammableControllerEntity;
@@ -40,6 +39,7 @@ import me.desht.pneumaticcraft.common.item.PneumaticArmorItem;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketHackingEntityStart;
 import me.desht.pneumaticcraft.common.network.PacketUpdateDebuggingDrone;
+import me.desht.pneumaticcraft.common.registry.ModSounds;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundSource;
@@ -50,7 +50,7 @@ import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.vehicle.AbstractMinecart;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.client.event.InputEvent;
+import net.neoforged.neoforge.client.event.InputEvent;
 import org.joml.Matrix3f;
 
 import java.util.ArrayList;
@@ -220,7 +220,7 @@ public class RenderEntityTarget {
             Player player = ClientUtils.getClientPlayer();
             IHackableEntity<?> hackable = HackManager.getHackableForEntity(entity, player);
             if (hackable != null && (hackTime == 0 || hackTime > hackable._getHackTime(entity, player)))
-                NetworkHandler.sendToServer(new PacketHackingEntityStart(entity));
+                NetworkHandler.sendToServer(new PacketHackingEntityStart(entity.getId()));
         }
     }
 
@@ -229,14 +229,14 @@ public class RenderEntityTarget {
             DroneDebuggerOptions.clearAreaShowWidgetId();
             Player player = ClientUtils.getClientPlayer();
             if (PneumaticArmorItem.isPlayerDebuggingDrone(player, (AbstractDroneEntity) entity)) {
-                NetworkHandler.sendToServer(new PacketUpdateDebuggingDrone(-1));
+                NetworkHandler.sendToServer(PacketUpdateDebuggingDrone.create(null));
                 player.playSound(ModSounds.SCI_FI.get(), 1.0f, 2.0f);
             } else {
-                if (entity instanceof DroneEntity) {
-                    NetworkHandler.sendToServer(new PacketUpdateDebuggingDrone(entity.getId()));
+                if (entity instanceof DroneEntity drone) {
+                    NetworkHandler.sendToServer(PacketUpdateDebuggingDrone.create(drone));
                     player.playSound(ModSounds.HUD_ENTITY_LOCK.get(), 1.0f, 2.0f);
-                } else if (entity instanceof ProgrammableControllerEntity) {
-                    NetworkHandler.sendToServer(new PacketUpdateDebuggingDrone(((ProgrammableControllerEntity) entity).getControllerPos()));
+                } else if (entity instanceof ProgrammableControllerEntity pce) {
+                    NetworkHandler.sendToServer(PacketUpdateDebuggingDrone.create(pce.getController()));
                     player.playSound(ModSounds.HUD_ENTITY_LOCK.get(), 1.0f, 2.0f);
                 }
             }
@@ -253,7 +253,7 @@ public class RenderEntityTarget {
 
     public boolean scroll(InputEvent.MouseScrollingEvent event) {
         if (isInitialized() && isPlayerLookingAtTarget()) {
-            return stat.mouseScrolled(event.getMouseX(), event.getMouseY(), event.getScrollDelta());
+            return stat.mouseScrolled(event.getMouseX(), event.getMouseY(), event.getScrollDeltaX(), event.getScrollDeltaY());
         }
         return false;
     }

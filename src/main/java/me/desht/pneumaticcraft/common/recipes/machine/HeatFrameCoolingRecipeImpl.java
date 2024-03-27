@@ -17,18 +17,17 @@
 
 package me.desht.pneumaticcraft.common.recipes.machine;
 
-import com.google.gson.JsonObject;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import me.desht.pneumaticcraft.api.crafting.recipe.HeatFrameCoolingRecipe;
-import me.desht.pneumaticcraft.common.core.ModRecipeSerializers;
-import me.desht.pneumaticcraft.common.core.ModRecipeTypes;
+import me.desht.pneumaticcraft.common.registry.ModRecipeSerializers;
+import me.desht.pneumaticcraft.common.registry.ModRecipeTypes;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.GsonHelper;
+import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.*;
 import net.minecraft.world.level.Level;
 
-import javax.annotation.Nullable;
 import java.util.Collection;
 
 public class HeatFrameCoolingRecipeImpl extends HeatFrameCoolingRecipe {
@@ -41,13 +40,11 @@ public class HeatFrameCoolingRecipeImpl extends HeatFrameCoolingRecipe {
     private final float bonusMultiplier;
     private final float bonusLimit;
 
-    public HeatFrameCoolingRecipeImpl(ResourceLocation id, Ingredient input, int temperature, ItemStack output) {
-        this(id, input, temperature, output, 0f, 0f);
+    public HeatFrameCoolingRecipeImpl(Ingredient input, int temperature, ItemStack output) {
+        this(input, temperature, output, 0f, 0f);
     }
 
-    public HeatFrameCoolingRecipeImpl(ResourceLocation id, Ingredient input, int temperature, ItemStack output, float bonusMultiplier, float bonusLimit) {
-        super(id);
-
+    public HeatFrameCoolingRecipeImpl(Ingredient input, int temperature, ItemStack output, float bonusMultiplier, float bonusLimit) {
         this.input = input;
         this.temperature = temperature;
         this.output = output;
@@ -86,15 +83,6 @@ public class HeatFrameCoolingRecipeImpl extends HeatFrameCoolingRecipe {
     }
 
     @Override
-    public void write(FriendlyByteBuf buffer) {
-        input.toNetwork(buffer);
-        buffer.writeInt(temperature);
-        buffer.writeItem(output);
-        buffer.writeFloat(bonusMultiplier);
-        buffer.writeFloat(bonusLimit);
-    }
-
-    @Override
     public RecipeSerializer<?> getSerializer() {
         return ModRecipeSerializers.HEAT_FRAME_COOLING.get();
     }
@@ -104,10 +92,10 @@ public class HeatFrameCoolingRecipeImpl extends HeatFrameCoolingRecipe {
         return ModRecipeTypes.HEAT_FRAME_COOLING.get();
     }
 
-    public static <T extends Recipe<?>> void cacheMaxThresholdTemp(Collection<T> recipes) {
+    public static <T extends Recipe<?>> void cacheMaxThresholdTemp(Collection<RecipeHolder<T>> recipes) {
         maxThresholdTemp = Integer.MIN_VALUE;
-        for (T recipe : recipes) {
-            if (recipe instanceof HeatFrameCoolingRecipe hfcr) {
+        for (var holder : recipes) {
+            if (holder.value() instanceof HeatFrameCoolingRecipe hfcr) {
                 if (hfcr.getThresholdTemperature() > maxThresholdTemp) {
                     maxThresholdTemp = hfcr.getThresholdTemperature();
                 }
@@ -124,44 +112,51 @@ public class HeatFrameCoolingRecipeImpl extends HeatFrameCoolingRecipe {
 
     public static class Serializer<T extends HeatFrameCoolingRecipe> implements RecipeSerializer<T> {
         private final IFactory<T> factory;
+        private final Codec<T> codec;
 
         public Serializer(IFactory<T> factory) {
             this.factory = factory;
+
+            codec = RecordCodecBuilder.create(inst -> inst.group(
+                    Ingredient.CODEC_NONEMPTY.fieldOf("input")
+                            .forGetter(HeatFrameCoolingRecipe::getInput),
+                    ExtraCodecs.NON_NEGATIVE_INT.fieldOf("temperature")
+                            .forGetter(HeatFrameCoolingRecipe::getThresholdTemperature),
+                    ItemStack.CODEC.fieldOf("output")
+                            .forGetter(HeatFrameCoolingRecipe::getOutput),
+                    Codec.floatRange(0f, Float.MAX_VALUE).optionalFieldOf("bonusMultiplier", 0f)
+                            .forGetter(HeatFrameCoolingRecipe::getBonusMultiplier),
+                    Codec.floatRange(0f, Float.MAX_VALUE).optionalFieldOf("bonusLimit", 0f)
+                            .forGetter(HeatFrameCoolingRecipe::getBonusLimit)
+            ).apply(inst, factory::create));
         }
 
         @Override
-        public T fromJson(ResourceLocation recipeId, JsonObject json) {
-            Ingredient input = Ingredient.fromJson(json.get("input"));
-            ItemStack result = ShapedRecipe.itemStackFromJson(GsonHelper.getAsJsonObject(json, "result"));
-            int maxTemp = GsonHelper.getAsInt(json,"max_temp", 273);
-            float bonusMultiplier = 0f;
-            float bonusLimit = 0f;
-            if (json.has("bonus_output")) {
-                JsonObject bonus = json.getAsJsonObject("bonus_output");
-                bonusMultiplier = GsonHelper.getAsFloat(bonus, "multiplier");
-                bonusLimit = GsonHelper.getAsFloat(bonus, "limit");
-            }
-            return factory.create(recipeId, input, maxTemp, result, bonusMultiplier, bonusLimit);
+        public Codec<T> codec() {
+            return codec;
         }
 
-        @Nullable
         @Override
-        public T fromNetwork(ResourceLocation recipeId, FriendlyByteBuf buffer) {
+        public T fromNetwork(FriendlyByteBuf buffer) {
             Ingredient input = Ingredient.fromNetwork(buffer);
             int temperature = buffer.readInt();
             ItemStack out = buffer.readItem();
             float bonusMultiplier = buffer.readFloat();
             float bonusLimit = buffer.readFloat();
-            return factory.create(recipeId, input, temperature, out, bonusMultiplier, bonusLimit);
+            return factory.create(input, temperature, out, bonusMultiplier, bonusLimit);
         }
 
         @Override
         public void toNetwork(FriendlyByteBuf buffer, T recipe) {
-            recipe.write(buffer);
+            recipe.getInput().toNetwork(buffer);
+            buffer.writeInt(recipe.getThresholdTemperature());
+            buffer.writeItem(recipe.getOutput());
+            buffer.writeFloat(recipe.getBonusMultiplier());
+            buffer.writeFloat(recipe.getBonusLimit());
         }
 
         public interface IFactory<T extends HeatFrameCoolingRecipe> {
-            T create(ResourceLocation id, Ingredient input, int temperature, ItemStack out, float bonusMultiplier, float bonusLimit);
+            T create(Ingredient input, int temperature, ItemStack out, float bonusMultiplier, float bonusLimit);
         }
     }
 }

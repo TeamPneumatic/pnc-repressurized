@@ -1,24 +1,25 @@
 {
   "type": "pneumaticcraft:compressor_upgrade_crafting",
-  "category": "misc",
-  "key": {
-    "C": {
-      "item": "pneumaticcraft:air_compressor"
+  "value": {
+    "category": "misc",
+    "key": {
+      "C": {
+        "item": "pneumaticcraft:air_compressor"
+      },
+      "I": {
+        "tag": "forge:ingots/compressed_iron"
+      },
+      "T": {
+        "item": "pneumaticcraft:advanced_pressure_tube"
+      }
     },
-    "I": {
-      "tag": "forge:ingots/compressed_iron"
-    },
-    "T": {
-      "item": "pneumaticcraft:advanced_pressure_tube"
+    "pattern": [
+      "III",
+      "I T",
+      "ICI"
+    ],
+    "result": {
+      "item": "pneumaticcraft:advanced_air_compressor"
     }
-  },
-  "pattern": [
-    "III",
-    "I T",
-    "ICI"
-  ],
-  "result": {
-    "item": "pneumaticcraft:advanced_air_compressor"
-  },
-  "show_notification": true
+  }
 }

@@ -19,11 +19,11 @@ package me.desht.pneumaticcraft.common.block.entity;
 
 import me.desht.pneumaticcraft.api.item.ISpawnerCoreStats;
 import me.desht.pneumaticcraft.api.pressure.PressureTier;
-import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.inventory.PressurizedSpawnerMenu;
 import me.desht.pneumaticcraft.common.item.SpawnerCoreItem;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
+import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.BlockPos;
@@ -43,12 +43,11 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.LevelEvent;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.phys.AABB;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.event.ForgeEventFactory;
-import net.minecraftforge.items.IItemHandler;
+import net.neoforged.neoforge.event.EventHooks;
+import net.neoforged.neoforge.items.IItemHandler;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class PressurizedSpawnerBlockEntity extends AbstractAirHandlingBlockEntity implements
@@ -59,7 +58,6 @@ public class PressurizedSpawnerBlockEntity extends AbstractAirHandlingBlockEntit
     private static final int MAX_NEARBY_ENTITIES = 32;
 
     private final SpawnerCoreItem.SpawnerCoreItemHandler inventory = new SpawnerCoreItem.SpawnerCoreItemHandler(this);
-    private final LazyOptional<IItemHandler> invCap = LazyOptional.of(() -> inventory);
     @GuiSynced
     public VacuumTrapBlockEntity.Problems problem = VacuumTrapBlockEntity.Problems.OK;
     @GuiSynced
@@ -70,7 +68,7 @@ public class PressurizedSpawnerBlockEntity extends AbstractAirHandlingBlockEntit
     private final RangeManager rangeManager = new RangeManager(this, 0x60400040).withCustomExtents(this::buildCustomExtents);
 
     public PressurizedSpawnerBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.PRESSURIZED_SPAWNER.get(), pos, state, PressureTier.TIER_TWO, PneumaticValues.VOLUME_PRESSURIZED_SPAWNER, 4);
+        super(ModBlockEntityTypes.PRESSURIZED_SPAWNER.get(), pos, state, PressureTier.TIER_TWO, PneumaticValues.VOLUME_PRESSURIZED_SPAWNER, 4);
     }
 
     @Override
@@ -116,10 +114,10 @@ public class PressurizedSpawnerBlockEntity extends AbstractAirHandlingBlockEntit
         }
     }
 
-    private AABB buildCustomExtents() {
+    private BoundingBox buildCustomExtents() {
         // following vanilla spawner behaviour of constrained Y-value (-1 .. +2)
-        AABB aabb = new AABB(getBlockPos(), getBlockPos());
-        return aabb.inflate(getRange(), 0, getRange()).expandTowards(0, 2, 0).expandTowards(0, -1, 0);
+        BoundingBox box = new BoundingBox(getBlockPos()).inflatedBy(getRange());
+        return new BoundingBox(box.minX(), box.minY() - 1, box.minZ(), box.maxX(), box.maxY() + 2, box.maxZ());
     }
 
     private boolean trySpawnSomething(ISpawnerCoreStats stats) {
@@ -132,10 +130,10 @@ public class PressurizedSpawnerBlockEntity extends AbstractAirHandlingBlockEntit
             if (serverworld.noCollision(type.getAABB(x, y, z))) {
                 Entity entity = type.create(serverworld);
                 if (!(entity instanceof Mob mobentity)) return false;
-                int entityCount = serverworld.getEntitiesOfClass(Mob.class, rangeManager.getExtents()).size();
+                int entityCount = serverworld.getEntitiesOfClass(Mob.class, rangeManager.getExtentsAsAABB()).size();
                 if (entityCount >= MAX_NEARBY_ENTITIES) return false;
                 entity.moveTo(x, y, z, level.random.nextFloat() * 360.0F, 0.0F);
-                ForgeEventFactory.onFinalizeSpawn(mobentity, serverworld, serverworld.getCurrentDifficultyAt(getPosition()), MobSpawnType.SPAWNER, null, null);
+                EventHooks.onFinalizeSpawn(mobentity, serverworld, serverworld.getCurrentDifficultyAt(getPosition()), MobSpawnType.SPAWNER, null, null);
                 if (!serverworld.tryAddFreshEntityWithPassengers(entity)) return false;
                 level.levelEvent(LevelEvent.PARTICLES_MOBBLOCK_SPAWN, worldPosition, 0);
                 mobentity.spawnAnim();
@@ -154,14 +152,8 @@ public class PressurizedSpawnerBlockEntity extends AbstractAirHandlingBlockEntit
     public int getAirUsage() { return PneumaticValues.USAGE_PRESSURIZED_SPAWNER * (getUpgrades(ModUpgrades.SPEED.get()) + 1); }
 
     @Override
-    public IItemHandler getPrimaryInventory() {
+    public IItemHandler getItemHandler(@Nullable Direction dir) {
         return inventory;
-    }
-
-    @Nonnull
-    @Override
-    protected LazyOptional<IItemHandler> getInventoryCap(Direction side) {
-        return invCap;
     }
 
     @Override
@@ -199,9 +191,8 @@ public class PressurizedSpawnerBlockEntity extends AbstractAirHandlingBlockEntit
         inventory.deserializeNBT(tag.getCompound("Inventory"));
     }
 
-    @Override
     public AABB getRenderBoundingBox() {
-        return rangeManager.shouldShowRange() ? rangeManager.getExtents() : super.getRenderBoundingBox();
+        return rangeManager.shouldShowRange() ? rangeManager.getExtentsAsAABB() : new AABB(getBlockPos());
     }
 
     @Override

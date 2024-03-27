@@ -21,11 +21,12 @@ import me.desht.pneumaticcraft.client.gui.AmadronScreen;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.inventory.AmadronMenu;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.network.NetworkEvent;
+import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 
-import java.util.function.Supplier;
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 /**
  * Received on: CLIENT
@@ -33,34 +34,31 @@ import java.util.function.Supplier;
  * (This needs a round trip rather than just updating client-side, since server needs to validate and cap
  *  requested shopping amounts)
  */
-public class PacketAmadronOrderResponse {
-    private final ResourceLocation offerId;
-    private final int amount;
+public record PacketAmadronOrderResponse(ResourceLocation offerId, int amount) implements CustomPacketPayload {
+    public static final ResourceLocation ID = RL("amadron_order_response");
 
-    public PacketAmadronOrderResponse(ResourceLocation offerId, int amount) {
-        this.offerId = offerId;
-        this.amount = amount;
+    public static PacketAmadronOrderResponse fromNetwork(FriendlyByteBuf buf) {
+        return new PacketAmadronOrderResponse(buf. readResourceLocation(), buf.readVarInt());
     }
 
-    public PacketAmadronOrderResponse(FriendlyByteBuf buf) {
-        this.offerId = buf.readResourceLocation();
-        this.amount = buf.readVarInt();
-    }
-
-    public void toBytes(FriendlyByteBuf buf) {
+    @Override
+    public void write(FriendlyByteBuf buf) {
         buf.writeResourceLocation(offerId);
         buf.writeVarInt(amount);
     }
 
+    @Override
+    public ResourceLocation id() {
+        return ID;
+    }
 
-    public void handle(Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> {
+    public static void handle(PacketAmadronOrderResponse message, PlayPayloadContext ctx) {
+        ctx.workHandler().submitAsync(() -> {
             Player player = ClientUtils.getClientPlayer();
             if (player.containerMenu instanceof AmadronMenu) {
-                ((AmadronMenu) player.containerMenu).updateBasket(offerId, amount);
+                ((AmadronMenu) player.containerMenu).updateBasket(message.offerId(), message.amount());
                 AmadronScreen.basketUpdated();
             }
         });
-        ctx.get().setPacketHandled(true);
     }
 }

@@ -20,10 +20,10 @@ package me.desht.pneumaticcraft.common.drone.progwidgets;
 import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
-import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.common.drone.IDroneBase;
 import me.desht.pneumaticcraft.common.drone.ai.DroneAICrafting;
-import me.desht.pneumaticcraft.common.recipes.RecipeCache;
+import me.desht.pneumaticcraft.common.recipes.VanillaRecipeCache;
+import me.desht.pneumaticcraft.common.registry.ModProgWidgets;
 import me.desht.pneumaticcraft.common.util.DummyContainer;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
@@ -140,8 +140,8 @@ public class ProgWidgetCrafting extends ProgWidget implements ICraftingWidget, I
     public Optional<CraftingRecipe> getRecipe(Level world, CraftingContainer grid) {
         // no caching if using variables, because the item can change at any item
         return usingVariables ?
-                world.getRecipeManager().getRecipeFor(RecipeType.CRAFTING, grid, world) :
-                RecipeCache.CRAFTING.getCachedRecipe(world, grid);
+                world.getRecipeManager().getRecipeFor(RecipeType.CRAFTING, grid, world).flatMap(holder -> Optional.of(holder.value())) :
+                VanillaRecipeCache.CRAFTING.getCachedRecipe(world, grid);
     }
 
     public static Recipe<CraftingContainer> getRecipe(Level world, ICraftingWidget widget) {

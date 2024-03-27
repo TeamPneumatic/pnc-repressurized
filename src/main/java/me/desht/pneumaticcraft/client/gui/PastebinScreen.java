@@ -97,7 +97,7 @@ public class PastebinScreen extends AbstractPneumaticCraftScreen {
                 super.setFocused(focused);
 
                 if (previousFocus != focused && focused) {
-                    moveCursorToEnd();
+                    moveCursorToEnd(true);
                     setHighlightPos(0);
                 }
             }
@@ -265,7 +265,7 @@ public class PastebinScreen extends AbstractPneumaticCraftScreen {
 
     @Override
     public void render(GuiGraphics graphics, int x, int y, float partialTicks) {
-        renderBackground(graphics);
+        renderBackground(graphics, x, y, partialTicks);
 
         super.render(graphics, x, y, partialTicks);
 

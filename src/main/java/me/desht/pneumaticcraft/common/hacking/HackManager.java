@@ -19,6 +19,7 @@ package me.desht.pneumaticcraft.common.hacking;
 
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorRegistry;
+import me.desht.pneumaticcraft.api.pneumatic_armor.hacking.IActiveEntityHacks;
 import me.desht.pneumaticcraft.api.pneumatic_armor.hacking.IHackableBlock;
 import me.desht.pneumaticcraft.api.pneumatic_armor.hacking.IHackableEntity;
 import me.desht.pneumaticcraft.client.pneumatic_armor.ClientArmorRegistry;
@@ -27,11 +28,12 @@ import me.desht.pneumaticcraft.client.pneumatic_armor.upgrade_handler.EntityTrac
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.RenderBlockTarget;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.RenderEntityTarget;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
-import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.hacking.block.*;
 import me.desht.pneumaticcraft.common.hacking.entity.*;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
+import me.desht.pneumaticcraft.common.registry.ModAttachmentTypes;
+import me.desht.pneumaticcraft.common.registry.ModBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.entity.Entity;
@@ -57,6 +59,7 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 public class HackManager {
     private static HackManager clientInstance, serverInstance;
@@ -134,7 +137,7 @@ public class HackManager {
         }
 
         // entities which implement IHackableEntity directly
-        if (entity instanceof IHackableEntity h && h.canHack(entity, player))
+        if (entity instanceof IHackableEntity<?> h && h.canHack(entity, player))
             return h;
 
         // entities which have been registered with the hack manager
@@ -206,5 +209,13 @@ public class HackManager {
         } else {
             return false;
         }
+    }
+
+    public static Optional<? extends IActiveEntityHacks> getActiveHacks(Entity entity) {
+        return entity.getExistingData(ModAttachmentTypes.HACKING.get());
+    }
+
+    public static Optional<? extends IActiveEntityHacks> getOrCreateActiveHacks(Entity entity) {
+        return Optional.of(entity.getData(ModAttachmentTypes.HACKING.get()));
     }
 }

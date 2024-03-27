@@ -3,9 +3,9 @@
   "category": "misc",
   "key": {
     "C": {
-      "type": "pneumaticcraft:no_nbt",
-      "count": 1,
-      "item": "pneumaticcraft:reinforced_chest"
+      "type": "neoforge:nbt",
+      "item": "pneumaticcraft:reinforced_chest",
+      "strict": true
     },
     "S": {
       "item": "minecraft:stick"
@@ -17,6 +17,5 @@
   ],
   "result": {
     "item": "pneumaticcraft:reinforced_chest_kit"
-  },
-  "show_notification": true
+  }
 }

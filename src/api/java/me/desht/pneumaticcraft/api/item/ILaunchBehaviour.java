@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.api.item;
 
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
 @FunctionalInterface
@@ -17,5 +17,5 @@ public interface ILaunchBehaviour {
      * @param player the player doing the launching
      * @return the entity to be launched
      */
-    Entity getEntityToLaunch(ItemStack stack, Player player);
+    Entity getEntityToLaunch(ItemStack stack, ServerPlayer player);
 }

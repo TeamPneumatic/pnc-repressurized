@@ -1,13 +1,9 @@
 {
-  "type": "pneumaticcraft:heat_properties",
-  "block": "minecraft:ice",
-  "temperature": 263,
-  "thermalResistance": 500,
-  "heatCapacity": 5000,
-  "transformHot": {
-    "fluid": "minecraft:water"
-  },
-  "transformCold": {
-    "block": "minecraft:packed_ice"
-  }
+   "heatCapacity" : 5000,
+   "transformHot" : "minecraft:water",
+   "temperature" : 263,
+   "transformCold" : "minecraft:packed_ice",
+   "thermalResistance" : 500,
+   "type" : "pneumaticcraft:heat_properties",
+   "block" : "minecraft:ice"
 }

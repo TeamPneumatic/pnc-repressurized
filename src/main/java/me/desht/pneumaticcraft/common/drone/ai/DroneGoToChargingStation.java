@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.common.drone.ai;
 
-import me.desht.pneumaticcraft.api.PNCCapabilities;
+import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.common.block.entity.ChargingStationBlockEntity;
 import me.desht.pneumaticcraft.common.block.entity.SecurityStationBlockEntity;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
@@ -53,27 +53,26 @@ public class DroneGoToChargingStation extends Goal {
     @Override
     public boolean canUse() {
         List<ChargingStationBlockEntity> validChargingStations = new ArrayList<>();
-        drone.getCapability(PNCCapabilities.AIR_HANDLER_CAPABILITY).ifPresent(h -> {
-            if (h.getPressure() < PneumaticValues.DRONE_LOW_PRESSURE && h.getPressure() > 0.001f) {
-                int maxDistSq = ConfigHelper.common().drones.maxDroneChargingStationSearchRange.get()
-                        * ConfigHelper.common().drones.maxDroneChargingStationSearchRange.get();
-                for (ChargingStationBlockEntity station : GlobalBlockEntityCacheManager.getInstance(drone.level()).getChargingStations()) {
-                    Level level = drone.level();
-                    BlockPos chargingPos = station.getBlockPos();
-                    if (station.getLevel() == level && level.isLoaded(chargingPos) && drone.distanceToSqr(Vec3.atCenterOf(chargingPos)) <= maxDistSq) {
-                        if (DroneClaimManager.getInstance(drone.level()).isClaimed(chargingPos)) {
-                            drone.getDebugger().addEntry("pneumaticcraft.gui.progWidget.chargingStation.debug.claimed", chargingPos);
-                        } else if (station.getPressure() <= PneumaticValues.DRONE_LOW_PRESSURE) {
-                            drone.getDebugger().addEntry("pneumaticcraft.gui.progWidget.chargingStation.debug.notEnoughPressure", chargingPos);
-                        } else if (station.getUpgrades(ModUpgrades.DISPENSER.get()) == 0) {
-                            drone.getDebugger().addEntry("pneumaticcraft.gui.progWidget.chargingStation.debug.noDispenserUpgrades", chargingPos);
-                        } else {
-                            validChargingStations.add(station);
-                        }
+        IAirHandler handler = drone.getAirHandler();
+        if (handler.getPressure() < PneumaticValues.DRONE_LOW_PRESSURE && handler.getPressure() > 0.001f) {
+            int maxDistSq = ConfigHelper.common().drones.maxDroneChargingStationSearchRange.get()
+                    * ConfigHelper.common().drones.maxDroneChargingStationSearchRange.get();
+            for (ChargingStationBlockEntity station : GlobalBlockEntityCacheManager.getInstance(drone.level()).getChargingStations()) {
+                Level level = drone.level();
+                BlockPos chargingPos = station.getBlockPos();
+                if (station.getLevel() == level && level.isLoaded(chargingPos) && drone.distanceToSqr(Vec3.atCenterOf(chargingPos)) <= maxDistSq) {
+                    if (DroneClaimManager.getInstance(drone.level()).isClaimed(chargingPos)) {
+                        drone.getDebugger().addEntry("pneumaticcraft.gui.progWidget.chargingStation.debug.claimed", chargingPos);
+                    } else if (station.getPressure() <= PneumaticValues.DRONE_LOW_PRESSURE) {
+                        drone.getDebugger().addEntry("pneumaticcraft.gui.progWidget.chargingStation.debug.notEnoughPressure", chargingPos);
+                    } else if (station.getUpgrades(ModUpgrades.DISPENSER.get()) == 0) {
+                        drone.getDebugger().addEntry("pneumaticcraft.gui.progWidget.chargingStation.debug.noDispenserUpgrades", chargingPos);
+                    } else {
+                        validChargingStations.add(station);
                     }
                 }
             }
-        });
+        }
 
         validChargingStations.sort(Comparator.comparingDouble(te -> te.getBlockPos().distSqr(drone.blockPosition())));
 
@@ -103,9 +102,8 @@ public class DroneGoToChargingStation extends Goal {
             isExecuting = false;
             return false;
         } else if (!drone.getPathNavigator().isGoingToTeleport() && (drone.getNavigation().getPath() == null || drone.getNavigation().getPath().isDone())) {
-            isExecuting = drone.getCapability(PNCCapabilities.AIR_HANDLER_CAPABILITY)
-                    .map(h -> h.getPressure() < 9.9F && curCharger.getPressure() > h.getPressure() + 0.1F)
-                    .orElseThrow(RuntimeException::new);
+            IAirHandler handler = drone.getAirHandler();
+            isExecuting = handler.getPressure() < 9.9F && curCharger.getPressure() > handler.getPressure() + 0.1F;
             if (isExecuting) {
                 chargingTime++;
                 if (chargingTime > 20) {

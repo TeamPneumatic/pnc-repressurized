@@ -21,24 +21,23 @@ import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.api.crafting.TemperatureRange.TemperatureScale;
 import me.desht.pneumaticcraft.api.crafting.recipe.RefineryRecipe;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTemperature;
-import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
+import me.desht.pneumaticcraft.common.registry.ModBlocks;
 import me.desht.pneumaticcraft.lib.Textures;
 import mezz.jei.api.constants.VanillaTypes;
-import mezz.jei.api.forge.ForgeTypes;
 import mezz.jei.api.gui.ITickTimer;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
+import mezz.jei.api.neoforge.NeoForgeTypes;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidStack;
 
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -46,7 +45,7 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class JEIRefineryCategory extends AbstractPNCCategory<RefineryRecipe> {
     private final ITickTimer tickTimer;
-    private final Map<ResourceLocation, WidgetTemperature> tempWidgets = new HashMap<>();
+    private final Map<RefineryRecipe, WidgetTemperature> tempWidgets = new IdentityHashMap<>();
 
     JEIRefineryCategory() {
         super(RecipeTypes.REFINERY,
@@ -60,7 +59,7 @@ public class JEIRefineryCategory extends AbstractPNCCategory<RefineryRecipe> {
     @Override
     public void setRecipe(IRecipeLayoutBuilder builder, RefineryRecipe recipe, IFocusGroup focuses) {
         builder.addSlot(RecipeIngredientRole.INPUT, 2, 10)
-                .addIngredients(ForgeTypes.FLUID_STACK, recipe.getInput().getFluidStacks())
+                .addIngredients(NeoForgeTypes.FLUID_STACK, recipe.getInput().getFluidStacks())
                 .setFluidRenderer(recipe.getInput().getAmount(), true, 16, 64)
                 .setOverlay(Helpers.makeTankOverlay(64), 0, 0);
 
@@ -69,7 +68,7 @@ public class JEIRefineryCategory extends AbstractPNCCategory<RefineryRecipe> {
             int h = out.getAmount() * 64 / recipe.getInput().getAmount();
             int yOff = 64 - h;
             builder.addSlot(RecipeIngredientRole.OUTPUT, 69 + n * 20, 18 - n * 4 + yOff)
-                    .addIngredient(ForgeTypes.FLUID_STACK, out)
+                    .addIngredient(NeoForgeTypes.FLUID_STACK, out)
                     .setFluidRenderer(out.getAmount(), true, 16, h)
                     .setOverlay(Helpers.makeTankOverlay(h), 0, 0);
             n++;
@@ -78,7 +77,7 @@ public class JEIRefineryCategory extends AbstractPNCCategory<RefineryRecipe> {
 
     @Override
     public void draw(RefineryRecipe recipe, IRecipeSlotsView recipeSlotsView, GuiGraphics graphics, double mouseX, double mouseY) {
-        WidgetTemperature w = tempWidgets.computeIfAbsent(recipe.getId(),
+        WidgetTemperature w = tempWidgets.computeIfAbsent(recipe,
                 id -> WidgetTemperature.fromOperatingRange(26, 18, recipe.getOperatingTemp()));
         w.setTemperature(w.getTotalRange().getMin() + (w.getTotalRange().getMax() - w.getTotalRange().getMin()) * tickTimer.getValue() / tickTimer.getMaxValue());
         w.renderWidget(graphics, (int)mouseX, (int)mouseY, 0f);
@@ -86,7 +85,7 @@ public class JEIRefineryCategory extends AbstractPNCCategory<RefineryRecipe> {
 
     @Override
     public List<Component> getTooltipStrings(RefineryRecipe recipe, IRecipeSlotsView recipeSlotsView, double mouseX, double mouseY) {
-        WidgetTemperature w = tempWidgets.get(recipe.getId());
+        WidgetTemperature w = tempWidgets.get(recipe);
         if (w != null && w.isMouseOver(mouseX, mouseY)) {
             return ImmutableList.of(HeatUtil.formatHeatString(recipe.getOperatingTemp().asString(TemperatureScale.CELSIUS)));
         }

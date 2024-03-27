@@ -4,8 +4,9 @@
   "key": {
     "C": {
       "type": "pneumaticcraft:fluid",
-      "amount": 1000,
-      "tag": "forge:lubricant"
+      "value": {
+        "tag": "forge:lubricant"
+      }
     },
     "L": {
       "tag": "pneumaticcraft:upgrade_components"
@@ -22,6 +23,5 @@
   "result": {
     "count": 2,
     "item": "pneumaticcraft:speed_upgrade"
-  },
-  "show_notification": true
+  }
 }

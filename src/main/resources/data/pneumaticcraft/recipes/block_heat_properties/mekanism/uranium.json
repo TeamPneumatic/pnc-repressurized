@@ -1,10 +1,8 @@
 {
-  "type": "pneumaticcraft:heat_properties",
-  "block": "mekanism:block_uranium",
-  "temperature": 438,
-  "thermalResistance": 500,
-  "transformCold": {
-    "block": "mekanism:block_lead"
-  },
-  "heatCapacity": 500000
+   "type" : "pneumaticcraft:heat_properties",
+   "block" : "mekanism:block_uranium",
+   "temperature" : 438,
+   "transformCold" : "mekanism:block_lead",
+   "thermalResistance" : 500,
+   "heatCapacity" : 500000
 }

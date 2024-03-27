@@ -17,19 +17,19 @@
 
 package me.desht.pneumaticcraft.common.recipes;
 
-import com.google.gson.JsonObject;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
-import net.minecraft.util.GsonHelper;
 import net.minecraft.world.level.material.Fluid;
-import net.minecraftforge.common.crafting.conditions.ICondition;
-import net.minecraftforge.common.crafting.conditions.IConditionSerializer;
-
-import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
+import net.neoforged.neoforge.common.conditions.ICondition;
 
 public class FluidTagPresentCondition implements ICondition {
-    private static final ResourceLocation NAME = RL("fluid_tag_present");
+    public static Codec<FluidTagPresentCondition> CODEC = RecordCodecBuilder.create(builder -> builder.group(
+                    ResourceLocation.CODEC.fieldOf("tag").forGetter(FluidTagPresentCondition::location)
+            ).apply(builder, FluidTagPresentCondition::new)
+    );
 
     private final TagKey<Fluid> tagKey;
 
@@ -41,9 +41,8 @@ public class FluidTagPresentCondition implements ICondition {
         this(new ResourceLocation(tagName));
     }
 
-    @Override
-    public ResourceLocation getID() {
-        return NAME;
+    private ResourceLocation location() {
+        return tagKey.location();
     }
 
     @Override
@@ -51,22 +50,8 @@ public class FluidTagPresentCondition implements ICondition {
         return !context.getTag(tagKey).isEmpty();
     }
 
-    public static class Serializer implements IConditionSerializer<FluidTagPresentCondition> {
-        public static final FluidTagPresentCondition.Serializer INSTANCE = new FluidTagPresentCondition.Serializer();
-
-        @Override
-        public void write(JsonObject json, FluidTagPresentCondition value) {
-            json.addProperty("tag", value.tagKey.location().toString());
-        }
-
-        @Override
-        public FluidTagPresentCondition read(JsonObject json) {
-            return new FluidTagPresentCondition(new ResourceLocation(GsonHelper.getAsString(json, "tag")));
-        }
-
-        @Override
-        public ResourceLocation getID() {
-            return FluidTagPresentCondition.NAME;
-        }
+    @Override
+    public Codec<? extends ICondition> codec() {
+        return CODEC;
     }
 }

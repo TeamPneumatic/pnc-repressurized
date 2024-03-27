@@ -17,34 +17,30 @@
 
 package me.desht.pneumaticcraft.common.recipes.other;
 
-import com.google.gson.JsonObject;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import me.desht.pneumaticcraft.api.crafting.ingredient.FluidIngredient;
 import me.desht.pneumaticcraft.api.crafting.recipe.FuelQualityRecipe;
-import me.desht.pneumaticcraft.common.core.ModRecipeSerializers;
-import me.desht.pneumaticcraft.common.core.ModRecipeTypes;
+import me.desht.pneumaticcraft.common.registry.ModRecipeSerializers;
+import me.desht.pneumaticcraft.common.registry.ModRecipeTypes;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.GsonHelper;
+import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.material.Fluid;
 import org.apache.commons.lang3.Validate;
 
-import javax.annotation.Nullable;
-
 public class FuelQualityRecipeImpl extends FuelQualityRecipe {
     private final FluidIngredient fuel;
     private final int airPerBucket;
     private final float burnRate;
 
-    public FuelQualityRecipeImpl(ResourceLocation id, FluidIngredient fuel, int airPerBucket, float burnRate) {
-        super(id);
-
-        Validate.isTrue(fuel.getAmount() > 0);
+    public FuelQualityRecipeImpl(FluidIngredient fuel, int airPerBucket, float burnRate) {
+//        Validate.isTrue(fuel.getAmount() > 0);
 
         this.fuel = fuel;
-        this.airPerBucket = airPerBucket * (1000 / fuel.getAmount());
+        this.airPerBucket = airPerBucket;// * (1000 / fuel.getAmount());
         this.burnRate = burnRate;
     }
 
@@ -69,13 +65,6 @@ public class FuelQualityRecipeImpl extends FuelQualityRecipe {
     }
 
     @Override
-    public void write(FriendlyByteBuf buffer) {
-        fuel.toNetwork(buffer);
-        buffer.writeInt(airPerBucket);
-        buffer.writeFloat(burnRate);
-    }
-
-    @Override
     public RecipeSerializer<?> getSerializer() {
         return ModRecipeSerializers.FUEL_QUALITY.get();
     }
@@ -87,37 +76,40 @@ public class FuelQualityRecipeImpl extends FuelQualityRecipe {
 
     public static class Serializer<T extends FuelQualityRecipe> implements RecipeSerializer<T> {
         private final IFactory<T> factory;
+        private final Codec<T> codec;
 
         public Serializer(IFactory<T> factory) {
             this.factory = factory;
+            this.codec = RecordCodecBuilder.create(builder -> builder.group(
+                    FluidIngredient.FLUID_CODEC_NON_EMPTY.fieldOf("fluid").forGetter(FuelQualityRecipe::getFuel),
+                    ExtraCodecs.POSITIVE_INT.fieldOf("air_per_bucket").forGetter(FuelQualityRecipe::getAirPerBucket),
+                    ExtraCodecs.POSITIVE_FLOAT.optionalFieldOf("burn_rate", 1f).forGetter(FuelQualityRecipe::getBurnRate)
+            ).apply(builder, factory::create));
         }
 
         @Override
-        public T fromJson(ResourceLocation recipeId, JsonObject json) {
-            Ingredient fluidInput = FluidIngredient.fromJson(json.get("fluid"));
-            int airPerBucket = GsonHelper.getAsInt(json, "air_per_bucket");
-            float burnRate = GsonHelper.getAsFloat(json, "burn_rate", 1f);
-
-            return factory.create(recipeId, (FluidIngredient) fluidInput, airPerBucket, burnRate);
+        public Codec<T> codec() {
+            return codec;
         }
 
-        @Nullable
         @Override
-        public T fromNetwork(ResourceLocation recipeId, FriendlyByteBuf buffer) {
+        public T fromNetwork(FriendlyByteBuf buffer) {
             FluidIngredient fluidIn = (FluidIngredient) Ingredient.fromNetwork(buffer);
             int airPerBucket = buffer.readInt();
             float burnRate = buffer.readFloat();
 
-            return factory.create(recipeId, fluidIn, airPerBucket, burnRate);
+            return factory.create(fluidIn, airPerBucket, burnRate);
         }
 
         @Override
         public void toNetwork(FriendlyByteBuf buffer, T recipe) {
-            recipe.write(buffer);
+            recipe.getFuel().toNetwork(buffer);
+            buffer.writeInt(recipe.getAirPerBucket());
+            buffer.writeFloat(recipe.getBurnRate());
         }
 
-        public interface IFactory <T extends FuelQualityRecipe> {
-            T create(ResourceLocation id, FluidIngredient fluid, int airPerBucket, float burnRate);
+        public interface IFactory<T extends FuelQualityRecipe> {
+            T create(FluidIngredient fluid, int airPerBucket, float burnRate);
         }
     }
 }

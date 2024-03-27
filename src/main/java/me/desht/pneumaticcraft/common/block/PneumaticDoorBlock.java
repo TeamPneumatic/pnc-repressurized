@@ -22,9 +22,9 @@ import me.desht.pneumaticcraft.client.ColorHandlers;
 import me.desht.pneumaticcraft.common.block.entity.PneumaticDoorBaseBlockEntity;
 import me.desht.pneumaticcraft.common.block.entity.PneumaticDoorBlockEntity;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
-import me.desht.pneumaticcraft.common.core.ModBlockEntities;
-import me.desht.pneumaticcraft.common.core.ModBlocks;
-import me.desht.pneumaticcraft.common.core.ModItems;
+import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
+import me.desht.pneumaticcraft.common.registry.ModBlocks;
+import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.BlockPos;
@@ -170,7 +170,7 @@ public class PneumaticDoorBlock extends AbstractPneumaticCraftBlock implements P
         super.setPlacedBy(world, pos, state, par5EntityLiving, par6ItemStack);
 
         world.setBlock(pos.relative(Direction.UP), world.getBlockState(pos).setValue(TOP_DOOR, true), Block.UPDATE_ALL);
-        world.getBlockEntity(pos, ModBlockEntities.PNEUMATIC_DOOR.get()).ifPresent(teDoor -> {
+        world.getBlockEntity(pos, ModBlockEntityTypes.PNEUMATIC_DOOR.get()).ifPresent(teDoor -> {
             BlockPos top = pos.above();
             if (world.getBlockState(top.relative(getRotation(state).getCounterClockWise())).getBlock() == ModBlocks.PNEUMATIC_DOOR_BASE.get()) {
                 teDoor.rightGoing = true;
@@ -186,7 +186,7 @@ public class PneumaticDoorBlock extends AbstractPneumaticCraftBlock implements P
     }
 
     @Override
-    public void playerWillDestroy(Level worldIn, BlockPos pos, BlockState state, Player player) {
+    public BlockState playerWillDestroy(Level worldIn, BlockPos pos, BlockState state, Player player) {
         BlockPos posDown = pos.below();
         BlockPos posUp = pos.above();
         if (isTopDoor(state) && worldIn.getBlockState(posDown).getBlock() == this) {
@@ -194,6 +194,7 @@ public class PneumaticDoorBlock extends AbstractPneumaticCraftBlock implements P
         } else if (!isTopDoor(state) && worldIn.getBlockState(posUp).getBlock() == this) {
             worldIn.removeBlock(posUp, false);
         }
+        return super.playerWillDestroy(worldIn, pos, state, player);
     }
 
     @Override

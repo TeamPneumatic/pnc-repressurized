@@ -2,17 +2,20 @@ package me.desht.pneumaticcraft.api.misc;
 
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.crafting.ingredient.FluidIngredient;
+import me.desht.pneumaticcraft.api.pneumatic_armor.hacking.IActiveEntityHacks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.items.IItemHandler;
+import net.neoforged.neoforge.items.IItemHandler;
+
+import java.util.Optional;
 
 /**
  * A collection of miscellaneous helper methods which don't fit elsewhere. Get an instance of this with
@@ -54,13 +57,12 @@ public interface IMiscHelpers {
 
     /**
      * Register a custom player matcher object. This is safe to call from a
-     * {@link net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent} handler. Note that matchers should be
+     * {@link net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent} handler. Note that matchers should be
      * able to run on both client and server.
      *
-     * @param id matcher ID, can be used as a key in recipe JSON's
-     * @param factory a factory object used to create instances of this matcher from JSON or a packet buffer
+     * @param type the matcher type, which is responsible for providing a codec for the matcher
      */
-    void registerPlayerMatcher(ResourceLocation id, IPlayerMatcher.MatcherFactory<?> factory);
+    <T extends IPlayerMatcher> void registerPlayerMatcher(IPlayerMatcher.MatcherType<T> type);
 
     /**
      * Return a Smart Chest item handler properly deserialized from the supplied NBT. Not for general use; here
@@ -101,4 +103,14 @@ public interface IMiscHelpers {
      * @return the air particle data
      */
     ParticleOptions airParticle();
+
+    /**
+     * Get the hacking manager for the given entity; this manager allows querying and modifying the list of active
+     * hacks on the entity.
+     * @param entity the entity
+     * @param create if true, create a new list if necessary
+     * @return the hack manager, if present
+     */
+    Optional<? extends IActiveEntityHacks> getHackingForEntity(Entity entity, boolean create);
+
 }

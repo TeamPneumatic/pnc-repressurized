@@ -18,12 +18,13 @@
 package me.desht.pneumaticcraft.common.thirdparty.curios;
 
 import me.desht.pneumaticcraft.common.block.entity.PneumaticEnergyStorage;
+import me.desht.pneumaticcraft.common.util.IOHelper;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.IItemHandlerModifiable;
-import net.minecraftforge.items.wrapper.CombinedInvWrapper;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.IItemHandlerModifiable;
+import net.neoforged.neoforge.items.wrapper.CombinedInvWrapper;
 import org.apache.commons.lang3.tuple.Pair;
 import top.theillusivec4.curios.api.CuriosApi;
 import top.theillusivec4.curios.api.type.inventory.ICurioStacksHandler;
@@ -43,10 +44,11 @@ public class CuriosUtils {
      * @param maxTransfer max amount to transfer per item
      */
     public static void chargeItems(Player player, PneumaticEnergyStorage energyStorage, int maxTransfer) {
-        CuriosApi.getCuriosHelper().getCuriosHandler(player).ifPresent(handler -> handler.getCurios().forEach((id, stackHandler) -> {
+
+        CuriosApi.getCuriosInventory(player).ifPresent(handler -> handler.getCurios().forEach((id, stackHandler) -> {
             for (int i = 0; i < stackHandler.getSlots() && energyStorage.getEnergyStored() > 0; i++) {
                 ItemStack stack = stackHandler.getStacks().getStackInSlot(i);
-                stack.getCapability(ForgeCapabilities.ENERGY).ifPresent(receivingStorage -> {
+                IOHelper.getCap(stack, Capabilities.EnergyStorage.ITEM).ifPresent(receivingStorage -> {
                     int energyLeft = energyStorage.getEnergyStored();
                     energyStorage.extractEnergy(
                             receivingStorage.receiveEnergy(Math.min(energyLeft, maxTransfer), false), false
@@ -64,7 +66,7 @@ public class CuriosUtils {
      * @return stack in that slot
      */
     public static ItemStack getStack(Player player, String invId, int slot) {
-        return CuriosApi.getCuriosHelper().getCuriosHandler(player).map(handler -> {
+        return CuriosApi.getCuriosInventory(player).map(handler -> {
             ICurioStacksHandler h = handler.getCurios().get(invId);
             return h == null ? ItemStack.EMPTY : h.getStacks().getStackInSlot(slot);
         }).orElse(ItemStack.EMPTY);
@@ -77,7 +79,7 @@ public class CuriosUtils {
      * @return a pair of (inventory id and slot), or null if no match
      */
     public static Pair<String,Integer> findStack(Player player, Predicate<ItemStack> predicate) {
-        return CuriosApi.getCuriosHelper().getCuriosHandler(player).map(handler -> {
+        return CuriosApi.getCuriosInventory(player).map(handler -> {
             for (Map.Entry<String,ICurioStacksHandler> entry : handler.getCurios().entrySet()) {
                 for (int i = 0; i < entry.getValue().getSlots(); i++) {
                     if (predicate.test(entry.getValue().getStacks().getStackInSlot(i))) {
@@ -90,7 +92,7 @@ public class CuriosUtils {
     }
 
     public static IItemHandler makeCombinedInvWrapper(@Nonnull Player player) {
-        return CuriosApi.getCuriosHelper().getCuriosHandler(player)
+        return CuriosApi.getCuriosInventory(player)
                 .map(handler -> new CombinedInvWrapper(handler.getCurios().values().stream()
                         .map(ICurioStacksHandler::getStacks)
                         .toArray(IItemHandlerModifiable[]::new))

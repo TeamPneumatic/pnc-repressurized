@@ -21,16 +21,16 @@ import me.desht.pneumaticcraft.api.lib.NBTKeys;
 import me.desht.pneumaticcraft.client.render.fluid.IFluidItemRenderInfoProvider;
 import me.desht.pneumaticcraft.client.render.fluid.RenderFluidTank;
 import me.desht.pneumaticcraft.common.block.entity.AbstractFluidTankBlockEntity;
-import me.desht.pneumaticcraft.common.capabilities.FluidItemWrapper;
-import me.desht.pneumaticcraft.common.core.ModBlocks;
-import me.desht.pneumaticcraft.common.core.ModItems;
+import me.desht.pneumaticcraft.common.capabilities.FluidHandlerSavedItemStack;
+import me.desht.pneumaticcraft.common.item.IFluidCapProvider;
 import me.desht.pneumaticcraft.common.item.IFluidRendered;
+import me.desht.pneumaticcraft.common.registry.ModBlocks;
+import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.RayTraceUtils;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
@@ -49,10 +49,11 @@ import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.FluidUtil;
-import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidUtil;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
+import net.neoforged.neoforge.fluids.capability.templates.FluidHandlerItemStack;
 
 import javax.annotation.Nullable;
 import java.util.Objects;
@@ -190,7 +191,7 @@ public class FluidTankBlock extends AbstractPneumaticCraftBlock
         return size.beFactory.apply(pPos, pState);
     }
 
-    public static class ItemBlockFluidTank extends BlockItem implements IFluidRendered {
+    public static class ItemBlockFluidTank extends BlockItem implements IFluidRendered, IFluidCapProvider {
         public static final String TANK_NAME = "Tank";
         private final int capacity;
 
@@ -232,14 +233,9 @@ public class FluidTankBlock extends AbstractPneumaticCraftBlock
             return stack.hasTag() && Objects.requireNonNull(stack.getTag()).contains(NBTKeys.BLOCK_ENTITY_TAG) ? 1 : 64;
         }
 
-        @Nullable
         @Override
-        public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundTag nbt) {
-            if (stack.getItem() instanceof ItemBlockFluidTank) {
-                return new FluidItemWrapper(stack, TANK_NAME, capacity);
-            } else {
-                return super.initCapabilities(stack, nbt);
-            }
+        public IFluidHandlerItem provideFluidCapability(ItemStack stack) {
+            return new FluidHandlerSavedItemStack(stack, TANK_NAME, capacity);
         }
     }
 

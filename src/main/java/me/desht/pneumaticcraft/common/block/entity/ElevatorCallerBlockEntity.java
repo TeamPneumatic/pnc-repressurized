@@ -18,12 +18,13 @@
 package me.desht.pneumaticcraft.common.block.entity;
 
 import me.desht.pneumaticcraft.common.block.ElevatorCallerBlock;
-import me.desht.pneumaticcraft.common.core.ModBlockEntities;
+import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.AABB;
-import net.minecraftforge.items.IItemHandler;
+import net.neoforged.neoforge.items.IItemHandler;
+import org.jetbrains.annotations.Nullable;
 
 public class ElevatorCallerBlockEntity extends AbstractTickingBlockEntity implements CamouflageableBlockEntity, IRedstoneControl<ElevatorCallerBlockEntity> {
     private ElevatorButton[] floors = new ElevatorButton[0];
@@ -34,7 +35,7 @@ public class ElevatorCallerBlockEntity extends AbstractTickingBlockEntity implem
     private final RedstoneController<ElevatorCallerBlockEntity> rsController = new RedstoneController<>(this);
 
     public ElevatorCallerBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.ELEVATOR_CALLER.get(), pos, state);
+        super(ModBlockEntityTypes.ELEVATOR_CALLER.get(), pos, state);
     }
 
     public void setEmittingRedstone(boolean emittingRedstone) {
@@ -42,6 +43,11 @@ public class ElevatorCallerBlockEntity extends AbstractTickingBlockEntity implem
             this.emittingRedstone = emittingRedstone;
             shouldUpdateNeighbors = true;
         }
+    }
+
+    @Override
+    public boolean hasItemCapability() {
+        return false;
     }
 
     @Override
@@ -105,7 +111,7 @@ public class ElevatorCallerBlockEntity extends AbstractTickingBlockEntity implem
     }
 
     @Override
-    public IItemHandler getPrimaryInventory() {
+    public IItemHandler getItemHandler(@Nullable Direction dir) {
         return null;
     }
 
@@ -117,11 +123,6 @@ public class ElevatorCallerBlockEntity extends AbstractTickingBlockEntity implem
 
     public ElevatorButton[] getFloors() {
         return floors;
-    }
-
-    @Override
-    public AABB getRenderBoundingBox() {
-        return new AABB(getBlockPos().getX(), getBlockPos().getY(), getBlockPos().getZ(), getBlockPos().getX() + 1, getBlockPos().getY() + 1, getBlockPos().getZ() + 1);
     }
 
     @Override

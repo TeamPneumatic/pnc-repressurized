@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.api.drone;
 
-import net.minecraftforge.eventbus.api.Event;
+import net.neoforged.bus.api.Event;
 
 /**
  * Event posted on the {@code MinecraftForge.EVENT_BUS} just before a Drone executes a Suicide piece. Used internally by

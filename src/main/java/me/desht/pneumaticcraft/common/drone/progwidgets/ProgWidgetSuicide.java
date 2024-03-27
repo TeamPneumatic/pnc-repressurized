@@ -19,13 +19,13 @@ package me.desht.pneumaticcraft.common.drone.progwidgets;
 
 import me.desht.pneumaticcraft.api.drone.DroneSuicideEvent;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
-import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.common.drone.IDroneBase;
+import me.desht.pneumaticcraft.common.registry.ModProgWidgets;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.item.DyeColor;
-import net.minecraftforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.NeoForge;
 
 import java.util.Collections;
 import java.util.List;
@@ -90,7 +90,7 @@ public class ProgWidgetSuicide extends ProgWidget {
 
         @Override
         public boolean canUse() {
-            MinecraftForge.EVENT_BUS.post(new DroneSuicideEvent(drone));
+            NeoForge.EVENT_BUS.post(new DroneSuicideEvent(drone));
             drone.overload("suicide");
             return false;
         }

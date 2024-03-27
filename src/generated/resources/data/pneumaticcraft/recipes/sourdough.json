@@ -7,8 +7,12 @@
     },
     "Y": {
       "type": "pneumaticcraft:fluid",
-      "amount": 1000,
-      "fluid": "pneumaticcraft:yeast_culture"
+      "value": {
+        "fluid": {
+          "Amount": 1000,
+          "FluidName": "pneumaticcraft:yeast_culture"
+        }
+      }
     }
   },
   "pattern": [
@@ -19,6 +23,5 @@
   "result": {
     "count": 8,
     "item": "pneumaticcraft:sourdough"
-  },
-  "show_notification": true
+  }
 }

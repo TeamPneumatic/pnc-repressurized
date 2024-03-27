@@ -25,6 +25,7 @@ import me.desht.pneumaticcraft.common.drone.progwidgets.*;
 import me.desht.pneumaticcraft.common.item.ItemRegistry;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableHelper;
+import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -36,7 +37,7 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.MinecraftForge;
+import net.neoforged.neoforge.common.NeoForge;
 
 import javax.annotation.Nonnull;
 import java.util.*;
@@ -137,10 +138,10 @@ public class DroneAIManager implements IVariableProvider {
 
         ListTag tagList2 = new ListTag();
         for (Map.Entry<String, ItemStack> entry : itemVariables.entrySet()) {
-            CompoundTag t = new CompoundTag();
-            t.putString("key", entry.getKey());
-            t.put("item", entry.getValue().serializeNBT());
-            tagList2.add(t);
+            tagList2.add(Util.make(new CompoundTag(), t -> {
+                t.putString("key", entry.getKey());
+                t.put("item", Util.make(new CompoundTag(), t1 -> entry.getValue().save(t1)));
+            }));
         }
         tag.put("items", tagList2);
 
@@ -166,7 +167,7 @@ public class DroneAIManager implements IVariableProvider {
     public Optional<BlockPos> getCoordinate(UUID id, String varName) {
         if (varName.startsWith("$")) {
             SpecialVariableRetrievalEvent.CoordinateVariable.Drone event = new SpecialVariableRetrievalEvent.CoordinateVariable.Drone(drone, varName.substring(1));
-            MinecraftForge.EVENT_BUS.post(event);
+            NeoForge.EVENT_BUS.post(event);
             return Optional.ofNullable(event.getCoordinate());
         } else if (varName.startsWith("%") || varName.startsWith("#")) {
             return Optional.ofNullable(GlobalVariableHelper.getPos(drone.getOwnerUUID(), varName));
@@ -180,7 +181,7 @@ public class DroneAIManager implements IVariableProvider {
         ItemStack item;
         if (varName.startsWith("$")) {
             SpecialVariableRetrievalEvent.ItemVariable.Drone event = new SpecialVariableRetrievalEvent.ItemVariable.Drone(drone, varName.substring(1));
-            MinecraftForge.EVENT_BUS.post(event);
+            NeoForge.EVENT_BUS.post(event);
             item = event.getItem();
         } else if (varName.startsWith("#") || varName.startsWith("%")) {
             item = GlobalVariableHelper.getStack(drone.getOwnerUUID(), varName);

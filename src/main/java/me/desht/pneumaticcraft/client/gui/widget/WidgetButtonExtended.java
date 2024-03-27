@@ -28,10 +28,12 @@ import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.client.gui.widget.ExtendedButton;
+import net.neoforged.neoforge.client.gui.widget.ExtendedButton;
+import org.jline.reader.Widget;
 import org.lwjgl.opengl.GL11;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Supplier;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
@@ -42,6 +44,7 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
  */
 public class WidgetButtonExtended extends ExtendedButton implements ITaggedWidget {
     private int iconSpacing = 18;
+    private Supplier<List<Component>> tooltipSupplier;
 
     public enum IconPosition { MIDDLE, LEFT, RIGHT }
     private ItemStack[] renderedStacks;
@@ -90,6 +93,11 @@ public class WidgetButtonExtended extends ExtendedButton implements ITaggedWidge
     public WidgetButtonExtended withTag(Supplier<String> tagSupplier) {
         this.tag = null;
         this.tagSupplier = tagSupplier;
+        return this;
+    }
+
+    public WidgetButtonExtended withCustomTooltip(Supplier<List<Component>> tooltipSupplier) {
+        this.tooltipSupplier = tooltipSupplier;
         return this;
     }
 
@@ -184,6 +192,9 @@ public class WidgetButtonExtended extends ExtendedButton implements ITaggedWidge
             if (active && !thisVisible && x >= this.getX() && y >= this.getY() && x < this.getX() + width && y < this.getY() + height) {
                 graphics.fill(this.getX(), this.getY(), this.getX() + width, this.getY() + height, invisibleHoverColor);
             }
+            if (isHovered && tooltipSupplier != null) {
+                graphics.renderTooltip(Minecraft.getInstance().font, tooltipSupplier.get(), Optional.empty(), x, y);
+            }
         }
     }
 
@@ -194,7 +205,6 @@ public class WidgetButtonExtended extends ExtendedButton implements ITaggedWidge
             case MIDDLE -> getX() + width / 2 - renderedStacks.length * 9 + 1;
         };
     }
-
 
     public WidgetButtonExtended setTooltipText(Component comp) {
         setTooltip(Tooltip.create(comp));

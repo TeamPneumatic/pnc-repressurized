@@ -19,11 +19,12 @@ package me.desht.pneumaticcraft.common.drone.progwidgets;
 
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.config.subconfig.ProgWidgetConfig;
-import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.common.drone.IDroneBase;
+import me.desht.pneumaticcraft.common.registry.ModProgWidgets;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.ChatFormatting;
+import net.minecraft.Util;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
@@ -61,7 +62,7 @@ public abstract class ProgWidget implements IProgWidget {
 
     @Override
     public ResourceLocation getTypeID() {
-        return ModProgWidgets.PROG_WIDGETS.get().getKey(getType());
+        return ModProgWidgets.PROG_WIDGETS_REGISTRY.getKey(getType());
     }
 
     @Override
@@ -234,6 +235,10 @@ public abstract class ProgWidget implements IProgWidget {
         return copy;
     }
 
+    public final CompoundTag toNbt() {
+        return Util.make(new CompoundTag(), this::writeToNBT);
+    }
+
     @Override
     public void writeToNBT(CompoundTag tag) {
         tag.putString("name", PneumaticCraftUtils.modDefaultedString(getTypeID()));
@@ -290,7 +295,7 @@ public abstract class ProgWidget implements IProgWidget {
 
     public static IProgWidget fromPacket(FriendlyByteBuf buf) {
         ResourceLocation typeID = PneumaticCraftUtils.modDefaultedRL(buf.readUtf(256));
-        ProgWidgetType<?> type = ModProgWidgets.PROG_WIDGETS.get().getValue(typeID);
+        ProgWidgetType<?> type = ModProgWidgets.PROG_WIDGETS_REGISTRY.get(typeID);
         if (type != null) {
             IProgWidget newWidget = IProgWidget.create(type);
             newWidget.readFromPacket(buf);
@@ -302,7 +307,7 @@ public abstract class ProgWidget implements IProgWidget {
 
     public static IProgWidget fromNBT(CompoundTag widgetTag) {
         ResourceLocation typeID = PneumaticCraftUtils.modDefaultedRL(widgetTag.getString("name"));
-        ProgWidgetType<?> type = ModProgWidgets.PROG_WIDGETS.get().getValue(typeID);
+        ProgWidgetType<?> type = ModProgWidgets.PROG_WIDGETS_REGISTRY.get(typeID);
         if (type == null) {
             Log.warning("can't read progwidget from NBT: bad widget ID: " + typeID);
             return null;

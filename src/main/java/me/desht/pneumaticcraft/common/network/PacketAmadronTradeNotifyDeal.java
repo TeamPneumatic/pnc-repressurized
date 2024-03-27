@@ -17,14 +17,14 @@
 
 package me.desht.pneumaticcraft.common.network;
 
-import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronPlayerOffer;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 
-import java.util.function.Supplier;
-
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 /**
@@ -33,41 +33,36 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
  * Using a packet rather than a simple chat message because the client can also elect not to receive
  * these notifications.
  */
-public class PacketAmadronTradeNotifyDeal extends PacketAbstractAmadronTrade {
-    private final int offerAmount;
-    private final String buyingPlayer;
+public record PacketAmadronTradeNotifyDeal(AmadronPlayerOffer offer, int offerAmount, String buyingPlayer) implements CustomPacketPayload {
+    public static final ResourceLocation ID = RL("amadron_notify_deal");
 
-    public PacketAmadronTradeNotifyDeal(AmadronPlayerOffer offer, int offerAmount, String buyingPlayer) {
-        super(offer);
-        this.offerAmount = offerAmount;
-        this.buyingPlayer = buyingPlayer;
-    }
-
-    public PacketAmadronTradeNotifyDeal(FriendlyByteBuf buffer) {
-        super(buffer);
-        offerAmount = buffer.readInt();
-        buyingPlayer = buffer.readUtf();
+    public static PacketAmadronTradeNotifyDeal fromNetwork(FriendlyByteBuf buffer) {
+        return new PacketAmadronTradeNotifyDeal(AmadronPlayerOffer.playerOfferFromBuf(buffer), buffer.readInt(), buffer.readUtf());
     }
 
     @Override
-    public void toBytes(FriendlyByteBuf buf) {
-        super.toBytes(buf);
+    public void write(FriendlyByteBuf buf) {
+        offer.write(buf);
         buf.writeInt(offerAmount);
         buf.writeUtf(buyingPlayer);
     }
 
-    public void handle(Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> {
+    @Override
+    public ResourceLocation id() {
+        return ID;
+    }
+
+    public static void handle(PacketAmadronTradeNotifyDeal message, PlayPayloadContext ctx) {
+        ctx.player().ifPresent(player -> ctx.workHandler().submitAsync(() -> {
             if (ConfigHelper.common().amadron.notifyOfDealMade.get())
-                ClientUtils.getClientPlayer().displayClientMessage(
+                player.displayClientMessage(
                         xlate("pneumaticcraft.message.amadron.playerBought",
-                                buyingPlayer,
-                                offerAmount,
-                                getOffer().getOutput().toString(),
-                                getOffer().getInput().toString()
+                                message.buyingPlayer(),
+                                message.offerAmount(),
+                                message.offer().getOutput().toString(),
+                                message.offer().getInput().toString()
                         ), false
                 );
-        });
-        ctx.get().setPacketHandled(true);
+        }));
     }
 }

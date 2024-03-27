@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.common.block.entity;
 
 import net.minecraft.nbt.CompoundTag;
-import net.minecraftforge.energy.EnergyStorage;
+import net.neoforged.neoforge.energy.EnergyStorage;
 
 public class PneumaticEnergyStorage extends EnergyStorage {
     public PneumaticEnergyStorage(int capacity) {

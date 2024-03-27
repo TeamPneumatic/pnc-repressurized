@@ -22,14 +22,13 @@
   },
   "requirements": [
     [
-      "has_empty_spawner",
-      "has_the_recipe"
+      "has_the_recipe",
+      "has_empty_spawner"
     ]
   ],
   "rewards": {
     "recipes": [
       "pneumaticcraft:pressurized_spawner"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }

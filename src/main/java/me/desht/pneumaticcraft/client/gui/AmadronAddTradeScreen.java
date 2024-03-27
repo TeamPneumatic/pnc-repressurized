@@ -25,8 +25,6 @@ import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.block.entity.AbstractPneumaticCraftBlockEntity;
-import me.desht.pneumaticcraft.common.core.ModItems;
-import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.inventory.AmadronAddTradeMenu;
 import me.desht.pneumaticcraft.common.item.AmadronTabletItem;
 import me.desht.pneumaticcraft.common.item.GPSToolItem;
@@ -34,6 +32,8 @@ import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketAmadronTradeAddCustom;
 import me.desht.pneumaticcraft.common.network.PacketGuiButton;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronPlayerOffer;
+import me.desht.pneumaticcraft.common.registry.ModItems;
+import me.desht.pneumaticcraft.common.registry.ModMenuTypes;
 import me.desht.pneumaticcraft.common.util.GlobalPosHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
@@ -47,8 +47,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.items.ItemHandlerHelper;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.items.ItemHandlerHelper;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.List;
@@ -186,16 +186,16 @@ public class AmadronAddTradeScreen extends AbstractPneumaticCraftContainerScreen
             WidgetTextFieldNumber amountIn = amountFields[INPUT_SLOT];
             WidgetTextFieldNumber amountOut = amountFields[OUTPUT_SLOT];
             if (amountIn.isFocused()) {
-                amountIn.moveCursorTo(amountIn.getCursorPosition());
+                amountIn.moveCursorTo(amountIn.getCursorPosition(), true);
                 amountIn.setFocused(false);
                 setFocused(amountOut);
-                amountOut.moveCursorTo(0);
+                amountOut.moveCursorTo(0, false);
                 amountOut.setHighlightPos(amountOut.getValue().length());
             } else if (amountOut.isFocused()) {
-                amountOut.moveCursorTo(amountOut.getCursorPosition());
+                amountOut.moveCursorTo(amountOut.getCursorPosition(), true);
                 amountOut.setFocused(false);
                 setFocused(amountIn);
-                amountIn.moveCursorTo(0);
+                amountIn.moveCursorTo(0, false);
                 amountIn.setHighlightPos(amountIn.getValue().length());
             }
         }

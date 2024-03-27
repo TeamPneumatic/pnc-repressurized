@@ -19,8 +19,8 @@ package me.desht.pneumaticcraft.common.thirdparty.computer_common;
 
 import me.desht.pneumaticcraft.common.block.AbstractPneumaticCraftBlock;
 import me.desht.pneumaticcraft.common.block.PneumaticCraftEntityBlock;
-import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.item.CreativeTabStackProvider;
+import me.desht.pneumaticcraft.common.registry.ModBlocks;
 import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.ItemStack;

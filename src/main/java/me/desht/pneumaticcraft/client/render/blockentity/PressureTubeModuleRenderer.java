@@ -32,6 +32,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 
 import java.util.HashMap;
@@ -95,5 +96,10 @@ public class PressureTubeModuleRenderer implements BlockEntityRenderer<PressureT
     @Override
     public boolean shouldRenderOffScreen(PressureTubeBlockEntity te) {
         return te.tubeModules().findAny().isPresent();
+    }
+
+    @Override
+    public AABB getRenderBoundingBox(PressureTubeBlockEntity blockEntity) {
+        return blockEntity.getRenderBoundingBox();
     }
 }

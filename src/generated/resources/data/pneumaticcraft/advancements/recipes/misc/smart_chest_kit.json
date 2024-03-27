@@ -22,14 +22,13 @@
   },
   "requirements": [
     [
-      "has_smart_chest",
-      "has_the_recipe"
+      "has_the_recipe",
+      "has_smart_chest"
     ]
   ],
   "rewards": {
     "recipes": [
       "pneumaticcraft:smart_chest_kit"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }

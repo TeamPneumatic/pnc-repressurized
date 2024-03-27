@@ -18,11 +18,11 @@
 package me.desht.pneumaticcraft.common.inventory;
 
 import me.desht.pneumaticcraft.common.block.entity.GasLiftBlockEntity;
-import me.desht.pneumaticcraft.common.core.ModMenuTypes;
+import me.desht.pneumaticcraft.common.registry.ModMenuTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
-import net.minecraftforge.items.SlotItemHandler;
+import net.neoforged.neoforge.items.SlotItemHandler;
 
 public class GasLiftMenu extends AbstractPneumaticCraftMenu<GasLiftBlockEntity> {
 
@@ -35,7 +35,7 @@ public class GasLiftMenu extends AbstractPneumaticCraftMenu<GasLiftBlockEntity> 
 
         addUpgradeSlots(11, 29);
 
-        addSlot(new SlotItemHandler(te.getPrimaryInventory(), 0, 55, 48));
+        addSlot(new SlotItemHandler(blockEntity.getItemHandler(), 0, 55, 48));
 
         addPlayerSlots(playerInventory, 84);
     }

@@ -1,13 +1,11 @@
 {
-  "type": "pneumaticcraft:heat_properties",
-  "block": "minecraft:soul_campfire",
-  "statePredicate": {
-    "lit": "true"
-  },
-  "temperature": 1700,
-  "thermalResistance": 2500,
-  "heatCapacity": 10000,
-  "transformCold": {
-    "block": "minecraft:soul_campfire[lit=false]"
-  }
+   "heatCapacity" : 10000,
+   "statePredicate" : {
+      "lit" : "true"
+   },
+   "type" : "pneumaticcraft:heat_properties",
+   "block" : "minecraft:soul_campfire",
+   "temperature" : 1700,
+   "thermalResistance" : 2500,
+   "transformCold" : "minecraft:soul_campfire[lit=false]"
 }

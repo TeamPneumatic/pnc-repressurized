@@ -22,9 +22,9 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetLabel;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTextField;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
-import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdateAirGrateModule;
+import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.tubemodules.AirGrateModule;
 import me.desht.pneumaticcraft.common.util.EntityFilter;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -133,7 +133,7 @@ public class AirGrateModuleScreen extends AbstractTubeModuleScreen<AirGrateModul
             EntityFilter filter = EntityFilter.fromString(textfield.getValue());
             if (filter != null) {
                 module.setEntityFilter(filter);
-                NetworkHandler.sendToServer(new PacketUpdateAirGrateModule(module, textfield.getValue()));
+                NetworkHandler.sendToServer(PacketUpdateAirGrateModule.create(module, textfield.getValue()));
             }
         }
     }

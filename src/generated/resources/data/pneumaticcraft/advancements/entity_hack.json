@@ -2,22 +2,20 @@
   "parent": "pneumaticcraft:pneumatic_armor",
   "criteria": {
     "0": {
-      "conditions": {},
+      "conditions": {
+        "id": "pneumaticcraft:entity_hack"
+      },
       "trigger": "pneumaticcraft:entity_hack"
     }
   },
   "display": {
-    "announce_to_chat": true,
     "background": "pneumaticcraft:textures/gui/advancement_bg.png",
     "description": {
       "translate": "pneumaticcraft.advancement.entity_hack.desc"
     },
-    "frame": "task",
-    "hidden": false,
     "icon": {
       "item": "pneumaticcraft:entity_tracker_upgrade"
     },
-    "show_toast": true,
     "title": {
       "translate": "pneumaticcraft.advancement.entity_hack"
     }

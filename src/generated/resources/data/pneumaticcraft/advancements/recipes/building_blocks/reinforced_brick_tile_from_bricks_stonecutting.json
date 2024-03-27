@@ -22,14 +22,13 @@
   },
   "requirements": [
     [
-      "has_reinforced_stone",
-      "has_the_recipe"
+      "has_the_recipe",
+      "has_reinforced_stone"
     ]
   ],
   "rewards": {
     "recipes": [
       "pneumaticcraft:reinforced_brick_tile_from_bricks_stonecutting"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }

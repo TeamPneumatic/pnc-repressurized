@@ -1,6 +1,6 @@
 {
 	"credit": "Made with Blockbench",
-	"parent": "forge:block/default",
+	"parent": "neoforge:block/default",
 	"texture_size": [32, 32],
 	"textures": {
 		"2": "pneumaticcraft:pnc_model/uv_light_box",

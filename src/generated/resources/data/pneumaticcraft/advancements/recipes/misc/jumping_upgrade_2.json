@@ -22,14 +22,13 @@
   },
   "requirements": [
     [
-      "has_pneumatic_leggings",
-      "has_the_recipe"
+      "has_the_recipe",
+      "has_pneumatic_leggings"
     ]
   ],
   "rewards": {
     "recipes": [
       "pneumaticcraft:jumping_upgrade_2"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }

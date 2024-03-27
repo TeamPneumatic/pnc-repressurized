@@ -29,8 +29,9 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
+import net.neoforged.neoforge.capabilities.EntityCapability;
 
+import java.util.Optional;
 import java.util.function.Consumer;
 
 /**
@@ -39,7 +40,7 @@ import java.util.function.Consumer;
  * @implNote While semiblocks are implemented as entities, this is an implementation detail which should not be relied
  * upon any more than strictly necessary.
  */
-public interface ISemiBlock extends ICapabilityProvider {
+public interface ISemiBlock {
     /**
      * Get a unique ID for this semiblock, which should match the corresponding item's registry name.
      * @return a semiblock ID
@@ -182,6 +183,10 @@ public interface ISemiBlock extends ICapabilityProvider {
      * @return a color for this semiblock type
      */
     default int getColor() { return 0xFF808080; }
+
+    <T> Optional<T> getSemiblockCapability(EntityCapability<T,Direction> capability, Direction direction);
+
+    <T> Optional<T> getSemiblockCapability(EntityCapability<T,Void> capability);
 
     /**
      * Retrieve a semiblock by tracking ID.  This is only intended to be used for network sync purposes and is

@@ -25,10 +25,11 @@ import com.blamejared.crafttweaker.api.item.IItemStack;
 import com.blamejared.crafttweaker.api.recipe.manager.base.IRecipeManager;
 import com.blamejared.crafttweaker_annotations.annotations.Document;
 import me.desht.pneumaticcraft.api.crafting.recipe.AssemblyRecipe;
-import me.desht.pneumaticcraft.common.core.ModRecipeTypes;
 import me.desht.pneumaticcraft.common.recipes.machine.AssemblyRecipeImpl;
+import me.desht.pneumaticcraft.common.registry.ModRecipeTypes;
 import me.desht.pneumaticcraft.common.thirdparty.crafttweaker.CTUtils;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeType;
 import org.openzen.zencode.java.ZenCodeType;
 
@@ -39,11 +40,12 @@ public class AssemblyLaser implements IRecipeManager<AssemblyRecipe> {
     @ZenCodeType.Method
     public void addRecipe(String name, IIngredientWithAmount input, IItemStack output) {
         CraftTweakerAPI.apply(new ActionAddRecipe<>(this,
-                new AssemblyRecipeImpl(new ResourceLocation("crafttweaker", fixRecipeName(name)),
+                new RecipeHolder<>(new ResourceLocation("crafttweaker", fixRecipeName(name)),
+                new AssemblyRecipeImpl(
                         CTUtils.toStackedIngredient(input),
                         output.getImmutableInternal(),
                         AssemblyRecipe.AssemblyProgramType.LASER))
-        );
+        ));
     }
 
     @Override

@@ -28,7 +28,6 @@ import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.config.subconfig.ArmorFeatureStatus;
-import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketToggleArmorFeature;
 import me.desht.pneumaticcraft.common.network.PacketToggleArmorFeatureBulk;
@@ -36,6 +35,7 @@ import me.desht.pneumaticcraft.common.network.PacketToggleArmorFeatureBulk.Featu
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
+import me.desht.pneumaticcraft.common.registry.ModSounds;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.KeyMapping;
@@ -48,10 +48,11 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.settings.KeyModifier;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.client.event.InputEvent;
+import net.neoforged.neoforge.client.settings.KeyModifier;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.*;
@@ -77,6 +78,8 @@ public class WidgetKeybindCheckBox extends WidgetCheckBox {
 
         this.oldCheckboxText = getMessage();
         this.upgradeID = upgradeID;
+
+        buildTooltip();
     }
 
     public static WidgetKeybindCheckBox getOrCreate(ResourceLocation upgradeID, int x, int y, int color, Consumer<ICheckboxWidget> pressable) {
@@ -187,6 +190,7 @@ public class WidgetKeybindCheckBox extends WidgetCheckBox {
                 updateBinding(InputConstants.UNKNOWN);
             } else {
                 isListeningForBinding = !isListeningForBinding;
+                buildTooltip();
                 if (isListeningForBinding) {
                     oldCheckboxText = getMessage();
                     setMessage(xlate("pneumaticcraft.gui.setKeybind").withStyle(ChatFormatting.YELLOW));
@@ -242,7 +246,7 @@ public class WidgetKeybindCheckBox extends WidgetCheckBox {
     public void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
         super.renderWidget(graphics, mouseX, mouseY, partialTick);
 
-        buildTooltip();
+//        buildTooltip();
     }
 
     private void buildTooltip() {
@@ -283,9 +287,12 @@ public class WidgetKeybindCheckBox extends WidgetCheckBox {
             keyBinding.setKeyModifierAndCode(mod, input);
             Minecraft.getInstance().options.setKey(keyBinding, input);
             KeyMapping.resetMapping();
-            Minecraft.getInstance().player.playSound(SoundEvents.NOTE_BLOCK_CHIME.get(), 1.0f, input == InputConstants.UNKNOWN ? 0.5f :1.0f);
+            KeyDispatcher.in2checkbox.values().remove(this);
+            KeyDispatcher.in2checkbox.put(InputRecord.forKeyMapping(keyBinding), this);
+            Minecraft.getInstance().player.playSound(SoundEvents.NOTE_BLOCK_CHIME.value(), 1.0f, input == InputConstants.UNKNOWN ? 0.5f :1.0f);
         }
         setMessage(oldCheckboxText);
+        buildTooltip();
     }
 
     @Override
@@ -299,14 +306,14 @@ public class WidgetKeybindCheckBox extends WidgetCheckBox {
         private static final Map<InputRecord, WidgetKeybindCheckBox> in2checkbox = new HashMap<>();
 
         @SubscribeEvent
-        public static void onKeyPress(net.minecraftforge.client.event.InputEvent.Key event) {
+        public static void onKeyPress(net.neoforged.neoforge.client.event.InputEvent.Key event) {
             if (Minecraft.getInstance().screen == null && event.getAction() == GLFW.GLFW_PRESS) {
                 handleInput(InputConstants.Type.KEYSYM.getOrCreate(event.getKey()));
             }
         }
 
         @SubscribeEvent
-        public static void onMouseClick(net.minecraftforge.client.event.InputEvent.MouseButton event) {
+        public static void onMouseClick(InputEvent.MouseButton.Post event) {
             if (Minecraft.getInstance().screen == null && event.getAction() == GLFW.GLFW_PRESS) {
                 handleInput(InputConstants.Type.MOUSE.getOrCreate(event.getButton()));
             }

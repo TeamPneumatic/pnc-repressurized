@@ -31,6 +31,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
@@ -51,18 +52,21 @@ public class EtchingTankScreen extends AbstractPneumaticCraftContainerScreen<Etc
 
         addRenderableWidget(new WidgetTank(leftPos + 149, topPos + 18, te.getAcidTank()));
 
-        addRenderableWidget(tempWidget = new WidgetTemperature(leftPos + 134, topPos + 18, TemperatureRange.of(273, 773), 323, 50,
-                () -> {
-                    int interval = te.getTickInterval();
-                    int processTimeSecs = interval * 5;
-                    MutableComponent c = xlate("pneumaticcraft.gui.tooltip.etching_tank.process_time", processTimeSecs).withStyle(ChatFormatting.GREEN);
-                    if (tempWidget.getTemperature() > 323) {
-                        float usage = (30 - interval) / (5f * interval);
-                        c.append("\n").append(xlate("pneumaticcraft.gui.tooltip.etching_tank.acid_usage", PneumaticCraftUtils.roundNumberTo(usage, 2)).withStyle(ChatFormatting.YELLOW));
-                    }
-                    return Tooltip.create(c);
-                })
+        addRenderableWidget(tempWidget = new WidgetTemperature(leftPos + 134, topPos + 18,
+                        TemperatureRange.of(273, 773), 323, 50, this::makeTooltip)
         );
+    }
+
+    @NotNull
+    private List<Component> makeTooltip() {
+        int interval = te.getTickInterval();
+        int processTimeSecs = interval * 5;
+        MutableComponent c = xlate("pneumaticcraft.gui.tooltip.etching_tank.process_time", processTimeSecs).withStyle(ChatFormatting.GREEN);
+        if (tempWidget.getTemperature() > 323) {
+            float usage = (30 - interval) / (5f * interval);
+            c.append("\n").append(xlate("pneumaticcraft.gui.tooltip.etching_tank.acid_usage", PneumaticCraftUtils.roundNumberTo(usage, 2)).withStyle(ChatFormatting.YELLOW));
+        }
+        return List.of(c);
     }
 
     @Override

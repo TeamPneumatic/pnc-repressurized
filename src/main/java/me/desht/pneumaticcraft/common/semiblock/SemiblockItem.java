@@ -18,12 +18,13 @@
 package me.desht.pneumaticcraft.common.semiblock;
 
 import me.desht.pneumaticcraft.api.semiblock.IDirectionalSemiblock;
-import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.entity.semiblock.AbstractSemiblockEntity;
+import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
@@ -33,7 +34,6 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.registries.ForgeRegistries;
 
 public class SemiblockItem extends Item {
     public SemiblockItem() {
@@ -61,16 +61,15 @@ public class SemiblockItem extends Item {
      */
     public AbstractSemiblockEntity createEntity(Level world, ItemStack stack, Player player, BlockPos pos) {
         ResourceLocation regName = PneumaticCraftUtils.getRegistryName(this).orElseThrow();
-        EntityType<?> type = ForgeRegistries.ENTITY_TYPES.getValue(regName);
-        if (type != null) {
+        return BuiltInRegistries.ENTITY_TYPE.getOptional(regName).map(type -> {
             Entity e = type.create(world);
-            if (e != null) {
+            if (e instanceof AbstractSemiblockEntity semi) {
                 e.moveTo(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, 0f, 0f);
                 EntityType.updateCustomEntityTag(world, player, e, stack.getTag());
-                return e instanceof AbstractSemiblockEntity ? (AbstractSemiblockEntity) e : null;
+                return semi;
             }
-        }
-        return null;
+            return null;
+        }).orElse(null);
     }
 
     private InteractionResult placeSemiblock(UseOnContext context) {

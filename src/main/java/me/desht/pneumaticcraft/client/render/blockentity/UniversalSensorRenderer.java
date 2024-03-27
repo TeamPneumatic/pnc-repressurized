@@ -16,6 +16,7 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.util.Mth;
+import net.minecraft.world.phys.AABB;
 
 public class UniversalSensorRenderer extends AbstractBlockEntityModelRenderer<UniversalSensorBlockEntity> {
     private final ModelPart part1;
@@ -190,5 +191,10 @@ public class UniversalSensorRenderer extends AbstractBlockEntityModelRenderer<Un
         part13.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
         part14.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
         part15.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
+    }
+
+    @Override
+    public AABB getRenderBoundingBox(UniversalSensorBlockEntity blockEntity) {
+        return blockEntity.getRenderBoundingBox();
     }
 }

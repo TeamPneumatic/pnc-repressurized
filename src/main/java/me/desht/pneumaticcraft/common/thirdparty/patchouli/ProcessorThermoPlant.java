@@ -18,12 +18,15 @@
 package me.desht.pneumaticcraft.common.thirdparty.patchouli;
 
 import me.desht.pneumaticcraft.api.crafting.TemperatureRange;
+import me.desht.pneumaticcraft.api.crafting.ingredient.FluidIngredient;
 import me.desht.pneumaticcraft.api.crafting.recipe.ThermoPlantRecipe;
-import me.desht.pneumaticcraft.common.core.ModRecipeTypes;
+import me.desht.pneumaticcraft.common.registry.ModRecipeTypes;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.Level;
 import vazkii.patchouli.api.IComponentProcessor;
 import vazkii.patchouli.api.IVariable;
@@ -37,7 +40,9 @@ public class ProcessorThermoPlant implements IComponentProcessor {
     @Override
     public void setup(Level level, IVariableProvider iVariableProvider) {
         ResourceLocation recipeId = new ResourceLocation(iVariableProvider.get("recipe").asString());
-        this.recipe = ModRecipeTypes.THERMO_PLANT.get().getRecipe(Minecraft.getInstance().level, recipeId);
+        ModRecipeTypes.THERMO_PLANT.get().getRecipe(Minecraft.getInstance().level, recipeId)
+                .ifPresentOrElse(h -> recipe = h.value(),
+                        () -> Log.warning("Missing thermoplant recipe: " + recipeId));
         this.header = iVariableProvider.has("header") ? iVariableProvider.get("header").asString() : "";
     }
 
@@ -49,9 +54,9 @@ public class ProcessorThermoPlant implements IComponentProcessor {
             case "header":
                 return IVariable.wrap(header.isEmpty() ? defaultHeader() : header);
             case "item_input":
-                return PatchouliAccess.getStacks(recipe.getInputItem());
+                return PatchouliAccess.getStacks(recipe.getInputItem().orElse(Ingredient.EMPTY));
             case "fluid_input":
-                return PatchouliAccess.getFluidStacks(recipe.getInputFluid());
+                return PatchouliAccess.getFluidStacks(recipe.getInputFluid().orElse(FluidIngredient.EMPTY));
             case "item_output":
                 return IVariable.from(recipe.getOutputItem());
             case "fluid_output":
@@ -67,7 +72,7 @@ public class ProcessorThermoPlant implements IComponentProcessor {
     }
 
     private int getScale(ThermoPlantRecipe recipe) {
-        int in = recipe.getInputFluid().getAmount();
+        int in = recipe.getInputFluidAmount();
         int out = recipe.getOutputFluid().getAmount();
         if (in >= 4000 || out >= 4000) {
             return 16000;

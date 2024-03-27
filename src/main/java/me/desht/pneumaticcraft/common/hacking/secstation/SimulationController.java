@@ -67,9 +67,9 @@ public class SimulationController implements ISimulationController {
         this.aiSimulation = new HackSimulation(this, te.findComponent(NetworkComponentType.DIAGNOSTIC_SUBROUTINE),
                 BlockEntityConstants.NETWORK_AI_BRIDGE_SPEED, HackingSide.AI);
 
-        for (int i = 0; i < te.getPrimaryInventory().getSlots(); i++) {
-            this.playerSimulation.addNode(i, te.getPrimaryInventory().getStackInSlot(i));
-            this.aiSimulation.addNode(i, te.getPrimaryInventory().getStackInSlot(i));
+        for (int i = 0; i < te.getItemHandler().getSlots(); i++) {
+            this.playerSimulation.addNode(i, te.getItemHandler().getStackInSlot(i));
+            this.aiSimulation.addNode(i, te.getItemHandler().getStackInSlot(i));
         }
 
         this.justTesting = justTesting;
@@ -108,8 +108,8 @@ public class SimulationController implements ISimulationController {
         aiSimulation.writeToNetwork(buffer);
 
         List<Pair<Integer, ItemStack>> nodes = new ArrayList<>();
-        for (int i = 0; i < te.getPrimaryInventory().getSlots(); i++) {
-            ItemStack stack = te.getPrimaryInventory().getStackInSlot(i);
+        for (int i = 0; i < te.getItemHandler().getSlots(); i++) {
+            ItemStack stack = te.getItemHandler().getStackInSlot(i);
             if (!stack.isEmpty()) {
                 nodes.add(Pair.of(i, stack));
             }
@@ -156,7 +156,7 @@ public class SimulationController implements ISimulationController {
         if (!(hacker.containerMenu instanceof SecurityStationHackingMenu) && !playerSimulation.isHackComplete()) {
             // hacker closed their window before hack complete: AI wins
             for (int slot = 0; slot < HackSimulation.GRID_SIZE; slot++) {
-                if (NetworkComponentItem.isType(te.getPrimaryInventory().getStackInSlot(slot), NetworkComponentType.NETWORK_IO_PORT)) {
+                if (NetworkComponentItem.isType(te.getItemHandler().getStackInSlot(slot), NetworkComponentType.NETWORK_IO_PORT)) {
                     aiSimulation.getNodeAt(slot).setHackProgress(slot, 1F, true);
                     break;
                 }
@@ -196,7 +196,7 @@ public class SimulationController implements ISimulationController {
             }
         }
         if (!te.nonNullLevel().isClientSide() && syncToClient) {
-            NetworkHandler.sendToPlayer(new PacketSyncHackSimulationUpdate(te), (ServerPlayer) hacker);
+            NetworkHandler.sendToPlayer(PacketSyncHackSimulationUpdate.forSecurityStation(te), (ServerPlayer) hacker);
         }
     }
 

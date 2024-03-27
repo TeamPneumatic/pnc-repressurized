@@ -21,13 +21,13 @@ import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import me.desht.pneumaticcraft.common.core.ModParticleTypes;
+import me.desht.pneumaticcraft.common.registry.ModParticleTypes;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.Calendar;
 import java.util.Locale;
@@ -75,7 +75,7 @@ public class AirParticleData implements ParticleOptions {
 
     @Override
     public String writeToString() {
-        ResourceLocation regName = PneumaticCraftUtils.getRegistryName(ForgeRegistries.PARTICLE_TYPES, getType()).orElseThrow();
+        ResourceLocation regName = PneumaticCraftUtils.getRegistryName(BuiltInRegistries.PARTICLE_TYPE, getType()).orElseThrow();
         return String.format(Locale.ROOT, "%s %f", regName, alpha);
     }
 

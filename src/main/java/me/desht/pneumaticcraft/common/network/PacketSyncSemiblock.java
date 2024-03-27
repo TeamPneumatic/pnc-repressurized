@@ -22,13 +22,16 @@ import me.desht.pneumaticcraft.api.semiblock.ISemiBlock;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.semiblock.ISyncableSemiblockItem;
 import me.desht.pneumaticcraft.lib.Log;
+import net.minecraft.Util;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.network.NetworkEvent;
+import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 import org.apache.commons.lang3.Validate;
 
-import java.util.function.Supplier;
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 /**
  * Received on: BOTH
@@ -36,38 +39,44 @@ import java.util.function.Supplier;
  * <p>Sent by server to sync settings needed for GUI purposes.</p>
  * <p>Sent by client to send updated settings from GUI code</p>
  */
-public class PacketSyncSemiblock {
-    private final int entityID;  // -1 indicates no entity, sync'ing to item in hand
-    private final FriendlyByteBuf payload;
+public record PacketSyncSemiblock(int entityID, FriendlyByteBuf payload) implements CustomPacketPayload {
+    public static final ResourceLocation ID = RL("sync_semiblock");
 
-    public PacketSyncSemiblock(ISemiBlock semiBlock, boolean itemContainer) {
-        this.entityID = itemContainer ? -1 : semiBlock.getTrackingId();
-        this.payload = new FriendlyByteBuf(Unpooled.buffer());
-        semiBlock.writeToBuf(payload);
+    public static PacketSyncSemiblock create(ISemiBlock semiBlock, boolean itemContainer) {
+        FriendlyByteBuf payload = Util.make(new FriendlyByteBuf(Unpooled.buffer()), semiBlock::writeToBuf);
+
+        return new PacketSyncSemiblock(itemContainer ? -1 : semiBlock.getTrackingId(), payload);
     }
 
-    PacketSyncSemiblock(FriendlyByteBuf buffer) {
-        this.entityID = buffer.readInt();
+    public static PacketSyncSemiblock fromNetwork(FriendlyByteBuf buffer) {
+        int entityID = buffer.readInt();
         int size = buffer.readVarInt();
-        this.payload = new FriendlyByteBuf(Unpooled.buffer(size));
-        buffer.readBytes(this.payload, size);
+        FriendlyByteBuf payload = new FriendlyByteBuf(Unpooled.buffer(size));
+        buffer.readBytes(payload, size);
+
+        return new PacketSyncSemiblock(entityID, payload);
     }
 
-    public void toBytes(FriendlyByteBuf buffer) {
+    @Override
+    public void write(FriendlyByteBuf buffer) {
         buffer.writeInt(entityID);
         buffer.writeVarInt(payload.writerIndex());
         buffer.writeBytes(payload);
     }
 
-    public void handle(Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> {
-           if (ctx.get().getSender() == null) {
-               handleClient();
-           } else {
-               handleServer(ctx.get().getSender());
+    @Override
+    public ResourceLocation id() {
+        return ID;
+    }
+
+    public static void handle(PacketSyncSemiblock message, PlayPayloadContext ctx) {
+        ctx.player().ifPresent(player -> ctx.workHandler().submitAsync(() -> {
+           if (ctx.flow().isClientbound()) {
+               message.handleClient();
+           } else if (player instanceof ServerPlayer sp) {
+               message.handleServer(sp);
            }
-        });
-        ctx.get().setPacketHandled(true);
+        }));
     }
 
     private void handleServer(ServerPlayer sender) {

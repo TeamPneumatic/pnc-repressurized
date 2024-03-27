@@ -20,10 +20,10 @@ package me.desht.pneumaticcraft.common.block.entity;
 import com.google.common.collect.ImmutableMap;
 import me.desht.pneumaticcraft.common.block.LiquidHopperBlock;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
-import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.inventory.LiquidHopperMenu;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
+import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.util.FluidUtils;
 import me.desht.pneumaticcraft.common.util.IOHelper;
@@ -42,13 +42,11 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.phys.AABB;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.fluids.*;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.fluids.capability.IFluidHandler.FluidAction;
-import net.minecraftforge.items.IItemHandler;
-import org.jetbrains.annotations.NotNull;
+import net.neoforged.neoforge.capabilities.BlockCapabilityCache;
+import net.neoforged.neoforge.fluids.*;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction;
+import net.neoforged.neoforge.items.IItemHandler;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -60,16 +58,45 @@ public class LiquidHopperBlockEntity extends AbstractHopperBlockEntity<LiquidHop
     @DescSynced
     @GuiSynced
     private final HopperTank tank = new HopperTank(PneumaticValues.NORMAL_TANK_CAPACITY);
-    private final LazyOptional<IFluidHandler> tankCap = LazyOptional.of(() -> tank);
     private final WrappedFluidTank inputWrapper = new WrappedFluidTank(tank, true);
-    private final LazyOptional<IFluidHandler> inputCap = LazyOptional.of(() -> inputWrapper);
     private final WrappedFluidTank outputWrapper = new WrappedFluidTank(tank, false);
-    private final LazyOptional<IFluidHandler> outputCap = LazyOptional.of(() -> outputWrapper);
     @GuiSynced
     private final RedstoneController<LiquidHopperBlockEntity> rsController = new RedstoneController<>(this);
 
+    private BlockCapabilityCache<IFluidHandler,Direction> inputCache, outputCache;
+
     public LiquidHopperBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.LIQUID_HOPPER.get(), pos, state);
+        super(ModBlockEntityTypes.LIQUID_HOPPER.get(), pos, state);
+    }
+
+    private BlockCapabilityCache<IFluidHandler,Direction> getInputCache() {
+        if (inputCache == null) {
+            inputCache = createFluidHandlerCache(inputDir);
+        }
+        return inputCache;
+    }
+
+    private BlockCapabilityCache<IFluidHandler,Direction> getOutputCache() {
+        if (outputCache == null) {
+            outputCache = createFluidHandlerCache(getRotation());
+        }
+        return outputCache;
+    }
+
+    @Override
+    public boolean hasFluidCapability() {
+        return true;
+    }
+
+    @Override
+    public IFluidHandler getFluidHandler(@Nullable Direction dir) {
+        if (dir == inputDir) {
+            return inputWrapper;
+        } else if (dir == getRotation()) {
+            return outputWrapper;
+        } else {
+            return tank;
+        }
     }
 
     @Override
@@ -108,17 +135,15 @@ public class LiquidHopperBlockEntity extends AbstractHopperBlockEntity<LiquidHop
         Direction dir = getRotation();
 
         // try to fill any neighbouring fluid-accepting block entity
-        BlockEntity neighbor = getCachedNeighbor(dir);
-        if (neighbor != null) {
-            return IOHelper.getFluidHandlerForTE(neighbor, dir.getOpposite()).map(fluidHandler -> {
-                int amount = Math.min(maxItems * 100, tank.getFluid().getAmount() - leaveMaterialCount * 1000);
-                FluidStack transferred = FluidUtil.tryFluidTransfer(fluidHandler, tank, amount, true);
-                return !transferred.isEmpty();
-            }).orElse(false);
+        IFluidHandler dstHandler = getOutputCache().getCapability();
+        if (dstHandler != null) {
+            int amount = Math.min(maxItems * 100, tank.getFluid().getAmount() - leaveMaterialCount * 1000);
+            FluidStack transferred = FluidUtil.tryFluidTransfer(dstHandler, tank, amount, true);
+            return !transferred.isEmpty();
         } else if (getUpgrades(ModUpgrades.ENTITY_TRACKER.get()) > 0) {
             for (Entity e : cachedOutputEntities) {
                 if (!e.isAlive()) continue;
-                FluidStack transferred = e.getCapability(ForgeCapabilities.FLUID_HANDLER, getRotation().getOpposite()).map(h -> {
+                FluidStack transferred = IOHelper.getFluidHandlerForEntity(e, getRotation().getOpposite()).map(h -> {
                     int amount = Math.min(maxItems * 100, tank.getFluid().getAmount() - leaveMaterialCount * 1000);
                     return FluidUtil.tryFluidTransfer(h, tank, amount, true);
                 }).orElse(FluidStack.EMPTY);
@@ -141,7 +166,7 @@ public class LiquidHopperBlockEntity extends AbstractHopperBlockEntity<LiquidHop
         // try to pour fluid into the world
         if (ConfigHelper.common().machines.liquidHopperDispenser.get() && getUpgrades(ModUpgrades.DISPENSER.get()) > 0
                 && tank.getFluidAmount() >= leaveMaterialCount + FluidType.BUCKET_VOLUME) {
-            return FluidUtils.tryPourOutFluid(outputCap, nonNullLevel(), getBlockPos().relative(dir), false, false, FluidAction.EXECUTE);
+            return FluidUtils.tryPourOutFluid(outputWrapper, nonNullLevel(), getBlockPos().relative(dir), false, false, FluidAction.EXECUTE);
         }
 
         return false;
@@ -149,27 +174,21 @@ public class LiquidHopperBlockEntity extends AbstractHopperBlockEntity<LiquidHop
 
     @Override
     protected boolean doImport(int maxItems) {
-        BlockEntity inputInv = getCachedNeighbor(inputDir);
-
-        if (inputInv != null) {
-            LazyOptional<IFluidHandler> cap = inputInv.getCapability(ForgeCapabilities.FLUID_HANDLER, inputDir.getOpposite());
-            if (cap.isPresent()) {
-                return cap.map(fluidHandler -> {
-                    FluidStack fluid = fluidHandler.drain(maxItems * 100, FluidAction.SIMULATE);
-                    if (!fluid.isEmpty()) {
-                        int filledFluid = tank.fill(fluid, FluidAction.EXECUTE);
-                        if (filledFluid > 0) {
-                            fluidHandler.drain(filledFluid, FluidAction.EXECUTE);
-                            return true;
-                        }
-                    }
-                    return false;
-                }).orElse(false);
+        IFluidHandler srcHandler = getInputCache().getCapability();
+        if (srcHandler != null) {
+            FluidStack fluid = srcHandler.drain(maxItems * 100, FluidAction.SIMULATE);
+            if (!fluid.isEmpty()) {
+                int filledFluid = tank.fill(fluid, FluidAction.EXECUTE);
+                if (filledFluid > 0) {
+                    srcHandler.drain(filledFluid, FluidAction.EXECUTE);
+                    return true;
+                }
             }
+            return false;
         } else if (getUpgrades(ModUpgrades.ENTITY_TRACKER.get()) > 0) {
             for (Entity e : cachedInputEntities) {
                 if (!e.isAlive()) continue;
-                FluidStack transferred = e.getCapability(ForgeCapabilities.FLUID_HANDLER, inputDir.getOpposite())
+                FluidStack transferred = IOHelper.getFluidHandlerForEntity(e, inputDir.getOpposite())
                         .map(h -> FluidUtil.tryFluidTransfer(tank, h, maxItems * 100, true))
                         .orElse(FluidStack.EMPTY);
                 if (!transferred.isEmpty()) return true;
@@ -190,7 +209,7 @@ public class LiquidHopperBlockEntity extends AbstractHopperBlockEntity<LiquidHop
 
         if (ConfigHelper.common().machines.liquidHopperDispenser.get() && getUpgrades(ModUpgrades.DISPENSER.get()) > 0) {
             BlockPos neighborPos = getBlockPos().relative(inputDir);
-            return !FluidUtils.tryPickupFluid(inputCap, nonNullLevel(), neighborPos, false, FluidAction.EXECUTE).isEmpty();
+            return !FluidUtils.tryPickupFluid(inputWrapper, nonNullLevel(), neighborPos, false, FluidAction.EXECUTE).isEmpty();
         }
 
         return false;
@@ -208,7 +227,7 @@ public class LiquidHopperBlockEntity extends AbstractHopperBlockEntity<LiquidHop
     @Override
     boolean shouldScanForEntities(Direction dir) {
         BlockEntity te = getCachedNeighbor(dir);
-        return (te == null || !te.getCapability(ForgeCapabilities.FLUID_HANDLER, dir.getOpposite()).isPresent())
+        return (te == null || IOHelper.getFluidHandlerForBlock(te, dir.getOpposite()).isEmpty())
                 && !isInputBlocked();
     }
 
@@ -224,25 +243,8 @@ public class LiquidHopperBlockEntity extends AbstractHopperBlockEntity<LiquidHop
     }
 
     @Override
-    public IItemHandler getPrimaryInventory() {
+    public IItemHandler getItemHandler(@org.jetbrains.annotations.Nullable Direction dir) {
         return null;
-    }
-
-    @Override
-    protected LazyOptional<IItemHandler> getInventoryCap(Direction side) {
-        return LazyOptional.empty();
-    }
-
-    @NotNull
-    @Override
-    public LazyOptional<IFluidHandler> getFluidCap(Direction side) {
-        if (side == inputDir) {
-            return inputCap;
-        } else if (side == getRotation()) {
-            return outputCap;
-        } else {
-            return tankCap;
-        }
     }
 
     @Nonnull

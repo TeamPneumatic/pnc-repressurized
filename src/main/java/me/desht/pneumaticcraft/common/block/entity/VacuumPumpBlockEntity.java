@@ -17,15 +17,14 @@
 
 package me.desht.pneumaticcraft.common.block.entity;
 
-import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.pressure.PressureTier;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
 import me.desht.pneumaticcraft.api.tileentity.IManoMeasurable;
 import me.desht.pneumaticcraft.common.capabilities.MachineAirHandler;
-import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.inventory.VacuumPumpMenu;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
+import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.ChatFormatting;
@@ -39,12 +38,8 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.AABB;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.IItemHandler;
+import net.neoforged.neoforge.items.IItemHandler;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 
@@ -54,7 +49,6 @@ public class VacuumPumpBlockEntity extends AbstractAirHandlingBlockEntity implem
         IRedstoneControl<VacuumPumpBlockEntity>, IManoMeasurable, MenuProvider {
     @GuiSynced
     private final IAirHandlerMachine vacuumHandler;
-    private final LazyOptional<IAirHandlerMachine> vacuumCap;
     public int rotation;
     public int oldRotation;
     private int turnTimer = -1;
@@ -65,28 +59,29 @@ public class VacuumPumpBlockEntity extends AbstractAirHandlingBlockEntity implem
     public final RedstoneController<VacuumPumpBlockEntity> rsController = new RedstoneController<>(this);
 
     public VacuumPumpBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.VACUUM_PUMP.get(), pos, state, PressureTier.TIER_ONE, PneumaticValues.VOLUME_VACUUM_PUMP, 4);
+        super(ModBlockEntityTypes.VACUUM_PUMP.get(), pos, state, PressureTier.TIER_ONE, PneumaticValues.VOLUME_VACUUM_PUMP, 4);
 
         this.vacuumHandler  = new MachineAirHandler(PressureTier.TIER_ONE, PneumaticValues.VOLUME_VACUUM_PUMP);
-        this.vacuumCap = LazyOptional.of(() -> vacuumHandler);
     }
 
-    @Nonnull
     @Override
-    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-        if (cap == PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY) {
-            if (level == null) return LazyOptional.empty();
-            if (side == getVacuumSide()) {
-                return vacuumCap.cast();
-            } else if (side != getInputSide() && side != null) {
-                return LazyOptional.empty();
-            }
+    public IAirHandlerMachine getAirHandler(Direction side) {
+        if (side == getVacuumSide()) {
+            return vacuumHandler;
+        } else if (side == getInputSide() || side == null) {
+            return super.getAirHandler(side);
+        } else {
+            return null;
         }
-        return super.getCapability(cap, side);
     }
 
     @Override
-    public IItemHandler getPrimaryInventory() {
+    public boolean canConnectPneumatic(Direction side) {
+        return side == getInputSide() || side == getVacuumSide();
+    }
+
+    @Override
+    public IItemHandler getItemHandler(@org.jetbrains.annotations.Nullable Direction dir) {
         return null;
     }
 
@@ -131,11 +126,6 @@ public class VacuumPumpBlockEntity extends AbstractAirHandlingBlockEntity implem
         }
         airHandler.setSideLeaking(airHandler.getConnectedAirHandlers(this).isEmpty() ? getInputSide() : null);
         vacuumHandler.setSideLeaking(vacuumHandler.getConnectedAirHandlers(this).isEmpty() ? getVacuumSide() : null);
-    }
-
-    @Override
-    public AABB getRenderBoundingBox() {
-        return new AABB(getBlockPos().getX(), getBlockPos().getY(), getBlockPos().getZ(), getBlockPos().getX() + 1, getBlockPos().getY() + 1, getBlockPos().getZ() + 1);
     }
 
     @Override

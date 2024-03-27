@@ -38,9 +38,8 @@ import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.items.ItemStackHandler;
-import net.minecraftforge.network.NetworkHooks;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.items.ItemStackHandler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,8 +51,8 @@ public abstract class AbstractLogisticsFrameItem extends SemiblockItem {
     @Override
     public InteractionResultHolder<ItemStack> use(Level world, Player player, InteractionHand handIn) {
         ItemStack stack = player.getItemInHand(handIn);
-        if (!world.isClientSide) {
-            NetworkHooks.openScreen((ServerPlayer) player, new MenuProvider() {
+        if (player instanceof ServerPlayer sp) {
+            sp.openMenu(new MenuProvider() {
                 @Override
                 public Component getDisplayName() {
                     return stack.getHoverName();

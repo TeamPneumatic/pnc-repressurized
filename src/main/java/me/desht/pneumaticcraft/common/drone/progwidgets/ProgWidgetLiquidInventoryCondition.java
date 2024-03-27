@@ -19,9 +19,10 @@ package me.desht.pneumaticcraft.common.drone.progwidgets;
 
 import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
-import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.common.drone.IDroneBase;
 import me.desht.pneumaticcraft.common.drone.ai.DroneAIBlockCondition;
+import me.desht.pneumaticcraft.common.registry.ModProgWidgets;
+import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
@@ -29,8 +30,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidStack;
 
 import java.util.List;
 
@@ -67,7 +67,7 @@ public class ProgWidgetLiquidInventoryCondition extends ProgWidgetCondition {
             }
 
             private int countFluid(BlockEntity te) {
-                return te.getCapability(ForgeCapabilities.FLUID_HANDLER).map(handler -> {
+                return IOHelper.getFluidHandlerForBlock(te).map(handler -> {
                     int total = 0;
                     for (int i = 0; i < handler.getTanks(); i++) {
                         FluidStack stack = handler.getFluidInTank(i);

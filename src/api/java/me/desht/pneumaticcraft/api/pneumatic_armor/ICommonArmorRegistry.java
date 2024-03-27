@@ -25,7 +25,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 
 import javax.annotation.Nonnull;
 import java.util.Collection;
@@ -42,7 +42,7 @@ public interface ICommonArmorRegistry {
     /**
      * Register a common (client and server) handler for a Pneumatic Armor upgrade.  This must be called from a
      * {@link FMLCommonSetupEvent} handler
-     * (do <strong>not</strong> use {@link net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent#enqueueWork(Runnable)}).
+     * (do <strong>not</strong> use {@link net.neoforged.fml.event.lifecycle.FMLClientSetupEvent#enqueueWork(Runnable)}).
      * @param handler the handler to register
      */
     @Nonnull
@@ -63,7 +63,7 @@ public interface ICommonArmorRegistry {
      * vanilla or from a different mod.  For your own entities, just have your entity implement {@link IHackableEntity}.
      * <p>
      * This must be called from a {@link FMLCommonSetupEvent} handler
-     * (it is not necessary to use {@link net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent#enqueueWork(Runnable)}).
+     * (it is not necessary to use {@link net.neoforged.fml.event.lifecycle.FMLClientSetupEvent#enqueueWork(Runnable)}).
      *
      * @param entityClazz entity class; subclasses of this entity will also be affected
      * @param iHackable the hack to register
@@ -75,7 +75,7 @@ public interface ICommonArmorRegistry {
      * vanilla or from a different mod.  For your own blocks, just have your block implement {@link IHackableBlock}.
      * <p>
      * This must be called from a {@link FMLCommonSetupEvent} handler
-     * (it is not necessary to use {@link net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent#enqueueWork(Runnable)}).
+     * (it is not necessary to use {@link net.neoforged.fml.event.lifecycle.FMLClientSetupEvent#enqueueWork(Runnable)}).
      *
      * @param block the block class; subclasses of this block will also be affected
      * @param iHackable the hack to register
@@ -87,7 +87,7 @@ public interface ICommonArmorRegistry {
      * registered, meaning any block added to any of those tags (e.g. modded doors) will also be considered hackable.
      * <p>
      * This must be called from a {@link FMLCommonSetupEvent} handler
-     * (it is not necessary to use {@link net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent#enqueueWork(Runnable)}).
+     * (it is not necessary to use {@link net.neoforged.fml.event.lifecycle.FMLClientSetupEvent#enqueueWork(Runnable)}).
      *
      * @param blockTag the block tag to register
      * @param iHackable the hack to register

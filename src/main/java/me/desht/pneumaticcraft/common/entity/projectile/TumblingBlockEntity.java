@@ -19,11 +19,9 @@ package me.desht.pneumaticcraft.common.entity.projectile;
 
 import com.mojang.authlib.GameProfile;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
-import me.desht.pneumaticcraft.common.core.ModEntityTypes;
+import me.desht.pneumaticcraft.common.registry.ModEntityTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -45,11 +43,10 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.util.BlockSnapshot;
-import net.minecraftforge.common.util.FakePlayer;
-import net.minecraftforge.common.util.FakePlayerFactory;
-import net.minecraftforge.event.ForgeEventFactory;
-import net.minecraftforge.network.NetworkHooks;
+import net.neoforged.neoforge.common.util.BlockSnapshot;
+import net.neoforged.neoforge.common.util.FakePlayer;
+import net.neoforged.neoforge.common.util.FakePlayerFactory;
+import net.neoforged.neoforge.event.EventHooks;
 import org.apache.commons.lang3.Validate;
 import org.joml.Vector3f;
 
@@ -101,10 +98,10 @@ public class TumblingBlockEntity extends ThrowableProjectile {
         }
     }
 
-    @Override
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return NetworkHooks.getEntitySpawningPacket(this);
-    }
+//    @Override
+//    public Packet<ClientGamePacketListener> getAddEntityPacket() {
+//        return NetworkHooks.getEntitySpawningPacket(this);
+//    }
 
     @Override
     protected void defineSynchedData() {
@@ -181,7 +178,7 @@ public class TumblingBlockEntity extends ThrowableProjectile {
 
         if (level().getBlockState(pos).canBeReplaced(ctx)) {
             BlockSnapshot snapshot = BlockSnapshot.create(level().dimension(), level(), pos);
-            if (!ForgeEventFactory.onBlockPlace(placer, snapshot, face)) {
+            if (!EventHooks.onBlockPlace(placer, snapshot, face)) {
                 InteractionResult res = ((BlockItem) stack.getItem()).place(ctx);
                 return res == InteractionResult.SUCCESS || res == InteractionResult.CONSUME;
             }

@@ -3,9 +3,10 @@
   "category": "misc",
   "key": {
     "G": {
-      "type": "forge:nbt",
-      "count": 1,
-      "item": "pneumaticcraft:small_tank"
+      "type": "neoforge:nbt",
+      "item": "pneumaticcraft:small_tank",
+      "strict": true,
+      "tag": "{}"
     },
     "S": {
       "item": "pneumaticcraft:reinforced_stone_slab"
@@ -21,6 +22,5 @@
   ],
   "result": {
     "item": "pneumaticcraft:gas_lift"
-  },
-  "show_notification": true
+  }
 }

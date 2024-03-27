@@ -18,8 +18,8 @@
 package me.desht.pneumaticcraft.common.drone;
 
 import me.desht.pneumaticcraft.api.drone.*;
-import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetCustomBlockInteract;
+import me.desht.pneumaticcraft.common.registry.ModProgWidgets;
 import me.desht.pneumaticcraft.common.util.ProgrammedDroneUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.GlobalPos;
@@ -29,7 +29,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidStack;
 import org.apache.commons.lang3.Validate;
 
 import java.util.HashMap;

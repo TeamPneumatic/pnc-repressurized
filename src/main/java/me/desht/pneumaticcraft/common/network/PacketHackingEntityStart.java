@@ -20,47 +20,45 @@ package me.desht.pneumaticcraft.common.network;
 import me.desht.pneumaticcraft.client.pneumatic_armor.ClientArmorRegistry;
 import me.desht.pneumaticcraft.client.pneumatic_armor.upgrade_handler.EntityTrackerClientHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.RenderEntityTarget;
-import me.desht.pneumaticcraft.client.util.ClientUtils;
-import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.network.NetworkEvent;
+import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 
-import java.util.function.Supplier;
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 /**
  * Received on: BOTH
  * Sent by client when player initiates an entity hack, and by server to confirm initiation
  */
-public class PacketHackingEntityStart {
-    private final int entityId;
+public record PacketHackingEntityStart(int entityId) implements CustomPacketPayload {
+    public static final ResourceLocation ID = RL("hack_entity_start");
 
-    public PacketHackingEntityStart(Entity entity) {
-        entityId = entity.getId();
+    public static PacketHackingEntityStart fromNetwork(FriendlyByteBuf buffer) {
+        return new PacketHackingEntityStart(buffer.readInt());
     }
 
-    public PacketHackingEntityStart(FriendlyByteBuf buffer) {
-        entityId = buffer.readInt();
-    }
-
-    public void toBytes(FriendlyByteBuf buf) {
+    @Override
+    public void write(FriendlyByteBuf buf) {
         buf.writeInt(entityId);
     }
 
-    public void handle(Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> {
-            ServerPlayer player = ctx.get().getSender();
-            ArmorUpgradeRegistry r = ArmorUpgradeRegistry.getInstance();
-            if (player == null) {
+    @Override
+    public ResourceLocation id() {
+        return ID;
+    }
+
+    public static void handle(PacketHackingEntityStart message, PlayPayloadContext ctx) {
+        ctx.player().ifPresent(player -> ctx.workHandler().submitAsync(() -> {
+            if (ctx.flow().isClientbound()) {
                 // client
-                Player cPlayer = ClientUtils.getClientPlayer();
-                Entity entity = cPlayer.level().getEntity(entityId);
+                Entity entity = player.level().getEntity(message.entityId());
                 if (entity != null) {
-                    CommonArmorHandler.getHandlerForPlayer(cPlayer)
+                    CommonArmorHandler.getHandlerForPlayer(player)
                             .getExtensionData(CommonUpgradeHandlers.hackHandler)
                             .setHackedEntity(entity);
                     ClientArmorRegistry.getInstance()
@@ -70,18 +68,17 @@ public class PacketHackingEntityStart {
                             .findFirst()
                             .ifPresent(RenderEntityTarget::onHackConfirmServer);
                 }
-            } else {
+            } else if (player instanceof ServerPlayer sp) {
                 // server
                 CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
                 if (handler.upgradeUsable(CommonUpgradeHandlers.entityTrackerHandler, true)) {
-                    Entity entity = player.level().getEntity(entityId);
+                    Entity entity = player.level().getEntity(message.entityId());
                     if (entity != null) {
                         handler.getExtensionData(CommonUpgradeHandlers.hackHandler).setHackedEntity(entity);
-                        NetworkHandler.sendToPlayer(this, player);
+                        NetworkHandler.sendToPlayer(message, sp);
                     }
                 }
             }
-        });
-        ctx.get().setPacketHandled(true);
+        }));
     }
 }

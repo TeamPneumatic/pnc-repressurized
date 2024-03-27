@@ -17,13 +17,13 @@
 
 package me.desht.pneumaticcraft.client.render.fluid;
 
-import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.common.block.entity.FluidMixerBlockEntity;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.core.Direction;
 import net.minecraft.world.phys.AABB;
 
 import java.util.Collection;
+import java.util.List;
 
 public class RenderFluidMixer extends AbstractFluidTER<FluidMixerBlockEntity> {
     private static final AABB[] TANK_BOUNDS_BASE = new AABB[]{
@@ -47,7 +47,7 @@ public class RenderFluidMixer extends AbstractFluidTER<FluidMixerBlockEntity> {
 
     @Override
     Collection<TankRenderInfo> getTanksToRender(FluidMixerBlockEntity te) {
-        return ImmutableList.of(
+        return List.of(
                 new TankRenderInfo(te.getInputTank1(), BOUNDS[0][te.getRotation().get2DDataValue()]).without(Direction.DOWN),
                 new TankRenderInfo(te.getInputTank2(), BOUNDS[1][te.getRotation().get2DDataValue()]).without(Direction.DOWN),
                 new TankRenderInfo(te.getOutputTank(), BOUNDS[2][te.getRotation().get2DDataValue()]).without(Direction.DOWN)

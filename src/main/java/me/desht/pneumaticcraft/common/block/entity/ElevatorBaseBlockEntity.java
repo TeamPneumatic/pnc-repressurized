@@ -27,12 +27,12 @@ import me.desht.pneumaticcraft.client.sound.MovingSounds;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.block.ElevatorBaseBlock;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
-import me.desht.pneumaticcraft.common.core.ModBlockEntities;
-import me.desht.pneumaticcraft.common.core.ModBlocks;
-import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.inventory.ElevatorMenu;
 import me.desht.pneumaticcraft.common.network.*;
 import me.desht.pneumaticcraft.common.network.PacketPlayMovingSound.MovingSoundFocus;
+import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
+import me.desht.pneumaticcraft.common.registry.ModBlocks;
+import me.desht.pneumaticcraft.common.registry.ModSounds;
 import me.desht.pneumaticcraft.common.thirdparty.computer_common.LuaMethod;
 import me.desht.pneumaticcraft.common.thirdparty.computer_common.LuaMethodRegistry;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
@@ -58,9 +58,8 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.AABB;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemHandlerHelper;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.ItemHandlerHelper;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -118,7 +117,12 @@ public class ElevatorBaseBlockEntity extends AbstractAirHandlingBlockEntity impl
     public int lightAbove;
 
     public ElevatorBaseBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.ELEVATOR_BASE.get(), pos, state, PressureTier.TIER_ONE, PneumaticValues.VOLUME_ELEVATOR, 4);
+        super(ModBlockEntityTypes.ELEVATOR_BASE.get(), pos, state, PressureTier.TIER_ONE, PneumaticValues.VOLUME_ELEVATOR, 4);
+    }
+
+    @Override
+    public boolean hasItemCapability() {
+        return false;
     }
 
     @Override
@@ -548,11 +552,6 @@ public class ElevatorBaseBlockEntity extends AbstractAirHandlingBlockEntity impl
         }
     }
 
-    @Override
-    public AABB getRenderBoundingBox() {
-        return new AABB(getBlockPos().getX(), getBlockPos().getY(), getBlockPos().getZ(), getBlockPos().getX() + 1, getBlockPos().getY() + 1 + extension, getBlockPos().getZ() + 1);
-    }
-
     private ElevatorBaseBlockEntity getCoreElevator() {
         if (coreElevator == null || (nonNullLevel().isClientSide && (nonNullLevel().getGameTime() & 0x3f) == 0)) {
             // bit of a hack; force a recalc every 64 ticks on the client
@@ -650,7 +649,7 @@ public class ElevatorBaseBlockEntity extends AbstractAirHandlingBlockEntity impl
     }
 
     @Override
-    public IItemHandler getPrimaryInventory() {
+    public IItemHandler getItemHandler(@org.jetbrains.annotations.Nullable Direction dir) {
         return null;
     }
 

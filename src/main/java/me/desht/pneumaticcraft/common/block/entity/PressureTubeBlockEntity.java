@@ -23,9 +23,9 @@ import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
 import me.desht.pneumaticcraft.api.tileentity.IAirListener;
 import me.desht.pneumaticcraft.api.tileentity.IManoMeasurable;
 import me.desht.pneumaticcraft.common.block.PressureTubeBlock;
-import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.item.TubeModuleItem;
 import me.desht.pneumaticcraft.common.network.DescSynced;
+import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
 import me.desht.pneumaticcraft.common.tubemodules.AbstractTubeModule;
 import me.desht.pneumaticcraft.common.tubemodules.IInfluenceDispersing;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
@@ -35,6 +35,7 @@ import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -51,8 +52,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.items.IItemHandler;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -70,7 +70,7 @@ public class PressureTubeBlockEntity extends AbstractAirHandlingBlockEntity impl
     private int pendingCacheShapeClear = 0;
 
     public PressureTubeBlockEntity(BlockPos pos, BlockState state) {
-        this(ModBlockEntities.PRESSURE_TUBE.get(), pos, state, PressureTier.TIER_ONE, PneumaticValues.VOLUME_PRESSURE_TUBE);
+        this(ModBlockEntityTypes.PRESSURE_TUBE.get(), pos, state, PressureTier.TIER_ONE, PneumaticValues.VOLUME_PRESSURE_TUBE);
     }
 
     PressureTubeBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state, PressureTier tier, int volumePressureTube) {
@@ -134,7 +134,7 @@ public class PressureTubeBlockEntity extends AbstractAirHandlingBlockEntity impl
         ListTag moduleList = tag.getList("modules", Tag.TAG_COMPOUND);
         for (int i = 0; i < moduleList.size(); i++) {
             CompoundTag moduleTag = moduleList.getCompound(i);
-            Item item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(moduleTag.getString("type")));
+            Item item = BuiltInRegistries.ITEM.get(new ResourceLocation(moduleTag.getString("type")));
             Direction dir = Direction.from3DDataValue(moduleTag.getInt("dir"));
             if (item instanceof TubeModuleItem) {
                 AbstractTubeModule module = ((TubeModuleItem) item).createModule(dir, this);
@@ -298,7 +298,8 @@ public class PressureTubeBlockEntity extends AbstractAirHandlingBlockEntity impl
 
     @Override
     public boolean canConnectPneumatic(Direction side) {
-        return (inLineModuleDir == null || inLineModuleDir.getAxis() == side.getAxis())
+        return side != null
+                && (inLineModuleDir == null || inLineModuleDir.getAxis() == side.getAxis())
                 && !isSideClosed(side)
                 && (getModule(side) == null || getModule(side).isInline());
     }
@@ -326,7 +327,7 @@ public class PressureTubeBlockEntity extends AbstractAirHandlingBlockEntity impl
     }
 
     @Override
-    public IItemHandler getPrimaryInventory() {
+    public IItemHandler getItemHandler(@org.jetbrains.annotations.Nullable Direction dir) {
         return null;
     }
 
@@ -334,14 +335,13 @@ public class PressureTubeBlockEntity extends AbstractAirHandlingBlockEntity impl
         AbstractTubeModule tm = getModule(dir);
         if (!isSideClosed(dir) && (tm == null || tm.isInline() && dir.getAxis() == tm.getDirection().getAxis())) {
             BlockEntity te = getCachedNeighbor(dir);
-            if (te != null && te.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, dir.getOpposite()).isPresent()) {
+            if (te != null && PNCCapabilities.getAirHandler(te, dir.getOpposite()).isPresent()) {
                 return te;
             }
         }
         return null;
     }
 
-    @Override
     public AABB getRenderBoundingBox() {
         return renderBoundingBox != null ? renderBoundingBox : new AABB(getBlockPos());
     }

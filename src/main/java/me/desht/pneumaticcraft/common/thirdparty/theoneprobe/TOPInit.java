@@ -26,6 +26,7 @@ import me.desht.pneumaticcraft.api.semiblock.IDirectionalSemiblock;
 import me.desht.pneumaticcraft.api.semiblock.ISemiBlock;
 import me.desht.pneumaticcraft.common.semiblock.SemiblockTracker;
 import me.desht.pneumaticcraft.common.thirdparty.ModNameCache;
+import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.ChatFormatting;
@@ -38,7 +39,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
+import net.neoforged.neoforge.capabilities.Capabilities;
 
 import java.util.function.Function;
 
@@ -95,11 +96,11 @@ public class TOPInit implements Function<ITheOneProbe, Void> {
                         v.text(Component.literal(ChatFormatting.BLUE.toString() + ChatFormatting.ITALIC + ModNameCache.getModName(state.getBlock())));
                     }
                 }
-                entity.getCapability(PNCCapabilities.AIR_HANDLER_CAPABILITY).ifPresent(h -> {
+                IOHelper.getCapV(entity, PNCCapabilities.AIR_HANDLER_ENTITY).ifPresent(h -> {
                     String p = PneumaticCraftUtils.roundNumberTo(h.getPressure(), 1);
                     probeInfo.text(xlate("pneumaticcraft.gui.tooltip.pressure", p).withStyle(COLOR));
                 });
-                entity.getCapability(ForgeCapabilities.FLUID_HANDLER)
+                IOHelper.getCap(entity, Capabilities.FluidHandler.ENTITY)
                         .ifPresent(h -> TOPInfoProvider.handleFluidTanks(mode, probeInfo, h));
             }
         });

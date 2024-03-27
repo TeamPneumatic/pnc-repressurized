@@ -2,9 +2,9 @@ package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.api.lib.NBTKeys;
 import me.desht.pneumaticcraft.common.block.entity.ChargingStationBlockEntity;
-import me.desht.pneumaticcraft.common.core.ModBlockEntities;
-import me.desht.pneumaticcraft.common.core.ModBlocks;
-import me.desht.pneumaticcraft.common.core.ModItems;
+import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
+import me.desht.pneumaticcraft.common.registry.ModBlocks;
+import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.util.VoxelShapeUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -129,7 +129,7 @@ public class ChargingStationBlock extends AbstractCamouflageBlock implements Pne
 
     @Override
     public int getSignal(BlockState blockState, BlockGetter blockAccess, BlockPos pos, Direction side) {
-        return blockAccess.getBlockEntity(pos, ModBlockEntities.CHARGING_STATION.get())
+        return blockAccess.getBlockEntity(pos, ModBlockEntityTypes.CHARGING_STATION.get())
                 .map(teCS -> teCS.getRedstoneController().shouldEmit() ? 15 : 0).orElse(0);
     }
 

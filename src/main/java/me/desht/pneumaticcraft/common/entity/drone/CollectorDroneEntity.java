@@ -17,8 +17,8 @@
 
 package me.desht.pneumaticcraft.common.entity.drone;
 
-import me.desht.pneumaticcraft.common.core.ModEntityTypes;
 import me.desht.pneumaticcraft.common.drone.progwidgets.*;
+import me.desht.pneumaticcraft.common.registry.ModEntityTypes;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.util.DroneProgramBuilder;
 import me.desht.pneumaticcraft.common.util.IOHelper;
@@ -30,8 +30,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.IItemHandler;
+import net.neoforged.neoforge.items.IItemHandler;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -56,10 +55,11 @@ public class CollectorDroneEntity extends AbstractBasicDroneEntity {
         List<IProgWidget> params = new ArrayList<>();
         int rangeUpgrades = UpgradableItemUtils.getUpgradeCount(droneStack, ModUpgrades.RANGE.get());
         params.add(ProgWidgetArea.fromPosition(pos, 16 + rangeUpgrades * 2));
-        LazyOptional<IItemHandler> itemCap = IOHelper.getInventoryForTE(level().getBlockEntity(clickPos), facing);
+
+        Optional<IItemHandler> itemCap = IOHelper.getInventoryForBlock(level().getBlockEntity(clickPos), facing);
         if (itemCap.isPresent()) {
             // placed on a chest; filter on the chest's contents, if any
-            Set<Item> filtered = getFilteredItems(itemCap);
+            Set<Item> filtered = getFilteredItems(itemCap.get());
             if (!filtered.isEmpty()) {
                 filtered.forEach(item -> params.add(ProgWidgetItemFilter.withFilter(new ItemStack(item))));
             }
@@ -86,17 +86,16 @@ public class CollectorDroneEntity extends AbstractBasicDroneEntity {
 
     private BlockPos findAdjacentInventory(BlockPos pos) {
         return Arrays.stream(Direction.values())
-                .filter(d -> IOHelper.getInventoryForTE(level().getBlockEntity(pos.relative(d)), d.getOpposite()).isPresent())
+                .filter(d -> IOHelper.getInventoryForBlock(level().getBlockEntity(pos.relative(d)), d.getOpposite()).isPresent())
                 .findFirst()
                 .map(pos::relative)
                 .orElse(pos);
     }
 
-    private Set<Item> getFilteredItems(LazyOptional<IItemHandler> cap) {
-        return cap.map(handler -> IntStream.range(0, handler.getSlots())
+    private Set<Item> getFilteredItems(IItemHandler handler) {
+        return IntStream.range(0, handler.getSlots())
                 .filter(i -> !handler.getStackInSlot(i).isEmpty())
                 .mapToObj(i -> handler.getStackInSlot(i).getItem())
-                .collect(Collectors.toSet())
-        ).orElse(Collections.emptySet());
+                .collect(Collectors.toSet());
     }
 }

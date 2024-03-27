@@ -24,16 +24,14 @@ import me.desht.pneumaticcraft.common.drone.progwidgets.ILiquidFiltered;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetInventoryBase;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.common.util.FluidUtils;
+import me.desht.pneumaticcraft.common.util.IOHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.fluids.capability.IFluidHandler.FluidAction;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction;
 
-import static net.minecraftforge.fluids.FluidType.BUCKET_VOLUME;
+import static net.neoforged.neoforge.fluids.FluidType.BUCKET_VOLUME;
 
 public class DroneAILiquidExport<W extends ProgWidgetInventoryBase & ILiquidFiltered & ILiquidExport> extends DroneAIImExBase<W> {
 
@@ -82,8 +80,8 @@ public class DroneAILiquidExport<W extends ProgWidgetInventoryBase & ILiquidFilt
             // drop through to here if there was no BE or a BE had no valid fluid handler
 
             if (progWidget.isPlacingFluidBlocks() && (!progWidget.useCount() || getRemainingCount() >= BUCKET_VOLUME)) {
-                LazyOptional<IFluidHandler> cap = drone.getCapability(ForgeCapabilities.FLUID_HANDLER);
-                if (FluidUtils.tryPourOutFluid(cap, drone.world(), pos, false, false, simulate ? FluidAction.SIMULATE : FluidAction.EXECUTE)) {
+                if (FluidUtils.tryPourOutFluid(drone.getFluidTank(), drone.world(), pos, false, false,
+                        simulate ? FluidAction.SIMULATE : FluidAction.EXECUTE)) {
                     if (!simulate) {
                         decreaseCount(BUCKET_VOLUME);
                     }
@@ -95,7 +93,7 @@ public class DroneAILiquidExport<W extends ProgWidgetInventoryBase & ILiquidFilt
     }
 
     private FillStatus trySide(BlockEntity te, Direction side, FluidStack fluidToExport, boolean simulate) {
-        return te.getCapability(ForgeCapabilities.FLUID_HANDLER, side).map(fluidHandler -> {
+        return IOHelper.getFluidHandlerForBlock(te, side).map(fluidHandler -> {
             int filledAmount = fluidHandler.fill(fluidToExport, FluidAction.SIMULATE);
             if (filledAmount > 0) {
                 if (((ICountWidget) progWidget).useCount()) {

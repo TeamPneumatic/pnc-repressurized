@@ -20,60 +20,62 @@ package me.desht.pneumaticcraft.common.network;
 import io.netty.buffer.Unpooled;
 import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
+import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.network.NetworkEvent;
+import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.Supplier;
+
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 /**
  * Sent to: CLIENT
- *
  * This is the primary mechanism for syncing block entity data to clients when it changes.
  */
-public class PacketDescription extends LocationIntPacket {
-    private final boolean fullSync;
-    private final List<IndexedField> fields = new ArrayList<>();
-    private final CompoundTag extraData;
+public record PacketDescription(BlockPos pos, boolean fullSync, List<IndexedField> fields, CompoundTag extraData) implements CustomPacketPayload {
+    public static final ResourceLocation ID = RL("description");
 
-    public PacketDescription(IDescSynced te, boolean fullSync) {
-        super(te.getPosition());
-
-        this.fullSync = fullSync;
+    public static PacketDescription create(IDescSynced te, boolean fullSync) {
+        List<IndexedField> fields = new ArrayList<>();
         List<SyncedField<?>> descFields = te.getDescriptionFields();
         for (int i = 0; i < descFields.size(); i++) {
             if (fullSync || te.shouldSyncField(i)) {
                 fields.add(new IndexedField(i, SyncedField.getType(descFields.get(i)), descFields.get(i).getValue()));
             }
         }
-        extraData = new CompoundTag();
-        te.writeToPacket(extraData);
+
+        CompoundTag extraData = Util.make(new CompoundTag(), te::writeToPacket);
+
+        return new PacketDescription(te.getPosition(), fullSync, fields, extraData);
     }
 
-    public PacketDescription(FriendlyByteBuf buf) {
-        super(buf);
-
-        fullSync = buf.readBoolean();
+    public static PacketDescription fromNetwork(FriendlyByteBuf buf) {
+        BlockPos pos = buf.readBlockPos();
+        boolean fullSync = buf.readBoolean();
         int fieldCount = buf.readVarInt();
+        List<IndexedField> fields = new ArrayList<>();
         for (int i = 0; i < fieldCount; i++) {
             int idx = fullSync ? i : buf.readVarInt();
             byte type = buf.readByte();
             fields.add(new IndexedField(idx, type, SyncedField.fromBytes(buf, type)));
         }
-        extraData = buf.readNbt();
+        CompoundTag extraData = buf.readNbt();
+
+        return new PacketDescription(pos, fullSync, fields, extraData);
     }
 
     @Override
-    public void toBytes(FriendlyByteBuf buf) {
-        super.toBytes(buf);
-
+    public void write(FriendlyByteBuf buf) {
+        buf.writeBlockPos(pos);
         buf.writeBoolean(fullSync);
         buf.writeVarInt(fields.size());
         for (IndexedField indexedField : fields) {
@@ -84,9 +86,13 @@ public class PacketDescription extends LocationIntPacket {
         buf.writeNbt(extraData);
     }
 
-    public void process(Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> processPacket(null));
-        ctx.get().setPacketHandled(true);
+    @Override
+    public ResourceLocation id() {
+        return ID;
+    }
+
+    public static void handle(PacketDescription message, PlayPayloadContext ctx) {
+        ctx.workHandler().submitAsync(() -> message.processPacket(null));
     }
 
     public void processPacket(BlockEntity blockEntity) {
@@ -139,12 +145,12 @@ public class PacketDescription extends LocationIntPacket {
         return compound;
     }
 
-    public PacketDescription(CompoundTag compound) {
-        super(new BlockPos(compound.getInt("x"), compound.getInt("y"), compound.getInt("z")));
-
-        fullSync = true;
+    public static PacketDescription fromNBT(CompoundTag compound) {
+        BlockPos pos = new BlockPos(compound.getInt("x"), compound.getInt("y"), compound.getInt("z"));
+        boolean fullSync = true;
         CompoundTag subTag = compound.getCompound(Names.MOD_ID);
         int fieldCount = subTag.getInt("Length");
+        List<IndexedField> fields = new ArrayList<>();
         ListTag list = subTag.getList("Data", Tag.TAG_COMPOUND);
         for (int i = 0; i < fieldCount; i++) {
             CompoundTag element = list.getCompound(i);
@@ -152,7 +158,9 @@ public class PacketDescription extends LocationIntPacket {
             byte[] b = element.getByteArray("Value");
             fields.add(new IndexedField(i, type, SyncedField.fromBytes(new FriendlyByteBuf(Unpooled.wrappedBuffer(b)), type)));
         }
-        extraData = subTag.getCompound("Extra");
+        CompoundTag extraData = subTag.getCompound("Extra");
+
+        return new PacketDescription(pos, fullSync, fields, extraData);
     }
 
     public boolean hasData() {

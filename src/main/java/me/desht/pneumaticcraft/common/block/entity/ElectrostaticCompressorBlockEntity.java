@@ -25,10 +25,10 @@ import me.desht.pneumaticcraft.common.block.ElectrostaticCompressorBlock;
 import me.desht.pneumaticcraft.common.block.entity.RedstoneController.EmittingRedstoneMode;
 import me.desht.pneumaticcraft.common.block.entity.RedstoneController.RedstoneMode;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
-import me.desht.pneumaticcraft.common.core.ModBlockEntities;
-import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.inventory.ElectrostaticCompressorMenu;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
+import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
+import me.desht.pneumaticcraft.common.registry.ModBlocks;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
@@ -51,7 +51,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
-import net.minecraftforge.items.IItemHandler;
+import net.neoforged.neoforge.items.IItemHandler;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -75,7 +75,12 @@ public class ElectrostaticCompressorBlockEntity extends AbstractAirHandlingBlock
     private int struckByLightningCooldown; // for redstone emission purposes
 
     public ElectrostaticCompressorBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.ELECTROSTATIC_COMPRESSOR.get(), pos, state, PressureTier.TIER_TWO, PneumaticValues.VOLUME_ELECTROSTATIC_COMPRESSOR, 4);
+        super(ModBlockEntityTypes.ELECTROSTATIC_COMPRESSOR.get(), pos, state, PressureTier.TIER_TWO, PneumaticValues.VOLUME_ELECTROSTATIC_COMPRESSOR, 4);
+    }
+
+    @Override
+    public boolean hasItemCapability() {
+        return false;
     }
 
     @Override
@@ -144,7 +149,7 @@ public class ElectrostaticCompressorBlockEntity extends AbstractAirHandlingBlock
                     for (LivingEntity entity : level.getEntitiesOfClass(LivingEntity.class, box, EntitySelector.ENTITY_STILL_ALIVE)) {
                         BlockPos pos = entity.blockPosition();
                         if (gridSet.contains(pos) || gridSet.contains(pos.below())) {
-                            if (!net.minecraftforge.event.ForgeEventFactory.onEntityStruckByLightning(entity, bolt)) {
+                            if (!net.neoforged.neoforge.event.EventHooks.onEntityStruckByLightning(entity, bolt)) {
                                 entity.thunderHit((ServerLevel) level, bolt);
                             }
                         }
@@ -178,7 +183,7 @@ public class ElectrostaticCompressorBlockEntity extends AbstractAirHandlingBlock
     }
 
     @Override
-    public IItemHandler getPrimaryInventory() {
+    public IItemHandler getItemHandler(@org.jetbrains.annotations.Nullable Direction dir) {
         return null;
     }
 
@@ -192,7 +197,7 @@ public class ElectrostaticCompressorBlockEntity extends AbstractAirHandlingBlock
     public void getElectrostaticGrid(Set<BlockPos> grid, Set<ElectrostaticCompressorBlockEntity> compressors, BlockPos pos) {
         Deque<BlockPos> pendingPos = new ArrayDeque<>(Collections.singleton(pos));
         grid.add(pos);
-        nonNullLevel().getBlockEntity(pos, ModBlockEntities.ELECTROSTATIC_COMPRESSOR.get())
+        nonNullLevel().getBlockEntity(pos, ModBlockEntityTypes.ELECTROSTATIC_COMPRESSOR.get())
                 .ifPresent(compressors::add);
 
         while (!pendingPos.isEmpty()) {
@@ -203,7 +208,7 @@ public class ElectrostaticCompressorBlockEntity extends AbstractAirHandlingBlock
                 if ((isValidGridBlock(state) || state.getBlock() == ModBlocks.ELECTROSTATIC_COMPRESSOR.get())
                         && grid.size() < MAX_ELECTROSTATIC_GRID_SIZE && grid.add(newPos)) {
                     if (state.getBlock() == ModBlocks.ELECTROSTATIC_COMPRESSOR.get()) {
-                        nonNullLevel().getBlockEntity(newPos, ModBlockEntities.ELECTROSTATIC_COMPRESSOR.get())
+                        nonNullLevel().getBlockEntity(newPos, ModBlockEntityTypes.ELECTROSTATIC_COMPRESSOR.get())
                                 .ifPresent(compressors::add);
                     }
                     pendingPos.push(newPos);

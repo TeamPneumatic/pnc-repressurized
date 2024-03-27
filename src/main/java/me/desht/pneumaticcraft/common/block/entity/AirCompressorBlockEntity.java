@@ -19,10 +19,10 @@ package me.desht.pneumaticcraft.common.block.entity;
 
 import me.desht.pneumaticcraft.api.block.PNCBlockStateProperties;
 import me.desht.pneumaticcraft.api.pressure.PressureTier;
-import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.inventory.AirCompressorMenu;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
+import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -38,20 +38,16 @@ import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.AABB;
-import net.minecraftforge.common.ForgeHooks;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.fluids.FluidUtil;
-import net.minecraftforge.items.IItemHandler;
+import net.neoforged.neoforge.common.CommonHooks;
+import net.neoforged.neoforge.fluids.FluidUtil;
+import net.neoforged.neoforge.items.IItemHandler;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class AirCompressorBlockEntity extends AbstractAirHandlingBlockEntity implements IRedstoneControl<AirCompressorBlockEntity>, MenuProvider {
     private static final int INVENTORY_SIZE = 1;
 
     private final AirCompressorFuelHandler itemHandler = new AirCompressorFuelHandler();
-    private final LazyOptional<IItemHandler> inventory = LazyOptional.of(() -> itemHandler);
 
     private static final int FUEL_SLOT = 0;
 
@@ -68,7 +64,7 @@ public class AirCompressorBlockEntity extends AbstractAirHandlingBlockEntity imp
     private float airBuffer;
 
     public AirCompressorBlockEntity(BlockPos pos, BlockState state) {
-        this(ModBlockEntities.AIR_COMPRESSOR.get(), pos, state, PressureTier.TIER_ONE, PneumaticValues.VOLUME_AIR_COMPRESSOR);
+        this(ModBlockEntityTypes.AIR_COMPRESSOR.get(), pos, state, PressureTier.TIER_ONE, PneumaticValues.VOLUME_AIR_COMPRESSOR);
     }
 
     AirCompressorBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state, PressureTier tier, int volume) {
@@ -100,7 +96,7 @@ public class AirCompressorBlockEntity extends AbstractAirHandlingBlockEntity imp
 
         if (rsController.shouldRun() && burnTime < curFuelUsage) {
             ItemStack fuelStack = itemHandler.getStackInSlot(FUEL_SLOT);
-            int itemBurnTime = ForgeHooks.getBurnTime(fuelStack, RecipeType.SMELTING);
+            int itemBurnTime = CommonHooks.getBurnTime(fuelStack, RecipeType.SMELTING);
             if (itemBurnTime > 0) {
                 burnTime += itemBurnTime;
                 maxBurnTime = burnTime;
@@ -189,19 +185,8 @@ public class AirCompressorBlockEntity extends AbstractAirHandlingBlockEntity imp
     }
 
     @Override
-    public AABB getRenderBoundingBox() {
-        return new AABB(getBlockPos().getX(), getBlockPos().getY(), getBlockPos().getZ(), getBlockPos().getX() + 1, getBlockPos().getY() + 1, getBlockPos().getZ() + 1);
-    }
-
-    @Override
-    public IItemHandler getPrimaryInventory() {
+    public IItemHandler getItemHandler(@Nullable Direction dir) {
         return itemHandler;
-    }
-
-    @Nonnull
-    @Override
-    protected LazyOptional<IItemHandler> getInventoryCap(Direction side) {
-        return inventory;
     }
 
     @Override
@@ -234,7 +219,7 @@ public class AirCompressorBlockEntity extends AbstractAirHandlingBlockEntity imp
         @Override
         public boolean isItemValid(int slot, ItemStack itemStack) {
             return slot == FUEL_SLOT &&
-                    (itemStack.isEmpty() || ForgeHooks.getBurnTime(itemStack, RecipeType.SMELTING) > 0 && FluidUtil.getFluidContained(itemStack).isEmpty());
+                    (itemStack.isEmpty() || CommonHooks.getBurnTime(itemStack, RecipeType.SMELTING) > 0 && FluidUtil.getFluidContained(itemStack).isEmpty());
         }
     }
 

@@ -33,7 +33,6 @@ import me.desht.pneumaticcraft.client.pneumatic_armor.upgrade_handler.EntityTrac
 import me.desht.pneumaticcraft.client.render.overlays.PneumaticArmorHUDOverlay;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
-import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.item.PneumaticArmorItem;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketToggleArmorFeature;
@@ -42,6 +41,7 @@ import me.desht.pneumaticcraft.common.network.PacketToggleArmorFeatureBulk.Featu
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
+import me.desht.pneumaticcraft.common.registry.ModSounds;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
@@ -54,11 +54,11 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.client.event.InputEvent;
-import net.minecraftforge.client.event.RenderLevelStageEvent;
-import net.minecraftforge.client.event.ScreenEvent;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.client.event.InputEvent;
+import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
+import net.neoforged.neoforge.client.event.ScreenEvent;
+import net.neoforged.neoforge.event.TickEvent;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -296,8 +296,10 @@ public enum HUDHandler implements IKeyListener {
     }
 
     @SubscribeEvent
-    public void handleResolutionChange(ScreenEvent.Init event) {
+    public void handleResolutionChange(ScreenEvent.Init.Post event) {
         Screen gui = event.getScreen();
+        // oh yes it can be null! shut up IntelliJ
+        //noinspection ConstantValue
         if (gui.getMinecraft() != null && gui.getMinecraft().level != null) {
             Window mw = gui.getMinecraft().getWindow();
             if (mw.getGuiScaledWidth() != lastScaledWidth || mw.getGuiScaledHeight() != lastScaledHeight) {

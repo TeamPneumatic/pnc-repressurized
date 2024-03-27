@@ -21,10 +21,10 @@ import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.upgrade.PNCUpgrade;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
-import me.desht.pneumaticcraft.common.core.ModEntityTypes;
-import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSpawnParticle;
+import me.desht.pneumaticcraft.common.registry.ModEntityTypes;
+import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import me.desht.pneumaticcraft.lib.Log;
@@ -37,8 +37,8 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.levelgen.Heightmap;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.items.ItemStackHandler;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.items.ItemStackHandler;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -90,8 +90,7 @@ public class AmadroneEntity extends DroneEntity {
             upgradeInv.setStackInSlot(2, ModUpgrades.ITEM_LIFE.get().getItemStack(10));
             upgradeInv.setStackInSlot(3, ModUpgrades.SECURITY.get().getItemStack());
             UpgradableItemUtils.setUpgrades(amadroneStack, upgradeInv);
-            amadroneStack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY)
-                    .orElseThrow(RuntimeException::new).addAir(100000);
+            amadroneStack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM).addAir(100000);
         }
         return amadroneStack;
     }
@@ -189,8 +188,12 @@ public class AmadroneEntity extends DroneEntity {
 
     @Override
     public void overload(String msgKey, Object... params) {
-        NetworkHandler.sendToAllTracking(new PacketSpawnParticle(ParticleTypes.CLOUD, getX() - 0.5, getY() - 0.5, getZ() - 0.5, 0, 0.1, 0, 10, 1, 1, 1), this);
-        MinecraftForge.EVENT_BUS.unregister(this);
+        NetworkHandler.sendToAllTracking(new PacketSpawnParticle(
+                ParticleTypes.CLOUD, (float) (getX() - 0.5), (float) (getY() - 0.5), (float) (getZ() - 0.5),
+                0, 0.1f, 0,
+                10,
+                1, 1, 1), this);
+        NeoForge.EVENT_BUS.unregister(this);
         discard();
     }
 }

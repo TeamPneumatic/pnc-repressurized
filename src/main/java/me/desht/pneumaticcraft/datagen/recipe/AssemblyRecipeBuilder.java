@@ -17,44 +17,29 @@
 
 package me.desht.pneumaticcraft.datagen.recipe;
 
-import com.google.gson.JsonObject;
 import me.desht.pneumaticcraft.api.crafting.recipe.AssemblyRecipe;
+import me.desht.pneumaticcraft.common.recipes.machine.AssemblyRecipeImpl;
+import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 
 import javax.annotation.Nonnull;
-import java.util.Locale;
 
-public class AssemblyRecipeBuilder extends PneumaticCraftRecipeBuilder<AssemblyRecipeBuilder> {
+public class AssemblyRecipeBuilder extends AbstractPNCRecipeBuilder {
     private final Ingredient input;
     @Nonnull
     private final ItemStack output;
     private final AssemblyRecipe.AssemblyProgramType program;
 
     public AssemblyRecipeBuilder(Ingredient input, @Nonnull ItemStack output, AssemblyRecipe.AssemblyProgramType program) {
-        super(program.getRecipeType());
-
         this.input = input;
         this.output = output;
         this.program = program;
     }
 
     @Override
-    protected RecipeResult getResult(ResourceLocation id) {
-        return new AssemblyRecipeResult(id);
-    }
-
-    public class AssemblyRecipeResult extends RecipeResult {
-        AssemblyRecipeResult(ResourceLocation id) {
-            super(id);
-        }
-
-        @Override
-        public void serializeRecipeData(JsonObject json) {
-            json.add("input", input.toJson());
-            json.add("result", SerializerHelper.serializeOneItemStack(output));
-            json.addProperty("program", program.toString().toLowerCase(Locale.ROOT));
-        }
+    public void save(RecipeOutput recipeOutput, ResourceLocation id) {
+        recipeOutput.accept(id, new AssemblyRecipeImpl(input, output, program), null);
     }
 }

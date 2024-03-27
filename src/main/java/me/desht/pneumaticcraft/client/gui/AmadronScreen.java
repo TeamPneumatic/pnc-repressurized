@@ -18,7 +18,6 @@
 package me.desht.pneumaticcraft.client.gui;
 
 import com.google.common.collect.ImmutableList;
-import me.desht.pneumaticcraft.api.crafting.recipe.AmadronRecipe;
 import me.desht.pneumaticcraft.api.misc.Symbols;
 import me.desht.pneumaticcraft.client.gui.widget.*;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
@@ -30,6 +29,7 @@ import me.desht.pneumaticcraft.common.inventory.AmadronMenu;
 import me.desht.pneumaticcraft.common.inventory.AmadronMenu.EnumProblemState;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketAmadronOrderUpdate;
+import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOffer;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
@@ -127,8 +127,8 @@ public class AmadronScreen extends AbstractPneumaticCraftContainerScreen<Amadron
     }
 
     @Override
-    public boolean mouseScrolled(double p_mouseScrolled_1_, double p_mouseScrolled_3_, double p_mouseScrolled_5_) {
-        return scrollbar.mouseScrolled(p_mouseScrolled_1_, p_mouseScrolled_3_, p_mouseScrolled_5_);
+    public boolean mouseScrolled(double pMouseX, double pMouseY, double pScrollX, double pScrollY) {
+        return scrollbar.mouseScrolled(pMouseX, pMouseY, pScrollX, pScrollY);
     }
 
     @Override
@@ -150,7 +150,7 @@ public class AmadronScreen extends AbstractPneumaticCraftContainerScreen<Amadron
         }
         for (WidgetAmadronOfferAdjustable offerWidget : offerWidgets) {
             offerWidget.setAffordable(menu.affordableOffers[offerWidget.index]);
-            offerWidget.setShoppingAmount(menu.getShoppingBasketUnits(offerWidget.getOffer().getId()));
+            offerWidget.setShoppingAmount(menu.getShoppingBasketUnits(offerWidget.getOffer().getOfferId()));
         }
         if (!hadProblem && menu.problemState != EnumProblemState.NO_PROBLEMS) {
             problemTab.openStat();
@@ -184,8 +184,8 @@ public class AmadronScreen extends AbstractPneumaticCraftContainerScreen<Amadron
         if (!menu.isBasketEmpty()) {
             builder.add(Component.empty());
             builder.add(xlate("pneumaticcraft.gui.amadron.basket").withStyle(ChatFormatting.AQUA, ChatFormatting.UNDERLINE));
-            for (AmadronRecipe offer : AmadronOfferManager.getInstance().getActiveOffers()) {
-                int nOrders = menu.getShoppingBasketUnits(offer.getId());
+            for (AmadronOffer offer : AmadronOfferManager.getInstance().getActiveOffers()) {
+                int nOrders = menu.getShoppingBasketUnits(offer.getOfferId());
                 if (nOrders > 0) {
                     String in = (offer.getInput().getAmount() * nOrders) + " x " + offer.getInput().getName();
                     String out = (offer.getOutput().getAmount() * nOrders) + " x " + offer.getOutput().getName();
@@ -220,12 +220,12 @@ public class AmadronScreen extends AbstractPneumaticCraftContainerScreen<Amadron
 
     private void updateVisibleOffers() {
         needsRefreshing = false;
-        List<AmadronRecipe> visibleOffers = new ArrayList<>();
+        List<AmadronOffer> visibleOffers = new ArrayList<>();
         int skippedOffers = 0;
         int applicableOffers = 0;
 
         for (int i = 0; i < menu.activeOffers.size(); i++) {
-            AmadronRecipe offer = menu.activeOffers.get(i);
+            AmadronOffer offer = menu.activeOffers.get(i);
             if (offer.passesQuery(searchBar.getValue())) {
                 applicableOffers++;
                 if (skippedOffers < page * OFFERS_PER_PAGE) {
@@ -241,7 +241,7 @@ public class AmadronScreen extends AbstractPneumaticCraftContainerScreen<Amadron
         offerWidgets.forEach(this::removeWidget);
         offerWidgets.clear();
         for (int i = 0; i < visibleOffers.size(); i++) {
-            AmadronRecipe offer = visibleOffers.get(i);
+            AmadronOffer offer = visibleOffers.get(i);
             int idx = menu.activeOffers.indexOf(offer);
             if (idx >= 0) {  // should always be the case; sanity check
                 WidgetAmadronOfferAdjustable widget = new WidgetAmadronOfferAdjustable(leftPos + 6 + 73 * (i % 2), topPos + 55 + 35 * (i / 2), offer, idx);
@@ -273,7 +273,7 @@ public class AmadronScreen extends AbstractPneumaticCraftContainerScreen<Amadron
         // index into the current active offers list
         private final int index;
 
-        WidgetAmadronOfferAdjustable(int x, int y, AmadronRecipe offer, int index) {
+        WidgetAmadronOfferAdjustable(int x, int y, AmadronOffer offer, int index) {
             super(x, y, offer);
             this.index = index;
         }
@@ -282,7 +282,7 @@ public class AmadronScreen extends AbstractPneumaticCraftContainerScreen<Amadron
         public boolean mouseClicked(double mouseX, double mouseY, int mouseButton) {
             if (super.mouseClicked(mouseX, mouseY, mouseButton)) return true;
             if (clicked(mouseX, mouseY) && getOffer().isUsableByPlayer(ClientUtils.getClientPlayer())) {
-                NetworkHandler.sendToServer(new PacketAmadronOrderUpdate(getOffer().getId(), mouseButton, Screen.hasShiftDown()));
+                NetworkHandler.sendToServer(new PacketAmadronOrderUpdate(getOffer().getOfferId(), mouseButton, Screen.hasShiftDown()));
                 return true;
             } else {
                 return false;

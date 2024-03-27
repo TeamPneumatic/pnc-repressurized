@@ -21,10 +21,11 @@ import me.desht.pneumaticcraft.api.item.IProgrammable;
 import me.desht.pneumaticcraft.client.gui.ProgrammerScreen;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.block.entity.ProgrammerBlockEntity;
-import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSendNBTPacket;
+import me.desht.pneumaticcraft.common.registry.ModMenuTypes;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
+import me.desht.pneumaticcraft.common.util.IOHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.FriendlyByteBuf;
@@ -34,9 +35,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.items.SlotItemHandler;
-import net.minecraftforge.server.ServerLifecycleHooks;
+import net.neoforged.neoforge.items.SlotItemHandler;
+import net.neoforged.neoforge.server.ServerLifecycleHooks;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -53,7 +53,7 @@ public class ProgrammerMenu extends AbstractPneumaticCraftMenu<ProgrammerBlockEn
         int xBase = hiRes ? 270 : 95;
         int yBase = hiRes ? 430 : 174;
 
-        addSlot(new SlotItemHandler(te.getPrimaryInventory(), 0, hiRes ? 676 : 326, 15) {
+        addSlot(new SlotItemHandler(blockEntity.getItemHandler(), 0, hiRes ? 676 : 326, 15) {
             @Override
             public boolean mayPlace(@Nonnull ItemStack stack) {
                 return isProgrammableItem(stack);
@@ -82,16 +82,16 @@ public class ProgrammerMenu extends AbstractPneumaticCraftMenu<ProgrammerBlockEn
 
         // update the client about contents of adjacent inventories so the programmer GUI knows what
         // puzzle pieces are available
-        if (te.nonNullLevel().getGameTime() % 20 == 0) {
+        if (blockEntity.nonNullLevel().getGameTime() % 20 == 0) {
             for (Direction d : DirectionUtil.VALUES) {
-                BlockEntity neighbor = te.getCachedNeighbor(d);
-                if (neighbor != null && neighbor.getCapability(ForgeCapabilities.ITEM_HANDLER, d.getOpposite()).isPresent()) {
+                BlockEntity neighbor = blockEntity.getCachedNeighbor(d);
+                if (neighbor != null && IOHelper.getInventoryForBlock(neighbor, d.getOpposite()).isPresent()) {
                     final AbstractPneumaticCraftMenu<?> self = this;
                     List<ServerPlayer> players = ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayers().stream()
                             .filter(p -> p.containerMenu == self)
                             .toList();
                     if (!players.isEmpty()) {
-                        players.forEach(p -> NetworkHandler.sendToPlayer(new PacketSendNBTPacket(neighbor), p));
+                        players.forEach(p -> NetworkHandler.sendToPlayer(PacketSendNBTPacket.forBlockEntity(neighbor), p));
                     }
                 }
             }
