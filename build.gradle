@@ -76,9 +76,7 @@ repositories {
 		name "K-4u Mod maven"
 		url "https://modmaven.dev/"
 		content {
-			includeGroup "com.jozufozu.flywheel"
 			includeGroup "com.simibubi.create"
-			includeGroup "com.tterrag.registrate"
 			includeGroup "mekanism"
 			includeGroup "mcjty.theoneprobe"
 		}
@@ -102,7 +100,6 @@ sourceSets {
 		resources {
 			srcDir 'src/generated/resources'
 		}
-//		ext.refMap = "mixins.pneumaticcraft.refmap.json"
 	}
 	test {
 		resources.srcDirs = []
@@ -177,9 +174,6 @@ dependencies {
 	runtimeOnly("mekanism:Mekanism:${mekanism_version}")
 
 	compileOnly("com.simibubi.create:create-1.20.1:${create_version}:slim") { transitive = false }
-//	compileOnly("com.jozufozu.flywheel:flywheel-forge-1.20.1:${flywheel_version}")
-//	compileOnly("com.tterrag.registrate:Registrate:${registrate_version}")
-//	implementation("curse.maven:create-328085:${create_curse_id}")
 
 	implementation("curse.maven:jade-324717:${jade_curse_id}")
 
@@ -274,6 +268,9 @@ javadoc {
 publishing {
     publications {
         register('mavenJava', MavenPublication) {
+			artifactId = archive_base_name
+			groupId = mod_group_id
+			version = "${mod_version}+mc${minecraft_version}${snapExt}"
             from components.java
         }
     }
