@@ -112,9 +112,9 @@ public class MicromissileScreen extends AbstractPneumaticCraftScreen {
         Component labelStr = xlate("pneumaticcraft.gui.sentryTurret.targetFilter");
         filterLabel = new WidgetLabel(guiLeft + 12, guiTop + 130, labelStr);
         addRenderableWidget(filterLabel);
-        int textBoxX = guiLeft + 12 + font.width(labelStr) + 5;
-        int textBoxWidth = xSize - (textBoxX - guiLeft) - 20;
-        textField = new WidgetTextField(font, textBoxX, guiTop + 128, textBoxWidth, 10);
+        int textBoxX = filterLabel.getX() + font.width(labelStr) + 2;
+        int textBoxWidth = xSize - (textBoxX - guiLeft) - 12;
+        textField = new WidgetTextField(font, textBoxX, guiTop + 128, textBoxWidth, font.lineHeight + 3);
         textField.setValue(entityFilter);
         setFocused(textField);
         textField.setResponder(s -> {
@@ -164,8 +164,6 @@ public class MicromissileScreen extends AbstractPneumaticCraftScreen {
 
     @Override
     public void render(GuiGraphics graphics, int x, int y, float partialTicks) {
-        renderBackground(graphics, x, y, partialTicks);
-
         super.render(graphics, x, y, partialTicks);
 
         if (ClientUtils.isKeyDown(GLFW.GLFW_KEY_F1)) {

@@ -130,7 +130,7 @@ public class PressureDisenchantingRecipe extends PressureChamberRecipeImpl {
     @Override
     public boolean isValidInputItem(ItemStack stack) {
         return stack.getItem() == Items.BOOK
-                || stack.getItem() != Items.ENCHANTED_BOOK && EnchantmentHelper.getEnchantments(stack).size() > 0;
+                || stack.getItem() != Items.ENCHANTED_BOOK && !EnchantmentHelper.getEnchantments(stack).isEmpty();
     }
 
     @Override

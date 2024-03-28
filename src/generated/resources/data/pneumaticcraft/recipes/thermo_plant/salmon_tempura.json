@@ -8,8 +8,7 @@
     "item": "pneumaticcraft:raw_salmon_tempura"
   },
   "item_output": {
-    "Count": 1,
-    "id": "pneumaticcraft:salmon_tempura"
+    "item": "pneumaticcraft:salmon_tempura"
   },
   "temperature": {
     "min": 423

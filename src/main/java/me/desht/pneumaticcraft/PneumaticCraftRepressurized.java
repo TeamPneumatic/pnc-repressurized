@@ -37,7 +37,6 @@ import me.desht.pneumaticcraft.common.hacking.HackEventListener;
 import me.desht.pneumaticcraft.common.hacking.HackManager;
 import me.desht.pneumaticcraft.common.heat.behaviour.HeatBehaviourManager;
 import me.desht.pneumaticcraft.common.item.GPSAreaToolItem;
-import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.BlockTrackLootable;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
@@ -52,11 +51,9 @@ import me.desht.pneumaticcraft.common.util.Reflections;
 import me.desht.pneumaticcraft.common.util.playerfilter.PlayerMatcherTypes;
 import me.desht.pneumaticcraft.common.villages.VillageStructures;
 import me.desht.pneumaticcraft.lib.Log;
-import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.neoforged.fml.event.lifecycle.FMLConstructModEvent;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.AddReloadListenerEvent;
@@ -82,7 +79,6 @@ public class PneumaticCraftRepressurized {
         ThirdPartyManager.instance().preInit(modBus);
         Reflections.init();
 
-        modBus.addListener(this::modConstructSetup);
         modBus.addListener(this::commonSetup);
         modBus.addListener(this::newRegistries);
         modBus.addListener(ForcedChunks.INSTANCE::registerTicketController);
@@ -141,9 +137,6 @@ public class PneumaticCraftRepressurized {
         ModCreativeModeTab.TABS.register(modBus);
     }
 
-    private void modConstructSetup(FMLConstructModEvent event) {
-    }
-
     private void commonSetup(FMLCommonSetupEvent event) {
         Log.info(Names.MOD_NAME + " is loading!");
 
@@ -155,7 +148,6 @@ public class PneumaticCraftRepressurized {
         ModNameCache.init();
         HeatBehaviourManager.getInstance().registerDefaultBehaviours();
         PlayerMatcherTypes.registerDefaultMatchers();
-//        PlayerFilter.registerDefaultMatchers();
         BlockTrackLootable.INSTANCE.addDefaultEntries();
         ItemLaunching.registerDefaultBehaviours();
 
@@ -166,15 +158,6 @@ public class PneumaticCraftRepressurized {
             ThirdPartyManager.instance().postInit();
         });
     }
-
-//    private void registerCapabilities(RegisterCapabilitiesEvent event) {
-//        event.register(IAirHandler.class);
-//        event.register(IAirHandlerItem.class);
-//        event.register(IAirHandlerMachine.class);
-//        event.register(IHeatExchangerLogic.class);
-//        event.register(IHacking.class);
-//        event.register(IUpgradeItem.class);
-//    }
 
     private void addReloadListeners(AddReloadListenerEvent event) {
         event.addListener(PneumaticCraftRecipeType.getCacheReloadListener());

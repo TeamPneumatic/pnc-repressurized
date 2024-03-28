@@ -9,8 +9,7 @@
     }
   },
   "output": {
-    "Count": 1,
-    "id": "pneumaticcraft:plastic"
+    "item": "pneumaticcraft:plastic"
   },
   "temperature": 273
 }

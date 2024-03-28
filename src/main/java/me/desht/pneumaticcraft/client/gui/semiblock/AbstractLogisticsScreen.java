@@ -44,6 +44,7 @@ import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.fluids.FluidStack;
 
 import java.util.ArrayList;
@@ -213,7 +214,8 @@ public class AbstractLogisticsScreen<L extends AbstractLogisticsFrameEntity> ext
     private void fluidClicked(WidgetFluidStack widget, int idx) {
         FluidStack stack = logistics.getFluidFilter(idx);
         if (!stack.isEmpty()) {
-            logistics.setFluidFilter(idx, widget.getFluidStack().copy());
+            logistics.setFluidFilter(idx, FluidStack.EMPTY);
+            widget.setFluid(Fluids.EMPTY);
             syncToServer();
             return;
         } else if (IOHelper.getFluidHandlerForItem(menu.getCarried()).isPresent()) {

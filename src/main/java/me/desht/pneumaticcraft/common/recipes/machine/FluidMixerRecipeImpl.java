@@ -104,7 +104,7 @@ public class FluidMixerRecipeImpl extends FluidMixerRecipe {
                     FluidIngredient.FLUID_CODEC.fieldOf("input1").forGetter(FluidMixerRecipe::getInput1),
                     FluidIngredient.FLUID_CODEC.fieldOf("input2").forGetter(FluidMixerRecipe::getInput2),
                     FluidStack.CODEC.fieldOf("fluid_output").forGetter(FluidMixerRecipe::getOutputFluid),
-                    ItemStack.CODEC.fieldOf("item_output").forGetter(FluidMixerRecipe::getOutputItem),
+                    ItemStack.ITEM_WITH_COUNT_CODEC.fieldOf("item_output").forGetter(FluidMixerRecipe::getOutputItem),
                     Codec.FLOAT.fieldOf("pressure").forGetter(FluidMixerRecipe::getRequiredPressure),
                     Codec.INT.fieldOf("time").forGetter(FluidMixerRecipe::getProcessingTime)
             ).apply(builder, factory::create));

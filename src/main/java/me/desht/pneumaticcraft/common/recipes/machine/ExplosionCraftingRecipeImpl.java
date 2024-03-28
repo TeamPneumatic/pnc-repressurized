@@ -25,6 +25,7 @@ import me.desht.pneumaticcraft.common.registry.ModRecipeSerializers;
 import me.desht.pneumaticcraft.common.registry.ModRecipeTypes;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
@@ -135,8 +136,8 @@ public class ExplosionCraftingRecipeImpl extends ExplosionCraftingRecipe {
             this.factory = factory;
             this.codec = RecordCodecBuilder.create(builder -> builder.group(
                     Ingredient.CODEC.fieldOf("input").forGetter(ExplosionCraftingRecipe::getInput),
-                    Codec.INT.fieldOf("loss_rate").forGetter(ExplosionCraftingRecipe::getLossRate),
-                    ItemStack.CODEC.listOf().fieldOf("results").forGetter(ExplosionCraftingRecipe::getOutputs)
+                    ExtraCodecs.intRange(0, 99).fieldOf("loss_rate").forGetter(ExplosionCraftingRecipe::getLossRate),
+                    ItemStack.ITEM_WITH_COUNT_CODEC.listOf().fieldOf("results").forGetter(ExplosionCraftingRecipe::getOutputs)
             ).apply(builder, factory::create));
         }
 

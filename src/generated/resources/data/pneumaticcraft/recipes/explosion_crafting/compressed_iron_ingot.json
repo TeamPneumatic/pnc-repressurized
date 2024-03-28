@@ -6,8 +6,7 @@
   "loss_rate": 20,
   "results": [
     {
-      "Count": 1,
-      "id": "pneumaticcraft:ingot_iron_compressed"
+      "item": "pneumaticcraft:ingot_iron_compressed"
     }
   ]
 }

@@ -31,20 +31,22 @@ public class ModCreativeModeTab {
     public static final Supplier<CreativeModeTab> DEFAULT = TABS.register("default", ModCreativeModeTab::buildDefaultTab);
 
     private static CreativeModeTab buildDefaultTab() {
+        return CreativeModeTab.builder()
+                .title(xlate("itemGroup.pneumaticcraft"))
+                .icon(() -> new ItemStack(ModItems.PRESSURE_GAUGE.get()))
+                .displayItems(ModCreativeModeTab::genDisplayItems)
+                .build();
+    }
+
+    private static void genDisplayItems(CreativeModeTab.ItemDisplayParameters params, CreativeModeTab.Output output) {
         List<ItemStack> items = ModItems.ITEMS.getEntries().stream()
                 .flatMap(ro -> stacksForItem(ro.get()))
                 .sorted(new ItemSorter())
                 .collect(Collectors.toCollection(ArrayList::new));
-
         if (ModList.get().isLoaded(ModIds.PATCHOULI)) {
             items.add(PatchouliBookCrafting.makeGuideBook());
         }
-
-        return CreativeModeTab.builder()
-                .title(xlate("itemGroup.pneumaticcraft"))
-                .icon(() -> new ItemStack(ModItems.PRESSURE_GAUGE.get()))
-                .displayItems((params, output) -> output.acceptAll(items))
-                .build();
+        output.acceptAll(items);
     }
 
     private static Stream<ItemStack> stacksForItem(Item item) {
@@ -55,7 +57,7 @@ public class ModCreativeModeTab {
             return provider.getStacksForItem();
         } else if (item instanceof IPressurizableItem p) {
             ItemStack stack2 = stack.copy();
-//            new AirHandlerItemStack(stack2).addAir((int) (p.getBaseVolume() * p.getMaxPressure()));
+            new AirHandlerItemStack(stack2).addAir((int) (p.getBaseVolume() * p.getMaxPressure()));
             return Stream.of(new ItemStack(item), stack2);
         } else {
             return Stream.of(stack);

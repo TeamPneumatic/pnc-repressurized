@@ -9,8 +9,7 @@
     "tag": "forge:ingots/compressed_iron"
   },
   "item_output": {
-    "Count": 1,
-    "id": "pneumaticcraft:drill_bit_compressed_iron"
+    "item": "pneumaticcraft:drill_bit_compressed_iron"
   },
   "pressure": 4.0,
   "speed": 0.25,

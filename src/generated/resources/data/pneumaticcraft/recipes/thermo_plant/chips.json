@@ -8,8 +8,8 @@
     "tag": "forge:crops/potato"
   },
   "item_output": {
-    "Count": 4,
-    "id": "pneumaticcraft:chips"
+    "count": 4,
+    "item": "pneumaticcraft:chips"
   },
   "temperature": {
     "min": 423

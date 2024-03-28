@@ -40,7 +40,6 @@ import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.language.I18n;
@@ -242,13 +241,6 @@ public class WidgetKeybindCheckBox extends WidgetCheckBox {
         return false;
     }
 
-    @Override
-    public void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        super.renderWidget(graphics, mouseX, mouseY, partialTick);
-
-//        buildTooltip();
-    }
-
     private void buildTooltip() {
         KeyMapping keyBinding = ClientArmorRegistry.getInstance().getKeybindingForUpgrade(upgradeID);
         String k = IArmorUpgradeHandler.getStringKey(upgradeID) + ".desc";
@@ -281,14 +273,13 @@ public class WidgetKeybindCheckBox extends WidgetCheckBox {
      */
     private void updateBinding(InputConstants.Key input) {
         isListeningForBinding = false;
-        KeyMapping keyBinding = ClientArmorRegistry.getInstance().getKeybindingForUpgrade(upgradeID);
-        if (keyBinding != null) {
+        KeyMapping mapping = ClientArmorRegistry.getInstance().getKeybindingForUpgrade(upgradeID);
+        if (mapping != null) {
             KeyModifier mod = input == InputConstants.UNKNOWN ? KeyModifier.NONE : KeyModifier.getActiveModifier();
-            keyBinding.setKeyModifierAndCode(mod, input);
-            Minecraft.getInstance().options.setKey(keyBinding, input);
+            mapping.setKeyModifierAndCode(mod, input);
+            Minecraft.getInstance().options.setKey(mapping, input);
             KeyMapping.resetMapping();
-            KeyDispatcher.in2checkbox.values().remove(this);
-            KeyDispatcher.in2checkbox.put(InputRecord.forKeyMapping(keyBinding), this);
+            KeyDispatcher.updateBinding(mapping, this);
             Minecraft.getInstance().player.playSound(SoundEvents.NOTE_BLOCK_CHIME.value(), 1.0f, input == InputConstants.UNKNOWN ? 0.5f :1.0f);
         }
         setMessage(oldCheckboxText);
@@ -306,7 +297,7 @@ public class WidgetKeybindCheckBox extends WidgetCheckBox {
         private static final Map<InputRecord, WidgetKeybindCheckBox> in2checkbox = new HashMap<>();
 
         @SubscribeEvent
-        public static void onKeyPress(net.neoforged.neoforge.client.event.InputEvent.Key event) {
+        public static void onKeyPress(InputEvent.Key event) {
             if (Minecraft.getInstance().screen == null && event.getAction() == GLFW.GLFW_PRESS) {
                 handleInput(InputConstants.Type.KEYSYM.getOrCreate(event.getKey()));
             }
@@ -321,6 +312,11 @@ public class WidgetKeybindCheckBox extends WidgetCheckBox {
 
         private static void handleInput(InputConstants.Key key) {
             Optional.ofNullable(in2checkbox.get(InputRecord.forKey(key))).ifPresent(WidgetKeybindCheckBox::handleClick);
+        }
+
+        private static void updateBinding(KeyMapping mapping, WidgetKeybindCheckBox widget) {
+            in2checkbox.values().remove(widget);
+            in2checkbox.put(InputRecord.forKeyMapping(mapping), widget);
         }
     }
 

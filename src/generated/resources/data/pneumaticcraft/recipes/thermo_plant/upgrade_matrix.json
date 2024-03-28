@@ -10,8 +10,8 @@
     "item": "minecraft:lapis_lazuli"
   },
   "item_output": {
-    "Count": 4,
-    "id": "pneumaticcraft:upgrade_matrix"
+    "count": 4,
+    "item": "pneumaticcraft:upgrade_matrix"
   },
   "pressure": 2.0,
   "temperature": {

@@ -6,8 +6,7 @@
   "loss_rate": 50,
   "results": [
     {
-      "Count": 1,
-      "id": "pneumaticcraft:wheat_flour"
+      "item": "pneumaticcraft:wheat_flour"
     }
   ]
 }

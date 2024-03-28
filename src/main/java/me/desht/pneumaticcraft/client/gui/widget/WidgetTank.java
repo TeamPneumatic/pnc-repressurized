@@ -21,6 +21,7 @@ import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.thirdparty.ModNameCache;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.ChatFormatting;
+import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
@@ -44,7 +45,7 @@ import java.util.Optional;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 /**
- * This class is derived from BluePower and edited by MineMaarten:
+ * This class is derived from BluePower and edited by MineMaarten and further by desht:
  * https://github.com/Qmunity/BluePower/blob/FluidCrafting/src/main/java/com/bluepowermod/client/gui/widget/WidgetTank.java
  */
 public class WidgetTank extends AbstractWidget {
@@ -70,9 +71,7 @@ public class WidgetTank extends AbstractWidget {
     }
 
     private static FluidTank makeTank(FluidStack stack, int capacity) {
-        FluidTank tank = new FluidTank(capacity);
-        tank.fill(stack, IFluidHandler.FluidAction.EXECUTE);
-        return tank;
+        return Util.make(new FluidTank(capacity), tank -> tank.fill(stack, IFluidHandler.FluidAction.EXECUTE));
     }
 
     @Override

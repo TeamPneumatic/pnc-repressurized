@@ -82,7 +82,7 @@ public class SimpleThermostatModuleScreen extends AbstractTubeModuleScreen<Therm
         addRenderableWidget(thresholdLabel = new WidgetLabel(x, y, xlate("pneumaticcraft.gui.tubeModule.simpleConfig.threshold")));
 
         x = guiLeft + 10 + thresholdLabel.getWidth() + 5;
-        thresholdField = new WidgetTextFieldNumber(font, x, y-1, 30, font.lineHeight + 2).setDecimals(0);
+        thresholdField = new WidgetTextFieldNumber(font, x, y-2, 30, font.lineHeight + 3).setDecimals(0);
         addRenderableWidget(thresholdField);
         thresholdField.setWidth(40);
         setInitialFocus(thresholdField);

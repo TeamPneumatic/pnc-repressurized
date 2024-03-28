@@ -9,8 +9,7 @@
     "item": "pneumaticcraft:spawner_core_shell"
   },
   "item_output": {
-    "Count": 1,
-    "id": "pneumaticcraft:spawner_core"
+    "item": "pneumaticcraft:spawner_core"
   },
   "pressure": 3.0,
   "speed": 0.5

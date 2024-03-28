@@ -115,7 +115,7 @@ public class ArmorStatMoveScreen extends AbstractPneumaticCraftScreen {
         addRenderableWidget(gridSlider);
 
         MutableComponent msg = Component.translatable("pneumaticcraft.armor.gui.misc.reset");
-        addRenderableWidget(new WidgetButtonExtended(gridSlider.getX(), gridSlider.getY() + 12, font.width(msg) + 20, 20,
+        addRenderableWidget(new WidgetButtonExtended(gridSlider.getX(), gridSlider.getY() + 20, font.width(msg) + 20, 20,
                 msg, b -> resetStatPosition()));
     }
 
@@ -193,8 +193,6 @@ public class ArmorStatMoveScreen extends AbstractPneumaticCraftScreen {
 
     @Override
     public void render(GuiGraphics graphics, int x, int y, float partialTicks) {
-        renderBackground(graphics, x, y, partialTicks);
-
         Rect2i bounds = GuiUtils.showPopupHelpScreen(graphics,this, font, helpText);
         snapToGrid.setY(bounds.getY() + bounds.getHeight() + 15);
         gridSlider.setY(snapToGrid.getY() + 12);

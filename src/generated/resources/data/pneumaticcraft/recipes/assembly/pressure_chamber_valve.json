@@ -5,6 +5,7 @@
   },
   "program": "DRILL",
   "result": {
+    "count": 20,
     "item": "pneumaticcraft:pressure_chamber_valve"
   }
 }

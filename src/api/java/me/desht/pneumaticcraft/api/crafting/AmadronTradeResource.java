@@ -43,7 +43,7 @@ import java.util.stream.IntStream;
  */
 public record AmadronTradeResource(Either<ItemStack,FluidStack> resource) {
     public static final Codec<AmadronTradeResource> CODEC = RecordCodecBuilder.create(inst -> inst.group(
-            Codec.either(ItemStack.CODEC, FluidStack.CODEC).fieldOf("resource").forGetter(AmadronTradeResource::resource)
+            Codec.either(ItemStack.ITEM_WITH_COUNT_CODEC, FluidStack.CODEC).fieldOf("resource").forGetter(AmadronTradeResource::resource)
     ).apply(inst, AmadronTradeResource::new));
 
     private enum Type { ITEM, FLUID }

@@ -20,15 +20,20 @@ package me.desht.pneumaticcraft.client.gui.widget;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.thirdparty.ModNameCache;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.vehicle.Minecart;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.fluids.FluidStack;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 public class WidgetFluidFilter extends AbstractWidget {
@@ -53,13 +58,14 @@ public class WidgetFluidFilter extends AbstractWidget {
     public void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
         if (!fluidStack.isEmpty()) {
             GuiUtils.drawFluid(graphics, new Rect2i(getX(), getY(), 16, 16), new FluidStack(fluidStack, 1000), null);
-            setTooltip(Tooltip.create(
-                    new FluidStack(fluidStack, 1).getDisplayName().copy().append("\n")
-                            .append(Component.literal(ModNameCache.getModName(fluidStack.getFluid()))
-                                    .withStyle(ChatFormatting.BLUE, ChatFormatting.ITALIC)))
+            List<Component> tooltip = List.of(
+                    fluidStack.getDisplayName(),
+                    Component.literal(ModNameCache.getModName(fluidStack.getFluid()))
+                            .withStyle(ChatFormatting.BLUE, ChatFormatting.ITALIC)
             );
-        } else {
-            setTooltip(null);
+            if (isHovered) {
+                graphics.renderTooltip(Minecraft.getInstance().font, tooltip, Optional.empty(), mouseX, mouseY);
+            }
         }
     }
 

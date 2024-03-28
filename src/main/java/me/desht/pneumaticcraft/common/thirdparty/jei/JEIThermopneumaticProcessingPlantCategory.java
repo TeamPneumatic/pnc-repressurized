@@ -119,10 +119,6 @@ public class JEIThermopneumaticProcessingPlantCategory extends AbstractPNCCatego
     @Override
     public List<Component> getTooltipStrings(ThermoPlantRecipe recipe, IRecipeSlotsView recipeSlotsView, double mouseX, double mouseY) {
         List<Component> res = new ArrayList<>();
-        WidgetTemperature w = tempWidgets.get(recipe);
-        if (w != null && w.isMouseOver(mouseX, mouseY)) {
-            res.add(HeatUtil.formatHeatString(recipe.getOperatingTemperature().asString(TemperatureScale.CELSIUS)));
-        }
         if (recipe.getRequiredPressure() > 0 && mouseX >= 116 && mouseY >= 22 && mouseX <= 156 && mouseY <= 62) {
             res.add(xlate("pneumaticcraft.gui.tooltip.pressure", recipe.getRequiredPressure()));
             if (recipe.getAirUseMultiplier() != 1f) {

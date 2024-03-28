@@ -13,8 +13,7 @@
     "tag": "forge:ethanol"
   },
   "item_output": {
-    "Count": 1,
-    "id": "pneumaticcraft:glycerol"
+    "item": "pneumaticcraft:glycerol"
   },
   "pressure": 2.0,
   "time": 300

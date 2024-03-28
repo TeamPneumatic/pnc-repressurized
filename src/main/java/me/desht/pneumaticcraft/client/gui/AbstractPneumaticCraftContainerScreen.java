@@ -363,7 +363,6 @@ public abstract class AbstractPneumaticCraftContainerScreen<C extends AbstractPn
 
     @Override
     public void render(GuiGraphics graphics, int x, int y, float partialTick) {
-        renderBackground(graphics, x, y, partialTick);
         super.render(graphics, x, y, partialTick);
         renderTooltip(graphics, x, y);
     }

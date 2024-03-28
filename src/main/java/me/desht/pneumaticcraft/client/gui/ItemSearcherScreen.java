@@ -79,7 +79,6 @@ public class ItemSearcherScreen extends AbstractContainerScreen<ItemSearcherMenu
     public ItemSearcherScreen(ItemSearcherMenu container, Inventory playerInventory, Component displayString) {
         super(container, playerInventory, displayString);
 
-//        passEvents = true;
         imageHeight = 176;
         parentScreen = Minecraft.getInstance().screen;
         container.init(this);
@@ -117,7 +116,7 @@ public class ItemSearcherScreen extends AbstractContainerScreen<ItemSearcherMenu
     public void init() {
         super.init();
 
-        searchField = new WidgetTextField(font, leftPos + 8, topPos + 36, 89, font.lineHeight);
+        searchField = new WidgetTextField(font, leftPos + 8, topPos + 35, 89, font.lineHeight + 3);
         searchField.setMaxLength(15);
         searchField.setBordered(true);
         searchField.setVisible(true);
@@ -178,22 +177,7 @@ public class ItemSearcherScreen extends AbstractContainerScreen<ItemSearcherMenu
 
     private Stream<SearchEntry> getSearchEntries() {
         if (cachedSearchEntries == null) {
-//            NonNullList<ItemStack> itemList = NonNullList.create();
-//
-//            for (Item item : ForgeRegistries.ITEMS.getValues()) {
-//                NonNullList<ItemStack> l = NonNullList.create();
-//                if (item != null && item.getItemCategory() != null) item.fillItemCategory(item.getItemCategory(), l);
-//                itemList.addAll(l);
-//            }
-
-//            for (Enchantment enchantment : ForgeRegistries.ENCHANTMENTS.getValues()) {
-//                if (enchantment != null && enchantment.category != null) {
-//                    getAllEnchantedBooks(enchantment, itemList);
-//                }
-//            }
-
-            cachedSearchEntries = CreativeModeTabs.allTabs().stream()
-                    .flatMap(tab -> tab.getDisplayItems().stream())
+            cachedSearchEntries = CreativeModeTabs.searchTab().getDisplayItems().stream()
                     .map(SearchEntry::new)
                     .toList();
         }
@@ -266,8 +250,6 @@ public class ItemSearcherScreen extends AbstractContainerScreen<ItemSearcherMenu
 
     @Override
     public void render(GuiGraphics graphics, int x, int y, float partialTicks) {
-        renderBackground(graphics, x, y, partialTicks);
-
         super.render(graphics, x, y, partialTicks);
 
         renderTooltip(graphics, x, y);
@@ -288,7 +270,8 @@ public class ItemSearcherScreen extends AbstractContainerScreen<ItemSearcherMenu
         int x = scrollArea.getX();
         int y1 = scrollArea.getY();
         int y2 = y1 + scrollArea.getHeight();
-        graphics.blit(SCROLL_TEXTURE, x, y1 + (int) ((y2 - y1 - 17) * currentScroll), 232 + (needsScrollBars() ? 0 : 12), 0, 12, 15);
+
+        graphics.blit(Textures.WIDGET_VERTICAL_SCROLLBAR, x, y1 + (int) ((y2 - y1 - 17) * currentScroll), (needsScrollBars() ? 0 : 12), 0, 12, 15, 26, 15);
 
     }
 

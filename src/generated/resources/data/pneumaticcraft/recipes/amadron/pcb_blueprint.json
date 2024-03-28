@@ -2,16 +2,15 @@
   "type": "pneumaticcraft:amadron",
   "input": {
     "resource": {
-      "Count": 8,
-      "id": "minecraft:emerald"
+      "count": 8,
+      "item": "minecraft:emerald"
     }
   },
   "level": 0,
   "offer_id": "pneumaticcraft:amadron/pcb_blueprint",
   "output": {
     "resource": {
-      "Count": 1,
-      "id": "pneumaticcraft:pcb_blueprint"
+      "item": "pneumaticcraft:pcb_blueprint"
     }
   }
 }

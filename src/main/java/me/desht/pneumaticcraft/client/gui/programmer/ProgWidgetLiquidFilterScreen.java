@@ -34,7 +34,6 @@ import java.util.Comparator;
 import java.util.List;
 
 public class ProgWidgetLiquidFilterScreen extends AbstractProgWidgetScreen<ProgWidgetLiquidFilter> {
-
     private static final int GRID_WIDTH = 8;
     private static final int GRID_HEIGHT = 6;
     private WidgetFluidFilter mainFilter;
@@ -77,7 +76,7 @@ public class ProgWidgetLiquidFilterScreen extends AbstractProgWidgetScreen<ProgW
             }
         }
 
-        searchField = new WidgetTextField(font, guiLeft + 8, guiTop + 35, 90, 10);
+        searchField = new WidgetTextField(font, guiLeft + 8, guiTop + 34, 90, font.lineHeight + 3);
         addRenderableWidget(searchField);
         setFocused(searchField);
         searchField.setResponder(s -> textTimer = 5);

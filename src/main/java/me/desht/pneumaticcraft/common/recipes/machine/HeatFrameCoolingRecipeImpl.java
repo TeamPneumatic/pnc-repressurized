@@ -122,7 +122,7 @@ public class HeatFrameCoolingRecipeImpl extends HeatFrameCoolingRecipe {
                             .forGetter(HeatFrameCoolingRecipe::getInput),
                     ExtraCodecs.NON_NEGATIVE_INT.fieldOf("temperature")
                             .forGetter(HeatFrameCoolingRecipe::getThresholdTemperature),
-                    ItemStack.CODEC.fieldOf("output")
+                    ItemStack.ITEM_WITH_COUNT_CODEC.fieldOf("output")
                             .forGetter(HeatFrameCoolingRecipe::getOutput),
                     Codec.floatRange(0f, Float.MAX_VALUE).optionalFieldOf("bonusMultiplier", 0f)
                             .forGetter(HeatFrameCoolingRecipe::getBonusMultiplier),

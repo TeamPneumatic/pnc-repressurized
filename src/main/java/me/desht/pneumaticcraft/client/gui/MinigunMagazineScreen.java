@@ -75,21 +75,11 @@ public class MinigunMagazineScreen extends AbstractPneumaticCraftContainerScreen
             int minX = 26 + (lockedSlot % 2) * 18;
             int minY = 26 + (lockedSlot / 2) * 18;
 
-//            RenderSystem.enableBlend();
-//            RenderSystem.defaultBlendFunc();
-
             event.getGuiGraphics().fill(minX, minY, minX + 16, minY + 16, 0x3200D000);
             event.getGuiGraphics().hLine(minX, minX + 16, minY, 0xFF00D000);
             event.getGuiGraphics().hLine(minX, minX + 16, minY + 16, 0xFF00D000);
             event.getGuiGraphics().vLine(minX, minY, minY + 16, 0xFF00D000);
             event.getGuiGraphics().vLine(minX + 16, minY, minY + 16, 0xFF00D000);
-//            PoseStack poseStack = event.getGuiGraphics().pose();
-//            BufferBuilder wr = Tesselator.getInstance().getBuilder();
-//            RenderSystem.setShader(GameRenderer::getPositionColorShader);
-//            GuiUtils.drawUntexturedQuad(poseStack, wr, minX, minY, 0, 16, 16, 0, 208, 0, 50);
-//            RenderSystem.lineWidth(3.0F);
-//            GuiUtils.drawOutline(poseStack, wr, minX, minY, 0, 16, 16, 0, 208, 0, 255);
-//            RenderSystem.lineWidth(1.0F);
         }
     }
 }

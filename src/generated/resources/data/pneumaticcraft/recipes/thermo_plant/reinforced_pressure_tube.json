@@ -8,8 +8,7 @@
     "item": "pneumaticcraft:pressure_tube"
   },
   "item_output": {
-    "Count": 1,
-    "id": "pneumaticcraft:reinforced_pressure_tube"
+    "item": "pneumaticcraft:reinforced_pressure_tube"
   },
   "pressure": 1.5
 }

@@ -9,8 +9,7 @@
     "tag": "forge:storage_blocks/diamond"
   },
   "item_output": {
-    "Count": 1,
-    "id": "pneumaticcraft:drill_bit_diamond"
+    "item": "pneumaticcraft:drill_bit_diamond"
   },
   "pressure": 7.5,
   "speed": 0.1,

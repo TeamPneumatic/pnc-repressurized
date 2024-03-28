@@ -9,8 +9,7 @@
     }
   },
   "output": {
-    "Count": 1,
-    "id": "minecraft:obsidian"
+    "item": "minecraft:obsidian"
   },
   "temperature": 273
 }

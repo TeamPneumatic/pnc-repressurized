@@ -27,11 +27,12 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.client.gui.widget.ExtendedButton;
-import org.jline.reader.Widget;
 import org.lwjgl.opengl.GL11;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -52,8 +53,7 @@ public class WidgetButtonExtended extends ExtendedButton implements ITaggedWidge
     private int invisibleHoverColor;
     private boolean thisVisible = true;
     private IconPosition iconPosition = IconPosition.MIDDLE;
-    private String tag = null;
-    private Supplier<String> tagSupplier = null;
+    private Supplier<String> tagSupplier = () -> null;
     private boolean renderStackSize = false;
     private boolean highlightInactive = false;
 
@@ -85,17 +85,31 @@ public class WidgetButtonExtended extends ExtendedButton implements ITaggedWidge
      * @return the button, for fluency
      */
     public WidgetButtonExtended withTag(String tag) {
-        this.tag = tag;
-        this.tagSupplier = null;
+        this.tagSupplier = () -> tag;
         return this;
     }
 
+    /**
+     * Added a string tag supplier to the button.  This will be sent to the server as the payload of a
+     * {@link PacketGuiButton} packet when the button is clicked. Use this when the tag may change depending on
+     * context of the GUI, etc.
+     *
+     * @param tagSupplier supplies string tag containing any arbitrary information
+     * @return the button, for fluency
+     */
     public WidgetButtonExtended withTag(Supplier<String> tagSupplier) {
-        this.tag = null;
         this.tagSupplier = tagSupplier;
         return this;
     }
 
+    /**
+     * Add a custom tooltip supplier. Use this rather than the setTooltip... methods for buttons whose tooltips
+     * need to be checked/updated in a tick handler. Use setTooltip... methods causes horrible flickering in that
+     * situation.
+     *
+     * @param tooltipSupplier a tooltip supplier
+     * @return the button, for fluency
+     */
     public WidgetButtonExtended withCustomTooltip(Supplier<List<Component>> tooltipSupplier) {
         this.tooltipSupplier = tooltipSupplier;
         return this;
@@ -111,7 +125,7 @@ public class WidgetButtonExtended extends ExtendedButton implements ITaggedWidge
 
     @Override
     public String getTag() {
-        return tagSupplier == null ? tag : tagSupplier.get();
+        return tagSupplier.get();
     }
 
     public WidgetButtonExtended setVisible(boolean visible) {
@@ -193,7 +207,9 @@ public class WidgetButtonExtended extends ExtendedButton implements ITaggedWidge
                 graphics.fill(this.getX(), this.getY(), this.getX() + width, this.getY() + height, invisibleHoverColor);
             }
             if (isHovered && tooltipSupplier != null) {
-                graphics.renderTooltip(Minecraft.getInstance().font, tooltipSupplier.get(), Optional.empty(), x, y);
+                List<FormattedCharSequence> l = new ArrayList<>();
+                tooltipSupplier.get().forEach(c -> l.addAll(Tooltip.splitTooltip(Minecraft.getInstance(), c)));
+                graphics.renderTooltip(Minecraft.getInstance().font, l, x, y);
             }
         }
     }

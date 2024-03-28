@@ -132,7 +132,7 @@ public class AssemblyRecipeImpl extends AssemblyRecipe {
 
             this.codec = RecordCodecBuilder.create(inst -> inst.group(
                     Ingredient.CODEC.fieldOf("input").forGetter(AssemblyRecipe::getInput),
-                    ItemStack.ADVANCEMENT_ICON_CODEC.fieldOf("result").forGetter(AssemblyRecipe::getOutput),
+                    ItemStack.ITEM_WITH_COUNT_CODEC.fieldOf("result").forGetter(AssemblyRecipe::getOutput),
                     Codec.STRING.xmap(str -> Objects.requireNonNull(AssemblyProgramType.valueOf(str)), AssemblyProgramType::name)
                             .fieldOf("program").forGetter(AssemblyRecipe::getProgramType)
             ).apply(inst, factory::create));

@@ -16,6 +16,7 @@
     "accessors.MobAccess",
     "accessors.ServerPlayerAccess",
     "accessors.ServerPlayerGameModeAccess",
+    "accessors.ShapedRecipeAccess",
     "accessors.ShulkerAccess",
     "accessors.StructureTemplatePoolAccess",
     "accessors.WitchAccess",

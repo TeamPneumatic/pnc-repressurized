@@ -59,7 +59,6 @@ public class ProgWidgetRenderer {
     public static void renderProgWidget2d(GuiGraphics graphics, IProgWidget progWidget, int alpha) {
         RenderSystem.setShader(GameRenderer::getPositionColorTexShader);
         RenderSystem.setShaderTexture(0, progWidget.getTexture());
-        RenderSystem.setShaderColor(1f, 1f, 1f, alpha / 255f);
         int width = progWidget.getWidth() + (progWidget.getParameters().isEmpty() ? 0 : 10);
         int height = progWidget.getHeight() + (progWidget.hasStepOutput() ? 10 : 0);
         Pair<Float,Float> maxUV = progWidget.getMaxUV();

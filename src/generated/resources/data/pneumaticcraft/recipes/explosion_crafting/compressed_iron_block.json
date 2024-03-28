@@ -6,8 +6,7 @@
   "loss_rate": 20,
   "results": [
     {
-      "Count": 1,
-      "id": "pneumaticcraft:compressed_iron_block"
+      "item": "pneumaticcraft:compressed_iron_block"
     }
   ]
 }

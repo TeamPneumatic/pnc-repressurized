@@ -34,6 +34,7 @@ import me.desht.pneumaticcraft.common.util.drama.DramaGenerator;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -130,8 +131,9 @@ public class AphorismTileScreen extends Screen {
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
         GuiUtils.drawPanel(graphics, -5, (height - PANEL_HEIGHT) / 2, PANEL_HEIGHT, panelWidth);
 
-        super.render(graphics, mouseX, mouseY, partialTicks);
-
+        for (Renderable renderable : this.renderables) {
+            renderable.render(graphics, mouseX, mouseY, partialTicks);
+        }
         if (ClientUtils.isKeyDown(GLFW.GLFW_KEY_F1)) {
             GuiUtils.showPopupHelpScreen(graphics, this, font,
                     GuiUtils.xlateAndSplit("pneumaticcraft.gui.aphorismTile.helpText"));

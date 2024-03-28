@@ -10,8 +10,7 @@
   "offer_id": "pneumaticcraft:amadron/lubricant_to_emerald",
   "output": {
     "resource": {
-      "Count": 1,
-      "id": "minecraft:emerald"
+      "item": "minecraft:emerald"
     }
   }
 }

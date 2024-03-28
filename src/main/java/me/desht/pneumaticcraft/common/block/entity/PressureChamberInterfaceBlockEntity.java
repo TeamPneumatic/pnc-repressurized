@@ -107,6 +107,11 @@ public class PressureChamberInterfaceBlockEntity extends PressureChamberWallBloc
         acceptedItemCache.clear();
     }
 
+    @Override
+    public boolean hasItemCapability() {
+        return true;
+    }
+
     @Nullable
     @Override
     public AbstractContainerMenu createMenu(int i, Inventory playerInventory, Player playerEntity) {

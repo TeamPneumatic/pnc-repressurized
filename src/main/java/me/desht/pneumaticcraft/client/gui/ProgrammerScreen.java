@@ -31,6 +31,7 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetRadioButton;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTextField;
 import me.desht.pneumaticcraft.client.render.ProgWidgetRenderer;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
+import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.block.entity.ProgrammerBlockEntity;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
@@ -163,7 +164,8 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
         addRenderableWidget(importButton);
 
         exportButton = new WidgetButtonExtended(xStart + xRight + 2, yStart + 20, 20, 15, Symbols.ARROW_RIGHT)
-                .withTag("export");
+                .withTag("export")
+                .withCustomTooltip(this::updateExportButtonTooltip);
         addRenderableWidget(exportButton);
 
         addRenderableWidget(new WidgetButtonExtended(xStart + xRight - 3, yStart + yBottom, 13, 10, Symbols.TRIANGLE_LEFT, b -> adjustPage(-1)));
@@ -202,7 +204,8 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
         undoButton = new WidgetButtonExtended(leftPos - 24, topPos + 2, 20, 20, "").withTag("undo");
         redoButton = new WidgetButtonExtended(leftPos - 24, topPos + 23, 20, 20, "").withTag("redo");
         WidgetButtonExtended clearAllButton = new WidgetButtonExtended(leftPos - 24, topPos + 65, 20, 20, Component.empty(), b -> clear());
-        convertToRelativeButton = new WidgetButtonExtended(leftPos - 24, topPos + 86, 20, 20, "R", b -> convertToRelative());
+        convertToRelativeButton = new WidgetButtonExtended(leftPos - 24, topPos + 86, 20, 20, "R", b -> convertToRelative())
+                .withCustomTooltip(this::buildConvertButtonTooltip);
         rotateCoordsButton = new WidgetButtonExtended(leftPos - 24, topPos + 107, 20, 20, "90", b -> rotateCoords90())
                 .setTooltipText(xlate("pneumaticcraft.gui.programmer.button.rotate90button.tooltip"));
 
@@ -222,11 +225,11 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
 
         addLabel(title, leftPos + 7, topPos + 5, 0xFF404040);
 
-        nameField = new WidgetTextField(font, leftPos + xRight - 99, topPos + 5, 98, font.lineHeight);
+        nameField = new WidgetTextField(font, leftPos + xRight - 99, topPos + 4, 98, font.lineHeight + 2);
         nameField.setResponder(s -> updateDroneName());
         addRenderableWidget(nameField);
 
-        filterField = new FilterTextField(font, leftPos + 78, topPos + 26, 100, font.lineHeight);
+        filterField = new FilterTextField(font, leftPos + 78, topPos + 25, 100, font.lineHeight + 2);
         filterField.setResponder(s -> filterSpawnWidgets());
 
         addRenderableWidget(filterField);
@@ -454,7 +457,7 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
         lastMouseX = mouseX;
         lastMouseY = mouseY;
 
-        renderBackground(graphics, mouseX, mouseY, partialTicks);
+//        renderBackground(graphics, mouseX, mouseY, partialTicks);
         int xStart = (width - imageWidth) / 2;
         int yStart = (height - imageHeight) / 2;
         graphics.blit(getGuiTexture(), xStart, yStart, 0, 0, imageWidth, imageHeight, imageWidth, imageHeight);
@@ -830,7 +833,7 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
         importButton.active = isDeviceInserted;
         exportButton.active = isDeviceInserted && programmerUnit.getTotalErrors() == 0;
 
-        updateExportButtonTooltip(programmedItem);
+        updateExportButtonTooltip();
 
         if (!programmedItem.isEmpty()) {
             nameField.setEditable(true);
@@ -843,7 +846,7 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
         }
     }
 
-    private void updateExportButtonTooltip(ItemStack programmedItem) {
+    private List<Component> updateExportButtonTooltip() {
         List<Component> exportButtonTooltip = new ArrayList<>();
         exportButtonTooltip.add(xlate("pneumaticcraft.gui.programmer.button.export"));
         exportButtonTooltip.add(xlate("pneumaticcraft.gui.programmer.button.export.programmingWhen",
@@ -852,7 +855,7 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
         exportButtonTooltip.add(xlate("pneumaticcraft.gui.programmer.button.export.pressRToChange")
                 .withStyle(ChatFormatting.ITALIC, ChatFormatting.GRAY));
 
-        if (!programmedItem.isEmpty()) {
+        if (!te.getItemInProgrammingSlot().isEmpty()) {
             int required = te.getRequiredPuzzleCount();
             if (required != 0) exportButtonTooltip.add(Component.empty());
             int effectiveRequired = ClientUtils.getClientPlayer().isCreative() ? 0 : required;
@@ -885,7 +888,7 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
         if (programmerUnit.getTotalWarnings() > 0)
             exportButtonTooltip.add(xlate("pneumaticcraft.gui.programmer.warningCount", programmerUnit.getTotalWarnings()).withStyle(ChatFormatting.YELLOW));
 
-        exportButton.setTooltipText(PneumaticCraftUtils.combineComponents(exportButtonTooltip));
+        return exportButtonTooltip;
     }
 
     private int countPlayerPuzzlePieces() {
@@ -907,38 +910,40 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
 
         convertToRelativeButton.active = false;
         rotateCoordsButton.active = false;
+    }
 
+    private List<Component> buildConvertButtonTooltip() {
         List<Component> tooltip = new ArrayList<>();
         tooltip.add(xlate("pneumaticcraft.gui.programmer.button.convertToRelative.desc"));
 
         IProgWidget startWidget = findWidget(te.progWidgets, ProgWidgetStart.class);
         if (startWidget == null) {
             tooltip.add(xlate("pneumaticcraft.gui.programmer.button.convertToRelative.noStartPiece").withStyle(ChatFormatting.RED));
-            return;
-        }
-
-        IProgWidget widget = startWidget.getOutputWidget();
-        if (widget instanceof ProgWidgetCoordinateOperator operatorWidget) {
-            if (operatorWidget.getVariable().isEmpty()) {
-                tooltip.add(xlate("pneumaticcraft.gui.programmer.button.convertToRelative.noVariableName").withStyle(ChatFormatting.RED));
-                return;
-            }
-            try {
-                rotateCoordsButton.active = true;
-                if (generateRelativeOperators(operatorWidget, tooltip, true)) {
-                    convertToRelativeButton.active = true;
-                } else {
-                    tooltip.add(xlate("pneumaticcraft.gui.programmer.button.convertToRelative.notEnoughRoom").withStyle(ChatFormatting.RED));
-                }
-            } catch (NullPointerException e) {
-                tooltip.add(xlate("pneumaticcraft.gui.programmer.button.convertToRelative.cantHaveVariables").withStyle(ChatFormatting.RED));
-            }
-
         } else {
-            tooltip.add(xlate("pneumaticcraft.gui.programmer.button.convertToRelative.noBaseCoordinate").withStyle(ChatFormatting.RED));
+            IProgWidget widget = startWidget.getOutputWidget();
+            if (widget instanceof ProgWidgetCoordinateOperator operatorWidget) {
+                if (operatorWidget.getVariable().isEmpty()) {
+                    tooltip.add(xlate("pneumaticcraft.gui.programmer.button.convertToRelative.noVariableName").withStyle(ChatFormatting.RED));
+                } else {
+                    try {
+                        rotateCoordsButton.active = true;
+                        if (generateRelativeOperators(operatorWidget, tooltip, true)) {
+                            convertToRelativeButton.active = true;
+                        } else {
+                            tooltip.add(xlate("pneumaticcraft.gui.programmer.button.convertToRelative.notEnoughRoom").withStyle(ChatFormatting.RED));
+                        }
+                    } catch (NullPointerException e) {
+                        tooltip.add(xlate("pneumaticcraft.gui.programmer.button.convertToRelative.cantHaveVariables").withStyle(ChatFormatting.RED));
+                    }
+                }
+
+            } else {
+                tooltip.add(xlate("pneumaticcraft.gui.programmer.button.convertToRelative.noBaseCoordinate").withStyle(ChatFormatting.RED));
+            }
         }
 
-        convertToRelativeButton.setTooltipText(PneumaticCraftUtils.combineComponents(tooltip));
+        return tooltip;
+//        convertToRelativeButton.setTooltipText(PneumaticCraftUtils.combineComponents(tooltip));
     }
 
     private boolean generateRelativeOperators(ProgWidgetCoordinateOperator baseWidget, List<Component> tooltip, boolean simulate) {

@@ -18,6 +18,7 @@
 package me.desht.pneumaticcraft.common.recipes.machine;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import me.desht.pneumaticcraft.api.crafting.TemperatureRange;
 import me.desht.pneumaticcraft.api.crafting.ingredient.FluidIngredient;
@@ -27,6 +28,7 @@ import me.desht.pneumaticcraft.common.registry.ModBlocks;
 import me.desht.pneumaticcraft.common.registry.ModRecipeSerializers;
 import me.desht.pneumaticcraft.common.registry.ModRecipeTypes;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
@@ -35,6 +37,7 @@ import net.neoforged.neoforge.fluids.FluidStack;
 
 import javax.annotation.Nonnull;
 import java.util.Optional;
+import java.util.function.Function;
 
 // yeah yeah codecs
 @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
@@ -148,26 +151,31 @@ public class ThermoPlantRecipeImpl extends ThermoPlantRecipe {
 
         public Serializer(IFactory<T> factory) {
             this.factory = factory;
-            this.codec = RecordCodecBuilder.create(inst -> inst.group(
-                    FluidIngredient.FLUID_CODEC.optionalFieldOf("fluid_input")
-                            .forGetter(ThermoPlantRecipe::getInputFluid),
-                    Ingredient.CODEC.optionalFieldOf("item_input")
-                            .forGetter(ThermoPlantRecipe::getInputItem),
-                    FluidStack.CODEC.optionalFieldOf("fluid_output", FluidStack.EMPTY)
-                            .forGetter(ThermoPlantRecipe::getOutputFluid),
-                    ItemStack.CODEC.optionalFieldOf("item_output", ItemStack.EMPTY)
-                            .forGetter(ThermoPlantRecipe::getOutputItem),
-                    TemperatureRange.CODEC.optionalFieldOf("temperature", TemperatureRange.any())
-                            .forGetter(ThermoPlantRecipe::getOperatingTemperature),
-                    Codec.FLOAT.optionalFieldOf("pressure", 0f)
-                            .forGetter(ThermoPlantRecipe::getRequiredPressure),
-                    Codec.FLOAT.optionalFieldOf("speed", 1f)
-                            .forGetter(ThermoPlantRecipe::getRecipeSpeed),
-                    Codec.FLOAT.optionalFieldOf("air_use_multiplier", 1f)
-                            .forGetter(ThermoPlantRecipe::getAirUseMultiplier),
-                    Codec.BOOL.optionalFieldOf("exothermic", false)
-                            .forGetter(ThermoPlantRecipe::isExothermic)
-            ).apply(inst, factory::create));
+            this.codec = ExtraCodecs.validate(
+                    RecordCodecBuilder.create(inst -> inst.group(
+                            FluidIngredient.FLUID_CODEC.optionalFieldOf("fluid_input")
+                                    .forGetter(ThermoPlantRecipe::getInputFluid),
+                            Ingredient.CODEC.optionalFieldOf("item_input")
+                                    .forGetter(ThermoPlantRecipe::getInputItem),
+                            FluidStack.CODEC.optionalFieldOf("fluid_output", FluidStack.EMPTY)
+                                    .forGetter(ThermoPlantRecipe::getOutputFluid),
+                            ItemStack.ITEM_WITH_COUNT_CODEC.optionalFieldOf("item_output", ItemStack.EMPTY)
+                                    .forGetter(ThermoPlantRecipe::getOutputItem),
+                            TemperatureRange.CODEC.optionalFieldOf("temperature", TemperatureRange.any())
+                                    .forGetter(ThermoPlantRecipe::getOperatingTemperature),
+                            Codec.FLOAT.optionalFieldOf("pressure", 0f)
+                                    .forGetter(ThermoPlantRecipe::getRequiredPressure),
+                            Codec.FLOAT.optionalFieldOf("speed", 1f)
+                                    .forGetter(ThermoPlantRecipe::getRecipeSpeed),
+                            Codec.FLOAT.optionalFieldOf("air_use_multiplier", 1f)
+                                    .forGetter(ThermoPlantRecipe::getAirUseMultiplier),
+                            Codec.BOOL.optionalFieldOf("exothermic", false)
+                                    .forGetter(ThermoPlantRecipe::isExothermic)
+                    ).apply(inst, factory::create)),
+                    recipe -> recipe.getInputItem().isPresent() || recipe.getInputFluid().isPresent() ?
+                            DataResult.success(recipe) :
+                            DataResult.error(() -> "at least one of item_input or fluid_input must be present!", recipe)
+            );
         }
 
         @Override

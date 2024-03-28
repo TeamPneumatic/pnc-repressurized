@@ -2,8 +2,7 @@
   "type": "pneumaticcraft:amadron",
   "input": {
     "resource": {
-      "Count": 1,
-      "id": "minecraft:emerald"
+      "item": "minecraft:emerald"
     }
   },
   "level": 0,

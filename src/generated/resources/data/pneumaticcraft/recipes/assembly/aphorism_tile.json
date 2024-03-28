@@ -5,6 +5,7 @@
   },
   "program": "LASER",
   "result": {
+    "count": 4,
     "item": "pneumaticcraft:aphorism_tile"
   }
 }

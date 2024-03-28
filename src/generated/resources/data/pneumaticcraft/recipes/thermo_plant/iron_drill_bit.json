@@ -9,8 +9,7 @@
     "tag": "forge:ingots/iron"
   },
   "item_output": {
-    "Count": 1,
-    "id": "pneumaticcraft:drill_bit_iron"
+    "item": "pneumaticcraft:drill_bit_iron"
   },
   "pressure": 3.0,
   "speed": 0.5
