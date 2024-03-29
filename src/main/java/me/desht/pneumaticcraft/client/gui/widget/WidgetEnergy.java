@@ -18,12 +18,16 @@
 package me.desht.pneumaticcraft.client.gui.widget;
 
 import me.desht.pneumaticcraft.lib.Textures;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.vehicle.Minecart;
 import net.neoforged.neoforge.energy.IEnergyStorage;
+
+import java.util.Optional;
 
 public class WidgetEnergy extends AbstractWidget {
     private static final int DEFAULT_SCALE = 42;
@@ -43,7 +47,11 @@ public class WidgetEnergy extends AbstractWidget {
         graphics.blit(Textures.WIDGET_ENERGY, x + 1, y, 1, 0, width - 2, height, 32, 64);
         graphics.blit(Textures.WIDGET_ENERGY, x + 1, y + DEFAULT_SCALE - amount, 17, DEFAULT_SCALE - amount, width - 2, amount, 32, 64);
 
-        setTooltip(Tooltip.create(Component.literal(storage.getEnergyStored() + " / " + storage.getMaxEnergyStored() + " FE")));
+        if (isHovered) {
+            graphics.renderTooltip(Minecraft.getInstance().font,
+                    Component.literal(storage.getEnergyStored() + " / " + storage.getMaxEnergyStored() + " FE"),
+                    mouseX, mouseY);
+        }
     }
 
     private int getScaled(){

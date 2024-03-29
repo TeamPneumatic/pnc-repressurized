@@ -45,6 +45,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -240,7 +241,7 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
         } else {
             CompoundTag tag = Util.make(new CompoundTag(), t -> t.putString("SkullOwner", playerName));
             SkullBlockEntity.resolveGameProfile(tag);
-//            SkullBlockEntity.resolveGameProfile(new GameProfile(null, playerName), profile -> gameProfileClient = profile);
+            gameProfileClient = NbtUtils.readGameProfile(tag);
         }
     }
 
@@ -252,6 +253,7 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
         dispenserUpgradeInserted = getUpgrades(ModUpgrades.DISPENSER.get()) > 0;
         if (wasInserted != dispenserUpgradeInserted) {
             needUpdateNeighbours = true;
+            invalidateCapabilities();
         }
     }
 
@@ -321,6 +323,7 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
             }
             curXpFluid = curXPFluidIndex >= 0 ? available.get(curXPFluidIndex) : Fluids.EMPTY;
             curXpRatio = XPFluidManager.getInstance().getXPRatio(curXpFluid);
+            invalidateCapabilities();
         } else if (itemHandlerSideConfigurator.handleButtonPress(tag, shiftHeld)) {
             needUpdateNeighbours = true;
         } else {
@@ -361,24 +364,6 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
     public IEnergyStorage getEnergyHandler(@org.jetbrains.annotations.Nullable Direction dir) {
         return energyStorage;
     }
-
-    //    @NotNull
-//    @Override
-//    protected LazyOptional<IItemHandler> getInventoryCap(Direction side) {
-//        return dispenserUpgradeInserted ? playerFoodCap : itemHandlerSideConfigurator.getHandler(side);
-//    }
-//
-//    @NotNull
-//    @Override
-//    public LazyOptional<IFluidHandler> getFluidCap(Direction side) {
-//        return dispenserUpgradeInserted && curXpFluid != Fluids.EMPTY ? playerExpCap : super.getFluidCap(side);
-//    }
-//
-//    @NotNull
-//    @Override
-//    protected LazyOptional<IEnergyStorage> getEnergyCap(Direction side) {
-//        return energyCap;
-//    }
 
     @Override
     public void load(CompoundTag tag) {

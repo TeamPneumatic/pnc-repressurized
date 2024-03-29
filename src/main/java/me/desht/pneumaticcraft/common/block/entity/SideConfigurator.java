@@ -46,7 +46,7 @@ public class SideConfigurator<T> implements INBTSerializable<CompoundTag> {
     private final String id;
     private final ISideConfigurable sideConfigurable;
     private final Map<String, Integer> idxMap = new HashMap<>();
-    private Supplier<T> nullFaceHandler;
+    private Supplier<T> nullFaceHandler = () -> null;
 
     // each value here is an index into the 'entries' list
     private final byte[] faces = new byte[RelativeFace.values().length];
