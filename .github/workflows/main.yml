@@ -31,7 +31,7 @@ jobs:
       - name: Set up mod metadata
         id: mod_meta
         run: |
-          echo mc_version=$(grep ^mc_version ./gradle.properties | cut -d= -f2) >> $GITHUB_OUTPUT
+          echo mc_version=$(grep ^minecraft_version= ./gradle.properties | cut -d= -f2) >> $GITHUB_OUTPUT
       - name: Build JAR and Publish to Modmaven
         uses: gradle/gradle-build-action@v2
         env:
