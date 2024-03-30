@@ -72,7 +72,6 @@ import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.mixin.accessors.EntityAccess;
 import net.minecraft.ChatFormatting;
-import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.BlockParticleOption;
@@ -126,7 +125,6 @@ import net.minecraft.world.level.pathfinder.Node;
 import net.minecraft.world.level.pathfinder.Path;
 import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.util.FakePlayer;
 import net.neoforged.neoforge.common.util.ITeleporter;
@@ -1159,7 +1157,7 @@ public class DroneEntity extends AbstractDroneEntity implements
         if (source.is(DamageTypes.IN_WALL)) {
             return suffocationCounter > 0 || !ConfigHelper.common().drones.enableDroneSuffocation.get();
         }
-        if (RadiationSourceCheck.INSTANCE.isRadiation(source)) {
+        if (RadiationSourceCheck.INSTANCE.isRadiation(level().registryAccess(), source)) {
             return true;
         }
         Entity e = source.getEntity();

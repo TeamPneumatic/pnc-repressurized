@@ -22,7 +22,6 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 
-import java.util.Optional;
 import java.util.function.BiPredicate;
 
 /**
@@ -68,10 +67,10 @@ public interface IHeatExchangerAdapter extends IHeatExchangerLogic {
      */
     abstract class Simple<CAP> implements IHeatExchangerAdapter {
         protected final Direction side;
-        protected final Optional<CAP> foreignHeatCap;
+        protected final CAP foreignHeatCap;
         protected final double ambientTemperature;
 
-        public Simple(Direction side, Optional<CAP> foreignHeatCap, double ambientTemperature) {
+        public Simple(Direction side, CAP foreignHeatCap, double ambientTemperature) {
             this.side = side;
             this.foreignHeatCap = foreignHeatCap;
             this.ambientTemperature = ambientTemperature;

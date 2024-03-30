@@ -168,7 +168,7 @@ dependencies {
 	compileOnly("cc.tweaked:cc-tweaked-${minecraft_version}-forge-api:${cc_tweaked_version}")
 	runtimeOnly("cc.tweaked:cc-tweaked-${minecraft_version}-forge:${cc_tweaked_version}")
 
-	compileOnly("blusunrize.immersiveengineering:ImmersiveEngineering:${immersive_engineering_version}")
+	implementation("blusunrize.immersiveengineering:ImmersiveEngineering:${immersive_engineering_version}")
 
 	compileOnly("mekanism:Mekanism:${mekanism_version}:api")
 	runtimeOnly("mekanism:Mekanism:${mekanism_version}")

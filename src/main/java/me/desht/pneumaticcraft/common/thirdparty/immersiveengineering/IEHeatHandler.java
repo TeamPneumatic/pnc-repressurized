@@ -31,11 +31,11 @@ import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
  * Allows PNC heat handling blocks to be heated by the IE External Heater
  */
 record IEHeatHandler(BlockEntity blockEntity, Direction dir) implements ExternalHeaterHandler.IExternalHeatable {
-    public static ExternalHeaterHandler.IExternalHeatable maybe(BlockEntity obj, Direction dir) {
+    private static ExternalHeaterHandler.IExternalHeatable maybe(BlockEntity obj, Direction dir) {
         return obj instanceof IHeatExchangingTE ? new IEHeatHandler(obj, dir) : null;
     }
 
-    public static void registerCap(RegisterCapabilitiesEvent event) {
+    static void registerCap(RegisterCapabilitiesEvent event) {
         ModBlockEntityTypes.streamBlockEntities()
                 .filter(be -> be instanceof IHeatExchangingTE)
                 .forEach(be -> event.registerBlockEntity(ExternalHeaterHandler.CAPABILITY, be.getType(), IEHeatHandler::maybe));
@@ -44,11 +44,10 @@ record IEHeatHandler(BlockEntity blockEntity, Direction dir) implements External
     @Override
     public int doHeatTick(int energyAvailable, boolean redstone) {
         return IOHelper.getCap(blockEntity, PNCCapabilities.HEAT_EXCHANGER_BLOCK, dir).map(handler -> {
-            int rfPerTick = ConfigHelper.common().integration.ieExternalHeaterFEperTick.get();
-            double heatPerRF = ConfigHelper.common().integration.ieExternalHeaterHeatPerFE.get();
-            if (energyAvailable >= rfPerTick) {
-                handler.addHeat(rfPerTick * heatPerRF);
-                return rfPerTick;
+            int fePerTick = ConfigHelper.common().integration.ieExternalHeaterFEperTick.get();
+            if (energyAvailable >= fePerTick) {
+                handler.addHeat(fePerTick * ConfigHelper.common().integration.ieExternalHeaterHeatPerFE.get());
+                return fePerTick;
             }
             return 0;
         }).orElse(0);

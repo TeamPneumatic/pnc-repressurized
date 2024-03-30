@@ -15,23 +15,20 @@
  *     along with pnc-repressurized.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.desht.pneumaticcraft.common.thirdparty.immersiveengineering;
+package me.desht.pneumaticcraft.common.thirdparty.mekanism;
 
-import me.desht.pneumaticcraft.common.registry.ModHarvestHandlers;
 import me.desht.pneumaticcraft.common.thirdparty.IThirdParty;
 import net.neoforged.bus.api.IEventBus;
-import net.neoforged.neoforge.common.NeoForge;
 
-import java.util.function.Supplier;
-
-public class ImmersiveEngineering implements IThirdParty {
-    @SuppressWarnings("unused")
-    public static final Supplier<HempHarvestHandler> HEMP_HARVEST
-            = ModHarvestHandlers.register("ie_hemp", HempHarvestHandler::new);
-
+public class Mekanism implements IThirdParty {
     @Override
     public void preInit(IEventBus modBus) {
-        NeoForge.EVENT_BUS.addListener(ElectricAttackHandler::onElectricalAttack);
-        modBus.addListener(IEHeatHandler::registerCap);
+        modBus.addListener(MekanismIntegration::registerCaps);
+        modBus.addListener(MekanismIntegration::registerPaxelHandler);
+    }
+
+    @Override
+    public void init() {
+        MekanismIntegration.mekSetup();
     }
 }

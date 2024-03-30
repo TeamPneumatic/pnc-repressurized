@@ -27,7 +27,9 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -175,17 +177,23 @@ public class ModBlockEntityTypes {
         return BLOCK_ENTITY_TYPES.register(name, () -> new BlockEntityType<>(supplier, Arrays.stream(blocks).map(Supplier::get).collect(Collectors.toSet()), null));
     }
 
+    private static final List<BlockEntity> DUMMY_BE_LIST = new ArrayList<>();
+
     /**
      * A stream of dummy block entities, used during capability registration. Returned block entities should ONLY be
-     * used for instanceof checks; these are not useful otherwise.
+     * used for instanceof or getType() checks; they are not useful otherwise.
      * @return a stream of block entities
      */
     public static Stream<BlockEntity> streamBlockEntities() {
-        return BLOCK_ENTITY_TYPES.getEntries().stream()
-                .flatMap(holder -> holder.get().getValidBlocks().stream()
-                        .findFirst()
-                        .stream()
-                        .map(b -> holder.get().create(BlockPos.ZERO, b.defaultBlockState()))
-                );
+        if (DUMMY_BE_LIST.isEmpty()) {
+            DUMMY_BE_LIST.addAll(BLOCK_ENTITY_TYPES.getEntries().stream()
+                    .flatMap(holder -> holder.get().getValidBlocks().stream()
+                            .findFirst()
+                            .stream()
+                            .map(b -> holder.get().create(BlockPos.ZERO, b.defaultBlockState())))
+                    .toList()
+            );
+        }
+        return DUMMY_BE_LIST.stream();
     }
 }

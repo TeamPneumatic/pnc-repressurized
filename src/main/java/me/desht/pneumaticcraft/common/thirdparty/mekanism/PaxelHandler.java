@@ -15,23 +15,20 @@
  *     along with pnc-repressurized.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.desht.pneumaticcraft.common.thirdparty.immersiveengineering;
+package me.desht.pneumaticcraft.common.thirdparty.mekanism;
 
-import me.desht.pneumaticcraft.common.registry.ModHarvestHandlers;
-import me.desht.pneumaticcraft.common.thirdparty.IThirdParty;
-import net.neoforged.bus.api.IEventBus;
-import net.neoforged.neoforge.common.NeoForge;
+import me.desht.pneumaticcraft.api.harvesting.HoeHandler;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import net.minecraft.world.item.ItemStack;
 
-import java.util.function.Supplier;
+public class PaxelHandler extends HoeHandler {
+    public PaxelHandler() {
+        super(PaxelHandler::isMekanismPaxel, (stack, player) -> stack.hurtAndBreak(1, player, p -> { }));
+    }
 
-public class ImmersiveEngineering implements IThirdParty {
-    @SuppressWarnings("unused")
-    public static final Supplier<HempHarvestHandler> HEMP_HARVEST
-            = ModHarvestHandlers.register("ie_hemp", HempHarvestHandler::new);
-
-    @Override
-    public void preInit(IEventBus modBus) {
-        NeoForge.EVENT_BUS.addListener(ElectricAttackHandler::onElectricalAttack);
-        modBus.addListener(IEHeatHandler::registerCap);
+    private static boolean isMekanismPaxel(ItemStack stack) {
+        return PneumaticCraftUtils.getRegistryName(stack.getItem())
+                .map(rl -> rl.getNamespace().equals("mekanismtools") && rl.getPath().endsWith("_paxel"))
+                .orElse(false);
     }
 }

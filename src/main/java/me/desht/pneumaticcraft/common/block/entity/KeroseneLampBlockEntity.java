@@ -360,6 +360,11 @@ public class KeroseneLampBlockEntity extends AbstractTickingBlockEntity implemen
         }
     }
 
+    @Override
+    public IFluidHandler getFluidHandler(@Nullable Direction dir) {
+        return tank;
+    }
+
     public SmartSyncTank getTank() {
         return tank;
     }

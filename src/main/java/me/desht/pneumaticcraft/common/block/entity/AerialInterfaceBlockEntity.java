@@ -166,12 +166,12 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
         // 1) reports of item duplication (which I can't reproduce)
         // 2) curios item handlers don't prevent non curio items being inserted (looks like checking only done at the slot level)
 
-//        if (Curios.available) {
-//            PlayerCuriosHandler playerCuriosHandler = new PlayerCuriosHandler();
-//            itemHandlerSideConfigurator.registerHandler("curiosInv", new ItemStack(Items.DIAMOND),
-//                    ForgeCapabilities.ITEM_HANDLER, () -> playerCuriosHandler);
-//            invHandlers.add(playerCuriosHandler);
-//        }
+        if (Curios.available) {
+            PlayerCuriosHandler playerCuriosHandler = new PlayerCuriosHandler();
+            itemHandlerSideConfigurator.registerHandler("curiosInv", new ItemStack(Items.DIAMOND),
+                    Capabilities.ItemHandler.BLOCK, () -> playerCuriosHandler);
+            invHandlers.add(playerCuriosHandler);
+        }
     }
 
     public String getPlayerName() {
@@ -194,11 +194,6 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
         NeoForge.EVENT_BUS.unregister(this);
 
         GlobalBlockEntityCacheManager.getInstance(getLevel()).getAerialInterfaces().remove(this);
-
-//        itemHandlerSideConfigurator.invalidateCaps();
-//        playerExpCap.invalidate();
-//        playerFoodCap.invalidate();
-//        energyCap.invalidate();
     }
 
     @SubscribeEvent
@@ -573,18 +568,16 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
     private class PlayerEnderInvHandler extends PlayerInvHandler {
         @Override
         protected IItemHandler getInvWrapper(Player player) {
-            if (cached == null) cached = new InvWrapper(player.getEnderChestInventory());
-            return cached;
+            return getCachedHandler(player, p -> new InvWrapper(p.player.getEnderChestInventory()));
         }
     }
 
-//    private class PlayerCuriosHandler extends PlayerInvHandler {
-//        @Override
-//        protected IItemHandler getInvWrapper(PlayerEntity player) {
-//            if (cached == null) cached = CuriosUtils.makeCombinedInvWrapper(player);
-//            return cached;
-//        }
-//    }
+    private class PlayerCuriosHandler extends PlayerInvHandler {
+        @Override
+        protected IItemHandler getInvWrapper(Player player) {
+            return getCachedHandler(player, p -> CuriosUtils.makeCombinedInvWrapper(p.player));
+        }
+    }
 
     private class PlayerFoodHandler implements IItemHandler {
         @Override

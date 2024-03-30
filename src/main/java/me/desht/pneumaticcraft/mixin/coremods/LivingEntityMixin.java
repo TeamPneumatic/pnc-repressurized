@@ -11,13 +11,17 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.util.Objects;
+
 @Mixin(LivingEntity.class)
 public class LivingEntityMixin {
     @Inject(method = "onEquipItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;level()Lnet/minecraft/world/level/Level;"))
     public void onOnEquipItem(EquipmentSlot pSlot, ItemStack pOldItem, ItemStack pNewItem, CallbackInfo ci) {
         //noinspection ConstantValue
         if ((Object) this instanceof Player p && pOldItem.getItem() instanceof PneumaticArmorItem && pNewItem.getItem() instanceof PneumaticArmorItem) {
-            CommonArmorHandler.getHandlerForPlayer(p).armorSwitched(pSlot);
+            if (!ItemStack.isSameItem(pOldItem, pNewItem) || !Objects.equals(pOldItem.getTag(), pNewItem.getTag())) {
+                CommonArmorHandler.getHandlerForPlayer(p).armorSwitched(pSlot);
+            }
         }
     }
 }
