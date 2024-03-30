@@ -237,7 +237,7 @@ public abstract class Minigun {
 
     public boolean tryFireMinigun(Entity target) {
         boolean lastShotOfAmmo = false;
-        if (!ammoStack.isEmpty() && ammoStack.getDamageValue() < ammoStack.getMaxDamage() && airCapability.getPressure() > 0) {
+        if (!ammoStack.isEmpty() && ammoStack.getDamageValue() < ammoStack.getMaxDamage() && (airCapability == null || airCapability.getPressure() > 0)) {
             setMinigunTriggerTimeOut(10);
             if (!world.isClientSide && getMinigunSpeed() == MAX_GUN_SPEED && (!requiresTarget || gunAimedAtTarget)) {
                 HitResult rtr = null;

@@ -150,7 +150,6 @@ public class InventorySearcherScreen extends AbstractContainerScreen<InventorySe
 
     @Override
     protected void renderBg(GuiGraphics graphics, float partialTicks, int x, int y) {
-        renderBackground(graphics, x, y, partialTicks);
         int xStart = (width - imageWidth) / 2;
         int yStart = (height - imageHeight) / 2;
         graphics.blit(Textures.GUI_INVENTORY_SEARCHER, xStart, yStart, 0, 0, imageWidth, imageHeight);

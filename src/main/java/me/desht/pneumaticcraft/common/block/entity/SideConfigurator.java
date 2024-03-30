@@ -17,6 +17,7 @@
 
 package me.desht.pneumaticcraft.common.block.entity;
 
+import com.mojang.datafixers.util.Either;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.ByteTag;
@@ -31,7 +32,6 @@ import net.neoforged.neoforge.common.util.INBTSerializable;
 import org.apache.commons.lang3.Validate;
 
 import java.util.*;
-import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
@@ -72,33 +72,33 @@ public class SideConfigurator<T> implements INBTSerializable<CompoundTag> {
     }
 
     public int registerHandler(String id, ItemStack textureStack, BaseCapability<T,?> cap, Supplier<T> handler, RelativeFace... defaultRelativeFaces) {
-        entries.add(new ConnectionEntry<>(id, textureStack, cap, handler));
+        entries.add(new ConnectionEntry<>(id, Either.left(textureStack), cap, handler));
         idxMap.put(id, entries.size() - 1);
         return setDefaultSides(defaultRelativeFaces);
     }
 
     public int registerHandler(String id, ResourceLocation texture, BaseCapability<T,?> cap, Supplier<T> handler, RelativeFace... defaultRelativeFaces) {
-        entries.add(new ConnectionEntry<>(id, texture, cap, handler));
+        entries.add(new ConnectionEntry<>(id, Either.right(texture), cap, handler));
         idxMap.put(id, entries.size() - 1);
         return setDefaultSides(defaultRelativeFaces);
     }
-
-    public void unregisterHandlers(Predicate<String> idMatcher) {
-        List<ConnectionEntry<T>> newEntries = new ArrayList<>();
-
-        for (String id : idxMap.keySet()) {
-            if (!idMatcher.test(id)) {
-                newEntries.add(entries.get(idxMap.get(id)));
-            }
-        }
-
-        entries.clear();
-        entries.addAll(newEntries);
-        idxMap.clear();
-        for (int i = 0; i < entries.size(); i++) {
-            idxMap.put(entries.get(i).id, i);
-        }
-    }
+//
+//    public void unregisterHandlers(Predicate<String> idMatcher) {
+//        List<ConnectionEntry<T>> newEntries = new ArrayList<>();
+//
+//        for (String id : idxMap.keySet()) {
+//            if (!idMatcher.test(id)) {
+//                newEntries.add(entries.get(idxMap.get(id)));
+//            }
+//        }
+//
+//        entries.clear();
+//        entries.addAll(newEntries);
+//        idxMap.clear();
+//        for (int i = 0; i < entries.size(); i++) {
+//            idxMap.put(entries.get(i).id, i);
+//        }
+//    }
 
 //    public void invalidateCaps() {
 //        for (ConnectionEntry<T> e : entries) {
@@ -117,8 +117,6 @@ public class SideConfigurator<T> implements INBTSerializable<CompoundTag> {
     }
 
     void setNullFaceHandler(String id) {
-//        if (nullFaceCap.isPresent()) nullFaceCap.invalidate();
-
         nullFaceHandler = entries.get(idxMap.get(id)).handler;
     }
 
@@ -133,13 +131,13 @@ public class SideConfigurator<T> implements INBTSerializable<CompoundTag> {
         setNullFaceHandler(id);
     }
 
-    public byte[] getFaces() {
-        return faces;
-    }
-
-    public void setFaces(byte[] faces) {
-        System.arraycopy(faces, 0, this.faces, 0, this.faces.length);
-    }
+//    public byte[] getFaces() {
+//        return faces;
+//    }
+//
+//    public void setFaces(byte[] faces) {
+//        System.arraycopy(faces, 0, this.faces, 0, this.faces.length);
+//    }
 
     public boolean handleButtonPress(String tag, boolean hasShiftDown) {
         if (tag.startsWith(BASE_BUTTON_TAG)) {
@@ -285,23 +283,6 @@ public class SideConfigurator<T> implements INBTSerializable<CompoundTag> {
         }
     }
 
-    public static class ConnectionEntry<T> {
-        private final String id;
-        private final Object texture;
-        private final BaseCapability<T,?> cap;
-        private final Supplier<T> handler;
-//        private final LazyOptional<T> lazy;
-
-        private ConnectionEntry(String id, Object texture, BaseCapability<T,?> cap, Supplier<T> handler) {
-            this.id = id;
-            this.texture = texture;
-            this.cap = cap;
-            this.handler = handler;
-//            this.lazy = LazyOptional.of(handler);
-        }
-
-        public Object getTexture() {
-            return texture;
-        }
+    public record ConnectionEntry<T>(String id, Either<ItemStack,ResourceLocation> texture, BaseCapability<T, ?> cap, Supplier<T> handler) {
     }
 }

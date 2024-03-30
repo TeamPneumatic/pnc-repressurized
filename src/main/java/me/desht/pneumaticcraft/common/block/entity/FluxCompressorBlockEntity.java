@@ -45,7 +45,6 @@ public class FluxCompressorBlockEntity extends AbstractAirHandlingBlockEntity
         implements IRedstoneControl<FluxCompressorBlockEntity>, MenuProvider, IHeatExchangingTE {
     private static final int BASE_FE_PRODUCTION = 40;
     private final PneumaticEnergyStorage energy = new PneumaticEnergyStorage(100000);
-//    private final LazyOptional<IEnergyStorage> energyCap = LazyOptional.of(() -> energy);
 
     @GuiSynced
     private int rfPerTick;
@@ -57,7 +56,6 @@ public class FluxCompressorBlockEntity extends AbstractAirHandlingBlockEntity
     private final RedstoneController<FluxCompressorBlockEntity> rsController = new RedstoneController<>(this);
     @GuiSynced
     private final IHeatExchangerLogic heatExchanger = PneumaticRegistry.getInstance().getHeatRegistry().makeHeatExchangerLogic();
-//    private final LazyOptional<IHeatExchangerLogic> heatCap = LazyOptional.of(() -> heatExchanger);
 
     public FluxCompressorBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntityTypes.FLUX_COMPRESSOR.get(), pos, state, PressureTier.TIER_TWO, PneumaticValues.VOLUME_FLUX_COMPRESSOR, 4);
@@ -76,8 +74,8 @@ public class FluxCompressorBlockEntity extends AbstractAirHandlingBlockEntity
     }
 
     @Override
-    public IEnergyStorage getEnergyHandler(@org.jetbrains.annotations.Nullable Direction dir) {
-        return energy;
+    public IEnergyStorage getEnergyHandler(@Nullable Direction dir) {
+        return dir == getRotation() ? null : energy;
     }
 
     public int getHeatEfficiency(){

@@ -23,10 +23,12 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import me.desht.pneumaticcraft.api.pressure.PressureTier;
+import me.desht.pneumaticcraft.client.ColorHandlers;
 import me.desht.pneumaticcraft.client.sound.MovingSounds;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.block.ElevatorBaseBlock;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
+import me.desht.pneumaticcraft.common.event.MiscEventHandler;
 import me.desht.pneumaticcraft.common.inventory.ElevatorMenu;
 import me.desht.pneumaticcraft.common.network.*;
 import me.desht.pneumaticcraft.common.network.PacketPlayMovingSound.MovingSoundFocus;
@@ -106,7 +108,7 @@ public class ElevatorBaseBlockEntity extends AbstractAirHandlingBlockEntity impl
     private List<ElevatorBaseBlockEntity> multiElevators;
     public int[] floorHeights = new int[0]; // list of every floor of Elevator Callers.
     private Int2ObjectMap<String> floorNames = new Int2ObjectOpenHashMap<>();
-    private int redstoneInputLevel; // current redstone input level
+    private int redstoneInputLevel = -1; // current redstone input level (-1 = re-check)
     private BlockState camoState;
     private BlockState prevCamoState;
     public int ticksRunning;  // ticks since elevator started moving (0 = stopped)
@@ -114,6 +116,7 @@ public class ElevatorBaseBlockEntity extends AbstractAirHandlingBlockEntity impl
     private final List<BlockPos> callerList = new ArrayList<>();
     private long lastFloorUpdate = 0L;
     public float[] fakeFloorTextureUV;
+    public int fakeFloorTextureTint;
     public int lightAbove;
 
     public ElevatorBaseBlockEntity(BlockPos pos, BlockState state) {
@@ -143,10 +146,14 @@ public class ElevatorBaseBlockEntity extends AbstractAirHandlingBlockEntity impl
             }
             speedMultiplier = syncedSpeedMult = getSpeedMultiplierFromUpgrades();
             chargingUpgrades = getUpgrades(ModUpgrades.CHARGING.get());  // sync'd to client to adjust elevator speed as appropriate
+            MiscEventHandler.needsTPSSync(getLevel());
         } else {
             speedMultiplier = (float) (syncedSpeedMult * PacketServerTickTime.tickTimeMultiplier);
             if (prevCamoState != camoState) {
                 fakeFloorTextureUV = ClientUtils.getTextureUV(camoState, Direction.UP);
+                fakeFloorTextureTint = camoState.getBlock() instanceof ColorHandlers.ITintableBlock t ?
+                        0xFF000000 | t.getTintColor(camoState, level, getBlockPos(), 0) :
+                        0xFFFFFFFF;
                 prevCamoState = camoState;
             }
             if ((nonNullLevel().getGameTime() & 0xf) == 0) {
@@ -222,10 +229,10 @@ public class ElevatorBaseBlockEntity extends AbstractAirHandlingBlockEntity impl
         double oldTargetExtension = targetExtension;
         float maxExtension = getMaxElevatorHeight();
 
-        int redstoneInput = redstoneInputLevel;
+        int redstoneInput = getRedstoneInputLevel();
         if (multiElevators != null) {
             for (ElevatorBaseBlockEntity base : multiElevators) {
-                redstoneInput = Math.max(redstoneInputLevel, base.redstoneInputLevel);
+                redstoneInput = Math.max(redstoneInput, base.getRedstoneInputLevel());
             }
         }
 
@@ -264,6 +271,13 @@ public class ElevatorBaseBlockEntity extends AbstractAirHandlingBlockEntity impl
 
     private boolean isControlledByRedstone() {
         return getRedstoneController().getCurrentMode() == RS_REDSTONE_MODE;
+    }
+
+    private int getRedstoneInputLevel() {
+        if (redstoneInputLevel < 0) {
+            updateRedstoneInputLevel();
+        }
+        return redstoneInputLevel;
     }
 
     private void updateRedstoneInputLevel() {
@@ -405,15 +419,8 @@ public class ElevatorBaseBlockEntity extends AbstractAirHandlingBlockEntity impl
      * elevator, and inform all elevators below us of that fact.
      */
     private void updateConnections() {
-        if (nonNullLevel().getBlockState(getBlockPos().relative(Direction.UP)).getBlock() != ModBlocks.ELEVATOR_BASE.get()) {
+        if (nonNullLevel().getBlockState(getBlockPos().above()).getBlock() != ModBlocks.ELEVATOR_BASE.get()) {
             coreElevator = this;
-//            int i = -1;
-//            TileEntity te = getWorld().getTileEntity(getPos().offset(Direction.DOWN));
-//            while (te instanceof ElevatorBaseBlockEntity) {
-//                ((ElevatorBaseBlockEntity) te).coreElevator = this;
-//                i--;
-//                te = getWorld().getTileEntity(getPos().add(0, i, 0));
-//            }
         } else {
             coreElevator = null; // force recalc
         }

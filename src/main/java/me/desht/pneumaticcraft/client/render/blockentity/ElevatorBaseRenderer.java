@@ -34,6 +34,7 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.util.Mth;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
 
@@ -115,10 +116,14 @@ public class ElevatorBaseRenderer extends AbstractBlockEntityModelRenderer<Eleva
             float uMax = te.fakeFloorTextureUV[2];
             float vMax = te.fakeFloorTextureUV[3];
             Matrix4f posMat = matrixStack.last().pose();
-            builder.vertex(posMat,0, 0, 1).color(1f, 1f, 1f, 1f).uv(uMin, vMax).uv2(te.lightAbove).endVertex();
-            builder.vertex(posMat,1, 0, 1).color(1f, 1f, 1f, 1f).uv(uMax, vMax).uv2(te.lightAbove).endVertex();
-            builder.vertex(posMat,1, 0, 0).color(1f, 1f, 1f, 1f).uv(uMax, vMin).uv2(te.lightAbove).endVertex();
-            builder.vertex(posMat,0, 0, 0).color(1f, 1f, 1f, 1f).uv(uMin, vMin).uv2(te.lightAbove).endVertex();
+            builder.vertex(posMat,0, 0, 1).color(te.fakeFloorTextureTint)
+                    .uv(uMin, vMax).uv2(te.lightAbove).endVertex();
+            builder.vertex(posMat,1, 0, 1).color(te.fakeFloorTextureTint)
+                    .uv(uMax, vMax).uv2(te.lightAbove).endVertex();
+            builder.vertex(posMat,1, 0, 0).color(te.fakeFloorTextureTint)
+                    .uv(uMax, vMin).uv2(te.lightAbove).endVertex();
+            builder.vertex(posMat,0, 0, 0).color(te.fakeFloorTextureTint)
+                    .uv(uMin, vMin).uv2(te.lightAbove).endVertex();
             matrixStack.popPose();
         }
     }
@@ -143,5 +148,10 @@ public class ElevatorBaseRenderer extends AbstractBlockEntityModelRenderer<Eleva
         // ignore camera Y pos for purposes of render visibility (like the beacon does)
         return Vec3.atCenterOf(pBlockEntity.getBlockPos()).multiply(1.0D, 0.0D, 1.0D)
                 .closerThan(pCameraPos.multiply(1.0D, 0.0D, 1.0D), this.getViewDistance());
+    }
+
+    @Override
+    public AABB getRenderBoundingBox(ElevatorBaseBlockEntity blockEntity) {
+        return super.getRenderBoundingBox(blockEntity).inflate(blockEntity.extension);
     }
 }

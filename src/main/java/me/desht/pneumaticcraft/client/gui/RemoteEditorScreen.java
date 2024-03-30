@@ -142,7 +142,6 @@ public class RemoteEditorScreen extends RemoteScreen {
 
     @Override
     protected void renderBg(GuiGraphics graphics, float partialTicks, int x, int y) {
-        renderBackground(graphics, x, y, partialTicks);
         graphics.blit(getGuiTexture(), leftPos, topPos, 0, 0, imageWidth, imageHeight, 320, 256);
     }
 

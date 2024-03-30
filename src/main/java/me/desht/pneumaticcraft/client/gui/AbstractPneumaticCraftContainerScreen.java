@@ -263,8 +263,8 @@ public abstract class AbstractPneumaticCraftContainerScreen<C extends AbstractPn
     private void setupSideConfiguratorButton(SideConfigurator<?> sc, SideConfiguratorButton button) {
         RelativeFace relativeFace = button.relativeFace;
         SideConfigurator.ConnectionEntry<?> c = sc.getEntry(relativeFace);
-        if (c != null && c.getTexture() != null) {
-            button.setTexture(c.getTexture());
+        if (c != null && c.texture() != null) {
+            button.setTexture(c.texture());
         } else {
             button.setRenderedIcon(Textures.GUI_X_BUTTON);
         }

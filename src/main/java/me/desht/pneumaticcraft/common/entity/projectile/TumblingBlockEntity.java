@@ -22,6 +22,7 @@ import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.registry.ModEntityTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.UUIDUtil;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -59,7 +60,7 @@ import javax.annotation.Nonnull;
 public class TumblingBlockEntity extends ThrowableProjectile {
     private static final EntityDataAccessor<BlockPos> ORIGIN = SynchedEntityData.defineId(TumblingBlockEntity.class, EntityDataSerializers.BLOCK_POS);
     private static final EntityDataAccessor<ItemStack> STATE_STACK = SynchedEntityData.defineId(TumblingBlockEntity.class, EntityDataSerializers.ITEM_STACK);
-    private static FakePlayer fakePlayer;
+    private static final GameProfile DEFAULT_FAKE_PROFILE = UUIDUtil.createOfflineProfile("Tumbling Block");
 
     private static final Vec3 Y_POS = new Vec3(0, 1, 0);
 
@@ -98,21 +99,15 @@ public class TumblingBlockEntity extends ThrowableProjectile {
         }
     }
 
-//    @Override
-//    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-//        return NetworkHooks.getEntitySpawningPacket(this);
-//    }
-
     @Override
     protected void defineSynchedData() {
         entityData.define(ORIGIN, BlockPos.ZERO);
         entityData.define(STATE_STACK, ItemStack.EMPTY);
     }
 
-    // shoot()
     @Override
     public void shootFromRotation(Entity entityThrower, float rotationPitchIn, float rotationYawIn, float pitchOffset, float velocity, float inaccuracy) {
-        // velocities etc. get set up in AirCannonBlockEntity#launchEntity()
+        // do nothing, since velocities etc. get set up in ItemLaunching#launchEntity()
     }
 
     @Override
@@ -138,7 +133,7 @@ public class TumblingBlockEntity extends ThrowableProjectile {
         this.yo = this.getY();
         this.zo = this.getZ();
 
-        super.tick();  // handles nearly all of the in-flight logic
+        super.tick();  // handles nearly all the in-flight logic
 
         if (!level().isClientSide) {
             BlockPos blockpos1 = blockPosition(); //new BlockPos(this);
@@ -170,8 +165,7 @@ public class TumblingBlockEntity extends ThrowableProjectile {
         }
         BlockPos pos0 = brtr.getBlockPos();
         Direction face = brtr.getDirection();
-        // getOwner = getThrower
-        Player placer = getOwner() instanceof Player ? (Player) getOwner() : getFakePlayer();
+        Player placer = getOwner() instanceof Player p ? p : getFakePlayer();
         BlockState state = level().getBlockState(pos0);
         BlockPlaceContext ctx = new LocalBlockPlaceContext(new UseOnContext(placer, InteractionHand.MAIN_HAND, brtr));
         BlockPos pos = state.canBeReplaced(ctx) ? pos0 : pos0.relative(face);
@@ -193,9 +187,7 @@ public class TumblingBlockEntity extends ThrowableProjectile {
     }
 
     private Player getFakePlayer() {
-        if (fakePlayer == null) {
-            fakePlayer = FakePlayerFactory.get((ServerLevel) level(), new GameProfile(null, "[Tumbling Block]"));
-        }
+        FakePlayer fakePlayer = FakePlayerFactory.get((ServerLevel) level(), DEFAULT_FAKE_PROFILE);
         fakePlayer.setPos(getX(), getY(), getZ());
         fakePlayer.setItemInHand(InteractionHand.MAIN_HAND, getStack());
         return fakePlayer;

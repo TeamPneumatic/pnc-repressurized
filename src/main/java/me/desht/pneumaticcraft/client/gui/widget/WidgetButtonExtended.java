@@ -18,6 +18,7 @@
 package me.desht.pneumaticcraft.client.gui.widget;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.datafixers.util.Either;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketGuiButton;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -34,7 +35,6 @@ import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.function.Supplier;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
@@ -160,14 +160,8 @@ public class WidgetButtonExtended extends ExtendedButton implements ITaggedWidge
         return this;
     }
 
-    public WidgetButtonExtended setTexture(Object texture) {
-        if (texture instanceof ItemStack) {
-            setRenderStacks((ItemStack) texture);
-        } else if (texture instanceof ResourceLocation) {
-            setRenderedIcon((ResourceLocation) texture);
-        } else {
-            throw new IllegalArgumentException("texture must be an ItemStack or ResourceLocation!");
-        }
+    public WidgetButtonExtended setTexture(Either<ItemStack,ResourceLocation> texture) {
+        texture.ifLeft(this::setRenderStacks).ifRight(this::setRenderedIcon);
         return this;
     }
 

@@ -55,7 +55,7 @@ public class SentryTurretScreen extends AbstractPneumaticCraftContainerScreen<Se
     public void init() {
         super.init();
 
-        addRenderableWidget(entityFilter = new WidgetTextField(font, leftPos + 80, topPos + 63, 70, font.lineHeight));
+        addRenderableWidget(entityFilter = new WidgetTextField(font, leftPos + 80, topPos + 62, 70, font.lineHeight + 3));
         entityFilter.setMaxLength(256);
         setFocused(entityFilter);
 

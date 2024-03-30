@@ -32,6 +32,7 @@ import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.StringFilterEntitySelector;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.UUIDUtil;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -63,6 +64,8 @@ public class SentryTurretBlockEntity extends AbstractTickingBlockEntity implemen
         IRedstoneControl<SentryTurretBlockEntity>, IGUITextFieldSensitive, MenuProvider {
     private static final int INVENTORY_SIZE = 4;
     public static final String NBT_ENTITY_FILTER = "entityFilter";
+    private static final String FAKE_NAME = "Sentry Turret";
+    private static final GameProfile FAKE_PROFILE = UUIDUtil.createOfflineProfile(FAKE_NAME);
 
     private final ItemStackHandler inventory = new TurretItemStackHandler(this);
 
@@ -194,7 +197,7 @@ public class SentryTurretBlockEntity extends AbstractTickingBlockEntity implemen
     }
 
     private Player getFakePlayer() {
-        return FakePlayerFactory.get((ServerLevel) getLevel(), new GameProfile(null, "Sentry Turret"));
+        return FakePlayerFactory.get((ServerLevel) getLevel(), FAKE_PROFILE);
     }
 
     @Override

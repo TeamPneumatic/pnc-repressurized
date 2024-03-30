@@ -122,7 +122,7 @@ public class PneumaticDynamoBlockEntity extends AbstractAirHandlingBlockEntity i
     }
 
     @Override
-    public IItemHandler getItemHandler(@org.jetbrains.annotations.Nullable Direction dir) {
+    public IItemHandler getItemHandler(@Nullable Direction dir) {
         return null;
     }
 
@@ -146,6 +146,11 @@ public class PneumaticDynamoBlockEntity extends AbstractAirHandlingBlockEntity i
 
     public int getInfoEnergyStored() {
         return energy.getEnergyStored();
+    }
+
+    @Override
+    public boolean hasEnergyCapability() {
+        return true;
     }
 
     @Override

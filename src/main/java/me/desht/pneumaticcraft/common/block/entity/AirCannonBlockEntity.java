@@ -43,6 +43,7 @@ import me.desht.pneumaticcraft.mixin.accessors.ItemEntityAccess;
 import me.desht.pneumaticcraft.mixin.accessors.ServerPlayerAccess;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.UUIDUtil;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -82,7 +83,7 @@ public class AirCannonBlockEntity extends AbstractAirHandlingBlockEntity
         implements IMinWorkingPressure, IRedstoneControl<AirCannonBlockEntity>, IGUIButtonSensitive, MenuProvider {
 
     private static final String FP_NAME = "[Air Cannon]";
-    private static final UUID FP_UUID = UUID.nameUUIDFromBytes(FP_NAME.getBytes());
+    private static final GameProfile FAKE_PROFILE = UUIDUtil.createOfflineProfile(FP_NAME);
 
     private static final List<RedstoneMode<AirCannonBlockEntity>> REDSTONE_MODES = ImmutableList.of(
             new ReceivingRedstoneMode<>("airCannon.highSignalAndAngle", Textures.GUI_HIGH_SIGNAL_ANGLE,
@@ -651,13 +652,18 @@ public class AirCannonBlockEntity extends AbstractAirHandlingBlockEntity
 
     private FakePlayer getFakePlayer() {
         if (fakePlayer == null) {
-            fakePlayer = FakePlayerFactory.get((ServerLevel) getLevel(), new GameProfile(FP_UUID, FP_NAME));
+            fakePlayer = FakePlayerFactory.get((ServerLevel) getLevel(), FAKE_PROFILE);
             fakePlayer.setPos(getBlockPos().getX() + 0.5, getBlockPos().getY() + 0.5, getBlockPos().getZ() + 0.5);
         }
         return fakePlayer;
     }
 
+    @Override
+    public void setRemoved() {
+        super.setRemoved();
 
+        fakePlayer = null;  // fake player holds a reference to the level; this is called when the level is unloaded
+    }
 
     private Entity getCloseEntityIfUpgraded() {
         int entityUpgrades = Math.min(5, getUpgrades(ModUpgrades.ENTITY_TRACKER.get()));

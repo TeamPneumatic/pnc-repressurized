@@ -254,6 +254,8 @@ public abstract class AbstractPneumaticCraftBlockEntity extends BlockEntity
         if (!nonNullLevel().isClientSide) {
             PneumaticRegistry.getInstance().getMiscHelpers().forceClientShapeRecalculation(level, worldPosition);
         }
+
+        invalidateCapabilities();
     }
 
     void rerenderTileEntity() {
@@ -283,8 +285,8 @@ public abstract class AbstractPneumaticCraftBlockEntity extends BlockEntity
 
     /**
      * Encoded into the description packet. Also included in saved data read by {@link AbstractPneumaticCraftBlockEntity#load(CompoundTag)}.
-     *
-     * Prefer to use @DescSynced where possible - use this either for complex fields not handled by @DescSynced,
+     * <p>
+     * Prefer to use {@code @DescSynced} where possible - use this either for complex fields not handled by {@code @DescSynced},
      * or for non-ticking tile entities.
      *
      * @param tag NBT tag
@@ -310,7 +312,7 @@ public abstract class AbstractPneumaticCraftBlockEntity extends BlockEntity
             IHeatExchangerLogic logic = he.getHeatExchanger();
             if (logic != null) tag.put(NBTKeys.NBT_HEAT_EXCHANGER, logic.serializeNBT());
         }
-        if (this instanceof IRedstoneControl rc) {
+        if (this instanceof IRedstoneControl<?> rc) {
             rc.getRedstoneController().serialize(tag);
         }
         if (this instanceof ISerializableTanks st) {
@@ -421,7 +423,7 @@ public abstract class AbstractPneumaticCraftBlockEntity extends BlockEntity
         if (this instanceof IHeatExchangingTE he) {
             he.initializeHullHeatExchangers(level, worldPosition);
         }
-        if (this instanceof IRedstoneControl rc) {
+        if (this instanceof IRedstoneControl<?> rc) {
             rc.getRedstoneController().updateRedstonePower();
         }
         neighbourCache.purge();
@@ -438,14 +440,17 @@ public abstract class AbstractPneumaticCraftBlockEntity extends BlockEntity
         IOHelper.getInventoryForBlock(this).ifPresent(itemHandler -> {
             ItemStack inputStack = itemHandler.getStackInSlot(inputSlot);
             ItemStack outputStack = itemHandler.getStackInSlot(outputSlot);
-            if (inputStack.getCount() != 1) return;
 
             FluidUtil.getFluidHandler(inputStack).ifPresent(fluidHandlerItem -> {
-                FluidStack itemContents = fluidHandlerItem.drain(1000, IFluidHandler.FluidAction.SIMULATE);
+                FluidStack itemContents = fluidHandlerItem.drain(Integer.MAX_VALUE, IFluidHandler.FluidAction.SIMULATE);
 
                 IOHelper.getFluidHandlerForBlock(this).ifPresent(fluidHandler -> {
                     if (!itemContents.isEmpty() && (outputStack.isEmpty() || ItemHandlerHelper.canItemStacksStack(inputStack.getItem().getCraftingRemainingItem(inputStack), outputStack))) {
                         // input item contains fluid: drain from input item into tank, move to output if empty
+                        // there must be only a single filled container in the input slot!
+                        if (inputStack.getCount() != 1) {
+                            return;
+                        }
                         FluidStack transferred = FluidUtil.tryFluidTransfer(fluidHandler, fluidHandlerItem, itemContents.getAmount(), true);
                         if (transferred.getAmount() == itemContents.getAmount()) {
                             // all transferred; move empty container to output if possible
@@ -462,12 +467,16 @@ public abstract class AbstractPneumaticCraftBlockEntity extends BlockEntity
                         }
                     } else if (itemHandler.getStackInSlot(outputSlot).isEmpty()) {
                         // input item is empty: drain from tank to item, move to output
-                        FluidStack transferred = FluidUtil.tryFluidTransfer(fluidHandlerItem, fluidHandler, Integer.MAX_VALUE, true);
-                        if (!transferred.isEmpty()) {
-                            itemHandler.extractItem(inputSlot, 1, false);
-                            ItemStack filledContainerStack = fluidHandlerItem.getContainer();
-                            itemHandler.insertItem(outputSlot, filledContainerStack, false);
-                        }
+                        // we allow multiple empty containers in the input slot
+                        ItemStack workStack = ItemHandlerHelper.copyStackWithSize(inputStack, 1);
+                        IOHelper.getFluidHandlerForItem(workStack).ifPresent(workHandler -> {
+                            FluidStack transferred = FluidUtil.tryFluidTransfer(workHandler, fluidHandler, Integer.MAX_VALUE, true);
+                            if (!transferred.isEmpty()) {
+                                itemHandler.extractItem(inputSlot, 1, false);
+                                ItemStack filledContainerStack = workHandler.getContainer();
+                                itemHandler.insertItem(outputSlot, filledContainerStack, false);
+                            }
+                        });
                     }
                 });
             });

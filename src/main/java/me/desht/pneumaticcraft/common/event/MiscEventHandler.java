@@ -46,6 +46,7 @@ import me.desht.pneumaticcraft.common.semiblock.SemiblockTracker;
 import me.desht.pneumaticcraft.common.thirdparty.ModdedWrenchUtils;
 import me.desht.pneumaticcraft.common.tubemodules.ModuleNetworkManager;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -81,22 +82,39 @@ import net.neoforged.neoforge.fluids.FluidUtil;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
 
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 
 public class MiscEventHandler {
+    private static final Set<ResourceLocation> needsTPSSync = new HashSet<>();
+
+    /**
+     * Call this from the tick method of block entities which require server TPS to be synced to client.
+     * Just the Elevator for now.
+     * @param level the level
+     */
+    public static void needsTPSSync(Level level) {
+        if (level != null && (level.getGameTime() & 0x3f) == 0) {
+            needsTPSSync.add(level.dimension().location());
+        }
+    }
+
     @SubscribeEvent
     public void onWorldTickEnd(TickEvent.LevelTickEvent event) {
         if (event.phase == TickEvent.Phase.END && !event.level.isClientSide) {
             DroneClaimManager.getInstance(event.level).tick();
 
-            if (event.level.getGameTime() % 100 == 0) {
-                double tickTime = event.level.getServer().getAverageTickTimeNanos();
+            if ((event.level.getGameTime() & 0x7f) == 0 && needsTPSSync.contains(event.level.dimension().location())) {
+                double tickTime = event.level.getServer().getAverageTickTimeNanos() / 1_000_000D;
                         //PneumaticCraftUtils.average(ServerLifecycleHooks.getCurrentServer().tickTimes) * 1.0E-6D;
                 // In case world are going to get their own thread: MinecraftServer.getServer().worldTickTimes.get(event.world.provider.getDimension())
                 NetworkHandler.sendToDimension(new PacketServerTickTime(tickTime), event.level.dimension());
+                needsTPSSync.remove(event.level.dimension().location());
             }
         }
     }
+
     @SubscribeEvent
     public void handleFuelEvent(FurnaceFuelBurnTimeEvent event) {
         // allow burning of PNC fuel fluids in any container item, iff item.hasContainer() is true
