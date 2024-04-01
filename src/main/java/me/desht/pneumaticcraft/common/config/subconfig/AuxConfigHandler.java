@@ -22,7 +22,6 @@ import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.world.level.storage.LevelResource;
 import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
-import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -48,11 +47,11 @@ public class AuxConfigHandler {
                 try {
                     subConfig.preInit(subFile);
                 } catch(IOException e) {
-                    Log.error("Config file " + subConfig.getConfigFilename() + " failed to create! Unexpected things can happen!");
-                    e.printStackTrace();
+                    Log.error("Config file {} failed to create! Unexpected things can happen!", subConfig.getConfigFilename());
+                    Log.error("Error detail: " + e.getMessage());
                 } catch (ClassCastException e) {
-                    Log.error("Config file " + subConfig.getConfigFilename() + " appears to be invalid JSON! Unexpected things can happen!");
-                    e.printStackTrace();
+                    Log.error("Config file {} appears to be invalid JSON! Unexpected things can happen!", subConfig.getConfigFilename());
+                    Log.error("Error detail: " + e.getMessage());
                 }
             }
         }
@@ -67,32 +66,16 @@ public class AuxConfigHandler {
             File subFolder = subConfig.useWorldSpecificDir() ? getWorldSpecificDir() : defaultConfigDir;
             if (subFolder.exists() || subFolder.mkdirs()) {
                 File subFile = new File(subFolder, subConfig.getConfigFilename() + ".cfg");
-                if (!subFile.exists() && subConfig.useWorldSpecificDir()) {
-                    maybeMigrateFile(new File(defaultConfigDir, subConfig.getConfigFilename() + ".cfg"), subFile);
-                }
                 try {
                     subConfig.postInit(subFile);
                 } catch (IOException e) {
-                    Log.error("Config file " + subConfig.getConfigFilename() + " failed to create! Unexpected things can happen!");
-                    e.printStackTrace();
+                    Log.error("Config file {} failed to create! Unexpected things can happen!", subConfig.getConfigFilename());
+                    Log.error("Error detail: " + e.getMessage());
                 } catch (ClassCastException e) {
-                    Log.error("Config file " + subConfig.getConfigFilename() + " appears to be invalid JSON! Unexpected things can happen!");
-                    e.printStackTrace();
+                    Log.error("Config file {} appears to be invalid JSON! Unexpected things can happen!", subConfig.getConfigFilename());
+                    Log.error("Error detail: " + e.getMessage());
                 }
             }
-        }
-    }
-
-    private static void maybeMigrateFile(File oldFile, File newFile) {
-        // on first time load with new per-world config system: check if we need to migrate
-        // a config file from the general config dir to the world-specific dir
-        try {
-            if (oldFile.exists()) {
-                FileUtils.moveFile(oldFile, newFile);
-                Log.info("Migrated " + oldFile + " to " + newFile);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 

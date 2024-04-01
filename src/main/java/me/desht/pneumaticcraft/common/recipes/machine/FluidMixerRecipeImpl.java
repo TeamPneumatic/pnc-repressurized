@@ -25,7 +25,6 @@ import me.desht.pneumaticcraft.common.registry.ModRecipeSerializers;
 import me.desht.pneumaticcraft.common.registry.ModRecipeTypes;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.neoforged.neoforge.fluids.FluidStack;
@@ -117,8 +116,8 @@ public class FluidMixerRecipeImpl extends FluidMixerRecipe {
 
         @Override
         public T fromNetwork(FriendlyByteBuf buffer) {
-            FluidIngredient input1 = (FluidIngredient) Ingredient.fromNetwork(buffer);
-            FluidIngredient input2 = (FluidIngredient) Ingredient.fromNetwork(buffer);
+            FluidIngredient input1 = FluidIngredient.fluidFromNetwork(buffer);
+            FluidIngredient input2 = FluidIngredient.fluidFromNetwork(buffer);
             FluidStack outputFluid = FluidStack.readFromPacket(buffer);
             ItemStack outputItem = buffer.readItem();
             float pressure = buffer.readFloat();
@@ -129,8 +128,8 @@ public class FluidMixerRecipeImpl extends FluidMixerRecipe {
 
         @Override
         public void toNetwork(FriendlyByteBuf buffer, T recipe) {
-            recipe.getInput1().toNetwork(buffer);
-            recipe.getInput2().toNetwork(buffer);
+            recipe.getInput1().fluidToNetwork(buffer);
+            recipe.getInput2().fluidToNetwork(buffer);
             recipe.getOutputFluid().writeToPacket(buffer);
             buffer.writeItem(recipe.getOutputItem());
             buffer.writeFloat(recipe.getRequiredPressure());

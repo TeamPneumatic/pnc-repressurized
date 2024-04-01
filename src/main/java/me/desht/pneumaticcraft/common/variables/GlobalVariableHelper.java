@@ -28,7 +28,7 @@ public class GlobalVariableHelper {
             return gvm.hasPos(varName.substring(1)) ? gvm.getPos(varName.substring(1)) : def;
         }
         if (id == null) {
-            Log.warning("querying player-global var %s with no player context?", varName);
+            Log.warning("querying player-global var {} with no player context?", varName);
             return def;
         }
         if (varName.startsWith("#")) {
@@ -62,7 +62,7 @@ public class GlobalVariableHelper {
             return gvm.hasStack(varName.substring(1)) ? gvm.getStack(varName.substring(1)) : def;
         }
         if (id == null) {
-            Log.warning("querying player-global var %s with no player context?", varName);
+            Log.warning("querying player-global var {} with no player context?", varName);
             return def;
         }
         if (varName.startsWith("#")) {

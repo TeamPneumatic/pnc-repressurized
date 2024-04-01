@@ -19,7 +19,7 @@ package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.common.amadron.AmadronOfferManager;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOffer;
-import me.desht.pneumaticcraft.common.recipes.amadron.AmadronPlayerOffer;
+import me.desht.pneumaticcraft.common.recipes.amadron.OfferType;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
@@ -48,11 +48,8 @@ public record PacketSyncAmadronOffers(Collection<AmadronOffer> activeOffers, boo
         List<AmadronOffer>  activeOffers = new ArrayList<>();
         int offerCount = buf.readVarInt();
         for (int i = 0; i < offerCount; i++) {
-            if (buf.readBoolean()) {
-                activeOffers.add(AmadronPlayerOffer.playerOfferFromBuf(buf));
-            } else {
-                activeOffers.add(AmadronOffer.offerFromBuf(buf.readResourceLocation(), buf));
-            }
+            OfferType type = buf.readEnum(OfferType.class);
+            type.read(buf).ifPresent(activeOffers::add);
         }
         return new PacketSyncAmadronOffers(activeOffers, notifyPlayer);
     }
@@ -62,8 +59,8 @@ public record PacketSyncAmadronOffers(Collection<AmadronOffer> activeOffers, boo
         buf.writeBoolean(notifyPlayer);
         buf.writeVarInt(activeOffers.size());
         for (AmadronOffer offer : activeOffers) {
-            buf.writeBoolean(offer instanceof AmadronPlayerOffer);
-            offer.write(buf);
+            buf.writeEnum(offer.getOfferType());
+            offer.getOfferType().write(buf, offer);
         }
     }
 
@@ -77,5 +74,4 @@ public record PacketSyncAmadronOffers(Collection<AmadronOffer> activeOffers, boo
                 AmadronOfferManager.getInstance().syncOffers(message.activeOffers(), message.notifyPlayer())
         );
     }
-
 }

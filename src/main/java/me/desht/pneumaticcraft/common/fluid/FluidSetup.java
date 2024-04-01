@@ -46,8 +46,8 @@ public class FluidSetup {
                 }
             } catch (RuntimeException e) {
                 ResourceLocation fluidId = BuiltInRegistries.FLUID.getKey(fluid);
-                Log.error("Caught exception while checking the fluid type of %s: %s", fluidId, e.getMessage());
-                Log.error("Looks like %s isn't setting a fluid type for this fluid, please report to the mod author", fluidId.getNamespace());
+                Log.error("Caught exception while checking the fluid type of {}: {}", fluidId, e.getMessage());
+                Log.error("Looks like {} isn't setting a fluid type for this fluid, please report to the mod author", fluidId.getNamespace());
             }
         }
 

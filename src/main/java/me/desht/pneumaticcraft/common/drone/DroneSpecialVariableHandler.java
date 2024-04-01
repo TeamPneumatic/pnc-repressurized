@@ -53,7 +53,7 @@ public class DroneSpecialVariableHandler {
 
     private static void register(String var, BiFunction<Drone, String, BlockPos> func) {
         if (DISPATCH_MAP.containsKey(var)) {
-            Log.warning("special variable '%s' is already registered! ignoring");
+            Log.warning("special variable '{}' is already registered! ignoring");
         } else {
             DISPATCH_MAP.put(var, func);
         }

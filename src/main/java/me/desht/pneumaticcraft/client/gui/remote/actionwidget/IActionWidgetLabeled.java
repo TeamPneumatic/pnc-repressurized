@@ -25,6 +25,7 @@ public interface IActionWidgetLabeled {
     Component getText();
 
     default Component deserializeTextComponent(String s) {
-        return s.startsWith("{") ? Component.Serializer.fromJson(s) : Component.literal(s);
+        return Component.Serializer.fromJson(s);
+//        return s.startsWith("{") ? Component.Serializer.fromJson(s) : Component.literal(s);
     }
 }

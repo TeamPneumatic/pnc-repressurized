@@ -50,7 +50,7 @@ public class DramaGenerator {
                     String s = shufflers.computeIfAbsent(grp, k -> new Shuffler(r, strings)).nextEntry();
                     builder.add(s);
                 } else {
-                    Log.warning("unknown sentence part type: %s", word);
+                    Log.warning("unknown sentence part type: {}", word);
                 }
                 DramaConstants.PARTS.get(m.group(1));
             } else {

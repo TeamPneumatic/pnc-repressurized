@@ -83,7 +83,7 @@ public class ProgWidgetItemFilterScreen extends AbstractProgWidgetScreen<ProgWid
 
         // variable dropdown when in variable filter mode
         addRenderableWidget(variableLabel = new WidgetLabel(guiLeft + 8, guiTop + 53, xlate("pneumaticcraft.gui.progWidget.itemFilter.variableLabel").append(":")));
-        addRenderableWidget(variableField = new WidgetComboBox(font, guiLeft + 12 + variableLabel.getWidth(), guiTop + 52, 80, font.lineHeight + 1)
+        addRenderableWidget(variableField = new WidgetComboBox(font, guiLeft + 12 + variableLabel.getWidth(), guiTop + 52, 80, font.lineHeight + 3)
                 .setElements(guiProgrammer.te.getAllVariables()));
         variableField.setMaxLength(GlobalVariableManager.MAX_VARIABLE_LEN);
         variableField.setValue(progWidget.getVariable());

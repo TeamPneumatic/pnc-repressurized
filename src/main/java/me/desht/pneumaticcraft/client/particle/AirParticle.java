@@ -61,7 +61,7 @@ public class AirParticle extends TextureSheetParticle {
 
         // fades out and gets bigger as it gets older
         setSpriteFromAge(sprite);
-        scale(1.1f);
+        scale(1.03f);
         alpha *= 0.975;
 
         if (level.random.nextInt(10) == 0) {

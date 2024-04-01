@@ -60,7 +60,7 @@ public class ProgWidgetImportExportScreen<P extends IProgWidget & ISidedWidget &
         ).setChecked(progWidget.useCount()).setTooltipKey(countTooltipKey());
         addRenderableWidget(useItemCount);
 
-        textField = new WidgetTextFieldNumber(font, guiLeft + 10, guiTop + (showSides() ? 128 : 43), 50, 11).setRange(0, Integer.MAX_VALUE);
+        textField = new WidgetTextFieldNumber(font, guiLeft + 10, guiTop + (showSides() ? 128 : 43), 50, font.lineHeight + 3).setRange(0, Integer.MAX_VALUE);
         textField.setValue(progWidget.getCount());
         textField.setEditable(useItemCount.checked);
         textField.setResponder(s -> progWidget.setCount(textField.getIntValue()));

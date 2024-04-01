@@ -276,8 +276,8 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
                 // 1) Drones programmed before the compile-time validation was added
                 // 2) Programs using variables where we don't necessarily have the values at compile-time
                 IDroneBase drone = aiManager.getDrone();
-                Log.warning(String.format("Drone @ %s (DIM %s) was killed due to excessively large area (%d > %d). See 'maxProgrammingArea' in config.",
-                        drone.getDronePos().toString(), drone.world().dimension().location(), size, maxSize));
+                Log.warning("Drone @ {} (DIM {}) was killed due to excessively large area ({} > {}). See 'maxProgrammingArea' in config.",
+                        drone.getDronePos().toString(), drone.world().dimension().location(), size, maxSize);
                 drone.overload("areaTooLarge", maxSize);
                 return;
             }
@@ -395,7 +395,7 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
 
     public static AreaType createType(String id) {
         if (!areaTypeToID.containsKey(id)) {
-            Log.error("No Area type found for id '" + id + "'! Substituting Box!");
+            Log.error("No Area type found for id '{}'! Substituting Box!", id);
             return new AreaTypeBox();
         }
         return createType(areaTypeToID.get(id));

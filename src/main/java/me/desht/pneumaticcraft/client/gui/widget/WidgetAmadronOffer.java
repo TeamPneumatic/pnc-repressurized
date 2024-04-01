@@ -25,7 +25,6 @@ import me.desht.pneumaticcraft.common.network.PacketGuiButton;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOffer;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
-import me.desht.pneumaticcraft.mixin.accessors.TooltipAccess;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -43,6 +42,7 @@ import org.lwjgl.opengl.GL11;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
@@ -113,20 +113,9 @@ public class WidgetAmadronOffer extends AbstractWidget {
 
         subWidgets.forEach(w -> w.render(graphics, mouseX, mouseY, partialTick));
 
-        List<Component> tooltip = new ArrayList<>();
-        for (AbstractWidget widget : subWidgets) {
-            if (widget.isHoveredOrFocused()) {
-                Component message = ((TooltipAccess) widget.getTooltip()).getMessage();
-                if (message != null) {
-                    tooltip.add(message);
-                }
-            }
+        if (isHovered && Arrays.stream(tooltipRectangles).noneMatch(rect -> rect.contains(mouseX, mouseY))) {
+            graphics.renderTooltip(Minecraft.getInstance().font, makeTooltip(offer, shoppingAmount), Optional.empty(), mouseX, mouseY);
         }
-        if (Arrays.stream(tooltipRectangles).noneMatch(rect -> rect.contains(mouseX, mouseY))) {
-            tooltip.addAll(makeTooltip(offer, shoppingAmount));
-        }
-
-        setTooltip(Tooltip.create(PneumaticCraftUtils.combineComponents(tooltip)));
     }
 
     public WidgetAmadronOffer setDrawBackground(boolean drawBackground) {
@@ -138,24 +127,6 @@ public class WidgetAmadronOffer extends AbstractWidget {
         this.canBuy = canBuy;
         return this;
     }
-
-//    @Override
-//    public void addTooltip(double mouseX, double mouseY, List<Component> curTip, boolean shiftPressed) {
-//        for (AbstractWidget widget : subWidgets) {
-//            if (widget.isHoveredOrFocused() && widget instanceof ITooltipProvider provider) {
-//                provider.addTooltip(mouseX, mouseY, curTip, shiftPressed);
-//            }
-//        }
-//        boolean isInBounds = false;
-//        for (Rect2i rect : tooltipRectangles) {
-//            if (rect.contains((int)mouseX, (int)mouseY)) {
-//                isInBounds = true;
-//            }
-//        }
-//        if (!isInBounds) {
-//            addTooltip(offer, curTip, shoppingAmount);
-//        }
-//    }
 
     public AmadronOffer getOffer() {
         return offer;

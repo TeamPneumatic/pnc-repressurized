@@ -1095,7 +1095,7 @@ public class DroneEntity extends AbstractDroneEntity implements
     @Override
     public UUID getOwnerUUID() {
         if (ownerUUID == null) {
-            Log.warning("Drone with owner '%s' has no UUID! Substituting the Drone's UUID (%s).", ownerName, getUUID());
+            Log.warning("Drone with owner '{}' has no UUID! Substituting the Drone's UUID ({}).", ownerName, getUUID());
             Log.warning("If you use any protection mods, the drone might not be able to operate in protected areas.");
             ownerUUID = getUUID();
         }

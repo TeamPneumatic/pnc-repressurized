@@ -88,7 +88,7 @@ public class AmadronScreen extends AbstractPneumaticCraftContainerScreen<Amadron
                 .setText(xlate("pneumaticcraft.gui.tab.amadron.disclaimer"));
         customTradesTab = addAnimatedStat(xlate("pneumaticcraft.gui.tab.amadron.customTrades"), new ItemStack(Items.DIAMOND), 0xFFD07000, false);
         customTradesTab.setMinimumExpandedDimensions(80, 50);
-        searchBar = new WidgetTextField(font, leftPos + 79, topPos + 40, 73, font.lineHeight);
+        searchBar = new WidgetTextField(font, leftPos + 79, topPos + 39, 73, font.lineHeight + 3);
         searchBar.setResponder(s -> sendDelayed(8));
         addRenderableWidget(searchBar);
         setFocused(searchBar);
@@ -199,9 +199,19 @@ public class AmadronScreen extends AbstractPneumaticCraftContainerScreen<Amadron
     }
 
     @Override
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (!searchBar.isMouseOver(mouseX, mouseY)) {
+            searchBar.setFocused(false);
+        }
+        return super.mouseClicked(mouseX, mouseY, button);
+    }
+
+    @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
-            ClientUtils.getClientPlayer().closeContainer();
+            onClose();
+            return true;
+//            ClientUtils.getClientPlayer().closeContainer();
         }
 
         return searchBar.keyPressed(keyCode, scanCode, modifiers)
@@ -280,7 +290,9 @@ public class AmadronScreen extends AbstractPneumaticCraftContainerScreen<Amadron
 
         @Override
         public boolean mouseClicked(double mouseX, double mouseY, int mouseButton) {
-            if (super.mouseClicked(mouseX, mouseY, mouseButton)) return true;
+            if (super.mouseClicked(mouseX, mouseY, mouseButton)) {
+                return true;
+            }
             if (clicked(mouseX, mouseY) && getOffer().isUsableByPlayer(ClientUtils.getClientPlayer())) {
                 NetworkHandler.sendToServer(new PacketAmadronOrderUpdate(getOffer().getOfferId(), mouseButton, Screen.hasShiftDown()));
                 return true;

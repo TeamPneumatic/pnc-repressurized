@@ -62,8 +62,7 @@ public abstract class ActionWidget<W extends AbstractWidget> {
             widget.readFromNBT(this.toNBT(0, 0), 0, 0);
             return widget;
         } catch (Exception e) {
-            Log.error("Error occurred when trying to copy an " + getId() + " action widget.");
-            e.printStackTrace();
+            Log.error("Error occurred when trying to copy a {} action widget: {}", getId(), e.getMessage());
             return null;
         }
     }

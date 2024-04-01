@@ -259,7 +259,7 @@ public class PastebinScreen extends AbstractPneumaticCraftScreen {
         nbt.put(IProgrammable.NBT_WIDGETS, l);
         nbt.remove("widgets");
         if (areaConversions > 0) {
-            Log.info("Pastebin import: converted %d legacy area widgets", areaConversions);
+            Log.info("Pastebin import: converted {} legacy area widgets", areaConversions);
         }
     }
 

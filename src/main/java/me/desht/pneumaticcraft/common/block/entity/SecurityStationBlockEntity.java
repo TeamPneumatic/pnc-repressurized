@@ -232,7 +232,7 @@ public class SecurityStationBlockEntity extends AbstractTickingBlockEntity imple
                 simulationController.getSimulation(HackingSide.PLAYER).startHack(nodePos);
             }
         } catch (IllegalArgumentException | IndexOutOfBoundsException e) {
-            Log.warning("security station @ %s: ignoring bad message %s from %s",
+            Log.warning("security station @ {}: ignoring bad message {} from {}",
                     PneumaticCraftUtils.posToString(worldPosition), tag, player.getGameProfile().getName());
         }
     }
@@ -246,7 +246,7 @@ public class SecurityStationBlockEntity extends AbstractTickingBlockEntity imple
                 simulationController.getSimulation(HackingSide.AI).fortify(nodePos);
             }
         } catch (IllegalArgumentException | IndexOutOfBoundsException e) {
-            Log.warning("security station @ %s: ignoring bad message %s from %s",
+            Log.warning("security station @ {}: ignoring bad message {} from {}",
                     PneumaticCraftUtils.posToString(worldPosition), tag, player.getGameProfile().getName());
         }
     }
@@ -273,7 +273,7 @@ public class SecurityStationBlockEntity extends AbstractTickingBlockEntity imple
                 player.kill();
             }
         } catch (IllegalArgumentException | IndexOutOfBoundsException e) {
-            Log.warning("security station @ %s: ignoring bad message %s from %s",
+            Log.warning("security station @ {}: ignoring bad message {}} from {}}",
                     PneumaticCraftUtils.posToString(worldPosition), tag, player.getGameProfile().getName());
         }
     }
@@ -398,31 +398,11 @@ public class SecurityStationBlockEntity extends AbstractTickingBlockEntity imple
     }
 
     public boolean isPlayerOnWhiteList(Player player) {
-        for (int i = 0; i < sharedUsers.size(); i++) {
-            GameProfile user = sharedUsers.get(i);
-            if (gameProfileEquals(user, player.getGameProfile())) {
-                if (user.getId() == null && player.getGameProfile().getId() != null) {
-                    sharedUsers.set(i, player.getGameProfile());
-                    Log.info("Legacy conversion: Security Station shared username '" + player.getName().getString() + "' is now using UUID '" + player.getGameProfile().getId() + "'.");
-                }
-                return true;
-            }
-        }
-        return false;
+        return sharedUsers.contains(player.getGameProfile());
     }
 
     public boolean hasPlayerHacked(Player player) {
-        for (int i = 0; i < hackedUsers.size(); i++) {
-            GameProfile user = hackedUsers.get(i);
-            if (gameProfileEquals(user, player.getGameProfile())) {
-                if (user.getId() == null && player.getGameProfile().getId() != null) {
-                    hackedUsers.set(i, player.getGameProfile());
-                    Log.info("Legacy conversion: Security Station hacked username '" + player.getName().getString() + "' is now using UUID '" + player.getGameProfile().getId() + "'.");
-                }
-                return true;
-            }
-        }
-        return false;
+        return hackedUsers.contains(player.getGameProfile());
     }
 
     /**

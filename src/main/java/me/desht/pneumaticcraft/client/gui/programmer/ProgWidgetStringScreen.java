@@ -17,6 +17,7 @@
 
 package me.desht.pneumaticcraft.client.gui.programmer;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import me.desht.pneumaticcraft.client.gui.ProgrammerScreen;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTextField;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetText;
@@ -26,28 +27,49 @@ public class ProgWidgetStringScreen<T extends ProgWidgetText> extends AbstractPr
 
     public ProgWidgetStringScreen(T widget, ProgrammerScreen guiProgrammer) {
         super(widget, guiProgrammer);
+        ySize = 50;
     }
 
     @Override
     public void init() {
         super.init();
 
-        textfield = new WidgetTextField(font, guiLeft + 10, guiTop + 20, 160, 10) {
-            @Override
-            public boolean charTyped(char c, int keyCode) {
-                if (c == '\n') {
-                    removed();
-                    minecraft.player.closeContainer();
-                    return true;
-                } else {
-                    return super.charTyped(c, keyCode);
-                }
-            }
-        };
+        textfield = new WidgetTextField(font, guiLeft + 10, guiTop + 20, 160, font.lineHeight + 3);
+//        {
+//            @Override
+//            public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+//                if (keyCode == InputConstants.KEY_RETURN) {
+//                    onClose();
+////                    minecraft.player.closeContainer();
+//                    return true;
+//                }
+//                return super.keyPressed(keyCode, scanCode, modifiers);
+//            }
+//
+////            @Override
+////            public boolean charTyped(char c, int keyCode) {
+////                if (c == '\n') {
+////                    removed();
+////                    minecraft.player.closeContainer();
+////                    return true;
+////                } else {
+////                    return super.charTyped(c, keyCode);
+////                }
+////            }
+//        };
         textfield.setMaxLength(1000);
         textfield.setValue(progWidget.string);
         setInitialFocus(textfield);
         addRenderableWidget(textfield);
+    }
+
+    @Override
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        if (keyCode == InputConstants.KEY_RETURN) {
+            onClose();
+            return true;
+        }
+        return super.keyPressed(keyCode, scanCode, modifiers);
     }
 
     @Override

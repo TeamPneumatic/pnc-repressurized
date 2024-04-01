@@ -148,7 +148,7 @@ public class NetworkUtils {
                 e.printStackTrace();
             }
             List<SyncedField<?>> syncedFields = builder.build();
-            if (syncedFields.isEmpty()) Log.warning("Field " + field + " didn't produce any syncable fields!");
+            if (syncedFields.isEmpty()) Log.warning("Field {} didn't produce any syncable fields!", field);
             return syncedFields;
         }
     }

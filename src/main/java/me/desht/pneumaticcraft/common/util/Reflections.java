@@ -51,7 +51,7 @@ public class Reflections {
                 }
             }
         }
-        Log.error("can't find any of [" + Strings.join(enclosedClassNames, ", ") + "] in class " + cls.getCanonicalName());
+        Log.error("can't find any of [{}] in class {}", Strings.join(enclosedClassNames, ", "),cls.getCanonicalName());
         return null;
     }
 }

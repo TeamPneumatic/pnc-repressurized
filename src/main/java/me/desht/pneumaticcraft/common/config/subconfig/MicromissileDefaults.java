@@ -60,7 +60,7 @@ public class MicromissileDefaults extends AuxConfigJson {
             if (entry.getValue().isJsonObject()) {
                 defaults.put(UUID.fromString(entry.getKey()), MicromissileDefaults.Entry.fromJson(entry.getValue().getAsJsonObject()));
             } else {
-                Log.warning("Invalid JSON? entry '" + entry.getKey() + "' in " + getConfigFilename());
+                Log.warning("Invalid JSON? entry '{}' in {}", entry.getKey(), getConfigFilename());
             }
         }
     }

@@ -75,7 +75,7 @@ public class PneumaticCraftRecipeType<T extends PneumaticCraftRecipe> implements
             }
             if (level == null) {
                 // still no world?  oh well
-                Log.error("detected someone trying to get recipes for %s with no world available - returning empty recipe list", this);
+                Log.error("detected someone trying to get recipes for {} with no world available - returning empty recipe list", this);
                 return Collections.emptyMap();
             }
         }

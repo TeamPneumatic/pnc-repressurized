@@ -41,8 +41,8 @@ public class UVLightBoxMenu extends AbstractPneumaticCraftMenu<UVLightBoxBlockEn
     public UVLightBoxMenu(int windowId, Inventory playerInventory, BlockPos pos) {
         super(ModMenuTypes.UV_LIGHT_BOX.get(), windowId, playerInventory, pos);
 
-        addSlot(new SlotPCB(blockEntity.getItemHandler(), 0, 11, 22));
-        addSlot(new OutputOnlySlot(blockEntity.getOutputInventory(), 0, 49, 22));
+        addSlot(new SlotPCB(blockEntity.getInputHandler(), 0, 11, 22));
+        addSlot(new OutputOnlySlot(blockEntity.getOutputHandler(), 0, 49, 22));
 
         // add upgrade slots
         for (int i = 0; i < 4; i++) {

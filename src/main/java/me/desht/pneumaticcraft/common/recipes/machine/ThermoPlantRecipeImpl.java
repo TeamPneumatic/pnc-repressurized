@@ -37,7 +37,6 @@ import net.neoforged.neoforge.fluids.FluidStack;
 
 import javax.annotation.Nonnull;
 import java.util.Optional;
-import java.util.function.Function;
 
 // yeah yeah codecs
 @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
@@ -188,7 +187,7 @@ public class ThermoPlantRecipeImpl extends ThermoPlantRecipe {
             TemperatureRange range = TemperatureRange.read(buffer);
             float pressure = buffer.readFloat();
             Optional<Ingredient> input = buffer.readOptional(Ingredient::fromNetwork);
-            Optional<FluidIngredient> fluidIn = buffer.readOptional(buf -> (FluidIngredient) Ingredient.fromNetwork(buf));
+            Optional<FluidIngredient> fluidIn = buffer.readOptional(FluidIngredient::fluidFromNetwork);
             ItemStack itemOutput = buffer.readItem();
             FluidStack fluidOut = FluidStack.readFromPacket(buffer);
             float recipeSpeed = buffer.readFloat();
@@ -202,7 +201,7 @@ public class ThermoPlantRecipeImpl extends ThermoPlantRecipe {
             recipe.getOperatingTemperature().write(buffer);
             buffer.writeFloat(recipe.getRequiredPressure());
             buffer.writeOptional(recipe.getInputItem(), (b, ingredient) -> ingredient.toNetwork(b));
-            buffer.writeOptional(recipe.getInputFluid(), (b, ingredient) -> ingredient.toNetwork(b));
+            buffer.writeOptional(recipe.getInputFluid(), (b, ingredient) -> ingredient.fluidToNetwork(b));
             buffer.writeItem(recipe.getOutputItem());
             recipe.getOutputFluid().writeToPacket(buffer);
             buffer.writeFloat(recipe.getRecipeSpeed());

@@ -37,7 +37,7 @@ public class ProgWidgetForEachScreen<W extends IProgWidget & IVariableSetWidget>
     public void init() {
         super.init();
 
-        variableField = new WidgetComboBox(font, guiLeft + 10, guiTop + 42, 160, font.lineHeight + 1);
+        variableField = new WidgetComboBox(font, guiLeft + 10, guiTop + 42, 160, font.lineHeight + 3);
         variableField.setElements(guiProgrammer.te.getAllVariables());
         variableField.setMaxLength(GlobalVariableManager.MAX_VARIABLE_LEN);
         addRenderableWidget(variableField);

@@ -138,7 +138,7 @@ public enum AmadronOfferManager {
         activeOffers.clear();
         newOffers.forEach(offer -> addOffer(activeOffers, offer));
 
-        Log.debug("Received " + activeOffers.size() + " active Amadron offers from server");
+        Log.debug("Received {} active Amadron offers from server", activeOffers.size() );
         if (notifyPlayer && ConfigHelper.client().general.notifyAmadronOfferUpdates.get()) {
             maybeNotifyPlayerOfUpdates(ClientUtils.getClientPlayer());
         }
@@ -175,6 +175,8 @@ public enum AmadronOfferManager {
         AmadronRecipe offer = activeOffers.get(id);
         if (offer != null) {
             offer.setStock(stock);
+        } else {
+            Log.warning("Received stock update for offer id {} ({}) but it's not in the active list!");
         }
     }
 
@@ -267,7 +269,7 @@ public enum AmadronOfferManager {
         // send active list to all clients (but not the local player for an integrated server)
         NetworkHandler.sendNonLocal(PacketSyncAmadronOffers.create(true));
         maybeNotifyLocalPlayerOfUpdates();
-        Log.debug(activeOffers.size() + " active Amadron offers to sync to clients");
+        Log.debug("{} active Amadron offers to sync to clients", activeOffers.size());
     }
 
     public void addPlayerOffers() {
@@ -289,7 +291,7 @@ public enum AmadronOfferManager {
                 level--;
             }
         } while (level > 0);
-        Log.debug("Amadron: no periodic offers of level %d or lower", level);
+        Log.debug("Amadron: no periodic offers of level {} or lower", level);
         return null;
     }
 

@@ -43,7 +43,7 @@ public abstract class ProgWidgetDigAndPlaceScreen<P extends ProgWidgetDigAndPlac
         WidgetLabel orderLabel = new WidgetLabel(guiLeft + 8, guiTop + 25, xlate("pneumaticcraft.gui.progWidget.digAndPlace.order"));
         addRenderableWidget(orderLabel);
 
-        orderSelector = new WidgetComboBox(font,guiLeft + 8 + orderLabel.getWidth() + 5, guiTop + 23, 80, 12)
+        orderSelector = new WidgetComboBox(font,guiLeft + 8 + orderLabel.getWidth() + 5, guiTop + 23, 80, font.lineHeight + 3)
                 .initFromEnum(progWidget.getOrder());
         addRenderableWidget(orderSelector);
 
@@ -56,7 +56,7 @@ public abstract class ProgWidgetDigAndPlaceScreen<P extends ProgWidgetDigAndPlac
                     .setTooltipKey("pneumaticcraft.gui.progWidget.digAndPlace.useMaxActions.tooltip");
             addRenderableWidget(useMaxActions);
 
-            textField = new WidgetTextFieldNumber(font, guiLeft + 20, guiTop + 128, 30, 11)
+            textField = new WidgetTextFieldNumber(font, guiLeft + 20, guiTop + 128, 30, font.lineHeight + 3)
                     .setRange(1, Integer.MAX_VALUE)
                     .setAdjustments(1, 10);
             textField.setValue(progWidget.getMaxActions());

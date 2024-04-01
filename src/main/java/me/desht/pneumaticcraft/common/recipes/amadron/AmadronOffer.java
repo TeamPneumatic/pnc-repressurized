@@ -91,6 +91,10 @@ public class AmadronOffer extends AmadronRecipe {
         return offerId;
     }
 
+    public OfferType getOfferType() {
+        return isVillagerTrade() ? OfferType.VILLAGER : OfferType.RECIPE;
+    }
+
     @Override
     @Nonnull
     public AmadronTradeResource getInput() {
@@ -131,7 +135,7 @@ public class AmadronOffer extends AmadronRecipe {
     public void setStock(int inStock) {
         int max = maxStock > 0 ? maxStock : Integer.MAX_VALUE;
         if (inStock < 0 || inStock > max) {
-            Log.warning("Amadron Offer %s: new stock %d out of range (0,%d) - clamped", this, inStock, maxStock);
+            Log.warning("Amadron Offer {}: new stock {} out of range (0,{}) - clamped", this, inStock, maxStock);
         }
         this.inStock = Mth.clamp(inStock, 0, max);
     }
@@ -139,7 +143,7 @@ public class AmadronOffer extends AmadronRecipe {
     public void onTrade(int tradingAmount, String buyingPlayer) {
     }
 
-    public static AmadronOffer offerFromBuf(ResourceLocation id, FriendlyByteBuf buf) {
+    public static AmadronOffer offerFromBuf(FriendlyByteBuf buf) {
         return ModRecipeSerializers.AMADRON_OFFERS.get().fromNetwork(buf);
     }
 
@@ -287,4 +291,5 @@ public class AmadronOffer extends AmadronRecipe {
                      boolean villagerTrade, int level, int maxStock, int inStock, PlayerFilter whitelist, PlayerFilter blacklist);
         }
     }
+
 }

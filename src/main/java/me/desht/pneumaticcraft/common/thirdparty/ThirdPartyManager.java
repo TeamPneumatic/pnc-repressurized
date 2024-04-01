@@ -105,7 +105,7 @@ public enum ThirdPartyManager {
             }
         }
 
-        Log.info("Thirdparty integration activated for [" + String.join(",", modNames) + "]");
+        Log.info("Third party integration activated for [{}]", String.join(",", modNames));
     }
 
     public void preInit(IEventBus modBus) {
@@ -170,7 +170,7 @@ public enum ThirdPartyManager {
     }
 
     private void logError(Throwable e, Class<?> cls, String when) {
-        Log.error("Third party integration error: class: %s, phase: %s", cls.getName(), when);
+        Log.error("Third party integration error: class: {}, phase: {}", cls.getName(), when);
         e.printStackTrace();
     }
 

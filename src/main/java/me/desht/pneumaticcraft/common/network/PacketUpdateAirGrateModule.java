@@ -59,7 +59,7 @@ public record PacketUpdateAirGrateModule(ModuleLocator locator, String entityFil
             try {
                 module.setEntityFilter(new EntityFilter(entityFilter));
             } catch (IllegalArgumentException e) {
-                Log.warning("ignoring invalid entity filter " + entityFilter + " (" + e.getMessage() + ")");
+                Log.warning("ignoring invalid entity filter {} ({})", entityFilter, e.getMessage());
             }
         }
     }

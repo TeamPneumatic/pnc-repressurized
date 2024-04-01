@@ -84,8 +84,8 @@ public class ProgWidgetAreaScreen extends ProgWidgetAreaShowScreen<ProgWidgetAre
         addRenderableWidget(gpsButton2);
 
         // variable textfields
-        variableField1 = new WidgetComboBox(font, guiLeft + 28, guiTop + 35, 88, font.lineHeight + 1);
-        variableField2 = new WidgetComboBox(font, guiLeft + 155, guiTop + 35, 88, font.lineHeight + 1);
+        variableField1 = new WidgetComboBox(font, guiLeft + 28, guiTop + 34, 88, font.lineHeight + 3);
+        variableField2 = new WidgetComboBox(font, guiLeft + 155, guiTop + 34, 88, font.lineHeight + 3);
         Set<String> variables = guiProgrammer == null ? Collections.emptySet() : guiProgrammer.te.getAllVariables();
         variableField1.setElements(variables);
         variableField2.setElements(variables);
@@ -170,7 +170,7 @@ public class ProgWidgetAreaScreen extends ProgWidgetAreaShowScreen<ProgWidgetAre
 
                 curY += font.lineHeight + 20;
             } else if (areaTypeWidget instanceof AreaTypeWidgetEnum<?> enumWidget) {
-                WidgetComboBox enumCbb = new WidgetComboBox(font, x, curY, 80, font.lineHeight + 1).setFixedOptions(true);
+                WidgetComboBox enumCbb = new WidgetComboBox(font, x, curY, 80, font.lineHeight + 3).setFixedOptions(true);
                 enumCbb.setElements(getEnumNames(enumWidget.enumClass));
                 String txt = xlate(enumWidget.readAction.get().getTranslationKey()).getString();
                 enumCbb.setValue(txt);

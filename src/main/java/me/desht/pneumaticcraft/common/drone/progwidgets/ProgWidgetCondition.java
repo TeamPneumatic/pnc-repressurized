@@ -101,7 +101,7 @@ public abstract class ProgWidgetCondition extends ProgWidgetInventoryBase implem
             }
             return ProgWidgetJump.jumpToLabel(drone, allWidgets, this, evaluation);
         } else {
-            Log.error("Shouldn't be happening! ProgWidgetCondition");
+            Log.error("Shouldn't be happening! ProgWidgetCondition evaluator is null for some reason");
             return super.getOutputWidget(drone, allWidgets);
         }
     }

@@ -26,19 +26,19 @@ public class Log {
     private static final Logger LOGGER = LogManager.getLogger(Names.MOD_ID);
 
     public static void debug(String message, Object... params) {
-        LOGGER.log(Level.DEBUG, String.format(message, params));
+        LOGGER.log(Level.DEBUG, message, params);
     }
 
     public static void info(String message, Object... params) {
-        LOGGER.log(Level.INFO, String.format(message, params));
+        LOGGER.log(Level.INFO, message, params);
     }
 
     public static void error(String message, Object... params) {
-        LOGGER.log(Level.ERROR, String.format(message, params));
+        LOGGER.log(Level.ERROR, message, params);
     }
 
     public static void warning(String message, Object... params) {
-        LOGGER.log(Level.WARN, String.format(message, params));
+        LOGGER.log(Level.WARN, message, params);
     }
 
     public static void stacktrace(String message, Throwable throwable) {

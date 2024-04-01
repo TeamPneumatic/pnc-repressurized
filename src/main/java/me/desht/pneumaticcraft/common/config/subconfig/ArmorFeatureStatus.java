@@ -18,8 +18,6 @@
 package me.desht.pneumaticcraft.common.config.subconfig;
 
 import com.google.common.collect.Maps;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IArmorUpgradeClientHandler;
 import me.desht.pneumaticcraft.client.pneumatic_armor.ClientArmorRegistry;
@@ -55,29 +53,14 @@ public class ArmorFeatureStatus extends AuxConfigJson {
 
     @Override
     protected void readFromJson(JsonObject json) {
-        if (json.has("active")) {
-            loadLegacy(json);
-        } else if (json.has("features")) {
+        if (json.has("features")) {
             JsonObject features = json.getAsJsonObject("features");
             for (var entry : features.entrySet()) {
                 try {
                     activeUpgrades.put(new ResourceLocation(entry.getKey()), entry.getValue().getAsBoolean());
                 } catch (ResourceLocationException | ClassCastException | IllegalStateException e) {
-                    Log.error("ignoring invalid entry '" + entry.getKey() + "' in ArmorFeatureStatus.json: " + e.getMessage());
+                    Log.error("ignoring invalid entry '{}' in ArmorFeatureStatus.json: {}", entry.getKey(), e.getMessage());
                 }
-            }
-        }
-    }
-
-    private void loadLegacy(JsonObject json) {
-        Log.info("converting legacy ArmorFeatureStatus.json to new format");
-        JsonArray array = json.get("active").getAsJsonArray();
-        activeUpgrades.clear();
-        for (JsonElement element : array) {
-            try {
-                activeUpgrades.put(new ResourceLocation(element.getAsString()), true);
-            } catch (ResourceLocationException e) {
-                Log.error("ignoring " + element.getAsString() + " in ArmorFeatureStatus.json: " + e.getMessage());
             }
         }
     }
@@ -92,7 +75,7 @@ public class ArmorFeatureStatus extends AuxConfigJson {
             String[] parts = upgradeID.getPath().split("\\.");
             IArmorUpgradeClientHandler<?> handler = ClientArmorRegistry.getInstance().getClientHandler(new ResourceLocation(upgradeID.getNamespace(), parts[0]));
             if (handler == null) {
-                Log.warning("attempt to retrieve enablement for unknown upgrade ID '%s'", upgradeID);
+                Log.warning("attempt to retrieve enablement for unknown upgrade ID '{}'", upgradeID);
                 return false;
             }
             if (parts.length == 1) {

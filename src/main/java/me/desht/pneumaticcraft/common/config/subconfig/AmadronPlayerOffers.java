@@ -23,6 +23,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import me.desht.pneumaticcraft.common.amadron.AmadronOfferManager;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronPlayerOffer;
+import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.HashMap;
@@ -76,9 +77,9 @@ public class AmadronPlayerOffers extends AuxConfigJson {
         for (JsonElement element : array) {
             try {
                 AmadronPlayerOffer offer = AmadronPlayerOffer.fromJson((JsonObject) element);
-                if (offer != null) playerOffers.put(offer.getOfferId(), offer);
+                playerOffers.put(offer.getOfferId(), offer);
             } catch (JsonSyntaxException e) {
-                e.printStackTrace();
+                Log.error("can't load amadron player offer: {}", e.getMessage());
             }
         }
         // need to get the newly-read offers into the offer manager, which has already loaded static & villager offers

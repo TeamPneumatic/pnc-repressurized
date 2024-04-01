@@ -422,7 +422,7 @@ public class RefineryControllerBlockEntity extends AbstractTickingBlockEntity
 
     public void decPlayersUsing() {
         if (nPlayersUsing == 0) {
-            Log.warning("decPlayersUsing() called for " + this + " but already 0?");
+            Log.warning("decPlayersUsing() called for {} but already 0?", this);
         } else {
             nPlayersUsing = Math.max(0, nPlayersUsing - 1);
         }

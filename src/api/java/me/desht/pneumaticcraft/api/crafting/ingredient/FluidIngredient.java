@@ -28,6 +28,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.item.ItemStack;
@@ -101,6 +102,17 @@ public class FluidIngredient extends Ingredient {
                     .toList();
         }
         return fluids;
+    }
+
+    public void fluidToNetwork(FriendlyByteBuf buf) {
+        buf.writeInt(getAmount());
+        buf.writeCollection(getFluidStacks().stream().map(stack -> BuiltInRegistries.FLUID.getId(stack.getFluid())).toList(), FriendlyByteBuf::writeInt);
+    }
+
+    public static FluidIngredient fluidFromNetwork(FriendlyByteBuf buf) {
+        int amount = buf.readInt();
+        Fluid[] fluids = buf.readList(FriendlyByteBuf::readInt).stream().map(BuiltInRegistries.FLUID::byId).toArray(Fluid[]::new);
+        return FluidIngredient.of(amount, fluids);
     }
 
     @Override

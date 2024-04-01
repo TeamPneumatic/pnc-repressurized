@@ -327,7 +327,7 @@ public abstract class AbstractSemiblockEntity extends Entity implements ISemiBlo
                 level.markAndNotifyBlock(blockPos, level.getChunkAt(blockPos), getBlockState(), getBlockState(), Block.UPDATE_ALL, 512);
             } else {
                 Direction dir = this instanceof IDirectionalSemiblock d ? d.getSide() : null;
-                Log.error("SemiblockTracker: not overwriting existing semiblock at %s, pos=%s, dir=%s!", level, blockPos, dir);
+                Log.error("SemiblockTracker: not overwriting existing semiblock at {}, pos={}, dir={}!", level, blockPos, dir);
             }
         }
     }

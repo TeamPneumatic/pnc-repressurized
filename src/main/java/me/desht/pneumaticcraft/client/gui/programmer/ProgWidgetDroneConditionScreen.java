@@ -75,7 +75,7 @@ public abstract class ProgWidgetDroneConditionScreen<T extends ProgWidgetDroneCo
             }
             builder.build(this::addRenderableWidget);
 
-            textField = new WidgetTextFieldNumber(font, guiLeft + baseX, guiTop + baseY + 40, 50, 11).setRange(0, Integer.MAX_VALUE);
+            textField = new WidgetTextFieldNumber(font, guiLeft + baseX, guiTop + baseY + 40, 50, font.lineHeight + 3).setRange(0, Integer.MAX_VALUE);
             textField.setValue(progWidget.getRequiredCount() + "");
             textField.setMaxLength(GlobalVariableManager.MAX_VARIABLE_LEN);
             textField.setResponder(s -> progWidget.setRequiredCount(textField.getIntValue()));

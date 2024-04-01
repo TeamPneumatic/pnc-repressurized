@@ -21,6 +21,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.BoolArgumentType;
+import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -97,8 +98,11 @@ public class ModCommands {
                         )
                         .then(literal("set")
                                 .then(argument("varname", new VarnameType())
+                                        .then(argument("val", IntegerArgumentType.integer())
+                                                .executes(c -> setGlobalVar(c, StringArgumentType.getString(c,"varname"), Either.left(new BlockPos(IntegerArgumentType.getInteger(c, "val"), 0, 0))))
+                                        )
                                         .then(argument("pos", BlockPosArgument.blockPos())
-                                                .executes(c -> setGlobalVar(c, StringArgumentType.getString(c,"varname"), Either.left(BlockPosArgument.getLoadedBlockPos(c, "pos"))))
+                                                .executes(c -> setGlobalVar(c, StringArgumentType.getString(c,"varname"), Either.left(BlockPosArgument.getBlockPos(c, "pos"))))
                                         )
                                         .then(argument("item", ItemArgument.item(buildContext))
                                                 .executes(c -> setGlobalVar(c, StringArgumentType.getString(c,"varname"), Either.right(ItemArgument.getItem(c, "item"))))

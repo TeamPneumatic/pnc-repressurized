@@ -112,7 +112,7 @@ public enum ItemRegistry implements IItemRegistry {
             try {
                 ((IInventoryItem) item.getItem()).getStacksInItem(item, items);
             } catch (Throwable e) {
-                Log.error("An InventoryItem crashed:");
+                Log.error("An InventoryItem crashed. Stacktrace:");
                 e.printStackTrace();
                 inventoryItemBlacklist.add(item.getItem());
             }
@@ -122,7 +122,7 @@ public enum ItemRegistry implements IItemRegistry {
                 try {
                     iterator.next().getStacksInItem(item, items);
                 } catch (Throwable e) {
-                    Log.error("An InventoryItem crashed:");
+                    Log.error("An InventoryItem crashed. Stacktrace:");
                     e.printStackTrace();
                     iterator.remove();
                 }

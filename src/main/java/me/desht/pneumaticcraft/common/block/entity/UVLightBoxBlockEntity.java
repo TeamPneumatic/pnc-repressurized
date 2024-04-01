@@ -73,7 +73,7 @@ public class UVLightBoxBlockEntity extends AbstractAirHandlingBlockEntity implem
     public static final int RS_MODE_INTERPOLATE = 3;
 
     // avoid rapid blockstate switching, which is a framerate killer
-    private long lastStateUpdate = 0;
+    private long lastStateUpdateTime = 0;
     private BlockState pendingState;
 
     @GuiSynced
@@ -84,9 +84,7 @@ public class UVLightBoxBlockEntity extends AbstractAirHandlingBlockEntity implem
     private final UVInputHandler inputHandler = new UVInputHandler();
     private final ItemStackHandler outputHandler = new BaseItemStackHandler(this, INVENTORY_SIZE);
     private final UVInvWrapper inventoryExt = new UVInvWrapper();
-//    private final LazyOptional<IItemHandler> invCap = LazyOptional.of(() -> inventoryExt);
     private BlockCapabilityCache<IItemHandler,Direction> ejectionCache;
-//    private LazyOptional<IItemHandler> cachedEjectHandler = LazyOptional.empty();
 
     public int ticksExisted;
 
@@ -131,31 +129,34 @@ public class UVLightBoxBlockEntity extends AbstractAirHandlingBlockEntity implem
         BlockState state = getBlockState();
         if (state.getBlock() == ModBlocks.UV_LIGHT_BOX.get()) {
             boolean loaded = state.getValue(UVLightBoxBlock.LOADED);
-            boolean update = false;
+            boolean updateNeeded = false;
             if (loaded == loadedStack.isEmpty()) {
                 state = state.setValue(UVLightBoxBlock.LOADED, !loadedStack.isEmpty());
-                update = true;
+                updateNeeded = true;
             }
             if (didWork != getBlockState().getValue(UVLightBoxBlock.LIT)) {
                 state = state.setValue(UVLightBoxBlock.LIT, didWork);
-                update = true;
+                updateNeeded = true;
             }
             long now = nonNullLevel().getGameTime();
-            if (update) {
-                if (now - lastStateUpdate > 10) {
-                    nonNullLevel().setBlockAndUpdate(worldPosition, state);
-                    pendingState = null;
-                    lastStateUpdate = now;
+            if (updateNeeded) {
+                if (now - lastStateUpdateTime > 10) {
+                    updateBlockStateImmediate(state, now);
                 } else {
                     pendingState = state;
                 }
-            } else if (pendingState != null && now - lastStateUpdate > 10) {
-                nonNullLevel().setBlockAndUpdate(worldPosition, pendingState);
-                pendingState = null;
-                lastStateUpdate = now;
+            } else if (pendingState != null && now - lastStateUpdateTime > 10) {
+                updateBlockStateImmediate(pendingState, now);
             }
         }
     }
+
+    private void updateBlockStateImmediate(BlockState state, long now) {
+        nonNullLevel().setBlockAndUpdate(worldPosition, state);
+        pendingState = null;
+        lastStateUpdateTime = now;
+    }
+
 
     private void tryEject() {
         Direction dir = getUpgradeCache().getEjectDirection();
@@ -254,7 +255,11 @@ public class UVLightBoxBlockEntity extends AbstractAirHandlingBlockEntity implem
         return inventoryExt;
     }
 
-    public IItemHandler getOutputInventory() {
+    public IItemHandler getInputHandler() {
+        return inputHandler;
+    }
+
+    public IItemHandler getOutputHandler() {
         return outputHandler;
     }
 

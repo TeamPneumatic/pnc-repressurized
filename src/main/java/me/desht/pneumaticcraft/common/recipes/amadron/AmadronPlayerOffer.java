@@ -40,7 +40,6 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.util.GsonHelper;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
@@ -84,6 +83,11 @@ public class AmadronPlayerOffer extends AmadronOffer {
         returningPos = pos;
         cachedOutput = null;
         return this;
+    }
+
+    @Override
+    public OfferType getOfferType() {
+        return OfferType.PLAYER;
     }
 
     /**
@@ -241,7 +245,6 @@ public class AmadronPlayerOffer extends AmadronOffer {
                 .getOrThrow(false, s -> Log.error("can't create json: " + s))
                 .getAsJsonObject();
 
-//        super.toJson(json);
         json.addProperty("offeringPlayerName", offeringPlayerName);
         json.addProperty("offeringPlayerId", offeringPlayerId.toString());
         json.addProperty("inStock", inStock);
@@ -256,14 +259,12 @@ public class AmadronPlayerOffer extends AmadronOffer {
     }
 
     public static AmadronPlayerOffer fromJson(JsonObject json) {
-        ResourceLocation id = new ResourceLocation(GsonHelper.getAsString(json, "id"));
-
         AmadronOffer offer = ModRecipeSerializers.AMADRON_OFFERS.get().codec().parse(JsonOps.INSTANCE, json)
-                .result()
+                .resultOrPartial(err -> {
+                    throw new JsonSyntaxException(err);
+                })
                 .orElseThrow(() -> new JsonSyntaxException("invalid json syntax"));
 
-//        AmadronRecipe recipe = ModRecipeSerializers.AMADRON_OFFERS.get().fromJson(id, json);
-//        if (recipe instanceof AmadronOffer offer) {
         AmadronPlayerOffer playerOffer = new AmadronPlayerOffer(offer.getOfferId(), offer.getInput(), offer.getOutput(),
                 json.get("offeringPlayerName").getAsString(), UUID.fromString(json.get("offeringPlayerId").getAsString()),
                 offer.whitelist, offer.blacklist);
@@ -277,8 +278,6 @@ public class AmadronPlayerOffer extends AmadronOffer {
             playerOffer.returningPos = GlobalPosHelper.fromJson(json.get("returningPos").getAsJsonObject());
         }
         return playerOffer;
-//        }
-//        return null;
     }
 
     @Override

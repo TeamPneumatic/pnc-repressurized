@@ -51,7 +51,7 @@ public abstract class HeatPropertiesRecipe extends PneumaticCraftRecipe {
      * Get the heat capacity for this block. This is the amount of heat which can be gained or lost before it
      * transforms into some other block.
      *
-     * @return the heat capacity, or 0 if this never transforms
+     * @return the heat capacity, or {@code Optional.empty()} if this block never transforms
      */
     public abstract Optional<Integer> getHeatCapacity();
 
@@ -65,14 +65,16 @@ public abstract class HeatPropertiesRecipe extends PneumaticCraftRecipe {
 
     /**
      * The block's thermal resistance, which defines how quickly heat is added or lost. Higher resistances mean a
-     * slower transfer of heat in or out of the block
+     * slower transfer of heat in or out of the block. You can return {@code Optional.empty()} here if the block
+     * should just use the default resistance from the mod configuration (see <em>blockThermalResistance</em> and
+     * <em>fluidThermalResistance</em> config settings).
      *
      * @return the thermal resistance
      */
     public abstract Optional<Double> getThermalResistance();
 
     /**
-     * Get the blockstate which the input will transform to if too much heat is added to it. This may be null if there
+     * Get the blockstate which the input will transform to if too much heat is added to it. This may be empty if there
      * is no hot transformation.
      *
      * @return a new blockstate
@@ -80,7 +82,7 @@ public abstract class HeatPropertiesRecipe extends PneumaticCraftRecipe {
     public abstract Optional<BlockState> getTransformHot();
 
     /**
-     * Get the blockstate which the input will transform to if too much heat is removed from it. This may be null if
+     * Get the blockstate which the input will transform to if too much heat is removed from it. This may be empty if
      * there is no cold transformation.
      *
      * @return a new blockstate
@@ -141,10 +143,8 @@ public abstract class HeatPropertiesRecipe extends PneumaticCraftRecipe {
      * @return some displayable text
      */
     public Component getInputDisplayName() {
-        if (getBlock() instanceof LiquidBlock) {
-            return new FluidStack(((LiquidBlock) getBlock()).getFluid(), 1000).getDisplayName();
-        } else {
-            return new ItemStack(getBlock()).getHoverName();
-        }
+        return getBlock() instanceof LiquidBlock l ?
+                new FluidStack(l.getFluid(), 1000).getDisplayName() :
+                new ItemStack(getBlock()).getHoverName();
     }
 }

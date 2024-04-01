@@ -25,11 +25,9 @@ import me.desht.pneumaticcraft.common.registry.ModRecipeSerializers;
 import me.desht.pneumaticcraft.common.registry.ModRecipeTypes;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.util.ExtraCodecs;
-import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.material.Fluid;
-import org.apache.commons.lang3.Validate;
 
 public class FuelQualityRecipeImpl extends FuelQualityRecipe {
     private final FluidIngredient fuel;
@@ -94,7 +92,7 @@ public class FuelQualityRecipeImpl extends FuelQualityRecipe {
 
         @Override
         public T fromNetwork(FriendlyByteBuf buffer) {
-            FluidIngredient fluidIn = (FluidIngredient) Ingredient.fromNetwork(buffer);
+            FluidIngredient fluidIn = FluidIngredient.fluidFromNetwork(buffer);
             int airPerBucket = buffer.readInt();
             float burnRate = buffer.readFloat();
 
@@ -103,7 +101,7 @@ public class FuelQualityRecipeImpl extends FuelQualityRecipe {
 
         @Override
         public void toNetwork(FriendlyByteBuf buffer, T recipe) {
-            recipe.getFuel().toNetwork(buffer);
+            recipe.getFuel().fluidToNetwork(buffer);
             buffer.writeInt(recipe.getAirPerBucket());
             buffer.writeFloat(recipe.getBurnRate());
         }

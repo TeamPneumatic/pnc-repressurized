@@ -306,7 +306,7 @@ public class AmadronMenu extends AbstractPneumaticCraftMenu<AbstractPneumaticCra
         ItemStack[] stacks = AmadronUtil.buildStacks(queryingItems, units);
         if (stacks.length == 0) {
             // shouldn't happen but see https://github.com/TeamPneumatic/pnc-repressurized/issues/399
-            Log.error(String.format("retrieveOrderItems: got empty itemstack list for offer %d x %s @ %s", units, queryingItems, itemGPos));
+            Log.error("retrieveOrderItems: got empty itemstack list for offer {} x {} @ {}", units, queryingItems, itemGPos);
             return null;
         }
 
@@ -339,7 +339,7 @@ public class AmadronMenu extends AbstractPneumaticCraftMenu<AbstractPneumaticCra
             // shouldn't happen normally, but could as result of a player trying to spoof the system
             // by bypassing stock checks in the Amadron GUI (e.g. hacked client)
             // https://github.com/TeamPneumatic/pnc-repressurized/issues/736
-            Log.warning("ignoring suspicious order from player [%s] for %d x %s - only %d in stock right now!",
+            Log.warning("ignoring suspicious order from player [{}] for {} x {} - only {} in stock right now!",
                     playerName, units, offer, offer.getStock());
             return false;
         }

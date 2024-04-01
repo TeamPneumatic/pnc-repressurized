@@ -97,7 +97,7 @@ public class RemoteEditorScreen extends RemoteScreen {
         widgetTray.add(new ActionWidgetCheckBox(new WidgetCheckBox(leftPos + 200, topPos + 23, 0xFF404040, xlate("pneumaticcraft.gui.remote.tray.checkbox.name"))));
         widgetTray.add(new ActionWidgetLabel(new WidgetLabelVariable(leftPos + 200, topPos + 38, xlate("pneumaticcraft.gui.remote.tray.label.name"))));
         widgetTray.add(new ActionWidgetButton(new WidgetButtonExtended(leftPos + 200, topPos + 53, 50, 20, xlate("pneumaticcraft.gui.remote.tray.button.name"))));
-        widgetTray.add(new ActionWidgetDropdown(new WidgetComboBox(font, leftPos + 200, topPos + 80, 70, font.lineHeight + 1).setFixedOptions(true)));
+        widgetTray.add(new ActionWidgetDropdown(new WidgetComboBox(font, leftPos + 200, topPos + 79, 70, font.lineHeight + 3).setFixedOptions(true)));
 
         for (ActionWidget<?> actionWidget : widgetTray) {
             addRenderableWidget(actionWidget.getWidget());

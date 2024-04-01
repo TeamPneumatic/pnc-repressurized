@@ -69,6 +69,8 @@ public class BasicRemoteOptionScreen<A extends ActionWidget<?>> extends Abstract
     public void init() {
         super.init();
 
+        int textFieldHeight = font.lineHeight + 3;
+
         playerGlobalEnableVar = actionWidget.getEnableVariable().isEmpty() || actionWidget.getEnableVariable().startsWith("#");
 
         addLabel(xlate("pneumaticcraft.gui.remote.enable"), guiLeft + 10, guiTop + 150);
@@ -87,7 +89,7 @@ public class BasicRemoteOptionScreen<A extends ActionWidget<?>> extends Abstract
         addLabel(Component.literal("Y:"), guiLeft + 67, guiTop + 186);
         addLabel(Component.literal("Z:"), guiLeft + 124, guiTop + 186);
 
-        enableField = new WidgetComboBox(font, guiLeft + 23, guiTop + 160, 147, 10);
+        enableField = new WidgetComboBox(font, guiLeft + 23, guiTop + 159, 147, textFieldHeight);
         enableField.setElements(GlobalVariableHelper.extractVarnames(guiRemote.getMenu().variables, playerGlobalEnableVar));
         enableField.setValue(GlobalVariableHelper.stripVarPrefix(actionWidget.getEnableVariable()));
         enableField.setTooltip(Tooltip.create(xlate("pneumaticcraft.gui.remote.enable.tooltip")));
@@ -95,34 +97,30 @@ public class BasicRemoteOptionScreen<A extends ActionWidget<?>> extends Abstract
 
         Component valueTooltip = xlate("pneumaticcraft.gui.remote.enableValue.tooltip");
 
-        xValueField = new WidgetTextFieldNumber(font, guiLeft + 20, guiTop + 185, 38, 10);
+        xValueField = new WidgetTextFieldNumber(font, guiLeft + 20, guiTop + 184, 38, textFieldHeight);
         xValueField.setValue(actionWidget.getEnablingValue().getX());
         xValueField.setTooltip(Tooltip.create(valueTooltip));
         addRenderableWidget(xValueField);
 
-        yValueField = new WidgetTextFieldNumber(font, guiLeft + 78, guiTop + 185, 38, 10);
+        yValueField = new WidgetTextFieldNumber(font, guiLeft + 78, guiTop + 184, 38, textFieldHeight);
         yValueField.setValue(actionWidget.getEnablingValue().getY());
         yValueField.setTooltip(Tooltip.create(valueTooltip));
         addRenderableWidget(yValueField);
 
-        zValueField = new WidgetTextFieldNumber(font, guiLeft + 136, guiTop + 185, 38, 10);
+        zValueField = new WidgetTextFieldNumber(font, guiLeft + 136, guiTop + 184, 38, textFieldHeight);
         zValueField.setValue(actionWidget.getEnablingValue().getZ());
         zValueField.setTooltip(Tooltip.create(valueTooltip));
         addRenderableWidget(zValueField);
 
         if (actionWidget instanceof IActionWidgetLabeled) {
-            labelField = new WidgetTextField(font, guiLeft + 10, guiTop + 30, 160, 10);
+            labelField = new WidgetTextField(font, guiLeft + 10, guiTop + 29, 160, textFieldHeight);
             labelField.setValue(((IActionWidgetLabeled) actionWidget).getText().getString());
             labelField.setTooltip(Tooltip.create(xlate("pneumaticcraft.gui.remote.label.tooltip")));
             labelField.setMaxLength(1000);
             addRenderableWidget(labelField);
 
-            tooltipField = new WidgetTextField(font, guiLeft + 10, guiTop + 56, 160, 10);
+            tooltipField = new WidgetTextField(font, guiLeft + 10, guiTop + 55, 160, textFieldHeight);
             tooltipField.setValue(actionWidget.getTooltipMessage().getString());
-//            String joined = ((IActionWidgetLabeled) actionWidget).getTooltip().stream()
-//                    .map(Component::getString)
-//                    .collect(Collectors.joining(TOOLTIP_DELIMITER));
-//            tooltipField.setValue(joined);
             addRenderableWidget(tooltipField);
         }
     }
@@ -135,13 +133,8 @@ public class BasicRemoteOptionScreen<A extends ActionWidget<?>> extends Abstract
             ((IActionWidgetLabeled) actionWidget).setText(Component.literal(labelField.getValue()));
             if (tooltipField.getValue().isEmpty()) {
                 actionWidget.setTooltip(null);
-//                ((IActionWidgetLabeled) actionWidget).setTooltip(Collections.emptyList());
             } else {
                 actionWidget.setTooltip(Tooltip.create(Component.literal(tooltipField.getValue())));
-//                List<Component> l = Arrays.stream(tooltipField.getValue().split(TOOLTIP_DELIMITER))
-//                        .map(Component::literal)
-//                        .collect(Collectors.toList());
-//                ((IActionWidgetLabeled) actionWidget).setTooltip(l);
             }
         }
     }

@@ -41,7 +41,7 @@ public class ProgWidgetLiquidImportScreen extends ProgWidgetImportExportScreen<P
         WidgetLabel orderLabel = new WidgetLabel(guiLeft + 8, guiTop + 150, xlate("pneumaticcraft.gui.progWidget.digAndPlace.order"));
         addRenderableWidget(orderLabel);
 
-        orderSelector = new WidgetComboBox(font,guiLeft + 8 + orderLabel.getWidth() + 5, guiTop + 148, 80, 12)
+        orderSelector = new WidgetComboBox(font,guiLeft + 8 + orderLabel.getWidth() + 5, guiTop + 148, 80, font.lineHeight + 3)
                 .initFromEnum(progWidget.getOrder());
         addRenderableWidget(orderSelector);
 

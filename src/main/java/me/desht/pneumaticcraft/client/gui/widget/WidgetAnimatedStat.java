@@ -32,15 +32,12 @@ import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.client.util.TintColor;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import me.desht.pneumaticcraft.mixin.accessors.TooltipAccess;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.EditBox;
-import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -64,6 +61,7 @@ import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class WidgetAnimatedStat extends AbstractWidget implements IGuiAnimatedStat {
     private static final int MIN_WIDTH_HEIGHT = 17;
@@ -76,7 +74,7 @@ public class WidgetAnimatedStat extends AbstractWidget implements IGuiAnimatedSt
     private final Screen gui;
     // the text we want to draw
     private final List<Component> textComponents = new ArrayList<>();
-    // the text which is actually renderered, after having been wrapped to fit the stat's width
+    // the text which is actually rendered, after having been wrapped to fit the stat's width
     private final List<FormattedCharSequence> reorderingProcessors = new ArrayList<>();
     // for each rendered line, should it be drawn with a drop shadow?
     private final List<Boolean> dropShadows = new ArrayList<>();
@@ -503,25 +501,17 @@ public class WidgetAnimatedStat extends AbstractWidget implements IGuiAnimatedSt
             statIcon.render(graphics, renderBaseX, renderAffectedY, leftSided);
         }
 
-        setupTooltip(mouseX, mouseY);
+        graphics.renderTooltip(fontRenderer, makeTooltip(mouseX, mouseY), Optional.empty(), mouseX, mouseY);
     }
 
-    private void setupTooltip(int mouseX, int mouseY) {
+    private List<Component> makeTooltip(int mouseX, int mouseY) {
         List<Component> lines = new ArrayList<>();
         if (mouseIsHoveringOverIcon(mouseX, mouseY)) {
             lines.add(getMessage());
             lines.addAll(getExtraTooltipText());
         }
 
-        for (AbstractWidget widget : subWidgets) {
-            if (widget.isHovered()) {
-                Tooltip tooltip = widget.getTooltip();
-                if (tooltip != null) {
-                    lines.add(((TooltipAccess) tooltip).getMessage());
-                }
-            }
-        }
-        setTooltip(Tooltip.create(PneumaticCraftUtils.combineComponents(lines)));
+        return lines;
     }
 
     @Override

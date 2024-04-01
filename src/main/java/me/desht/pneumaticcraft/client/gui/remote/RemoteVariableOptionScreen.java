@@ -49,7 +49,7 @@ public class RemoteVariableOptionScreen<A extends ActionWidgetVariable<?>> exten
                 .setTooltipKey("pneumaticcraft.gui.remote.varType.tooltip");
         addRenderableWidget(varTypeButton);
 
-        variableField = new WidgetComboBox(font, guiLeft + 23, guiTop + 80, 147, 10);
+        variableField = new WidgetComboBox(font, guiLeft + 23, guiTop + 79, 147, font.lineHeight + 3);
         variableField.setElements(GlobalVariableHelper.extractVarnames(guiRemote.getMenu().variables, playerGlobal));
         variableField.setValue(GlobalVariableHelper.stripVarPrefix(actionWidget.getVariableName()));
         variableField.setTooltip(Tooltip.create(xlate("pneumaticcraft.gui.remote.variable.tooltip")));

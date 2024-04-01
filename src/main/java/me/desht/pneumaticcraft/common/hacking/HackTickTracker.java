@@ -53,10 +53,10 @@ public class HackTickTracker extends SavedData {
                 ResourceLocation id = new ResourceLocation(sub.getString("id"));
                 CommonArmorRegistry.getInstance().getHackableBlockForId(id).ifPresentOrElse(
                         hackable -> hackedBlocks.put(pos, hackable),
-                        () -> Log.error("unknown hackable block ID '%s'", id)
+                        () -> Log.error("unknown hackable block ID '{}'", id)
                 );
             } catch (ResourceLocationException e) {
-                Log.error("invalid hackable block ID '%s'", sub.getString("id"));
+                Log.error("invalid hackable block ID '{}'", sub.getString("id"));
             }
         }
 

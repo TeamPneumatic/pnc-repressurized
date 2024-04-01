@@ -116,7 +116,6 @@ public class ClientEventHandler {
                 event.setNearPlaneDistance(20f);
                 event.setNearPlaneDistance(50f);
                 event.setFogShape(FogShape.SPHERE);
-//                event.setDensity(350f);
                 event.setCanceled(true);
             }
         }
@@ -132,7 +131,6 @@ public class ClientEventHandler {
         }
 
         // custom durability bars
-//        RenderSystem.setShader(GameRenderer::getPositionColorShader);
         AbstractContainerScreen<?> container = event.getContainerScreen();
         PoseStack poseStack = event.getGuiGraphics().pose();
         poseStack.pushPose();

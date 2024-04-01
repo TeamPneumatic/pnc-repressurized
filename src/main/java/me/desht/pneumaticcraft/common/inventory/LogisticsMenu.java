@@ -60,7 +60,7 @@ public class LogisticsMenu extends AbstractPneumaticCraftMenu<AbstractPneumaticC
                 this.logistics = (AbstractLogisticsFrameEntity) e;
             } else {
                 this.logistics = null;
-                Log.error("no logistics frame entity for id %d!", entityId);
+                Log.error("no logistics frame entity for id {}!", entityId);
             }
             this.itemContainer = false;
         }

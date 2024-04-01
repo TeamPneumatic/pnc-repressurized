@@ -60,7 +60,7 @@ public class LegacyAreaWidgetConverter {
     public static AreaType convertFromLegacyFormat(EnumOldAreaType oldType, int typeInfo) {
         String newTypeId = oldFormatToAreaTypes.get(oldType);
         if (newTypeId == null) {
-            Log.error("Legacy import: no area converter found for " + oldType + "! Substituting 'box'.");
+            Log.error("Legacy import: no area converter found for {}! Substituting 'box'.", oldType);
             return new AreaTypeBox();
         } else {
             AreaType type = ProgWidgetArea.createType(newTypeId);

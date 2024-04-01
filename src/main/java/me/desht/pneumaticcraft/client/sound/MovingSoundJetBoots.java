@@ -111,7 +111,7 @@ public class MovingSoundJetBoots extends AbstractTickableSoundInstance {
                     player.position().add(player.getLookAngle().scale(player == ClientUtils.getClientPlayer() ? -4 : -2)) :
                     player.position().add(0, -0.25, 0);
             for (int i = 0; i < nParticles; i++) {
-                player.level().addParticle(AirParticleData.DENSE, feet.x, feet.y, feet.z, jetVec.x, jetVec.y, jetVec.z);
+                ClientUtils.getClientLevel().addParticle(AirParticleData.DENSE, feet.x, feet.y, feet.z, jetVec.x, jetVec.y, jetVec.z);
             }
         }
     }

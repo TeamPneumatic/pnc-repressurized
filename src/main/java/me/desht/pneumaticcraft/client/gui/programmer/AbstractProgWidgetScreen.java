@@ -54,8 +54,6 @@ public abstract class AbstractProgWidgetScreen<P extends IProgWidget> extends Ab
 
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-        renderBackground(graphics, mouseX, mouseY, partialTicks);
-
         super.render(graphics, mouseX, mouseY, partialTicks);
     }
 
@@ -67,7 +65,7 @@ public abstract class AbstractProgWidgetScreen<P extends IProgWidget> extends Ab
     @Override
     public void removed() {
         // Important: when overriding this in subclasses, copy any update gui data into the
-        // progwidget BEFORE calling super.close() !
+        // progwidget BEFORE calling super.removed() !
 
         if (guiProgrammer != null) {
             NetworkHandler.sendToServer(PacketProgrammerSync.forBlockEntity(guiProgrammer.te));

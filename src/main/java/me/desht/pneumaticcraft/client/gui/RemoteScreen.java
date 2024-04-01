@@ -24,7 +24,6 @@ import me.desht.pneumaticcraft.common.block.entity.AbstractPneumaticCraftBlockEn
 import me.desht.pneumaticcraft.common.inventory.RemoteMenu;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
@@ -48,8 +47,7 @@ public class RemoteScreen extends AbstractPneumaticCraftContainerScreen<RemoteMe
      * @param varName variable that changed
      */
     public static void maybeHandleVariableChange(String varName) {
-        Screen screen = Minecraft.getInstance().screen;
-        if (screen instanceof RemoteScreen r) {
+        if (Minecraft.getInstance().screen instanceof RemoteScreen r) {
             r.onGlobalVariableChange(varName);
         }
     }

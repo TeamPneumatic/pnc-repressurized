@@ -63,10 +63,10 @@ public class ActiveEntityHacks implements IActiveEntityHacks, INBTSerializable<C
                 ResourceLocation hackableId = new ResourceLocation(id);
                 CommonArmorRegistry.getInstance().getHackableEntityForId(hackableId).ifPresentOrElse(
                         this::addHackable,
-                        () -> Log.error("entity-hackable '%s' not found when deserializing IHacking capability?", hackableId)
+                        () -> Log.error("entity-hackable '{}' not found when deserializing IHacking capability?", hackableId)
                 );
             } else {
-                Log.error("invalid hackable id '%s': not a resource location", id);
+                Log.error("invalid hackable id '{}': not a resource location", id);
             }
         }
     }

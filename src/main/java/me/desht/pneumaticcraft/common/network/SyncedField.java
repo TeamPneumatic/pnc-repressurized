@@ -71,8 +71,8 @@ public abstract class SyncedField<T> {
                 return !isLazy;
             }
         } catch (Throwable e) {
-            Log.error("A problem occurred when trying to sync the field of " + te.toString() + ". Field: " + field.toString());
-            e.printStackTrace();
+            Log.error("A problem occurred when trying to sync the field of {}. Field: {}, error: {}",
+                    te.toString(), field.toString(), e.getMessage());
         }
         return false;
     }
@@ -110,8 +110,8 @@ public abstract class SyncedField<T> {
                 injectValue(field, te, value);
             }
         } catch (Exception e) {
-            Log.error("A problem occurred when trying to sync the field of " + te.toString() + ". Field: " + field.toString());
-            e.printStackTrace();
+            Log.error("A problem occurred when trying to sync the field of {}. Field: {}, error: {}",
+                    te.toString(), field.toString(), e.getMessage());
         }
     }
 

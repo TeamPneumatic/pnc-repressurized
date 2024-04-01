@@ -214,6 +214,10 @@ tasks.withType(ProcessResources).configureEach {
     }
 }
 
+jar {
+	from sourceSets.api.output
+}
+
 //configurations {
 //	apiImplementation.extendsFrom(implementation)
 //}

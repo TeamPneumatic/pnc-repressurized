@@ -101,7 +101,7 @@ public record PacketSyncSemiblock(int entityID, FriendlyByteBuf payload) impleme
         if (semiBlock != null) {
             semiBlock.readFromBuf(payload);
         } else {
-            Log.warning("PacketSyncSemiblock: did not get expected ISemiBlock entity for entity ID %d", entityID);
+            Log.warning("PacketSyncSemiblock: did not get expected ISemiBlock entity for entity ID {}", entityID);
         }
     }
 }

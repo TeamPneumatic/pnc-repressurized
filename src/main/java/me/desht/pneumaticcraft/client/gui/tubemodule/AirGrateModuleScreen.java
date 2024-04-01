@@ -69,7 +69,7 @@ public class AirGrateModuleScreen extends AbstractTubeModuleScreen<AirGrateModul
         addRenderableWidget(advPCB);
 
         int tx = 12 + filterLabel.getWidth();
-        textfield = new WidgetTextField(font, guiLeft + tx, guiTop + 20, xSize - tx - 10, 10);
+        textfield = new WidgetTextField(font, guiLeft + tx, guiTop + 19, xSize - tx - 10, font.lineHeight + 3);
         textfield.setValue(module.getEntityFilter().toString());
         textfield.setResponder(s -> {
             if (validateEntityFilter(s)) {

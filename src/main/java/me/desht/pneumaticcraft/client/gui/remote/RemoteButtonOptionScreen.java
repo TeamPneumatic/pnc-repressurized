@@ -40,6 +40,8 @@ public class RemoteButtonOptionScreen extends RemoteVariableOptionScreen<ActionW
     public void init() {
         super.init();
 
+        int textFieldHeight = font.lineHeight + 3;
+
         addLabel(xlate("pneumaticcraft.gui.remote.button.settingValue"), guiLeft + 10, guiTop + 95);
         addLabel(Component.literal("X:"), guiLeft + 10, guiTop + 106);
         addLabel(Component.literal("Y:"), guiLeft + 67, guiTop + 106);
@@ -52,28 +54,28 @@ public class RemoteButtonOptionScreen extends RemoteVariableOptionScreen<ActionW
 
         Component valueTooltip = xlate("pneumaticcraft.gui.remote.button.value.tooltip");
 
-        xValueField = new WidgetTextFieldNumber(font, guiLeft + 20, guiTop + 105, 38, 10);
+        xValueField = new WidgetTextFieldNumber(font, guiLeft + 20, guiTop + 104, 38, textFieldHeight);
         xValueField.setValue(actionWidget.settingCoordinate.getX());
         xValueField.setTooltip(Tooltip.create(valueTooltip));
         addRenderableWidget(xValueField);
 
-        yValueField = new WidgetTextFieldNumber(font, guiLeft + 78, guiTop + 105, 38, 10);
+        yValueField = new WidgetTextFieldNumber(font, guiLeft + 78, guiTop + 104, 38, textFieldHeight);
         yValueField.setValue(actionWidget.settingCoordinate.getY());
         yValueField.setTooltip(Tooltip.create(valueTooltip));
         addRenderableWidget(yValueField);
 
-        zValueField = new WidgetTextFieldNumber(font, guiLeft + 136, guiTop + 105, 38, 10);
+        zValueField = new WidgetTextFieldNumber(font, guiLeft + 136, guiTop + 104, 38, textFieldHeight);
         zValueField.setValue(actionWidget.settingCoordinate.getZ());
         zValueField.setTooltip(Tooltip.create(valueTooltip));
         addRenderableWidget(zValueField);
 
-        widthField = new WidgetTextFieldNumber(font, xOff, guiTop + 122, 35, 10)
+        widthField = new WidgetTextFieldNumber(font, xOff, guiTop + 121, 35, textFieldHeight)
                 .setRange(10, Integer.MAX_VALUE).setAdjustments(1, 10);
         widthField.setValue(actionWidget.getWidth());
         widthField.minValue = 10;
         addRenderableWidget(widthField);
 
-        heightField = new WidgetTextFieldNumber(font, xOff, guiTop + 135, 35, 10)
+        heightField = new WidgetTextFieldNumber(font, xOff, guiTop + 134, 35, textFieldHeight)
                 .setRange(10, Integer.MAX_VALUE).setAdjustments(1, 10);
         heightField.setValue(actionWidget.getHeight());
         heightField.minValue = 10;

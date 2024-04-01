@@ -87,7 +87,8 @@ public record PacketMultiHeader(int length, String className) implements CustomP
                 }
             }
         } else {
-            Log.error("Received unexpected multi-message payload from player " + player.getName() + " - " + player.getUUID());
+            Log.error("Received unexpected multi-message payload from player {} - {}",
+                    player.getGameProfile().getName(), player.getUUID());
         }
     }
 

@@ -99,7 +99,9 @@ public class AerialInterfaceScreen extends AbstractPneumaticCraftContainerScreen
                 List<Component> l = new ArrayList<>();
                 l.add(xlate(mode.getTranslationKey()).withStyle(ChatFormatting.YELLOW));
                 l.addAll(GuiUtils.xlateAndSplit(mode.getDescTranslationKey()));
-                Component combined = l.stream().reduce((c1, c2) -> c1.copy().append("\n").append(c2)).orElse(Component.empty());
+                Component combined = l.stream()
+                        .reduce((c1, c2) -> c1.copy().append("\n").append(c2.copy().withStyle(ChatFormatting.WHITE)))
+                        .orElse(Component.empty());
 
                 WidgetButtonExtended button = new WidgetButtonExtended(5 + 25 * i, 20, 20, 20)
                         .withTag(mode.toString())

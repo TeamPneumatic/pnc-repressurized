@@ -48,20 +48,6 @@ public record AmadronTradeResource(Either<ItemStack,FluidStack> resource) {
 
     private enum Type { ITEM, FLUID }
 
-//    private final Either<ItemStack,FluidStack> resource;
-
-//    private AmadronTradeResource(Either<ItemStack,FluidStack> either) {
-//        resource = either;
-//    }
-
-//    private static AmadronTradeResource ofItemStack(@Nonnull ItemStack stack) {
-//        return new AmadronTradeResource(Either.left(stack));
-//    }
-//
-//    private static AmadronTradeResource ofFluidStack(@Nonnull FluidStack stack) {
-//        return new AmadronTradeResource(Either.right(stack));
-//    }
-
     public boolean isEmpty() {
         return resource.map(ItemStack::isEmpty, FluidStack::isEmpty);
     }
@@ -172,49 +158,6 @@ public record AmadronTradeResource(Either<ItemStack,FluidStack> resource) {
         return this;
     }
 
-//    public static AmadronTradeResource fromJson(JsonObject obj) throws CommandSyntaxException {
-//        Type type = Type.valueOf(obj.get("type").getAsString().toUpperCase(Locale.ROOT));
-//        ResourceLocation rl = new ResourceLocation(obj.get("id").getAsString());
-//        int amount = obj.get("amount").getAsInt();
-//        switch (type) {
-//            case ITEM -> {
-//                Item item = BuiltInRegistries.ITEM.getOptional(rl)
-//                        .orElseThrow(() -> new JsonSyntaxException("unknown item " + rl + "!"));
-//                ItemStack itemStack = new ItemStack(item, amount);
-//                if (obj.has("nbt")) {
-//                    itemStack.setTag(TagParser.parseTag(GsonHelper.getAsString(obj, "nbt")));
-//                }
-//                return AmadronTradeResource.of(itemStack);
-//            }
-//            case FLUID -> {
-//                Fluid fluid = BuiltInRegistries.FLUID.getOptional(rl)
-//                        .orElseThrow(() -> new JsonSyntaxException("unknown fluid " + rl + "!"));
-//                FluidStack fluidStack = new FluidStack(fluid, amount);
-//                return new AmadronTradeResource(fluidStack);
-//            }
-//            default -> throw new JsonSyntaxException("amadron offer " + rl + " : invalid type!");
-//        }
-//    }
-
-//    public JsonObject toJson() {
-//        JsonObject res = new JsonObject();
-//        resource.ifLeft(item -> {
-//            res.addProperty("type", Type.ITEM.name());
-//            ResourceLocation id = BuiltInRegistries.ITEM.getKey(item.getItem());
-//            res.addProperty("id", id.toString());
-//            res.addProperty("amount", item.getCount());
-//            if (item.hasTag()) {
-//                res.addProperty("nbt", Objects.requireNonNull(item.getTag()).toString()); //NBTToJsonConverter.getObject(item.getTag()));
-//            }
-//        }).ifRight(fluid -> {
-//            res.addProperty("type", Type.FLUID.name());
-//            ResourceLocation id = BuiltInRegistries.FLUID.getKey(fluid.getFluid());
-//            res.addProperty("id", id.toString());
-//            res.addProperty("amount", fluid.getAmount());
-//        });
-//        return res;
-//    }
-
     public void toNetwork(FriendlyByteBuf pb) {
         resource.ifLeft(pStack -> {
                     pb.writeEnum(Type.ITEM);
@@ -243,19 +186,6 @@ public record AmadronTradeResource(Either<ItemStack,FluidStack> resource) {
     public int getAmount() {
         return resource.map(ItemStack::getCount, FluidStack::getAmount);
     }
-
-//    public CompoundTag writeToNBT() {
-//        CompoundTag tag = new CompoundTag();
-//        resource.ifLeft(itemStack -> {
-//                    tag.putString("type", Type.ITEM.toString());
-//                    tag.put("resource", itemStack.save(new CompoundTag()));
-//                })
-//                .ifRight(fluidStack -> {
-//                    tag.putString("type", Type.FLUID.toString());
-//                    tag.put("resource", fluidStack.writeToNBT(new CompoundTag()));
-//                });
-//        return tag;
-//    }
 
     @Override
     public boolean equals(Object o) {

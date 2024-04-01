@@ -30,7 +30,6 @@ import me.desht.pneumaticcraft.common.registry.ModRecipeTypes;
 import me.desht.pneumaticcraft.common.util.CodecUtil;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.neoforged.neoforge.fluids.FluidStack;
@@ -114,7 +113,7 @@ public class RefineryRecipeImpl extends RefineryRecipe {
 
 		@Override
         public T fromNetwork(FriendlyByteBuf buffer) {
-            FluidIngredient input = (FluidIngredient) Ingredient.fromNetwork(buffer);
+            FluidIngredient input = FluidIngredient.fluidFromNetwork(buffer);
             TemperatureRange range = TemperatureRange.read(buffer);
 			List<FluidStack> outputs = buffer.readList(FluidStack::readFromPacket);
             return factory.create(input, range, outputs);
@@ -122,7 +121,7 @@ public class RefineryRecipeImpl extends RefineryRecipe {
 
         @Override
         public void toNetwork(FriendlyByteBuf buffer, T recipe) {
-			recipe.getInput().toNetwork(buffer);
+			recipe.getInput().fluidToNetwork(buffer);
 			recipe.getOperatingTemp().write(buffer);
 			buffer.writeCollection(recipe.getOutputs(), (buf, fluidStack) -> fluidStack.writeToPacket(buf));
         }

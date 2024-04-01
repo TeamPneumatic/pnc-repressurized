@@ -36,7 +36,7 @@ public class ProgWidgetItemAssignScreen extends AbstractProgWidgetScreen<ProgWid
     public void init() {
         super.init();
 
-        textfield = new WidgetComboBox(font, guiLeft + 10, guiTop + 40, 160, 10);
+        textfield = new WidgetComboBox(font, guiLeft + 10, guiTop + 40, 160, font.lineHeight + 3);
         textfield.setElements(guiProgrammer.te.getAllVariables());
         textfield.setMaxLength(GlobalVariableManager.MAX_VARIABLE_LEN);
         textfield.setValue(progWidget.getVariable());

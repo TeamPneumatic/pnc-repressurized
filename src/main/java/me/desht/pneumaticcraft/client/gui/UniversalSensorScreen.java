@@ -92,12 +92,12 @@ public class UniversalSensorScreen extends AbstractPneumaticCraftContainerScreen
         sensorInfoStat = addAnimatedStat(Component.literal("Sensor Info"), new ItemStack(ModBlocks.UNIVERSAL_SENSOR.get()), 0xFFFFAA00, false);
         sensorInfoStat.setForegroundColor(0xFF000000);
 
-        textField = new WidgetTextField(font, xStart + 70, yStart + 58, 98, 10);
+        textField = new WidgetTextField(font, xStart + 70, yStart + 58, 98, font.lineHeight + 3);
         textField.setMaxLength(MAX_TEXTFIELD_LENGTH);
         textField.setValue(te.getText(0));
         addRenderableWidget(textField);
 
-        comboBox = new WidgetComboBox(font, xStart + 70, yStart + 58, 98, 10);
+        comboBox = new WidgetComboBox(font, xStart + 70, yStart + 58, 98, font.lineHeight + 3);
         comboBox.setMaxLength(MAX_TEXTFIELD_LENGTH);
         comboBox.setValue(te.getText(0));
         addRenderableWidget(comboBox);

@@ -68,7 +68,7 @@ public class UpgradeCache {
             if (stack.getItem() instanceof IUpgradeItem upgradeItem) {
                 PNCUpgrade upgradeType = upgradeItem.getUpgradeType();
                 if (countCache[upgradeType.getCacheId()] != 0) {
-                    Log.warning("found upgrade " + upgradeType + " in multiple slots! Ignoring.");
+                    Log.warning("found upgrade {} in multiple slots! Ignoring.", upgradeType);
                     continue;
                 }
                 countCache[upgradeType.getCacheId()] = (byte)(stack.getCount() * upgradeItem.getUpgradeTier());

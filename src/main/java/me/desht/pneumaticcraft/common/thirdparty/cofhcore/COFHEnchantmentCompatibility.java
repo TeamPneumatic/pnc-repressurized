@@ -23,7 +23,7 @@ public class COFHEnchantmentCompatibility {
         for (Item item : BuiltInRegistries.ITEM) {
             // Allow any pressurizable items to take the CoFH holding enchantment
             if (item instanceof IPressurizableItem) {
-                Log.info("Making item: " + item + " compatible with Holding enchantment.");
+                Log.info("Making item '{}' compatible with Holding enchantment.", item);
 
                 // Sends IMC to CoFH core to add Holding compatibility to item
                 Supplier<Item> sItem = () -> item;
