@@ -6,6 +6,12 @@ Changes are in reverse chronological order; newest changes at the top.
 
 # Minecraft 1.20.1
 
+## [6.0.15]
+
+### Fixed
+* Fixed Pneumatic Armor keybinds not always working after they are initially set up
+* Fixed some outdated manual text regarding Pressure Chamber Interface descriptions
+
 ## [6.0.14]
 
 ### Added
