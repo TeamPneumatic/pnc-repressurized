@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.api.item.IInventoryItem;
-import me.desht.pneumaticcraft.common.block.entity.ReinforcedChestBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.utility.ReinforcedChestBlockEntity;
 import me.desht.pneumaticcraft.common.registry.ModBlocks;
 import me.desht.pneumaticcraft.common.registry.ModItems;
 import net.minecraft.ChatFormatting;

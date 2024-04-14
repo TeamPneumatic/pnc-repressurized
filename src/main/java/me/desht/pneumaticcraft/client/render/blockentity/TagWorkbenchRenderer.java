@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.client.render.blockentity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import me.desht.pneumaticcraft.common.block.entity.TagWorkbenchBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.utility.TagWorkbenchBlockEntity;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;

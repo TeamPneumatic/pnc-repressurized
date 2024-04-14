@@ -23,7 +23,7 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetEnergy;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTemperature;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
-import me.desht.pneumaticcraft.common.block.entity.FluxCompressorBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.compressor.FluxCompressorBlockEntity;
 import me.desht.pneumaticcraft.common.inventory.FluxCompressorMenu;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;

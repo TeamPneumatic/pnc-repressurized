@@ -3,7 +3,7 @@
   "input": {
     "item": "pneumaticcraft:empty_pcb"
   },
-  "program": "LASER",
+  "program": "laser",
   "result": {
     "item": "pneumaticcraft:unassembled_pcb"
   }

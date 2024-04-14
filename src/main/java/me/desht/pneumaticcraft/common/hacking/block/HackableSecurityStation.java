@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.common.hacking.block;
 
 import me.desht.pneumaticcraft.api.pneumatic_armor.hacking.IHackableBlock;
-import me.desht.pneumaticcraft.common.block.entity.SecurityStationBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.utility.SecurityStationBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;

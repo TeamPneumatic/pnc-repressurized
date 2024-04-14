@@ -21,7 +21,7 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTextField;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
-import me.desht.pneumaticcraft.common.block.entity.SentryTurretBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.utility.SentryTurretBlockEntity;
 import me.desht.pneumaticcraft.common.inventory.SentryTurretMenu;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdateTextfield;

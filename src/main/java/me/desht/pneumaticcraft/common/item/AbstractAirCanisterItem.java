@@ -30,7 +30,7 @@ public abstract class AbstractAirCanisterItem extends PressurizableItem {
     public int getMaxStackSize(ItemStack stack) {
         // only completely empty (freshly crafted) canisters may stack
         // this makes it easier for players when needed in a crafting recipe
-        return stack.hasTag() ? 1 : super.getMaxStackSize(stack);
+        return getPressure(stack) > 0f ? 1 : super.getMaxStackSize(stack);
     }
 
     public static class Basic extends AbstractAirCanisterItem {

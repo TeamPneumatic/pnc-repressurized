@@ -141,7 +141,7 @@ public class AmadronAddTradeScreen extends AbstractPneumaticCraftContainerScreen
 
         int coarse = fluidFilters[slot].getFluid() == Fluids.EMPTY ? 10 : 1000;
         int max = fluidFilters[slot].getFluid() == Fluids.EMPTY ? 64 : Integer.MAX_VALUE;
-        amountFields[slot] = new WidgetTextFieldNumber(font, leftPos + 22 + xOffset, topPos + 145, 40, font.lineHeight)
+        amountFields[slot] = new WidgetTextFieldNumber(font, leftPos + 22 + xOffset, topPos + 144, 40, font.lineHeight + 3)
                 .setValue(amountFields[slot] != null ? amountFields[slot].getIntValue() : 1).setRange(1, max).setAdjustments(1, coarse);
         addRenderableWidget(amountFields[slot]);
 

@@ -21,7 +21,7 @@ import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
-import me.desht.pneumaticcraft.common.block.entity.ElectrostaticCompressorBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.compressor.ElectrostaticCompressorBlockEntity;
 import me.desht.pneumaticcraft.common.inventory.ElectrostaticCompressorMenu;
 import me.desht.pneumaticcraft.common.registry.ModBlocks;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -37,7 +37,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import static me.desht.pneumaticcraft.common.block.entity.ElectrostaticCompressorBlockEntity.MAX_ELECTROSTATIC_GRID_SIZE;
+import static me.desht.pneumaticcraft.common.block.entity.compressor.ElectrostaticCompressorBlockEntity.MAX_ELECTROSTATIC_GRID_SIZE;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class ElectrostaticCompressorScreen extends AbstractPneumaticCraftContainerScreen<ElectrostaticCompressorMenu,ElectrostaticCompressorBlockEntity> {

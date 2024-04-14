@@ -9,7 +9,7 @@
       }
     }
   },
-  "program": "LASER",
+  "program": "laser",
   "result": {
     "count": 8,
     "item": "pneumaticcraft:advanced_pressure_tube"

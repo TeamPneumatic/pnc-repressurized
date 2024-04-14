@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.client.gui;
 
-import me.desht.pneumaticcraft.common.block.entity.CreativeCompressorBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.compressor.CreativeCompressorBlockEntity;
 import me.desht.pneumaticcraft.common.inventory.CreativeCompressorMenu;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.network.chat.Component;

@@ -19,7 +19,7 @@ package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.client.ColorHandlers;
 import me.desht.pneumaticcraft.client.gui.AphorismTileScreen;
-import me.desht.pneumaticcraft.common.block.entity.AphorismTileBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.utility.AphorismTileBlockEntity;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.registry.ModBlocks;
 import me.desht.pneumaticcraft.common.registry.ModItems;
@@ -62,8 +62,8 @@ import java.util.List;
 
 import static me.desht.pneumaticcraft.api.lib.NBTKeys.BLOCK_ENTITY_TAG;
 import static me.desht.pneumaticcraft.api.lib.NBTKeys.NBT_EXTRA;
-import static me.desht.pneumaticcraft.common.block.entity.AphorismTileBlockEntity.NBT_BACKGROUND_COLOR;
-import static me.desht.pneumaticcraft.common.block.entity.AphorismTileBlockEntity.NBT_BORDER_COLOR;
+import static me.desht.pneumaticcraft.common.block.entity.utility.AphorismTileBlockEntity.NBT_BACKGROUND_COLOR;
+import static me.desht.pneumaticcraft.common.block.entity.utility.AphorismTileBlockEntity.NBT_BORDER_COLOR;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class AphorismTileBlock extends AbstractPneumaticCraftBlock implements ColorHandlers.ITintableBlock, PneumaticCraftEntityBlock {

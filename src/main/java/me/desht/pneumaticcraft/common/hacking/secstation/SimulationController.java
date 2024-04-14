@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.common.hacking.secstation;
 
-import me.desht.pneumaticcraft.common.block.entity.SecurityStationBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.utility.SecurityStationBlockEntity;
 import me.desht.pneumaticcraft.common.inventory.SecurityStationHackingMenu;
 import me.desht.pneumaticcraft.common.item.NetworkComponentItem;
 import me.desht.pneumaticcraft.common.item.NetworkComponentItem.NetworkComponentType;

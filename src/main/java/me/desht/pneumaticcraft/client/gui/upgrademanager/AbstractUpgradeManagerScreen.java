@@ -30,7 +30,7 @@ import me.desht.pneumaticcraft.client.render.pressure_gauge.PressureGaugeRendere
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
-import me.desht.pneumaticcraft.common.block.entity.ChargingStationBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.utility.ChargingStationBlockEntity;
 import me.desht.pneumaticcraft.common.inventory.ChargingStationUpgradeManagerMenu;
 import me.desht.pneumaticcraft.common.item.ItemRegistry;
 import me.desht.pneumaticcraft.common.upgrades.ApplicableUpgradesDB;

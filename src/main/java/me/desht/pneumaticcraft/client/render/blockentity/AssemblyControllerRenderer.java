@@ -6,7 +6,7 @@ import com.mojang.math.Axis;
 import me.desht.pneumaticcraft.client.model.PNCModelLayers;
 import me.desht.pneumaticcraft.client.render.ModRenderTypes;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
-import me.desht.pneumaticcraft.common.block.entity.AssemblyControllerBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.processing.AssemblyControllerBlockEntity;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;

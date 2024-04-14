@@ -1,8 +1,8 @@
 package me.desht.pneumaticcraft.common.block;
 
-import me.desht.pneumaticcraft.common.block.entity.PressureChamberInterfaceBlockEntity;
-import me.desht.pneumaticcraft.common.block.entity.PressureChamberValveBlockEntity;
-import me.desht.pneumaticcraft.common.block.entity.PressureChamberWallBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.processing.PressureChamberInterfaceBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.processing.PressureChamberValveBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.processing.PressureChamberWallBlockEntity;
 import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
 import me.desht.pneumaticcraft.common.registry.ModBlocks;
 import me.desht.pneumaticcraft.common.registry.ModCriterionTriggers;

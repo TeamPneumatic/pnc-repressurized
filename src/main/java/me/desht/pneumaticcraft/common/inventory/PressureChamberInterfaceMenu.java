@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.common.inventory;
 
-import me.desht.pneumaticcraft.common.block.entity.PressureChamberInterfaceBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.processing.PressureChamberInterfaceBlockEntity;
 import me.desht.pneumaticcraft.common.inventory.slot.UntouchableSlot;
 import me.desht.pneumaticcraft.common.registry.ModMenuTypes;
 import net.minecraft.core.BlockPos;

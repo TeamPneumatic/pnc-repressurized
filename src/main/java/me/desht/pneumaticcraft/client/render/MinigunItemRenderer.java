@@ -18,7 +18,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
-import net.neoforged.neoforge.common.util.NonNullLazy;
+import net.neoforged.neoforge.common.util.Lazy;
 
 import java.util.Objects;
 
@@ -80,7 +80,7 @@ public class MinigunItemRenderer extends BlockEntityWithoutLevelRenderer {
     }
 
     public static class RenderProperties implements IClientItemExtensions {
-        static final NonNullLazy<BlockEntityWithoutLevelRenderer> renderer = NonNullLazy.of(() ->
+        static final Lazy<BlockEntityWithoutLevelRenderer> renderer = Lazy.of(() ->
                 new MinigunItemRenderer(
                         Minecraft.getInstance().getBlockEntityRenderDispatcher(),
                         Minecraft.getInstance().getEntityModels()

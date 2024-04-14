@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.common.block;
 
-import me.desht.pneumaticcraft.common.block.entity.AssemblyIOUnitBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.processing.AssemblyIOUnitBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;

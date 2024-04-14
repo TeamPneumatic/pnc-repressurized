@@ -147,7 +147,6 @@ public abstract class AbstractAirHandlingBlockEntity extends AbstractTickingBloc
     public void initializeHullAirHandlers() {
         invalidateCapabilities();
 
-//        Map<IAirHandlerMachine, EnumSet<Direction>> connections = new IdentityHashMap<>();
         airHandlerMap.clear();
         for (Direction side : DirectionUtil.VALUES) {
             IAirHandlerMachine h = getAirHandler(side);

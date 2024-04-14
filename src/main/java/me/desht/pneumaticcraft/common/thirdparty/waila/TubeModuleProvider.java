@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.common.thirdparty.waila;
 
 import me.desht.pneumaticcraft.common.block.PressureTubeBlock;
-import me.desht.pneumaticcraft.common.block.entity.PressureTubeBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.tube.PressureTubeBlockEntity;
 import me.desht.pneumaticcraft.common.tubemodules.AbstractTubeModule;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;

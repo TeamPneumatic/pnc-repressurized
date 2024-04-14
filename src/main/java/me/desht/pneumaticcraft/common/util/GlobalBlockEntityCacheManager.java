@@ -18,10 +18,10 @@
 package me.desht.pneumaticcraft.common.util;
 
 import me.desht.pneumaticcraft.api.lib.Names;
-import me.desht.pneumaticcraft.common.block.entity.AerialInterfaceBlockEntity;
-import me.desht.pneumaticcraft.common.block.entity.ChargingStationBlockEntity;
-import me.desht.pneumaticcraft.common.block.entity.SecurityStationBlockEntity;
-import me.desht.pneumaticcraft.common.block.entity.UniversalSensorBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.utility.AerialInterfaceBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.utility.ChargingStationBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.utility.SecurityStationBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.utility.UniversalSensorBlockEntity;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.bus.api.SubscribeEvent;

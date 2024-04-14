@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.common.inventory;
 
-import me.desht.pneumaticcraft.common.block.entity.CreativeCompressorBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.compressor.CreativeCompressorBlockEntity;
 import me.desht.pneumaticcraft.common.registry.ModMenuTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;

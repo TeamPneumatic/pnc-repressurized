@@ -40,10 +40,13 @@ public class ProgWidgetDroneConditionItem extends ProgWidgetDroneCondition imple
 
     @Override
     protected int getCount(IDroneBase drone, IProgWidget widget) {
+        if (!(widget instanceof IItemFiltering filtering)) {
+            return 0;
+        }
         int count = 0;
         for (int i = 0; i < drone.getInv().getSlots(); i++) {
             ItemStack droneStack = drone.getInv().getStackInSlot(i);
-            if (((IItemFiltering) widget).isItemValidForFilters(droneStack)) {
+            if (filtering.isItemValidForFilters(droneStack)) {
                 count += droneStack.getCount();
             }
         }

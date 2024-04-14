@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.client.gui;
 
-import me.desht.pneumaticcraft.common.block.entity.CreativeCompressedIronBlockBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.heat.CreativeCompressedIronBlockBlockEntity;
 import me.desht.pneumaticcraft.common.inventory.CreativeCompressedIronBlockMenu;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;

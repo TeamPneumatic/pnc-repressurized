@@ -20,7 +20,7 @@ package me.desht.pneumaticcraft.common.inventory;
 import me.desht.pneumaticcraft.api.item.IProgrammable;
 import me.desht.pneumaticcraft.client.gui.ProgrammerScreen;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
-import me.desht.pneumaticcraft.common.block.entity.ProgrammerBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.drone.ProgrammerBlockEntity;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSendNBTPacket;
 import me.desht.pneumaticcraft.common.registry.ModMenuTypes;

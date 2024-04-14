@@ -19,7 +19,7 @@ package me.desht.pneumaticcraft.client.sound;
 
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
-import me.desht.pneumaticcraft.common.block.entity.SentryTurretBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.utility.SentryTurretBlockEntity;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.entity.drone.DroneEntity;
 import me.desht.pneumaticcraft.common.minigun.Minigun;

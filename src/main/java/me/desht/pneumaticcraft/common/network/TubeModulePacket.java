@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.common.network;
 
-import me.desht.pneumaticcraft.common.block.entity.PressureTubeBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.tube.PressureTubeBlockEntity;
 import me.desht.pneumaticcraft.common.tubemodules.AbstractTubeModule;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.core.BlockPos;

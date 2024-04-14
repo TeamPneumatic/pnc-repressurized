@@ -19,9 +19,9 @@ package me.desht.pneumaticcraft.common.tubemodules;
 
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.client.render.area.AreaRenderManager;
-import me.desht.pneumaticcraft.common.block.entity.HeatSinkBlockEntity;
-import me.desht.pneumaticcraft.common.block.entity.PressureTubeBlockEntity;
 import me.desht.pneumaticcraft.common.block.entity.RangeManager;
+import me.desht.pneumaticcraft.common.block.entity.heat.HeatSinkBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.tube.PressureTubeBlockEntity;
 import me.desht.pneumaticcraft.common.entity.semiblock.AbstractSemiblockEntity;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdatePressureBlock;

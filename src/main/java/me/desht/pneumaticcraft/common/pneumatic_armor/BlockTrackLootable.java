@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.common.pneumatic_armor;
 
-import me.desht.pneumaticcraft.common.block.entity.ReinforcedChestBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.utility.ReinforcedChestBlockEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity;

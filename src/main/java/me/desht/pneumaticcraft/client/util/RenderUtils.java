@@ -35,6 +35,7 @@ import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 
+import java.util.BitSet;
 import java.util.function.BiConsumer;
 
 import static net.minecraft.util.Mth.lerp;
@@ -110,19 +111,21 @@ public class RenderUtils {
 //        GlStateManager.enableTexture();
 //    }
 
-    private static boolean drawSide(byte mask, Direction d1, Direction d2) {
-        return ((mask & 1 << d1.get3DDataValue()) | (mask & 1 << d2.get3DDataValue())) != 0;
+    private static boolean drawSide(BitSet mask, Direction d1, Direction d2) {
+        return mask.get(d1.get3DDataValue()) || mask.get(d2.get3DDataValue());
     }
 
     public static RenderType renderFrame(PoseStack matrixStack, MultiBufferSource buffer, AABB aabb, float fw, float r, float g, float b, float a, int packedLightIn, Direction... sides) {
         RenderType type = ModRenderTypes.BLOCK_FRAME;
         VertexConsumer builder = buffer.getBuffer(type);
         Matrix4f posMat = matrixStack.last().pose();
-        byte mask = 0;
+        BitSet mask = new BitSet(6);
         if (sides.length == 0) {
-            mask = (byte) 0xFF;
+            mask.set(0, 6);
         } else {
-            for (Direction d: sides) mask |= 1 << d.get3DDataValue();
+            for (Direction d: sides) {
+                mask.set(d.get3DDataValue());
+            }
         }
 
         float x1 = (float) aabb.minX;
@@ -196,7 +199,7 @@ public class RenderUtils {
     }
 
     /**
-     * Rotates the render matrix dependant on the rotation of a block. Used by many block entity render methods.
+     * Rotates the render matrix dependent on the rotation of a block. Used by many block entity render methods.
      *
      * @param matrixStack the matrix stack
      * @param facing block facing direction
@@ -318,9 +321,9 @@ public class RenderUtils {
     }
 
     public static void finishBuffer(MultiBufferSource buffer, RenderType type) {
-        if (buffer instanceof MultiBufferSource.BufferSource) {
+        if (buffer instanceof MultiBufferSource.BufferSource mbs) {
             RenderSystem.disableDepthTest();
-            ((MultiBufferSource.BufferSource) buffer).endBatch(type);
+            mbs.endBatch(type);
         }
     }
 

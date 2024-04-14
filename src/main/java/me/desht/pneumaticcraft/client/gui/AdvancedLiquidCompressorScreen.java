@@ -21,7 +21,7 @@ import me.desht.pneumaticcraft.api.crafting.TemperatureRange;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTemperature;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
-import me.desht.pneumaticcraft.common.block.entity.AdvancedLiquidCompressorBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.compressor.AdvancedLiquidCompressorBlockEntity;
 import me.desht.pneumaticcraft.common.inventory.LiquidCompressorMenu;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.network.chat.Component;

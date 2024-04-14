@@ -21,7 +21,7 @@ import me.desht.pneumaticcraft.client.gui.widget.PNCForgeSlider;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.block.UVLightBoxBlock;
-import me.desht.pneumaticcraft.common.block.entity.UVLightBoxBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.processing.UVLightBoxBlockEntity;
 import me.desht.pneumaticcraft.common.inventory.UVLightBoxMenu;
 import me.desht.pneumaticcraft.common.registry.ModBlocks;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;

@@ -19,7 +19,7 @@ package me.desht.pneumaticcraft.client.sound;
 
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.lib.Names;
-import me.desht.pneumaticcraft.common.block.entity.ElevatorBaseBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.elevator.ElevatorBaseBlockEntity;
 import me.desht.pneumaticcraft.common.entity.drone.DroneEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;

@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.common.network;
 
-import me.desht.pneumaticcraft.common.block.entity.SmartChestBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.utility.SmartChestBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;

@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.common.block;
 
-import me.desht.pneumaticcraft.common.block.entity.DisplayTableBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.utility.DisplayTableBlockEntity;
 import me.desht.pneumaticcraft.common.registry.ModBlocks;
 import me.desht.pneumaticcraft.common.thirdparty.ModdedWrenchUtils;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;

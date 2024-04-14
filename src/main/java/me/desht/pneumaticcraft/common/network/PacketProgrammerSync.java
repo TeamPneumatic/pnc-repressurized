@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.common.network;
 
 import io.netty.buffer.Unpooled;
-import me.desht.pneumaticcraft.common.block.entity.ProgrammerBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.drone.ProgrammerBlockEntity;
 import me.desht.pneumaticcraft.common.drone.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.drone.progwidgets.WidgetSerializer;
 import net.minecraft.Util;

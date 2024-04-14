@@ -22,7 +22,7 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetLabel;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTextField;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
-import me.desht.pneumaticcraft.common.block.entity.ElevatorBaseBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.elevator.ElevatorBaseBlockEntity;
 import me.desht.pneumaticcraft.common.inventory.ElevatorMenu;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdateTextfield;

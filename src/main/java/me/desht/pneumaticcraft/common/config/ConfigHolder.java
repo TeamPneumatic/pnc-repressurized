@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.common.config;
 
 import me.desht.pneumaticcraft.client.pneumatic_armor.ClientArmorRegistry;
-import me.desht.pneumaticcraft.common.block.entity.AerialInterfaceBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.utility.AerialInterfaceBlockEntity;
 import me.desht.pneumaticcraft.common.worldgen.OilLakeFilter;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModLoadingContext;

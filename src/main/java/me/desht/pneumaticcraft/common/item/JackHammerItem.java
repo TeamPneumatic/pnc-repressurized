@@ -24,7 +24,7 @@ import me.desht.pneumaticcraft.api.data.PneumaticCraftTags;
 import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.client.ColorHandlers;
 import me.desht.pneumaticcraft.client.sound.MovingSounds;
-import me.desht.pneumaticcraft.common.block.entity.ChargingStationBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.utility.ChargingStationBlockEntity;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.inventory.AbstractPneumaticCraftMenu;
 import me.desht.pneumaticcraft.common.inventory.JackhammerSetupMenu;

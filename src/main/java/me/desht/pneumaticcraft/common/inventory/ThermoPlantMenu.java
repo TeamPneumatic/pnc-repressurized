@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.common.inventory;
 
-import me.desht.pneumaticcraft.common.block.entity.ThermoPlantBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.processing.ThermoPlantBlockEntity;
 import me.desht.pneumaticcraft.common.inventory.slot.OutputOnlySlot;
 import me.desht.pneumaticcraft.common.inventory.slot.UpgradeSlot;
 import me.desht.pneumaticcraft.common.registry.ModMenuTypes;

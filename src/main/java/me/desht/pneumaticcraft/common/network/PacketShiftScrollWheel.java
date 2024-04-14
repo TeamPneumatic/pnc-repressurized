@@ -53,7 +53,7 @@ public record PacketShiftScrollWheel(boolean forward, InteractionHand hand) impl
 
     public static void handle(PacketShiftScrollWheel message, PlayPayloadContext ctx) {
         ctx.player().ifPresent(player -> ctx.workHandler().submitAsync(() -> {
-            ItemStack stack = player.getMainHandItem();
+            ItemStack stack = player.getItemInHand(message.hand());
             if (stack.getItem() instanceof IShiftScrollable ss) {
                 ss.onShiftScrolled(player, message.forward(), message.hand());
             }

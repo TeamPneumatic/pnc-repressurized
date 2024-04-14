@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.common.network;
 
-import me.desht.pneumaticcraft.common.block.entity.ProgrammableControllerBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.drone.ProgrammableControllerBlockEntity;
 import me.desht.pneumaticcraft.common.drone.IDroneBase;
 import me.desht.pneumaticcraft.common.entity.drone.DroneEntity;
 import net.minecraft.core.BlockPos;

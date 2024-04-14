@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.common.inventory;
 
-import me.desht.pneumaticcraft.common.block.entity.LiquidCompressorBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.compressor.LiquidCompressorBlockEntity;
 import me.desht.pneumaticcraft.common.inventory.slot.FluidContainerSlot;
 import me.desht.pneumaticcraft.common.inventory.slot.OutputOnlySlot;
 import me.desht.pneumaticcraft.common.registry.ModMenuTypes;

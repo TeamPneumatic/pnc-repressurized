@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.common.block;
 
-import me.desht.pneumaticcraft.common.block.entity.UniversalSensorBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.utility.UniversalSensorBlockEntity;
 import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
 import me.desht.pneumaticcraft.common.registry.ModBlocks;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;

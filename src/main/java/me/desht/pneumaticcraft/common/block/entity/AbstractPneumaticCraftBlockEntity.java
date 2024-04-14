@@ -187,7 +187,7 @@ public abstract class AbstractPneumaticCraftBlockEntity extends BlockEntity
     /**
      * A way to safely mark a block for an update from another thread (like the CC Lua thread).
      */
-    void scheduleDescriptionPacket() {
+    protected void scheduleDescriptionPacket() {
         forceFullSync = true;
     }
 
@@ -258,7 +258,7 @@ public abstract class AbstractPneumaticCraftBlockEntity extends BlockEntity
         invalidateCapabilities();
     }
 
-    void rerenderTileEntity() {
+    protected void forceBlockEntityRerender() {
         if (level != null) {
             level.sendBlockUpdated(getBlockPos(), getBlockState(), getBlockState(), 0);
         }
@@ -347,7 +347,7 @@ public abstract class AbstractPneumaticCraftBlockEntity extends BlockEntity
     @Override
     public void onDescUpdate() {
         if (shouldRerenderChunkOnDescUpdate()) {
-            rerenderTileEntity();
+            forceBlockEntityRerender();
             if (this instanceof CamouflageableBlockEntity) requestModelDataUpdate();
         }
     }
@@ -436,7 +436,7 @@ public abstract class AbstractPneumaticCraftBlockEntity extends BlockEntity
      * @param inputSlot input slot
      * @param outputSlot output slot
      */
-    void processFluidItem(int inputSlot, int outputSlot) {
+    protected void processFluidItem(int inputSlot, int outputSlot) {
         IOHelper.getInventoryForBlock(this).ifPresent(itemHandler -> {
             ItemStack inputStack = itemHandler.getStackInSlot(inputSlot);
             ItemStack outputStack = itemHandler.getStackInSlot(outputSlot);

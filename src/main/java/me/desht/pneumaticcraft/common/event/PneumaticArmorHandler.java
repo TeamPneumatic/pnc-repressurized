@@ -276,12 +276,12 @@ public class PneumaticArmorHandler {
     @SubscribeEvent
     public void onPlayerTrack(PlayerEvent.StartTracking event) {
         // keep other players up to date with the state of each player's jetboots activity
-        if (event.getEntity() instanceof ServerPlayer && event.getTarget() instanceof ServerPlayer trackedPlayer) {
+        if (event.getEntity() instanceof ServerPlayer sp && event.getTarget() instanceof ServerPlayer trackedPlayer) {
             if (trackedPlayer.getItemBySlot(EquipmentSlot.FEET).getItem() == ModItems.PNEUMATIC_BOOTS.get()) {
                 CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(trackedPlayer);
                 if (handler.getUpgradeCount(EquipmentSlot.FEET, ModUpgrades.JET_BOOTS.get()) > 0) {
                     JetBootsState state = JetBootsStateTracker.getServerTracker().getJetBootsState(trackedPlayer);
-                    NetworkHandler.sendToPlayer(new PacketJetBootsStateSync(trackedPlayer.getUUID(), state), (ServerPlayer) event.getEntity());
+                    NetworkHandler.sendToPlayer(new PacketJetBootsStateSync(trackedPlayer.getUUID(), state), sp);
                 }
             }
         }

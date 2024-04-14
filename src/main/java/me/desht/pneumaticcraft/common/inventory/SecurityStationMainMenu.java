@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.common.inventory;
 
 import me.desht.pneumaticcraft.client.gui.SecurityStationInventoryScreen;
-import me.desht.pneumaticcraft.common.block.entity.SecurityStationBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.utility.SecurityStationBlockEntity;
 import me.desht.pneumaticcraft.common.inventory.slot.ItemFilteredSlot;
 import me.desht.pneumaticcraft.common.item.NetworkComponentItem;
 import me.desht.pneumaticcraft.common.registry.ModMenuTypes;

@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.client.render.fluid;
 
-import me.desht.pneumaticcraft.common.block.entity.AdvancedLiquidCompressorBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.compressor.AdvancedLiquidCompressorBlockEntity;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.core.Direction;
 import net.minecraft.world.phys.AABB;

@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.api.lib.NBTKeys;
-import me.desht.pneumaticcraft.common.block.entity.SentryTurretBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.utility.SentryTurretBlockEntity;
 import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
 import me.desht.pneumaticcraft.common.registry.ModBlocks;
 import net.minecraft.ChatFormatting;

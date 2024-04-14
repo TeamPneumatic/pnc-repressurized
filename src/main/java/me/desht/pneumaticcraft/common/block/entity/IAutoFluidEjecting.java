@@ -28,7 +28,7 @@ import net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction;
 
 import static net.neoforged.neoforge.fluids.FluidType.BUCKET_VOLUME;
 
-interface IAutoFluidEjecting {
+public interface IAutoFluidEjecting {
     default void autoExportFluid(AbstractPneumaticCraftBlockEntity te) {
         IOHelper.getFluidHandlerForBlock(te).ifPresent(handler -> {
             FluidStack toDrain = handler.drain(BUCKET_VOLUME, FluidAction.SIMULATE);

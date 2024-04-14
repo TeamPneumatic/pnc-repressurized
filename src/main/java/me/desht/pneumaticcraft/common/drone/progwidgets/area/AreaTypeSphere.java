@@ -93,20 +93,20 @@ public class AreaTypeSphere extends AreaType{
     }
 
     @Override
+    public void readFromNBT(CompoundTag tag){
+        super.readFromNBT(tag);
+        sphereType = EnumSphereType.values()[tag.getByte("sphereType")];
+    }
+
+    @Override
     public void writeToPacket(FriendlyByteBuf buffer) {
         super.writeToPacket(buffer);
-        buffer.writeByte(sphereType.ordinal());
+        buffer.writeEnum(sphereType);
     }
 
     @Override
     public void readFromPacket(FriendlyByteBuf buf) {
         super.readFromPacket(buf);
-        sphereType = EnumSphereType.values()[buf.readByte()];
-    }
-
-    @Override
-    public void readFromNBT(CompoundTag tag){
-        super.readFromNBT(tag);
-        sphereType = EnumSphereType.values()[tag.getByte("sphereType")];
+        sphereType = buf.readEnum(EnumSphereType.class);
     }
 }

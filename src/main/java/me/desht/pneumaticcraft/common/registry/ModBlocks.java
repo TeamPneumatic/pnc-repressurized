@@ -2,9 +2,9 @@ package me.desht.pneumaticcraft.common.registry;
 
 import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.common.block.*;
-import me.desht.pneumaticcraft.common.block.entity.AdvancedPressureTubeBlockEntity;
-import me.desht.pneumaticcraft.common.block.entity.PressureTubeBlockEntity;
-import me.desht.pneumaticcraft.common.block.entity.ReinforcedPressureTubeBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.tube.AdvancedPressureTubeBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.tube.PressureTubeBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.tube.ReinforcedPressureTubeBlockEntity;
 import me.desht.pneumaticcraft.common.thirdparty.computer_common.DroneInterfaceBlock;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.DyeColor;

@@ -18,8 +18,8 @@
 package me.desht.pneumaticcraft.common.drone.ai;
 
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
-import me.desht.pneumaticcraft.common.block.entity.ChargingStationBlockEntity;
-import me.desht.pneumaticcraft.common.block.entity.SecurityStationBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.utility.ChargingStationBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.utility.SecurityStationBlockEntity;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.drone.DroneClaimManager;
 import me.desht.pneumaticcraft.common.entity.drone.DroneEntity;

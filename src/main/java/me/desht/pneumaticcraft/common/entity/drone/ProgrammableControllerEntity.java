@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.common.entity.drone;
 
-import me.desht.pneumaticcraft.common.block.entity.ProgrammableControllerBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.drone.ProgrammableControllerBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.damagesource.DamageSource;

@@ -23,7 +23,7 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetCheckBox;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetEnergy;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
-import me.desht.pneumaticcraft.common.block.entity.ProgrammableControllerBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.drone.ProgrammableControllerBlockEntity;
 import me.desht.pneumaticcraft.common.drone.IDroneBase;
 import me.desht.pneumaticcraft.common.inventory.ProgrammableControllerMenu;
 import me.desht.pneumaticcraft.common.registry.ModItems;

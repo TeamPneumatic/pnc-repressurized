@@ -21,7 +21,7 @@ import com.google.common.collect.ImmutableSet;
 import me.desht.pneumaticcraft.api.misc.RangedInt;
 import me.desht.pneumaticcraft.api.universal_sensor.*;
 import me.desht.pneumaticcraft.api.upgrade.PNCUpgrade;
-import me.desht.pneumaticcraft.common.block.entity.UniversalSensorBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.utility.UniversalSensorBlockEntity;
 import me.desht.pneumaticcraft.common.sensor.eventSensors.BlockInteractSensor;
 import me.desht.pneumaticcraft.common.sensor.eventSensors.PlayerAttackSensor;
 import me.desht.pneumaticcraft.common.sensor.eventSensors.PlayerItemPickupSensor;

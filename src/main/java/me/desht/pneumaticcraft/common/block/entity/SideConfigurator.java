@@ -63,7 +63,7 @@ public class SideConfigurator<T> implements INBTSerializable<CompoundTag> {
      * @param id a unique string for this configurator's title (I18n: gui.sideConfigurator.title.&lt;titleKey&gt;)
      * @param sideConfigurable the owning object
      */
-    SideConfigurator(String id, ISideConfigurable sideConfigurable) {
+    public SideConfigurator(String id, ISideConfigurable sideConfigurable) {
         this.id = id;
         this.sideConfigurable = sideConfigurable;
         entries.add(null);  // null represents "unconnected"
@@ -82,29 +82,6 @@ public class SideConfigurator<T> implements INBTSerializable<CompoundTag> {
         idxMap.put(id, entries.size() - 1);
         return setDefaultSides(defaultRelativeFaces);
     }
-//
-//    public void unregisterHandlers(Predicate<String> idMatcher) {
-//        List<ConnectionEntry<T>> newEntries = new ArrayList<>();
-//
-//        for (String id : idxMap.keySet()) {
-//            if (!idMatcher.test(id)) {
-//                newEntries.add(entries.get(idxMap.get(id)));
-//            }
-//        }
-//
-//        entries.clear();
-//        entries.addAll(newEntries);
-//        idxMap.clear();
-//        for (int i = 0; i < entries.size(); i++) {
-//            idxMap.put(entries.get(i).id, i);
-//        }
-//    }
-
-//    public void invalidateCaps() {
-//        for (ConnectionEntry<T> e : entries) {
-//            if (e != null && e.lazy != null) e.lazy.invalidate();
-//        }
-//    }
 
     private int setDefaultSides(RelativeFace... defaultRelativeFaces) {
         Validate.isTrue(entries.size() <= Byte.MAX_VALUE, "No more than " + Byte.MAX_VALUE + " entries allowed");
@@ -116,7 +93,7 @@ public class SideConfigurator<T> implements INBTSerializable<CompoundTag> {
         return idx;
     }
 
-    void setNullFaceHandler(String id) {
+    public void setNullFaceHandler(String id) {
         nullFaceHandler = entries.get(idxMap.get(id)).handler;
     }
 
@@ -124,20 +101,12 @@ public class SideConfigurator<T> implements INBTSerializable<CompoundTag> {
         return !Arrays.equals(faces, defaultFaces);
     }
 
-    void updateHandler(String id, Supplier<T> handler) {
+    public void updateHandler(String id, Supplier<T> handler) {
         int idx = idxMap.get(id);
         ConnectionEntry<T> e = entries.get(idx);
         entries.set(idx, new ConnectionEntry<>(e.id, e.texture, e.cap, handler));
         setNullFaceHandler(id);
     }
-
-//    public byte[] getFaces() {
-//        return faces;
-//    }
-//
-//    public void setFaces(byte[] faces) {
-//        System.arraycopy(faces, 0, this.faces, 0, this.faces.length);
-//    }
 
     public boolean handleButtonPress(String tag, boolean hasShiftDown) {
         if (tag.startsWith(BASE_BUTTON_TAG)) {
@@ -181,7 +150,7 @@ public class SideConfigurator<T> implements INBTSerializable<CompoundTag> {
         return "pneumaticcraft.gui.sideConfigurator.title." + id;
     }
 
-    T getHandler(Direction facing) {
+    public T getHandler(Direction facing) {
         if (facing == null) return nullFaceHandler.get();
         ConnectionEntry<T> c = entries.get(faces[getRelativeFace(facing).ordinal()]);
         return c == null ? null : c.handler.get();

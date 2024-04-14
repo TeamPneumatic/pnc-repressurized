@@ -3,7 +3,7 @@
   "input": {
     "item": "pneumaticcraft:compressed_iron_block"
   },
-  "program": "DRILL",
+  "program": "drill",
   "result": {
     "count": 20,
     "item": "pneumaticcraft:pressure_chamber_valve"

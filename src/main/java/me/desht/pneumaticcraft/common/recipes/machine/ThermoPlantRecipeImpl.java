@@ -73,9 +73,6 @@ public class ThermoPlantRecipeImpl extends ThermoPlantRecipe {
         boolean fluidOK = inputFluid.map(ingr -> ingr.testFluid(fluidStack.getFluid())).orElse(fluidStack.isEmpty());
 
         return itemOK && fluidOK;
-
-//        return (inputFluid.isEmpty() && fluidStack.isEmpty() || inputFluid.testFluid(fluidStack.getFluid()))
-//                && (inputItem.isEmpty() && itemStack.isEmpty() || inputItem.test(itemStack));
     }
 
     @Override

@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.common.recipes.assembly;
 
 import me.desht.pneumaticcraft.api.crafting.recipe.AssemblyRecipe;
-import me.desht.pneumaticcraft.common.block.entity.AssemblyControllerBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.processing.AssemblyControllerBlockEntity;
 import me.desht.pneumaticcraft.common.item.AssemblyProgramItem;
 import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.registry.ModRecipeTypes;

@@ -19,7 +19,7 @@ package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.api.item.IInventoryItem;
 import me.desht.pneumaticcraft.api.lib.NBTKeys;
-import me.desht.pneumaticcraft.common.block.entity.SmartChestBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.utility.SmartChestBlockEntity;
 import me.desht.pneumaticcraft.common.registry.ModBlocks;
 import me.desht.pneumaticcraft.common.registry.ModItems;
 import net.minecraft.ChatFormatting;

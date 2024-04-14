@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.common.inventory.handler;
 
 import me.desht.pneumaticcraft.api.upgrade.PNCUpgrade;
-import me.desht.pneumaticcraft.common.block.entity.ChargingStationBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.utility.ChargingStationBlockEntity;
 import me.desht.pneumaticcraft.common.upgrades.ApplicableUpgradesDB;
 import me.desht.pneumaticcraft.common.util.NBTUtils;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;

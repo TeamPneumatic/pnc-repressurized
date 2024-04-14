@@ -23,7 +23,7 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetLabel;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTank;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
-import me.desht.pneumaticcraft.common.block.entity.KeroseneLampBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.utility.KeroseneLampBlockEntity;
 import me.desht.pneumaticcraft.common.inventory.KeroseneLampMenu;
 import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.lib.Textures;

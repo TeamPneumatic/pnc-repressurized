@@ -19,7 +19,7 @@ package me.desht.pneumaticcraft.common.drone;
 
 import com.google.common.collect.Lists;
 import me.desht.pneumaticcraft.api.drone.IPathNavigator;
-import me.desht.pneumaticcraft.common.block.entity.SecurityStationBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.utility.SecurityStationBlockEntity;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.entity.drone.DroneEntity;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;

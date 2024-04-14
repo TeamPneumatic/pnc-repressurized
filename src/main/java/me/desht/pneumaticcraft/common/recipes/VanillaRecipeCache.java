@@ -34,8 +34,10 @@ import java.util.Optional;
  * Currently used for vanilla crafting and smelting recipes.
  */
 public class VanillaRecipeCache<T extends RecipeType<R>, R extends Recipe<C>, C extends Container> {
-    public static final VanillaRecipeCache<RecipeType<CraftingRecipe>, CraftingRecipe, CraftingContainer> CRAFTING = new VanillaRecipeCache<>(RecipeType.CRAFTING, true);
-    public static final VanillaRecipeCache<RecipeType<SmeltingRecipe>, SmeltingRecipe, Container> SMELTING = new VanillaRecipeCache<>(RecipeType.SMELTING, false);
+    public static final VanillaRecipeCache<RecipeType<CraftingRecipe>, CraftingRecipe, CraftingContainer> CRAFTING
+            = new VanillaRecipeCache<>(RecipeType.CRAFTING, true);
+    public static final VanillaRecipeCache<RecipeType<SmeltingRecipe>, SmeltingRecipe, Container> SMELTING
+            = new VanillaRecipeCache<>(RecipeType.SMELTING, false);
 
     private static final int MAX_CACHE_SIZE = 1024;
 

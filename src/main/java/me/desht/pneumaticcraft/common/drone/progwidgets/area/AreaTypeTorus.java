@@ -217,14 +217,14 @@ public class AreaTypeTorus extends AreaType {
     @Override
     public void writeToPacket(FriendlyByteBuf buffer) {
         super.writeToPacket(buffer);
-        buffer.writeByte(axis.ordinal());
-        buffer.writeByte(torusType.ordinal());
+        buffer.writeEnum(axis);
+        buffer.writeEnum(torusType);
     }
 
     @Override
     public void readFromPacket(FriendlyByteBuf buf) {
         super.readFromPacket(buf);
-        axis = EnumAxis.values()[buf.readByte()];
-        torusType = EnumTorusType.values()[buf.readByte()];
+        axis = buf.readEnum(EnumAxis.class);
+        torusType = buf.readEnum(EnumTorusType.class);
     }
 }

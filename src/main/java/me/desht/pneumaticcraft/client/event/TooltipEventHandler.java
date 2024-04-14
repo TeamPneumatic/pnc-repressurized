@@ -26,7 +26,7 @@ import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.api.misc.Symbols;
 import me.desht.pneumaticcraft.client.gui.IGuiDrone;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
-import me.desht.pneumaticcraft.common.block.entity.ProgrammerBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.drone.ProgrammerBlockEntity;
 import me.desht.pneumaticcraft.common.drone.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.item.ICustomTooltipName;
 import me.desht.pneumaticcraft.common.item.MicromissilesItem;

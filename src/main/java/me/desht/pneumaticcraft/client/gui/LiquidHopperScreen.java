@@ -23,7 +23,7 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTank;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
-import me.desht.pneumaticcraft.common.block.entity.LiquidHopperBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.hopper.LiquidHopperBlockEntity;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.inventory.LiquidHopperMenu;
 import me.desht.pneumaticcraft.common.registry.ModBlocks;

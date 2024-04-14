@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.client.gui;
 
-import me.desht.pneumaticcraft.common.block.entity.ReinforcedChestBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.utility.ReinforcedChestBlockEntity;
 import me.desht.pneumaticcraft.common.inventory.ReinforcedChestMenu;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.network.chat.Component;

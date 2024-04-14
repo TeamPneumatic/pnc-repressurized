@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.client.render.fluid;
 
 import com.google.common.collect.ImmutableList;
-import me.desht.pneumaticcraft.common.block.entity.LiquidHopperBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.hopper.LiquidHopperBlockEntity;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.core.Direction;

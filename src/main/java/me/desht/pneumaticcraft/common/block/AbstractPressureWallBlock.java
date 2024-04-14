@@ -19,8 +19,8 @@ package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.api.block.PNCBlockStateProperties;
 import me.desht.pneumaticcraft.api.block.PressureChamberWallState;
-import me.desht.pneumaticcraft.common.block.entity.PressureChamberValveBlockEntity;
-import me.desht.pneumaticcraft.common.block.entity.PressureChamberWallBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.processing.PressureChamberValveBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.processing.PressureChamberWallBlockEntity;
 import me.desht.pneumaticcraft.common.registry.ModCriterionTriggers;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.core.BlockPos;

@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.common.inventory;
 
 import me.desht.pneumaticcraft.api.item.IPositionProvider;
-import me.desht.pneumaticcraft.common.block.entity.AirCannonBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.utility.AirCannonBlockEntity;
 import me.desht.pneumaticcraft.common.inventory.slot.ItemFilteredSlot;
 import me.desht.pneumaticcraft.common.registry.ModMenuTypes;
 import net.minecraft.core.BlockPos;

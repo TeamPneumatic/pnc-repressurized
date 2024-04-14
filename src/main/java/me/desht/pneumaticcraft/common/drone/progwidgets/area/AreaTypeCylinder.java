@@ -165,15 +165,15 @@ public class AreaTypeCylinder extends AreaType {
     @Override
     public void writeToPacket(FriendlyByteBuf buffer) {
         super.writeToPacket(buffer);
-        buffer.writeByte(axis.ordinal());
-        buffer.writeByte(cylinderType.ordinal());
+        buffer.writeEnum(axis);
+        buffer.writeEnum(cylinderType);
     }
 
     @Override
     public void readFromPacket(FriendlyByteBuf buf) {
         super.readFromPacket(buf);
-        axis = EnumAxis.values()[buf.readByte()];
-        cylinderType = EnumCylinderType.values()[buf.readByte()];
+        axis = buf.readEnum(EnumAxis.class);
+        cylinderType = buf.readEnum(EnumCylinderType.class);
     }
 
     @Override

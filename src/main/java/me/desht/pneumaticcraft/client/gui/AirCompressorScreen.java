@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.client.gui;
 
 import me.desht.pneumaticcraft.client.util.GuiUtils;
-import me.desht.pneumaticcraft.common.block.entity.AirCompressorBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.compressor.AirCompressorBlockEntity;
 import me.desht.pneumaticcraft.common.inventory.AirCompressorMenu;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;

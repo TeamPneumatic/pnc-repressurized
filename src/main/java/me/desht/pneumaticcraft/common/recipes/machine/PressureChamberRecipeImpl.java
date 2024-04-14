@@ -172,7 +172,7 @@ public class PressureChamberRecipeImpl extends PressureChamberRecipe {
             this.factory = factory;
             this.codec = RecordCodecBuilder.create(builder -> builder.group(
                     StackedIngredient.CODEC.listOf().fieldOf("inputs").forGetter(PressureChamberRecipe::getInputs),
-                    Codec.FLOAT.fieldOf("pressure").forGetter(PressureChamberRecipe::getPressure),
+                    Codec.floatRange(-1f, 5f).fieldOf("pressure").forGetter(PressureChamberRecipe::getPressure),
                     ItemStack.ITEM_WITH_COUNT_CODEC.listOf().fieldOf("results").forGetter(PressureChamberRecipe::getOutputs)
             ).apply(builder, factory::create));
         }

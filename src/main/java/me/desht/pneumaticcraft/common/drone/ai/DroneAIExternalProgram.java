@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.common.drone.ai;
 
 import me.desht.pneumaticcraft.api.item.IProgrammable;
-import me.desht.pneumaticcraft.common.block.entity.ProgrammerBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.drone.ProgrammerBlockEntity;
 import me.desht.pneumaticcraft.common.drone.IDroneBase;
 import me.desht.pneumaticcraft.common.drone.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetExternalProgram;

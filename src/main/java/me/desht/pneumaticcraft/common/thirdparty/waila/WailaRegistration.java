@@ -20,7 +20,7 @@ package me.desht.pneumaticcraft.common.thirdparty.waila;
 import me.desht.pneumaticcraft.common.block.AbstractPneumaticCraftBlock;
 import me.desht.pneumaticcraft.common.block.PressureTubeBlock;
 import me.desht.pneumaticcraft.common.block.entity.AbstractPneumaticCraftBlockEntity;
-import me.desht.pneumaticcraft.common.block.entity.PressureTubeBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.tube.PressureTubeBlockEntity;
 import me.desht.pneumaticcraft.common.entity.semiblock.AbstractSemiblockEntity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.block.Block;

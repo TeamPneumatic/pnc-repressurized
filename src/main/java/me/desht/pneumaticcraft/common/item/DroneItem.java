@@ -19,8 +19,8 @@ package me.desht.pneumaticcraft.common.item;
 
 import me.desht.pneumaticcraft.api.item.IProgrammable;
 import me.desht.pneumaticcraft.client.ColorHandlers;
-import me.desht.pneumaticcraft.common.block.entity.ChargingStationBlockEntity;
-import me.desht.pneumaticcraft.common.block.entity.ProgrammerBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.drone.ProgrammerBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.utility.ChargingStationBlockEntity;
 import me.desht.pneumaticcraft.common.entity.drone.DroneEntity;
 import me.desht.pneumaticcraft.common.registry.ModCriterionTriggers;
 import me.desht.pneumaticcraft.common.registry.ModItems;

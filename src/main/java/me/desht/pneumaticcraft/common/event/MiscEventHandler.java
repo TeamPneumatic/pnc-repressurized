@@ -26,8 +26,8 @@ import me.desht.pneumaticcraft.api.drone.DroneConstructingEvent;
 import me.desht.pneumaticcraft.api.item.IPositionProvider;
 import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.api.semiblock.ISemiBlock;
-import me.desht.pneumaticcraft.common.block.entity.ProgrammerBlockEntity;
-import me.desht.pneumaticcraft.common.block.entity.VacuumTrapBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.drone.ProgrammerBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.spawning.VacuumTrapBlockEntity;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.drone.DroneClaimManager;
 import me.desht.pneumaticcraft.common.drone.IDroneBase;
@@ -107,8 +107,6 @@ public class MiscEventHandler {
 
             if ((event.level.getGameTime() & 0x7f) == 0 && needsTPSSync.contains(event.level.dimension().location())) {
                 double tickTime = event.level.getServer().getAverageTickTimeNanos() / 1_000_000D;
-                        //PneumaticCraftUtils.average(ServerLifecycleHooks.getCurrentServer().tickTimes) * 1.0E-6D;
-                // In case world are going to get their own thread: MinecraftServer.getServer().worldTickTimes.get(event.world.provider.getDimension())
                 NetworkHandler.sendToDimension(new PacketServerTickTime(tickTime), event.level.dimension());
                 needsTPSSync.remove(event.level.dimension().location());
             }

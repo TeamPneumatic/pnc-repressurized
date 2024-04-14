@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.common.inventory;
 
-import me.desht.pneumaticcraft.common.block.entity.ReinforcedChestBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.utility.ReinforcedChestBlockEntity;
 import me.desht.pneumaticcraft.common.registry.ModMenuTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;

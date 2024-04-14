@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.common.block;
 
-import me.desht.pneumaticcraft.common.block.entity.ElevatorBaseBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.elevator.ElevatorBaseBlockEntity;
 import me.desht.pneumaticcraft.common.registry.ModBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;

@@ -21,7 +21,7 @@ import me.desht.pneumaticcraft.api.crafting.TemperatureRange;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTank;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTemperature;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
-import me.desht.pneumaticcraft.common.block.entity.EtchingTankBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.processing.EtchingTankBlockEntity;
 import me.desht.pneumaticcraft.common.inventory.EtchingTankMenu;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;

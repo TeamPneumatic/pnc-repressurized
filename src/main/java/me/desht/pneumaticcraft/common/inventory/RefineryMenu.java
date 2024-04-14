@@ -17,11 +17,11 @@
 
 package me.desht.pneumaticcraft.common.inventory;
 
-import me.desht.pneumaticcraft.common.block.entity.RefineryControllerBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.processing.RefineryControllerBlockEntity;
 import me.desht.pneumaticcraft.common.registry.ModMenuTypes;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.Slot;
@@ -38,14 +38,15 @@ public class RefineryMenu extends AbstractPneumaticCraftMenu<RefineryControllerB
     public RefineryMenu(int i, Inventory playerInventory, BlockPos pos) {
         super(ModMenuTypes.REFINERY.get(), i, playerInventory, pos);
 
-        RefineryControllerBlockEntity refinery = blockEntity;
-        refinery.incPlayersUsing();
-        refinery.onNeighborTileUpdate(null);
-        while (refinery.getCachedNeighbor(Direction.UP) instanceof RefineryControllerBlockEntity) {
-            refinery = (RefineryControllerBlockEntity) refinery.getCachedNeighbor(Direction.UP);
-            addSyncedFields(refinery);
-            refinery.onNeighborTileUpdate(null);
+        if (playerInventory.player instanceof ServerPlayer) {
+            blockEntity.incPlayersUsing();
         }
+//        refinery.onNeighborTileUpdate(null);
+//        while (refinery.getCachedNeighbor(Direction.UP) instanceof RefineryControllerBlockEntity) {
+//            refinery = (RefineryControllerBlockEntity) refinery.getCachedNeighbor(Direction.UP);
+//            addSyncedFields(refinery);
+////            refinery.onNeighborTileUpdate(null);
+//        }
 
         addPlayerSlots(playerInventory, 108);
     }
@@ -54,7 +55,9 @@ public class RefineryMenu extends AbstractPneumaticCraftMenu<RefineryControllerB
     public void removed(Player pPlayer) {
         super.removed(pPlayer);
 
-        blockEntity.decPlayersUsing();
+        if (pPlayer instanceof ServerPlayer) {
+            blockEntity.decPlayersUsing();
+        }
     }
 
     @Override

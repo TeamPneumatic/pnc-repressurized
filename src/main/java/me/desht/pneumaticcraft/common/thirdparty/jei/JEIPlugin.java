@@ -24,7 +24,7 @@ import me.desht.pneumaticcraft.client.gui.*;
 import me.desht.pneumaticcraft.client.gui.programmer.ProgWidgetItemFilterScreen;
 import me.desht.pneumaticcraft.client.gui.semiblock.AbstractLogisticsScreen;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
-import me.desht.pneumaticcraft.common.block.entity.UVLightBoxBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.processing.UVLightBoxBlockEntity;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.item.ICustomTooltipName;
 import me.desht.pneumaticcraft.common.item.PressurizableItem;

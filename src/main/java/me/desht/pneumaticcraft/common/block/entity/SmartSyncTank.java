@@ -44,7 +44,7 @@ public class SmartSyncTank extends PNCFluidTank {
     private final WeakReference<BlockEntity> owner;
     private final int threshold;
 
-    SmartSyncTank(BlockEntity owner, int capacity) {
+    public SmartSyncTank(BlockEntity owner, int capacity) {
         super(capacity);
 
         this.owner = new WeakReference<>(owner);

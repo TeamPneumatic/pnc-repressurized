@@ -20,7 +20,7 @@ package me.desht.pneumaticcraft.common.block;
 import me.desht.pneumaticcraft.client.ColorHandlers;
 import me.desht.pneumaticcraft.client.render.fluid.IFluidItemRenderInfoProvider;
 import me.desht.pneumaticcraft.client.render.fluid.RenderLiquidHopper;
-import me.desht.pneumaticcraft.common.block.entity.LiquidHopperBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.hopper.LiquidHopperBlockEntity;
 import me.desht.pneumaticcraft.common.capabilities.FluidHandlerSavedItemStack;
 import me.desht.pneumaticcraft.common.item.IFluidCapProvider;
 import me.desht.pneumaticcraft.common.item.IFluidRendered;
@@ -37,7 +37,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.fluids.FluidUtil;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
-import net.neoforged.neoforge.fluids.capability.templates.FluidHandlerItemStack;
 
 public class LiquidHopperBlock extends OmnidirectionalHopperBlock implements PneumaticCraftEntityBlock {
     public LiquidHopperBlock() {

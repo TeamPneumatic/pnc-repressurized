@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.common.block.AphorismTileBlock;
-import me.desht.pneumaticcraft.common.block.entity.AphorismTileBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.utility.AphorismTileBlockEntity;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;

@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.api.lib.NBTKeys;
-import me.desht.pneumaticcraft.common.block.entity.VacuumTrapBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.spawning.VacuumTrapBlockEntity;
 import me.desht.pneumaticcraft.common.item.SpawnerCoreItem;
 import me.desht.pneumaticcraft.common.registry.ModBlocks;
 import me.desht.pneumaticcraft.common.registry.ModItems;

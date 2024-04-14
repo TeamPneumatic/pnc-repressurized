@@ -22,7 +22,7 @@ import com.mojang.math.Axis;
 import me.desht.pneumaticcraft.client.gui.AphorismTileScreen;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.block.AphorismTileBlock;
-import me.desht.pneumaticcraft.common.block.entity.AphorismTileBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.utility.AphorismTileBlockEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.MultiBufferSource;

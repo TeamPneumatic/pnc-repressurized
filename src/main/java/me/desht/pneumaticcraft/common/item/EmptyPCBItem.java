@@ -19,7 +19,7 @@ package me.desht.pneumaticcraft.common.item;
 
 import me.desht.pneumaticcraft.api.data.PneumaticCraftTags;
 import me.desht.pneumaticcraft.api.item.ICustomDurabilityBar;
-import me.desht.pneumaticcraft.common.block.entity.UVLightBoxBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.processing.UVLightBoxBlockEntity;
 import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.lib.BlockEntityConstants;
 import net.minecraft.ChatFormatting;

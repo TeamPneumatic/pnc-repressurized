@@ -21,7 +21,7 @@ import me.desht.pneumaticcraft.api.crafting.TemperatureRange;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTemperature;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
-import me.desht.pneumaticcraft.common.block.entity.SolarCompressorBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.compressor.SolarCompressorBlockEntity;
 import me.desht.pneumaticcraft.common.inventory.SolarCompressorMenu;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;

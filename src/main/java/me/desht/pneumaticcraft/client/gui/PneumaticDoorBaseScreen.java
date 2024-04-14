@@ -19,7 +19,7 @@ package me.desht.pneumaticcraft.client.gui;
 
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetCheckBox;
-import me.desht.pneumaticcraft.common.block.entity.PneumaticDoorBaseBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.utility.PneumaticDoorBaseBlockEntity;
 import me.desht.pneumaticcraft.common.inventory.PneumaticDoorBaseMenu;
 import me.desht.pneumaticcraft.common.registry.ModBlocks;
 import me.desht.pneumaticcraft.lib.Textures;

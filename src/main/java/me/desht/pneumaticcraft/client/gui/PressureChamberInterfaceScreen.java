@@ -21,7 +21,7 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetLabel;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
-import me.desht.pneumaticcraft.common.block.entity.PressureChamberInterfaceBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.processing.PressureChamberInterfaceBlockEntity;
 import me.desht.pneumaticcraft.common.inventory.PressureChamberInterfaceMenu;
 import me.desht.pneumaticcraft.common.registry.ModBlocks;
 import me.desht.pneumaticcraft.lib.Textures;
@@ -37,7 +37,7 @@ import net.minecraft.world.item.ItemStack;
 import java.util.Collections;
 import java.util.List;
 
-import static me.desht.pneumaticcraft.common.block.entity.PressureChamberInterfaceBlockEntity.MAX_PROGRESS;
+import static me.desht.pneumaticcraft.common.block.entity.processing.PressureChamberInterfaceBlockEntity.MAX_PROGRESS;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class PressureChamberInterfaceScreen extends AbstractPneumaticCraftContainerScreen<PressureChamberInterfaceMenu,PressureChamberInterfaceBlockEntity> {

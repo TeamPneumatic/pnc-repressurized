@@ -32,7 +32,7 @@ import me.desht.pneumaticcraft.api.tileentity.IManoMeasurable;
 import me.desht.pneumaticcraft.api.upgrade.PNCUpgrade;
 import me.desht.pneumaticcraft.client.util.ProgressingLine;
 import me.desht.pneumaticcraft.common.block.entity.PneumaticEnergyStorage;
-import me.desht.pneumaticcraft.common.block.entity.ProgrammerBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.drone.ProgrammerBlockEntity;
 import me.desht.pneumaticcraft.common.capabilities.BasicAirHandler;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.debug.DroneDebugger;
@@ -739,7 +739,7 @@ public class DroneEntity extends AbstractDroneEntity implements
                 oldTargetLine.endZ = (float) (targetEntity.zo - zo);
 
                 oldTargetLine.setProgress(targetLine.getProgress());
-                targetLine.incProgressByDistance(0.2D);
+                targetLine.incProgressByDistance(0.2f);
                 noCulling = true; //don't stop rendering the drone when it goes out of the camera frustrum, as we need to render the target lines as well.
             } else {
                 targetLine = oldTargetLine = null;

@@ -117,13 +117,13 @@ public class AreaTypeWall extends AreaType{
     @Override
     public void writeToPacket(FriendlyByteBuf buffer) {
         super.writeToPacket(buffer);
-        buffer.writeByte(axis.ordinal());
+        buffer.writeEnum(axis);
     }
 
     @Override
     public void readFromPacket(FriendlyByteBuf buf) {
         super.readFromPacket(buf);
-        axis = EnumAxis.values()[buf.readByte()];
+        axis = buf.readEnum(EnumAxis.class);
     }
 
     @Override

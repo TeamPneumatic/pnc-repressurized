@@ -22,7 +22,7 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetTank;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
-import me.desht.pneumaticcraft.common.block.entity.LiquidCompressorBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.compressor.LiquidCompressorBlockEntity;
 import me.desht.pneumaticcraft.common.fluid.FuelRegistry;
 import me.desht.pneumaticcraft.common.inventory.LiquidCompressorMenu;
 import me.desht.pneumaticcraft.common.registry.ModItems;

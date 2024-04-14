@@ -55,14 +55,11 @@ public class AxisOptions {
     }
 
     public void writeToBuffer(FriendlyByteBuf buffer) {
-        buffer.writeBoolean(shouldCheck(Direction.Axis.X));
-        buffer.writeBoolean(shouldCheck(Direction.Axis.Y));
-        buffer.writeBoolean(shouldCheck(Direction.Axis.Z));
+        buffer.writeByte(options.toByteArray()[0]);
     }
 
     public void readFromBuffer(FriendlyByteBuf buffer) {
-        setCheck(Direction.Axis.X, buffer.readBoolean());
-        setCheck(Direction.Axis.Y, buffer.readBoolean());
-        setCheck(Direction.Axis.Z, buffer.readBoolean());
+        options.clear();
+        options.or(BitSet.valueOf(new byte[] { buffer.readByte() }));
     }
 }

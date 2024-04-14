@@ -21,16 +21,13 @@ import net.minecraft.world.phys.Vec3;
 import org.joml.Vector3f;
 
 public class ProgressingLine {
-    public float startX;
-    public float startY;
-    public float startZ;
+    public final float startX;
+    public final float startY;
+    public final float startZ;
     public float endX;
     public float endY;
     public float endZ;
     protected float progress = 0;
-
-    public ProgressingLine() {
-    }
 
     public ProgressingLine(Vector3f start, Vector3f end) {
         this.startX = start.x();
@@ -70,7 +67,7 @@ public class ProgressingLine {
     /**
      * Increases the progress by the given amount.
      *
-     * @param increment
+     * @param increment the increment
      * @return Returns true when the maximum progress has been reached.
      */
     public boolean incProgress(float increment) {
@@ -85,8 +82,8 @@ public class ProgressingLine {
         return false;
     }
 
-    public boolean incProgressByDistance(double distance) {
-        double totalDistance = Math.sqrt(Math.pow(endX - startX, 2) + Math.pow(endY - startY, 2) + Math.pow(endZ - startZ, 2));
+    public boolean incProgressByDistance(float distance) {
+        float totalDistance = (float) Math.sqrt(Math.pow(endX - startX, 2) + Math.pow(endY - startY, 2) + Math.pow(endZ - startZ, 2));
         progress += distance / totalDistance;
         if (progress > 1F) {
             progress = 1F;

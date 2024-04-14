@@ -3,7 +3,7 @@
   "input": {
     "tag": "forge:dusts/redstone"
   },
-  "program": "DRILL",
+  "program": "drill",
   "result": {
     "count": 2,
     "item": "minecraft:red_dye"

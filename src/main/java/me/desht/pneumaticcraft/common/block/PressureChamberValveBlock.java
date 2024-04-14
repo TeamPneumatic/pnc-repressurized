@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.api.block.PNCBlockStateProperties;
-import me.desht.pneumaticcraft.common.block.entity.PressureChamberValveBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.processing.PressureChamberValveBlockEntity;
 import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
 import me.desht.pneumaticcraft.common.registry.ModBlocks;
 import me.desht.pneumaticcraft.common.registry.ModCriterionTriggers;

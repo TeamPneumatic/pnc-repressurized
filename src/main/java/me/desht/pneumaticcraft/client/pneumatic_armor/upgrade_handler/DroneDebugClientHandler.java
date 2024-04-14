@@ -26,7 +26,7 @@ import me.desht.pneumaticcraft.client.KeyHandler;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.ArmorMainScreen;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.options.DroneDebuggerOptions;
 import me.desht.pneumaticcraft.client.pneumatic_armor.ClientArmorRegistry;
-import me.desht.pneumaticcraft.common.block.entity.ProgrammerBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.drone.ProgrammerBlockEntity;
 import me.desht.pneumaticcraft.common.drone.IDroneBase;
 import me.desht.pneumaticcraft.common.item.PneumaticArmorItem;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;

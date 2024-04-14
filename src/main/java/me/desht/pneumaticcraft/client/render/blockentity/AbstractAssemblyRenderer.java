@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.client.render.blockentity;
 
-import me.desht.pneumaticcraft.common.block.entity.AbstractAssemblyRobotBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.processing.AbstractAssemblyRobotBlockEntity;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.AABB;

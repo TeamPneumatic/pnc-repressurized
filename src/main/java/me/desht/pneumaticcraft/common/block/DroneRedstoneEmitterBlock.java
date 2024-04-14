@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.common.block;
 
-import me.desht.pneumaticcraft.common.block.entity.DroneRedstoneEmitterBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.drone.DroneRedstoneEmitterBlockEntity;
 import me.desht.pneumaticcraft.common.entity.drone.DroneEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;

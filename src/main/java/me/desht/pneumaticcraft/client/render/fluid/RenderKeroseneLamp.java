@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.client.render.fluid;
 
-import me.desht.pneumaticcraft.common.block.entity.KeroseneLampBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.utility.KeroseneLampBlockEntity;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.core.Direction;
 import net.minecraft.world.phys.AABB;

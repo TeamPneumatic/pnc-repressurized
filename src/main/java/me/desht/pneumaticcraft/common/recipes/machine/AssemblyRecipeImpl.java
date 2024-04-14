@@ -18,23 +18,25 @@
 package me.desht.pneumaticcraft.common.recipes.machine;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import me.desht.pneumaticcraft.api.crafting.recipe.AssemblyRecipe;
 import me.desht.pneumaticcraft.common.registry.ModRecipeSerializers;
 import me.desht.pneumaticcraft.common.registry.ModRecipeTypes;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
@@ -133,9 +135,16 @@ public class AssemblyRecipeImpl extends AssemblyRecipe {
             this.codec = RecordCodecBuilder.create(inst -> inst.group(
                     Ingredient.CODEC.fieldOf("input").forGetter(AssemblyRecipe::getInput),
                     ItemStack.ITEM_WITH_COUNT_CODEC.fieldOf("result").forGetter(AssemblyRecipe::getOutput),
-                    Codec.STRING.xmap(str -> Objects.requireNonNull(AssemblyProgramType.valueOf(str)), AssemblyProgramType::name)
+                    ExtraCodecs.validate(AssemblyProgramType.CODEC, Serializer::checkNotDrillAndLaser)
                             .fieldOf("program").forGetter(AssemblyRecipe::getProgramType)
             ).apply(inst, factory::create));
+        }
+
+        @NotNull
+        private static DataResult<AssemblyProgramType> checkNotDrillAndLaser(AssemblyProgramType type) {
+            return type == AssemblyProgramType.DRILL_LASER ?
+                    DataResult.error(() -> "'drill_laser' may not be used as a recipe type!") :
+                    DataResult.success(type);
         }
 
         @Override

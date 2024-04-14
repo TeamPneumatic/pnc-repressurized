@@ -138,8 +138,7 @@ public class ProgWidgetCoordinate extends ProgWidget implements IVariableWidget 
     @Override
     public void writeToPacket(FriendlyByteBuf buf) {
         super.writeToPacket(buf);
-        buf.writeBoolean(coord != null);
-        if (coord != null) buf.writeBlockPos(coord);
+        buf.writeNullable(coord, FriendlyByteBuf::writeBlockPos);
         buf.writeUtf(variable);
         buf.writeBoolean(useVariable);
     }
@@ -147,7 +146,7 @@ public class ProgWidgetCoordinate extends ProgWidget implements IVariableWidget 
     @Override
     public void readFromPacket(FriendlyByteBuf buf) {
         super.readFromPacket(buf);
-        coord = buf.readBoolean() ? buf.readBlockPos() : null;
+        coord = buf.readNullable(FriendlyByteBuf::readBlockPos);
         variable = buf.readUtf(GlobalVariableManager.MAX_VARIABLE_LEN);
         useVariable = buf.readBoolean();
     }

@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.client.ColorHandlers;
-import me.desht.pneumaticcraft.common.block.entity.ThermalCompressorBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.compressor.ThermalCompressorBlockEntity;
 import me.desht.pneumaticcraft.common.registry.ModBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.BlockGetter;

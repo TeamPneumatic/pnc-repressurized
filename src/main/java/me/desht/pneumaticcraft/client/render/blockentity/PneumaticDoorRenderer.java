@@ -23,7 +23,7 @@ import com.mojang.math.Axis;
 import me.desht.pneumaticcraft.client.model.PNCModelLayers;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.block.PneumaticDoorBlock;
-import me.desht.pneumaticcraft.common.block.entity.PneumaticDoorBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.utility.PneumaticDoorBlockEntity;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;

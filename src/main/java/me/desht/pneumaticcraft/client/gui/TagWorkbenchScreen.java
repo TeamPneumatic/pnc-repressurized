@@ -21,7 +21,7 @@ import me.desht.pneumaticcraft.api.misc.Symbols;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetList;
 import me.desht.pneumaticcraft.client.util.PointXY;
-import me.desht.pneumaticcraft.common.block.entity.TagWorkbenchBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.utility.TagWorkbenchBlockEntity;
 import me.desht.pneumaticcraft.common.inventory.TagWorkbenchMenu;
 import me.desht.pneumaticcraft.common.item.TagFilterItem;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;

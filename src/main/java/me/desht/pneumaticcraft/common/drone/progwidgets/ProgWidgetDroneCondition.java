@@ -134,7 +134,7 @@ public abstract class ProgWidgetDroneCondition extends ProgWidgetConditionBase i
     public void writeToPacket(FriendlyByteBuf buf) {
         super.writeToPacket(buf);
         buf.writeBoolean(isAndFunction);
-        buf.writeByte(operator.ordinal());
+        buf.writeEnum(operator);
         buf.writeVarInt(requiredCount);
         buf.writeUtf(measureVar, GlobalVariableManager.MAX_VARIABLE_LEN);
     }
@@ -143,7 +143,7 @@ public abstract class ProgWidgetDroneCondition extends ProgWidgetConditionBase i
     public void readFromPacket(FriendlyByteBuf buf) {
         super.readFromPacket(buf);
         isAndFunction = buf.readBoolean();
-        operator = Operator.values()[buf.readByte()];
+        operator = buf.readEnum(Operator.class);
         requiredCount = buf.readVarInt();
         measureVar = buf.readUtf(GlobalVariableManager.MAX_VARIABLE_LEN);
     }

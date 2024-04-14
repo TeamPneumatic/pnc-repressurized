@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.client.ColorHandlers;
-import me.desht.pneumaticcraft.common.block.entity.CompressedIronBlockBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.heat.CompressedIronBlockBlockEntity;
 import me.desht.pneumaticcraft.common.registry.ModBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.entity.BlockEntity;

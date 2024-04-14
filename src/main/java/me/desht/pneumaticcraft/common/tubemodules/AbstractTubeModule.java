@@ -19,7 +19,7 @@ package me.desht.pneumaticcraft.common.tubemodules;
 
 import me.desht.pneumaticcraft.client.gui.tubemodule.AbstractTubeModuleScreen;
 import me.desht.pneumaticcraft.common.block.PressureTubeBlock;
-import me.desht.pneumaticcraft.common.block.entity.PressureTubeBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.tube.PressureTubeBlockEntity;
 import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.ChatFormatting;

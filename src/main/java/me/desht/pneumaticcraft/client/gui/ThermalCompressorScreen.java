@@ -22,7 +22,7 @@ import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTemperature;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
-import me.desht.pneumaticcraft.common.block.entity.ThermalCompressorBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.compressor.ThermalCompressorBlockEntity;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.common.inventory.ThermalCompressorMenu;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;

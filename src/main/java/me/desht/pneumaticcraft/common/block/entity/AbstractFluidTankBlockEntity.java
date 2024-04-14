@@ -96,9 +96,8 @@ public abstract class AbstractFluidTankBlockEntity extends AbstractTickingBlockE
             if (getBlockState().getValue(AbstractPneumaticCraftBlock.connectionProperty(dir))) {
                 BlockState other = nonNullLevel().getBlockState(worldPosition.relative(dir));
                 if (other.getBlock() instanceof FluidTankBlock && other.getValue(AbstractPneumaticCraftBlock.connectionProperty(dir.getOpposite()))) {
-                    BlockEntity teOther = getCachedNeighbor(dir);
-                    if (teOther instanceof AbstractFluidTankBlockEntity) {
-                        FluidUtil.tryFluidTransfer(((AbstractFluidTankBlockEntity) teOther).getTank(), tank, tank.getCapacity() / 32, true);
+                    if (getCachedNeighbor(dir) instanceof AbstractFluidTankBlockEntity tankBE) {
+                        FluidUtil.tryFluidTransfer(tankBE.getTank(), tank, tank.getCapacity() / 32, true);
                     }
                 }
             }

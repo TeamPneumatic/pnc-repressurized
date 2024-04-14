@@ -22,7 +22,7 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import me.desht.pneumaticcraft.client.model.PNCModelLayers;
 import me.desht.pneumaticcraft.client.render.fluid.AbstractFluidTER;
 import me.desht.pneumaticcraft.client.render.fluid.TankRenderInfo;
-import me.desht.pneumaticcraft.common.block.entity.SpawnerExtractorBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.spawning.SpawnerExtractorBlockEntity;
 import me.desht.pneumaticcraft.common.registry.ModFluids;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.model.geom.ModelPart;

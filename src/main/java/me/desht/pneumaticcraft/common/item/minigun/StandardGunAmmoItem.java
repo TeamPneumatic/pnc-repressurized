@@ -21,6 +21,7 @@ import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.util.NBTUtils;
+import net.minecraft.Util;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -63,9 +64,7 @@ public class StandardGunAmmoItem extends AbstractGunAmmoItem {
     }
 
     public static void setPotion(ItemStack ammo, ItemStack potion) {
-        CompoundTag tag = new CompoundTag();
-        potion.save(tag);
-        NBTUtils.setCompoundTag(ammo, "potion", tag);
+        NBTUtils.setCompoundTag(ammo, "potion", Util.make(new CompoundTag(), potion::save));
     }
 
     @Override

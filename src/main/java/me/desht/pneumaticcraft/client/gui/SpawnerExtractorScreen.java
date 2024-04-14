@@ -19,7 +19,7 @@ package me.desht.pneumaticcraft.client.gui;
 
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
-import me.desht.pneumaticcraft.common.block.entity.SpawnerExtractorBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.spawning.SpawnerExtractorBlockEntity;
 import me.desht.pneumaticcraft.common.inventory.SpawnerExtractorMenu;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.gui.GuiGraphics;

@@ -17,8 +17,10 @@
 
 package me.desht.pneumaticcraft.api.crafting.recipe;
 
+import com.mojang.serialization.Codec;
 import me.desht.pneumaticcraft.api.crafting.PneumaticCraftRecipeTypes;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 
@@ -60,8 +62,15 @@ public abstract class AssemblyRecipe extends PneumaticCraftRecipe {
      */
     public abstract boolean matches(ItemStack stack);
 
-    public enum AssemblyProgramType {
-        DRILL, LASER, DRILL_LASER;
+    public enum AssemblyProgramType implements StringRepresentable {
+        DRILL("drill"), LASER("laser"), DRILL_LASER("drill_laser");
+
+        public static final Codec<AssemblyProgramType> CODEC = StringRepresentable.fromEnum(AssemblyProgramType::values);
+        private final String name;
+
+        AssemblyProgramType(String name) {
+            this.name = name;
+        }
 
         public String getRegistryName() {
             return "assembly_program_" + this.toString().toLowerCase(Locale.ROOT);
@@ -73,6 +82,11 @@ public abstract class AssemblyRecipe extends PneumaticCraftRecipe {
                 case LASER -> RL(PneumaticCraftRecipeTypes.ASSEMBLY_LASER);
                 case DRILL_LASER -> RL(PneumaticCraftRecipeTypes.ASSEMBLY_DRILL_LASER);
             };
+        }
+
+        @Override
+        public String getSerializedName() {
+            return name;
         }
     }
 }

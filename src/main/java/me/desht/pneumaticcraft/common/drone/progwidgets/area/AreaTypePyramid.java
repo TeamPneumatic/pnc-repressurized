@@ -180,15 +180,15 @@ public class AreaTypePyramid extends AreaType {
     @Override
     public void writeToPacket(FriendlyByteBuf buffer) {
         super.writeToPacket(buffer);
-        buffer.writeByte(axis.ordinal());
-        buffer.writeByte(pyramidType.ordinal());
+        buffer.writeEnum(axis);
+        buffer.writeEnum(pyramidType);
     }
 
     @Override
     public void readFromPacket(FriendlyByteBuf buf) {
         super.readFromPacket(buf);
-        axis = EnumAxis.values()[buf.readByte()];
-        pyramidType = EnumAreaTypePyramid.values()[buf.readByte()];
+        axis = buf.readEnum(EnumAxis.class);
+        pyramidType = buf.readEnum(EnumAreaTypePyramid.class);
     }
 
     private enum EnumAreaTypePyramid implements ITranslatableEnum {

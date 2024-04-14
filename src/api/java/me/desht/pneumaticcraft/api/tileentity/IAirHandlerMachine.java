@@ -118,7 +118,7 @@ public interface IAirHandlerMachine extends IAirHandler, IManoMeasurable, INBTSe
     List<IAirHandlerMachine.Connection> getConnectedAirHandlers(BlockEntity ownerTE);
 
     /**
-     * Set the connected faces of this air handler. This should be called on the first server tick, and when
+     * Set the connectable faces of this air handler. This should be called on the first server tick, and when
      * neighbouring blocks change (i.e. via {@link net.minecraft.world.level.block.Block#neighborChanged(BlockState, Level, BlockPos, Block, BlockPos, boolean)})
      * <p>
      * This also invalidates any cached neighbour data.

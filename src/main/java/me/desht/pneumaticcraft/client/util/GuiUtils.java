@@ -39,6 +39,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.neoforged.neoforge.client.model.data.ModelData;
 import net.neoforged.neoforge.fluids.FluidStack;
@@ -90,14 +91,16 @@ public class GuiUtils {
      * @param tank a fluid tank; if non-null, fluid Y size is scaled according to the tank's capacity
      */
     public static void drawFluid(GuiGraphics graphics, final Rect2i bounds, @Nullable FluidStack fluidStack, @Nullable IFluidTank tank) {
-        if (fluidStack == null || fluidStack.getFluid() == null) {
+        if (fluidStack == null || fluidStack.getFluid() == Fluids.EMPTY) {
             return;
         }
 
         Fluid fluid = fluidStack.getFluid();
         IClientFluidTypeExtensions renderProps = IClientFluidTypeExtensions.of(fluid);
         ResourceLocation fluidStill = renderProps.getStillTexture(fluidStack);
-        if (fluidStill == null) fluidStill = MissingTextureAtlasSprite.getLocation();
+        if (fluidStill == null) {
+            fluidStill = MissingTextureAtlasSprite.getLocation();
+        }
         TextureAtlasSprite fluidStillSprite = Minecraft.getInstance().getTextureAtlas(TextureAtlas.LOCATION_BLOCKS).apply(fluidStill);
 
         int scaledAmount = tank == null ? bounds.getHeight() : fluidStack.getAmount() * bounds.getHeight() / tank.getCapacity();

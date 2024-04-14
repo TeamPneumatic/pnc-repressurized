@@ -20,7 +20,7 @@ package me.desht.pneumaticcraft.client.gui;
 import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
-import me.desht.pneumaticcraft.common.block.entity.PressureChamberValveBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.processing.PressureChamberValveBlockEntity;
 import me.desht.pneumaticcraft.common.inventory.PressureChamberValveMenu;
 import me.desht.pneumaticcraft.common.registry.ModBlocks;
 import me.desht.pneumaticcraft.lib.Textures;

@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.client.ColorHandlers;
-import me.desht.pneumaticcraft.common.block.entity.HeatSinkBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.heat.HeatSinkBlockEntity;
 import me.desht.pneumaticcraft.common.registry.ModBlocks;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.core.BlockPos;

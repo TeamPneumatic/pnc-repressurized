@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.common.tubemodules;
 
-import me.desht.pneumaticcraft.common.block.entity.PressureTubeBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.tube.PressureTubeBlockEntity;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;

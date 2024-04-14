@@ -22,7 +22,7 @@ import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.block.ITubeNetworkConnector;
 import me.desht.pneumaticcraft.api.block.PNCBlockStateProperties;
 import me.desht.pneumaticcraft.api.block.PressureTubeConnection;
-import me.desht.pneumaticcraft.common.block.entity.PressureTubeBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.tube.PressureTubeBlockEntity;
 import me.desht.pneumaticcraft.common.item.TubeModuleItem;
 import me.desht.pneumaticcraft.common.registry.ModBlocks;
 import me.desht.pneumaticcraft.common.registry.ModItems;

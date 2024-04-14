@@ -18,8 +18,8 @@
 package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.client.ColorHandlers;
-import me.desht.pneumaticcraft.common.block.entity.AbstractHopperBlockEntity;
-import me.desht.pneumaticcraft.common.block.entity.OmnidirectionalHopperBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.hopper.AbstractHopperBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.hopper.OmnidirectionalHopperBlockEntity;
 import me.desht.pneumaticcraft.common.registry.ModBlocks;
 import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;

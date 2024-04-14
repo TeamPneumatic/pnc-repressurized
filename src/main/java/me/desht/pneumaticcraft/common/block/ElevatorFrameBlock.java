@@ -17,8 +17,8 @@
 
 package me.desht.pneumaticcraft.common.block;
 
-import me.desht.pneumaticcraft.common.block.entity.ElevatorBaseBlockEntity;
-import me.desht.pneumaticcraft.common.block.entity.ElevatorFrameBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.elevator.ElevatorBaseBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.elevator.ElevatorFrameBlockEntity;
 import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
 import me.desht.pneumaticcraft.common.registry.ModBlocks;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;

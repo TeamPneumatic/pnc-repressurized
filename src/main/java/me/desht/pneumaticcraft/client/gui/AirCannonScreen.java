@@ -20,7 +20,7 @@ package me.desht.pneumaticcraft.client.gui;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
-import me.desht.pneumaticcraft.common.block.entity.AirCannonBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.utility.AirCannonBlockEntity;
 import me.desht.pneumaticcraft.common.inventory.AirCannonMenu;
 import me.desht.pneumaticcraft.common.registry.ModBlocks;
 import me.desht.pneumaticcraft.common.registry.ModItems;

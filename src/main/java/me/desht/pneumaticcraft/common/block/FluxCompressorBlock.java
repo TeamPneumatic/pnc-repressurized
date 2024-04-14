@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.api.block.PNCBlockStateProperties;
-import me.desht.pneumaticcraft.common.block.entity.FluxCompressorBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.compressor.FluxCompressorBlockEntity;
 import me.desht.pneumaticcraft.common.registry.ModBlocks;
 import me.desht.pneumaticcraft.common.util.VoxelShapeUtils;
 import net.minecraft.core.BlockPos;

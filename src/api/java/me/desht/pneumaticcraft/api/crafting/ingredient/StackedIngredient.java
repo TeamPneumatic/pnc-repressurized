@@ -173,8 +173,6 @@ public class StackedIngredient extends Ingredient {
                         throw new UnsupportedOperationException("This is neither an item value nor a tag value.");
                     }
                 });
-
-//        Collection<ItemStack> getItems();
     }
 
     public record StackedItemValue(ItemStack itemStack, BiFunction<ItemStack, ItemStack, Boolean> comparator) implements Value {

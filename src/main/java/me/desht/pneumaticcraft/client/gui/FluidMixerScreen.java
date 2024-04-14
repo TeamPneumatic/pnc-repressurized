@@ -22,14 +22,13 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTank;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
-import me.desht.pneumaticcraft.common.block.entity.FluidMixerBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.processing.FluidMixerBlockEntity;
 import me.desht.pneumaticcraft.common.inventory.FluidMixerMenu;
 import me.desht.pneumaticcraft.common.registry.ModRecipeTypes;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
@@ -60,7 +59,8 @@ public class FluidMixerScreen extends AbstractPneumaticCraftContainerScreen<Flui
 
         for (int i = 0; i < 2; i++) {
             dumpButtons[i] = new WidgetButtonExtended(leftPos + 14 + i * 20, topPos + 86, 14, 14, Component.empty())
-                    .withTag("dump" + (i + 1));
+                    .withTag("dump" + (i + 1))
+                    .withCustomTooltip(this::makeDumpButtonTooltip);
             addRenderableWidget(dumpButtons[i]);
         }
     }
@@ -91,9 +91,10 @@ public class FluidMixerScreen extends AbstractPneumaticCraftContainerScreen<Flui
         super.containerTick();
 
         for (int i = 0; i < 2; i++) {
-            String k = hasShiftDown() ? "dumpInput" : "moveInput";
-            dumpButtons[i].setMessage(hasShiftDown() ? Component.literal("X").withStyle(ChatFormatting.RED) : Component.literal(Symbols.TRIANGLE_RIGHT).withStyle(ChatFormatting.DARK_AQUA));
-            dumpButtons[i].setTooltip(Tooltip.create(xlate("pneumaticcraft.gui.thermopneumatic." + k)));
+            dumpButtons[i].setMessage(hasShiftDown() ?
+                    Component.literal("X").withStyle(ChatFormatting.RED) :
+                    Component.literal(Symbols.TRIANGLE_RIGHT).withStyle(ChatFormatting.DARK_AQUA)
+            );
         }
     }
 
@@ -127,5 +128,9 @@ public class FluidMixerScreen extends AbstractPneumaticCraftContainerScreen<Flui
         return getCurrentRecipe(ModRecipeTypes.FLUID_MIXER.get())
                 .map(recipe -> Collections.singletonList(recipe.value().getOutputFluid()))
                 .orElse(Collections.emptyList());
+    }
+
+    private List<Component> makeDumpButtonTooltip() {
+        return List.of(xlate("pneumaticcraft.gui.thermopneumatic." + (hasShiftDown() ? "dumpInput" : "moveInput")));
     }
 }

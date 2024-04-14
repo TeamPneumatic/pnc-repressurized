@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.common.item;
 
-import me.desht.pneumaticcraft.common.block.entity.ChargingStationBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.utility.ChargingStationBlockEntity;
 import me.desht.pneumaticcraft.common.inventory.ChargingStationUpgradeManagerMenu;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.MenuProvider;

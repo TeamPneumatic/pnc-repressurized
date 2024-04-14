@@ -23,7 +23,7 @@ import com.mojang.math.Axis;
 import me.desht.pneumaticcraft.api.client.assembly_machine.IAssemblyRenderOverriding;
 import me.desht.pneumaticcraft.client.ClientRegistryImpl;
 import me.desht.pneumaticcraft.client.model.PNCModelLayers;
-import me.desht.pneumaticcraft.common.block.entity.AssemblyIOUnitBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.processing.AssemblyIOUnitBlockEntity;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.geom.ModelPart;

@@ -114,13 +114,13 @@ public class AreaTypeBox extends AreaType {
     @Override
     public void writeToPacket(FriendlyByteBuf buffer) {
         super.writeToPacket(buffer);
-        buffer.writeByte(boxType.ordinal());
+        buffer.writeEnum(boxType);
     }
 
     @Override
     public void readFromPacket(FriendlyByteBuf buf) {
         super.readFromPacket(buf);
-        boxType = EnumBoxType.values()[buf.readByte()];
+        boxType = buf.readEnum(EnumBoxType.class);
     }
 
     private enum EnumBoxType implements ITranslatableEnum {

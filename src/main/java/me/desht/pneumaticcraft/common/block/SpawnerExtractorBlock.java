@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.common.block;
 
-import me.desht.pneumaticcraft.common.block.entity.SpawnerExtractorBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.spawning.SpawnerExtractorBlockEntity;
 import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
 import me.desht.pneumaticcraft.common.registry.ModBlocks;
 import net.minecraft.core.BlockPos;

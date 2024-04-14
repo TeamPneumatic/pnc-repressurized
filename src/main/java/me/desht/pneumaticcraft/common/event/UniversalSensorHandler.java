@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.common.event;
 
-import me.desht.pneumaticcraft.common.block.entity.UniversalSensorBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.utility.UniversalSensorBlockEntity;
 import me.desht.pneumaticcraft.common.util.GlobalBlockEntityCacheManager;
 import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.Event;

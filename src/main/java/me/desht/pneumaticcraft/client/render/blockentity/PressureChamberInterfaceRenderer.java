@@ -4,7 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import me.desht.pneumaticcraft.client.model.PNCModelLayers;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
-import me.desht.pneumaticcraft.common.block.entity.PressureChamberInterfaceBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.processing.PressureChamberInterfaceBlockEntity;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.geom.ModelPart;
@@ -21,7 +21,7 @@ import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemDisplayContext;
 
-import static me.desht.pneumaticcraft.common.block.entity.PressureChamberInterfaceBlockEntity.MAX_PROGRESS;
+import static me.desht.pneumaticcraft.common.block.entity.processing.PressureChamberInterfaceBlockEntity.MAX_PROGRESS;
 
 public class PressureChamberInterfaceRenderer extends AbstractBlockEntityModelRenderer<PressureChamberInterfaceBlockEntity> {
 

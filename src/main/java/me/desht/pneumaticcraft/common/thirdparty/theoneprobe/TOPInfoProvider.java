@@ -28,7 +28,7 @@ import me.desht.pneumaticcraft.common.block.PressureTubeBlock;
 import me.desht.pneumaticcraft.common.block.entity.CamouflageableBlockEntity;
 import me.desht.pneumaticcraft.common.block.entity.IInfoForwarder;
 import me.desht.pneumaticcraft.common.block.entity.IRedstoneControl;
-import me.desht.pneumaticcraft.common.block.entity.PressureTubeBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.tube.PressureTubeBlockEntity;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.common.heat.TemperatureData;
