@@ -283,6 +283,7 @@ public class WidgetKeybindCheckBox extends WidgetCheckBox {
             keyBinding.setKeyModifierAndCode(mod, input);
             Minecraft.getInstance().options.setKey(keyBinding, input);
             KeyMapping.resetMapping();
+            KeyDispatcher.updateBinding(keyBinding, this);
             Minecraft.getInstance().player.playSound(SoundEvents.NOTE_BLOCK_CHIME.get(), 1.0f, input == InputConstants.UNKNOWN ? 0.5f :1.0f);
         }
         setMessage(oldCheckboxText);
@@ -314,6 +315,11 @@ public class WidgetKeybindCheckBox extends WidgetCheckBox {
 
         private static void handleInput(InputConstants.Key key) {
             Optional.ofNullable(in2checkbox.get(InputRecord.forKey(key))).ifPresent(WidgetKeybindCheckBox::handleClick);
+        }
+
+        private static void updateBinding(KeyMapping mapping, WidgetKeybindCheckBox widget) {
+            in2checkbox.values().remove(widget);
+            in2checkbox.put(InputRecord.forKeyMapping(mapping), widget);
         }
     }
 
