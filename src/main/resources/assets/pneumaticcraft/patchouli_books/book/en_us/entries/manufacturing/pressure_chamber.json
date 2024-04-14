@@ -35,7 +35,7 @@
       "type": "spotlight",
       "anchor": "interface",
       "item": "pneumaticcraft:pressure_chamber_interface",
-      "text": "The $(item)Pressure Chamber Interface/$ is used to automate the insertion and extraction of items to the $(thing)Pressure Chamber/$. Items $(italic)must/$ be piped in via $(item)Hoppers/$ or other mod piping systems. You should have at least two interfaces: one with the 'I' facing out (the $(thing)input interface/$), and one with the 'O' facing out (the $(thing)output interface/$)."
+      "text": "The $(item)Pressure Chamber Interface/$ is used to automate the insertion and extraction of items to the $(thing)Pressure Chamber/$. Items $(italic)must/$ be piped in via $(item)Hoppers/$ or other mod piping systems. You should have at least two interfaces: one with a $(9)blue/$ side facing out (the $(thing)input interface/$), and one with an $(6)orange/$ side facing out (the $(thing)output interface/$)."
     },
     {
       "type": "text",
