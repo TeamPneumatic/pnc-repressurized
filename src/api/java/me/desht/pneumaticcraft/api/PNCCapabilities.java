@@ -18,6 +18,7 @@
 package me.desht.pneumaticcraft.api;
 
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
+import me.desht.pneumaticcraft.api.item.IFilteringItem;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerItem;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
@@ -50,7 +51,9 @@ public class PNCCapabilities {
             = BlockCapability.createSided(RL("air_handler_machine"), IAirHandlerMachine.class);
 
     /**
-     * Item air handler; use this on items which can be pressurized.
+     * Item air handler; use this on items which can be pressurized. See also
+     * {@link me.desht.pneumaticcraft.api.item.IItemRegistry#makeItemAirHandler(ItemStack)} for an API
+     * method to create a useful air handler implementation.
      */
     public static final ItemCapability<IAirHandlerItem,Void> AIR_HANDLER_ITEM
             = ItemCapability.createVoid(RL("air_handler_item"), IAirHandlerItem.class);
@@ -63,6 +66,12 @@ public class PNCCapabilities {
 
     public static final EntityCapability<IHeatExchangerLogic,Void> HEAT_EXCHANGER_ENTITY
             = EntityCapability.createVoid(RL("heat_exchanger_entity"), IHeatExchangerLogic.class);
+
+    /**
+     * Item Filtering capability; may be attached to items which can act as filters in Drone programs and Logistics filters
+     */
+    public static final ItemCapability<IFilteringItem,Void> ITEM_FILTERING
+            = ItemCapability.createVoid(RL("item_filtering"), IFilteringItem.class);
 
     /* ------------------------------------------------------------------------------------------------------- */
 
@@ -109,5 +118,9 @@ public class PNCCapabilities {
 
     public static Optional<IHeatExchangerLogic> getHeatLogic(BlockEntity blockEntity) {
         return getHeatLogic(blockEntity, null);
+    }
+
+    public static Optional<IFilteringItem> getItemFiltering(ItemStack stack) {
+        return Optional.ofNullable(stack.getCapability(ITEM_FILTERING));
     }
 }

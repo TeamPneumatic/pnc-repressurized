@@ -283,8 +283,6 @@ public class DroneEntity extends AbstractDroneEntity implements
             // https://github.com/EnigmaticaModpacks/Enigmatica6/issues/5167
             ench.keySet().removeIf(e -> !droneStack.getItem().canApplyAtEnchantingTable(droneStack, e));
             stackEnchants.putAll(ench);
-            int air = droneStack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM).getAir();
-            getAirHandler().addAir(air);
             DroneItem droneItem = (DroneItem) droneStack.getItem();
             if (droneItem.canProgram(droneStack)) {
                 progWidgets = WidgetSerializer.getWidgetsFromNBT(stackTag);
@@ -297,6 +295,8 @@ public class DroneEntity extends AbstractDroneEntity implements
                 fluidTank.readFromNBT(stackTag.getCompound("Tank"));
             }
         }
+        int air = droneStack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM).getAir();
+        getAirHandler().addAir(air);
         if (droneStack.hasCustomHoverName()) setCustomName(droneStack.getHoverName());
     }
 

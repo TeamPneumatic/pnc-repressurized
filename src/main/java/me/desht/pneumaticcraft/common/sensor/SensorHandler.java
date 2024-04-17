@@ -146,8 +146,6 @@ public class SensorHandler implements ISensorRegistry {
         for (int i = 0; i < upgrades.size(); i++) {
             String suffix = i < upgrades.size() - 1 ? "_" : "/";
             ret.append(upgrades.get(i).getId()).append(suffix);
-//            PneumaticCraftUtils.getRegistryName(ModUpgrades.UPGRADES.get(), upgrades.get(i))
-//                    .ifPresent(regName -> ret.append(regName).append(suffix));
         }
 
         return ret.toString();

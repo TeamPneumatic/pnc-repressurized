@@ -19,6 +19,7 @@ package me.desht.pneumaticcraft.common.util;
 
 import com.google.common.base.Splitter;
 import com.mojang.authlib.GameProfile;
+import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.item.IFilteringItem;
 import me.desht.pneumaticcraft.api.item.IInventoryItem;
 import me.desht.pneumaticcraft.api.lib.Names;
@@ -352,8 +353,11 @@ public class PneumaticCraftUtils {
 
         if (filterStack.getItem() instanceof IFilteringItem f) {
             return f.matchFilter(filterStack, stack);
-        } else if (stack.getItem() instanceof IFilteringItem f) {
-            return f.matchFilter(stack, filterStack);
+        } else {
+            IFilteringItem filterCap = filterStack.getCapability(PNCCapabilities.ITEM_FILTERING);
+            if (filterCap != null) {
+                return filterCap.matchFilter(filterStack, stack);
+            }
         }
 
         if (filterStack.getItem() != stack.getItem()) return false;

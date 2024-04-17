@@ -21,7 +21,6 @@ import me.desht.pneumaticcraft.api.crafting.AmadronTradeResource;
 import me.desht.pneumaticcraft.api.misc.IPlayerFilter;
 import me.desht.pneumaticcraft.api.misc.IPlayerMatcher;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 
 import javax.annotation.Nonnull;
@@ -80,7 +79,7 @@ public abstract class AmadronRecipe extends PneumaticCraftRecipe {
     public abstract int getStock();
 
     /**
-     * Update the number of trades Amadron currently has in stock for this offer. It is the responsbility of the
+     * Update the number of trades Amadron currently has in stock for this offer. It is the responsibility of the
      * implementation to ensure the stock level does not go below 0, or above the max stock level as returned by
      * {@link #getMaxStock()} (provided that the max stock level is &gt; 0).
      *
@@ -116,7 +115,7 @@ public abstract class AmadronRecipe extends PneumaticCraftRecipe {
      * whitelisted/blacklisted in data packs with the "whitelist" and "blacklist" fields in the Amadron recipe JSON.
      * This could be used, for example, to only allow selling snow in a desert biome, or only purchasing ender pearls
      * in the End.  Default filters are "dimensions" and "biome_categories", but others can be added via
-     * {@link me.desht.pneumaticcraft.api.misc.IMiscHelpers#registerPlayerMatcher(ResourceLocation, IPlayerMatcher.MatcherFactory)}.
+     * {@link me.desht.pneumaticcraft.api.misc.IMiscHelpers#registerPlayerMatcher(IPlayerMatcher.MatcherType)}.
      *
      * @param player the player to check
      * @return true if the offer is available to the player at the time of use, false otherwise

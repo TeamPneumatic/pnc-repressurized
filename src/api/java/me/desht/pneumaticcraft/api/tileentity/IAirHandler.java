@@ -55,7 +55,8 @@ public interface IAirHandler {
 
     /**
      * Set the base volume of this air handler. May be useful if the base volume depends on factors other than the
-     * number of volume upgrades.
+     * number of volume upgrades; for example, the Pressure Chamber multiblock uses this to increase the volume based
+     * on the multiblock size.
      *
      * @param newBaseVolume the new base volume
      */
@@ -71,7 +72,7 @@ public interface IAirHandler {
 
     /**
      * Get the maximum pressure this handler can take.  Behaviour when more air is added is implementation-dependent
-     * (e.g. items tend to stop accepting air, while blocks/machine tend to explode)
+     * (e.g. items tend to stop accepting air, while blocks/machines tend to explode)
      *
      * @return the maximum pressure for this handler
      */

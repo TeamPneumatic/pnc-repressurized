@@ -203,7 +203,7 @@ public class StackedIngredient extends Ingredient {
     public static class StackedTagValue implements Value {
         static final Codec<StackedIngredient.StackedTagValue> CODEC = RecordCodecBuilder.create(builder -> builder.group(
                         TagKey.codec(Registries.ITEM).fieldOf("tag").forGetter(val -> val.tagKey),
-                        Codec.INT.fieldOf("count").forGetter(val -> val.count)
+                        Codec.intRange(1, Integer.MAX_VALUE).fieldOf("count").forGetter(val -> val.count)
                 ).apply(builder, StackedIngredient.StackedTagValue::new)
         );
 

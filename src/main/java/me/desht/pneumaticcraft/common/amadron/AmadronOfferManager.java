@@ -36,7 +36,6 @@ import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.entity.npc.VillagerTrades;
@@ -47,7 +46,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.client.event.RecipesUpdatedEvent;
 import net.neoforged.neoforge.items.wrapper.CombinedInvWrapper;
 import net.neoforged.neoforge.items.wrapper.PlayerMainInvWrapper;
 import net.neoforged.neoforge.items.wrapper.PlayerOffhandInvWrapper;
@@ -393,8 +392,12 @@ public enum AmadronOfferManager {
     @Mod.EventBusSubscriber(modid = Names.MOD_ID)
     public static class EventListener {
         @SubscribeEvent
-        public static void serverLogin(PlayerEvent.PlayerLoggedInEvent evt) {
-            NetworkHandler.sendNonLocal((ServerPlayer) evt.getEntity(), PacketSyncAmadronOffers.create(false));
+        public static void onRecipesAvailable(RecipesUpdatedEvent event) {
+            NetworkHandler.sendToServer(PacketSyncAmadronOffers.createRequest());
         }
+//        @SubscribeEvent
+//        public static void serverLogin(PlayerEvent.PlayerLoggedInEvent evt) {
+//            NetworkHandler.sendNonLocal((ServerPlayer) evt.getEntity(), PacketSyncAmadronOffers.create(false));
+//        }
     }
 }

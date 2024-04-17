@@ -61,7 +61,6 @@ public class HeatFrameEntity extends AbstractSemiblockEntity {
 
     private final IHeatExchangerLogic logic = PneumaticRegistry.getInstance().getHeatRegistry().makeHeatExchangerLogic();
 
-//    private final LazyOptional<IHeatExchangerLogic> heatCap;
     private int lastValidSlot; // cache the current cooking slot for performance boost
     private int cookingProgress;
 
@@ -71,8 +70,6 @@ public class HeatFrameEntity extends AbstractSemiblockEntity {
 
     public HeatFrameEntity(EntityType<?> entityTypeIn, Level worldIn) {
         super(entityTypeIn, worldIn);
-
-//        heatCap = LazyOptional.of(() -> logic);
     }
 
     public IHeatExchangerLogic getHeatExchangerLogic() {
@@ -86,15 +83,6 @@ public class HeatFrameEntity extends AbstractSemiblockEntity {
         this.entityData.define(STATUS, IDLE);
         this.entityData.define(TEMPERATURE, 0);
     }
-
-//    @Nonnull
-//    @Override
-//    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-//        if (cap == PNCCapabilities.HEAT_EXCHANGER_BLOCK) {
-//            return PNCCapabilities.HEAT_EXCHANGER_BLOCK.orEmpty(cap, heatCap);
-//        }
-//        return super.getCapability(cap, side);
-//    }
 
     @Override
     public boolean canPlace(Direction facing) {

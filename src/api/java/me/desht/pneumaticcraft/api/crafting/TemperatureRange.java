@@ -179,22 +179,6 @@ public class TemperatureRange {
         buffer.writeVarInt(max);
     }
 
-//    public JsonObject toJson() {
-//        JsonObject json = new JsonObject();
-//        if (min > -Integer.MAX_VALUE) json.addProperty("min_temp", min);
-//        if (max < Integer.MAX_VALUE) json.addProperty("max_temp", max);
-//        return json;
-//    }
-//
-//    public static TemperatureRange fromJson(JsonObject json) {
-//        if (!json.has("min_temp") && !json.has("max_temp")) {
-//            return TemperatureRange.any();
-//        }
-//        if (!json.has("min_temp")) return TemperatureRange.max(GsonHelper.getAsInt(json,"max_temp"));
-//        if (!json.has("max_temp")) return TemperatureRange.min(GsonHelper.getAsInt(json,"min_temp"));
-//        return TemperatureRange.of(GsonHelper.getAsInt(json,"min_temp"), GsonHelper.getAsInt(json,"max_temp"));
-//    }
-
     public String asString(TemperatureScale scale) {
         if (isAny()) return "any";
         if (this == invalid()) return "invalid";

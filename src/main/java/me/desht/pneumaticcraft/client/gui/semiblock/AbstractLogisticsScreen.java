@@ -36,7 +36,6 @@ import me.desht.pneumaticcraft.common.registry.ModMenuTypes;
 import me.desht.pneumaticcraft.common.semiblock.ISpecificRequester;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
@@ -102,13 +101,13 @@ public class AbstractLogisticsScreen<L extends AbstractLogisticsFrameEntity> ext
             logistics.setItemWhiteList(!logistics.isItemWhiteList());
             updateLabels();
             syncToServer();
-        }).setVisible(false).setInvisibleHoverColor(0x80808080));
+        }).setVisible(false).setInvisibleHoverColor(0x80808080)).setTooltipKey("pneumaticcraft.gui.logistics_frame.itemWhitelist.tooltip");
         itemWhitelist.visible = logistics.supportsBlacklisting();
         addRenderableWidget(fluidWhitelist = new WidgetButtonExtended(leftPos + 5, topPos + 88, 12, 12, Component.empty(), b -> {
             logistics.setFluidWhiteList(!logistics.isFluidWhiteList());
             updateLabels();
             syncToServer();
-        }).setVisible(false).setInvisibleHoverColor(0x80808080));
+        }).setVisible(false).setInvisibleHoverColor(0x80808080)).setTooltipKey("pneumaticcraft.gui.logistics_frame.fluidWhitelist.tooltip");;
         fluidWhitelist.visible = logistics.supportsBlacklisting();
         int xOff = logistics.supportsBlacklisting() ? 13 : 0;
         addRenderableWidget(itemLabel = new WidgetLabel(leftPos + 5 + xOff, topPos + 18, Component.empty()) {
@@ -199,10 +198,8 @@ public class AbstractLogisticsScreen<L extends AbstractLogisticsFrameEntity> ext
     }
 
     private void updateLabels() {
-        ChatFormatting s1 = logistics.isItemWhiteList() ? ChatFormatting.RESET : ChatFormatting.STRIKETHROUGH;
-        ChatFormatting s2 = logistics.isFluidWhiteList() ? ChatFormatting.RESET : ChatFormatting.STRIKETHROUGH;
-        itemLabel.setMessage(xlate(String.format("pneumaticcraft.gui.%s.itemFilters", logistics.getSemiblockId().getPath())).withStyle(s1));
-        fluidLabel.setMessage(xlate(String.format("pneumaticcraft.gui.%s.fluidFilters", logistics.getSemiblockId().getPath())).withStyle(s2));
+        itemLabel.setMessage(xlate("pneumaticcraft.gui.logistics_frame." + (logistics.isItemWhiteList() ? "itemWhitelist" : "itemBlacklist")));
+        fluidLabel.setMessage(xlate("pneumaticcraft.gui.logistics_frame." + (logistics.isFluidWhiteList() ? "fluidWhitelist" : "fluidBlacklist")));
         itemWhitelist.setRenderedIcon(logistics.isItemWhiteList() ? Textures.GUI_WHITELIST : Textures.GUI_BLACKLIST);
         fluidWhitelist.setRenderedIcon(logistics.isFluidWhiteList() ? Textures.GUI_WHITELIST : Textures.GUI_BLACKLIST);
     }

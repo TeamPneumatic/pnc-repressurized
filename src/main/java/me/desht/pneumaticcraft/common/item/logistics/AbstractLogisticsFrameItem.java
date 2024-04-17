@@ -23,6 +23,7 @@ import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.entity.semiblock.AbstractLogisticsFrameEntity;
 import me.desht.pneumaticcraft.common.inventory.LogisticsMenu;
 import me.desht.pneumaticcraft.common.semiblock.SemiblockItem;
+import me.desht.pneumaticcraft.common.util.FluidFilter;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
@@ -115,10 +116,10 @@ public abstract class AbstractLogisticsFrameItem extends SemiblockItem {
                 curInfo.add(xlate("pneumaticcraft.gui.logistics_frame." + (whitelist ? "fluidWhitelist" : "fluidBlacklist"))
                         .append(":").withStyle(ChatFormatting.YELLOW));
 
-                AbstractLogisticsFrameEntity.FluidFilter fluidFilter = new AbstractLogisticsFrameEntity.FluidFilter();
+                FluidFilter fluidFilter = new FluidFilter();
                 fluidFilter.deserializeNBT(tag.getCompound(AbstractLogisticsFrameEntity.NBT_FLUID_FILTERS));
                 for (int i = 0; i < fluidFilter.size(); i++) {
-                    FluidStack fluid = fluidFilter.get(i);
+                    FluidStack fluid = fluidFilter.getFluid(i);
                     if (!fluid.isEmpty()) {
                         curInfo.add(bullet().append(fluid.getAmount() + "mB ").append(fluid.getDisplayName()).withStyle(ChatFormatting.GOLD));
                     }

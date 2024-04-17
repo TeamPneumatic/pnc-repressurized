@@ -44,8 +44,9 @@ public interface IItemRegistry {
 
     /**
      * Convenience method to check if an item matches a given filter item. Note that the filtering item (the first
-     * parameter) could be a Tag Filter, Classify Filter, or other instance of {@link IFilteringItem}, so parameter
-     * order is important; provide the filtering item first, and the item to check second.
+     * parameter) could be a Tag Filter, Classify Filter, some other instance of {@link IFilteringItem}, or an item
+     * which has the {@link me.desht.pneumaticcraft.api.PNCCapabilities#ITEM_FILTERING} capability, so parameter
+     * order is important; provide the filtering item <strong>first</strong>, and the item to check second.
      *
      * @param filterStack the item to check against
      * @param stack the item being checked
@@ -88,7 +89,8 @@ public interface IItemRegistry {
      * handler item capability.
      * <p>
      * You can use this method to register an air-handling capability for your items
-     * via {@link net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent}.
+     * via {@link net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent} and
+     * {@link me.desht.pneumaticcraft.api.PNCCapabilities#AIR_HANDLER_ITEM}.
      *
      * @param stack the ItemStack, whose item must implement {@link me.desht.pneumaticcraft.api.pressure.IPressurizableItem}
      * @return an implementation of IAirHandler

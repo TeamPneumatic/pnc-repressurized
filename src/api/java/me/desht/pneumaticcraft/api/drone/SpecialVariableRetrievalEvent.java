@@ -25,7 +25,7 @@ import javax.annotation.Nullable;
 
 /**
  * Fired when a Drone is trying to get a special coordinate, by accessing a variable with '$' prefix.
- * These event are posted on the MinecraftForge.EVENT_BUS.
+ * These events are posted on the MinecraftForge.EVENT_BUS.
  */
 public abstract class SpecialVariableRetrievalEvent extends Event {
     /**

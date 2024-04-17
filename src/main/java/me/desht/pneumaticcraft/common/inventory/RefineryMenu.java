@@ -41,12 +41,6 @@ public class RefineryMenu extends AbstractPneumaticCraftMenu<RefineryControllerB
         if (playerInventory.player instanceof ServerPlayer) {
             blockEntity.incPlayersUsing();
         }
-//        refinery.onNeighborTileUpdate(null);
-//        while (refinery.getCachedNeighbor(Direction.UP) instanceof RefineryControllerBlockEntity) {
-//            refinery = (RefineryControllerBlockEntity) refinery.getCachedNeighbor(Direction.UP);
-//            addSyncedFields(refinery);
-////            refinery.onNeighborTileUpdate(null);
-//        }
 
         addPlayerSlots(playerInventory, 108);
     }

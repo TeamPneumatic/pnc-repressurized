@@ -43,6 +43,7 @@ public class ModIds {
     public static final String THAUMCRAFT = "thaumcraft";
     public static final String TOUGH_AS_NAILS = "toughasnails";
     public static final String THE_ONE_PROBE = "theoneprobe";
+    public static final String FFS = "ftbfiltersystem";
 
     // the mods we have integrated with in the past but not in 1.16
     //    public static final String BUILDCRAFT = "buildcraftcore";

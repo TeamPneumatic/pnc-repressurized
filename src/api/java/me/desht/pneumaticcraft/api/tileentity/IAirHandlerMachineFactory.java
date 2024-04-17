@@ -49,11 +49,11 @@ public interface IAirHandlerMachineFactory {
      * blowing up when the pressure gets too high, providing a method for releasing air into the atmosphere...
      * <strong>provided that you take the following steps:</strong>
      * <ul>
-     *     <li>Storing this object in your block entity</li>
-     *     <li>Providing access to it via {@link net.neoforged.neoforge.common.util.LazyOptional} and the {@link me.desht.pneumaticcraft.api.PNCCapabilities#AIR_HANDLER_MACHINE} capability</li>
+     *     <li>Storing this object as a field in your block entity</li>
+     *     <li>Providing capability-based access to it via {@link me.desht.pneumaticcraft.api.PNCCapabilities#AIR_HANDLER_MACHINE}</li>
      *     <li>Loading and saving the air handler in {@link net.minecraft.world.level.block.entity.BlockEntity#load(CompoundTag)}
-     *     and {@link net.minecraft.world.level.block.entity.BlockEntity#saveAdditional(CompoundTag)}</li>
-     *     <li>Ticking the air handler in your block entity's server-side tick implementation (your block entity <strong>must</strong> be ticked)</li>
+     *     and {@link net.minecraft.world.level.block.entity.BlockEntity#saveAdditional(CompoundTag)} </li>
+     *     <li>Ticking the air handler in your block entity's tick implementation (your block entity <strong>must</strong> be ticked)</li>
      *</ul>
      *
      * @param tier   the pressure tier

@@ -60,8 +60,9 @@ public record PacketSyncSemiblock(int entityID, FriendlyByteBuf payload) impleme
     @Override
     public void write(FriendlyByteBuf buffer) {
         buffer.writeInt(entityID);
-        buffer.writeVarInt(payload.writerIndex());
-        buffer.writeBytes(payload);
+        int size = payload.writerIndex();
+        buffer.writeVarInt(size);
+        buffer.writeBytes(payload, 0, size);
     }
 
     @Override

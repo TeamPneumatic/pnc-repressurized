@@ -160,7 +160,8 @@ public class NetworkHandler {
 
 		// amadron
 		registrar.play(PacketSyncAmadronOffers.ID, PacketSyncAmadronOffers::fromNetwork,
-				handler -> handler.client(PacketSyncAmadronOffers::handle));
+				handler -> handler.client(PacketSyncAmadronOffers::handle)
+						.server(PacketSyncAmadronOffers::handle));
 		registrar.play(PacketAmadronOrderResponse.ID, PacketAmadronOrderResponse::fromNetwork,
 				handler -> handler.client(PacketAmadronOrderResponse::handle));
 		registrar.play(PacketAmadronOrderUpdate.ID, PacketAmadronOrderUpdate::fromNetwork,

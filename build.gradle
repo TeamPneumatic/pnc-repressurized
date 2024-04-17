@@ -81,6 +81,13 @@ repositories {
 			includeGroup "mcjty.theoneprobe"
 		}
 	}
+	maven {
+		name "FTB Maven"
+		url "https://maven.ftb.dev/releases/"
+//		content {
+//			includeGroup "dev.ftb.mods.ftb-filter-system"
+//		}
+	}
 }
 
 base {
@@ -147,7 +154,7 @@ dependencies {
 	testImplementation "org.junit.jupiter:junit-jupiter-api:5.7.2"
 	testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.7.2"
 
-	implementation("mcjty.theoneprobe:theoneprobe:${top_version}") {
+	compileOnly("mcjty.theoneprobe:theoneprobe:${top_version}") {
 		exclude group: "net.minecraftforge", module: "forge"
 	}
 
@@ -167,6 +174,8 @@ dependencies {
 
 	compileOnly("cc.tweaked:cc-tweaked-${minecraft_version}-forge-api:${cc_tweaked_version}")
 	runtimeOnly("cc.tweaked:cc-tweaked-${minecraft_version}-forge:${cc_tweaked_version}")
+
+	compileOnly("dev.ftb.mods:ftb-filter-system-neoforge:${ffs_version}") { transitive = false }
 
 	implementation("blusunrize.immersiveengineering:ImmersiveEngineering:${immersive_engineering_version}")
 

@@ -20,13 +20,18 @@ package me.desht.pneumaticcraft.api.item;
 import net.minecraft.world.item.ItemStack;
 
 /**
- * Implement this on items which can be used to as filters.  E.g. the Tag Filter item.  Such items can
- * be passed as the first parameter to {@link IItemRegistry#doesItemMatchFilter(ItemStack, ItemStack, boolean, boolean, boolean)}
+ * This interface may be implemented on items which can be used as filters for other items, for example the
+ * Tag Filter and Classify Filter items.
+ * <p>
+ * Such items can be passed as the first parameter to {@link IItemRegistry#doesItemMatchFilter(ItemStack, ItemStack, boolean, boolean, boolean)}
+ * <p>
+ * Alternatively, it may be attached as an item capability to items using the {@link me.desht.pneumaticcraft.api.PNCCapabilities#ITEM_FILTERING}
+ * capability.
  */
 public interface IFilteringItem {
     /**
      * Does the given item's match the given filter stack's filtering criteria?
-     * @param filterStack the stack to filter against; <strong>must</strong> be of an item implementing this interface
+     * @param filterStack the stack to filter against
      * @param item the item to check
      * @return true if there's a match, false otherwise
      */

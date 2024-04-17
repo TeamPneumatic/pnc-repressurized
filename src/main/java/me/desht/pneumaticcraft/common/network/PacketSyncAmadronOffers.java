@@ -23,6 +23,7 @@ import me.desht.pneumaticcraft.common.recipes.amadron.OfferType;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 
 import java.util.ArrayList;
@@ -32,12 +33,17 @@ import java.util.List;
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 /**
- * Received on: CLIENT
+ * Received on: BOTH
+ * Sent by client to request Amadron offer sync when ready (i.e. client has a level)
  * Sent by server to sync up current Amadron offer list when the offer list changes (due to a shuffle or reload),
- * or when a player logs in
+ * or when client requests it
  */
 public record PacketSyncAmadronOffers(Collection<AmadronOffer> activeOffers, boolean notifyPlayer) implements CustomPacketPayload {
     public static final ResourceLocation ID = RL("sync_amadron_offers");
+
+    public static PacketSyncAmadronOffers createRequest() {
+        return new PacketSyncAmadronOffers(List.of(), false);
+    }
 
     public static PacketSyncAmadronOffers create(boolean notifyPlayer) {
         return new PacketSyncAmadronOffers(AmadronOfferManager.getInstance().getActiveOffers(), notifyPlayer);
@@ -70,8 +76,18 @@ public record PacketSyncAmadronOffers(Collection<AmadronOffer> activeOffers, boo
     }
 
     public static void handle(PacketSyncAmadronOffers message, PlayPayloadContext ctx) {
-        ctx.workHandler().submitAsync(() ->
-                AmadronOfferManager.getInstance().syncOffers(message.activeOffers(), message.notifyPlayer())
+        ctx.workHandler().submitAsync(
+                () -> {
+                    if (ctx.flow().isClientbound()) {
+                        AmadronOfferManager.getInstance().syncOffers(message.activeOffers(), message.notifyPlayer());
+                    } else {
+                        ctx.player().ifPresent(player -> {
+                            if (player instanceof ServerPlayer sp) {
+                                NetworkHandler.sendNonLocal(sp, PacketSyncAmadronOffers.create(false));
+                            }
+                        });
+                    }
+                }
         );
     }
 }

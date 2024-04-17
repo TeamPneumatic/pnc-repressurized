@@ -30,14 +30,13 @@ import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.semiblock.ISpecificRequester;
 import me.desht.pneumaticcraft.common.semiblock.SemiblockItem;
 import me.desht.pneumaticcraft.common.semiblock.SemiblockTracker;
+import me.desht.pneumaticcraft.common.util.FluidFilter;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -59,7 +58,6 @@ import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.phys.AABB;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.neoforge.common.util.INBTSerializable;
 import net.neoforged.neoforge.event.entity.player.AttackEntityEvent;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.items.ItemStackHandler;
@@ -90,12 +88,12 @@ public abstract class AbstractLogisticsFrameEntity extends AbstractSemiblockEnti
     private final Map<ItemStack, Integer> incomingStacks = new HashMap<>();
     private final Map<FluidStack, Integer> incomingFluid = new IdentityHashMap<>();
     private final ItemFilterHandler itemFilterHandler = new ItemFilterHandler(ITEM_FILTER_SLOTS);
-    private FluidFilter fluidFilters = new FluidFilter(FLUID_FILTER_SLOTS);
+    private FluidFilter fluidFilter = new FluidFilter(FLUID_FILTER_SLOTS);
     private boolean matchNBT = false;
     private boolean matchDurability = false;
     private boolean matchModId = false;
-    private boolean itemWhiteList = true;
-    private boolean fluidWhiteList = true;
+    private boolean itemWhiteList = false;
+    private boolean fluidWhiteList = false;
     private int alpha = 255;
 
     AbstractLogisticsFrameEntity(EntityType<?> entityTypeIn, Level worldIn) {
@@ -315,11 +313,11 @@ public abstract class AbstractLogisticsFrameEntity extends AbstractSemiblockEnti
     }
 
     public void setFluidFilter(int filterIndex, FluidStack stack) {
-        fluidFilters.fluidStacks.set(filterIndex, stack);
+        fluidFilter.setFluid(filterIndex, stack);
     }
 
     public FluidStack getFluidFilter(int filterIndex) {
-        return fluidFilters.fluidStacks.get(filterIndex);
+        return fluidFilter.getFluid(filterIndex);
     }
 
     public ItemFilterHandler getItemFilterHandler() {
@@ -331,7 +329,7 @@ public abstract class AbstractLogisticsFrameEntity extends AbstractSemiblockEnti
         super.readAdditionalSaveData(tag);
 
         itemFilterHandler.deserializeNBT(tag.getCompound(NBT_ITEM_FILTERS));
-        fluidFilters.deserializeNBT(tag.getCompound(NBT_FLUID_FILTERS));
+        fluidFilter.deserializeNBT(tag.getCompound(NBT_FLUID_FILTERS));
         setSemiblockInvisible(tag.getBoolean(NBT_INVISIBLE));
         setMatchNBT(tag.getBoolean(NBT_MATCH_NBT));
         setMatchDurability(tag.getBoolean(NBT_MATCH_DURABILITY));
@@ -351,7 +349,7 @@ public abstract class AbstractLogisticsFrameEntity extends AbstractSemiblockEnti
         tag = super.serializeNBT(tag);
 
         tag.put(NBT_ITEM_FILTERS, itemFilterHandler.serializeNBT());
-        tag.put(NBT_FLUID_FILTERS, fluidFilters.serializeNBT());
+        tag.put(NBT_FLUID_FILTERS, fluidFilter.serializeNBT());
         if (isSemiblockInvisible()) tag.putBoolean(NBT_INVISIBLE, true);
         if (isMatchNBT()) tag.putBoolean(NBT_MATCH_NBT, true);
         if (isMatchDurability()) tag.putBoolean(NBT_MATCH_DURABILITY, true);
@@ -379,23 +377,11 @@ public abstract class AbstractLogisticsFrameEntity extends AbstractSemiblockEnti
     }
 
     boolean passesFilter(ItemStack stack) {
-        return itemFilterHandler.isEmpty() || itemFilterHandler.match(stack) == isItemWhiteList();
+        return itemFilterHandler.match(stack) == isItemWhiteList();
     }
 
     boolean passesFilter(Fluid fluid) {
-        boolean hasFilter = false;
-        for (FluidStack filterStack : fluidFilters.fluidStacks) {
-            if (filterStack.getAmount() > 0) {
-                if (matchFluids(filterStack, fluid)) return isFluidWhiteList();
-                hasFilter = true;
-            }
-        }
-        return !hasFilter;
-    }
-
-    private boolean matchFluids(FluidStack filterStack, Fluid fluid) {
-        // TODO tag matcher fluid support
-        return filterStack.getFluid() == fluid;
+        return fluidFilter.matchFluid(fluid) == isFluidWhiteList();
     }
 
     @Override
@@ -461,7 +447,7 @@ public abstract class AbstractLogisticsFrameEntity extends AbstractSemiblockEnti
         for (int i = 0; i < itemFilterHandler.getSlots(); i++) {
             payload.writeItem(itemFilterHandler.getStackInSlot(i));
         }
-        fluidFilters.write(payload);
+        fluidFilter.write(payload);
         if (this instanceof ISpecificRequester spr) {
             payload.writeVarInt(spr.getMinItemOrderSize());
             payload.writeVarInt(spr.getMinFluidOrderSize());
@@ -483,7 +469,7 @@ public abstract class AbstractLogisticsFrameEntity extends AbstractSemiblockEnti
         for (int i = 0; i < size; i++) {
             itemFilterHandler.setStackInSlot(i, payload.readItem());
         }
-        fluidFilters = new FluidFilter(payload);
+        fluidFilter = new FluidFilter(payload);
         if (this instanceof ISpecificRequester spr) {
             spr.setMinItemOrderSize(payload.readVarInt());
             spr.setMinFluidOrderSize(payload.readVarInt());
@@ -535,7 +521,7 @@ public abstract class AbstractLogisticsFrameEntity extends AbstractSemiblockEnti
          * Match against a filter stack. It's important that the filter stack is passed <em>first</em> here; since if
          * it's a {@link TagFilterItem}, it will have some special handling.
          *
-         * @param filterStack the stack to filter against, which is treated specially if it's a Tag Filter - beware
+         * @param filterStack the stack to filter against, which may be special filtering functionality
          * @param stack the stack being tested
          * @return true if the stack being tested matches the filter
          */
@@ -572,61 +558,4 @@ public abstract class AbstractLogisticsFrameEntity extends AbstractSemiblockEnti
         }
     }
 
-    public static class FluidFilter implements INBTSerializable<CompoundTag> {
-        private final List<FluidStack> fluidStacks;
-
-        public FluidFilter() {
-            fluidStacks = new ArrayList<>();
-        }
-
-        FluidFilter(int size) {
-            fluidStacks = new ArrayList<>();
-            for (int i = 0; i < size; i++) {
-                fluidStacks.add(FluidStack.EMPTY);
-            }
-        }
-
-        FluidFilter(FriendlyByteBuf packetBuffer) {
-            fluidStacks = new ArrayList<>();
-            int size = packetBuffer.readVarInt();
-            for (int i = 0; i < size; i++) {
-                fluidStacks.add(packetBuffer.readFluidStack());
-            }
-        }
-
-        public FluidStack get(int slot) {
-            return fluidStacks.get(slot);
-        }
-
-        public int size() {
-            return fluidStacks.size();
-        }
-
-        public void write(FriendlyByteBuf packetBuffer) {
-            packetBuffer.writeVarInt(fluidStacks.size());
-            fluidStacks.forEach(packetBuffer::writeFluidStack);
-        }
-
-        @Override
-        public CompoundTag serializeNBT() {
-            CompoundTag tag = new CompoundTag();
-            tag.putInt("size", fluidStacks.size());
-            ListTag list = new ListTag();
-            for (FluidStack f : fluidStacks) {
-                list.add(f.writeToNBT(new CompoundTag()));
-            }
-            tag.put("filters", list);
-            return tag;
-        }
-
-        @Override
-        public void deserializeNBT(CompoundTag nbt) {
-            fluidStacks.clear();
-            int n = nbt.getInt("size");
-            ListTag l = nbt.getList("filters", Tag.TAG_COMPOUND);
-            for (int i = 0; i < n; i++) {
-                fluidStacks.add(FluidStack.loadFluidStackFromNBT(l.getCompound(i)));
-            }
-        }
-    }
 }
