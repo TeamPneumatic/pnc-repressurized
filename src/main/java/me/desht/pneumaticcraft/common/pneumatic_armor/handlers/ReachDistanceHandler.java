@@ -79,4 +79,12 @@ public class ReachDistanceHandler extends BaseArmorUpgradeHandler<IArmorExtensio
             }
         }
     }
+
+    @Override
+    public void onShutdown(ICommonArmorHandler commonArmorHandler) {
+        AttributeInstance attr = commonArmorHandler.getPlayer().getAttribute(NeoForgeMod.BLOCK_REACH.value());
+        if (attr != null) {
+            attr.removeModifier(REACH_DIST_BOOST_ID);
+        }
+    }
 }
