@@ -78,8 +78,16 @@ public class ReachDistanceHandler extends BaseArmorUpgradeHandler<IArmorExtensio
         if (!newState) {
             AttributeInstance attr = commonArmorHandler.getPlayer().getAttribute(ForgeMod.REACH_DISTANCE.get());
             if (attr != null) {
-                attr.removeModifier(ReachDistanceHandler.REACH_DIST_BOOST);
+                attr.removeModifier(REACH_DIST_BOOST);
             }
+        }
+    }
+
+    @Override
+    public void onShutdown(ICommonArmorHandler commonArmorHandler) {
+        AttributeInstance attr = commonArmorHandler.getPlayer().getAttribute(ForgeMod.BLOCK_REACH.get());
+        if (attr != null) {
+            attr.removeModifier(REACH_DIST_BOOST);
         }
     }
 }
