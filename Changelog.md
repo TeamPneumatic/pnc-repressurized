@@ -6,6 +6,12 @@ Changes are in reverse chronological order; newest changes at the top.
 
 # Minecraft 1.19.2
 
+## [4.3.16]
+
+### Added
+* Added Chunkloader Upgrade, which can be added to Drones to keep 1 or more chunks loaded around the Drone
+  * This can be added to programmable Drones only, not the cheaper pre-programmed Drones
+
 ## [4.3.15]
 
 ### Added
