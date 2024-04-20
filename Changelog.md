@@ -8,6 +8,11 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## [6.0.15]
 
+### Added
+* Added Chunkloader Upgrade, which can be added to Drones to keep 1 or more chunks loaded around the Drone
+  * Thanks @ozraru
+  * This can be added to programmable Drones only, not the cheaper pre-programmed Drones
+
 ### Fixed
 * Fixed Pneumatic Armor keybinds not always working after they are initially set up
 * Fixed some outdated manual text regarding Pressure Chamber Interface descriptions
