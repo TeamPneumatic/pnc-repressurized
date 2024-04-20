@@ -16,6 +16,7 @@ Changes are in reverse chronological order; newest changes at the top.
 ### Fixed
 * Fixed Pneumatic Armor keybinds not always working after they are initially set up
 * Fixed some outdated manual text regarding Pressure Chamber Interface descriptions
+* Fixed Radiation Shielding Upgrade (for Mekanism radiation) recipe
 
 ## [6.0.14]
 
