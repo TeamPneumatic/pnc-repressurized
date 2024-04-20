@@ -4,7 +4,41 @@ This is an overview of significant new features and fixes by release.  See https
 
 Changes are in reverse chronological order; newest changes at the top.
 
+# Minecraft 1.20.4
+
+This release (and all future releases) is built for [Neoforge](https://neoforged.net/), and will _not_ work on [MinecraftForge](https://files.minecraftforge.net/)!
+
+## [7.0.0]
+
+### Added
+* Initial port to Minecraft 1.20.4, using NeoForge
+  * Based on most recent 6.0.x release for 1.20.1
+
 # Minecraft 1.20.1
+
+## [6.0.15]
+
+### Added
+* Added Chunkloader Upgrade, which can be added to Drones to keep 1 or more chunks loaded around the Drone
+  * Thanks @ozraru
+  * This can be added to programmable Drones only, not the cheaper pre-programmed Drones
+
+### Fixed
+* Fixed Pneumatic Armor keybinds not always working after they are initially set up
+* Fixed some outdated manual text regarding Pressure Chamber Interface descriptions
+
+## [6.0.14]
+
+### Added
+* Minimum pressure for the Pressurized Spawner is now configurable (default is 10 bar, as before)
+  * See `pressurized_spawner_min_pressure` config setting in common config
+
+### Fixed
+* Overhauled Redstone Tube Module implementation, improving timing consistency and server performance
+  * Thanks @ShBLOCK
+* Fixed server crash if a drone is summoned via commands
+  * Drones aren't supposed to be created this way, but also shouldn't crash completely
+* Fixed right-clicking a tube module with a block in hand also wrongly placing the block
 
 ## [6.0.13]
 
