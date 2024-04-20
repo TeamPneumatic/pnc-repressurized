@@ -1,0 +1,7 @@
+{
+   "parent" : "item/generated",
+   "textures" : {
+      "layer0" : "pneumaticcraft:item/upgrades/upgrade_layer0",
+      "layer1" : "pneumaticcraft:item/upgrades/chunkloader"
+   }
+}

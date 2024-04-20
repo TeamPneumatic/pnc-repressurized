@@ -18,6 +18,7 @@
 package me.desht.pneumaticcraft.common.entity.drone;
 
 import com.mojang.authlib.GameProfile;
+import me.desht.pneumaticcraft.ForcedChunks;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.block.IPneumaticWrenchable;
 import me.desht.pneumaticcraft.api.drone.IDrone;
@@ -25,6 +26,7 @@ import me.desht.pneumaticcraft.api.drone.IPathNavigator;
 import me.desht.pneumaticcraft.api.drone.IPathfindHandler;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.api.lib.NBTKeys;
+import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.api.pneumatic_armor.hacking.IHackableEntity;
 import me.desht.pneumaticcraft.api.pressure.PressureHelper;
 import me.desht.pneumaticcraft.api.semiblock.SemiblockEvent;
@@ -115,6 +117,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -128,6 +131,7 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.util.FakePlayer;
 import net.neoforged.neoforge.common.util.ITeleporter;
+import net.neoforged.neoforge.common.world.chunk.TicketController;
 import net.neoforged.neoforge.energy.IEnergyStorage;
 import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
 import net.neoforged.neoforge.fluids.FluidType;
@@ -227,6 +231,9 @@ public class DroneEntity extends AbstractDroneEntity implements
     private LogisticsManager logisticsManager;
     private final Map<Enchantment,Integer> stackEnchants = new HashMap<>();
     private boolean carriedEntityAIdisabled;  // true if the drone's carried entity AI was already disabled
+
+    private ChunkPos prevChunkPos = null;
+    private final Set<ChunkPos> loadedChunks = new HashSet<>();
 
     public DroneEntity(EntityType<? extends DroneEntity> type, Level world) {
         super(type, world);
@@ -465,6 +472,8 @@ public class DroneEntity extends AbstractDroneEntity implements
             if (securityUpgradeCount > 1 && getHealth() > 0F) {
                 handleFluidDisplacement();
             }
+
+            airHandler.addAir(-PneumaticValues.DRONE_USAGE_CHUNKLOAD*getUpgrades(ModUpgrades.CHUNKLOADER.get()));
         } else {
             oldLaserExtension = laserExtension;
             if (getActiveProgramKey().getPath().equals("dig")) {
@@ -542,6 +551,11 @@ public class DroneEntity extends AbstractDroneEntity implements
 
             setHasMinigun(getUpgrades(ModUpgrades.MINIGUN.get()) > 0);
 
+            if (getUpgrades(ModUpgrades.CHUNKLOADER.get()) > 0) {
+                prevChunkPos = chunkPosition();
+                handleDynamicChunkloading(prevChunkPos);
+            }
+
             droneItemHandler.setFakePlayerReady();
 
             aiManager.setWidgets(progWidgets);
@@ -574,6 +588,42 @@ public class DroneEntity extends AbstractDroneEntity implements
                 }
             }
         }
+    }
+
+    @Override
+    public void setPos(double x, double y, double z) {
+        super.setPos(x, y, z);
+        if (!level().isClientSide && prevChunkPos != null && !chunkPosition().equals(prevChunkPos)) {
+            prevChunkPos = chunkPosition();
+            handleDynamicChunkloading(prevChunkPos);
+        }
+    }
+
+    private void handleDynamicChunkloading(ChunkPos newPos) {
+        for (int cx = newPos.x - 1; cx <= newPos.x + 1; cx++) {
+            for (int cz = newPos.z - 1; cz <= newPos.z + 1; cz++) {
+                ChunkPos cp = new ChunkPos(cx, cz);
+                if (shouldLoadChunk(cp)) loadedChunks.add(cp);
+            }
+        }
+
+        Iterator<ChunkPos> iter = loadedChunks.iterator();
+        while (iter.hasNext()) {
+            ChunkPos cp = iter.next();
+            boolean load = shouldLoadChunk(cp);
+            ticketController().forceChunk((ServerLevel) level(), this, cp.x, cp.z, load, true);
+            if (!load) {
+                iter.remove();
+            }
+        }
+    }
+
+    private TicketController ticketController() {
+        return ForcedChunks.INSTANCE.getDroneController();
+    }
+
+    private boolean shouldLoadChunk(ChunkPos cp) {
+        return Math.abs(cp.x - chunkPosition().x)+Math.abs(cp.z - chunkPosition().z) < getUpgrades(ModUpgrades.CHUNKLOADER.get());
     }
 
     @Override
@@ -873,6 +923,10 @@ public class DroneEntity extends AbstractDroneEntity implements
         }
 
         restoreFluidBlocks(false);
+
+        if (!level().isClientSide) {
+            loadedChunks.forEach(cp -> ticketController().forceChunk((ServerLevel) level(), this, cp.x, cp.z, false, true));
+        }
 
         if (shouldDropAsItem()) {
             ItemStack stack = new ItemStack(getDroneItem());

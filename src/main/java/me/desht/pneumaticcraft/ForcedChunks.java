@@ -9,13 +9,20 @@ public enum ForcedChunks {
     INSTANCE;
 
     private TicketController pcController;
+    private TicketController droneController;
 
     public void registerTicketController(RegisterTicketControllersEvent event) {
         pcController = new TicketController(RL("programmable_controller"));
+        droneController = new TicketController(RL("drone_controller"));
         event.register(pcController);
+        event.register(droneController);
     }
 
     public TicketController getPcController() {
         return pcController;
+    }
+
+    public TicketController getDroneController() {
+        return droneController;
     }
 }

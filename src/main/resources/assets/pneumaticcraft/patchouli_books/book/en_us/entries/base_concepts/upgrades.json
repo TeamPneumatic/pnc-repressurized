@@ -219,6 +219,12 @@
             "anchor": "stomp",
             "recipe": "pneumaticcraft:stomp_upgrade",
             "text": "Crafting a Stomp Upgrade"
+        },
+        {
+            "type": "crafting",
+            "anchor": "chunkloader",
+            "recipe": "pneumaticcraft:chunkloader_upgrade",
+            "text": "Crafting a Chunkloader Upgrade"
         }
     ]
 }
