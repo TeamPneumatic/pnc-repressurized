@@ -34,7 +34,8 @@ public enum BuiltinUpgrade {
     GILDED("gilded"),
     ENDER_VISOR("ender_visor"),
     STOMP("stomp"),
-    ELYTRA("elytra");
+    ELYTRA("elytra"),
+    CHUNKLOADER("chunkloader");
 
     private final String name;
     private final int maxTier;

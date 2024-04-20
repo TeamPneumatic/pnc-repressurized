@@ -73,7 +73,6 @@ import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.mixin.accessors.EntityAccess;
 import net.minecraft.ChatFormatting;
-import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.BlockParticleOption;
@@ -606,7 +605,7 @@ public class DroneEntity extends AbstractDroneEntity implements
     @Override
     public void setPos(double x, double y, double z) {
         super.setPos(x, y, z);
-        if (!level.isClientSide && prevChunkPos != null && !chunkPosition().equals(prevChunkPos)) {
+        if (!level().isClientSide && prevChunkPos != null && !chunkPosition().equals(prevChunkPos)) {
             prevChunkPos = chunkPosition();
             handleDynamicChunkloading(prevChunkPos);
         }
@@ -624,7 +623,7 @@ public class DroneEntity extends AbstractDroneEntity implements
         while (iter.hasNext()) {
             ChunkPos cp = iter.next();
             boolean load = shouldLoadChunk(cp);
-            ForgeChunkManager.forceChunk((ServerLevel) level, Names.MOD_ID, this, cp.x, cp.z, load, true);
+            ForgeChunkManager.forceChunk((ServerLevel) level(), Names.MOD_ID, this, cp.x, cp.z, load, true);
             if (!load) {
                 iter.remove();
             }
@@ -933,8 +932,8 @@ public class DroneEntity extends AbstractDroneEntity implements
 
         restoreFluidBlocks(false);
 
-        if (!level.isClientSide) {
-            loadedChunks.forEach(cp -> ForgeChunkManager.forceChunk((ServerLevel) level, Names.MOD_ID, this, cp.x, cp.z, false, true));
+        if (!level().isClientSide) {
+            loadedChunks.forEach(cp -> ForgeChunkManager.forceChunk((ServerLevel) level(), Names.MOD_ID, this, cp.x, cp.z, false, true));
         }
 
         if (shouldDropAsItem()) {

@@ -38,6 +38,7 @@ public class ModUpgrades {
     public static final Supplier<PNCUpgrade> ENDER_VISOR = () -> BUILTIN_MAP.get(BuiltinUpgrade.ENDER_VISOR);
     public static final Supplier<PNCUpgrade> STOMP = () -> BUILTIN_MAP.get(BuiltinUpgrade.STOMP);
     public static final Supplier<PNCUpgrade> ELYTRA = () -> BUILTIN_MAP.get(BuiltinUpgrade.ELYTRA);
+    public static final Supplier<PNCUpgrade> CHUNKLOADER = () -> BUILTIN_MAP.get(BuiltinUpgrade.CHUNKLOADER);
 
     public static PNCUpgrade registerBuiltin(BuiltinUpgrade bu, PNCUpgrade pncUpgrade) {
         BUILTIN_MAP.put(bu, pncUpgrade);
