@@ -50,12 +50,12 @@ public class HeatExchangerLogicTicking implements IHeatExchangerLogic {
     private final List<TemperatureListener> temperatureCallbacks = new ArrayList<>();
 
     @Override
-    public void initializeAsHull(Level world, BlockPos pos, BiPredicate<LevelAccessor,BlockPos> blockFilter, Direction... validSides) {
+    public void initializeAsHull(Level level, BlockPos pos, BiPredicate<LevelAccessor,BlockPos> blockFilter, Direction... validSides) {
         if (ambientTemperature < 0) {
-            initializeAmbientTemperature(world, pos);
+            initializeAmbientTemperature(level, pos);
         }
 
-        if (world.isClientSide) return;
+        if (level.isClientSide) return;
 
         for (IHeatExchangerLogic logic : hullExchangers) {
             removeConnectedExchanger(logic);
@@ -64,10 +64,10 @@ public class HeatExchangerLogicTicking implements IHeatExchangerLogic {
         newBehaviours = new ArrayList<>();
         connections.clear();
         for (Direction dir : validSides) {
-            if (HeatBehaviourManager.getInstance().addHeatBehaviours(world, pos.relative(dir), dir, blockFilter, this, newBehaviours) > 0) {
+            if (HeatBehaviourManager.getInstance().addHeatBehaviours(level, pos.relative(dir), dir, blockFilter, this, newBehaviours) > 0) {
                 connections.set(dir.get3DDataValue());
             }
-            HeatExchangerManager.getInstance().getLogic(world, pos.relative(dir), dir.getOpposite(), blockFilter).ifPresent(logic -> {
+            HeatExchangerManager.getInstance().getLogic(level, pos.relative(dir), dir.getOpposite(), blockFilter).ifPresent(logic -> {
                 hullExchangers.add(logic);
                 addConnectedExchanger(logic);
                 connections.set(dir.get3DDataValue());
@@ -97,8 +97,8 @@ public class HeatExchangerLogicTicking implements IHeatExchangerLogic {
     }
 
     @Override
-    public void initializeAmbientTemperature(Level world, BlockPos pos) {
-        ambientTemperature = HeatExchangerLogicAmbient.atPosition(world, pos).getAmbientTemperature();
+    public void initializeAmbientTemperature(Level level, BlockPos pos) {
+        ambientTemperature = HeatExchangerLogicAmbient.atPosition(level, pos).getAmbientTemperature();
     }
 
     @Override

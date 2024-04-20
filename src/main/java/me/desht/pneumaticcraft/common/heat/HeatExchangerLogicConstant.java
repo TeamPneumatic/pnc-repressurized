@@ -43,11 +43,11 @@ public class HeatExchangerLogicConstant implements IHeatExchangerLogic {
     }
 
     @Override
-    public void initializeAsHull(Level world, BlockPos pos, BiPredicate<LevelAccessor,BlockPos> loseHeatToAir, Direction... validSides) {
+    public void initializeAsHull(Level level, BlockPos pos, BiPredicate<LevelAccessor,BlockPos> loseHeatToAir, Direction... validSides) {
     }
 
     @Override
-    public void initializeAmbientTemperature(Level world, BlockPos pos) {
+    public void initializeAmbientTemperature(Level level, BlockPos pos) {
     }
 
     @Override

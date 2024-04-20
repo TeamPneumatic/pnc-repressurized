@@ -26,6 +26,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.common.util.INBTSerializable;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
@@ -40,39 +41,39 @@ import java.util.function.BiPredicate;
  * in your BE, and provide it via capability as described above. Your BE should also call {@link #tick()} and
  * {@link #initializeAsHull(Level, BlockPos, BiPredicate, Direction...)} as documented in those methods.
  * <p>
- * If you want to attach this capability as an <em>adapater</em> to other mods' heat systems, see
+ * If you want to attach this capability as an <em>adapter</em> to other mods' heat systems, see
  * {@link IHeatExchangerAdapter} and {@link IHeatExchangerAdapter.Simple} which are convenience extensions and
- * implementations of this interface.
+ * implementations of this interface, respectively.
  *
  * @author MineMaarten, desht
  */
 public interface IHeatExchangerLogic extends INBTSerializable<CompoundTag> {
     /**
-     * Call this to tick this logic, and make the heat disperse itself. In general this should be called each tick
-     * by the owning block entity's {@code tick()} method, on the server side only.
+     * Call this to tick this logic, and make the heat disperse itself to neighbours. Typically, this is called
+     * each tick by the owning block entity's {@code tick()} method, on the server side only.
      */
     void tick();
 
     /**
-     * Discovers all heat exchanging neighbor block entities  (i.e. block entities who provide the
+     * Discovers all heat exchanging neighbor block entities (i.e. block entities who provide the
      * {@link IHeatExchangerLogic} capability on that side) and adds them as connected heat exchangers.  It also
      * accounts for neighbouring blocks with special heat properties, like Magma or Lava, and other special cases like
      * Heat Frames (which are entities).
      * <p>
-     * This should be called by the owning block entity on first tick ({@link BlockEntity#onLoad()} is suitable)
+     * This should be called by the owning block entity on its first tick ({@link BlockEntity#onLoad()} is suitable)
      * and when neighboring blocks update
      * ({@link net.minecraft.world.level.block.Block#neighborChanged(BlockState, Level, BlockPos, Block, BlockPos, boolean)}.
      * <p>
      * You don't need to call this method if this heat exchanger is not connected to the outside world (e.g.
      * the internal connecting heat exchanger within a Vortex Tube).
      *
-     * @param world the world
+     * @param level the level
      * @param pos the blockpos of the owning block entity
      * @param blockFilter a whitelist check; can be used to exclude certain blocks, e.g. air or fluids. In most cases,
      *                    {@link #ALL_BLOCKS} can be passed here.
      * @param validSides an array of sides to check for heat exchanging neighbours
      */
-    void initializeAsHull(Level world, BlockPos pos, BiPredicate<LevelAccessor,BlockPos> blockFilter, Direction... validSides);
+    void initializeAsHull(Level level, BlockPos pos, BiPredicate<LevelAccessor,BlockPos> blockFilter, Direction... validSides);
 
     /**
      * Initialize this heat exchanger's ambient temperature based on the given world &amp; position.  You don't need to
@@ -80,22 +81,22 @@ public interface IHeatExchangerLogic extends INBTSerializable<CompoundTag> {
      * via capability lookup), as such heat exchangers are automatically initialized by
      * {@link IHeatExchangerLogic#initializeAsHull(Level, BlockPos, BiPredicate, Direction...)}.
      *
-     * @param world the world
-     * @param pos the position
+     * @param level the level
+     * @param pos the block position
      */
-    void initializeAmbientTemperature(Level world, BlockPos pos);
+    void initializeAmbientTemperature(Level level, BlockPos pos);
 
     /**
-     * When called, this will create a thermal connection between this heat exchanger and the given one. This should
-     * be used when your BE contains more than one heat exchanger and you need a thermal connection between them;
-     * an example is the hot and cold ends of the Vortex Tube.
+     * When called, a thermal connection is created between this heat exchanger and the given one. This should
+     * be used when your block entity contains more than one heat exchanger, and you need a thermal connection between
+     * them; an example is the hot and cold ends of the Vortex Tube.
      * <p>
      * You <strong>don't</strong> need to call this method if your BE just has one heat exchanger to
      * expose to the world; in that case {@link #initializeAsHull(Level, BlockPos, BiPredicate, Direction...)} will
      * handle connecting your BE's heat exchanger to neighbouring blocks.
      * <p>
-     * You should only call this method on one of the two heat exchangers being connected; a reciprocal connection
-     * on the target heat exchanger will automatically be added.
+     * You should only call this method on <strong>one</strong> of the two heat exchangers being connected; a reciprocal
+     * connection on the target heat exchanger is automatically added.
      *
      * @param exchanger the other heat exchanger
      */
@@ -108,6 +109,7 @@ public interface IHeatExchangerLogic extends INBTSerializable<CompoundTag> {
      * @param reciprocate whether the other exchanger should also add this one
      * @apiNote non-api; don't call directly
      */
+    @ApiStatus.Internal
     default void addConnectedExchanger(IHeatExchangerLogic exchanger, boolean reciprocate) {
     }
 
@@ -125,6 +127,7 @@ public interface IHeatExchangerLogic extends INBTSerializable<CompoundTag> {
      * @param reciprocate whether the other exchanger should also remove this one
      * @apiNote non-api; don't call directly
      */
+    @ApiStatus.Internal
     default void removeConnectedExchanger(IHeatExchangerLogic exchanger, boolean reciprocate) {
     }
 

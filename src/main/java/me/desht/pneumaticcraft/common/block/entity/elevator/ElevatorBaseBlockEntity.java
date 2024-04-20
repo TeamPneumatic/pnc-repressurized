@@ -337,11 +337,7 @@ public class ElevatorBaseBlockEntity extends AbstractAirHandlingBlockEntity impl
             extension = tag.getFloat("extension");
             targetExtension = tag.getFloat("targetExtension");
         }
-        if (!tag.contains("maxFloorHeight")) {//backwards compatibility implementation.
-            updateMaxElevatorHeight();
-        } else {
-            maxFloorHeight = tag.getInt("maxFloorHeight");
-        }
+        maxFloorHeight = tag.getInt("maxFloorHeight");
     }
 
     @Override

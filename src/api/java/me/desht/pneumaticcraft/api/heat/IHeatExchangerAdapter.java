@@ -26,8 +26,9 @@ import java.util.function.BiPredicate;
 
 /**
  * A special extension of {@link IHeatExchangerLogic} intended for implementing adapter objects for other mods' heat
- * systems.  An implementation of this can be attached to other mods' tile entities to make them appear like PNC heat
- * exchanging blocks, while internally adapting the PNC heat API to the block's actual heat API.
+ * systems.  An implementation of this can be attached (as the {@link me.desht.pneumaticcraft.api.PNCCapabilities#HEAT_EXCHANGER_BLOCK}
+ * capability) to other mods' block entities to make them appear like PNC heat exchanging blocks, while internally
+ * adapting the PNC heat API to the block's native heat API.
  */
 public interface IHeatExchangerAdapter extends IHeatExchangerLogic {
     @Override
@@ -35,11 +36,11 @@ public interface IHeatExchangerAdapter extends IHeatExchangerLogic {
     }
 
     @Override
-    default void initializeAsHull(Level world, BlockPos pos, BiPredicate<LevelAccessor, BlockPos> blockFilter, Direction... validSides) {
+    default void initializeAsHull(Level level, BlockPos pos, BiPredicate<LevelAccessor, BlockPos> blockFilter, Direction... validSides) {
     }
 
     @Override
-    default void initializeAmbientTemperature(Level world, BlockPos pos) {
+    default void initializeAmbientTemperature(Level level, BlockPos pos) {
     }
 
     @Override
