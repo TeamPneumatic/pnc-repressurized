@@ -1033,6 +1033,13 @@ public class ModRecipeProvider extends RecipeProvider {
                 'N', NBTIngredient.of(true, nightVisionPotion)
         ).save(consumer);
 
+        shaped(ModUpgrades.CHUNKLOADER.get().getItem(), ModItems.DRONE.get(),
+                "LCL/ECE/LCL",
+                'L', PneumaticCraftTags.Items.UPGRADE_COMPONENTS,
+                'E', Items.ENDER_EYE,
+                'C', ModItems.PRINTED_CIRCUIT_BOARD.get()
+        ).save(consumer);
+
         shaped(ModUpgrades.SCUBA.get().getItem(), ModItems.PNEUMATIC_HELMET.get(),
                 "LTL/PRP/LPL",
                 'L', PneumaticCraftTags.Items.UPGRADE_COMPONENTS,
