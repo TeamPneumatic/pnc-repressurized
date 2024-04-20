@@ -17,6 +17,7 @@ Changes are in reverse chronological order; newest changes at the top.
 * Fixed Pneumatic Armor keybinds not always working after they are initially set up
 * Fixed some outdated manual text regarding Pressure Chamber Interface descriptions
 * Fixed Radiation Shielding Upgrade (for Mekanism radiation) recipe
+* Fixed Reach Distance armor upgrade not getting reset if Pneumatic Chestplate is removed
 
 ## [6.0.14]
 
