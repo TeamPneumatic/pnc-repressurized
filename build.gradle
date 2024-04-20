@@ -141,6 +141,7 @@ dependencies {
 	compileOnly fg.deobf("org.squiddev:cc-tweaked-1.19.2:${cc_tweaked_version}")
 	implementation fg.deobf("blusunrize.immersiveengineering:ImmersiveEngineering:${immersive_engineering_version}")
 	compileOnly fg.deobf("mekanism:Mekanism:${mekanism_version}:api")
+	runtimeOnly fg.deobf("mekanism:Mekanism:${mekanism_version}")
 	//runtimeOnly fg.deobf("mekanism:Mekanism:${mekanism_version}")
 	implementation fg.deobf("com.simibubi.create:create-1.20.1:${create_version}:slim") { transitive = false }
 	implementation fg.deobf("com.jozufozu.flywheel:flywheel-forge-1.20.1:${flywheel_version}")
