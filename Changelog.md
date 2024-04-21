@@ -6,23 +6,17 @@ Changes are in reverse chronological order; newest changes at the top.
 
 # Minecraft 1.19.2
 
-## [4.3.16]
+## [4.3.15]
 
 ### Added
+* Minimum pressure for the Pressurized Spawner is now configurable (default is 10 bar, as before)
+  * See `pressurized_spawner_min_pressure` config setting in common config
 * Added Chunkloader Upgrade, which can be added to Drones to keep 1 or more chunks loaded around the Drone
   * Thanks @ozraru
   * This can be added to programmable Drones only, not the cheaper pre-programmed Drones
 
 ### Fixed
 * Fixed Drone redstone emission not working
-
-## [4.3.15]
-
-### Added
-* Minimum pressure for the Pressurized Spawner is now configurable (default is 10 bar, as before)
-  * See `pressurized_spawner_min_pressure` config setting in common config
-
-### Fixed
 * Fixed tag display in the Tag Workbench GUI getting cut off after a few rows
 
 ## [4.3.14]
