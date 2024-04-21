@@ -33,6 +33,7 @@ import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.api.tileentity.IManoMeasurable;
 import me.desht.pneumaticcraft.api.upgrade.PNCUpgrade;
 import me.desht.pneumaticcraft.client.util.ProgressingLine;
+import me.desht.pneumaticcraft.common.block.entity.DroneRedstoneEmitterBlockEntity;
 import me.desht.pneumaticcraft.common.block.entity.PneumaticEnergyStorage;
 import me.desht.pneumaticcraft.common.block.entity.ProgrammerBlockEntity;
 import me.desht.pneumaticcraft.common.capabilities.BasicAirHandler;
@@ -575,11 +576,12 @@ public class DroneEntity extends AbstractDroneEntity implements
     }
 
     private void handleRedstoneEmission() {
-        for (Direction d : DirectionUtil.VALUES) {
-            if (getEmittingRedstone(d) > 0) {
-                BlockPos emitterPos = new BlockPos((int) Math.floor(getX() + getBbWidth() / 2), (int) Math.floor(getY()), (int) Math.floor(getZ() + getBbWidth() / 2));
-                if (level().isEmptyBlock(emitterPos)) {
-                    level().setBlockAndUpdate(emitterPos, ModBlocks.DRONE_REDSTONE_EMITTER.get().defaultBlockState());
+        if (level().isEmptyBlock(blockPosition())) {
+            for (Direction d : DirectionUtil.VALUES) {
+                if (getEmittingRedstone(d) > 0) {
+                    level().setBlockAndUpdate(blockPosition(), ModBlocks.DRONE_REDSTONE_EMITTER.get().defaultBlockState());
+                    PneumaticCraftUtils.getTileEntityAt(level(), blockPosition(), DroneRedstoneEmitterBlockEntity.class)
+                            .ifPresent(be -> be.setOwner(this));
                 }
                 break;
             }
@@ -1235,6 +1237,7 @@ public class DroneEntity extends AbstractDroneEntity implements
         return droneItemHandler;
     }
 
+    @Override
     public int getEmittingRedstone(Direction side) {
         return emittingRedstoneValues.getOrDefault(side, 0);
     }

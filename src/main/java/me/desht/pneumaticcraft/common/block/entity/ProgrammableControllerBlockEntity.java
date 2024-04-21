@@ -676,6 +676,7 @@ public class ProgrammableControllerBlockEntity extends AbstractAirHandlingBlockE
         updateNeighbours();
     }
 
+    @Override
     public int getEmittingRedstone(Direction direction) {
         return redstoneLevels[direction.get3DDataValue()];
     }
