@@ -18,6 +18,7 @@ Changes are in reverse chronological order; newest changes at the top.
 * Fixed some outdated manual text regarding Pressure Chamber Interface descriptions
 * Fixed Radiation Shielding Upgrade (for Mekanism radiation) recipe
 * Fixed Reach Distance armor upgrade not getting reset if Pneumatic Chestplate is removed
+* Fixed Drone redstone emission not working
 
 ## [6.0.14]
 
