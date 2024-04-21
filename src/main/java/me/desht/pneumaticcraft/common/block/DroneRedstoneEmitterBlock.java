@@ -19,6 +19,7 @@ package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.common.block.entity.DroneRedstoneEmitterBlockEntity;
 import me.desht.pneumaticcraft.common.entity.drone.DroneEntity;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.BlockGetter;
@@ -34,7 +35,7 @@ import net.minecraft.world.phys.AABB;
 import javax.annotation.Nullable;
 import java.util.List;
 
-public class DroneRedstoneEmitterBlock extends AirBlock implements EntityBlock {
+public class DroneRedstoneEmitterBlock extends AirBlock implements PneumaticCraftEntityBlock {
     public DroneRedstoneEmitterBlock() {
         super(Block.Properties.copy(Blocks.AIR));
     }
@@ -51,16 +52,9 @@ public class DroneRedstoneEmitterBlock extends AirBlock implements EntityBlock {
 
     @Override
     public int getSignal(BlockState state, BlockGetter blockAccess, BlockPos pos, Direction side) {
-        if (blockAccess instanceof EntityGetter entityGetter) {
-            List<DroneEntity> drones = entityGetter.getEntitiesOfClass(DroneEntity.class, new AABB(pos, pos.offset(1, 1, 1)));
-            int signal = 0;
-            for (DroneEntity drone : drones) {
-                signal = Math.max(signal, drone.getEmittingRedstone(side.getOpposite()));
-            }
-            return signal;
-        } else {
-            return 0;
-        }
+        return PneumaticCraftUtils.getTileEntityAt(blockAccess, pos, DroneRedstoneEmitterBlockEntity.class)
+                .map(be -> be.getSignalLevel(side))
+                .orElse(0);
     }
 
     @Nullable

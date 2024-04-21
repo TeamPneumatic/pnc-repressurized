@@ -34,6 +34,7 @@ import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.api.tileentity.IManoMeasurable;
 import me.desht.pneumaticcraft.client.util.ProgressingLine;
 import me.desht.pneumaticcraft.common.PNCDamageSource;
+import me.desht.pneumaticcraft.common.block.entity.DroneRedstoneEmitterBlockEntity;
 import me.desht.pneumaticcraft.common.block.entity.PneumaticEnergyStorage;
 import me.desht.pneumaticcraft.common.block.entity.ProgrammerBlockEntity;
 import me.desht.pneumaticcraft.common.capabilities.BasicAirHandler;
@@ -1213,6 +1214,7 @@ public class DroneEntity extends AbstractDroneEntity implements
         return droneItemHandler;
     }
 
+    @Override
     public int getEmittingRedstone(Direction side) {
         return emittingRedstoneValues.getOrDefault(side, 0);
     }
