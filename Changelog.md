@@ -10,7 +10,11 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ### Added
 * Added Chunkloader Upgrade, which can be added to Drones to keep 1 or more chunks loaded around the Drone
+  * Thanks @ozraru
   * This can be added to programmable Drones only, not the cheaper pre-programmed Drones
+
+### Fixed
+* Fixed Drone redstone emission not working
 
 ## [4.3.15]
 
