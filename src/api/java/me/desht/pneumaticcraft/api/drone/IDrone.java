@@ -161,6 +161,8 @@ public interface IDrone {
      */
     void setEmittingRedstone(Direction orientation, int emittingRedstone);
 
+    int getEmittingRedstone(Direction orientation);
+
     /**
      * Set the drone's custom name.
      *
