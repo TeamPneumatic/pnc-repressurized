@@ -116,13 +116,10 @@ public class ProgrammableControllerBlockEntity extends AbstractAirHandlingBlockE
     private static final double BASE_SPEED = 0.15;
 
     private final ProgrammableItemStackHandler inventory = new ProgrammableItemStackHandler(this);
-//    private final LazyOptional<IItemHandler> invCap = LazyOptional.of(() -> inventory);
 
     private final FluidTank tank = new FluidTank(16000);
-//    private final LazyOptional<IFluidHandler> tankCap = LazyOptional.of(() -> tank);
 
     private final PneumaticEnergyStorage energy = new PneumaticEnergyStorage(MAX_ENERGY);
-//    private final LazyOptional<IEnergyStorage> energyCap = LazyOptional.of(() -> energy);
 
     private final DroneItemHandler droneItemHandler = new DroneItemHandler(this, 1);
 

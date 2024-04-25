@@ -84,9 +84,9 @@ repositories {
 	maven {
 		name "FTB Maven"
 		url "https://maven.ftb.dev/releases/"
-//		content {
-//			includeGroup "dev.ftb.mods.ftb-filter-system"
-//		}
+		content {
+			includeGroup "dev.ftb.mods"
+		}
 	}
 }
 
