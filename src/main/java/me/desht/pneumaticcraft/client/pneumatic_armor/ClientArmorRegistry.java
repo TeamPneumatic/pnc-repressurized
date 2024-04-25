@@ -69,6 +69,8 @@ public enum ClientArmorRegistry implements IClientArmorRegistry {
     private final Map<ResourceLocation, KeyMapping> id2KeyBindMap = new ConcurrentHashMap<>();
     // map keymapping name to upgrade handler that it triggers (e.g. hacking, kick, item launcher...)
     private final Map<String, IArmorUpgradeClientHandler<?>> triggerKeyBindMap = new ConcurrentHashMap<>();
+    // frozen when everything set up
+    private boolean frozen;
 
     public static ClientArmorRegistry getInstance() {
         return INSTANCE;
@@ -244,4 +246,11 @@ public enum ClientArmorRegistry implements IClientArmorRegistry {
         }
     }
 
+    public void freeze() {
+        frozen = true;
+    }
+
+    public boolean isFrozen() {
+        return frozen;
+    }
 }

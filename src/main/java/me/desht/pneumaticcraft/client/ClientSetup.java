@@ -8,11 +8,7 @@ import me.desht.pneumaticcraft.client.gui.programmer.*;
 import me.desht.pneumaticcraft.client.gui.semiblock.LogisticsProviderScreen;
 import me.desht.pneumaticcraft.client.gui.semiblock.LogisticsRequesterScreen;
 import me.desht.pneumaticcraft.client.gui.semiblock.LogisticsStorageScreen;
-import me.desht.pneumaticcraft.client.gui.tubemodule.AirGrateModuleScreen;
-import me.desht.pneumaticcraft.client.gui.tubemodule.LogisticsModuleScreen;
-import me.desht.pneumaticcraft.client.gui.tubemodule.PressureGaugeModuleScreen;
-import me.desht.pneumaticcraft.client.gui.tubemodule.RedstoneModuleScreen;
-import me.desht.pneumaticcraft.client.gui.tubemodule.ThermostatModuleScreen;
+import me.desht.pneumaticcraft.client.gui.tubemodule.*;
 import me.desht.pneumaticcraft.client.gui.upgrademanager.*;
 import me.desht.pneumaticcraft.client.model.ModelMinigun;
 import me.desht.pneumaticcraft.client.model.PNCModelLayers;
@@ -133,6 +129,7 @@ public class ClientSetup {
         BlockTrackHandler.getInstance().freeze();
         ClientArmorRegistry.getInstance().registerSubKeyBinds();
         ClientArmorRegistry.getInstance().registerKeybindsWithMinecraft();
+        ClientArmorRegistry.getInstance().freeze();
 
         registerProgWidgetExtraRenderers();
     }
