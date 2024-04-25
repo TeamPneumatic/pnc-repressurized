@@ -18,13 +18,11 @@ plugins {
 	id "me.modmuss50.mod-publish-plugin" version "0.4.5"
 }
 
-//version = "${mod_version}+mc${minecraft_version}"
-//group = mod_group_id
-
-ext.releaseTag = providers.environmentVariable("TAG").orElse("").toString()
-ext.isAlpha = ext.releaseTag.contains("alpha")
-ext.isBeta = ext.releaseTag.contains("beta")
-def relType = ext.isAlpha ? "alpha" : (ext.isBeta ? "beta" : "release")
+ext {
+	releaseTag = providers.environmentVariable("TAG").orElse("").get()
+	isAlpha = ext.releaseTag.contains("alpha")
+	isBeta = ext.releaseTag.contains("beta")
+}
 
 // All jar files from this folder will be added automatically as runtime-only mod dependencies
 def extraModsDir = "extra-mods-${minecraft_version}"
@@ -154,7 +152,7 @@ dependencies {
 	testImplementation "org.junit.jupiter:junit-jupiter-api:5.7.2"
 	testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.7.2"
 
-	compileOnly("mcjty.theoneprobe:theoneprobe:${top_version}") {
+	implementation("mcjty.theoneprobe:theoneprobe:${top_version}") {
 		exclude group: "net.minecraftforge", module: "forge"
 	}
 
@@ -308,19 +306,12 @@ tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
 }
 
-Closure<ReleaseType> getReleaseType = { type ->
-    switch(type) {
-        case "alpha": return ReleaseType.ALPHA
-        case "beta": return ReleaseType.BETA
-        default: return ReleaseType.STABLE
-    }
-}
-
+def releaseType = ext.isAlpha ? ReleaseType.ALPHA : (ext.isBeta ? ReleaseType.BETA : ReleaseType.STABLE)
 publishMods {
     dryRun = providers.environmentVariable("CURSEFORGE_TOKEN").getOrNull() == null
     changelog = providers.environmentVariable("CHANGELOG").orElse("dryrun")
     version = mod_version
-    type = getReleaseType(relType)
+    type = releaseType
     file = jar.archiveFile
     displayName = "${mod_name} ${mod_version} MC-${minecraft_version}"
     modLoaders.add("neoforge")
