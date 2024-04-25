@@ -123,7 +123,7 @@ public class ClassifyFilterItem extends Item implements IFilteringItem {
     }
 
     public enum FilterCondition implements ITranslatableEnum, Predicate<ItemStack> {
-        FUEL_ITEM(Items.COAL, s -> CommonHooks.getBurnTime(s, RecipeType.SMELTING) > 0),
+        FUEL_ITEM(Items.COAL, s -> s.getBurnTime(RecipeType.SMELTING) > 0),
         EDIBLE(Items.BREAD, ItemStack::isEdible),
         PLACEABLE(Items.STONE, s -> s.getItem() instanceof BlockItem),
         FLUID_CONTAINER(Items.BUCKET, s -> IOHelper.getFluidHandlerForItem(s).isPresent()),
