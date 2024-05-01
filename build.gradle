@@ -14,7 +14,6 @@ plugins {
     id 'idea'
     id 'maven-publish'
     id 'net.neoforged.gradle.userdev' version '7.0.101'
-	id 'net.neoforged.gradle.mixin' version '[7.0.5,)'
 	id "me.modmuss50.mod-publish-plugin" version "0.4.5"
 }
 
