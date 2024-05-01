@@ -119,11 +119,6 @@ public class MachineAirHandler extends BasicAirHandler implements IAirHandlerMac
     public void setConnectableFaces(Collection<Direction> sides) {
         connectableFaces.clear();
         sides.forEach(side -> connectableFaces.set(side.get3DDataValue()));
-
-        // invalidate cached neighbour data
-        for (Direction dir : DirectionUtil.VALUES) {
-            this.neighbourAirHandlers.put(dir, null);
-        }
     }
 
     @Override
@@ -248,9 +243,7 @@ public class MachineAirHandler extends BasicAirHandler implements IAirHandlerMac
                 neighbourAirHandlers.put(dir, BlockCapabilityCache.create(PNCCapabilities.AIR_HANDLER_MACHINE,
                         level,
                         ownerTE.getBlockPos().relative(dir),
-                        dir.getOpposite(),
-                        () -> !ownerTE.isRemoved(),
-                        () -> neighbourAirHandlers.put(dir, null)
+                        dir.getOpposite()
                 ));
             }
             return Optional.ofNullable(neighbourAirHandlers.get(dir).getCapability());

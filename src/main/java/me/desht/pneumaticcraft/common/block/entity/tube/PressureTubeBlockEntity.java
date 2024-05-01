@@ -70,6 +70,7 @@ public class PressureTubeBlockEntity extends AbstractAirHandlingBlockEntity impl
     private final List<Direction> neighbourDirections = new ArrayList<>();
     private VoxelShape cachedTubeShape = null; // important for performance
     private int pendingCacheShapeClear = 0;
+    private boolean needDiscover = false;
 
     public PressureTubeBlockEntity(BlockPos pos, BlockState state) {
         this(ModBlockEntityTypes.PRESSURE_TUBE.get(), pos, state, PressureTier.TIER_ONE, PneumaticValues.VOLUME_PRESSURE_TUBE);
@@ -199,6 +200,11 @@ public class PressureTubeBlockEntity extends AbstractAirHandlingBlockEntity impl
     public void tickServer() {
         super.tickServer();
 
+        if (needDiscover) {
+            discoverConnectedNeighbors();
+            needDiscover = false;
+        }
+
         boolean couldLeak = true;
 
         for (Direction dir : DirectionUtil.VALUES) {
@@ -320,7 +326,10 @@ public class PressureTubeBlockEntity extends AbstractAirHandlingBlockEntity impl
 
         tubeModules().forEach(AbstractTubeModule::onNeighborBlockUpdate);
 
-        discoverConnectedNeighbors();
+        // connected neighbour discovery needs to be deferred,
+        //   since although the neighbouring block has updated,
+        //   the block entity's air handler data may not yet have updated
+        needDiscover = true;
     }
 
     private void discoverConnectedNeighbors() {

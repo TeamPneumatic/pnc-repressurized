@@ -120,7 +120,6 @@ public abstract class AbstractAirHandlingBlockEntity extends AbstractTickingBloc
     public void onBlockRotated() {
         super.onBlockRotated();
 
-        // force a recalculation of where any possible leak might be coming from
         initializeHullAirHandlers();
 
         airHandlerMap.keySet().forEach(h -> h.setSideLeaking(null));
