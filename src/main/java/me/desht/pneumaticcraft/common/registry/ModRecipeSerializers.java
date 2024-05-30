@@ -94,8 +94,6 @@ public class ModRecipeSerializers {
             = RECIPE_SERIALIZERS.register("drone_upgrade_crafting", () -> new SimpleCraftingRecipeSerializer<>(DroneUpgradeCrafting::new));
     public static final Supplier<SimpleCraftingRecipeSerializer<DroneColorCrafting>> DRONE_COLOR_CRAFTING
             = RECIPE_SERIALIZERS.register("drone_color_crafting", () -> new SimpleCraftingRecipeSerializer<>(DroneColorCrafting::new));
-    public static final Supplier<SimpleCraftingRecipeSerializer<PatchouliBookCrafting>> PATCHOULI_BOOK_CRAFTING
-            = RECIPE_SERIALIZERS.register("patchouli_book_crafting", () -> new SimpleCraftingRecipeSerializer<>(PatchouliBookCrafting::new));
 
     public static final Supplier<ShapedPressurizableRecipe.Serializer> CRAFTING_SHAPED_PRESSURIZABLE
             = RECIPE_SERIALIZERS.register("crafting_shaped_pressurizable", ShapedPressurizableRecipe.Serializer::new);

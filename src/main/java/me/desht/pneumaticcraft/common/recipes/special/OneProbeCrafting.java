@@ -17,8 +17,11 @@
 
 package me.desht.pneumaticcraft.common.recipes.special;
 
+import com.google.common.base.Suppliers;
+import me.desht.pneumaticcraft.common.recipes.ModCraftingHelper;
 import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.registry.ModRecipeSerializers;
+import net.minecraft.Util;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -29,39 +32,39 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.ShapelessRecipe;
 import net.minecraft.world.level.Level;
 
 import java.util.List;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
-public class OneProbeCrafting extends CustomPNCRecipe {
+public class OneProbeCrafting extends ShapelessRecipe {
+    private static final Supplier<Item> oneProbeItem
+            = Suppliers.memoize(() -> BuiltInRegistries.ITEM.get(new ResourceLocation("theoneprobe:probe")));
+
     protected static final List<Predicate<ItemStack>> ITEM_PREDICATE = List.of(
             stack -> stack.getItem() == ModItems.PNEUMATIC_HELMET.get(),
-            stack -> stack.getItem() == probe() && !stack.isEmpty()
+            stack -> stack.getItem() == oneProbeItem.get() && !stack.isEmpty()
     );
-    private static Item theOneProbe = null;
 
     private static final String ONE_PROBE_TAG = "theoneprobe";
 
     public OneProbeCrafting(CraftingBookCategory category) {
-        super(category);
-    }
-
-    private static Item probe() {
-        if (theOneProbe == null) {
-            theOneProbe = BuiltInRegistries.ITEM.get(new ResourceLocation("theoneprobe:probe"));
-        }
-        return theOneProbe;
+        super("", category,
+                Util.make(new ItemStack(ModItems.PNEUMATIC_HELMET.get()), OneProbeCrafting::setOneProbeEnabled),
+                NonNullList.of(Ingredient.EMPTY, Ingredient.of(ModItems.PNEUMATIC_HELMET.get()), Ingredient.of(oneProbeItem.get()))
+        );
     }
 
     @Override
     public boolean matches(CraftingContainer inv, Level worldIn) {
-        return findItems(inv, ITEM_PREDICATE).size() == 2;
+        return ModCraftingHelper.allPresent(inv, ITEM_PREDICATE);
     }
 
     @Override
     public ItemStack assemble(CraftingContainer inv, RegistryAccess registryAccess) {
-        List<ItemStack> stacks = findItems(inv, ITEM_PREDICATE);
+        List<ItemStack> stacks = ModCraftingHelper.findItems(inv, ITEM_PREDICATE);
         return setOneProbeEnabled(stacks.get(0).copy());
     }
 
@@ -73,16 +76,6 @@ public class OneProbeCrafting extends CustomPNCRecipe {
     @Override
     public RecipeSerializer<?> getSerializer() {
         return ModRecipeSerializers.ONE_PROBE_HELMET_CRAFTING.get();
-    }
-
-    @Override
-    public ItemStack getResultItem(RegistryAccess access) {
-        return setOneProbeEnabled(new ItemStack(ModItems.PNEUMATIC_HELMET.get()));
-    }
-
-    @Override
-    public NonNullList<Ingredient> getIngredients() {
-        return NonNullList.of(Ingredient.EMPTY, Ingredient.of(ModItems.PNEUMATIC_HELMET.get()), Ingredient.of(probe()));
     }
 
     public static boolean isOneProbeEnabled(ItemStack helmetStack) {

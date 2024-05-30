@@ -18,6 +18,7 @@
 package me.desht.pneumaticcraft.common.recipes.special;
 
 import me.desht.pneumaticcraft.common.item.minigun.StandardGunAmmoItem;
+import me.desht.pneumaticcraft.common.recipes.ModCraftingHelper;
 import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.registry.ModRecipeSerializers;
 import net.minecraft.core.NonNullList;
@@ -33,6 +34,7 @@ import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.ShapelessRecipe;
 import net.minecraft.world.level.Level;
 
 import javax.annotation.Nullable;
@@ -40,24 +42,26 @@ import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-public class GunAmmoPotionCrafting extends CustomPNCRecipe {
-    private static final List<Predicate<ItemStack>> ITEM_PREDICATE = List.of(
+public class GunAmmoPotionCrafting extends ShapelessRecipe {
+    private static final List<Predicate<ItemStack>> ITEM_PREDICATES = List.of(
             stack -> stack.getItem() instanceof PotionItem,
             stack -> stack.getItem() instanceof StandardGunAmmoItem
     );
 
     public GunAmmoPotionCrafting(CraftingBookCategory category) {
-        super(category);
+        super("", category, ModItems.GUN_AMMO.get().getDefaultInstance(), NonNullList.of(Ingredient.EMPTY,
+                Ingredient.of(ModItems.GUN_AMMO.get()), new PotionIngredient())
+        );
     }
 
     @Override
     public boolean matches(CraftingContainer container, Level level) {
-        return findItems(container, ITEM_PREDICATE).size() == 2;
+        return ModCraftingHelper.allPresent(container, ITEM_PREDICATES);
     }
 
     @Override
     public ItemStack assemble(CraftingContainer inv, RegistryAccess registryAccess) {
-        List<ItemStack> stacks = findItems(inv, ITEM_PREDICATE);
+        List<ItemStack> stacks = ModCraftingHelper.findItems(inv, ITEM_PREDICATES);
         if (stacks.size() == 2) {
             ItemStack potion = stacks.get(0);
             ItemStack ammo = stacks.get(1).copy();
@@ -79,16 +83,6 @@ public class GunAmmoPotionCrafting extends CustomPNCRecipe {
         return ModRecipeSerializers.GUN_AMMO_POTION_CRAFTING.get();
     }
 
-    @Override
-    public ItemStack getResultItem(RegistryAccess access) {
-        return new ItemStack(ModItems.GUN_AMMO.get());
-    }
-
-    @Override
-    public NonNullList<Ingredient> getIngredients() {
-        return NonNullList.of(Ingredient.EMPTY, Ingredient.of(ModItems.GUN_AMMO.get()), new PotionIngredient());
-    }
-
     private static class PotionIngredient extends Ingredient {
         PotionIngredient() {
             super(Stream.empty());
@@ -106,7 +100,7 @@ public class GunAmmoPotionCrafting extends CustomPNCRecipe {
 
         @Override
         public boolean test(@Nullable ItemStack stack) {
-            return !PotionUtils.getMobEffects(stack).isEmpty();
+            return stack != null && !PotionUtils.getMobEffects(stack).isEmpty();
         }
     }
 }

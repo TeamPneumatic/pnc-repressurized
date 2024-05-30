@@ -11,10 +11,15 @@ import me.desht.pneumaticcraft.api.upgrade.PNCUpgrade;
 import me.desht.pneumaticcraft.common.recipes.FluidTagPresentCondition;
 import me.desht.pneumaticcraft.common.recipes.machine.PressureDisenchantingRecipe;
 import me.desht.pneumaticcraft.common.recipes.machine.PressureEnchantingRecipe;
-import me.desht.pneumaticcraft.common.recipes.special.*;
+import me.desht.pneumaticcraft.common.recipes.special.DroneColorCrafting;
+import me.desht.pneumaticcraft.common.recipes.special.DroneUpgradeCrafting;
+import me.desht.pneumaticcraft.common.recipes.special.GunAmmoPotionCrafting;
+import me.desht.pneumaticcraft.common.recipes.special.OneProbeCrafting;
 import me.desht.pneumaticcraft.common.registry.ModBlocks;
 import me.desht.pneumaticcraft.common.registry.ModFluids;
 import me.desht.pneumaticcraft.common.registry.ModItems;
+import me.desht.pneumaticcraft.common.thirdparty.patchouli.Patchouli;
+import me.desht.pneumaticcraft.common.thirdparty.patchouli.PatchouliBookCrafting;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.playerfilter.PlayerFilter;
@@ -1276,14 +1281,14 @@ public class ModRecipeProvider extends RecipeProvider {
         }
 
         // specials
+        shapeless(PatchouliBookCrafting.makeGuideBook(), ModItems.COMPRESSED_IRON_INGOT.get(), Items.BOOK)
+                .save(consumer.withConditions(new ModLoadedCondition(ModIds.PATCHOULI)));
         SpecialRecipeBuilder.special(DroneColorCrafting::new)
                 .save(consumer, getId("drone_color"));
         SpecialRecipeBuilder.special(DroneUpgradeCrafting::new)
                 .save(consumer, getId("drone_upgrade"));
         SpecialRecipeBuilder.special(GunAmmoPotionCrafting::new)
                 .save(consumer, getId("gun_ammo_potion_crafting"));
-        SpecialRecipeBuilder.special(PatchouliBookCrafting::new)
-                .save(consumer.withConditions(new ModLoadedCondition(ModIds.PATCHOULI)), getId("patchouli_book_crafting"));
         SpecialRecipeBuilder.special(OneProbeCrafting::new)
                 .save(consumer.withConditions(new ModLoadedCondition(ModIds.THE_ONE_PROBE)), getId("one_probe_crafting"));
 
@@ -1637,8 +1642,30 @@ public class ModRecipeProvider extends RecipeProvider {
         return shapeless(result, 1, required, ingredients);
     }
 
+    private ShapelessRecipeBuilder shapeless(ItemStack result, ItemLike required, Object... ingredients) {
+        return shapelessStack(result, required, ingredients);
+    }
+
     private <T extends ItemLike> ShapelessRecipeBuilder shapeless(T result, int count, T required, Object... ingredients) {
         ShapelessRecipeBuilder b = ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, result, count);
+        for (Object v : ingredients) {
+            if (v instanceof TagKey<?>) {
+                //noinspection unchecked
+                b.requires((TagKey<Item>) v);
+            } else if (v instanceof ItemLike) {
+                b.requires((ItemLike) v);
+            } else if (v instanceof Ingredient) {
+                b.requires((Ingredient) v);
+            } else {
+                throw new IllegalArgumentException("bad type for recipe ingredient " + v);
+            }
+        }
+        b.unlockedBy("has_" + safeName(required), has(required));
+        return b;
+    }
+
+    private <T extends ItemLike> ShapelessRecipeBuilder shapelessStack(ItemStack result, T required, Object... ingredients) {
+        ShapelessRecipeBuilder b = ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, result).requires(required);
         for (Object v : ingredients) {
             if (v instanceof TagKey<?>) {
                 //noinspection unchecked

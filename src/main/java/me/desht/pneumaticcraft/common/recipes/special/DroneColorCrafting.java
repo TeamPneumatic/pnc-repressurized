@@ -19,6 +19,7 @@ package me.desht.pneumaticcraft.common.recipes.special;
 
 import me.desht.pneumaticcraft.common.entity.drone.DroneEntity;
 import me.desht.pneumaticcraft.common.item.DroneItem;
+import me.desht.pneumaticcraft.common.recipes.ModCraftingHelper;
 import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.registry.ModRecipeSerializers;
 import net.minecraft.core.NonNullList;
@@ -26,45 +27,38 @@ import net.minecraft.core.RegistryAccess;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.DyeColor;
-import net.minecraft.world.item.DyeItem;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.ShapelessRecipe;
 import net.minecraft.world.level.Level;
+import net.neoforged.neoforge.common.Tags;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.function.Predicate;
 
-public class DroneColorCrafting extends CustomPNCRecipe {
-    // you'd think using Ingredient.fromTag(Tags.Items.Dyes) would work, but nope
-    private static final Item[] DYES = new Item[DyeColor.values().length];
-
-    private static final List<Predicate<ItemStack>> ITEM_PREDICATE = List.of(
+public class DroneColorCrafting extends ShapelessRecipe {
+    private static final List<Predicate<ItemStack>> ITEM_PREDICATES = List.of(
             stack -> stack.getItem() instanceof DroneItem,
             stack -> DyeColor.getColor(stack) != null
     );
 
-    static {
-        Arrays.setAll(DYES, i -> DyeItem.byColor(DyeColor.values()[i]));
-    }
-
     public DroneColorCrafting(CraftingBookCategory category) {
-        super(category);
+        super("", category, new ItemStack(ModItems.DRONE.get()),
+                NonNullList.of(Ingredient.EMPTY, Ingredient.of(Tags.Items.DYES), Ingredient.of(ModItems.DRONE.get()))
+        );
     }
 
     @Override
     public boolean matches(CraftingContainer container, Level level) {
-        List<ItemStack> stacks = findItems(container, ITEM_PREDICATE);
-        return stacks.size() == 2;
+        return ModCraftingHelper.allPresent(container, ITEM_PREDICATES);
     }
 
     @Override
     public ItemStack assemble(CraftingContainer container, RegistryAccess registryAccess) {
-        List<ItemStack> stacks = findItems(container, ITEM_PREDICATE);
-        ItemStack drone = stacks.get(0);
+        List<ItemStack> stacks = ModCraftingHelper.findItems(container, ITEM_PREDICATES);
+        ItemStack drone = stacks.get(0).copy();
         DyeColor dyeColor = DyeColor.getColor(stacks.get(1));
         if (drone.isEmpty() || dyeColor == null) {
             return ItemStack.EMPTY;
@@ -78,16 +72,6 @@ public class DroneColorCrafting extends CustomPNCRecipe {
     @Override
     public boolean canCraftInDimensions(int w, int h) {
         return w * h >= 2;
-    }
-
-    @Override
-    public ItemStack getResultItem(RegistryAccess p_267025_) {
-        return new ItemStack(ModItems.DRONE.get());
-    }
-
-    @Override
-    public NonNullList<Ingredient> getIngredients() {
-        return NonNullList.of(Ingredient.EMPTY, Ingredient.of(DYES), Ingredient.of(ModItems.DRONE.get()));
     }
 
     @Override
