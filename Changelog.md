@@ -8,6 +8,12 @@ Changes are in reverse chronological order; newest changes at the top.
 
 This release (and all future releases) is built for [Neoforge](https://neoforged.net/), and will _not_ work on [MinecraftForge](https://files.minecraftforge.net/)!
 
+## [7.0.1]
+
+### Fixed
+* Fixed up some of the "special" crafting recipes, which weren't showing in recipe display mods
+  * Patchouli manual, drone colouring/upgrading, potion ammo crafting, one probe crafting
+
 ## [7.0.0]
 
 ### Added
