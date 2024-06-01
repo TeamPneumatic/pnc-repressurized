@@ -65,5 +65,6 @@ public class ConfigHolder {
     static void refreshCommon() {
         OilLakeFilter.DimensionFilter.clearMatcherCaches();
         AerialInterfaceBlockEntity.clearDimensionBlacklist();
+        ConfigHelper.cachedXPFluid = null;
     }
 }

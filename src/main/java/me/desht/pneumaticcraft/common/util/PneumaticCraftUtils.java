@@ -25,6 +25,7 @@ import me.desht.pneumaticcraft.api.item.IInventoryItem;
 import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.api.misc.Symbols;
 import me.desht.pneumaticcraft.common.XPFluidManager;
+import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.item.ItemRegistry;
 import me.desht.pneumaticcraft.common.registry.ModFluids;
 import net.minecraft.ChatFormatting;
@@ -586,9 +587,14 @@ public class PneumaticCraftUtils {
      * @return true if the XP orb was (or could be) fully absorbed into the fluid handler
      */
     public static boolean fillTankWithOrb(IFluidHandler handler, ExperienceOrb orb, FluidAction action) {
-        int ratio = XPFluidManager.getInstance().getXPRatio(ModFluids.MEMORY_ESSENCE.get());
+        Fluid xpFluid = ConfigHelper.getExperienceFluid();
+        int ratio = XPFluidManager.getInstance().getXPRatio(xpFluid);
+        if (ratio == 0) {
+            return false;
+        }
+
         int fluidAmount = orb.getValue() * ratio;
-        FluidStack toFill = new FluidStack(ModFluids.MEMORY_ESSENCE.get(), fluidAmount);
+        FluidStack toFill = new FluidStack(xpFluid, fluidAmount);
         int filled = handler.fill(toFill, action);
         if (filled > 0 && filled < fluidAmount && action.execute()) {
             orb.value = orb.value - Math.max(1, filled / ratio);  // partial fill, adjust the orb

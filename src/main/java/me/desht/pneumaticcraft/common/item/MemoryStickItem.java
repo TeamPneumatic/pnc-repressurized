@@ -21,16 +21,18 @@ import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.client.ColorHandlers;
 import me.desht.pneumaticcraft.common.XPFluidManager;
 import me.desht.pneumaticcraft.common.capabilities.PNCFluidHandlerItemStack;
+import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketLeftClickEmpty;
-import me.desht.pneumaticcraft.common.registry.ModFluids;
 import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.thirdparty.curios.Curios;
 import me.desht.pneumaticcraft.common.thirdparty.curios.CuriosUtils;
 import me.desht.pneumaticcraft.common.util.EnchantmentUtils;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -43,6 +45,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.material.Fluid;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
@@ -76,9 +79,15 @@ public class MemoryStickItem extends Item implements ColorHandlers.ITintableItem
         ItemStack stack = playerIn.getItemInHand(handIn);
         if (stack.getCount() != 1) return InteractionResultHolder.pass(stack);
 
+        Fluid xpFluid = ConfigHelper.getExperienceFluid();
+
         if (!worldIn.isClientSide) {
+            int ratio = XPFluidManager.getInstance().getXPRatio(xpFluid);
+            if (ratio == 0) {
+                Log.error("configured fluid {} does not have a valid xp -> mB ratio!", BuiltInRegistries.FLUID.getKey(xpFluid));
+                return InteractionResultHolder.fail(stack);
+            }
             IOHelper.getFluidHandlerForItem(stack).ifPresent(handler -> {
-                int ratio = XPFluidManager.getInstance().getXPRatio(ModFluids.MEMORY_ESSENCE.get());
                 int playerXp = EnchantmentUtils.getPlayerXP(playerIn);
                 if (playerIn.isShiftKeyDown()) {
                     // take XP fluid from the stick and give to player
@@ -97,12 +106,15 @@ public class MemoryStickItem extends Item implements ColorHandlers.ITintableItem
                         if (xpToTake == 0) {
                             xpToTake = playerXp - EnchantmentUtils.getExperienceForLevel(playerIn.experienceLevel - 1);
                         }
+                        // if the stick already has some fluid, use that; otherwise use our default XP fluid
+                        FluidStack f = handler.drain(1, IFluidHandler.FluidAction.SIMULATE);
+                        Fluid fillType = f.isEmpty() ? xpFluid : f.getFluid();
                         int fluidAmount = xpToTake * ratio;
-                        FluidStack toFill = new FluidStack(ModFluids.MEMORY_ESSENCE.get(), fluidAmount);
+                        FluidStack toFill = new FluidStack(fillType, fluidAmount);
                         int filled = handler.fill(toFill, IFluidHandler.FluidAction.SIMULATE);
                         if (filled >= ratio) {
                             EnchantmentUtils.addPlayerXP(playerIn, -(filled / ratio));
-                            handler.fill(new FluidStack(ModFluids.MEMORY_ESSENCE.get(), filled), IFluidHandler.FluidAction.EXECUTE);
+                            handler.fill(new FluidStack(fillType, filled), IFluidHandler.FluidAction.EXECUTE);
                             playerIn.setItemInHand(handIn, handler.getContainer());
                         }
                     }
@@ -110,11 +122,14 @@ public class MemoryStickItem extends Item implements ColorHandlers.ITintableItem
             });
         } else {
             IOHelper.getFluidHandlerForItem(stack).ifPresent(handler -> {
-                int amount = handler.getFluidInTank(0).getAmount();
-                if (EnchantmentUtils.getPlayerXP(playerIn) > 0 && amount < handler.getTankCapacity(0) && !playerIn.isShiftKeyDown()
-                        || handler.getFluidInTank(0).getAmount() > 0 && playerIn.isShiftKeyDown()) {
-                    playerIn.playSound(SoundEvents.EXPERIENCE_ORB_PICKUP, 0.1f,
-                            (worldIn.random.nextFloat() - worldIn.random.nextFloat()) * 0.35F + 0.9F);
+                if (handler.isFluidValid(0, new FluidStack(xpFluid, 1))) {
+                    int amount = handler.getFluidInTank(0).getAmount();
+                    if (EnchantmentUtils.getPlayerXP(playerIn) > 0
+                            && amount < handler.getTankCapacity(0) && !playerIn.isShiftKeyDown()
+                            || handler.getFluidInTank(0).getAmount() > 0 && playerIn.isShiftKeyDown()) {
+                        playerIn.playSound(SoundEvents.EXPERIENCE_ORB_PICKUP, 0.1f,
+                                (worldIn.random.nextFloat() - worldIn.random.nextFloat()) * 0.35F + 0.9F);
+                    }
                 }
             });
         }
@@ -127,7 +142,7 @@ public class MemoryStickItem extends Item implements ColorHandlers.ITintableItem
 
         if (worldIn != null) {
             IOHelper.getFluidHandlerForItem(stack).ifPresent(handler -> {
-                int ratio = XPFluidManager.getInstance().getXPRatio(ModFluids.MEMORY_ESSENCE.get());
+                int ratio = XPFluidManager.getInstance().getXPRatio(ConfigHelper.getExperienceFluid());
                 if (ratio > 0) {  // could be 0 if queried too early, e.g. JEI item scanning
                     FluidStack fluidStack = handler.getFluidInTank(0);
                     int amount = fluidStack.getAmount();
@@ -212,7 +227,7 @@ public class MemoryStickItem extends Item implements ColorHandlers.ITintableItem
 
     @Override
     public IFluidHandlerItem provideFluidCapability(ItemStack stack) {
-        return new PNCFluidHandlerItemStack(stack, XP_FLUID_CAPACITY, fluid -> fluid == ModFluids.MEMORY_ESSENCE.get());
+        return new PNCFluidHandlerItemStack(stack, XP_FLUID_CAPACITY, fluid -> XPFluidManager.getInstance().getXPRatio(fluid) > 0);
     }
 
     @Mod.EventBusSubscriber(modid = Names.MOD_ID)

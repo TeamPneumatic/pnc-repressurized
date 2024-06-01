@@ -20,6 +20,11 @@ public class PNCFluidHandlerItemStack extends FluidHandlerItemStack {
     }
 
     @Override
+    public boolean isFluidValid(int tank, FluidStack stack) {
+        return fluidPredicate.test(stack.getFluid());
+    }
+
+    @Override
     protected void setFluid(FluidStack fluid) {
         if (fluidPredicate.test(fluid.getFluid())) {
             super.setFluid(fluid);

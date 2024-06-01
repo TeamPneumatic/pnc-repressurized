@@ -19,8 +19,18 @@ package me.desht.pneumaticcraft.common.config;
 
 import me.desht.pneumaticcraft.client.pneumatic_armor.ComponentInit;
 import me.desht.pneumaticcraft.common.drone.progwidgets.IProgWidget.WidgetDifficulty;
+import me.desht.pneumaticcraft.common.registry.ModFluids;
+import me.desht.pneumaticcraft.lib.Log;
+import net.minecraft.ResourceLocationException;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.material.Fluid;
 
 public class ConfigHelper {
+    static Fluid cachedXPFluid = null;
+
     public static ClientConfig client() {
         return ConfigHolder.client;
     }
@@ -54,5 +64,18 @@ public class ConfigHelper {
 
     public static void setComponentInit(ComponentInit when) {
         ConfigHolder.client.armor.componentInitMessages.set(when);
+    }
+
+    public static Fluid getExperienceFluid() {
+        if (cachedXPFluid == null) {
+            try {
+                ResourceLocation id = new ResourceLocation(ConfigHolder.common.machines.defaultXPFluid.get());
+                cachedXPFluid = BuiltInRegistries.FLUID.getOrThrow(ResourceKey.create(Registries.FLUID, id));
+            } catch (ResourceLocationException | IllegalStateException e) {
+                Log.error("invalid resource location {} for 'default_experience_fluid'", ConfigHolder.common.machines.defaultXPFluid.get());
+                cachedXPFluid = ModFluids.MEMORY_ESSENCE.get();
+            }
+        }
+        return cachedXPFluid;
     }
 }

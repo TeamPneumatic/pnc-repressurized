@@ -19,8 +19,8 @@ package me.desht.pneumaticcraft.common.thirdparty.jei;
 
 import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.common.XPFluidManager;
+import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.registry.ModBlocks;
-import me.desht.pneumaticcraft.common.registry.ModFluids;
 import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -49,7 +49,7 @@ import java.util.List;
 public class JEIMemoryEssenceCategory extends AbstractPNCCategory<JEIMemoryEssenceCategory.MemoryEssenceRecipe> {
     public JEIMemoryEssenceCategory() {
         super(RecipeTypes.MEMORY_ESSENCE,
-                new FluidStack(ModFluids.MEMORY_ESSENCE.get(), 1000).getDisplayName(),
+                new FluidStack(ConfigHelper.getExperienceFluid(), 1000).getDisplayName(),
                 guiHelper().createDrawable(Textures.GUI_JEI_MEMORY_ESSENCE, 0, 0, 146, 73),
                 guiHelper().createDrawableIngredient(VanillaTypes.ITEM_STACK, new ItemStack(ModItems.MEMORY_ESSENCE_BUCKET.get()))
         );
@@ -66,13 +66,13 @@ public class JEIMemoryEssenceCategory extends AbstractPNCCategory<JEIMemoryEssen
                     .addTooltipCallback(new Tooltip(recipe, 1));
         }
         builder.addSlot(RecipeIngredientRole.OUTPUT, 112, 29)
-                .addIngredients(NeoForgeTypes.FLUID_STACK, Collections.singletonList(new FluidStack(ModFluids.MEMORY_ESSENCE.get(), 1000)));
+                .addIngredients(NeoForgeTypes.FLUID_STACK, Collections.singletonList(new FluidStack(ConfigHelper.getExperienceFluid(), 1000)));
     }
 
     @Override
     public void draw(MemoryEssenceRecipe recipe, IRecipeSlotsView recipeSlotsView, GuiGraphics graphics, double mouseX, double mouseY) {
         Font fr = Minecraft.getInstance().font;
-        int ratio = XPFluidManager.getInstance().getXPRatio(ModFluids.MEMORY_ESSENCE.get());
+        int ratio = XPFluidManager.getInstance().getXPRatio(ConfigHelper.getExperienceFluid());
         String s = "1 XP = " + ratio + " mB";
         int w = fr.width(s);
         graphics.drawString(fr, s, (getBackground().getWidth() - w) / 2, 0, 0x404040, false);
@@ -97,7 +97,7 @@ public class JEIMemoryEssenceCategory extends AbstractPNCCategory<JEIMemoryEssen
         );
     }
 
-    static class MemoryEssenceRecipe {
+    public static class MemoryEssenceRecipe {
         final ItemStack input1;
         final ItemStack input2;
         final String[] tooltips = new String[] {"", ""};

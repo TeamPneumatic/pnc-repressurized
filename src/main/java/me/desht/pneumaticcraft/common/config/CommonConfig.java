@@ -67,6 +67,7 @@ public class CommonConfig {
         public ModConfigSpec.ConfigValue<List<String>> aerialInterfaceDimensionBlacklist;
         public ModConfigSpec.IntValue vortexCannonPlayerBoostRate;
         public ModConfigSpec.DoubleValue pressurizedSpawnerMinPressure;
+        public ModConfigSpec.ConfigValue<String> defaultXPFluid;
     }
     public static class Armor {
         public ModConfigSpec.IntValue jetBootsAirUsage;
@@ -354,6 +355,11 @@ public class CommonConfig {
                 .comment("Minimum interval in ticks which the player can use the Vortex Cannon to boost their own speed")
                 .translation("pneumaticcraft.config.common.machines.vortex_cannon.player_boost_rate")
                 .defineInRange("vortex_cannon_player_boost_rate", 10, 1, Integer.MAX_VALUE);
+        machines.defaultXPFluid = builder
+                .comment("Default XP fluid produced by the Memory Stick, and by Drones picking up experience orbs. This must be the ID of a valid registered fluid; it should also be in the `forge:experience` fluid tag, and its native mod should use an XP->mB ratio of 1:20 for the fluid.")
+                .translation("pneumaticcraft.config.common.machines.default_experience_fluid")
+                .define("default_experience_fluid", "pneumaticcraft:memory_essence");
+
         builder.pop();
 
         builder.push("Pneumatic Armor");
