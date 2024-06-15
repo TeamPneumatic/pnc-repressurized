@@ -38,16 +38,6 @@ public class RegulatorModule extends AbstractRedstoneReceivingModule implements 
     }
 
     @Override
-    public void onPlaced() {
-        super.onPlaced();
-
-        airHandlerCache = pressureTube.getLevel() instanceof ServerLevel level ?
-                BlockCapabilityCache.create(PNCCapabilities.AIR_HANDLER_MACHINE, level, pressureTube.getBlockPos().relative(dir), dir.getOpposite(),
-                        () -> !pressureTube.isRemoved(), () -> {}) :
-                null;
-    }
-
-    @Override
     public Item getItem() {
         return ModItems.REGULATOR_TUBE_MODULE.get();
     }
@@ -77,6 +67,12 @@ public class RegulatorModule extends AbstractRedstoneReceivingModule implements 
     }
 
     private Optional<IAirHandlerMachine> getCachedNeighbourAirHandler() {
+        if (airHandlerCache == null) {
+            airHandlerCache = pressureTube.getLevel() instanceof ServerLevel level ?
+                    BlockCapabilityCache.create(PNCCapabilities.AIR_HANDLER_MACHINE, level, pressureTube.getBlockPos().relative(dir), dir.getOpposite(),
+                            () -> !pressureTube.isRemoved(), () -> {}) :
+                    null;
+        }
         return airHandlerCache == null ? Optional.empty() : Optional.ofNullable(airHandlerCache.getCapability());
     }
 

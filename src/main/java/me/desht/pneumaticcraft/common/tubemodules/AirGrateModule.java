@@ -27,6 +27,7 @@ import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdatePressureBlock;
 import me.desht.pneumaticcraft.common.particle.AirParticleData;
 import me.desht.pneumaticcraft.common.registry.ModItems;
+import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.common.util.EntityFilter;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
@@ -234,10 +235,28 @@ public class AirGrateModule extends AbstractTubeModule {
     }
 
     private Optional<IItemHandler> getItemInsertionCap() {
+        if (itemInsertionCache == null && pressureTube.getLevel() instanceof ServerLevel level) {
+            for (Direction dir : DirectionUtil.VALUES) {
+                BlockPos neighborPos = pressureTube.getBlockPos().relative(dir);
+                if (level.getCapability(Capabilities.ItemHandler.BLOCK, neighborPos, dir.getOpposite()) != null) {
+                    itemInsertionCache = BlockCapabilityCache.create(Capabilities.ItemHandler.BLOCK, level, neighborPos, dir.getOpposite(),
+                            () -> !getTube().isRemoved(), () -> itemInsertionCache = null);
+                }
+            }
+        }
         return itemInsertionCache == null ? Optional.empty() : Optional.ofNullable(itemInsertionCache.getCapability());
     }
 
     private Optional<IFluidHandler> getFluidInsertionCap() {
+        if (fluidInsertionCache == null && pressureTube.getLevel() instanceof ServerLevel level) {
+            for (Direction dir : DirectionUtil.VALUES) {
+                BlockPos neighborPos = pressureTube.getBlockPos().relative(dir);
+                if (level.getCapability(Capabilities.FluidHandler.BLOCK, neighborPos, dir.getOpposite()) != null) {
+                    fluidInsertionCache = BlockCapabilityCache.create(Capabilities.FluidHandler.BLOCK, level, neighborPos, dir.getOpposite(),
+                            () -> !getTube().isRemoved(), () -> itemInsertionCache = null);
+                }
+            }
+        }
         return fluidInsertionCache == null ? Optional.empty() : Optional.ofNullable(fluidInsertionCache.getCapability());
     }
 
@@ -338,16 +357,6 @@ public class AirGrateModule extends AbstractTubeModule {
     public void onRemoved() {
         if (pressureTube.nonNullLevel().isClientSide) {
             AreaRenderManager.getInstance().removeHandlers(pressureTube);
-        }
-    }
-
-    @Override
-    public void onPlaced() {
-        if (pressureTube.getLevel() instanceof ServerLevel level) {
-            itemInsertionCache = BlockCapabilityCache.create(Capabilities.ItemHandler.BLOCK, level, pressureTube.getBlockPos().relative(dir), dir.getOpposite(),
-                    () -> !getTube().isRemoved(), () -> {});
-            fluidInsertionCache = BlockCapabilityCache.create(Capabilities.FluidHandler.BLOCK, level, pressureTube.getBlockPos().relative(dir), dir.getOpposite(),
-                    () -> !getTube().isRemoved(), () -> {});
         }
     }
 }
