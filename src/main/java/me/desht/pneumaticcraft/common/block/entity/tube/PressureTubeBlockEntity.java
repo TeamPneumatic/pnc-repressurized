@@ -234,6 +234,8 @@ public class PressureTubeBlockEntity extends AbstractAirHandlingBlockEntity impl
         if (!nonNullLevel().isClientSide) {
             discoverConnectedNeighbors();
         }
+
+        tubeModules().forEach(AbstractTubeModule::onPlaced);
     }
 
     @Override

@@ -45,14 +45,6 @@ public class VacuumModule extends AbstractRedstoneReceivingModule implements IIn
     }
 
     @Override
-    public void onPlaced() {
-        airHandlerCache = pressureTube.getLevel() instanceof ServerLevel level ?
-                BlockCapabilityCache.create(PNCCapabilities.AIR_HANDLER_MACHINE, level, pressureTube.getBlockPos().relative(dir), dir.getOpposite(),
-                        () -> !pressureTube.isRemoved(), () -> {}) :
-                null;
-    }
-
-    @Override
     public Item getItem() {
         return ModItems.VACUUM_MODULE.get();
     }
@@ -111,6 +103,10 @@ public class VacuumModule extends AbstractRedstoneReceivingModule implements IIn
     }
 
     private Optional<IAirHandlerMachine> getCachedNeighbourAirHandler() {
+        if (airHandlerCache == null && pressureTube.getLevel() instanceof ServerLevel level) {
+            airHandlerCache = BlockCapabilityCache.create(PNCCapabilities.AIR_HANDLER_MACHINE, level, pressureTube.getBlockPos().relative(dir), dir.getOpposite(),
+                    () -> !pressureTube.isRemoved(), () -> airHandlerCache = null);
+        }
         return airHandlerCache == null ? Optional.empty() : Optional.ofNullable(airHandlerCache.getCapability());
     }
 
