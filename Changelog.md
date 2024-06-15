@@ -8,6 +8,11 @@ Changes are in reverse chronological order; newest changes at the top.
 
 This release (and all future releases) is built for [Neoforge](https://neoforged.net/), and will _not_ work on [MinecraftForge](https://files.minecraftforge.net/)!
 
+## [7.0.2]
+
+### Fixed
+* Fixed issues with Regulator Module, Air Grate Module & Vacuum Module not functioning after world reload
+
 ## [7.0.1]
 
 ### Fixed
