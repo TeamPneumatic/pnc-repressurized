@@ -21,14 +21,18 @@ import me.desht.pneumaticcraft.common.item.PneumaticArmorItem;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.neoforged.neoforge.network.handling.PlayPayloadContext;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
@@ -37,33 +41,27 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
  * Sent by client to update the searched item (Pneumatic Helmet search upgrade)
  */
 public record PacketUpdateSearchItem(Item item) implements CustomPacketPayload {
-    public static final ResourceLocation ID = RL("search_item");
+    public static final Type<PacketUpdateSearchItem> TYPE = new Type<>(RL("search_item"));
 
-    public static PacketUpdateSearchItem fromNetwork(FriendlyByteBuf buffer) {
-        return new PacketUpdateSearchItem(buffer.readById(BuiltInRegistries.ITEM));
-    }
-
-    @Override
-    public void write(FriendlyByteBuf buffer) {
-        buffer.writeId(BuiltInRegistries.ITEM, item);
-    }
+    public static final StreamCodec<RegistryFriendlyByteBuf, PacketUpdateSearchItem> STREAM_CODEC = StreamCodec.composite(
+            ByteBufCodecs.registry(Registries.ITEM), PacketUpdateSearchItem::item,
+            PacketUpdateSearchItem::new
+    );
 
     @Override
-    public ResourceLocation id() {
-        return ID;
+    public Type<PacketUpdateSearchItem> type() {
+        return TYPE;
     }
 
-    public static void handle(PacketUpdateSearchItem message, PlayPayloadContext ctx) {
-        ctx.player().ifPresent(player -> ctx.workHandler().submitAsync(() -> {
-            if (message.item() != null && message.item() != Items.AIR) {
-                CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
-                if (handler.upgradeUsable(CommonUpgradeHandlers.searchHandler, true)) {
-                    ItemStack helmetStack = player.getItemBySlot(EquipmentSlot.HEAD);
-                    if (helmetStack.getItem() instanceof PneumaticArmorItem) {  // should be, but let's be paranoid...
-                        PneumaticArmorItem.setSearchedItem(helmetStack, message.item());
-                    }
+    public static void handle(PacketUpdateSearchItem message, IPayloadContext ctx) {
+        if (message.item() != null && message.item() != Items.AIR) {
+            CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(ctx.player());
+            if (handler.upgradeUsable(CommonUpgradeHandlers.searchHandler, true)) {
+                ItemStack helmetStack = handler.getPlayer().getItemBySlot(EquipmentSlot.HEAD);
+                if (helmetStack.getItem() instanceof PneumaticArmorItem) {  // should be, but let's be paranoid...
+                    PneumaticArmorItem.setSearchedItem(helmetStack, message.item());
                 }
             }
-        }));
+        }
     }
 }

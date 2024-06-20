@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.common.semiblock;
 
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.entity.player.Player;
 
 /**
@@ -26,5 +26,5 @@ import net.minecraft.world.entity.player.Player;
  * E.g. see Logistics Frames
  */
 public interface ISyncableSemiblockItem {
-    void syncSemiblockItemFromClient(Player player, FriendlyByteBuf payload);
+    void syncSemiblockItemFromClient(Player player, RegistryFriendlyByteBuf payload);
 }

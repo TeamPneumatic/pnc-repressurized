@@ -17,10 +17,13 @@
 
 package me.desht.pneumaticcraft.common.drone.progwidgets;
 
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import me.desht.pneumaticcraft.api.drone.DroneSuicideEvent;
+import me.desht.pneumaticcraft.api.drone.IDrone;
+import me.desht.pneumaticcraft.api.drone.IProgWidget;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
-import me.desht.pneumaticcraft.common.drone.IDroneBase;
-import me.desht.pneumaticcraft.common.registry.ModProgWidgets;
+import me.desht.pneumaticcraft.common.registry.ModProgWidgetTypes;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.goal.Goal;
@@ -31,9 +34,20 @@ import java.util.Collections;
 import java.util.List;
 
 public class ProgWidgetSuicide extends ProgWidget {
+    public static final MapCodec<ProgWidgetSuicide> CODEC = RecordCodecBuilder.mapCodec(builder ->
+        baseParts(builder).apply(builder, ProgWidgetSuicide::new));
+
+    private ProgWidgetSuicide(PositionFields pos) {
+        super(pos);
+    }
 
     public ProgWidgetSuicide() {
-        super(ModProgWidgets.SUICIDE.get());
+        super(PositionFields.DEFAULT);
+    }
+
+    @Override
+    public ProgWidgetType<?> getType() {
+        return ModProgWidgetTypes.SUICIDE.get();
     }
 
     @Override
@@ -77,14 +91,14 @@ public class ProgWidgetSuicide extends ProgWidget {
     }
 
     @Override
-    public Goal getWidgetAI(IDroneBase drone, IProgWidget widget) {
+    public Goal getWidgetAI(IDrone drone, IProgWidget widget) {
         return new DroneAISuicide(drone);
     }
 
     private static class DroneAISuicide extends Goal {
-        private final IDroneBase drone;
+        private final IDrone drone;
 
-        DroneAISuicide(IDroneBase drone) {
+        DroneAISuicide(IDrone drone) {
             this.drone = drone;
         }
 

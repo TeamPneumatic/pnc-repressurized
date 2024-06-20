@@ -82,7 +82,7 @@ public class ChargingStationUpgradeManagerMenu extends AbstractPneumaticCraftMen
         @Override
         public void setChanged() {
             super.setChanged();
-            ((ChargeableItemHandler) getItemHandler()).writeToNBT();
+            ((ChargeableItemHandler) getItemHandler()).writeToChargingStack();
         }
     }
 }

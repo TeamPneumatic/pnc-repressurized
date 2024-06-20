@@ -18,6 +18,7 @@
 package me.desht.pneumaticcraft.common.hacking.secstation;
 
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.entity.player.Player;
 
 public interface ISimulationController {
@@ -88,7 +89,7 @@ public interface ISimulationController {
      *
      * @param buf packet buffer
      */
-    void toBytes(FriendlyByteBuf buf);
+    void toBytes(RegistryFriendlyByteBuf buf);
 
     enum HackingSide {
         PLAYER,

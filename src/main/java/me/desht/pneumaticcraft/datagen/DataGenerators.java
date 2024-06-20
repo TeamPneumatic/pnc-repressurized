@@ -9,7 +9,7 @@ import net.minecraft.data.DataProvider;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.registries.RegistryPatchGenerator;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.common.data.BlockTagsProvider;
 import net.neoforged.neoforge.common.data.DatapackBuiltinEntriesProvider;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
-@Mod.EventBusSubscriber(modid = Names.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = Names.MOD_ID, bus = EventBusSubscriber.Bus.MOD)
 public class DataGenerators {
     @SubscribeEvent
     public static void gatherData(GatherDataEvent event) {
@@ -28,8 +28,8 @@ public class DataGenerators {
         ExistingFileHelper existingFileHelper = event.getExistingFileHelper();
         CompletableFuture<HolderLookup.Provider> lookupProvider = event.getLookupProvider();
 
-        generator.addProvider(event.includeServer(), new ModRecipeProvider(generator));
-        generator.addProvider(event.includeServer(), new ModLootTablesProvider(generator));
+        generator.addProvider(event.includeServer(), new ModRecipeProvider(generator, lookupProvider));
+        generator.addProvider(event.includeServer(), new ModLootTablesProvider(generator, lookupProvider));
         BlockTagsProvider blockTagsProvider = new ModBlockTagsProvider(generator, lookupProvider, existingFileHelper);
         generator.addProvider(event.includeServer(), blockTagsProvider);
         generator.addProvider(event.includeServer(), new ModItemTagsProvider(generator, lookupProvider, blockTagsProvider.contentsGetter(), existingFileHelper));
@@ -37,7 +37,7 @@ public class DataGenerators {
         generator.addProvider(event.includeServer(), new ModBiomeTagsProvider(generator, lookupProvider, existingFileHelper));
         generator.addProvider(event.includeServer(), new ModEntityTypeTagsProvider(generator, lookupProvider, existingFileHelper));
         generator.addProvider(event.includeServer(), new ModAdvancementProvider(generator, lookupProvider, existingFileHelper));
-        generator.addProvider(event.includeServer(), new ModGLMProvider(generator));
+        generator.addProvider(event.includeServer(), new ModGLMProvider(generator, lookupProvider));
         generator.addProvider(event.includeServer(), new ModPoiTypeTagsProvider(generator, lookupProvider, existingFileHelper));
         generator.addProvider(event.includeServer(), new ModStructureTagsProvider(generator, lookupProvider, event.getExistingFileHelper()));
 //        generator.addProvider(event.includeServer(), new ModDamageTypeTagsProvider(generator.getPackOutput(), lookupProvider, event.getExistingFileHelper()));

@@ -54,7 +54,7 @@ public class IncendiaryGunAmmoItem extends AbstractGunAmmoItem {
     @Override
     public int onTargetHit(Minigun minigun, ItemStack ammo, Entity target) {
         if (minigun.dispenserWeightedPercentage(ConfigHelper.common().minigun.incendiaryAmmoEntityIgniteChance.get())) {
-            target.setSecondsOnFire(ConfigHelper.common().minigun.incendiaryAmmoFireDuration.get());
+            target.setRemainingFireTicks(ConfigHelper.common().minigun.incendiaryAmmoFireDuration.get() * 20);
         }
         return super.onTargetHit(minigun, ammo, target);
     }

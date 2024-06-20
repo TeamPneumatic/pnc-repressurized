@@ -23,14 +23,14 @@ import me.desht.pneumaticcraft.common.inventory.AmadronAddTradeMenu;
 import me.desht.pneumaticcraft.common.item.AmadronTabletItem;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronPlayerOffer;
 import me.desht.pneumaticcraft.common.registry.ModItems;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.neoforge.network.handling.PlayPayloadContext;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
@@ -41,30 +41,24 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
  * Sent by server to all clients to notify them of a trade addition
  */
 public record PacketAmadronTradeAddCustom(AmadronPlayerOffer offer) implements CustomPacketPayload {
-    public static final ResourceLocation ID = RL("amadron_add_custom_trade");
+    public static final Type<PacketAmadronTradeAddCustom> TYPE = new Type<>(RL("amadron_add_custom_trade"));
 
-    public static PacketAmadronTradeAddCustom fromNetwork(FriendlyByteBuf buffer) {
-        return new PacketAmadronTradeAddCustom(AmadronPlayerOffer.playerOfferFromBuf(buffer));
-    }
+    public static final StreamCodec<RegistryFriendlyByteBuf, PacketAmadronTradeAddCustom> STREAM_CODEC = StreamCodec.composite(
+            AmadronPlayerOffer.STREAM_CODEC, PacketAmadronTradeAddCustom::offer,
+            PacketAmadronTradeAddCustom::new
+    );
 
-    public static void handle(PacketAmadronTradeAddCustom message, PlayPayloadContext ctx) {
-        ctx.player().ifPresent(player -> ctx.workHandler().submitAsync(() -> {
-            if (ctx.flow().isClientbound()) {
-                message.handleClientSide(player);
-            } else if (player instanceof ServerPlayer sp) {
-                message.handleServerSide(sp);
-            }
-        }));
-    }
-
-    @Override
-    public void write(FriendlyByteBuf buf) {
-        offer.write(buf);
+    public static void handle(PacketAmadronTradeAddCustom message, IPayloadContext ctx) {
+        if (ctx.flow().isClientbound()) {
+            message.handleClientSide(ctx.player());
+        } else if (ctx.player() instanceof ServerPlayer sp) {
+            message.handleServerSide(sp);
+        }
     }
 
     @Override
-    public ResourceLocation id() {
-        return ID;
+    public Type<PacketAmadronTradeAddCustom> type() {
+        return TYPE;
     }
 
     private void handleClientSide(Player player) {

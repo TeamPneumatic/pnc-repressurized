@@ -17,8 +17,11 @@
 
 package me.desht.pneumaticcraft.common.drone.progwidgets;
 
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import me.desht.pneumaticcraft.api.drone.IProgWidget;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
-import me.desht.pneumaticcraft.common.registry.ModProgWidgets;
+import me.desht.pneumaticcraft.common.registry.ModProgWidgetTypes;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -30,9 +33,15 @@ import java.util.List;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class ProgWidgetStart extends ProgWidget {
+    public static final MapCodec<ProgWidgetStart> CODEC = RecordCodecBuilder.mapCodec(builder ->
+            baseParts(builder).apply(builder, ProgWidgetStart::new));
+
+    public ProgWidgetStart(PositionFields pos) {
+        super(pos);
+    }
 
     public ProgWidgetStart() {
-        super(ModProgWidgets.START.get());
+        super(PositionFields.DEFAULT);
     }
 
     @Override
@@ -68,6 +77,11 @@ public class ProgWidgetStart extends ProgWidget {
     @Override
     public DyeColor getColor() {
         return DyeColor.LIME;
+    }
+
+    @Override
+    public ProgWidgetType<?> getType() {
+        return ModProgWidgetTypes.START.get();
     }
 
     @Override

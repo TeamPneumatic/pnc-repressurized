@@ -18,6 +18,7 @@
 package me.desht.pneumaticcraft.client.gui.remote.actionwidget;
 
 import me.desht.pneumaticcraft.client.gui.RemoteEditorScreen;
+import me.desht.pneumaticcraft.client.gui.remote.RemoteLayout;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableHelper;
 import me.desht.pneumaticcraft.lib.Log;
@@ -26,10 +27,15 @@ import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.chat.Component;
 
+import java.util.function.Supplier;
+
 public abstract class ActionWidget<W extends AbstractWidget> {
+    private static final BlockPos ONE_ZERO_ZERO = new BlockPos(1, 0, 0);
     protected W widget;
     private String enableVariable = "";
     private BlockPos enablingValue = BlockPos.ZERO;
@@ -41,26 +47,25 @@ public abstract class ActionWidget<W extends AbstractWidget> {
     ActionWidget() {
     }
 
-    public void readFromNBT(CompoundTag tag, int guiLeft, int guiTop) {
+    public void readFromNBT(HolderLookup.Provider provider, CompoundTag tag, int guiLeft, int guiTop) {
         enableVariable = tag.getString("enableVariable");
-        enablingValue = tag.contains("enablingX") ? new BlockPos(tag.getInt("enablingX"), tag.getInt("enablingY"), tag.getInt("enablingZ")) : new BlockPos(1, 0, 0);
+        enablingValue = NbtUtils.readBlockPos(tag, "enablingVal").orElse(ONE_ZERO_ZERO);
     }
 
-    public CompoundTag toNBT(int guiLeft, int guiTop) {
+    public CompoundTag toNBT(HolderLookup.Provider provider, int guiLeft, int guiTop) {
         CompoundTag tag = new CompoundTag();
         tag.putString("id", getId());
         tag.putString("enableVariable", enableVariable);
-        tag.putInt("enablingX", enablingValue.getX());
-        tag.putInt("enablingY", enablingValue.getY());
-        tag.putInt("enablingZ", enablingValue.getZ());
+        tag.put("enablingVal", NbtUtils.writeBlockPos(enablingValue));
         return tag;
     }
 
-    public ActionWidget<?> copy() {
+    public ActionWidget<?> copy(HolderLookup.Provider provider) {
         try {
-            ActionWidget<?> widget = this.getClass().getDeclaredConstructor().newInstance();
-            widget.readFromNBT(this.toNBT(0, 0), 0, 0);
-            return widget;
+            ActionWidget<?> copy = RemoteLayout.createWidget(getId())
+                    .orElseThrow(() -> new IllegalArgumentException("unknown id"));
+            copy.readFromNBT(provider, toNBT(provider, 0, 0), 0, 0);
+            return copy;
         } catch (Exception e) {
             Log.error("Error occurred when trying to copy a {} action widget: {}", getId(), e.getMessage());
             return null;
@@ -114,9 +119,9 @@ public abstract class ActionWidget<W extends AbstractWidget> {
         return tooltip == null ? Component.empty() : ((TooltipAccess) tooltip).getMessage();
     }
 
-    void deserializeTooltip(String val) {
+    void deserializeTooltip(String val, HolderLookup.Provider provider) {
         if (!val.isEmpty()) {
-            Component c = Component.Serializer.fromJson(val);
+            Component c = Component.Serializer.fromJson(val, provider);
             widget.setTooltip(c == null ? null : Tooltip.create(c));
         } else {
             widget.setTooltip(null);

@@ -37,9 +37,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.TickEvent;
+import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.items.ItemHandlerHelper;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
 
 import java.util.ArrayList;
@@ -127,7 +126,7 @@ public class AmadronEventListener {
                         int toDeliver = itemStack.getCount() * drone.getOfferTimes();
                         List<ItemStack> stacks = new ArrayList<>();
                         while (toDeliver > 0) {
-                            ItemStack stack = ItemHandlerHelper.copyStackWithSize(itemStack, Math.min(toDeliver, itemStack.getMaxStackSize()));
+                            ItemStack stack = itemStack.copyWithCount(Math.min(toDeliver, itemStack.getMaxStackSize()));
                             stacks.add(stack);
                             toDeliver -= stack.getCount();
                         }
@@ -146,22 +145,20 @@ public class AmadronEventListener {
     }
 
     @SubscribeEvent
-    public void amadronHousekeeping(TickEvent.ServerTickEvent event) {
-        if (event.phase == TickEvent.Phase.END) {
-            MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
+    public void amadronHousekeeping(ServerTickEvent.Post event) {
+        MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
 
-            if (reshuffleCounter++ >= ConfigHelper.common().amadron.reshuffleInterval.get() && !anyPlayerUsingAmadron(server)) {
-                // don't reshuffle if any player has a tablet open, to avoid confusion
-                AmadronOfferManager.getInstance().compileActiveOffersList();
-                reshuffleCounter = 0;
-            }
-            if (server.getTickCount() % 600 == 0) {
-                AmadronOfferManager.getInstance().tryRestockPlayerOffers();
-            }
-            Level overWorld = server.getLevel(Level.OVERWORLD);
-            if (overWorld != null) {
-                AmadronOfferManager.getInstance().checkForFullRebuild(overWorld);
-            }
+        if (reshuffleCounter++ >= ConfigHelper.common().amadron.reshuffleInterval.get() && !anyPlayerUsingAmadron(server)) {
+            // don't reshuffle if any player has a tablet open, to avoid confusion
+            AmadronOfferManager.getInstance().compileActiveOffersList();
+            reshuffleCounter = 0;
+        }
+        if (server.getTickCount() % 600 == 0) {
+            AmadronOfferManager.getInstance().tryRestockPlayerOffers();
+        }
+        Level overWorld = server.getLevel(Level.OVERWORLD);
+        if (overWorld != null) {
+            AmadronOfferManager.getInstance().checkForFullRebuild(overWorld);
         }
     }
 

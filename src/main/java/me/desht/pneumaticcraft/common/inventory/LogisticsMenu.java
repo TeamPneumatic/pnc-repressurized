@@ -17,17 +17,18 @@
 
 package me.desht.pneumaticcraft.common.inventory;
 
-import me.desht.pneumaticcraft.api.lib.NBTKeys;
 import me.desht.pneumaticcraft.common.block.entity.AbstractPneumaticCraftBlockEntity;
 import me.desht.pneumaticcraft.common.entity.semiblock.AbstractLogisticsFrameEntity;
 import me.desht.pneumaticcraft.common.inventory.slot.PhantomSlot;
 import me.desht.pneumaticcraft.common.inventory.slot.UnstackablePhantomSlot;
 import me.desht.pneumaticcraft.common.item.logistics.AbstractLogisticsFrameItem;
+import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.registry.ModMenuTypes;
 import me.desht.pneumaticcraft.common.semiblock.ISyncableSemiblockItem;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
@@ -36,9 +37,9 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.ItemHandlerHelper;
 
 import javax.annotation.Nonnull;
 
@@ -131,7 +132,7 @@ public class LogisticsMenu extends AbstractPneumaticCraftMenu<AbstractPneumaticC
                 if (!slot.hasItem()) {
                     ItemStack s = logistics.canFilterStack() ?
                             stackInSlot.copy() :
-                            ItemHandlerHelper.copyStackWithSize(stackInSlot, 1);
+                            stackInSlot.copyWithCount(1);
                     slot.set(s);
                     break;
                 }
@@ -154,13 +155,13 @@ public class LogisticsMenu extends AbstractPneumaticCraftMenu<AbstractPneumaticC
     }
 
     @Override
-    public void syncSemiblockItemFromClient(Player player, FriendlyByteBuf payload) {
+    public void syncSemiblockItemFromClient(Player player, RegistryFriendlyByteBuf payload) {
         if (logistics != null) {
             if (payload != null) logistics.readFromBuf(payload);
             ItemStack stack = getHeldLogisticsFrame(player);
             if (!stack.isEmpty()) {
-                CompoundTag subtag = logistics.serializeNBT(new CompoundTag());
-                stack.getOrCreateTag().put(NBTKeys.ENTITY_TAG, subtag);
+                CompoundTag subtag = logistics.serializeNBT(new CompoundTag(), player.registryAccess());
+                stack.set(ModDataComponents.SEMIBLOCK_DATA, CustomData.of(subtag));
             }
         }
     }

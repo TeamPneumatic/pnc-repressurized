@@ -19,15 +19,13 @@ package me.desht.pneumaticcraft.common.capabilities;
 
 import me.desht.pneumaticcraft.api.pressure.IPressurizableItem;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerItem;
-import me.desht.pneumaticcraft.common.registry.ModAttachmentTypes;
+import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import net.minecraft.world.item.ItemStack;
 import org.apache.commons.lang3.Validate;
 
 import javax.annotation.Nonnull;
 
 public class AirHandlerItemStack implements IAirHandlerItem {
-    public static final String AIR_NBT_KEY = "pneumaticcraft:air";
-
     private final ItemStack container;
     private final IPressurizableItem pressurizable;
     private int baseVolume;
@@ -53,7 +51,7 @@ public class AirHandlerItemStack implements IAirHandlerItem {
         if (pressure > maxPressure) {
             // this isn't impossible, e.g. enchant an item with CoFH Holding, pressurize, then disenchant...
             // best option in this case is just to reduce air to the max amount it can actually hold
-            container.getOrCreateTag().putInt(AIR_NBT_KEY, (int) (maxPressure * getVolume()));
+            container.set(ModDataComponents.AIR, (int) (maxPressure * getVolume()));
             return maxPressure;
         }
         return pressure;
@@ -71,9 +69,9 @@ public class AirHandlerItemStack implements IAirHandlerItem {
         int currentAir = getAir();
         int newAir = currentAir + amount;
         if (newAir != 0) {
-            container.setData(ModAttachmentTypes.AIR.get(),currentAir + amount);
+            container.set(ModDataComponents.AIR, currentAir + amount);
         } else {
-            container.removeData(ModAttachmentTypes.AIR.get());
+            container.remove(ModDataComponents.AIR);
         }
     }
 

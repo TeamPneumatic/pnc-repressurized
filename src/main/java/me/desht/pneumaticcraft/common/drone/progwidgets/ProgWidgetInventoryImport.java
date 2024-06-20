@@ -17,9 +17,13 @@
 
 package me.desht.pneumaticcraft.common.drone.progwidgets;
 
-import me.desht.pneumaticcraft.common.drone.IDroneBase;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import me.desht.pneumaticcraft.api.drone.IDrone;
+import me.desht.pneumaticcraft.api.drone.IProgWidget;
+import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.drone.ai.DroneEntityAIInventoryImport;
-import me.desht.pneumaticcraft.common.registry.ModProgWidgets;
+import me.desht.pneumaticcraft.common.registry.ModProgWidgetTypes;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.goal.Goal;
@@ -27,8 +31,15 @@ import net.minecraft.world.item.DyeColor;
 
 public class ProgWidgetInventoryImport extends ProgWidgetInventoryBase {
 
+    public static final MapCodec<ProgWidgetInventoryImport> CODEC = RecordCodecBuilder.mapCodec(builder ->
+            invParts(builder).apply(builder, ProgWidgetInventoryImport::new));
+
+    public ProgWidgetInventoryImport(PositionFields pos, InvBaseFields invBaseFields) {
+        super(pos, invBaseFields);
+    }
+
     public ProgWidgetInventoryImport() {
-        super(ModProgWidgets.INVENTORY_IMPORT.get());
+        super(PositionFields.DEFAULT, InvBaseFields.DEFAULT);
     }
 
     @Override
@@ -37,7 +48,12 @@ public class ProgWidgetInventoryImport extends ProgWidgetInventoryBase {
     }
 
     @Override
-    public Goal getWidgetAI(IDroneBase drone, IProgWidget widget) {
+    public ProgWidgetType<?> getType() {
+        return ModProgWidgetTypes.INVENTORY_IMPORT.get();
+    }
+
+    @Override
+    public Goal getWidgetAI(IDrone drone, IProgWidget widget) {
         return new DroneEntityAIInventoryImport(drone, (ProgWidgetInventoryBase) widget);
     }
 

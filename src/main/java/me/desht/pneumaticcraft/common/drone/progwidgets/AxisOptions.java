@@ -17,6 +17,9 @@
 
 package me.desht.pneumaticcraft.common.drone.progwidgets;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import me.desht.pneumaticcraft.common.util.CodecUtil;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
@@ -24,11 +27,20 @@ import net.minecraft.network.FriendlyByteBuf;
 import java.util.BitSet;
 
 public class AxisOptions {
+    public static final Codec<AxisOptions> CODEC = RecordCodecBuilder.create(builder -> builder.group(
+            CodecUtil.bitSetCodec(3).fieldOf("axes").forGetter(a -> a.options)
+    ).apply(builder, AxisOptions::new));
+
     public static final AxisOptions TRUE = new AxisOptions(true, true, true);
 
-    private final BitSet options = new BitSet(3);
+    private final BitSet options;
+
+    private AxisOptions(BitSet options) {
+        this.options = options;
+    }
 
     public AxisOptions(boolean x, boolean y, boolean z) {
+        options = new BitSet(3);
         options.set(0, x);
         options.set(1, y);
         options.set(2, z);

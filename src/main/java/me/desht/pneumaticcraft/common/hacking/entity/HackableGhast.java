@@ -23,6 +23,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.monster.Ghast;
 import net.minecraft.world.entity.projectile.Fireball;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 
@@ -45,7 +46,7 @@ public class HackableGhast extends AbstractPersistentEntityHack<Ghast> {
         return Ghast.class;
     }
 
-    @Mod.EventBusSubscriber(modid = Names.MOD_ID)
+    @EventBusSubscriber(modid = Names.MOD_ID)
     public static class Listener {
         @SubscribeEvent
         public static void onFireball(EntityJoinLevelEvent event) {

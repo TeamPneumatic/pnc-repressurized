@@ -17,10 +17,10 @@
 
 package me.desht.pneumaticcraft.datagen.recipe;
 
-import me.desht.pneumaticcraft.api.crafting.ingredient.FluidIngredient;
 import me.desht.pneumaticcraft.common.recipes.other.FuelQualityRecipeImpl;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.fluids.crafting.FluidIngredient;
 
 public class FuelQualityBuilder extends AbstractPNCRecipeBuilder {
     private final FluidIngredient fuel;

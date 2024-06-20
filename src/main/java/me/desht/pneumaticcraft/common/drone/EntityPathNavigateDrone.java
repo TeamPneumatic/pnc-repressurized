@@ -43,6 +43,7 @@ import net.minecraft.world.level.pathfinder.Path;
 import net.minecraft.world.level.pathfinder.PathFinder;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import org.joml.Vector3f;
 
 import javax.annotation.Nullable;
 
@@ -181,7 +182,10 @@ public class EntityPathNavigateDrone extends FlyingPathNavigation implements IPa
                 float f = (rand.nextFloat() - 0.5F) * 0.02F * teleportCounter;
                 float f1 = (rand.nextFloat() - 0.5F) * 0.02F * teleportCounter;
                 float f2 = (rand.nextFloat() - 0.5F) * 0.02F * teleportCounter;
-                NetworkHandler.sendToAllTracking(new PacketSpawnParticle(ParticleTypes.PORTAL, droneEntity.getX(), droneEntity.getY(), droneEntity.getZ(), f, f1, f2), droneEntity);
+                NetworkHandler.sendToAllTracking(PacketSpawnParticle.oneParticle(ParticleTypes.PORTAL,
+                        droneEntity.position().toVector3f(),
+                        new Vector3f(f, f1, f2)
+                ), droneEntity);
             }
 
             if (++teleportCounter > TELEPORT_TICKS) {
@@ -221,9 +225,9 @@ public class EntityPathNavigateDrone extends FlyingPathNavigation implements IPa
     public void teleport() {
         Vec3 dest = Vec3.atCenterOf(telPos);
         NetworkHandler.sendToAllTracking(new PacketSpawnParticleTrail(ParticleTypes.PORTAL,
-                        droneEntity.getX(), droneEntity.getY(), droneEntity.getZ(),
-                        dest.x, dest.y, dest.z),
-                droneEntity);
+                        droneEntity.position().toVector3f(),
+                        dest.toVector3f()
+                ), droneEntity);
         droneEntity.playSound(SoundEvents.ENDERMAN_TELEPORT, 1.0F, 1.0F);
         droneEntity.setPos(dest.x, dest.y, dest.z);
     }

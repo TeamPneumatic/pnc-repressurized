@@ -19,7 +19,9 @@ package me.desht.pneumaticcraft.client.gui;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
+import me.desht.pneumaticcraft.api.drone.IProgWidget;
 import me.desht.pneumaticcraft.api.misc.Symbols;
+import me.desht.pneumaticcraft.api.registry.PNCRegistries;
 import me.desht.pneumaticcraft.client.gui.programmer.ProgWidgetGuiManager;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetVerticalScrollbar;
 import me.desht.pneumaticcraft.client.render.ProgWidgetRenderer;
@@ -27,8 +29,6 @@ import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.drone.progwidgets.IJump;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ILabel;
-import me.desht.pneumaticcraft.common.drone.progwidgets.IProgWidget;
-import me.desht.pneumaticcraft.common.registry.ModProgWidgets;
 import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.ChatFormatting;
@@ -150,7 +150,7 @@ public class ProgrammerWidgetAreaRenderer {
         }
         ThirdPartyManager.instance().getDocsProvider().addTooltip(tooltip, false);
         if (Minecraft.getInstance().options.advancedItemTooltips) {
-            PneumaticCraftUtils.getRegistryName(ModProgWidgets.PROG_WIDGETS_REGISTRY, widget.getType())
+            PneumaticCraftUtils.getRegistryName(PNCRegistries.PROG_WIDGETS_REGISTRY, widget.getType())
                             .ifPresent(regName -> tooltip.add(Component.literal(regName.toString()).withStyle(ChatFormatting.DARK_GRAY)));
         }
     }

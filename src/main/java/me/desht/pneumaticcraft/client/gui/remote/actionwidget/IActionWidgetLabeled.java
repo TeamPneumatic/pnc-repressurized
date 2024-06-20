@@ -17,6 +17,7 @@
 
 package me.desht.pneumaticcraft.client.gui.remote.actionwidget;
 
+import net.minecraft.core.HolderLookup;
 import net.minecraft.network.chat.Component;
 
 public interface IActionWidgetLabeled {
@@ -24,8 +25,7 @@ public interface IActionWidgetLabeled {
 
     Component getText();
 
-    default Component deserializeTextComponent(String s) {
-        return Component.Serializer.fromJson(s);
-//        return s.startsWith("{") ? Component.Serializer.fromJson(s) : Component.literal(s);
+    default Component deserializeTextComponent(String s, HolderLookup.Provider provider) {
+        return Component.Serializer.fromJson(s, provider);
     }
 }

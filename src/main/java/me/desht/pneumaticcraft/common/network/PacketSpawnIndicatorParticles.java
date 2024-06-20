@@ -17,16 +17,17 @@
 
 package me.desht.pneumaticcraft.common.network;
 
-import me.desht.pneumaticcraft.client.util.ClientUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.network.handling.PlayPayloadContext;
+import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.joml.Vector3f;
 
 import java.util.ArrayList;
@@ -39,7 +40,14 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
  * Sent by server to spawn coloured redstone particles in multiple positions around an initial position
  */
 public record PacketSpawnIndicatorParticles(BlockPos pos0, DyeColor dyeColor, List<ByteOffset> offsets) implements CustomPacketPayload {
-    public static final ResourceLocation ID = RL("indicator_particles");
+    public static final Type<PacketSpawnIndicatorParticles> TYPE = new Type<>(RL("indicator_particles"));
+
+    public static final StreamCodec<FriendlyByteBuf, PacketSpawnIndicatorParticles> STREAM_CODEC = StreamCodec.composite(
+            BlockPos.STREAM_CODEC, PacketSpawnIndicatorParticles::pos0,
+            NeoForgeStreamCodecs.enumCodec(DyeColor.class), PacketSpawnIndicatorParticles::dyeColor,
+            ByteOffset.STREAM_CODEC.apply(ByteBufCodecs.list()), PacketSpawnIndicatorParticles::offsets,
+            PacketSpawnIndicatorParticles::new
+    );
 
     public static PacketSpawnIndicatorParticles create(List<BlockPos> posList, DyeColor dyeColor) {
         BlockPos pos0 = posList.get(0);
@@ -54,57 +62,37 @@ public record PacketSpawnIndicatorParticles(BlockPos pos0, DyeColor dyeColor, Li
         return new PacketSpawnIndicatorParticles(pos0, dyeColor, offsets);
     }
 
-    public static PacketSpawnIndicatorParticles fromNetwork(FriendlyByteBuf buffer) {
-        return new PacketSpawnIndicatorParticles(
-                buffer.readBlockPos(),
-                DyeColor.byId(buffer.readVarInt()),
-                buffer.readList(ByteOffset::fromNetwork)
-        );
-    }
-
     @Override
-    public void write(FriendlyByteBuf buffer) {
-        buffer.writeBlockPos(pos0);
-        buffer.writeVarInt(dyeColor.getId());
-        buffer.writeCollection(offsets, (buf, byteOffset) -> byteOffset.write(buf));
+    public Type<PacketSpawnIndicatorParticles> type() {
+        return TYPE;
     }
 
-    @Override
-    public ResourceLocation id() {
-        return ID;
-    }
-
-    public static void handle(PacketSpawnIndicatorParticles message, PlayPayloadContext ctx) {
-        ctx.workHandler().submitAsync(() -> {
-            Level world = ClientUtils.getClientLevel();
-            float[] cols = message.dyeColor().getTextureDiffuseColors();
-            ParticleOptions particle = new DustParticleOptions(new Vector3f(cols[0], cols[1], cols[2]), 1f);
-            BlockPos pos0 = message.pos0();
-            world.addParticle(particle, pos0.getX() + 0.5, pos0.getY() + 0.5, pos0.getZ() + 0.5, 0, 0, 0);
-            for (ByteOffset offset : message.offsets()) {
-                world.addParticle(particle,
-                        pos0.getX() + offset.x + 0.5,
-                        pos0.getY() + offset.y + 0.5,
-                        pos0.getZ() + offset.z + 0.5,
-                        0, 0, 0
-                );
-            }
-        });
+    public static void handle(PacketSpawnIndicatorParticles message, IPayloadContext ctx) {
+        Level world = ctx.player().level();
+        float[] cols = message.dyeColor().getTextureDiffuseColors();
+        ParticleOptions particle = new DustParticleOptions(new Vector3f(cols[0], cols[1], cols[2]), 1f);
+        BlockPos pos0 = message.pos0();
+        world.addParticle(particle, pos0.getX() + 0.5, pos0.getY() + 0.5, pos0.getZ() + 0.5, 0, 0, 0);
+        for (ByteOffset offset : message.offsets()) {
+            world.addParticle(particle,
+                    pos0.getX() + offset.x + 0.5,
+                    pos0.getY() + offset.y + 0.5,
+                    pos0.getZ() + offset.z + 0.5,
+                    0, 0, 0
+            );
+        }
     }
 
     private record ByteOffset(byte x, byte y, byte z) {
+        public static StreamCodec<FriendlyByteBuf, ByteOffset> STREAM_CODEC = StreamCodec.composite(
+                ByteBufCodecs.BYTE, ByteOffset::x,
+                ByteBufCodecs.BYTE, ByteOffset::y,
+                ByteBufCodecs.BYTE, ByteOffset::z,
+                ByteOffset::new
+        );
+
         public ByteOffset(int x, int y, int z) {
             this((byte) x, (byte) y, (byte) z);
-        }
-
-        public static ByteOffset fromNetwork(FriendlyByteBuf buf) {
-            return new ByteOffset(buf.readByte(), buf.readByte(), buf.readByte());
-        }
-
-        void write(FriendlyByteBuf buf) {
-            buf.writeByte(x);
-            buf.writeByte(y);
-            buf.writeByte(z);
         }
     }
 }

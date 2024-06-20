@@ -24,6 +24,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.monster.Shulker;
 import net.minecraft.world.entity.projectile.ShulkerBullet;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import org.jetbrains.annotations.NotNull;
@@ -57,7 +58,7 @@ public class HackableShulker extends AbstractPersistentEntityHack<Shulker> {
         return true;
     }
 
-    @Mod.EventBusSubscriber(modid = Names.MOD_ID)
+    @EventBusSubscriber(modid = Names.MOD_ID)
     public static class Listener {
         @SubscribeEvent
         public static void onBullet(EntityJoinLevelEvent event) {

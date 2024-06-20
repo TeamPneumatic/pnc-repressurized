@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.common.drone.ai;
 
-import me.desht.pneumaticcraft.common.drone.IDroneBase;
+import me.desht.pneumaticcraft.api.drone.IDrone;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetInventoryBase;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.common.util.IOHelper;
@@ -29,9 +29,9 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
 
-public class DroneEntityAIInventoryImport extends DroneAIImExBase<ProgWidgetInventoryBase> {
+public class DroneEntityAIInventoryImport extends DroneAIImportExportBase<ProgWidgetInventoryBase> {
 
-    public DroneEntityAIInventoryImport(IDroneBase drone, ProgWidgetInventoryBase widget) {
+    public DroneEntityAIInventoryImport(IDrone drone, ProgWidgetInventoryBase widget) {
         super(drone, widget);
     }
 
@@ -46,7 +46,7 @@ public class DroneEntityAIInventoryImport extends DroneAIImExBase<ProgWidgetInve
     }
 
     private boolean importItems(BlockPos pos, boolean simulate) {
-        BlockEntity te = drone.world().getBlockEntity(pos);
+        BlockEntity te = drone.getDroneLevel().getBlockEntity(pos);
         boolean imported = false;
         for (Direction dir : DirectionUtil.VALUES) {
             if (progWidget.isSideSelected(dir)) {

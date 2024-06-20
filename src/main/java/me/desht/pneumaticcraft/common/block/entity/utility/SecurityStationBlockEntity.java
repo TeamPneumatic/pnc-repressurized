@@ -43,7 +43,7 @@ import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.registry.ModSounds;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.util.GlobalBlockEntityCacheManager;
-import me.desht.pneumaticcraft.common.util.ITranslatableEnum;
+import me.desht.pneumaticcraft.api.misc.ITranslatableEnum;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.BlockEntityConstants;
 import me.desht.pneumaticcraft.lib.Log;
@@ -51,6 +51,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -75,10 +76,9 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
-import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.common.util.BlockSnapshot;
 import net.neoforged.neoforge.event.entity.player.PlayerContainerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
@@ -322,33 +322,33 @@ public class SecurityStationBlockEntity extends AbstractTickingBlockEntity imple
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
+    public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
+        super.loadAdditional(tag, provider);
 
         rebootTimer = tag.getInt("startupTimer");
-        inventory.deserializeNBT(tag.getCompound("Items"));
+        inventory.deserializeNBT(provider, tag.getCompound("Items"));
         checkForNetworkValidity();
     }
 
     @Override
-    public void saveAdditional(CompoundTag tag) {
-        super.saveAdditional(tag);
+    public void saveAdditional(CompoundTag tag, HolderLookup.Provider provider) {
+        super.saveAdditional(tag, provider);
 
         tag.putInt("startupTimer", rebootTimer);
-        tag.put("Items", inventory.serializeNBT());
+        tag.put("Items", inventory.serializeNBT(provider));
     }
 
     @Override
-    public void writeToPacket(CompoundTag tag) {
-        super.writeToPacket(tag);
+    public void writeToPacket(CompoundTag tag, HolderLookup.Provider provider) {
+        super.writeToPacket(tag, provider);
 
         tag.put("SharedUsers", toNBTList(sharedUsers));
         tag.put("HackedUsers", toNBTList(hackedUsers));
     }
 
     @Override
-    public void readFromPacket(CompoundTag tag) {
-        super.readFromPacket(tag);
+    public void readFromPacket(CompoundTag tag, HolderLookup.Provider provider) {
+        super.readFromPacket(tag, provider);
 
         sharedUsers.clear();
         sharedUsers.addAll(fromNBTList(tag.getList("SharedUsers", Tag.TAG_COMPOUND)));
@@ -666,21 +666,25 @@ public class SecurityStationBlockEntity extends AbstractTickingBlockEntity imple
         }
     }
 
-    @Mod.EventBusSubscriber(modid = Names.MOD_ID)
+    @EventBusSubscriber(modid = Names.MOD_ID)
     public static class Listener {
         @SubscribeEvent(priority = EventPriority.HIGHEST)
         public static void onPlayerInteract(PlayerInteractEvent.RightClickBlock event) {
-            handleInteraction(event);
+            if (!handleInteraction(event)) {
+                event.setCanceled(true);
+            }
         }
 
         @SubscribeEvent(priority = EventPriority.HIGHEST)
         public static void onPlayerInteract(PlayerInteractEvent.LeftClickBlock event) {
-            handleInteraction(event);
+            if (!handleInteraction(event)) {
+                event.setCanceled(true);
+            }
         }
 
-        private static void handleInteraction(PlayerInteractEvent event) {
+        private static boolean handleInteraction(PlayerInteractEvent event) {
             if (!(event.getEntity() instanceof ServerPlayer player) || !event.getLevel().isLoaded(event.getPos())) {
-                return;
+                return false;
             }
 
             ItemStack heldItem = player.getItemInHand(event.getHand());
@@ -691,7 +695,6 @@ public class SecurityStationBlockEntity extends AbstractTickingBlockEntity imple
             if (interactedBlock != ModBlocks.SECURITY_STATION.get() || event instanceof PlayerInteractEvent.LeftClickBlock) {
                 boolean tryingToPlaceSecurityStation = heldItem.getItem() instanceof BlockItem bi && bi.getBlock() == ModBlocks.SECURITY_STATION.get();
                 if (SecurityStationBlockEntity.isProtectedFromPlayer(player, event.getPos(), tryingToPlaceSecurityStation)) {
-                    event.setResult(Event.Result.DENY);
                     player.displayClientMessage(xlate(tryingToPlaceSecurityStation ?
                             "pneumaticcraft.message.securityStation.stationPlacementPrevented" :
                             "pneumaticcraft.message.securityStation.accessPrevented"
@@ -699,8 +702,10 @@ public class SecurityStationBlockEntity extends AbstractTickingBlockEntity imple
                     if (heldItem.getItem() instanceof BlockItem) {
                         player.connection.send(new ClientboundContainerSetSlotPacket(-2, 0, player.getInventory().selected, heldItem));
                     }
+                    return false;
                 }
             }
+            return true;
         }
 
         @SubscribeEvent(priority = EventPriority.HIGHEST)

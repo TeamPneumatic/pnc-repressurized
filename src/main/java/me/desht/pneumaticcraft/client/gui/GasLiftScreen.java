@@ -98,7 +98,7 @@ public class GasLiftScreen extends AbstractPneumaticCraftContainerScreen<GasLift
     private List<Component> getStatus() {
         List<Component> textList = new ArrayList<>();
         textList.add(xlate("pneumaticcraft.gui.tab.status.gasLift.action"));
-        textList.add(xlate(te.status.getTranslationKey(), te.getTank().getFluid().getDisplayName().getString()).withStyle(ChatFormatting.BLACK));
+        textList.add(xlate(te.status.getTranslationKey(), te.getTank().getFluid().getHoverName().getString()).withStyle(ChatFormatting.BLACK));
         textList.add(xlate("pneumaticcraft.gui.tab.status.gasLift.currentDepth"));
         textList.add(Component.literal(te.currentDepth + " meter(s)").withStyle(ChatFormatting.BLACK));
         return textList;

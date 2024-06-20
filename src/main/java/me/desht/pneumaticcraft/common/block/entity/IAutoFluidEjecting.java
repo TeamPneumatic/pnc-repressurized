@@ -33,15 +33,16 @@ public interface IAutoFluidEjecting {
         IOHelper.getFluidHandlerForBlock(te).ifPresent(handler -> {
             FluidStack toDrain = handler.drain(BUCKET_VOLUME, FluidAction.SIMULATE);
             if (!toDrain.isEmpty()) {
-                Direction ejectDir = te.getUpgradeCache().getEjectDirection();
-                if (ejectDir != null) {
-                    tryEjectLiquid(te, handler, ejectDir, toDrain.getAmount());
-                } else {
-                    for (Direction d : DirectionUtil.VALUES) {
-                        toDrain.setAmount(toDrain.getAmount() - tryEjectLiquid(te, handler, d, toDrain.getAmount()));
-                        if (toDrain.getAmount() <= 0) break;
-                    }
-                }
+                te.getUpgradeCache().getEjectDirection().ifPresentOrElse(
+                        ejectDir -> {
+                            tryEjectLiquid(te, handler, ejectDir, toDrain.getAmount());
+                        },
+                        () -> {
+                            for (Direction d : DirectionUtil.VALUES) {
+                                toDrain.setAmount(toDrain.getAmount() - tryEjectLiquid(te, handler, d, toDrain.getAmount()));
+                                if (toDrain.getAmount() <= 0) break;
+                            }
+                        });
             }
         });
     }

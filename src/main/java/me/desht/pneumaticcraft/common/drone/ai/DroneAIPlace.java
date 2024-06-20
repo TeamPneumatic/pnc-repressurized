@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.common.drone.ai;
 
-import me.desht.pneumaticcraft.common.drone.IDroneBase;
+import me.desht.pneumaticcraft.api.drone.IDrone;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetAreaItemBase;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
@@ -42,7 +42,7 @@ public class DroneAIPlace<W extends ProgWidgetAreaItemBase /*& IBlockOrdered & I
      * @param drone the drone
      * @param widget needs to implement IBlockOrdered as well as ProgWidgetAreaItemBase
      */
-    public DroneAIPlace(IDroneBase drone, W widget) {
+    public DroneAIPlace(IDrone drone, W widget) {
         super(drone, widget);
     }
 
@@ -53,7 +53,7 @@ public class DroneAIPlace<W extends ProgWidgetAreaItemBase /*& IBlockOrdered & I
 
     @Override
     protected boolean isValidPosition(BlockPos pos) {
-        if (drone.world().getBlockState(pos).canBeReplaced()) {
+        if (drone.getDroneLevel().getBlockState(pos).canBeReplaced()) {
             if (Vec3.atCenterOf(pos).distanceToSqr(drone.getDronePos()) < 1.2) {
                 // too close - placement could be blocked by the drone
                 return false;
@@ -73,8 +73,8 @@ public class DroneAIPlace<W extends ProgWidgetAreaItemBase /*& IBlockOrdered & I
                     if (state == null) {
                         drone.getDebugger().addEntry("pneumaticcraft.gui.progWidget.place.debug.cantPlaceBlock", pos);
                         failedOnPlacement = true;
-                    } else if (worldCache.isUnobstructed(null, state.getShape(drone.world(), pos))) {
-                        if (state.canSurvive(drone.world(), pos)) {
+                    } else if (worldCache.isUnobstructed(null, state.getShape(drone.getDroneLevel(), pos))) {
+                        if (state.canSurvive(drone.getDroneLevel(), pos)) {
                             return true;
                         } else {
                             drone.getDebugger().addEntry("pneumaticcraft.gui.progWidget.place.debug.cantPlaceBlock", pos);
@@ -123,7 +123,7 @@ public class DroneAIPlace<W extends ProgWidgetAreaItemBase /*& IBlockOrdered & I
     private BlockPos findClearSide(BlockPos pos) {
         for (Direction side : DirectionUtil.VALUES) {
             BlockPos pos2 = pos.relative(side);
-            if (drone.world().getBlockState(pos.relative(side)).isPathfindable(drone.world(), pos2, PathComputationType.AIR)) {
+            if (drone.getDroneLevel().getBlockState(pos.relative(side)).isPathfindable(PathComputationType.AIR)) {
                 return pos2;
             }
         }
@@ -131,7 +131,7 @@ public class DroneAIPlace<W extends ProgWidgetAreaItemBase /*& IBlockOrdered & I
     }
 
     private BlockPlaceContext getPlacementContext(BlockPos placerPos, BlockPos targetPos, ItemStack droneStack) {
-        BlockHitResult brtr = drone.world().clip(new ClipContext(
+        BlockHitResult brtr = drone.getDroneLevel().clip(new ClipContext(
                 Vec3.atCenterOf(placerPos),
                 Vec3.atCenterOf(targetPos),
                 ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE,

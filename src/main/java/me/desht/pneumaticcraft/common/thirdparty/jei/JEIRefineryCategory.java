@@ -36,10 +36,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.fluids.FluidStack;
 
-import java.util.Collections;
-import java.util.IdentityHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
@@ -59,13 +56,13 @@ public class JEIRefineryCategory extends AbstractPNCCategory<RefineryRecipe> {
     @Override
     public void setRecipe(IRecipeLayoutBuilder builder, RefineryRecipe recipe, IFocusGroup focuses) {
         builder.addSlot(RecipeIngredientRole.INPUT, 2, 10)
-                .addIngredients(NeoForgeTypes.FLUID_STACK, recipe.getInput().getFluidStacks())
-                .setFluidRenderer(recipe.getInput().getAmount(), true, 16, 64)
+                .addIngredients(NeoForgeTypes.FLUID_STACK, Arrays.asList(recipe.getInput().getFluids()))
+                .setFluidRenderer(recipe.getInput().amount(), true, 16, 64)
                 .setOverlay(Helpers.makeTankOverlay(64), 0, 0);
 
         int n = 1;
         for (FluidStack out : recipe.getOutputs()) {
-            int h = out.getAmount() * 64 / recipe.getInput().getAmount();
+            int h = out.getAmount() * 64 / recipe.getInput().amount();
             int yOff = 64 - h;
             builder.addSlot(RecipeIngredientRole.OUTPUT, 69 + n * 20, 18 - n * 4 + yOff)
                     .addIngredient(NeoForgeTypes.FLUID_STACK, out)

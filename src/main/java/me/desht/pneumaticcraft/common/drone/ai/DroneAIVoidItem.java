@@ -17,6 +17,7 @@
 
 package me.desht.pneumaticcraft.common.drone.ai;
 
+import me.desht.pneumaticcraft.api.drone.IDrone;
 import me.desht.pneumaticcraft.common.drone.IDroneBase;
 import me.desht.pneumaticcraft.common.drone.progwidgets.IItemFiltering;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
@@ -27,10 +28,10 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 
 public class DroneAIVoidItem extends Goal {
-    private final IDroneBase drone;
+    private final IDrone drone;
     private final IItemFiltering widget;
 
-    public DroneAIVoidItem(IDroneBase drone, IItemFiltering widget) {
+    public DroneAIVoidItem(IDrone drone, IItemFiltering widget) {
         this.drone = drone;
         this.widget = widget;
     }
@@ -53,9 +54,9 @@ public class DroneAIVoidItem extends Goal {
             if (!stack.isEmpty() && widget.isItemValidForFilters(stack)) {
                 drone.getInv().setStackInSlot(i, ItemStack.EMPTY);
                 drone.addAirToDrone(-PneumaticValues.DRONE_USAGE_VOID * stack.getCount());
-                if (drone.world() instanceof ServerLevel) {
+                if (drone.getDroneLevel() instanceof ServerLevel) {
                     Vec3 vec = drone.getDronePos();
-                    ((ServerLevel)drone.world()).sendParticles(ParticleTypes.LAVA, vec.x, vec.y, vec.z, 5, 0, 0, 0, 0);
+                    ((ServerLevel)drone.getDroneLevel()).sendParticles(ParticleTypes.LAVA, vec.x, vec.y, vec.z, 5, 0, 0, 0, 0);
                 }
             }
         }

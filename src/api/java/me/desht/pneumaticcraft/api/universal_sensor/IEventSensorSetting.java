@@ -20,7 +20,7 @@ package me.desht.pneumaticcraft.api.universal_sensor;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.bus.api.Event;
 import net.neoforged.neoforge.event.entity.player.AttackEntityEvent;
-import net.neoforged.neoforge.event.entity.player.EntityItemPickupEvent;
+import net.neoforged.neoforge.event.entity.player.ItemEntityPickupEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 
 public interface IEventSensorSetting extends ISensorSetting {
@@ -28,7 +28,7 @@ public interface IEventSensorSetting extends ISensorSetting {
      * This method is called when a Forge event of interest is triggered.  Events of interest are:
      * <ul>
      *     <li>{@link PlayerInteractEvent}</li>
-     *     <li>{@link EntityItemPickupEvent}</li>
+     *     <li>{@link ItemEntityPickupEvent}</li>
      *     <li>{@link AttackEntityEvent}</li>
      * </ul>
      * @param event the Forge event (one of PlayerInteractEvent, EntityItemPickupEvent or AttackEntityEvent)

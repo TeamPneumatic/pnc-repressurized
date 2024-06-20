@@ -18,7 +18,6 @@
 package me.desht.pneumaticcraft.common.thirdparty.patchouli;
 
 import me.desht.pneumaticcraft.api.crafting.TemperatureRange;
-import me.desht.pneumaticcraft.api.crafting.ingredient.FluidIngredient;
 import me.desht.pneumaticcraft.api.crafting.recipe.ThermoPlantRecipe;
 import me.desht.pneumaticcraft.common.registry.ModRecipeTypes;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -28,6 +27,8 @@ import net.minecraft.client.resources.language.I18n;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.Level;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
 import vazkii.patchouli.api.IComponentProcessor;
 import vazkii.patchouli.api.IVariable;
 import vazkii.patchouli.api.IVariableProvider;
@@ -56,7 +57,7 @@ public class ProcessorThermoPlant implements IComponentProcessor {
             case "item_input":
                 return PatchouliAccess.getStacks(recipe.getInputItem().orElse(Ingredient.EMPTY));
             case "fluid_input":
-                return PatchouliAccess.getFluidStacks(recipe.getInputFluid().orElse(FluidIngredient.EMPTY));
+                return PatchouliAccess.getFluidStacks(recipe.getInputFluid().orElse(SizedFluidIngredient.of(FluidStack.EMPTY)));
             case "item_output":
                 return IVariable.from(recipe.getOutputItem());
             case "fluid_output":
@@ -83,7 +84,7 @@ public class ProcessorThermoPlant implements IComponentProcessor {
 
     private String defaultHeader() {
         if (!recipe.getOutputFluid().isEmpty()) {
-            return recipe.getOutputFluid().getDisplayName().getString();
+            return recipe.getOutputFluid().getHoverName().getString();
         } else if (!recipe.getOutputItem().isEmpty()) {
             return recipe.getOutputItem().getHoverName().getString();
         } else {

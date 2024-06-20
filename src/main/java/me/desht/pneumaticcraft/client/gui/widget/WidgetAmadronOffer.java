@@ -35,6 +35,7 @@ import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.FormattedCharSequence;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import org.lwjgl.opengl.GL11;
@@ -175,7 +176,9 @@ public class WidgetAmadronOffer extends AbstractWidget {
         public WidgetItemStack(int startX, int startY, ItemStack stack) {
             super(startX, startY, 16, 16);
             setRenderStacks(stack);
-            setTooltip(Tooltip.create(PneumaticCraftUtils.combineComponents(stack.getTooltipLines(Minecraft.getInstance().player, TooltipFlag.Default.NORMAL))));
+            setTooltip(Tooltip.create(PneumaticCraftUtils.combineComponents(
+                    stack.getTooltipLines(Item.TooltipContext.of(Minecraft.getInstance().level), Minecraft.getInstance().player, TooltipFlag.Default.NORMAL)
+            )));
             setVisible(false);
             setRenderStackSize(true);
         }

@@ -65,7 +65,7 @@ public abstract class FluidPlastic {
 
     public static class Bucket extends PneumaticCraftBucketItem implements ICustomTooltipName {
         public Bucket() {
-            super(ModFluids.PLASTIC);
+            super(ModFluids.PLASTIC.get());
         }
 
         @Override

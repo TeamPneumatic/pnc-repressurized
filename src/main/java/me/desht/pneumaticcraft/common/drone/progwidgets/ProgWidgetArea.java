@@ -18,23 +18,31 @@
 package me.desht.pneumaticcraft.common.drone.progwidgets;
 
 import com.google.common.collect.ImmutableList;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import me.desht.pneumaticcraft.api.drone.IDrone;
+import me.desht.pneumaticcraft.api.drone.IProgWidget;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
+import me.desht.pneumaticcraft.api.drone.area.AreaTypeWidget;
+import me.desht.pneumaticcraft.api.registry.PNCRegistries;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
-import me.desht.pneumaticcraft.common.drone.IDroneBase;
 import me.desht.pneumaticcraft.common.drone.ai.DroneAIManager;
-import me.desht.pneumaticcraft.common.drone.progwidgets.area.*;
-import me.desht.pneumaticcraft.common.registry.ModProgWidgets;
+import me.desht.pneumaticcraft.common.drone.progwidgets.area.AreaTooBigException;
+import me.desht.pneumaticcraft.api.drone.area.AreaType;
+import me.desht.pneumaticcraft.common.drone.progwidgets.area.AreaTypeBox;
+import me.desht.pneumaticcraft.api.drone.area.AreaTypeSerializer;
+import me.desht.pneumaticcraft.common.registry.ModProgWidgetTypes;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
 import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtUtils;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.DyeColor;
@@ -44,8 +52,6 @@ import net.minecraft.world.phys.AABB;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
@@ -53,44 +59,46 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
  * The Area widget itself
  */
 public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariableWidget {
+    public static final MapCodec<ProgWidgetArea> CODEC = RecordCodecBuilder.mapCodec(builder ->
+        baseParts(builder).and(builder.group(
+              BlockPos.CODEC.optionalFieldOf("pos1").forGetter(p -> p.getPos(0)),
+              BlockPos.CODEC.optionalFieldOf("pos2").forGetter(p -> p.getPos(1)),
+              AreaType.CODEC.fieldOf("type").forGetter(p -> p.areaType),
+              Codec.STRING.optionalFieldOf("var1", "").forGetter(p -> p.getVarName(0)),
+              Codec.STRING.optionalFieldOf("var2", "").forGetter(p -> p.getVarName(1))
+        )
+    ).apply(builder, ProgWidgetArea::new));
+
+    public static StreamCodec<RegistryFriendlyByteBuf, ProgWidgetArea> STREAM_CODEC = StreamCodec.of(
+            (buf, widgetArea) -> widgetArea.writeToPacket(buf),
+            buf -> ProgWidget.fromPacket(buf, ModProgWidgetTypes.AREA.get())
+    );
+
     private DroneAIManager aiManager;
     private final BlockPos[] pos = new BlockPos[] { null, null };
     private final String[] varNames = new String[] { "", "" };
-    public AreaType type = new AreaTypeBox();
+    private AreaType areaType = new AreaTypeBox();
     private IVariableProvider variableProvider;
     private UUID playerID;  // for player-global variable context
 
-    // map string area types to internal numeric ID's (for more efficient sync)
-    private static final Map<String, Integer> areaTypeToID = new HashMap<>();
-    // collection of area type factories, indexed by internal ID
-    private static final List<Supplier<? extends AreaType>> areaTypeFactories = new ArrayList<>();
-
-    static {
-        register(AreaTypeBox.ID, AreaTypeBox::new);
-        register(AreaTypeSphere.ID, AreaTypeSphere::new);
-        register(AreaTypeLine.ID, AreaTypeLine::new);
-        register(AreaTypeWall.ID, AreaTypeWall::new);
-        register(AreaTypeCylinder.ID, AreaTypeCylinder::new);
-        register(AreaTypePyramid.ID, AreaTypePyramid::new);
-        register(AreaTypeGrid.ID, AreaTypeGrid::new);
-        register(AreaTypeRandom.ID, AreaTypeRandom::new);
-        register(AreaTypeTorus.ID, AreaTypeTorus::new);
-    }
-
     public ProgWidgetArea() {
-        super(ModProgWidgets.AREA.get());
+        this(PositionFields.DEFAULT, Optional.empty(), Optional.empty(), new AreaTypeBox(), "", "");
     }
 
-    private static <T extends AreaType> void register(String id, Supplier<T> factory) {
-        if (areaTypeToID.containsKey(id)) {
-            throw new IllegalStateException("Area type " + id + " could not be registered, duplicate id");
-        }
-        areaTypeFactories.add(factory);
-        areaTypeToID.put(id, areaTypeFactories.size() - 1);
+    @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
+    public ProgWidgetArea(PositionFields pos, Optional<BlockPos> pos1, Optional<BlockPos> pos2, AreaType areaType, String varName1, String varName2) {
+        super(pos);
+
+        setPos(0, pos1.orElse(null));
+        setPos(1, pos2.orElse(null));
+        this.areaType = areaType;
+        setVarName(0, varName1);
+        setVarName(1, varName2);
     }
 
-    public static List<AreaType> getAllAreaTypes() {
-        return areaTypeFactories.stream().map(Supplier::get).collect(Collectors.toList());
+    public static List<? extends AreaType> getAllAreaTypes() {
+        return PNCRegistries.AREA_TYPE_SERIALIZER_REGISTRY.stream()
+                .map(AreaTypeSerializer::createDefaultInstance).toList();
     }
 
     public static ProgWidgetArea fromPosition(BlockPos p1) {
@@ -109,10 +117,15 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
     }
 
     public static ProgWidgetArea fromPositions(BlockPos p1, BlockPos p2) {
-        ProgWidgetArea area = new ProgWidgetArea();
-        area.setPos(0, p1);
-        area.setPos(1, p2);
-        return area;
+        return new ProgWidgetArea(PositionFields.DEFAULT, Optional.ofNullable(p1), Optional.ofNullable(p2), new AreaTypeBox(), "", "");
+    }
+
+    public AreaType getAreaType() {
+        return areaType;
+    }
+
+    public void setAreaType(AreaType areaType) {
+        this.areaType = areaType;
     }
 
     @Override
@@ -133,14 +146,19 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
                 res.add(Component.literal(PneumaticCraftUtils.posToString(pos[1])));
             }
             if (res.size() == 2) {
-                MutableComponent c = xlate(type.getTranslationKey());
-                List<AreaType.AreaTypeWidget> widgets = new ArrayList<>();
-                type.addUIWidgets(widgets);
+                MutableComponent c = xlate(areaType.getTranslationKey());
+                List<AreaTypeWidget> widgets = new ArrayList<>();
+                areaType.addUIWidgets(widgets);
                 widgets.forEach(w -> c.append("/").append(w.getDisplayName()));
                 res.add(c);
             }
         }
         return res;
+    }
+
+    @Override
+    public ProgWidgetType<?> getType() {
+        return ModProgWidgetTypes.AREA.get();
     }
 
     @Override
@@ -168,12 +186,12 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
     }
 
     public void addAreaTypeTooltip(List<Component> curTooltip) {
-        curTooltip.add(xlate("pneumaticcraft.gui.progWidget.area.type").append(xlate(type.getTranslationKey()).withStyle(ChatFormatting.YELLOW)));
+        curTooltip.add(xlate("pneumaticcraft.gui.progWidget.area.type").append(xlate(areaType.getTranslationKey()).withStyle(ChatFormatting.YELLOW)));
 
-        List<AreaType.AreaTypeWidget> widgets = new ArrayList<>();
-        type.addUIWidgets(widgets);
-        for (AreaType.AreaTypeWidget widget : widgets) {
-            curTooltip.add(xlate(widget.title).append(" ").append(widget.getDisplayName().copy().withStyle(ChatFormatting.YELLOW)));
+        List<AreaTypeWidget> widgets = new ArrayList<>();
+        areaType.addUIWidgets(widgets);
+        for (AreaTypeWidget widget : widgets) {
+            curTooltip.add(xlate(widget.getTranslationKey()).append(" ").append(widget.getDisplayName().copy().withStyle(ChatFormatting.YELLOW)));
         }
     }
 
@@ -183,13 +201,13 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
         if (varNames[0].isEmpty() && varNames[1].isEmpty() && pos[0] == null && pos[1] == null) {
             curInfo.add(xlate("pneumaticcraft.gui.progWidget.area.error.noArea"));
         }
-        if (!(type instanceof AreaTypeBox)) {
+        if (!(areaType instanceof AreaTypeBox)) {
             IProgWidget p = this;
             while ((p = p.getParent()) != null) {
                 ProgWidgetType<?> type = p.getType();
-                if (type == ModProgWidgets.ENTITY_ATTACK.get() || type == ModProgWidgets.ENTITY_IMPORT.get()
-                        || type == ModProgWidgets.ENTITY_RIGHT_CLICK.get() || type == ModProgWidgets.CONDITION_ENTITY.get()
-                        || type == ModProgWidgets.PICKUP_ITEM.get()) {
+                if (type == ModProgWidgetTypes.ENTITY_ATTACK.get() || type == ModProgWidgetTypes.ENTITY_IMPORT.get()
+                        || type == ModProgWidgetTypes.ENTITY_RIGHT_CLICK.get() || type == ModProgWidgetTypes.CONDITION_ENTITY.get()
+                        || type == ModProgWidgetTypes.PICKUP_ITEM.get()) {
                     curInfo.add(xlate("pneumaticcraft.gui.progWidget.area.error.onlyAreaTypeBox", xlate(p.getTranslationKey())));
                     break;
                 }
@@ -223,12 +241,12 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
 
     @Override
     public ProgWidgetType<?> returnType() {
-        return ModProgWidgets.AREA.get();
+        return ModProgWidgetTypes.AREA.get();
     }
 
     @Override
     public List<ProgWidgetType<?>> getParameters() {
-        return ImmutableList.of(ModProgWidgets.AREA.get());
+        return ImmutableList.of(ModProgWidgetTypes.AREA.get());
     }
 
     @Override
@@ -238,7 +256,7 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
 
     @Override
     public void getArea(Set<BlockPos> area) {
-        getArea(area, type);
+        getArea(area, areaType);
     }
 
     public void getArea(Set<BlockPos> area, AreaType areaType) {
@@ -275,9 +293,9 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
                 // We still need to do run-time checks:
                 // 1) Drones programmed before the compile-time validation was added
                 // 2) Programs using variables where we don't necessarily have the values at compile-time
-                IDroneBase drone = aiManager.getDrone();
+                IDrone drone = aiManager.getDrone();
                 Log.warning("Drone @ {} (DIM {}) was killed due to excessively large area ({} > {}). See 'maxProgrammingArea' in config.",
-                        drone.getDronePos().toString(), drone.world().dimension().location(), size, maxSize);
+                        drone.getDronePos().toString(), drone.getDroneLevel().dimension().location(), size, maxSize);
                 drone.overload("areaTooLarge", maxSize);
                 return;
             }
@@ -327,7 +345,7 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
     }
 
     @Override
-    public void writeToPacket(FriendlyByteBuf buf) {
+    public void writeToPacket(RegistryFriendlyByteBuf buf) {
         super.writeToPacket(buf);
         BlockPos pos1 = getPos(0).orElse(BlockPos.ZERO);
         BlockPos pos2 = getPos(1).orElse(BlockPos.ZERO);
@@ -336,74 +354,76 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
         // (keep numbers positive for best varint results)
         BlockPos offset = pos1.subtract(pos2).offset(127, 127, 127);
         buf.writeBlockPos(offset);
-        buf.writeVarInt(areaTypeToID.get(type.getName()));
-        type.writeToPacket(buf);
+        AreaType.STREAM_CODEC.encode(buf, areaType);
+//        buf.writeVarInt(areaTypeToID.get(type.getName()));
+//        type.writeToPacket(buf);
         buf.writeUtf(varNames[0]);
         buf.writeUtf(varNames[1]);
     }
 
     @Override
-    public void readFromPacket(FriendlyByteBuf buf) {
+    public void readFromPacket(RegistryFriendlyByteBuf buf) {
         super.readFromPacket(buf);
         pos[0] = buf.readBlockPos();
         BlockPos offset = buf.readBlockPos().offset(-127, -127, -127);
         pos[1] = pos[0].subtract(offset);
-        type = createType(buf.readVarInt());
-        type.readFromPacket(buf);
+        areaType = AreaType.STREAM_CODEC.decode(buf);
+//        type = createType(buf.readVarInt());
+//        type.readFromPacket(buf);
         varNames[0] = buf.readUtf(GlobalVariableManager.MAX_VARIABLE_LEN);
         varNames[1] = buf.readUtf(GlobalVariableManager.MAX_VARIABLE_LEN);
     }
 
-    @Override
-    public void writeToNBT(CompoundTag tag) {
-        super.writeToNBT(tag);
-        getPos(0).ifPresent(pos -> tag.put("pos1", NbtUtils.writeBlockPos(pos)));
-        getPos(1).ifPresent(pos -> tag.put("pos2", NbtUtils.writeBlockPos(pos)));
-        tag.putString("type", type.getName());
-        type.writeToNBT(tag);
-        if (!varNames[0].isEmpty()) {
-            tag.putString("var1", varNames[0]);
-        } else {
-            tag.remove("var1");
-        }
-        if (!varNames[1].isEmpty()) {
-            tag.putString("var2", varNames[1]);
-        } else {
-            tag.remove("var2");
-        }
-    }
+//    @Override
+//    public void writeToNBT(CompoundTag tag, HolderLookup.Provider provider) {
+//        super.writeToNBT(tag, provider);
+//        getPos(0).ifPresent(pos -> tag.put("pos1", NbtUtils.writeBlockPos(pos)));
+//        getPos(1).ifPresent(pos -> tag.put("pos2", NbtUtils.writeBlockPos(pos)));
+//        tag.putString("type", type.getName());
+//        type.writeToNBT(tag);
+//        if (!varNames[0].isEmpty()) {
+//            tag.putString("var1", varNames[0]);
+//        } else {
+//            tag.remove("var1");
+//        }
+//        if (!varNames[1].isEmpty()) {
+//            tag.putString("var2", varNames[1]);
+//        } else {
+//            tag.remove("var2");
+//        }
+//    }
+//
+//    @Override
+//    public void readFromNBT(CompoundTag tag, HolderLookup.Provider provider) {
+//        super.readFromNBT(tag, provider);
+//
+//        if (tag.contains("x1")) {
+//            // legacy import
+//            pos[0] = new BlockPos(tag.getInt("x1"), tag.getInt("y1"), tag.getInt("z1"));
+//            pos[1] = new BlockPos(tag.getInt("x2"), tag.getInt("y2"), tag.getInt("z2"));
+//            varNames[0] = tag.getString("coord1Variable");
+//            varNames[1] = tag.getString("coord2Variable");
+//        } else {
+//            pos[0] = NbtUtils.readBlockPos(tag.getCompound("pos1"));
+//            pos[1] = NbtUtils.readBlockPos(tag.getCompound("pos2"));
+//            varNames[0] = tag.getString("var1");
+//            varNames[1] = tag.getString("var2");
+//        }
+//        type = createType(tag.getString("type"));
+//        type.readFromNBT(tag);
+//    }
 
-    @Override
-    public void readFromNBT(CompoundTag tag) {
-        super.readFromNBT(tag);
-
-        if (tag.contains("x1")) {
-            // legacy import
-            pos[0] = new BlockPos(tag.getInt("x1"), tag.getInt("y1"), tag.getInt("z1"));
-            pos[1] = new BlockPos(tag.getInt("x2"), tag.getInt("y2"), tag.getInt("z2"));
-            varNames[0] = tag.getString("coord1Variable");
-            varNames[1] = tag.getString("coord2Variable");
-        } else {
-            pos[0] = NbtUtils.readBlockPos(tag.getCompound("pos1"));
-            pos[1] = NbtUtils.readBlockPos(tag.getCompound("pos2"));
-            varNames[0] = tag.getString("var1");
-            varNames[1] = tag.getString("var2");
-        }
-        type = createType(tag.getString("type"));
-        type.readFromNBT(tag);
-    }
-
-    public static AreaType createType(String id) {
-        if (!areaTypeToID.containsKey(id)) {
-            Log.error("No Area type found for id '{}'! Substituting Box!", id);
-            return new AreaTypeBox();
-        }
-        return createType(areaTypeToID.get(id));
-    }
-
-    public static AreaType createType(int id) {
-        return areaTypeFactories.get(id).get();
-    }
+//    public static AreaType createType(String id) {
+//        if (!areaTypeToID.containsKey(id)) {
+//            Log.error("No Area type found for id '{}'! Substituting Box!", id);
+//            return new AreaTypeBox();
+//        }
+//        return createType(areaTypeToID.get(id));
+//    }
+//
+//    public static AreaType createType(int id) {
+//        return areaTypeFactories.get(id).get();
+//    }
 
     @Override
     public WidgetDifficulty getDifficulty() {
@@ -446,5 +466,13 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
     public void setVariableProvider(IVariableProvider provider, UUID playerID) {
         this.variableProvider = provider;
         this.playerID = playerID;
+    }
+
+    public void updateFrom(ProgWidgetArea otherArea) {
+        setPos(0, otherArea.getPos(0).orElse(null));
+        setPos(1, otherArea.getPos(1).orElse(null));
+        areaType = otherArea.areaType.copy();
+        setVarName(0, otherArea.getVarName(0));
+        setVarName(1, otherArea.getVarName(1));
     }
 }

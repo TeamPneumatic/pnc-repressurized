@@ -17,21 +17,23 @@
 
 package me.desht.pneumaticcraft.common.recipes.machine;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import me.desht.pneumaticcraft.api.crafting.PneumaticCraftRecipeTypes;
 import me.desht.pneumaticcraft.api.crafting.recipe.ExplosionCraftingRecipe;
 import me.desht.pneumaticcraft.common.registry.ModRecipeSerializers;
 import me.desht.pneumaticcraft.common.registry.ModRecipeTypes;
 import net.minecraft.core.NonNullList;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
+import net.neoforged.neoforge.common.crafting.SizedIngredient;
 
 import java.util.List;
 import java.util.Random;
@@ -40,24 +42,19 @@ import java.util.concurrent.ThreadLocalRandom;
 public class ExplosionCraftingRecipeImpl extends ExplosionCraftingRecipe {
     private static final NonNullList<ItemStack> EMPTY_RESULT = NonNullList.create();
 
-    private final Ingredient input;
+    private final SizedIngredient input;
     private final List<ItemStack> outputs;
     private final int lossRate;
 
-    public ExplosionCraftingRecipeImpl(Ingredient input, int lossRate, List<ItemStack> outputs) {
+    public ExplosionCraftingRecipeImpl(SizedIngredient input, int lossRate, List<ItemStack> outputs) {
         this.input = input;
         this.outputs = outputs;
         this.lossRate = lossRate;
     }
 
     @Override
-    public Ingredient getInput() {
+    public SizedIngredient getInput() {
         return input;
-    }
-
-    @Override
-    public int getAmount() {
-        return input.getItems().length > 0 ? input.getItems()[0].getCount() : 0;
     }
 
     @Override
@@ -128,41 +125,36 @@ public class ExplosionCraftingRecipeImpl extends ExplosionCraftingRecipe {
         return new ItemStack(Blocks.TNT);
     }
 
+    public interface IFactory<T extends ExplosionCraftingRecipe> {
+        T create(SizedIngredient input, int lossRate, List<ItemStack> result);
+    }
+
     public static class Serializer<T extends ExplosionCraftingRecipe> implements RecipeSerializer<T> {
-        private final Codec<T> codec;
-        private final IFactory<T> factory;
+        private final MapCodec<T> codec;
+        private final StreamCodec<RegistryFriendlyByteBuf, T> streamCodec;
 
         public Serializer(IFactory<T> factory) {
-            this.factory = factory;
-            this.codec = RecordCodecBuilder.create(builder -> builder.group(
-                    Ingredient.CODEC.fieldOf("input").forGetter(ExplosionCraftingRecipe::getInput),
+            this.codec = RecordCodecBuilder.mapCodec(builder -> builder.group(
+                    SizedIngredient.FLAT_CODEC.fieldOf("input").forGetter(ExplosionCraftingRecipe::getInput),
                     ExtraCodecs.intRange(0, 99).fieldOf("loss_rate").forGetter(ExplosionCraftingRecipe::getLossRate),
-                    ItemStack.ITEM_WITH_COUNT_CODEC.listOf().fieldOf("results").forGetter(ExplosionCraftingRecipe::getOutputs)
+                    ItemStack.CODEC.listOf().fieldOf("results").forGetter(ExplosionCraftingRecipe::getOutputs)
             ).apply(builder, factory::create));
+            this.streamCodec = StreamCodec.composite(
+                    SizedIngredient.STREAM_CODEC, ExplosionCraftingRecipe::getInput,
+                    ByteBufCodecs.VAR_INT, ExplosionCraftingRecipe::getLossRate,
+                    ItemStack.STREAM_CODEC.apply(ByteBufCodecs.list()), ExplosionCraftingRecipe::getOutputs,
+                    factory::create
+            );
         }
 
         @Override
-        public Codec<T> codec() {
+        public MapCodec<T> codec() {
             return codec;
         }
 
         @Override
-        public T fromNetwork(FriendlyByteBuf buffer) {
-            Ingredient input = Ingredient.fromNetwork(buffer);
-            List<ItemStack> l = buffer.readList(FriendlyByteBuf::readItem);
-            int lossRate = buffer.readVarInt();
-            return factory.create(input, lossRate, l);
-        }
-
-        @Override
-        public void toNetwork(FriendlyByteBuf buffer, T recipe) {
-            recipe.getInput().toNetwork(buffer);
-            buffer.writeCollection(recipe.getOutputs(), FriendlyByteBuf::writeItem);
-            buffer.writeVarInt(recipe.getLossRate());
-        }
-
-        public interface IFactory<T extends ExplosionCraftingRecipe> {
-            T create(Ingredient input, int lossRate, List<ItemStack> result);
+        public StreamCodec<RegistryFriendlyByteBuf, T> streamCodec() {
+            return streamCodec;
         }
     }
 }

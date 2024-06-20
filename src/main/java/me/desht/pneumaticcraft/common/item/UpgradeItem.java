@@ -21,9 +21,9 @@ import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.upgrade.IUpgradeItem;
 import me.desht.pneumaticcraft.api.upgrade.PNCUpgrade;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
+import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
-import me.desht.pneumaticcraft.common.util.NBTUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
@@ -47,13 +47,11 @@ import java.util.stream.Stream;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class UpgradeItem extends Item implements IUpgradeItem, CreativeTabStackProvider {
-    public static final String NBT_DIRECTION = "Facing";
-
     private final PNCUpgrade upgrade;
     private final int tier;
 
-    public UpgradeItem(PNCUpgrade upgrade, int tier) {
-        this(upgrade, tier, ModItems.defaultProps());
+    public UpgradeItem(PNCUpgrade upgrade, int tier, Rarity rarity) {
+        this(upgrade, tier, ModItems.defaultProps().rarity(rarity));
     }
 
     public UpgradeItem(PNCUpgrade upgrade, int tier, Properties properties) {
@@ -74,7 +72,7 @@ public class UpgradeItem extends Item implements IUpgradeItem, CreativeTabStackP
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, Level world, List<Component> infoList, TooltipFlag par4) {
+    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> infoList, TooltipFlag par4) {
         if (ClientUtils.hasShiftDown()) {
             infoList.add(xlate("pneumaticcraft.gui.tooltip.item.upgrade.usedIn").withStyle(ChatFormatting.AQUA));
             PneumaticRegistry.getInstance().getUpgradeRegistry().addUpgradeTooltip(upgrade, infoList);
@@ -83,14 +81,14 @@ public class UpgradeItem extends Item implements IUpgradeItem, CreativeTabStackP
         }
         // FIXME code smell
         if (getUpgradeType() == ModUpgrades.DISPENSER.get()) {
-            Direction dir = stack.hasTag() ? Direction.byName(NBTUtils.getString(stack, NBT_DIRECTION)) : null;
+            Direction dir = stack.get(ModDataComponents.EJECT_DIR);
             infoList.add(xlate("pneumaticcraft.message.dispenser.direction", dir == null ?
                     xlate("pneumaticcraft.gui.misc.any") :
                     xlate("pneumaticcraft.gui.tooltip.direction." + dir.getSerializedName()))
             );
             infoList.add(xlate("pneumaticcraft.message.dispenser.clickToSet"));
         }
-        super.appendHoverText(stack, world, infoList, par4);
+        super.appendHoverText(stack, context, infoList, par4);
     }
 
     @Override
@@ -118,17 +116,12 @@ public class UpgradeItem extends Item implements IUpgradeItem, CreativeTabStackP
     private void setDirection(ServerPlayer player, InteractionHand hand, Direction facing) {
         ItemStack stack = player.getItemInHand(hand);
         if (facing == null) {
-            stack.setTag(null);
+            stack.remove(ModDataComponents.EJECT_DIR);
             player.displayClientMessage(Component.translatable("pneumaticcraft.message.dispenser.direction", "*"), true);
         } else {
-            NBTUtils.setString(stack, NBT_DIRECTION, facing.getSerializedName());
+            stack.set(ModDataComponents.EJECT_DIR, facing);
             player.displayClientMessage(Component.translatable("pneumaticcraft.message.dispenser.direction", facing.getSerializedName()), true);
         }
-    }
-
-    @Override
-    public Rarity getRarity(ItemStack stack) {
-        return getUpgradeType() == ModUpgrades.CREATIVE.get() ? Rarity.EPIC : Rarity.COMMON;
     }
 
     public static UpgradeItem of(ItemStack stack) {
@@ -137,7 +130,6 @@ public class UpgradeItem extends Item implements IUpgradeItem, CreativeTabStackP
 
     @Override
     public Stream<ItemStack> getStacksForItem() {
-//        return getUpgradeType().isDependencyLoaded() ? Stream.of(new ItemStack(this)) : Stream.empty();
         return Stream.of(new ItemStack(this));
     }
 }

@@ -25,6 +25,7 @@ import com.blamejared.crafttweaker.api.ingredient.IIngredient;
 import com.blamejared.crafttweaker.api.item.IItemStack;
 import com.blamejared.crafttweaker.api.recipe.manager.base.IRecipeManager;
 import com.blamejared.crafttweaker_annotations.annotations.Document;
+import com.mojang.datafixers.util.Either;
 import me.desht.pneumaticcraft.api.crafting.recipe.HeatFrameCoolingRecipe;
 import me.desht.pneumaticcraft.common.recipes.machine.HeatFrameCoolingRecipeImpl;
 import me.desht.pneumaticcraft.common.registry.ModRecipeTypes;
@@ -43,7 +44,7 @@ public class HeatFrameCooling implements IRecipeManager<HeatFrameCoolingRecipe> 
         CraftTweakerAPI.apply(new ActionAddRecipe<>(this,
                 new RecipeHolder<>(new ResourceLocation("crafttweaker", fixRecipeName(name)),
                         new HeatFrameCoolingRecipeImpl(
-                                input.asVanillaIngredient(),
+                                Either.left(input.asVanillaIngredient()),
                                 temperature,
                                 output.getInternal(),
                                 bonusMult, bonusLimit)
@@ -56,7 +57,7 @@ public class HeatFrameCooling implements IRecipeManager<HeatFrameCoolingRecipe> 
         CraftTweakerAPI.apply(new ActionAddRecipe<>(this,
                 new RecipeHolder<>(new ResourceLocation("crafttweaker", fixRecipeName(name)),
                         new HeatFrameCoolingRecipeImpl(
-                                CTUtils.toFluidIngredient(inputFluid),
+                                Either.right(CTUtils.toSizedFluidIngredient(inputFluid)),
                                 temperature,
                                 output.getInternal(),
                                 bonusMult, bonusLimit)

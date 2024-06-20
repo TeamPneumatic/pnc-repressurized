@@ -52,16 +52,15 @@ public class HackableTameable extends AbstractTameableHack<TamableAnimal> {
             entity.setHealth(20.0F);
             entity.setOwnerUUID(player.getUUID());
             entity.level().broadcastEntityEvent(entity, EntityEvent.TAMING_SUCCEEDED);
-            entity.setTame(true);
+            entity.setTame(true, true);
 
             // TODO: code smell
             // Would be better to have a HackableCat subclass, but HackableHandler.getHackableForEntity() isn't
             // set up to prioritise getting a cat over a generic tameable.
             if (entity instanceof Cat cat) {
-                // TODO no forge registry for cat variants at this time
                 BuiltInRegistries.CAT_VARIANT.getTag(CatVariantTags.DEFAULT_SPAWNS)
                         .flatMap(variants -> variants.getRandomElement(cat.level().getRandom()))
-                        .ifPresent(variant -> cat.setVariant(variant.value()));
+                        .ifPresent(cat::setVariant);
             }
         }
     }

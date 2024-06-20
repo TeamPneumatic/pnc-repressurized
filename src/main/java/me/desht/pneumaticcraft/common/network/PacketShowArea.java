@@ -21,11 +21,14 @@ import me.desht.pneumaticcraft.client.render.area.AreaRenderManager;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.network.handling.PlayPayloadContext;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
@@ -34,40 +37,29 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
  * Received on: CLIENT
  * Sent by server to make a block entity render its area of effect
  */
-public record PacketShowArea(BlockPos pos, BlockPos[] area) implements CustomPacketPayload {
-    public static final ResourceLocation ID = RL("show_area");
+public record PacketShowArea(BlockPos pos, Set<BlockPos> area) implements CustomPacketPayload {
+    public static final Type<PacketShowArea> TYPE = new Type<>(RL("show_area"));
+
+    public static final StreamCodec<FriendlyByteBuf, PacketShowArea> STREAM_CODEC = StreamCodec.composite(
+            BlockPos.STREAM_CODEC, PacketShowArea::pos,
+            BlockPos.STREAM_CODEC.apply(ByteBufCodecs.collection(HashSet::new)), PacketShowArea::area,
+            PacketShowArea::new
+    );
 
     public static PacketShowArea forPos(BlockPos pos) {
-        return new PacketShowArea(pos, new BlockPos[0]);
+        return new PacketShowArea(pos, Set.of());
     }
 
     public static PacketShowArea forArea(BlockPos pos, Set<BlockPos> area) {
-        return new PacketShowArea(pos, area.toArray(new BlockPos[0]));
-    }
-
-    public static PacketShowArea fromNetwork(FriendlyByteBuf buffer) {
-        BlockPos pos = buffer.readBlockPos();
-        var area = new BlockPos[buffer.readInt()];
-        for (int i = 0; i < area.length; i++) {
-            area[i] = buffer.readBlockPos();
-        }
         return new PacketShowArea(pos, area);
     }
 
     @Override
-    public void write(FriendlyByteBuf buffer) {
-        buffer.writeBlockPos(pos);
-        buffer.writeInt(area.length);
-        Arrays.stream(area).forEach(buffer::writeBlockPos);
+    public Type<PacketShowArea> type() {
+        return TYPE;
     }
 
-    @Override
-    public ResourceLocation id() {
-        return ID;
-    }
-
-    public static void handle(PacketShowArea message, PlayPayloadContext ctx) {
-        ctx.workHandler().submitAsync(() ->
-                AreaRenderManager.getInstance().showArea(message.area(), 0x9000FFFF, ClientUtils.getBlockEntity(message.pos())));
+    public static void handle(PacketShowArea message, IPayloadContext ctx) {
+        AreaRenderManager.getInstance().showArea(message.area(), 0x9000FFFF, ClientUtils.getBlockEntity(message.pos()));
     }
 }

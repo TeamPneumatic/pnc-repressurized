@@ -18,11 +18,13 @@
 package me.desht.pneumaticcraft.common.drone.progwidgets;
 
 import com.google.common.collect.ImmutableList;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
-import me.desht.pneumaticcraft.common.registry.ModProgWidgets;
+import me.desht.pneumaticcraft.common.registry.ModProgWidgetTypes;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.DyeColor;
@@ -31,14 +33,29 @@ import java.util.Collections;
 import java.util.List;
 
 public class ProgWidgetText extends ProgWidget {
-    public String string = "";
+    public static final MapCodec<ProgWidgetText> CODEC = RecordCodecBuilder.mapCodec(builder ->
+            baseParts(builder).and(
+                    Codec.STRING.fieldOf("string").forGetter(ProgWidgetText::getString)
+            ).apply(builder, ProgWidgetText::new));
+
+    protected String string = "";
 
     public ProgWidgetText() {
-        super(ModProgWidgets.TEXT.get());
+        super(PositionFields.DEFAULT);
     }
 
-    public ProgWidgetText(ProgWidgetType<?> type) {
-        super(type);
+    protected ProgWidgetText(PositionFields positionFields, String string) {
+        super(positionFields);
+
+        this.string = string;
+    }
+
+    public String getString() {
+        return string;
+    }
+
+    public void setString(String string) {
+        this.string = string;
     }
 
     public static ProgWidgetText withText(String string){
@@ -46,7 +63,12 @@ public class ProgWidgetText extends ProgWidget {
         widget.string = string;
         return widget;
     }
-    
+
+    @Override
+    public ProgWidgetType<?> getType() {
+        return ModProgWidgetTypes.TEXT.get();
+    }
+
     @Override
     public void getTooltip(List<Component> curTooltip) {
         super.getTooltip(curTooltip);
@@ -71,12 +93,12 @@ public class ProgWidgetText extends ProgWidget {
 
     @Override
     public ProgWidgetType<?> returnType() {
-        return ModProgWidgets.TEXT.get();
+        return ModProgWidgetTypes.TEXT.get();
     }
 
     @Override
     public List<ProgWidgetType<?>> getParameters() {
-        return ImmutableList.of(ModProgWidgets.TEXT.get());
+        return ImmutableList.of(ModProgWidgetTypes.TEXT.get());
     }
 
     @Override
@@ -84,26 +106,26 @@ public class ProgWidgetText extends ProgWidget {
         return Textures.PROG_WIDGET_TEXT;
     }
 
-    @Override
-    public void writeToNBT(CompoundTag tag) {
-        super.writeToNBT(tag);
-        tag.putString("string", string);
-    }
+//    @Override
+//    public void writeToNBT(CompoundTag tag, HolderLookup.Provider provider) {
+//        super.writeToNBT(tag, provider);
+//        tag.putString("string", string);
+//    }
+//
+//    @Override
+//    public void readFromNBT(CompoundTag tag, HolderLookup.Provider provider) {
+//        super.readFromNBT(tag, provider);
+//        string = tag.getString("string");
+//    }
 
     @Override
-    public void readFromNBT(CompoundTag tag) {
-        super.readFromNBT(tag);
-        string = tag.getString("string");
-    }
-
-    @Override
-    public void writeToPacket(FriendlyByteBuf buf) {
+    public void writeToPacket(RegistryFriendlyByteBuf buf) {
         super.writeToPacket(buf);
         buf.writeUtf(string);
     }
 
     @Override
-    public void readFromPacket(FriendlyByteBuf buf) {
+    public void readFromPacket(RegistryFriendlyByteBuf buf) {
         super.readFromPacket(buf);
         string = buf.readUtf(32768);
 

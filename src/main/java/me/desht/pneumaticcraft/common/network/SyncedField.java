@@ -19,6 +19,7 @@ package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.items.IItemHandlerModifiable;
@@ -283,7 +284,7 @@ public abstract class SyncedField<T> {
         @Override
         protected boolean equals(FluidStack oldValue, FluidStack newValue) {
             // Note: FluidStack#equals() implementation only checks the fluid, not the amount
-            return oldValue.isFluidStackIdentical(newValue);
+            return FluidStack.matches(oldValue, newValue);
         }
     }
 
@@ -354,7 +355,7 @@ public abstract class SyncedField<T> {
         }
     }
 
-    static Object fromBytes(FriendlyByteBuf buf, int type) {
+    static Object fromBytes(RegistryFriendlyByteBuf buf, int type) {
         switch (type) {
             case 0:
                 return buf.readInt();
@@ -369,21 +370,21 @@ public abstract class SyncedField<T> {
             case 5:
                 return buf.readByte();
             case 6:
-                return buf.readItem();
+                return ItemStack.OPTIONAL_STREAM_CODEC.decode(buf);
             case 7:
-                return buf.readFluidStack();
+                return FluidStack.OPTIONAL_STREAM_CODEC.decode(buf);
             case 8:
                 int len = buf.readVarInt();
                 ItemStackHandler handler = new ItemStackHandler(len);
                 for (int i = 0; i < len; i++) {
-                    handler.setStackInSlot(buf.readVarInt(), buf.readItem());
+                    handler.setStackInSlot(buf.readVarInt(), ItemStack.OPTIONAL_STREAM_CODEC.decode(buf));
                 }
                 return handler;
         }
         throw new IllegalArgumentException("Invalid sync type! " + type);
     }
 
-    static void toBytes(FriendlyByteBuf buf, Object value, int type) {
+    static void toBytes(RegistryFriendlyByteBuf buf, Object value, int type) {
         switch (type) {
             case 0 -> buf.writeInt((Integer) value);
             case 1 -> buf.writeFloat((Float) value);
@@ -391,14 +392,14 @@ public abstract class SyncedField<T> {
             case 3 -> buf.writeBoolean((Boolean) value);
             case 4 -> buf.writeUtf((String) value);
             case 5 -> buf.writeByte((Byte) value);
-            case 6 -> buf.writeItem(value == null ? ItemStack.EMPTY : (ItemStack) value);
-            case 7 -> buf.writeFluidStack((FluidStack) value);
+            case 6 -> ItemStack.OPTIONAL_STREAM_CODEC.encode(buf, value == null ? ItemStack.EMPTY : (ItemStack) value);
+            case 7 -> FluidStack.OPTIONAL_STREAM_CODEC.encode(buf, ((FluidStack) value));
             case 8 -> {
                 ItemStackHandler h = (ItemStackHandler) value;
                 buf.writeVarInt(h.getSlots());
                 for (int i = 0; i < h.getSlots(); i++) {
                     buf.writeVarInt(i);
-                    buf.writeItem(h.getStackInSlot(i));
+                    ItemStack.OPTIONAL_STREAM_CODEC.encode(buf, h.getStackInSlot(i));
                 }
             }
         }

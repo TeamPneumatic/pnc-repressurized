@@ -19,7 +19,7 @@ public class LivingEntityMixin {
     public void onOnEquipItem(EquipmentSlot pSlot, ItemStack pOldItem, ItemStack pNewItem, CallbackInfo ci) {
         //noinspection ConstantValue
         if ((Object) this instanceof Player p && pOldItem.getItem() instanceof PneumaticArmorItem && pNewItem.getItem() instanceof PneumaticArmorItem) {
-            if (!ItemStack.isSameItem(pOldItem, pNewItem) || !Objects.equals(pOldItem.getTag(), pNewItem.getTag())) {
+            if (!ItemStack.isSameItemSameComponents(pOldItem, pNewItem)) {
                 CommonArmorHandler.getHandlerForPlayer(p).armorSwitched(pSlot);
             }
         }

@@ -17,26 +17,28 @@
 
 package me.desht.pneumaticcraft.common.recipes.machine;
 
-import com.google.common.collect.ImmutableList;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntList;
 import me.desht.pneumaticcraft.common.registry.ModRecipeSerializers;
+import net.minecraft.core.Holder;
 import net.minecraft.core.NonNullList;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.CraftingBookCategory;
-import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.ItemHandlerHelper;
 
 import javax.annotation.Nonnull;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
@@ -74,38 +76,47 @@ public class PressureEnchantingRecipe extends PressureChamberRecipeImpl {
     }
 
     private boolean isApplicable(ItemStack enchantedBook, ItemStack enchantable) {
-        Map<Enchantment, Integer> bookMap = EnchantmentHelper.getEnchantments(enchantedBook);
+        ItemEnchantments bookMap = EnchantmentHelper.getEnchantmentsForCrafting(enchantedBook);
         // if the enchantment is applicable, AND the item doesn't have an existing enchantment of the
         // same type which is equal to or stronger than the book's enchantment level...
         return bookMap.entrySet().stream()
-                .anyMatch(entry -> enchantable.canApplyAtEnchantingTable(entry.getKey())
-                        && enchantable.getEnchantmentLevel(entry.getKey()) < entry.getValue());
+                .anyMatch(entry -> enchantable.canApplyAtEnchantingTable(entry.getKey().value())
+                        && enchantable.getEnchantmentLevel(entry.getKey().value()) < entry.getIntValue());
     }
 
     @Override
     public NonNullList<ItemStack> craftRecipe(@Nonnull IItemHandler chamberHandler, IntList ingredientSlots, boolean simulate) {
         ItemStack enchantedBook = chamberHandler.getStackInSlot(ingredientSlots.getInt(0));
-        ItemStack enchantable = ItemHandlerHelper.copyStackWithSize(chamberHandler.getStackInSlot(ingredientSlots.getInt(1)), 1);
+        ItemStack enchantable = chamberHandler.getStackInSlot(ingredientSlots.getInt(1)).copyWithCount(1);
 
-        Map<Enchantment, Integer> bookEnchantments = EnchantmentHelper.getEnchantments(enchantedBook);
-        Set<Enchantment> itemEnchantments = EnchantmentHelper.getEnchantments(enchantable).keySet();
-        List<Enchantment> toTransfer = new ArrayList<>();
-        bookEnchantments.forEach((enchantment, level) -> {
-            if (enchantment.canEnchant(enchantable) && itemEnchantments.stream().allMatch(e -> e.isCompatibleWith(enchantment))) {
-                enchantable.enchant(enchantment, level);
-                toTransfer.add(enchantment);
+        ItemEnchantments.Mutable bookEnchantments = new ItemEnchantments.Mutable(EnchantmentHelper.getEnchantmentsForCrafting(enchantedBook));
+        Set<Holder<Enchantment>> itemEnchantments = EnchantmentHelper.getEnchantmentsForCrafting(enchantable).keySet();
+
+        Set<Holder<Enchantment>> toTransfer = new HashSet<>();
+
+        bookEnchantments.keySet().forEach(entry -> {
+            Enchantment enchantment = entry.value();
+            if (enchantment.canEnchant(enchantable) && itemEnchantments.stream().allMatch(e -> e.value().isCompatibleWith(enchantment))) {
+                enchantable.enchant(enchantment, bookEnchantments.getLevel(enchantment));
+                toTransfer.add(entry);
             }
         });
-        if (toTransfer.isEmpty()) return NonNullList.create(); // no enchantments could be transferred
-        toTransfer.forEach(bookEnchantments::remove);
+
+        if (toTransfer.isEmpty()) {
+            // no enchantments could be transferred
+            return NonNullList.create();
+        }
+
+        bookEnchantments.keySet().removeAll(toTransfer);
+
         ItemStack newBook;
-        if (bookEnchantments.isEmpty()) {
+        if (bookEnchantments.keySet().isEmpty()) {
             // all the enchantments could transfer
             newBook = new ItemStack(Items.BOOK);
         } else {
             // some enchantments could transfer
             newBook = new ItemStack(Items.ENCHANTED_BOOK);
-            bookEnchantments.forEach(newBook::enchant);
+            EnchantmentHelper.setEnchantments(newBook, bookEnchantments.toImmutable());
         }
 
         chamberHandler.extractItem(ingredientSlots.getInt(0), 1, simulate);
@@ -114,19 +125,19 @@ public class PressureEnchantingRecipe extends PressureChamberRecipeImpl {
     }
 
     @Override
-    public List<Ingredient> getInputsForDisplay() {
+    public List<List<ItemStack>> getInputsForDisplay() {
         ItemStack enchBook = new ItemStack(Items.ENCHANTED_BOOK);
-        enchBook.enchant(Enchantments.BLOCK_FORTUNE, 1);
+        enchBook.enchant(Enchantments.FORTUNE, 1);
 
-        return ImmutableList.of(Ingredient.of(Items.DIAMOND_PICKAXE), Ingredient.of(enchBook));
+        return List.of(List.of(new ItemStack(Items.DIAMOND_PICKAXE)), List.of(enchBook));
     }
 
     @Override
     public List<ItemStack> getSingleResultsForDisplay() {
         ItemStack pick = new ItemStack(Items.DIAMOND_PICKAXE);
-        pick.enchant(Enchantments.BLOCK_FORTUNE, 1);
-        ItemStack book = new ItemStack(Items.BOOK);
-        return NonNullList.of(ItemStack.EMPTY, pick, book);
+        pick.enchant(Enchantments.FORTUNE, 1);
+
+        return List.of(pick, new ItemStack(Items.BOOK));
     }
 
     @Override

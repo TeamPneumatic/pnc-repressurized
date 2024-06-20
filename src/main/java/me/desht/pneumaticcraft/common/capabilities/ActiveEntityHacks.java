@@ -5,6 +5,7 @@ import me.desht.pneumaticcraft.api.pneumatic_armor.hacking.IHackableEntity;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorRegistry;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.Util;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -41,7 +42,7 @@ public class ActiveEntityHacks implements IActiveEntityHacks, INBTSerializable<C
     }
 
     @Override
-    public @UnknownNullability CompoundTag serializeNBT() {
+    public @UnknownNullability CompoundTag serializeNBT(HolderLookup.Provider provider) {
         return getCurrentHacks().isEmpty() ?
                 null :
                 Util.make(new CompoundTag(), compound ->
@@ -54,7 +55,7 @@ public class ActiveEntityHacks implements IActiveEntityHacks, INBTSerializable<C
     }
 
     @Override
-    public void deserializeNBT(CompoundTag nbt) {
+    public void deserializeNBT(HolderLookup.Provider provider, CompoundTag nbt) {
         clear();
         ListTag tagList = nbt.getList("hackables", Tag.TAG_COMPOUND);
         for (int i = 0; i < tagList.size(); i++) {

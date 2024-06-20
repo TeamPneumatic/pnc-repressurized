@@ -18,10 +18,13 @@
 package me.desht.pneumaticcraft.common.drone.progwidgets;
 
 import com.google.common.collect.ImmutableList;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import me.desht.pneumaticcraft.api.drone.IDrone;
+import me.desht.pneumaticcraft.api.drone.IProgWidget;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
-import me.desht.pneumaticcraft.common.drone.IDroneBase;
 import me.desht.pneumaticcraft.common.drone.ai.DroneAIEntityImport;
-import me.desht.pneumaticcraft.common.registry.ModProgWidgets;
+import me.desht.pneumaticcraft.common.registry.ModProgWidgetTypes;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -36,11 +39,23 @@ import java.util.Set;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class ProgWidgetEntityImport extends ProgWidget implements IProgWidget, IAreaProvider, IEntityProvider {
+public class ProgWidgetEntityImport extends ProgWidget implements IAreaProvider, IEntityProvider, IProgWidget {
+    public static final MapCodec<ProgWidgetEntityImport> CODEC = RecordCodecBuilder.mapCodec(builder ->
+            baseParts(builder).apply(builder, ProgWidgetEntityImport::new));
+
     private EntityFilterPair<ProgWidgetEntityImport> entityFilters;
 
+    public ProgWidgetEntityImport(PositionFields pos) {
+        super(pos);
+    }
+
     public ProgWidgetEntityImport() {
-        super(ModProgWidgets.ENTITY_IMPORT.get());
+        super(PositionFields.DEFAULT);
+    }
+
+    @Override
+    public ProgWidgetType<?> getType() {
+        return ModProgWidgetTypes.ENTITY_IMPORT.get();
     }
 
     @Override
@@ -63,13 +78,13 @@ public class ProgWidgetEntityImport extends ProgWidget implements IProgWidget, I
     }
 
     @Override
-    public Goal getWidgetAI(IDroneBase drone, IProgWidget widget) {
+    public Goal getWidgetAI(IDrone drone, IProgWidget widget) {
         return new DroneAIEntityImport(drone, (IEntityProvider) widget);
     }
 
     @Override
     public List<ProgWidgetType<?>> getParameters() {
-        return ImmutableList.of(ModProgWidgets.AREA.get(), ModProgWidgets.TEXT.get());
+        return ImmutableList.of(ModProgWidgetTypes.AREA.get(), ModProgWidgetTypes.TEXT.get());
     }
 
     @Override

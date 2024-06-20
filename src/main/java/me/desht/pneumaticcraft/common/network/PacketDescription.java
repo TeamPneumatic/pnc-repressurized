@@ -22,14 +22,16 @@ import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.neoforged.neoforge.network.handling.PlayPayloadContext;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -42,9 +44,14 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
  * This is the primary mechanism for syncing block entity data to clients when it changes.
  */
 public record PacketDescription(BlockPos pos, boolean fullSync, List<IndexedField> fields, CompoundTag extraData) implements CustomPacketPayload {
-    public static final ResourceLocation ID = RL("description");
+    public static final Type<PacketDescription> TYPE = new Type<>(RL("description"));
 
-    public static PacketDescription create(IDescSynced te, boolean fullSync) {
+    public static final StreamCodec<RegistryFriendlyByteBuf, PacketDescription> STREAM_CODEC = StreamCodec.of(
+            PacketDescription::toNetwork,
+            PacketDescription::fromNetwork
+    );
+
+    public static PacketDescription create(IDescSynced te, boolean fullSync, HolderLookup.Provider provider) {
         List<IndexedField> fields = new ArrayList<>();
         List<SyncedField<?>> descFields = te.getDescriptionFields();
         for (int i = 0; i < descFields.size(); i++) {
@@ -53,12 +60,24 @@ public record PacketDescription(BlockPos pos, boolean fullSync, List<IndexedFiel
             }
         }
 
-        CompoundTag extraData = Util.make(new CompoundTag(), te::writeToPacket);
+        CompoundTag extraData = Util.make(new CompoundTag(), tag -> te.writeToPacket(tag, provider));
 
         return new PacketDescription(te.getPosition(), fullSync, fields, extraData);
     }
 
-    public static PacketDescription fromNetwork(FriendlyByteBuf buf) {
+    public static void toNetwork(RegistryFriendlyByteBuf buf, PacketDescription packet) {
+        buf.writeBlockPos(packet.pos);
+        buf.writeBoolean(packet.fullSync);
+        buf.writeVarInt(packet.fields.size());
+        for (IndexedField indexedField : packet.fields) {
+            if (!packet.fullSync) buf.writeVarInt(indexedField.idx);
+            buf.writeByte(indexedField.type);
+            SyncedField.toBytes(buf, indexedField.value, indexedField.type);
+        }
+        buf.writeNbt(packet.extraData);
+    }
+
+    public static PacketDescription fromNetwork(RegistryFriendlyByteBuf buf) {
         BlockPos pos = buf.readBlockPos();
         boolean fullSync = buf.readBoolean();
         int fieldCount = buf.readVarInt();
@@ -74,28 +93,15 @@ public record PacketDescription(BlockPos pos, boolean fullSync, List<IndexedFiel
     }
 
     @Override
-    public void write(FriendlyByteBuf buf) {
-        buf.writeBlockPos(pos);
-        buf.writeBoolean(fullSync);
-        buf.writeVarInt(fields.size());
-        for (IndexedField indexedField : fields) {
-            if (!fullSync) buf.writeVarInt(indexedField.idx);
-            buf.writeByte(indexedField.type);
-            SyncedField.toBytes(buf, indexedField.value, indexedField.type);
-        }
-        buf.writeNbt(extraData);
+    public Type<PacketDescription> type() {
+        return TYPE;
     }
 
-    @Override
-    public ResourceLocation id() {
-        return ID;
+    public static void handle(PacketDescription message, IPayloadContext ctx) {
+        message.processPacket(null, ctx.player().registryAccess());
     }
 
-    public static void handle(PacketDescription message, PlayPayloadContext ctx) {
-        ctx.workHandler().submitAsync(() -> message.processPacket(null));
-    }
-
-    public void processPacket(BlockEntity blockEntity) {
+    public void processPacket(BlockEntity blockEntity, HolderLookup.Provider provider) {
         if (blockEntity == null) {
             // - null blockentity: coming from processing our PacketDescription packet, expect pos to be in the packet
             // - non-null blockentity: coming from TileEntityBase#handleUpdateTag(), which has already received the BE from the vanilla packet
@@ -114,7 +120,7 @@ public record PacketDescription(BlockPos pos, boolean fullSync, List<IndexedFiel
                     }
                 }
             }
-            descSynced.readFromPacket(extraData);
+            descSynced.readFromPacket(extraData, provider);
             descSynced.onDescUpdate();
         }
     }
@@ -123,11 +129,11 @@ public record PacketDescription(BlockPos pos, boolean fullSync, List<IndexedFiel
      * These two methods are only used for initial chunk sending (getUpdateTag() and handleUpdateTag())
      */
 
-    public CompoundTag writeNBT(CompoundTag compound) {
+    public CompoundTag writeNBT(CompoundTag compound, RegistryAccess registryAccess) {
         CompoundTag subTag = new CompoundTag();
 
         subTag.putInt("Length", fields.size());
-        FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
+        RegistryFriendlyByteBuf buf = new RegistryFriendlyByteBuf(Unpooled.buffer(), registryAccess);
         ListTag list = new ListTag();
         for (IndexedField field : fields) {
             CompoundTag element = new CompoundTag();
@@ -145,7 +151,7 @@ public record PacketDescription(BlockPos pos, boolean fullSync, List<IndexedFiel
         return compound;
     }
 
-    public static PacketDescription fromNBT(CompoundTag compound) {
+    public static PacketDescription fromNBT(CompoundTag compound, RegistryAccess registryAccess) {
         BlockPos pos = new BlockPos(compound.getInt("x"), compound.getInt("y"), compound.getInt("z"));
         boolean fullSync = true;
         CompoundTag subTag = compound.getCompound(Names.MOD_ID);
@@ -156,7 +162,7 @@ public record PacketDescription(BlockPos pos, boolean fullSync, List<IndexedFiel
             CompoundTag element = list.getCompound(i);
             byte type = element.getByte("Type");
             byte[] b = element.getByteArray("Value");
-            fields.add(new IndexedField(i, type, SyncedField.fromBytes(new FriendlyByteBuf(Unpooled.wrappedBuffer(b)), type)));
+            fields.add(new IndexedField(i, type, SyncedField.fromBytes(new RegistryFriendlyByteBuf(Unpooled.wrappedBuffer(b), registryAccess), type)));
         }
         CompoundTag extraData = subTag.getCompound("Extra");
 

@@ -17,12 +17,16 @@
 
 package me.desht.pneumaticcraft.common.drone.progwidgets;
 
-import me.desht.pneumaticcraft.common.drone.IDroneBase;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import me.desht.pneumaticcraft.api.drone.IDrone;
+import me.desht.pneumaticcraft.api.drone.IProgWidget;
+import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.drone.ai.DroneAIHarvest;
-import me.desht.pneumaticcraft.common.registry.ModProgWidgets;
+import me.desht.pneumaticcraft.common.registry.ModProgWidgetTypes;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.goal.Goal;
@@ -33,11 +37,22 @@ import java.util.List;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class ProgWidgetHarvest extends ProgWidgetDigAndPlace implements IToolUser {
+    public static final MapCodec<ProgWidgetHarvest> CODEC = RecordCodecBuilder.mapCodec(builder ->
+            digPlaceParts(builder).and(
+                    Codec.BOOL.optionalFieldOf("require_hoe", false).forGetter(ProgWidgetHarvest::requiresTool)
+            ).apply(builder, ProgWidgetHarvest::new)
+    );
 
     private boolean requireHoe;
-    
+
+    public ProgWidgetHarvest(PositionFields pos, DigPlaceFields digPlaceFields, boolean requireHoe) {
+        super(pos, digPlaceFields);
+
+        this.requireHoe = requireHoe;
+    }
+
     public ProgWidgetHarvest() {
-        super(ModProgWidgets.HARVEST.get(), Ordering.CLOSEST);
+        super(PositionFields.DEFAULT, DigPlaceFields.makeDefault(Ordering.CLOSEST));
     }
 
     @Override
@@ -46,7 +61,7 @@ public class ProgWidgetHarvest extends ProgWidgetDigAndPlace implements IToolUse
     }
 
     @Override
-    public Goal getWidgetAI(IDroneBase drone, IProgWidget widget) {
+    public Goal getWidgetAI(IDrone drone, IProgWidget widget) {
         return setupMaxActions(new DroneAIHarvest(drone, (ProgWidgetAreaItemBase) widget), (IMaxActions) widget);
     }
 
@@ -64,7 +79,12 @@ public class ProgWidgetHarvest extends ProgWidgetDigAndPlace implements IToolUse
     public void setRequiresTool(boolean requireHoe){
         this.requireHoe = requireHoe;
     }
-    
+
+    @Override
+    public ProgWidgetType<?> getType() {
+        return ModProgWidgetTypes.HARVEST.get();
+    }
+
     @Override
     public void getTooltip(List<Component> curTooltip) {
         super.getTooltip(curTooltip);
@@ -74,26 +94,26 @@ public class ProgWidgetHarvest extends ProgWidgetDigAndPlace implements IToolUse
         }
     }
     
-    @Override
-    public void writeToNBT(CompoundTag tag){
-        super.writeToNBT(tag);
-        if (requireHoe) tag.putBoolean("requireHoe", true);
-    }
-    
-    @Override
-    public void readFromNBT(CompoundTag tag){
-        super.readFromNBT(tag);
-        requireHoe = tag.getBoolean("requireHoe");
-    }
+//    @Override
+//    public void writeToNBT(CompoundTag tag, HolderLookup.Provider provider){
+//        super.writeToNBT(tag, provider);
+//        if (requireHoe) tag.putBoolean("requireHoe", true);
+//    }
+//
+//    @Override
+//    public void readFromNBT(CompoundTag tag, HolderLookup.Provider provider){
+//        super.readFromNBT(tag, provider);
+//        requireHoe = tag.getBoolean("requireHoe");
+//    }
 
     @Override
-    public void writeToPacket(FriendlyByteBuf buf) {
+    public void writeToPacket(RegistryFriendlyByteBuf buf) {
         super.writeToPacket(buf);
         buf.writeBoolean(requireHoe);
     }
 
     @Override
-    public void readFromPacket(FriendlyByteBuf buf) {
+    public void readFromPacket(RegistryFriendlyByteBuf buf) {
         super.readFromPacket(buf);
         requireHoe = buf.readBoolean();
     }

@@ -64,7 +64,7 @@ import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.*;
-import net.neoforged.neoforge.client.gui.overlay.VanillaGuiOverlay;
+import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 import net.neoforged.neoforge.common.NeoForge;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
@@ -104,9 +104,9 @@ public class ClientSetup {
         event.register(MicromissilesItem.Tooltip.class, MicromissileClientTooltip::new);
     }
 
-    public static void registerGuiOverlays(RegisterGuiOverlaysEvent event) {
-        event.registerAbove(VanillaGuiOverlay.CROSSHAIR.id(), RL("jackhammer"), new JackhammerOverlay());
-        event.registerAbove(VanillaGuiOverlay.CROSSHAIR.id(), RL("minigun"), new MinigunOverlay());
+    public static void registerGuiOverlays(RegisterGuiLayersEvent event) {
+        event.registerAbove(VanillaGuiLayers.CROSSHAIR, RL("jackhammer"), new JackhammerOverlay());
+        event.registerAbove(VanillaGuiLayers.CROSSHAIR, RL("minigun"), new MinigunOverlay());
         event.registerAboveAll(RL("pneumatic_armor"), new PneumaticArmorHUDOverlay());
     }
 
@@ -221,8 +221,8 @@ public class ClientSetup {
     }
 
     private static void registerProgWidgetExtraRenderers() {
-        ProgWidgetRenderer.registerItemRenderer(ModProgWidgets.CRAFTING.get(), ProgWidgetRenderer::renderCraftingItem);
-        ProgWidgetRenderer.registerItemRenderer(ModProgWidgets.ITEM_FILTER.get(), ProgWidgetRenderer::renderItemFilterItem);
+        ProgWidgetRenderer.registerItemRenderer(ModProgWidgetTypes.CRAFTING.get(), ProgWidgetRenderer::renderCraftingItem);
+        ProgWidgetRenderer.registerItemRenderer(ModProgWidgetTypes.ITEM_FILTER.get(), ProgWidgetRenderer::renderItemFilterItem);
     }
 
     public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {

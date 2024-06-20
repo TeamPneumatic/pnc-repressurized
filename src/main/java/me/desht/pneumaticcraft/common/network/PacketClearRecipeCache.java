@@ -19,9 +19,9 @@ package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.network.handling.PlayPayloadContext;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
@@ -32,23 +32,17 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 public enum PacketClearRecipeCache implements CustomPacketPayload {
     INSTANCE;
 
-    public static final ResourceLocation ID = RL("clear_recipe_cache");
+    public static final Type<PacketClearRecipeCache> TYPE = new Type<>(RL("clear_recipe_cache"));
 
-    public static PacketClearRecipeCache fromNetwork(@SuppressWarnings("unused") FriendlyByteBuf buffer) {
-        return INSTANCE;
-    }
-
-    @SuppressWarnings("EmptyMethod")
-    @Override
-    public void write(@SuppressWarnings("unused") FriendlyByteBuf buf) {
-    }
+    public static final StreamCodec<FriendlyByteBuf, PacketClearRecipeCache> STREAM_CODEC = StreamCodec.unit(INSTANCE);
 
     @Override
-    public ResourceLocation id() {
-        return ID;
+    public Type<PacketClearRecipeCache> type() {
+        return TYPE;
     }
 
-    public static void handle(@SuppressWarnings("unused") PacketClearRecipeCache message, PlayPayloadContext ctx) {
-        ctx.workHandler().submitAsync(() -> PneumaticCraftRecipeType.clearCachedRecipes());
+    @SuppressWarnings("unused")
+    public static void handle(PacketClearRecipeCache message, IPayloadContext ctx) {
+        PneumaticCraftRecipeType.clearCachedRecipes();
     }
 }

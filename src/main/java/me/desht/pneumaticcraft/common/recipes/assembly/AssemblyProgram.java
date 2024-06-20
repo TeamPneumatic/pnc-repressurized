@@ -21,7 +21,7 @@ import me.desht.pneumaticcraft.api.crafting.recipe.AssemblyRecipe;
 import me.desht.pneumaticcraft.common.block.entity.processing.AssemblyControllerBlockEntity;
 import me.desht.pneumaticcraft.common.item.AssemblyProgramItem;
 import me.desht.pneumaticcraft.common.registry.ModBlocks;
-import me.desht.pneumaticcraft.common.util.ITranslatableEnum;
+import me.desht.pneumaticcraft.api.misc.ITranslatableEnum;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;

@@ -6,8 +6,10 @@ import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorRegistry;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.ResourceLocationException;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtUtils;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -33,8 +35,8 @@ public class HackTickTracker extends SavedData {
     private HackTickTracker() {
     }
 
-    private static HackTickTracker load(CompoundTag tag) {
-        return new HackTickTracker().readNBT(tag);
+    private static HackTickTracker load(CompoundTag tag, HolderLookup.Provider provider) {
+        return new HackTickTracker().readNBT(tag, provider);
     }
 
     public static HackTickTracker getInstance(Level level) {
@@ -43,34 +45,33 @@ public class HackTickTracker extends SavedData {
                 clientInstance;
     }
 
-    private HackTickTracker readNBT(CompoundTag tag) {
+    private HackTickTracker readNBT(CompoundTag tag, HolderLookup.Provider ignored) {
         ListTag list = tag.getList("block_hacks", Tag.TAG_COMPOUND);
 
         for (int i = 0; i < list.size(); i++) {
             CompoundTag sub = list.getCompound(i);
-            BlockPos pos = new BlockPos(sub.getInt("x"), sub.getInt("y"), sub.getInt("z"));
-            try {
-                ResourceLocation id = new ResourceLocation(sub.getString("id"));
-                CommonArmorRegistry.getInstance().getHackableBlockForId(id).ifPresentOrElse(
-                        hackable -> hackedBlocks.put(pos, hackable),
-                        () -> Log.error("unknown hackable block ID '{}'", id)
-                );
-            } catch (ResourceLocationException e) {
-                Log.error("invalid hackable block ID '{}'", sub.getString("id"));
-            }
+            NbtUtils.readBlockPos(sub, "pos").ifPresent(pos -> {
+                try {
+                    ResourceLocation id = new ResourceLocation(sub.getString("id"));
+                    CommonArmorRegistry.getInstance().getHackableBlockForId(id).ifPresentOrElse(
+                            hackable -> hackedBlocks.put(pos, hackable),
+                            () -> Log.error("unknown hackable block ID '{}'", id)
+                    );
+                } catch (ResourceLocationException e) {
+                    Log.error("invalid hackable block ID '{}'", sub.getString("id"));
+                }
+            });
         }
 
         return this;
     }
 
     @Override
-    public CompoundTag save(CompoundTag pCompoundTag) {
+    public CompoundTag save(CompoundTag pCompoundTag, HolderLookup.Provider provider) {
         ListTag blockTag = new ListTag();
         hackedBlocks.forEach((pos, hackable) -> {
             CompoundTag sub = new CompoundTag();
-            sub.putInt("x", pos.getX());
-            sub.putInt("y", pos.getY());
-            sub.putInt("z", pos.getZ());
+            sub.put("pos", NbtUtils.writeBlockPos(pos));
             sub.putString("id", hackable.getHackableId().toString());
             blockTag.add(sub);
         });

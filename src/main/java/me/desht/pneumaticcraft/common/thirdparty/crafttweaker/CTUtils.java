@@ -21,21 +21,22 @@ import com.blamejared.crafttweaker.api.fluid.CTFluidIngredient;
 import com.blamejared.crafttweaker.api.fluid.MCFluidStack;
 import com.blamejared.crafttweaker.api.ingredient.IIngredientWithAmount;
 import com.blamejared.crafttweaker.api.item.IItemStack;
-import me.desht.pneumaticcraft.api.crafting.ingredient.FluidIngredient;
-import me.desht.pneumaticcraft.api.crafting.ingredient.StackedIngredient;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.common.crafting.SizedIngredient;
 import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.crafting.FluidIngredient;
+import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
 
 import java.util.Arrays;
 import java.util.List;
 
 public class CTUtils {
-    public static StackedIngredient toStackedIngredient(IIngredientWithAmount ingredient) {
-        return StackedIngredient.fromIngredient(ingredient.getAmount(), ingredient.getIngredient().asVanillaIngredient());
+    public static SizedIngredient toSizedIngredient(IIngredientWithAmount ingredient) {
+        return new SizedIngredient(ingredient.getIngredient().asVanillaIngredient(), ingredient.getAmount());
     }
 
-    public static List<StackedIngredient> toStackedIngredientList(IIngredientWithAmount[] ingredients) {
-        return Arrays.stream(ingredients).map(CTUtils::toStackedIngredient).toList();
+    public static List<SizedIngredient> toSizedIngredientList(IIngredientWithAmount[] ingredients) {
+        return Arrays.stream(ingredients).map(CTUtils::toSizedIngredient).toList();
     }
 
     public static List<ItemStack> toItemStacks(IItemStack[] stacks) {
@@ -47,10 +48,18 @@ public class CTUtils {
     }
 
     public static FluidIngredient toFluidIngredient(CTFluidIngredient ingredient) {
-        return ingredient.mapTo(
-                fStack -> FluidIngredient.of((int) fStack.getAmount(), fStack.getFluid()),
-                (tag, amount) -> FluidIngredient.of(amount, tag),
-                FluidIngredient::ofFluidStream
-        );
+        // TODO when CT updates
+        return FluidIngredient.empty();
+
+//        return ingredient.mapTo(
+//                fStack -> FluidIngredient.of(new FluidStack(fStack.getFluid(), (int)fStack.getAmount())),
+//                (tag, amount) -> FluidIngredient.of(amount, tag),
+//                FluidIngredient::ofFluidStream
+//        );
+    }
+
+    public static SizedFluidIngredient toSizedFluidIngredient(CTFluidIngredient ingredient) {
+        // TODO when CT updates
+        return SizedFluidIngredient.of(FluidStack.EMPTY);
     }
 }

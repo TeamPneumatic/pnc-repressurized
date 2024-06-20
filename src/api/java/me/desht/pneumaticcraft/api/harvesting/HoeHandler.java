@@ -29,7 +29,7 @@ import java.util.function.Predicate;
  * Defines a hoe handler; use this to register items that are not vanilla-style hoes (i.e. do not extend
  * {@link HoeItem}) as a valid tool for Harvesting Drones to use.
  * <p>
- * Hoe handlers are Forge registry objects and should be registered as such.
+ * Hoe handlers are registry objects and should be registered as such.
  */
 public class HoeHandler implements Predicate<ItemStack> {
     private final Predicate<ItemStack> matchItem;
@@ -54,7 +54,7 @@ public class HoeHandler implements Predicate<ItemStack> {
      */
     public static class DefaultHoeHandler extends HoeHandler {
         public DefaultHoeHandler() {
-            super(stack -> stack.getItem() instanceof HoeItem, (stack, player) -> stack.hurtAndBreak(1, player, p -> { }));
+            super(stack -> stack.getItem() instanceof HoeItem, (stack, player) -> stack.hurtAndBreak(1, player.getRandom(), player, () -> { }));
         }
     }
 }

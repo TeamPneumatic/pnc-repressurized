@@ -20,9 +20,10 @@ package me.desht.pneumaticcraft.common.network;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.inventory.AbstractPneumaticCraftMenu;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.network.handling.PlayPayloadContext;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
@@ -31,14 +32,18 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
  * The primary mechanism for sync'ing BE fields to an open GUI.  BE fields annotated with @GuiSynced will be synced
  * in this packet, via {@link AbstractPneumaticCraftMenu#broadcastChanges()}.
  */
-public record PacketUpdateGui(int syncId, Object value, byte type) implements CustomPacketPayload {
-    public static final ResourceLocation ID = RL("update_gui");
+public record PacketUpdateGui(int syncId, Object fieldValue, byte fieldType) implements CustomPacketPayload {
+    public static final Type<PacketUpdateGui> TYPE = new Type<>(RL("update_gui"));
+
+    public static final StreamCodec<RegistryFriendlyByteBuf, PacketUpdateGui> STREAM_CODEC = StreamCodec.of(
+            PacketUpdateGui::write, PacketUpdateGui::read
+    );
 
     public static PacketUpdateGui create(int syncId, SyncedField<?> syncField) {
         return new PacketUpdateGui(syncId, syncField.getValue(), SyncedField.getType(syncField));
     }
 
-    public static PacketUpdateGui fromNetwork(FriendlyByteBuf buf) {
+    private static PacketUpdateGui read(RegistryFriendlyByteBuf buf) {
         int syncId = buf.readVarInt();
         byte type = buf.readByte();
         Object value = SyncedField.fromBytes(buf, type);
@@ -46,19 +51,18 @@ public record PacketUpdateGui(int syncId, Object value, byte type) implements Cu
         return new PacketUpdateGui(syncId, value, type);
     }
 
-    @Override
-    public void write(FriendlyByteBuf buf) {
-        buf.writeVarInt(syncId);
-        buf.writeByte(type);
-        SyncedField.toBytes(buf, value, type);
+    private static void write(RegistryFriendlyByteBuf buf, PacketUpdateGui packet) {
+        buf.writeVarInt(packet.syncId);
+        buf.writeByte(packet.fieldType);
+        SyncedField.toBytes(buf, packet.fieldValue, packet.fieldType);
     }
 
     @Override
-    public ResourceLocation id() {
-        return ID;
+    public Type<PacketUpdateGui> type() {
+        return TYPE;
     }
 
-    public static void handle(PacketUpdateGui message, PlayPayloadContext ctx) {
-        ctx.workHandler().submitAsync(() -> ClientUtils.syncViaOpenContainerScreen(message.syncId(), message.value()));
+    public static void handle(PacketUpdateGui message, IPayloadContext ctx) {
+        ClientUtils.syncViaOpenContainerScreen(message.syncId(), message.fieldValue());
     }
 }

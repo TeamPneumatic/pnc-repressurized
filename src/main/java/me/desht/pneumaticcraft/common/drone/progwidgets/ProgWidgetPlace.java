@@ -17,22 +17,29 @@
 
 package me.desht.pneumaticcraft.common.drone.progwidgets;
 
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import me.desht.pneumaticcraft.api.drone.IDrone;
+import me.desht.pneumaticcraft.api.drone.IProgWidget;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
-import me.desht.pneumaticcraft.common.drone.IDroneBase;
 import me.desht.pneumaticcraft.common.drone.ai.DroneAIPlace;
-import me.desht.pneumaticcraft.common.registry.ModProgWidgets;
+import me.desht.pneumaticcraft.common.registry.ModProgWidgetTypes;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.item.DyeColor;
 
 public class ProgWidgetPlace extends ProgWidgetDigAndPlace {
-    public ProgWidgetPlace() {
-        super(ModProgWidgets.PLACE.get(), Ordering.LOW_TO_HIGH);
+    public static final MapCodec<ProgWidgetPlace> CODEC = RecordCodecBuilder.mapCodec(builder ->
+            digPlaceParts(builder).apply(builder, ProgWidgetPlace::new)
+    );
+
+    public ProgWidgetPlace(PositionFields pos, DigPlaceFields digPlaceFields) {
+        super(pos, digPlaceFields);
     }
 
-    ProgWidgetPlace(ProgWidgetType<?> type) {
-        super(type, Ordering.LOW_TO_HIGH);
+    public ProgWidgetPlace() {
+        super(PositionFields.DEFAULT, DigPlaceFields.makeDefault(Ordering.LOW_TO_HIGH));
     }
 
     @Override
@@ -41,7 +48,12 @@ public class ProgWidgetPlace extends ProgWidgetDigAndPlace {
     }
 
     @Override
-    public Goal getWidgetAI(IDroneBase drone, IProgWidget widget) {
+    public ProgWidgetType<?> getType() {
+        return ModProgWidgetTypes.PLACE.get();
+    }
+
+    @Override
+    public Goal getWidgetAI(IDrone drone, IProgWidget widget) {
         return setupMaxActions(new DroneAIPlace<>(drone, (ProgWidgetAreaItemBase) widget), (IMaxActions) widget);
     }
 

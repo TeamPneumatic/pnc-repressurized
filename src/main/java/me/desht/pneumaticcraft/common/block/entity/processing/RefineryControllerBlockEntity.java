@@ -29,17 +29,17 @@ import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.recipes.RecipeCaches;
 import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
+import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.registry.ModRecipeTypes;
 import me.desht.pneumaticcraft.common.util.AcceptabilityCache;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
-import me.desht.pneumaticcraft.common.util.FluidUtils;
 import me.desht.pneumaticcraft.common.util.PNCFluidTank;
 import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.MenuProvider;
@@ -55,6 +55,7 @@ import net.neoforged.neoforge.capabilities.BlockCapabilityCache;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.IFluidTank;
+import net.neoforged.neoforge.fluids.SimpleFluidContent;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction;
 import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
@@ -124,13 +125,13 @@ public class RefineryControllerBlockEntity extends AbstractTickingBlockEntity
 
     public static boolean isInputFluidValid(Level world, FluidStack fluid, int size) {
         return fluid.isEmpty() || acceptedFluidCache.isAcceptable(fluid.getFluid(), () -> ModRecipeTypes.REFINERY.get()
-                .findFirst(world, r -> r.getOutputs().size() <= size && FluidUtils.matchFluid(r.getInput(), fluid, true)).isPresent());
+                .findFirst(world, r -> r.getOutputs().size() <= size && r.getInput().test(fluid)).isPresent());
     }
 
     private Optional<RecipeHolder<RefineryRecipe>> findApplicableRecipe() {
         return ModRecipeTypes.REFINERY.get().stream(level)
                 .filter(r -> r.value().getOutputs().size() <= outputCount)
-                .filter(r -> FluidUtils.matchFluid(r.value().getInput(), inputTank.getFluid(), true))
+                .filter(r -> r.value().getInput().test(inputTank.getFluid()))
                 .max(Comparator.comparingInt(r2 -> r2.value().getOutputs().size()));
     }
 
@@ -190,16 +191,16 @@ public class RefineryControllerBlockEntity extends AbstractTickingBlockEntity
             if (outputCount > 1 && doesRedstoneAllow() && doRefiningStep(FluidAction.SIMULATE)) {
                 hasWork = true;
                 if (operatingTemp.inRange(heatExchanger.getTemperature())
-                        && inputTank.getFluidAmount() >= currentRecipe.getInput().getAmount()) {
+                        && inputTank.getFluidAmount() >= currentRecipe.getInput().amount()) {
                     // TODO support for cryo-refining (faster as it gets colder, adds heat instead of removing)
                     int progress = Math.max(0, ((int) heatExchanger.getTemperature() - (operatingTemp.getMin() - 30)) / 30);
                     progress = Math.min(5, progress);
                     heatExchanger.addHeat(-progress);
                     workTimer += progress;
-                    while (workTimer >= 20 && inputTank.getFluidAmount() >= currentRecipe.getInput().getAmount()) {
+                    while (workTimer >= 20 && inputTank.getFluidAmount() >= currentRecipe.getInput().amount()) {
                         workTimer -= 20;
                         doRefiningStep(FluidAction.EXECUTE);
-                        inputTank.drain(currentRecipe.getInput().getAmount(), FluidAction.EXECUTE);
+                        inputTank.drain(currentRecipe.getInput().amount(), FluidAction.EXECUTE);
                     }
                     lastProgress = progress;
                 }
@@ -212,7 +213,7 @@ public class RefineryControllerBlockEntity extends AbstractTickingBlockEntity
             for (int i = 0; i < outputCount; i++) {
                 final int j = i;
                 getOutputHandler(i).ifPresent(h -> {
-                    if (!outputsSynced[j].getFluid().isFluidStackIdentical(h.getFluidInTank(0))) {
+                    if (!FluidStack.matches(outputsSynced[j].getFluid(), h.getFluidInTank(0))) {
                         outputsSynced[j].setFluid(h.getFluidInTank(0).copy());
                         outputsSynced[j].tick();
                     }
@@ -242,11 +243,11 @@ public class RefineryControllerBlockEntity extends AbstractTickingBlockEntity
             final FluidStack wantedFluid = currentRecipe.getOutputs().get(i);
             getOutputHandler(i).ifPresent(outputHandler -> {
                 FluidStack fluid = outputHandler.getFluidInTank(0);
-                if (!fluid.isFluidEqual(wantedFluid)) {
+                if (!FluidStack.isSameFluidSameComponents(fluid, wantedFluid)) {
                     // this fluid shouldn't be here; find the appropriate output tank to move it to,
                     // using an intermediate temporary tank to allow for possible swapping of fluids
                     for (int j = 0; j < currentRecipe.getOutputs().size(); j++) {
-                        if (currentRecipe.getOutputs().get(j).isFluidEqual(fluid)) {
+                        if (FluidStack.isSameFluidSameComponents(currentRecipe.getOutputs().get(j), fluid)) {
                             tryMoveFluid(outputHandler, tempTanks[j]);
                             break;
                         }
@@ -377,7 +378,7 @@ public class RefineryControllerBlockEntity extends AbstractTickingBlockEntity
 
     private void maybeUpdateComparatorValue(boolean hasWork) {
         int newValue;
-        if (hasWork && currentRecipe != null && inputTank.getFluidAmount() >= currentRecipe.getInput().getAmount() && outputCount >= currentRecipe.getOutputs().size()) {
+        if (hasWork && currentRecipe != null && inputTank.getFluidAmount() >= currentRecipe.getInput().amount() && outputCount >= currentRecipe.getOutputs().size()) {
             newValue = 15;
         } else {
             newValue = 0;
@@ -402,8 +403,8 @@ public class RefineryControllerBlockEntity extends AbstractTickingBlockEntity
 
     @Nonnull
     @Override
-    public Map<String, PNCFluidTank> getSerializableTanks() {
-        return ImmutableMap.of("OilTank", inputTank);
+    public Map<DataComponentType<SimpleFluidContent>, PNCFluidTank> getSerializableTanks() {
+        return Map.of(ModDataComponents.MAIN_TANK.get(), inputTank);
     }
 
     @Nullable
@@ -429,9 +430,8 @@ public class RefineryControllerBlockEntity extends AbstractTickingBlockEntity
         }
     }
 
-    public int genIngredientHash() {
-        int n = getInputTank().getFluid().hasTag() ? getInputTank().getFluid().getTag().hashCode() : 0;
-        return Objects.hash(BuiltInRegistries.FLUID.getId(getInputTank().getFluid().getFluid()), n);
+    private int genIngredientHash() {
+        return FluidStack.hashFluidAndComponents(getInputTank().getFluid());
     }
 
     private class RefineryInputTank extends SmartSyncTank {
@@ -441,7 +441,7 @@ public class RefineryControllerBlockEntity extends AbstractTickingBlockEntity
 
         @Override
         public boolean isFluidValid(FluidStack fluid) {
-            return getFluid().isFluidEqual(fluid) || isInputFluidValid(level, fluid, 4);
+            return FluidStack.isSameFluidSameComponents(getFluid(), fluid) || isInputFluidValid(level, fluid, 4);
         }
 
         @Override

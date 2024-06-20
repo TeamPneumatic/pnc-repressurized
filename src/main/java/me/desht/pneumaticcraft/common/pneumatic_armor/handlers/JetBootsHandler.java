@@ -32,13 +32,12 @@ import me.desht.pneumaticcraft.common.network.PacketSpawnParticle;
 import me.desht.pneumaticcraft.common.particle.AirParticleData;
 import me.desht.pneumaticcraft.common.pneumatic_armor.JetBootsStateTracker;
 import me.desht.pneumaticcraft.common.registry.ModCriterionTriggers;
+import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.ByteTag;
-import net.minecraft.nbt.IntTag;
-import net.minecraft.nbt.Tag;
+import net.minecraft.core.component.DataComponentType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -52,6 +51,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
+import java.util.Optional;
 import java.util.function.Supplier;
 
 public class JetBootsHandler extends BaseArmorUpgradeHandler<JetBootsHandler.JetBootsLocalState> {
@@ -193,11 +193,11 @@ public class JetBootsHandler extends BaseArmorUpgradeHandler<JetBootsHandler.Jet
         Player player = commonArmorHandler.getPlayer();
         ItemStack armorStack = player.getItemBySlot(EquipmentSlot.FEET);
         JetBootsHandler.JetBootsLocalState jbLocal = commonArmorHandler.getExtensionData(this);
-        jbLocal.flightStabilizers = PneumaticArmorItem.getBooleanData(armorStack, PneumaticArmorItem.NBT_FLIGHT_STABILIZERS, false);
-        jbLocal.jetBootsPower = PneumaticArmorItem.getIntData(armorStack, PneumaticArmorItem.NBT_JET_BOOTS_POWER, 100, 0, 100) / 100f;
-        jbLocal.hover = PneumaticArmorItem.getBooleanData(armorStack, PneumaticArmorItem.NBT_HOVER, true);
-        jbLocal.smartHover = PneumaticArmorItem.getBooleanData(armorStack, PneumaticArmorItem.NBT_SMART_HOVER, false);
-        boolean jetBootsBuilderMode = PneumaticArmorItem.getBooleanData(armorStack, PneumaticArmorItem.NBT_BUILDER_MODE, false);
+        jbLocal.flightStabilizers = PneumaticArmorItem.getBooleanData(armorStack, ModDataComponents.JET_BOOTS_STABILIZERS.get(), false);
+        jbLocal.jetBootsPower = PneumaticArmorItem.getIntData(armorStack, ModDataComponents.JET_BOOTS_PCT.get(), 100, 0, 100) / 100f;
+        jbLocal.hover = PneumaticArmorItem.getBooleanData(armorStack, ModDataComponents.JET_BOOTS_HOVER.get(), true);
+        jbLocal.smartHover = PneumaticArmorItem.getBooleanData(armorStack, ModDataComponents.JET_BOOTS_SMART_HOVER.get(), false);
+        boolean jetBootsBuilderMode = PneumaticArmorItem.getBooleanData(armorStack, ModDataComponents.JET_BOOTS_BUILDER_MODE.get(), false);
         JetBootsStateTracker.JetBootsState jbState = JetBootsStateTracker.getTracker(player).getJetBootsState(player);
         JetBootsStateTracker.getTracker(player).setJetBootsState(player, jbState.isEnabled(), jbState.isActive(), jetBootsBuilderMode);
     }
@@ -217,20 +217,19 @@ public class JetBootsHandler extends BaseArmorUpgradeHandler<JetBootsHandler.Jet
     }
 
     @Override
-    public void onDataFieldUpdated(ICommonArmorHandler commonArmorHandler, String tagName, Tag inbt) {
+    public void onDataFieldUpdated(ICommonArmorHandler commonArmorHandler, DataComponentType<?> componentType, Object val) {
         Player player = commonArmorHandler.getPlayer();
         JetBootsHandler.JetBootsLocalState jbLocal = commonArmorHandler.getExtensionData(this);
-        switch (tagName) {
-            case PneumaticArmorItem.NBT_BUILDER_MODE ->
-                    JetBootsStateTracker.getTracker(player).getJetBootsState(player).setBuilderMode(((ByteTag) inbt).getAsByte() == 1);
-            case PneumaticArmorItem.NBT_JET_BOOTS_POWER ->
-                    jbLocal.jetBootsPower = Mth.clamp(((IntTag) inbt).getAsInt() / 100f, 0f, 1f);
-            case PneumaticArmorItem.NBT_FLIGHT_STABILIZERS ->
-                    jbLocal.flightStabilizers = ((ByteTag) inbt).getAsByte() == 1;
-            case PneumaticArmorItem.NBT_HOVER ->
-                    jbLocal.hover = ((ByteTag) inbt).getAsByte() == 1;
-            case PneumaticArmorItem.NBT_SMART_HOVER ->
-                    jbLocal.smartHover = ((ByteTag) inbt).getAsByte() == 1;
+        if (componentType == ModDataComponents.JET_BOOTS_BUILDER_MODE.get()) {
+            JetBootsStateTracker.getTracker(player).getJetBootsState(player).setBuilderMode((boolean) val);
+        } else if (componentType == ModDataComponents.JET_BOOTS_PCT.get()) {
+            jbLocal.jetBootsPower = Mth.clamp((int) val / 100f, 0f, 1f);
+        } else if (componentType == ModDataComponents.JET_BOOTS_STABILIZERS.get()) {
+            jbLocal.flightStabilizers = (boolean) val;
+        } else if (componentType == ModDataComponents.JET_BOOTS_HOVER.get()) {
+            jbLocal.hover = (boolean) val;
+        } else if (componentType == ModDataComponents.JET_BOOTS_SMART_HOVER.get()) {
+            jbLocal.smartHover = (boolean) val;
         }
     }
 
@@ -245,7 +244,12 @@ public class JetBootsHandler extends BaseArmorUpgradeHandler<JetBootsHandler.Jet
                 if (!player.level().isClientSide) {
                     double l = Math.pow(player.getDeltaMovement().length(), 1.65);
                     commonArmorHandler.addAir(EquipmentSlot.FEET, (int) (l * -50));
-                    NetworkHandler.sendToAllTracking(new PacketSpawnParticle(AirParticleData.DENSE, player.getX(), player.getY(), player.getZ(), 0, 0, 0, (int) (l * 2), 0, 0, 0), player.level(), player.blockPosition());
+                    NetworkHandler.sendToAllTracking(new PacketSpawnParticle(AirParticleData.DENSE,
+                            player.position().toVector3f(),
+                            PneumaticCraftUtils.VEC3F_ZERO,
+                            (int) (l * 2),
+                            Optional.empty()
+                    ), player.level(), player.blockPosition());
                 }
                 player.setDeltaMovement(Vec3.ZERO);
             }

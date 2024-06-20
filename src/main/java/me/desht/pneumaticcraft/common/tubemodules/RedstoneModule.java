@@ -23,7 +23,7 @@ import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSyncRedstoneModuleToClient;
 import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.thirdparty.ModdedWrenchUtils;
-import me.desht.pneumaticcraft.common.util.ITranslatableEnum;
+import me.desht.pneumaticcraft.api.misc.ITranslatableEnum;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -113,7 +113,7 @@ public class RedstoneModule extends AbstractNetworkedRedstoneModule implements I
         updatedSinceLoaded = true;
         super.updateOutput(levels);
         if (setOutputLevel(computeOutputSignal(outputLevel, levels))) {
-            NetworkHandler.sendToAllTracking(PacketSyncRedstoneModuleToClient.create(this), getTube());
+            NetworkHandler.sendToAllTracking(PacketSyncRedstoneModuleToClient.forModule(this), getTube());
         }
         System.arraycopy(levels, 0, prevLevels, 0, 16);
     }
@@ -308,7 +308,7 @@ public class RedstoneModule extends AbstractNetworkedRedstoneModule implements I
             redstoneDirection = redstoneDirection == EnumRedstoneDirection.INPUT ? EnumRedstoneDirection.OUTPUT : EnumRedstoneDirection.INPUT;
             updateNeighbors();
             if (!updateInputLevel()) {
-                NetworkHandler.sendToAllTracking(PacketSyncRedstoneModuleToClient.create(this), getTube());
+                NetworkHandler.sendToAllTracking(PacketSyncRedstoneModuleToClient.forModule(this), getTube());
             }
             return true;
         } else {
@@ -329,7 +329,7 @@ public class RedstoneModule extends AbstractNetworkedRedstoneModule implements I
 
     @Override
     protected void onInputLevelChange(int level) {
-        NetworkHandler.sendToAllTracking(PacketSyncRedstoneModuleToClient.create(this), getTube());
+        NetworkHandler.sendToAllTracking(PacketSyncRedstoneModuleToClient.forModule(this), getTube());
     }
 
     private int readInputLevel() {

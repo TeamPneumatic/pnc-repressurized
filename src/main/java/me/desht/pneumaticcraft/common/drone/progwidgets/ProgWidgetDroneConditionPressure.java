@@ -18,27 +18,35 @@
 package me.desht.pneumaticcraft.common.drone.progwidgets;
 
 import com.google.common.collect.ImmutableList;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import me.desht.pneumaticcraft.api.drone.IDrone;
+import me.desht.pneumaticcraft.api.drone.IProgWidget;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
-import me.desht.pneumaticcraft.common.drone.IDroneBase;
-import me.desht.pneumaticcraft.common.registry.ModProgWidgets;
+import me.desht.pneumaticcraft.common.registry.ModProgWidgetTypes;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.List;
 
 public class ProgWidgetDroneConditionPressure extends ProgWidgetDroneCondition {
+    public static final MapCodec<ProgWidgetDroneConditionPressure> CODEC = RecordCodecBuilder.mapCodec(builder ->
+            droneConditionParts(builder).apply(builder, ProgWidgetDroneConditionPressure::new));
 
     public ProgWidgetDroneConditionPressure() {
-        super(ModProgWidgets.DRONE_CONDITION_PRESSURE.get());
+    }
+
+    public ProgWidgetDroneConditionPressure(PositionFields pos, DroneConditionFields cond) {
+        super(pos, cond);
     }
 
     @Override
     public List<ProgWidgetType<?>> getParameters() {
-        return ImmutableList.of(ModProgWidgets.TEXT.get());
+        return ImmutableList.of(ModProgWidgetTypes.TEXT.get());
     }
 
     @Override
-    protected int getCount(IDroneBase drone, IProgWidget widget) {
+    protected int getCount(IDrone drone, IProgWidget widget) {
         float pressure = drone.getDronePressure();
         maybeRecordMeasuredVal(drone, (int)(pressure * 1000));
         return (int) pressure;
@@ -49,4 +57,8 @@ public class ProgWidgetDroneConditionPressure extends ProgWidgetDroneCondition {
         return Textures.PROG_WIDGET_CONDITION_DRONE_PRESSURE;
     }
 
+    @Override
+    public ProgWidgetType<?> getType() {
+        return ModProgWidgetTypes.DRONE_CONDITION_PRESSURE.get();
+    }
 }

@@ -1,17 +1,21 @@
 package me.desht.pneumaticcraft.common.thirdparty.patchouli;
 
-import me.desht.pneumaticcraft.api.crafting.ingredient.FluidIngredient;
 import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.registry.ModBlocks;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.block.state.BlockState;
+import net.neoforged.neoforge.common.crafting.SizedIngredient;
 import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.crafting.FluidIngredient;
+import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
 import vazkii.patchouli.api.*;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
@@ -92,11 +96,19 @@ public class PatchouliAccess {
         return Patchouli.PNC_BOOK.equals(PatchouliAPI.get().getOpenBookGui());
     }
 
-    static IVariable getStacks(Ingredient ingr) {
-        return IVariable.wrapList(Arrays.stream(ingr.getItems()).map(IVariable::from).collect(Collectors.toList()));
+    static IVariable getStacks(SizedIngredient ingr) {
+        return IVariable.wrapList(Arrays.stream(ingr.getItems()).map(IVariable::from).toList());
     }
 
-    public static IVariable getFluidStacks(FluidIngredient ingr) {
-        return IVariable.wrapList(ingr.getFluidStacks().stream().map(IVariable::from).collect(Collectors.toList()));
+    static IVariable getStacks(Ingredient ingr) {
+        return IVariable.wrapList(Arrays.stream(ingr.getItems()).map(IVariable::from).toList());
+    }
+
+    static IVariable getStacks(List<ItemStack> stacks) {
+        return IVariable.wrapList(stacks.stream().map(IVariable::from).toList());
+    }
+
+    public static IVariable getFluidStacks(SizedFluidIngredient ingr) {
+        return IVariable.wrapList(Arrays.stream(ingr.getFluids()).map(IVariable::from).toList());
     }
 }

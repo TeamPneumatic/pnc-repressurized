@@ -1,23 +1,23 @@
 package me.desht.pneumaticcraft.common.block;
 
-import me.desht.pneumaticcraft.api.lib.NBTKeys;
 import me.desht.pneumaticcraft.common.block.entity.spawning.VacuumTrapBlockEntity;
 import me.desht.pneumaticcraft.common.item.SpawnerCoreItem;
 import me.desht.pneumaticcraft.common.registry.ModBlocks;
+import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.util.VoxelShapeUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.component.DataComponentType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.ItemContainerContents;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -28,9 +28,7 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.neoforged.neoforge.items.ItemStackHandler;
 
-import javax.annotation.Nullable;
 import java.util.List;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
@@ -112,14 +110,14 @@ public class VacuumTrapBlock extends AbstractPneumaticCraftBlock implements Simp
     }
 
     @Override
-    public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult brtr) {
+    public InteractionResult useWithoutItem(BlockState state, Level world, BlockPos pos, Player player, BlockHitResult brtr) {
         if (player.isShiftKeyDown()) {
             boolean open = state.getValue(OPEN);
             world.setBlockAndUpdate(pos, state.setValue(OPEN, !open));
             world.playSound(player, pos, open ? SoundEvents.IRON_DOOR_OPEN : SoundEvents.IRON_DOOR_CLOSE, SoundSource.BLOCKS, 1f, 0.5f);
             return InteractionResult.sidedSuccess(world.isClientSide);
         }
-        return super.use(state, world, pos, player, hand, brtr);
+        return InteractionResult.PASS;
     }
 
     @Override
@@ -140,22 +138,24 @@ public class VacuumTrapBlock extends AbstractPneumaticCraftBlock implements Simp
         return new VacuumTrapBlockEntity(pPos, pState);
     }
 
+    @Override
+    public void addSerializableComponents(List<DataComponentType<?>> list) {
+        super.addSerializableComponents(list);
+        list.add(ModDataComponents.BLOCK_ENTITY_SAVED_INV.get());
+    }
+
     public static class ItemBlockVacuumTrap extends BlockItem {
         public ItemBlockVacuumTrap(VacuumTrapBlock blockVacuumTrap) {
             super(blockVacuumTrap, ModItems.defaultProps());
         }
 
         @Override
-        public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
-            super.appendHoverText(stack, worldIn, tooltip, flagIn);
+        public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flagIn) {
+            super.appendHoverText(stack, context, tooltip, flagIn);
 
-            CompoundTag tag = stack.getTagElement(NBTKeys.BLOCK_ENTITY_TAG);
-            if (tag != null && tag.contains("Items")) {
-                ItemStackHandler handler = new ItemStackHandler(1);
-                handler.deserializeNBT(tag.getCompound("Items"));
-                if (handler.getStackInSlot(0).getItem() instanceof SpawnerCoreItem) {
-                    tooltip.add(xlate("pneumaticcraft.message.vacuum_trap.coreInstalled").withStyle(ChatFormatting.YELLOW));
-                }
+            ItemContainerContents contents = stack.get(ModDataComponents.BLOCK_ENTITY_SAVED_INV.get());
+            if (contents != null && contents.copyOne().getItem() instanceof SpawnerCoreItem) {
+                tooltip.add(xlate("pneumaticcraft.message.vacuum_trap.coreInstalled").withStyle(ChatFormatting.YELLOW));
             }
         }
     }

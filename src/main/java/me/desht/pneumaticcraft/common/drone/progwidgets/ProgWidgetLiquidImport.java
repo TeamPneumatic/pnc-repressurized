@@ -18,15 +18,19 @@
 package me.desht.pneumaticcraft.common.drone.progwidgets;
 
 import com.google.common.collect.ImmutableList;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import me.desht.pneumaticcraft.api.drone.IDrone;
+import me.desht.pneumaticcraft.api.drone.IProgWidget;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
-import me.desht.pneumaticcraft.common.drone.IDroneBase;
 import me.desht.pneumaticcraft.common.drone.ai.DroneAILiquidImport;
-import me.desht.pneumaticcraft.common.registry.ModProgWidgets;
+import me.desht.pneumaticcraft.common.registry.ModProgWidgetTypes;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.material.Fluid;
@@ -36,11 +40,24 @@ import java.util.List;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class ProgWidgetLiquidImport extends ProgWidgetInventoryBase implements ILiquidFiltered, IBlockOrdered {
-    private Ordering order = Ordering.HIGH_TO_LOW;
-    private boolean voidExcess = false;
+    public static final MapCodec<ProgWidgetLiquidImport> CODEC = RecordCodecBuilder.mapCodec(builder ->
+        invParts(builder).and(builder.group(
+                StringRepresentable.fromEnum(Ordering::values).optionalFieldOf("order", Ordering.HIGH_TO_LOW).forGetter(ProgWidgetLiquidImport::getOrder),
+                Codec.BOOL.optionalFieldOf("void_excess", false).forGetter(ProgWidgetLiquidImport::shouldVoidExcess)
+        )
+    ).apply(builder, ProgWidgetLiquidImport::new));
+
+    private Ordering order;
+    private boolean voidExcess;
+
+    private ProgWidgetLiquidImport(PositionFields pos, InvBaseFields invBaseFields, Ordering order, boolean voidExcess) {
+        super(pos, invBaseFields);
+        this.order = order;
+        this.voidExcess = voidExcess;
+    }
 
     public ProgWidgetLiquidImport() {
-        super(ModProgWidgets.LIQUID_IMPORT.get());
+        this(PositionFields.DEFAULT, InvBaseFields.DEFAULT, Ordering.HIGH_TO_LOW, false);
     }
 
     @Override
@@ -50,7 +67,7 @@ public class ProgWidgetLiquidImport extends ProgWidgetInventoryBase implements I
 
     @Override
     public List<ProgWidgetType<?>> getParameters() {
-        return ImmutableList.of(ModProgWidgets.AREA.get(), ModProgWidgets.LIQUID_FILTER.get());
+        return ImmutableList.of(ModProgWidgetTypes.AREA.get(), ModProgWidgetTypes.LIQUID_FILTER.get());
     }
 
     @Override
@@ -59,7 +76,7 @@ public class ProgWidgetLiquidImport extends ProgWidgetInventoryBase implements I
     }
 
     @Override
-    public Goal getWidgetAI(IDroneBase drone, IProgWidget widget) {
+    public Goal getWidgetAI(IDrone drone, IProgWidget widget) {
         return new DroneAILiquidImport(drone, (ProgWidgetInventoryBase) widget);
     }
 
@@ -87,6 +104,11 @@ public class ProgWidgetLiquidImport extends ProgWidgetInventoryBase implements I
     }
 
     @Override
+    public ProgWidgetType<?> getType() {
+        return ModProgWidgetTypes.LIQUID_IMPORT.get();
+    }
+
+    @Override
     public void getTooltip(List<Component> curTooltip) {
         super.getTooltip(curTooltip);
         curTooltip.add(xlate("pneumaticcraft.message.misc.order", xlate(order.getTranslationKey())));
@@ -95,29 +117,29 @@ public class ProgWidgetLiquidImport extends ProgWidgetInventoryBase implements I
         }
     }
 
-    @Override
-    public void writeToNBT(CompoundTag tag) {
-        super.writeToNBT(tag);
-        tag.putInt("order", order.ordinal());
-        if (voidExcess) tag.putBoolean("voidExcess", true);
-    }
+//    @Override
+//    public void writeToNBT(CompoundTag tag, HolderLookup.Provider provider) {
+//        super.writeToNBT(tag, provider);
+//        tag.putInt("order", order.ordinal());
+//        if (voidExcess) tag.putBoolean("voidExcess", true);
+//    }
+//
+//    @Override
+//    public void readFromNBT(CompoundTag tag, HolderLookup.Provider provider) {
+//        super.readFromNBT(tag, provider);
+//        order = Ordering.values()[tag.getInt("order")];
+//        voidExcess = tag.getBoolean("voidExcess");
+//    }
 
     @Override
-    public void readFromNBT(CompoundTag tag) {
-        super.readFromNBT(tag);
-        order = Ordering.values()[tag.getInt("order")];
-        voidExcess = tag.getBoolean("voidExcess");
-    }
-
-    @Override
-    public void writeToPacket(FriendlyByteBuf buf) {
+    public void writeToPacket(RegistryFriendlyByteBuf buf) {
         super.writeToPacket(buf);
         buf.writeByte(order.ordinal());
         buf.writeBoolean(voidExcess);
     }
 
     @Override
-    public void readFromPacket(FriendlyByteBuf buf) {
+    public void readFromPacket(RegistryFriendlyByteBuf buf) {
         super.readFromPacket(buf);
         order = Ordering.values()[buf.readByte()];
         voidExcess = buf.readBoolean();

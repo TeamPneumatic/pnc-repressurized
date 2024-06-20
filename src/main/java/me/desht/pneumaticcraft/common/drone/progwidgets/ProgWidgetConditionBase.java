@@ -17,8 +17,9 @@
 
 package me.desht.pneumaticcraft.common.drone.progwidgets;
 
+import me.desht.pneumaticcraft.api.drone.IDrone;
+import me.desht.pneumaticcraft.api.drone.IProgWidget;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
-import me.desht.pneumaticcraft.common.drone.IDroneBase;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.DyeColor;
 
@@ -32,8 +33,8 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
  */
 public abstract class ProgWidgetConditionBase extends ProgWidget implements IJump {
 
-    ProgWidgetConditionBase(ProgWidgetType<?> type) {
-        super(type);
+    ProgWidgetConditionBase(PositionFields pos) {
+        super(pos);
     }
 
     @Override
@@ -77,7 +78,7 @@ public abstract class ProgWidgetConditionBase extends ProgWidget implements IJum
     }
 
     @Override
-    public IProgWidget getOutputWidget(IDroneBase drone, List<IProgWidget> allWidgets) {
+    public IProgWidget getOutputWidget(IDrone drone, List<IProgWidget> allWidgets) {
         boolean evaluation = evaluate(drone, this);
         if (evaluation) {
             drone.getDebugger().addEntry("pneumaticcraft.gui.progWidget.condition.evaluatedTrue");
@@ -87,7 +88,7 @@ public abstract class ProgWidgetConditionBase extends ProgWidget implements IJum
         return ProgWidgetJump.jumpToLabel(drone, allWidgets, this, evaluation);
     }
 
-    public abstract boolean evaluate(IDroneBase drone, IProgWidget widget);
+    public abstract boolean evaluate(IDrone drone, IProgWidget widget);
 
     @Override
     public DyeColor getColor() {

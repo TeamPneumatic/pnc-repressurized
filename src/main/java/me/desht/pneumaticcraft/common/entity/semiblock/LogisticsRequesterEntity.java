@@ -24,6 +24,7 @@ import me.desht.pneumaticcraft.common.thirdparty.ae2.AE2Integration;
 import me.desht.pneumaticcraft.common.thirdparty.ae2.AE2RequesterIntegration;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.lib.Textures;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -51,11 +52,11 @@ public class LogisticsRequesterEntity extends AbstractLogisticsFrameEntity imple
     }
 
     @Override
-    protected void defineSynchedData() {
-        super.defineSynchedData();
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
 
         if (AE2Integration.isAvailable()) {
-            getEntityData().define(AE2_ENABLED, false);
+            builder.define(AE2_ENABLED, false);
         }
     }
 
@@ -109,8 +110,8 @@ public class LogisticsRequesterEntity extends AbstractLogisticsFrameEntity imple
     }
 
     @Override
-    public CompoundTag serializeNBT(CompoundTag tag) {
-        tag = super.serializeNBT(tag);
+    public CompoundTag serializeNBT(CompoundTag tag, HolderLookup.Provider provider) {
+        tag = super.serializeNBT(tag, provider);
 
         if (AE2Integration.isAvailable()) {
             tag.putBoolean(NBT_AE2_INTEGRATION, isAE2enabled());

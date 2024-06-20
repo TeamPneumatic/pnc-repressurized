@@ -27,6 +27,7 @@ import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
 import me.desht.pneumaticcraft.lib.BlockEntityConstants;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -106,22 +107,22 @@ public class AssemblyPlatformBlockEntity extends AbstractTickingBlockEntity impl
     }
 
     @Override
-    public void saveAdditional(CompoundTag tag) {
-        super.saveAdditional(tag);
+    public void saveAdditional(CompoundTag tag, HolderLookup.Provider provider) {
+        super.saveAdditional(tag, provider);
         tag.putBoolean("clawClosing", shouldClawClose);
         tag.putFloat("clawProgress", clawProgress);
         tag.putFloat("speed", speed);
-        tag.put("Items", itemHandler.serializeNBT());
+        tag.put("Items", itemHandler.serializeNBT(provider));
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
+    public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
+        super.loadAdditional(tag, provider);
 
         shouldClawClose = tag.getBoolean("clawClosing");
         clawProgress = tag.getFloat("clawProgress");
         speed = tag.getFloat("speed");
-        itemHandler.deserializeNBT(tag.getCompound("Items"));
+        itemHandler.deserializeNBT(provider, tag.getCompound("Items"));
     }
 
     @Override

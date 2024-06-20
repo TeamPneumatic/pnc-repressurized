@@ -43,8 +43,8 @@ public class FluidMixer implements IRecipeManager<FluidMixerRecipe> {
         CraftTweakerAPI.apply(new ActionAddRecipe<>(this,
                 new RecipeHolder<>(new ResourceLocation("crafttweaker", fixRecipeName(name)),
                 new FluidMixerRecipeImpl(
-                        CTUtils.toFluidIngredient(input1),
-                        CTUtils.toFluidIngredient(input2),
+                        CTUtils.toSizedFluidIngredient(input1),
+                        CTUtils.toSizedFluidIngredient(input2),
                         outputFluid.getImmutableInternal(),
                         outputItem.getImmutableInternal(),
                         pressure,

@@ -29,6 +29,7 @@ import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.block.entity.RangeManager;
 import me.desht.pneumaticcraft.common.block.entity.SideConfigurator.RelativeFace;
 import me.desht.pneumaticcraft.common.block.entity.utility.SmartChestBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.utility.SmartChestBlockEntity.FilterSlot;
 import me.desht.pneumaticcraft.common.block.entity.utility.SmartChestBlockEntity.PushPullMode;
 import me.desht.pneumaticcraft.common.inventory.SmartChestMenu;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
@@ -50,8 +51,6 @@ import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
-import net.neoforged.neoforge.items.ItemHandlerHelper;
-import org.apache.commons.lang3.tuple.Pair;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
@@ -64,7 +63,7 @@ import static me.desht.pneumaticcraft.common.inventory.SmartChestMenu.N_COLS;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class SmartChestScreen extends AbstractPneumaticCraftContainerScreen<SmartChestMenu, SmartChestBlockEntity> {
-    private List<Pair<Integer, ItemStack>> filter;
+    private List<FilterSlot> filter;
     private IGuiAnimatedStat statusStat;
     private WidgetButtonExtended showRangeButton;
 
@@ -212,8 +211,8 @@ public class SmartChestScreen extends AbstractPneumaticCraftContainerScreen<Smar
         RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 
         // the filtered slots
-        for (Pair<Integer, ItemStack> p : filter) {
-            int slot = p.getLeft();
+        for (FilterSlot p : filter) {
+            int slot = p.slot();
             if (slot < te.getLastSlot() && menu.slots.get(slot).hasItem()) {
                 int sx = leftPos + 8 + (slot % N_COLS) * 18;
                 int sy = topPos + 18 + (slot / N_COLS) * 18;
@@ -237,13 +236,13 @@ public class SmartChestScreen extends AbstractPneumaticCraftContainerScreen<Smar
 
         RenderSystem.enableBlend();
         RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-        for (Pair<Integer, ItemStack> p : filter) {
-            int slot = p.getLeft();
+        for (FilterSlot p : filter) {
+            int slot = p.slot();
             if (slot < te.getLastSlot()) {
                 int sx = 8 + (slot % N_COLS) * 18;
                 int sy = 18 + (slot / N_COLS) * 18;
                 graphics.pose().pushPose();
-                ItemStack stack = p.getRight();
+                ItemStack stack = p.stack();
                 graphics.renderItem(stack, sx, sy);
                 String label = "[" + stack.getCount() + "]";
                 graphics.pose().translate(0, 0, 300);
@@ -292,7 +291,7 @@ public class SmartChestScreen extends AbstractPneumaticCraftContainerScreen<Smar
             } else {
                 // alt-click an item - toggle filtering for it
                 if (te.getFilter(slotId).isEmpty()) {
-                    te.setFilter(slotId, hasShiftDown() ? ItemHandlerHelper.copyStackWithSize(stack, stack.getMaxStackSize()) : stack);
+                    te.setFilter(slotId, hasShiftDown() ? stack.copyWithCount(stack.getMaxStackSize()) : stack);
                 } else {
                     te.setFilter(slotId, ItemStack.EMPTY);
                 }
@@ -315,7 +314,7 @@ public class SmartChestScreen extends AbstractPneumaticCraftContainerScreen<Smar
                         stack.getCount() + (int) dirY;
                 newSize = Mth.clamp(newSize, 1, stack.getMaxStackSize());
                 if (newSize != stack.getCount()) {
-                    te.setFilter(s.index, ItemHandlerHelper.copyStackWithSize(stack, newSize));
+                    te.setFilter(s.index, stack.copyWithCount(newSize));
                     this.filter = te.getFilter();
                     sendDelayed(5);  // avoid packet spam while spinning mouse wheel
                 }
@@ -338,7 +337,7 @@ public class SmartChestScreen extends AbstractPneumaticCraftContainerScreen<Smar
                 };
                 newCount = Mth.clamp(newCount, 1, stack.getMaxStackSize());
                 if (newCount != stack.getCount()) {
-                    te.setFilter(s.index, ItemHandlerHelper.copyStackWithSize(stack, newCount));
+                    te.setFilter(s.index, stack.copyWithCount(newCount));
                     this.filter = te.getFilter();
                     sendDelayed(5);  // avoid packet spam while spinning mouse wheel
                 }

@@ -80,7 +80,7 @@ public class PneumaticDoorBaseBlock extends AbstractCamouflageBlock implements P
             BlockPos doorPos = pos.relative(teDoorBase.getRotation());
             BlockState doorState = world.getBlockState(doorPos);
             if (doorState.getBlock() instanceof PneumaticDoorBlock) {
-                doorState.neighborChanged(world, doorPos, doorState.getBlock(), pos, false);
+                doorState.handleNeighborChanged(world, doorPos, doorState.getBlock(), pos, false);
             }
         });
     }

@@ -19,11 +19,13 @@ package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.ArmorMessage;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.ComponentSerialization;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.network.handling.PlayPayloadContext;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
@@ -32,26 +34,21 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
  * Sent by server to get a message displayed on the Pneumatic Armor HUD
  */
 public record PacketSendArmorHUDMessage(Component message, int duration, int color) implements CustomPacketPayload {
-    public static final ResourceLocation ID = RL("send_armor_hud_message");
+    public static final Type<PacketSendArmorHUDMessage> TYPE = new Type<>(RL("send_armor_hud_message"));
 
-    public static PacketSendArmorHUDMessage fromNetwork(FriendlyByteBuf buffer) {
-        return new PacketSendArmorHUDMessage(buffer.readComponent(), buffer.readInt(), buffer.readInt());
-    }
-
-    @Override
-    public void write(FriendlyByteBuf buf) {
-        buf.writeComponent(this.message);
-        buf.writeInt(this.duration);
-        buf.writeInt(this.color);
-    }
+    public static final StreamCodec<RegistryFriendlyByteBuf, PacketSendArmorHUDMessage> STREAM_CODEC = StreamCodec.composite(
+            ComponentSerialization.STREAM_CODEC, PacketSendArmorHUDMessage::message,
+            ByteBufCodecs.VAR_INT, PacketSendArmorHUDMessage::duration,
+            ByteBufCodecs.INT, PacketSendArmorHUDMessage::color,
+            PacketSendArmorHUDMessage::new
+    );
 
     @Override
-    public ResourceLocation id() {
-        return ID;
+    public Type<PacketSendArmorHUDMessage> type() {
+        return TYPE;
     }
 
-    public static void handle(PacketSendArmorHUDMessage message, PlayPayloadContext ctx) {
-        ctx.workHandler().submitAsync(() ->
-                HUDHandler.getInstance().addMessage(new ArmorMessage(message.message(), message.duration(), message.color())));
+    public static void handle(PacketSendArmorHUDMessage message, IPayloadContext ctx) {
+        HUDHandler.getInstance().addMessage(new ArmorMessage(message.message(), message.duration(), message.color()));
     }
 }

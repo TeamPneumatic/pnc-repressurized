@@ -18,13 +18,16 @@
 package me.desht.pneumaticcraft.common.drone.progwidgets;
 
 import com.google.common.collect.ImmutableList;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import me.desht.pneumaticcraft.api.drone.IDrone;
+import me.desht.pneumaticcraft.api.drone.IProgWidget;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
-import me.desht.pneumaticcraft.common.drone.IDroneBase;
 import me.desht.pneumaticcraft.common.drone.ai.DroneAIExternalProgram;
-import me.desht.pneumaticcraft.common.registry.ModProgWidgets;
+import me.desht.pneumaticcraft.common.registry.ModProgWidgetTypes;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.item.DyeColor;
@@ -32,10 +35,21 @@ import net.minecraft.world.item.DyeColor;
 import java.util.List;
 
 public class ProgWidgetExternalProgram extends ProgWidgetAreaItemBase {
+    public static final MapCodec<ProgWidgetExternalProgram> CODEC = RecordCodecBuilder.mapCodec(builder ->
+            baseParts(builder).and(
+                    Codec.BOOL.optionalFieldOf("share_variables", false).forGetter(ProgWidgetExternalProgram::isShareVariables)
+            ).apply(builder, ProgWidgetExternalProgram::new));
+
     public boolean shareVariables;
 
+    private ProgWidgetExternalProgram(PositionFields pos, boolean shareVariables) {
+        super(pos);
+
+        this.shareVariables = shareVariables;
+    }
+
     public ProgWidgetExternalProgram() {
-        super(ModProgWidgets.EXTERNAL_PROGRAM.get());
+        this(PositionFields.DEFAULT, false);
     }
 
     @Override
@@ -49,41 +63,50 @@ public class ProgWidgetExternalProgram extends ProgWidgetAreaItemBase {
     }
 
     @Override
-    public Goal getWidgetAI(IDroneBase drone, IProgWidget widget) {
+    public ProgWidgetType<?> getType() {
+        return ModProgWidgetTypes.EXTERNAL_PROGRAM.get();
+    }
+
+    @Override
+    public Goal getWidgetAI(IDrone drone, IProgWidget widget) {
         return new DroneAIExternalProgram(drone, aiManager, (ProgWidgetExternalProgram) widget);
     }
 
     @Override
     public List<ProgWidgetType<?>> getParameters() {
-        return ImmutableList.of(ModProgWidgets.AREA.get());
+        return ImmutableList.of(ModProgWidgetTypes.AREA.get());
     }
 
-    @Override
-    public void writeToNBT(CompoundTag tag) {
-        super.writeToNBT(tag);
-        if (shareVariables) tag.putBoolean("shareVariables", true);
+    public boolean isShareVariables() {
+        return shareVariables;
     }
 
-    @Override
-    public void readFromNBT(CompoundTag tag) {
-        super.readFromNBT(tag);
-        shareVariables = tag.getBoolean("shareVariables");
-    }
+//    @Override
+//    public void writeToNBT(CompoundTag tag, HolderLookup.Provider provider) {
+//        super.writeToNBT(tag, provider);
+//        if (shareVariables) tag.putBoolean("shareVariables", true);
+//    }
+//
+//    @Override
+//    public void readFromNBT(CompoundTag tag, HolderLookup.Provider provider) {
+//        super.readFromNBT(tag, provider);
+//        shareVariables = tag.getBoolean("shareVariables");
+//    }
 
     @Override
-    public void writeToPacket(FriendlyByteBuf buf) {
+    public void writeToPacket(RegistryFriendlyByteBuf buf) {
         super.writeToPacket(buf);
         buf.writeBoolean(shareVariables);
     }
 
     @Override
-    public void readFromPacket(FriendlyByteBuf buf) {
+    public void readFromPacket(RegistryFriendlyByteBuf buf) {
         super.readFromPacket(buf);
         shareVariables = buf.readBoolean();
     }
 
     @Override
-    public boolean canBeRunByComputers(IDroneBase drone, IProgWidget widget) {
+    public boolean canBeRunByComputers(IDrone drone, IProgWidget widget) {
         return false;
     }
 }

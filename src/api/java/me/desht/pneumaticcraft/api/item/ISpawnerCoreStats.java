@@ -17,22 +17,29 @@
 
 package me.desht.pneumaticcraft.api.item;
 
+import net.minecraft.core.component.DataComponentType;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.ApiStatus;
 
+import java.util.Map;
 import java.util.Set;
 
 /**
  * Represents the entity types contained in a Spawner Core. Retrieve an instance of this with
  * {@link IItemRegistry#getSpawnerCoreStats(ItemStack)}.
+ *
+ * @implNote implementations of this can be used as item data components, and as such should be treated
+ * as immutable objects.
  */
+@ApiStatus.NonExtendable
 public interface ISpawnerCoreStats {
     /**
-     * Get the entity types stored in this spawner core
+     * Get an unmodifiable set of the entity types stored in this spawner core.
      *
      * @return a set of entity types
      */
-    Set<EntityType<?>> getEntities();
+    Map<EntityType<?>,Integer> getEntities();
 
     /**
      * Get the percentage of the core that the given entity type occupies
@@ -53,13 +60,16 @@ public interface ISpawnerCoreStats {
      * Update the percentage level for the given entity type. The update level will be clamped so that does not go
      * below zero, or leaves the total occupation of the core greater than 100%.
      * <p>
-     * The updated level is not automatically serialized to an ItemStack; see {@link #serialize(ItemStack)} for that.
+     * The updated level is not automatically serialized to an ItemStack; use
+     * {@link #saveSpawnerCoreStats(ItemStack, ISpawnerCoreStats)} for that.
      *
      * @param type an entity type
      * @param toAdd the amount to adjust by, may be negative
-     * @return true if any change was made, false otherwise
+     * @return a new stats object, which may or may not have been modified
      */
-    boolean addAmount(EntityType<?> type, int toAdd);
+    ISpawnerCoreStats addAmount(EntityType<?> type, int toAdd);
+
+    void save(ItemStack stack);
 
     /**
      * Pick a weighted random entity from the core.
@@ -71,10 +81,15 @@ public interface ISpawnerCoreStats {
     EntityType<?> pickEntity(boolean includeUnused);
 
     /**
-     * Serialize the current stats onto the given ItemStack, which must be a Spawner Core
-     *
-     * @param stack an ItemStack
-     * @throws IllegalArgumentException if the ItemStack is not a Spawner Core
+     * {@return an empty spawner core stats object}
      */
-    void serialize(ItemStack stack);
+    ISpawnerCoreStats empty();
+
+//    /**
+//     * Serialize the current stats onto the given ItemStack, which must be a Spawner Core
+//     *
+//     * @param stack an ItemStack
+//     * @throws IllegalArgumentException if the ItemStack is not a Spawner Core
+//     */
+//    void serialize(ItemStack stack);
 }

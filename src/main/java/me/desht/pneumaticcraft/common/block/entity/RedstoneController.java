@@ -104,11 +104,12 @@ public class RedstoneController<T extends BlockEntity & IRedstoneControl<T>> {
         return te != null && modes.get(currentMode).emissionPredicate.test(te);
     }
 
-    public void serialize(CompoundTag tag) {
+    public CompoundTag serialize(CompoundTag tag) {
         // don't write default mode 0; avoid messy NBT
         if (currentMode != 0) {
             tag.putInt(NBTKeys.NBT_REDSTONE_MODE, currentMode);
         }
+        return tag;
     }
 
     public void deserialize(CompoundTag tag) {

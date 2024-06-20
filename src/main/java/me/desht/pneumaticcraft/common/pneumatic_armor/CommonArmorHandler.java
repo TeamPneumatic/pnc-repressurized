@@ -31,8 +31,9 @@ import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.item.PneumaticArmorItem;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketToggleArmorFeature;
+import me.desht.pneumaticcraft.common.network.PacketToggleArmorFeature.FeatureSetting;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
-import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
+import me.desht.pneumaticcraft.common.upgrades.UpgradableItemUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -41,11 +42,12 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
-import net.neoforged.neoforge.event.TickEvent;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
 import java.util.*;
 
@@ -112,15 +114,13 @@ public class CommonArmorHandler implements ICommonArmorHandler {
         }
     }
 
-    @Mod.EventBusSubscriber(modid = Names.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
+    @EventBusSubscriber(modid = Names.MOD_ID, bus = EventBusSubscriber.Bus.GAME)
     public static class Listeners {
         @SubscribeEvent
-        public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
-            if (event.phase == TickEvent.Phase.END) {
-                CommonArmorHandler handler = getHandlerForPlayer(event.player);
-                for (EquipmentSlot slot : ArmorUpgradeRegistry.ARMOR_SLOTS) {
-                    handler.tickArmorPiece(slot);
-                }
+        public static void onPlayerTick(PlayerTickEvent.Post event) {
+            CommonArmorHandler handler = getHandlerForPlayer(event.getEntity());
+            for (EquipmentSlot slot : ArmorUpgradeRegistry.ARMOR_SLOTS) {
+                handler.tickArmorPiece(slot);
             }
         }
 
@@ -141,7 +141,7 @@ public class CommonArmorHandler implements ICommonArmorHandler {
         }
     }
 
-    @Mod.EventBusSubscriber(modid = Names.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
+    @EventBusSubscriber(modid = Names.MOD_ID, bus = EventBusSubscriber.Bus.GAME, value = Dist.CLIENT)
     public static class ClientListeners {
         @SubscribeEvent
         public static void onClientDisconnect(ClientPlayerNetworkEvent.LoggingOut event) {
@@ -150,12 +150,10 @@ public class CommonArmorHandler implements ICommonArmorHandler {
         }
 
         @SubscribeEvent
-        public static void tickEnd(TickEvent.ClientTickEvent event) {
-            if (event.phase == TickEvent.Phase.END) {
-                if (ClientUtils.getOptionalClientPlayer().isEmpty() && ArmorUpgradeRegistry.getInstance().isFrozen() && ClientArmorRegistry.getInstance().isFrozen()) {
-                    for (EquipmentSlot slot : ArmorUpgradeRegistry.ARMOR_SLOTS) {
-                        ClientArmorRegistry.getInstance().getHandlersForSlot(slot).forEach(IArmorUpgradeClientHandler::reset);
-                    }
+        public static void tickEnd(ClientTickEvent.Post event) {
+            if (ClientUtils.getOptionalClientPlayer().isEmpty() && ArmorUpgradeRegistry.getInstance().isFrozen() && ClientArmorRegistry.getInstance().isFrozen()) {
+                for (EquipmentSlot slot : ArmorUpgradeRegistry.ARMOR_SLOTS) {
+                    ClientArmorRegistry.getInstance().getHandlersForSlot(slot).forEach(IArmorUpgradeClientHandler::reset);
                 }
             }
         }
@@ -404,7 +402,9 @@ public class CommonArmorHandler implements ICommonArmorHandler {
             if (player.level().isClientSide) {
                 ClientUtils.setArmorUpgradeEnabled(upgrade.getEquipmentSlot(), (byte) upgrade.getIndex(), enabled);
             } else if (player instanceof ServerPlayer sp) {
-                NetworkHandler.sendToPlayer(new PacketToggleArmorFeature(upgrade.getEquipmentSlot(), (byte) upgrade.getIndex(), enabled), sp);
+                NetworkHandler.sendToPlayer(new PacketToggleArmorFeature(
+                        new FeatureSetting(upgrade.getEquipmentSlot(), (byte) upgrade.getIndex(), enabled)),
+                        sp);
             }
         }
     }

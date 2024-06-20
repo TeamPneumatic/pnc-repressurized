@@ -14,8 +14,8 @@ public class ModAttachmentTypes {
     public static final DeferredRegister<AttachmentType<?>> ATTACHMENT_TYPES
             = DeferredRegister.create(NeoForgeRegistries.ATTACHMENT_TYPES, Names.MOD_ID);
 
-    public static final Supplier<AttachmentType<Integer>> AIR = ATTACHMENT_TYPES.register(
-            "air", () -> AttachmentType.builder(() -> 0).serialize(Codec.INT).build());
+//    public static final Supplier<AttachmentType<Integer>> AIR = ATTACHMENT_TYPES.register(
+//            "air", () -> AttachmentType.builder(() -> 0).serialize(Codec.INT).build());
 
     public static final Supplier<AttachmentType<? extends IActiveEntityHacks>> HACKING = ATTACHMENT_TYPES.register(
             "hacking", () -> AttachmentType.serializable(ActiveEntityHacks::new).build());

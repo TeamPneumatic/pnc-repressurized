@@ -23,11 +23,16 @@ import me.desht.pneumaticcraft.common.inventory.ReinforcedChestMenu;
 import me.desht.pneumaticcraft.common.inventory.handler.ComparatorItemStackHandler;
 import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
 import me.desht.pneumaticcraft.common.registry.ModBlocks;
+import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.component.DataComponentMap;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.MenuProvider;
@@ -35,6 +40,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.ItemContainerContents;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.LootTable;
@@ -54,7 +60,7 @@ public class ReinforcedChestBlockEntity extends AbstractPneumaticCraftBlockEntit
     private static final String NBT_LOOT_TABLE = "LootTable";
     private static final String NBT_LOOT_TABLE_SEED = "LootTableSeed";
 
-    private ResourceLocation lootTable;
+    private ResourceKey<LootTable> lootTable;
     private long lootTableSeed;
 
     private final ComparatorItemStackHandler inventory = new ComparatorItemStackHandler(this, CHEST_SIZE) {
@@ -74,27 +80,27 @@ public class ReinforcedChestBlockEntity extends AbstractPneumaticCraftBlockEntit
     }
 
     @Override
-    public void saveAdditional(CompoundTag tag) {
-        super.saveAdditional(tag);
+    public void saveAdditional(CompoundTag tag, HolderLookup.Provider provider) {
+        super.saveAdditional(tag, provider);
         if (lootTable != null) {
             tag.putString(NBT_LOOT_TABLE, lootTable.toString());
             if (lootTableSeed != 0L) {
                 tag.putLong(NBT_LOOT_TABLE_SEED, lootTableSeed);
             }
         } else {
-            tag.put(NBT_ITEMS, inventory.serializeNBT());
+            tag.put(NBT_ITEMS, inventory.serializeNBT(provider));
         }
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
+    public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
+        super.loadAdditional(tag, provider);
 
         if (tag.contains(NBT_LOOT_TABLE, Tag.TAG_STRING)) {
-            lootTable = new ResourceLocation(tag.getString(NBT_LOOT_TABLE));
+            lootTable = ResourceKey.create(Registries.LOOT_TABLE, new ResourceLocation(tag.getString(NBT_LOOT_TABLE)));
             lootTableSeed = tag.getLong(NBT_LOOT_TABLE_SEED);
         } else {
-            inventory.deserializeNBT(tag.getCompound(NBT_ITEMS));
+            inventory.deserializeNBT(provider, tag.getCompound(NBT_ITEMS));
         }
     }
 
@@ -109,15 +115,17 @@ public class ReinforcedChestBlockEntity extends AbstractPneumaticCraftBlockEntit
     }
 
     @Override
-    public void serializeExtraItemData(CompoundTag blockEntityTag, boolean preserveState) {
-        super.serializeExtraItemData(blockEntityTag, preserveState);
+    protected void applyImplicitComponents(DataComponentInput componentInput) {
+        super.applyImplicitComponents(componentInput);
 
-        for (int i = 0; i < inventory.getSlots(); i++) {
-            if (!inventory.getStackInSlot(i).isEmpty()) {
-                blockEntityTag.put(NBT_ITEMS, inventory.serializeNBT());
-                break;
-            }
-        }
+        inventory.loadContainerContents(componentInput.getOrDefault(ModDataComponents.BLOCK_ENTITY_SAVED_INV, ItemContainerContents.EMPTY));
+    }
+
+    @Override
+    protected void collectImplicitComponents(DataComponentMap.Builder builder) {
+        super.collectImplicitComponents(builder);
+
+        builder.set(ModDataComponents.BLOCK_ENTITY_SAVED_INV, inventory.toContainerContents());
     }
 
     @Nullable
@@ -129,7 +137,7 @@ public class ReinforcedChestBlockEntity extends AbstractPneumaticCraftBlockEntit
 
     public void maybeFillWithLoot(Player player) {
         if (lootTable != null && level instanceof ServerLevel serverLevel) {
-            LootTable table = level.getServer().getLootData().getLootTable(lootTable);
+            LootTable table = level.getServer().reloadableRegistries().getLootTable(lootTable);
             lootTable = null;
 
             LootParams.Builder builder = new LootParams.Builder(serverLevel)
@@ -139,16 +147,6 @@ public class ReinforcedChestBlockEntity extends AbstractPneumaticCraftBlockEntit
             }
             RecipeWrapper invWrapper = new RecipeWrapper(inventory);
             table.fill(invWrapper, builder.create(LootContextParamSets.CHEST), lootTableSeed);
-
-//            LootContext.Builder contextBuilder = new LootContext.Builder((ServerLevel)this.level).withOptionalRandomSeed(this.lootTableSeed);
-//            contextBuilder.withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(this.worldPosition));
-//            if (player != null) {
-//                contextBuilder.withLuck(player.getLuck());
-//            }
-//
-//            RecipeWrapper invWrapper = new RecipeWrapper(inventory);  // handy forge-provided IInventory->IItemHandlerModifiable adapter
-//            LootContext context = contextBuilder.create(LootContextParamSets.CHEST);
-//            table.fill(invWrapper, context);
 
             setChanged();
         }

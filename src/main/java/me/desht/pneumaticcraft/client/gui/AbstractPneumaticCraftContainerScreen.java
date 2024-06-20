@@ -58,6 +58,8 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.client.renderer.texture.Tickable;
 import net.minecraft.client.resources.language.I18n;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -575,6 +577,13 @@ public abstract class AbstractPneumaticCraftContainerScreen<C extends AbstractPn
         String id = te.getCurrentRecipeIdSynced();
         return id.isEmpty() ? Optional.empty() :
                 type.getRecipe(ClientUtils.getClientLevel(), new ResourceLocation(id));
+    }
+
+    protected RegistryAccess registryAccess() {
+        if (minecraft == null || minecraft.player == null) {
+            throw new IllegalStateException("can't get registry access from null minecraft/player!");
+        }
+        return minecraft.player.registryAccess();
     }
 
     private static class SideConfiguratorButton extends WidgetButtonExtended {

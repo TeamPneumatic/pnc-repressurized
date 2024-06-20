@@ -17,14 +17,13 @@
 
 package me.desht.pneumaticcraft.common.thirdparty.gamestages;
 
-import me.desht.pneumaticcraft.api.PneumaticRegistry;
+import me.desht.pneumaticcraft.common.registry.ModPlayerMatchers;
 import me.desht.pneumaticcraft.common.thirdparty.IThirdParty;
 import net.neoforged.bus.api.IEventBus;
 
 public class Gamestages implements IThirdParty {
     @Override
     public void preInit(IEventBus modBus) {
-        PneumaticRegistry.getInstance().getMiscHelpers()
-                .registerPlayerMatcher(GamestagesMatcher.GamestagesMatcherType.INSTANCE);
+        ModPlayerMatchers.PLAYER_MATCHERS_DEFERRED.register("gamestages", () -> GamestagesMatcher.TYPE);
     }
 }

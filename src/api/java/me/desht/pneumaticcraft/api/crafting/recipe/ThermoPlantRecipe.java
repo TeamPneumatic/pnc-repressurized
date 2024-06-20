@@ -17,11 +17,17 @@
 
 package me.desht.pneumaticcraft.api.crafting.recipe;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import me.desht.pneumaticcraft.api.crafting.TemperatureRange;
-import me.desht.pneumaticcraft.api.crafting.ingredient.FluidIngredient;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 
@@ -89,7 +95,7 @@ public abstract class ThermoPlantRecipe extends PneumaticCraftRecipe {
 
     public abstract Optional<Ingredient> getInputItem();
 
-    public abstract Optional<FluidIngredient> getInputFluid();
+    public abstract Optional<SizedFluidIngredient> getInputFluid();
 
     public abstract FluidStack getOutputFluid();
 
@@ -108,14 +114,51 @@ public abstract class ThermoPlantRecipe extends PneumaticCraftRecipe {
     public abstract boolean isExothermic();
 
     public final int getInputFluidAmount() {
-        return getInputFluid().map(FluidIngredient::getAmount).orElse(0);
+        return getInputFluid().map(SizedFluidIngredient::amount).orElse(0);
     }
 
     public final boolean testFluid(FluidStack fluid) {
-        return getInputFluid().map(i -> i.testFluid(fluid)).orElse(false);
+        return getInputFluid().map(i -> i.test(fluid)).orElse(false);
     }
 
     public final boolean testItem(ItemStack stack) {
         return getInputItem().map(i -> i.test(stack)).orElse(false);
     }
+
+    public abstract Inputs inputs();
+
+    public abstract Outputs outputs();
+
+    public record Inputs(Optional<SizedFluidIngredient> inputFluid, Optional<Ingredient> inputItem) {
+        public static final Codec<Inputs> CODEC = RecordCodecBuilder.create(builder -> builder.group(
+                SizedFluidIngredient.FLAT_CODEC.optionalFieldOf("fluid")
+                        .forGetter(Inputs::inputFluid),
+                Ingredient.CODEC.optionalFieldOf("item")
+                        .forGetter(Inputs::inputItem)
+        ).apply(builder, Inputs::new));
+        public static StreamCodec<RegistryFriendlyByteBuf, Inputs> STREAM_CODEC = StreamCodec.composite(
+                ByteBufCodecs.optional(SizedFluidIngredient.STREAM_CODEC), Inputs::inputFluid,
+                ByteBufCodecs.optional(Ingredient.CONTENTS_STREAM_CODEC), Inputs::inputItem,
+                Inputs::new
+        );
+
+        public static Inputs of(@Nullable SizedFluidIngredient inputFluid, @Nullable Ingredient inputItem) {
+            return new Inputs(Optional.ofNullable(inputFluid), Optional.ofNullable(inputItem));
+        }
+    }
+
+    public record Outputs(FluidStack outputFluid, ItemStack outputItem) {
+        public static final Codec<Outputs> CODEC = RecordCodecBuilder.create(builder -> builder.group(
+                FluidStack.CODEC.optionalFieldOf("fluid_output", FluidStack.EMPTY)
+                        .forGetter(Outputs::outputFluid),
+                ItemStack.CODEC.optionalFieldOf("item_output", ItemStack.EMPTY)
+                        .forGetter(Outputs::outputItem)
+        ).apply(builder, Outputs::new));
+        public static StreamCodec<RegistryFriendlyByteBuf, Outputs> STREAM_CODEC = StreamCodec.composite(
+                FluidStack.STREAM_CODEC, Outputs::outputFluid,
+                ItemStack.STREAM_CODEC, Outputs::outputItem,
+                Outputs::new
+        );
+    }
+
 }

@@ -18,8 +18,8 @@
 package me.desht.pneumaticcraft.api.crafting.recipe;
 
 import me.desht.pneumaticcraft.api.crafting.TemperatureRange;
-import me.desht.pneumaticcraft.api.crafting.ingredient.FluidIngredient;
 import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
 
 import java.util.List;
 
@@ -28,9 +28,10 @@ public abstract class RefineryRecipe extends PneumaticCraftRecipe {
 
     /**
      * Get the input fluid ingredient for this recipe
+     *
      * @return the input fluid
      */
-    public abstract FluidIngredient getInput();
+    public abstract SizedFluidIngredient getInput();
 
     /**
      * Get a list of fluid outputs for this recipe

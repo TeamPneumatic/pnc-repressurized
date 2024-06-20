@@ -44,7 +44,7 @@ public class ModBlockTagsProvider extends BlockTagsProvider {
 
     @Override
     protected void addTags(HolderLookup.Provider pProvider) {
-        createAndAppend(PneumaticCraftTags.Blocks.REINFORCED_STONE, Tags.Blocks.STONE,
+        createAndAppend(PneumaticCraftTags.Blocks.REINFORCED_STONE, Tags.Blocks.STONES,
                 ModBlocks.REINFORCED_STONE);
         createAndAppend(PneumaticCraftTags.Blocks.REINFORCED_STONE_BRICKS, BlockTags.STONE_BRICKS,
                 ModBlocks.REINFORCED_BRICKS);
@@ -55,7 +55,7 @@ public class ModBlockTagsProvider extends BlockTagsProvider {
         createAndAppend(PneumaticCraftTags.Blocks.STAIRS, BlockTags.STAIRS,
                 ModBlocks.REINFORCED_BRICK_STAIRS);
 
-        createAndAppend(PneumaticCraftTags.Blocks.COMPRESSED_STONE, Tags.Blocks.STONE,
+        createAndAppend(PneumaticCraftTags.Blocks.COMPRESSED_STONE, Tags.Blocks.STONES,
                 ModBlocks.COMPRESSED_STONE);
         createAndAppend(PneumaticCraftTags.Blocks.COMPRESSED_STONE_BRICKS, BlockTags.STONE_BRICKS,
                 ModBlocks.COMPRESSED_BRICKS);

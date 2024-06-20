@@ -17,16 +17,23 @@
 
 package me.desht.pneumaticcraft.common.particle;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.core.particles.ParticleType;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 
 public class AirParticleType extends ParticleType<AirParticleData> {
     public AirParticleType() {
-        super(false, AirParticleData.DESERIALIZER);
+        super(false);
     }
 
     @Override
-    public Codec<AirParticleData> codec() {
+    public MapCodec<AirParticleData> codec() {
         return AirParticleData.CODEC;
+    }
+
+    @Override
+    public StreamCodec<? super RegistryFriendlyByteBuf, AirParticleData> streamCodec() {
+        return AirParticleData.STREAM_CODEC;
     }
 }

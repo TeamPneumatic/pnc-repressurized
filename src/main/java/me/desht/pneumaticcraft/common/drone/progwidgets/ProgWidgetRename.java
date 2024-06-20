@@ -18,10 +18,13 @@
 package me.desht.pneumaticcraft.common.drone.progwidgets;
 
 import com.google.common.collect.ImmutableList;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import me.desht.pneumaticcraft.api.drone.IDrone;
+import me.desht.pneumaticcraft.api.drone.IProgWidget;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
-import me.desht.pneumaticcraft.common.drone.IDroneBase;
 import me.desht.pneumaticcraft.common.drone.ai.DroneAIManager;
-import me.desht.pneumaticcraft.common.registry.ModProgWidgets;
+import me.desht.pneumaticcraft.common.registry.ModProgWidgetTypes;
 import me.desht.pneumaticcraft.common.variables.TextVariableParser;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.network.chat.Component;
@@ -35,10 +38,22 @@ import java.util.Set;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class ProgWidgetRename extends ProgWidget implements IRenamingWidget, IVariableWidget {
+    public static final MapCodec<ProgWidgetRename> CODEC = RecordCodecBuilder.mapCodec(builder ->
+            baseParts(builder).apply(builder, ProgWidgetRename::new));
+
     private DroneAIManager aiManager;
 
+    public ProgWidgetRename(PositionFields pos) {
+        super(pos);
+    }
+
     public ProgWidgetRename() {
-        super(ModProgWidgets.RENAME.get());
+        super(PositionFields.DEFAULT);
+    }
+
+    @Override
+    public ProgWidgetType<?> getType() {
+        return ModProgWidgetTypes.RENAME.get();
     }
 
     @Override
@@ -53,7 +68,7 @@ public class ProgWidgetRename extends ProgWidget implements IRenamingWidget, IVa
 
     @Override
     public List<ProgWidgetType<?>> getParameters() {
-        return ImmutableList.of(ModProgWidgets.TEXT.get());
+        return ImmutableList.of(ModProgWidgetTypes.TEXT.get());
     }
 
     @Override
@@ -72,24 +87,8 @@ public class ProgWidgetRename extends ProgWidget implements IRenamingWidget, IVa
     }
 
     @Override
-    public Goal getWidgetAI(final IDroneBase drone, final IProgWidget widget) {
+    public Goal getWidgetAI(final IDrone drone, final IProgWidget widget) {
         return new DroneAIRename(drone, (IRenamingWidget) widget);
-    }
-
-    private static class DroneAIRename extends Goal {
-        private final IDroneBase drone;
-        private final IRenamingWidget widget;
-
-        DroneAIRename(IDroneBase drone, IRenamingWidget widget) {
-            this.drone = drone;
-            this.widget = widget;
-        }
-
-        @Override
-        public boolean canUse() {
-            drone.setName(widget.getNewName() != null ? Component.literal(widget.getNewName()) : xlate("entity.pneumaticcraft.drone"));
-            return false;
-        }
     }
 
     @Override
@@ -104,6 +103,22 @@ public class ProgWidgetRename extends ProgWidget implements IRenamingWidget, IVa
 
     @Override
     public void addVariables(Set<String> variables) {
+    }
+
+    private static class DroneAIRename extends Goal {
+        private final IDrone drone;
+        private final IRenamingWidget widget;
+
+        DroneAIRename(IDrone drone, IRenamingWidget widget) {
+            this.drone = drone;
+            this.widget = widget;
+        }
+
+        @Override
+        public boolean canUse() {
+            drone.setName(widget.getNewName() != null ? Component.literal(widget.getNewName()) : xlate("entity.pneumaticcraft.drone"));
+            return false;
+        }
     }
 
 }

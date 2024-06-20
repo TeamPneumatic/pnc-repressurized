@@ -22,6 +22,7 @@ import me.desht.pneumaticcraft.common.entity.drone.DroneEntity;
 import me.desht.pneumaticcraft.common.item.MicromissilesItem;
 import me.desht.pneumaticcraft.common.item.MicromissilesItem.FireMode;
 import me.desht.pneumaticcraft.common.particle.AirParticleData;
+import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.registry.ModEntityTypes;
 import me.desht.pneumaticcraft.common.util.EntityFilter;
 import net.minecraft.nbt.CompoundTag;
@@ -46,7 +47,6 @@ import net.minecraft.world.phys.Vec3;
 
 import java.util.Comparator;
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 
 public class MicromissileEntity extends ThrowableProjectile {
@@ -71,19 +71,19 @@ public class MicromissileEntity extends ThrowableProjectile {
         super(type, worldIn);
     }
 
-    public MicromissileEntity(Level worldIn, LivingEntity thrower, ItemStack iStack) {
+    public MicromissileEntity(Level worldIn, LivingEntity thrower, ItemStack stack) {
         super(ModEntityTypes.MICROMISSILE.get(), thrower, worldIn);
 
-        if (iStack.hasTag()) {
-            CompoundTag tag = Objects.requireNonNull(iStack.getTag());
-            entityFilter = EntityFilter.fromString(tag.getString(MicromissilesItem.NBT_FILTER));
-            fireMode = FireMode.fromString(tag.getString(MicromissilesItem.NBT_FIRE_MODE));
+        MicromissilesItem.Settings settings = stack.get(ModDataComponents.MICROMISSILE_SETTINGS);
+        if (settings != null) {
+            entityFilter = EntityFilter.fromString(settings.entityFilter());
+            fireMode = settings.fireMode();
             switch (fireMode) {
                 case SMART -> {
-                    accel = Math.max(1.02f, 1.0f + tag.getFloat(MicromissilesItem.NBT_TOP_SPEED) / 10f);
-                    maxVelocitySq = (float) Math.pow(0.25 + tag.getFloat(MicromissilesItem.NBT_TOP_SPEED) * 3.75f, 2);
-                    turnSpeed = 0.4f * tag.getFloat(MicromissilesItem.NBT_TURN_SPEED);
-                    explosionPower = Math.max(1f, 5 * tag.getFloat(MicromissilesItem.NBT_DAMAGE));
+                    accel = Math.max(1.02f, 1.0f + settings.topSpeed() / 10f);
+                    maxVelocitySq = (float) Math.pow(0.25 + settings.topSpeed() * 3.75f, 2);
+                    turnSpeed = 0.4f * settings.turnSpeed();
+                    explosionPower = Math.max(1f, 5 * settings.damage());
                 }
                 case DUMB -> {
                     accel = 1.5f;
@@ -95,17 +95,12 @@ public class MicromissileEntity extends ThrowableProjectile {
         }
     }
 
-//    @Override
-//    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-//        return NetworkHooks.getEntitySpawningPacket(this);
-//    }
-
     @Override
-    protected void defineSynchedData() {
-        entityData.define(TARGET_ID, 0);
-        entityData.define(MAX_VEL_SQ, 0.5f);
-        entityData.define(ACCEL, 1.05f);
-        entityData.define(TURN_SPEED, 0.4f);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        builder.define(TARGET_ID, 0);
+        builder.define(MAX_VEL_SQ, 0.5f);
+        builder.define(ACCEL, 1.05f);
+        builder.define(TURN_SPEED, 0.4f);
     }
 
     @Override
@@ -265,11 +260,6 @@ public class MicromissileEntity extends ThrowableProjectile {
         this.setXRot((float)(Mth.atan2(y, f1) * (180D / Math.PI)));
         this.yRotO = this.getYRot();
         this.xRotO = this.getXRot();
-    }
-
-    @Override
-    protected float getGravity() {
-        return outOfFuel ? super.getGravity() : 0f;
     }
 
     @Override

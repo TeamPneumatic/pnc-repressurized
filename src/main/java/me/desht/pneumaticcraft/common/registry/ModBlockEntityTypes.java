@@ -33,7 +33,7 @@ import me.desht.pneumaticcraft.common.block.entity.hopper.OmnidirectionalHopperB
 import me.desht.pneumaticcraft.common.block.entity.processing.*;
 import me.desht.pneumaticcraft.common.block.entity.spawning.PressurizedSpawnerBlockEntity;
 import me.desht.pneumaticcraft.common.block.entity.spawning.SpawnerExtractorBlockEntity;
-import me.desht.pneumaticcraft.common.block.entity.spawning.VacuumPumpBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.utility.VacuumPumpBlockEntity;
 import me.desht.pneumaticcraft.common.block.entity.spawning.VacuumTrapBlockEntity;
 import me.desht.pneumaticcraft.common.block.entity.tube.AdvancedPressureTubeBlockEntity;
 import me.desht.pneumaticcraft.common.block.entity.tube.PressureTubeBlockEntity;

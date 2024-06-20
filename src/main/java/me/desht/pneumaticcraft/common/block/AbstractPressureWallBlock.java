@@ -25,7 +25,6 @@ import me.desht.pneumaticcraft.common.registry.ModCriterionTriggers;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -59,10 +58,10 @@ public abstract class AbstractPressureWallBlock extends AbstractPneumaticCraftBl
     }
 
     @Override
-    public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult brtr) {
+    public InteractionResult useWithoutItem(BlockState state, Level world, BlockPos pos, Player player, BlockHitResult brtr) {
         if (player instanceof ServerPlayer sp) {
             // forward activation to the pressure chamber valve, which will open the GUI
-            return PneumaticCraftUtils.getTileEntityAt(world, pos, PressureChamberWallBlockEntity.class).map(te -> {
+            return PneumaticCraftUtils.getBlockEntityAt(world, pos, PressureChamberWallBlockEntity.class).map(te -> {
                 PressureChamberValveBlockEntity valve = te.getPrimaryValve();
                 if (valve != null) {
                     sp.openMenu(valve, valve.getBlockPos());
@@ -88,7 +87,7 @@ public abstract class AbstractPressureWallBlock extends AbstractPneumaticCraftBl
     @Override
     public void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean isMoving) {
         if (state.getBlock() != newState.getBlock() && !world.isClientSide) {
-            PneumaticCraftUtils.getTileEntityAt(world, pos, PressureChamberWallBlockEntity.class)
+            PneumaticCraftUtils.getBlockEntityAt(world, pos, PressureChamberWallBlockEntity.class)
                     .ifPresent(PressureChamberWallBlockEntity::onBlockBreak);
         }
         super.onRemove(state, world, pos, newState, isMoving);

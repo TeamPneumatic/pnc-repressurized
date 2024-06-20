@@ -17,19 +17,34 @@
 
 package me.desht.pneumaticcraft.common.drone.progwidgets;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
-import me.desht.pneumaticcraft.common.registry.ModProgWidgets;
+import me.desht.pneumaticcraft.common.registry.ModProgWidgetTypes;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.DyeColor;
 
-import java.util.Collections;
 import java.util.List;
 
 public class ProgWidgetComment extends ProgWidgetText {
+    public static final MapCodec<ProgWidgetComment> CODEC = RecordCodecBuilder.mapCodec(builder ->
+            baseParts(builder).and(
+                    Codec.STRING.fieldOf("string").forGetter(ProgWidgetComment::getString)
+            ).apply(builder, ProgWidgetComment::new));
+
     public ProgWidgetComment() {
-        super(ModProgWidgets.COMMENT.get());
+    }
+
+    public ProgWidgetComment(PositionFields positionFields, String string) {
+        super(positionFields, string);
+    }
+
+    @Override
+    public ProgWidgetType<?> getType() {
+        return ModProgWidgetTypes.COMMENT.get();
     }
 
     @Override
@@ -39,12 +54,7 @@ public class ProgWidgetComment extends ProgWidgetText {
 
     @Override
     public List<ProgWidgetType<?>> getParameters() {
-        return Collections.emptyList();
-    }
-
-    @Override
-    public void getTooltip(List<Component> curTooltip) {
-        super.getTooltip(curTooltip);
+        return List.of();
     }
 
     @Override
@@ -74,7 +84,7 @@ public class ProgWidgetComment extends ProgWidgetText {
 
     @Override
     public List<Component> getExtraStringInfo() {
-        return Collections.singletonList(Component.literal(string));
+        return List.of(Component.literal(string));
     }
 
     @Override

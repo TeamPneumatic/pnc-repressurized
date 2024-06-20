@@ -34,11 +34,14 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.*;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.player.PlayerContainerEvent;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
 
@@ -237,7 +240,7 @@ public abstract class AbstractPneumaticCraftMenu<T extends AbstractPneumaticCraf
 
                 Slot slot = this.slots.get(i);
                 ItemStack itemstack = slot.getItem();
-                if (!itemstack.isEmpty() && ItemStack.isSameItemSameTags(stack, itemstack)) {
+                if (!itemstack.isEmpty() && ItemStack.isSameItemSameComponents(stack, itemstack)) {
                     int j = itemstack.getCount() + stack.getCount();
                     // modified HERE
                     int maxSize = Math.min(slot.getMaxStackSize(itemstack), Math.min(slot.getMaxStackSize(), stack.getMaxStackSize()));
@@ -350,7 +353,7 @@ public abstract class AbstractPneumaticCraftMenu<T extends AbstractPneumaticCraf
     }
 
     private boolean canStacksMerge(ItemStack stack1, ItemStack stack2) {
-        return !(stack1.isEmpty() || stack2.isEmpty()) && ItemStack.isSameItemSameTags(stack1, stack2);
+        return !(stack1.isEmpty() || stack2.isEmpty()) && ItemStack.isSameItemSameComponents(stack1, stack2);
     }
 
     private void adjustPhantomSlot(Slot slot, ClickType clickType, int dragType) {
@@ -395,7 +398,7 @@ public abstract class AbstractPneumaticCraftMenu<T extends AbstractPneumaticCraf
         }
     }
 
-    @Mod.EventBusSubscriber(modid = PneumaticRegistry.MOD_ID)
+    @EventBusSubscriber(modid = PneumaticRegistry.MOD_ID)
     public static class Listener {
         @SubscribeEvent
         public static void onMenuOpen(PlayerContainerEvent.Open event) {

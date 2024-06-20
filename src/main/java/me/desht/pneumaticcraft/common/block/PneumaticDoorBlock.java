@@ -17,23 +17,23 @@
 
 package me.desht.pneumaticcraft.common.block;
 
-import me.desht.pneumaticcraft.api.lib.NBTKeys;
 import me.desht.pneumaticcraft.client.ColorHandlers;
 import me.desht.pneumaticcraft.common.block.entity.utility.PneumaticDoorBaseBlockEntity;
 import me.desht.pneumaticcraft.common.block.entity.utility.PneumaticDoorBlockEntity;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
 import me.desht.pneumaticcraft.common.registry.ModBlocks;
+import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
+import net.minecraft.core.component.DataComponentType;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
@@ -57,6 +57,8 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
 
 public class PneumaticDoorBlock extends AbstractPneumaticCraftBlock implements PneumaticCraftEntityBlock {
     public static final BooleanProperty TOP_DOOR = BooleanProperty.create("top_door");
@@ -224,8 +226,7 @@ public class PneumaticDoorBlock extends AbstractPneumaticCraftBlock implements P
     }
 
     @Override
-    public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult brtr) {
-        PneumaticDoorBaseBlockEntity doorBase = getDoorBase(world, pos);
+    public ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult brtr) {
         if (!world.isClientSide) {
             DyeColor dyeColor =  DyeColor.getColor(player.getItemInHand(hand));
             if (dyeColor != null) {
@@ -235,8 +236,18 @@ public class PneumaticDoorBlock extends AbstractPneumaticCraftBlock implements P
                         player.getItemInHand(hand).shrink(1);
                     }
                 }
-            } else if (doorBase != null && doorBase.getRedstoneController().getCurrentMode() == PneumaticDoorBaseBlockEntity.RS_MODE_WOODEN_DOOR
-                    && doorBase.getPressure() >= doorBase.getMinWorkingPressure() && hand == InteractionHand.MAIN_HAND) {
+            }
+        }
+        return ItemInteractionResult.sidedSuccess(world.isClientSide);
+    }
+
+    @Override
+    protected InteractionResult useWithoutItem(BlockState state, Level world, BlockPos pos, Player player, BlockHitResult brtr) {
+        PneumaticDoorBaseBlockEntity doorBase = getDoorBase(world, pos);
+        if (!world.isClientSide) {
+            if (doorBase != null
+                    && doorBase.getRedstoneController().getCurrentMode() == PneumaticDoorBaseBlockEntity.RS_MODE_WOODEN_DOOR
+                    && doorBase.getPressure() >= doorBase.getMinWorkingPressure()) {
                 doorBase.setOpening(!doorBase.isOpening());
                 doorBase.setNeighborOpening(doorBase.isOpening());
             }
@@ -261,7 +272,7 @@ public class PneumaticDoorBlock extends AbstractPneumaticCraftBlock implements P
     }
 
     @Override
-    public boolean isPathfindable(BlockState state, BlockGetter worldIn, BlockPos pos, PathComputationType type) {
+    public boolean isPathfindable(BlockState state, PathComputationType type) {
         return state.getValue(DoorBlock.OPEN);
     }
 
@@ -293,6 +304,12 @@ public class PneumaticDoorBlock extends AbstractPneumaticCraftBlock implements P
         return new PneumaticDoorBlockEntity(pPos, pState);
     }
 
+    @Override
+    public void addSerializableComponents(List<DataComponentType<?>> list) {
+        super.addSerializableComponents(list);
+        list.add(ModDataComponents.DOOR_COLOR.get());
+    }
+
     public static class ItemBlockPneumaticDoor extends BlockItem implements ColorHandlers.ITintableItem {
         public ItemBlockPneumaticDoor(Block blockIn) {
             super(blockIn, ModItems.defaultProps());
@@ -301,11 +318,8 @@ public class PneumaticDoorBlock extends AbstractPneumaticCraftBlock implements P
         @Override
         public int getTintColor(ItemStack stack, int tintIndex) {
             if (tintIndex == 0) {
-                CompoundTag tag = stack.getTagElement(NBTKeys.BLOCK_ENTITY_TAG);
-                if (tag != null && tag.contains("color", Tag.TAG_INT)) {
-                    int color = tag.getInt("color");
-                    return PneumaticCraftUtils.getDyeColorAsRGB(DyeColor.byId(color));
-                }
+                DyeColor color = stack.getOrDefault(ModDataComponents.DOOR_COLOR, DyeColor.WHITE);
+                return PneumaticCraftUtils.getDyeColorAsRGB(color);
             }
             return 0xFFFFFFFF;
         }

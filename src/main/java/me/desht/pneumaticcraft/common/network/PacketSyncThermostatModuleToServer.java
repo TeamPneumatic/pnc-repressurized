@@ -20,6 +20,8 @@ package me.desht.pneumaticcraft.common.network;
 import me.desht.pneumaticcraft.common.tubemodules.ThermostatModule;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 
@@ -30,26 +32,22 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
  * Sent by client to update server-side settings when redstone module GUI is closed
  */
 public record PacketSyncThermostatModuleToServer(ModuleLocator locator, byte channel, int threshold) implements TubeModulePacket<ThermostatModule> {
-    public static ResourceLocation ID = RL("sync_thermostat_module_to_server");
+    public static Type<PacketSyncThermostatModuleToServer> TYPE = new Type<>(RL("sync_thermostat_module_to_server"));
+
+    public static StreamCodec<FriendlyByteBuf, PacketSyncThermostatModuleToServer> STREAM_CODEC = StreamCodec.composite(
+            ModuleLocator.STREAM_CODEC, PacketSyncThermostatModuleToServer::locator,
+            ByteBufCodecs.BYTE, PacketSyncThermostatModuleToServer::channel,
+            ByteBufCodecs.VAR_INT, PacketSyncThermostatModuleToServer::threshold,
+            PacketSyncThermostatModuleToServer::new
+    );
 
     public static PacketSyncThermostatModuleToServer create(ThermostatModule module) {
         return new PacketSyncThermostatModuleToServer(ModuleLocator.forModule(module), (byte) module.getColorChannel(), module.getThreshold());
     }
 
-    public static PacketSyncThermostatModuleToServer fromNetwork(FriendlyByteBuf buffer) {
-        return new PacketSyncThermostatModuleToServer(ModuleLocator.fromNetwork(buffer), buffer.readByte(), buffer.readInt());
-    }
-
     @Override
-    public void write(FriendlyByteBuf buf) {
-        locator.write(buf);
-        buf.writeByte(channel);
-        buf.writeInt(threshold);
-    }
-
-    @Override
-    public ResourceLocation id() {
-        return ID;
+    public Type<PacketSyncThermostatModuleToServer> type() {
+        return TYPE;
     }
 
     @Override

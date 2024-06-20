@@ -27,10 +27,10 @@ import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.advancements.AdvancementType;
 import net.minecraft.advancements.Criterion;
-import net.minecraft.advancements.critereon.InventoryChangeTrigger;
-import net.minecraft.advancements.critereon.ItemPredicate;
-import net.minecraft.advancements.critereon.MinMaxBounds;
+import net.minecraft.advancements.critereon.*;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.component.DataComponentPredicate;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Items;
@@ -299,7 +299,7 @@ public class ModAdvancementProvider extends AdvancementProvider {
             return ItemPredicate.Builder.item()
                     .of(item.asItem())
                     .withCount(MinMaxBounds.Ints.atLeast(minCount))
-                    .hasDurability(MinMaxBounds.Ints.ANY)
+                    .withSubPredicate(ItemSubPredicates.DAMAGE, ItemDamagePredicate.durability(MinMaxBounds.Ints.ANY))
                     .build();
         }
 
@@ -307,7 +307,7 @@ public class ModAdvancementProvider extends AdvancementProvider {
             return ItemPredicate.Builder.item()
                     .of(item.asItem())
                     .withCount(MinMaxBounds.Ints.atLeast(minCount))
-                    .hasDurability(MinMaxBounds.Ints.ANY)
+                    .withSubPredicate(ItemSubPredicates.DAMAGE, ItemDamagePredicate.durability(MinMaxBounds.Ints.ANY))
 //                    .hasNbt(null)
                     .build();
         }

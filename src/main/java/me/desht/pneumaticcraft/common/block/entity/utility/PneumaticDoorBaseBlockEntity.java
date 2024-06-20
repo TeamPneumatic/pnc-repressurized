@@ -33,6 +33,7 @@ import me.desht.pneumaticcraft.lib.BlockEntityConstants;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerPlayer;
@@ -240,8 +241,8 @@ public class PneumaticDoorBaseBlockEntity extends AbstractAirHandlingBlockEntity
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
+    public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
+        super.loadAdditional(tag, provider);
 
         progress = tag.getFloat("extension");
         opening = tag.getBoolean("opening");
@@ -250,8 +251,8 @@ public class PneumaticDoorBaseBlockEntity extends AbstractAirHandlingBlockEntity
     }
 
     @Override
-    public void saveAdditional(CompoundTag tag) {
-        super.saveAdditional(tag);
+    public void saveAdditional(CompoundTag tag, HolderLookup.Provider provider) {
+        super.saveAdditional(tag, provider);
         tag.putFloat("extension", progress);
         tag.putBoolean("opening", opening);
         tag.putBoolean("rightGoing", rightGoing);
@@ -259,15 +260,15 @@ public class PneumaticDoorBaseBlockEntity extends AbstractAirHandlingBlockEntity
     }
 
     @Override
-    public void writeToPacket(CompoundTag tag) {
-        super.writeToPacket(tag);
+    public void writeToPacket(CompoundTag tag, HolderLookup.Provider provider) {
+        super.writeToPacket(tag, provider);
 
         CamouflageableBlockEntity.writeCamo(tag, camoState);
     }
 
     @Override
-    public void readFromPacket(CompoundTag tag) {
-        super.readFromPacket(tag);
+    public void readFromPacket(CompoundTag tag, HolderLookup.Provider provider) {
+        super.readFromPacket(tag, provider);
 
         camoState = CamouflageableBlockEntity.readCamo(tag);
     }

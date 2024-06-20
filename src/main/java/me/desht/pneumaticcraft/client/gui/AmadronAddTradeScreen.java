@@ -48,7 +48,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.items.ItemHandlerHelper;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.List;
@@ -266,7 +265,7 @@ public class AmadronAddTradeScreen extends AbstractPneumaticCraftContainerScreen
         AmadronTradeResource[] resources = new AmadronTradeResource[2];
         for (int slot = 0; slot < resources.length; slot++) {
             if (!menu.getStack(slot).isEmpty()) {
-                resources[slot] = AmadronTradeResource.of(ItemHandlerHelper.copyStackWithSize(menu.getStack(slot), amountFields[slot].getIntValue()));
+                resources[slot] = AmadronTradeResource.of(menu.getStack(slot).copyWithCount(amountFields[slot].getIntValue()));
             } else {
                 resources[slot] = AmadronTradeResource.of(new FluidStack(fluidFilters[slot].getFluid(), amountFields[slot].getIntValue()));
             }

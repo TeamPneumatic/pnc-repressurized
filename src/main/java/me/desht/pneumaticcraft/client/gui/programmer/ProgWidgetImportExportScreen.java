@@ -17,12 +17,12 @@
 
 package me.desht.pneumaticcraft.client.gui.programmer;
 
+import me.desht.pneumaticcraft.api.drone.IProgWidget;
 import me.desht.pneumaticcraft.client.gui.ProgrammerScreen;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetCheckBox;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTextFieldNumber;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ICountWidget;
-import me.desht.pneumaticcraft.common.drone.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ISidedWidget;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import net.minecraft.core.Direction;
@@ -30,7 +30,7 @@ import net.minecraft.network.chat.Component;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class ProgWidgetImportExportScreen<P extends IProgWidget & ISidedWidget & ICountWidget> extends ProgWidgetAreaShowScreen<P> {
+public class ProgWidgetImportExportScreen<P extends ISidedWidget & ICountWidget & IProgWidget> extends ProgWidgetAreaShowScreen<P> {
 
     private WidgetTextFieldNumber textField;
 

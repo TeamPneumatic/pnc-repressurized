@@ -22,7 +22,7 @@ import me.desht.pneumaticcraft.common.tubemodules.RedstoneModule.EnumRedstoneDir
 import me.desht.pneumaticcraft.common.tubemodules.RedstoneModule.Operation;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.entity.player.Player;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
@@ -35,9 +35,14 @@ public record PacketSyncRedstoneModuleToServer(ModuleLocator locator, Operation 
                                                byte ourColor, byte otherColor, int constantVal, boolean invert,
                                                EnumRedstoneDirection redstoneDirection, boolean comparatorInput)
         implements TubeModulePacket<RedstoneModule> {
-    public static final ResourceLocation ID = RL("sync_redstone_module_to_server");
+    public static final Type<PacketSyncRedstoneModuleToServer> TYPE = new Type<>(RL("sync_redstone_module_to_server"));
 
-    public static PacketSyncRedstoneModuleToServer create(RedstoneModule module) {
+    public static final StreamCodec<FriendlyByteBuf, PacketSyncRedstoneModuleToServer> STREAM_CODEC = StreamCodec.of(
+            PacketSyncRedstoneModuleToServer::toNetwork,
+            PacketSyncRedstoneModuleToServer::fromNetwork
+    );
+
+    public static PacketSyncRedstoneModuleToServer forModule(RedstoneModule module) {
         return new PacketSyncRedstoneModuleToServer(
                 ModuleLocator.forModule(module),
                 module.getOperation(),
@@ -51,7 +56,7 @@ public record PacketSyncRedstoneModuleToServer(ModuleLocator locator, Operation 
     }
 
     public static PacketSyncRedstoneModuleToServer fromNetwork(FriendlyByteBuf buffer) {
-        ModuleLocator loc = ModuleLocator.fromNetwork(buffer);
+        ModuleLocator loc = ModuleLocator.STREAM_CODEC.decode(buffer);
         EnumRedstoneDirection redstoneDir = buffer.readEnum(EnumRedstoneDirection.class);
         byte ourColor = buffer.readByte();
         if (redstoneDir.isInput()) {
@@ -63,24 +68,23 @@ public record PacketSyncRedstoneModuleToServer(ModuleLocator locator, Operation 
         }
     }
 
-    @Override
-    public void write(FriendlyByteBuf buf) {
-        locator.write(buf);
-        buf.writeEnum(redstoneDirection);
-        buf.writeByte(ourColor);
-        if (redstoneDirection.isInput()) {
-            buf.writeBoolean(comparatorInput);
+    public static void toNetwork(FriendlyByteBuf buf, PacketSyncRedstoneModuleToServer message) {
+        ModuleLocator.STREAM_CODEC.encode(buf, message.locator);
+        buf.writeEnum(message.redstoneDirection);
+        buf.writeByte(message.ourColor);
+        if (message.redstoneDirection.isInput()) {
+            buf.writeBoolean(message.comparatorInput);
         } else {
-            buf.writeEnum(op);
-            buf.writeByte(otherColor);
-            buf.writeVarInt(constantVal);
-            buf.writeBoolean(invert);
+            buf.writeEnum(message.op);
+            buf.writeByte(message.otherColor);
+            buf.writeVarInt(message.constantVal);
+            buf.writeBoolean(message.invert);
         }
     }
 
     @Override
-    public ResourceLocation id() {
-        return ID;
+    public Type<PacketSyncRedstoneModuleToServer> type() {
+        return TYPE;
     }
 
     @Override

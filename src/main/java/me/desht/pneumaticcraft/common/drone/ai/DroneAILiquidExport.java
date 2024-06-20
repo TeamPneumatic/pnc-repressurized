@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.common.drone.ai;
 
-import me.desht.pneumaticcraft.common.drone.IDroneBase;
+import me.desht.pneumaticcraft.api.drone.IDrone;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ICountWidget;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ILiquidExport;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ILiquidFiltered;
@@ -33,11 +33,11 @@ import net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction;
 
 import static net.neoforged.neoforge.fluids.FluidType.BUCKET_VOLUME;
 
-public class DroneAILiquidExport<W extends ProgWidgetInventoryBase & ILiquidFiltered & ILiquidExport> extends DroneAIImExBase<W> {
+public class DroneAILiquidExport<W extends ProgWidgetInventoryBase & ILiquidFiltered & ILiquidExport> extends DroneAIImportExportBase<W> {
 
     private enum FillStatus { OK, NO_HANDLER, NO_SPACE }
 
-    public DroneAILiquidExport(IDroneBase drone, W widget) {
+    public DroneAILiquidExport(IDrone drone, W widget) {
         super(drone, widget);
     }
 
@@ -57,7 +57,7 @@ public class DroneAILiquidExport<W extends ProgWidgetInventoryBase & ILiquidFilt
             abort();
             return false;
         } else {
-            BlockEntity te = drone.world().getBlockEntity(pos);
+            BlockEntity te = drone.getDroneLevel().getBlockEntity(pos);
             if (te != null) {
                 FluidStack exportedFluid = drone.getFluidTank().drain(Integer.MAX_VALUE, FluidAction.SIMULATE);
                 if (!exportedFluid.isEmpty() && progWidget.isFluidValid(exportedFluid.getFluid())) {
@@ -80,7 +80,7 @@ public class DroneAILiquidExport<W extends ProgWidgetInventoryBase & ILiquidFilt
             // drop through to here if there was no BE or a BE had no valid fluid handler
 
             if (progWidget.isPlacingFluidBlocks() && (!progWidget.useCount() || getRemainingCount() >= BUCKET_VOLUME)) {
-                if (FluidUtils.tryPourOutFluid(drone.getFluidTank(), drone.world(), pos, false, false,
+                if (FluidUtils.tryPourOutFluid(drone.getFluidTank(), drone.getDroneLevel(), pos, false, false,
                         simulate ? FluidAction.SIMULATE : FluidAction.EXECUTE)) {
                     if (!simulate) {
                         decreaseCount(BUCKET_VOLUME);

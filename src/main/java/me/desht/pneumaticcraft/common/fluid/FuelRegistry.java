@@ -24,19 +24,16 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.fluids.FluidStack;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public enum FuelRegistry implements IFuelRegistry {
     INSTANCE;
 
-    private static final FuelRecord MISSING_FUEL_ENTRY = new FuelRecord(0, 1f);
+    private static final FuelEntry MISSING_FUEL_ENTRY = new FuelEntry(0, 1f);
 
-    private final Map<Fluid, FuelRecord> cachedFuels = new ConcurrentHashMap<>();  // cleared on a /reload
-    private final Map<Fluid, FuelRecord> hotFluids = new ConcurrentHashMap<>();
+    private final Map<Fluid, FuelEntry> cachedFuels = new ConcurrentHashMap<>();  // cleared on a /reload
+    private final Map<Fluid, FuelEntry> hotFluids = new ConcurrentHashMap<>();
 
     public static FuelRegistry getInstance() {
         return INSTANCE;
@@ -44,7 +41,7 @@ public enum FuelRegistry implements IFuelRegistry {
 
     // non-API!
     public void registerHotFluid(Fluid fluid, int mLPerBucket, float burnRateMultiplier) {
-        hotFluids.put(fluid, new FuelRecord(mLPerBucket, burnRateMultiplier));
+        hotFluids.put(fluid, new FuelEntry(mLPerBucket, burnRateMultiplier));
     }
 
     @Override
@@ -62,7 +59,7 @@ public enum FuelRegistry implements IFuelRegistry {
         Set<Fluid> res = new HashSet<>(hotFluids.keySet());
 
         for (FuelQualityRecipe recipe : ModRecipeTypes.FUEL_QUALITY.get().allRecipes(level)) {
-            res.addAll(recipe.getFuel().getFluidStacks().stream()
+            res.addAll(Arrays.stream(recipe.getFuel().getStacks())
                     .map(FluidStack::getFluid)
                     .filter(f -> f.isSource(f.defaultFluidState()))
                     .toList());
@@ -76,21 +73,21 @@ public enum FuelRegistry implements IFuelRegistry {
         cachedFuels.clear();
     }
 
-    private FuelRecord findEntry(Level level, Fluid fluid) {
+    private FuelEntry findEntry(Level level, Fluid fluid) {
         // special case for high-temperature fluids
-        FuelRecord fe = hotFluids.get(fluid);
+        FuelEntry fe = hotFluids.get(fluid);
         if (fe != null) return fe;
 
         // stuff from datapacks (override default registered stuff)
         for (FuelQualityRecipe recipe : ModRecipeTypes.FUEL_QUALITY.get().allRecipes(level)) {
             if (recipe.matchesFluid(fluid)) {
-                return new FuelRecord(recipe.getAirPerBucket(), recipe.getBurnRate());
+                return new FuelEntry(recipe.getAirPerBucket(), recipe.getBurnRate());
             }
         }
 
         return MISSING_FUEL_ENTRY;
     }
 
-    private record FuelRecord(int mLperBucket, float burnRateMultiplier) {
+    private record FuelEntry(int mLperBucket, float burnRateMultiplier) {
     }
 }

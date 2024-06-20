@@ -14,6 +14,7 @@ import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
 import me.desht.pneumaticcraft.common.pneumatic_armor.JetBootsStateTracker;
 import me.desht.pneumaticcraft.common.registry.ModSounds;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.resources.ResourceLocation;
@@ -27,8 +28,10 @@ import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.AABB;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.event.entity.living.LivingFallEvent;
+import org.joml.Vector3f;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,7 +58,7 @@ public class FallProtectionHandler extends BaseArmorUpgradeHandler<IArmorExtensi
         return EquipmentSlot.FEET;
     }
 
-    @Mod.EventBusSubscriber(modid = Names.MOD_ID)
+    @EventBusSubscriber(modid = Names.MOD_ID)
     public static class Listener {
         @SubscribeEvent
         public static void onPlayerFall(LivingFallEvent event) {
@@ -108,14 +111,20 @@ public class FallProtectionHandler extends BaseArmorUpgradeHandler<IArmorExtensi
                     for (int i = 0; i < event.getDistance() / 2; i++) {
                         float sx = player.getRandom().nextFloat() * 0.6F - 0.3F;
                         float sz = player.getRandom().nextFloat() * 0.6F - 0.3F;
-                        NetworkHandler.sendToAllTracking(new PacketSpawnParticle(AirParticleData.DENSE, player.getX(), player.getY(), player.getZ(), sx, 0.1, sz), player.level(), player.blockPosition());
+                        NetworkHandler.sendToAllTracking(PacketSpawnParticle.oneParticle(AirParticleData.DENSE,
+                                player.position().toVector3f(),
+                                new Vector3f(sx, 0.1f, sz)
+                        ), player.level(), player.blockPosition());
                     }
                     for (Entity e : stomped) {
-                        NetworkHandler.sendToAllTracking(new PacketSpawnParticle(ParticleTypes.EXPLOSION, e.getX(), e.getY(), e.getZ(), 0, 0, 0), player.level(), player.blockPosition());
+                        NetworkHandler.sendToAllTracking(PacketSpawnParticle.oneParticle(ParticleTypes.EXPLOSION,
+                                e.position().toVector3f(),
+                                PneumaticCraftUtils.VEC3F_ZERO
+                        ), player.level(), player.blockPosition());
                         e.hurt(player.damageSources().explosion(player, null), Mth.clamp(origDistance / 3f, 1f, 20f));
                     }
                     if (!stomped.isEmpty()) {
-                        player.level().playSound(null, player.blockPosition(), SoundEvents.GENERIC_EXPLODE, SoundSource.PLAYERS, 1f, 0.5f);
+                        player.level().playSound(null, player.blockPosition(), SoundEvents.GENERIC_EXPLODE.value(), SoundSource.PLAYERS, 1f, 0.5f);
                     }
                     player.level().playSound(null, player.blockPosition(), ModSounds.SHORT_HISS.get(), SoundSource.PLAYERS, 0.3f, 0.8f);
                     handler.addAir(EquipmentSlot.FEET, (int) -(airNeeded + extraAirNeeded));

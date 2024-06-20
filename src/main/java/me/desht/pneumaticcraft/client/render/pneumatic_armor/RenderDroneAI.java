@@ -19,9 +19,9 @@ package me.desht.pneumaticcraft.client.render.pneumatic_armor;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
+import me.desht.pneumaticcraft.api.drone.IProgWidget;
 import me.desht.pneumaticcraft.client.render.ProgWidgetRenderer;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
-import me.desht.pneumaticcraft.common.drone.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.entity.drone.AbstractDroneEntity;
 import me.desht.pneumaticcraft.common.entity.drone.DroneEntity;
 import me.desht.pneumaticcraft.common.entity.drone.ProgrammableControllerEntity;
@@ -108,10 +108,10 @@ public class RenderDroneAI {
     }
 
     private IProgWidget getActiveWidget(AbstractDroneEntity droneBase) {
-        if (droneBase instanceof DroneEntity) {
-            return ((DroneEntity) droneBase).getActiveWidget();
-        } else if (droneBase instanceof ProgrammableControllerEntity) {
-            return ((ProgrammableControllerEntity) droneBase).getController().getActiveWidget();
+        if (droneBase instanceof DroneEntity de) {
+            return de.getActiveWidget();
+        } else if (droneBase instanceof ProgrammableControllerEntity pc) {
+            return pc.getController().getActiveWidget();
         } else {
             return null;
         }

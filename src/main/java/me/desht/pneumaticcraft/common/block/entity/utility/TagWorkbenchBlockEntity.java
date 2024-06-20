@@ -23,6 +23,7 @@ import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
 import me.desht.pneumaticcraft.common.registry.ModItems;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
@@ -40,6 +41,7 @@ import net.neoforged.neoforge.items.IItemHandler;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.HashSet;
 import java.util.Set;
 
 public class TagWorkbenchBlockEntity extends DisplayTableBlockEntity implements MenuProvider {
@@ -73,7 +75,7 @@ public class TagWorkbenchBlockEntity extends DisplayTableBlockEntity implements 
                 outputStack = new ItemStack(ModItems.TAG_FILTER.get());
             }
             if (!outputStack.isEmpty()) {
-                Set<TagKey<Item>> tags = TagFilterItem.getConfiguredTagList(outputStack);
+                Set<TagKey<Item>> tags = new HashSet<>(TagFilterItem.getConfiguredTagList(outputStack));
                 for (String s : data) {
                     tags.add(TagKey.create(Registries.ITEM, new ResourceLocation(s)));
                 }
@@ -84,32 +86,32 @@ public class TagWorkbenchBlockEntity extends DisplayTableBlockEntity implements 
     }
 
     @Override
-    public void saveAdditional(CompoundTag tag) {
-        super.saveAdditional(tag);
-        tag.put("Items", inventory.serializeNBT());
+    public void saveAdditional(CompoundTag tag, HolderLookup.Provider provider) {
+        super.saveAdditional(tag, provider);
+        tag.put("Items", inventory.serializeNBT(provider));
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
+    public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
+        super.loadAdditional(tag, provider);
 
-        inventory.deserializeNBT(tag.getCompound("Items"));
+        inventory.deserializeNBT(provider, tag.getCompound("Items"));
         displayedStack = inventory.getStackInSlot(0);
         paperItemId = Item.getId(inventory.getStackInSlot(1).getItem());
         outputItemId = Item.getId(inventory.getStackInSlot(2).getItem());
     }
 
     @Override
-    public void readFromPacket(CompoundTag tag) {
-        super.readFromPacket(tag);
+    public void readFromPacket(CompoundTag tag, HolderLookup.Provider provider) {
+        super.readFromPacket(tag, provider);
 
         paperItemId = tag.getInt("PaperItemId");
         outputItemId = tag.getInt("OutputItemId");
     }
 
     @Override
-    public void writeToPacket(CompoundTag tag) {
-        super.writeToPacket(tag);
+    public void writeToPacket(CompoundTag tag, HolderLookup.Provider provider) {
+        super.writeToPacket(tag, provider);
 
         tag.putInt("PaperItemId", paperItemId);
         tag.putInt("OutputItemId", outputItemId);

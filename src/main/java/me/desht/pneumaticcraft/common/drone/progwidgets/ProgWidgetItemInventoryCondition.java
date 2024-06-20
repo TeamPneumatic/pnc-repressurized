@@ -18,10 +18,13 @@
 package me.desht.pneumaticcraft.common.drone.progwidgets;
 
 import com.google.common.collect.ImmutableList;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import me.desht.pneumaticcraft.api.drone.IDrone;
+import me.desht.pneumaticcraft.api.drone.IProgWidget;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
-import me.desht.pneumaticcraft.common.drone.IDroneBase;
 import me.desht.pneumaticcraft.common.drone.ai.DroneAIBlockCondition;
-import me.desht.pneumaticcraft.common.registry.ModProgWidgets;
+import me.desht.pneumaticcraft.common.registry.ModProgWidgetTypes;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.core.BlockPos;
@@ -36,23 +39,28 @@ import java.util.List;
 import java.util.Set;
 
 public class ProgWidgetItemInventoryCondition extends ProgWidgetCondition {
+    public static final MapCodec<ProgWidgetItemInventoryCondition> CODEC = RecordCodecBuilder.mapCodec(builder ->
+            condParts(builder).apply(builder, ProgWidgetItemInventoryCondition::new));
 
     public ProgWidgetItemInventoryCondition() {
-        super(ModProgWidgets.CONDITION_ITEM_INVENTORY.get());
+    }
+
+    public ProgWidgetItemInventoryCondition(PositionFields pos, InvBaseFields inv, ConditionFields cond) {
+        super(pos, inv, cond);
     }
 
     @Override
     public List<ProgWidgetType<?>> getParameters() {
-        return ImmutableList.of(ModProgWidgets.AREA.get(), ModProgWidgets.ITEM_FILTER.get(), ModProgWidgets.TEXT.get());
+        return ImmutableList.of(ModProgWidgetTypes.AREA.get(), ModProgWidgetTypes.ITEM_FILTER.get(), ModProgWidgetTypes.TEXT.get());
     }
 
     @Override
-    protected DroneAIBlockCondition getEvaluator(IDroneBase drone, IProgWidget widget) {
+    protected DroneAIBlockCondition getEvaluator(IDrone drone, IProgWidget widget) {
         return new DroneAIBlockCondition(drone, (ProgWidgetAreaItemBase) widget) {
 
             @Override
             protected boolean evaluate(BlockPos pos) {
-                BlockEntity te = drone.world().getBlockEntity(pos);
+                BlockEntity te = drone.getDroneLevel().getBlockEntity(pos);
 
                 boolean[] sides = ((ISidedWidget) progWidget).getSides();
 
@@ -86,4 +94,8 @@ public class ProgWidgetItemInventoryCondition extends ProgWidgetCondition {
         return Textures.PROG_WIDGET_CONDITION_ITEM_INVENTORY;
     }
 
+    @Override
+    public ProgWidgetType<?> getType() {
+        return ModProgWidgetTypes.CONDITION_ITEM_INVENTORY.get();
+    }
 }

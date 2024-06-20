@@ -20,8 +20,9 @@ package me.desht.pneumaticcraft.api.crafting;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.util.ExtraCodecs;
+import io.netty.buffer.ByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import org.apache.commons.lang3.Validate;
 
 /**
@@ -29,14 +30,15 @@ import org.apache.commons.lang3.Validate;
  * so negative values are not accepted.
  */
 public class TemperatureRange {
-    public static final Codec<TemperatureRange> CODEC = ExtraCodecs.validate(
-            RecordCodecBuilder.create(instance -> instance.group(
-                    Codec.INT.optionalFieldOf("min", 0).forGetter(TemperatureRange::getMin),
-                    Codec.INT.optionalFieldOf("max", Integer.MAX_VALUE).forGetter(TemperatureRange::getMax)
-            ).apply(instance, TemperatureRange::of)),
-            r -> r.min < r.max ?
-                    DataResult.success(r) :
-                    DataResult.error(() -> "min must be < max", r)
+    public static final Codec<TemperatureRange> CODEC = RecordCodecBuilder.<TemperatureRange>create(instance -> instance.group(
+            Codec.INT.optionalFieldOf("min", 0).forGetter(TemperatureRange::getMin),
+            Codec.INT.optionalFieldOf("max", Integer.MAX_VALUE).forGetter(TemperatureRange::getMax)
+    ).apply(instance, TemperatureRange::of)).validate(TemperatureRange::validate);
+
+    public static StreamCodec<ByteBuf, TemperatureRange> STREAM_CODEC = StreamCodec.composite(
+            ByteBufCodecs.INT, TemperatureRange::getMin,
+            ByteBufCodecs.INT, TemperatureRange::getMax,
+            TemperatureRange::new
     );
 
     private static final TemperatureRange INVALID = new TemperatureRange(0, 1) {
@@ -50,6 +52,7 @@ public class TemperatureRange {
             return false;
         }
     };
+
     private static final TemperatureRange ANY = new TemperatureRange(0, Integer.MAX_VALUE);
 
     private final int min;
@@ -60,6 +63,12 @@ public class TemperatureRange {
         Validate.isTrue(min < max, "min temp must be < max temp!");
         this.min = min;
         this.max = max;
+    }
+
+    private static DataResult<TemperatureRange> validate(TemperatureRange range) {
+        return range.min < range.max ?
+                DataResult.success(range) :
+                DataResult.error(() -> "min must be < max", range);
     }
 
     /**
@@ -121,15 +130,6 @@ public class TemperatureRange {
     }
 
     /**
-     * Read a temperature range from packet buffer, as written by {@link #write(FriendlyByteBuf)}
-     * @param buffer the buffer
-     * @return a new temperature range object
-     */
-    public static TemperatureRange read(FriendlyByteBuf buffer) {
-        return new TemperatureRange(buffer.readVarInt(), buffer.readVarInt());
-    }
-
-    /**
      * Check if the given temperature is valid for this range object.
      *
      * @param temp the temperature
@@ -172,11 +172,6 @@ public class TemperatureRange {
 
     public boolean hasMax() {
         return max < Integer.MAX_VALUE;
-    }
-
-    public void write(FriendlyByteBuf buffer) {
-        buffer.writeVarInt(min);
-        buffer.writeVarInt(max);
     }
 
     public String asString(TemperatureScale scale) {

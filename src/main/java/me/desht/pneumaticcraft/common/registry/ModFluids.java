@@ -22,6 +22,7 @@ import me.desht.pneumaticcraft.common.fluid.*;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.level.material.FlowingFluid;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.neoforged.neoforge.common.SoundActions;
@@ -63,44 +64,44 @@ public class ModFluids {
     public static final Supplier<FluidType> YEAST_CULTURE_FLUID_TYPE = registerFluidType("yeast_culture",
             standardProps(800, 5000), FluidYeastCulture.RENDER_PROPS);
 
-    public static final Supplier<Fluid> OIL = register("oil", FluidOil.Source::new);
-    public static final Supplier<Fluid> OIL_FLOWING = register("oil_flowing", FluidOil.Flowing::new);
+    public static final Supplier<FlowingFluid> OIL = register("oil", FluidOil.Source::new);
+    public static final Supplier<FlowingFluid> OIL_FLOWING = register("oil_flowing", FluidOil.Flowing::new);
 
-    public static final Supplier<Fluid> ETCHING_ACID = register("etching_acid", FluidEtchingAcid.Source::new);
-    public static final Supplier<Fluid> ETCHING_ACID_FLOWING = register("etching_acid_flowing", FluidEtchingAcid.Flowing::new);
+    public static final Supplier<FlowingFluid> ETCHING_ACID = register("etching_acid", FluidEtchingAcid.Source::new);
+    public static final Supplier<FlowingFluid> ETCHING_ACID_FLOWING = register("etching_acid_flowing", FluidEtchingAcid.Flowing::new);
 
-    public static final Supplier<Fluid> PLASTIC = register("plastic", FluidPlastic.Source::new);
-    public static final Supplier<Fluid> PLASTIC_FLOWING = register("plastic_flowing", FluidPlastic.Flowing::new);
+    public static final Supplier<FlowingFluid> PLASTIC = register("plastic", FluidPlastic.Source::new);
+    public static final Supplier<FlowingFluid> PLASTIC_FLOWING = register("plastic_flowing", FluidPlastic.Flowing::new);
 
-    public static final Supplier<Fluid> DIESEL = register("diesel", FluidDiesel.Source::new);
-    public static final Supplier<Fluid> DIESEL_FLOWING = register("diesel_flowing", FluidDiesel.Flowing::new);
+    public static final Supplier<FlowingFluid> DIESEL = register("diesel", FluidDiesel.Source::new);
+    public static final Supplier<FlowingFluid> DIESEL_FLOWING = register("diesel_flowing", FluidDiesel.Flowing::new);
 
-    public static final Supplier<Fluid> KEROSENE = register("kerosene", FluidKerosene.Source::new);
-    public static final Supplier<Fluid> KEROSENE_FLOWING = register("kerosene_flowing", FluidKerosene.Flowing::new);
+    public static final Supplier<FlowingFluid> KEROSENE = register("kerosene", FluidKerosene.Source::new);
+    public static final Supplier<FlowingFluid> KEROSENE_FLOWING = register("kerosene_flowing", FluidKerosene.Flowing::new);
 
-    public static final Supplier<Fluid> GASOLINE = register("gasoline", FluidGasoline.Source::new);
-    public static final Supplier<Fluid> GASOLINE_FLOWING = register("gasoline_flowing", FluidGasoline.Flowing::new);
+    public static final Supplier<FlowingFluid> GASOLINE = register("gasoline", FluidGasoline.Source::new);
+    public static final Supplier<FlowingFluid> GASOLINE_FLOWING = register("gasoline_flowing", FluidGasoline.Flowing::new);
 
-    public static final Supplier<Fluid> LPG = register("lpg", FluidLPG.Source::new);
-    public static final Supplier<Fluid> LPG_FLOWING = register("lpg_flowing", FluidLPG.Flowing::new);
+    public static final Supplier<FlowingFluid> LPG = register("lpg", FluidLPG.Source::new);
+    public static final Supplier<FlowingFluid> LPG_FLOWING = register("lpg_flowing", FluidLPG.Flowing::new);
 
-    public static final Supplier<Fluid> LUBRICANT = register("lubricant", FluidLubricant.Source::new);
-    public static final Supplier<Fluid> LUBRICANT_FLOWING = register("lubricant_flowing", FluidLubricant.Flowing::new);
+    public static final Supplier<FlowingFluid> LUBRICANT = register("lubricant", FluidLubricant.Source::new);
+    public static final Supplier<FlowingFluid> LUBRICANT_FLOWING = register("lubricant_flowing", FluidLubricant.Flowing::new);
 
-    public static final Supplier<Fluid> MEMORY_ESSENCE = register("memory_essence", FluidMemoryEssence.Source::new);
-    public static final Supplier<Fluid> MEMORY_ESSENCE_FLOWING = register("memory_essence_flowing", FluidMemoryEssence.Flowing::new);
+    public static final Supplier<FlowingFluid> MEMORY_ESSENCE = register("memory_essence", FluidMemoryEssence.Source::new);
+    public static final Supplier<FlowingFluid> MEMORY_ESSENCE_FLOWING = register("memory_essence_flowing", FluidMemoryEssence.Flowing::new);
 
-    public static final Supplier<Fluid> YEAST_CULTURE = register("yeast_culture", FluidYeastCulture.Source::new);
-    public static final Supplier<Fluid> YEAST_CULTURE_FLOWING = register("yeast_culture_flowing", FluidYeastCulture.Flowing::new);
+    public static final Supplier<FlowingFluid> YEAST_CULTURE = register("yeast_culture", FluidYeastCulture.Source::new);
+    public static final Supplier<FlowingFluid> YEAST_CULTURE_FLOWING = register("yeast_culture_flowing", FluidYeastCulture.Flowing::new);
 
-    public static final Supplier<Fluid> ETHANOL = register("ethanol", FluidEthanol.Source::new);
-    public static final Supplier<Fluid> ETHANOL_FLOWING = register("ethanol_flowing", FluidEthanol.Flowing::new);
+    public static final Supplier<FlowingFluid> ETHANOL = register("ethanol", FluidEthanol.Source::new);
+    public static final Supplier<FlowingFluid> ETHANOL_FLOWING = register("ethanol_flowing", FluidEthanol.Flowing::new);
 
-    public static final Supplier<Fluid> VEGETABLE_OIL = register("vegetable_oil", FluidVegetableOil.Source::new);
-    public static final Supplier<Fluid> VEGETABLE_OIL_FLOWING = register("vegetable_oil_flowing", FluidVegetableOil.Flowing::new);
+    public static final Supplier<FlowingFluid> VEGETABLE_OIL = register("vegetable_oil", FluidVegetableOil.Source::new);
+    public static final Supplier<FlowingFluid> VEGETABLE_OIL_FLOWING = register("vegetable_oil_flowing", FluidVegetableOil.Flowing::new);
 
-    public static final Supplier<Fluid> BIODIESEL = register("biodiesel", FluidBiodiesel.Source::new);
-    public static final Supplier<Fluid> BIODIESEL_FLOWING = register("biodiesel_flowing", FluidBiodiesel.Flowing::new);
+    public static final Supplier<FlowingFluid> BIODIESEL = register("biodiesel", FluidBiodiesel.Source::new);
+    public static final Supplier<FlowingFluid> BIODIESEL_FLOWING = register("biodiesel_flowing", FluidBiodiesel.Flowing::new);
 
     private static <T extends Fluid> Supplier<T> register(String name, final Supplier<T> sup) {
         return FLUIDS.register(name, sup);

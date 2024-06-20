@@ -21,6 +21,7 @@ import me.desht.pneumaticcraft.common.inventory.CreativeCompressedIronBlockMenu;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
@@ -58,21 +59,21 @@ public class CreativeCompressedIronBlockBlockEntity extends CompressedIronBlockB
     }
 
     @Override
-    public void saveAdditional(CompoundTag tag) {
-        super.saveAdditional(tag);
+    public void saveAdditional(CompoundTag tag, HolderLookup.Provider provider) {
+        super.saveAdditional(tag, provider);
         tag.putInt("targetTemperature", targetTemperature);
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
+    public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
+        super.loadAdditional(tag, provider);
         targetTemperature = tag.getInt("targetTemperature");
     }
 
     @Override
     public void handleGUIButtonPress(String tag, boolean shiftHeld, ServerPlayer player) {
         try {
-            targetTemperature += Float.parseFloat(tag);
+            targetTemperature += (int) Float.parseFloat(tag);
             targetTemperature = Mth.clamp(targetTemperature, 0, 2273);
             setChanged();
         } catch (IllegalArgumentException ignored) {

@@ -39,8 +39,8 @@ public class DroneFakePlayer extends FakePlayer {
     @Override
     public void giveExperiencePoints(int amount) {
         Vec3 pos = drone.getDronePos();
-        ExperienceOrb orb = new ExperienceOrb(drone.world(), pos.x, pos.y, pos.z, amount);
-        drone.world().addFreshEntity(orb);
+        ExperienceOrb orb = new ExperienceOrb(drone.getDroneLevel(), pos.x, pos.y, pos.z, amount);
+        drone.getDroneLevel().addFreshEntity(orb);
     }
 
     @Override

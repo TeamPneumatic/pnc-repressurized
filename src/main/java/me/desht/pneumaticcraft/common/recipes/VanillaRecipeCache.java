@@ -20,7 +20,6 @@ package me.desht.pneumaticcraft.common.recipes;
 import it.unimi.dsi.fastutil.ints.Int2ObjectLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.Container;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.ItemStack;
@@ -42,12 +41,12 @@ public class VanillaRecipeCache<T extends RecipeType<R>, R extends Recipe<C>, C 
     private static final int MAX_CACHE_SIZE = 1024;
 
     private final T type;
-    private final boolean nbtSignificant;
+    private final boolean checkComponents;
     private final Int2ObjectLinkedOpenHashMap<Optional<R>> recipeCache = new Int2ObjectLinkedOpenHashMap<>(MAX_CACHE_SIZE, 0.25f);
 
-    private VanillaRecipeCache(T type, boolean nbtSignificant) {
+    private VanillaRecipeCache(T type, boolean checkComponents) {
         this.type = type;
-        this.nbtSignificant = nbtSignificant;
+        this.checkComponents = checkComponents;
     }
 
     static void clearAll() {
@@ -78,12 +77,7 @@ public class VanillaRecipeCache<T extends RecipeType<R>, R extends Recipe<C>, C 
         for (int i = 0; i < inv.getContainerSize(); i++) {
             ItemStack stack = inv.getItem(i);
             if (!stack.isEmpty()) {
-                c.add(i);
-                c.add(stack.getItem().hashCode());
-                if (nbtSignificant) {
-                    CompoundTag tag = stack.getTag();
-                    if (tag != null) c.add(tag.hashCode());
-                }
+                c.add(checkComponents ? ItemStack.hashItemAndComponents(stack) : stack.getItem().hashCode());
             }
         }
         return c.hashCode();

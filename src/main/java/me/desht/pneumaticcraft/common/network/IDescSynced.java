@@ -18,6 +18,7 @@
 package me.desht.pneumaticcraft.common.network;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 
 import java.util.List;
@@ -25,9 +26,9 @@ import java.util.List;
 public interface IDescSynced {
     List<SyncedField<?>> getDescriptionFields();
 
-    void writeToPacket(CompoundTag tag);
+    void writeToPacket(CompoundTag tag, HolderLookup.Provider provider);
 
-    void readFromPacket(CompoundTag tag);
+    void readFromPacket(CompoundTag tag, HolderLookup.Provider provider);
 
     BlockPos getPosition();
 

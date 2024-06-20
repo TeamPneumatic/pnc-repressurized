@@ -36,15 +36,16 @@ import me.desht.pneumaticcraft.common.minigun.MinigunPlayerTracker;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketMinigunStop;
 import me.desht.pneumaticcraft.common.network.PacketPlaySound;
+import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.registry.ModMenuTypes;
 import me.desht.pneumaticcraft.common.upgrades.ApplicableUpgradesDB;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
-import me.desht.pneumaticcraft.common.util.NBTUtils;
-import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
+import me.desht.pneumaticcraft.common.upgrades.UpgradableItemUtils;
 import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.server.level.ServerPlayer;
@@ -63,14 +64,16 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.alchemy.PotionUtils;
+import net.minecraft.world.item.alchemy.PotionContents;
+import net.minecraft.world.item.component.ItemContainerContents;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 import net.neoforged.neoforge.event.entity.living.LivingAttackEvent;
 import org.apache.commons.lang3.Validate;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -113,9 +116,9 @@ public class MinigunItem extends PressurizableItem implements
             // tag the minigun with the player's entity ID - it's sync'd to clients
             // so other clients will know who's wielding it, and render appropriately
             // See RenderItemMinigun
-            stack.getOrCreateTag().putInt(OWNING_PLAYER_ID, player.getId());
+            stack.set(ModDataComponents.OWNER_ENTITY_ID, player.getId());
         } else {
-            stack.getOrCreateTag().remove(OWNING_PLAYER_ID);
+            stack.remove(ModDataComponents.OWNER_ENTITY_ID);
             Minigun minigun = getMinigun(stack, player);
             if (minigun.getMinigunSpeed() > 0 || minigun.isMinigunActivated()) {
                 NetworkHandler.sendToPlayer(new PacketMinigunStop(stack), player);
@@ -186,6 +189,7 @@ public class MinigunItem extends PressurizableItem implements
                 .setInfiniteAmmo(isCreative);
     }
 
+    @NotNull
     public Minigun getMinigun(ItemStack stack, Player player) {
         return getMinigun(stack, player, getMagazine(stack).getAmmo());
     }
@@ -298,13 +302,13 @@ public class MinigunItem extends PressurizableItem implements
                 else if (newSlot >= MAGAZINE_SIZE) newSlot = 0;
                 ItemStack ammoStack = handler.getStackInSlot(newSlot);
                 if (ammoStack.getItem() instanceof AbstractGunAmmoItem ammo) {
-                    NBTUtils.setInteger(stack, MinigunItem.NBT_LOCKED_SLOT, newSlot);
+                    stack.set(ModDataComponents.MINIGUN_LOCKED_SLOT, newSlot);
                     if (!player.level().isClientSide) {
                         // possible message for potion-tipped ammo
                         if (ammo instanceof StandardGunAmmoItem) {
-                            ItemStack potion = StandardGunAmmoItem.getPotion(ammoStack);
+                            ItemStack potion = StandardGunAmmoItem.getPotionStack(ammoStack);
                             if (!potion.isEmpty()) {
-                                int col = PotionUtils.getColor(potion);
+                                int col = potion.getOrDefault(DataComponents.POTION_CONTENTS, PotionContents.EMPTY).getColor();
                                 player.displayClientMessage(potion.getDisplayName().copy().withStyle(Style.EMPTY.withColor(col)), true);
                             } else {
                                 player.displayClientMessage(Component.literal(" "), true);
@@ -320,19 +324,19 @@ public class MinigunItem extends PressurizableItem implements
     }
 
     public static int getLockedSlot(ItemStack stack) {
-        if (NBTUtils.hasTag(stack, NBT_LOCKED_SLOT)) {
-            int slot = NBTUtils.getInteger(stack, NBT_LOCKED_SLOT);
+        if (stack.has(ModDataComponents.MINIGUN_LOCKED_SLOT)) {
+            int slot = stack.get(ModDataComponents.MINIGUN_LOCKED_SLOT);
             if (slot >= 0 && slot < MAGAZINE_SIZE) {
                 return slot;
             } else {
                 Log.warning("removed out of range saved ammo slot: " + slot);
-                NBTUtils.removeTag(stack, NBT_LOCKED_SLOT);
+                stack.remove(ModDataComponents.MINIGUN_LOCKED_SLOT);
             }
         }
         return -1;
     }
 
-    @Mod.EventBusSubscriber(modid = Names.MOD_ID)
+    @EventBusSubscriber(modid = Names.MOD_ID)
     public static class Listener {
         @SubscribeEvent
         public static void onLivingAttack(LivingAttackEvent event) {
@@ -357,9 +361,7 @@ public class MinigunItem extends PressurizableItem implements
             super(MAGAZINE_SIZE);
 
             this.gunStack = gunStack;
-            if (gunStack.hasTag() && gunStack.getTag().contains(NBT_MAGAZINE)) {
-                deserializeNBT(gunStack.getTag().getCompound(NBT_MAGAZINE));
-            }
+            loadContainerContents(gunStack.getOrDefault(ModDataComponents.MINGUN_MAGAZINE, ItemContainerContents.EMPTY));
         }
 
         @Override
@@ -369,7 +371,7 @@ public class MinigunItem extends PressurizableItem implements
 
         public ItemStack getAmmo() {
             int slot = getLockedSlot(gunStack);
-            if (slot >= 0) {
+            if (slot >= 0 && slot < getSlots()) {
                 return getStackInSlot(slot);
             }
             for (int i = 0; i < MAGAZINE_SIZE; i++) {
@@ -381,7 +383,7 @@ public class MinigunItem extends PressurizableItem implements
         }
 
         public void save() {
-            if (!gunStack.isEmpty()) NBTUtils.setCompoundTag(gunStack, NBT_MAGAZINE, serializeNBT());
+            gunStack.set(ModDataComponents.MINGUN_MAGAZINE, toContainerContents());
         }
     }
 

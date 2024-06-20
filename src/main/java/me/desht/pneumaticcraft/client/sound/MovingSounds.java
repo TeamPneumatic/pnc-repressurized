@@ -32,8 +32,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod;
-import net.neoforged.neoforge.event.TickEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 
 import java.util.HashMap;
@@ -107,7 +107,7 @@ public class MovingSounds {
         }
     }
 
-    @Mod.EventBusSubscriber(modid = Names.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
+    @EventBusSubscriber(modid = Names.MOD_ID, bus = EventBusSubscriber.Bus.GAME, value = Dist.CLIENT)
     private static class Listener {
         @SubscribeEvent
         public static void onPlayerJoinWorld(EntityJoinLevelEvent event) {
@@ -117,7 +117,7 @@ public class MovingSounds {
         }
 
         @SubscribeEvent
-        public static void clientTick(TickEvent.ClientTickEvent event) {
+        public static void clientTick(ClientTickEvent.Post event) {
             posToTickableSound.values().removeIf(AbstractTickableSoundInstance::isStopped);
         }
     }

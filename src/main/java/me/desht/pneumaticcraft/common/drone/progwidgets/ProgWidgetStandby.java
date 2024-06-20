@@ -17,13 +17,16 @@
 
 package me.desht.pneumaticcraft.common.drone.progwidgets;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import me.desht.pneumaticcraft.api.drone.IDrone;
+import me.desht.pneumaticcraft.api.drone.IProgWidget;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
-import me.desht.pneumaticcraft.common.drone.IDroneBase;
 import me.desht.pneumaticcraft.common.entity.drone.DroneEntity;
-import me.desht.pneumaticcraft.common.registry.ModProgWidgets;
+import me.desht.pneumaticcraft.common.registry.ModProgWidgetTypes;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.goal.Goal;
@@ -35,10 +38,19 @@ import java.util.List;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class ProgWidgetStandby extends ProgWidget implements IStandbyWidget {
+    public static final MapCodec<ProgWidgetStandby> CODEC = RecordCodecBuilder.mapCodec(builder ->
+        baseParts(builder).and(Codec.BOOL.optionalFieldOf("allow_pickup", false).forGetter(ProgWidgetStandby::allowPickupOnStandby)
+    ).apply(builder, ProgWidgetStandby::new));
+
     private boolean allowStandbyPickup;
 
+    public ProgWidgetStandby(PositionFields pos, boolean allowStandbyPickup) {
+        super(pos);
+        this.allowStandbyPickup = allowStandbyPickup;
+    }
+
     public ProgWidgetStandby() {
-        super(ModProgWidgets.STANDBY.get());
+        this(PositionFields.DEFAULT, false);
     }
 
     @Override
@@ -72,8 +84,13 @@ public class ProgWidgetStandby extends ProgWidget implements IStandbyWidget {
     }
 
     @Override
-    public Goal getWidgetAI(IDroneBase drone, IProgWidget widget) {
+    public Goal getWidgetAI(IDrone drone, IProgWidget widget) {
         return new DroneAIStandby((DroneEntity) drone, (ProgWidget) widget);
+    }
+
+    @Override
+    public ProgWidgetType<?> getType() {
+        return ModProgWidgetTypes.STANDBY.get();
     }
 
     @Override
@@ -95,26 +112,26 @@ public class ProgWidgetStandby extends ProgWidget implements IStandbyWidget {
         this.allowStandbyPickup = allowStandbyPickup;
     }
 
-    @Override
-    public void writeToNBT(CompoundTag tag) {
-        super.writeToNBT(tag);
-        if (allowStandbyPickup) tag.putBoolean("allowStandbyPickup", true);
-    }
+//    @Override
+//    public void writeToNBT(CompoundTag tag, HolderLookup.Provider provider) {
+//        super.writeToNBT(tag, provider);
+//        if (allowStandbyPickup) tag.putBoolean("allowStandbyPickup", true);
+//    }
+//
+//    @Override
+//    public void readFromNBT(CompoundTag tag, HolderLookup.Provider provider) {
+//        super.readFromNBT(tag, provider);
+//        allowStandbyPickup = tag.getBoolean("allowStandbyPickup");
+//    }
 
     @Override
-    public void readFromNBT(CompoundTag tag) {
-        super.readFromNBT(tag);
-        allowStandbyPickup = tag.getBoolean("allowStandbyPickup");
-    }
-
-    @Override
-    public void writeToPacket(FriendlyByteBuf buf) {
+    public void writeToPacket(RegistryFriendlyByteBuf buf) {
         super.writeToPacket(buf);
         buf.writeBoolean(allowStandbyPickup);
     }
 
     @Override
-    public void readFromPacket(FriendlyByteBuf buf) {
+    public void readFromPacket(RegistryFriendlyByteBuf buf) {
         super.readFromPacket(buf);
         allowStandbyPickup = buf.readBoolean();
     }

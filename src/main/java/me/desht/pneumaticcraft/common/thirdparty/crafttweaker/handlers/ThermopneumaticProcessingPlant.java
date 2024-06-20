@@ -49,16 +49,20 @@ public class ThermopneumaticProcessingPlant implements IRecipeManager<ThermoPlan
                           @ZenCodeType.OptionalBoolean() boolean exothermic) {
         CraftTweakerAPI.apply(new ActionAddRecipe<>(this,
                 new RecipeHolder<>(new ResourceLocation("crafttweaker", fixRecipeName(name)),
-                new ThermoPlantRecipeImpl(
-                        Optional.ofNullable(CTUtils.toFluidIngredient(inputFluid)),
-                        Optional.ofNullable(inputItem.asVanillaIngredient()),
-                        outputFluid.getImmutableInternal(),
-                        outputItem.getImmutableInternal(),
-                        TemperatureRange.of(minTemp, maxTemp),
-                        pressure,
-                        recipeSpeed,
-                        airUseMultiplier,
-                        exothermic)
+                        new ThermoPlantRecipeImpl(
+                                new ThermoPlantRecipe.Inputs(
+                                        Optional.ofNullable(CTUtils.toSizedFluidIngredient(inputFluid)),
+                                        Optional.ofNullable(inputItem.asVanillaIngredient())
+                                ),
+                                new ThermoPlantRecipe.Outputs(
+                                        outputFluid.getImmutableInternal(),
+                                        outputItem.getImmutableInternal()
+                                ),
+                                TemperatureRange.of(minTemp, maxTemp),
+                                pressure,
+                                recipeSpeed,
+                                airUseMultiplier,
+                                exothermic)
                 )
         ));
     }

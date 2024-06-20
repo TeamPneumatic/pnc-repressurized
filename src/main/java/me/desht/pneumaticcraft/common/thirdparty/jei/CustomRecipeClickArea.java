@@ -80,7 +80,7 @@ public class CustomRecipeClickArea {
                     }
                     for (FluidStack stack : fluids) {
                         if (!stack.isEmpty()) {
-                            builder.add(Component.literal(Symbols.ARROW_RIGHT + " ").append(stack.getDisplayName())
+                            builder.add(Component.literal(Symbols.ARROW_RIGHT + " ").append(stack.getHoverName())
                                     .withStyle(ChatFormatting.AQUA));
                         }
                     }

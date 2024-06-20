@@ -26,14 +26,10 @@ import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorUpgradeHandler;
 import me.desht.pneumaticcraft.client.gui.AbstractPneumaticCraftContainerScreen;
 import me.desht.pneumaticcraft.client.gui.programmer.AbstractProgWidgetScreen;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetKeybindCheckBox;
-import me.desht.pneumaticcraft.client.pneumatic_armor.ClientArmorRegistry;
-import me.desht.pneumaticcraft.client.pneumatic_armor.upgrade_handler.EntityTrackerClientHandler;
-import me.desht.pneumaticcraft.common.entity.drone.DroneEntity;
 import me.desht.pneumaticcraft.common.fluid.FuelRegistry;
 import me.desht.pneumaticcraft.common.inventory.AbstractPneumaticCraftMenu;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
-import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
 import me.desht.pneumaticcraft.common.thirdparty.ModNameCache;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.ChatFormatting;
@@ -106,14 +102,6 @@ public class ClientUtils {
     @Nonnull
     public static ItemStack getWornArmor(EquipmentSlot slot) {
         return getClientPlayer().getItemBySlot(slot);
-    }
-
-    public static void addDroneToHudHandler(DroneEntity drone, BlockPos pos) {
-        ClientArmorRegistry.getInstance()
-                .getClientHandler(CommonUpgradeHandlers.entityTrackerHandler, EntityTrackerClientHandler.class)
-                .getTargetsStream()
-                .filter(target -> target.entity == drone)
-                .forEach(target -> target.getDroneAIRenderer(drone).addBlackListEntry(drone.level(), pos));
     }
 
     public static boolean isKeyDown(int keyCode) {
@@ -374,7 +362,7 @@ public class ClientUtils {
         fluids.sort((f1, f2) -> Integer.compare(valueMap.getInt(f2), valueMap.getInt(f1)));
 
         Map<String, Integer> counted = fluids.stream()
-                .collect(Collectors.toMap(fluid -> new FluidStack(fluid, 1).getDisplayName().getString(), fluid -> 1, Integer::sum));
+                .collect(Collectors.toMap(fluid -> new FluidStack(fluid, 1).getHoverName().getString(), fluid -> 1, Integer::sum));
 
         int dotWidth = font.width(".");
         Component prevLine = Component.empty();
@@ -386,7 +374,7 @@ public class ClientUtils {
             String valStr = String.format("%4d", valueMap.getInt(fluid));
             int nSpc = (32 - font.width(valStr)) / dotWidth;
             valStr = valStr + StringUtils.repeat('.', nSpc);
-            String fluidName = new FluidStack(fluid, 1).getDisplayName().getString();
+            String fluidName = new FluidStack(fluid, 1).getHoverName().getString();
             float mul = fuelRegistry.getBurnRateMultiplier(world, fluid);
             Component line = mul == 1 || !includeBurnRate ?
                     Component.literal(valStr + "| " + StringUtils.abbreviate(fluidName, 25)) :

@@ -18,34 +18,27 @@
 package me.desht.pneumaticcraft.datagen.recipe;
 
 import me.desht.pneumaticcraft.api.crafting.TemperatureRange;
-import me.desht.pneumaticcraft.api.crafting.ingredient.FluidIngredient;
+import me.desht.pneumaticcraft.api.crafting.recipe.ThermoPlantRecipe;
 import me.desht.pneumaticcraft.common.recipes.machine.ThermoPlantRecipeImpl;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.Ingredient;
 import net.neoforged.neoforge.fluids.FluidStack;
 
-import java.util.Optional;
-
 public class ThermoPlantRecipeBuilder extends AbstractPNCRecipeBuilder {
-    private final FluidIngredient inputFluid;
-    private final Ingredient inputItem;
-    private final FluidStack outputFluid;
-    private final ItemStack outputItem;
+    private final ThermoPlantRecipe.Inputs inputs;
+    private final ThermoPlantRecipe.Outputs outputs;
     private final TemperatureRange operatingTemperature;
     private final float requiredPressure;
     private final float recipeSpeed;
     private final float airUseMultiplier;
     private final boolean exothermic;
 
-    public ThermoPlantRecipeBuilder(FluidIngredient inputFluid, Ingredient inputItem,
-                                    FluidStack outputFluid, ItemStack outputItem, TemperatureRange operatingTemperature, float requiredPressure,
+    public ThermoPlantRecipeBuilder(ThermoPlantRecipe.Inputs inputs, ThermoPlantRecipe.Outputs outputs,
+                                    TemperatureRange operatingTemperature, float requiredPressure,
                                     float recipeSpeed, float airUseMultiplier, boolean exothermic) {
-        this.inputFluid = inputFluid;
-        this.inputItem = inputItem;
-        this.outputFluid = outputFluid;
-        this.outputItem = outputItem;
+        this.inputs = inputs;
+        this.outputs = outputs;
         this.operatingTemperature = operatingTemperature;
         this.requiredPressure = requiredPressure;
         this.recipeSpeed = recipeSpeed;
@@ -55,8 +48,10 @@ public class ThermoPlantRecipeBuilder extends AbstractPNCRecipeBuilder {
 
     @Override
     public void save(RecipeOutput output, ResourceLocation id) {
-        output.accept(id, new ThermoPlantRecipeImpl(Optional.ofNullable(inputFluid), Optional.ofNullable(inputItem),
-                outputFluid, outputItem,
-                operatingTemperature, requiredPressure, recipeSpeed, airUseMultiplier, exothermic), null);
+        output.accept(id, new ThermoPlantRecipeImpl(
+                inputs, outputs, operatingTemperature,
+                requiredPressure, recipeSpeed, airUseMultiplier,
+                exothermic
+        ), null);
     }
 }

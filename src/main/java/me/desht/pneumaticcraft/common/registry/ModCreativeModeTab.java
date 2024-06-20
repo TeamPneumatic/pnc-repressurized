@@ -5,8 +5,8 @@ import me.desht.pneumaticcraft.api.pressure.IPressurizableItem;
 import me.desht.pneumaticcraft.common.capabilities.AirHandlerItemStack;
 import me.desht.pneumaticcraft.common.item.*;
 import me.desht.pneumaticcraft.common.item.minigun.AbstractGunAmmoItem;
-import me.desht.pneumaticcraft.common.recipes.special.PatchouliBookCrafting;
 import me.desht.pneumaticcraft.common.semiblock.SemiblockItem;
+import me.desht.pneumaticcraft.common.thirdparty.patchouli.PatchouliBookCrafting;
 import me.desht.pneumaticcraft.lib.ModIds;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.item.BlockItem;
@@ -51,16 +51,21 @@ public class ModCreativeModeTab {
 
     private static Stream<ItemStack> stacksForItem(Item item) {
         ItemStack stack = new ItemStack(item);
-        if (item instanceof CreativeTabStackProvider provider) {
-            return provider.getStacksForItem();
-        } else if (item instanceof BlockItem bi && bi.getBlock() instanceof CreativeTabStackProvider provider) {
-            return provider.getStacksForItem();
-        } else if (item instanceof IPressurizableItem p) {
-            ItemStack stack2 = stack.copy();
-            new AirHandlerItemStack(stack2).addAir((int) (p.getBaseVolume() * p.getMaxPressure()));
-            return Stream.of(new ItemStack(item), stack2);
-        } else {
-            return Stream.of(stack);
+        switch (item) {
+            case CreativeTabStackProvider provider -> {
+                return provider.getStacksForItem();
+            }
+            case BlockItem bi when bi.getBlock() instanceof CreativeTabStackProvider provider -> {
+                return provider.getStacksForItem();
+            }
+            case IPressurizableItem p -> {
+                ItemStack stack2 = stack.copy();
+                new AirHandlerItemStack(stack2).addAir((int) (p.getBaseVolume() * p.getMaxPressure()));
+                return Stream.of(new ItemStack(item), stack2);
+            }
+            default -> {
+                return Stream.of(stack);
+            }
         }
     }
 

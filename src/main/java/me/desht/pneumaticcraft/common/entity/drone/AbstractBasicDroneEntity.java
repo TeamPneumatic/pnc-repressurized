@@ -21,7 +21,7 @@ import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetArea;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetStandby;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.util.DroneProgramBuilder;
-import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
+import me.desht.pneumaticcraft.common.upgrades.UpgradableItemUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;

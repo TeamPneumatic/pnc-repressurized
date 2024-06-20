@@ -37,6 +37,7 @@ import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -81,8 +82,8 @@ public class PressureTubeBlockEntity extends AbstractAirHandlingBlockEntity impl
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
+    public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
+        super.loadAdditional(tag, provider);
 
         byte closed = tag.getByte("sidesClosed");
         for (int i = 0; i < 6; i++) {
@@ -91,21 +92,21 @@ public class PressureTubeBlockEntity extends AbstractAirHandlingBlockEntity impl
     }
 
     @Override
-    public void saveAdditional(CompoundTag nbt) {
-        super.saveAdditional(nbt);
+    public void saveAdditional(CompoundTag tag, HolderLookup.Provider provider) {
+        super.saveAdditional(tag, provider);
 
         byte closed = 0;
         for (int i = 0; i < 6; i++) {
             if (sidesClosed[i]) closed |= 1 << i;
         }
         if (closed != 0) {
-            nbt.putByte("sidesClosed", closed);
+            tag.putByte("sidesClosed", closed);
         }
     }
 
     @Override
-    public void writeToPacket(CompoundTag tag) {
-        super.writeToPacket(tag);
+    public void writeToPacket(CompoundTag tag, HolderLookup.Provider provider) {
+        super.writeToPacket(tag, provider);
 
         writeModulesToNBT(tag);
         CamouflageableBlockEntity.writeCamo(tag, camoState);
@@ -128,8 +129,8 @@ public class PressureTubeBlockEntity extends AbstractAirHandlingBlockEntity impl
     }
 
     @Override
-    public void readFromPacket(CompoundTag tag) {
-        super.readFromPacket(tag);
+    public void readFromPacket(CompoundTag tag, HolderLookup.Provider provider) {
+        super.readFromPacket(tag, provider);
 
         clearCachedShape();
 

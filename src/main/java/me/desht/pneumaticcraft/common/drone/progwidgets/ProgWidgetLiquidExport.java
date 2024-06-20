@@ -18,13 +18,16 @@
 package me.desht.pneumaticcraft.common.drone.progwidgets;
 
 import com.google.common.collect.ImmutableList;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import me.desht.pneumaticcraft.api.drone.IDrone;
+import me.desht.pneumaticcraft.api.drone.IProgWidget;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
-import me.desht.pneumaticcraft.common.drone.IDroneBase;
 import me.desht.pneumaticcraft.common.drone.ai.DroneAILiquidExport;
-import me.desht.pneumaticcraft.common.registry.ModProgWidgets;
+import me.desht.pneumaticcraft.common.registry.ModProgWidgetTypes;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.item.DyeColor;
@@ -33,11 +36,21 @@ import net.minecraft.world.level.material.Fluid;
 import java.util.List;
 
 public class ProgWidgetLiquidExport extends ProgWidgetInventoryBase implements ILiquidFiltered, ILiquidExport {
+    public static final MapCodec<ProgWidgetLiquidExport> CODEC = RecordCodecBuilder.mapCodec(builder ->
+            invParts(builder).and(
+                    Codec.BOOL.optionalFieldOf("place_fluid_blocks", false).forGetter(ProgWidgetLiquidExport::isPlacingFluidBlocks)
+    ).apply(builder, ProgWidgetLiquidExport::new));
 
     private boolean placeFluidBlocks;
 
     public ProgWidgetLiquidExport() {
-        super(ModProgWidgets.LIQUID_EXPORT.get());
+        this(PositionFields.DEFAULT, InvBaseFields.DEFAULT, false);
+    }
+
+    private ProgWidgetLiquidExport(PositionFields pos, InvBaseFields invBaseFields, boolean placeFluidBlocks) {
+        super(pos, invBaseFields);
+
+        this.placeFluidBlocks = placeFluidBlocks;
     }
 
     @Override
@@ -47,7 +60,7 @@ public class ProgWidgetLiquidExport extends ProgWidgetInventoryBase implements I
 
     @Override
     public List<ProgWidgetType<?>> getParameters() {
-        return ImmutableList.of(ModProgWidgets.AREA.get(), ModProgWidgets.LIQUID_FILTER.get());
+        return ImmutableList.of(ModProgWidgetTypes.AREA.get(), ModProgWidgetTypes.LIQUID_FILTER.get());
     }
 
     @Override
@@ -56,7 +69,7 @@ public class ProgWidgetLiquidExport extends ProgWidgetInventoryBase implements I
     }
 
     @Override
-    public Goal getWidgetAI(IDroneBase drone, IProgWidget widget) {
+    public Goal getWidgetAI(IDrone drone, IProgWidget widget) {
         return new DroneAILiquidExport(drone, (ProgWidgetInventoryBase) widget);
     }
 
@@ -65,26 +78,26 @@ public class ProgWidgetLiquidExport extends ProgWidgetInventoryBase implements I
         return DyeColor.ORANGE;
     }
 
-    @Override
-    public void writeToNBT(CompoundTag tag) {
-        super.writeToNBT(tag);
-        if (placeFluidBlocks) tag.putBoolean("placeFluidBlocks", true);
-    }
+//    @Override
+//    public void writeToNBT(CompoundTag tag, HolderLookup.Provider provider) {
+//        super.writeToNBT(tag, provider);
+//        if (placeFluidBlocks) tag.putBoolean("placeFluidBlocks", true);
+//    }
+//
+//    @Override
+//    public void readFromNBT(CompoundTag tag, HolderLookup.Provider provider) {
+//        super.readFromNBT(tag, provider);
+//        placeFluidBlocks = tag.getBoolean("placeFluidBlocks");
+//    }
 
     @Override
-    public void readFromNBT(CompoundTag tag) {
-        super.readFromNBT(tag);
-        placeFluidBlocks = tag.getBoolean("placeFluidBlocks");
-    }
-
-    @Override
-    public void writeToPacket(FriendlyByteBuf buf) {
+    public void writeToPacket(RegistryFriendlyByteBuf buf) {
         super.writeToPacket(buf);
         buf.writeBoolean(placeFluidBlocks);
     }
 
     @Override
-    public void readFromPacket(FriendlyByteBuf buf) {
+    public void readFromPacket(RegistryFriendlyByteBuf buf) {
         super.readFromPacket(buf);
         placeFluidBlocks = buf.readBoolean();
     }
@@ -99,4 +112,8 @@ public class ProgWidgetLiquidExport extends ProgWidgetInventoryBase implements I
         return placeFluidBlocks;
     }
 
+    @Override
+    public ProgWidgetType<?> getType() {
+        return ModProgWidgetTypes.LIQUID_EXPORT.get();
+    }
 }

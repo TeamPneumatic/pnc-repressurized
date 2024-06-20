@@ -17,51 +17,34 @@
 
 package me.desht.pneumaticcraft.common.particle;
 
-import com.mojang.brigadier.StringReader;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import me.desht.pneumaticcraft.common.registry.ModParticleTypes;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 
 import java.util.Calendar;
-import java.util.Locale;
 
-public class AirParticleData implements ParticleOptions {
+public record AirParticleData(float alpha) implements ParticleOptions {
     public static final AirParticleData NORMAL = new AirParticleData(0.1f);
     public static final AirParticleData DENSE = new AirParticleData(0.3f);
 
-    public static final Deserializer<AirParticleData> DESERIALIZER = new Deserializer<AirParticleData>() {
-        @Override
-        public AirParticleData fromCommand(ParticleType<AirParticleData> particleType, StringReader stringReader) throws CommandSyntaxException {
-            stringReader.expect(' ');
-            float alpha = stringReader.readFloat();
-            return new AirParticleData(alpha);
-        }
+    static final MapCodec<AirParticleData> CODEC = RecordCodecBuilder.mapCodec(builder -> builder.group(
+                    Codec.FLOAT.fieldOf("alpha").forGetter(AirParticleData::alpha)
+            ).apply(builder, AirParticleData::new)
+    );
 
-        @Override
-        public AirParticleData fromNetwork(ParticleType<AirParticleData> particleType, FriendlyByteBuf packetBuffer) {
-            return new AirParticleData(packetBuffer.readFloat());
-        }
-    };
-    static final Codec<AirParticleData> CODEC = RecordCodecBuilder.create((instance) ->
-            instance.group(Codec.FLOAT.fieldOf("alpha")
-                    .forGetter((d) -> d.alpha))
-                    .apply(instance, AirParticleData::new));
+    public static final StreamCodec<FriendlyByteBuf, AirParticleData> STREAM_CODEC = StreamCodec.composite(
+            ByteBufCodecs.FLOAT, AirParticleData::alpha,
+            AirParticleData::new
+    );
 
     private static boolean checkedDate;
     private static boolean useAlt;
-
-    private final float alpha;
-
-    public AirParticleData(float alpha) {
-        this.alpha = alpha;
-    }
 
     @Override
     public ParticleType<?> getType() {
@@ -69,17 +52,7 @@ public class AirParticleData implements ParticleOptions {
     }
 
     @Override
-    public void writeToNetwork(FriendlyByteBuf packetBuffer) {
-        packetBuffer.writeFloat(alpha);
-    }
-
-    @Override
-    public String writeToString() {
-        ResourceLocation regName = PneumaticCraftUtils.getRegistryName(BuiltInRegistries.PARTICLE_TYPE, getType()).orElseThrow();
-        return String.format(Locale.ROOT, "%s %f", regName, alpha);
-    }
-
-    public float getAlpha() {
+    public float alpha() {
         return useAlt ? alpha * 2 : alpha;
     }
 

@@ -17,15 +17,17 @@
 
 package me.desht.pneumaticcraft.common.network;
 
-import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.item.PneumaticArmorItem;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.network.handling.PlayPayloadContext;
+import net.minecraft.world.item.component.DyedItemColor;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
@@ -34,18 +36,23 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
  * Sent from Pneumatic Armor colors GUI to re-color armor pieces
  */
 public record PacketUpdateArmorColors(int[][] cols, int eyepiece) implements CustomPacketPayload {
-    public static final ResourceLocation ID = RL("update_armor_colors");
+    public static final Type<PacketUpdateArmorColors> TYPE = new Type<>(RL("update_armor_colors"));
 
-    public static PacketUpdateArmorColors create() {
+    public static final StreamCodec<FriendlyByteBuf, PacketUpdateArmorColors> STREAM_CODEC = StreamCodec.of(
+            PacketUpdateArmorColors::write,
+            PacketUpdateArmorColors::fromNetwork
+    );
+
+    public static PacketUpdateArmorColors forPlayer(Player player) {
         int [][] cols = new int[4][2];
         for (EquipmentSlot slot : ArmorUpgradeRegistry.ARMOR_SLOTS) {
-            ItemStack stack = ClientUtils.getClientPlayer().getItemBySlot(slot);
+            ItemStack stack = player.getItemBySlot(slot);
             if (stack.getItem() instanceof PneumaticArmorItem p) {
-                cols[slot.getIndex()][0] = p.getColor(stack);
+                cols[slot.getIndex()][0] = p.getPrimaryColor(stack);
                 cols[slot.getIndex()][1] = p.getSecondaryColor(stack);
             }
         }
-        ItemStack stack = ClientUtils.getClientPlayer().getItemBySlot(EquipmentSlot.HEAD);
+        ItemStack stack = player.getItemBySlot(EquipmentSlot.HEAD);
         int eyepiece = stack.getItem() instanceof PneumaticArmorItem p ? p.getEyepieceColor(stack) : 0;
 
         return new PacketUpdateArmorColors(cols, eyepiece);
@@ -60,33 +67,31 @@ public record PacketUpdateArmorColors(int[][] cols, int eyepiece) implements Cus
         return new PacketUpdateArmorColors(cols, buffer.readInt());
     }
 
-    @Override
-    public void write(FriendlyByteBuf buffer) {
-        for (int[] col : cols) {
+    public static void write(FriendlyByteBuf buffer, PacketUpdateArmorColors message) {
+        for (int[] col : message.cols) {
             buffer.writeInt(col[0]);
             buffer.writeInt(col[1]);
         }
-        buffer.writeInt(eyepiece);
+        buffer.writeInt(message.eyepiece);
     }
 
     @Override
-    public ResourceLocation id() {
-        return ID;
+    public Type<PacketUpdateArmorColors> type() {
+        return TYPE;
     }
 
-    public static void handle(PacketUpdateArmorColors message, PlayPayloadContext ctx) {
-        ctx.player().ifPresent(player -> ctx.workHandler().submitAsync(() -> {
-            for (EquipmentSlot slot : ArmorUpgradeRegistry.ARMOR_SLOTS) {
-                ItemStack stack = player.getItemBySlot(slot);
-                if (stack.getItem() instanceof PneumaticArmorItem p) {
-                    p.setColor(stack, message.cols()[slot.getIndex()][0]);
-                    p.setSecondaryColor(stack, message.cols()[slot.getIndex()][1]);
-                }
-            }
-            ItemStack stack = player.getItemBySlot(EquipmentSlot.HEAD);
+    public static void handle(PacketUpdateArmorColors message, IPayloadContext ctx) {
+        for (EquipmentSlot slot : ArmorUpgradeRegistry.ARMOR_SLOTS) {
+            ItemStack stack = ctx.player().getItemBySlot(slot);
             if (stack.getItem() instanceof PneumaticArmorItem p) {
-                p.setEyepieceColor(stack, message.eyepiece());
+                stack.set(DataComponents.DYED_COLOR, new DyedItemColor(message.cols()[slot.getIndex()][0], true));
+                p.setPrimaryColor(stack, message.cols()[slot.getIndex()][1]);
+                p.setSecondaryColor(stack, message.cols()[slot.getIndex()][1]);
             }
-        }));
+        }
+        ItemStack stack = ctx.player().getItemBySlot(EquipmentSlot.HEAD);
+        if (stack.getItem() instanceof PneumaticArmorItem p) {
+            p.setEyepieceColor(stack, message.eyepiece());
+        }
     }
 }

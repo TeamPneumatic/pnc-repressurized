@@ -17,17 +17,16 @@
 
 package me.desht.pneumaticcraft.common.network;
 
-import io.netty.buffer.Unpooled;
+import me.desht.pneumaticcraft.api.drone.IProgWidget;
 import me.desht.pneumaticcraft.common.block.entity.drone.ProgrammerBlockEntity;
-import me.desht.pneumaticcraft.common.drone.progwidgets.IProgWidget;
-import me.desht.pneumaticcraft.common.drone.progwidgets.WidgetSerializer;
-import net.minecraft.Util;
+import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidget;
+import me.desht.pneumaticcraft.common.inventory.ProgrammerMenu;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.player.Player;
-import net.neoforged.neoforge.network.handling.PlayPayloadContext;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import java.util.List;
 
@@ -39,45 +38,28 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
  * Sent by server when programmer GUI is being opened
  * Sent by client programmer GUI to push the current program to the server-side BE
  */
-public record PacketProgrammerSync(BlockPos pos, List<IProgWidget> widgets) implements CustomPacketPayload, ILargePayload {
-    public static final ResourceLocation ID = RL("programmer_sync");
+public record PacketProgrammerSync(BlockPos pos, List<IProgWidget> widgets) implements CustomPacketPayload {
+    public static final Type<PacketProgrammerSync> TYPE = new Type<>(RL("programmer_sync"));
+
+    public static final StreamCodec<RegistryFriendlyByteBuf, PacketProgrammerSync> STREAM_CODEC = StreamCodec.composite(
+            BlockPos.STREAM_CODEC, PacketProgrammerSync::pos,
+            ProgWidget.STREAM_CODEC.apply(ByteBufCodecs.list()), PacketProgrammerSync::widgets,
+            PacketProgrammerSync::new
+    );
 
     public static PacketProgrammerSync forBlockEntity(ProgrammerBlockEntity te) {
         return new PacketProgrammerSync(te.getBlockPos(), te.progWidgets);
     }
 
-    public static PacketProgrammerSync fromNetwork(FriendlyByteBuf buffer) {
-        return new PacketProgrammerSync(buffer.readBlockPos(), WidgetSerializer.readWidgetsFromPacket(buffer));
-    }
-
     @Override
-    public void write(FriendlyByteBuf buffer) {
-        buffer.writeBlockPos(pos);
-        WidgetSerializer.writeProgWidgetsToPacket(widgets, buffer);
+    public Type<PacketProgrammerSync> type() {
+        return TYPE;
     }
 
-    @Override
-    public ResourceLocation id() {
-        return ID;
+    public static void handle(PacketProgrammerSync message, IPayloadContext ctx) {
+        if (ctx.player().isLocalPlayer() || ctx.player().containerMenu instanceof ProgrammerMenu) {
+            PacketUtil.getBlockEntity(ctx.player(), message.pos, ProgrammerBlockEntity.class)
+                    .ifPresent(te -> te.setProgWidgets(message.widgets, ctx.player()));
+        }
     }
-
-    public static void handle(PacketProgrammerSync message, PlayPayloadContext ctx) {
-        ctx.player().ifPresent(player -> ctx.workHandler().submitAsync(() -> message.updateTE(player)));
-    }
-
-    private void updateTE(Player player) {
-        PacketUtil.getBlockEntity(player, pos, ProgrammerBlockEntity.class)
-                .ifPresent(te -> te.setProgWidgets(widgets, player));
-    }
-
-    @Override
-    public FriendlyByteBuf dumpToBuffer() {
-        return Util.make(new FriendlyByteBuf(Unpooled.buffer()), this::write);
-    }
-
-    @Override
-    public void handleLargePayload(Player player) {
-        updateTE(player);
-    }
-
 }

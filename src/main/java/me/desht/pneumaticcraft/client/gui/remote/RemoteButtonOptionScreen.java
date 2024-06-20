@@ -55,17 +55,17 @@ public class RemoteButtonOptionScreen extends RemoteVariableOptionScreen<ActionW
         Component valueTooltip = xlate("pneumaticcraft.gui.remote.button.value.tooltip");
 
         xValueField = new WidgetTextFieldNumber(font, guiLeft + 20, guiTop + 104, 38, textFieldHeight);
-        xValueField.setValue(actionWidget.settingCoordinate.getX());
+        xValueField.setValue(actionWidget.settingPos.getX());
         xValueField.setTooltip(Tooltip.create(valueTooltip));
         addRenderableWidget(xValueField);
 
         yValueField = new WidgetTextFieldNumber(font, guiLeft + 78, guiTop + 104, 38, textFieldHeight);
-        yValueField.setValue(actionWidget.settingCoordinate.getY());
+        yValueField.setValue(actionWidget.settingPos.getY());
         yValueField.setTooltip(Tooltip.create(valueTooltip));
         addRenderableWidget(yValueField);
 
         zValueField = new WidgetTextFieldNumber(font, guiLeft + 136, guiTop + 104, 38, textFieldHeight);
-        zValueField.setValue(actionWidget.settingCoordinate.getZ());
+        zValueField.setValue(actionWidget.settingPos.getZ());
         zValueField.setTooltip(Tooltip.create(valueTooltip));
         addRenderableWidget(zValueField);
 
@@ -86,7 +86,7 @@ public class RemoteButtonOptionScreen extends RemoteVariableOptionScreen<ActionW
 
     @Override
     public void removed() {
-        actionWidget.settingCoordinate = new BlockPos(xValueField.getIntValue(), yValueField.getIntValue(), zValueField.getIntValue());
+        actionWidget.settingPos = new BlockPos(xValueField.getIntValue(), yValueField.getIntValue(), zValueField.getIntValue());
         actionWidget.setWidth(widthField.getIntValue());
         actionWidget.setHeight(heightField.getIntValue());
 

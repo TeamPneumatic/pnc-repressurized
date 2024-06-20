@@ -19,10 +19,12 @@ package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.common.inventory.AmadronMenu;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import net.neoforged.neoforge.network.handling.PlayPayloadContext;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
@@ -31,29 +33,23 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
  * Sent from client when an offer widget is clicked in the Amadron GUI to update the server-side order amount
  */
 public record PacketAmadronOrderUpdate(ResourceLocation orderId, int mouseButton, boolean sneaking) implements CustomPacketPayload {
-    public static final ResourceLocation ID = RL("amadron_order_update");
+    public static final Type<PacketAmadronOrderUpdate> TYPE = new Type<>(RL("amadron_order_update"));
 
-    public static PacketAmadronOrderUpdate fromNetwork(FriendlyByteBuf buffer) {
-        return new PacketAmadronOrderUpdate(buffer.readResourceLocation(), buffer.readByte(), buffer.readBoolean());
-    }
-
-    @Override
-    public void write(FriendlyByteBuf buf) {
-        buf.writeResourceLocation(orderId);
-        buf.writeByte(mouseButton);
-        buf.writeBoolean(sneaking);
-    }
+    public static final StreamCodec<FriendlyByteBuf, PacketAmadronOrderUpdate> STREAM_CODEC = StreamCodec.composite(
+            ResourceLocation.STREAM_CODEC, PacketAmadronOrderUpdate::orderId,
+            ByteBufCodecs.VAR_INT, PacketAmadronOrderUpdate::mouseButton,
+            ByteBufCodecs.BOOL, PacketAmadronOrderUpdate::sneaking,
+            PacketAmadronOrderUpdate::new
+    );
 
     @Override
-    public ResourceLocation id() {
-        return ID;
+    public Type<PacketAmadronOrderUpdate> type() {
+        return TYPE;
     }
 
-    public static void handle(PacketAmadronOrderUpdate message, PlayPayloadContext ctx) {
-        ctx.player().ifPresent(player -> ctx.workHandler().submitAsync(() -> {
-            if (player instanceof ServerPlayer sp && player.containerMenu instanceof AmadronMenu menu) {
-                menu.clickOffer(message.orderId(), message.mouseButton(), message.sneaking(), sp);
-            }
-        }));
+    public static void handle(PacketAmadronOrderUpdate message, IPayloadContext ctx) {
+        if (ctx.player() instanceof ServerPlayer sp && sp.containerMenu instanceof AmadronMenu menu) {
+            menu.clickOffer(message.orderId(), message.mouseButton(), message.sneaking(), sp);
+        }
     }
 }

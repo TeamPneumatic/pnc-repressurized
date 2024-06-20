@@ -18,45 +18,61 @@
 package me.desht.pneumaticcraft.common.drone.progwidgets;
 
 import com.google.common.collect.ImmutableList;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import me.desht.pneumaticcraft.api.drone.IDrone;
+import me.desht.pneumaticcraft.api.drone.IProgWidget;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
-import me.desht.pneumaticcraft.common.drone.IDroneBase;
 import me.desht.pneumaticcraft.common.drone.ai.DroneAIBlockCondition;
 import me.desht.pneumaticcraft.common.drone.ai.DroneAIDig;
-import me.desht.pneumaticcraft.common.registry.ModProgWidgets;
+import me.desht.pneumaticcraft.common.registry.ModProgWidgetTypes;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.List;
 
 public class ProgWidgetBlockCondition extends ProgWidgetCondition {
+    public static final MapCodec<ProgWidgetBlockCondition> CODEC = RecordCodecBuilder.mapCodec(builder ->
+            condParts(builder).and(builder.group(
+                            Codec.BOOL.optionalFieldOf("check_air", false).forGetter(p -> p.checkingForAir),
+                            Codec.BOOL.optionalFieldOf("check_liquid", false).forGetter(p -> p.checkingForLiquids)
+                    )
+            ).apply(builder, ProgWidgetBlockCondition::new));
+
     public boolean checkingForAir;
     public boolean checkingForLiquids;
 
     public ProgWidgetBlockCondition() {
-        super(ModProgWidgets.CONDITION_BLOCK.get());
+    }
+
+    public ProgWidgetBlockCondition(PositionFields pos, InvBaseFields inv, ConditionFields cond, boolean checkingForAir, boolean checkingForLiquids) {
+        super(pos, inv, cond);
+
+        this.checkingForAir = checkingForAir;
+        this.checkingForLiquids = checkingForLiquids;
     }
 
     @Override
     public List<ProgWidgetType<?>> getParameters() {
-        return ImmutableList.of(ModProgWidgets.AREA.get(), ModProgWidgets.ITEM_FILTER.get(), ModProgWidgets.TEXT.get());
+        return ImmutableList.of(ModProgWidgetTypes.AREA.get(), ModProgWidgetTypes.ITEM_FILTER.get(), ModProgWidgetTypes.TEXT.get());
     }
 
     @Override
-    protected DroneAIBlockCondition getEvaluator(IDroneBase drone, IProgWidget widget) {
+    protected DroneAIBlockCondition getEvaluator(IDrone drone, IProgWidget widget) {
         return new DroneAIBlockCondition(drone, (ProgWidgetAreaItemBase) widget) {
             @Override
             protected boolean evaluate(BlockPos pos) {
                 boolean ret = false;
-                if (checkingForAir && drone.world().isEmptyBlock(pos)) {
+                if (checkingForAir && drone.getDroneLevel().isEmptyBlock(pos)) {
                     ret = true;
-                } else if (checkingForLiquids && PneumaticCraftUtils.isBlockLiquid(drone.world().getBlockState(pos).getBlock())) {
+                } else if (checkingForLiquids && PneumaticCraftUtils.isBlockLiquid(drone.getDroneLevel().getBlockState(pos).getBlock())) {
                     ret = true;
                 } else if (!checkingForAir && !checkingForLiquids || getConnectedParameters()[1] != null) {
-                    ret = DroneAIDig.isBlockValidForFilter(drone.world(), pos, drone, progWidget);
+                    ret = DroneAIDig.isBlockValidForFilter(drone.getDroneLevel(), pos, drone, progWidget);
                 }
                 maybeRecordMeasuredVal(drone, ret ? 1 : 0);
                 return ret;
@@ -69,29 +85,34 @@ public class ProgWidgetBlockCondition extends ProgWidgetCondition {
         return Textures.PROG_WIDGET_CONDITION_BLOCK;
     }
 
+//    @Override
+//    public void writeToNBT(CompoundTag tag, HolderLookup.Provider provider) {
+//        super.writeToNBT(tag, provider);
+//        if (checkingForAir) tag.putBoolean("checkingForAir", true);
+//        if (checkingForLiquids) tag.putBoolean("checkingForLiquids", true);
+//    }
+//
+//    @Override
+//    public void readFromNBT(CompoundTag tag, HolderLookup.Provider provider) {
+//        super.readFromNBT(tag, provider);
+//        checkingForAir = tag.getBoolean("checkingForAir");
+//        checkingForLiquids = tag.getBoolean("checkingForLiquids");
+//    }
+
     @Override
-    public void writeToNBT(CompoundTag tag) {
-        super.writeToNBT(tag);
-        if (checkingForAir) tag.putBoolean("checkingForAir", true);
-        if (checkingForLiquids) tag.putBoolean("checkingForLiquids", true);
+    public ProgWidgetType<?> getType() {
+        return ModProgWidgetTypes.CONDITION_BLOCK.get();
     }
 
     @Override
-    public void readFromNBT(CompoundTag tag) {
-        super.readFromNBT(tag);
-        checkingForAir = tag.getBoolean("checkingForAir");
-        checkingForLiquids = tag.getBoolean("checkingForLiquids");
-    }
-
-    @Override
-    public void writeToPacket(FriendlyByteBuf buf) {
+    public void writeToPacket(RegistryFriendlyByteBuf buf) {
         super.writeToPacket(buf);
         buf.writeBoolean(checkingForAir);
         buf.writeBoolean(checkingForLiquids);
     }
 
     @Override
-    public void readFromPacket(FriendlyByteBuf buf) {
+    public void readFromPacket(RegistryFriendlyByteBuf buf) {
         super.readFromPacket(buf);
         checkingForAir = buf.readBoolean();
         checkingForLiquids = buf.readBoolean();

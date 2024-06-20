@@ -19,9 +19,11 @@ package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.common.amadron.AmadronOfferManager;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.network.handling.PlayPayloadContext;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
@@ -30,26 +32,20 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
  * Sent by server when an order is purchased by someone, to update remaining stock levels as seen on clients.
  */
 public record PacketAmadronStockUpdate(ResourceLocation id, int stock) implements CustomPacketPayload {
-    public static final ResourceLocation ID = RL("amadron_stock_update");
+    public static final Type<PacketAmadronStockUpdate> TYPE = new Type<>(RL("amadron_stock_update"));
 
-    public static PacketAmadronStockUpdate fromNetwork(FriendlyByteBuf buffer) {
-        return new PacketAmadronStockUpdate(buffer.readResourceLocation(), buffer.readVarInt());
-    }
-
-    @Override
-    public void write(FriendlyByteBuf buf) {
-        buf.writeResourceLocation(id);
-        buf.writeVarInt(stock);
-    }
+    public static final StreamCodec<FriendlyByteBuf, PacketAmadronStockUpdate> STREAM_CODEC = StreamCodec.composite(
+            ResourceLocation.STREAM_CODEC, PacketAmadronStockUpdate::id,
+            ByteBufCodecs.VAR_INT, PacketAmadronStockUpdate::stock,
+            PacketAmadronStockUpdate::new
+    );
 
     @Override
-    public ResourceLocation id() {
-        return ID;
+    public Type<PacketAmadronStockUpdate> type() {
+        return TYPE;
     }
 
-    public static void handle(PacketAmadronStockUpdate message, PlayPayloadContext ctx) {
-        ctx.workHandler().submitAsync(() ->
-                AmadronOfferManager.getInstance().updateStock(message.id(), message.stock())
-        );
+    public static void handle(PacketAmadronStockUpdate message, IPayloadContext ctx) {
+        AmadronOfferManager.getInstance().updateStock(message.id(), message.stock());
     }
 }

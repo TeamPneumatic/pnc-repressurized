@@ -20,38 +20,37 @@ package me.desht.pneumaticcraft.common.recipes.other;
 import com.google.common.collect.ImmutableMap;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.DataResult;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import me.desht.pneumaticcraft.api.crafting.recipe.HeatPropertiesRecipe;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.common.heat.HeatExchangerLogicConstant;
-import me.desht.pneumaticcraft.common.network.PacketUtil;
 import me.desht.pneumaticcraft.common.registry.ModRecipeSerializers;
 import me.desht.pneumaticcraft.common.registry.ModRecipeTypes;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.commands.arguments.blocks.BlockStateParser;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Property;
+import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-// codecs mean optional fields and params!
 @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
 public class HeatPropertiesRecipeImpl extends HeatPropertiesRecipe {
     private final Block block;
     private final BlockState inputState;
-    private final Optional<BlockState> transformHot;
-    private final Optional<BlockState> transformHotFlowing;
-    private final Optional<BlockState> transformCold;
-    private final Optional<BlockState> transformColdFlowing;
+    private final Transforms transforms;
     private final Map<String, String> predicates;
     private final Optional<Integer> heatCapacity;
     private final int temperature;
@@ -59,19 +58,14 @@ public class HeatPropertiesRecipeImpl extends HeatPropertiesRecipe {
     private final String descriptionKey;
     private final HeatExchangerLogicConstant logic;
 
-    public HeatPropertiesRecipeImpl(Block block,
-                                    Optional<BlockState> transformHot, Optional<BlockState> transformHotFlowing,
-                                    Optional<BlockState> transformCold, Optional<BlockState> transformColdFlowing,
+    public HeatPropertiesRecipeImpl(Block block, Transforms transforms,
                                     Optional<Integer> heatCapacity, int temperature, Optional<Double> thermalResistance,
                                     Map<String, String> predicates, String descriptionKey)
     {
         super();
 
         this.block = block;
-        this.transformHot = transformHot;
-        this.transformHotFlowing = transformHotFlowing;
-        this.transformCold = transformCold;
-        this.transformColdFlowing = transformColdFlowing;
+        this.transforms = transforms;
         this.predicates = ImmutableMap.copyOf(predicates);
         this.heatCapacity = heatCapacity;
         this.temperature = temperature;
@@ -125,23 +119,28 @@ public class HeatPropertiesRecipeImpl extends HeatPropertiesRecipe {
     }
 
     @Override
+    public Transforms getTransforms() {
+        return transforms;
+    }
+
+    @Override
     public Optional<BlockState> getTransformHot() {
-        return transformHot;
+        return transforms.hot();
     }
 
     @Override
     public Optional<BlockState> getTransformCold() {
-        return transformCold;
+        return transforms.cold();
     }
 
     @Override
     public Optional<BlockState> getTransformHotFlowing() {
-        return transformHotFlowing;
+        return transforms.hotFlowing();
     }
 
     @Override
     public Optional<BlockState> getTransformColdFlowing() {
-        return transformColdFlowing;
+        return transforms.coldFlowing();
     }
 
     @Override
@@ -186,83 +185,48 @@ public class HeatPropertiesRecipeImpl extends HeatPropertiesRecipe {
         return descriptionKey;
     }
 
-    public static class Serializer<T extends HeatPropertiesRecipe> implements RecipeSerializer<T> {
-        private static final Codec<Map<String,String>> PREDICATES = Codec.unboundedMap(Codec.STRING, Codec.STRING);
-        private static final Codec<BlockState> BLOCKSTATE_STRING = Codec.STRING.comapFlatMap(
-                str -> {
-                    try {
-                        var result = BlockStateParser.parseForBlock(BuiltInRegistries.BLOCK.asLookup(), str, false);
-                        return DataResult.success(result.blockState());
-                    } catch (CommandSyntaxException e) {
-                        return DataResult.error(() -> "can't parse blockstate " + str + ": " + e.getMessage());
-                    }
-                },
-                BlockStateParser::serialize
-        );
+    public interface IFactory <T extends HeatPropertiesRecipe> {
+        T create(Block block, Transforms transforms,
+                 Optional<Integer> heatCapacity, int temperature, Optional<Double> thermalResistance,
+                 Map<String, String> predicates, String descriptionKey);
+    }
 
-        private final IFactory<T> factory;
-        private final Codec<T> codec;
+    public static class Serializer<T extends HeatPropertiesRecipe> implements RecipeSerializer<T> {
+        private static final Codec<Map<String,String>> PREDICATES_CODEC = Codec.unboundedMap(Codec.STRING, Codec.STRING);
+
+        private final MapCodec<T> codec;
+        private final StreamCodec<RegistryFriendlyByteBuf, T> streamCodec;
 
         public Serializer(IFactory<T> factory) {
-            this.factory = factory;
-            this.codec = RecordCodecBuilder.create(builder -> builder.group(
+            this.codec = RecordCodecBuilder.mapCodec(builder -> builder.group(
                     BuiltInRegistries.BLOCK.byNameCodec().fieldOf("block").forGetter(HeatPropertiesRecipe::getBlock),
-                    BLOCKSTATE_STRING.optionalFieldOf("transformHot").forGetter(HeatPropertiesRecipe::getTransformHot),
-                    BLOCKSTATE_STRING.optionalFieldOf("transformHotFlowing").forGetter(HeatPropertiesRecipe::getTransformHotFlowing),
-                    BLOCKSTATE_STRING.optionalFieldOf("transformCold").forGetter(HeatPropertiesRecipe::getTransformCold),
-                    BLOCKSTATE_STRING.optionalFieldOf("transformColdFlowing").forGetter(HeatPropertiesRecipe::getTransformColdFlowing),
+                    Transforms.CODEC.fieldOf("transforms").forGetter(HeatPropertiesRecipe::getTransforms),
                     ExtraCodecs.NON_NEGATIVE_INT.optionalFieldOf("heatCapacity").forGetter(HeatPropertiesRecipe::getHeatCapacity),
                     ExtraCodecs.NON_NEGATIVE_INT.optionalFieldOf("temperature", 0).forGetter(HeatPropertiesRecipe::getTemperature),
                     Codec.DOUBLE.optionalFieldOf("thermalResistance").forGetter(HeatPropertiesRecipe::getThermalResistance),
-                    PREDICATES.optionalFieldOf("predicates", Map.of()).forGetter(HeatPropertiesRecipe::getBlockStatePredicates),
+                    PREDICATES_CODEC.optionalFieldOf("predicates", Map.of()).forGetter(HeatPropertiesRecipe::getBlockStatePredicates),
                     Codec.STRING.optionalFieldOf("description", "").forGetter(HeatPropertiesRecipe::getDescriptionKey)
             ).apply(builder, factory::create));
-        }
-
-        @Override
-        public Codec<T> codec() {
-            return codec;
-        }
-
-        @Override
-        public T fromNetwork(FriendlyByteBuf buffer) {
-            Block block = buffer.readById(BuiltInRegistries.BLOCK);
-            Optional<BlockState> transformHot = PacketUtil.readOptionalBlockState(buffer);
-            Optional<BlockState> transformCold = PacketUtil.readOptionalBlockState(buffer);
-            Optional<BlockState> transformHotFlowing = PacketUtil.readOptionalBlockState(buffer);
-            Optional<BlockState> transformColdFlowing = PacketUtil.readOptionalBlockState(buffer);
-            Map<String,String> predicates = buffer.readMap(FriendlyByteBuf::readUtf, (FriendlyByteBuf.Reader<String>) FriendlyByteBuf::readUtf);
-            int temperature = buffer.readInt();
-            Optional<Integer> heatCapacity = buffer.readOptional(FriendlyByteBuf::readInt);
-            Optional<Double> thermalResistance = buffer.readOptional(FriendlyByteBuf::readDouble);
-            String descriptionKey = buffer.readUtf();
-
-            return factory.create(block,
-                    transformHot, transformHotFlowing, transformCold, transformColdFlowing,
-                    heatCapacity, temperature, thermalResistance, predicates, descriptionKey
+            this.streamCodec = NeoForgeStreamCodecs.composite(
+                    ByteBufCodecs.fromCodec(BuiltInRegistries.BLOCK.byNameCodec()), HeatPropertiesRecipe::getBlock,
+                    Transforms.STREAM_CODEC, HeatPropertiesRecipe::getTransforms,
+                    ByteBufCodecs.optional(ByteBufCodecs.INT), HeatPropertiesRecipe::getHeatCapacity,
+                    ByteBufCodecs.INT, HeatPropertiesRecipe::getTemperature,
+                    ByteBufCodecs.optional(ByteBufCodecs.DOUBLE), HeatPropertiesRecipe::getThermalResistance,
+                    ByteBufCodecs.map(HashMap::new, ByteBufCodecs.STRING_UTF8, ByteBufCodecs.STRING_UTF8), HeatPropertiesRecipe::getBlockStatePredicates,
+                    ByteBufCodecs.STRING_UTF8, HeatPropertiesRecipe::getDescriptionKey,
+                    factory::create
             );
         }
 
         @Override
-        public void toNetwork(FriendlyByteBuf buffer, T recipe) {
-            buffer.writeId(BuiltInRegistries.BLOCK, recipe.getBlock());
-            PacketUtil.writeOptionalBlockState(buffer, recipe.getTransformHot());
-            PacketUtil.writeOptionalBlockState(buffer, recipe.getTransformCold());
-            PacketUtil.writeOptionalBlockState(buffer, recipe.getTransformHotFlowing());
-            PacketUtil.writeOptionalBlockState(buffer, recipe.getTransformColdFlowing());
-            buffer.writeMap(recipe.getBlockStatePredicates(), FriendlyByteBuf::writeUtf, (FriendlyByteBuf.Writer<String>) FriendlyByteBuf::writeUtf);
-            buffer.writeInt(recipe.getTemperature());
-            buffer.writeOptional(recipe.getHeatCapacity(), FriendlyByteBuf::writeInt);
-            buffer.writeOptional(recipe.getThermalResistance(), FriendlyByteBuf::writeDouble);
-            buffer.writeUtf(recipe.getDescriptionKey());
+        public MapCodec<T> codec() {
+            return codec;
         }
 
-        public interface IFactory <T extends HeatPropertiesRecipe> {
-            T create(Block block,
-                     Optional<BlockState> transformHot, Optional<BlockState> transformHotFlowing,
-                     Optional<BlockState> transformCold, Optional<BlockState> transformColdFlowing,
-                     Optional<Integer> heatCapacity, int temperature, Optional<Double> thermalResistance,
-                     Map<String, String> predicates, String descriptionKey);
+        @Override
+        public StreamCodec<RegistryFriendlyByteBuf, T> streamCodec() {
+            return streamCodec;
         }
     }
 }

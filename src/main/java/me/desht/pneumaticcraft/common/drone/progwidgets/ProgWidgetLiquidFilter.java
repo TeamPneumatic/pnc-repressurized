@@ -18,19 +18,18 @@
 package me.desht.pneumaticcraft.common.drone.progwidgets;
 
 import com.google.common.collect.ImmutableList;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import me.desht.pneumaticcraft.api.drone.IProgWidget;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
-import me.desht.pneumaticcraft.common.registry.ModProgWidgets;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.common.registry.ModProgWidgetTypes;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.material.Fluid;
-import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.fluids.FluidStack;
 
 import java.util.Collections;
@@ -39,22 +38,40 @@ import java.util.List;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class ProgWidgetLiquidFilter extends ProgWidget {
-    private Fluid fluid = Fluids.EMPTY;
+    public static final MapCodec<ProgWidgetLiquidFilter> CODEC = RecordCodecBuilder.mapCodec(builder ->
+        baseParts(builder).and(
+                FluidStack.OPTIONAL_CODEC.optionalFieldOf("fluid", FluidStack.EMPTY).forGetter(ProgWidgetLiquidFilter::getFluidStack)
+    ).apply(builder, ProgWidgetLiquidFilter::new));
+
+    private FluidStack fluidStack;
+
+    public ProgWidgetLiquidFilter(PositionFields pos, FluidStack fluidStack) {
+        super(pos);
+
+        this.fluidStack = fluidStack;
+    }
 
     public ProgWidgetLiquidFilter() {
-        super(ModProgWidgets.LIQUID_FILTER.get());
+        this(PositionFields.DEFAULT, FluidStack.EMPTY);
     }
 
     public static ProgWidgetLiquidFilter withFilter(Fluid fluid) {
+        return withFilter(new FluidStack(fluid, 1000));
+    }
+
+    public static ProgWidgetLiquidFilter withFilter(FluidStack fluid) {
         ProgWidgetLiquidFilter f = new ProgWidgetLiquidFilter();
-        f.setFluid(fluid);
+        f.setFluidStack(fluid);
         return f;
     }
 
     @Override
     public void addErrors(List<Component> curInfo, List<IProgWidget> widgets) {
         super.addErrors(curInfo, widgets);
-        if (fluid == Fluids.EMPTY) curInfo.add(xlate("pneumaticcraft.gui.progWidget.liquidFilter.error.noLiquid"));
+
+        if (fluidStack.isEmpty()) {
+            curInfo.add(xlate("pneumaticcraft.gui.progWidget.liquidFilter.error.noLiquid"));
+        }
     }
 
     @Override
@@ -64,12 +81,12 @@ public class ProgWidgetLiquidFilter extends ProgWidget {
 
     @Override
     public ProgWidgetType<?> returnType() {
-        return ModProgWidgets.LIQUID_FILTER.get();
+        return ModProgWidgetTypes.LIQUID_FILTER.get();
     }
 
     @Override
     public List<ProgWidgetType<?>> getParameters() {
-        return ImmutableList.of(ModProgWidgets.LIQUID_FILTER.get());
+        return ImmutableList.of(ModProgWidgetTypes.LIQUID_FILTER.get());
     }
 
     @Override
@@ -77,36 +94,41 @@ public class ProgWidgetLiquidFilter extends ProgWidget {
         return Textures.PROG_WIDGET_LIQUID_FILTER;
     }
 
-    @Override
-    public void readFromNBT(CompoundTag tag) {
-        super.readFromNBT(tag);
-        fluid = tag.contains("fluid") ?
-                BuiltInRegistries.FLUID.get(new ResourceLocation(tag.getString("fluid"))) :
-                Fluids.EMPTY;
-    }
+//    @Override
+//    public void readFromNBT(CompoundTag tag, HolderLookup.Provider provider) {
+//        super.readFromNBT(tag, provider);
+//        fluidStack = tag.contains("fluid") ?
+//                BuiltInRegistries.FLUID.get(new ResourceLocation(tag.getString("fluid"))) :
+//                Fluids.EMPTY;
+//    }
+//
+//    @Override
+//    public void writeToNBT(CompoundTag tag, HolderLookup.Provider provider) {
+//        super.writeToNBT(tag, provider);
+//        if (fluidStack != Fluids.EMPTY) tag.putString("fluid", PneumaticCraftUtils.getRegistryName(fluidStack).orElseThrow().toString());
+//    }
 
     @Override
-    public void writeToNBT(CompoundTag tag) {
-        super.writeToNBT(tag);
-        if (fluid != Fluids.EMPTY) tag.putString("fluid", PneumaticCraftUtils.getRegistryName(fluid).orElseThrow().toString());
-    }
-
-    @Override
-    public void writeToPacket(FriendlyByteBuf buf) {
+    public void writeToPacket(RegistryFriendlyByteBuf buf) {
         super.writeToPacket(buf);
-        buf.writeFluidStack(new FluidStack(fluid, 1000));
+        FluidStack.OPTIONAL_STREAM_CODEC.encode(buf, fluidStack);
     }
 
     @Override
-    public void readFromPacket(FriendlyByteBuf buf) {
+    public void readFromPacket(RegistryFriendlyByteBuf buf) {
         super.readFromPacket(buf);
-        fluid = buf.readFluidStack().getFluid();
+        fluidStack = FluidStack.OPTIONAL_STREAM_CODEC.decode(buf);
+    }
+
+    @Override
+    public ProgWidgetType<?> getType() {
+        return ModProgWidgetTypes.LIQUID_FILTER.get();
     }
 
     @Override
     public void getTooltip(List<Component> curTooltip) {
         super.getTooltip(curTooltip);
-        if (fluid != null) {
+        if (fluidStack != null) {
             curTooltip.add(xlate("pneumaticcraft.gui.tooltip.fluid")
                     .withStyle(ChatFormatting.AQUA)
                     .append(asTextComponent()));
@@ -114,7 +136,7 @@ public class ProgWidgetLiquidFilter extends ProgWidget {
     }
 
     private boolean isLiquidValid(Fluid fluid) {
-        return this.fluid == null || fluid == this.fluid;
+        return this.fluidStack.isEmpty() || fluid == this.fluidStack.getFluid();
     }
 
     public static boolean isLiquidValid(Fluid fluid, IProgWidget mainWidget, int filterIndex) {
@@ -138,11 +160,7 @@ public class ProgWidgetLiquidFilter extends ProgWidget {
         for (ProgWidgetLiquidFilter filter : blacklist) {
             if (!filter.isLiquidValid(fluid)) return false;
         }
-        if (whitelist.size() == 0) return true;
-        for (ProgWidgetLiquidFilter filter : whitelist) {
-            if (filter.isLiquidValid(fluid)) return true;
-        }
-        return false;
+        return whitelist.isEmpty() || whitelist.stream().anyMatch(filter -> filter.isLiquidValid(fluid));
     }
 
     @Override
@@ -156,17 +174,17 @@ public class ProgWidgetLiquidFilter extends ProgWidget {
     }
 
     private Component asTextComponent() {
-        return fluid != Fluids.EMPTY ?
-                new FluidStack(fluid, 1).getDisplayName() :
+        return !fluidStack.isEmpty() ?
+                fluidStack.getHoverName() :
                 xlate("pneumaticcraft.gui.progWidget.liquidFilter.noFluid");
     }
 
-    public void setFluid(Fluid fluid) {
-        this.fluid = fluid;
+    public void setFluidStack(FluidStack fluidStack) {
+        this.fluidStack = fluidStack;
     }
 
-    public Fluid getFluid() {
-        return fluid;
+    public FluidStack getFluidStack() {
+        return fluidStack;
     }
 
     @Override

@@ -18,6 +18,7 @@
 package me.desht.pneumaticcraft.common.entity.projectile;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -47,11 +48,6 @@ public class VortexEntity extends ThrowableProjectile {
     public VortexEntity(EntityType<? extends VortexEntity> type, Level world) {
         super(type, world);
     }
-
-//    @Override
-//    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-//        return NetworkHooks.getEntitySpawningPacket(this);
-//    }
 
     @Override
     public void tick() {
@@ -84,8 +80,8 @@ public class VortexEntity extends ThrowableProjectile {
     }
 
     @Override
-    public float getGravity() {
-        return 0;
+    public boolean isNoGravity() {
+        return true;
     }
 
     @Override
@@ -136,6 +132,7 @@ public class VortexEntity extends ThrowableProjectile {
     }
 
     @Override
-    protected void defineSynchedData() {
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        // none
     }
 }

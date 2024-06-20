@@ -25,6 +25,7 @@ import me.desht.pneumaticcraft.common.block.entity.IMinWorkingPressure;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
@@ -71,7 +72,7 @@ public class ElementPressure implements IElement {
     }
 
     @Override
-    public void toBytes(FriendlyByteBuf buf) {
+    public void toBytes(RegistryFriendlyByteBuf buf) {
         buf.writeFloat(min);
         buf.writeFloat(pressure);
         buf.writeFloat(danger);
@@ -85,7 +86,7 @@ public class ElementPressure implements IElement {
 
     public static class Factory implements IElementFactory {
         @Override
-        public IElement createElement(FriendlyByteBuf friendlyByteBuf) {
+        public IElement createElement(RegistryFriendlyByteBuf friendlyByteBuf) {
             return new ElementPressure(friendlyByteBuf);
         }
 

@@ -20,11 +20,14 @@ package me.desht.pneumaticcraft.common.block;
 import me.desht.pneumaticcraft.api.item.IInventoryItem;
 import me.desht.pneumaticcraft.common.block.entity.utility.ReinforcedChestBlockEntity;
 import me.desht.pneumaticcraft.common.registry.ModBlocks;
+import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.registry.ModItems;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.component.DataComponentType;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.ItemContainerContents;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -67,6 +70,12 @@ public class ReinforcedChestBlock extends AbstractPneumaticCraftBlock implements
         return new ReinforcedChestBlockEntity(pPos, pState);
     }
 
+    @Override
+    public void addSerializableComponents(List<DataComponentType<?>> list) {
+        super.addSerializableComponents(list);
+        list.add(ModDataComponents.BLOCK_ENTITY_SAVED_INV.get());
+    }
+
     public static class ItemBlockReinforcedChest extends BlockItem implements IInventoryItem {
         public ItemBlockReinforcedChest(ReinforcedChestBlock block) {
             super(block, ModItems.defaultProps());
@@ -74,7 +83,7 @@ public class ReinforcedChestBlock extends AbstractPneumaticCraftBlock implements
 
         @Override
         public void getStacksInItem(ItemStack stack, List<ItemStack> curStacks) {
-            IInventoryItem.getStacks(stack, curStacks);
+            IInventoryItem.getStacks(stack.getOrDefault(ModDataComponents.BLOCK_ENTITY_SAVED_INV, ItemContainerContents.EMPTY), curStacks);
         }
 
         @Override

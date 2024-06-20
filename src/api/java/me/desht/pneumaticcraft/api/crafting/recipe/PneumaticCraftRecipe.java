@@ -17,6 +17,7 @@
 
 package me.desht.pneumaticcraft.api.crafting.recipe;
 
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.player.StackedContents;
@@ -41,7 +42,7 @@ public abstract class PneumaticCraftRecipe implements CraftingRecipe {
     }
 
     @Override
-    public ItemStack assemble(CraftingContainer container, RegistryAccess registryAccess) {
+    public ItemStack assemble(CraftingContainer container, HolderLookup.Provider registryAccess) {
         return ItemStack.EMPTY;
     }
 
@@ -51,7 +52,7 @@ public abstract class PneumaticCraftRecipe implements CraftingRecipe {
     }
 
     @Override
-    public ItemStack getResultItem(RegistryAccess registryAccess) {
+    public ItemStack getResultItem(HolderLookup.Provider registryAccess) {
         return ItemStack.EMPTY;
     }
 

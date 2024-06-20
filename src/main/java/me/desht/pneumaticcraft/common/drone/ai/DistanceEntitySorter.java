@@ -17,13 +17,13 @@
 
 package me.desht.pneumaticcraft.common.drone.ai;
 
-import me.desht.pneumaticcraft.common.drone.IDroneBase;
+import me.desht.pneumaticcraft.api.drone.IDrone;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.Comparator;
 
-public record DistanceEntitySorter(IDroneBase drone) implements Comparator<Entity> {
+public record DistanceEntitySorter(IDrone drone) implements Comparator<Entity> {
     @Override
     public int compare(Entity entity1, Entity entity2) {
         Vec3 vec = drone.getDronePos();

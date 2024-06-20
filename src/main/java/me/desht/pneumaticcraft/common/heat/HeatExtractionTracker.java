@@ -18,8 +18,10 @@
 package me.desht.pneumaticcraft.common.heat;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtUtils;
 import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
@@ -40,7 +42,7 @@ public class HeatExtractionTracker extends SavedData {
     private HeatExtractionTracker() {
     }
 
-    private static HeatExtractionTracker load(CompoundTag tag) {
+    private static HeatExtractionTracker load(CompoundTag tag, HolderLookup.Provider provider) {
         return new HeatExtractionTracker().readNBT(tag);
     }
 
@@ -68,21 +70,18 @@ public class HeatExtractionTracker extends SavedData {
         ListTag list = nbt.getList("extracted", Tag.TAG_COMPOUND);
         for (int i = 0; i < list.size(); i++) {
             CompoundTag sub = list.getCompound(i);
-            BlockPos pos = new BlockPos(sub.getInt("x"), sub.getInt("y"), sub.getInt("z"));
-            extracted.put(pos, sub.getDouble("heat"));
+            NbtUtils.readBlockPos(sub, "pos").ifPresent(pos -> extracted.put(pos, sub.getDouble("heat")));
         }
 
         return this;
     }
 
     @Override
-    public CompoundTag save(CompoundTag compound) {
+    public CompoundTag save(CompoundTag compound, HolderLookup.Provider provider) {
         ListTag list = new ListTag();
         extracted.forEach((pos, heat) -> {
             CompoundTag sub = new CompoundTag();
-            sub.putInt("x", pos.getX());
-            sub.putInt("y", pos.getY());
-            sub.putInt("z", pos.getZ());
+            sub.put("pos", NbtUtils.writeBlockPos(pos));
             sub.putDouble("heat", heat);
             list.add(sub);
         });

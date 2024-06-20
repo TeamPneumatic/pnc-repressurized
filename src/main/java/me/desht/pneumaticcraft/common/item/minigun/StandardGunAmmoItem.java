@@ -19,12 +19,11 @@ package me.desht.pneumaticcraft.common.item.minigun;
 
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
+import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
-import me.desht.pneumaticcraft.common.util.NBTUtils;
-import net.minecraft.Util;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -34,8 +33,8 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.ThrownPotion;
 import net.minecraft.world.item.*;
-import net.minecraft.world.item.alchemy.PotionUtils;
-import net.minecraft.world.level.Level;
+import net.minecraft.world.item.alchemy.PotionContents;
+import net.minecraft.world.item.component.ItemContainerContents;
 import net.minecraft.world.phys.BlockHitResult;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
@@ -47,35 +46,31 @@ import java.util.List;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class StandardGunAmmoItem extends AbstractGunAmmoItem {
-    private static final String NBT_POTION = "potion";
-
     @Override
     public int getMaxDamage(ItemStack stack) {
         return ConfigHelper.common().minigun.standardAmmoCartridgeSize.get();
     }
 
     @Nonnull
-    public static ItemStack getPotion(ItemStack ammo) {
-        if (ammo.getTag() != null && ammo.getTag().contains(NBT_POTION)) {
-            return ItemStack.of(ammo.getTag().getCompound(NBT_POTION));
-        } else {
-            return ItemStack.EMPTY;
-        }
+    public static ItemStack getPotionStack(ItemStack ammo) {
+        return ammo.has(ModDataComponents.POTION_AMMO) ?
+                ammo.get(ModDataComponents.POTION_AMMO).copyOne() :
+                ItemStack.EMPTY;
     }
 
     public static void setPotion(ItemStack ammo, ItemStack potion) {
-        NBTUtils.setCompoundTag(ammo, "potion", Util.make(new CompoundTag(), potion::save));
+        ammo.set(ModDataComponents.POTION_AMMO, ItemContainerContents.fromItems(List.of(potion)));
     }
 
     @Override
     @OnlyIn(Dist.CLIENT)
     public boolean isFoil(ItemStack stack) {
-        return stack.isEnchanted() || stack.hasTag() && stack.getTag().contains(NBT_POTION);
+        return stack.isEnchanted() || stack.has(ModDataComponents.POTION_AMMO);
     }
 
     @Override
     public int getAmmoCost(ItemStack ammoStack) {
-        ItemStack potion = getPotion(ammoStack);
+        ItemStack potion = getPotionStack(ammoStack);
         return potion.isEmpty() ? 1 : getPotionAmmoCost(potion.getItem());
     }
 
@@ -86,7 +81,7 @@ public class StandardGunAmmoItem extends AbstractGunAmmoItem {
 
     @Override
     public float getAirUsageMultiplier(Minigun minigun, ItemStack ammoStack) {
-        if (minigun.getUpgrades(ModUpgrades.DISPENSER.get()) > 0 && !getPotion(ammoStack).isEmpty()) {
+        if (minigun.getUpgrades(ModUpgrades.DISPENSER.get()) > 0 && !getPotionStack(ammoStack).isEmpty()) {
             return minigun.getUpgrades(ModUpgrades.DISPENSER.get()) + 1f;
         } else {
             return 1f;
@@ -94,12 +89,12 @@ public class StandardGunAmmoItem extends AbstractGunAmmoItem {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, Level world, List<Component> infoList, TooltipFlag extraInfo) {
-        super.appendHoverText(stack, world, infoList, extraInfo);
-        ItemStack potion = getPotion(stack);
+    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> infoList, TooltipFlag extraInfo) {
+        super.appendHoverText(stack, context, infoList, extraInfo);
+        ItemStack potion = getPotionStack(stack);
         if (!potion.isEmpty()) {
             List<Component> potionInfo = new ArrayList<>();
-            potion.getItem().appendHoverText(potion, world, potionInfo, extraInfo);
+            potion.getItem().appendHoverText(potion, context, potionInfo, extraInfo);
             String extra = "";
             if (potion.getItem() instanceof SplashPotionItem) {
                 extra = " " + I18n.get("pneumaticcraft.gui.tooltip.gunAmmo.splash");
@@ -114,15 +109,13 @@ public class StandardGunAmmoItem extends AbstractGunAmmoItem {
 
     @Override
     public int onTargetHit(Minigun minigun, ItemStack ammo, Entity target) {
-        ItemStack potion = getPotion(ammo);
+        ItemStack potion = getPotionStack(ammo);
         if (!potion.isEmpty() && target instanceof LivingEntity entity) {
             Player shooter = minigun.getPlayer();
             if (minigun.dispenserWeightedPercentage(ConfigHelper.common().minigun.potionProcChance.get(), 0.25f)) {
                 if (potion.getItem() == Items.POTION) {
-                    List<MobEffectInstance> effects = PotionUtils.getMobEffects(potion);
-                    for (MobEffectInstance effect : effects) {
-                        entity.addEffect(new MobEffectInstance(effect));
-                    }
+                    potion.getOrDefault(DataComponents.POTION_CONTENTS, PotionContents.EMPTY)
+                            .forEachEffect(effect -> entity.addEffect(new MobEffectInstance(effect)));
                     entity.level().playSound(null, entity.blockPosition(), SoundEvents.SPLASH_POTION_BREAK, SoundSource.PLAYERS, 1f, 1f);
                 } else if (potion.getItem() == Items.SPLASH_POTION || potion.getItem() == Items.LINGERING_POTION) {
                     ThrownPotion entityPotion = new ThrownPotion(shooter.level(), shooter);
@@ -139,7 +132,7 @@ public class StandardGunAmmoItem extends AbstractGunAmmoItem {
 
     @Override
     public int onBlockHit(Minigun minigun, ItemStack ammo, BlockHitResult brtr) {
-        ItemStack potion = getPotion(ammo);
+        ItemStack potion = getPotionStack(ammo);
         if (potion.getItem() == Items.SPLASH_POTION || potion.getItem() == Items.LINGERING_POTION) {
             Player shooter = minigun.getPlayer();
             int chance = ConfigHelper.common().minigun.potionProcChance.get() + minigun.getUpgrades(ModUpgrades.DISPENSER.get()) * 2;

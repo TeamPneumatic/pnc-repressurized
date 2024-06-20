@@ -22,7 +22,6 @@ import me.desht.pneumaticcraft.common.registry.ModBlocks;
 import me.desht.pneumaticcraft.common.registry.ModItems;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
@@ -87,12 +86,7 @@ public class CreativeCompressorBlock extends AbstractPneumaticCraftBlock impleme
 
     public static class ItemBlockCreativeCompressor extends BlockItem {
         public ItemBlockCreativeCompressor(Block block) {
-            super(block, ModItems.defaultProps());
-        }
-
-        @Override
-        public Rarity getRarity(ItemStack stack) {
-            return Rarity.EPIC;
+            super(block, ModItems.defaultProps().rarity(Rarity.EPIC));
         }
     }
 }

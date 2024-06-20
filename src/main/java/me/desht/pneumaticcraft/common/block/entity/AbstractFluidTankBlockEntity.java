@@ -17,21 +17,22 @@
 
 package me.desht.pneumaticcraft.common.block.entity;
 
-import com.google.common.collect.ImmutableMap;
 import me.desht.pneumaticcraft.common.block.AbstractPneumaticCraftBlock;
 import me.desht.pneumaticcraft.common.block.FluidTankBlock;
-import me.desht.pneumaticcraft.common.block.FluidTankBlock.ItemBlockFluidTank;
 import me.desht.pneumaticcraft.common.inventory.FluidTankMenu;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.network.LazySynced;
 import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
+import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PNCFluidTank;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.component.DataComponentType;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
@@ -44,6 +45,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidUtil;
 import net.neoforged.neoforge.fluids.IFluidTank;
+import net.neoforged.neoforge.fluids.SimpleFluidContent;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.ItemStackHandler;
@@ -103,13 +105,14 @@ public abstract class AbstractFluidTankBlockEntity extends AbstractTickingBlockE
             }
         }
 
-        Direction ejectDir = getUpgradeCache().getEjectDirection();
-        if (ejectDir != null && (ejectDir.getAxis() != Direction.Axis.Y || !getBlockState().getValue(AbstractPneumaticCraftBlock.connectionProperty(ejectDir)))) {
-            IOHelper.getFluidHandlerForBlock(getCachedNeighbor(ejectDir), ejectDir.getOpposite()).ifPresent(h -> {
-                int amount = BASE_EJECT_RATE << getUpgrades(ModUpgrades.SPEED.get());
-                FluidUtil.tryFluidTransfer(h, tank, amount, true);
-            });
-        }
+        getUpgradeCache().getEjectDirection().ifPresent(ejectDir -> {
+            if (ejectDir.getAxis() != Direction.Axis.Y || !getBlockState().getValue(AbstractPneumaticCraftBlock.connectionProperty(ejectDir))) {
+                IOHelper.getFluidHandlerForBlock(getCachedNeighbor(ejectDir), ejectDir.getOpposite()).ifPresent(h -> {
+                    int amount = BASE_EJECT_RATE << getUpgrades(ModUpgrades.SPEED.get());
+                    FluidUtil.tryFluidTransfer(h, tank, amount, true);
+                });
+            }
+        });
     }
 
     @Override
@@ -129,22 +132,22 @@ public abstract class AbstractFluidTankBlockEntity extends AbstractTickingBlockE
 
     @Nonnull
     @Override
-    public Map<String, PNCFluidTank> getSerializableTanks() {
-        return ImmutableMap.of(ItemBlockFluidTank.TANK_NAME, tank);
+    public Map<DataComponentType<SimpleFluidContent>, PNCFluidTank> getSerializableTanks() {
+        return Map.of(ModDataComponents.MAIN_TANK.get(), tank);
     }
 
     @Override
-    public void saveAdditional(CompoundTag tag) {
-        super.saveAdditional(tag);
+    public void saveAdditional(CompoundTag tag, HolderLookup.Provider provider) {
+        super.saveAdditional(tag, provider);
 
-        tag.put("Items", inventory.serializeNBT());
+        tag.put("Items", inventory.serializeNBT(provider));
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
+    public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
+        super.loadAdditional(tag, provider);
 
-        inventory.deserializeNBT(tag.getCompound("Items"));
+        inventory.deserializeNBT(provider, tag.getCompound("Items"));
     }
 
     public SmartSyncTank getTank() {

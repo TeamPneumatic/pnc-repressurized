@@ -32,10 +32,12 @@ import me.desht.pneumaticcraft.common.item.EmptyPCBItem;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
 import me.desht.pneumaticcraft.common.registry.ModBlocks;
+import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
@@ -50,7 +52,6 @@ import net.neoforged.neoforge.capabilities.BlockCapabilityCache;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
 import net.neoforged.neoforge.items.ItemStackHandler;
-import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
@@ -59,7 +60,6 @@ import java.util.List;
 
 public class UVLightBoxBlockEntity extends AbstractAirHandlingBlockEntity implements
         IMinWorkingPressure, IRedstoneControl<UVLightBoxBlockEntity>, MenuProvider /*,ILightProvider */ {
-    private static final String NBT_EXPOSURE = "pneumaticcraft:uv_exposure";
 
     public static final int INVENTORY_SIZE = 1;
     public static final int PCB_SLOT = 0;
@@ -163,8 +163,7 @@ public class UVLightBoxBlockEntity extends AbstractAirHandlingBlockEntity implem
 
 
     private void tryEject() {
-        Direction dir = getUpgradeCache().getEjectDirection();
-        if (dir != null) {
+        getUpgradeCache().getEjectDirection().ifPresent(dir -> {
             IItemHandler dstHandler = getEjectionCache(dir).getCapability();
             if (dstHandler != null) {
                 ItemStack stack = outputHandler.extractItem(0, 1, true);
@@ -172,7 +171,7 @@ public class UVLightBoxBlockEntity extends AbstractAirHandlingBlockEntity implem
                     outputHandler.extractItem(0, 1, false);
                 }
             }
-        }
+        });
     }
 
     private BlockCapabilityCache<IItemHandler,Direction> getEjectionCache(@NotNull Direction dir) {
@@ -183,30 +182,29 @@ public class UVLightBoxBlockEntity extends AbstractAirHandlingBlockEntity implem
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
+    public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
+        super.loadAdditional(tag, provider);
 
         threshold = tag.getInt("threshold");
-        inputHandler.deserializeNBT(tag.getCompound("Items"));
-        outputHandler.deserializeNBT(tag.getCompound("Output"));
+        inputHandler.deserializeNBT(provider, tag.getCompound("Items"));
+        outputHandler.deserializeNBT(provider, tag.getCompound("Output"));
     }
 
     @Override
-    public void saveAdditional(CompoundTag nbt) {
-        super.saveAdditional(nbt);
+    public void saveAdditional(CompoundTag tag, HolderLookup.Provider provider) {
+        super.saveAdditional(tag, provider);
 
-        nbt.putInt("threshold", threshold);
-        nbt.put("Items", inputHandler.serializeNBT());
-        nbt.put("Output", outputHandler.serializeNBT());
+        tag.putInt("threshold", threshold);
+        tag.put("Items", inputHandler.serializeNBT(provider));
+        tag.put("Output", outputHandler.serializeNBT(provider));
     }
 
     public static int getExposureProgress(ItemStack stack) {
-        return stack.hasTag() ? stack.getTag().getInt(NBT_EXPOSURE) : 0;
+        return stack.getOrDefault(ModDataComponents.UV_EXPOSURE, 0);
     }
 
     public static ItemStack setExposureProgress(ItemStack stack, int progress) {
-        Validate.isTrue(progress >= 0 && progress <= 100);
-        stack.getOrCreateTag().putInt(NBT_EXPOSURE, progress);
+        stack.set(ModDataComponents.UV_EXPOSURE, Mth.clamp(progress, 0, 100));
         return stack;
     }
 

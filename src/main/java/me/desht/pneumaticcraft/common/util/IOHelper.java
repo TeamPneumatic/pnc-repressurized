@@ -171,7 +171,7 @@ public class IOHelper {
     }
 
     private static boolean matchStacks(ItemStack stack1, ItemStack stack2, boolean matchNBT) {
-        return matchNBT ? ItemStack.isSameItemSameTags(stack1, stack2) : ItemStack.isSameItem(stack1, stack2);
+        return matchNBT ? ItemStack.isSameItemSameComponents(stack1, stack2) : ItemStack.isSameItem(stack1, stack2);
     }
 
     @Nonnull

@@ -19,6 +19,7 @@ package me.desht.pneumaticcraft.common.inventory;
 
 import me.desht.pneumaticcraft.common.block.entity.AbstractPneumaticCraftBlockEntity;
 import me.desht.pneumaticcraft.common.item.minigun.MinigunItem;
+import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.registry.ModMenuTypes;
 import me.desht.pneumaticcraft.common.util.NBTUtils;
@@ -72,9 +73,9 @@ public class MinigunMagazineMenu extends AbstractPneumaticCraftMenu<AbstractPneu
             if (gunStack.getItem() instanceof MinigunItem) {
                 int slot = MinigunItem.getLockedSlot(gunStack);
                 if (slot == slotId) {
-                    NBTUtils.removeTag(gunStack, MinigunItem.NBT_LOCKED_SLOT);
+                    gunStack.remove(ModDataComponents.MINIGUN_LOCKED_SLOT);
                 } else {
-                    NBTUtils.setInteger(gunStack, MinigunItem.NBT_LOCKED_SLOT, slotId);
+                    gunStack.set(ModDataComponents.MINIGUN_LOCKED_SLOT, slotId);
                 }
                 if (player.level().isClientSide) {
                     player.playSound(SoundEvents.UI_BUTTON_CLICK.value(), 0.5f, 1.0f);

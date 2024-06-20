@@ -18,7 +18,6 @@
 package me.desht.pneumaticcraft.common.entity.semiblock;
 
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
-import me.desht.pneumaticcraft.api.crafting.ingredient.FluidIngredient;
 import me.desht.pneumaticcraft.api.crafting.recipe.HeatFrameCoolingRecipe;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
@@ -31,6 +30,7 @@ import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -77,11 +77,11 @@ public class HeatFrameEntity extends AbstractSemiblockEntity {
     }
 
     @Override
-    protected void defineSynchedData() {
-        super.defineSynchedData();
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
 
-        this.entityData.define(STATUS, IDLE);
-        this.entityData.define(TEMPERATURE, 0);
+        builder.define(STATUS, IDLE);
+        builder.define(TEMPERATURE, 0);
     }
 
     @Override
@@ -227,24 +227,23 @@ public class HeatFrameEntity extends AbstractSemiblockEntity {
 
             return ModRecipeTypes.HEAT_FRAME_COOLING.get().findFirst(level(), r -> r.matches(stack)).map(holder -> {
                 HeatFrameCoolingRecipe recipe = holder.value();
-                boolean extractedOK;
-                if (recipe.getInput() instanceof FluidIngredient fluidIngredient) {
-                    if (stack.getCount() != 1) return false;  // fluid-containing items must not be stacked!
-                    extractedOK = IOHelper.getFluidHandlerForItem(stack).map(fluidHandler -> {
-                        int toDrain = fluidIngredient.getAmount();
-                        if (fluidHandler.drain(toDrain, IFluidHandler.FluidAction.EXECUTE).getAmount() == toDrain) {
-                            ItemStack containerStack = fluidHandler.getContainer().copy();
-                            handler.extractItem(slot, 1, false);
-                            handler.insertItem(slot, containerStack, false);
-                            return true;
-                        }
-                        return false;
-                    }).orElse(false);
-                } else {
-                    extractedOK = handler.extractItem(slot, 1, false).getCount() == 1;
-                }
+                boolean extractedOK = recipe.getInput().map(
+                        ingredient -> handler.extractItem(slot, 1, false).getCount() == 1,
+                        fluidIngredient -> {
+                            if (stack.getCount() != 1) return false;  // fluid-containing items must not be stacked!
+                            return IOHelper.getFluidHandlerForItem(stack).map(fluidHandler -> {
+                                int toDrain = fluidIngredient.amount();
+                                if (fluidHandler.drain(toDrain, IFluidHandler.FluidAction.EXECUTE).getAmount() == toDrain) {
+                                    ItemStack containerStack = fluidHandler.getContainer().copy();
+                                    handler.extractItem(slot, 1, false);
+                                    handler.insertItem(slot, containerStack, false);
+                                    return true;
+                                }
+                                return false;
+                            }).orElse(false);
+                        });
                 if (extractedOK) {
-                    ItemStack result = ItemHandlerHelper.copyStackWithSize(recipe.getOutput(), recipe.calculateOutputQuantity(logic.getTemperature()));
+                    ItemStack result = recipe.getOutput().copyWithCount(recipe.calculateOutputQuantity(logic.getTemperature()));
                     ItemHandlerHelper.insertItem(handler, result, false);
                     lastValidSlot = slot;
                 }
@@ -265,12 +264,12 @@ public class HeatFrameEntity extends AbstractSemiblockEntity {
     }
 
     @Override
-    public CompoundTag serializeNBT(CompoundTag tag) {
+    public CompoundTag serializeNBT(CompoundTag tag, HolderLookup.Provider provider) {
         tag.put("heatExchanger", logic.serializeNBT());
         tag.putInt("cookingProgress", cookingProgress);
         tag.putInt("coolingProgress", coolingProgress);
 
-        return super.serializeNBT(tag);
+        return super.serializeNBT(tag, provider);
     }
 
     @Override

@@ -17,13 +17,13 @@
 
 package me.desht.pneumaticcraft.common.util.playerfilter;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import me.desht.pneumaticcraft.api.misc.IPlayerMatcher;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.biome.Biome;
@@ -31,22 +31,22 @@ import net.minecraft.world.level.biome.Biome;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public record BiomeMatcher(List<TagKey<Biome>> tags) implements IPlayerMatcher {
-    private static final Codec<BiomeMatcher> CODEC = RecordCodecBuilder.create(builder -> builder.group(
+    private static final MapCodec<BiomeMatcher> CODEC = RecordCodecBuilder.mapCodec(builder -> builder.group(
             TagKey.codec(Registries.BIOME).listOf().fieldOf("biomes").forGetter(BiomeMatcher::tags)
     ).apply(builder, BiomeMatcher::new));
+    private static final StreamCodec<RegistryFriendlyByteBuf, BiomeMatcher> STREAM_CODEC = StreamCodec.of(
+            (buf, matcher) -> buf.writeCollection(matcher.tags, (b, key) -> b.writeResourceLocation(key.location())),
+            buf -> new BiomeMatcher(buf.readList(b -> TagKey.create(Registries.BIOME, b.readResourceLocation())))
+    );
+
+    public static final MatcherType<BiomeMatcher> TYPE = new MatcherType<>(CODEC, STREAM_CODEC);
 
     @Override
-    public void toNetwork(FriendlyByteBuf buffer) {
-        buffer.writeCollection(tags, (buf, biomeTagKey) -> buf.writeResourceLocation(biomeTagKey.location()));
-    }
-
-    @Override
-    public MatcherType<?> getType() {
-        return BiomeMatcherType.INSTANCE;
+    public MatcherType<?> type() {
+        return TYPE;
     }
 
     @Override
@@ -60,26 +60,5 @@ public record BiomeMatcher(List<TagKey<Biome>> tags) implements IPlayerMatcher {
     @Override
     public boolean test(Player playerEntity) {
         return tags.isEmpty() || playerEntity.level().getBiome(playerEntity.blockPosition()).tags().anyMatch(tags::contains);
-    }
-
-    public enum BiomeMatcherType implements MatcherType<BiomeMatcher> {
-        INSTANCE;
-
-        private static final ResourceLocation ID = RL("biomes");
-
-        @Override
-        public ResourceLocation getId() {
-            return ID;
-        }
-
-        @Override
-        public BiomeMatcher fromNetwork(FriendlyByteBuf buf) {
-            return new BiomeMatcher(buf.readList(buf1 -> TagKey.create(Registries.BIOME, buf1.readResourceLocation())));
-        }
-
-        @Override
-        public Codec<BiomeMatcher> codec() {
-            return CODEC;
-        }
     }
 }

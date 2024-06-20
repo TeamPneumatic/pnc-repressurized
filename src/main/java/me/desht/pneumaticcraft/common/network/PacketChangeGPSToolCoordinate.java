@@ -18,14 +18,15 @@
 package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.common.item.IGPSToolSync;
-import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.network.handling.PlayPayloadContext;
+import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
@@ -34,31 +35,25 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
  * Send when the GPS Tool GUI is closed, to update the held GPS tool settings
  */
 public record PacketChangeGPSToolCoordinate(BlockPos pos, InteractionHand hand, String variable, int index) implements CustomPacketPayload {
-    public static final ResourceLocation ID = RL("change_gps_tool_coord");
+    public static final Type<PacketChangeGPSToolCoordinate> TYPE = new Type<>(RL("change_gps_tool_coord"));
 
-    public PacketChangeGPSToolCoordinate(FriendlyByteBuf buf) {
-        this(buf.readBlockPos(), buf.readEnum(InteractionHand.class), buf.readUtf(GlobalVariableManager.MAX_VARIABLE_LEN), buf.readByte());
-    }
-
-    @Override
-    public void write(FriendlyByteBuf buf) {
-        buf.writeBlockPos(pos);
-        buf.writeEnum(hand);
-        buf.writeUtf(variable);
-        buf.writeByte(index);
-    }
+    public static final StreamCodec<FriendlyByteBuf, PacketChangeGPSToolCoordinate> STREAM_CODEC = StreamCodec.composite(
+            BlockPos.STREAM_CODEC, PacketChangeGPSToolCoordinate::pos,
+            NeoForgeStreamCodecs.enumCodec(InteractionHand.class), PacketChangeGPSToolCoordinate::hand,
+            ByteBufCodecs.STRING_UTF8, PacketChangeGPSToolCoordinate::variable,
+            ByteBufCodecs.VAR_INT, PacketChangeGPSToolCoordinate::index,
+            PacketChangeGPSToolCoordinate::new
+    );
 
     @Override
-    public ResourceLocation id() {
-        return ID;
+    public Type<PacketChangeGPSToolCoordinate> type() {
+        return TYPE;
     }
 
-    public static void handle(PacketChangeGPSToolCoordinate message, PlayPayloadContext ctx) {
-        ctx.player().ifPresent(player -> ctx.workHandler().submitAsync(() -> {
-            ItemStack stack = player.getItemInHand(message.hand);
-            if (stack.getItem() instanceof IGPSToolSync sync) {
-                sync.syncFromClient(player, stack, message.index, message.pos, message.variable);
-            }
-        }));
+    public static void handle(PacketChangeGPSToolCoordinate message, IPayloadContext ctx) {
+        ItemStack stack = ctx.player().getItemInHand(message.hand);
+        if (stack.getItem() instanceof IGPSToolSync sync) {
+            sync.syncFromClient(ctx.player(), stack, message.index, message.pos, message.variable);
+        }
     }
 }

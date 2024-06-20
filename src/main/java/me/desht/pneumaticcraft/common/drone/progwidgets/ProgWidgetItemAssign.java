@@ -18,14 +18,17 @@
 package me.desht.pneumaticcraft.common.drone.progwidgets;
 
 import com.google.common.collect.ImmutableList;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import me.desht.pneumaticcraft.api.drone.IDrone;
+import me.desht.pneumaticcraft.api.drone.IProgWidget;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
-import me.desht.pneumaticcraft.common.drone.IDroneBase;
 import me.desht.pneumaticcraft.common.drone.ai.DroneAIManager;
-import me.desht.pneumaticcraft.common.registry.ModProgWidgets;
+import me.desht.pneumaticcraft.common.registry.ModProgWidgetTypes;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.DyeColor;
@@ -37,11 +40,20 @@ import java.util.Set;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class ProgWidgetItemAssign extends ProgWidget implements IVariableSetWidget {
+    public static final MapCodec<ProgWidgetItemAssign> CODEC = RecordCodecBuilder.mapCodec(builder ->
+            baseParts(builder).and(Codec.STRING.optionalFieldOf("variable", "").forGetter(ProgWidgetItemAssign::getVariable)
+    ).apply(builder, ProgWidgetItemAssign::new));
+
     private String variable = "";
     private DroneAIManager aiManager;
 
+    private ProgWidgetItemAssign(PositionFields pos, String variable) {
+        super(pos);
+        this.variable = variable;
+    }
+
     public ProgWidgetItemAssign() {
-        super(ModProgWidgets.ITEM_ASSIGN.get());
+        this(PositionFields.DEFAULT, "");
     }
 
     @Override
@@ -61,7 +73,7 @@ public class ProgWidgetItemAssign extends ProgWidget implements IVariableSetWidg
 
     @Override
     public List<ProgWidgetType<?>> getParameters() {
-        return ImmutableList.of(ModProgWidgets.ITEM_FILTER.get());
+        return ImmutableList.of(ModProgWidgetTypes.ITEM_FILTER.get());
     }
 
     @Override
@@ -93,34 +105,34 @@ public class ProgWidgetItemAssign extends ProgWidget implements IVariableSetWidg
     }
 
     @Override
-    public IProgWidget getOutputWidget(IDroneBase drone, List<IProgWidget> allWidgets) {
+    public IProgWidget getOutputWidget(IDrone drone, List<IProgWidget> allWidgets) {
         if (!variable.isEmpty()) {
             ProgWidgetItemFilter filter = (ProgWidgetItemFilter) getConnectedParameters()[0];
-            aiManager.setStack(variable, filter != null ? filter.getFilter() : drone.getInv().getStackInSlot(0).copy());
+            aiManager.setItemStack(variable, filter != null ? filter.getFilter() : drone.getInv().getStackInSlot(0).copy());
         }
         return super.getOutputWidget(drone, allWidgets);
     }
 
-    @Override
-    public void writeToNBT(CompoundTag tag) {
-        super.writeToNBT(tag);
-        tag.putString("variable", variable);
-    }
+//    @Override
+//    public void writeToNBT(CompoundTag tag, HolderLookup.Provider provider) {
+//        super.writeToNBT(tag, provider);
+//        tag.putString("variable", variable);
+//    }
+//
+//    @Override
+//    public void readFromNBT(CompoundTag tag, HolderLookup.Provider provider) {
+//        super.readFromNBT(tag, provider);
+//        variable = tag.getString("variable");
+//    }
 
     @Override
-    public void readFromNBT(CompoundTag tag) {
-        super.readFromNBT(tag);
-        variable = tag.getString("variable");
-    }
-
-    @Override
-    public void writeToPacket(FriendlyByteBuf buf) {
+    public void writeToPacket(RegistryFriendlyByteBuf buf) {
         super.writeToPacket(buf);
         buf.writeUtf(variable);
     }
 
     @Override
-    public void readFromPacket(FriendlyByteBuf buf) {
+    public void readFromPacket(RegistryFriendlyByteBuf buf) {
         super.readFromPacket(buf);
         variable = buf.readUtf(GlobalVariableManager.MAX_VARIABLE_LEN);
     }
@@ -133,6 +145,11 @@ public class ProgWidgetItemAssign extends ProgWidget implements IVariableSetWidg
     @Override
     public void setVariable(String variable) {
         this.variable = variable;
+    }
+
+    @Override
+    public ProgWidgetType<?> getType() {
+        return ModProgWidgetTypes.ITEM_ASSIGN.get();
     }
 
     @Override

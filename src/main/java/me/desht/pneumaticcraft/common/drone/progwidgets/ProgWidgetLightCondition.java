@@ -18,10 +18,13 @@
 package me.desht.pneumaticcraft.common.drone.progwidgets;
 
 import com.google.common.collect.ImmutableList;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import me.desht.pneumaticcraft.api.drone.IDrone;
+import me.desht.pneumaticcraft.api.drone.IProgWidget;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
-import me.desht.pneumaticcraft.common.drone.IDroneBase;
 import me.desht.pneumaticcraft.common.drone.ai.DroneAIBlockCondition;
-import me.desht.pneumaticcraft.common.registry.ModProgWidgets;
+import me.desht.pneumaticcraft.common.registry.ModProgWidgetTypes;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
@@ -29,14 +32,19 @@ import net.minecraft.resources.ResourceLocation;
 import java.util.List;
 
 public class ProgWidgetLightCondition extends ProgWidgetCondition {
+    public static final MapCodec<ProgWidgetLightCondition> CODEC = RecordCodecBuilder.mapCodec(builder ->
+            condParts(builder).apply(builder, ProgWidgetLightCondition::new));
 
     public ProgWidgetLightCondition() {
-        super(ModProgWidgets.CONDITION_LIGHT.get());
+    }
+
+    public ProgWidgetLightCondition(PositionFields pos, InvBaseFields inv, ConditionFields cond) {
+        super(pos, inv, cond);
     }
 
     @Override
     public List<ProgWidgetType<?>> getParameters() {
-        return ImmutableList.of(ModProgWidgets.AREA.get(), ModProgWidgets.TEXT.get());
+        return ImmutableList.of(ModProgWidgetTypes.AREA.get(), ModProgWidgetTypes.TEXT.get());
     }
 
     @Override
@@ -45,16 +53,21 @@ public class ProgWidgetLightCondition extends ProgWidgetCondition {
     }
 
     @Override
-    protected DroneAIBlockCondition getEvaluator(IDroneBase drone, IProgWidget widget) {
+    protected DroneAIBlockCondition getEvaluator(IDrone drone, IProgWidget widget) {
         return new DroneAIBlockCondition(drone, (ProgWidgetAreaItemBase) widget) {
             @Override
             protected boolean evaluate(BlockPos pos) {
-                int lightLevel = drone.world().getMaxLocalRawBrightness(pos);
+                int lightLevel = drone.getDroneLevel().getMaxLocalRawBrightness(pos);
                 int requiredLight = ((ICondition) progWidget).getRequiredCount();
                 maybeRecordMeasuredVal(drone, lightLevel);
                 return ((ICondition) progWidget).getOperator().evaluate(lightLevel, requiredLight);
             }
 
         };
+    }
+
+    @Override
+    public ProgWidgetType<?> getType() {
+        return ModProgWidgetTypes.CONDITION_LIGHT.get();
     }
 }

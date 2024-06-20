@@ -39,6 +39,7 @@ import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.EnchantedBookItem;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag.Default;
 import net.minecraft.world.item.enchantment.Enchantment;
@@ -288,7 +289,7 @@ public class ItemSearcherScreen extends AbstractContainerScreen<ItemSearcherMenu
 
             List<String> l;
             try {
-                l = stack.getTooltipLines(minecraft.player, minecraft.options.advancedItemTooltips ? Default.ADVANCED : Default.NORMAL).stream()
+                l = stack.getTooltipLines(Item.TooltipContext.of(minecraft.level), minecraft.player, minecraft.options.advancedItemTooltips ? Default.ADVANCED : Default.NORMAL).stream()
                         .map(Component::getString)
                         .collect(Collectors.toList());
             } catch (Exception ignored) {

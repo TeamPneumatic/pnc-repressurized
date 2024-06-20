@@ -19,6 +19,7 @@ package me.desht.pneumaticcraft;
 
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.lib.Names;
+import me.desht.pneumaticcraft.api.registry.PNCRegistries;
 import me.desht.pneumaticcraft.client.ClientSetup;
 import me.desht.pneumaticcraft.common.PneumaticCraftAPIHandler;
 import me.desht.pneumaticcraft.common.amadron.AmadronEventListener;
@@ -48,10 +49,10 @@ import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
 import me.desht.pneumaticcraft.common.upgrades.UpgradesDBSetup;
 import me.desht.pneumaticcraft.common.util.ItemLaunching;
 import me.desht.pneumaticcraft.common.util.Reflections;
-import me.desht.pneumaticcraft.common.util.playerfilter.PlayerMatcherTypes;
 import me.desht.pneumaticcraft.common.villages.VillageStructures;
 import me.desht.pneumaticcraft.lib.Log;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.loading.FMLEnvironment;
@@ -64,12 +65,12 @@ import net.neoforged.neoforge.registries.NewRegistryEvent;
 
 @Mod(Names.MOD_ID)
 public class PneumaticCraftRepressurized {
-    public PneumaticCraftRepressurized(IEventBus modBus) {
+    public PneumaticCraftRepressurized(ModContainer container, IEventBus modBus) {
         IEventBus forgeBus = NeoForge.EVENT_BUS;
 
         PneumaticRegistry.init(PneumaticCraftAPIHandler.getInstance());
 
-        ConfigHolder.init(modBus);
+        ConfigHolder.init(container, modBus);
         AuxConfigHandler.preInit();
 
         if (FMLEnvironment.dist.isClient()) {
@@ -101,9 +102,9 @@ public class PneumaticCraftRepressurized {
     }
 
     private void newRegistries(NewRegistryEvent event) {
-        event.register(ModHoeHandlers.HOE_HANDLER_REGISTRY);
-        event.register(ModHarvestHandlers.HARVEST_HANDLER_REGISTRY);
-        event.register(ModProgWidgets.PROG_WIDGETS_REGISTRY);
+        event.register(PNCRegistries.HOE_HANDLER_REGISTRY);
+        event.register(PNCRegistries.HARVEST_HANDLER_REGISTRY);
+        event.register(PNCRegistries.PROG_WIDGETS_REGISTRY);
     }
 
     private void registerAllDeferredRegistryObjects(IEventBus modBus) {
@@ -124,15 +125,18 @@ public class PneumaticCraftRepressurized {
         ModVillagers.PROFESSIONS.register(modBus);
         ModLootModifiers.LOOT_MODIFIERS.register(modBus);
         ModCommands.COMMAND_ARGUMENT_TYPES.register(modBus);
-        ModLootFunctions.LOOT_FUNCTIONS.register(modBus);
         ModPlacementModifierTypes.PLACEMENT_MODIFIERS.register(modBus);
         ModCriterionTriggers.CRITERION_TRIGGERS.register(modBus);
+        ModDataComponents.COMPONENTS.register(modBus);
         ModAttachmentTypes.ATTACHMENT_TYPES.register(modBus);
+        ModArmorMaterials.ARMOR_MATERIALS.register(modBus);
 
         // custom registries
         ModHarvestHandlers.HARVEST_HANDLERS_DEFERRED.register(modBus);
         ModHoeHandlers.HOE_HANDLERS_DEFERRED.register(modBus);
-        ModProgWidgets.PROG_WIDGETS_DEFERRED.register(modBus);
+        ModProgWidgetTypes.PROG_WIDGETS_DEFERRED.register(modBus);
+        ModProgWidgetAreaTypes.PROG_WIDGET_AREA_SERIALIZER_DEFERRED.register(modBus);
+        ModPlayerMatchers.PLAYER_MATCHERS_DEFERRED.register(modBus);
 
         ModCreativeModeTab.TABS.register(modBus);
     }
@@ -147,7 +151,6 @@ public class PneumaticCraftRepressurized {
         SensorHandler.getInstance().init();
         ModNameCache.init();
         HeatBehaviourManager.getInstance().registerDefaultBehaviours();
-        PlayerMatcherTypes.registerDefaultMatchers();
         BlockTrackLootable.INSTANCE.addDefaultEntries();
         ItemLaunching.registerDefaultBehaviours();
 

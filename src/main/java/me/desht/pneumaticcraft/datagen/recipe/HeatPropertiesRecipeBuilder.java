@@ -17,6 +17,7 @@
 
 package me.desht.pneumaticcraft.datagen.recipe;
 
+import me.desht.pneumaticcraft.api.crafting.recipe.HeatPropertiesRecipe;
 import me.desht.pneumaticcraft.common.recipes.other.HeatPropertiesRecipeImpl;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.resources.ResourceLocation;
@@ -63,8 +64,10 @@ public class HeatPropertiesRecipeBuilder extends AbstractPNCRecipeBuilder {
     @Override
     public void save(RecipeOutput output, ResourceLocation id) {
         output.accept(id, new HeatPropertiesRecipeImpl(block,
-                Optional.ofNullable(transformHot), Optional.ofNullable(transformHotFlowing),
-                Optional.ofNullable(transformCold), Optional.ofNullable(transformColdFlowing),
+                new HeatPropertiesRecipe.Transforms(
+                        Optional.ofNullable(transformHot), Optional.of(transformCold),
+                        Optional.ofNullable(transformHotFlowing), Optional.of(transformColdFlowing)
+                ),
                 Optional.of(heatCapacity), temperature, Optional.of(thermalResistance), predicates, ""), null);
     }
 }

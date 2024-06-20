@@ -23,7 +23,7 @@ import net.minecraft.world.item.ItemStack;
 
 public class PaxelHandler extends HoeHandler {
     public PaxelHandler() {
-        super(PaxelHandler::isMekanismPaxel, (stack, player) -> stack.hurtAndBreak(1, player, p -> { }));
+        super(PaxelHandler::isMekanismPaxel, (stack, player) -> stack.hurtAndBreak(1, player.getRandom(), player, () -> { }));
     }
 
     private static boolean isMekanismPaxel(ItemStack stack) {

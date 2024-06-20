@@ -18,7 +18,10 @@
 package me.desht.pneumaticcraft.common.block.entity;
 
 import me.desht.pneumaticcraft.common.util.PNCFluidTank;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.component.DataComponentType;
 import net.minecraft.nbt.CompoundTag;
+import net.neoforged.neoforge.fluids.SimpleFluidContent;
 
 import javax.annotation.Nonnull;
 import java.util.Map;
@@ -30,22 +33,23 @@ import java.util.Map;
 @FunctionalInterface
 public interface ISerializableTanks {
     /**
-     * Get a mapping of all tanks; this maps a tag name, which is used as the serialization key, to a fluid tank.
+     * Get a mapping of all tanks; this maps a data component (which must be for a {@link SimpleFluidContent})
+     * to a PNC fluid tank object.
      *
      * @return a map of tag names to tanks
      */
     @Nonnull
-    Map<String, PNCFluidTank> getSerializableTanks();
+    Map<DataComponentType<SimpleFluidContent>, PNCFluidTank> getSerializableTanks();
 
-    default void deserializeTanks(CompoundTag tag) {
-        getSerializableTanks().forEach((key, tank) -> tank.readFromNBT(tag.getCompound(key)));
+    default void deserializeTanks(HolderLookup.Provider provider, CompoundTag tag) {
+        getSerializableTanks().forEach((comp, tank) -> tank.readFromNBT(provider, tag.getCompound(comp.toString())));
     }
 
-    default CompoundTag serializeTanks() {
+    default CompoundTag serializeTanks(HolderLookup.Provider provider) {
         CompoundTag tag = new CompoundTag();
-        getSerializableTanks().forEach((key, tank) -> {
+        getSerializableTanks().forEach((comp, tank) -> {
             if (!tank.getFluid().isEmpty()) {
-                tag.put(key, tank.writeToNBT(new CompoundTag()));
+                tag.put(comp.toString(), tank.writeToNBT(provider, new CompoundTag()));
             }
         });
         return tag;

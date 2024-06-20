@@ -11,11 +11,14 @@ import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.inventory.SolarCompressorMenu;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
+import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.util.BoundingBlockEntityData;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.Vec3i;
+import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
@@ -32,8 +35,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
-
-import static me.desht.pneumaticcraft.api.lib.NBTKeys.NBT_BROKEN;
 
 public class SolarCompressorBlockEntity extends AbstractAirHandlingBlockEntity implements IHeatExchangingTE, MenuProvider, IHasBoundingBlocks {
     public static final double MAX_TEMPERATURE = 698.15; // 425C
@@ -315,25 +316,32 @@ public class SolarCompressorBlockEntity extends AbstractAirHandlingBlockEntity i
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
+    public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
+        super.loadAdditional(tag, provider);
         isBroken = tag.getBoolean(NBTKeys.NBT_BROKEN);
     }
 
     @Override
-    public void saveAdditional(CompoundTag tag) {
-        super.saveAdditional(tag);
+    public void saveAdditional(CompoundTag tag, HolderLookup.Provider provider) {
+        super.saveAdditional(tag, provider);
         if (isBroken) {
             tag.putBoolean(NBTKeys.NBT_BROKEN, true);
         }
     }
 
     @Override
-    public void serializeExtraItemData(CompoundTag blockEntityTag, boolean preserveState) {
-        super.serializeExtraItemData(blockEntityTag, preserveState);
+    protected void applyImplicitComponents(DataComponentInput componentInput) {
+        super.applyImplicitComponents(componentInput);
+
+        isBroken = componentInput.getOrDefault(ModDataComponents.SOLAR_BROKEN, false);
+    }
+
+    @Override
+    protected void collectImplicitComponents(DataComponentMap.Builder builder) {
+        super.collectImplicitComponents(builder);
 
         if (isBroken) {
-            blockEntityTag.putBoolean(NBT_BROKEN, true);
+            builder.set(ModDataComponents.SOLAR_BROKEN, true);
         }
     }
 }

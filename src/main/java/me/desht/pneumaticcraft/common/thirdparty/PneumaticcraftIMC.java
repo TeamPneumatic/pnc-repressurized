@@ -4,6 +4,7 @@ import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.lib.Log;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.InterModComms;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.InterModEnqueueEvent;
 
@@ -12,7 +13,7 @@ import java.util.ArrayList;
 /**
  * Class containing manager for sending all IMC messages to other mods
  */
-@Mod.EventBusSubscriber(modid = Names.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = Names.MOD_ID, bus = EventBusSubscriber.Bus.MOD)
 public class PneumaticcraftIMC {
 
     // List of all IMC messages to be sent at the InterModEnqueueEvent stage

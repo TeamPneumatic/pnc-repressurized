@@ -17,6 +17,7 @@
 
 package me.desht.pneumaticcraft.common.entity.drone;
 
+import me.desht.pneumaticcraft.api.drone.IProgWidget;
 import me.desht.pneumaticcraft.common.registry.ModEntityTypes;
 import me.desht.pneumaticcraft.common.drone.progwidgets.IBlockOrdered.Ordering;
 import me.desht.pneumaticcraft.common.drone.progwidgets.*;

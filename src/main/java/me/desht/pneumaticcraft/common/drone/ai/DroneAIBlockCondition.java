@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.common.drone.ai;
 
-import me.desht.pneumaticcraft.common.drone.IDroneBase;
+import me.desht.pneumaticcraft.api.drone.IDrone;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ICondition;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetAreaItemBase;
 import net.minecraft.core.BlockPos;
@@ -26,7 +26,7 @@ public abstract class DroneAIBlockCondition extends DroneAIBlockInteraction<Prog
 
     private boolean result;
 
-    public DroneAIBlockCondition(IDroneBase drone, ProgWidgetAreaItemBase widget) {
+    public DroneAIBlockCondition(IDrone drone, ProgWidgetAreaItemBase widget) {
         super(drone, widget);
     }
 

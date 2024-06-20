@@ -20,6 +20,8 @@ package me.desht.pneumaticcraft.client.gui.pneumatic_armor.options;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IGuiScreen;
 import me.desht.pneumaticcraft.client.pneumatic_armor.upgrade_handler.SpeedBoostClientHandler;
 import me.desht.pneumaticcraft.common.item.PneumaticArmorItem;
+import me.desht.pneumaticcraft.common.registry.ModDataComponents;
+import net.minecraft.core.component.DataComponentType;
 import net.minecraft.network.chat.Component;
 
 public class SpeedBoostOptions extends AbstractSliderOptions<SpeedBoostClientHandler> {
@@ -28,8 +30,8 @@ public class SpeedBoostOptions extends AbstractSliderOptions<SpeedBoostClientHan
     }
 
     @Override
-    protected String getTagName() {
-        return PneumaticArmorItem.NBT_SPEED_BOOST;
+    protected DataComponentType<Integer> getIntegerComponent() {
+        return ModDataComponents.SPEED_BOOST_PCT.get();
     }
 
     @Override

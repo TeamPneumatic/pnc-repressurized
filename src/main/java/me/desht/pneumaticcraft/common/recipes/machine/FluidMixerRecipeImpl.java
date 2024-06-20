@@ -18,26 +18,29 @@
 package me.desht.pneumaticcraft.common.recipes.machine;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import me.desht.pneumaticcraft.api.crafting.ingredient.FluidIngredient;
 import me.desht.pneumaticcraft.api.crafting.recipe.FluidMixerRecipe;
 import me.desht.pneumaticcraft.common.registry.ModRecipeSerializers;
 import me.desht.pneumaticcraft.common.registry.ModRecipeTypes;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
 
 public class FluidMixerRecipeImpl extends FluidMixerRecipe {
-    private final FluidIngredient input1;
-    private final FluidIngredient input2;
+    private final SizedFluidIngredient input1;
+    private final SizedFluidIngredient input2;
     private final FluidStack outputFluid;
     private final ItemStack outputItem;
     private final float pressure;
     private final int processingTime;
 
-    public FluidMixerRecipeImpl(FluidIngredient input1, FluidIngredient input2, FluidStack outputFluid, ItemStack outputItem, float pressure, int processingTime) {
+    public FluidMixerRecipeImpl(SizedFluidIngredient input1, SizedFluidIngredient input2, FluidStack outputFluid, ItemStack outputItem, float pressure, int processingTime) {
         this.input1 = input1;
         this.input2 = input2;
         this.outputFluid = outputFluid;
@@ -48,17 +51,17 @@ public class FluidMixerRecipeImpl extends FluidMixerRecipe {
 
     @Override
     public boolean matches(FluidStack fluid1, FluidStack fluid2) {
-        return input1.testFluid(fluid1) && input2.testFluid(fluid2)
-                || input2.testFluid(fluid1) && input1.testFluid(fluid2);
+        return input1.test(fluid1) && input2.test(fluid2)
+                || input2.test(fluid1) && input1.test(fluid2);
     }
 
     @Override
-    public FluidIngredient getInput1() {
+    public SizedFluidIngredient getInput1() {
         return input1;
     }
 
     @Override
-    public FluidIngredient getInput2() {
+    public SizedFluidIngredient getInput2() {
         return input2;
     }
 
@@ -92,53 +95,44 @@ public class FluidMixerRecipeImpl extends FluidMixerRecipe {
         return ModRecipeTypes.FLUID_MIXER.get();
     }
 
+
+    public interface IFactory<T extends FluidMixerRecipe> {
+        T create(SizedFluidIngredient input1, SizedFluidIngredient input2,
+                 FluidStack outputFluid, ItemStack outputItem, float pressure, int processingTime);
+    }
+
     public static class Serializer<T extends FluidMixerRecipe> implements RecipeSerializer<T> {
-        private final IFactory<T> factory;
-        private final Codec<T> codec;
+        private final MapCodec<T> codec;
+        private final StreamCodec<RegistryFriendlyByteBuf,T> streamCodec;
 
         public Serializer(IFactory<T> factory) {
-            this.factory = factory;
-
-            codec = RecordCodecBuilder.create(builder -> builder.group(
-                    FluidIngredient.FLUID_CODEC.fieldOf("input1").forGetter(FluidMixerRecipe::getInput1),
-                    FluidIngredient.FLUID_CODEC.fieldOf("input2").forGetter(FluidMixerRecipe::getInput2),
-                    FluidStack.CODEC.fieldOf("fluid_output").forGetter(FluidMixerRecipe::getOutputFluid),
-                    ItemStack.ITEM_WITH_COUNT_CODEC.fieldOf("item_output").forGetter(FluidMixerRecipe::getOutputItem),
+            codec = RecordCodecBuilder.mapCodec(builder -> builder.group(
+                    SizedFluidIngredient.FLAT_CODEC.fieldOf("input1").forGetter(FluidMixerRecipe::getInput1),
+                    SizedFluidIngredient.FLAT_CODEC.fieldOf("input2").forGetter(FluidMixerRecipe::getInput2),
+                    FluidStack.OPTIONAL_CODEC.fieldOf("fluid_output").forGetter(FluidMixerRecipe::getOutputFluid),
+                    ItemStack.OPTIONAL_CODEC.fieldOf("item_output").forGetter(FluidMixerRecipe::getOutputItem),
                     Codec.FLOAT.fieldOf("pressure").forGetter(FluidMixerRecipe::getRequiredPressure),
                     Codec.INT.fieldOf("time").forGetter(FluidMixerRecipe::getProcessingTime)
             ).apply(builder, factory::create));
+            streamCodec = StreamCodec.composite(
+                    SizedFluidIngredient.STREAM_CODEC, FluidMixerRecipe::getInput1,
+                    SizedFluidIngredient.STREAM_CODEC, FluidMixerRecipe::getInput2,
+                    FluidStack.STREAM_CODEC, FluidMixerRecipe::getOutputFluid,
+                    ItemStack.STREAM_CODEC, FluidMixerRecipe::getOutputItem,
+                    ByteBufCodecs.FLOAT, FluidMixerRecipe::getRequiredPressure,
+                    ByteBufCodecs.VAR_INT, FluidMixerRecipe::getProcessingTime,
+                    factory::create
+            );
         }
 
         @Override
-        public Codec<T> codec() {
+        public MapCodec<T> codec() {
             return codec;
         }
 
         @Override
-        public T fromNetwork(FriendlyByteBuf buffer) {
-            FluidIngredient input1 = FluidIngredient.fluidFromNetwork(buffer);
-            FluidIngredient input2 = FluidIngredient.fluidFromNetwork(buffer);
-            FluidStack outputFluid = FluidStack.readFromPacket(buffer);
-            ItemStack outputItem = buffer.readItem();
-            float pressure = buffer.readFloat();
-            int processingTime = buffer.readVarInt();
-
-            return factory.create(input1, input2, outputFluid, outputItem, pressure, processingTime);
-        }
-
-        @Override
-        public void toNetwork(FriendlyByteBuf buffer, T recipe) {
-            recipe.getInput1().fluidToNetwork(buffer);
-            recipe.getInput2().fluidToNetwork(buffer);
-            recipe.getOutputFluid().writeToPacket(buffer);
-            buffer.writeItem(recipe.getOutputItem());
-            buffer.writeFloat(recipe.getRequiredPressure());
-            buffer.writeVarInt(recipe.getProcessingTime());
-        }
-
-        public interface IFactory<T extends FluidMixerRecipe> {
-            T create(FluidIngredient input1, FluidIngredient input2,
-                     FluidStack outputFluid, ItemStack outputItem, float pressure, int processingTime);
+        public StreamCodec<RegistryFriendlyByteBuf, T> streamCodec() {
+            return streamCodec;
         }
     }
 }

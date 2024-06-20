@@ -18,9 +18,12 @@
 package me.desht.pneumaticcraft.common.drone.progwidgets;
 
 import com.google.common.collect.ImmutableList;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import me.desht.pneumaticcraft.api.drone.IDrone;
+import me.desht.pneumaticcraft.api.drone.IProgWidget;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
-import me.desht.pneumaticcraft.common.drone.IDroneBase;
-import me.desht.pneumaticcraft.common.registry.ModProgWidgets;
+import me.desht.pneumaticcraft.common.registry.ModProgWidgetTypes;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -32,10 +35,23 @@ import java.util.List;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class ProgWidgetJumpSub extends ProgWidget implements IJumpBackWidget, IJump {
+
+    public static final MapCodec<ProgWidgetJumpSub> CODEC = RecordCodecBuilder.mapCodec(builder ->
+            baseParts(builder).apply(builder, ProgWidgetJumpSub::new));
+
     private boolean jumpBack;
 
+    public ProgWidgetJumpSub(PositionFields pos) {
+        super(pos);
+    }
+
+    @Override
+    public ProgWidgetType<?> getType() {
+        return ModProgWidgetTypes.JUMP_SUB.get();
+    }
+
     public ProgWidgetJumpSub() {
-        super(ModProgWidgets.JUMP_SUB.get());
+        super(PositionFields.DEFAULT);
     }
 
     @Override
@@ -55,11 +71,11 @@ public class ProgWidgetJumpSub extends ProgWidget implements IJumpBackWidget, IJ
     }
 
     @Override
-    public IProgWidget getOutputWidget(IDroneBase drone, List<IProgWidget> allWidgets) {
+    public IProgWidget getOutputWidget(IDrone drone, List<IProgWidget> allWidgets) {
         List<String> locations = getPossibleJumpLocations();
-        if (locations.size() > 0 && !jumpBack) {
+        if (!locations.isEmpty() && !jumpBack) {
             jumpBack = true;
-            return ProgWidgetJump.jumpToLabel(drone, allWidgets, locations.get(0));
+            return ProgWidgetJump.jumpToLabel(drone, allWidgets, locations.getFirst());
         }
         jumpBack = false;
         return super.getOutputWidget(drone, allWidgets);
@@ -72,7 +88,7 @@ public class ProgWidgetJumpSub extends ProgWidget implements IJumpBackWidget, IJ
 
     @Override
     public List<ProgWidgetType<?>> getParameters() {
-        return ImmutableList.of(ModProgWidgets.TEXT.get());
+        return ImmutableList.of(ModProgWidgetTypes.TEXT.get());
     }
 
     @Override

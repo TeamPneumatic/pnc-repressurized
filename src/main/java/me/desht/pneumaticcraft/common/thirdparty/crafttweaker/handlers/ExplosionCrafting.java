@@ -47,7 +47,7 @@ public class ExplosionCrafting implements IRecipeManager<ExplosionCraftingRecipe
         CraftTweakerAPI.apply(new ActionAddRecipe<>(this,
                 new RecipeHolder<>(new ResourceLocation("crafttweaker", fixRecipeName(name)),
                 new ExplosionCraftingRecipeImpl(
-                        CTUtils.toStackedIngredient(input),
+                        CTUtils.toSizedIngredient(input),
                         lossRate,
                         CTUtils.toItemStacks(outputs))
                 )));

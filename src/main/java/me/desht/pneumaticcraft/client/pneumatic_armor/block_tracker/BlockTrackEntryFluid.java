@@ -24,7 +24,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -42,7 +41,7 @@ public class BlockTrackEntryFluid implements IBlockTrackEntry {
     public static final ResourceLocation ID = RL("block_tracker.module.fluids");
 
     @Override
-    public boolean shouldTrackWithThisEntry(BlockGetter world, BlockPos pos, BlockState state, BlockEntity te) {
+    public boolean shouldTrackWithThisEntry(Level world, BlockPos pos, BlockState state, BlockEntity te) {
         return te != null
                 && !TrackerBlacklistManager.isFluidBlacklisted(te)
                 && IBlockTrackEntry.hasCapabilityOnAnyFace(te, Capabilities.FluidHandler.BLOCK)
@@ -68,7 +67,7 @@ public class BlockTrackEntryFluid implements IBlockTrackEntry {
                     if (stack.isEmpty()) {
                         infoList.add(xlate("pneumaticcraft.blockTracker.info.fluids.tankEmpty", i + 1, handler.getTankCapacity(i)));
                     } else {
-                        infoList.add(xlate("pneumaticcraft.blockTracker.info.fluids.tankFull", i + 1, stack.getAmount(), handler.getTankCapacity(i), stack.getDisplayName().getString()));
+                        infoList.add(xlate("pneumaticcraft.blockTracker.info.fluids.tankFull", i + 1, stack.getAmount(), handler.getTankCapacity(i), stack.getHoverName().getString()));
                     }
                 }
             });

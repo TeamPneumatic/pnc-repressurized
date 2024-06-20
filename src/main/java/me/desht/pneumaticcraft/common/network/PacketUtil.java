@@ -78,7 +78,7 @@ public class PacketUtil {
     public static <T extends BlockEntity> Optional<T> getBlockEntity(Player player, BlockPos pos, Class<T> cls) {
         if (player == null || player.level().isClientSide) {
             // client-side: we trust the blockpos the server sends
-            return ClientUtils.getOptionalClientLevel().flatMap(level -> PneumaticCraftUtils.getTileEntityAt(level, pos, cls));
+            return ClientUtils.getOptionalClientLevel().flatMap(level -> PneumaticCraftUtils.getBlockEntityAt(level, pos, cls));
         } else {
             // server-side: don't trust the blockpos the client sent us
             // instead get the BE from the player's open container

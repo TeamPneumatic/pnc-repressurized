@@ -18,14 +18,17 @@
 package me.desht.pneumaticcraft.common.drone.progwidgets;
 
 import com.google.common.collect.ImmutableList;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import me.desht.pneumaticcraft.api.drone.IDrone;
+import me.desht.pneumaticcraft.api.drone.IProgWidget;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
-import me.desht.pneumaticcraft.common.drone.IDroneBase;
 import me.desht.pneumaticcraft.common.drone.ai.DroneAIEditSign;
-import me.desht.pneumaticcraft.common.registry.ModProgWidgets;
+import me.desht.pneumaticcraft.common.registry.ModProgWidgetTypes;
 import me.desht.pneumaticcraft.common.variables.TextVariableParser;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.item.DyeColor;
@@ -34,10 +37,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ProgWidgetEditSign extends ProgWidgetAreaItemBase implements ISignEditWidget {
-    private boolean backSide = false;
+    public static final MapCodec<ProgWidgetEditSign> CODEC = RecordCodecBuilder.mapCodec(builder ->
+            baseParts(builder).and(Codec.BOOL.optionalFieldOf("back_side", false).forGetter(ProgWidgetEditSign::isSignBackSide)
+    ).apply(builder, ProgWidgetEditSign::new));
+
+    private boolean backSide;
+
+    public ProgWidgetEditSign(PositionFields pos, boolean backSide) {
+        super(pos);
+        this.backSide = backSide;
+    }
 
     public ProgWidgetEditSign() {
-        super(ModProgWidgets.EDIT_SIGN.get());
+        super(PositionFields.DEFAULT);
+
+        backSide = false;
     }
 
     @Override
@@ -47,11 +61,16 @@ public class ProgWidgetEditSign extends ProgWidgetAreaItemBase implements ISignE
 
     @Override
     public List<ProgWidgetType<?>> getParameters() {
-        return ImmutableList.of(ModProgWidgets.AREA.get(), ModProgWidgets.TEXT.get());
+        return ImmutableList.of(ModProgWidgetTypes.AREA.get(), ModProgWidgetTypes.TEXT.get());
     }
 
     @Override
-    public Goal getWidgetAI(IDroneBase drone, IProgWidget widget) {
+    public ProgWidgetType<?> getType() {
+        return ModProgWidgetTypes.EDIT_SIGN.get();
+    }
+
+    @Override
+    public Goal getWidgetAI(IDrone drone, IProgWidget widget) {
         return new DroneAIEditSign(drone, (ProgWidgetAreaItemBase) widget);
     }
 
@@ -86,26 +105,26 @@ public class ProgWidgetEditSign extends ProgWidgetAreaItemBase implements ISignE
         this.backSide = backSide;
     }
 
-    @Override
-    public void writeToNBT(CompoundTag tag) {
-        super.writeToNBT(tag);
-        if (backSide) tag.putBoolean("back", isSignBackSide());
-    }
+//    @Override
+//    public void writeToNBT(CompoundTag tag, HolderLookup.Provider provider) {
+//        super.writeToNBT(tag, provider);
+//        if (backSide) tag.putBoolean("back", isSignBackSide());
+//    }
+//
+//    @Override
+//    public void readFromNBT(CompoundTag tag, HolderLookup.Provider provider) {
+//        super.readFromNBT(tag, provider);
+//        backSide = tag.getBoolean("back");
+//    }
 
     @Override
-    public void readFromNBT(CompoundTag tag) {
-        super.readFromNBT(tag);
-        backSide = tag.getBoolean("back");
-    }
-
-    @Override
-    public void writeToPacket(FriendlyByteBuf buf) {
+    public void writeToPacket(RegistryFriendlyByteBuf buf) {
         super.writeToPacket(buf);
         buf.writeBoolean(backSide);
     }
 
     @Override
-    public void readFromPacket(FriendlyByteBuf buf) {
+    public void readFromPacket(RegistryFriendlyByteBuf buf) {
         super.readFromPacket(buf);
         backSide = buf.readBoolean();
     }

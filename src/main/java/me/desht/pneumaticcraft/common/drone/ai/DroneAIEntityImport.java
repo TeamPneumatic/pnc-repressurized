@@ -17,6 +17,7 @@
 
 package me.desht.pneumaticcraft.common.drone.ai;
 
+import me.desht.pneumaticcraft.api.drone.IDrone;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.drone.IDroneBase;
 import me.desht.pneumaticcraft.common.drone.progwidgets.IEntityProvider;
@@ -32,7 +33,7 @@ import net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction;
 
 public class DroneAIEntityImport extends DroneEntityBase<IEntityProvider, Entity> {
 
-    public DroneAIEntityImport(IDroneBase drone, IEntityProvider progWidget) {
+    public DroneAIEntityImport(IDrone drone, IEntityProvider progWidget) {
         super(drone, progWidget);
     }
 

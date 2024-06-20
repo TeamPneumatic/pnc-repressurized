@@ -55,7 +55,9 @@ import net.minecraft.commands.synchronization.ArgumentTypeInfos;
 import net.minecraft.commands.synchronization.SingletonArgumentInfo;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.GlobalPos;
+import net.minecraft.core.component.TypedDataComponent;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
@@ -85,9 +87,12 @@ public class ModCommands {
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext buildContext) {
         dispatcher.register(literal("pncr")
-                .then(literal("dump_nbt")
+                .then(literal("dump_components")
                         .requires(cs -> cs.hasPermission(2))
-                        .executes(ModCommands::dumpNBT)
+                        .executes(ctx -> dumpComponents(ctx.getSource(), false))
+                        .then(literal("all")
+                                .executes(ctx -> dumpComponents(ctx.getSource(), true))
+                        )
                 )
                 .then(literal("global_var")
                         .then(literal("get")
@@ -171,21 +176,39 @@ public class ModCommands {
         return SharedSuggestionProvider.suggest(varNames, builder);
     }
 
-    private static int dumpNBT(CommandContext<CommandSourceStack> ctx) {
-        CommandSourceStack source = ctx.getSource();
-        if (source.getEntity() instanceof Player) {
-            ItemStack held = ((Player) source.getEntity()).getMainHandItem();
-            if (held.getTag() == null) {
-                source.sendFailure(Component.literal("No NBT"));
-                return 0;
-            } else if (held.getTag().isEmpty()) {
-                source.sendFailure(Component.literal("Empty NBT"));
-                return 0;
+    private static int dumpComponents(CommandSourceStack source, boolean all) throws CommandSyntaxException {
+        ItemStack stack = source.getPlayerOrException().getMainHandItem();
+
+        if (!stack.getComponents().isEmpty()) {
+            int amount = stack.getComponents().size();
+            source.sendSuccess(() -> Component.translatable("pneumaticcraft.message.components_header", amount, stack.getItem().getDescription())
+                    .withStyle(ChatFormatting.YELLOW), false);
+            if (!all) {
+                source.sendSuccess(() -> Component.translatable("pneumaticcraft.message.non_default_components")
+                        .withStyle(ChatFormatting.YELLOW, ChatFormatting.ITALIC), false);
             }
-            source.sendSuccess(() -> Component.literal(held.getTag().toString()), false);
+            stack.getComponents().forEach(tc -> {
+                if (all || !tc.value().equals(stack.getItem().components().get(tc.type()))) {
+                    source.sendSuccess(() -> Component.empty()
+                                    .append(Component.literal(tc.type().toString()).withStyle(ChatFormatting.AQUA))
+                                    .append(": ")
+                                    .append(encodeComponent(tc)),
+                            false);
+                }
+            });
             return 1;
+        } else {
+            source.sendFailure(Component.translatable("pneumaticcraft.message.components_header_none").withStyle(ChatFormatting.GOLD));
+            return 0;
         }
-        return 0;
+    }
+
+    private static Component encodeComponent(TypedDataComponent<?> tc) {
+        try {
+            return Component.literal(tc.encodeValue(NbtOps.INSTANCE).getOrThrow().toString());
+        } catch (IllegalStateException ignored) {
+            return Component.literal("(encoding failed)").withStyle(ChatFormatting.GRAY, ChatFormatting.ITALIC);
+        }
     }
 
     private static int amadroneDeliver(CommandSourceStack source, BlockPos toPos, BlockPos fromPos) {

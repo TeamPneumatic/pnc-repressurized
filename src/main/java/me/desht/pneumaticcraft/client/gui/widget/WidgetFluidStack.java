@@ -72,7 +72,7 @@ public class WidgetFluidStack extends WidgetFluidFilter {
 //                font.drawShadow(graphics, str, 0, 0, 0xFFFFFFFF);
 //                graphics.popPose();
             }
-            MutableComponent c = new FluidStack(fluidStack, 1).getDisplayName().copy();
+            MutableComponent c = fluidStack.copyWithAmount(1).getHoverName().copy();
             if (adjustable) {
                 c.append("\n").append(xlate("pneumaticcraft.message.misc.fluidmB", fluidStack.getAmount()).withStyle(ChatFormatting.GRAY));
             }

@@ -18,14 +18,17 @@
 package me.desht.pneumaticcraft.common.drone.progwidgets;
 
 import com.google.common.collect.ImmutableList;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import me.desht.pneumaticcraft.api.drone.IDrone;
+import me.desht.pneumaticcraft.api.drone.IProgWidget;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
-import me.desht.pneumaticcraft.common.drone.IDroneBase;
 import me.desht.pneumaticcraft.common.drone.ai.DroneAIManager;
-import me.desht.pneumaticcraft.common.registry.ModProgWidgets;
+import me.desht.pneumaticcraft.common.registry.ModProgWidgetTypes;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.DyeColor;
@@ -38,12 +41,22 @@ import java.util.List;
 import java.util.Set;
 
 public class ProgWidgetForEachItem extends ProgWidget implements IJumpBackWidget, IJump, IVariableSetWidget {
+    public static final MapCodec<ProgWidgetForEachItem> CODEC = RecordCodecBuilder.mapCodec(builder ->
+            baseParts(builder).and(
+                    Codec.STRING.optionalFieldOf("variable", "").forGetter(ProgWidgetForEachItem::getVariable)
+            ).apply(builder, ProgWidgetForEachItem::new));
+
     private String elementVariable = "";
     private int curIndex; //iterator index
     private DroneAIManager aiManager;
 
+    private ProgWidgetForEachItem(PositionFields pos, String elementVariable) {
+        super(pos);
+        this.elementVariable = elementVariable;
+    }
+
     public ProgWidgetForEachItem() {
-        super(ModProgWidgets.FOR_EACH_ITEM.get());
+        this(PositionFields.DEFAULT, "");
     }
 
     @Override
@@ -58,7 +71,7 @@ public class ProgWidgetForEachItem extends ProgWidget implements IJumpBackWidget
 
     @Override
     public List<ProgWidgetType<?>> getParameters() {
-        return ImmutableList.of(ModProgWidgets.ITEM_FILTER.get(), ModProgWidgets.TEXT.get());
+        return ImmutableList.of(ModProgWidgetTypes.ITEM_FILTER.get(), ModProgWidgetTypes.TEXT.get());
     }
 
     @Override
@@ -76,26 +89,26 @@ public class ProgWidgetForEachItem extends ProgWidget implements IJumpBackWidget
         elementVariable = variable;
     }
 
-    @Override
-    public void writeToNBT(CompoundTag tag) {
-        if (!elementVariable.isEmpty()) tag.putString("variable", elementVariable);
-        super.writeToNBT(tag);
-    }
+//    @Override
+//    public void writeToNBT(CompoundTag tag, HolderLookup.Provider provider) {
+//        if (!elementVariable.isEmpty()) tag.putString("variable", elementVariable);
+//        super.writeToNBT(tag, provider);
+//    }
+//
+//    @Override
+//    public void readFromNBT(CompoundTag tag, HolderLookup.Provider provider) {
+//        elementVariable = tag.getString("variable");
+//        super.readFromNBT(tag, provider);
+//    }
 
     @Override
-    public void readFromNBT(CompoundTag tag) {
-        elementVariable = tag.getString("variable");
-        super.readFromNBT(tag);
-    }
-
-    @Override
-    public void writeToPacket(FriendlyByteBuf buf) {
+    public void writeToPacket(RegistryFriendlyByteBuf buf) {
         super.writeToPacket(buf);
         buf.writeUtf(elementVariable);
     }
 
     @Override
-    public void readFromPacket(FriendlyByteBuf buf) {
+    public void readFromPacket(RegistryFriendlyByteBuf buf) {
         super.readFromPacket(buf);
         elementVariable = buf.readUtf(GlobalVariableManager.MAX_VARIABLE_LEN);
     }
@@ -106,12 +119,12 @@ public class ProgWidgetForEachItem extends ProgWidget implements IJumpBackWidget
     }
 
     @Override
-    public IProgWidget getOutputWidget(IDroneBase drone, List<IProgWidget> allWidgets) {
+    public IProgWidget getOutputWidget(IDrone drone, List<IProgWidget> allWidgets) {
         List<String> locations = getPossibleJumpLocations();
         ItemStack filter = getFilterForIndex(curIndex++);
-        if (locations.size() > 0 && !filter.isEmpty() && (curIndex == 1 || !aiManager.getStack(drone.getOwnerUUID(), elementVariable).isEmpty())) {
-            aiManager.setStack(elementVariable, filter);
-            return ProgWidgetJump.jumpToLabel(drone, allWidgets, locations.get(0));
+        if (!locations.isEmpty() && !filter.isEmpty() && (curIndex == 1 || !aiManager.getStack(drone.getOwnerUUID(), elementVariable).isEmpty())) {
+            aiManager.setItemStack(elementVariable, filter);
+            return ProgWidgetJump.jumpToLabel(drone, allWidgets, locations.getFirst());
         }
         curIndex = 0;
         return super.getOutputWidget(drone, allWidgets);
@@ -134,6 +147,11 @@ public class ProgWidgetForEachItem extends ProgWidget implements IJumpBackWidget
         List<String> locations = new ArrayList<>();
         if (textWidget != null) locations.add(textWidget.string);
         return locations;
+    }
+
+    @Override
+    public ProgWidgetType<?> getType() {
+        return ModProgWidgetTypes.FOR_EACH_ITEM.get();
     }
 
     @Override

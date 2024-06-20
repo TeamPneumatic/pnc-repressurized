@@ -19,13 +19,11 @@ package me.desht.pneumaticcraft.client.gui.widget;
 
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.thirdparty.ModNameCache;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
-import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
@@ -101,7 +99,7 @@ public class WidgetTank extends AbstractWidget {
         if (fluid == Fluids.EMPTY || tank.getCapacity() == 0 || tank.getFluidAmount() == 0) {
             l.add(xlate("pneumaticcraft.gui.misc.empty").withStyle(ChatFormatting.GRAY));
         } else {
-            l.add(new FluidStack(fluid, tank.getFluidAmount()).getDisplayName().copy().withStyle(ChatFormatting.GRAY));
+            l.add(new FluidStack(fluid, tank.getFluidAmount()).getHoverName().copy().withStyle(ChatFormatting.GRAY));
             l.add(Component.literal(ModNameCache.getModName(fluid)).withStyle(ChatFormatting.BLUE, ChatFormatting.ITALIC));
         }
         return l;

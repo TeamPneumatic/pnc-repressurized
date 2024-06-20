@@ -21,9 +21,6 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenCustomHashMap;
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.ItemHandlerHelper;
-
-import java.util.Objects;
 
 public class CountedItemStacks extends Object2IntOpenCustomHashMap<ItemStack> {
     private final boolean canCoalesce;
@@ -31,13 +28,13 @@ public class CountedItemStacks extends Object2IntOpenCustomHashMap<ItemStack> {
     private static class ItemStackHashingStrategy implements Strategy<ItemStack> {
         @Override
         public int hashCode(ItemStack object) {
-            return Objects.hash(object.getItem(), object.getTag());
+            return ItemStack.hashItemAndComponents(object);
         }
 
         @Override
         public boolean equals(ItemStack o1, ItemStack o2) {
             return (o1 == o2) || !(o1 == null || o2 == null)
-                    && ItemStack.isSameItemSameTags(o1, o2);
+                    && ItemStack.isSameItemSameComponents(o1, o2);
         }
     }
 
@@ -77,7 +74,7 @@ public class CountedItemStacks extends Object2IntOpenCustomHashMap<ItemStack> {
             while (amount > 0) {
                 int toTake = Math.min(amount, stack.getMaxStackSize());
                 amount -= toTake;
-                coalesced.add(ItemHandlerHelper.copyStackWithSize(stack, toTake));
+                coalesced.add(stack.copyWithCount(toTake));
             }
         });
         return coalesced;

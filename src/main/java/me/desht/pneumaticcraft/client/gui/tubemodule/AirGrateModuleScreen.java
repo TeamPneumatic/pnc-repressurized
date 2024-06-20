@@ -133,7 +133,7 @@ public class AirGrateModuleScreen extends AbstractTubeModuleScreen<AirGrateModul
             EntityFilter filter = EntityFilter.fromString(textfield.getValue());
             if (filter != null) {
                 module.setEntityFilter(filter);
-                NetworkHandler.sendToServer(PacketUpdateAirGrateModule.create(module, textfield.getValue()));
+                NetworkHandler.sendToServer(PacketUpdateAirGrateModule.forModule(module, textfield.getValue()));
             }
         }
     }

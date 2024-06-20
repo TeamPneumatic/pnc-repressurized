@@ -35,10 +35,10 @@
 package me.desht.pneumaticcraft.common.thirdparty.jei.transfer;
 
 import com.google.common.collect.ImmutableList;
+import me.desht.pneumaticcraft.api.drone.IProgWidget;
 import me.desht.pneumaticcraft.client.gui.ProgrammerScreen;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.block.entity.drone.ProgrammerBlockEntity;
-import me.desht.pneumaticcraft.common.drone.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetCrafting;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetItemFilter;
 import me.desht.pneumaticcraft.common.inventory.ProgrammerMenu;
@@ -157,11 +157,9 @@ public class ProgrammerTransferHandler implements IRecipeTransferHandler<Program
             if (!stack.isEmpty() || craftingWidget != null && n % 3 < 2 && !l.get(n + 1).isEmpty()) {
                 ProgWidgetItemFilter w = ProgWidgetItemFilter.withFilter(stack);
                 if (craftingWidget == null) {
-                    w.setX(base.x() + c++ * filterWidget.getWidth() / 2);
-                    w.setY(base.y());
+                    w.setPosition(base.x() + c++ * filterWidget.getWidth() / 2, base.y());
                 } else {
-                    w.setX(base.x() + (n % 3) * filterWidget.getWidth() / 2);
-                    w.setY(base.y() + (n / 3) * filterWidget.getHeight() / 2);
+                    w.setPosition(base.x() + (n % 3) * filterWidget.getWidth() / 2, base.y() + (n / 3) * filterWidget.getHeight() / 2);
                 }
                 builder.add(w);
             }

@@ -51,7 +51,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.vehicle.AbstractMinecart;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.client.event.InputEvent;
-import org.joml.Matrix3f;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -299,15 +298,15 @@ public class RenderEntityTarget {
             rotationAngle += rotationSpeed;
         }
 
-        public void render(PoseStack matrixStack, MultiBufferSource buffer, float size, float partialTicks, float alpha) {
+        public void render(PoseStack poseStack, MultiBufferSource buffer, float size, float partialTicks, float alpha) {
             double renderRotationAngle = Mth.lerp(partialTicks, oldRotationAngle, rotationAngle);
 
-            matrixStack.pushPose();
+            poseStack.pushPose();
 
-            matrixStack.mulPose(Axis.ZP.rotationDegrees((float) renderRotationAngle));
+            poseStack.mulPose(Axis.ZP.rotationDegrees((float) renderRotationAngle));
 
             for (int pass = 0; pass < 2; pass++) {
-                RenderUtils.renderWithTypeAndFinish(matrixStack, buffer, ModRenderTypes.TARGET_CIRCLE, (posMat, builder) -> {
+                RenderUtils.renderWithTypeAndFinish(poseStack, buffer, ModRenderTypes.TARGET_CIRCLE, (posMat, builder) -> {
                     for (float i = 0; i < QUARTER_CIRCLE; i += STEP) {
                         RenderUtils.posF(builder, posMat,Mth.cos(i) * size, Mth.sin(i) * size, 0)
                                 .color(cols[0], cols[1], cols[2], alpha)
@@ -321,14 +320,13 @@ public class RenderEntityTarget {
                 });
 
                 if (renderAsTagged) {
-                    final Matrix3f normal = matrixStack.last().normal();
-                    RenderUtils.renderWithTypeAndFinish(matrixStack, buffer, ModRenderTypes.getLineLoops(3.0), (posMat, builder) -> {
+                    RenderUtils.renderWithTypeAndFinish(poseStack, buffer, ModRenderTypes.getLineLoops(3.0), (posMat, builder) -> {
                         for (float i = 0; i < QUARTER_CIRCLE; i += STEP) {
                             Vec3 v1 = new Vec3(Mth.cos(i) * size, Mth.sin(i) * size, 0);
                             Vec3 v2 = new Vec3(Mth.cos(i + STEP) * size, Mth.sin(i + STEP) * size, 0);
                             RenderUtils.posF(builder, posMat, v1.x(), v1.y(), 0)
                                     .color(255, 0, 0, 255)
-                                    .normal(normal, (float) (v2.x() - v1.x()), (float) (v2.y() - v1.y()), 0f)
+                                    .normal(poseStack.last(), (float) (v2.x() - v1.x()), (float) (v2.y() - v1.y()), 0f)
                                     .endVertex();
                         }
                         for (float i = QUARTER_CIRCLE - STEP; i >= 0f; i -= STEP) {
@@ -336,15 +334,15 @@ public class RenderEntityTarget {
                             Vec3 v2 = new Vec3(Mth.cos(i + STEP) * size, Mth.sin(i + STEP) * size, 0);
                             RenderUtils.posF(builder, posMat, v1.x(), v1.y(), 0)
                                     .color(255, 0, 0, 255)
-                                    .normal(normal, (float) (v2.x() - v1.x()), (float) (v2.y() - v1.y()), 0f)
+                                    .normal(poseStack.last(), (float) (v2.x() - v1.x()), (float) (v2.y() - v1.y()), 0f)
                                     .endVertex();
                         }
                     });
                 }
 
-                matrixStack.mulPose(Axis.ZP.rotationDegrees(180));
+                poseStack.mulPose(Axis.ZP.rotationDegrees(180));
             }
-            matrixStack.popPose();
+            poseStack.popPose();
         }
 
         private float[] getCircleColour(Entity entity) {

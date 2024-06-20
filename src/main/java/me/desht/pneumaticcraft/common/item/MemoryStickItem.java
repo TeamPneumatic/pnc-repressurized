@@ -23,6 +23,7 @@ import me.desht.pneumaticcraft.common.XPFluidManager;
 import me.desht.pneumaticcraft.common.capabilities.PNCFluidHandlerItemStack;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketLeftClickEmpty;
+import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.registry.ModFluids;
 import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.thirdparty.curios.Curios;
@@ -44,20 +45,17 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerXpEvent;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
 
-import javax.annotation.Nullable;
 import java.util.*;
 
 public class MemoryStickItem extends Item implements ColorHandlers.ITintableItem, ILeftClickableItem, IFluidCapProvider {
-    public static final String TANK_NAME = "Tank";
     public static final int XP_FLUID_CAPACITY = 512000;
-    private static final String NBT_ABSORB_ORBS = "AbsorbXPOrbs";
     private static final int[] TINT_COLORS = new int[] {
                 0xf7ffbf,
                 0xf2ff99,
@@ -122,10 +120,10 @@ public class MemoryStickItem extends Item implements ColorHandlers.ITintableItem
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
-        super.appendHoverText(stack, worldIn, tooltip, flagIn);
+    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flagIn) {
+        super.appendHoverText(stack, context, tooltip, flagIn);
 
-        if (worldIn != null) {
+        if (context.registries() != null) {
             IOHelper.getFluidHandlerForItem(stack).ifPresent(handler -> {
                 int ratio = XPFluidManager.getInstance().getXPRatio(ModFluids.MEMORY_ESSENCE.get());
                 if (ratio > 0) {  // could be 0 if queried too early, e.g. JEI item scanning
@@ -154,14 +152,12 @@ public class MemoryStickItem extends Item implements ColorHandlers.ITintableItem
     }
 
     public static boolean shouldAbsorbXPOrbs(ItemStack stack) {
-        return stack.getItem() == ModItems.MEMORY_STICK.get()
-                && stack.getCount() == 1
-                && stack.hasTag() && Objects.requireNonNull(stack.getTag()).getBoolean(NBT_ABSORB_ORBS);
+        return stack.getOrDefault(ModDataComponents.ABSORB_ORBS, false);
     }
 
     public static void setAbsorbXPOrbs(ItemStack stack, boolean absorb) {
         if (stack.getItem() == ModItems.MEMORY_STICK.get()) {
-            stack.getOrCreateTag().putBoolean(NBT_ABSORB_ORBS, absorb);
+            stack.set(ModDataComponents.ABSORB_ORBS, absorb);
         }
     }
 
@@ -212,10 +208,10 @@ public class MemoryStickItem extends Item implements ColorHandlers.ITintableItem
 
     @Override
     public IFluidHandlerItem provideFluidCapability(ItemStack stack) {
-        return new PNCFluidHandlerItemStack(stack, XP_FLUID_CAPACITY, fluid -> fluid == ModFluids.MEMORY_ESSENCE.get());
+        return new PNCFluidHandlerItemStack(ModDataComponents.STORED_FLUID, stack, XP_FLUID_CAPACITY, fluid -> fluid == ModFluids.MEMORY_ESSENCE.get());
     }
 
-    @Mod.EventBusSubscriber(modid = Names.MOD_ID)
+    @EventBusSubscriber(modid = Names.MOD_ID)
     public static class Listener {
         private static final Map<UUID, Long> lastEvent = new HashMap<>();
         private static final Map<UUID, Set<MemoryStickLocator>> memoryStickCache = new HashMap<>();
@@ -250,7 +246,6 @@ public class MemoryStickItem extends Item implements ColorHandlers.ITintableItem
                 IOHelper.getFluidHandlerForItem(stack).ifPresent(handler -> {
                     if (PneumaticCraftUtils.fillTankWithOrb(handler, event.getOrb(), IFluidHandler.FluidAction.EXECUTE)) {
                         // orb's xp can fit in the memory stick: remove the entity, cancel the event
-                        stack.setTag(handler.getContainer().getTag());
                         event.getOrb().discard();
                         event.setCanceled(true);
                     }

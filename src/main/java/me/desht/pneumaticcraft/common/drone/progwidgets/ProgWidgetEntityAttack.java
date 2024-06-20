@@ -18,17 +18,20 @@
 package me.desht.pneumaticcraft.common.drone.progwidgets;
 
 import com.google.common.collect.ImmutableList;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import me.desht.pneumaticcraft.api.drone.IDrone;
+import me.desht.pneumaticcraft.api.drone.IProgWidget;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.drone.IDroneBase;
 import me.desht.pneumaticcraft.common.drone.ai.DroneAIAttackEntity;
 import me.desht.pneumaticcraft.common.drone.ai.DroneAINearestAttackableTarget;
 import me.desht.pneumaticcraft.common.drone.progwidgets.area.AreaTypeBox;
-import me.desht.pneumaticcraft.common.entity.drone.DroneEntity;
-import me.desht.pneumaticcraft.common.registry.ModProgWidgets;
+import me.desht.pneumaticcraft.common.registry.ModProgWidgetTypes;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
@@ -44,13 +47,35 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class ProgWidgetEntityAttack extends ProgWidget
         implements IAreaProvider, IEntityProvider, IMaxActions, ICheckLineOfSight {
+
+    public static final MapCodec<ProgWidgetEntityAttack> CODEC = RecordCodecBuilder.mapCodec(builder ->
+            baseParts(builder).and(builder.group(
+                    Codec.BOOL.optionalFieldOf("use_max_actions", false).forGetter(ProgWidgetEntityAttack::useMaxActions),
+                    Codec.INT.optionalFieldOf("max_actions", 1).forGetter(ProgWidgetEntityAttack::getMaxActions),
+                    Codec.BOOL.optionalFieldOf("check_sight", false).forGetter(ProgWidgetEntityAttack::isCheckSight)
+            )
+    ).apply(builder, ProgWidgetEntityAttack::new));
+
     private EntityFilterPair<ProgWidgetEntityAttack> entityFilters;
     private int maxActions;
     private boolean useMaxActions;
     private boolean checkSight;
 
+    public ProgWidgetEntityAttack(PositionFields pos, boolean useMaxActions, int maxActions, boolean checkSight) {
+        super(pos);
+
+        this.useMaxActions = useMaxActions;
+        this.maxActions = maxActions;
+        this.checkSight = checkSight;
+    }
+
     public ProgWidgetEntityAttack() {
-        super(ModProgWidgets.ENTITY_ATTACK.get());
+        this(PositionFields.DEFAULT, false, 1, false);
+    }
+
+    @Override
+    public ProgWidgetType<?> getType() {
+        return ModProgWidgetTypes.ENTITY_ATTACK.get();
     }
 
     @Override
@@ -68,13 +93,13 @@ public class ProgWidgetEntityAttack extends ProgWidget
     }
 
     @Override
-    public Goal getWidgetAI(IDroneBase drone, IProgWidget widget) {
-        return new DroneAIAttackEntity((DroneEntity) drone, 1.0D, false, getEntityFilters().getFilterString());
+    public Goal getWidgetAI(IDrone drone, IProgWidget widget) {
+        return new DroneAIAttackEntity(IDroneBase.asDrone(drone), 1.0D, false, getEntityFilters().getFilterString());
     }
 
     @Override
-    public Goal getWidgetTargetAI(IDroneBase drone, IProgWidget widget) {
-        return new DroneAINearestAttackableTarget((DroneEntity) drone, checkSight, (ProgWidget) widget);
+    public Goal getWidgetTargetAI(IDrone drone, IProgWidget widget) {
+        return new DroneAINearestAttackableTarget(IDroneBase.asDrone(drone), checkSight, (ProgWidget) widget);
     }
 
     @Override
@@ -84,7 +109,7 @@ public class ProgWidgetEntityAttack extends ProgWidget
 
     @Override
     public List<ProgWidgetType<?>> getParameters() {
-        return ImmutableList.of(ModProgWidgets.AREA.get(), ModProgWidgets.TEXT.get());
+        return ImmutableList.of(ModProgWidgetTypes.AREA.get(), ModProgWidgetTypes.TEXT.get());
     }
 
     @Override
@@ -170,24 +195,24 @@ public class ProgWidgetEntityAttack extends ProgWidget
         return checkSight;
     }
 
-    @Override
-    public void writeToNBT(CompoundTag tag) {
-        super.writeToNBT(tag);
-        if (useMaxActions) tag.putBoolean("useMaxActions", true);
-        if (checkSight) tag.putBoolean("checkSight", true);
-        tag.putInt("maxActions", maxActions);
-    }
+//    @Override
+//    public void writeToNBT(CompoundTag tag, HolderLookup.Provider provider) {
+//        super.writeToNBT(tag, provider);
+//        if (useMaxActions) tag.putBoolean("useMaxActions", true);
+//        if (checkSight) tag.putBoolean("checkSight", true);
+//        tag.putInt("maxActions", maxActions);
+//    }
+//
+//    @Override
+//    public void readFromNBT(CompoundTag tag, HolderLookup.Provider provider) {
+//        super.readFromNBT(tag, provider);
+//        useMaxActions = tag.getBoolean("useMaxActions");
+//        checkSight = tag.getBoolean("checkSight");
+//        maxActions = tag.getInt("maxActions");
+//    }
 
     @Override
-    public void readFromNBT(CompoundTag tag) {
-        super.readFromNBT(tag);
-        useMaxActions = tag.getBoolean("useMaxActions");
-        checkSight = tag.getBoolean("checkSight");
-        maxActions = tag.getInt("maxActions");
-    }
-
-    @Override
-    public void writeToPacket(FriendlyByteBuf buf) {
+    public void writeToPacket(RegistryFriendlyByteBuf buf) {
         super.writeToPacket(buf);
         buf.writeBoolean(useMaxActions);
         buf.writeVarInt(maxActions);
@@ -195,7 +220,7 @@ public class ProgWidgetEntityAttack extends ProgWidget
     }
 
     @Override
-    public void readFromPacket(FriendlyByteBuf buf) {
+    public void readFromPacket(RegistryFriendlyByteBuf buf) {
         super.readFromPacket(buf);
         useMaxActions = buf.readBoolean();
         maxActions = buf.readVarInt();

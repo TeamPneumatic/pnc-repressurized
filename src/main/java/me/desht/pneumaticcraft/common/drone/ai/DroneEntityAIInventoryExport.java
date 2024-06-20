@@ -17,6 +17,7 @@
 
 package me.desht.pneumaticcraft.common.drone.ai;
 
+import me.desht.pneumaticcraft.api.drone.IDrone;
 import me.desht.pneumaticcraft.common.drone.IDroneBase;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetInventoryBase;
 import me.desht.pneumaticcraft.common.util.IOHelper;
@@ -26,9 +27,9 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
-public class DroneEntityAIInventoryExport extends DroneAIImExBase<ProgWidgetInventoryBase> {
+public class DroneEntityAIInventoryExport extends DroneAIImportExportBase<ProgWidgetInventoryBase> {
 
-    public DroneEntityAIInventoryExport(IDroneBase drone, ProgWidgetInventoryBase widget) {
+    public DroneEntityAIInventoryExport(IDrone drone, ProgWidgetInventoryBase widget) {
         super(drone, widget);
     }
 
@@ -43,7 +44,7 @@ public class DroneEntityAIInventoryExport extends DroneAIImExBase<ProgWidgetInve
     }
 
     private boolean export(BlockPos pos, boolean simulate) {
-        BlockEntity te = drone.world().getBlockEntity(pos);
+        BlockEntity te = drone.getDroneLevel().getBlockEntity(pos);
         if (te != null) {
             for (int i = 0; i < drone.getInv().getSlots(); i++) {
                 ItemStack droneStack = drone.getInv().getStackInSlot(i);

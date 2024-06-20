@@ -8,24 +8,26 @@ import me.desht.pneumaticcraft.common.minigun.Minigun;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.LayeredDraw;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod;
-import net.neoforged.neoforge.client.event.RenderGuiOverlayEvent;
-import net.neoforged.neoforge.client.gui.overlay.ExtendedGui;
-import net.neoforged.neoforge.client.gui.overlay.IGuiOverlay;
-import net.neoforged.neoforge.client.gui.overlay.VanillaGuiOverlay;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.RenderGuiLayerEvent;
+import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 import org.lwjgl.opengl.GL11;
 
-public class MinigunOverlay implements IGuiOverlay {
+public class MinigunOverlay implements LayeredDraw.Layer {
     private static final float MINIGUN_TEXT_SIZE = 0.55f;
 
     @Override
-    public void render(ExtendedGui gui, GuiGraphics graphics, float partialTicks, int width, int height) {
+    public void render(GuiGraphics graphics, float partialTicks) {
         Minecraft mc = Minecraft.getInstance();
+        int width = graphics.guiWidth();
+        int height = graphics.guiHeight();
         Player player = mc.player;
+
         if (player == null || !(player.getMainHandItem().getItem() instanceof MinigunItem itemMinigun) || !Minecraft.getInstance().options.getCameraType().isFirstPerson())
             return;
         ItemStack heldStack = player.getMainHandItem();
@@ -52,12 +54,12 @@ public class MinigunOverlay implements IGuiOverlay {
         graphics.blit(Textures.MINIGUN_CROSSHAIR, width / 2 - 7, height / 2 - 7, 0, 0, 16, 16, 16, 16);
     }
 
-    @Mod.EventBusSubscriber(modid = Names.MOD_ID, value = Dist.CLIENT)
+    @EventBusSubscriber(modid = Names.MOD_ID, value = Dist.CLIENT)
     public static class Listener {
         @SubscribeEvent
-        public static void crosshairsEvent(RenderGuiOverlayEvent.Pre event) {
+        public static void crosshairsEvent(RenderGuiLayerEvent.Pre event) {
             boolean firstPerson = Minecraft.getInstance().options.getCameraType().isFirstPerson();
-            if (event.getOverlay().id().equals(VanillaGuiOverlay.CROSSHAIR.id())
+            if (event.getName().equals(VanillaGuiLayers.CROSSHAIR)
                     && ClientUtils.getClientPlayer().getMainHandItem().getItem() instanceof MinigunItem
                     && firstPerson) {
                 event.setCanceled(true);

@@ -20,42 +20,35 @@ package me.desht.pneumaticcraft.common.item;
 import com.google.common.collect.Sets;
 import me.desht.pneumaticcraft.api.item.IFilteringItem;
 import me.desht.pneumaticcraft.api.misc.Symbols;
+import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.StringTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.level.Level;
 import org.apache.commons.lang3.Validate;
 
-import javax.annotation.Nullable;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class TagFilterItem extends Item implements IFilteringItem {
-    private static final String NBT_TAG_LIST = "TagList";
-
     public TagFilterItem() {
         super(ModItems.defaultProps().stacksTo(1));
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
-        super.appendHoverText(stack, worldIn, tooltip, flagIn);
+    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flagIn) {
+        super.appendHoverText(stack, context, tooltip, flagIn);
 
-        if (worldIn != null) {
+        if (context.registries() != null) {
             tooltip.add(xlate("pneumaticcraft.gui.tooltip.tag_filter.header").withStyle(ChatFormatting.YELLOW));
             for (TagKey<Item> key : getConfiguredTagList(stack)) {
                 tooltip.add(Symbols.bullet().append(key.location().toString()).withStyle(ChatFormatting.GOLD));
@@ -64,23 +57,18 @@ public class TagFilterItem extends Item implements IFilteringItem {
     }
 
     public static Set<TagKey<Item>> getConfiguredTagList(ItemStack stack) {
-        CompoundTag nbt = stack.getTag();
-        if (nbt != null && nbt.contains(NBT_TAG_LIST)) {
-            ListTag l = nbt.getList(NBT_TAG_LIST, Tag.TAG_STRING);
-            Set<TagKey<Item>> res = new HashSet<>();
-            for (int i = 0; i < l.size(); i++) {
-                res.add(TagKey.create(Registries.ITEM, new ResourceLocation(l.getString(i))));
-            }
-            return res;
-        } else {
-            return Sets.newHashSet();
-        }
+        List<ResourceLocation> tagIds = stack.get(ModDataComponents.TAG_FILTER_KEYS);
+        return tagIds != null && !tagIds.isEmpty() ?
+                tagIds.stream().map(r -> TagKey.create(Registries.ITEM, r)).collect(Collectors.toSet()) :
+                Set.of();
     }
 
     public static void setConfiguredTagList(ItemStack stack, Set<TagKey<Item>> tags) {
-        ListTag l = new ListTag();
-        tags.forEach(tagKey -> l.add(StringTag.valueOf(tagKey.location().toString())));
-        stack.getOrCreateTag().put(NBT_TAG_LIST, l);
+        if (tags.isEmpty()) {
+            stack.remove(ModDataComponents.TAG_FILTER_KEYS);
+        } else {
+            stack.set(ModDataComponents.TAG_FILTER_KEYS, tags.stream().map(TagKey::location).toList());
+        }
     }
 
     @Override

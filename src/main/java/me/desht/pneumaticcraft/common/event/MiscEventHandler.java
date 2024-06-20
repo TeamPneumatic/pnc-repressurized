@@ -20,7 +20,6 @@ package me.desht.pneumaticcraft.common.event;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.block.IPneumaticWrenchable;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.InventoryTrackEvent;
-import me.desht.pneumaticcraft.api.crafting.ingredient.FluidIngredient;
 import me.desht.pneumaticcraft.api.data.PneumaticCraftTags;
 import me.desht.pneumaticcraft.api.drone.DroneConstructingEvent;
 import me.desht.pneumaticcraft.api.item.IPositionProvider;
@@ -47,6 +46,7 @@ import me.desht.pneumaticcraft.common.thirdparty.ModdedWrenchUtils;
 import me.desht.pneumaticcraft.common.tubemodules.ModuleNetworkManager;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -56,31 +56,31 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.vehicle.AbstractMinecart;
 import net.minecraft.world.entity.vehicle.Boat;
+import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.LiquidBlock;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.level.material.Fluids;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.ServerChatEvent;
 import net.neoforged.neoforge.event.TagsUpdatedEvent;
-import net.neoforged.neoforge.event.TickEvent;
 import net.neoforged.neoforge.event.entity.EntityEvent;
 import net.neoforged.neoforge.event.entity.EntityMountEvent;
+import net.neoforged.neoforge.event.entity.living.FinalizeSpawnEvent;
 import net.neoforged.neoforge.event.entity.living.LivingEquipmentChangeEvent;
-import net.neoforged.neoforge.event.entity.living.MobSpawnEvent;
-import net.neoforged.neoforge.event.entity.player.FillBucketEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.furnace.FurnaceFuelBurnTimeEvent;
 import net.neoforged.neoforge.event.level.ExplosionEvent;
 import net.neoforged.neoforge.event.level.LevelEvent;
+import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import net.neoforged.neoforge.fluids.FluidUtil;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
+import net.neoforged.neoforge.fluids.crafting.FluidIngredient;
 
 import java.util.HashSet;
 import java.util.Iterator;
@@ -101,14 +101,14 @@ public class MiscEventHandler {
     }
 
     @SubscribeEvent
-    public void onWorldTickEnd(TickEvent.LevelTickEvent event) {
-        if (event.phase == TickEvent.Phase.END && !event.level.isClientSide) {
-            DroneClaimManager.getInstance(event.level).tick();
+    public void onWorldTickEnd(LevelTickEvent.Post event) {
+        if (event.getLevel() instanceof ServerLevel serverLevel) {
+            DroneClaimManager.getInstance(serverLevel).tick();
 
-            if ((event.level.getGameTime() & 0x7f) == 0 && needsTPSSync.contains(event.level.dimension().location())) {
-                double tickTime = event.level.getServer().getAverageTickTimeNanos() / 1_000_000D;
-                NetworkHandler.sendToDimension(new PacketServerTickTime(tickTime), event.level.dimension());
-                needsTPSSync.remove(event.level.dimension().location());
+            if ((serverLevel.getGameTime() & 0x7f) == 0 && needsTPSSync.contains(serverLevel.dimension().location())) {
+                double tickTime = event.getLevel().getServer().getAverageTickTimeNanos() / 1_000_000D;
+                NetworkHandler.sendToDimension(new PacketServerTickTime(tickTime), serverLevel);
+                needsTPSSync.remove(serverLevel.dimension().location());
             }
         }
     }
@@ -181,10 +181,11 @@ public class MiscEventHandler {
     }
 
     @SubscribeEvent
-    public void onFillBucket(FillBucketEvent event) {
-        if (event.getTarget() instanceof BlockHitResult brtr
-                && event.getLevel().getBlockState(brtr.getBlockPos()).getBlock() instanceof LiquidBlock l
-                && l.getFluid().is(PneumaticCraftTags.Fluids.CRUDE_OIL)
+    public void onFillBucket(PlayerInteractEvent.RightClickItem event) {
+        if (event.getItemStack().getItem() instanceof BucketItem bucket
+                && event.getLevel().getBlockState(event.getPos()).getBlock() instanceof LiquidBlock liquidBlock
+                && liquidBlock.fluid.is(PneumaticCraftTags.Fluids.CRUDE_OIL)
+                && bucket.content == Fluids.EMPTY
                 && event.getEntity() instanceof ServerPlayer sp)
         {
             ModCriterionTriggers.OIL_BUCKET.get().trigger(sp);
@@ -285,11 +286,11 @@ public class MiscEventHandler {
     public void onTagsUpdated(TagsUpdatedEvent event) {
         CommonArmorRegistry.getInstance().resolveBlockTags();
 
-        PneumaticRegistry.getInstance().getMiscHelpers().registerXPFluid(FluidIngredient.of(1, PneumaticCraftTags.Fluids.EXPERIENCE), 20);
+        PneumaticRegistry.getInstance().getMiscHelpers().registerXPFluid(FluidIngredient.tag(PneumaticCraftTags.Fluids.EXPERIENCE), 20);
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
-    public void onMobSpawn(MobSpawnEvent.FinalizeSpawn event) {
+    public void onMobSpawn(FinalizeSpawnEvent event) {
         if (event.getSpawner() != null) {
             // tag any mob spawned by a vanilla Spawner (rather than naturally) as a "defender"
             // such defenders are immune to being absorbed by a Vacuum Trap
@@ -299,13 +300,12 @@ public class MiscEventHandler {
             // any mob spawned due to a spawner with Agitator attached should be persistent
             // i.e. not despawn if no players nearby
             if (event.getLevel() instanceof Level level) {
-                BlockEntity be = event.getSpawner().getSpawnerBlockEntity();
-                if (be != null) {
-                    ISemiBlock semi = SemiblockTracker.getInstance().getSemiblock(level, be.getBlockPos());
+                event.getSpawner().ifLeft(blockEntity -> {
+                    ISemiBlock semi = SemiblockTracker.getInstance().getSemiblock(level, blockEntity.getBlockPos());
                     if (semi instanceof SpawnerAgitatorEntity) {
                         event.getEntity().setPersistenceRequired();
                     }
-                }
+                });
             }
         }
     }

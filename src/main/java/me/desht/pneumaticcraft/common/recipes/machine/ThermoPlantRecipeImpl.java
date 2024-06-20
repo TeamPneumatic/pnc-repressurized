@@ -19,47 +19,44 @@ package me.desht.pneumaticcraft.common.recipes.machine;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import me.desht.pneumaticcraft.api.crafting.TemperatureRange;
-import me.desht.pneumaticcraft.api.crafting.ingredient.FluidIngredient;
 import me.desht.pneumaticcraft.api.crafting.recipe.ThermoPlantRecipe;
 import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.common.registry.ModBlocks;
 import me.desht.pneumaticcraft.common.registry.ModRecipeSerializers;
 import me.desht.pneumaticcraft.common.registry.ModRecipeTypes;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.util.ExtraCodecs;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
+import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
 
 import javax.annotation.Nonnull;
 import java.util.Optional;
 
-// yeah yeah codecs
-@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
 public class ThermoPlantRecipeImpl extends ThermoPlantRecipe {
-    private final Optional<FluidIngredient> inputFluid;
-    private final FluidStack outputFluid;
-    private final Optional<Ingredient> inputItem;
+    private final Inputs inputs;
+    private final Outputs outputs;
     private final float requiredPressure;
     private final float recipeSpeed;
     private final boolean exothermic;
     private final TemperatureRange operatingTemperature;
-    private final ItemStack outputItem;
     private final float airUseMultiplier;
 
     public ThermoPlantRecipeImpl(
-            Optional<FluidIngredient> inputFluid, Optional<Ingredient> inputItem,
-            FluidStack outputFluid, ItemStack outputItem, TemperatureRange operatingTemperature, float requiredPressure,
+            Inputs inputs, Outputs outputs,
+            TemperatureRange operatingTemperature, float requiredPressure,
             float recipeSpeed, float airUseMultiplier, boolean exothermic)
     {
-        this.inputItem = inputItem;
-        this.inputFluid = inputFluid;
-        this.outputFluid = outputFluid;
-        this.outputItem = outputItem;
+        this.inputs = inputs;
+        this.outputs = outputs;
         this.operatingTemperature = operatingTemperature;
         this.requiredPressure = requiredPressure;
         this.recipeSpeed = recipeSpeed;
@@ -69,8 +66,8 @@ public class ThermoPlantRecipeImpl extends ThermoPlantRecipe {
 
     @Override
     public boolean matches(FluidStack fluidStack, @Nonnull ItemStack itemStack) {
-        boolean itemOK = inputItem.map(ingr -> ingr.test(itemStack)).orElse(itemStack.isEmpty());
-        boolean fluidOK = inputFluid.map(ingr -> ingr.testFluid(fluidStack.getFluid())).orElse(fluidStack.isEmpty());
+        boolean itemOK = inputs.inputItem().map(ingr -> ingr.test(itemStack)).orElse(itemStack.isEmpty());
+        boolean fluidOK = inputs.inputFluid().map(ingr -> ingr.test(fluidStack)).orElse(fluidStack.isEmpty());
 
         return itemOK && fluidOK;
     }
@@ -86,29 +83,39 @@ public class ThermoPlantRecipeImpl extends ThermoPlantRecipe {
     }
 
     @Override
-    public Optional<FluidIngredient> getInputFluid() {
-        return inputFluid;
+    public Optional<SizedFluidIngredient> getInputFluid() {
+        return inputs.inputFluid();
     }
 
     @Nonnull
     @Override
     public Optional<Ingredient> getInputItem() {
-        return inputItem;
+        return inputs.inputItem();
     }
 
     @Override
     public FluidStack getOutputFluid() {
-        return outputFluid;
+        return outputs.outputFluid();
     }
 
     @Override
     public ItemStack getOutputItem() {
-        return outputItem;
+        return outputs.outputItem();
     }
 
     @Override
     public boolean isExothermic() {
         return exothermic;
+    }
+
+    @Override
+    public Inputs inputs() {
+        return inputs;
+    }
+
+    @Override
+    public Outputs outputs() {
+        return outputs;
     }
 
     @Override
@@ -141,22 +148,21 @@ public class ThermoPlantRecipeImpl extends ThermoPlantRecipe {
         return new ItemStack(ModBlocks.THERMOPNEUMATIC_PROCESSING_PLANT.get());
     }
 
+    public interface IFactory <T extends ThermoPlantRecipe> {
+        T create(Inputs inputs, Outputs outputs, TemperatureRange operatingTemperature,
+                 float requiredPressure, float recipeSpeed, float airUseMultiplier, boolean exothermic);
+    }
+
     public static class Serializer<T extends ThermoPlantRecipe> implements RecipeSerializer<T> {
-        private final IFactory<T> factory;
-        private final Codec<T> codec;
+        private final MapCodec<T> codec;
+        private final StreamCodec<RegistryFriendlyByteBuf, T> streamCodec;
 
         public Serializer(IFactory<T> factory) {
-            this.factory = factory;
-            this.codec = ExtraCodecs.validate(
-                    RecordCodecBuilder.create(inst -> inst.group(
-                            FluidIngredient.FLUID_CODEC.optionalFieldOf("fluid_input")
-                                    .forGetter(ThermoPlantRecipe::getInputFluid),
-                            Ingredient.CODEC.optionalFieldOf("item_input")
-                                    .forGetter(ThermoPlantRecipe::getInputItem),
-                            FluidStack.CODEC.optionalFieldOf("fluid_output", FluidStack.EMPTY)
-                                    .forGetter(ThermoPlantRecipe::getOutputFluid),
-                            ItemStack.ITEM_WITH_COUNT_CODEC.optionalFieldOf("item_output", ItemStack.EMPTY)
-                                    .forGetter(ThermoPlantRecipe::getOutputItem),
+            this.codec = RecordCodecBuilder.<T>mapCodec(inst -> inst.group(
+                            Inputs.CODEC.fieldOf("inputs")
+                                    .forGetter(ThermoPlantRecipe::inputs),
+                            Outputs.CODEC.fieldOf("outputs")
+                                    .forGetter(ThermoPlantRecipe::outputs),
                             TemperatureRange.CODEC.optionalFieldOf("temperature", TemperatureRange.any())
                                     .forGetter(ThermoPlantRecipe::getOperatingTemperature),
                             Codec.FLOAT.optionalFieldOf("pressure", 0f)
@@ -167,49 +173,32 @@ public class ThermoPlantRecipeImpl extends ThermoPlantRecipe {
                                     .forGetter(ThermoPlantRecipe::getAirUseMultiplier),
                             Codec.BOOL.optionalFieldOf("exothermic", false)
                                     .forGetter(ThermoPlantRecipe::isExothermic)
-                    ).apply(inst, factory::create)),
-                    recipe -> recipe.getInputItem().isPresent() || recipe.getInputFluid().isPresent() ?
+                    ).apply(inst, factory::create))
+                    .validate(recipe -> recipe.getInputItem().isPresent() || recipe.getInputFluid().isPresent() ?
                             DataResult.success(recipe) :
                             DataResult.error(() -> "at least one of item_input or fluid_input must be present!", recipe)
+                    );
+
+            this.streamCodec = NeoForgeStreamCodecs.composite(
+                    Inputs.STREAM_CODEC, ThermoPlantRecipe::inputs,
+                    Outputs.STREAM_CODEC, ThermoPlantRecipe::outputs,
+                    TemperatureRange.STREAM_CODEC, ThermoPlantRecipe::getOperatingTemperature,
+                    ByteBufCodecs.FLOAT, ThermoPlantRecipe::getRequiredPressure,
+                    ByteBufCodecs.FLOAT, ThermoPlantRecipe::getRecipeSpeed,
+                    ByteBufCodecs.FLOAT, ThermoPlantRecipe::getAirUseMultiplier,
+                    ByteBufCodecs.BOOL, ThermoPlantRecipe::isExothermic,
+                    factory::create
             );
         }
 
         @Override
-        public Codec<T> codec() {
+        public MapCodec<T> codec() {
             return codec;
         }
 
         @Override
-        public T fromNetwork(FriendlyByteBuf buffer) {
-            TemperatureRange range = TemperatureRange.read(buffer);
-            float pressure = buffer.readFloat();
-            Optional<Ingredient> input = buffer.readOptional(Ingredient::fromNetwork);
-            Optional<FluidIngredient> fluidIn = buffer.readOptional(FluidIngredient::fluidFromNetwork);
-            ItemStack itemOutput = buffer.readItem();
-            FluidStack fluidOut = FluidStack.readFromPacket(buffer);
-            float recipeSpeed = buffer.readFloat();
-            float airUseMultiplier = buffer.readFloat();
-            boolean exothermic = buffer.readBoolean();
-            return factory.create(fluidIn, input, fluidOut, itemOutput, range, pressure, recipeSpeed, airUseMultiplier, exothermic);
-        }
-
-        @Override
-        public void toNetwork(FriendlyByteBuf buffer, T recipe) {
-            recipe.getOperatingTemperature().write(buffer);
-            buffer.writeFloat(recipe.getRequiredPressure());
-            buffer.writeOptional(recipe.getInputItem(), (b, ingredient) -> ingredient.toNetwork(b));
-            buffer.writeOptional(recipe.getInputFluid(), (b, ingredient) -> ingredient.fluidToNetwork(b));
-            buffer.writeItem(recipe.getOutputItem());
-            recipe.getOutputFluid().writeToPacket(buffer);
-            buffer.writeFloat(recipe.getRecipeSpeed());
-            buffer.writeFloat(recipe.getAirUseMultiplier());
-            buffer.writeBoolean(recipe.isExothermic());
-        }
-
-        public interface IFactory <T extends ThermoPlantRecipe> {
-            T create(Optional<FluidIngredient> inputFluid, Optional<Ingredient> inputItem,
-                     FluidStack outputFluid, ItemStack outputItem, TemperatureRange operatingTemperature, float requiredPressure,
-                     float recipeSpeed, float airUseMultiplier, boolean exothermic);
+        public StreamCodec<RegistryFriendlyByteBuf, T> streamCodec() {
+            return streamCodec;
         }
     }
 }

@@ -18,10 +18,13 @@
 package me.desht.pneumaticcraft.common.drone.progwidgets;
 
 import com.google.common.collect.ImmutableList;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import me.desht.pneumaticcraft.api.drone.IDrone;
+import me.desht.pneumaticcraft.api.drone.IProgWidget;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
-import me.desht.pneumaticcraft.common.drone.IDroneBase;
 import me.desht.pneumaticcraft.common.drone.ai.DroneAIBlockCondition;
-import me.desht.pneumaticcraft.common.registry.ModProgWidgets;
+import me.desht.pneumaticcraft.common.registry.ModProgWidgetTypes;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
@@ -29,14 +32,19 @@ import net.minecraft.resources.ResourceLocation;
 import java.util.List;
 
 public class ProgWidgetRedstoneCondition extends ProgWidgetCondition {
+    public static final MapCodec<ProgWidgetRedstoneCondition> CODEC = RecordCodecBuilder.mapCodec(builder ->
+            condParts(builder).apply(builder, ProgWidgetRedstoneCondition::new));
 
     public ProgWidgetRedstoneCondition() {
-        super(ModProgWidgets.CONDITION_REDSTONE.get());
+    }
+
+    public ProgWidgetRedstoneCondition(PositionFields pos, InvBaseFields inv, ConditionFields cond) {
+        super(pos, inv, cond);
     }
 
     @Override
     public List<ProgWidgetType<?>> getParameters() {
-        return ImmutableList.of(ModProgWidgets.AREA.get(), ModProgWidgets.TEXT.get());
+        return ImmutableList.of(ModProgWidgetTypes.AREA.get(), ModProgWidgetTypes.TEXT.get());
     }
 
     @Override
@@ -45,15 +53,20 @@ public class ProgWidgetRedstoneCondition extends ProgWidgetCondition {
     }
 
     @Override
-    protected DroneAIBlockCondition getEvaluator(IDroneBase drone, IProgWidget widget) {
+    protected DroneAIBlockCondition getEvaluator(IDrone drone, IProgWidget widget) {
         return new DroneAIBlockCondition(drone, (ProgWidgetAreaItemBase) widget) {
             @Override
             protected boolean evaluate(BlockPos pos) {
-                int redstoneLevel = drone.world().getBestNeighborSignal(pos);
+                int redstoneLevel = drone.getDroneLevel().getBestNeighborSignal(pos);
                 int requiredRedstone = ((ICondition) progWidget).getRequiredCount();
                 maybeRecordMeasuredVal(drone, redstoneLevel);
                 return ((ICondition) progWidget).getOperator().evaluate(redstoneLevel, requiredRedstone);
             }
         };
+    }
+
+    @Override
+    public ProgWidgetType<?> getType() {
+        return ModProgWidgetTypes.CONDITION_REDSTONE.get();
     }
 }

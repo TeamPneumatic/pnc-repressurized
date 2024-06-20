@@ -44,7 +44,7 @@ public class JEIExplosionCraftingCategory extends AbstractPNCCategory<ExplosionC
 
     @Override
     public void setRecipe(IRecipeLayoutBuilder builder, ExplosionCraftingRecipe recipe, IFocusGroup focuses) {
-        builder.addSlot(RecipeIngredientRole.INPUT, 1, 1).addIngredients(recipe.getInput());
+        builder.addSlot(RecipeIngredientRole.INPUT, 1, 1).addIngredients(recipe.getInput().ingredient());
         builder.addSlot(RecipeIngredientRole.OUTPUT, 65, 1).addItemStacks(recipe.getOutputs());
     }
 

@@ -96,7 +96,7 @@ public class KeroseneLampBlock extends AbstractPneumaticCraftBlock implements Pn
 
     @Override
     public void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean isMoving) {
-        PneumaticCraftUtils.getTileEntityAt(world, pos, KeroseneLampBlockEntity.class)
+        PneumaticCraftUtils.getBlockEntityAt(world, pos, KeroseneLampBlockEntity.class)
                 .ifPresent(KeroseneLampBlockEntity::removeLights);
 
         super.onRemove(state, world, pos, newState, isMoving);

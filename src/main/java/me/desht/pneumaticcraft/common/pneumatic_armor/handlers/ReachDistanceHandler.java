@@ -27,14 +27,14 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.neoforge.common.NeoForgeMod;
 
 import java.util.UUID;
 
 public class ReachDistanceHandler extends BaseArmorUpgradeHandler<IArmorExtensionData> {
     private static final UUID REACH_DIST_BOOST_ID = UUID.fromString("c9dce729-70c4-4c0f-95d4-31d2e50bc826");
-    public static final AttributeModifier REACH_DIST_BOOST = new AttributeModifier(REACH_DIST_BOOST_ID, "Pneumatic Reach Boost", 3.5D, AttributeModifier.Operation.ADDITION);
+    public static final AttributeModifier REACH_DIST_BOOST = new AttributeModifier(REACH_DIST_BOOST_ID, "Pneumatic Reach Boost", 3.5D, AttributeModifier.Operation.ADD_VALUE);
 
     @Override
     public ResourceLocation getID() {
@@ -60,7 +60,7 @@ public class ReachDistanceHandler extends BaseArmorUpgradeHandler<IArmorExtensio
     public void tick(ICommonArmorHandler commonArmorHandler, boolean enabled) {
         Player player = commonArmorHandler.getPlayer();
         if ((player.level().getGameTime() & 0xf) == 0) {
-            AttributeInstance attr = player.getAttribute(NeoForgeMod.BLOCK_REACH.value());
+            AttributeInstance attr = player.getAttribute(Attributes.BLOCK_INTERACTION_RANGE);
             if (attr != null) {
                 attr.removeModifier(REACH_DIST_BOOST_ID);
                 if (enabled && commonArmorHandler.hasMinPressure(EquipmentSlot.CHEST) && commonArmorHandler.isArmorEnabled()) {
@@ -73,7 +73,7 @@ public class ReachDistanceHandler extends BaseArmorUpgradeHandler<IArmorExtensio
     @Override
     public void onToggle(ICommonArmorHandler commonArmorHandler, boolean newState) {
         if (!newState) {
-            AttributeInstance attr = commonArmorHandler.getPlayer().getAttribute(NeoForgeMod.BLOCK_REACH.value());
+            AttributeInstance attr = commonArmorHandler.getPlayer().getAttribute(Attributes.BLOCK_INTERACTION_RANGE);
             if (attr != null) {
                 attr.removeModifier(ReachDistanceHandler.REACH_DIST_BOOST_ID);
             }
@@ -82,7 +82,7 @@ public class ReachDistanceHandler extends BaseArmorUpgradeHandler<IArmorExtensio
 
     @Override
     public void onShutdown(ICommonArmorHandler commonArmorHandler) {
-        AttributeInstance attr = commonArmorHandler.getPlayer().getAttribute(NeoForgeMod.BLOCK_REACH.value());
+        AttributeInstance attr = commonArmorHandler.getPlayer().getAttribute(Attributes.BLOCK_INTERACTION_RANGE);
         if (attr != null) {
             attr.removeModifier(REACH_DIST_BOOST_ID);
         }

@@ -23,12 +23,13 @@ import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.semiblock.ISyncableSemiblockItem;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.Util;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.network.handling.PlayPayloadContext;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.apache.commons.lang3.Validate;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
@@ -39,45 +40,47 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
  * <p>Sent by server to sync settings needed for GUI purposes.</p>
  * <p>Sent by client to send updated settings from GUI code</p>
  */
-public record PacketSyncSemiblock(int entityID, FriendlyByteBuf payload) implements CustomPacketPayload {
-    public static final ResourceLocation ID = RL("sync_semiblock");
+public record PacketSyncSemiblock(int entityID, RegistryFriendlyByteBuf payload) implements CustomPacketPayload {
+    public static final Type<PacketSyncSemiblock> TYPE = new Type<>(RL("sync_semiblock"));
 
-    public static PacketSyncSemiblock create(ISemiBlock semiBlock, boolean itemContainer) {
-        FriendlyByteBuf payload = Util.make(new FriendlyByteBuf(Unpooled.buffer()), semiBlock::writeToBuf);
+    public static final StreamCodec<RegistryFriendlyByteBuf, PacketSyncSemiblock> STREAM_CODEC = StreamCodec.of(
+            PacketSyncSemiblock::write,
+            PacketSyncSemiblock::fromNetwork
+    );
+
+    public static PacketSyncSemiblock create(ISemiBlock semiBlock, boolean itemContainer, RegistryAccess registryAccess) {
+        RegistryFriendlyByteBuf payload = Util.make(new RegistryFriendlyByteBuf(Unpooled.buffer(), registryAccess), semiBlock::writeToBuf);
 
         return new PacketSyncSemiblock(itemContainer ? -1 : semiBlock.getTrackingId(), payload);
     }
 
-    public static PacketSyncSemiblock fromNetwork(FriendlyByteBuf buffer) {
+    private static void write(RegistryFriendlyByteBuf buffer, PacketSyncSemiblock message) {
+        buffer.writeInt(message.entityID);
+        int size = message.payload.writerIndex();
+        buffer.writeVarInt(size);
+        buffer.writeBytes(message.payload, 0, size);
+    }
+
+    private static PacketSyncSemiblock fromNetwork(RegistryFriendlyByteBuf buffer) {
         int entityID = buffer.readInt();
         int size = buffer.readVarInt();
-        FriendlyByteBuf payload = new FriendlyByteBuf(Unpooled.buffer(size));
+        RegistryFriendlyByteBuf payload = new RegistryFriendlyByteBuf(Unpooled.buffer(size), buffer.registryAccess());
         buffer.readBytes(payload, size);
 
         return new PacketSyncSemiblock(entityID, payload);
     }
 
     @Override
-    public void write(FriendlyByteBuf buffer) {
-        buffer.writeInt(entityID);
-        int size = payload.writerIndex();
-        buffer.writeVarInt(size);
-        buffer.writeBytes(payload, 0, size);
+    public Type<PacketSyncSemiblock> type() {
+        return TYPE;
     }
 
-    @Override
-    public ResourceLocation id() {
-        return ID;
-    }
-
-    public static void handle(PacketSyncSemiblock message, PlayPayloadContext ctx) {
-        ctx.player().ifPresent(player -> ctx.workHandler().submitAsync(() -> {
-           if (ctx.flow().isClientbound()) {
-               message.handleClient();
-           } else if (player instanceof ServerPlayer sp) {
-               message.handleServer(sp);
-           }
-        }));
+    public static void handle(PacketSyncSemiblock message, IPayloadContext ctx) {
+        if (ctx.flow().isClientbound()) {
+            message.handleClient();
+        } else if (ctx.player() instanceof ServerPlayer sp) {
+            message.handleServer(sp);
+        }
     }
 
     private void handleServer(ServerPlayer sender) {

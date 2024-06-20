@@ -97,25 +97,25 @@ public class ManometerItem extends PressurizableItem {
                     ((IManoMeasurable) te).printManometerMessage(player, curInfo);
                 }
 
-                TemperatureData tempData = new TemperatureData(te);
+                TemperatureData tempData = TemperatureData.forBlockEntity(te);
                 if (tempData.isMultisided()) {
                     for (Direction face : DirectionUtil.VALUES) {
                         if (tempData.hasData(face)) {
-                            curInfo.add(HeatUtil.formatHeatString(face, (int) tempData.getTemperature(face)));
+                            curInfo.add(HeatUtil.formatHeatString(face, tempData.getTemperatureAsInt(face)));
                         }
                     }
                 } else if (tempData.hasData(null)) {
-                    curInfo.add(HeatUtil.formatHeatString((int) tempData.getTemperature(null)));
+                    curInfo.add(HeatUtil.formatHeatString(tempData.getTemperatureAsInt(null)));
                 } else {
                     HeatExchangerManager.getInstance().getLogic(world, pos, side)
                             .ifPresent(logic -> curInfo.add(HeatUtil.formatHeatString((int) logic.getTemperature())));
                 }
             } else {
                 BlockState state1 = world.getBlockState(pos);
-                if (state1.getBlock() instanceof LiquidBlock) {
-                    Fluid f = ((LiquidBlock) state1.getBlock()).getFluid();
+                if (state1.getBlock() instanceof LiquidBlock liquidBlock) {
+                    Fluid f = liquidBlock.fluid;
                     FluidStack fs = new FluidStack(f, 1000);
-                    curInfo.add(fs.getDisplayName().copy().withStyle(ChatFormatting.AQUA));
+                    curInfo.add(fs.getHoverName().copy().withStyle(ChatFormatting.AQUA));
                 } else {
                     curInfo.add(xlate(world.getBlockState(pos).getBlock().getDescriptionId()).withStyle(ChatFormatting.AQUA));
                 }
@@ -124,7 +124,7 @@ public class ManometerItem extends PressurizableItem {
             }
             checkForHeatExtraction(world, pos, curInfo);
 
-            if (curInfo.size() > 0) {
+            if (!curInfo.isEmpty()) {
                 for (int i = 1; i < curInfo.size(); i++) {
                     curInfo.set(i, Symbols.bullet().append(curInfo.get(i)));
                 }

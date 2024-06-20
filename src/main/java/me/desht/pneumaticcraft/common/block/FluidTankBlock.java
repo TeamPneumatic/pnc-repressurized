@@ -17,18 +17,17 @@
 
 package me.desht.pneumaticcraft.common.block;
 
-import me.desht.pneumaticcraft.api.lib.NBTKeys;
 import me.desht.pneumaticcraft.client.render.fluid.IFluidItemRenderInfoProvider;
 import me.desht.pneumaticcraft.client.render.fluid.RenderFluidTank;
 import me.desht.pneumaticcraft.common.block.entity.AbstractFluidTankBlockEntity;
-import me.desht.pneumaticcraft.common.capabilities.FluidHandlerSavedItemStack;
 import me.desht.pneumaticcraft.common.item.IFluidCapProvider;
 import me.desht.pneumaticcraft.common.item.IFluidRendered;
 import me.desht.pneumaticcraft.common.registry.ModBlocks;
+import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.registry.ModItems;
+import me.desht.pneumaticcraft.common.upgrades.UpgradableItemUtils;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.RayTraceUtils;
-import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
@@ -56,7 +55,6 @@ import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
 import net.neoforged.neoforge.fluids.capability.templates.FluidHandlerItemStack;
 
 import javax.annotation.Nullable;
-import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.stream.Stream;
 
@@ -192,7 +190,6 @@ public class FluidTankBlock extends AbstractPneumaticCraftBlock
     }
 
     public static class ItemBlockFluidTank extends BlockItem implements IFluidRendered, IFluidCapProvider {
-        public static final String TANK_NAME = "Tank";
         private final int capacity;
 
         private RenderFluidTank.ItemRenderInfoProvider renderInfoProvider;
@@ -230,12 +227,12 @@ public class FluidTankBlock extends AbstractPneumaticCraftBlock
             // empty tanks may stack, but not filled tanks (even if filled to the same level)
             // note: can't use hasContainerItem() here: it can lead to infinite recursion on init
             // https://github.com/TeamPneumatic/pnc-repressurized/issues/666
-            return stack.hasTag() && Objects.requireNonNull(stack.getTag()).contains(NBTKeys.BLOCK_ENTITY_TAG) ? 1 : 64;
+            return stack.has(ModDataComponents.MAIN_TANK.get()) ?  1 : 64;
         }
 
         @Override
         public IFluidHandlerItem provideFluidCapability(ItemStack stack) {
-            return new FluidHandlerSavedItemStack(stack, TANK_NAME, capacity);
+            return new FluidHandlerItemStack(ModDataComponents.MAIN_TANK, stack, capacity);
         }
     }
 

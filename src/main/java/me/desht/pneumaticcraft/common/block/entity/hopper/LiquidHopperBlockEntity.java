@@ -27,6 +27,7 @@ import me.desht.pneumaticcraft.common.inventory.LiquidHopperMenu;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
+import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.util.FluidUtils;
 import me.desht.pneumaticcraft.common.util.IOHelper;
@@ -34,6 +35,8 @@ import me.desht.pneumaticcraft.common.util.PNCFluidTank;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.component.DataComponentType;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -239,8 +242,8 @@ public class LiquidHopperBlockEntity extends AbstractHopperBlockEntity<LiquidHop
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
+    public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
+        super.loadAdditional(tag, provider);
 
         comparatorValue = -1;
     }
@@ -252,8 +255,8 @@ public class LiquidHopperBlockEntity extends AbstractHopperBlockEntity<LiquidHop
 
     @Nonnull
     @Override
-    public Map<String, PNCFluidTank> getSerializableTanks() {
-        return ImmutableMap.of(LiquidHopperBlock.ItemBlockLiquidHopper.TANK_NAME, tank);
+    public Map<DataComponentType<SimpleFluidContent>, PNCFluidTank> getSerializableTanks() {
+        return Map.of(ModDataComponents.MAIN_TANK.get(), tank);
     }
 
     @Nullable

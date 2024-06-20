@@ -18,14 +18,17 @@
 package me.desht.pneumaticcraft.common.drone.progwidgets;
 
 import com.google.common.collect.ImmutableList;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import me.desht.pneumaticcraft.api.drone.IDrone;
+import me.desht.pneumaticcraft.api.drone.IProgWidget;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
-import me.desht.pneumaticcraft.common.drone.IDroneBase;
 import me.desht.pneumaticcraft.common.drone.ai.DroneEntityAIGoToLocation;
-import me.desht.pneumaticcraft.common.registry.ModProgWidgets;
+import me.desht.pneumaticcraft.common.registry.ModProgWidgetTypes;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.goal.Goal;
@@ -37,14 +40,20 @@ import java.util.Set;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class ProgWidgetGoToLocation extends ProgWidget implements IGotoWidget, IAreaProvider {
+    public static final MapCodec<ProgWidgetGoToLocation> CODEC = RecordCodecBuilder.mapCodec(builder ->
+            baseParts(builder).and(
+                    Codec.BOOL.optionalFieldOf("done_when_depart", false).forGetter(ProgWidgetGoToLocation::doneWhenDeparting)
+            ).apply(builder, ProgWidgetGoToLocation::new));
+
     private boolean doneWhenDeparting;
 
-    public ProgWidgetGoToLocation() {
-        super(ModProgWidgets.GOTO.get());
+    private ProgWidgetGoToLocation(PositionFields pos, boolean doneWhenDeparting) {
+        super(pos);
+        this.doneWhenDeparting = doneWhenDeparting;
     }
 
-    ProgWidgetGoToLocation(ProgWidgetType<ProgWidgetTeleport> type) {
-        super(type);
+    public ProgWidgetGoToLocation() {
+        this(PositionFields.DEFAULT, false);
     }
 
     @Override
@@ -66,6 +75,11 @@ public class ProgWidgetGoToLocation extends ProgWidget implements IGotoWidget, I
     }
 
     @Override
+    public ProgWidgetType<?> getType() {
+        return ModProgWidgetTypes.GOTO.get();
+    }
+
+    @Override
     public void getTooltip(List<Component> curTooltip) {
         super.getTooltip(curTooltip);
         curTooltip.add(xlate("pneumaticcraft.gui.progWidget.goto.doneWhen" + (doneWhenDeparting ? "Departing" : "Arrived")));
@@ -77,7 +91,7 @@ public class ProgWidgetGoToLocation extends ProgWidget implements IGotoWidget, I
     }
 
     @Override
-    public Goal getWidgetAI(IDroneBase drone, IProgWidget widget) {
+    public Goal getWidgetAI(IDrone drone, IProgWidget widget) {
         return new DroneEntityAIGoToLocation(drone, (ProgWidget) widget);
     }
 
@@ -93,7 +107,7 @@ public class ProgWidgetGoToLocation extends ProgWidget implements IGotoWidget, I
 
     @Override
     public List<ProgWidgetType<?>> getParameters() {
-        return ImmutableList.of(ModProgWidgets.AREA.get());
+        return ImmutableList.of(ModProgWidgetTypes.AREA.get());
     }
 
     @Override
@@ -101,26 +115,26 @@ public class ProgWidgetGoToLocation extends ProgWidget implements IGotoWidget, I
         ProgWidgetAreaItemBase.getArea(area, (ProgWidgetArea) getConnectedParameters()[0], (ProgWidgetArea) getConnectedParameters()[getParameters().size()]);
     }
 
-    @Override
-    public void writeToNBT(CompoundTag tag) {
-        super.writeToNBT(tag);
-        if (doneWhenDeparting) tag.putBoolean("doneWhenDeparting", true);
-    }
+//    @Override
+//    public void writeToNBT(CompoundTag tag, HolderLookup.Provider provider) {
+//        super.writeToNBT(tag, provider);
+//        if (doneWhenDeparting) tag.putBoolean("doneWhenDeparting", true);
+//    }
+//
+//    @Override
+//    public void readFromNBT(CompoundTag tag, HolderLookup.Provider provider) {
+//        super.readFromNBT(tag, provider);
+//        doneWhenDeparting = tag.getBoolean("doneWhenDeparting");
+//    }
 
     @Override
-    public void readFromNBT(CompoundTag tag) {
-        super.readFromNBT(tag);
-        doneWhenDeparting = tag.getBoolean("doneWhenDeparting");
-    }
-
-    @Override
-    public void writeToPacket(FriendlyByteBuf buf) {
+    public void writeToPacket(RegistryFriendlyByteBuf buf) {
         super.writeToPacket(buf);
         buf.writeBoolean(doneWhenDeparting);
     }
 
     @Override
-    public void readFromPacket(FriendlyByteBuf buf) {
+    public void readFromPacket(RegistryFriendlyByteBuf buf) {
         super.readFromPacket(buf);
         doneWhenDeparting = buf.readBoolean();
     }

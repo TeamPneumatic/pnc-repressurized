@@ -18,9 +18,12 @@
 package me.desht.pneumaticcraft.common.drone.progwidgets;
 
 import com.google.common.collect.ImmutableList;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import me.desht.pneumaticcraft.api.drone.IDrone;
+import me.desht.pneumaticcraft.api.drone.IProgWidget;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
-import me.desht.pneumaticcraft.common.drone.IDroneBase;
-import me.desht.pneumaticcraft.common.registry.ModProgWidgets;
+import me.desht.pneumaticcraft.common.registry.ModProgWidgetTypes;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.material.Fluid;
@@ -28,18 +31,23 @@ import net.minecraft.world.level.material.Fluid;
 import java.util.List;
 
 public class ProgWidgetDroneConditionFluid extends ProgWidgetDroneCondition implements ILiquidFiltered {
+    public static final MapCodec<ProgWidgetDroneConditionFluid> CODEC = RecordCodecBuilder.mapCodec(builder ->
+            droneConditionParts(builder).apply(builder, ProgWidgetDroneConditionFluid::new));
 
     public ProgWidgetDroneConditionFluid() {
-        super(ModProgWidgets.DRONE_CONDITION_LIQUID.get());
+    }
+
+    public ProgWidgetDroneConditionFluid(PositionFields pos, DroneConditionFields cond) {
+        super(pos, cond);
     }
 
     @Override
     public List<ProgWidgetType<?>> getParameters() {
-        return ImmutableList.of(ModProgWidgets.LIQUID_FILTER.get(), ModProgWidgets.TEXT.get());
+        return ImmutableList.of(ModProgWidgetTypes.LIQUID_FILTER.get(), ModProgWidgetTypes.TEXT.get());
     }
 
     @Override
-    protected int getCount(IDroneBase drone, IProgWidget widget) {
+    protected int getCount(IDrone drone, IProgWidget widget) {
         int count = !drone.getFluidTank().getFluid().isEmpty()
                 && ((ILiquidFiltered) widget).isFluidValid(drone.getFluidTank().getFluid().getFluid()) ? drone.getFluidTank().getFluidAmount() : 0;
         maybeRecordMeasuredVal(drone, count);
@@ -56,4 +64,8 @@ public class ProgWidgetDroneConditionFluid extends ProgWidgetDroneCondition impl
         return ProgWidgetLiquidFilter.isLiquidValid(fluid, this, 0);
     }
 
+    @Override
+    public ProgWidgetType<?> getType() {
+        return ModProgWidgetTypes.DRONE_CONDITION_LIQUID.get();
+    }
 }

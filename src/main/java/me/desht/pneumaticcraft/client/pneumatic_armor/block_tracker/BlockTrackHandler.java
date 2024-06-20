@@ -24,6 +24,7 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetKeybindCheckBox;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
@@ -68,7 +69,7 @@ public enum BlockTrackHandler {
         trackers = builder.build();
     }
 
-    public List<IBlockTrackEntry> getEntriesForCoordinate(BlockGetter blockAccess, BlockPos pos, BlockEntity te) {
+    public List<IBlockTrackEntry> getEntriesForCoordinate(Level blockAccess, BlockPos pos, BlockEntity te) {
         final BlockState state = blockAccess.getBlockState(pos);
         List<IBlockTrackEntry> trackers = new ArrayList<>();
         for (IBlockTrackEntry tracker : this.trackers) {

@@ -71,7 +71,7 @@ public class JEIPressureChamberRecipeCategory extends AbstractPNCCategory<Pressu
         List<List<ItemStack>> slots;
         RecipeIngredientRole role = focus.getRole();
         if (role == RecipeIngredientRole.INPUT) {
-            slots = recipe.getInputsForDisplay().stream().map(ingr -> Arrays.asList(ingr.getItems())).toList();
+            slots = recipe.getInputsForDisplay(); //.stream().map(ingr -> Arrays.asList(ingr.getItems())).toList();
         } else if (role == RecipeIngredientRole.OUTPUT) {
             slots = new ArrayList<>(recipe.getResultsForDisplay());
         } else {
@@ -91,7 +91,7 @@ public class JEIPressureChamberRecipeCategory extends AbstractPNCCategory<Pressu
                     }
                 }
                 IntList matches = IntLists.unmodifiable(l);
-                if (matches.size() > 0) {
+                if (!matches.isEmpty()) {
                     // Return the first slot that has matches
                     return Optional.of(new SlotCycle(new RecipeSlot(role == RecipeIngredientRole.INPUT, slot), matches));
                 }
@@ -127,7 +127,7 @@ public class JEIPressureChamberRecipeCategory extends AbstractPNCCategory<Pressu
         Map<RecipeSlot, IntList> overrides = getMatchingCycle(recipe, focus)
                 .map(recipe::getSyncForDisplay)
                 .orElseGet(ImmutableMap::of);
-        List<List<ItemStack>> l = recipe.getInputsForDisplay().stream().map(i -> Arrays.asList(i.getItems())).toList();
+        List<List<ItemStack>> l = recipe.getInputsForDisplay();//.stream().map(i -> Arrays.asList(i.getItems())).toList();
         List<List<ItemStack>> inputs = applyOverrides(true, l, overrides);
         for (int i = 0; i < inputs.size(); i++) {
             int posX = 19 + i % 3 * 17;

@@ -4,8 +4,9 @@ import net.neoforged.neoforge.common.crafting.IngredientType;
 
 import java.util.function.Supplier;
 
+/**
+ * Provides access to any custom ingredient types registered by the mod.
+ */
 public interface CustomIngredientTypes {
-    Supplier<IngredientType<FluidIngredient>> fluidType();
-
-    Supplier<IngredientType<StackedIngredient>> stackedItemType();
+    Supplier<IngredientType<FluidContainerIngredient>> fluidContainerType();
 }

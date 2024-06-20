@@ -17,6 +17,7 @@
 
 package me.desht.pneumaticcraft.common.drone.ai;
 
+import me.desht.pneumaticcraft.api.drone.IDrone;
 import me.desht.pneumaticcraft.common.drone.IDroneBase;
 import me.desht.pneumaticcraft.common.drone.progwidgets.IAreaProvider;
 import me.desht.pneumaticcraft.common.drone.progwidgets.IGotoWidget;
@@ -28,12 +29,12 @@ import net.minecraft.world.phys.Vec3;
 import java.util.*;
 
 public class DroneEntityAIGoToLocation extends Goal {
-    protected final IDroneBase drone;
+    protected final IDrone drone;
     private final ProgWidget gotoWidget;
     private final ChunkPositionSorter positionSorter;
     private final List<BlockPos> validArea;
 
-    public DroneEntityAIGoToLocation(IDroneBase drone, ProgWidget gotoWidget) {
+    public DroneEntityAIGoToLocation(IDrone drone, ProgWidget gotoWidget) {
         this.drone = drone;
         setFlags(EnumSet.allOf(Flag.class)); // so it won't run along with other AI tasks.
         this.gotoWidget = gotoWidget;

@@ -17,13 +17,12 @@
 
 package me.desht.pneumaticcraft.common.network;
 
-import me.desht.pneumaticcraft.api.lib.NBTKeys;
 import me.desht.pneumaticcraft.common.drone.IDroneBase;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
-import me.desht.pneumaticcraft.common.util.NBTUtils;
+import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
@@ -36,32 +35,20 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
  * Sent by client when the drone debug key is pressed, for a valid entity or programmable controller target
  */
 public record PacketUpdateDebuggingDrone(DroneTarget droneTarget) implements DronePacket {
-    public static final ResourceLocation ID = RL("update_debugging_drone");
+    public static final Type<PacketUpdateDebuggingDrone> TYPE = new Type<>(RL("update_debugging_drone"));
+
+    public static final StreamCodec<FriendlyByteBuf, PacketUpdateDebuggingDrone> STREAM_CODEC = StreamCodec.composite(
+            DroneTarget.STREAM_CODEC, PacketUpdateDebuggingDrone::droneTarget,
+            PacketUpdateDebuggingDrone::new
+    );
 
     public static PacketUpdateDebuggingDrone create(IDroneBase drone) {
         return new PacketUpdateDebuggingDrone(drone == null ? DroneTarget.none() : drone.getPacketTarget());
     }
 
-//    public PacketUpdateDebuggingDrone(int entityId) {
-//        super(entityId, null);
-//    }
-//
-//    public PacketUpdateDebuggingDrone(BlockPos controllerPos) {
-//        super(-1, controllerPos);
-//    }
-
-    public static PacketUpdateDebuggingDrone fromNetwork(FriendlyByteBuf buf) {
-        return new PacketUpdateDebuggingDrone(DroneTarget.fromNetwork(buf));
-    }
-
     @Override
-    public void write(FriendlyByteBuf buf) {
-        droneTarget.toNetwork(buf);
-    }
-
-    @Override
-    public ResourceLocation id() {
-        return ID;
+    public Type<PacketUpdateDebuggingDrone> type() {
+        return TYPE;
     }
 
     @Override
@@ -71,8 +58,7 @@ public record PacketUpdateDebuggingDrone(DroneTarget droneTarget) implements Dro
             if (handler.upgradeUsable(CommonUpgradeHandlers.droneDebugHandler, false)) {
                 ItemStack stack = player.getItemBySlot(EquipmentSlot.HEAD);
                 if (droneBase == null) {
-                    NBTUtils.removeTag(stack, NBTKeys.PNEUMATIC_HELMET_DEBUGGING_DRONE);
-                    NBTUtils.removeTag(stack, NBTKeys.PNEUMATIC_HELMET_DEBUGGING_PC);
+                    stack.remove(ModDataComponents.DRONE_DEBUG_TARGET);
                 } else {
                     droneBase.storeTrackerData(stack);
                     droneBase.getDebugger().trackAsDebugged((ServerPlayer) player);

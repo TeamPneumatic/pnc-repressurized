@@ -19,11 +19,14 @@ package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.common.block.entity.elevator.ElevatorBaseBlockEntity;
 import me.desht.pneumaticcraft.common.registry.ModBlocks;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -35,6 +38,8 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Optional;
 
 public class ElevatorBaseBlock extends AbstractCamouflageBlock implements PneumaticCraftEntityBlock {
     private static final VoxelShape BASE = box(0, 0, 0, 16, 1, 16);
@@ -60,10 +65,8 @@ public class ElevatorBaseBlock extends AbstractCamouflageBlock implements Pneuma
     @Override
     public void onPlace(BlockState newState, Level world, BlockPos pos, BlockState oldState, boolean isMoving) {
         super.onPlace(newState, world, pos, oldState, isMoving);
-        ElevatorBaseBlockEntity elevatorBase = getCoreTileEntity(world, pos);
-        if (elevatorBase != null) {
-            elevatorBase.updateMaxElevatorHeight();
-        }
+
+        getCoreBlockEntity(world, pos).ifPresent(ElevatorBaseBlockEntity::updateMaxElevatorHeight);
     }
 
     @Override
@@ -78,8 +81,13 @@ public class ElevatorBaseBlock extends AbstractCamouflageBlock implements Pneuma
     }
 
     @Override
-    public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult brtr) {
-        return super.use(state, world, getCoreElevatorPos(world, pos), player, hand, brtr);
+    public ItemInteractionResult useItemOn(ItemStack heldItem, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult brtr) {
+        return super.useItemOn(heldItem, state, level, getCoreElevatorPos(level, pos), player, hand, brtr);
+    }
+
+    @Override
+    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
+        return super.useWithoutItem(state, level, getCoreElevatorPos(level, pos), player, hitResult);
     }
 
     private static BlockPos getCoreElevatorPos(Level world, BlockPos pos) {
@@ -90,23 +98,20 @@ public class ElevatorBaseBlock extends AbstractCamouflageBlock implements Pneuma
         }
     }
 
-    public static ElevatorBaseBlockEntity getCoreTileEntity(Level world, BlockPos pos) {
-        return (ElevatorBaseBlockEntity) world.getBlockEntity(getCoreElevatorPos(world, pos));
+    public static Optional<ElevatorBaseBlockEntity> getCoreBlockEntity(Level level, BlockPos pos) {
+        return PneumaticCraftUtils.getBlockEntityAt(level, pos, ElevatorBaseBlockEntity.class);
     }
 
     @Override
-    public void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean isMoving) {
+    public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
         if (state.getBlock() != newState.getBlock()) {
-            if (world.getBlockState(pos.relative(Direction.DOWN)).getBlock() == ModBlocks.ELEVATOR_BASE.get()) {
-                BlockEntity te = world.getBlockEntity(pos.relative(Direction.DOWN));
-                ((ElevatorBaseBlockEntity) te).moveUpgradesFromAbove();
+            if (level.getBlockState(pos.relative(Direction.DOWN)).getBlock() == ModBlocks.ELEVATOR_BASE.get()) {
+                PneumaticCraftUtils.getBlockEntityAt(level, pos.below(), ElevatorBaseBlockEntity.class)
+                        .ifPresent(ElevatorBaseBlockEntity::moveUpgradesFromAbove);
             }
-            ElevatorBaseBlockEntity elevatorBase = getCoreTileEntity(world, pos);
-            if (elevatorBase != null) {
-                elevatorBase.updateMaxElevatorHeight();
-            }
+            getCoreBlockEntity(level, pos).ifPresent(ElevatorBaseBlockEntity::updateMaxElevatorHeight);
         }
-        super.onRemove(state, world, pos, newState, isMoving);
+        super.onRemove(state, level, pos, newState, isMoving);
     }
 
     @Nullable

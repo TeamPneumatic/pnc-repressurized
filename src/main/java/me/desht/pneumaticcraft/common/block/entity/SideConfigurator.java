@@ -20,6 +20,7 @@ package me.desht.pneumaticcraft.common.block.entity;
 import com.mojang.datafixers.util.Either;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.ByteTag;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -197,7 +198,7 @@ public class SideConfigurator<T> implements INBTSerializable<CompoundTag> {
     }
 
     @Override
-    public CompoundTag serializeNBT() {
+    public CompoundTag serializeNBT(HolderLookup.Provider provider) {
         CompoundTag tag = new CompoundTag();
         ListTag l = new ListTag();
         for (byte face : faces) {
@@ -208,7 +209,7 @@ public class SideConfigurator<T> implements INBTSerializable<CompoundTag> {
     }
 
     @Override
-    public void deserializeNBT(CompoundTag nbt) {
+    public void deserializeNBT(HolderLookup.Provider provider, CompoundTag nbt) {
         ListTag l = nbt.getList("faces", Tag.TAG_BYTE);
         for (int i = 0; i < l.size() && i < faces.length; i++) {
             faces[i] = ((ByteTag) l.get(i)).getAsByte();
@@ -219,22 +220,22 @@ public class SideConfigurator<T> implements INBTSerializable<CompoundTag> {
         }
     }
 
-    public static CompoundTag writeToNBT(ISideConfigurable sideConfigurable) {
+    public static CompoundTag writeToNBT(ISideConfigurable sideConfigurable, HolderLookup.Provider provider) {
         CompoundTag tag = new CompoundTag();
         for (SideConfigurator<?> sc : sideConfigurable.getSideConfigurators()) {
             if (sc.shouldSaveNBT()) {
-                CompoundTag subtag = sc.serializeNBT();
+                CompoundTag subtag = sc.serializeNBT(provider);
                 tag.put(sc.id, subtag);
             }
         }
         return tag;
     }
 
-    public static void readFromNBT(CompoundTag tag, ISideConfigurable sideConfigurable) {
+    public static void readFromNBT(CompoundTag tag, ISideConfigurable sideConfigurable, HolderLookup.Provider provider) {
         for (SideConfigurator<?> sc : sideConfigurable.getSideConfigurators()) {
             if (tag.contains(sc.id)) {
                 CompoundTag subtag = tag.getCompound(sc.id);
-                sc.deserializeNBT(subtag);
+                sc.deserializeNBT(provider, subtag);
             }
         }
     }

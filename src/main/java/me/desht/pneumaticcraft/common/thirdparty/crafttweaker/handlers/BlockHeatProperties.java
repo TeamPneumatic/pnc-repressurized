@@ -49,9 +49,10 @@ public class BlockHeatProperties implements IRecipeManager<HeatPropertiesRecipe>
     public void addRecipe(String name, Block block, Map<String,String> matchProps, int temperature, double thermalResistance) {
         CraftTweakerAPI.apply(new ActionAddRecipe<>(this,
                 new RecipeHolder<>(new ResourceLocation("crafttweaker", fixRecipeName(name)),
-                        new HeatPropertiesRecipeImpl(block,
+                        new HeatPropertiesRecipeImpl(block, new HeatPropertiesRecipe.Transforms(
                                 Optional.empty(), Optional.empty(),
-                                Optional.empty(), Optional.empty(),
+                                Optional.empty(), Optional.empty()
+                        ),
                                 Optional.empty(), temperature, Optional.of(thermalResistance),
                                 matchProps, "")
                 )));
@@ -65,13 +66,15 @@ public class BlockHeatProperties implements IRecipeManager<HeatPropertiesRecipe>
                           @ZenCodeType.OptionalString String descriptionKey) {
         CraftTweakerAPI.apply(new ActionAddRecipe<>(this,
                 new RecipeHolder<>(new ResourceLocation("crafttweaker", fixRecipeName(name)),
-                new HeatPropertiesRecipeImpl(block,
-                        Optional.ofNullable(transformHot), Optional.ofNullable(transformHotFlowing),
-                        Optional.ofNullable(transformCold), Optional.ofNullable(transformColdFlowing),
-                        Optional.of(heatCapacity), temperature, Optional.of(thermalResistance),
-                        matchProps,
-                        descriptionKey)
-        )));
+                        new HeatPropertiesRecipeImpl(block,
+                                new HeatPropertiesRecipe.Transforms(
+                                        Optional.ofNullable(transformHot), Optional.ofNullable(transformHotFlowing),
+                                        Optional.ofNullable(transformCold), Optional.ofNullable(transformColdFlowing)
+                                ),
+                                Optional.of(heatCapacity), temperature, Optional.of(thermalResistance),
+                                matchProps,
+                                descriptionKey)
+                )));
     }
 
     @Override

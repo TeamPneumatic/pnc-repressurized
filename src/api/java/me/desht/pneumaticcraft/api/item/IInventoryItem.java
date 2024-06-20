@@ -17,12 +17,9 @@
 
 package me.desht.pneumaticcraft.api.item;
 
-import me.desht.pneumaticcraft.api.lib.NBTKeys;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.items.ItemStackHandler;
+import net.minecraft.world.item.component.ItemContainerContents;
 
 import java.util.List;
 
@@ -57,17 +54,10 @@ public interface IInventoryItem {
      * Convenience implementation for {@link IInventoryItem#getStacksInItem(ItemStack, List)} for items have been
      * dropped from a block entity block with serialized data.
      *
-     * @param stack the stack
+     * @param contents the saved container contents
      * @param curStacks a list of stacks to fill
      */
-    static void getStacks(ItemStack stack, List<ItemStack> curStacks) {
-        CompoundTag sub = stack.getTagElement(NBTKeys.BLOCK_ENTITY_TAG);
-        if (sub != null && sub.contains(NBTKeys.NBT_ITEM_INV, Tag.TAG_COMPOUND)) {
-            ItemStackHandler handler = new ItemStackHandler();
-            handler.deserializeNBT(sub.getCompound(NBTKeys.NBT_ITEM_INV));
-            for (int i = 0; i < handler.getSlots(); i++) {
-                if (!handler.getStackInSlot(i).isEmpty()) curStacks.add(handler.getStackInSlot(i));
-            }
-        }
+    static void getStacks(ItemContainerContents contents, List<ItemStack> curStacks) {
+        contents.stream().forEach(curStacks::add);
     }
 }

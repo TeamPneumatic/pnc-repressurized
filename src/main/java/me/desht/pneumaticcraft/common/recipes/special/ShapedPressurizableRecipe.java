@@ -17,13 +17,14 @@
 
 package me.desht.pneumaticcraft.common.recipes.special;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.common.registry.ModRecipeSerializers;
 import me.desht.pneumaticcraft.common.util.IOHelper;
-import net.minecraft.core.RegistryAccess;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeSerializer;
@@ -38,7 +39,7 @@ public class ShapedPressurizableRecipe extends WrappedShapedRecipe {
     }
 
     @Override
-    public ItemStack assemble(CraftingContainer inv, RegistryAccess registryAccess) {
+    public ItemStack assemble(CraftingContainer inv, HolderLookup.Provider registryAccess) {
         ItemStack newOutput = this.getResultItem(registryAccess).copy();
 
         IOHelper.getCap(newOutput, PNCCapabilities.AIR_HANDLER_ITEM).ifPresent(outputHandler -> {
@@ -60,23 +61,19 @@ public class ShapedPressurizableRecipe extends WrappedShapedRecipe {
     }
 
     public static class Serializer implements RecipeSerializer<ShapedPressurizableRecipe> {
-        public static final Codec<ShapedPressurizableRecipe> CODEC = ShapedRecipe.Serializer.CODEC.xmap(
-                ShapedPressurizableRecipe::new, ShapedPressurizableRecipe::getWrapped
-        );
+        public static final MapCodec<ShapedPressurizableRecipe> CODEC
+                = ShapedRecipe.Serializer.CODEC.xmap(ShapedPressurizableRecipe::new, ShapedPressurizableRecipe::wrapped);
+        public static final StreamCodec<RegistryFriendlyByteBuf, ShapedPressurizableRecipe> STREAM_CODEC
+                = ShapedRecipe.Serializer.STREAM_CODEC.map(ShapedPressurizableRecipe::new, ShapedPressurizableRecipe::wrapped);
 
         @Override
-        public Codec<ShapedPressurizableRecipe> codec() {
+        public MapCodec<ShapedPressurizableRecipe> codec() {
             return CODEC;
         }
 
         @Override
-        public ShapedPressurizableRecipe fromNetwork(FriendlyByteBuf buf) {
-            return new ShapedPressurizableRecipe(RecipeSerializer.SHAPED_RECIPE.fromNetwork(buf));
-        }
-
-        @Override
-        public void toNetwork(FriendlyByteBuf buf, ShapedPressurizableRecipe recipe) {
-            RecipeSerializer.SHAPED_RECIPE.toNetwork(buf, recipe.wrapped);
+        public StreamCodec<RegistryFriendlyByteBuf, ShapedPressurizableRecipe> streamCodec() {
+            return STREAM_CODEC;
         }
     }
 }

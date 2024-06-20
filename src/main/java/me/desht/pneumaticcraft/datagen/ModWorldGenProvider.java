@@ -7,7 +7,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.data.worldgen.BootstapContext;
+import net.minecraft.data.worldgen.BootstrapContext;
 import net.minecraft.data.worldgen.features.FeatureUtils;
 import net.minecraft.data.worldgen.placement.PlacementUtils;
 import net.minecraft.resources.ResourceKey;
@@ -43,7 +43,7 @@ public class ModWorldGenProvider {
 
 
     static class ConfiguredFeatures {
-        public static void bootstrap(BootstapContext<ConfiguredFeature<?,?>> ctx) {
+        public static void bootstrap(BootstrapContext<ConfiguredFeature<?,?>> ctx) {
             FeatureUtils.register(ctx, OIL_LAKE, Feature.LAKE, new LakeFeature.Configuration(
                     BlockStateProvider.simple(ModBlocks.OIL.get().defaultBlockState()),
                     BlockStateProvider.simple(Blocks.AIR.defaultBlockState())
@@ -52,7 +52,7 @@ public class ModWorldGenProvider {
     }
 
     static class PlacedFeatures {
-        public static void bootstrap(BootstapContext<PlacedFeature> ctx) {
+        public static void bootstrap(BootstrapContext<PlacedFeature> ctx) {
             var configuredFeatures = ctx.lookup(Registries.CONFIGURED_FEATURE);
             var oilLakeCF = configuredFeatures.getOrThrow(OIL_LAKE);
 
@@ -81,7 +81,7 @@ public class ModWorldGenProvider {
     }
 
     static class BiomeModifiers {
-        public static void bootstrap(BootstapContext<BiomeModifier> ctx) {
+        public static void bootstrap(BootstrapContext<BiomeModifier> ctx) {
             var placedFeatures = ctx.lookup(Registries.PLACED_FEATURE);
             var biomeReg = ctx.lookup(Registries.BIOME);
 

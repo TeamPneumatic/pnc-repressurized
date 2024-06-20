@@ -30,7 +30,7 @@ import net.minecraft.world.level.material.FlowingFluid;
 public class FluidEtchingAcidBlock extends LiquidBlock {
 
     public FluidEtchingAcidBlock(Properties props) {
-        super(() -> (FlowingFluid) ModFluids.ETCHING_ACID.get(), props);
+        super((FlowingFluid) ModFluids.ETCHING_ACID.get(), props);
     }
 
     @Override

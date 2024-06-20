@@ -23,7 +23,7 @@ import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.event.entity.player.AttackEntityEvent;
-import net.neoforged.neoforge.event.entity.player.EntityItemPickupEvent;
+import net.neoforged.neoforge.event.entity.player.ItemEntityPickupEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 
 public class UniversalSensorHandler {
@@ -43,8 +43,8 @@ public class UniversalSensorHandler {
     }
 
     @SubscribeEvent
-    public void onItemPickUp(EntityItemPickupEvent event) {
-        sendEventToSensors(event.getEntity().level(), event);
+    public void onItemPickUp(ItemEntityPickupEvent event) {
+        sendEventToSensors(event.getItemEntity().level(), event);
     }
 
     private void sendEventToSensors(Level level, Event event) {

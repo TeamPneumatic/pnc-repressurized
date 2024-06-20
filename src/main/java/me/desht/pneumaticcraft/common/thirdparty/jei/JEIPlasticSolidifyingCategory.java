@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.common.thirdparty.jei;
 
 import com.google.common.collect.ImmutableList;
-import me.desht.pneumaticcraft.api.crafting.ingredient.FluidIngredient;
+import com.mojang.datafixers.util.Either;
 import me.desht.pneumaticcraft.common.registry.ModFluids;
 import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.lib.Textures;
@@ -31,7 +31,9 @@ import mezz.jei.api.recipe.RecipeIngredientRole;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.neoforged.neoforge.fluids.crafting.FluidIngredient;
 
+import java.util.Arrays;
 import java.util.List;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
@@ -47,13 +49,12 @@ public class JEIPlasticSolidifyingCategory extends AbstractPNCCategory<JEIPlasti
 
     @Override
     public void setRecipe(IRecipeLayoutBuilder builder, PlasticSolidifyingRecipe recipe, IFocusGroup focuses) {
-        if (recipe.input instanceof FluidIngredient f) {
-            builder.addSlot(RecipeIngredientRole.INPUT, 1, 1)
-                    .addIngredients(NeoForgeTypes.FLUID_STACK, f.getFluidStacks());
-        } else {
-            builder.addSlot(RecipeIngredientRole.INPUT, 1, 1)
-                    .addIngredients(recipe.input);
-        }
+        recipe.input
+                .ifLeft(ingredient -> builder.addSlot(RecipeIngredientRole.INPUT, 1, 1)
+                        .addIngredients(ingredient))
+                .ifRight(fluidIngredient -> builder.addSlot(RecipeIngredientRole.INPUT, 1, 1)
+                        .addIngredients(NeoForgeTypes.FLUID_STACK, Arrays.asList(fluidIngredient.getStacks())));
+
         builder.addSlot(RecipeIngredientRole.OUTPUT, 65, 1)
                 .addItemStack(recipe.output);
     }
@@ -66,16 +67,16 @@ public class JEIPlasticSolidifyingCategory extends AbstractPNCCategory<JEIPlasti
     public static List<PlasticSolidifyingRecipe> getAllRecipes() {
         return ImmutableList.of(
                 new PlasticSolidifyingRecipe(
-                        FluidIngredient.of(1000, ModFluids.PLASTIC.get()),
+                        Either.right(FluidIngredient.of(ModFluids.PLASTIC.get())),
                         new ItemStack(ModItems.PLASTIC.get())
                 ),
                 new PlasticSolidifyingRecipe(
-                        Ingredient.of(new ItemStack(ModItems.PLASTIC_BUCKET.get())),
+                        Either.left(Ingredient.of(new ItemStack(ModItems.PLASTIC_BUCKET.get()))),
                         new ItemStack(ModItems.PLASTIC.get())
                 )
         );
     }
 
-    record PlasticSolidifyingRecipe(Ingredient input, ItemStack output) {
+    public record PlasticSolidifyingRecipe(Either<Ingredient,FluidIngredient> input, ItemStack output) {
     }
 }

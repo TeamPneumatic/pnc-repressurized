@@ -1,17 +1,17 @@
 package me.desht.pneumaticcraft.common.recipes.special;
 
-import cofh.lib.util.constants.NBTTags;
 import com.google.common.base.Suppliers;
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import me.desht.pneumaticcraft.common.registry.ModRecipeSerializers;
-import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.ShapedRecipe;
 import org.jetbrains.annotations.NotNull;
@@ -45,7 +45,7 @@ public class CompressorUpgradeCrafting extends WrappedShapedRecipe {
 
     @NotNull
     @Override
-    public ItemStack assemble(CraftingContainer inv, RegistryAccess registryAccess) {
+    public ItemStack assemble(CraftingContainer inv, HolderLookup.Provider registryAccess) {
         ItemStack result = wrapped.assemble(inv, registryAccess);
 
         int index = getMainItem(inv);
@@ -55,13 +55,10 @@ public class CompressorUpgradeCrafting extends WrappedShapedRecipe {
         }
         ItemStack input = inv.getItem(index);
 
-        CompoundTag tag = input.getTag();
-        if (tag == null) return result;
-
-        Tag blockEntityTag = tag.get(NBTTags.TAG_BLOCK_ENTITY);
-        if (blockEntityTag == null) return result;
-
-        result.getOrCreateTag().put(NBTTags.TAG_BLOCK_ENTITY, blockEntityTag);
+        CustomData data = input.get(DataComponents.BLOCK_ENTITY_DATA);
+        if (data != null && !data.isEmpty()) {
+            result.set(DataComponents.BLOCK_ENTITY_DATA, data);
+        }
         return result;
     }
 
@@ -83,23 +80,19 @@ public class CompressorUpgradeCrafting extends WrappedShapedRecipe {
     }
 
     public static class Serializer implements RecipeSerializer<CompressorUpgradeCrafting> {
-        public static final Codec<CompressorUpgradeCrafting> CODEC = ShapedRecipe.Serializer.CODEC.xmap(
-                CompressorUpgradeCrafting::new, CompressorUpgradeCrafting::getWrapped
-        );
+        public static final MapCodec<CompressorUpgradeCrafting> CODEC
+                = ShapedRecipe.Serializer.CODEC.xmap(CompressorUpgradeCrafting::new, CompressorUpgradeCrafting::wrapped);
+        public static final StreamCodec<RegistryFriendlyByteBuf, CompressorUpgradeCrafting> STREAM_CODEC
+                = ShapedRecipe.Serializer.STREAM_CODEC.map(CompressorUpgradeCrafting::new, CompressorUpgradeCrafting::wrapped);
 
         @Override
-        public Codec<CompressorUpgradeCrafting> codec() {
+        public MapCodec<CompressorUpgradeCrafting> codec() {
             return CODEC;
         }
 
         @Override
-        public CompressorUpgradeCrafting fromNetwork(FriendlyByteBuf buf) {
-            return new CompressorUpgradeCrafting(RecipeSerializer.SHAPED_RECIPE.fromNetwork(buf));
-        }
-
-        @Override
-        public void toNetwork(FriendlyByteBuf buf, CompressorUpgradeCrafting recipe) {
-            RecipeSerializer.SHAPED_RECIPE.toNetwork(buf, recipe.wrapped);
+        public StreamCodec<RegistryFriendlyByteBuf, CompressorUpgradeCrafting> streamCodec() {
+            return STREAM_CODEC;
         }
     }
 }

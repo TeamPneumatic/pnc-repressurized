@@ -18,20 +18,21 @@
 package me.desht.pneumaticcraft.datagen.recipe;
 
 import me.desht.pneumaticcraft.api.crafting.TemperatureRange;
-import me.desht.pneumaticcraft.api.crafting.ingredient.FluidIngredient;
 import me.desht.pneumaticcraft.common.recipes.machine.RefineryRecipeImpl;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.crafting.FluidIngredient;
+import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
 
 import java.util.List;
 
 public class RefineryRecipeBuilder extends AbstractPNCRecipeBuilder {
-    private final FluidIngredient input;
+    private final SizedFluidIngredient input;
     private final TemperatureRange operatingTemp;
     private final FluidStack[] outputs;
 
-    public RefineryRecipeBuilder(FluidIngredient input, TemperatureRange operatingTemp, FluidStack... outputs) {
+    public RefineryRecipeBuilder(SizedFluidIngredient input, TemperatureRange operatingTemp, FluidStack... outputs) {
         this.input = input;
         this.operatingTemp = operatingTemp;
         this.outputs = outputs;

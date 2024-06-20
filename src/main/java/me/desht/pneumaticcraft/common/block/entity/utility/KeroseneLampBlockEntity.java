@@ -18,7 +18,6 @@
 package me.desht.pneumaticcraft.common.block.entity.utility;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.data.PneumaticCraftTags;
 import me.desht.pneumaticcraft.common.block.entity.*;
@@ -31,10 +30,14 @@ import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
 import me.desht.pneumaticcraft.common.registry.ModBlocks;
+import me.desht.pneumaticcraft.common.registry.ModDataComponents;
+import me.desht.pneumaticcraft.common.util.NBTUtils;
 import me.desht.pneumaticcraft.common.util.PNCFluidTank;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -57,6 +60,7 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.util.FakePlayerFactory;
 import net.neoforged.neoforge.fluids.FluidUtil;
+import net.neoforged.neoforge.fluids.SimpleFluidContent;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.ItemStackHandler;
@@ -110,12 +114,11 @@ public class KeroseneLampBlockEntity extends AbstractTickingBlockEntity implemen
         @Override
         protected void onContentsChanged(Fluid prevFluid, int prevAmount) {
             super.onContentsChanged(prevFluid, prevAmount);
-            if (prevFluid != fluid.getFluid()) {
-                fuelQuality = calculateFuelQuality(fluid.getFluid());
+            if (prevFluid != fluidStack.getFluid()) {
+                fuelQuality = calculateFuelQuality(fluidStack.getFluid());
             }
         }
     };
-//    private final LazyOptional<IFluidHandler> fluidCap = LazyOptional.of(() -> tank);
 
     @DescSynced
     private float fuelQuality = -1f; // the quality of the liquid currently in the tank; basically, its burn time
@@ -126,7 +129,6 @@ public class KeroseneLampBlockEntity extends AbstractTickingBlockEntity implemen
             return itemStack.isEmpty() || FluidUtil.getFluidHandler(itemStack).isPresent();
         }
     };
-//    private final LazyOptional<IItemHandler> inventoryCap = LazyOptional.of(() -> inventory);
 
     public KeroseneLampBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntityTypes.KEROSENE_LAMP.get(), pos, state);
@@ -316,28 +318,28 @@ public class KeroseneLampBlockEntity extends AbstractTickingBlockEntity implemen
     }
 
     @Override
-    public void saveAdditional(CompoundTag tag) {
-        super.saveAdditional(tag);
+    public void saveAdditional(CompoundTag tag, HolderLookup.Provider provider) {
+        super.saveAdditional(tag, provider);
         tag.put("lights", managingLights.stream().map(NbtUtils::writeBlockPos).collect(Collectors.toCollection(ListTag::new)));
         tag.putByte("targetRange", (byte) targetRange);
         tag.putByte("range", (byte) range);
-        tag.put("Items", inventory.serializeNBT());
+        tag.put("Items", inventory.serializeNBT(provider));
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
+    public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
+        super.loadAdditional(tag, provider);
 
         managingLights.clear();
-        ListTag lights = tag.getList("lights", 10);
+        ListTag lights = tag.getList("lights", CompoundTag.TAG_INT_ARRAY);
         for (int i = 0; i < lights.size(); i++) {
-            managingLights.add(NbtUtils.readBlockPos(lights.getCompound(i)));
+            NBTUtils.getPos(lights.getIntArray(i)).ifPresent(managingLights::add);
         }
         fuelQuality = calculateFuelQuality(tank.getFluid().getFluid());
         targetRange = tag.getByte("targetRange");
         range = tag.getByte("range");
         rangeSq = range * range;
-        inventory.deserializeNBT(tag.getCompound("Items"));
+        inventory.deserializeNBT(provider, tag.getCompound("Items"));
     }
 
     @Override
@@ -388,8 +390,8 @@ public class KeroseneLampBlockEntity extends AbstractTickingBlockEntity implemen
 
     @Nonnull
     @Override
-    public Map<String, PNCFluidTank> getSerializableTanks() {
-        return ImmutableMap.of("Tank", tank);
+    public Map<DataComponentType<SimpleFluidContent>, PNCFluidTank> getSerializableTanks() {
+        return Map.of(ModDataComponents.MAIN_TANK.get(), tank);
     }
 
     @Nullable

@@ -22,11 +22,11 @@ import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.neoforged.neoforge.network.handling.PlayPayloadContext;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
@@ -36,36 +36,28 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
  * TODO: replace with a more formal data request protocol
  */
 public record PacketDescriptionPacketRequest(BlockPos pos) implements CustomPacketPayload {
-    public static final ResourceLocation ID = RL("description_request");
+    public static final Type<PacketDescriptionPacketRequest> TYPE = new Type<>(RL("description_request"));
 
-    public PacketDescriptionPacketRequest(FriendlyByteBuf buffer) {
-        this(buffer.readBlockPos());
-    }
-
-    @Override
-    public void write(FriendlyByteBuf buf) {
-        buf.writeBlockPos(pos);
-    }
+    public static final StreamCodec<FriendlyByteBuf, PacketDescriptionPacketRequest> STREAM_CODEC = StreamCodec.composite(
+            BlockPos.STREAM_CODEC, PacketDescriptionPacketRequest::pos,
+            PacketDescriptionPacketRequest::new
+    );
 
     @Override
-    public ResourceLocation id() {
-        return ID;
+    public Type<PacketDescriptionPacketRequest> type() {
+        return TYPE;
     }
 
-    public static void handle(PacketDescriptionPacketRequest message, PlayPayloadContext ctx) {
-        ctx.player().ifPresent(player -> {
-            if (player instanceof ServerPlayer sp && !player.isSpectator()) {
-                ctx.workHandler().submitAsync(() -> {
-                    CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
-                    if (handler.upgradeUsable(CommonUpgradeHandlers.blockTrackerHandler, true)) {
-                        BlockEntity blockEntity = player.level().getBlockEntity(message.pos);
-                        if (blockEntity != null) {
-                            BlockTrackLootable.INSTANCE.apply(player, blockEntity);
-                            NetworkHandler.sendToPlayer(PacketSendNBTPacket.forBlockEntity(blockEntity), sp);
-                        }
-                    }
-                });
+    public static void handle(PacketDescriptionPacketRequest message, IPayloadContext ctx) {
+        if (ctx.player() instanceof ServerPlayer serverPlayer && !serverPlayer.isSpectator()) {
+            CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(serverPlayer);
+            if (handler.upgradeUsable(CommonUpgradeHandlers.blockTrackerHandler, true)) {
+                BlockEntity blockEntity = serverPlayer.level().getBlockEntity(message.pos);
+                if (blockEntity != null) {
+                    BlockTrackLootable.INSTANCE.apply(serverPlayer, blockEntity);
+                    NetworkHandler.sendToPlayer(PacketSendNBTPacket.forBlockEntity(blockEntity), serverPlayer);
+                }
             }
-        });
+        }
     }
 }

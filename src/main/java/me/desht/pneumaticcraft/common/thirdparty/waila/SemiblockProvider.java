@@ -47,7 +47,7 @@ public class SemiblockProvider {
                     .forEach((semiBlock) -> {
                         NonNullList<ItemStack> drops = semiBlock.getDrops();
                         if (!drops.isEmpty()) {
-                            tag.put(Integer.toString(semiBlock.getTrackingId()), semiBlock.serializeNBT(new CompoundTag()));
+                            tag.put(Integer.toString(semiBlock.getTrackingId()), semiBlock.serializeNBT(new CompoundTag(), blockAccessor.getLevel().registryAccess()));
                         }
                     });
             compoundTag.put("semiBlocks", tag);

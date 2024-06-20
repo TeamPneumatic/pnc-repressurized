@@ -7,6 +7,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 
@@ -76,7 +77,7 @@ public interface IUpgradeRegistry {
      * This list is intended to be displayed while Shift is held down while hovering over the upgrade item, and will
      * scroll if larger than 12 lines.
      * <p>
-     * This is automatically used by custom upgrades created via {@link #makeUpgradeItem(PNCUpgrade, int)}. You can also
+     * This is automatically used by custom upgrades created via {@link #makeUpgradeItem(PNCUpgrade, int, Rarity)}. You can also
      * call this yourself <strong>on the client only</strong> for custom upgrades that you create (i.e. items which
      * implement {@link IUpgradeItem}).
      *
@@ -132,13 +133,19 @@ public interface IUpgradeRegistry {
      * item properties; see {@link #makeUpgradeItem(PNCUpgrade, int, Item.Properties)} if you need custom behaviour here.
      *
      * @param upgrade the upgrade object, as returned by {@link #registerUpgrade(ResourceLocation)}
-     * @param tier upgrade tier of this item
+     * @param tier    upgrade tier of this item
+     * @param rarity  the item rarity, for display purposes
      * @return an item, which should be registered in the usual way
      */
-    Item makeUpgradeItem(PNCUpgrade upgrade, int tier);
+    Item makeUpgradeItem(PNCUpgrade upgrade, int tier, Rarity rarity);
+
+    @Deprecated
+    default Item makeUpgradeItem(PNCUpgrade upgrade, int tier) {
+        return makeUpgradeItem(upgrade, tier, Rarity.COMMON);
+    }
 
     /**
-     * Same as {@link #makeUpgradeItem(PNCUpgrade, int)} but allows a custom item properties object to be supplied for
+     * Same as {@link #makeUpgradeItem(PNCUpgrade, int, Rarity)} but allows a custom item properties object to be supplied for
      * use when the {@code Item} is created.
      *
      * @param upgrade a supplier for the upgrade object, which will not yet be registered

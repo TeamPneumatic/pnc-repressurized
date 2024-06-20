@@ -18,14 +18,19 @@
 package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.common.item.RemoteItem;
+import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.network.handling.PlayPayloadContext;
+import net.minecraft.world.item.component.CustomData;
+import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
+
+import java.rmi.Remote;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
@@ -34,35 +39,23 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
  * Sent by client to update the layout of a Remote item from the Remote GUI
  */
 public record PacketUpdateRemoteLayout(CompoundTag layout, InteractionHand hand) implements CustomPacketPayload {
-    public static final ResourceLocation ID = RL("update_remote_layout");
+    public static final Type<PacketUpdateRemoteLayout> TYPE = new Type<>(RL("update_remote_layout"));
 
-    public static PacketUpdateRemoteLayout fromNetwork(FriendlyByteBuf buffer) {
-        return new PacketUpdateRemoteLayout(buffer.readNbt(), buffer.readEnum(InteractionHand.class));
-    }
-
-    @Override
-    public void write(FriendlyByteBuf buf) {
-        buf.writeNbt(layout);
-        buf.writeEnum(hand);
-    }
+    public static final StreamCodec<FriendlyByteBuf, PacketUpdateRemoteLayout> STREAM_CODEC = StreamCodec.composite(
+            ByteBufCodecs.COMPOUND_TAG, PacketUpdateRemoteLayout::layout,
+            NeoForgeStreamCodecs.enumCodec(InteractionHand.class), PacketUpdateRemoteLayout::hand,
+            PacketUpdateRemoteLayout::new
+    );
 
     @Override
-    public ResourceLocation id() {
-        return ID;
+    public Type<PacketUpdateRemoteLayout> type() {
+        return TYPE;
     }
 
-    public static void handle(PacketUpdateRemoteLayout message, PlayPayloadContext ctx) {
-        ctx.player().ifPresent(player -> ctx.workHandler().submitAsync(() -> {
-            ItemStack remote = player.getItemInHand(message.hand());
-            if (remote.getItem() instanceof RemoteItem) {
-                CompoundTag tag = remote.getTag();
-                if (tag == null) {
-                    tag = new CompoundTag();
-                    remote.setTag(tag);
-                }
-                tag.put("actionWidgets", message.layout().getList("actionWidgets", Tag.TAG_COMPOUND));
-            }
-        }));
+    public static void handle(PacketUpdateRemoteLayout message, IPayloadContext ctx) {
+        ItemStack remote = ctx.player().getItemInHand(message.hand);
+        if (remote.getItem() instanceof RemoteItem) {
+            RemoteItem.setSavedLayout(remote, message.layout);
+        }
     }
-
 }

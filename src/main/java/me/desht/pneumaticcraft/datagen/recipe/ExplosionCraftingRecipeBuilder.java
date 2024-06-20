@@ -22,15 +22,16 @@ import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.neoforged.neoforge.common.crafting.SizedIngredient;
 
 import java.util.List;
 
 public class ExplosionCraftingRecipeBuilder extends AbstractPNCRecipeBuilder {
-    private final Ingredient input;
+    private final SizedIngredient input;
     private final int lossRate;
     private final List<ItemStack> outputs;
 
-    public ExplosionCraftingRecipeBuilder(Ingredient input, int lossRate, ItemStack... outputs) {
+    public ExplosionCraftingRecipeBuilder(SizedIngredient input, int lossRate, ItemStack... outputs) {
         this.input = input;
         this.lossRate = lossRate;
         this.outputs = List.of(outputs);

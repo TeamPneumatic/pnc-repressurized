@@ -17,7 +17,8 @@
 
 package me.desht.pneumaticcraft.common.block.entity.utility;
 
-import me.desht.pneumaticcraft.api.lib.NBTKeys;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import me.desht.pneumaticcraft.client.render.area.AreaRenderManager;
 import me.desht.pneumaticcraft.common.block.entity.*;
 import me.desht.pneumaticcraft.common.inventory.SmartChestMenu;
@@ -30,16 +31,22 @@ import me.desht.pneumaticcraft.common.network.PacketSyncSmartChest;
 import me.desht.pneumaticcraft.common.particle.AirParticleData;
 import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
 import me.desht.pneumaticcraft.common.registry.ModBlocks;
+import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.util.IOHelper;
-import me.desht.pneumaticcraft.common.util.ITranslatableEnum;
+import me.desht.pneumaticcraft.api.misc.ITranslatableEnum;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -47,13 +54,14 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.ItemContainerContents;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
-import org.apache.commons.lang3.tuple.Pair;
+import org.joml.Vector3f;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -63,6 +71,7 @@ public class SmartChestBlockEntity extends AbstractTickingBlockEntity
         implements MenuProvider, IRedstoneControl<SmartChestBlockEntity>, IComparatorSupport {
     public static final int CHEST_SIZE = 72;
     private static final String NBT_ITEMS = "Items";
+    public static final Vector3f PARTICLE_AREA = new Vector3f(0.5f, 0.5f, 0.5f);
 
     private final SmartChestItemHandler inventory = new SmartChestItemHandler(this, CHEST_SIZE);
     @GuiSynced
@@ -195,7 +204,12 @@ public class SmartChestBlockEntity extends AbstractTickingBlockEntity
                     item.setItem(excess);
                 }
                 if (excess.getCount() < stack.getCount()) {
-                    NetworkHandler.sendToAllTracking(new PacketSpawnParticle(AirParticleData.DENSE, item.getX(), item.getY() + 0.5, item.getZ(), 0, 0, 0, 5, 0.5, 0.5, 0.5), this);
+                    NetworkHandler.sendToAllTracking(new PacketSpawnParticle(AirParticleData.DENSE,
+                            item.position().toVector3f(),
+                            PneumaticCraftUtils.VEC3F_ZERO,
+                            5,
+                            Optional.of(PARTICLE_AREA)
+                    ), this);
                     didWork = true;
                 }
             }
@@ -303,36 +317,35 @@ public class SmartChestBlockEntity extends AbstractTickingBlockEntity
     }
 
     @Override
-    public void saveAdditional(CompoundTag tag) {
-        super.saveAdditional(tag);
-        tag.put(NBT_ITEMS, inventory.serializeNBT());
+    public void saveAdditional(CompoundTag tag, HolderLookup.Provider provider) {
+        super.saveAdditional(tag, provider);
+        tag.put(NBT_ITEMS, inventory.serializeNBT(provider));
         tag.putInt("pushPull", pushPullModes);
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
+    public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
+        super.loadAdditional(tag, provider);
 
-        inventory.deserializeNBT(tag.getCompound(NBT_ITEMS));
+        inventory.deserializeNBT(provider, tag.getCompound(NBT_ITEMS));
         pushPullModes = tag.getInt("pushPull");
     }
 
     @Override
-    public void serializeExtraItemData(CompoundTag blockEntityTag, boolean preserveState) {
-        super.serializeExtraItemData(blockEntityTag, preserveState);
+    protected void applyImplicitComponents(DataComponentInput componentInput) {
+        super.applyImplicitComponents(componentInput);
 
-        boolean shouldSave = inventory.lastSlot < CHEST_SIZE || rsController.getCurrentMode() != 0;
-        if (!shouldSave) {
-            for (int i = 0; i < inventory.getSlots(); i++) {
-                if (!inventory.getStackInSlot(i).isEmpty() || !inventory.filter[i].isEmpty()) {
-                    shouldSave = true;
-                }
-            }
+        SavedData savedData = componentInput.get(ModDataComponents.SMART_CHEST_SAVED);
+        if (savedData != null) {
+            inventory.loadSavedData(savedData);
         }
-        if (shouldSave) {
-            blockEntityTag.put(NBT_ITEMS, inventory.serializeNBT());
-            blockEntityTag.putInt(NBTKeys.NBT_REDSTONE_MODE, rsController.getCurrentMode());
-        }
+    }
+
+    @Override
+    protected void collectImplicitComponents(DataComponentMap.Builder builder) {
+        super.collectImplicitComponents(builder);
+
+        builder.set(ModDataComponents.SMART_CHEST_SAVED, SavedData.fromBlockEntity(this));
     }
 
     @Override
@@ -363,21 +376,19 @@ public class SmartChestBlockEntity extends AbstractTickingBlockEntity
         inventory.setLastSlot(lastSlot);
     }
 
-    public List<Pair<Integer, ItemStack>> getFilter() {
-        List<Pair<Integer, ItemStack>> res = new ArrayList<>();
+    public List<FilterSlot> getFilter() {
+        List<FilterSlot> res = new ArrayList<>();
         for (int i = 0; i < inventory.getSlots(); i++) {
             if (!inventory.filter[i].isEmpty()) {
-                res.add(Pair.of(i, inventory.filter[i].copy()));
+                res.add(new FilterSlot(i, inventory.filter[i].copy()));
             }
         }
         return res;
     }
 
-    public void setFilter(List<Pair<Integer, ItemStack>> l) {
+    public void setFilter(List<FilterSlot> l) {
         Arrays.fill(inventory.filter, ItemStack.EMPTY);
-        for (Pair<Integer, ItemStack> p : l) {
-            inventory.setFilter(p.getLeft(), p.getRight());
-        }
+        l.forEach(p -> inventory.setFilter(p.slot, p.stack));
     }
 
     public ItemStack getFilter(int slotId) {
@@ -422,9 +433,9 @@ public class SmartChestBlockEntity extends AbstractTickingBlockEntity
         }
     }
 
-    public static IItemHandler deserializeSmartChest(CompoundTag tag) {
+    public static IItemHandler deserializeSmartChest(CompoundTag tag, HolderLookup.Provider provider) {
         SmartChestItemHandler res = new SmartChestItemHandler(null, CHEST_SIZE);
-        res.deserializeNBT(tag);
+        res.deserializeNBT(provider, tag);
         return res;
     }
 
@@ -473,8 +484,8 @@ public class SmartChestBlockEntity extends AbstractTickingBlockEntity
         }
 
         @Override
-        public CompoundTag serializeNBT() {
-            CompoundTag tag = super.serializeNBT();
+        public CompoundTag serializeNBT(HolderLookup.Provider provider) {
+            CompoundTag tag = super.serializeNBT(provider);
 
             tag.putInt("LastSlot", lastSlot);
             ListTag l = new ListTag();
@@ -482,28 +493,63 @@ public class SmartChestBlockEntity extends AbstractTickingBlockEntity
                 if (!filter[i].isEmpty()) {
                     CompoundTag subTag = new CompoundTag();
                     subTag.putInt("Slot", i);
-                    filter[i].save(subTag);
+                    filter[i].save(provider, subTag);
                     l.add(subTag);
                 }
             }
             tag.put("Filter", l);
-            tag.putBoolean("V2", true);
             return tag;
         }
 
         @Override
-        public void deserializeNBT(CompoundTag nbt) {
-            super.deserializeNBT(nbt);
+        public void deserializeNBT(HolderLookup.Provider provider, CompoundTag nbt) {
+            super.deserializeNBT(provider, nbt);
 
             lastSlot = nbt.getInt("LastSlot");
             ListTag l = nbt.getList("Filter", Tag.TAG_COMPOUND);
-            boolean isV2 = nbt.getBoolean("V2");
             for (int i = 0; i < l.size(); i++) {
                 CompoundTag tag = l.getCompound(i);
-                ItemStack stack = ItemStack.of(tag);
-                if (!isV2 && stack.getCount() == 1) stack.setCount(stack.getMaxStackSize());
-                filter[tag.getInt("Slot")] = stack;
+                filter[tag.getInt("Slot")] = ItemStack.parseOptional(provider, tag);
             }
+        }
+
+        public void loadSavedData(SavedData savedData) {
+            lastSlot = savedData.lastSlot;
+
+            loadContainerContents(savedData.inventory);
+            for (int i = 0; i < savedData.filter.getSlots() && i < filter.length; i++) {
+                filter[i] = savedData.filter.getStackInSlot(i);
+            }
+        }
+    }
+
+    public record FilterSlot(int slot, ItemStack stack) {
+        public static StreamCodec<RegistryFriendlyByteBuf, FilterSlot> STREAM_CODEC = StreamCodec.composite(
+                ByteBufCodecs.VAR_INT, FilterSlot::slot,
+                ItemStack.OPTIONAL_STREAM_CODEC, FilterSlot::stack,
+                FilterSlot::new
+        );
+    }
+
+    public record SavedData(ItemContainerContents inventory, int lastSlot, ItemContainerContents filter) {
+        public static final Codec<SavedData> CODEC = RecordCodecBuilder.create(builder -> builder.group(
+            ItemContainerContents.CODEC.fieldOf("inventory").forGetter(SavedData::inventory),
+            Codec.INT.fieldOf("last_slot").forGetter(SavedData::lastSlot),
+            ItemContainerContents.CODEC.fieldOf("filter").forGetter(SavedData::filter)
+        ).apply(builder, SavedData::new));
+        public static final StreamCodec<RegistryFriendlyByteBuf, SavedData> STREAM_CODEC = StreamCodec.composite(
+                ItemContainerContents.STREAM_CODEC, SavedData::inventory,
+                ByteBufCodecs.VAR_INT, SavedData::lastSlot,
+                ItemContainerContents.STREAM_CODEC, SavedData::filter,
+                SavedData::new
+        );
+        public static final SavedData EMPTY = new SavedData(ItemContainerContents.EMPTY, 0, ItemContainerContents.EMPTY);
+
+        static SavedData fromBlockEntity(SmartChestBlockEntity smartChest) {
+            return new SavedData(
+                    smartChest.inventory.toContainerContents(), smartChest.getLastSlot(),
+                    ItemContainerContents.fromItems(Arrays.asList(smartChest.inventory.filter))
+            );
         }
     }
 }

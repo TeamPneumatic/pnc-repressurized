@@ -38,8 +38,14 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
+import org.joml.Vector3f;
+
+import java.util.Optional;
 
 public class ScubaHandler extends BaseArmorUpgradeHandler<IArmorExtensionData> {
+
+    public static final Vector3f BUBBLE_SPEED = new Vector3f(0.0f, 0.2f, 0.0f);
+    public static final Vector3f BUBBLE_AREA = new Vector3f(1.0f, 1.0f, 1.0f);
 
     @Override
     public ResourceLocation getID() {
@@ -81,7 +87,12 @@ public class ScubaHandler extends BaseArmorUpgradeHandler<IArmorExtensionData> {
 
             NetworkHandler.sendToPlayer(new PacketPlaySound(ModSounds.SCUBA.get(), SoundSource.PLAYERS, player.blockPosition(), 1f, 1.0f, false), (ServerPlayer) player);
             Vec3 eyes = player.getEyePosition(1.0f).add(player.getLookAngle().scale(0.5));
-            NetworkHandler.sendToAllTracking(new PacketSpawnParticle(ParticleTypes.BUBBLE, eyes.x - 0.5, eyes.y, eyes.z -0.5, 0.0, 0.2, 0.0, 10, 1.0, 1.0, 1.0), player.level(), player.blockPosition());
+            NetworkHandler.sendToAllTracking(new PacketSpawnParticle(ParticleTypes.BUBBLE,
+                    eyes.toVector3f().add(-0.5f, 0, -0.5f),
+                    BUBBLE_SPEED,
+                    10,
+                    Optional.of(BUBBLE_AREA)
+            ), player.level(), player.blockPosition());
         }
     }
 }

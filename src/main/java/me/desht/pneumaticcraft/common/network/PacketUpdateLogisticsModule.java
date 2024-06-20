@@ -19,7 +19,8 @@ package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.common.tubemodules.LogisticsModule;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.entity.player.Player;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
@@ -29,27 +30,23 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
  * Sent by server when the status or colour of a logistics module is updated
  */
 public record PacketUpdateLogisticsModule(ModuleLocator locator, int colorIndex, int status) implements TubeModulePacket<LogisticsModule> {
-    public static final ResourceLocation ID = RL("update_logsistics_module");
+    public static final Type<PacketUpdateLogisticsModule> TYPE = new Type<>(RL("update_logsistics_module"));
+
+    public static final StreamCodec<FriendlyByteBuf, PacketUpdateLogisticsModule> STREAM_CODEC = StreamCodec.composite(
+            ModuleLocator.STREAM_CODEC, PacketUpdateLogisticsModule::locator,
+            ByteBufCodecs.INT, PacketUpdateLogisticsModule::colorIndex,
+            ByteBufCodecs.VAR_INT, PacketUpdateLogisticsModule::status,
+            PacketUpdateLogisticsModule::new
+    );
 
     public static PacketUpdateLogisticsModule create(LogisticsModule module, int action) {
         int status = action > 0 ? 1 + action : module.hasPower() ? 1 : 0;
         return new PacketUpdateLogisticsModule(ModuleLocator.forModule(module), module.getColorChannel(), status);
     }
 
-    public static PacketUpdateLogisticsModule fromNetwork(FriendlyByteBuf buffer) {
-        return new PacketUpdateLogisticsModule(ModuleLocator.fromNetwork(buffer), buffer.readByte(), buffer.readByte());
-    }
-
     @Override
-    public void write(FriendlyByteBuf buf) {
-        locator.write(buf);
-        buf.writeByte(colorIndex);
-        buf.writeByte(status);
-    }
-
-    @Override
-    public ResourceLocation id() {
-        return ID;
+    public Type<PacketUpdateLogisticsModule> type() {
+        return TYPE;
     }
 
     @Override

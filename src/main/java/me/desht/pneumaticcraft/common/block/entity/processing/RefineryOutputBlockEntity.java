@@ -26,10 +26,12 @@ import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
 import me.desht.pneumaticcraft.common.registry.ModBlocks;
+import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.util.PNCFluidTank;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.component.DataComponentType;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -38,12 +40,14 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.IFluidTank;
+import net.neoforged.neoforge.fluids.SimpleFluidContent;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.items.IItemHandler;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Map;
+import java.util.Optional;
 
 public class RefineryOutputBlockEntity extends AbstractTickingBlockEntity implements
         IRedstoneControl<RefineryOutputBlockEntity>, IComparatorSupport, ISerializableTanks,
@@ -83,8 +87,7 @@ public class RefineryOutputBlockEntity extends AbstractTickingBlockEntity implem
 
     @Override
     public int getComparatorValue() {
-        RefineryControllerBlockEntity controller = getRefineryController();
-        return controller == null ? 0 : controller.getComparatorValue();
+        return getRefineryController().map(RefineryControllerBlockEntity::getComparatorValue).orElse(0);
     }
 
     @Override
@@ -94,14 +97,13 @@ public class RefineryOutputBlockEntity extends AbstractTickingBlockEntity implem
 
     @Override
     public int getRedstoneMode() {
-        RefineryControllerBlockEntity controller = getRefineryController();
-        return controller == null ? 0 : controller.getRedstoneMode();
+        return getRefineryController().map(IRedstoneControl::getRedstoneMode).orElse(0);
     }
 
     @Nonnull
     @Override
-    public Map<String, PNCFluidTank> getSerializableTanks() {
-        return ImmutableMap.of("Tank", outputTank);
+    public Map<DataComponentType<SimpleFluidContent>, PNCFluidTank> getSerializableTanks() {
+        return Map.of(ModDataComponents.OUTPUT_TANK.get(), outputTank);
     }
 
     @Override
@@ -112,11 +114,12 @@ public class RefineryOutputBlockEntity extends AbstractTickingBlockEntity implem
     @Nullable
     @Override
     public AbstractContainerMenu createMenu(int windowId, Inventory inventory, Player player) {
-        RefineryControllerBlockEntity controller = getRefineryController();
-        return controller == null ? null : new RefineryMenu(windowId, inventory, controller.getBlockPos());
+        return getRefineryController()
+                .map(c -> new RefineryMenu(windowId, inventory, c.getBlockPos()))
+                .orElse(null);
     }
 
-    public RefineryControllerBlockEntity getRefineryController() {
+    public Optional<RefineryControllerBlockEntity> getRefineryController() {
         if (controllerTE != null && controllerTE.isRemoved()) controllerTE = null;
 
         if (controllerTE == null) {
@@ -137,7 +140,7 @@ public class RefineryOutputBlockEntity extends AbstractTickingBlockEntity implem
                 }
             }
         }
-        return controllerTE;
+        return Optional.ofNullable(controllerTE);
     }
 
     public IFluidTank getOutputTank() {

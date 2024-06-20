@@ -18,6 +18,7 @@
 package me.desht.pneumaticcraft.api.drone;
 
 import net.minecraft.world.entity.Entity;
+import org.jetbrains.annotations.ApiStatus;
 
 /**
  * Some methods to control a drone-like object's movement. "Drone-like" means it could be a real Drone, or a
@@ -25,6 +26,7 @@ import net.minecraft.world.entity.Entity;
  * <p>
  * Retrieve an instance of this via {@link IDrone#getPathNavigator()}.
  */
+@ApiStatus.NonExtendable
 public interface IPathNavigator {
     /**
      * Instruct the drone to move to the given position. Note that any currently-running program may subsequently

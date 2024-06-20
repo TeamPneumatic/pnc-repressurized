@@ -24,7 +24,7 @@ import java.util.List;
 
 /**
  * A functional interface to modify a given Pneumatic item's effective volume based on attributes of the item stack
- * (generally values in its NBT, e.g. upgrades or enchantments). Instances of this can be registered
+ * (generally component data, e.g. upgrades or enchantments). Instances of this can be registered
  * with {@link IItemRegistry#registerPneumaticVolumeModifier(ItemVolumeModifier)}.
  */
 @FunctionalInterface
@@ -38,8 +38,8 @@ public interface ItemVolumeModifier {
     int getNewVolume(ItemStack stack, int oldVolume);
 
     /**
-     * Add some information regarding this volume modifier for GUI display purposes; this information will be
-     * displayed in the Charging Station upgrade screen for the item in the Charging Station.
+     * Add some information regarding this volume modifier for GUI display purposes; this information is
+     * displayed in the Charging Station upgrade screen for the item when it's in the Charging Station.
      * @param stack the item
      * @param text information text to be appended to
      */

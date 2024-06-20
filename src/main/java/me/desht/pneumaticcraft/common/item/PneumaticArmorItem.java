@@ -17,12 +17,9 @@
 
 package me.desht.pneumaticcraft.common.item;
 
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.client.IFOVModifierItem;
 import me.desht.pneumaticcraft.api.item.ICustomDurabilityBar;
-import me.desht.pneumaticcraft.api.lib.NBTKeys;
 import me.desht.pneumaticcraft.api.pressure.IPressurizableItem;
 import me.desht.pneumaticcraft.client.ColorHandlers;
 import me.desht.pneumaticcraft.client.pneumatic_armor.upgrade_handler.EnderVisorClientHandler;
@@ -34,48 +31,46 @@ import me.desht.pneumaticcraft.common.drone.IDroneBase;
 import me.desht.pneumaticcraft.common.entity.drone.AbstractDroneEntity;
 import me.desht.pneumaticcraft.common.entity.drone.DroneEntity;
 import me.desht.pneumaticcraft.common.entity.drone.ProgrammableControllerEntity;
+import me.desht.pneumaticcraft.common.network.DronePacket.DroneTarget;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
 import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.ElytraHandler;
 import me.desht.pneumaticcraft.common.recipes.special.OneProbeCrafting;
-import me.desht.pneumaticcraft.common.registry.ModAttachmentTypes;
+import me.desht.pneumaticcraft.common.registry.ModArmorMaterials;
+import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.registry.ModMenuTypes;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
+import me.desht.pneumaticcraft.common.upgrades.UpgradableItemUtils;
 import me.desht.pneumaticcraft.common.util.GlobalPosHelper;
-import me.desht.pneumaticcraft.common.util.NBTUtils;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
-import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.GlobalPos;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtUtils;
-import net.minecraft.nbt.Tag;
+import net.minecraft.core.component.DataComponentType;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.monster.EnderMan;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
+import net.minecraft.world.item.component.DyedItemColor;
+import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 
 import javax.annotation.Nullable;
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 import java.util.function.Consumer;
 
@@ -83,7 +78,7 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class PneumaticArmorItem extends ArmorItem implements
         IChargeableContainerProvider, IFOVModifierItem, ICustomDurabilityBar, IPressurizableItem,
-        DyeableLeatherItem, ColorHandlers.ITintableItem
+        ColorHandlers.ITintableItem
         /*, IVisDiscountGear, IGoggles, IRevealer,*/
 {
     private static final UUID[] PNEUMATIC_ARMOR_MODIFIERS = new UUID[] {
@@ -93,8 +88,6 @@ public class PneumaticArmorItem extends ArmorItem implements
             UUID.fromString("e836e6c9-355e-49f2-87fc-331fadfdd642")
     };
 
-    private static final ArmorMaterial PNEUMATIC_ARMOR_MATERIAL = new CompressedIronArmorMaterial(0.2f);
-
     private static final int[] ARMOR_VOLUMES = new int[] {
             PneumaticValues.PNEUMATIC_BOOTS_VOLUME,
             PneumaticValues.PNEUMATIC_LEGGINGS_VOLUME,
@@ -103,22 +96,12 @@ public class PneumaticArmorItem extends ArmorItem implements
     };
 //    private static final int[] VIS_DISCOUNTS = new int[] { 1, 2, 2, 5 };
 
-    public static final String NBT_SEARCH_ITEM = "SearchStack";
-    public static final String NBT_COORD_TRACKER = "CoordTracker";
-    public static final String NBT_ENTITY_FILTER = "entityFilter";
-    public static final String NBT_JUMP_BOOST = "jumpBoost";
-    public static final String NBT_SPEED_BOOST = "speedBoost";
-    public static final String NBT_BUILDER_MODE = "JetBootsBuilderMode";
-    public static final String NBT_JET_BOOTS_POWER = "JetBootsPower";
-    public static final String NBT_FLIGHT_STABILIZERS = "JetBootsStabilizers";
-    public static final String NBT_HOVER = "Hover";
-    public static final String NBT_SMART_HOVER = "SmartHover";
-    public static final int DEFAULT_PRIMARY_COLOR = 0xFF969696;
-    public static final int DEFAULT_SECONDARY_COLOR = 0xFFC0C0C0;
-    public static final int DEFAULT_EYEPIECE_COLOR = 0xFF00AA00;
+    public static final DyedItemColor DEFAULT_PRIMARY_COLOR = new DyedItemColor(0xFF969696, false);
+    public static final DyedItemColor DEFAULT_SECONDARY_COLOR = new DyedItemColor(0xFFC0C0C0, false);
+    public static final DyedItemColor DEFAULT_EYEPIECE_COLOR = new DyedItemColor(0xFF00AA00, false);
 
     public PneumaticArmorItem(ArmorItem.Type equipmentSlotIn) {
-        super(PNEUMATIC_ARMOR_MATERIAL, equipmentSlotIn, ModItems.defaultProps());
+        super(ModArmorMaterials.PNEUMATIC.getDelegate(), equipmentSlotIn, ModItems.defaultProps());
     }
 
     @Override
@@ -155,7 +138,7 @@ public class PneumaticArmorItem extends ArmorItem implements
 
     @Override
     public int getAir(ItemStack stack) {
-        return stack.getData(ModAttachmentTypes.AIR.get());
+        return stack.getOrDefault(ModDataComponents.AIR, 0);
     }
 
     @Override
@@ -163,21 +146,27 @@ public class PneumaticArmorItem extends ArmorItem implements
         return 10F;
     }
 
-    @Nullable
     @Override
-    public String getArmorTexture(ItemStack stack, Entity entity, EquipmentSlot slot, String type) {
-        String s = slot == EquipmentSlot.LEGS ? Textures.ARMOR_PNEUMATIC + "_2" : Textures.ARMOR_PNEUMATIC + "_1";
-        return type == null ? s + ".png" : s + "_" + type + ".png";
+    @Nullable
+    public ResourceLocation getArmorTexture(ItemStack stack, Entity entity, EquipmentSlot slot, ArmorMaterial.Layer layer, boolean innerModel) {
+        return super.getArmorTexture(stack, entity, slot, layer, innerModel);
     }
 
+//    @Nullable
+//    @Override
+//    public String getArmorTexture(ItemStack stack, Entity entity, EquipmentSlot slot, String type) {
+//        String s = slot == EquipmentSlot.LEGS ? Textures.ARMOR_PNEUMATIC + "_2" : Textures.ARMOR_PNEUMATIC + "_1";
+//        return type == null ? s + ".png" : s + "_" + type + ".png";
+//    }
+
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
-        if (type == Type.HELMET && worldIn != null) {
-            addHelmetInformation(stack, worldIn, tooltip);
+    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flagIn) {
+        if (type == Type.HELMET && context.registries() != null) {
+            ClientUtils.getOptionalClientLevel().ifPresent(level -> addHelmetInformation(stack, level, tooltip));
         }
     }
 
-    private void addHelmetInformation(ItemStack stack, Level worldIn, List<Component> tooltip) {
+    private void addHelmetInformation(ItemStack stack, Level level, List<Component> tooltip) {
         if (OneProbeCrafting.isOneProbeEnabled(stack)) {
             tooltip.add(xlate("gui.tooltip.item.pneumaticcraft.pneumatic_helmet.one_probe").withStyle(ChatFormatting.BLUE));
         }
@@ -190,7 +179,7 @@ public class PneumaticArmorItem extends ArmorItem implements
             }
         }
 
-        BlockPos pos = getCoordTrackerPos(stack, worldIn);
+        BlockPos pos = getCoordTrackerPos(stack, level);
         if (pos != null) {
             tooltip.add(xlate("pneumaticcraft.armor.upgrade.coordinate_tracker")
                     .append(": ").append(PneumaticCraftUtils.posToString(pos)).withStyle(ChatFormatting.YELLOW));
@@ -203,20 +192,22 @@ public class PneumaticArmorItem extends ArmorItem implements
     }
 
     @Override
-    public Multimap<Attribute, AttributeModifier> getAttributeModifiers(EquipmentSlot equipmentSlot, ItemStack stack) {
-        Multimap<Attribute, AttributeModifier> multimap = HashMultimap.create(super.getAttributeModifiers(equipmentSlot, stack));
+    public ItemAttributeModifiers getAttributeModifiers(ItemStack stack) {
+        ItemAttributeModifiers modifiers = super.getAttributeModifiers(stack);
 
-        // in future?
-//        Multimap<Attribute, AttributeModifier> m = MultimapBuilder.hashKeys().hashSetValues()
-//                .build(super.getAttributeModifiers(equipmentSlot, stack));
-
-        if (equipmentSlot == type.getSlot()) {
+        if (stack.getEquipmentSlot() == type.getSlot()) {
             int upgrades = UpgradableItemUtils.getUpgradeCount(stack, ModUpgrades.ARMOR.get());
-            multimap.put(Attributes.ARMOR, new AttributeModifier(PNEUMATIC_ARMOR_MODIFIERS[equipmentSlot.getIndex()], "Pneumatic Armor modifier boost", (double) upgrades / 2d, AttributeModifier.Operation.ADDITION));
-            multimap.put(Attributes.ARMOR_TOUGHNESS, new AttributeModifier(PNEUMATIC_ARMOR_MODIFIERS[equipmentSlot.getIndex()], "Pneumatic Armor toughness boost", upgrades, AttributeModifier.Operation.ADDITION));
+            if (upgrades > 0) {
+                EquipmentSlotGroup group = EquipmentSlotGroup.bySlot(type.getSlot());
+                AttributeModifier armor = new AttributeModifier("FIXME", upgrades / 2d, AttributeModifier.Operation.ADD_VALUE);
+                AttributeModifier armorToughness = new AttributeModifier("FIXME2", upgrades, AttributeModifier.Operation.ADD_VALUE);
+                return modifiers
+                        .withModifierAdded(Attributes.ARMOR, armor, group)
+                        .withModifierAdded(Attributes.ARMOR_TOUGHNESS, armorToughness, group);
+            }
         }
 
-        return multimap;
+        return modifiers;
     }
 
 //    @Nullable
@@ -227,108 +218,80 @@ public class PneumaticArmorItem extends ArmorItem implements
 
     /* ----------- Pneumatic Helmet helpers ---------- */
 
-    public static int getIntData(ItemStack stack, String key, int def) {
-        if (stack.getItem() instanceof PneumaticArmorItem && stack.hasTag() && stack.getTag().contains(key, Tag.TAG_INT)) {
-            return stack.getTag().getInt(key);
-        } else {
-            return def;
-        }
+    public static int getIntData(ItemStack stack, DataComponentType<Integer> componentType, int def) {
+        return stack.getOrDefault(componentType, def);
     }
 
-    public static int getIntData(ItemStack stack, String key, int def, int min, int max) {
-        if (stack.getItem() instanceof PneumaticArmorItem && stack.hasTag() && stack.getTag().contains(key, Tag.TAG_INT)) {
-            return Mth.clamp(stack.getTag().getInt(key), min, max);
-        } else {
-            return def;
-        }
+    public static int getIntData(ItemStack stack, DataComponentType<Integer> componentType, int def, int min, int max) {
+        return Mth.clamp(stack.getOrDefault(componentType, def), min, max);
     }
 
-    public static boolean getBooleanData(ItemStack stack, String key, boolean def) {
-        if (stack.getItem() instanceof PneumaticArmorItem && stack.hasTag() && stack.getTag().contains(key, Tag.TAG_BYTE)) {
-            return stack.getTag().getByte(key) == 1;
-        } else {
-            return def;
-        }
+    public static boolean getBooleanData(ItemStack stack, DataComponentType<Boolean> componentType, boolean def) {
+        return stack.getOrDefault(componentType, def);
     }
 
     public static Item getSearchedItem(ItemStack helmetStack) {
-        if (helmetStack.isEmpty() || !NBTUtils.hasTag(helmetStack, NBT_SEARCH_ITEM)) return null;
-        String itemName = NBTUtils.getString(helmetStack, NBT_SEARCH_ITEM);
-        return itemName.isEmpty() ? null : BuiltInRegistries.ITEM.get(new ResourceLocation(itemName));
+        return helmetStack.has(ModDataComponents.HELMET_SEARCH_ITEM) ?
+                helmetStack.get(ModDataComponents.HELMET_SEARCH_ITEM) :
+                null;
     }
 
     public static void setSearchedItem(ItemStack helmetStack, Item searchedItem) {
         if (helmetStack.getItem() instanceof PneumaticArmorItem) {
-            NBTUtils.setString(helmetStack, NBT_SEARCH_ITEM, PneumaticCraftUtils.getRegistryName(searchedItem).orElseThrow().toString());
+            helmetStack.set(ModDataComponents.HELMET_SEARCH_ITEM, searchedItem);
         }
     }
 
     public static BlockPos getCoordTrackerPos(ItemStack helmetStack, Level world) {
-        if (helmetStack.isEmpty() || !NBTUtils.hasTag(helmetStack, NBT_COORD_TRACKER)) return null;
-        CompoundTag tag = NBTUtils.getCompoundTag(helmetStack, NBT_COORD_TRACKER);
-        GlobalPos gPos = GlobalPosHelper.fromNBT(tag);
-        if (world.isOutsideBuildHeight(gPos.pos().getY()) || !GlobalPosHelper.isSameWorld(gPos, world)) {
-            return null;
+        if (helmetStack.has(ModDataComponents.COORD_TRACKER)) {
+            GlobalPos gPos = helmetStack.get(ModDataComponents.COORD_TRACKER);
+            if (!world.isOutsideBuildHeight(gPos.pos().getY()) && GlobalPosHelper.isSameWorld(gPos, world)) {
+                return helmetStack.get(ModDataComponents.COORD_TRACKER).pos();
+            }
         }
-        return gPos.pos();
+        return null;
     }
 
     public static void setCoordTrackerPos(ItemStack helmetStack, GlobalPos gPos) {
-        NBTUtils.setCompoundTag(helmetStack, PneumaticArmorItem.NBT_COORD_TRACKER, GlobalPosHelper.toNBT(gPos));
+        helmetStack.set(ModDataComponents.COORD_TRACKER, gPos);
     }
 
     public static String getEntityFilter(ItemStack helmetStack) {
-        if (helmetStack.isEmpty() || !NBTUtils.hasTag(helmetStack, NBT_ENTITY_FILTER)) return "";
-        return NBTUtils.getString(helmetStack, NBT_ENTITY_FILTER);
+        return helmetStack.getOrDefault(ModDataComponents.ENTITY_FILTER, "");
     }
 
-    public static boolean isPlayerDebuggingDrone(Player player, AbstractDroneEntity e) {
+    public static boolean isPlayerDebuggingDrone(Player player, AbstractDroneEntity drone) {
         ItemStack helmet = player.getItemBySlot(EquipmentSlot.HEAD);
         if (helmet.getItem() != ModItems.PNEUMATIC_HELMET.get()) return false;
-        if (e instanceof DroneEntity) {
-            return NBTUtils.getInteger(helmet, NBTKeys.PNEUMATIC_HELMET_DEBUGGING_DRONE) == e.getId();
-        } else if (e instanceof ProgrammableControllerEntity) {
-            CompoundTag tag = helmet.getTagElement(NBTKeys.PNEUMATIC_HELMET_DEBUGGING_PC);
-            return tag != null && NbtUtils.readBlockPos(tag).equals(((ProgrammableControllerEntity) e).getControllerPos());
+        if (drone instanceof DroneEntity) {
+            return helmet.getOrDefault(ModDataComponents.DRONE_DEBUG_TARGET, DroneTarget.NONE).is(drone);
+        } else if (drone instanceof ProgrammableControllerEntity pc) {
+            return helmet.getOrDefault(ModDataComponents.DRONE_DEBUG_TARGET, DroneTarget.NONE).is(pc.getControllerPos());
         } else {
             return false;
         }
     }
 
-    public static boolean isPlayerDebuggingDrone(Player player, IDroneBase e) {
+    public static boolean isPlayerDebuggingDrone(Player player, IDroneBase drone) {
         ItemStack helmet = player.getItemBySlot(EquipmentSlot.HEAD);
         if (helmet.getItem() != ModItems.PNEUMATIC_HELMET.get()) return false;
-        if (e instanceof DroneEntity) {
-            return NBTUtils.getInteger(helmet, NBTKeys.PNEUMATIC_HELMET_DEBUGGING_DRONE) == ((DroneEntity)e).getId();
-        } else if (e instanceof ProgrammableControllerBlockEntity) {
-            CompoundTag tag = helmet.getTagElement(NBTKeys.PNEUMATIC_HELMET_DEBUGGING_PC);
-            return tag != null && NbtUtils.readBlockPos(tag).equals(((ProgrammableControllerBlockEntity) e).getBlockPos());
+        if (drone instanceof DroneEntity e) {
+            return helmet.getOrDefault(ModDataComponents.DRONE_DEBUG_TARGET, DroneTarget.NONE).is(e);
+        } else if (drone instanceof ProgrammableControllerBlockEntity pc) {
+            return helmet.getOrDefault(ModDataComponents.DRONE_DEBUG_TARGET, DroneTarget.NONE).is(pc.getControllerPos());
         } else {
             return false;
         }
     }
 
     /**
-     * Client-side method to get the debugged drone or programmable controller
+     * Get the debugged drone or programmable controller for the given player, who should be wearing a Pneumatic Helmet
      * @return the debugged whatever
      */
-    public static IDroneBase getDebuggedDrone() {
-        ItemStack helmet = ClientUtils.getClientPlayer().getItemBySlot(EquipmentSlot.HEAD);
-        if (helmet.getItem() == ModItems.PNEUMATIC_HELMET.get() && helmet.hasTag()) {
-            CompoundTag tag = Objects.requireNonNull(helmet.getTag());
-            if (tag.contains(NBTKeys.PNEUMATIC_HELMET_DEBUGGING_DRONE)) {
-                int id = tag.getInt(NBTKeys.PNEUMATIC_HELMET_DEBUGGING_DRONE);
-                if (id > 0) {
-                    Entity e = ClientUtils.getClientLevel().getEntity(id);
-                    if (e instanceof IDroneBase) return (IDroneBase) e;
-                }
-            }
-            if (tag.contains(NBTKeys.PNEUMATIC_HELMET_DEBUGGING_PC)) {
-                BlockEntity te = ClientUtils.getClientLevel().getBlockEntity(NbtUtils.readBlockPos(tag.getCompound(NBTKeys.PNEUMATIC_HELMET_DEBUGGING_PC)));
-                if (te instanceof IDroneBase) {
-                    return (IDroneBase) te;
-                }
-            }
+    public static IDroneBase getDebuggedDrone(Player player) {
+        ItemStack helmet = player.getItemBySlot(EquipmentSlot.HEAD);
+        if (helmet.getItem() == ModItems.PNEUMATIC_HELMET.get() && helmet.has(ModDataComponents.DRONE_DEBUG_TARGET)) {
+            return helmet.getOrDefault(ModDataComponents.DRONE_DEBUG_TARGET, DroneTarget.NONE).getDrone(player.level());
         }
         return null;
     }
@@ -369,18 +332,11 @@ public class PneumaticArmorItem extends ArmorItem implements
     @Override
     public int getTintColor(ItemStack stack, int tintIndex) {
         return switch (tintIndex) {
-            case 0 -> getColor(stack);
+            case 0 -> getPrimaryColor(stack);
             case 1 -> getSecondaryColor(stack);
             case 2 -> stack.getItem() == ModItems.PNEUMATIC_HELMET.get() ? getEyepieceColor(stack) : 0xFFFFFFFF;
             default -> 0xFFFFFFFF;
         };
-    }
-
-    @Override
-    public int getColor(ItemStack stack) {
-        // default IDyeableArmor gives undyed items a leather-brown colour... override for compressed-iron-grey
-        CompoundTag nbt = stack.getTagElement("display");
-        return nbt != null && nbt.contains("color", Tag.TAG_ANY_NUMERIC) ? nbt.getInt("color") : DEFAULT_PRIMARY_COLOR;
     }
 
     @Override
@@ -423,27 +379,28 @@ public class PneumaticArmorItem extends ArmorItem implements
         return ElytraHandler.handleFlightTick(entity, flightTicks);
     }
 
-    /**
-     * Get the overlay colour
-     * @param stack the armor piece
-     * @return the overlay colour in ARGB format
-     */
+    public int getPrimaryColor(ItemStack stack) {
+        return stack.getOrDefault(DataComponents.DYED_COLOR, DEFAULT_PRIMARY_COLOR).rgb();
+    }
+
+    public void setPrimaryColor(ItemStack stack, int color) {
+        stack.set(DataComponents.DYED_COLOR, new DyedItemColor(color, false));
+    }
+
     public int getSecondaryColor(ItemStack stack) {
-        CompoundTag nbt = stack.getTagElement("display");
-        return nbt != null && nbt.contains("color2", Tag.TAG_ANY_NUMERIC) ? nbt.getInt("color2") : DEFAULT_SECONDARY_COLOR;
+        return stack.getOrDefault(ModDataComponents.ARMOR_SECONDARY_COLOR, DEFAULT_SECONDARY_COLOR).rgb();
     }
 
     public void setSecondaryColor(ItemStack stack, int color) {
-        stack.getOrCreateTagElement("display").putInt("color2", color);
+        stack.set(ModDataComponents.ARMOR_SECONDARY_COLOR, new DyedItemColor(color, false));
     }
 
     public int getEyepieceColor(ItemStack stack) {
-        CompoundTag nbt = stack.getTagElement("display");
-        return nbt != null && nbt.contains("color_eye", Tag.TAG_ANY_NUMERIC) ? nbt.getInt("color_eye") : DEFAULT_EYEPIECE_COLOR;
+        return stack.getOrDefault(ModDataComponents.ARMOR_EYEPIECE_COLOR, DEFAULT_EYEPIECE_COLOR).rgb();
     }
 
     public void setEyepieceColor(ItemStack stack, int color) {
-        stack.getOrCreateTagElement("display").putInt("color_eye", color);
+        stack.set(ModDataComponents.ARMOR_EYEPIECE_COLOR, new DyedItemColor(color, false));
     }
 
     /*------- Thaumcraft -------- */

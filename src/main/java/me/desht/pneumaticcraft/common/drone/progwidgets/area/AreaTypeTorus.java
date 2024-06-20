@@ -17,44 +17,57 @@
 
 package me.desht.pneumaticcraft.common.drone.progwidgets.area;
 
-import me.desht.pneumaticcraft.common.util.ITranslatableEnum;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import me.desht.pneumaticcraft.api.drone.area.AreaType;
+import me.desht.pneumaticcraft.api.drone.area.AreaTypeSerializer;
+import me.desht.pneumaticcraft.api.drone.area.AreaTypeWidget;
+import me.desht.pneumaticcraft.common.registry.ModProgWidgetAreaTypes;
+import me.desht.pneumaticcraft.api.misc.ITranslatableEnum;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.util.StringRepresentable;
+import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
 
 import java.util.List;
 import java.util.function.Consumer;
 
 public class AreaTypeTorus extends AreaType {
+    public static final MapCodec<AreaTypeTorus> CODEC = RecordCodecBuilder.mapCodec(builder -> builder.group(
+        StringRepresentable.fromEnum(AreaAxis::values).optionalFieldOf("axis", AreaAxis.X).forGetter(t -> t.axis),
+        StringRepresentable.fromEnum(TorusType::values).optionalFieldOf("torus_type", TorusType.FILLED).forGetter(t -> t.torusType)
+    ).apply(builder, AreaTypeTorus::new));
+    public static final StreamCodec<FriendlyByteBuf, AreaTypeTorus> STREAM_CODEC = StreamCodec.composite(
+            NeoForgeStreamCodecs.enumCodec(AreaAxis.class), t -> t.axis,
+            NeoForgeStreamCodecs.enumCodec(TorusType.class), t -> t.torusType,
+            AreaTypeTorus::new
+    );
 
     public static final String ID = "torus";
 
-    private EnumAxis axis = EnumAxis.Y;
-    private EnumTorusType torusType = EnumTorusType.FILLED;
+    private AreaAxis axis;
+    private TorusType torusType;
 
-    private enum EnumTorusType implements ITranslatableEnum {
-        FILLED("filled"), HOLLOW("hollow");
-
-        private final String name;
-
-        EnumTorusType(String name) {
-            this.name = "pneumaticcraft.gui.progWidget.area.type.torus.torusType." + name;
-        }
-
-        @Override
-        public String getTranslationKey() {
-            return name;
-        }
+    public AreaTypeTorus(AreaAxis axis, TorusType torusType) {
+        super(ID);
+        this.axis = axis;
+        this.torusType = torusType;
     }
 
     public AreaTypeTorus() {
-        super(ID);
+        this(AreaAxis.X, TorusType.FILLED);
     }
 
     @Override
     public String toString() {
         return getName() + "/" + torusType + "/" + axis;
+    }
+
+    @Override
+    public AreaTypeSerializer<? extends AreaType> getSerializer() {
+        return ModProgWidgetAreaTypes.AREA_TYPE_TORUS.get();
     }
 
     @Override
@@ -89,11 +102,11 @@ public class AreaTypeTorus extends AreaType {
                             int xSq = x*x;
                             int ySq = y*y;
                             int zSq = z*z;
-                            if (torusType == EnumTorusType.FILLED) {
+                            if (torusType == TorusType.FILLED) {
                                 if ((xSq + ySq + zSq + RSq - rSq)*(xSq + ySq + zSq + RSq - rSq) < (4 * RSq * (ySq + zSq))) {
                                     areaAdder.accept(new BlockPos(x + pX, y + pY, z + pZ));
                                 }
-                            } else if (torusType == EnumTorusType.HOLLOW) {
+                            } else if (torusType == TorusType.HOLLOW) {
                                 if ((xSq + ySq + zSq + RSq - rSq)*(xSq + ySq + zSq + RSq - rSq) < (4 * RSq * (ySq + zSq)) &&
                                     (xSq + ySq + zSq + RSq - rSqI)*(xSq + ySq + zSq + RSq - rSqI) >= (4 * RSq * (ySq + zSq))) {
                                     areaAdder.accept(new BlockPos(x + pX, y + pY, z + pZ));
@@ -132,11 +145,11 @@ public class AreaTypeTorus extends AreaType {
                             int xSq = x*x;
                             int ySq = y*y;
                             int zSq = z*z;
-                            if (torusType == EnumTorusType.FILLED) {
+                            if (torusType == TorusType.FILLED) {
                                 if ((xSq + ySq + zSq + RSq - rSq)*(xSq + ySq + zSq + RSq - rSq) < (4 * RSq * (xSq + zSq))) {
                                     areaAdder.accept(new BlockPos(x + pX, y + pY, z + pZ));
                                 }
-                            } else if (torusType == EnumTorusType.HOLLOW) {
+                            } else if (torusType == TorusType.HOLLOW) {
                                 if ((xSq + ySq + zSq + RSq - rSq)*(xSq + ySq + zSq + RSq - rSq) < (4 * RSq * (xSq + zSq)) &&
                                     (xSq + ySq + zSq + RSq - rSqI)*(xSq + ySq + zSq + RSq - rSqI) >= (4 * RSq * (xSq + zSq))) {
                                     areaAdder.accept(new BlockPos(x + pX, y + pY, z + pZ));
@@ -175,11 +188,11 @@ public class AreaTypeTorus extends AreaType {
                             int xSq = x*x;
                             int ySq = y*y;
                             int zSq = z*z;
-                            if (torusType == EnumTorusType.FILLED) {
+                            if (torusType == TorusType.FILLED) {
                                 if ((xSq + ySq + zSq + RSq - rSq)*(xSq + ySq + zSq + RSq - rSq) < (4 * RSq * (xSq + ySq))) {
                                     areaAdder.accept(new BlockPos(x + pX, y + pY, z + pZ));
                                 }
-                            } else if (torusType == EnumTorusType.HOLLOW) {
+                            } else if (torusType == TorusType.HOLLOW) {
                                 if ((xSq + ySq + zSq + RSq - rSq)*(xSq + ySq + zSq + RSq - rSq) < (4 * RSq * (xSq + ySq)) &&
                                     (xSq + ySq + zSq + RSq - rSqI)*(xSq + ySq + zSq + RSq - rSqI) >= (4 * RSq * (xSq + ySq))) {
                                     areaAdder.accept(new BlockPos(x + pX, y + pY, z + pZ));
@@ -196,35 +209,27 @@ public class AreaTypeTorus extends AreaType {
     @Override
     public void addUIWidgets(List<AreaTypeWidget> widgets) {
         super.addUIWidgets(widgets);
-        widgets.add(new AreaTypeWidgetEnum<>("pneumaticcraft.gui.progWidget.area.type.torus.torusType", EnumTorusType.class, () -> torusType, torusType -> this.torusType = torusType));
-        widgets.add(new AreaTypeWidgetEnum<>("pneumaticcraft.gui.progWidget.area.type.general.axis", EnumAxis.class, () -> axis, axis -> this.axis = axis));
+        widgets.add(new AreaTypeWidget.EnumSelectorField<>("pneumaticcraft.gui.progWidget.area.type.torus.torusType", TorusType.class, () -> torusType, torusType -> this.torusType = torusType));
+        widgets.add(new AreaTypeWidget.EnumSelectorField<>("pneumaticcraft.gui.progWidget.area.type.general.axis", AreaAxis.class, () -> axis, axis -> this.axis = axis));
     }
 
-    @Override
-    public void writeToNBT(CompoundTag tag) {
-        super.writeToNBT(tag);
-        tag.putByte("axis", (byte) axis.ordinal());
-        tag.putByte("torusType", (byte) torusType.ordinal());
-    }
+    public enum TorusType implements ITranslatableEnum, StringRepresentable {
+        FILLED("filled"), HOLLOW("hollow");
 
-    @Override
-    public void readFromNBT(CompoundTag tag) {
-        super.readFromNBT(tag);
-        axis = EnumAxis.values()[tag.getByte("axis")];
-        torusType = EnumTorusType.values()[tag.getByte("torusType")];
-    }
+        private final String name;
 
-    @Override
-    public void writeToPacket(FriendlyByteBuf buffer) {
-        super.writeToPacket(buffer);
-        buffer.writeEnum(axis);
-        buffer.writeEnum(torusType);
-    }
+        TorusType(String name) {
+            this.name = "pneumaticcraft.gui.progWidget.area.type.torus.torusType." + name;
+        }
 
-    @Override
-    public void readFromPacket(FriendlyByteBuf buf) {
-        super.readFromPacket(buf);
-        axis = buf.readEnum(EnumAxis.class);
-        torusType = buf.readEnum(EnumTorusType.class);
+        @Override
+        public String getTranslationKey() {
+            return name;
+        }
+
+        @Override
+        public String getSerializedName() {
+            return name;
+        }
     }
 }

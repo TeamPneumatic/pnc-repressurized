@@ -17,8 +17,8 @@
 
 package me.desht.pneumaticcraft.common.drone.ai;
 
+import me.desht.pneumaticcraft.api.drone.IDrone;
 import me.desht.pneumaticcraft.common.drone.DroneClaimManager;
-import me.desht.pneumaticcraft.common.drone.IDroneBase;
 import me.desht.pneumaticcraft.common.drone.progwidgets.IBlockOrdered;
 import me.desht.pneumaticcraft.common.drone.progwidgets.IBlockOrdered.Ordering;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ISidedWidget;
@@ -50,7 +50,7 @@ public abstract class DroneAIBlockInteraction<W extends ProgWidgetAreaItemBase> 
     private static final int MAX_LOOKUPS_PER_SEARCH = 30;
     private static final int DRONE_DEBUG_PARTICLE_RANGE_SQ = 32 * 32;
 
-    protected final IDroneBase drone;
+    protected final IDrone drone;
     protected final W progWidget;
     private final Ordering order;
     private BlockPos curPos;
@@ -71,13 +71,13 @@ public abstract class DroneAIBlockInteraction<W extends ProgWidgetAreaItemBase> 
      * @param drone the drone
      * @param progWidget needs to implement IBlockOrdered
      */
-    public DroneAIBlockInteraction(IDroneBase drone, W progWidget) {
+    public DroneAIBlockInteraction(IDrone drone, W progWidget) {
         this.drone = drone;
         setFlags(EnumSet.allOf(Flag.class)); // exclusive to all other AI tasks
         this.progWidget = progWidget;
         order = progWidget instanceof IBlockOrdered ? ((IBlockOrdered) progWidget).getOrder() : Ordering.CLOSEST;
         area = progWidget.getCachedAreaList();
-        worldCache = progWidget.getChunkCache(drone.world());
+        worldCache = progWidget.getChunkCache(drone.getDroneLevel());
 
         if (!area.isEmpty()) {
             BoundingBox extents = progWidget.getAreaExtents();
@@ -124,7 +124,7 @@ public abstract class DroneAIBlockInteraction<W extends ProgWidgetAreaItemBase> 
     }
 
     private boolean isYValid(int y) {
-        return y < drone.world().getMaxBuildHeight() && y >= drone.world().getMinBuildHeight() && order == Ordering.CLOSEST || y == curY;
+        return y < drone.getDroneLevel().getMaxBuildHeight() && y >= drone.getDroneLevel().getMinBuildHeight() && order == Ordering.CLOSEST || y == curY;
     }
 
     public DroneAIBlockInteraction<?> setMaxActions(int maxActions) {
@@ -171,7 +171,7 @@ public abstract class DroneAIBlockInteraction<W extends ProgWidgetAreaItemBase> 
                 while (!shouldAbort() && searchIndex < area.size()) {
                     BlockPos pos = area.get(searchIndex);
                     searchIndex++;
-                    if (isYValid(pos.getY()) && !blacklist.contains(pos) && (!respectClaims() || !DroneClaimManager.getInstance(drone.world()).isClaimed(pos))) {
+                    if (isYValid(pos.getY()) && !blacklist.contains(pos) && (!respectClaims() || !DroneClaimManager.getInstance(drone.getDroneLevel()).isClaimed(pos))) {
                         if (!drone.getDebugger().getDebuggingPlayers().isEmpty()) inspectedPositions.add(pos);
                         if (isValidPosition(pos)) {
                             curPos = pos;
@@ -207,7 +207,7 @@ public abstract class DroneAIBlockInteraction<W extends ProgWidgetAreaItemBase> 
             // curPos *should* always be non-null here, but just to be defensive...
             if (curPos != null) {
                 if (respectClaims()) {
-                    DroneClaimManager.getInstance(drone.world()).claim(curPos);
+                    DroneClaimManager.getInstance(drone.getDroneLevel()).claim(curPos);
                 }
                 double distSq = drone.getDronePos().distanceToSqr(Vec3.atCenterOf(curPos));
                 if (!moveToPositions() || distSq < (moveIntoBlock() ? 1 : 4)) {  // 1 or 2 blocks
@@ -244,15 +244,15 @@ public abstract class DroneAIBlockInteraction<W extends ProgWidgetAreaItemBase> 
     }
 
     private boolean blockAllowsMovement(CollisionGetter world, BlockPos pos, BlockState state) {
-        return state.getBlock() instanceof LiquidBlock ?
-                drone.canMoveIntoFluid(((LiquidBlock) state.getBlock()).getFluid()) :
-                world.getBlockState(pos).isPathfindable(world, pos, PathComputationType.AIR);
+        return state.getBlock() instanceof LiquidBlock liq ?
+                drone.canMoveIntoFluid(liq.fluid) :
+                world.getBlockState(pos).isPathfindable(PathComputationType.AIR);
     }
 
     private boolean movedToBlockOK(BlockPos pos) {
         searching = false;
         totalActions++;
-        if (respectClaims()) DroneClaimManager.getInstance(drone.world()).claim(pos);
+        if (respectClaims()) DroneClaimManager.getInstance(drone.getDroneLevel()).claim(pos);
         blacklist.clear(); //clear the list for next time (maybe the blocks/rights have changed by the time there will be dug again).
         return true;
     }

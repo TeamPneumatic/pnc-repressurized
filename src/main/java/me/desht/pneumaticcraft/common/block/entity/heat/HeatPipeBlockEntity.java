@@ -25,6 +25,7 @@ import me.desht.pneumaticcraft.common.block.entity.IHeatExchangingTE;
 import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.LiquidBlock;
@@ -55,15 +56,15 @@ public class HeatPipeBlockEntity extends AbstractTickingBlockEntity implements C
     }
 
     @Override
-    public void writeToPacket(CompoundTag tag) {
-        super.writeToPacket(tag);
+    public void writeToPacket(CompoundTag tag, HolderLookup.Provider provider) {
+        super.writeToPacket(tag, provider);
 
         CamouflageableBlockEntity.writeCamo(tag, camoState);
     }
 
     @Override
-    public void readFromPacket(CompoundTag tag) {
-        super.readFromPacket(tag);
+    public void readFromPacket(CompoundTag tag, HolderLookup.Provider provider) {
+        super.readFromPacket(tag, provider);
 
         camoState = CamouflageableBlockEntity.readCamo(tag);
     }

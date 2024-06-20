@@ -44,6 +44,7 @@ import me.desht.pneumaticcraft.mixin.accessors.ItemEntityAccess;
 import me.desht.pneumaticcraft.mixin.accessors.ServerPlayerAccess;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.UUIDUtil;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -199,10 +200,10 @@ public class AirCannonBlockEntity extends AbstractAirHandlingBlockEntity
         ItemStack gpsStack = itemHandler.getStackInSlot(GPS_SLOT);
         if (gpsStack.getItem() instanceof IPositionProvider && !externalControl) {
             List<BlockPos> posList = ((IPositionProvider) gpsStack.getItem()).getStoredPositions(null, gpsStack);
-            if (!posList.isEmpty() && posList.get(0) != null) {
-                int destinationX = posList.get(0).getX();
-                int destinationY = posList.get(0).getY();
-                int destinationZ = posList.get(0).getZ();
+            if (!posList.isEmpty() && posList.getFirst() != null) {
+                int destinationX = posList.getFirst().getX();
+                int destinationY = posList.getFirst().getY();
+                int destinationZ = posList.getFirst().getZ();
                 if (destinationX != gpsX || destinationY != gpsY || destinationZ != gpsZ) {
                     gpsX = destinationX;
                     gpsY = destinationY;
@@ -355,6 +356,17 @@ public class AirCannonBlockEntity extends AbstractAirHandlingBlockEntity
         // calculate the heading.
         double deltaX = gpsX - getBlockPos().getX();
         double deltaZ = gpsZ - getBlockPos().getZ();
+        float calculatedRotationAngle = calculateRotationAngle(deltaX, deltaZ);
+
+        // calculate the height angle.
+        double distance = Math.sqrt(deltaX * deltaX + deltaZ * deltaZ);
+        double deltaY = gpsY - getBlockPos().getY();
+        float calculatedHeightAngle = calculateBestHeightAngle(distance, deltaY, getForce(), payloadGravity, payloadFrictionX, payloadFrictionY);
+
+        setTargetAngles(calculatedRotationAngle, calculatedHeightAngle);
+    }
+
+    private static float calculateRotationAngle(double deltaX, double deltaZ) {
         float calculatedRotationAngle;
         double angleXZ = Math.atan(Math.abs(deltaX / deltaZ)) / Math.PI * 180D;
         if (deltaX >= 0 && deltaZ < 0) {
@@ -369,13 +381,7 @@ public class AirCannonBlockEntity extends AbstractAirHandlingBlockEntity
                 calculatedRotationAngle = (float) angleZX + 270;
             }
         }
-
-        // calculate the height angle.
-        double distance = Math.sqrt(deltaX * deltaX + deltaZ * deltaZ);
-        double deltaY = gpsY - getBlockPos().getY();
-        float calculatedHeightAngle = calculateBestHeightAngle(distance, deltaY, getForce(), payloadGravity, payloadFrictionX, payloadFrictionY);
-
-        setTargetAngles(calculatedRotationAngle, calculatedHeightAngle);
+        return calculatedRotationAngle;
     }
 
     private float calculateBestHeightAngle(double distance, double deltaY, float force, double payloadGravity, double payloadFrictionX, double payloadFrictionY) {
@@ -450,8 +456,8 @@ public class AirCannonBlockEntity extends AbstractAirHandlingBlockEntity
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
+    public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
+        super.loadAdditional(tag, provider);
         targetRotationAngle = tag.getFloat("targetRotationAngle");
         targetHeightAngle = tag.getFloat("targetHeightAngle");
         rotationAngle = tag.getFloat("rotationAngle");
@@ -460,7 +466,7 @@ public class AirCannonBlockEntity extends AbstractAirHandlingBlockEntity
         gpsY = tag.getInt("gpsY");
         gpsZ = tag.getInt("gpsZ");
         coordWithinReach = tag.getBoolean("targetWithinReach");
-        itemHandler.deserializeNBT(tag.getCompound("Items"));
+        itemHandler.deserializeNBT(provider, tag.getCompound("Items"));
         forceMult = tag.getInt("forceMult");
 
         trackedItemIds = new HashSet<>();
@@ -480,8 +486,8 @@ public class AirCannonBlockEntity extends AbstractAirHandlingBlockEntity
     }
 
     @Override
-    public void saveAdditional(CompoundTag tag) {
-        super.saveAdditional(tag);
+    public void saveAdditional(CompoundTag tag, HolderLookup.Provider provider) {
+        super.saveAdditional(tag, provider);
         tag.putFloat("targetRotationAngle", targetRotationAngle);
         tag.putFloat("targetHeightAngle", targetHeightAngle);
         tag.putFloat("rotationAngle", rotationAngle);
@@ -490,7 +496,7 @@ public class AirCannonBlockEntity extends AbstractAirHandlingBlockEntity
         tag.putInt("gpsY", gpsY);
         tag.putInt("gpsZ", gpsZ);
         tag.putBoolean("targetWithinReach", coordWithinReach);
-        tag.put("Items", itemHandler.serializeNBT());
+        tag.put("Items", itemHandler.serializeNBT(provider));
         tag.putInt("forceMult", forceMult);
 
         ListTag tagList = new ListTag();
@@ -672,7 +678,7 @@ public class AirCannonBlockEntity extends AbstractAirHandlingBlockEntity
             List<LivingEntity> entities = nonNullLevel().getEntitiesOfClass(LivingEntity.class, new AABB(getBlockPos()).inflate(entityUpgrades));
             if (!entities.isEmpty()) {
                 entities.sort(new EntityDistanceComparator(getBlockPos()));
-                return entities.get(0);
+                return entities.getFirst();
             }
         }
         return null;

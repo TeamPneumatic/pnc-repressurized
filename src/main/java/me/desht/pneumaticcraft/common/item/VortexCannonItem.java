@@ -71,9 +71,4 @@ public class VortexCannonItem extends PressurizableItem {
         }
         return InteractionResultHolder.sidedSuccess(iStack, world.isClientSide);
     }
-
-    @Override
-    public boolean shouldCauseReequipAnimation(ItemStack oldStack, ItemStack newStack, boolean slotChanged) {
-        return false;
-    }
 }

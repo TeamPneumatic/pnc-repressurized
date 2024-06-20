@@ -21,15 +21,18 @@ import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorUpgradeHandler;
 import me.desht.pneumaticcraft.common.item.PneumaticArmorItem;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
-import me.desht.pneumaticcraft.common.util.NBTUtils;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
-import net.minecraft.network.FriendlyByteBuf;
+import me.desht.pneumaticcraft.common.registry.ModDataComponents;
+import net.minecraft.core.component.DataComponentPatch;
+import net.minecraft.core.component.DataComponentType;
+import net.minecraft.core.component.PatchedDataComponentMap;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.network.handling.PlayPayloadContext;
+import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import java.util.*;
 
@@ -39,66 +42,67 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
  * Received on: SERVER
  * General packet for updating various pneumatic armor settings from client GUI
  */
-public record PacketUpdateArmorExtraData(EquipmentSlot slot, ResourceLocation upgradeID, CompoundTag data) implements CustomPacketPayload {
-    public static final ResourceLocation ID = RL("update_armor_extradata");
-    private static final List<Map<String, Integer>> VALID_KEYS = new ArrayList<>();
+public record PacketUpdateArmorExtraData(EquipmentSlot slot, ResourceLocation upgradeID,
+                                         DataComponentPatch patch) implements CustomPacketPayload {
+    public static final Type<PacketUpdateArmorExtraData> TYPE = new Type<>(RL("update_armor_extradata"));
 
-    private static void addKey(EquipmentSlot slot, String key, int nbtType) {
-        VALID_KEYS.get(slot.getIndex()).put(key, nbtType);
+    public static final StreamCodec<RegistryFriendlyByteBuf, PacketUpdateArmorExtraData> STREAM_CODEC = StreamCodec.composite(
+            NeoForgeStreamCodecs.enumCodec(EquipmentSlot.class), PacketUpdateArmorExtraData::slot,
+            ResourceLocation.STREAM_CODEC, PacketUpdateArmorExtraData::upgradeID,
+            DataComponentPatch.STREAM_CODEC, PacketUpdateArmorExtraData::patch,
+            PacketUpdateArmorExtraData::new
+    );
+
+    public static <T> void sendToServer(IArmorUpgradeHandler<?> handler, DataComponentType<T> type, T data) {
+        DataComponentPatch patch = DataComponentPatch.builder().set(type, data).build();
+        NetworkHandler.sendToServer(new PacketUpdateArmorExtraData(handler.getEquipmentSlot(), handler.getID(), patch));
+    }
+
+    private static final List<Set<DataComponentType<?>>> VALID_KEYS = new ArrayList<>();
+
+    private static void addKey(EquipmentSlot slot, DataComponentType<?> type) {
+        VALID_KEYS.get(slot.getIndex()).add(type);
     }
 
     static {
-        Arrays.stream(ArmorUpgradeRegistry.ARMOR_SLOTS)
-                .<Map<String, Integer>>map(slot -> new HashMap<>())
-                .forEach(VALID_KEYS::add);
-        addKey(EquipmentSlot.HEAD, PneumaticArmorItem.NBT_ENTITY_FILTER, Tag.TAG_STRING);
-        addKey(EquipmentSlot.HEAD, PneumaticArmorItem.NBT_COORD_TRACKER, Tag.TAG_COMPOUND);
-        addKey(EquipmentSlot.LEGS, PneumaticArmorItem.NBT_SPEED_BOOST, Tag.TAG_INT);
-        addKey(EquipmentSlot.LEGS, PneumaticArmorItem.NBT_JUMP_BOOST, Tag.TAG_INT);
-        addKey(EquipmentSlot.FEET, PneumaticArmorItem.NBT_BUILDER_MODE, Tag.TAG_BYTE);
-        addKey(EquipmentSlot.FEET, PneumaticArmorItem.NBT_JET_BOOTS_POWER, Tag.TAG_INT);
-        addKey(EquipmentSlot.FEET, PneumaticArmorItem.NBT_FLIGHT_STABILIZERS, Tag.TAG_BYTE);
-        addKey(EquipmentSlot.FEET, PneumaticArmorItem.NBT_HOVER, Tag.TAG_BYTE);
-        addKey(EquipmentSlot.FEET, PneumaticArmorItem.NBT_SMART_HOVER, Tag.TAG_BYTE);
-    }
-
-    public static PacketUpdateArmorExtraData fromNetwork(FriendlyByteBuf buffer) {
-        return new PacketUpdateArmorExtraData(buffer.readEnum(EquipmentSlot.class), buffer.readResourceLocation(), buffer.readNbt());
+        for (EquipmentSlot ignored : ArmorUpgradeRegistry.ARMOR_SLOTS) {
+            VALID_KEYS.add(new HashSet<>());
+        }
+        addKey(EquipmentSlot.HEAD, ModDataComponents.ENTITY_FILTER.get());
+        addKey(EquipmentSlot.HEAD, ModDataComponents.COORD_TRACKER.get());
+        addKey(EquipmentSlot.LEGS, ModDataComponents.SPEED_BOOST_PCT.get());
+        addKey(EquipmentSlot.LEGS, ModDataComponents.JET_BOOTS_PCT.get());
+        addKey(EquipmentSlot.FEET, ModDataComponents.JET_BOOTS_STABILIZERS.get());
+        addKey(EquipmentSlot.FEET, ModDataComponents.JET_BOOTS_BUILDER_MODE.get());
+        addKey(EquipmentSlot.FEET, ModDataComponents.JET_BOOTS_HOVER.get());
+        addKey(EquipmentSlot.FEET, ModDataComponents.JET_BOOTS_SMART_HOVER.get());
     }
 
     @Override
-    public void write(FriendlyByteBuf buf) {
-        buf.writeEnum(slot);
-        buf.writeResourceLocation(upgradeID);
-        buf.writeNbt(data);
+    public Type<PacketUpdateArmorExtraData> type() {
+        return TYPE;
     }
 
-    @Override
-    public ResourceLocation id() {
-        return ID;
-    }
+    public static void handle(PacketUpdateArmorExtraData message, IPayloadContext ctx) {
+        ItemStack stack = ctx.player().getItemBySlot(message.slot());
+        if (stack.getItem() instanceof PneumaticArmorItem) {
+            CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(ctx.player());
 
-    public static void handle(PacketUpdateArmorExtraData message, PlayPayloadContext ctx) {
-        ctx.player().ifPresent(player -> ctx.workHandler().submitAsync(() -> {
-            ItemStack stack = player.getItemBySlot(message.slot());
-            if (stack.getItem() instanceof PneumaticArmorItem) {
-                CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
-                NBTUtils.initNBTTagCompound(stack);
-                for (String key : message.data().getAllKeys()) {
-                    Tag dataTag = message.data().get(key);
-                    if (isKeyOKForSlot(key, message.slot(), Objects.requireNonNull(dataTag).getId())) {
-                        Objects.requireNonNull(stack.getTag()).put(key, dataTag);
+            if (stack.getComponents() instanceof PatchedDataComponentMap pdcm) {
+                message.patch.entrySet().forEach(entry -> {
+                    if (isTypeOKForSlot(message.slot, entry.getKey())) {
+                        pdcm.applyPatch(message.patch);
                         IArmorUpgradeHandler<?> upgradeHandler = ArmorUpgradeRegistry.getInstance().getUpgradeEntry(message.upgradeID());
                         if (upgradeHandler != null) {
-                            upgradeHandler.onDataFieldUpdated(handler, key, dataTag);
+                            upgradeHandler.onDataFieldUpdated(handler, entry.getKey(), entry.getValue());
                         }
                     }
-                }
+                });
             }
-        }));
+        }
     }
 
-    private static boolean isKeyOKForSlot(String key, EquipmentSlot slot, int nbtType) {
-        return VALID_KEYS.get(slot.getIndex()).get(key) == nbtType;
+    private static boolean isTypeOKForSlot(EquipmentSlot slot, DataComponentType<?> type) {
+        return VALID_KEYS.get(slot.getIndex()).contains(type);
     }
 }

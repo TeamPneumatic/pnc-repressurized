@@ -20,7 +20,8 @@ package me.desht.pneumaticcraft.common.network;
 import me.desht.pneumaticcraft.common.tubemodules.AbstractTubeModule;
 import me.desht.pneumaticcraft.common.tubemodules.INetworkedModule;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.entity.player.Player;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
@@ -30,20 +31,16 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
  * Sent by client when logistics module colour is updated via GUI
  */
 public record PacketTubeModuleColor<T extends AbstractTubeModule & INetworkedModule>(ModuleLocator locator, int color) implements TubeModulePacket<T> {
-    public static final ResourceLocation ID = RL("tube_module_color");
+    public static final Type<PacketTubeModuleColor<?>> TYPE = new Type<>(RL("tube_module_color"));
 
-    public static <T extends AbstractTubeModule & INetworkedModule> PacketTubeModuleColor<T> create(T module) {
+    public static final StreamCodec<FriendlyByteBuf, PacketTubeModuleColor<?>> STREAM_CODEC = StreamCodec.composite(
+            ModuleLocator.STREAM_CODEC, PacketTubeModuleColor::locator,
+            ByteBufCodecs.INT, PacketTubeModuleColor::color,
+            PacketTubeModuleColor::new
+    );
+
+    public static <T extends AbstractTubeModule & INetworkedModule> PacketTubeModuleColor<T> forModule(T module) {
         return new PacketTubeModuleColor<>(ModuleLocator.forModule(module), module.getColorChannel());
-    }
-
-    public static <T extends AbstractTubeModule & INetworkedModule> PacketTubeModuleColor<T> fromNetwork(FriendlyByteBuf buffer) {
-        return new PacketTubeModuleColor<>(ModuleLocator.fromNetwork(buffer), buffer.readByte());
-    }
-
-    @Override
-    public void write(FriendlyByteBuf buf) {
-        locator.write(buf);
-        buf.writeByte(color);
     }
 
     @Override
@@ -54,7 +51,7 @@ public record PacketTubeModuleColor<T extends AbstractTubeModule & INetworkedMod
     }
 
     @Override
-    public ResourceLocation id() {
-        return ID;
+    public Type<PacketTubeModuleColor<?>> type() {
+        return TYPE;
     }
 }

@@ -17,7 +17,6 @@
 
 package me.desht.pneumaticcraft.common.block.entity.processing;
 
-import com.google.common.collect.ImmutableMap;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.crafting.recipe.ThermoPlantRecipe;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
@@ -32,15 +31,17 @@ import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketPlaySound;
 import me.desht.pneumaticcraft.common.recipes.RecipeCaches;
 import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
+import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.registry.ModRecipeTypes;
 import me.desht.pneumaticcraft.common.util.AcceptabilityCache;
-import me.desht.pneumaticcraft.common.util.ITranslatableEnum;
+import me.desht.pneumaticcraft.api.misc.ITranslatableEnum;
 import me.desht.pneumaticcraft.common.util.PNCFluidTank;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -59,6 +60,7 @@ import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidUtil;
 import net.neoforged.neoforge.fluids.IFluidTank;
+import net.neoforged.neoforge.fluids.SimpleFluidContent;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction;
 import net.neoforged.neoforge.items.IItemHandler;
@@ -273,20 +275,20 @@ public class ThermoPlantBlockEntity extends AbstractAirHandlingBlockEntity imple
     }
 
     @Override
-    public void saveAdditional(CompoundTag tag) {
-        super.saveAdditional(tag);
+    public void saveAdditional(CompoundTag tag, HolderLookup.Provider provider) {
+        super.saveAdditional(tag, provider);
 
-        tag.put("Items", inputItemHandler.serializeNBT());
-        tag.put("Output", outputItemHandler.serializeNBT());
+        tag.put("Items", inputItemHandler.serializeNBT(provider));
+        tag.put("Output", outputItemHandler.serializeNBT(provider));
         tag.putFloat("craftingProgress", craftingProgress);
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
+    public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
+        super.loadAdditional(tag, provider);
 
-        inputItemHandler.deserializeNBT(tag.getCompound("Items"));
-        outputItemHandler.deserializeNBT(tag.getCompound("Output"));
+        inputItemHandler.deserializeNBT(provider, tag.getCompound("Items"));
+        outputItemHandler.deserializeNBT(provider, tag.getCompound("Output"));
         craftingProgress = tag.getFloat("craftingProgress");
     }
 
@@ -324,8 +326,11 @@ public class ThermoPlantBlockEntity extends AbstractAirHandlingBlockEntity imple
 
     @Nonnull
     @Override
-    public Map<String, PNCFluidTank> getSerializableTanks() {
-        return ImmutableMap.of("InputTank", inputTank, "OutputTank", outputTank);
+    public Map<DataComponentType<SimpleFluidContent>, PNCFluidTank> getSerializableTanks() {
+        return Map.of(
+                ModDataComponents.INPUT_TANK_1.get(), inputTank,
+                ModDataComponents.OUTPUT_TANK.get(), outputTank
+        );
     }
 
     @Nullable
@@ -365,16 +370,9 @@ public class ThermoPlantBlockEntity extends AbstractAirHandlingBlockEntity imple
     }
 
     public int genIngredientHash() {
-        FluidStack f = inputTank.getFluid();
-        ItemStack s = inputItemHandler.getStackInSlot(0);
-        int n1 = f.hasTag() ? f.getTag().hashCode() : 0;
-        int n2 = s.hasTag() ? s.getTag().hashCode() : 0;
-
         return Objects.hash(
-                BuiltInRegistries.FLUID.getId(f.getFluid()),
-                n1,
-                BuiltInRegistries.ITEM.getId(s.getItem()),
-                n2
+                FluidStack.hashFluidAndComponents(inputTank.getFluid()),
+                ItemStack.hashItemAndComponents(inputItemHandler.getStackInSlot(0))
         );
     }
 
@@ -467,7 +465,9 @@ public class ThermoPlantBlockEntity extends AbstractAirHandlingBlockEntity imple
 
         @Override
         public FluidStack drain(FluidStack resource, FluidAction doDrain) {
-            return outputTank.getFluid().isFluidEqual(resource) ? outputTank.drain(resource.getAmount(), doDrain) : FluidStack.EMPTY;
+            return FluidStack.isSameFluidSameComponents(outputTank.getFluid(), resource) ?
+                    outputTank.drain(resource.getAmount(), doDrain) :
+                    FluidStack.EMPTY;
         }
 
         @Override

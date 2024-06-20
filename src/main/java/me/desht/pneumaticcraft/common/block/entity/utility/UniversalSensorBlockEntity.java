@@ -19,6 +19,7 @@ package me.desht.pneumaticcraft.common.block.entity.utility;
 
 import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.api.item.IPositionProvider;
+import me.desht.pneumaticcraft.api.misc.ITranslatableEnum;
 import me.desht.pneumaticcraft.api.pressure.PressureTier;
 import me.desht.pneumaticcraft.api.universal_sensor.IEventSensorSetting;
 import me.desht.pneumaticcraft.api.universal_sensor.IPollSensorSetting;
@@ -41,10 +42,10 @@ import me.desht.pneumaticcraft.common.thirdparty.computer_common.LuaMethod;
 import me.desht.pneumaticcraft.common.thirdparty.computer_common.LuaMethodRegistry;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.util.GlobalBlockEntityCacheManager;
-import me.desht.pneumaticcraft.common.util.ITranslatableEnum;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.MutableComponent;
@@ -264,10 +265,10 @@ public class UniversalSensorBlockEntity extends AbstractAirHandlingBlockEntity i
     }
 
     @Override
-    public void saveAdditional(CompoundTag tag) {
-        super.saveAdditional(tag);
+    public void saveAdditional(CompoundTag tag, HolderLookup.Provider provider) {
+        super.saveAdditional(tag, provider);
 
-        tag.put("Items", itemHandler.serializeNBT());
+        tag.put("Items", itemHandler.serializeNBT(provider));
         tag.putString("sensorSetting", sensorSetting);
         tag.putFloat("dishSpeed", dishSpeed);
         tag.putString("sensorText", sensorGuiText);
@@ -275,10 +276,10 @@ public class UniversalSensorBlockEntity extends AbstractAirHandlingBlockEntity i
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
+    public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
+        super.loadAdditional(tag, provider);
 
-        itemHandler.deserializeNBT(tag.getCompound("Items"));
+        itemHandler.deserializeNBT(provider, tag.getCompound("Items"));
         setSensorSetting(tag.getString("sensorSetting"));
         dishSpeed = tag.getFloat("dishSpeed");
         sensorGuiText = tag.getString("sensorText");

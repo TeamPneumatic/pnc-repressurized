@@ -49,7 +49,7 @@ public class HackSimulationRenderer {
     private ProgressingLine makeProgressingLine(HackSimulation.ConnectionEntry entry) {
         int xOff = 0;
         int yOff = 0;
-        int delta = entry.from - entry.to;
+        int delta = entry.from() - entry.to();
         if (delta == GRID_WIDTH) {
             xOff = 1;
         } else if (delta == -GRID_WIDTH) {
@@ -57,10 +57,10 @@ public class HackSimulationRenderer {
         } else {
             yOff = delta < 0 ? -1 : 1;
         }
-        int startX = baseX + xOff + entry.from % GRID_WIDTH * nodeSpacing;
-        int startY = baseY + yOff + entry.from / GRID_WIDTH * nodeSpacing;
-        int endX = baseX + xOff + entry.to % GRID_WIDTH * nodeSpacing;
-        int endY = baseY + yOff + entry.to / GRID_WIDTH * nodeSpacing;
-        return new ProgressingLine(startX, startY, endX, endY).setProgress(entry.progress);
+        int startX = baseX + xOff + entry.from() % GRID_WIDTH * nodeSpacing;
+        int startY = baseY + yOff + entry.from() / GRID_WIDTH * nodeSpacing;
+        int endX = baseX + xOff + entry.to() % GRID_WIDTH * nodeSpacing;
+        int endY = baseY + yOff + entry.to() / GRID_WIDTH * nodeSpacing;
+        return new ProgressingLine(startX, startY, endX, endY).setProgress(entry.progress());
     }
 }

@@ -28,7 +28,6 @@ import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.drone.DroneRegistry;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketAmadronTradeNotifyDeal;
-import me.desht.pneumaticcraft.common.network.PacketUtil;
 import me.desht.pneumaticcraft.common.registry.ModRecipeSerializers;
 import me.desht.pneumaticcraft.common.util.GlobalPosHelper;
 import me.desht.pneumaticcraft.common.util.IOHelper;
@@ -36,13 +35,15 @@ import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.playerfilter.PlayerFilter;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.core.GlobalPos;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
+import java.util.Optional;
 import java.util.UUID;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
@@ -51,6 +52,11 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
  * Extended Amadron offer used for player-player trading.
  */
 public class AmadronPlayerOffer extends AmadronOffer {
+    public static StreamCodec<RegistryFriendlyByteBuf, AmadronPlayerOffer> STREAM_CODEC = StreamCodec.of(
+            (buf, playerOffer) -> playerOffer.write(buf),
+            AmadronPlayerOffer::playerOfferFromBuf
+    );
+
     private final String offeringPlayerName;
     private UUID offeringPlayerId;
     private GlobalPos providingPos;
@@ -203,46 +209,40 @@ public class AmadronPlayerOffer extends AmadronOffer {
     }
 
     @Override
-    public void write(FriendlyByteBuf buf) {
+    public void write(RegistryFriendlyByteBuf buf) {
         super.write(buf);
 
         buf.writeUtf(offeringPlayerName);
         buf.writeUUID(offeringPlayerId);
-        buf.writeBoolean(providingPos != null);
-        if (providingPos != null) {
-            PacketUtil.writeGlobalPos(buf, providingPos);
-        }
-        buf.writeBoolean(returningPos != null);
-        if (returningPos != null) {
-            PacketUtil.writeGlobalPos(buf, returningPos);
-        }
+        buf.writeOptional(Optional.ofNullable(providingPos), GlobalPos.STREAM_CODEC);
+        buf.writeOptional(Optional.ofNullable(returningPos), GlobalPos.STREAM_CODEC);
         buf.writeVarInt(inStock);
         buf.writeVarInt(pendingPayments);
     }
 
-    public static AmadronPlayerOffer playerOfferFromBuf(FriendlyByteBuf buf) {
-        AmadronRecipe recipe = ModRecipeSerializers.AMADRON_OFFERS.get().fromNetwork(buf);
+    public static AmadronPlayerOffer playerOfferFromBuf(RegistryFriendlyByteBuf buf) {
+        AmadronRecipe recipe = ModRecipeSerializers.AMADRON_OFFERS.get().streamCodec().decode(buf);
 
         if (recipe instanceof AmadronOffer offer) {
             AmadronPlayerOffer playerOffer = new AmadronPlayerOffer(offer.getOfferId(),
                     offer.getInput(), offer.getOutput(), buf.readUtf(100), buf.readUUID(),
                     offer.whitelist, offer.blacklist);
-            if (buf.readBoolean()) {
-                playerOffer.setProvidingPosition(PacketUtil.readGlobalPos(buf));
-            }
-            if (buf.readBoolean()) {
-                playerOffer.setReturningPosition(PacketUtil.readGlobalPos(buf));
-            }
+            playerOffer.setProvidingPosition(buf.readOptional(GlobalPos.STREAM_CODEC).orElse(null));
+            playerOffer.setReturningPosition(buf.readOptional(GlobalPos.STREAM_CODEC).orElse(null));
             playerOffer.inStock = buf.readVarInt();
             playerOffer.pendingPayments = buf.readVarInt();
             return playerOffer;
         }
-        return null;  // shouldn't happen
+
+        throw new IllegalStateException("recipe isn't an amadron offer?! impossible!");
     }
 
     public JsonObject toJson() {
-        JsonObject json = ModRecipeSerializers.AMADRON_OFFERS.get().codec().encodeStart(JsonOps.INSTANCE, this)
-                .getOrThrow(false, s -> Log.error("can't create json: " + s))
+        JsonObject json = ModRecipeSerializers.AMADRON_OFFERS.get().codec()
+                .encode(this, JsonOps.INSTANCE, JsonOps.INSTANCE.mapBuilder())
+                .build(new JsonObject())
+                .resultOrPartial(s -> Log.error("can't create json: " + s))
+                .orElseThrow()
                 .getAsJsonObject();
 
         json.addProperty("offeringPlayerName", offeringPlayerName);
@@ -259,15 +259,14 @@ public class AmadronPlayerOffer extends AmadronOffer {
     }
 
     public static AmadronPlayerOffer fromJson(JsonObject json) {
-        AmadronOffer offer = ModRecipeSerializers.AMADRON_OFFERS.get().codec().parse(JsonOps.INSTANCE, json)
-                .resultOrPartial(err -> {
-                    throw new JsonSyntaxException(err);
-                })
+        AmadronOffer baseOffer = ModRecipeSerializers.AMADRON_OFFERS.get().codec()
+                .decode(JsonOps.INSTANCE, JsonOps.INSTANCE.getMap(json).getOrThrow())
+                .resultOrPartial(err -> { throw new JsonSyntaxException(err); })
                 .orElseThrow(() -> new JsonSyntaxException("invalid json syntax"));
 
-        AmadronPlayerOffer playerOffer = new AmadronPlayerOffer(offer.getOfferId(), offer.getInput(), offer.getOutput(),
+        AmadronPlayerOffer playerOffer = new AmadronPlayerOffer(baseOffer.getOfferId(), baseOffer.getInput(), baseOffer.getOutput(),
                 json.get("offeringPlayerName").getAsString(), UUID.fromString(json.get("offeringPlayerId").getAsString()),
-                offer.whitelist, offer.blacklist);
+                baseOffer.whitelist, baseOffer.blacklist);
 
         playerOffer.inStock = json.get("inStock").getAsInt();
         playerOffer.pendingPayments = json.get("pendingPayments").getAsInt();

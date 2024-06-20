@@ -18,14 +18,18 @@
 package me.desht.pneumaticcraft.common.drone.progwidgets;
 
 import com.google.common.collect.ImmutableList;
-import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
+import com.mojang.datafixers.Products;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import me.desht.pneumaticcraft.api.drone.IDrone;
+import me.desht.pneumaticcraft.api.drone.IProgWidget;
 import me.desht.pneumaticcraft.common.drone.IDroneBase;
 import me.desht.pneumaticcraft.common.drone.ai.DroneAIManager;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.entity.ai.goal.Goal;
 
 import java.util.Collections;
@@ -35,42 +39,39 @@ import java.util.Set;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public abstract class ProgWidgetDroneCondition extends ProgWidgetConditionBase implements ICondition, IVariableSetWidget {
-    private boolean isAndFunction;
-    private ICondition.Operator operator = ICondition.Operator.GE;
-    private int requiredCount = 1;
-    private String measureVar = "";
+    protected static <P extends ProgWidgetDroneCondition> Products.P2<RecordCodecBuilder.Mu<P>, PositionFields, DroneConditionFields> droneConditionParts(RecordCodecBuilder.Instance<P> pInstance) {
+        return baseParts(pInstance).and(DroneConditionFields.CODEC.fieldOf("cond").forGetter(p -> p.cond));
+    }
 
-    public ProgWidgetDroneCondition(ProgWidgetType<?> type) {
-        super(type);
+    protected DroneConditionFields cond;
+
+    public ProgWidgetDroneCondition() {
+        this(PositionFields.DEFAULT, DroneConditionFields.DEFAULT);
+    }
+
+    public ProgWidgetDroneCondition(PositionFields pos, DroneConditionFields cond) {
+        super(pos);
+
+        this.cond = cond;
     }
 
     @Override
-    public boolean isAndFunction() {
-        return isAndFunction;
-    }
-
-    @Override
-    public void setAndFunction(boolean isAndFunction) {
-        this.isAndFunction = isAndFunction;
-    }
-
-    @Override
-    public boolean evaluate(IDroneBase drone, IProgWidget widget) {
+    public boolean evaluate(IDrone drone, IProgWidget widget) {
         return getOperator().evaluate(getCount(drone, widget), getRequiredCount());
     }
 
     @Override
     public void getTooltip(List<Component> curTooltip) {
         super.getTooltip(curTooltip);
-        if (!measureVar.isEmpty()) {
-            curTooltip.add(xlate("pneumaticcraft.gui.progWidget.condition.measure").append(measureVar));
+        if (!getMeasureVar().isEmpty()) {
+            curTooltip.add(xlate("pneumaticcraft.gui.progWidget.condition.measure").append(getMeasureVar()));
         }
     }
 
-    protected abstract int getCount(IDroneBase drone, IProgWidget widget);
+    protected abstract int getCount(IDrone drone, IProgWidget widget);
 
     @Override
-    public Goal getWidgetAI(IDroneBase drone, IProgWidget widget) {
+    public Goal getWidgetAI(IDrone drone, IProgWidget widget) {
         if (widget instanceof ProgWidgetDroneCondition) {
             return null;
         } else {
@@ -84,75 +85,88 @@ public abstract class ProgWidgetDroneCondition extends ProgWidgetConditionBase i
     }
 
     @Override
+    public boolean isAndFunction() {
+        return cond.isAndFunc;
+    }
+
+    @Override
+    public void setAndFunction(boolean isAndFunction) {
+        this.cond = cond.withIsAndFunc(isAndFunction);
+    }
+
+    @Override
     public int getRequiredCount() {
-        return requiredCount;
+        return cond.requiredCount;
     }
 
     @Override
     public void setRequiredCount(int count) {
-        requiredCount = count;
+        this.cond = cond.withRequiredCount(count);
     }
 
     @Override
     public Operator getOperator() {
-        return operator;
+        return cond.op;
     }
 
     @Override
     public void setOperator(Operator operator) {
-        this.operator = operator;
+        this.cond = cond.withOp(operator);
     }
     @Override
     public String getMeasureVar() {
-        return measureVar;
+        return cond.measureVar;
     }
 
     @Override
     public void setMeasureVar(String measureVar) {
-        this.measureVar = measureVar;
+        this.cond = cond.withMeasureVar(measureVar);
     }
 
-    @Override
-    public void writeToNBT(CompoundTag tag) {
-        super.writeToNBT(tag);
-        if (isAndFunction) tag.putBoolean("isAndFunction", true);
-        tag.putByte("operator", (byte) operator.ordinal());
-        tag.putInt("requiredCount", requiredCount);
-        if (!measureVar.isEmpty()) tag.putString("measureVar", measureVar);
-    }
+//    @Override
+//    public void writeToNBT(CompoundTag tag, HolderLookup.Provider provider) {
+//        super.writeToNBT(tag, provider);
+//        if (isAndFunction) tag.putBoolean("isAndFunction", true);
+//        tag.putByte("operator", (byte) operator.ordinal());
+//        tag.putInt("requiredCount", requiredCount);
+//        if (!measureVar.isEmpty()) tag.putString("measureVar", measureVar);
+//    }
+//
+//    @Override
+//    public void readFromNBT(CompoundTag tag, HolderLookup.Provider provider) {
+//        super.readFromNBT(tag, provider);
+//        isAndFunction = tag.getBoolean("isAndFunction");
+//        operator = Operator.values()[tag.getByte("operator")];
+//        requiredCount = tag.getInt("requiredCount");
+//        measureVar = tag.getString("measureVar");
+//    }
 
     @Override
-    public void readFromNBT(CompoundTag tag) {
-        super.readFromNBT(tag);
-        isAndFunction = tag.getBoolean("isAndFunction");
-        operator = Operator.values()[tag.getByte("operator")];
-        requiredCount = tag.getInt("requiredCount");
-        measureVar = tag.getString("measureVar");
-    }
-
-    @Override
-    public void writeToPacket(FriendlyByteBuf buf) {
+    public void writeToPacket(RegistryFriendlyByteBuf buf) {
         super.writeToPacket(buf);
-        buf.writeBoolean(isAndFunction);
-        buf.writeEnum(operator);
-        buf.writeVarInt(requiredCount);
-        buf.writeUtf(measureVar, GlobalVariableManager.MAX_VARIABLE_LEN);
+        buf.writeBoolean(isAndFunction());
+        buf.writeEnum(getOperator());
+        buf.writeVarInt(getRequiredCount());
+        buf.writeUtf(getMeasureVar(), GlobalVariableManager.MAX_VARIABLE_LEN);
     }
 
     @Override
-    public void readFromPacket(FriendlyByteBuf buf) {
+    public void readFromPacket(RegistryFriendlyByteBuf buf) {
         super.readFromPacket(buf);
-        isAndFunction = buf.readBoolean();
-        operator = buf.readEnum(Operator.class);
-        requiredCount = buf.readVarInt();
-        measureVar = buf.readUtf(GlobalVariableManager.MAX_VARIABLE_LEN);
+
+        cond = new DroneConditionFields(
+                buf.readBoolean(),
+                buf.readEnum(Operator.class),
+                buf.readVarInt(),
+                buf.readUtf(GlobalVariableManager.MAX_VARIABLE_LEN)
+        );
     }
 
     @Override
     public List<Component> getExtraStringInfo() {
         MutableComponent anyAll = xlate(isAndFunction() ? "pneumaticcraft.gui.misc.all" : "pneumaticcraft.gui.misc.any")
                 .append(" " + getOperator().toString() + " " + getRequiredCount());
-        return measureVar.isEmpty() ? Collections.singletonList(anyAll) : ImmutableList.of(anyAll, varAsTextComponent(measureVar));
+        return getMeasureVar().isEmpty() ? Collections.singletonList(anyAll) : ImmutableList.of(anyAll, varAsTextComponent(getMeasureVar()));
     }
 
     @Override
@@ -175,5 +189,32 @@ public abstract class ProgWidgetDroneCondition extends ProgWidgetConditionBase i
     @Override
     public void setAIManager(DroneAIManager aiManager) {
         // no-op
+    }
+
+    public record DroneConditionFields(boolean isAndFunc, Operator op, int requiredCount, String measureVar) {
+        public static final DroneConditionFields DEFAULT = new DroneConditionFields(false, Operator.GE, 1, "");
+
+        public static final Codec<DroneConditionFields> CODEC = RecordCodecBuilder.create(builder -> builder.group(
+                Codec.BOOL.optionalFieldOf("and_func", false).forGetter(DroneConditionFields::isAndFunc),
+                StringRepresentable.fromEnum(Operator::values).optionalFieldOf("op", Operator.GE).forGetter(DroneConditionFields::op),
+                Codec.INT.optionalFieldOf("required_count", 1).forGetter(DroneConditionFields::requiredCount),
+                Codec.STRING.optionalFieldOf("measure_var", "").forGetter(DroneConditionFields::measureVar)
+        ).apply(builder, DroneConditionFields::new));
+
+        public DroneConditionFields withIsAndFunc(boolean isAndFunc) {
+            return new DroneConditionFields(isAndFunc, op, requiredCount, measureVar);
+        }
+
+        public DroneConditionFields withOp(Operator op) {
+            return new DroneConditionFields(isAndFunc, op, requiredCount, measureVar);
+        }
+
+        public DroneConditionFields withRequiredCount(int requiredCount) {
+            return new DroneConditionFields(isAndFunc, op, requiredCount, measureVar);
+        }
+
+        public DroneConditionFields withMeasureVar(String measureVar) {
+            return new DroneConditionFields(isAndFunc, op, requiredCount, measureVar);
+        }
     }
 }

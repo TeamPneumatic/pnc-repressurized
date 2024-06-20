@@ -48,12 +48,12 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.material.FogType;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.*;
 
 import java.util.List;
 
-@Mod.EventBusSubscriber(modid = Names.MOD_ID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.FORGE)
+@EventBusSubscriber(modid = Names.MOD_ID, value = Dist.CLIENT, bus = EventBusSubscriber.Bus.GAME)
 public class ClientEventHandler {
     private static float currentScreenRoll = 0F;
 
@@ -120,8 +120,6 @@ public class ClientEventHandler {
             }
         }
     }
-
-    private static final int Z_LEVEL = 233;  // should be just above the drawn itemstack
 
     @SubscribeEvent
     public static void guiContainerForeground(ContainerScreenEvent.Render.Foreground event) {

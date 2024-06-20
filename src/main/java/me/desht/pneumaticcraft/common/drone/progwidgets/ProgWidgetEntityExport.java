@@ -18,10 +18,13 @@
 package me.desht.pneumaticcraft.common.drone.progwidgets;
 
 import com.google.common.collect.ImmutableList;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import me.desht.pneumaticcraft.api.drone.IDrone;
+import me.desht.pneumaticcraft.api.drone.IProgWidget;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
-import me.desht.pneumaticcraft.common.drone.IDroneBase;
 import me.desht.pneumaticcraft.common.drone.ai.DroneAIEntityExport;
-import me.desht.pneumaticcraft.common.registry.ModProgWidgets;
+import me.desht.pneumaticcraft.common.registry.ModProgWidgetTypes;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.goal.Goal;
@@ -30,9 +33,20 @@ import net.minecraft.world.item.DyeColor;
 import java.util.List;
 
 public class ProgWidgetEntityExport extends ProgWidgetAreaItemBase {
+    public static final MapCodec<ProgWidgetEntityExport> CODEC = RecordCodecBuilder.mapCodec(builder ->
+        baseParts(builder).apply(builder, ProgWidgetEntityExport::new));
+
+    public ProgWidgetEntityExport(PositionFields pos) {
+        super(pos);
+    }
+
+    @Override
+    public ProgWidgetType<?> getType() {
+        return ModProgWidgetTypes.ENTITY_EXPORT.get();
+    }
 
     public ProgWidgetEntityExport() {
-        super(ModProgWidgets.ENTITY_EXPORT.get());
+        super(PositionFields.DEFAULT);
     }
 
     @Override
@@ -42,7 +56,7 @@ public class ProgWidgetEntityExport extends ProgWidgetAreaItemBase {
 
     @Override
     public List<ProgWidgetType<?>> getParameters() {
-        return ImmutableList.of(ModProgWidgets.AREA.get(), ModProgWidgets.TEXT.get());
+        return ImmutableList.of(ModProgWidgetTypes.AREA.get(), ModProgWidgetTypes.TEXT.get());
     }
 
     @Override
@@ -51,7 +65,7 @@ public class ProgWidgetEntityExport extends ProgWidgetAreaItemBase {
     }
 
     @Override
-    public Goal getWidgetAI(IDroneBase drone, IProgWidget widget) {
+    public Goal getWidgetAI(IDrone drone, IProgWidget widget) {
         return new DroneAIEntityExport<>(drone, (ProgWidgetAreaItemBase) widget);
     }
 }

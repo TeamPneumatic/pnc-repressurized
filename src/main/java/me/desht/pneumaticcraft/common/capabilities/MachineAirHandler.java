@@ -305,7 +305,9 @@ public class MachineAirHandler extends BasicAirHandler implements IAirHandlerMac
     @Override
     public CompoundTag serializeNBT() {
         CompoundTag nbt = super.serializeNBT();
-        if (leakDir != null) nbt.putByte("Leaking", (byte) leakDir.get3DDataValue());
+        if (leakDir != null) {
+            nbt.putByte("Leaking", (byte) leakDir.get3DDataValue());
+        }
         return nbt;
     }
 

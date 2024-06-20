@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.client.gui.widget;
 
 import me.desht.pneumaticcraft.api.misc.Symbols;
-import me.desht.pneumaticcraft.common.util.ITranslatableEnum;
+import me.desht.pneumaticcraft.api.misc.ITranslatableEnum;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.resources.language.I18n;

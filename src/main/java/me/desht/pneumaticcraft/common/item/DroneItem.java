@@ -23,6 +23,7 @@ import me.desht.pneumaticcraft.common.block.entity.drone.ProgrammerBlockEntity;
 import me.desht.pneumaticcraft.common.block.entity.utility.ChargingStationBlockEntity;
 import me.desht.pneumaticcraft.common.entity.drone.DroneEntity;
 import me.desht.pneumaticcraft.common.registry.ModCriterionTriggers;
+import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.registry.ModMenuTypes;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -45,15 +46,12 @@ import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.block.state.BlockState;
+import net.neoforged.neoforge.event.EventHooks;
 import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
+import net.neoforged.neoforge.fluids.SimpleFluidContent;
 
-import javax.annotation.Nullable;
 import java.util.List;
-import java.util.Objects;
 import java.util.function.BiFunction;
-
-import static me.desht.pneumaticcraft.common.entity.drone.DroneEntity.NBT_DRONE_COLOR;
 
 public class DroneItem extends PressurizableItem
         implements IChargeableContainerProvider, IProgrammable, ColorHandlers.ITintableItem {
@@ -70,9 +68,9 @@ public class DroneItem extends PressurizableItem
 
     @Override
     public InteractionResult useOn(UseOnContext ctx) {
-        Level world = ctx.getLevel();
-        BlockPos pos = ctx.getClickedPos();
         if (ctx.getPlayer() instanceof ServerPlayer sp) {
+            Level world = ctx.getLevel();
+            BlockPos pos = ctx.getClickedPos();
             ItemStack iStack = sp.getItemInHand(ctx.getHand());
             if (iStack.getItem() == ModItems.LOGISTICS_DRONE.get()) {
                 ModCriterionTriggers.LOGISTICS_DRONE_DEPLOYED.get().trigger(sp);
@@ -87,47 +85,48 @@ public class DroneItem extends PressurizableItem
 
     @Override
     public boolean onEntityItemUpdate(ItemStack stack, ItemEntity entity) {
-        if (!entity.getCommandSenderWorld().isClientSide && stack.hasTag() && stack.getTag().contains(IProgrammable.NBT_WIDGETS)) entity.setExtendedLifetime();
+        if (!entity.getCommandSenderWorld().isClientSide && stack.has(ModDataComponents.SAVED_DRONE_PROGRAM)) {
+            entity.setExtendedLifetime();
+        }
         return false;
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
-        super.appendHoverText(stack, worldIn, tooltip, flagIn);
+    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flagIn) {
+        super.appendHoverText(stack, context, tooltip, flagIn);
 
-        if (stack.hasTag() && stack.getTag().contains("Tank")) {
-            FluidTank fluidTank = new FluidTank(16000);
-            fluidTank.readFromNBT(stack.getTag().getCompound("Tank"));
-            FluidStack fluidStack = fluidTank.getFluid();
+        SimpleFluidContent storedFluid = stack.get(ModDataComponents.STORED_FLUID);
+        if (storedFluid != null) {
+            FluidStack fluidStack = storedFluid.copy();
             if (!fluidStack.isEmpty()) {
                 tooltip.add(Component.translatable("pneumaticcraft.gui.tooltip.fluid")
                         .append(fluidStack.getAmount() + "mB ")
-                        .append(fluidStack.getDisplayName()).withStyle(ChatFormatting.GRAY)
+                        .append(fluidStack.getHoverName()).withStyle(ChatFormatting.GRAY)
                 );
             }
         }
     }
 
     public DyeColor getDroneColor(ItemStack stack) {
-        return stack.hasTag() && Objects.requireNonNull(stack.getTag()).contains(NBT_DRONE_COLOR) ?
-                DyeColor.byId(stack.getTag().getInt(NBT_DRONE_COLOR)) :
-                defaultColor;
+        int color = stack.getOrDefault(ModDataComponents.DRONE_COLOR, defaultColor.getId());
+        return DyeColor.byId(color);
     }
 
-    public void spawnDrone(Player player, Level world, BlockPos clickPos, Direction facing, BlockPos placePos, ItemStack iStack){
-        DroneEntity drone = droneCreator.apply(world, player);
+    public void spawnDrone(Player player, Level level, BlockPos clickPos, Direction facing, BlockPos placePos, ItemStack iStack) {
+        DroneEntity drone = droneCreator.apply(level, player);
 
         drone.setPos(placePos.getX() + 0.5, placePos.getY() + 0.5, placePos.getZ() + 0.5);
         drone.readFromItemStack(iStack);
-        world.addFreshEntity(drone);
+        level.addFreshEntity(drone);
         drone.setDeployPos(placePos);
 
         if (drone.addProgram(clickPos, facing, placePos, iStack, drone.progWidgets)) {
             ProgrammerBlockEntity.updatePuzzleConnections(drone.progWidgets);
         }
 
-        if (world instanceof ServerLevelAccessor) {
-            drone.finalizeSpawn((ServerLevelAccessor) world, world.getCurrentDifficultyAt(placePos), MobSpawnType.TRIGGERED, new SpawnGroupData() {}, null);
+        if (level instanceof ServerLevelAccessor) {
+            EventHooks.finalizeMobSpawn(drone, (ServerLevelAccessor) level, level.getCurrentDifficultyAt(placePos),
+                    MobSpawnType.TRIGGERED, new SpawnGroupData() {});
         }
     }
 
@@ -145,7 +144,7 @@ public class DroneItem extends PressurizableItem
     public boolean showProgramTooltip() {
         return true;
     }
-    
+
     @Override
     public MenuProvider getContainerProvider(ChargingStationBlockEntity te) {
         return new IChargeableContainerProvider.Provider(te, ModMenuTypes.CHARGING_DRONE.get());
@@ -154,5 +153,9 @@ public class DroneItem extends PressurizableItem
     @Override
     public int getTintColor(ItemStack stack, int tintIndex) {
         return tintIndex == 1 ? PneumaticCraftUtils.getDyeColorAsRGB(getDroneColor(stack)) : -1;
+    }
+
+    public static boolean isBasicDrone(ItemStack stack) {
+        return stack.getItem() instanceof DroneItem d && !d.canProgram(stack);
     }
 }

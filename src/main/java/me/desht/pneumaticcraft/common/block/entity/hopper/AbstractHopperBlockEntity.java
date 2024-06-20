@@ -26,6 +26,7 @@ import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.MenuProvider;
@@ -145,14 +146,14 @@ public abstract class AbstractHopperBlockEntity<T extends BlockEntity & IRedston
     protected abstract int getComparatorValueInternal();
 
     @Override
-    public void saveAdditional(CompoundTag tag) {
-        super.saveAdditional(tag);
+    public void saveAdditional(CompoundTag tag, HolderLookup.Provider provider) {
+        super.saveAdditional(tag, provider);
         tag.putInt("leaveMaterialCount", leaveMaterialCount);
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
+    public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
+        super.loadAdditional(tag, provider);
 
         if (tag.contains("leaveMaterial")) {
             leaveMaterialCount = (byte)(tag.getBoolean("leaveMaterial") ? 1 : 0);

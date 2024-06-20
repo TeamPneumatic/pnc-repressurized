@@ -42,7 +42,7 @@ public class AssemblyDrill implements IRecipeManager<AssemblyRecipe> {
         CraftTweakerAPI.apply(new ActionAddRecipe<>(this,
                 new RecipeHolder<>(new ResourceLocation("crafttweaker", fixRecipeName(name)),
                         new AssemblyRecipeImpl(
-                                CTUtils.toStackedIngredient(input),
+                                CTUtils.toSizedIngredient(input),
                                 output.getImmutableInternal(),
                                 AssemblyRecipe.AssemblyProgramType.DRILL)
                 ))

@@ -56,6 +56,7 @@ import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ItemLike;
 import org.joml.Matrix3f;
+import org.joml.Matrix4fStack;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 
@@ -489,12 +490,12 @@ public class WidgetAnimatedStat extends AbstractWidget implements IGuiAnimatedSt
             // Set up necessary translations so subwidgets render in the right place
             // While our own matrix stack is passed to widget.render, we also need to modify the model view stack so
             //  widgets which render itemstacks do it in the right place
-            PoseStack poseStack = RenderSystem.getModelViewStack();
-            poseStack.pushPose();
+            Matrix4fStack poseStack = RenderSystem.getModelViewStack();
+            poseStack.pushMatrix();
             poseStack.translate(renderBaseX + (leftSided ? widgetOffsetLeft : widgetOffsetRight), renderAffectedY + (titleYoffset - 10), 0);
             RenderSystem.applyModelViewMatrix();
             subWidgets.forEach(widget -> widget.render(graphics, mouseX - renderBaseX, mouseY - renderAffectedY, partialTicks));
-            poseStack.popPose();
+            poseStack.popMatrix();
             RenderSystem.applyModelViewMatrix();
         }
         if (renderHeight > 16 && renderWidth > 16 && statIcon != null) {
@@ -515,7 +516,7 @@ public class WidgetAnimatedStat extends AbstractWidget implements IGuiAnimatedSt
     }
 
     @Override
-    public void renderStat(PoseStack matrixStack, MultiBufferSource buffer, float partialTicks) {
+    public void renderStat(PoseStack poseStack, MultiBufferSource buffer, float partialTicks) {
         // used by the Block Tracker & Entity Tracker armor upgrades
         if (needTextRecalc) recalcText();
 
@@ -526,7 +527,7 @@ public class WidgetAnimatedStat extends AbstractWidget implements IGuiAnimatedSt
 
         // quad bg
         int[] cols = RenderUtils.decomposeColor(backGroundColor);
-        RenderUtils.renderWithTypeAndFinish(matrixStack, buffer, ModRenderTypes.UNTEXTURED_QUAD_NO_DEPTH, (posMat, builder) -> {
+        RenderUtils.renderWithTypeAndFinish(poseStack, buffer, ModRenderTypes.UNTEXTURED_QUAD_NO_DEPTH, (posMat, builder) -> {
             int rw = leftSided ? -renderWidth : renderWidth;
             builder.vertex(posMat, (float)renderBaseX, (float)renderEffectiveY + renderHeight, 0.0F)
                     .color(cols[1], cols[2], cols[3], cols[0])
@@ -547,34 +548,34 @@ public class WidgetAnimatedStat extends AbstractWidget implements IGuiAnimatedSt
         });
 
         // line loops border
-        final Matrix3f normal = matrixStack.last().normal();
-        RenderUtils.renderWithTypeAndFinish(matrixStack, buffer, ModRenderTypes.getLineLoops(5.0f), (posMat, builder) -> {
+        final Matrix3f normal = poseStack.last().normal();
+        RenderUtils.renderWithTypeAndFinish(poseStack, buffer, ModRenderTypes.getLineLoops(5.0f), (posMat, builder) -> {
             int rw = leftSided ? -renderWidth : renderWidth;
             float[] c1 = leftSided ? bgColorLo.getComponents(null) : bgColorHi.getComponents(null);
             float[] c2 = bgColorHi.getComponents(null);
             float[] c3 = leftSided ? bgColorHi.getComponents(null) : bgColorLo.getComponents(null);
             float[] c4 = bgColorLo.getComponents(null);
-            RenderUtils.normalLine(builder, posMat, normal, renderBaseX, renderEffectiveY, 0, renderBaseX + rw, renderEffectiveY,
+            RenderUtils.normalLine(builder, poseStack, renderBaseX, renderEffectiveY, 0, renderBaseX + rw, renderEffectiveY,
                     0, c1[0], c1[1], c1[2], c1[3], true);
-            RenderUtils.normalLine(builder, posMat, normal, renderBaseX + rw, renderEffectiveY, 0, renderBaseX + rw, renderEffectiveY + height,
+            RenderUtils.normalLine(builder, poseStack, renderBaseX + rw, renderEffectiveY, 0, renderBaseX + rw, renderEffectiveY + height,
                     0, c2[0], c2[1], c2[2], c2[3], true);
-            RenderUtils.normalLine(builder, posMat, normal, renderBaseX + rw, renderEffectiveY + height, 0, renderBaseX, renderEffectiveY + height,
+            RenderUtils.normalLine(builder, poseStack, renderBaseX + rw, renderEffectiveY + height, 0, renderBaseX, renderEffectiveY + height,
                     0, c3[0], c3[1], c3[2], c3[3], true);
-            RenderUtils.normalLine(builder, posMat, normal, renderBaseX, renderEffectiveY + height, 0, renderBaseX, renderEffectiveY,
+            RenderUtils.normalLine(builder, poseStack, renderBaseX, renderEffectiveY + height, 0, renderBaseX, renderEffectiveY,
                     0, c4[0], c4[1], c4[2], c4[3], true);
-            RenderUtils.normalLine(builder, posMat, normal, renderBaseX, renderEffectiveY, 0, renderBaseX + rw, renderEffectiveY,
+            RenderUtils.normalLine(builder, poseStack, renderBaseX, renderEffectiveY, 0, renderBaseX + rw, renderEffectiveY,
                     0, c1[0], c1[1], c1[2], c1[3], true);
         });
 
         if (doneExpanding) {
-            matrixStack.pushPose();
+            poseStack.pushPose();
             int renderX = renderBaseX + (leftSided ? -renderWidth + 2 : 18);
             // text title
             String title = getMessage().getString();
             int titleOffsetY = 3;
             if (!title.isEmpty()) {
                 RenderUtils.renderString3d(Component.literal(title).withStyle(ChatFormatting.UNDERLINE), renderX, renderEffectiveY + 2,
-                        titleColor, matrixStack, buffer, false, true);
+                        titleColor, poseStack, buffer, false, true);
                 titleOffsetY = 12;
             }
             // text lines
@@ -582,23 +583,23 @@ public class WidgetAnimatedStat extends AbstractWidget implements IGuiAnimatedSt
             for (int i = curScroll; i < textComponents.size() && i < curScroll + getVisibleLines(); i++) {
                 int renderY = renderEffectiveY + (i - curScroll) * lineSpacing + titleOffsetY + reservedLines * lineHeight;
                 RenderUtils.renderString3d(reorderingProcessors.get(i), renderX, renderY,
-                        0xFFFFFF, matrixStack, buffer, false, true);
+                        0xFFFFFF, poseStack, buffer, false, true);
             }
 
-            matrixStack.pushPose();
-            matrixStack.translate(renderBaseX + (leftSided ? widgetOffsetLeft : widgetOffsetRight), renderEffectiveY + (titleOffsetY - 10), 0);
+            poseStack.pushPose();
+            poseStack.translate(renderBaseX + (leftSided ? widgetOffsetLeft : widgetOffsetRight), renderEffectiveY + (titleOffsetY - 10), 0);
             subWidgets.stream()
                     .filter(widget -> widget instanceof ICanRender3d)
-                    .forEach(widget -> ((ICanRender3d) widget).render3d(matrixStack, buffer, partialTicks));
-            matrixStack.popPose();
+                    .forEach(widget -> ((ICanRender3d) widget).render3d(poseStack, buffer, partialTicks));
+            poseStack.popPose();
 
-            matrixStack.popPose();
+            poseStack.popPose();
         }
 
         // no subwidget drawing in 3d rendering
 
         if (renderHeight > 16 && renderWidth > 16 && statIcon != null) {
-            statIcon.render3d(matrixStack, buffer, renderBaseX, renderEffectiveY);
+            statIcon.render3d(poseStack, buffer, renderBaseX, renderEffectiveY);
         }
     }
 

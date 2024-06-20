@@ -17,10 +17,12 @@
 
 package me.desht.pneumaticcraft.common.util;
 
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.IFluidTank;
+import net.neoforged.neoforge.fluids.SimpleFluidContent;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 
 import javax.annotation.Nonnull;
@@ -33,7 +35,7 @@ import java.util.function.Predicate;
 public class PNCFluidTank implements IFluidHandler, IFluidTank {
     protected Predicate<FluidStack> validator;
     @Nonnull
-    protected FluidStack fluid = FluidStack.EMPTY;
+    protected FluidStack fluidStack = FluidStack.EMPTY;
     protected int capacity;
 
     public PNCFluidTank(int capacity) {
@@ -57,31 +59,34 @@ public class PNCFluidTank implements IFluidHandler, IFluidTank {
         return this;
     }
 
+    @Override
     public boolean isFluidValid(FluidStack stack) {
         return validator.test(stack);
     }
 
+    @Override
     public int getCapacity() {
         return capacity;
     }
 
     @Nonnull
     public FluidStack getFluid() {
-        return fluid;
+        return fluidStack;
     }
 
+    @Override
     public int getFluidAmount() {
-        return fluid.getAmount();
+        return fluidStack.getAmount();
     }
 
-    public PNCFluidTank readFromNBT(CompoundTag nbt) {
-        FluidStack fluid = FluidStack.loadFluidStackFromNBT(nbt);
+    public PNCFluidTank readFromNBT(HolderLookup.Provider provider, CompoundTag nbt) {
+        FluidStack fluid = FluidStack.parseOptional(provider, nbt);
         setFluid(fluid);
         return this;
     }
 
-    public CompoundTag writeToNBT(CompoundTag nbt) {
-        fluid.writeToNBT(nbt);
+    public CompoundTag writeToNBT(HolderLookup.Provider provider, CompoundTag nbt) {
+        fluidStack.save(provider, nbt);
         return nbt;
     }
 
@@ -112,31 +117,31 @@ public class PNCFluidTank implements IFluidHandler, IFluidTank {
             return 0;
         }
         if (action.simulate()) {
-            if (fluid.isEmpty()) {
+            if (fluidStack.isEmpty()) {
                 return Math.min(capacity, resource.getAmount());
             }
-            if (!fluid.isFluidEqual(resource)) {
+            if (!FluidStack.isSameFluidSameComponents(fluidStack, resource)) {
                 return 0;
             }
-            return Math.min(capacity - fluid.getAmount(), resource.getAmount());
+            return Math.min(capacity - fluidStack.getAmount(), resource.getAmount());
         }
-        Fluid prevFluid = fluid.getFluid();
-        int prevAmount = fluid.getAmount();
-        if (fluid.isEmpty()) {
-            fluid = new FluidStack(resource, Math.min(capacity, resource.getAmount()));
+        Fluid prevFluid = fluidStack.getFluid();
+        int prevAmount = fluidStack.getAmount();
+        if (fluidStack.isEmpty()) {
+            fluidStack = new FluidStack(resource.getFluid(), Math.min(capacity, resource.getAmount()));
             onContentsChanged(prevFluid, prevAmount);
-            return fluid.getAmount();
+            return fluidStack.getAmount();
         }
-        if (!fluid.isFluidEqual(resource)) {
+        if (!FluidStack.isSameFluidSameComponents(fluidStack, resource)) {
             return 0;
         }
-        int filled = capacity - fluid.getAmount();
+        int filled = capacity - fluidStack.getAmount();
 
         if (resource.getAmount() < filled) {
-            fluid.grow(resource.getAmount());
+            fluidStack.grow(resource.getAmount());
             filled = resource.getAmount();
         } else {
-            fluid.setAmount(capacity);
+            fluidStack.setAmount(capacity);
         }
         if (filled > 0) {
             onContentsChanged(prevFluid, prevAmount);
@@ -147,7 +152,7 @@ public class PNCFluidTank implements IFluidHandler, IFluidTank {
     @Nonnull
     @Override
     public FluidStack drain(FluidStack resource, FluidAction action) {
-        if (resource.isEmpty() || !resource.isFluidEqual(fluid)) {
+        if (resource.isEmpty() || !FluidStack.isSameFluidSameComponents(resource, fluidStack)) {
             return FluidStack.EMPTY;
         }
         return drain(resource.getAmount(), action);
@@ -157,14 +162,14 @@ public class PNCFluidTank implements IFluidHandler, IFluidTank {
     @Override
     public FluidStack drain(int maxDrain, FluidAction action) {
         int drained = maxDrain;
-        if (fluid.getAmount() < drained) {
-            drained = fluid.getAmount();
+        if (fluidStack.getAmount() < drained) {
+            drained = fluidStack.getAmount();
         }
-        FluidStack stack = new FluidStack(fluid, drained);
+        FluidStack stack = new FluidStack(fluidStack.getFluid(), drained);
         if (action.execute() && drained > 0) {
-            Fluid prevFluid = fluid.getFluid();
-            int prevAmount = fluid.getAmount();
-            fluid.shrink(drained);
+            Fluid prevFluid = fluidStack.getFluid();
+            int prevAmount = fluidStack.getAmount();
+            fluidStack.shrink(drained);
             onContentsChanged(prevFluid, prevAmount);
         }
         return stack;
@@ -175,17 +180,25 @@ public class PNCFluidTank implements IFluidHandler, IFluidTank {
     }
 
     public void setFluid(FluidStack stack) {
-        Fluid prevFluid = fluid.getFluid();
-        int prevAmount = fluid.getAmount();
-        this.fluid = stack;
+        Fluid prevFluid = fluidStack.getFluid();
+        int prevAmount = fluidStack.getAmount();
+        this.fluidStack = stack;
         onContentsChanged(prevFluid, prevAmount);
     }
 
     public boolean isEmpty() {
-        return fluid.isEmpty();
+        return fluidStack.isEmpty();
     }
 
     public int getSpace() {
-        return Math.max(0, capacity - fluid.getAmount());
+        return Math.max(0, capacity - fluidStack.getAmount());
+    }
+
+    public SimpleFluidContent getContent() {
+        return SimpleFluidContent.copyOf(fluidStack);
+    }
+
+    public void loadFromContent(SimpleFluidContent contents) {
+        fluidStack = contents.copy();
     }
 }

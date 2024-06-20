@@ -1,24 +1,28 @@
 package me.desht.pneumaticcraft.common.drone.progwidgets;
 
+import me.desht.pneumaticcraft.api.drone.IProgWidget;
 import me.desht.pneumaticcraft.api.item.IProgrammable;
 import me.desht.pneumaticcraft.lib.Log;
+import net.minecraft.Util;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class WidgetSerializer {
-    public static void writeProgWidgetsToPacket(List<IProgWidget> widgetList, FriendlyByteBuf buf) {
+    public static void writeProgWidgetsToPacket(List<IProgWidget> widgetList, RegistryFriendlyByteBuf buf) {
         buf.writeVarInt(widgetList.size());
         for (IProgWidget progWidget : widgetList) {
             progWidget.writeToPacket(buf);
         }
     }
 
-    public static List<IProgWidget> readWidgetsFromPacket(FriendlyByteBuf buf) {
+    public static List<IProgWidget> readWidgetsFromPacket(RegistryFriendlyByteBuf buf) {
         List<IProgWidget> widgets = new ArrayList<>();
         int nWidgets = buf.readVarInt();
         for (int i = 0; i < nWidgets; i++) {
@@ -53,12 +57,7 @@ public class WidgetSerializer {
     }
 
     public static void putWidgetsToNBT(List<IProgWidget> widgets, CompoundTag tag) {
-        ListTag widgetTags = new ListTag();
-        for (IProgWidget widget : widgets) {
-            CompoundTag widgetTag = new CompoundTag();
-            widget.writeToNBT(widgetTag);
-            widgetTags.add(widgetTags.size(), widgetTag);
-        }
-        tag.put(IProgrammable.NBT_WIDGETS, widgetTags);
+        tag.put(IProgrammable.NBT_WIDGETS, Util.make(new ListTag(), list ->
+                widgets.forEach(widget -> ProgWidget.CODEC.encodeStart(NbtOps.INSTANCE, widget).ifSuccess(list::add))));
     }
 }

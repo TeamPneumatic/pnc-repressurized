@@ -17,6 +17,7 @@
 
 package me.desht.pneumaticcraft.common.drone.ai;
 
+import me.desht.pneumaticcraft.api.drone.IDrone;
 import me.desht.pneumaticcraft.common.drone.IDroneBase;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetForEachCoordinate;
 import net.minecraft.core.BlockPos;
@@ -25,7 +26,7 @@ public class DroneAIForEachCoordinate extends DroneAIBlockInteraction<ProgWidget
 
     private BlockPos curCoord;
 
-    public DroneAIForEachCoordinate(IDroneBase drone, ProgWidgetForEachCoordinate widget) {
+    public DroneAIForEachCoordinate(IDrone drone, ProgWidgetForEachCoordinate widget) {
         super(drone, widget);
     }
 

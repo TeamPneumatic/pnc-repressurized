@@ -92,7 +92,7 @@ public abstract class AbstractChestUpgradeKitItem extends Item {
                 }
 
                 // 3. fill the upgraded chest with the copied inventory
-                PneumaticCraftUtils.getTileEntityAt(world, pos, AbstractPneumaticCraftBlockEntity.class).ifPresent(teRC -> {
+                PneumaticCraftUtils.getBlockEntityAt(world, pos, AbstractPneumaticCraftBlockEntity.class).ifPresent(teRC -> {
                     IItemHandler chestInv = teRC.getItemHandler();
                     for (int i = 0; i < inv.size(); i++) {
                         if (i < chestInv.getSlots()) {

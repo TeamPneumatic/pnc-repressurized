@@ -18,8 +18,11 @@
 package me.desht.pneumaticcraft.common.drone.progwidgets;
 
 import com.google.common.collect.ImmutableList;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import me.desht.pneumaticcraft.api.drone.IProgWidget;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
-import me.desht.pneumaticcraft.common.registry.ModProgWidgets;
+import me.desht.pneumaticcraft.common.registry.ModProgWidgetTypes;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -30,9 +33,20 @@ import java.util.List;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class ProgWidgetLabel extends ProgWidget implements ILabel {
+    public static final MapCodec<ProgWidgetLabel> CODEC = RecordCodecBuilder.mapCodec(builder ->
+            baseParts(builder).apply(builder, ProgWidgetLabel::new));
+
+    public ProgWidgetLabel(PositionFields pos) {
+        super(pos);
+    }
 
     public ProgWidgetLabel() {
-        super(ModProgWidgets.LABEL.get());
+        super(PositionFields.DEFAULT);
+    }
+
+    @Override
+    public ProgWidgetType<?> getType() {
+        return ModProgWidgetTypes.LABEL.get();
     }
 
     @Override
@@ -58,7 +72,7 @@ public class ProgWidgetLabel extends ProgWidget implements ILabel {
 
     @Override
     public List<ProgWidgetType<?>> getParameters() {
-        return ImmutableList.of(ModProgWidgets.TEXT.get());
+        return ImmutableList.of(ModProgWidgetTypes.TEXT.get());
     }
 
     @Override

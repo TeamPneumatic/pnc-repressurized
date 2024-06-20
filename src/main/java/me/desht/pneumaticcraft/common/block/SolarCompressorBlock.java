@@ -1,20 +1,21 @@
 package me.desht.pneumaticcraft.common.block;
 
-import me.desht.pneumaticcraft.api.lib.NBTKeys;
 import me.desht.pneumaticcraft.common.block.entity.compressor.SolarCompressorBlockEntity;
 import me.desht.pneumaticcraft.common.registry.ModBlocks;
+import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.util.VoxelShapeUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.component.DataComponentType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.BlockGetter;
@@ -96,44 +97,46 @@ public class SolarCompressorBlock extends AbstractPNCBlockWithBoundingBlocks {
     }
 
     @Override
-    public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult brtr) {
+    public ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult brtr) {
         // Prevents any interactions with bounding blocks of compressor
         if (state.getValue(BOUNDING)) {
-            return InteractionResult.FAIL;
+            return ItemInteractionResult.FAIL;
         }
 
         // Only can repair if proper block entity type and is broken
-        if (world.getBlockEntity(pos) instanceof SolarCompressorBlockEntity solarCompressor
-                && solarCompressor.isBroken()) {
+        if (level.getBlockEntity(pos) instanceof SolarCompressorBlockEntity solarCompressor
+                && solarCompressor.isBroken()
+                && stack.getItem() == ModItems.SOLAR_CELL.get()) {
 
-            if (player.getMainHandItem().getItem() == ModItems.SOLAR_CELL.get()) {
+            if (!level.isClientSide) {
                 // Only consumes solar cell when player is not in creative
                 if (!player.isCreative()) {
                     player.getMainHandItem().shrink(1);
                 }
 
                 solarCompressor.fixBroken();
-                world.playSound(null, pos, SoundEvents.ANVIL_USE, SoundSource.BLOCKS, 1 ,1.5f);
-
-                return InteractionResult.SUCCESS;
+                level.playSound(null, pos, SoundEvents.ANVIL_USE, SoundSource.BLOCKS, 1 ,1.5f);
             }
+
+            return ItemInteractionResult.sidedSuccess(level.isClientSide);
         }
 
-        // Allows other interactions if cannot do repair interaction
-        return super.use(state, world, pos, player, hand, brtr);
+        // Allows other interactions if we cannot do repair interaction
+        return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, BlockGetter world, List<Component> curInfo, TooltipFlag flag) {
-        super.appendHoverText(stack, world, curInfo, flag);
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> curInfo, TooltipFlag flag) {
+        super.appendHoverText(stack, context, curInfo, flag);
 
-        if (stack.hasTag()) {
-            CompoundTag subTag = stack.getTagElement(NBTKeys.BLOCK_ENTITY_TAG);
-            if (subTag != null && subTag.contains(NBTKeys.NBT_BROKEN)) {
-                if (subTag.getBoolean(NBTKeys.NBT_BROKEN)) {
-                    curInfo.add(xlate("pneumaticcraft.gui.tooltip.broken"));
-                }
-            }
+        if (stack.getOrDefault(ModDataComponents.SOLAR_BROKEN, false)) {
+            curInfo.add(xlate("pneumaticcraft.gui.tooltip.broken"));
         }
+    }
+
+    @Override
+    public void addSerializableComponents(List<DataComponentType<?>> list) {
+        super.addSerializableComponents(list);
+        list.add(ModDataComponents.SOLAR_BROKEN.get());
     }
 }

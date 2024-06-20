@@ -18,16 +18,15 @@
 package me.desht.pneumaticcraft.client.gui.remote;
 
 import me.desht.pneumaticcraft.client.gui.remote.actionwidget.*;
+import me.desht.pneumaticcraft.common.item.RemoteItem;
 import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.item.ItemStack;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Supplier;
 
 public class RemoteLayout {
@@ -46,29 +45,31 @@ public class RemoteLayout {
         registeredWidgets.put(widget.getId(), supplier);
     }
 
-    public RemoteLayout(ItemStack remote, int guiLeft, int guiTop) {
-        CompoundTag tag = remote.getTag();
-        if (tag != null) {
+    public static Optional<ActionWidget<?>> createWidget(String id) {
+        Supplier<ActionWidget<?>> sup = registeredWidgets.get(id);
+        return sup == null ? Optional.empty() : Optional.of(sup.get());
+    }
+
+    public RemoteLayout(HolderLookup.Provider provider, ItemStack remote, int guiLeft, int guiTop) {
+        CompoundTag tag = RemoteItem.getSavedLayout(remote);
+        if (!tag.isEmpty()) {
             ListTag tagList = tag.getList("actionWidgets", Tag.TAG_COMPOUND);
             for (int i = 0; i < tagList.size(); i++) {
                 CompoundTag widgetTag = tagList.getCompound(i);
-                String id = widgetTag.getString("id");
-                Supplier<ActionWidget<?>> sup = registeredWidgets.get(id);
-                if (sup != null) {
-                    ActionWidget<?> actionWidget = sup.get();
-                    actionWidget.readFromNBT(widgetTag, guiLeft, guiTop);
+                createWidget(widgetTag.getString("id")).ifPresent(actionWidget -> {
+                    actionWidget.readFromNBT(provider, widgetTag, guiLeft, guiTop);
                     actionWidgets.add(actionWidget);
-                }
+                });
             }
         }
     }
 
-    public CompoundTag toNBT(int guiLeft, int guiTop) {
+    public CompoundTag toNBT(HolderLookup.Provider provider, int guiLeft, int guiTop) {
         CompoundTag tag = new CompoundTag();
 
         ListTag tagList = new ListTag();
         for (ActionWidget<?> actionWidget : actionWidgets) {
-            tagList.add(actionWidget.toNBT(guiLeft, guiTop));
+            tagList.add(actionWidget.toNBT(provider, guiLeft, guiTop));
         }
         tag.put("actionWidgets", tagList);
         return tag;

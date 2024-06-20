@@ -21,6 +21,7 @@ import me.desht.pneumaticcraft.client.gui.programmer.ProgWidgetLiquidFilterScree
 import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetLiquidFilter;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.world.level.material.Fluid;
+import net.neoforged.neoforge.fluids.FluidStack;
 
 public class LogisticsLiquidFilterScreen extends ProgWidgetLiquidFilterScreen {
     private final Screen parentScreen;
@@ -31,11 +32,11 @@ public class LogisticsLiquidFilterScreen extends ProgWidgetLiquidFilterScreen {
     }
 
     public Fluid getFilter() {
-        return progWidget.getFluid();
+        return progWidget.getFluidStack().getFluid();
     }
 
     public void setFilter(Fluid fluid) {
-        progWidget.setFluid(fluid);
+        progWidget.setFluidStack(new FluidStack(fluid, 1000));
     }
 
     @Override

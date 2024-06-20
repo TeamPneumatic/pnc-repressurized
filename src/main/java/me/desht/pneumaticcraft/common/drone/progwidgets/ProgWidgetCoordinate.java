@@ -18,17 +18,19 @@
 package me.desht.pneumaticcraft.common.drone.progwidgets;
 
 import com.google.common.collect.ImmutableList;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import me.desht.pneumaticcraft.api.drone.IProgWidget;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.drone.ai.DroneAIManager;
 import me.desht.pneumaticcraft.common.item.GPSToolItem;
-import me.desht.pneumaticcraft.common.registry.ModProgWidgets;
+import me.desht.pneumaticcraft.common.registry.ModProgWidgetTypes;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtUtils;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.DyeColor;
@@ -42,6 +44,12 @@ import java.util.Set;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class ProgWidgetCoordinate extends ProgWidget implements IVariableWidget {
+    public static final MapCodec<ProgWidgetCoordinate> CODEC = RecordCodecBuilder.mapCodec(builder ->
+            baseParts(builder).and(builder.group(
+                    BlockPos.CODEC.optionalFieldOf("pos", null).forGetter(p -> p.coord),
+                    Codec.STRING.optionalFieldOf("var", "").forGetter(ProgWidgetCoordinate::getVariable),
+                    Codec.BOOL.optionalFieldOf("using_var", false).forGetter(ProgWidgetCoordinate::isUsingVariable)
+            )).apply(builder, ProgWidgetCoordinate::new));
 
     private BlockPos coord;
     private String variable = "";
@@ -49,7 +57,15 @@ public class ProgWidgetCoordinate extends ProgWidget implements IVariableWidget 
     private DroneAIManager aiManager;
 
     public ProgWidgetCoordinate() {
-        super(ModProgWidgets.COORDINATE.get());
+        super(PositionFields.DEFAULT);
+    }
+
+    private ProgWidgetCoordinate(PositionFields pos, BlockPos coord, String variable, boolean useVariable) {
+        super(pos);
+
+        this.coord = coord;
+        this.variable = variable;
+        this.useVariable = useVariable;
     }
 
     public static ProgWidgetCoordinate fromPos(BlockPos pos) {
@@ -71,12 +87,12 @@ public class ProgWidgetCoordinate extends ProgWidget implements IVariableWidget 
 
     @Override
     public ProgWidgetType<?> returnType() {
-        return ModProgWidgets.COORDINATE.get();
+        return ModProgWidgetTypes.COORDINATE.get();
     }
 
     @Override
     public List<ProgWidgetType<?>> getParameters() {
-        return ImmutableList.of(ModProgWidgets.COORDINATE.get());
+        return ImmutableList.of(ModProgWidgetTypes.COORDINATE.get());
     }
 
     @Override
@@ -110,43 +126,43 @@ public class ProgWidgetCoordinate extends ProgWidget implements IVariableWidget 
         return Textures.PROG_WIDGET_COORDINATE;
     }
 
-    @Override
-    public void writeToNBT(CompoundTag tag) {
-        super.writeToNBT(tag);
-        if (coord != null) {
-            tag.put("coord", NbtUtils.writeBlockPos(coord));
-        }
-        if (!variable.isEmpty()) tag.putString("variable", variable);
-        if (useVariable) tag.putBoolean("useVariable", true);
-    }
+//    @Override
+//    public void writeToNBT(CompoundTag tag, HolderLookup.Provider provider) {
+//        super.writeToNBT(tag, provider);
+//        if (coord != null) {
+//            tag.put("coord", NbtUtils.writeBlockPos(coord));
+//        }
+//        if (!variable.isEmpty()) tag.putString("variable", variable);
+//        if (useVariable) tag.putBoolean("useVariable", true);
+//    }
+//
+//    @Override
+//    public void readFromNBT(CompoundTag tag, HolderLookup.Provider provider) {
+//        super.readFromNBT(tag, provider);
+//        if (tag.contains("coord")) {
+//            coord = NbtUtils.readBlockPos(tag.getCompound("coord"));
+//        } else if (tag.contains("posX")) {
+//            // legacy import
+//            coord = new BlockPos(tag.getInt("posX"), tag.getInt("posY"), tag.getInt("posZ"));
+//        } else {
+//            coord = null;
+//        }
+//        variable = tag.getString("variable");
+//        useVariable = tag.getBoolean("useVariable");
+//    }
 
     @Override
-    public void readFromNBT(CompoundTag tag) {
-        super.readFromNBT(tag);
-        if (tag.contains("coord")) {
-            coord = NbtUtils.readBlockPos(tag.getCompound("coord"));
-        } else if (tag.contains("posX")) {
-            // legacy import
-            coord = new BlockPos(tag.getInt("posX"), tag.getInt("posY"), tag.getInt("posZ"));
-        } else {
-            coord = null;
-        }
-        variable = tag.getString("variable");
-        useVariable = tag.getBoolean("useVariable");
-    }
-
-    @Override
-    public void writeToPacket(FriendlyByteBuf buf) {
+    public void writeToPacket(RegistryFriendlyByteBuf buf) {
         super.writeToPacket(buf);
-        buf.writeNullable(coord, FriendlyByteBuf::writeBlockPos);
+        BlockPos.STREAM_CODEC.encode(buf, coord);
         buf.writeUtf(variable);
         buf.writeBoolean(useVariable);
     }
 
     @Override
-    public void readFromPacket(FriendlyByteBuf buf) {
+    public void readFromPacket(RegistryFriendlyByteBuf buf) {
         super.readFromPacket(buf);
-        coord = buf.readNullable(FriendlyByteBuf::readBlockPos);
+        coord = BlockPos.STREAM_CODEC.decode(buf);
         variable = buf.readUtf(GlobalVariableManager.MAX_VARIABLE_LEN);
         useVariable = buf.readBoolean();
     }
@@ -197,6 +213,11 @@ public class ProgWidgetCoordinate extends ProgWidget implements IVariableWidget 
             setVariable(variable);
             setUsingVariable(true);
         }
+    }
+
+    @Override
+    public ProgWidgetType<?> getType() {
+        return ModProgWidgetTypes.COORDINATE.get();
     }
 
     @Override

@@ -35,30 +35,8 @@ public class ProgWidgetStringScreen<T extends ProgWidgetText> extends AbstractPr
         super.init();
 
         textfield = new WidgetTextField(font, guiLeft + 10, guiTop + 20, 160, font.lineHeight + 3);
-//        {
-//            @Override
-//            public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-//                if (keyCode == InputConstants.KEY_RETURN) {
-//                    onClose();
-////                    minecraft.player.closeContainer();
-//                    return true;
-//                }
-//                return super.keyPressed(keyCode, scanCode, modifiers);
-//            }
-//
-////            @Override
-////            public boolean charTyped(char c, int keyCode) {
-////                if (c == '\n') {
-////                    removed();
-////                    minecraft.player.closeContainer();
-////                    return true;
-////                } else {
-////                    return super.charTyped(c, keyCode);
-////                }
-////            }
-//        };
         textfield.setMaxLength(1000);
-        textfield.setValue(progWidget.string);
+        textfield.setValue(progWidget.getString());
         setInitialFocus(textfield);
         addRenderableWidget(textfield);
     }
@@ -74,7 +52,7 @@ public class ProgWidgetStringScreen<T extends ProgWidgetText> extends AbstractPr
 
     @Override
     public void removed() {
-        progWidget.string = textfield.getValue();
+        progWidget.setString(textfield.getValue());
 
         super.removed();
     }

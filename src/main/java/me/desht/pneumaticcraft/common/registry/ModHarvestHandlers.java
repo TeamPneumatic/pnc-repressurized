@@ -19,30 +19,21 @@ package me.desht.pneumaticcraft.common.registry;
 
 import me.desht.pneumaticcraft.api.harvesting.HarvestHandler;
 import me.desht.pneumaticcraft.api.lib.Names;
+import me.desht.pneumaticcraft.api.registry.PNCRegistries;
 import me.desht.pneumaticcraft.common.harvesting.*;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import net.neoforged.neoforge.registries.RegistryBuilder;
 
 import java.util.function.Supplier;
 import java.util.regex.Pattern;
 
-import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
-
 public class ModHarvestHandlers {
-    public static final ResourceKey<Registry<HarvestHandler>> HARVEST_HANDLERS_KEY
-            = ResourceKey.createRegistryKey(RL("harvest_handlers"));
-    public static final Registry<HarvestHandler> HARVEST_HANDLER_REGISTRY
-            = new RegistryBuilder<>(HARVEST_HANDLERS_KEY).create();
-
     public static final DeferredRegister<HarvestHandler> HARVEST_HANDLERS_DEFERRED
-            = DeferredRegister.create(HARVEST_HANDLER_REGISTRY, Names.MOD_ID);
+            = DeferredRegister.create(PNCRegistries.HARVEST_HANDLER_REGISTRY, Names.MOD_ID);
 
     public static final Supplier<HarvestHandler> CROPS = register("crops", HarvestHandlerCrops::new);
     public static final Supplier<HarvestHandler> NETHER_WART = register("nether_wart", HarvestHandlerCropLike.NetherWart::new);

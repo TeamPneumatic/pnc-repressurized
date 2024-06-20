@@ -18,10 +18,13 @@
 package me.desht.pneumaticcraft.common.drone.progwidgets;
 
 import com.google.common.collect.ImmutableList;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import me.desht.pneumaticcraft.api.drone.IDrone;
+import me.desht.pneumaticcraft.api.drone.IProgWidget;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
-import me.desht.pneumaticcraft.common.drone.IDroneBase;
 import me.desht.pneumaticcraft.common.drone.ai.DroneAIVoidItem;
-import me.desht.pneumaticcraft.common.registry.ModProgWidgets;
+import me.desht.pneumaticcraft.common.registry.ModProgWidgetTypes;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.goal.Goal;
@@ -32,12 +35,24 @@ import javax.annotation.Nonnull;
 import java.util.List;
 
 public class ProgWidgetVoidItem extends ProgWidget implements IItemFiltering {
+    public static final MapCodec<ProgWidgetVoidItem> CODEC = RecordCodecBuilder.mapCodec(builder ->
+            baseParts(builder).apply(builder, ProgWidgetVoidItem::new));
+
+    private ProgWidgetVoidItem(PositionFields pos) {
+        super(pos);
+    }
+
     public ProgWidgetVoidItem() {
-        super(ModProgWidgets.VOID_ITEM.get());
+        super(PositionFields.DEFAULT);
     }
 
     @Override
-    public Goal getWidgetAI(IDroneBase drone, IProgWidget widget) {
+    public ProgWidgetType<?> getType() {
+        return ModProgWidgetTypes.VOID_ITEM.get();
+    }
+
+    @Override
+    public Goal getWidgetAI(IDrone drone, IProgWidget widget) {
         return new DroneAIVoidItem(drone, (IItemFiltering) widget);
     }
 
@@ -59,7 +74,7 @@ public class ProgWidgetVoidItem extends ProgWidget implements IItemFiltering {
     @Nonnull
     @Override
     public List<ProgWidgetType<?>> getParameters() {
-        return ImmutableList.of(ModProgWidgets.ITEM_FILTER.get());
+        return ImmutableList.of(ModProgWidgetTypes.ITEM_FILTER.get());
     }
 
     @Override
@@ -75,8 +90,8 @@ public class ProgWidgetVoidItem extends ProgWidget implements IItemFiltering {
     @Override
     public boolean isItemValidForFilters(ItemStack item) {
         return ProgWidgetItemFilter.isItemValidForFilters(item,
-                ProgWidget.getConnectedWidgetList(this, 0, ModProgWidgets.ITEM_FILTER.get()),
-                ProgWidget.getConnectedWidgetList(this, getParameters().size(), ModProgWidgets.ITEM_FILTER.get()),
+                ProgWidget.getConnectedWidgetList(this, 0, ModProgWidgetTypes.ITEM_FILTER.get()),
+                ProgWidget.getConnectedWidgetList(this, getParameters().size(), ModProgWidgetTypes.ITEM_FILTER.get()),
                 null
         );
     }

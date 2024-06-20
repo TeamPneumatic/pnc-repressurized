@@ -22,6 +22,7 @@ import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSetGlobalVariable;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableHelper;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 
@@ -34,19 +35,23 @@ public class ActionWidgetCheckBox extends ActionWidgetVariable<WidgetCheckBox> i
     }
 
     @Override
-    public void readFromNBT(CompoundTag tag, int guiLeft, int guiTop) {
-        super.readFromNBT(tag, guiLeft, guiTop);
-        widget = new WidgetCheckBox(tag.getInt("x") + guiLeft, tag.getInt("y") + guiTop, 0xFF404040, deserializeTextComponent(tag.getString("text")), b -> onActionPerformed());
-        deserializeTooltip(tag.getString("tooltip"));
+    public void readFromNBT(HolderLookup.Provider provider, CompoundTag tag, int guiLeft, int guiTop) {
+        super.readFromNBT(provider, tag, guiLeft, guiTop);
+        widget = new WidgetCheckBox(
+                tag.getInt("x") + guiLeft, tag.getInt("y") + guiTop,
+                0xFF404040, deserializeTextComponent(tag.getString("text"), provider),
+                b -> onActionPerformed()
+        );
+        deserializeTooltip(tag.getString("tooltip"), provider);
     }
 
     @Override
-    public CompoundTag toNBT(int guiLeft, int guiTop) {
-        CompoundTag tag = super.toNBT(guiLeft, guiTop);
+    public CompoundTag toNBT(HolderLookup.Provider provider, int guiLeft, int guiTop) {
+        CompoundTag tag = super.toNBT(provider, guiLeft, guiTop);
         tag.putInt("x", widget.getX() - guiLeft);
         tag.putInt("y", widget.getY() - guiTop);
-        tag.putString("text", Component.Serializer.toJson(widget.getMessage()));
-        tag.putString("tooltip", Component.Serializer.toJson(getTooltipMessage()));
+        tag.putString("text", Component.Serializer.toJson(widget.getMessage(), provider));
+        tag.putString("tooltip", Component.Serializer.toJson(getTooltipMessage(), provider));
         return tag;
     }
 

@@ -21,9 +21,8 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntList;
-import me.desht.pneumaticcraft.api.crafting.ingredient.StackedIngredient;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.Ingredient;
+import net.neoforged.neoforge.common.crafting.SizedIngredient;
 import net.neoforged.neoforge.items.IItemHandler;
 
 import javax.annotation.Nonnull;
@@ -35,7 +34,7 @@ import java.util.Set;
 public abstract class PressureChamberRecipe extends PneumaticCraftRecipe {
     public abstract float getPressure();
 
-    public abstract List<StackedIngredient> getInputs();
+    public abstract List<SizedIngredient> getInputs();
 
     public abstract List<ItemStack> getOutputs();
 
@@ -75,7 +74,7 @@ public abstract class PressureChamberRecipe extends PneumaticCraftRecipe {
      * Get the input items for this recipe. This is primarily intended for recipe display purposes by
      * JEI or any other recipe display mod.
      */
-    public abstract List<Ingredient> getInputsForDisplay();
+    public abstract List<List<ItemStack>> getInputsForDisplay();
 
     /**
      * Implement if no output slots display more than one stack.

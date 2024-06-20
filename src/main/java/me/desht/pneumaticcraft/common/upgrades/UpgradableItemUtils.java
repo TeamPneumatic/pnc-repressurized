@@ -15,32 +15,25 @@
  *     along with pnc-repressurized.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.desht.pneumaticcraft.common.util;
+package me.desht.pneumaticcraft.common.upgrades;
 
-import com.google.common.collect.ImmutableMap;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntLists;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
-import me.desht.pneumaticcraft.api.lib.NBTKeys;
 import me.desht.pneumaticcraft.api.misc.Symbols;
-import me.desht.pneumaticcraft.api.upgrade.IUpgradeItem;
 import me.desht.pneumaticcraft.api.upgrade.PNCUpgrade;
-import me.desht.pneumaticcraft.common.upgrades.ApplicableUpgradesDB;
-import me.desht.pneumaticcraft.common.upgrades.UpgradeCache;
+import me.desht.pneumaticcraft.common.registry.ModDataComponents;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.ChatFormatting;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import net.neoforged.neoforge.items.ItemStackHandler;
+import net.neoforged.neoforge.items.IItemHandler;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
@@ -48,10 +41,7 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
  * Some helper methods to manage items which can store upgrades (Pneumatic Armor, Drones...)
  */
 public class UpgradableItemUtils {
-    public static final String NBT_CREATIVE = "CreativeUpgrade";
-    public static final String NBT_UPGRADE_TAG = "UpgradeInventory";
     public static final int UPGRADE_INV_SIZE = 9;
-    private static final String NBT_UPGRADE_CACHE_TAG = "UpgradeCache";
 
     /**
      * Add a standardized tooltip listing the installed upgrades in the given item.
@@ -81,10 +71,8 @@ public class UpgradableItemUtils {
      * @param stack the stack
      * @param handler an ItemStackHandler holding upgrade items
      */
-    public static void setUpgrades(ItemStack stack, ItemStackHandler handler) {
-        stack.getOrCreateTag().put(NBT_UPGRADE_TAG, handler.serializeNBT());
-        UpgradeCache cache = new UpgradeCache(() -> handler);
-        Objects.requireNonNull(stack.getTag()).put(NBT_UPGRADE_CACHE_TAG, cache.toNBT());
+    public static void setUpgrades(ItemStack stack, IItemHandler handler) {
+        stack.set(ModDataComponents.ITEM_UPGRADES, SavedUpgrades.fromItemHandler(handler));
 
         // in case volume upgrade count has changed...
         PNCCapabilities.getAirHandler(stack).ifPresent(h -> {
@@ -103,16 +91,7 @@ public class UpgradableItemUtils {
      * @return a map of upgrade->count
      */
     public static Map<PNCUpgrade,Integer> getUpgrades(ItemStack stack) {
-        CompoundTag tag = getSerializedUpgrades(stack);
-        ListTag itemList = tag.getList("Items", Tag.TAG_COMPOUND);
-        ImmutableMap.Builder<PNCUpgrade,Integer> builder = ImmutableMap.builder();
-        for (int i = 0; i < itemList.size(); i++) {
-            ItemStack upgradeStack = ItemStack.of(itemList.getCompound(i));
-            if (upgradeStack.getItem() instanceof IUpgradeItem upgradeItem) {
-                builder.put(upgradeItem.getUpgradeType(), upgradeItem.getUpgradeTier() * upgradeStack.getCount());
-            }
-        }
-        return builder.build();
+        return stack.getOrDefault(ModDataComponents.ITEM_UPGRADES, SavedUpgrades.EMPTY).getUpgradeMap();
     }
 
     /**
@@ -124,13 +103,7 @@ public class UpgradableItemUtils {
      * @return number of upgrades installed
      */
     public static int getUpgradeCount(ItemStack stack, PNCUpgrade upgrade) {
-        if (stack.getTag() != null) {
-            validateUpgradeCache(stack);
-            CompoundTag subTag = Objects.requireNonNull(stack.getTag()).getCompound(NBT_UPGRADE_CACHE_TAG);
-            String key = PneumaticCraftUtils.modDefaultedString(upgrade.getId());
-            return subTag.getInt(key);
-        }
-        return 0;
+        return stack.getOrDefault(ModDataComponents.ITEM_UPGRADES, SavedUpgrades.EMPTY).getUpgradeCount(upgrade);
     }
 
     /**
@@ -139,42 +112,18 @@ public class UpgradableItemUtils {
      *
      * @param stack the itemstack to check
      * @param upgradeList the upgrades to check for
-     * @return number of upgrades installed, in the same order as the upgrades which were passed to the method
+     * @return a list of the upgrades installed with their count, in the same order as the upgrades which were passed to the method
      */
     public static IntList getUpgradeList(ItemStack stack, PNCUpgrade... upgradeList) {
         IntList res = new IntArrayList();
-        if (stack.getTag() != null) {
-            validateUpgradeCache(stack);
-            CompoundTag subTag = stack.getTag().getCompound(NBT_UPGRADE_CACHE_TAG);
-            for (PNCUpgrade upgrade : upgradeList) {
-                String key = PneumaticCraftUtils.modDefaultedString(upgrade.getId());
-                res.add(subTag.getInt(key));
-            }
+        var map = getUpgrades(stack);
+        for (PNCUpgrade upgrade : upgradeList) {
+            res.add((int) map.getOrDefault(upgrade, 0));
         }
         return IntLists.unmodifiable(res);
     }
 
     public static boolean hasCreativeUpgrade(ItemStack stack) {
-        return stack.getTag() != null && stack.getTag().getBoolean(UpgradableItemUtils.NBT_CREATIVE);
-    }
-
-    private static void validateUpgradeCache(ItemStack stack) {
-        if (Objects.requireNonNull(stack.getTag()).contains(NBT_UPGRADE_TAG) && !stack.getTag().contains(NBT_UPGRADE_CACHE_TAG)) {
-            // should not normally get here; the quick-access cache should already be built by setUpgrades()
-            ItemStackHandler handler = new ItemStackHandler(UPGRADE_INV_SIZE);
-            CompoundTag tag = getSerializedUpgrades(stack);
-            if (!tag.isEmpty()) handler.deserializeNBT(tag);
-            UpgradeCache cache = new UpgradeCache(() -> handler);
-            Objects.requireNonNull(stack.getTag()).put(NBT_UPGRADE_CACHE_TAG, cache.toNBT());
-        }
-    }
-
-    private static CompoundTag getSerializedUpgrades(ItemStack stack) {
-        if (stack.getTag() == null) return new CompoundTag();
-        if (stack.getTag().contains(NBTKeys.BLOCK_ENTITY_TAG)) {
-            return Objects.requireNonNull(stack.getTagElement(NBTKeys.BLOCK_ENTITY_TAG)).getCompound(NBT_UPGRADE_TAG);
-        } else {
-            return stack.getTag().getCompound(NBT_UPGRADE_TAG);
-        }
+        return getUpgradeCount(stack, ModUpgrades.CREATIVE.get()) > 0;
     }
 }

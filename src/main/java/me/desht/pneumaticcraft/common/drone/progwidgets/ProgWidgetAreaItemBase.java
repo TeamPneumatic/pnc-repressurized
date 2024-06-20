@@ -18,10 +18,11 @@
 package me.desht.pneumaticcraft.common.drone.progwidgets;
 
 import com.google.common.collect.ImmutableList;
+import me.desht.pneumaticcraft.api.drone.IProgWidget;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.drone.ai.DroneAIManager;
-import me.desht.pneumaticcraft.common.registry.ModProgWidgets;
+import me.desht.pneumaticcraft.common.registry.ModProgWidgetTypes;
 import me.desht.pneumaticcraft.common.util.ChunkCache;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -50,8 +51,8 @@ public abstract class ProgWidgetAreaItemBase extends ProgWidget
     private boolean canCache = true;
     private EntityFilterPair<ProgWidgetAreaItemBase> entityFilters;
 
-    public ProgWidgetAreaItemBase(ProgWidgetType<?> type) {
-        super(type);
+    protected ProgWidgetAreaItemBase(PositionFields pos) {
+        super(pos);
     }
 
     @Override
@@ -66,7 +67,7 @@ public abstract class ProgWidgetAreaItemBase extends ProgWidget
 
     @Override
     public List<ProgWidgetType<?>> getParameters() {
-        return ImmutableList.of(ModProgWidgets.AREA.get(), ModProgWidgets.ITEM_FILTER.get());
+        return ImmutableList.of(ModProgWidgetTypes.AREA.get(), ModProgWidgetTypes.ITEM_FILTER.get());
     }
 
     @Override
@@ -150,7 +151,7 @@ public abstract class ProgWidgetAreaItemBase extends ProgWidget
         if (whitelistWidget == null) return;
         ProgWidgetArea widget = whitelistWidget;
         while (widget != null) {
-            if (!widget.type.isDeterministic()) canCache = false;
+            if (!widget.getAreaType().isDeterministic()) canCache = false;
             if (aiManager != null) {
                 initVars(widget);
             }
@@ -158,7 +159,7 @@ public abstract class ProgWidgetAreaItemBase extends ProgWidget
         }
         widget = blacklistWidget;
         while (widget != null) {
-            if (!widget.type.isDeterministic()) canCache = false;
+            if (!widget.getAreaType().isDeterministic()) canCache = false;
             if (aiManager != null) {
                 initVars(widget);
             }
@@ -217,8 +218,8 @@ public abstract class ProgWidgetAreaItemBase extends ProgWidget
 
     public boolean isItemValidForFilters(ItemStack item, BlockState blockState) {
         return ProgWidgetItemFilter.isItemValidForFilters(item,
-                ProgWidget.getConnectedWidgetList(this, 1, ModProgWidgets.ITEM_FILTER.get()),
-                ProgWidget.getConnectedWidgetList(this, getParameters().size() + 1, ModProgWidgets.ITEM_FILTER.get()),
+                ProgWidget.getConnectedWidgetList(this, 1, ModProgWidgetTypes.ITEM_FILTER.get()),
+                ProgWidget.getConnectedWidgetList(this, getParameters().size() + 1, ModProgWidgetTypes.ITEM_FILTER.get()),
                 blockState
         );
     }

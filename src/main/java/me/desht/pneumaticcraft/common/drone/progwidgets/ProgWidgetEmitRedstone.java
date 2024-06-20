@@ -18,16 +18,19 @@
 package me.desht.pneumaticcraft.common.drone.progwidgets;
 
 import com.google.common.collect.ImmutableList;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import joptsimple.internal.Strings;
+import me.desht.pneumaticcraft.api.drone.IDrone;
+import me.desht.pneumaticcraft.api.drone.IProgWidget;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
-import me.desht.pneumaticcraft.common.drone.IDroneBase;
-import me.desht.pneumaticcraft.common.registry.ModProgWidgets;
+import me.desht.pneumaticcraft.common.registry.ModProgWidgetTypes;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.core.Direction;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.goal.Goal;
@@ -41,10 +44,21 @@ import java.util.List;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class ProgWidgetEmitRedstone extends ProgWidget implements IRedstoneEmissionWidget, ISidedWidget {
+    public static final MapCodec<ProgWidgetEmitRedstone> CODEC = RecordCodecBuilder.mapCodec(builder ->
+            baseParts(builder).and(
+                    Codec.BYTE.xmap(ProgWidget::decodeSides, ProgWidget::encodeSides)
+                            .optionalFieldOf("sides", ALL_SIDES).forGetter(ProgWidgetEmitRedstone::getSides)
+    ).apply(builder, ProgWidgetEmitRedstone::new));
+
     private boolean[] accessingSides = new boolean[]{true, true, true, true, true, true};
 
+    public ProgWidgetEmitRedstone(PositionFields pos, boolean[] accessingSides) {
+        super(pos);
+        this.accessingSides = accessingSides;
+    }
+
     public ProgWidgetEmitRedstone() {
-        super(ModProgWidgets.EMIT_REDSTONE.get());
+        super(PositionFields.DEFAULT);
     }
 
     @Override
@@ -78,6 +92,11 @@ public class ProgWidgetEmitRedstone extends ProgWidget implements IRedstoneEmiss
     }
 
     @Override
+    public ProgWidgetType<?> getType() {
+        return ModProgWidgetTypes.EMIT_REDSTONE.get();
+    }
+
+    @Override
     public void getTooltip(List<Component> curTooltip) {
         super.getTooltip(curTooltip);
         curTooltip.add(xlate("pneumaticcraft.gui.progWidget.general.affectingSides"));
@@ -108,36 +127,34 @@ public class ProgWidgetEmitRedstone extends ProgWidget implements IRedstoneEmiss
         }
     }
 
-    @Override
-    public void writeToNBT(CompoundTag tag) {
-        super.writeToNBT(tag);
-        for (int i = 0; i < 6; i++) {
-            if (accessingSides[i]) tag.putBoolean(Direction.from3DDataValue(i).name(), true);
-        }
-    }
+//    @Override
+//    public void writeToNBT(CompoundTag tag, HolderLookup.Provider provider) {
+//        super.writeToNBT(tag, provider);
+//        for (int i = 0; i < 6; i++) {
+//            if (accessingSides[i]) tag.putBoolean(Direction.from3DDataValue(i).name(), true);
+//        }
+//    }
+//
+//    @Override
+//    public void readFromNBT(CompoundTag tag, HolderLookup.Provider provider) {
+//        super.readFromNBT(tag, provider);
+//        for (int i = 0; i < 6; i++) {
+//            accessingSides[i] = tag.getBoolean(Direction.from3DDataValue(i).name());
+//        }
+//    }
 
     @Override
-    public void readFromNBT(CompoundTag tag) {
-        super.readFromNBT(tag);
-        for (int i = 0; i < 6; i++) {
-            accessingSides[i] = tag.getBoolean(Direction.from3DDataValue(i).name());
-        }
-    }
-
-    @Override
-    public void writeToPacket(FriendlyByteBuf buf) {
+    public void writeToPacket(RegistryFriendlyByteBuf buf) {
         super.writeToPacket(buf);
-        for (int i = 0; i < 6; i++) {
-            buf.writeBoolean(accessingSides[i]);
-        }
+
+        buf.writeByte(encodeSides(accessingSides));
     }
 
     @Override
-    public void readFromPacket(FriendlyByteBuf buf) {
+    public void readFromPacket(RegistryFriendlyByteBuf buf) {
         super.readFromPacket(buf);
-        for (int i = 0; i < 6; i++) {
-            accessingSides[i] = buf.readBoolean();
-        }
+
+        accessingSides = decodeSides(buf.readByte());
     }
 
     @Override
@@ -152,7 +169,7 @@ public class ProgWidgetEmitRedstone extends ProgWidget implements IRedstoneEmiss
 
     @Override
     public List<ProgWidgetType<?>> getParameters() {
-        return ImmutableList.of(ModProgWidgets.TEXT.get());
+        return ImmutableList.of(ModProgWidgetTypes.TEXT.get());
     }
 
     @Override
@@ -176,16 +193,15 @@ public class ProgWidgetEmitRedstone extends ProgWidget implements IRedstoneEmiss
     }
 
     @Override
-    public Goal getWidgetAI(IDroneBase drone, IProgWidget widget) {
+    public Goal getWidgetAI(IDrone drone, IProgWidget widget) {
         return new DroneAIEmitRedstone(drone, widget);
     }
 
     private static class DroneAIEmitRedstone extends Goal {
-
         private final IProgWidget widget;
-        private final IDroneBase drone;
+        private final IDrone drone;
 
-        DroneAIEmitRedstone(IDroneBase drone, IProgWidget widget) {
+        DroneAIEmitRedstone(IDrone drone, IProgWidget widget) {
             this.widget = widget;
             this.drone = drone;
         }

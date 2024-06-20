@@ -100,7 +100,7 @@ public class ThermostatModuleScreen extends AbstractTubeModuleScreen<ThermostatM
         x = guiLeft + 10 + colorLabel.getWidth() + 7 + colorSelector.getWidth() + 10;
         WidgetCheckBox advancedMode = new WidgetCheckBox(x, y, 0xFF404040, Component.literal("Advanced"), b -> {
                 module.advancedConfig = b.checked;
-                NetworkHandler.sendToServer(PacketUpdatePressureModule.create(module));
+                NetworkHandler.sendToServer(PacketUpdatePressureModule.forModule(module));
         }).setChecked(true);
         advancedMode.setTooltip(Tooltip.create(xlate("pneumaticcraft.gui.tubeModule.advancedConfig.tooltip")));
         addRenderableWidget(advancedMode);
@@ -155,7 +155,7 @@ public class ThermostatModuleScreen extends AbstractTubeModuleScreen<ThermostatM
         renderGraph(graphics);
 
         // Update bounds and advancedConfig state
-        NetworkHandler.sendToServer(PacketUpdatePressureModule.create(module));
+        NetworkHandler.sendToServer(PacketUpdatePressureModule.forModule(module));
         // Update channel
         NetworkHandler.sendToServer(PacketSyncThermostatModuleToServer.create(module));
 
@@ -216,7 +216,7 @@ public class ThermostatModuleScreen extends AbstractTubeModuleScreen<ThermostatM
                     module.lowerBound = Mth.clamp(Integer.parseInt(lowerBoundField.getValue()),
                                                   ThermostatModule.MIN_VALUE, ThermostatModule.MAX_VALUE);
                     if (!Mth.equal(module.lowerBound, prev)) {
-                        NetworkHandler.sendToServer(PacketUpdatePressureModule.create(module));
+                        NetworkHandler.sendToServer(PacketUpdatePressureModule.forModule(module));
                     }
                 }
                 case 1 -> {
@@ -224,7 +224,7 @@ public class ThermostatModuleScreen extends AbstractTubeModuleScreen<ThermostatM
                     module.higherBound = Mth.clamp(Integer.parseInt(higherBoundField.getValue()),
                                                    ThermostatModule.MIN_VALUE, ThermostatModule.MAX_VALUE);
                     if (!Mth.equal(module.higherBound, prev)) {
-                        NetworkHandler.sendToServer(PacketUpdatePressureModule.create(module));
+                        NetworkHandler.sendToServer(PacketUpdatePressureModule.forModule(module));
                     }
                 }
                 default -> throw new IllegalArgumentException("unknown field id " + fieldId);
@@ -282,11 +282,11 @@ public class ThermostatModuleScreen extends AbstractTubeModuleScreen<ThermostatM
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int state) {
         if (grabLower) {
-            NetworkHandler.sendToServer(PacketUpdatePressureModule.create(module));
+            NetworkHandler.sendToServer(PacketUpdatePressureModule.forModule(module));
             grabLower = false;
             return true;
         } else if (grabHigher) {
-            NetworkHandler.sendToServer(PacketUpdatePressureModule.create(module));
+            NetworkHandler.sendToServer(PacketUpdatePressureModule.forModule(module));
             grabHigher = false;
             return true;
         } else {

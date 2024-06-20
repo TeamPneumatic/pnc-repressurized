@@ -17,6 +17,7 @@
 
 package me.desht.pneumaticcraft.common.drone.ai;
 
+import me.desht.pneumaticcraft.api.drone.IDrone;
 import me.desht.pneumaticcraft.common.drone.IDroneBase;
 import me.desht.pneumaticcraft.common.drone.progwidgets.IToolUser;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetAreaItemBase;
@@ -40,7 +41,7 @@ import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import java.util.List;
 
 public class DroneAIDig<W extends ProgWidgetAreaItemBase & IToolUser> extends DroneAIBlockInteraction<W> {
-    public DroneAIDig(IDroneBase drone, W widget) {
+    public DroneAIDig(IDrone drone, W widget) {
         super(drone, widget);
     }
 
@@ -80,7 +81,7 @@ public class DroneAIDig<W extends ProgWidgetAreaItemBase & IToolUser> extends Dr
 
         // get relative hardness for empty hand
         drone.getInv().setStackInSlot(0, ItemStack.EMPTY);
-        float baseSoftness = worldCache.getBlockState(pos).getDestroyProgress(drone.getFakePlayer(), drone.world(), pos);
+        float baseSoftness = worldCache.getBlockState(pos).getDestroyProgress(drone.getFakePlayer(), drone.getDroneLevel(), pos);
         drone.getInv().setStackInSlot(0, currentStackSaved);
         boolean hasDiggingTool = false;
 
@@ -90,7 +91,7 @@ public class DroneAIDig<W extends ProgWidgetAreaItemBase & IToolUser> extends Dr
         BlockState state = worldCache.getBlockState(pos);
         for (int i = 0; i < drone.getInv().getSlots(); i++) {
             drone.getInv().setStackInSlot(0, drone.getInv().getStackInSlot(i));
-            float softness = state.getDestroyProgress(drone.getFakePlayer(), drone.world(), pos);
+            float softness = state.getDestroyProgress(drone.getFakePlayer(), drone.getDroneLevel(), pos);
             if (softness > bestSoftness) {
                 bestSlot = i;
                 bestSoftness = softness;
@@ -116,7 +117,7 @@ public class DroneAIDig<W extends ProgWidgetAreaItemBase & IToolUser> extends Dr
         if (!access.isDestroyingBlock() || !access.hasDelayedDestroy()) { //is not destroying and is not acknowledged.
             BlockState blockState = worldCache.getBlockState(pos);
             if (!ignoreBlock(blockState) && isBlockValidForFilter(worldCache, pos, drone, progWidget)) {
-                if (blockState.getDestroySpeed(drone.world(), pos) < 0) {
+                if (blockState.getDestroySpeed(drone.getDroneLevel(), pos) < 0) {
                     addToBlacklist(pos);
                     drone.getDebugger().addEntry("pneumaticcraft.gui.progWidget.dig.debug.cantDigBlock", pos);
                     drone.setDugBlock(null);
@@ -124,7 +125,7 @@ public class DroneAIDig<W extends ProgWidgetAreaItemBase & IToolUser> extends Dr
                 }
                 PlayerInteractEvent.LeftClickBlock event = CommonHooks.onLeftClickBlock(drone.getFakePlayer(), pos, Direction.UP, ServerboundPlayerActionPacket.Action.START_DESTROY_BLOCK);
                 if (!event.isCanceled()) {
-                    int limit = drone.world().getMaxBuildHeight();
+                    int limit = drone.getDroneLevel().getMaxBuildHeight();
                     manager.handleBlockBreakAction(pos, ServerboundPlayerActionPacket.Action.START_DESTROY_BLOCK, Direction.DOWN, limit, 0);
                     manager.handleBlockBreakAction(pos, ServerboundPlayerActionPacket.Action.STOP_DESTROY_BLOCK, Direction.DOWN, limit, 1);
                     drone.setDugBlock(pos);
@@ -138,7 +139,7 @@ public class DroneAIDig<W extends ProgWidgetAreaItemBase & IToolUser> extends Dr
         }
     }
 
-    public static boolean isBlockValidForFilter(BlockGetter worldCache, BlockPos pos, IDroneBase drone, ProgWidgetAreaItemBase widget) {
+    public static boolean isBlockValidForFilter(BlockGetter worldCache, BlockPos pos, IDrone drone, ProgWidgetAreaItemBase widget) {
         BlockState blockState = worldCache.getBlockState(pos);
 
         if (!blockState.isAir()) {
@@ -152,10 +153,10 @@ public class DroneAIDig<W extends ProgWidgetAreaItemBase & IToolUser> extends Dr
         return false;
     }
 
-    private static List<ItemStack> getDrops(BlockGetter worldCache, BlockPos pos, IDroneBase drone) {
+    private static List<ItemStack> getDrops(BlockGetter worldCache, BlockPos pos, IDrone drone) {
         BlockState state = worldCache.getBlockState(pos);
         DroneEntity d = drone instanceof DroneEntity ? (DroneEntity) drone : null;
-        return state.getDrops(new LootParams.Builder((ServerLevel) drone.world())
+        return state.getDrops(new LootParams.Builder((ServerLevel) drone.getDroneLevel())
                 .withParameter(LootContextParams.BLOCK_STATE, state)
                 .withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(pos))
                 .withParameter(LootContextParams.TOOL, drone.getInv().getStackInSlot(0))

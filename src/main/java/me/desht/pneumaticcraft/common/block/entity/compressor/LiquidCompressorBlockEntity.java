@@ -28,10 +28,13 @@ import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
+import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.util.PNCFluidTank;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
@@ -45,6 +48,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidUtil;
 import net.neoforged.neoforge.fluids.IFluidTank;
+import net.neoforged.neoforge.fluids.SimpleFluidContent;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.ItemStackHandler;
@@ -75,8 +79,6 @@ public class LiquidCompressorBlockEntity extends AbstractAirHandlingBlockEntity 
             return itemStack.isEmpty() || FluidUtil.getFluidHandler(itemStack).isPresent();
         }
     };
-//    private final LazyOptional<IItemHandler> inventoryCap = LazyOptional.of(() -> itemHandler);
-//    private final LazyOptional<IFluidHandler> fluidCap = LazyOptional.of(() -> tank);
 
     private double internalFuelBuffer;
     private float burnMultiplier = 1f;  // how fast this fuel burns (and produces pressure)
@@ -190,19 +192,19 @@ public class LiquidCompressorBlockEntity extends AbstractAirHandlingBlockEntity 
     }
 
     @Override
-    public void saveAdditional(CompoundTag tag) {
-        super.saveAdditional(tag);
+    public void saveAdditional(CompoundTag tag, HolderLookup.Provider provider) {
+        super.saveAdditional(tag, provider);
 
-        tag.put("Items", itemHandler.serializeNBT());
+        tag.put("Items", itemHandler.serializeNBT(provider));
         tag.putDouble("internalFuelBuffer", internalFuelBuffer);
         tag.putFloat("burnMultiplier", burnMultiplier);
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
+    public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
+        super.loadAdditional(tag, provider);
 
-        itemHandler.deserializeNBT(tag.getCompound("Items"));
+        itemHandler.deserializeNBT(provider, tag.getCompound("Items"));
         internalFuelBuffer = tag.getDouble("internalFuelBuffer");
         burnMultiplier = tag.getFloat("burnMultiplier");
     }
@@ -224,8 +226,8 @@ public class LiquidCompressorBlockEntity extends AbstractAirHandlingBlockEntity 
 
     @Nonnull
     @Override
-    public Map<String, PNCFluidTank> getSerializableTanks() {
-        return ImmutableMap.of("Tank", tank);
+    public Map<DataComponentType<SimpleFluidContent>, PNCFluidTank> getSerializableTanks() {
+        return Map.of(ModDataComponents.MAIN_TANK.get(), tank);
     }
 
     @Nullable

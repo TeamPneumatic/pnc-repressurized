@@ -19,8 +19,10 @@ package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.common.tubemodules.RedstoneModule;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.entity.player.Player;
+import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
@@ -28,10 +30,20 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
  * Received on: CLIENT
  * Sent by server to sync up the settings of a redstone module
  */
-public record PacketSyncRedstoneModuleToClient(ModuleLocator locator, RedstoneModule.EnumRedstoneDirection dir, int outputLevel, int inputLevel, int channel) implements TubeModulePacket<RedstoneModule> {
-    public static final ResourceLocation ID = RL("sync_redstone_module_to_client");
+public record PacketSyncRedstoneModuleToClient(ModuleLocator locator, RedstoneModule.EnumRedstoneDirection dir, int outputLevel, int inputLevel, int channel)
+        implements TubeModulePacket<RedstoneModule> {
+    public static final Type<PacketSyncRedstoneModuleToClient> TYPE = new Type<>(RL("sync_redstone_module_to_client"));
 
-    public static PacketSyncRedstoneModuleToClient create(RedstoneModule module) {
+    public static final StreamCodec<FriendlyByteBuf, PacketSyncRedstoneModuleToClient> STREAM_CODEC = StreamCodec.composite(
+            ModuleLocator.STREAM_CODEC, PacketSyncRedstoneModuleToClient::locator,
+            NeoForgeStreamCodecs.enumCodec(RedstoneModule.EnumRedstoneDirection.class), PacketSyncRedstoneModuleToClient::dir,
+            ByteBufCodecs.VAR_INT, PacketSyncRedstoneModuleToClient::outputLevel,
+            ByteBufCodecs.VAR_INT, PacketSyncRedstoneModuleToClient::inputLevel,
+            ByteBufCodecs.VAR_INT, PacketSyncRedstoneModuleToClient::channel,
+            PacketSyncRedstoneModuleToClient::new
+    );
+
+    public static PacketSyncRedstoneModuleToClient forModule(RedstoneModule module) {
         return new PacketSyncRedstoneModuleToClient(
                 ModuleLocator.forModule(module),
                 module.getRedstoneDirection(),
@@ -41,28 +53,9 @@ public record PacketSyncRedstoneModuleToClient(ModuleLocator locator, RedstoneMo
         );
     }
 
-    public static PacketSyncRedstoneModuleToClient fromNetwork(FriendlyByteBuf buffer) {
-        return new PacketSyncRedstoneModuleToClient(
-                ModuleLocator.fromNetwork(buffer),
-                buffer.readEnum(RedstoneModule.EnumRedstoneDirection.class),
-                buffer.readByte(),
-                buffer.readByte(),
-                buffer.readByte()
-        );
-    }
-
     @Override
-    public void write(FriendlyByteBuf buf) {
-        locator.write(buf);
-        buf.writeEnum(dir);
-        buf.writeByte(outputLevel);
-        buf.writeByte(inputLevel);
-        buf.writeByte(channel);
-    }
-
-    @Override
-    public ResourceLocation id() {
-        return ID;
+    public Type<PacketSyncRedstoneModuleToClient> type() {
+        return TYPE;
     }
 
     @Override

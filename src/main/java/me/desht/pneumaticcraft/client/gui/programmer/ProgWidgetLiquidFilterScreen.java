@@ -59,9 +59,9 @@ public class ProgWidgetLiquidFilterScreen extends AbstractProgWidgetScreen<ProgW
     public void init() {
         super.init();
 
-        mainFilter = new WidgetFluidFilter(guiLeft + 148, guiTop + 12, progWidget.getFluid(),  b -> {
+        mainFilter = new WidgetFluidFilter(guiLeft + 148, guiTop + 12, progWidget.getFluidStack().getFluid(), b -> {
             b.setFluid(Fluids.EMPTY);
-            progWidget.setFluid(Fluids.EMPTY);
+            progWidget.setFluidStack(FluidStack.EMPTY);
         });
         addRenderableWidget(mainFilter);
 
@@ -69,7 +69,7 @@ public class ProgWidgetLiquidFilterScreen extends AbstractProgWidgetScreen<ProgW
             for (int x = 0; x < GRID_WIDTH; x++) {
                 WidgetFluidFilter f = new WidgetFluidFilter(guiLeft + 8 + x * 18, guiTop + 52 + y * 18, Fluids.EMPTY, b -> {
                     mainFilter.setFluid(b.getFluid());
-                    progWidget.setFluid(b.getFluid());
+                    progWidget.setFluidStack(b.getFluidStack().copy());
                 });
                 addRenderableWidget(f);
                 visibleFluidWidgets.add(f);
@@ -91,7 +91,7 @@ public class ProgWidgetLiquidFilterScreen extends AbstractProgWidgetScreen<ProgW
     private void addValidFluids() {
         List<Fluid> fluids = BuiltInRegistries.FLUID.stream()
                 .filter(fluid -> matchSearch(searchField.getValue(), fluid))
-                .sorted(Comparator.comparing(f -> new FluidStack(f, 1).getDisplayName().getString()))
+                .sorted(Comparator.comparing(f -> new FluidStack(f, 1).getHoverName().getString()))
                 .toList();
 
         scrollbar.setStates(Math.max(0, (fluids.size() - GRID_WIDTH * GRID_HEIGHT + GRID_WIDTH - 1) / GRID_WIDTH));
@@ -109,7 +109,7 @@ public class ProgWidgetLiquidFilterScreen extends AbstractProgWidgetScreen<ProgW
     private boolean matchSearch(String srch, Fluid fluid) {
         if (fluid == Fluids.EMPTY || !fluid.isSource(fluid.defaultFluidState())) return false;
         String srchL = srch.toLowerCase();
-        return srch.isEmpty() || new FluidStack(fluid, 1).getDisplayName().getString().toLowerCase().contains(srchL);
+        return srch.isEmpty() || new FluidStack(fluid, 1).getHoverName().getString().toLowerCase().contains(srchL);
     }
 
     @Override

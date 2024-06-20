@@ -17,9 +17,25 @@
 
 package me.desht.pneumaticcraft.client.util;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import io.netty.buffer.ByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+
 import java.util.Objects;
 
 public record PointXY(int x, int y) {
+    public static final Codec<PointXY> CODEC = RecordCodecBuilder.create(builder -> builder.group(
+        Codec.INT.fieldOf("x").forGetter(PointXY::x),
+        Codec.INT.fieldOf("y").forGetter(PointXY::y)
+    ).apply(builder, PointXY::new));
+    public static final StreamCodec<ByteBuf, PointXY> STREAM_CODEC = StreamCodec.composite(
+            ByteBufCodecs.INT, PointXY::x,
+            ByteBufCodecs.INT, PointXY::y,
+            PointXY::new
+    );
+
     public static final PointXY ZERO = new PointXY(0, 0);
 
     @Override

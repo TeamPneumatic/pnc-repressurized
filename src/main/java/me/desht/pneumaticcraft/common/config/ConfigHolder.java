@@ -21,7 +21,7 @@ import me.desht.pneumaticcraft.client.pneumatic_armor.ClientArmorRegistry;
 import me.desht.pneumaticcraft.common.block.entity.utility.AerialInterfaceBlockEntity;
 import me.desht.pneumaticcraft.common.worldgen.OilLakeFilter;
 import net.neoforged.bus.api.IEventBus;
-import net.neoforged.fml.ModLoadingContext;
+import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.config.ModConfigEvent;
 import net.neoforged.neoforge.common.ModConfigSpec;
@@ -34,7 +34,7 @@ public class ConfigHolder {
     private static ModConfigSpec configCommonSpec;
     private static ModConfigSpec configClientSpec;
 
-    public static void init(IEventBus modBus) {
+    public static void init(ModContainer container, IEventBus modBus) {
         final Pair<ClientConfig, ModConfigSpec> spec1 = new ModConfigSpec.Builder().configure(ClientConfig::new);
         client = spec1.getLeft();
         configClientSpec = spec1.getRight();
@@ -43,8 +43,8 @@ public class ConfigHolder {
         common = spec2.getLeft();
         configCommonSpec = spec2.getRight();
 
-        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, ConfigHolder.configCommonSpec);
-        ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, ConfigHolder.configClientSpec);
+        container.registerConfig(ModConfig.Type.COMMON, ConfigHolder.configCommonSpec);
+        container.registerConfig(ModConfig.Type.CLIENT, ConfigHolder.configClientSpec);
 
         modBus.addListener(ConfigHolder::onConfigChanged);
     }

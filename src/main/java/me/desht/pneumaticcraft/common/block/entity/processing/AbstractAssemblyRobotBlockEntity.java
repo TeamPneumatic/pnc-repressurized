@@ -27,6 +27,7 @@ import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.BlockEntityConstants;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -212,8 +213,8 @@ public abstract class AbstractAssemblyRobotBlockEntity extends AbstractTickingBl
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
+    public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
+        super.loadAdditional(tag, provider);
 
         for (int i = 0; i < 5; i++) {
             angles[i] = tag.getFloat("angle" + i);
@@ -226,8 +227,8 @@ public abstract class AbstractAssemblyRobotBlockEntity extends AbstractTickingBl
     }
 
     @Override
-    public void saveAdditional(CompoundTag tag) {
-        super.saveAdditional(tag);
+    public void saveAdditional(CompoundTag tag, HolderLookup.Provider provider) {
+        super.saveAdditional(tag, provider);
 
         for (int i = 0; i < 5; i++) {
             tag.putFloat("angle" + i, angles[i]);

@@ -46,7 +46,7 @@ public class RemoteScreen extends AbstractPneumaticCraftContainerScreen<RemoteMe
      * Client has received a PacketSetGlobalVariable message; update the remote GUI, if it's open.
      * @param varName variable that changed
      */
-    public static void maybeHandleVariableChange(String varName) {
+    public static void handleVariableChangeIfOpen(String varName) {
         if (Minecraft.getInstance().screen instanceof RemoteScreen r) {
             r.onGlobalVariableChange(varName);
         }
@@ -59,7 +59,7 @@ public class RemoteScreen extends AbstractPneumaticCraftContainerScreen<RemoteMe
         super.init();
 
         if (remoteLayout == null) {
-            remoteLayout = new RemoteLayout(remote, leftPos, topPos);
+            remoteLayout = new RemoteLayout(registryAccess(), remote, leftPos, topPos);
         }
         remoteLayout.getWidgets(!(this instanceof RemoteEditorScreen)).forEach(this::addRenderableWidget);
     }

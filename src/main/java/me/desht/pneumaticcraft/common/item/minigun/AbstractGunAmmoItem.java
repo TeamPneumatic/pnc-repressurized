@@ -22,6 +22,7 @@ import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
 import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
@@ -33,7 +34,6 @@ import net.minecraft.world.entity.projectile.ShulkerBullet;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
 
 import java.util.List;
@@ -41,9 +41,8 @@ import java.util.List;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public abstract class AbstractGunAmmoItem extends Item {
-
     public AbstractGunAmmoItem() {
-        super(ModItems.defaultProps().stacksTo(1).setNoRepair().defaultDurability(1000));
+        super(ModItems.defaultProps().stacksTo(1).setNoRepair().component(DataComponents.MAX_DAMAGE, 2000));
     }
 
     @Override
@@ -109,9 +108,9 @@ public abstract class AbstractGunAmmoItem extends Item {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, Level world, List<Component> infoList, TooltipFlag extraInfo) {
+    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> infoList, TooltipFlag extraInfo) {
         infoList.add(xlate("pneumaticcraft.gui.tooltip.gunAmmo.ammoRemaining", stack.getMaxDamage() - stack.getDamageValue(), stack.getMaxDamage()));
-        super.appendHoverText(stack, world, infoList, extraInfo);
+        super.appendHoverText(stack, context, infoList, extraInfo);
     }
 
     /**

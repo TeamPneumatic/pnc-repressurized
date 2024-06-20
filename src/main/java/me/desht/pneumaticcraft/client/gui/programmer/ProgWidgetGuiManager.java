@@ -17,8 +17,8 @@
 
 package me.desht.pneumaticcraft.client.gui.programmer;
 
+import me.desht.pneumaticcraft.api.drone.IProgWidget;
 import me.desht.pneumaticcraft.client.gui.ProgrammerScreen;
-import me.desht.pneumaticcraft.common.drone.progwidgets.IProgWidget;
 
 import java.util.HashMap;
 import java.util.Map;

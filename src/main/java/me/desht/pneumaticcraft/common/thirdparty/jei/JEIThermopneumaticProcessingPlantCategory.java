@@ -17,12 +17,10 @@
 
 package me.desht.pneumaticcraft.common.thirdparty.jei;
 
-import me.desht.pneumaticcraft.api.crafting.TemperatureRange.TemperatureScale;
 import me.desht.pneumaticcraft.api.crafting.recipe.ThermoPlantRecipe;
 import me.desht.pneumaticcraft.api.pressure.PressureTier;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTemperature;
 import me.desht.pneumaticcraft.client.render.pressure_gauge.PressureGaugeRenderer2D;
-import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.common.registry.ModBlocks;
 import me.desht.pneumaticcraft.lib.Textures;
 import mezz.jei.api.constants.VanillaTypes;
@@ -40,10 +38,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 
-import java.util.ArrayList;
-import java.util.IdentityHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
@@ -78,7 +73,7 @@ public class JEIThermopneumaticProcessingPlantCategory extends AbstractPNCCatego
 
         if (inputAmount > 0) {
             builder.addSlot(RecipeIngredientRole.INPUT, 8, 3 + (64 - inH))
-                    .addIngredients(NeoForgeTypes.FLUID_STACK, recipe.getInputFluid().orElseThrow().getFluidStacks())
+                    .addIngredients(NeoForgeTypes.FLUID_STACK, Arrays.asList(recipe.getInputFluid().orElseThrow().getFluids()))
                     .setFluidRenderer(inputAmount, false, 16, inH)
                     .setOverlay(Helpers.makeTankOverlay(inH), 0, 0);
         }

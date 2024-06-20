@@ -17,13 +17,12 @@
 
 package me.desht.pneumaticcraft.common.drone.ai;
 
+import me.desht.pneumaticcraft.api.drone.IDrone;
 import me.desht.pneumaticcraft.api.harvesting.HarvestHandler;
 import me.desht.pneumaticcraft.api.harvesting.HoeHandler;
-import me.desht.pneumaticcraft.common.drone.IDroneBase;
+import me.desht.pneumaticcraft.api.registry.PNCRegistries;
 import me.desht.pneumaticcraft.common.drone.progwidgets.IToolUser;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetAreaItemBase;
-import me.desht.pneumaticcraft.common.registry.ModHarvestHandlers;
-import me.desht.pneumaticcraft.common.registry.ModHoeHandlers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -34,7 +33,7 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 public class DroneAIHarvest<W extends ProgWidgetAreaItemBase & IToolUser> extends DroneAIBlockInteraction<W> {
-    public DroneAIHarvest(IDroneBase drone, W widget) {
+    public DroneAIHarvest(IDrone drone, W widget) {
         super(drone, widget);
     }
 
@@ -62,14 +61,14 @@ public class DroneAIHarvest<W extends ProgWidgetAreaItemBase & IToolUser> extend
 
     private Optional<HarvestHandler> getApplicableHandler(BlockPos pos) {
         BlockState state = worldCache.getBlockState(pos);
-        return ModHarvestHandlers.HARVEST_HANDLER_REGISTRY.stream()
-                .filter(handler -> handler.canHarvest(drone.world(), worldCache, pos, state, drone) &&
+        return PNCRegistries.HARVEST_HANDLER_REGISTRY.stream()
+                .filter(handler -> handler.canHarvest(drone.getDroneLevel(), worldCache, pos, state, drone) &&
                         hasApplicableItemFilters(handler, pos, state))
                 .findFirst();
     }
 
     private boolean hasApplicableItemFilters(HarvestHandler harvestHandler, BlockPos pos, BlockState blockState) {
-        List<ItemStack> droppedStacks = harvestHandler.addFilterItems(drone.world(), worldCache, pos, blockState, drone);
+        List<ItemStack> droppedStacks = harvestHandler.addFilterItems(drone.getDroneLevel(), worldCache, pos, blockState, drone);
         return droppedStacks.stream().anyMatch(droppedStack -> progWidget.isItemValidForFilters(droppedStack, blockState));
     }
 
@@ -82,14 +81,14 @@ public class DroneAIHarvest<W extends ProgWidgetAreaItemBase & IToolUser> extend
     protected boolean doBlockInteraction(BlockPos pos, double squareDistToBlock) {
         getApplicableHandler(pos).ifPresent(applicableHandler -> {
             BlockState state = worldCache.getBlockState(pos);
-            if (applicableHandler.canHarvest(drone.world(), worldCache, pos, state, drone)) {
+            if (applicableHandler.canHarvest(drone.getDroneLevel(), worldCache, pos, state, drone)) {
                 Consumer<Player> damageableHoe = getDamageableHoe();
                 if (damageableHoe != null) {
-                    if (applicableHandler.harvestAndReplant(drone.world(), worldCache, pos, state, drone)) {
+                    if (applicableHandler.harvestAndReplant(drone.getDroneLevel(), worldCache, pos, state, drone)) {
                         damageableHoe.accept(drone.getFakePlayer());
                     }
                 } else {
-                    applicableHandler.harvest(drone.world(), worldCache, pos, state, drone);
+                    applicableHandler.harvest(drone.getDroneLevel(), worldCache, pos, state, drone);
                 }
 
             }
@@ -100,7 +99,7 @@ public class DroneAIHarvest<W extends ProgWidgetAreaItemBase & IToolUser> extend
     private Consumer<Player> getDamageableHoe() {
         for (int i = 0; i < drone.getInv().getSlots(); i++) {
             ItemStack stack = drone.getInv().getStackInSlot(i);
-            HoeHandler handler = ModHoeHandlers.HOE_HANDLER_REGISTRY.stream()
+            HoeHandler handler = PNCRegistries.HOE_HANDLER_REGISTRY.stream()
                     .filter(hoeHandler -> hoeHandler.test(stack))
                     .findFirst().orElse(null);
             if (handler != null) return handler.getConsumer(stack);

@@ -18,9 +18,12 @@
 package me.desht.pneumaticcraft.common.drone.progwidgets;
 
 import com.google.common.collect.ImmutableList;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import me.desht.pneumaticcraft.api.drone.IDrone;
+import me.desht.pneumaticcraft.api.drone.IProgWidget;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
-import me.desht.pneumaticcraft.common.drone.IDroneBase;
-import me.desht.pneumaticcraft.common.registry.ModProgWidgets;
+import me.desht.pneumaticcraft.common.registry.ModProgWidgetTypes;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.goal.Goal;
@@ -30,9 +33,20 @@ import org.apache.commons.lang3.math.NumberUtils;
 import java.util.List;
 
 public class ProgWidgetWait extends ProgWidget {
+    public static final MapCodec<ProgWidgetWait> CODEC = RecordCodecBuilder.mapCodec(builder ->
+            baseParts(builder).apply(builder, ProgWidgetWait::new));
+
+    public ProgWidgetWait(PositionFields pos) {
+        super(pos);
+    }
 
     public ProgWidgetWait() {
-        super(ModProgWidgets.WAIT.get());
+        super(PositionFields.DEFAULT);
+    }
+
+    @Override
+    public ProgWidgetType<?> getType() {
+        return ModProgWidgetTypes.WAIT.get();
     }
 
     @Override
@@ -47,7 +61,7 @@ public class ProgWidgetWait extends ProgWidget {
 
     @Override
     public List<ProgWidgetType<?>> getParameters() {
-        return ImmutableList.of(ModProgWidgets.TEXT.get());
+        return ImmutableList.of(ModProgWidgetTypes.TEXT.get());
     }
 
     @Override
@@ -61,8 +75,10 @@ public class ProgWidgetWait extends ProgWidget {
     }
 
     @Override
-    public Goal getWidgetAI(IDroneBase drone, IProgWidget widget) {
-        return widget instanceof ProgWidgetWait ? widget.getConnectedParameters()[0] != null ? new DroneAIWait((ProgWidgetText) widget.getConnectedParameters()[0]) : null : null;
+    public Goal getWidgetAI(IDrone drone, IProgWidget widget) {
+        return widget instanceof ProgWidgetWait ?
+                (widget.getConnectedParameters()[0] != null ? new DroneAIWait((ProgWidgetText) widget.getConnectedParameters()[0]) : null) :
+                null;
     }
 
     private static class DroneAIWait extends Goal {

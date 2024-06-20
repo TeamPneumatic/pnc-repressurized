@@ -23,15 +23,13 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
-import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.entity.vehicle.Minecart;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidType;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -45,7 +43,7 @@ public class WidgetFluidFilter extends AbstractWidget {
     }
 
     public WidgetFluidFilter(int x, int y, Fluid fluid, Consumer<WidgetFluidFilter> pressable) {
-        this(x, y, new FluidStack(fluid, 1000), pressable);
+        this(x, y, new FluidStack(fluid, FluidType.BUCKET_VOLUME), pressable);
     }
 
     WidgetFluidFilter(int x, int y, FluidStack fluidStack, Consumer<WidgetFluidFilter> pressable) {
@@ -57,9 +55,9 @@ public class WidgetFluidFilter extends AbstractWidget {
     @Override
     public void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
         if (!fluidStack.isEmpty()) {
-            GuiUtils.drawFluid(graphics, new Rect2i(getX(), getY(), 16, 16), new FluidStack(fluidStack, 1000), null);
+            GuiUtils.drawFluid(graphics, new Rect2i(getX(), getY(), 16, 16), fluidStack.copyWithAmount(1000), null);
             List<Component> tooltip = List.of(
-                    fluidStack.getDisplayName(),
+                    fluidStack.getHoverName(),
                     Component.literal(ModNameCache.getModName(fluidStack.getFluid()))
                             .withStyle(ChatFormatting.BLUE, ChatFormatting.ITALIC)
             );
@@ -67,6 +65,10 @@ public class WidgetFluidFilter extends AbstractWidget {
                 graphics.renderTooltip(Minecraft.getInstance().font, tooltip, Optional.empty(), mouseX, mouseY);
             }
         }
+    }
+
+    public FluidStack getFluidStack() {
+        return fluidStack;
     }
 
     public Fluid getFluid() {
@@ -79,8 +81,8 @@ public class WidgetFluidFilter extends AbstractWidget {
     }
 
     @Override
-    public void onClick(double x, double y) {
-        super.onClick(x, y);
+    public void onClick(double x, double y, int button) {
+        super.onClick(x, y, button);
 
         if (pressable != null) pressable.accept(this);
     }

@@ -25,7 +25,7 @@ import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSyncHackSimulationUpdate;
 import me.desht.pneumaticcraft.lib.BlockEntityConstants;
 import net.minecraft.ChatFormatting;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.player.Player;
@@ -101,11 +101,11 @@ public class SimulationController implements ISimulationController {
     }
 
     @Override
-    public void toBytes(FriendlyByteBuf buffer) {
+    public void toBytes(RegistryFriendlyByteBuf buffer) {
         buffer.writeBlockPos(te.getBlockPos());
 
-        playerSimulation.writeToNetwork(buffer);
-        aiSimulation.writeToNetwork(buffer);
+        HackSimulation.STREAM_CODEC.encode(buffer, playerSimulation);
+        HackSimulation.STREAM_CODEC.encode(buffer, aiSimulation);
 
         List<Pair<Integer, ItemStack>> nodes = new ArrayList<>();
         for (int i = 0; i < te.getItemHandler().getSlots(); i++) {
@@ -117,12 +117,11 @@ public class SimulationController implements ISimulationController {
         buffer.writeVarInt(nodes.size());
         nodes.forEach(pair -> {
             buffer.writeVarInt(pair.getLeft());
-            buffer.writeItem(pair.getRight());
+            ItemStack.OPTIONAL_STREAM_CODEC.encode(buffer, pair.getRight());
         });
 
         buffer.writeBoolean(justTesting);
     }
-
 
     @Override
     public void onNodeHacked(HackSimulation hackSimulation, int pos) {

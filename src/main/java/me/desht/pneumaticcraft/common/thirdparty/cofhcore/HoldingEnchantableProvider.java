@@ -49,13 +49,13 @@ public class HoldingEnchantableProvider {
         @Override
         public int getNewVolume(ItemStack stack, int oldVolume) {
             // finalVolume = baseVolume * ((1 + level_of_holding_enchantment) * configMultiplier)
-            return (int)Math.ceil(oldVolume * ((1 + EnchantmentHelper.getItemEnchantmentLevel(holding, stack))
+            return (int)Math.ceil(oldVolume * ((1 + stack.getEnchantmentLevel(holding))
                     * ConfigHelper.common().integration.cofhHoldingMultiplier.get()));
         }
 
         @Override
         public void addInfo(ItemStack stack, List<Component> text) {
-            int nHolding = EnchantmentHelper.getItemEnchantmentLevel(holding, stack);
+            int nHolding = stack.getEnchantmentLevel(holding);
             if (nHolding > 0) {
                 text.add(Component.literal(Symbols.TRIANGLE_RIGHT + " ").append(holding.getFullname(nHolding)));
             }

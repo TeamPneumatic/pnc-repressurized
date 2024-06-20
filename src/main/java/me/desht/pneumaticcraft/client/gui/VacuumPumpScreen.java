@@ -22,7 +22,7 @@ import me.desht.pneumaticcraft.api.misc.Symbols;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
 import me.desht.pneumaticcraft.client.render.pressure_gauge.PressureGaugeRenderer2D;
 import me.desht.pneumaticcraft.client.util.PointXY;
-import me.desht.pneumaticcraft.common.block.entity.spawning.VacuumPumpBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.utility.VacuumPumpBlockEntity;
 import me.desht.pneumaticcraft.common.inventory.VacuumPumpMenu;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;

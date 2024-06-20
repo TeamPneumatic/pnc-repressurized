@@ -35,6 +35,7 @@ import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
 import me.desht.pneumaticcraft.common.registry.ModAttachmentTypes;
 import me.desht.pneumaticcraft.common.registry.ModBlocks;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.GlobalPos;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Mob;
@@ -65,7 +66,7 @@ public class HackManager {
     private static HackManager clientInstance, serverInstance;
 
     private final Map<Entity, IHackableEntity<?>> hackableEntities = new HashMap<>();
-    private final Map<WorldAndCoord, Pair<Block,IHackableBlock>> hackableBlocks = new HashMap<>();
+    private final Map<GlobalPos, Pair<Block,IHackableBlock>> hackableBlocks = new HashMap<>();
     private long lastEntityPrune = 0L;
     private long lastBlockPrune = 0L;
 
@@ -151,7 +152,7 @@ public class HackManager {
         return hackable;
     }
 
-    public static IHackableBlock getHackableForBlock(BlockGetter blockGetter, BlockPos pos, Player player) {
+    public static IHackableBlock getHackableForBlock(Level blockGetter, BlockPos pos, Player player) {
         BlockState state = blockGetter.getBlockState(pos);
         Block block = state.getBlock();
         HackManager manager = getInstance(player.level());
@@ -162,9 +163,10 @@ public class HackManager {
                     entry -> {
                         Block trackedBlock = entry.getValue().getLeft();
                         IHackableBlock hackableBlock = entry.getValue().getRight();
-                        return block != trackedBlock ||
-                                !hackableBlock.canHack(entry.getKey().world, entry.getKey().pos, state, player)
-                                        && !isInDisplayCooldown(hackableBlock, entry.getKey().world, entry.getKey().pos, player);
+                        Level level = blockGetter.getServer().getLevel(entry.getKey().dimension());
+                        return block != trackedBlock || level == null ||
+                                !hackableBlock.canHack(level, entry.getKey().pos(), state, player)
+                                        && !isInDisplayCooldown(hackableBlock, level, entry.getKey().pos(), player);
                     }
             );
             manager.lastBlockPrune = player.level().getGameTime();
@@ -173,13 +175,13 @@ public class HackManager {
         if (block instanceof IHackableBlock h && h.canHack(blockGetter, pos, state, player))
             return h;
 
-        WorldAndCoord loc = new WorldAndCoord(blockGetter, pos);
-        Pair<Block,IHackableBlock> pair = manager.hackableBlocks.get(loc);
+        GlobalPos gpos = GlobalPos.of(blockGetter.dimension(), pos);
+        Pair<Block,IHackableBlock> pair = manager.hackableBlocks.get(gpos);
         if (pair == null) {
             IHackableBlock hackable = CommonArmorRegistry.getInstance().getHackable(block);
             if (hackable != null && hackable.canHack(blockGetter, pos, state, player)) {
                 pair = Pair.of(block, hackable);
-                manager.hackableBlocks.put(loc, pair);
+                manager.hackableBlocks.put(gpos, pair);
             } else {
                 return null;
             }

@@ -26,18 +26,20 @@ import me.desht.pneumaticcraft.api.pneumatic_armor.hacking.IHackableEntity;
 import me.desht.pneumaticcraft.api.upgrade.PNCUpgrade;
 import me.desht.pneumaticcraft.common.hacking.HackManager;
 import me.desht.pneumaticcraft.common.hacking.HackTickTracker;
-import me.desht.pneumaticcraft.common.hacking.WorldAndCoord;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketHackingBlockFinish;
 import me.desht.pneumaticcraft.common.network.PacketHackingEntityFinish;
 import me.desht.pneumaticcraft.common.registry.ModCriterionTriggers;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
+import me.desht.pneumaticcraft.common.util.GlobalPosHelper;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.GlobalPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
 
 import java.util.function.Supplier;
 
@@ -78,7 +80,7 @@ public class HackHandler extends BaseArmorUpgradeHandler<HackHandler.HackData> {
 
     public static class HackData implements IArmorExtensionData {
         private int hackTime;
-        private WorldAndCoord hackedBlockPos;
+        private GlobalPos hackedBlockPos;
         private Entity hackedEntity;
 
         private void tickServerSide(ServerPlayer player) {
@@ -90,18 +92,20 @@ public class HackHandler extends BaseArmorUpgradeHandler<HackHandler.HackData> {
         }
 
         private void tickBlockHack(ServerPlayer player) {
-            IHackableBlock hackableBlock = HackManager.getHackableForBlock(hackedBlockPos.world, hackedBlockPos.pos, player);
+            Level level = GlobalPosHelper.getWorldForGlobalPos(player.getServer(), hackedBlockPos);
+            BlockPos pos = hackedBlockPos.pos();
+
+            IHackableBlock hackableBlock = HackManager.getHackableForBlock(level, pos, player);
             if (hackableBlock != null) {
-                BlockGetter world = hackedBlockPos.world;
-                int requiredTime = hackableBlock.getHackTime(world, hackedBlockPos.pos, player);
+                int requiredTime = hackableBlock.getHackTime(level, pos, player);
                 if (requiredTime <= 0) {
                     setHackedBlockPos(null);
                     return;
                 }
                 if (++this.hackTime >= requiredTime) {
-                    hackableBlock.onHackComplete(player.level(), hackedBlockPos.pos, player);
-                    HackTickTracker.getInstance(player.level()).trackBlock(hackedBlockPos.pos, hackableBlock);
-                    NetworkHandler.sendToAllTracking(PacketHackingBlockFinish.create(hackedBlockPos), player.level(), player.blockPosition());
+                    hackableBlock.onHackComplete(player.level(), pos, player);
+                    HackTickTracker.getInstance(player.level()).trackBlock(pos, hackableBlock);
+                    NetworkHandler.sendToAllTracking(PacketHackingBlockFinish.create(pos), player.level(), player.blockPosition());
                     setHackedBlockPos(null);
                     ModCriterionTriggers.BLOCK_HACK.get().trigger(player);
                 }
@@ -122,7 +126,7 @@ public class HackHandler extends BaseArmorUpgradeHandler<HackHandler.HackData> {
                     if (hackedEntity.isAlive()) {
                         hackableEntity._onHackFinished(hackedEntity, player);
                         HackTickTracker.getInstance(player.level()).trackEntity(hackedEntity, hackableEntity);
-                        NetworkHandler.sendToAllTracking(new PacketHackingEntityFinish(hackedEntity.getId()), hackedEntity);
+                        NetworkHandler.sendToAllTracking(PacketHackingEntityFinish.forEntity(hackedEntity), hackedEntity);
                         ModCriterionTriggers.ENTITY_HACK.get().trigger(player);
                     }
                     setHackedEntity(null);
@@ -132,7 +136,7 @@ public class HackHandler extends BaseArmorUpgradeHandler<HackHandler.HackData> {
             }
         }
 
-        public void setHackedBlockPos(WorldAndCoord pos) {
+        public void setHackedBlockPos(GlobalPos pos) {
             this.hackedBlockPos = pos;
             this.hackedEntity = null;
             this.hackTime = 0;

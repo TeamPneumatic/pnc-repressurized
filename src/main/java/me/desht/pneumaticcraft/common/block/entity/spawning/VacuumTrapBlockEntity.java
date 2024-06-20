@@ -17,9 +17,10 @@
 
 package me.desht.pneumaticcraft.common.block.entity.spawning;
 
-import com.google.common.collect.ImmutableMap;
 import me.desht.pneumaticcraft.api.data.PneumaticCraftTags;
+import me.desht.pneumaticcraft.api.item.ISpawnerCoreStats;
 import me.desht.pneumaticcraft.api.lib.Names;
+import me.desht.pneumaticcraft.api.misc.ITranslatableEnum;
 import me.desht.pneumaticcraft.api.pressure.PressureTier;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.block.entity.*;
@@ -30,13 +31,16 @@ import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
 import me.desht.pneumaticcraft.common.registry.ModBlocks;
+import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
-import me.desht.pneumaticcraft.common.util.ITranslatableEnum;
 import me.desht.pneumaticcraft.common.util.PNCFluidTank;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.component.DataComponentMap;
+import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
@@ -57,6 +61,7 @@ import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.IFluidTank;
+import net.neoforged.neoforge.fluids.SimpleFluidContent;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.items.IItemHandler;
 
@@ -151,10 +156,11 @@ public class VacuumTrapBlockEntity extends AbstractAirHandlingBlockEntity implem
         if (xpTank.getFluid().getAmount() >= MEMORY_ESSENCE_AMOUNT) {
             toAdd += e.level().random.nextInt(3) + 1;
         }
-        if (inv.getStats().addAmount(e.getType(), toAdd)) {
+        ISpawnerCoreStats newStats = inv.getStats().addAmount(e.getType(), toAdd);
+        if (newStats != inv.getStats()) {
             e.discard();
             if (toAdd > 1) xpTank.drain(MEMORY_ESSENCE_AMOUNT, IFluidHandler.FluidAction.EXECUTE);
-            inv.getStats().serialize(inv.getStackInSlot(0));
+            inv.getStackInSlot(0).set(ModDataComponents.SPAWNER_CORE_STATS, newStats);
             e.level().playSound(null, worldPosition, SoundEvents.PORTAL_TRIGGER, SoundSource.BLOCKS, 1f, 2f);
             if (level instanceof ServerLevel) {
                 ((ServerLevel) level).sendParticles(ParticleTypes.CLOUD, e.getX(), e.getY() + 0.5, e.getZ(), 5, 0, 1, 0, 0);
@@ -187,8 +193,8 @@ public class VacuumTrapBlockEntity extends AbstractAirHandlingBlockEntity implem
 
     @Nonnull
     @Override
-    public Map<String, PNCFluidTank> getSerializableTanks() {
-        return ImmutableMap.of("Tank", xpTank);
+    public Map<DataComponentType<SimpleFluidContent>, PNCFluidTank> getSerializableTanks() {
+        return Map.of(ModDataComponents.MAIN_TANK.get(), xpTank);
     }
 
     @Override
@@ -213,17 +219,17 @@ public class VacuumTrapBlockEntity extends AbstractAirHandlingBlockEntity implem
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
+    public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
+        super.loadAdditional(tag, provider);
 
-        inv.deserializeNBT(tag.getCompound("Items"));
+        inv.deserializeNBT(provider, tag.getCompound("Items"));
     }
 
     @Override
-    public void saveAdditional(CompoundTag tag) {
-        super.saveAdditional(tag);
+    public void saveAdditional(CompoundTag tag, HolderLookup.Provider provider) {
+        super.saveAdditional(tag, provider);
 
-        tag.put("Items", inv.serializeNBT());
+        tag.put("Items", inv.serializeNBT(provider));
     }
 
     @Override
@@ -235,12 +241,18 @@ public class VacuumTrapBlockEntity extends AbstractAirHandlingBlockEntity implem
     }
 
     @Override
-    public void serializeExtraItemData(CompoundTag blockEntityTag, boolean preserveState) {
-        super.serializeExtraItemData(blockEntityTag, preserveState);
+    protected void applyImplicitComponents(DataComponentInput componentInput) {
+        super.applyImplicitComponents(componentInput);
 
-        if (preserveState) {
-            // if wrenching, spawner core stays inside the trap when broken
-            blockEntityTag.put("Items", inv.serializeNBT());
+        inv.loadContainerContents(componentInput.get(ModDataComponents.BLOCK_ENTITY_SAVED_INV));
+    }
+
+    @Override
+    protected void collectImplicitComponents(DataComponentMap.Builder builder) {
+        super.collectImplicitComponents(builder);
+
+        if (shouldPreserveStateOnBreak()) {
+            builder.set(ModDataComponents.BLOCK_ENTITY_SAVED_INV, inv.toContainerContents());
         }
     }
 

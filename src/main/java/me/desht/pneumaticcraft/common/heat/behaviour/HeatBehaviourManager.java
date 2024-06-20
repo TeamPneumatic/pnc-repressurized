@@ -25,10 +25,10 @@ import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
-import org.apache.commons.lang3.Validate;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiPredicate;
 import java.util.function.Supplier;
@@ -51,7 +51,7 @@ public enum HeatBehaviourManager {
     }
 
     public void registerBehaviour(ResourceLocation id, Supplier<? extends HeatBehaviour> behaviour) {
-        Validate.notNull(behaviour);
+        Objects.requireNonNull(behaviour);
 
         Supplier<? extends HeatBehaviour> existing = behaviourRegistry.put(id, behaviour);
         if (existing != null) Log.warning("Overriding heat behaviour " + id);

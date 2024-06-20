@@ -18,16 +18,16 @@
 package me.desht.pneumaticcraft.common.drone.ai;
 
 import me.desht.pneumaticcraft.api.drone.IBlockInteractHandler;
-import me.desht.pneumaticcraft.common.drone.IDroneBase;
+import me.desht.pneumaticcraft.api.drone.IDrone;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetInventoryBase;
 import net.minecraft.core.BlockPos;
 
-public abstract class DroneAIImExBase<W extends ProgWidgetInventoryBase>
+public abstract class DroneAIImportExportBase<W extends ProgWidgetInventoryBase>
         extends DroneAIBlockInteraction<W>
         implements IBlockInteractHandler {
     private int transportCount;
 
-    protected DroneAIImExBase(IDroneBase drone, W widget) {
+    protected DroneAIImportExportBase(IDrone drone, W widget) {
         super(drone, widget);
         transportCount = widget.getCount();
     }

@@ -18,10 +18,12 @@
 package me.desht.pneumaticcraft.common.inventory.handler;
 
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.ItemContainerContents;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.items.ItemStackHandler;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Item stack handler which marks its owning BE as dirty when it changes.
@@ -49,5 +51,21 @@ public class BaseItemStackHandler extends ItemStackHandler {
     @Override
     public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
         return isItemValid(slot, stack) ? super.insertItem(slot, stack, simulate) : stack;
+    }
+
+    public ItemContainerContents toContainerContents() {
+        return ItemContainerContents.fromItems(stacks);
+    }
+
+    public void loadContainerContents(@Nullable ItemContainerContents contents) {
+        if (contents != null) {
+            for (int i = 0; i < contents.getSlots() && i < stacks.size(); i++) {
+                stacks.set(i, contents.getStackInSlot(i));
+            }
+            // in case the container contents are smaller...
+            for (int i = contents.getSlots(); i < stacks.size(); i++) {
+                stacks.set(i, ItemStack.EMPTY);
+            }
+        }
     }
 }

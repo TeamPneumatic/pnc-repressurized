@@ -18,73 +18,56 @@
 package me.desht.pneumaticcraft.common.util.playerfilter;
 
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.DataResult;
-import com.mojang.serialization.DynamicOps;
-import com.mojang.serialization.codecs.PrimitiveCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import me.desht.pneumaticcraft.api.misc.IPlayerFilter;
 import me.desht.pneumaticcraft.api.misc.IPlayerMatcher;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.entity.player.Player;
+import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 /**
  * A player filter is a collection of individual matcher objects with either match-any or match-all behaviour.
- * Custom matcher objects can be registered and have support for reading/writing to JSON and packet buffers, so
- * are suitable for use in recipes, for example.
+ * Custom matcher objects can be registered and have full codec/stream-codec support, so can be used in recipes etc.
  */
 public record PlayerFilter(Op op, List<IPlayerMatcher> matchers) implements IPlayerFilter {
-    public static final Codec<IPlayerMatcher> MATCHER_CODEC
-            = PlayerMatcherTypes.CODEC.dispatch("type", IPlayerMatcher::getType, IPlayerMatcher.MatcherType::codec);
-
     public static final Codec<PlayerFilter> CODEC = RecordCodecBuilder.create(inst -> inst.group(
-            Op.CODEC.fieldOf("op").forGetter(PlayerFilter::op),
-            MATCHER_CODEC.listOf().fieldOf("matchers").forGetter(PlayerFilter::matchers)
+            StringRepresentable.fromEnum(Op::values).fieldOf("op").forGetter(PlayerFilter::op),
+            IPlayerMatcher.CODEC.listOf().fieldOf("matchers").forGetter(PlayerFilter::matchers)
     ).apply(inst, PlayerFilter::new));
+
+    public static StreamCodec<RegistryFriendlyByteBuf, PlayerFilter> STREAM_CODEC = StreamCodec.composite(
+            NeoForgeStreamCodecs.enumCodec(Op.class), PlayerFilter::op,
+            IPlayerMatcher.STREAM_CODEC.apply(ByteBufCodecs.list()), PlayerFilter::matchers,
+            PlayerFilter::new
+    );
 
     public static final PlayerFilter YES = new PlayerFilter(Op.YES, List.of());
     public static final PlayerFilter NO = new PlayerFilter(Op.NO, List.of());
 
-    public static PlayerFilter fromNetwork(FriendlyByteBuf buffer) {
-        Op op = buffer.readEnum(Op.class);
-
-        int nMatchers = buffer.readVarInt();
-        List<IPlayerMatcher> list = new ArrayList<>();
-        for (int i = 0; i < nMatchers; i++) {
-            ResourceLocation id = buffer.readResourceLocation();
-            list.add(PlayerMatcherTypes.matcherTypes.get(id).fromNetwork(buffer));
-        }
-
-        return new PlayerFilter(op, list);
+    public static PlayerFilter fromNetwork(RegistryFriendlyByteBuf buffer) {
+        return STREAM_CODEC.decode(buffer);
     }
 
-    public void toNetwork(FriendlyByteBuf buffer) {
-        buffer.writeEnum(op);
-        buffer.writeVarInt(matchers.size());
-        matchers.forEach(matcher -> {
-            buffer.writeResourceLocation(matcher.getType().getId());
-            matcher.toNetwork(buffer);
-        });
+    public void toNetwork(RegistryFriendlyByteBuf buffer) {
+        STREAM_CODEC.encode(buffer, this);
     }
 
     @Override
     public boolean isReal() {
-        return !op.isFake();
+        return op.isReal();
     }
 
     @Override
     public boolean matchAll() {
         return op == Op.AND;
     }
-
-//    private static ResourceLocation getId(String key) {
-//        return key.contains(":") ? new ResourceLocation(key) : RL(key);
-//    }
 
     @Override
     public boolean test(Player player) {
@@ -109,27 +92,22 @@ public record PlayerFilter(Op op, List<IPlayerMatcher> matchers) implements IPla
         return "[" + matchers.stream().map(Object::toString).collect(Collectors.joining(delimiter)) + "]";
     }
 
-    public enum Op {
-        YES, NO, AND, OR;
+    public enum Op implements StringRepresentable {
+        YES("yes"), NO("no"), AND("and"), OR("or");
 
-        public static final Codec<Op> CODEC = new PrimitiveCodec<>() {
-            @Override
-            public <T> DataResult<Op> read(DynamicOps<T> ops, T input) {
-                try {
-                    return ops.getStringValue(input).map(Op::valueOf);
-                } catch (IllegalArgumentException e) {
-                    return DataResult.error(() -> "invalid value: " + input);
-                }
-            }
+        private final String name;
 
-            @Override
-            public <T> T write(DynamicOps<T> ops, Op value) {
-                return ops.createString(value.name());
-            }
-        };
+        Op(String name) {
+            this.name = name;
+        }
 
-        public boolean isFake() {
-            return this == YES || this == NO;
+        public boolean isReal() {
+            return this == AND || this == OR;
+        }
+
+        @Override
+        public String getSerializedName() {
+            return name;
         }
     }
 }

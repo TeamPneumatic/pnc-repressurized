@@ -20,10 +20,11 @@ package me.desht.pneumaticcraft.common.network;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.block.entity.IGUIButtonSensitive;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import net.neoforged.neoforge.network.handling.PlayPayloadContext;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
@@ -32,31 +33,26 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
  * Sent when a GUI button is clicked.
  */
 public record PacketGuiButton(String tag, boolean shiftHeld) implements CustomPacketPayload {
-    public static final ResourceLocation ID = RL("gui_button");
+    public static final Type<PacketGuiButton> TYPE = new Type<>(RL("gui_button"));
+
+    public static final StreamCodec<FriendlyByteBuf, PacketGuiButton> STREAM_CODEC = StreamCodec.composite(
+            ByteBufCodecs.STRING_UTF8, PacketGuiButton::tag,
+            ByteBufCodecs.BOOL, PacketGuiButton::shiftHeld,
+            PacketGuiButton::new
+    );
 
     public PacketGuiButton(String tag) {
         this(tag, ClientUtils.hasShiftDown());
     }
 
-    public PacketGuiButton(FriendlyByteBuf buffer) {
-        this(buffer.readUtf(1024), buffer.readBoolean());
-    }
-
-    public void write(FriendlyByteBuf buffer) {
-        buffer.writeUtf(tag);
-        buffer.writeBoolean(shiftHeld);
-    }
-
     @Override
-    public ResourceLocation id() {
-        return ID;
+    public Type<PacketGuiButton> type() {
+        return TYPE;
     }
 
-    public static void handle(PacketGuiButton message, PlayPayloadContext ctx) {
-        ctx.player().ifPresent(player -> ctx.workHandler().submitAsync(() -> {
-            if (player instanceof ServerPlayer sp && sp.containerMenu instanceof IGUIButtonSensitive gbs) {
-                gbs.handleGUIButtonPress(message.tag, message.shiftHeld, sp);
-            }
-        }));
+    public static void handle(PacketGuiButton message, IPayloadContext ctx) {
+        if (ctx.player() instanceof ServerPlayer sp && sp.containerMenu instanceof IGUIButtonSensitive gbs) {
+            gbs.handleGUIButtonPress(message.tag, message.shiftHeld, sp);
+        }
     }
 }

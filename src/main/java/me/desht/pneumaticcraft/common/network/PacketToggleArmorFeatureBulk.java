@@ -18,13 +18,14 @@
 package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.common.item.PneumaticArmorItem;
+import me.desht.pneumaticcraft.common.network.PacketToggleArmorFeature.FeatureSetting;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.EquipmentSlot;
-import net.neoforged.neoforge.network.handling.PlayPayloadContext;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import java.util.List;
 
@@ -36,44 +37,26 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
  * (used in armor init and core components reset)
  */
 public record PacketToggleArmorFeatureBulk(List<FeatureSetting> features) implements CustomPacketPayload {
-    public static final ResourceLocation ID = RL("toggle_armor_feature_bulk");
+    public static final Type<PacketToggleArmorFeatureBulk> TYPE = new Type<>(RL("toggle_armor_feature_bulk"));
 
-    public static PacketToggleArmorFeatureBulk fromNetwork(FriendlyByteBuf buffer) {
-        return new PacketToggleArmorFeatureBulk(buffer.readList(FeatureSetting::fromNetwork));
-    }
-
-    @Override
-    public void write(FriendlyByteBuf buf) {
-        buf.writeCollection(features, (b, feature) -> feature.toBytes(b));
-    }
+    public static final StreamCodec<FriendlyByteBuf, PacketToggleArmorFeatureBulk> STREAM_CODEC = StreamCodec.composite(
+            FeatureSetting.STREAM_CODEC.apply(ByteBufCodecs.list()), PacketToggleArmorFeatureBulk::features,
+            PacketToggleArmorFeatureBulk::new
+    );
 
     @Override
-    public ResourceLocation id() {
-        return ID;
+    public Type<PacketToggleArmorFeatureBulk> type() {
+        return TYPE;
     }
 
-    public static void handle(PacketToggleArmorFeatureBulk message, PlayPayloadContext ctx) {
-        ctx.player().ifPresent(player -> ctx.workHandler().submitAsync(() -> {
-            CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
-            message.features().forEach(f -> {
-                if (f.featureIndex >= 0 && f.featureIndex < ArmorUpgradeRegistry.getInstance().getHandlersForSlot(f.slot).size()
-                        && PneumaticArmorItem.isPneumaticArmorPiece(player, f.slot))
-                {
-                    handler.setUpgradeEnabled(f.slot, f.featureIndex, f.state);
-                }
-            });
-        }));
-    }
-
-    public record FeatureSetting(EquipmentSlot slot, byte featureIndex, boolean state) {
-        static FeatureSetting fromNetwork(FriendlyByteBuf buffer) {
-            return new FeatureSetting(buffer.readEnum(EquipmentSlot.class), buffer.readByte(), buffer.readBoolean());
-        }
-
-        void toBytes(FriendlyByteBuf buffer) {
-            buffer.writeEnum(slot);
-            buffer.writeByte(featureIndex);
-            buffer.writeBoolean(state);
-        }
+    public static void handle(PacketToggleArmorFeatureBulk message, IPayloadContext ctx) {
+        CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(ctx.player());
+        message.features().forEach(feature -> {
+            if (feature.featureIndex() >= 0 && feature.featureIndex() < ArmorUpgradeRegistry.getInstance().getHandlersForSlot(feature.slot()).size()
+                    && PneumaticArmorItem.isPneumaticArmorPiece(ctx.player(), feature.slot()))
+            {
+                handler.setUpgradeEnabled(feature.slot(), feature.featureIndex(), feature.state());
+            }
+        });
     }
 }

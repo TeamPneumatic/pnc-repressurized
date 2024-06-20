@@ -20,6 +20,8 @@ package me.desht.pneumaticcraft.common.pneumatic_armor;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketJetBootsStateSync;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.entity.player.Player;
 
 import java.util.HashMap;
@@ -92,20 +94,17 @@ public class JetBootsStateTracker {
         private boolean active;   // actively firing (player holding thrust key)
         private boolean builderMode; // player in builder mode (prevents model rotation)
 
+        public static StreamCodec<FriendlyByteBuf, JetBootsState> STREAM_CODEC = StreamCodec.composite(
+                ByteBufCodecs.BOOL, JetBootsState::isEnabled,
+                ByteBufCodecs.BOOL, JetBootsState::isActive,
+                ByteBufCodecs.BOOL, JetBootsState::isBuilderMode,
+                JetBootsState::new
+        );
+
         public JetBootsState(boolean enabled, boolean active, boolean builderMode) {
             this.enabled = enabled;
             this.active = active;
             this.builderMode = builderMode;
-        }
-
-        public static JetBootsState fromNetwork(FriendlyByteBuf buf) {
-            return new JetBootsState(buf.readBoolean(), buf.readBoolean(), buf.readBoolean());
-        }
-
-        public void toNetwork(FriendlyByteBuf buf) {
-            buf.writeBoolean(enabled);
-            buf.writeBoolean(active);
-            buf.writeBoolean(builderMode);
         }
 
         public boolean isEnabled() {

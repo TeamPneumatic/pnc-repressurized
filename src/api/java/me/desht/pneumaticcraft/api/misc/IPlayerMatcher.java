@@ -18,10 +18,13 @@
 package me.desht.pneumaticcraft.api.misc;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import me.desht.pneumaticcraft.api.registry.PNCRegistries;
 import net.minecraft.ChatFormatting;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.entity.player.Player;
 
 import java.util.List;
@@ -32,15 +35,21 @@ import java.util.function.Predicate;
  * particular offer is usable by a player.
  * <p>
  * This matcher should be able to run on both client and server.
+ * <p>
+ * Player matchers are registry objects, and should be registered via the usual Neoforge deferred registry system.
+ * Register an instance of {@link MatcherType} for each player matcher object you wish to register.
  */
 public interface IPlayerMatcher extends Predicate<Player> {
-    /**
-     * Serialize this matcher object to a packet buffer, for sync'ing to clients
-     * @param buffer a packet buffer
-     */
-    void toNetwork(FriendlyByteBuf buffer);
+    Codec<IPlayerMatcher> CODEC = PNCRegistries.PLAYER_MATCHER_REGISTRY.byNameCodec()
+            .dispatch(IPlayerMatcher::type, MatcherType::codec);
+    StreamCodec<RegistryFriendlyByteBuf,IPlayerMatcher> STREAM_CODEC = ByteBufCodecs.registry(PNCRegistries.PLAYER_MATCHER_KEY)
+            .dispatch(IPlayerMatcher::type, MatcherType::streamCodec);
 
-    MatcherType<?> getType();
+    /**
+     * Get the matcher type, which handles serialization for the matcher.
+     * @return the matcher type
+     */
+    MatcherType<? extends IPlayerMatcher> type();
 
     /**
      * Add this matcher's information to a tooltip.  This is used for example by the Amadron Tablet GUI to show
@@ -78,16 +87,10 @@ public interface IPlayerMatcher extends Predicate<Player> {
     }
 
     /**
-     * The type of a matcher object, which supplies a codec for serialization, as well as a factory method to construct
-     * a matcher from a byte buffer (which may one day become part of the codec...)
+     * The matcher type, which provides a codec and stream codec for serialization
      *
-     * @param <P> the matcher type
+     * @param <P> the parameterised type of the player matcher object
      */
-    interface MatcherType<P extends IPlayerMatcher> {
-        ResourceLocation getId();
-
-        P fromNetwork(FriendlyByteBuf buf);
-
-        Codec<P> codec();
+    record MatcherType<P extends IPlayerMatcher>(MapCodec<P> codec, StreamCodec<RegistryFriendlyByteBuf, P> streamCodec) {
     }
 }

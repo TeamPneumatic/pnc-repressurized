@@ -20,7 +20,6 @@ package me.desht.pneumaticcraft.common.amadron;
 import me.desht.pneumaticcraft.common.inventory.AmadronMenu;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.items.ItemHandlerHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +29,7 @@ public class AmadronUtil {
         int amount = stack.getCount() * units;
         List<ItemStack> stacks = new ArrayList<>();
         while (amount > 0 && stacks.size() < AmadronMenu.HARD_MAX_STACKS) {
-            ItemStack toAdd = ItemHandlerHelper.copyStackWithSize(stack, Math.min(amount, stack.getMaxStackSize()));
+            ItemStack toAdd = stack.copyWithCount(Math.min(amount, stack.getMaxStackSize()));
             stacks.add(toAdd);
             amount -= toAdd.getCount();
         }

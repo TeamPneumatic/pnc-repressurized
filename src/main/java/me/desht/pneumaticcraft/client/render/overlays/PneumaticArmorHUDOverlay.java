@@ -17,11 +17,10 @@ import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.registry.ModSounds;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.LayeredDraw;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.client.gui.overlay.ExtendedGui;
-import net.neoforged.neoforge.client.gui.overlay.IGuiOverlay;
 import org.lwjgl.opengl.GL11;
 
 import java.util.List;
@@ -31,14 +30,14 @@ import static me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler.
 import static me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler.LOW_PRESSURE;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class PneumaticArmorHUDOverlay implements IGuiOverlay {
+public class PneumaticArmorHUDOverlay implements LayeredDraw.Layer {
     private static final int PROGRESS_BAR_HEIGHT = 17;
 
     private final boolean[] gaveCriticalWarning = new boolean[4];  // per-slot
     private final boolean[] gaveLowPressureWarning = new boolean[4];  // per-slot
 
     @Override
-    public void render(ExtendedGui gui, GuiGraphics graphics, float partialTicks, int width, int height) {
+    public void render(GuiGraphics graphics, float partialTicks) {
         Minecraft mc = Minecraft.getInstance();
         Player player = mc.player;
 

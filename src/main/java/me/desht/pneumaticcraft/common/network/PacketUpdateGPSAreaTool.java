@@ -17,14 +17,16 @@
 
 package me.desht.pneumaticcraft.common.network;
 
+import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetArea;
+import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.registry.ModItems;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.network.handling.PlayPayloadContext;
+import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
@@ -32,30 +34,24 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
  * Received on: SERVER
  * Sent by client from area tool GUI to update stored settings
  */
-public record PacketUpdateGPSAreaTool(CompoundTag areaWidgetData, InteractionHand hand) implements CustomPacketPayload {
-    public static final ResourceLocation ID = RL("update_gps_area_tool");
+public record PacketUpdateGPSAreaTool(ProgWidgetArea widget, InteractionHand hand) implements CustomPacketPayload {
+    public static final Type<PacketUpdateGPSAreaTool> TYPE = new Type<>(RL("update_gps_area_tool"));
 
-    public PacketUpdateGPSAreaTool(FriendlyByteBuf buffer) {
-        this(buffer.readNbt(), buffer.readEnum(InteractionHand.class));
-    }
+    public static final StreamCodec<RegistryFriendlyByteBuf, PacketUpdateGPSAreaTool> STREAM_CODEC = StreamCodec.composite(
+            ProgWidgetArea.STREAM_CODEC, PacketUpdateGPSAreaTool::widget,
+            NeoForgeStreamCodecs.enumCodec(InteractionHand.class), PacketUpdateGPSAreaTool::hand,
+            PacketUpdateGPSAreaTool::new
+    );
 
-    public void write(FriendlyByteBuf buffer) {
-        buffer.writeNbt(areaWidgetData);
-        buffer.writeEnum(InteractionHand.MAIN_HAND);
-    }
-
-    public static void handle(PacketUpdateGPSAreaTool message, PlayPayloadContext ctx) {
-        ctx.player().ifPresent(player -> ctx.workHandler().submitAsync(() -> {
-                ItemStack stack = player.getItemInHand(message.hand);
-                if (stack.getItem() == ModItems.GPS_AREA_TOOL.get()) {
-                    stack.setTag(message.areaWidgetData);
-                }
-            })
-        );
+    public static void handle(PacketUpdateGPSAreaTool message, IPayloadContext ctx) {
+        ItemStack stack = ctx.player().getItemInHand(message.hand);
+        if (stack.getItem() == ModItems.GPS_AREA_TOOL.get()) {
+            stack.set(ModDataComponents.AREA_WIDGET, message.widget);
+        }
     }
 
     @Override
-    public ResourceLocation id() {
-        return ID;
+    public Type<PacketUpdateGPSAreaTool> type() {
+        return TYPE;
     }
 }

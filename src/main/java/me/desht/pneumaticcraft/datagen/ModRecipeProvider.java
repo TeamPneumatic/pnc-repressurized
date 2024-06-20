@@ -1,25 +1,31 @@
 package me.desht.pneumaticcraft.datagen;
 
 import com.google.common.collect.ImmutableList;
+import com.mojang.datafixers.util.Either;
 import me.desht.pneumaticcraft.api.crafting.AmadronTradeResource;
 import me.desht.pneumaticcraft.api.crafting.TemperatureRange;
-import me.desht.pneumaticcraft.api.crafting.ingredient.FluidIngredient;
-import me.desht.pneumaticcraft.api.crafting.ingredient.StackedIngredient;
+import me.desht.pneumaticcraft.api.crafting.ingredient.FluidContainerIngredient;
 import me.desht.pneumaticcraft.api.crafting.recipe.AssemblyRecipe.AssemblyProgramType;
+import me.desht.pneumaticcraft.api.crafting.recipe.ThermoPlantRecipe;
 import me.desht.pneumaticcraft.api.data.PneumaticCraftTags;
 import me.desht.pneumaticcraft.api.upgrade.PNCUpgrade;
 import me.desht.pneumaticcraft.common.recipes.FluidTagPresentCondition;
 import me.desht.pneumaticcraft.common.recipes.machine.PressureDisenchantingRecipe;
 import me.desht.pneumaticcraft.common.recipes.machine.PressureEnchantingRecipe;
-import me.desht.pneumaticcraft.common.recipes.special.*;
+import me.desht.pneumaticcraft.common.recipes.special.DroneColorCrafting;
+import me.desht.pneumaticcraft.common.recipes.special.DroneUpgradeCrafting;
+import me.desht.pneumaticcraft.common.recipes.special.GunAmmoPotionCrafting;
+import me.desht.pneumaticcraft.common.recipes.special.OneProbeCrafting;
 import me.desht.pneumaticcraft.common.registry.ModBlocks;
 import me.desht.pneumaticcraft.common.registry.ModFluids;
 import me.desht.pneumaticcraft.common.registry.ModItems;
+import me.desht.pneumaticcraft.common.thirdparty.patchouli.PatchouliBookCrafting;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.playerfilter.PlayerFilter;
 import me.desht.pneumaticcraft.datagen.recipe.*;
 import me.desht.pneumaticcraft.lib.ModIds;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.recipes.*;
@@ -31,7 +37,7 @@ import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.alchemy.PotionUtils;
+import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ItemLike;
@@ -39,18 +45,22 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.conditions.ModLoadedCondition;
-import net.neoforged.neoforge.common.crafting.NBTIngredient;
+import net.neoforged.neoforge.common.crafting.DataComponentIngredient;
+import net.neoforged.neoforge.common.crafting.SizedIngredient;
 import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.crafting.FluidIngredient;
+import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
 
 import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 public class ModRecipeProvider extends RecipeProvider {
-    public ModRecipeProvider(DataGenerator generatorIn) {
-        super(generatorIn.getPackOutput());
+    public ModRecipeProvider(DataGenerator generatorIn, CompletableFuture<HolderLookup.Provider> provider) {
+        super(generatorIn.getPackOutput(), provider);
     }
 
     @Override
@@ -147,7 +157,7 @@ public class ModRecipeProvider extends RecipeProvider {
 
         shaped(ModBlocks.ASSEMBLY_LASER.get(), ModItems.PRINTED_CIRCUIT_BOARD.get(),
                 "DCC/  C/IBI",
-                'D', Tags.Items.GLASS_RED,
+                'D', Items.RED_STAINED_GLASS,
                 'C', ModItems.PNEUMATIC_CYLINDER.get(),
                 'B', ModItems.PRINTED_CIRCUIT_BOARD.get(),
                 'I', PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON
@@ -328,7 +338,7 @@ public class ModRecipeProvider extends RecipeProvider {
                 "BPB/PRP/BPB",
                 'P', PneumaticCraftTags.Items.PLASTIC_SHEETS,
                 'B', Blocks.STONE_BUTTON,
-                'R', Tags.Blocks.STONE
+                'R', Tags.Blocks.STONES
         ).save(consumer);
 
         shaped(ModBlocks.ELEVATOR_FRAME.get(), 4, ModItems.COMPRESSED_IRON_INGOT.get(),
@@ -338,9 +348,9 @@ public class ModRecipeProvider extends RecipeProvider {
 
         shaped(ModBlocks.ETCHING_TANK.get(), ModItems.ETCHING_ACID_BUCKET.get(),
                 "OGO/WTW/SSS",
-                'O', Tags.Blocks.OBSIDIAN,
+                'O', Tags.Blocks.OBSIDIANS,
                 'W', ModBlocks.REINFORCED_BRICK_WALL.get(),
-                'T', NBTIngredient.of(true, new ItemStack(ModBlocks.TANK_SMALL.get())),
+                'T', DataComponentIngredient.of(true, new ItemStack(ModBlocks.TANK_SMALL.get())),
                 'S', ModBlocks.REINFORCED_BRICK_SLAB.get(),
                 'G', Tags.Items.GLASS_PANES
         ).save(consumer);
@@ -377,7 +387,7 @@ public class ModRecipeProvider extends RecipeProvider {
         shaped(ModBlocks.GAS_LIFT.get(), ModItems.COMPRESSED_IRON_INGOT.get(),
                 " T /TGT/SSS",
                 'T', ModBlocks.PRESSURE_TUBE.get(),
-                'G', NBTIngredient.of(true, new ItemStack(ModBlocks.TANK_SMALL.get())),
+                'G', DataComponentIngredient.of(true, new ItemStack(ModBlocks.TANK_SMALL.get())),
                 'S', ModBlocks.REINFORCED_STONE_SLAB.get()
         ).save(consumer);
 
@@ -402,13 +412,13 @@ public class ModRecipeProvider extends RecipeProvider {
         ).save(consumer);
 
         shapeless(ModItems.GUN_AMMO.get(), ModItems.MINIGUN.get(),
-                Tags.Items.GUNPOWDER, PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON, Tags.Items.INGOTS_COPPER
+                Tags.Items.GUNPOWDERS, PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON, Tags.Items.INGOTS_COPPER
         ).save(consumer);
         miniGunAmmo(ModItems.GUN_AMMO_AP.get(), Tags.Items.GEMS_DIAMOND, Tags.Items.GEMS_DIAMOND).save(consumer);
         miniGunAmmo(ModItems.GUN_AMMO_EXPLOSIVE.get(), Blocks.TNT, Blocks.TNT).save(consumer);
         miniGunAmmo(ModItems.GUN_AMMO_FREEZING.get(), Blocks.ICE, Blocks.ICE).save(consumer);
         miniGunAmmo(ModItems.GUN_AMMO_INCENDIARY.get(), Tags.Items.RODS_BLAZE, Tags.Items.RODS_BLAZE).save(consumer);
-        miniGunAmmo(ModItems.GUN_AMMO_WEIGHTED.get(), Tags.Items.STORAGE_BLOCKS_GOLD, Tags.Items.OBSIDIAN).save(consumer);
+        miniGunAmmo(ModItems.GUN_AMMO_WEIGHTED.get(), Tags.Items.STORAGE_BLOCKS_GOLD, Tags.Items.OBSIDIANS).save(consumer);
 
         shaped(ModItems.HARVESTING_DRONE.get(), ModItems.TURBINE_ROTOR.get(),
                 " R /RSR/ R ",
@@ -453,20 +463,20 @@ public class ModRecipeProvider extends RecipeProvider {
                 " I /G G/IBI",
                 'I', PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON,
                 'G', Tags.Items.GLASS_PANES,
-                'B', NBTIngredient.of(true, new ItemStack(ModBlocks.TANK_SMALL.get()))
+                'B', DataComponentIngredient.of(true, new ItemStack(ModBlocks.TANK_SMALL.get()))
         ).save(consumer);
 
         shaped(ModBlocks.LIQUID_COMPRESSOR.get(), ModItems.COMPRESSED_IRON_INGOT.get(),
                 "PBP/LCL",
                 'P', ModBlocks.PRESSURE_TUBE.get(),
-                'B', NBTIngredient.of(true, new ItemStack(ModBlocks.TANK_SMALL.get())),
-                'L', Tags.Items.LEATHER,
+                'B', DataComponentIngredient.of(true, new ItemStack(ModBlocks.TANK_SMALL.get())),
+                'L', Tags.Items.LEATHERS,
                 'C', ModBlocks.AIR_COMPRESSOR.get()
         ).save(consumer);
 
         shaped(ModBlocks.LIQUID_HOPPER.get(), ModItems.COMPRESSED_IRON_INGOT.get(),
                 "T/H",
-                'T', NBTIngredient.of(true, new ItemStack(ModBlocks.TANK_SMALL.get())),
+                'T', DataComponentIngredient.of(true, new ItemStack(ModBlocks.TANK_SMALL.get())),
                 'H', Blocks.HOPPER
         ).save(consumer);
 
@@ -593,13 +603,13 @@ public class ModRecipeProvider extends RecipeProvider {
         shaped(ModBlocks.PRESSURE_CHAMBER_GLASS.get(), 16, ModItems.COMPRESSED_IRON_INGOT.get(),
                 "III/IGI/III",
                 'I', ModBlocks.REINFORCED_BRICKS.get(),
-                'G', Tags.Items.GLASS
+                'G', Tags.Items.GLASS_BLOCKS
         ).save(consumer);
         shapeless(ModBlocks.PRESSURE_CHAMBER_GLASS.get(), ModItems.COMPRESSED_IRON_INGOT.get(),
-                Tags.Items.GLASS, ModBlocks.PRESSURE_CHAMBER_WALL.get()
+                Tags.Items.GLASS_BLOCKS, ModBlocks.PRESSURE_CHAMBER_WALL.get()
         ).save(consumer, RL("pressure_chamber_glass_x1"));
         shapeless(ModBlocks.PRESSURE_CHAMBER_GLASS.get(), 4, ModItems.COMPRESSED_IRON_INGOT.get(),
-                Tags.Items.GLASS,
+                Tags.Items.GLASS_BLOCKS,
                 ModBlocks.PRESSURE_CHAMBER_WALL.get(),
                 ModBlocks.PRESSURE_CHAMBER_WALL.get(),
                 ModBlocks.PRESSURE_CHAMBER_WALL.get(),
@@ -654,7 +664,7 @@ public class ModRecipeProvider extends RecipeProvider {
 
         shaped(ModBlocks.PRESSURE_TUBE.get(), 8, ModItems.COMPRESSED_IRON_INGOT.get(),
                 "IGI",
-                'G', Tags.Items.GLASS,
+                'G', Tags.Items.GLASS_BLOCKS,
                 'I', PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON
         ).save(consumer);
 
@@ -685,7 +695,7 @@ public class ModRecipeProvider extends RecipeProvider {
         shaped(ModBlocks.PROGRAMMER.get(), ModItems.PRINTED_CIRCUIT_BOARD.get(),
                 "RGR/TBT/P P",
                 'R', Tags.Items.DYES_RED,
-                'G', Tags.Items.GLASS_PANES_BLACK,
+                'G', Items.BLACK_STAINED_GLASS_PANE,
                 'T', ModItems.TURBINE_ROTOR.get(),
                 'B', ModItems.PRINTED_CIRCUIT_BOARD.get(),
                 'P', PneumaticCraftTags.Items.PLASTIC_SHEETS
@@ -711,14 +721,14 @@ public class ModRecipeProvider extends RecipeProvider {
         shaped(ModBlocks.REFINERY.get(), ModItems.COMPRESSED_IRON_INGOT.get(),
                 "SSS/RTR/SSS",
                 'S', ModBlocks.REINFORCED_STONE_SLAB.get(),
-                'T', NBTIngredient.of(true, new ItemStack(ModBlocks.TANK_SMALL.get())),
+                'T', DataComponentIngredient.of(true, new ItemStack(ModBlocks.TANK_SMALL.get())),
                 'R', Tags.Items.DUSTS_REDSTONE
         ).save(consumer);
 
         shaped(ModBlocks.REFINERY_OUTPUT.get(), ModItems.COMPRESSED_IRON_INGOT.get(),
                 "SSS/GDG/SSS",
                 'S', ModBlocks.REINFORCED_STONE_SLAB.get(),
-                'G', Tags.Items.GLASS,
+                'G', Tags.Items.GLASS_BLOCKS,
                 'D', Tags.Items.GEMS_DIAMOND
         ).save(consumer);
 
@@ -740,13 +750,13 @@ public class ModRecipeProvider extends RecipeProvider {
                 'G', Tags.Items.NUGGETS_GOLD,
                 'I', PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON,
                 'W', ModBlocks.REINFORCED_BRICK_WALL.get(),
-                'O', Tags.Blocks.OBSIDIAN,
+                'O', Tags.Blocks.OBSIDIANS,
                 'C', Tags.Items.CHESTS_WOODEN
         ).save(consumer);
 
         shaped(ModItems.REINFORCED_CHEST_KIT.get(), ModBlocks.REINFORCED_CHEST.get(),
                 " C/S ",
-                'C', NBTIngredient.of(true, null, ModBlocks.REINFORCED_CHEST.get()),
+                'C', DataComponentIngredient.of(true, new ItemStack(ModBlocks.REINFORCED_CHEST.get())),
                 'S', Items.STICK
         ).save(consumer);
 
@@ -769,7 +779,7 @@ public class ModRecipeProvider extends RecipeProvider {
                 "DBD/TPT/G G",
                 'D', Tags.Items.DYES_GRAY,
                 'G', PneumaticCraftTags.Items.PLASTIC_SHEETS,
-                'B', Tags.Items.GLASS_PANES_BLACK,
+                'B', Tags.Items.GLASS_PANES,
                 'T', ModItems.TURBINE_ROTOR.get(),
                 'P', ModItems.PRINTED_CIRCUIT_BOARD.get()
         ).save(consumer);
@@ -777,7 +787,7 @@ public class ModRecipeProvider extends RecipeProvider {
         shaped(ModItems.SEISMIC_SENSOR.get(), ModItems.COMPRESSED_IRON_INGOT.get(),
                 " T /GRG/GCG",
                 'T', Blocks.REDSTONE_TORCH,
-                'G', Tags.Items.GLASS,
+                'G', Tags.Items.GLASS_BLOCKS,
                 'R', Blocks.REPEATER,
                 'C', Blocks.NOTE_BLOCK
         ).save(consumer);
@@ -791,14 +801,14 @@ public class ModRecipeProvider extends RecipeProvider {
 
         shaped(ModItems.SMART_CHEST_KIT.get(), ModBlocks.SMART_CHEST.get(),
                 " C/S ",
-                'C', NBTIngredient.of(true, null, ModBlocks.SMART_CHEST.get()),
+                'C', DataComponentIngredient.of(true, new ItemStack(ModBlocks.SMART_CHEST.get())),
                 'S', Items.STICK
         ).save(consumer);
 
         shaped(ModItems.SOURDOUGH.get(), 8, ModItems.WHEAT_FLOUR.get(),
                 "FFF/FYF/FFF",
                 'F', PneumaticCraftTags.Items.FLOUR,
-                'Y', FluidIngredient.of(1000, ModFluids.YEAST_CULTURE.get())
+                'Y', FluidContainerIngredient.of(ModFluids.YEAST_CULTURE.get(), 1000)
         ).save(consumer);
 
         shaped(ModBlocks.SMART_CHEST.get(), ModBlocks.REINFORCED_CHEST.get(),
@@ -837,13 +847,13 @@ public class ModRecipeProvider extends RecipeProvider {
                 'T', ModBlocks.PRESSURE_TUBE.get(),
                 'W', ModBlocks.PRESSURE_CHAMBER_WALL.get(),
                 'A', ModItems.SPAWNER_AGITATOR.get(),
-                'O', Tags.Blocks.OBSIDIAN,
+                'O', Tags.Blocks.OBSIDIANS,
                 'P', ModBlocks.DRILL_PIPE.get()
         ).save(consumer);
 
         shaped(ModItems.STONE_BASE.get(), ModItems.COMPRESSED_IRON_INGOT.get(),
                 "S S/STS",
-                'S', Tags.Items.STONE,
+                'S', Tags.Items.STONES,
                 'T', ModBlocks.PRESSURE_TUBE.get()
         ).save(consumer);
 
@@ -857,20 +867,20 @@ public class ModRecipeProvider extends RecipeProvider {
                 "BIB/IGI/BIB",
                 'B', Blocks.IRON_BARS,
                 'I', PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON,
-                'G', Tags.Items.GLASS
+                'G', Tags.Items.GLASS_BLOCKS
         ).save(consumer);
 
         shaped(ModBlocks.TANK_MEDIUM.get(), ModItems.PLASTIC.get(),
                 "PSP/ITI/PSP",
                 'P', PneumaticCraftTags.Items.PLASTIC_SHEETS,
-                'S', NBTIngredient.of(true, new ItemStack(ModBlocks.TANK_SMALL.get())),
+                'S', DataComponentIngredient.of(true, new ItemStack(ModBlocks.TANK_SMALL.get())),
                 'I', Tags.Items.INGOTS_GOLD,
                 'T', ModBlocks.PRESSURE_TUBE.get()
         ).save(consumer);
 
         shaped(ModBlocks.TANK_LARGE.get(), ModBlocks.ADVANCED_PRESSURE_TUBE.get(),
                 "PMP/DTD/PMP",
-                'M', NBTIngredient.of(true, new ItemStack(ModBlocks.TANK_MEDIUM.get())),
+                'M', DataComponentIngredient.of(true, new ItemStack(ModBlocks.TANK_MEDIUM.get())),
                 'P', PneumaticCraftTags.Items.PLASTIC_SHEETS,
                 'D', Tags.Items.GEMS_DIAMOND,
                 'T', ModBlocks.ADVANCED_PRESSURE_TUBE.get()
@@ -878,7 +888,7 @@ public class ModRecipeProvider extends RecipeProvider {
 
         shaped(ModBlocks.TANK_HUGE.get(), ModBlocks.ADVANCED_PRESSURE_TUBE.get(),
                 "NTN/TRT/NTN",
-                'T', NBTIngredient.of(true, new ItemStack(ModBlocks.TANK_LARGE.get())),
+                'T', DataComponentIngredient.of(true, new ItemStack(ModBlocks.TANK_LARGE.get())),
                 'R', ModItems.REINFORCED_AIR_CANISTER.get(),
                 'N', Tags.Items.INGOTS_NETHERITE
         ).save(consumer);
@@ -894,13 +904,13 @@ public class ModRecipeProvider extends RecipeProvider {
         shaped(ModBlocks.THERMAL_LAGGING.get(), 6, ModItems.COMPRESSED_IRON_INGOT.get(),
                 "WGW/GWG/WGW",
                 'W', ItemTags.WOOL,
-                'G', Tags.Items.GLASS
+                'G', Tags.Items.GLASS_BLOCKS
         ).save(consumer);
 
         shaped(ModBlocks.THERMOPNEUMATIC_PROCESSING_PLANT.get(), ModItems.COMPRESSED_IRON_INGOT.get(),
                 "SSS/TPT/SSS",
                 'S', ModBlocks.REINFORCED_STONE_SLAB.get(),
-                'T', NBTIngredient.of(true, new ItemStack(ModBlocks.TANK_SMALL.get())),
+                'T', DataComponentIngredient.of(true, new ItemStack(ModBlocks.TANK_SMALL.get())),
                 'P', ModBlocks.PRESSURE_TUBE.get()
         ).save(consumer);
 
@@ -1013,24 +1023,23 @@ public class ModRecipeProvider extends RecipeProvider {
         standardUpgrade(ModUpgrades.INVENTORY.get(), Tags.Items.CHESTS_WOODEN, ItemTags.PLANKS).save(consumer);
         standardUpgrade(ModUpgrades.ITEM_LIFE.get(), Items.CLOCK, Items.APPLE).save(consumer);
         standardUpgrade(ModUpgrades.MAGNET.get(), PneumaticCraftTags.Items.PLASTIC_SHEETS, PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON).save(consumer);
-        standardUpgrade(ModUpgrades.MINIGUN.get(), ModItems.MINIGUN.get(), Tags.Items.GUNPOWDER).save(consumer);
+        standardUpgrade(ModUpgrades.MINIGUN.get(), ModItems.MINIGUN.get(), Tags.Items.GUNPOWDERS).save(consumer);
         standardUpgrade(ModUpgrades.RANGE.get(), Items.BOW, ItemTags.ARROWS).save(consumer);
         standardUpgrade(ModUpgrades.SEARCH.get(), Items.GOLDEN_CARROT, Items.ENDER_EYE).save(consumer);
-        standardUpgrade(ModUpgrades.SECURITY.get(), ModItems.SAFETY_TUBE_MODULE.get(), Tags.Items.OBSIDIAN).save(consumer);
-        standardUpgrade(ModUpgrades.SPEED.get(), FluidIngredient.of(1000, PneumaticCraftTags.Fluids.LUBRICANT), Items.SUGAR).save(consumer);
-        standardUpgrade(ModUpgrades.SPEED.get(), 2, FluidIngredient.of(1000, PneumaticCraftTags.Fluids.LUBRICANT), ModItems.GLYCEROL.get()).save(consumer, RL("speed_upgrade_from_glycerol"));
+        standardUpgrade(ModUpgrades.SECURITY.get(), ModItems.SAFETY_TUBE_MODULE.get(), Tags.Items.OBSIDIANS).save(consumer);
+        standardUpgrade(ModUpgrades.SPEED.get(), FluidContainerIngredient.of(PneumaticCraftTags.Fluids.LUBRICANT, 1000), Items.SUGAR).save(consumer);
+        standardUpgrade(ModUpgrades.SPEED.get(), 2, FluidContainerIngredient.of(PneumaticCraftTags.Fluids.LUBRICANT, 1000), ModItems.GLYCEROL.get()).save(consumer, RL("speed_upgrade_from_glycerol"));
         standardUpgrade(ModUpgrades.STANDBY.get(), ItemTags.BEDS, Items.REDSTONE_TORCH).save(consumer);
         standardUpgrade(ModUpgrades.STOMP.get(), Blocks.TNT, Blocks.PISTON).save(consumer);
         standardUpgrade(ModUpgrades.VOLUME.get(), ModItems.AIR_CANISTER.get(), PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON).save(consumer);
 
         // non-standard upgrade patterns
-        ItemStack nightVisionPotion = new ItemStack(Items.POTION);
-        PotionUtils.setPotion(nightVisionPotion, Potions.LONG_NIGHT_VISION);
+        ItemStack nightVisionPotion = PotionContents.createItemStack(Items.POTION, Potions.LONG_NIGHT_VISION);
         shaped(ModUpgrades.NIGHT_VISION.get().getItem(), ModItems.PNEUMATIC_HELMET.get(),
                 "LNL/GNG/LNL",
                 'L', PneumaticCraftTags.Items.UPGRADE_COMPONENTS,
                 'G', ModBlocks.PRESSURE_CHAMBER_GLASS.get(),
-                'N', NBTIngredient.of(true, nightVisionPotion)
+                'N', DataComponentIngredient.of(true, nightVisionPotion)
         ).save(consumer);
 
         shaped(ModUpgrades.CHUNKLOADER.get().getItem(), ModItems.DRONE.get(),
@@ -1069,14 +1078,13 @@ public class ModRecipeProvider extends RecipeProvider {
                 'V', ModItems.VORTEX_CANNON.get(),
                 'U', ModUpgrades.JET_BOOTS.get().getItem(2)
         ).save(consumer);
-        ItemStack slowFallPotion = new ItemStack(Items.POTION);
-        PotionUtils.setPotion(slowFallPotion, Potions.LONG_SLOW_FALLING);
+        ItemStack slowFallPotion = PotionContents.createItemStack(Items.POTION, Potions.LONG_SLOW_FALLING);
         shaped(ModUpgrades.JET_BOOTS.get().getItem(4), ModItems.PNEUMATIC_BOOTS.get(),
                 "MNM/VUV/P P",
                 'N', Items.NETHER_STAR,
                 'M', Items.PHANTOM_MEMBRANE,
                 'V', ModItems.VORTEX_CANNON.get(),
-                'P', NBTIngredient.of(true, slowFallPotion),
+                'P', DataComponentIngredient.of(true, slowFallPotion),
                 'U', ModUpgrades.JET_BOOTS.get().getItem(3)
         ).save(consumer);
         shaped(ModUpgrades.JET_BOOTS.get().getItem(5), ModItems.PNEUMATIC_BOOTS.get(),
@@ -1103,21 +1111,19 @@ public class ModRecipeProvider extends RecipeProvider {
                 'P', Blocks.PISTON,
                 'C', ModItems.PNEUMATIC_CYLINDER.get()
         ).save(consumer);
-        ItemStack jumpBoostPotion1 = new ItemStack(Items.POTION);
-        PotionUtils.setPotion(jumpBoostPotion1, Potions.LEAPING);
+        ItemStack jumpBoostPotion1 = PotionContents.createItemStack(Items.POTION, Potions.LEAPING);
         shaped(ModUpgrades.JUMPING.get().getItem(3), ModItems.PNEUMATIC_LEGGINGS.get(),
                 "PCP/JUJ/ J ",
                 'U', ModUpgrades.JUMPING.get().getItem(2),
-                'J', NBTIngredient.of(true, jumpBoostPotion1),
+                'J', DataComponentIngredient.of(true, jumpBoostPotion1),
                 'P', Blocks.PISTON,
                 'C', ModItems.PNEUMATIC_CYLINDER.get()
         ).save(consumer);
-        ItemStack jumpBoostPotion2 = new ItemStack(Items.POTION);
-        PotionUtils.setPotion(jumpBoostPotion2, Potions.STRONG_LEAPING);
+        ItemStack jumpBoostPotion2 = PotionContents.createItemStack(Items.POTION, Potions.STRONG_LEAPING);
         shaped(ModUpgrades.JUMPING.get().getItem(4), ModItems.PNEUMATIC_LEGGINGS.get(),
                 "PCP/JUJ/ J ",
                 'U', ModUpgrades.JUMPING.get().getItem(3),
-                'J', NBTIngredient.of(true, jumpBoostPotion2),
+                'J', DataComponentIngredient.of(true, jumpBoostPotion2),
                 'P', Blocks.PISTON,
                 'C', ModItems.PNEUMATIC_CYLINDER.get()
         ).save(consumer);
@@ -1276,14 +1282,14 @@ public class ModRecipeProvider extends RecipeProvider {
         }
 
         // specials
+        shapeless(PatchouliBookCrafting.makeGuideBook(), ModItems.COMPRESSED_IRON_INGOT.get(), Items.BOOK)
+                .save(consumer.withConditions(new ModLoadedCondition(ModIds.PATCHOULI)));
         SpecialRecipeBuilder.special(DroneColorCrafting::new)
                 .save(consumer, getId("drone_color"));
         SpecialRecipeBuilder.special(DroneUpgradeCrafting::new)
                 .save(consumer, getId("drone_upgrade"));
         SpecialRecipeBuilder.special(GunAmmoPotionCrafting::new)
                 .save(consumer, getId("gun_ammo_potion_crafting"));
-        SpecialRecipeBuilder.special(PatchouliBookCrafting::new)
-                .save(consumer.withConditions(new ModLoadedCondition(ModIds.PATCHOULI)), getId("patchouli_book_crafting"));
         SpecialRecipeBuilder.special(OneProbeCrafting::new)
                 .save(consumer.withConditions(new ModLoadedCondition(ModIds.THE_ONE_PROBE)), getId("one_probe_crafting"));
 
@@ -1311,103 +1317,103 @@ public class ModRecipeProvider extends RecipeProvider {
                 .save(consumer, RL("sourdough_bread"));
 
         // pressure chamber
-        pressureChamber(ImmutableList.of(StackedIngredient.fromItems(4, Items.SNOW_BLOCK)),
+        pressureChamber(ImmutableList.of(SizedIngredient.of(Items.SNOW_BLOCK, 4)),
                 1.5f, new ItemStack(Items.ICE))
                 .save(consumer, RL("pressure_chamber/ice"));
-        pressureChamber(ImmutableList.of(StackedIngredient.fromItems(4, Items.ICE)),
+        pressureChamber(ImmutableList.of(SizedIngredient.of(Items.ICE, 4)),
                 2.0f, new ItemStack(Items.PACKED_ICE))
                 .save(consumer, RL("pressure_chamber/packed_ice"));
-        pressureChamber(ImmutableList.of(StackedIngredient.fromItems(4, Items.PACKED_ICE)),
+        pressureChamber(ImmutableList.of(SizedIngredient.of(Items.PACKED_ICE, 4)),
                 2.5f, new ItemStack(Items.BLUE_ICE))
                 .save(consumer, RL("pressure_chamber/blue_ice"));
-        pressureChamber(ImmutableList.of(StackedIngredient.fromTag(1, Tags.Items.INGOTS_IRON)),
+        pressureChamber(ImmutableList.of(SizedIngredient.of(Tags.Items.INGOTS_IRON, 1)),
                 2.0f, new ItemStack(ModItems.COMPRESSED_IRON_INGOT.get()))
                 .save(consumer, RL("pressure_chamber/compressed_iron_ingot"));
-        pressureChamber(ImmutableList.of(StackedIngredient.fromTag(1, Tags.Items.STORAGE_BLOCKS_IRON)),
+        pressureChamber(ImmutableList.of(SizedIngredient.of(Tags.Items.STORAGE_BLOCKS_IRON, 1)),
                 2.0f, new ItemStack(ModBlocks.COMPRESSED_IRON_BLOCK.get()))
                 .save(consumer, RL("pressure_chamber/compressed_iron_block"));
         pressureChamber(ImmutableList.of(
-                        StackedIngredient.fromItems(2, Items.REDSTONE_TORCH),
-                        StackedIngredient.fromTag(3, PneumaticCraftTags.Items.WIRING),
-                        StackedIngredient.fromItems(1, ModItems.PLASTIC.get())),
+                        SizedIngredient.of(Items.REDSTONE_TORCH, 2),
+                        SizedIngredient.of(PneumaticCraftTags.Items.WIRING, 3),
+                        SizedIngredient.of(ModItems.PLASTIC.get(), 1)),
                 1.5f, new ItemStack(ModItems.EMPTY_PCB.get(), 3))
                 .save(consumer, RL("pressure_chamber/empty_pcb"));
         pressureChamber(ImmutableList.of(
-                        StackedIngredient.fromTag(2, PneumaticCraftTags.Items.WIRING),
-                        StackedIngredient.fromTag(1, Tags.Items.SLIMEBALLS),
-                        StackedIngredient.fromItems(1, ModItems.PLASTIC.get())),
+                        SizedIngredient.of(PneumaticCraftTags.Items.WIRING, 2),
+                        SizedIngredient.of(Tags.Items.SLIMEBALLS, 1),
+                        SizedIngredient.of(ModItems.PLASTIC.get(), 1)),
                 1f, new ItemStack(ModItems.CAPACITOR.get()))
                 .save(consumer, RL("pressure_chamber/capacitor"));
         pressureChamber(ImmutableList.of(
-                        StackedIngredient.fromTag(3, PneumaticCraftTags.Items.WIRING),
-                        StackedIngredient.fromTag(1, Tags.Items.DUSTS_REDSTONE),
-                        StackedIngredient.fromItems(1, ModItems.PLASTIC.get())),
+                        SizedIngredient.of(PneumaticCraftTags.Items.WIRING, 3),
+                        SizedIngredient.of(Tags.Items.DUSTS_REDSTONE, 1),
+                        SizedIngredient.of(ModItems.PLASTIC.get(), 1)),
                 1f, new ItemStack(ModItems.TRANSISTOR.get()))
                 .save(consumer, RL("pressure_chamber/transistor"));
         pressureChamber(ImmutableList.of(
-                        StackedIngredient.fromItems(1, ModItems.PLASTIC_BUCKET.get()),
-                        StackedIngredient.fromItems(2, Items.ROTTEN_FLESH),
-                        StackedIngredient.fromItems(2, Items.SPIDER_EYE),
-                        StackedIngredient.fromTag(2, Tags.Items.GUNPOWDER)),
+                        SizedIngredient.of(ModItems.PLASTIC_BUCKET.get(), 1),
+                        SizedIngredient.of(Items.ROTTEN_FLESH, 2),
+                        SizedIngredient.of(Items.SPIDER_EYE, 2),
+                        SizedIngredient.of(Tags.Items.GUNPOWDERS, 2)),
                 1f, new ItemStack(ModItems.ETCHING_ACID_BUCKET.get()))
                 .save(consumer, RL("pressure_chamber/etching_acid"));
         pressureChamber(ImmutableList.of(
-                        StackedIngredient.fromItems(1, Items.MILK_BUCKET),
-                        StackedIngredient.fromTag(4, Tags.Items.DYES_GREEN)),
+                        SizedIngredient.of(Items.MILK_BUCKET, 1),
+                        SizedIngredient.of(Tags.Items.DYES_GREEN, 4)),
                 1f, new ItemStack(Items.SLIME_BALL, 4), new ItemStack(Items.BUCKET))
                 .save(consumer, RL("pressure_chamber/milk_to_slime_balls"));
         pressureChamber(ImmutableList.of(
-                        StackedIngredient.fromTag(1, Tags.Items.INGOTS_GOLD),
-                        StackedIngredient.fromTag(2, Tags.Items.DUSTS_REDSTONE)),
+                        SizedIngredient.of(Tags.Items.INGOTS_GOLD, 1),
+                        SizedIngredient.of(Tags.Items.DUSTS_REDSTONE, 2)),
                 1f, new ItemStack(ModItems.TURBINE_BLADE.get()))
                 .save(consumer, RL("pressure_chamber/turbine_blade"));
-        pressureChamber(ImmutableList.of(StackedIngredient.fromTag(8, Tags.Items.STORAGE_BLOCKS_COAL)),
+        pressureChamber(ImmutableList.of(SizedIngredient.of(Tags.Items.STORAGE_BLOCKS_COAL, 8)),
                 4f, new ItemStack(Items.DIAMOND))
                 .save(consumer, RL("pressure_chamber/coal_to_diamond"));
-        pressureChamber(ImmutableList.of(StackedIngredient.fromTag(1, Tags.Items.CROPS_WHEAT)),
+        pressureChamber(ImmutableList.of(SizedIngredient.of(Tags.Items.CROPS_WHEAT, 1)),
                 1.5f, new ItemStack(ModItems.WHEAT_FLOUR.get(), 3))
                 .save(consumer, RL("pressure_chamber/wheat_flour"));
-        pressureChamber(ImmutableList.of(StackedIngredient.fromTag(1, Tags.Items.STONE)),
+        pressureChamber(ImmutableList.of(SizedIngredient.of(Tags.Items.STONES, 1)),
                 1f, new ItemStack(ModBlocks.COMPRESSED_STONE.get()))
                 .save(consumer, RL("pressure_chamber/compressed_stone"));
         pressureChamber(ImmutableList.of(
-                        StackedIngredient.fromItems(1, ModItems.UPGRADE_MATRIX.get()),
-                        StackedIngredient.fromItems(1, Items.AMETHYST_SHARD)),
+                        SizedIngredient.of(ModItems.UPGRADE_MATRIX.get(), 1),
+                        SizedIngredient.of(Items.AMETHYST_SHARD, 1)),
                 2.5f, new ItemStack(ModItems.SOLAR_WAFER.get()))
                 .save(consumer, RL("pressure_chamber/solar_wafer"));
 
         // explosion crafting
-        explosionCrafting(Ingredient.of(Tags.Items.INGOTS_IRON), 20, new ItemStack(ModItems.COMPRESSED_IRON_INGOT.get()))
+        explosionCrafting(SizedIngredient.of(Tags.Items.INGOTS_IRON, 1), 20, new ItemStack(ModItems.COMPRESSED_IRON_INGOT.get()))
                 .save(consumer, RL("explosion_crafting/compressed_iron_ingot"));
-        explosionCrafting(Ingredient.of(Tags.Items.STORAGE_BLOCKS_IRON), 20, new ItemStack(ModBlocks.COMPRESSED_IRON_BLOCK.get()))
+        explosionCrafting(SizedIngredient.of(Tags.Items.STORAGE_BLOCKS_IRON, 1), 20, new ItemStack(ModBlocks.COMPRESSED_IRON_BLOCK.get()))
                 .save(consumer, RL("explosion_crafting/compressed_iron_block"));
-        explosionCrafting(Ingredient.of(Tags.Items.CROPS_WHEAT), 50, new ItemStack(ModItems.WHEAT_FLOUR.get()))
+        explosionCrafting(SizedIngredient.of(Tags.Items.CROPS_WHEAT, 1), 50, new ItemStack(ModItems.WHEAT_FLOUR.get()))
                 .save(consumer, RL("explosion_crafting/wheat_flour"));
 
         // heat frame cooling
-        heatFrameCooling(FluidIngredient.of(1000, FluidTags.WATER), 273,
+        heatFrameCooling(SizedFluidIngredient.of(FluidTags.WATER, 1000), 273,
                 new ItemStack(Blocks.ICE))
                 .save(consumer, RL("heat_frame_cooling/ice"));
-        heatFrameCooling(FluidIngredient.of(1000, FluidTags.LAVA), 273,
+        heatFrameCooling(SizedFluidIngredient.of(FluidTags.LAVA, 1000), 273,
                 new ItemStack(Blocks.OBSIDIAN), 0.025f, 0.5f)
                 .save(consumer, RL("heat_frame_cooling/obsidian"));
-        heatFrameCooling(FluidIngredient.of(1000, PneumaticCraftTags.Fluids.PLASTIC), 273,
+        heatFrameCooling(SizedFluidIngredient.of(PneumaticCraftTags.Fluids.PLASTIC, 1000), 273,
                 new ItemStack(ModItems.PLASTIC.get()), 0.01f, 0.75f)
                 .save(consumer, RL("heat_frame_cooling/plastic"));
 
         // refinery
-        refinery(FluidIngredient.of(10, PneumaticCraftTags.Fluids.CRUDE_OIL),
+        refinery(SizedFluidIngredient.of(PneumaticCraftTags.Fluids.CRUDE_OIL, 10),
                 TemperatureRange.min(373),
                 new FluidStack(ModFluids.DIESEL.get(), 4),
                 new FluidStack(ModFluids.LPG.get(), 2)
         ).save(consumer, RL("refinery/oil_2"));
-        refinery(FluidIngredient.of(10, PneumaticCraftTags.Fluids.CRUDE_OIL),
+        refinery(SizedFluidIngredient.of(PneumaticCraftTags.Fluids.CRUDE_OIL, 10),
                 TemperatureRange.min(373),
                 new FluidStack(ModFluids.DIESEL.get(), 2),
                 new FluidStack(ModFluids.KEROSENE.get(), 3),
                 new FluidStack(ModFluids.LPG.get(), 2)
         ).save(consumer, RL("refinery/oil_3"));
-        refinery(FluidIngredient.of(10, PneumaticCraftTags.Fluids.CRUDE_OIL),
+        refinery(SizedFluidIngredient.of(PneumaticCraftTags.Fluids.CRUDE_OIL, 10),
                 TemperatureRange.min(373),
                 new FluidStack(ModFluids.DIESEL.get(), 2),
                 new FluidStack(ModFluids.KEROSENE.get(), 3),
@@ -1416,123 +1422,123 @@ public class ModRecipeProvider extends RecipeProvider {
         ).save(consumer, RL("refinery/oil_4"));
 
         // thermopneumatic processing plant
-        thermoPlant(FluidIngredient.of(100, PneumaticCraftTags.Fluids.DIESEL), Ingredient.EMPTY,
+        thermoPlant(SizedFluidIngredient.of(PneumaticCraftTags.Fluids.DIESEL, 100), Ingredient.EMPTY,
                 new FluidStack(ModFluids.KEROSENE.get(), 80), ItemStack.EMPTY,
                 TemperatureRange.min(573), 2.0f, 1.0f, 1.0f, false
         ).save(consumer, RL("thermo_plant/kerosene"));
-        thermoPlant(FluidIngredient.of(100, PneumaticCraftTags.Fluids.KEROSENE), Ingredient.EMPTY,
+        thermoPlant(SizedFluidIngredient.of(PneumaticCraftTags.Fluids.KEROSENE, 100), Ingredient.EMPTY,
                 new FluidStack(ModFluids.GASOLINE.get(), 80), ItemStack.EMPTY,
                 TemperatureRange.min(573), 2.0f, 1.0f, 1.0f, false
         ).save(consumer, RL("thermo_plant/gasoline"));
-        thermoPlant(FluidIngredient.of(100, PneumaticCraftTags.Fluids.GASOLINE), Ingredient.EMPTY,
+        thermoPlant(SizedFluidIngredient.of(PneumaticCraftTags.Fluids.GASOLINE, 100), Ingredient.EMPTY,
                 new FluidStack(ModFluids.LPG.get(), 80), ItemStack.EMPTY,
                 TemperatureRange.min(573), 2.0f, 1.0f, 1.0f, false
         ).save(consumer, RL("thermo_plant/lpg"));
-        thermoPlant(FluidIngredient.of(1000, PneumaticCraftTags.Fluids.DIESEL), Ingredient.of(Tags.Items.DUSTS_REDSTONE),
+        thermoPlant(SizedFluidIngredient.of(PneumaticCraftTags.Fluids.DIESEL, 1000), Ingredient.of(Tags.Items.DUSTS_REDSTONE),
                 new FluidStack(ModFluids.LUBRICANT.get(), 1000), ItemStack.EMPTY,
                 TemperatureRange.min(373), 0f, 1.0f, 1.0f, false
         ).save(consumer, RL("thermo_plant/lubricant_from_diesel"));
-        thermoPlant(FluidIngredient.of(1000, PneumaticCraftTags.Fluids.BIODIESEL), Ingredient.of(Tags.Items.DUSTS_REDSTONE),
+        thermoPlant(SizedFluidIngredient.of(PneumaticCraftTags.Fluids.BIODIESEL, 1000), Ingredient.of(Tags.Items.DUSTS_REDSTONE),
                 new FluidStack(ModFluids.LUBRICANT.get(), 1000), ItemStack.EMPTY,
                 TemperatureRange.min(373), 0f, 1.0f, 1.0f, false
         ).save(consumer, RL("thermo_plant/lubricant_from_biodiesel"));
-        thermoPlant(FluidIngredient.of(100, PneumaticCraftTags.Fluids.LPG), Ingredient.of(Items.COAL),
+        thermoPlant(SizedFluidIngredient.of(PneumaticCraftTags.Fluids.LPG, 100), Ingredient.of(Items.COAL),
                 new FluidStack(ModFluids.PLASTIC.get(), 1000), ItemStack.EMPTY,
                 TemperatureRange.min(373), 0f,1.0f, 1.0f,  false
         ).save(consumer, RL("thermo_plant/plastic_from_lpg"));
-        thermoPlant(FluidIngredient.of(100, PneumaticCraftTags.Fluids.BIODIESEL), Ingredient.of(Items.CHARCOAL),
+        thermoPlant(SizedFluidIngredient.of(PneumaticCraftTags.Fluids.BIODIESEL, 100), Ingredient.of(Items.CHARCOAL),
                 new FluidStack(ModFluids.PLASTIC.get(), 1000), ItemStack.EMPTY,
                 TemperatureRange.min(373), 0f,1.0f, 1.0f,  false
         ).save(consumer, RL("thermo_plant/plastic_from_biodiesel"));
-        thermoPlant(FluidIngredient.of(1000, Fluids.WATER), Ingredient.of(Items.LAPIS_LAZULI),
+        thermoPlant(SizedFluidIngredient.of(Fluids.WATER, 1000), Ingredient.of(Items.LAPIS_LAZULI),
                 FluidStack.EMPTY, new ItemStack(ModItems.UPGRADE_MATRIX.get(), 4),
                 TemperatureRange.min(273), 2f, 1.0f, 1.0f, false
         ).save(consumer, RL("thermo_plant/upgrade_matrix"));
-        thermoPlant(FluidIngredient.of(1000, Fluids.WATER), Ingredient.of(Tags.Items.MUSHROOMS),
+        thermoPlant(SizedFluidIngredient.of(Fluids.WATER, 1000), Ingredient.of(Tags.Items.MUSHROOMS),
                 new FluidStack(ModFluids.YEAST_CULTURE.get(), 250), ItemStack.EMPTY,
                 TemperatureRange.of(303, 333), 0f, 0.1f, 1.0f, false
         ).save(consumer, RL("thermo_plant/yeast_culture"));
-        thermoPlant(FluidIngredient.of(100, PneumaticCraftTags.Fluids.YEAST_CULTURE), Ingredient.of(Items.SUGAR),
+        thermoPlant(SizedFluidIngredient.of(PneumaticCraftTags.Fluids.YEAST_CULTURE, 100), Ingredient.of(Items.SUGAR),
                 new FluidStack(ModFluids.ETHANOL.get(), 50), ItemStack.EMPTY,
                 TemperatureRange.of(303, 333), 0f, 0.5f, 1.0f, true
         ).save(consumer, RL("thermo_plant/ethanol_from_sugar"));
-        thermoPlant(FluidIngredient.of(100, PneumaticCraftTags.Fluids.YEAST_CULTURE), Ingredient.of(Tags.Items.CROPS_POTATO),
+        thermoPlant(SizedFluidIngredient.of(PneumaticCraftTags.Fluids.YEAST_CULTURE, 100), Ingredient.of(Tags.Items.CROPS_POTATO),
                 new FluidStack(ModFluids.ETHANOL.get(), 25), ItemStack.EMPTY,
                 TemperatureRange.of(303, 333), 0f, 0.25f, 1.0f, true
         ).save(consumer, RL("thermo_plant/ethanol_from_potato"));
-        thermoPlant(FluidIngredient.of(100, PneumaticCraftTags.Fluids.YEAST_CULTURE), Ingredient.of(Items.POISONOUS_POTATO),
+        thermoPlant(SizedFluidIngredient.of(PneumaticCraftTags.Fluids.YEAST_CULTURE, 100), Ingredient.of(Items.POISONOUS_POTATO),
                 new FluidStack(ModFluids.ETHANOL.get(), 50), ItemStack.EMPTY,
                 TemperatureRange.of(303, 333), 0f, 0.25f, 1.0f, true
         ).save(consumer, RL("thermo_plant/ethanol_from_poisonous_potato"));
-        thermoPlant(FluidIngredient.of(100, PneumaticCraftTags.Fluids.YEAST_CULTURE), Ingredient.of(Items.APPLE),
+        thermoPlant(SizedFluidIngredient.of(PneumaticCraftTags.Fluids.YEAST_CULTURE, 100), Ingredient.of(Items.APPLE),
                 new FluidStack(ModFluids.ETHANOL.get(), 50), ItemStack.EMPTY,
                 TemperatureRange.of(303, 333), 0f, 0.25f, 1.0f, true
         ).save(consumer, RL("thermo_plant/ethanol_from_apple"));
-        thermoPlant(FluidIngredient.of(100, PneumaticCraftTags.Fluids.YEAST_CULTURE), Ingredient.of(Items.MELON_SLICE),
+        thermoPlant(SizedFluidIngredient.of(PneumaticCraftTags.Fluids.YEAST_CULTURE, 100), Ingredient.of(Items.MELON_SLICE),
                 new FluidStack(ModFluids.ETHANOL.get(), 10), ItemStack.EMPTY,
                 TemperatureRange.of(303, 333), 0f, 0.4f, 1.0f, true
         ).save(consumer, RL("thermo_plant/ethanol_from_melon"));
-        thermoPlant(FluidIngredient.of(100, PneumaticCraftTags.Fluids.YEAST_CULTURE), Ingredient.of(Items.SWEET_BERRIES),
+        thermoPlant(SizedFluidIngredient.of(PneumaticCraftTags.Fluids.YEAST_CULTURE, 100), Ingredient.of(Items.SWEET_BERRIES),
                 new FluidStack(ModFluids.ETHANOL.get(), 20), ItemStack.EMPTY,
                 TemperatureRange.of(303, 333), 0f, 0.4f, 1.0f, true
         ).save(consumer, RL("thermo_plant/ethanol_from_sweet_berries"));
-        thermoPlant(FluidIngredient.EMPTY, Ingredient.of(Tags.Items.SEEDS),
+        thermoPlant(SizedFluidIngredient.of(FluidStack.EMPTY), Ingredient.of(Tags.Items.SEEDS),
                 new FluidStack(ModFluids.VEGETABLE_OIL.get(), 50), ItemStack.EMPTY,
                 TemperatureRange.any(), 2f, 0.5f, 1.0f, false
         ).save(consumer, RL("thermo_plant/vegetable_oil_from_seeds"));
-        thermoPlant(FluidIngredient.EMPTY, Ingredient.of(Tags.Items.CROPS),
+        thermoPlant(SizedFluidIngredient.of(FluidStack.EMPTY), Ingredient.of(Tags.Items.CROPS),
                 new FluidStack(ModFluids.VEGETABLE_OIL.get(), 20), ItemStack.EMPTY,
                 TemperatureRange.any(), 2f, 0.5f, 1.0f, false
         ).save(consumer, RL("thermo_plant/vegetable_oil_from_crops"));
-        thermoPlant(FluidIngredient.of(2000, PneumaticCraftTags.Fluids.LUBRICANT), Ingredient.of(Tags.Items.INGOTS_IRON),
+        thermoPlant(SizedFluidIngredient.of(PneumaticCraftTags.Fluids.LUBRICANT, 2000), Ingredient.of(Tags.Items.INGOTS_IRON),
                 FluidStack.EMPTY, new ItemStack(ModItems.IRON_DRILL_BIT.get()),
                 TemperatureRange.any(), 3f, 0.5f, 2.0f, false
         ).save(consumer, RL("thermo_plant/iron_drill_bit"));
-        thermoPlant(FluidIngredient.of(4000, PneumaticCraftTags.Fluids.LUBRICANT), Ingredient.of(PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON),
+        thermoPlant(SizedFluidIngredient.of(PneumaticCraftTags.Fluids.LUBRICANT, 4000), Ingredient.of(PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON),
                 FluidStack.EMPTY, new ItemStack(ModItems.COMPRESSED_IRON_DRILL_BIT.get()),
                 TemperatureRange.min(573), 4f, 0.25f, 5.0f, false
         ).save(consumer, RL("thermo_plant/compressed_iron_drill_bit"));
-        thermoPlant(FluidIngredient.of(8000, PneumaticCraftTags.Fluids.LUBRICANT), Ingredient.of(Tags.Items.STORAGE_BLOCKS_DIAMOND),
+        thermoPlant(SizedFluidIngredient.of(PneumaticCraftTags.Fluids.LUBRICANT, 8000), Ingredient.of(Tags.Items.STORAGE_BLOCKS_DIAMOND),
                 FluidStack.EMPTY, new ItemStack(ModItems.DIAMOND_DRILL_BIT.get()),
                 TemperatureRange.min(773), 7.5f, 0.1f, 10.0f, false
         ).save(consumer, RL("thermo_plant/diamond_drill_bit"));
-        thermoPlant(FluidIngredient.of(100, PneumaticCraftTags.Fluids.PLANT_OIL), Ingredient.of(Tags.Items.CROPS_POTATO),
+        thermoPlant(SizedFluidIngredient.of(PneumaticCraftTags.Fluids.PLANT_OIL, 100), Ingredient.of(Tags.Items.CROPS_POTATO),
                 FluidStack.EMPTY, new ItemStack(ModItems.CHIPS.get(), 4),
                 TemperatureRange.min(423), 0f, 1.0f, 1.0f, false
         ).save(consumer, RL("thermo_plant/chips"));
-        thermoPlant(FluidIngredient.of(100, PneumaticCraftTags.Fluids.PLANT_OIL), Ingredient.of(ModItems.RAW_SALMON_TEMPURA.get()),
+        thermoPlant(SizedFluidIngredient.of(PneumaticCraftTags.Fluids.PLANT_OIL, 100), Ingredient.of(ModItems.RAW_SALMON_TEMPURA.get()),
                 FluidStack.EMPTY, new ItemStack(ModItems.SALMON_TEMPURA.get(), 1),
                 TemperatureRange.min(423), 0f, 1.0f, 1.0f, false
         ).save(consumer, RL("thermo_plant/salmon_tempura"));
-        thermoPlant(FluidIngredient.of(4000, PneumaticCraftTags.Fluids.EXPERIENCE), Ingredient.of(ModItems.SPAWNER_CORE_SHELL.get()),
+        thermoPlant(SizedFluidIngredient.of(PneumaticCraftTags.Fluids.EXPERIENCE, 4000), Ingredient.of(ModItems.SPAWNER_CORE_SHELL.get()),
                 FluidStack.EMPTY, new ItemStack(ModItems.SPAWNER_CORE.get()),
                 TemperatureRange.any(), 3f, 0.5f, 3.0f, false
         ).save(consumer, RL("thermo_plant/spawner_core"));
-        thermoPlant(FluidIngredient.of(50, PneumaticCraftTags.Fluids.PLASTIC), Ingredient.of(ModBlocks.PRESSURE_TUBE.get()),
+        thermoPlant(SizedFluidIngredient.of(PneumaticCraftTags.Fluids.PLASTIC, 50), Ingredient.of(ModBlocks.PRESSURE_TUBE.get()),
                 FluidStack.EMPTY, new ItemStack(ModBlocks.REINFORCED_PRESSURE_TUBE.get()),
                 TemperatureRange.any(), 1.5f, 1f, 1.0f, false
         ).save(consumer, RL("thermo_plant/reinforced_pressure_tube"));
 
         // assembly system
-        assembly(Ingredient.of(ModItems.EMPTY_PCB.get()), new ItemStack(ModItems.UNASSEMBLED_PCB.get()),
+        assembly(SizedIngredient.of(ModItems.EMPTY_PCB.get(), 1), new ItemStack(ModItems.UNASSEMBLED_PCB.get()),
                 AssemblyProgramType.LASER)
                 .save(consumer, RL("assembly/unassembled_pcb"));
-        assembly(Ingredient.of(Tags.Items.DUSTS_REDSTONE), new ItemStack(Items.RED_DYE, 2),
+        assembly(SizedIngredient.of(Tags.Items.DUSTS_REDSTONE, 1), new ItemStack(Items.RED_DYE, 2),
                 AssemblyProgramType.DRILL)
                 .save(consumer, RL("assembly/red_dye"));
-        assembly(Ingredient.of(ModBlocks.COMPRESSED_IRON_BLOCK.get()), new ItemStack(ModBlocks.PRESSURE_CHAMBER_VALVE.get(), 20),
+        assembly(SizedIngredient.of(ModBlocks.COMPRESSED_IRON_BLOCK.get(), 1), new ItemStack(ModBlocks.PRESSURE_CHAMBER_VALVE.get(), 20),
                 AssemblyProgramType.DRILL)
                 .save(consumer, RL("assembly/pressure_chamber_valve"));
-        assembly(StackedIngredient.fromItems(20, ModBlocks.PRESSURE_CHAMBER_VALVE.get()), new ItemStack(ModBlocks.ADVANCED_PRESSURE_TUBE.get(), 8),
+        assembly(SizedIngredient.of(ModBlocks.PRESSURE_CHAMBER_VALVE.get(), 20), new ItemStack(ModBlocks.ADVANCED_PRESSURE_TUBE.get(), 8),
                 AssemblyProgramType.LASER)
                 .save(consumer, RL("assembly/advanced_pressure_tube"));
-        assembly(Ingredient.of(Tags.Items.STORAGE_BLOCKS_QUARTZ), new ItemStack(ModBlocks.APHORISM_TILE.get(), 4),
+        assembly(SizedIngredient.of(Blocks.QUARTZ_BLOCK, 1), new ItemStack(ModBlocks.APHORISM_TILE.get(), 4),
                 AssemblyProgramType.LASER)
                 .save(consumer, RL("assembly/aphorism_tile"));
-        assembly(Ingredient.of(ModItems.UNASSEMBLED_NETHERITE_DRILL_BIT.get()), new ItemStack(ModItems.NETHERITE_DRILL_BIT.get()),
+        assembly(SizedIngredient.of(ModItems.UNASSEMBLED_NETHERITE_DRILL_BIT.get(), 1), new ItemStack(ModItems.NETHERITE_DRILL_BIT.get()),
                 AssemblyProgramType.DRILL)
                 .save(consumer, RL("assembly/netherite_drill_bit"));
-        assembly(Ingredient.of(ModItems.SOLAR_WAFER.get()), new ItemStack(ModItems.SOLAR_CELL.get()),
+        assembly(SizedIngredient.of(ModItems.SOLAR_WAFER.get(), 1), new ItemStack(ModItems.SOLAR_CELL.get()),
                 AssemblyProgramType.DRILL)
                 .save(consumer, RL("assembly/solar_cell"));
 
@@ -1588,67 +1594,86 @@ public class ModRecipeProvider extends RecipeProvider {
 
         // fluid mixer
         fluidMixer(
-                FluidIngredient.of(25, PneumaticCraftTags.Fluids.PLANT_OIL),
-                FluidIngredient.of(25, PneumaticCraftTags.Fluids.ETHANOL),
+                SizedFluidIngredient.of(PneumaticCraftTags.Fluids.PLANT_OIL, 25),
+                SizedFluidIngredient.of(PneumaticCraftTags.Fluids.ETHANOL, 25),
                 new FluidStack(ModFluids.BIODIESEL.get(), 50), new ItemStack(ModItems.GLYCEROL.get()),
                 2.0f, 300
         ).save(consumer, RL("fluid_mixer/biodiesel"));
         fluidMixer(
-                FluidIngredient.of(1000, Fluids.WATER),
-                FluidIngredient.of(1000, Fluids.LAVA),
+                SizedFluidIngredient.of(Fluids.WATER, 1000),
+                SizedFluidIngredient.of(Fluids.LAVA, 1000),
                 FluidStack.EMPTY, new ItemStack(Items.OBSIDIAN),
                 0.5f, 40
         ).save(consumer, RL("fluid_mixer/mix_obsidian"));
 
         // fuels
-        fuelQuality(FluidIngredient.of(1000, PneumaticCraftTags.Fluids.CRUDE_OIL), 200_000, 0.25f)
+        fuelQuality(FluidIngredient.tag(PneumaticCraftTags.Fluids.CRUDE_OIL), 200_000, 0.25f)
                 .save(consumer, RL("pneumaticcraft_fuels/crude_oil"));
-        fuelQuality(FluidIngredient.of(1000, PneumaticCraftTags.Fluids.DIESEL), 1_000_000, 0.8f)
+        fuelQuality(FluidIngredient.tag(PneumaticCraftTags.Fluids.DIESEL), 1_000_000, 0.8f)
                 .save(consumer, RL("pneumaticcraft_fuels/diesel"));
-        fuelQuality(FluidIngredient.of(1000, PneumaticCraftTags.Fluids.BIODIESEL), 1_000_000, 0.8f)
+        fuelQuality(FluidIngredient.tag(PneumaticCraftTags.Fluids.BIODIESEL), 1_000_000, 0.8f)
                 .save(consumer, RL("pneumaticcraft_fuels/biodiesel"));
-        fuelQuality(FluidIngredient.of(1000, PneumaticCraftTags.Fluids.KEROSENE), 1_100_000, 1f)
+        fuelQuality(FluidIngredient.tag(PneumaticCraftTags.Fluids.KEROSENE), 1_100_000, 1f)
                 .save(consumer, RL("pneumaticcraft_fuels/kerosene"));
-        fuelQuality(FluidIngredient.of(1000, PneumaticCraftTags.Fluids.GASOLINE), 1_500_000, 1.5f)
+        fuelQuality(FluidIngredient.tag(PneumaticCraftTags.Fluids.GASOLINE), 1_500_000, 1.5f)
                 .save(consumer, RL("pneumaticcraft_fuels/gasoline"));
-        fuelQuality(FluidIngredient.of(1000, PneumaticCraftTags.Fluids.LPG), 1_800_000, 1.25f)
+        fuelQuality(FluidIngredient.tag(PneumaticCraftTags.Fluids.LPG), 1_800_000, 1.25f)
                 .save(consumer, RL("pneumaticcraft_fuels/lpg"));
-        fuelQuality(FluidIngredient.of(1000, PneumaticCraftTags.Fluids.ETHANOL), 400_000, 1f)
+        fuelQuality(FluidIngredient.tag(PneumaticCraftTags.Fluids.ETHANOL), 400_000, 1f)
                 .save(consumer, RL("pneumaticcraft_fuels/ethanol"));
 
         // non-pneumaticcraft fuel compat
-        fuelQuality(FluidIngredient.of(1000, PneumaticCraftTags.Fluids.forgeTag("ethene")), 1_800_800, 1.25f)
+        fuelQuality(FluidIngredient.tag(PneumaticCraftTags.Fluids.forgeTag("ethene")), 1_800_800, 1.25f)
                 .save(consumer.withConditions(new FluidTagPresentCondition("forge:ethene")), RL("pneumaticcraft_fuels/ethylene"));
-        fuelQuality(FluidIngredient.of(1000, PneumaticCraftTags.Fluids.forgeTag("hydrogen")), 300_000, 1.5f)
+        fuelQuality(FluidIngredient.tag(PneumaticCraftTags.Fluids.forgeTag("hydrogen")), 300_000, 1.5f)
                 .save(consumer.withConditions(new FluidTagPresentCondition("forge:hydrogen")), RL("pneumaticcraft_fuels/hydrogen"));
 
 //        ModLoadedCondition thermalLoaded = new ModLoadedCondition("thermal");
 //        conditionalFuelQuality(consumer, RL("pneumaticcraft_fuels/cofh_biofuel"), thermalLoaded,
-//                FluidIngredient.of(1000, new ResourceLocation("thermal:refined_biofuel")), 1_000_000, 0.8f);
+//                FluidIngredient.tag(new ResourceLocation("thermal:refined_biofuel")), 1_000_000, 0.8f);
 //        conditionalFuelQuality(consumer, RL("pneumaticcraft_fuels/cofh_creosote"), thermalLoaded,
-//                FluidIngredient.of(1000, new ResourceLocation("thermal:creosote")), 50_000, 0.25f);
+//                FluidIngredient.tag(new ResourceLocation("thermal:creosote")), 50_000, 0.25f);
 //        conditionalFuelQuality(consumer, RL("pneumaticcraft_fuels/cofh_refined_fuel"), thermalLoaded,
-//                FluidIngredient.of(1000, new ResourceLocation("thermal:refined_fuel")), 1_500_000, 1.5f);
+//                FluidIngredient.tag(new ResourceLocation("thermal:refined_fuel")), 1_500_000, 1.5f);
 //        conditionalFuelQuality(consumer, RL("pneumaticcraft_fuels/cofh_tree_oil"), thermalLoaded,
-//                FluidIngredient.of(1000, new ResourceLocation("thermal:tree_oil")), 400_000, 1.0f);
+//                FluidIngredient.tag(new ResourceLocation("thermal:tree_oil")), 400_000, 1.0f);
     }
 
     private <T extends ItemLike> ShapelessRecipeBuilder shapeless(T result, T required, Object... ingredients) {
         return shapeless(result, 1, required, ingredients);
     }
 
+
+    private ShapelessRecipeBuilder shapeless(ItemStack result, ItemLike required, Object... ingredients) {
+        return shapelessStack(result, required, ingredients);
+    }
+
     private <T extends ItemLike> ShapelessRecipeBuilder shapeless(T result, int count, T required, Object... ingredients) {
         ShapelessRecipeBuilder b = ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, result, count);
         for (Object v : ingredients) {
-            if (v instanceof TagKey<?>) {
-                //noinspection unchecked
-                b.requires((TagKey<Item>) v);
-            } else if (v instanceof ItemLike) {
-                b.requires((ItemLike) v);
-            } else if (v instanceof Ingredient) {
-                b.requires((Ingredient) v);
-            } else {
-                throw new IllegalArgumentException("bad type for recipe ingredient " + v);
+            switch (v) {
+                case TagKey<?> ignored ->
+                    //noinspection unchecked
+                        b.requires((TagKey<Item>) v);
+                case ItemLike itemLike -> b.requires(itemLike);
+                case Ingredient ingredient -> b.requires(ingredient);
+                case null, default -> throw new IllegalArgumentException("bad type for recipe ingredient " + v);
+            }
+        }
+        b.unlockedBy("has_" + safeName(required), has(required));
+        return b;
+    }
+
+    private <T extends ItemLike> ShapelessRecipeBuilder shapelessStack(ItemStack result, T required, Object... ingredients) {
+        ShapelessRecipeBuilder b = ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, result).requires(required);
+        for (Object v : ingredients) {
+            switch (v) {
+                case TagKey<?> ignored ->
+                    //noinspection unchecked
+                        b.requires((TagKey<Item>) v);
+                case ItemLike itemLike -> b.requires(itemLike);
+                case Ingredient ingredient -> b.requires(ingredient);
+                case null, default -> throw new IllegalArgumentException("bad type for recipe ingredient " + v);
             }
         }
         b.unlockedBy("has_" + safeName(required), has(required));
@@ -1689,15 +1714,13 @@ public class ModRecipeProvider extends RecipeProvider {
         Arrays.stream(pattern.split("/")).forEach(builder::pattern);
         for (int i = 0; i < keys.length; i += 2) {
             Object v = keys[i + 1];
-            if (v instanceof TagKey<?>) {
-                //noinspection unchecked
-                builder.define((Character) keys[i], (TagKey<Item>) v);
-            } else if (v instanceof ItemLike) {
-                builder.define((Character) keys[i], (ItemLike) v);
-            } else if (v instanceof Ingredient) {
-                builder.define((Character) keys[i], (Ingredient) v);
-            } else {
-                throw new IllegalArgumentException("bad type for recipe ingredient " + v);
+            switch (v) {
+                case TagKey<?> ignored ->
+                    //noinspection unchecked
+                        builder.define((Character) keys[i], (TagKey<Item>) v);
+                case ItemLike itemLike -> builder.define((Character) keys[i], itemLike);
+                case Ingredient ingredient -> builder.define((Character) keys[i], ingredient);
+                case null, default -> throw new IllegalArgumentException("bad type for recipe ingredient " + v);
             }
         }
         builder.unlockedBy("has_" + safeName(required), has(required));
@@ -1765,12 +1788,12 @@ public class ModRecipeProvider extends RecipeProvider {
                 'C', center);
     }
 
-    private RecipeBuilder pressureChamber(List<StackedIngredient> in, float pressure, ItemStack... out) {
+    private RecipeBuilder pressureChamber(List<SizedIngredient> in, float pressure, ItemStack... out) {
         return new PressureChamberRecipeBuilder(in, pressure, out)
                 .unlockedBy(getHasName(ModBlocks.PRESSURE_CHAMBER_VALVE.get()), has(ModBlocks.PRESSURE_CHAMBER_VALVE.get()));
     }
 
-    private RecipeBuilder explosionCrafting(Ingredient ingredient, int lossRate, ItemStack result) {
+    private RecipeBuilder explosionCrafting(SizedIngredient ingredient, int lossRate, ItemStack result) {
         return new ExplosionCraftingRecipeBuilder(ingredient, lossRate, result)
                 .unlockedBy(getHasName(Blocks.TNT), has(Blocks.TNT));
     }
@@ -1779,24 +1802,35 @@ public class ModRecipeProvider extends RecipeProvider {
         return heatFrameCooling(ingredient, maxTemp, result, 0f, 0f);
     }
 
+    private RecipeBuilder heatFrameCooling(SizedFluidIngredient ingredient, int maxTemp, ItemStack result) {
+        return heatFrameCooling(ingredient, maxTemp, result, 0f, 0f);
+    }
+
     private RecipeBuilder heatFrameCooling(Ingredient ingredient, int maxTemp, ItemStack result, float bonusMult, float bonusLimit) {
-        return new HeatFrameCoolingRecipeBuilder(ingredient, maxTemp, result, bonusMult, bonusLimit)
+        return new HeatFrameCoolingRecipeBuilder(Either.left(ingredient), maxTemp, result, bonusMult, bonusLimit)
+                .unlockedBy(getHasName(ModItems.HEAT_FRAME.get()), has(ModItems.HEAT_FRAME.get()));
+    }
+    private RecipeBuilder heatFrameCooling(SizedFluidIngredient ingredient, int maxTemp, ItemStack result, float bonusMult, float bonusLimit) {
+        return new HeatFrameCoolingRecipeBuilder(Either.right(ingredient), maxTemp, result, bonusMult, bonusLimit)
                 .unlockedBy(getHasName(ModItems.HEAT_FRAME.get()), has(ModItems.HEAT_FRAME.get()));
     }
 
-    private RecipeBuilder refinery(FluidIngredient ingredient, TemperatureRange operatingTemp, FluidStack... outputs) {
+    private RecipeBuilder refinery(SizedFluidIngredient ingredient, TemperatureRange operatingTemp, FluidStack... outputs) {
         return new RefineryRecipeBuilder(ingredient, operatingTemp, outputs)
                 .unlockedBy(getHasName(ModBlocks.REFINERY.get()), has(ModBlocks.REFINERY.get()));
     }
 
-    private RecipeBuilder thermoPlant(FluidIngredient inputFluid, @Nullable Ingredient inputItem,
-                                                 FluidStack outputFluid, ItemStack outputItem, TemperatureRange operatingTemperature, float requiredPressure,
-                                                 float speed, float airUseMuliplier, boolean exothermic) {
-        return new ThermoPlantRecipeBuilder(inputFluid, inputItem, outputFluid, outputItem, operatingTemperature, requiredPressure, speed, airUseMuliplier, exothermic)
+    private RecipeBuilder thermoPlant(SizedFluidIngredient inputFluid, @Nullable Ingredient inputItem,
+                                      FluidStack outputFluid, ItemStack outputItem, TemperatureRange operatingTemperature, float requiredPressure,
+                                      float speed, float airUseMuliplier, boolean exothermic) {
+        return new ThermoPlantRecipeBuilder(
+                ThermoPlantRecipe.Inputs.of(inputFluid, inputItem),
+                new ThermoPlantRecipe.Outputs(outputFluid, outputItem),
+                operatingTemperature, requiredPressure, speed, airUseMuliplier, exothermic)
                 .unlockedBy(getHasName(ModBlocks.THERMOPNEUMATIC_PROCESSING_PLANT.get()), has(ModBlocks.THERMOPNEUMATIC_PROCESSING_PLANT.get()));
     }
 
-    private RecipeBuilder assembly(Ingredient input, ItemStack output, AssemblyProgramType programType) {
+    private RecipeBuilder assembly(SizedIngredient input, ItemStack output, AssemblyProgramType programType) {
         return new AssemblyRecipeBuilder(input, output, programType)
                 .unlockedBy(getHasName(ModBlocks.ASSEMBLY_CONTROLLER.get()), has(ModBlocks.ASSEMBLY_CONTROLLER.get()));
     }
@@ -1811,7 +1845,7 @@ public class ModRecipeProvider extends RecipeProvider {
                 .unlockedBy(getHasName(ModItems.AMADRON_TABLET.get()), has(ModItems.AMADRON_TABLET.get()));
     }
 
-    private RecipeBuilder fluidMixer(FluidIngredient input1, FluidIngredient input2, FluidStack outputFluid, ItemStack outputItem, float pressure, int processingTime) {
+    private RecipeBuilder fluidMixer(SizedFluidIngredient input1, SizedFluidIngredient input2, FluidStack outputFluid, ItemStack outputItem, float pressure, int processingTime) {
         return new FluidMixerRecipeBuilder(input1, input2, outputFluid, outputItem, pressure, processingTime)
                 .unlockedBy(getHasName(ModBlocks.FLUID_MIXER.get()), has(ModBlocks.FLUID_MIXER.get()));
     }
@@ -1829,9 +1863,4 @@ public class ModRecipeProvider extends RecipeProvider {
         ResourceLocation key = BuiltInRegistries.ITEM.getKey(required.asItem());
         return key.getPath().replace('/', '_');
     }
-
-//    @Override
-//    public String getName() {
-//        return "PneumaticCraft Recipes";
-//    }
 }

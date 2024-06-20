@@ -30,6 +30,7 @@ import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
@@ -55,7 +56,6 @@ public class OmnidirectionalHopperBlockEntity extends AbstractHopperBlockEntity<
     public static final int INVENTORY_SIZE = 5;
 
     private final ComparatorItemStackHandler itemHandler = new ComparatorItemStackHandler(this, getInvSize());
-//    private final LazyOptional<IItemHandler> invCap = LazyOptional.of(() -> itemHandler);
     @GuiSynced
     public boolean roundRobin;
     private int rrSlot;
@@ -270,18 +270,18 @@ public class OmnidirectionalHopperBlockEntity extends AbstractHopperBlockEntity<
     }
 
     @Override
-    public void saveAdditional(CompoundTag tag) {
-        super.saveAdditional(tag);
-        tag.put("Items", itemHandler.serializeNBT());
+    public void saveAdditional(CompoundTag tag, HolderLookup.Provider provider) {
+        super.saveAdditional(tag, provider);
+        tag.put("Items", itemHandler.serializeNBT(provider));
         tag.putBoolean("RoundRobin", roundRobin);
         if (roundRobin) tag.putInt("RRSlot", rrSlot);
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
+    public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
+        super.loadAdditional(tag, provider);
 
-        itemHandler.deserializeNBT(tag.getCompound("Items"));
+        itemHandler.deserializeNBT(provider, tag.getCompound("Items"));
         roundRobin = tag.getBoolean("RoundRobin");
         rrSlot = tag.getInt("RRSlot");
     }

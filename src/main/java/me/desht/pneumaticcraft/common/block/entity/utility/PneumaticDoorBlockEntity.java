@@ -22,9 +22,12 @@ import me.desht.pneumaticcraft.common.block.entity.AbstractTickingBlockEntity;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.LazySynced;
 import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
+import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.block.DoorBlock;
@@ -41,7 +44,7 @@ public class PneumaticDoorBlockEntity extends AbstractTickingBlockEntity {
     @DescSynced
     public boolean rightGoing;  // true = door rotates clockwise when door base arm extends
     @DescSynced
-    public int color = DyeColor.WHITE.getId();
+    public DyeColor color;
 
     public PneumaticDoorBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntityTypes.PNEUMATIC_DOOR.get(), pos, state);
@@ -66,7 +69,7 @@ public class PneumaticDoorBlockEntity extends AbstractTickingBlockEntity {
 
         // also rotate the BE for the other half of the door
         BlockPos otherPos = getBlockPos().relative(isTopDoor() ? Direction.DOWN : Direction.UP);
-        PneumaticCraftUtils.getTileEntityAt(getLevel(), otherPos, PneumaticDoorBlockEntity.class).ifPresent(otherDoorHalf -> {
+        PneumaticCraftUtils.getBlockEntityAt(getLevel(), otherPos, PneumaticDoorBlockEntity.class).ifPresent(otherDoorHalf -> {
             otherDoorHalf.rightGoing = rightGoing;
             otherDoorHalf.setChanged();
             if (rotationAngle != otherDoorHalf.rotationAngle) {
@@ -76,8 +79,8 @@ public class PneumaticDoorBlockEntity extends AbstractTickingBlockEntity {
     }
 
     public boolean setColor(DyeColor dyeColor) {
-        if (color != dyeColor.getId() && !getBlockState().getValue(PneumaticDoorBlock.TOP_DOOR)) {
-            color = (byte) dyeColor.getId();
+        if (color != dyeColor && !getBlockState().getValue(PneumaticDoorBlock.TOP_DOOR)) {
+            color = dyeColor;
             nonNullLevel().getBlockEntity(getBlockPos(), ModBlockEntityTypes.PNEUMATIC_DOOR.get()).ifPresent(topHalf -> {
                 topHalf.color = color;
                 if (!nonNullLevel().isClientSide) {
@@ -96,27 +99,34 @@ public class PneumaticDoorBlockEntity extends AbstractTickingBlockEntity {
     }
 
     @Override
-    public void saveAdditional(CompoundTag tag) {
-        super.saveAdditional(tag);
+    public void saveAdditional(CompoundTag tag, HolderLookup.Provider provider) {
+        super.saveAdditional(tag, provider);
 
         tag.putBoolean("rightGoing", rightGoing);
-        tag.putInt("color", color);
+        tag.putInt("color", color.getId());
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
+    public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
+        super.loadAdditional(tag, provider);
 
         rightGoing = tag.getBoolean("rightGoing");
-        color = tag.getInt("color");
+        color = DyeColor.byId(tag.getInt("color"));
         scheduleDescriptionPacket();
     }
 
     @Override
-    public void serializeExtraItemData(CompoundTag blockEntityTag, boolean preserveState) {
-        super.serializeExtraItemData(blockEntityTag, preserveState);
+    protected void applyImplicitComponents(DataComponentInput componentInput) {
+        super.applyImplicitComponents(componentInput);
 
-        blockEntityTag.putInt("color", color);
+        color = componentInput.getOrDefault(ModDataComponents.DOOR_COLOR, DyeColor.WHITE);
+    }
+
+    @Override
+    protected void collectImplicitComponents(DataComponentMap.Builder builder) {
+        super.collectImplicitComponents(builder);
+
+        builder.set(ModDataComponents.DOOR_COLOR, color);
     }
 
     @Override

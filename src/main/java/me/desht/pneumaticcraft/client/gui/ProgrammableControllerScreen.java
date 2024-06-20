@@ -17,7 +17,6 @@
 
 package me.desht.pneumaticcraft.client.gui;
 
-import com.google.common.collect.ImmutableMap;
 import me.desht.pneumaticcraft.api.misc.Symbols;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetCheckBox;
@@ -30,6 +29,7 @@ import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
+import net.minecraft.Util;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
@@ -39,6 +39,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraft.world.item.enchantment.ItemEnchantments;
 
 import java.util.Collections;
 import java.util.List;
@@ -50,16 +51,18 @@ public class ProgrammableControllerScreen extends AbstractPneumaticCraftContaine
         implements IGuiDrone
 {
     private static final ItemStack EYE_OFF = new ItemStack(Items.ENDER_EYE);
-    private static final ItemStack EYE_ON = new ItemStack(Items.ENDER_EYE);
-    static {
-        EnchantmentHelper.setEnchantments(ImmutableMap.of(Enchantments.SILK_TOUCH, 1), EYE_ON);
-    }
+    private static final ItemStack EYE_ON = Util.make(new ItemStack(Items.ENDER_EYE), stack -> {
+        ItemEnchantments.Mutable m = new ItemEnchantments.Mutable(ItemEnchantments.EMPTY);
+        m.set(Enchantments.SILK_TOUCH, 1);
+        EnchantmentHelper.setEnchantments(stack, m.toImmutable());
+    });
 
     private WidgetAnimatedStat chunkTab;
     private WidgetCheckBox shouldCharge;
     private WidgetCheckBox chunkloadSelf;
     private WidgetCheckBox chunkloadWork;
     private WidgetCheckBox chunkloadWork3x3;
+
 
     public ProgrammableControllerScreen(ProgrammableControllerMenu container, Inventory inv, Component displayString) {
         super(container, inv, displayString);

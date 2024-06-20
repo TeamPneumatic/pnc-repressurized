@@ -17,14 +17,13 @@
 
 package me.desht.pneumaticcraft.common.network;
 
-import me.desht.pneumaticcraft.client.util.ClientUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
-import net.neoforged.neoforge.network.handling.PlayPayloadContext;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
@@ -37,26 +36,21 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
  * neighbouring cached block shapes (pressure tubes especially, but potentially anything) can be recalculated.
  */
 public record PacketNotifyBlockUpdate(BlockPos pos) implements CustomPacketPayload {
-    public static final ResourceLocation ID = RL("notify_block_update");
+    public static final Type<PacketNotifyBlockUpdate> TYPE = new Type<>(RL("notify_block_update"));
 
-    public static PacketNotifyBlockUpdate fromNetwork(FriendlyByteBuf buffer) {
-        return new PacketNotifyBlockUpdate(buffer.readBlockPos());
-    }
-
-    @Override
-    public void write(FriendlyByteBuf buf) {
-        buf.writeBlockPos(pos);
-    }
+    public static final StreamCodec<FriendlyByteBuf, PacketNotifyBlockUpdate> STREAM_CODEC = StreamCodec.composite(
+            BlockPos.STREAM_CODEC, PacketNotifyBlockUpdate::pos,
+            PacketNotifyBlockUpdate::new
+    );
 
     @Override
-    public ResourceLocation id() {
-        return ID;
+    public Type<PacketNotifyBlockUpdate> type() {
+        return TYPE;
     }
 
-    public static void handle(PacketNotifyBlockUpdate message, PlayPayloadContext ctx) {
-        ctx.workHandler().submitAsync(() -> {
-            Level w = ClientUtils.getClientLevel();
-            w.getBlockState(message.pos()).updateNeighbourShapes(w, message.pos(), Block.UPDATE_ALL);
-        });
+    public static void handle(PacketNotifyBlockUpdate message, IPayloadContext ctx) {
+        Level level = ctx.player().level();
+        level.getBlockState(message.pos())
+                .updateNeighbourShapes(level, message.pos(), Block.UPDATE_ALL);
     }
 }

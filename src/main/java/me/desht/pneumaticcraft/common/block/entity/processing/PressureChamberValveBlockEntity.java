@@ -49,9 +49,7 @@ import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.SizeLimitedItemHandlerWrapper;
 import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import net.minecraft.core.NonNullList;
+import net.minecraft.core.*;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -79,12 +77,10 @@ import net.neoforged.neoforge.items.ItemHandlerHelper;
 import net.neoforged.neoforge.items.ItemStackHandler;
 import net.neoforged.neoforge.items.wrapper.CombinedInvWrapper;
 import org.jetbrains.annotations.NotNull;
+import org.joml.Vector3f;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.BitSet;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class PressureChamberValveBlockEntity extends AbstractAirHandlingBlockEntity
@@ -421,39 +417,42 @@ public class PressureChamberValveBlockEntity extends AbstractAirHandlingBlockEnt
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
+    public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
+        super.loadAdditional(tag, provider);
 
         setupMultiBlock(tag.getInt("multiBlockSize"), tag.getInt("multiBlockX"), tag.getInt("multiBlockY"), tag.getInt("multiBlockZ"));
         ItemStackHandler handler = new ItemStackHandler();
-        handler.deserializeNBT(tag.getCompound("itemsInChamber"));
+        handler.deserializeNBT(provider, tag.getCompound("itemsInChamber"));
         for (int i = 0; i < handler.getSlots() && i < CHAMBER_INV_SIZE; i++) {
             itemsInChamber.setStackInSlot(i, handler.getStackInSlot(i));
         }
         ItemStackHandler outHandler = new ItemStackHandler();
-        outHandler.deserializeNBT(tag.getCompound("craftedItems"));
+        outHandler.deserializeNBT(provider, tag.getCompound("craftedItems"));
         for (int i = 0; i < outHandler.getSlots() && i < OUTPUT_INV_SIZE; i++) {
             craftedItems.setStackInSlot(i, outHandler.getStackInSlot(i));
         }
 
         // Read in the accessory valves from NBT
-        ListTag accList = tag.getList("Valves", Tag.TAG_COMPOUND);
+        ListTag accList = tag.getList("Valves", Tag.TAG_INT_ARRAY);
         nbtValveList.clear();
         for (int i = 0; i < accList.size(); ++i) {
-            CompoundTag tagCompound = accList.getCompound(i);
-            nbtValveList.add(NbtUtils.readBlockPos(tagCompound));
+            int[] p = accList.getIntArray(i);
+            if (p.length == 3) {
+                nbtValveList.add(new BlockPos(p[0], p[1], p[2]));
+            }
         }
     }
 
     @Override
-    public void saveAdditional(CompoundTag tag) {
-        super.saveAdditional(tag);
+    public void saveAdditional(CompoundTag tag, HolderLookup.Provider provider) {
+        super.saveAdditional(tag, provider);
+
         tag.putInt("multiBlockX", multiBlockX);
         tag.putInt("multiBlockY", multiBlockY);
         tag.putInt("multiBlockZ", multiBlockZ);
         tag.putInt("multiBlockSize", multiBlockSize);
-        tag.put("itemsInChamber", itemsInChamber.serializeNBT());
-        tag.put("craftedItems", craftedItems.serializeNBT());
+        tag.put("itemsInChamber", itemsInChamber.serializeNBT(provider));
+        tag.put("craftedItems", craftedItems.serializeNBT(provider));
 
         // Write the accessory valve list to NBT
         ListTag accList = accessoryValves.stream()
@@ -476,7 +475,7 @@ public class PressureChamberValveBlockEntity extends AbstractAirHandlingBlockEnt
         }
 
     }
-    
+
     private void dropItemOnGround(ItemStack stack){
         PneumaticCraftUtils.dropItemOnGroundPrecisely(stack, getLevel(),
                 multiBlockX + multiBlockSize / 2.0, multiBlockY + 1.0, multiBlockZ + multiBlockSize / 2.0);
@@ -572,22 +571,24 @@ public class PressureChamberValveBlockEntity extends AbstractAirHandlingBlockEnt
         return false;
     }
 
-    private static boolean checkForCubeOfSize(int size, Level world, int baseX, int baseY, int baseZ, BlockPos rebuildPos) {
+    private static boolean checkForCubeOfSize(int size, Level level, int baseX, int baseY, int baseZ, BlockPos rebuildPos) {
         List<PressureChamberValveBlockEntity> valveList = new ArrayList<>();
         BlockPos.MutableBlockPos mPos = new BlockPos.MutableBlockPos();
         for (int x = 0; x < size; x++) {
             for (int y = 0; y < size; y++) {
                 for (int z = 0; z < size; z++) {
                     mPos = mPos.set(x + baseX, y + baseY, z + baseZ);
-                    BlockState state = world.getBlockState(mPos);
+                    BlockState state = level.getBlockState(mPos);
                     if (x != 0 && x != size - 1 && y != 0 && y != size - 1 && z != 0 && z != size - 1) {
-                        if (!world.isEmptyBlock(mPos)) {
+                        // interior of the pressure chamber; must be empty
+                        if (!level.isEmptyBlock(mPos)) {
                             return false;
                         }
                     } else if (!(state.getBlock() instanceof IBlockPressureChamber)) {
+                        // invalid block!
                         return false;
                     } else if (state.getBlock() instanceof PressureChamberValveBlock) {
-                        // this a valve; ensure it faces the right way for the face it's in
+                        // a valve; ensure it faces the right way for the face it's in
                         boolean xMid = x != 0 && x != size - 1;
                         boolean yMid = y != 0 && y != size - 1;
                         boolean zMid = z != 0 && z != size - 1;
@@ -595,18 +596,16 @@ public class PressureChamberValveBlockEntity extends AbstractAirHandlingBlockEnt
                         if (xMid && yMid && facing.getAxis() == Direction.Axis.Z
                                 || xMid && zMid && facing.getAxis() == Direction.Axis.Y
                                 || yMid && zMid && facing.getAxis() == Direction.Axis.X) {
-                            BlockEntity te = world.getBlockEntity(mPos);
-                            if (te instanceof PressureChamberValveBlockEntity) {
-                                valveList.add((PressureChamberValveBlockEntity) te);
+                            if (level.getBlockEntity(mPos) instanceof PressureChamberValveBlockEntity valve) {
+                                valveList.add(valve);
                             }
                         } else {
                             return false;
                         }
                     } else {
-                        // this is a wall or interface; ensure it doesn't belong to another pressure chamber
-                        BlockEntity te = world.getBlockEntity(mPos);
-                        if (te instanceof PressureChamberWallBlockEntity) {
-                            BlockEntity teV = ((PressureChamberWallBlockEntity) te).getPrimaryValve();
+                        // a wall or interface; ensure it doesn't belong to another pressure chamber
+                        if (level.getBlockEntity(mPos) instanceof PressureChamberWallBlockEntity wall) {
+                            BlockEntity teV = wall.getPrimaryValve();
                             if (teV != null && (rebuildPos == null || !rebuildPos.equals(teV.getBlockPos()))) return false;
                         }
                     }
@@ -641,24 +640,25 @@ public class PressureChamberValveBlockEntity extends AbstractAirHandlingBlockEnt
         for (int x = 0; x < size; x++) {
             for (int y = 0; y < size; y++) {
                 for (int z = 0; z < size; z++) {
-                    BlockEntity be = world.getBlockEntity(new BlockPos(x + baseX, y + baseY, z + baseZ));
+                    BlockEntity be = level.getBlockEntity(new BlockPos(x + baseX, y + baseY, z + baseZ));
                     if (be instanceof PressureChamberWallBlockEntity wall) {
                         wall.setPrimaryValve(primaryValve);  // this also forces re-rendering with the formed texture
-                        if (world.getBlockState(be.getBlockPos()).getBlock() instanceof PressureChamberGlassBlock) {
+                        if (level.getBlockState(be.getBlockPos()).getBlock() instanceof PressureChamberGlassBlock) {
                             primaryValve.hasGlass = true;
                         }
                     } else if (be instanceof PressureChamberValveBlockEntity v) {
-                        BlockState state = world.getBlockState(be.getBlockPos());
-                        world.setBlock(be.getBlockPos(), state.setValue(PNCBlockStateProperties.FORMED, v.isPrimaryValve()), Block.UPDATE_CLIENTS);
+                        BlockState state = level.getBlockState(be.getBlockPos());
+                        level.setBlock(be.getBlockPos(), state.setValue(PNCBlockStateProperties.FORMED, v.isPrimaryValve()), Block.UPDATE_CLIENTS);
                     }
                     if (be != null) {
                         float dx = x == 0 ? -0.1f : 0.1f;
                         float dz = z == 0 ? -0.1f : 0.1f;
-                        NetworkHandler.sendToAllTracking(
-                                new PacketSpawnParticle(ParticleTypes.POOF,
-                                        be.getBlockPos().getX() + 0.5, be.getBlockPos().getY() + 0.5, be.getBlockPos().getZ() + 0.5,
-                                        dx, 0.3, dz, 5, 0, 0, 0),
-                                be);
+                        NetworkHandler.sendToAllTracking(new PacketSpawnParticle(ParticleTypes.POOF,
+                                be.getBlockPos().getCenter().toVector3f(),
+                                new Vector3f(dx, 0.3f, dz),
+                                5,
+                                Optional.empty()
+                        ), be);
                     }
                 }
             }
@@ -699,7 +699,7 @@ public class PressureChamberValveBlockEntity extends AbstractAirHandlingBlockEnt
         return new AABB(multiBlockX, multiBlockY, multiBlockZ,
                 multiBlockX + multiBlockSize, multiBlockY + multiBlockSize, multiBlockZ + multiBlockSize);
     }
-    
+
     private void captureEntityItemsInChamber() {
         List<ItemEntity> items = nonNullLevel().getEntitiesOfClass(ItemEntity.class, getChamberAABB(), EntitySelector.ENTITY_STILL_ALIVE);
         for (ItemEntity item : items) {

@@ -17,18 +17,21 @@
 
 package me.desht.pneumaticcraft.common.drone.progwidgets;
 
+import com.mojang.datafixers.Products;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import joptsimple.internal.Strings;
-import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
+import me.desht.pneumaticcraft.api.drone.IProgWidget;
 import me.desht.pneumaticcraft.api.misc.Symbols;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
+import me.desht.pneumaticcraft.common.util.CodecUtil;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
-import net.minecraft.core.Direction;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.Util;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 
 import java.util.Arrays;
-import java.util.Collections;
+import java.util.BitSet;
 import java.util.List;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
@@ -37,61 +40,69 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
  * Base class for widgets which have side filtering and count limits.
  */
 public abstract class ProgWidgetInventoryBase extends ProgWidgetAreaItemBase implements ISidedWidget, ICountWidget {
-    private boolean[] accessingSides = new boolean[]{false, true, false, false, false, false};
-    private boolean useCount;
-    private int count = 1;
+    protected static <P extends ProgWidgetInventoryBase> Products.P2<RecordCodecBuilder.Mu<P>, PositionFields, InvBaseFields> invParts(RecordCodecBuilder.Instance<P> pInstance) {
+        return baseParts(pInstance).and(
+                InvBaseFields.CODEC.fieldOf("inv").forGetter(p -> p.invBaseFields)
+        );
+    }
 
-    public ProgWidgetInventoryBase(ProgWidgetType<?> type) {
-        super(type);
+    protected InvBaseFields invBaseFields;
+
+    protected ProgWidgetInventoryBase(PositionFields pos, InvBaseFields invBaseFields) {
+        super(pos);
+
+        this.invBaseFields = invBaseFields;
+    }
+
+    public BitSet getAccessingSides() {
+        return invBaseFields.accessingSides;
     }
 
     @Override
     public void addErrors(List<Component> curInfo, List<IProgWidget> widgets) {
         super.addErrors(curInfo, widgets);
 
-        boolean sideActive = false;
-        for (boolean bool : accessingSides) {
-            sideActive |= bool;
+        if (getAccessingSides().isEmpty()) {
+            curInfo.add(xlate("pneumaticcraft.gui.progWidget.general.error.noSideActive"));
         }
-        if (!sideActive) curInfo.add(xlate("pneumaticcraft.gui.progWidget.general.error.noSideActive"));
     }
 
     @Override
     public void setSides(boolean[] sides) {
-        accessingSides = sides;
+        invBaseFields = invBaseFields.withSides(BitSet.valueOf(new byte[] { encodeSides(sides) }));
     }
 
     @Override
     public boolean[] getSides() {
-        return accessingSides;
+        return decodeSides(getAccessingSides().toByteArray()[0]);
     }
 
     @Override
     public boolean useCount() {
-        return useCount;
+        return invBaseFields.useCount;
     }
 
     @Override
     public void setUseCount(boolean useCount) {
-        this.useCount = useCount;
+        invBaseFields = invBaseFields.withUseCount(useCount);
     }
 
     @Override
     public int getCount() {
-        return count;
+        return invBaseFields.count;
     }
 
     @Override
     public void setCount(int count) {
-        this.count = count;
+        invBaseFields = invBaseFields.withCount(count);
     }
 
     @Override
     public void getTooltip(List<Component> curTooltip) {
         super.getTooltip(curTooltip);
         if (isUsingSides()) curTooltip.add(xlate("pneumaticcraft.gui.progWidget.inventory.accessingSides"));
-        curTooltip.add(Component.literal(Symbols.TRIANGLE_RIGHT + " ").append(getExtraStringInfo().get(0)));
-        if (useCount) curTooltip.add(xlate("pneumaticcraft.gui.progWidget.inventory.usingCount", count));
+        curTooltip.add(Component.literal(Symbols.TRIANGLE_RIGHT + " ").append(getExtraStringInfo().getFirst()));
+        if (useCount()) curTooltip.add(xlate("pneumaticcraft.gui.progWidget.inventory.usingCount", getCount()));
     }
 
     protected boolean isUsingSides() {
@@ -100,65 +111,75 @@ public abstract class ProgWidgetInventoryBase extends ProgWidgetAreaItemBase imp
 
     @Override
     public List<Component> getExtraStringInfo() {
-        boolean allSides = true;
-        boolean noSides = true;
-        for (boolean bool : accessingSides) {
-            if (bool) {
-                noSides = false;
-            } else {
-                allSides = false;
-            }
-        }
-        if (allSides) {
-            return Collections.singletonList(ALL_TEXT);
-        } else if (noSides) {
-            return Collections.singletonList(NONE_TEXT);
+        if (getAccessingSides().cardinality() == 6) {
+            return List.of(ALL_TEXT);
+        } else if (getAccessingSides().isEmpty()) {
+            return List.of(NONE_TEXT);
         } else {
             List<String> l = Arrays.stream(DirectionUtil.VALUES)
-                    .filter(side -> accessingSides[side.get3DDataValue()])
+                    .filter(side -> getAccessingSides().get(side.get3DDataValue()))
                     .map(ClientUtils::translateDirection)
                     .toList();
-            return Collections.singletonList(Component.literal(Strings.join(l, ", ")));
+            return List.of(Component.literal(Strings.join(l, ", ")));
         }
     }
 
-    @Override
-    public void writeToNBT(CompoundTag tag) {
-        super.writeToNBT(tag);
-        for (int i = 0; i < 6; i++) {
-            if (accessingSides[i]) tag.putBoolean(Direction.from3DDataValue(i).name(), true);
-        }
-        if (useCount) tag.putBoolean("useCount", true);
-        tag.putInt("count", count);
-    }
+//    @Override
+//    public void writeToNBT(CompoundTag tag, HolderLookup.Provider provider) {
+//        super.writeToNBT(tag, provider);
+//        for (int i = 0; i < 6; i++) {
+//            if (accessingSides.get(i)) tag.putBoolean(Direction.from3DDataValue(i).name(), true);
+//        }
+//        if (useCount) tag.putBoolean("useCount", true);
+//        tag.putInt("count", count);
+//    }
+//
+//    @Override
+//    public void readFromNBT(CompoundTag tag, HolderLookup.Provider provider) {
+//        super.readFromNBT(tag, provider);
+//        for (int i = 0; i < 6; i++) {
+//            accessingSides.set(i, tag.getBoolean(Direction.from3DDataValue(i).name()));
+//        }
+//        useCount = tag.getBoolean("useCount");
+//        count = tag.getInt("count");
+//    }
 
     @Override
-    public void readFromNBT(CompoundTag tag) {
-        super.readFromNBT(tag);
-        for (int i = 0; i < 6; i++) {
-            accessingSides[i] = tag.getBoolean(Direction.from3DDataValue(i).name());
-        }
-        useCount = tag.getBoolean("useCount");
-        count = tag.getInt("count");
-    }
-
-    @Override
-    public void writeToPacket(FriendlyByteBuf buf) {
+    public void writeToPacket(RegistryFriendlyByteBuf buf) {
         super.writeToPacket(buf);
-        for (int i = 0; i < 6; i++) {
-            buf.writeBoolean(accessingSides[i]);
-        }
-        buf.writeBoolean(useCount);
-        buf.writeVarInt(count);
+        buf.writeByte(getAccessingSides().toByteArray()[0]);
+        buf.writeBoolean(useCount());
+        buf.writeVarInt(getCount());
     }
 
     @Override
-    public void readFromPacket(FriendlyByteBuf buf) {
+    public void readFromPacket(RegistryFriendlyByteBuf buf) {
         super.readFromPacket(buf);
-        for (int i = 0; i < 6; i++) {
-            accessingSides[i] = buf.readBoolean();
-        }
-        useCount = buf.readBoolean();
-        count = buf.readVarInt();
+
+        invBaseFields = new InvBaseFields(BitSet.valueOf(new byte[] { buf.readByte() }), buf.readBoolean(), buf.readVarInt());
     }
+
+    public record InvBaseFields(BitSet accessingSides, boolean useCount, int count) {
+        private static final BitSet DEFAULT_SIDES = Util.make(new BitSet(6), bs -> bs.set(1)); // UP face
+        public static final InvBaseFields DEFAULT = new InvBaseFields(DEFAULT_SIDES, false, 1);
+
+        public static final Codec<InvBaseFields> CODEC = RecordCodecBuilder.create(builder -> builder.group(
+                CodecUtil.bitSetCodec(6).optionalFieldOf("sides", DEFAULT_SIDES).forGetter(InvBaseFields::accessingSides),
+                Codec.BOOL.optionalFieldOf("use_count", false).forGetter(InvBaseFields::useCount),
+                Codec.INT.optionalFieldOf("count", 1).forGetter(InvBaseFields::count)
+        ).apply(builder, InvBaseFields::new));
+
+        public InvBaseFields withSides(BitSet accessingSides) {
+            return new InvBaseFields(accessingSides, useCount, count);
+        }
+
+        public InvBaseFields withUseCount(boolean useCount) {
+            return new InvBaseFields(accessingSides, useCount, count);
+        }
+
+        public InvBaseFields withCount(int count) {
+            return new InvBaseFields(accessingSides, useCount, count);
+        }
+    }
+
 }

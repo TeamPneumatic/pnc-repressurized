@@ -22,6 +22,7 @@ import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.data.PneumaticCraftTags;
 import me.desht.pneumaticcraft.api.lib.Names;
+import me.desht.pneumaticcraft.api.misc.ITranslatableEnum;
 import me.desht.pneumaticcraft.client.ColorHandlers;
 import me.desht.pneumaticcraft.client.sound.MovingSounds;
 import me.desht.pneumaticcraft.common.block.entity.utility.ChargingStationBlockEntity;
@@ -33,21 +34,24 @@ import me.desht.pneumaticcraft.common.item.DrillBitItem.DrillBitType;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketPlayMovingSound;
 import me.desht.pneumaticcraft.common.network.PacketPlayMovingSound.MovingSoundFocus;
+import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.registry.ModMenuTypes;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
-import me.desht.pneumaticcraft.common.util.*;
+import me.desht.pneumaticcraft.common.upgrades.UpgradableItemUtils;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.common.util.RayTraceUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.stats.Stats;
+import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.MenuProvider;
@@ -57,19 +61,21 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.component.ItemContainerContents;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
+import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.common.CommonHooks;
-import net.neoforged.neoforge.common.TierSortingRegistry;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import net.neoforged.neoforge.event.level.BlockEvent;
 import org.apache.commons.lang3.mutable.MutableBoolean;
 
 import javax.annotation.Nonnull;
@@ -118,14 +124,14 @@ public class JackHammerItem extends PressurizableItem
         return null;
     }
 
-    public DrillBitType getDrillBit(ItemStack stack) {
+    public static DrillBitType getDrillBit(ItemStack stack) {
         DrillBitHandler handler = new DrillBitHandler(stack);
         return handler.getStackInSlot(0).getItem() instanceof DrillBitItem bit ? bit.getType() : DrillBitType.NONE;
     }
 
     @Override
     public boolean isCorrectToolForDrops(ItemStack stack, BlockState state) {
-        return TierSortingRegistry.isCorrectTierForDrops(getDrillBit(stack).getTier(), state);
+        return !state.is(getDrillBit(stack).getTier().getIncorrectBlocksForDrops());
     }
 
     @Override
@@ -158,80 +164,6 @@ public class JackHammerItem extends PressurizableItem
     @Override
     public boolean onEntitySwing(ItemStack stack, LivingEntity entity) {
         return getDrillBit(stack) != DrillBitType.NONE && getAir(stack) > 0f;
-    }
-
-    @Override
-    public boolean onBlockStartBreak(ItemStack itemstack, BlockPos pos, Player player) {
-        MutableBoolean didWork = new MutableBoolean(false);
-
-        if (player instanceof ServerPlayer serverPlayer) {
-            Level level = serverPlayer.getCommandSenderWorld();
-
-            HitResult hitResult = RayTraceUtils.getEntityLookedObject(player, PneumaticCraftUtils.getPlayerReachDistance(player));
-            if (hitResult instanceof BlockHitResult blockHitResult) {
-                PNCCapabilities.getAirHandler(itemstack).ifPresent(airHandler -> {
-                    DigMode digMode = JackHammerItem.getDigMode(itemstack);
-
-                    IntList upgrades = UpgradableItemUtils.getUpgradeList(itemstack, ModUpgrades.SPEED.get(), ModUpgrades.MAGNET.get());
-                    int speed = upgrades.getInt(0);
-                    boolean magnet = upgrades.getInt(1) > 0 && digMode.isVeinMining();
-
-                    DrillBitType bitType = getDrillBit(itemstack);
-                    if (TierSortingRegistry.getTiersLowerThan(digMode.getBitType().getTier()).contains(bitType.getTier())) {
-                        // sanity check
-                        digMode = DigMode.MODE_1X1;
-                    }
-                    Set<BlockPos> brokenPos = getBreakPositions(level, pos, blockHitResult.getDirection(), player, digMode);
-
-                    float air = airHandler.getAir();
-                    float air0 = air;
-                    float usage = player.isCreative() ? 0f : PneumaticValues.USAGE_JACKHAMMER * SPEED_MULT[speed];
-                    if (magnet) usage *= 1.1f;
-
-                    if (air >= usage) {
-                        didWork.setTrue();
-
-                        // the first block (always mined)
-                        air -= usage;
-
-                        // any extra blocks, based on the dig mode
-                        for (BlockPos pos1 : brokenPos) {
-                            if (air < usage) break;
-
-                            BlockState state1 = level.getBlockState(pos1);
-                            if (state1.getDestroySpeed(level, pos1) < 0) continue;
-
-                            int exp = CommonHooks.onBlockBreakEvent(serverPlayer.level(), serverPlayer.gameMode.getGameModeForPlayer(), serverPlayer, pos1);
-                            if (exp == -1) {
-                                continue;
-                            }
-                            if (level.getBlockEntity(pos1) != null) {
-                                continue;
-                            }
-                            Block block = state1.getBlock();
-                            boolean removed = state1.onDestroyedByPlayer(level, pos1, player, true, level.getFluidState(pos1));
-                            if (removed) {
-                                block.destroy(level, pos1, state1);
-                                if (magnet) {
-                                    magnetHarvest(block, level, player, pos, pos1, state1, itemstack);
-                                } else {
-                                    block.playerDestroy(level, player, pos1, state1, null, itemstack);
-                                }
-                                if (exp > 0 && level instanceof ServerLevel) {
-                                    block.popExperience((ServerLevel) level, magnet ? pos : pos1, exp);
-                                }
-                                air -= usage;
-                                player.awardStat(Stats.ITEM_USED.get(this));
-                            }
-                        }
-                        if (air != air0 && !player.isCreative()) {
-                            airHandler.addAir((int) (air - air0));
-                        }
-                    }
-                });
-            }
-        }
-        return !didWork.booleanValue();
     }
 
     // just like Block#playerDestroy, except all items are dropped in the same place (the block that was mined)
@@ -363,24 +295,16 @@ public class JackHammerItem extends PressurizableItem
     }
 
     public static DigMode getDigMode(ItemStack stack) {
-        if (stack.getItem() instanceof JackHammerItem && stack.hasTag()) {
-            try {
-                return Objects.requireNonNull(stack.getTag()).contains(NBT_DIG_MODE) ?
-                        DigMode.valueOf(stack.getTag().getString(NBT_DIG_MODE)) :
-                        DigMode.MODE_1X1;
-            } catch (IllegalArgumentException ignored) {
-            }
-        }
-        return DigMode.MODE_1X1;
+        return stack.getOrDefault(ModDataComponents.JACKHAMMER_DIG_MODE, DigMode.MODE_1X1);
     }
 
     public static void setDigMode(ItemStack stack, DigMode mode) {
-        stack.getOrCreateTag().putString(NBT_DIG_MODE, mode.toString());
+        stack.set(ModDataComponents.JACKHAMMER_DIG_MODE, mode);
     }
 
     public static DigMode cycleDigMode(ItemStack stack, boolean forward) {
-        if (stack.getItem() instanceof JackHammerItem) {
-            DrillBitType ourBit = ((JackHammerItem) stack.getItem()).getDrillBit(stack);
+        if (stack.getItem() instanceof JackHammerItem jackHammer) {
+            DrillBitType ourBit = jackHammer.getDrillBit(stack);
             DigMode currentMode = getDigMode(stack);
             DigMode newMode = currentMode;
             if (forward) {
@@ -423,7 +347,7 @@ public class JackHammerItem extends PressurizableItem
         }
     }
 
-    public enum DigMode implements ITranslatableEnum {
+    public enum DigMode implements ITranslatableEnum, StringRepresentable {
         MODE_1X1("1x1", 1, DrillBitType.IRON),
         MODE_1X2("1x2", 2, DrillBitType.COMPRESSED_IRON),
         MODE_1X3("1x3", 3, DrillBitType.COMPRESSED_IRON),
@@ -476,25 +400,21 @@ public class JackHammerItem extends PressurizableItem
         public String getTranslationKey() {
             return "pneumaticcraft.message.jackhammer.mode." + name;
         }
+
+        @Override
+        public String getSerializedName() {
+            return name;
+        }
     }
 
     public static class DrillBitHandler extends BaseItemStackHandler {
-        private static final String NBT_DRILL_BIT = "DrillBit";
-
         private final ItemStack jackhammerStack;
 
         public DrillBitHandler(ItemStack jackhammerStack) {
             super(1);
 
             this.jackhammerStack = jackhammerStack;
-            if (jackhammerStack.hasTag() && Objects.requireNonNull(jackhammerStack.getTag()).contains(NBT_DRILL_BIT, Tag.TAG_STRING)) {
-                String name = jackhammerStack.getTag().getString(NBT_DRILL_BIT);
-                try {
-                    DrillBitType type = DrillBitType.valueOf(name);
-                    setStackInSlot(0, type.asItemStack());
-                } catch (IllegalArgumentException ignored) {
-                }
-            }
+            loadContainerContents(jackhammerStack.getOrDefault(ModDataComponents.JACKHAMMER_DRILL_BIT, ItemContainerContents.EMPTY));
         }
 
         @Override
@@ -503,12 +423,7 @@ public class JackHammerItem extends PressurizableItem
         }
 
         public void save() {
-            ItemStack bitStack = getStackInSlot(0);
-            if (bitStack.getItem() instanceof DrillBitItem bit) {
-                NBTUtils.setString(jackhammerStack, NBT_DRILL_BIT, bit.getType().toString());
-            } else {
-                NBTUtils.setString(jackhammerStack, NBT_DRILL_BIT, DrillBitType.NONE.toString());
-            }
+            jackhammerStack.set(ModDataComponents.JACKHAMMER_DRILL_BIT, toContainerContents());
         }
     }
 
@@ -520,11 +435,12 @@ public class JackHammerItem extends PressurizableItem
 
             this.jackhammerStack = jackhammerStack;
 
-            Map<Enchantment, Integer> ench = EnchantmentHelper.getEnchantments(jackhammerStack);
-            for (Map.Entry<Enchantment, Integer> map : ench.entrySet()) {
-                if (map.getKey() == Enchantments.SILK_TOUCH || map.getKey() == Enchantments.BLOCK_FORTUNE) {
-                    ItemStack book = new ItemStack(Items.ENCHANTED_BOOK);
-                    EnchantmentHelper.setEnchantments(Collections.singletonMap(map.getKey(), map.getValue()), book);
+            ItemEnchantments ench = EnchantmentHelper.getEnchantmentsForCrafting(jackhammerStack);
+            for (var entry : ench.entrySet()) {
+                if (entry.getKey() == Enchantments.SILK_TOUCH || entry.getKey() == Enchantments.FORTUNE) {
+                    ItemStack book = PneumaticCraftUtils.enchant(
+                            new ItemStack(Items.ENCHANTED_BOOK), Map.of(entry.getKey().value(), entry.getIntValue())
+                    );
                     setStackInSlot(0, book);
                     break;
                 }
@@ -539,27 +455,26 @@ public class JackHammerItem extends PressurizableItem
         public void save() {
             // replace any silk touch or fortune enchant, but leave any other enchants untouched
             ItemStack bookStack = getStackInSlot(0);
-            Map<Enchantment, Integer> currentEnchants = EnchantmentHelper.getEnchantments(jackhammerStack);
-            currentEnchants.remove(Enchantments.SILK_TOUCH);
-            currentEnchants.remove(Enchantments.BLOCK_FORTUNE);
+            ItemEnchantments.Mutable currentEnchants = new ItemEnchantments.Mutable(EnchantmentHelper.getEnchantmentsForCrafting(jackhammerStack));
+            currentEnchants.removeIf(h -> h.value() == Enchantments.SILK_TOUCH || h.value() == Enchantments.FORTUNE);
             if (validateBook(bookStack)) {
-                currentEnchants.putAll(EnchantmentHelper.getEnchantments(bookStack));
+                EnchantmentHelper.getEnchantmentsForCrafting(bookStack).entrySet()
+                        .forEach(entry -> currentEnchants.set(entry.getKey().value(), entry.getIntValue()));
             }
-            EnchantmentHelper.setEnchantments(currentEnchants, jackhammerStack);
+            EnchantmentHelper.setEnchantments(jackhammerStack, currentEnchants.toImmutable());
         }
 
         public static boolean validateBook(ItemStack bookStack) {
             // must be an enchanted book with Silk Touch or Fortune and nothing else
             if (bookStack.getItem() == Items.ENCHANTED_BOOK) {
-                Map<Enchantment, Integer> ench = EnchantmentHelper.getEnchantments(bookStack);
-                if (ench.size() != 1) return false;
-                return ench.containsKey(Enchantments.BLOCK_FORTUNE) || ench.containsKey(Enchantments.SILK_TOUCH);
+                var ench = EnchantmentHelper.getEnchantmentsForCrafting(bookStack);
+                return ench.size() == 1 && (ench.getLevel(Enchantments.FORTUNE) > 0 || ench.getLevel(Enchantments.SILK_TOUCH) > 0);
             }
             return false;
         }
     }
 
-    @Mod.EventBusSubscriber(modid = Names.MOD_ID)
+    @EventBusSubscriber(modid = Names.MOD_ID)
     public static class Listener {
         @SubscribeEvent
         public static void onLeftClickBlock(PlayerInteractEvent.LeftClickBlock event) {
@@ -572,6 +487,77 @@ public class JackHammerItem extends PressurizableItem
                 } else {
                     // play the sound to any other players tracking this player
                     NetworkHandler.sendToAllTracking(new PacketPlayMovingSound(MovingSounds.Sound.JACKHAMMER, MovingSoundFocus.of(player)), player);
+                }
+            }
+        }
+
+        @SubscribeEvent(priority = EventPriority.LOWEST)
+        public static void onBlockBreak(BlockEvent.BreakEvent event) {
+            if (event.getPlayer() instanceof ServerPlayer serverPlayer && serverPlayer.getMainHandItem().getItem() instanceof JackHammerItem) {
+                Level level = serverPlayer.getCommandSenderWorld();
+                ItemStack itemstack = serverPlayer.getMainHandItem();
+                BlockPos pos = event.getPos();
+
+                HitResult hitResult = RayTraceUtils.getEntityLookedObject(serverPlayer, PneumaticCraftUtils.getPlayerReachDistance(serverPlayer));
+                if (hitResult instanceof BlockHitResult blockHitResult) {
+                    PNCCapabilities.getAirHandler(itemstack).ifPresent(airHandler -> {
+                        DigMode digMode = JackHammerItem.getDigMode(itemstack);
+
+                        IntList upgrades = UpgradableItemUtils.getUpgradeList(itemstack, ModUpgrades.SPEED.get(), ModUpgrades.MAGNET.get());
+                        int speed = upgrades.getInt(0);
+                        boolean magnet = upgrades.getInt(1) > 0 && digMode.isVeinMining();
+
+                        if (digMode.getBitType().getBitQuality() > getDrillBit(itemstack).getBitQuality()) {
+                            // shouldn't happen, but ensure jackhammer isn't in a dig mode that its installed bit can't do
+                            digMode = DigMode.MODE_1X1;
+                        }
+
+                        Set<BlockPos> brokenPos = getBreakPositions(level, pos, blockHitResult.getDirection(), serverPlayer, digMode);
+
+                        float air = airHandler.getAir();
+                        float air0 = air;
+                        float usage = serverPlayer.isCreative() ? 0f : PneumaticValues.USAGE_JACKHAMMER * SPEED_MULT[speed];
+                        if (magnet) usage *= 1.1f;
+
+                        if (air >= usage) {
+                            // the first block (always mined)
+                            air -= usage;
+
+                            // any extra blocks, based on the dig mode
+                            for (BlockPos pos1 : brokenPos) {
+                                if (air < usage) break;
+
+                                BlockState state1 = level.getBlockState(pos1);
+                                if (state1.getDestroySpeed(level, pos1) < 0) continue;
+
+                                int exp = CommonHooks.fireBlockBreak(serverPlayer.level(), serverPlayer.gameMode.getGameModeForPlayer(), serverPlayer, pos1, state1);
+                                if (exp == -1) {
+                                    continue;
+                                }
+                                if (level.getBlockEntity(pos1) != null) {
+                                    continue;
+                                }
+                                Block block = state1.getBlock();
+                                boolean removed = state1.onDestroyedByPlayer(level, pos1, serverPlayer, true, level.getFluidState(pos1));
+                                if (removed) {
+                                    block.destroy(level, pos1, state1);
+                                    if (magnet) {
+                                        magnetHarvest(block, level, serverPlayer, pos, pos1, state1, itemstack);
+                                    } else {
+                                        block.playerDestroy(level, serverPlayer, pos1, state1, null, itemstack);
+                                    }
+                                    if (exp > 0 && level instanceof ServerLevel) {
+                                        block.popExperience((ServerLevel) level, magnet ? pos : pos1, exp);
+                                    }
+                                    air -= usage;
+                                    serverPlayer.awardStat(Stats.ITEM_USED.get(itemstack.getItem()));
+                                }
+                            }
+                            if (air != air0 && !serverPlayer.isCreative()) {
+                                airHandler.addAir((int) (air - air0));
+                            }
+                        }
+                    });
                 }
             }
         }

@@ -27,6 +27,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.common.NeoForgeMod;
 
@@ -58,18 +59,18 @@ public class StepAssistHandler extends BaseArmorUpgradeHandler<IArmorExtensionDa
     @Override
     public void tick(ICommonArmorHandler commonArmorHandler, boolean enabled) {
         Player player = commonArmorHandler.getPlayer();
-        AttributeInstance attributeInstance = player.getAttribute(NeoForgeMod.STEP_HEIGHT.value());
+        AttributeInstance attributeInstance = player.getAttribute(Attributes.STEP_HEIGHT);
         if (attributeInstance != null) {
             AttributeModifier currentModifier = attributeInstance.getModifier(STEP_ASSIST_MODIFIER_ID);
             double stepBoost = enabled && commonArmorHandler.hasMinPressure(EquipmentSlot.FEET) && !player.isShiftKeyDown() ? 0.6 : 0f;
             if (currentModifier != null) {
-                if (PneumaticCraftUtils.epsilonEquals(currentModifier.getAmount(), stepBoost)) {
+                if (PneumaticCraftUtils.epsilonEquals(currentModifier.amount(), stepBoost)) {
                     return;  // already good
                 }
-                attributeInstance.removeModifier(currentModifier.getId());
+                attributeInstance.removeModifier(currentModifier.id());
             }
             if (stepBoost > 0) {
-                attributeInstance.addTransientModifier(new AttributeModifier(STEP_ASSIST_MODIFIER_ID, "Step Assist", stepBoost, AttributeModifier.Operation.ADDITION));
+                attributeInstance.addTransientModifier(new AttributeModifier(STEP_ASSIST_MODIFIER_ID, "Step Assist", stepBoost, AttributeModifier.Operation.ADD_VALUE));
             }
         }
     }
@@ -83,10 +84,10 @@ public class StepAssistHandler extends BaseArmorUpgradeHandler<IArmorExtensionDa
 
     @Override
     public void onShutdown(ICommonArmorHandler commonArmorHandler) {
-        AttributeInstance attributeInstance = commonArmorHandler.getPlayer().getAttribute(NeoForgeMod.STEP_HEIGHT.value());
+        AttributeInstance attributeInstance = commonArmorHandler.getPlayer().getAttribute(Attributes.STEP_HEIGHT);
         if (attributeInstance != null) {
             AttributeModifier currentModifier = attributeInstance.getModifier(STEP_ASSIST_MODIFIER_ID);
-            if (currentModifier != null) attributeInstance.removeModifier(currentModifier.getId());
+            if (currentModifier != null) attributeInstance.removeModifier(currentModifier.id());
         }
     }
 }

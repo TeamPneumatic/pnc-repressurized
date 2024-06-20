@@ -92,7 +92,7 @@ public class AirParticle extends TextureSheetParticle {
         @Override
         public Particle createParticle(AirParticleData airParticleData, ClientLevel world, double x, double y, double z, double dx, double dy, double dz) {
             AirParticle p = new AirParticle(world, x, y, z, dx, dy, dz, 0.2f, spriteSet);
-            p.setAlpha(airParticleData.getAlpha());
+            p.setAlpha(airParticleData.alpha());
             return p;
         }
     }

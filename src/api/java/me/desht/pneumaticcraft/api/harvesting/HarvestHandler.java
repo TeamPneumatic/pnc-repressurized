@@ -32,7 +32,7 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Defines a generic harvest handler.  Register new harvest handlers via the standard Forge deferred register system.
+ * Defines a generic harvest handler.  Register new harvest handlers via the deferred register system.
  *
  * @author MineMaarten, desht
  */

@@ -52,9 +52,8 @@ public class NonDespawningItem extends Item {
      * allows items to add custom lines of information to the mouseover description
      */
     @Override
-    @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, Level worldIn, List<Component> curInfo, TooltipFlag moreInfo) {
-        super.appendHoverText(stack, worldIn, curInfo, moreInfo);
+    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> curInfo, TooltipFlag moreInfo) {
+        super.appendHoverText(stack, context, curInfo, moreInfo);
         curInfo.add(xlate("pneumaticcraft.gui.tooltip.doesNotDespawn"));
     }
 }

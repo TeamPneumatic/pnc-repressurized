@@ -17,26 +17,29 @@
 
 package me.desht.pneumaticcraft.api.drone;
 
+import com.mojang.serialization.MapCodec;
+
 import java.util.function.Supplier;
 
 /**
  * Represents the type of a progwidget. You do not need to use this directly.
  */
-public class ProgWidgetType<P extends IProgWidgetBase> {
-    private final Supplier<? extends P> factory;
-
+public class ProgWidgetType<P extends IProgWidget> {
+    private final Supplier<? extends P> defaultSupplier;
+    private final MapCodec<? extends IProgWidget> codec;
     private String descriptionId;
 
-    private ProgWidgetType(Supplier<P> factory) {
-        this.factory = factory;
+    private ProgWidgetType(Supplier<P> defaultSupplier, MapCodec<P> codec) {
+        this.defaultSupplier = defaultSupplier;
+        this.codec = codec;
     }
 
-    public static <P extends IProgWidgetBase> ProgWidgetType<P> createType(Supplier<P> factory) {
-        return new ProgWidgetType<>(factory);
+    public static <P extends IProgWidget> ProgWidgetType<P> createType(Supplier<P> factory, MapCodec<P> codec) {
+        return new ProgWidgetType<>(factory, codec);
     }
 
     public P create() {
-        return factory.get();
+        return defaultSupplier.get();
     }
 
     public String getTranslationKey() {
@@ -46,8 +49,12 @@ public class ProgWidgetType<P extends IProgWidgetBase> {
         return this.descriptionId;
     }
 
-    public P cast(IProgWidgetBase widget) {
+    public P cast(IProgWidget widget) {
         //noinspection unchecked
         return (P) widget;
+    }
+
+    public MapCodec<? extends IProgWidget> codec() {
+        return codec;
     }
 }

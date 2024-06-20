@@ -57,32 +57,32 @@ public class PressureGaugeRenderer3D {
      * @param yPos y position
      * @param fgColor color to draw the surround, needle and text
      */
-    public static void drawPressureGauge(PoseStack matrixStack, MultiBufferSource buffer, float minPressure, float maxPressure, float dangerPressure, float minWorkingPressure, float currentPressure, int xPos, int yPos, int fgColor) {
-        Matrix3f normal = matrixStack.last().normal();
+    public static void drawPressureGauge(PoseStack poseStack, MultiBufferSource buffer, float minPressure, float maxPressure, float dangerPressure, float minWorkingPressure, float currentPressure, int xPos, int yPos, int fgColor) {
+        Matrix3f normal = poseStack.last().normal();
 
         // Draw the green and red surface in the gauge.
-        RenderUtils.renderWithType(matrixStack, buffer, ModRenderTypes.TRIANGLE_FAN, (posMat, builder) ->
+        RenderUtils.renderWithType(poseStack, buffer, ModRenderTypes.TRIANGLE_FAN, (posMat, builder) ->
                 drawGaugeBackground(posMat, builder, minPressure, maxPressure, dangerPressure, minWorkingPressure, xPos, yPos));
 
         // Draw the surrounding circle in the foreground colour
-        RenderUtils.renderWithType(matrixStack, buffer, RenderType.LINE_STRIP, (posMat, builder) ->
-                drawGaugeSurround(posMat, normal, builder, xPos, yPos, fgColor));
+        RenderUtils.renderWithType(poseStack, buffer, RenderType.LINE_STRIP, (posMat, builder) ->
+                drawGaugeSurround(poseStack, builder, xPos, yPos, fgColor));
 
         // Draw the scale
         int currentScale = (int) maxPressure;
         List<TextScaler> textScalers = new ArrayList<>();
-        RenderUtils.renderWithType(matrixStack, buffer, RenderType.LINES, (posMat, builder) ->
-                drawScale(posMat, normal, builder, minPressure, maxPressure, xPos, yPos, currentScale, textScalers));
+        RenderUtils.renderWithType(poseStack, buffer, RenderType.LINES, (posMat, builder) ->
+                drawScale(poseStack, builder, minPressure, maxPressure, xPos, yPos, currentScale, textScalers));
 
         // Draw the needle.
-        RenderUtils.renderWithType(matrixStack, buffer, RenderType.LINE_STRIP, (posMat, builder) -> {
+        RenderUtils.renderWithType(poseStack, buffer, RenderType.LINE_STRIP, (posMat, builder) -> {
                     float angleIndicator = GAUGE_POINTS - (int) ((currentPressure - minPressure) / (maxPressure - minPressure) * GAUGE_POINTS);
                     angleIndicator = -angleIndicator / CIRCLE_POINTS * 2F * PI_F - STOP_ANGLE;
-                    drawNeedle(posMat, normal, builder, xPos, yPos, angleIndicator, fgColor);
+                    drawNeedle(poseStack, builder, xPos, yPos, angleIndicator, fgColor);
                 });
 
         // draw the numbers next to the scaler.
-        drawText(matrixStack, buffer, xPos, yPos, fgColor, textScalers);
+        drawText(poseStack, buffer, xPos, yPos, fgColor, textScalers);
     }
 
     private static void drawGaugeBackground(Matrix4f posMat, VertexConsumer builder, float minPressure, float maxPressure, float dangerPressure, float minWorkingPressure, int xPos, int yPos) {
@@ -126,11 +126,11 @@ public class PressureGaugeRenderer3D {
         }
     }
 
-    private static void drawGaugeSurround(Matrix4f posMat, Matrix3f normal, VertexConsumer builder, int xPos, int yPos, int fgColor) {
+    private static void drawGaugeSurround(PoseStack poseStack, VertexConsumer builder, int xPos, int yPos, int fgColor) {
         // vertex builder is set up for VertexMode.LINE_STRIP
         float[] cols = RenderUtils.decomposeColorF(fgColor);
         for (int i = 0; i < CIRCLE_POINTS; i++) {
-            RenderUtils.normalLine(builder, posMat, normal,
+            RenderUtils.normalLine(builder, poseStack,
                     GAUGE_SURROUND[i][0] + xPos, GAUGE_SURROUND[i][1] + yPos, 0f,
                     GAUGE_SURROUND[i + 1][0] + xPos, GAUGE_SURROUND[i + 1][1] + yPos, 0f,
                     cols[0], cols[1], cols[2], cols[3],
@@ -138,7 +138,7 @@ public class PressureGaugeRenderer3D {
         }
     }
 
-    private static void drawScale(Matrix4f posMat, Matrix3f normal, VertexConsumer builder, float minPressure, float maxPressure, int xPos, int yPos, int currentScale, List<TextScaler> textScalers) {
+    private static void drawScale(PoseStack poseStack, VertexConsumer builder, float minPressure, float maxPressure, int xPos, int yPos, int currentScale, List<TextScaler> textScalers) {
         // vertex builder is set up for VertexMode.LINE
         for (int i = 0; i <= GAUGE_POINTS; i++) {
             float angle = -i / (float) CIRCLE_POINTS * 2F * PI_F - STOP_ANGLE;
@@ -153,12 +153,12 @@ public class PressureGaugeRenderer3D {
                 float y1 = y * RADIUS * r1 + yPos;
                 float x2 = x * RADIUS * r2 + xPos;
                 float y2 = y * RADIUS * r2 + yPos;
-                RenderUtils.normalLine(builder, posMat, normal, x1, y1, 0f, x2, y2, 0f, 1f, 0f, 0f, 0f, false);
+                RenderUtils.normalLine(builder, poseStack, x1, y1, 0f, x2, y2, 0f, 1f, 0f, 0f, 0f, false);
             }
         }
     }
 
-    private static void drawNeedle(Matrix4f posMat, Matrix3f normal, VertexConsumer builder, int xPos, int yPos, float angle, int fgColor) {
+    private static void drawNeedle(PoseStack poseStack, VertexConsumer builder, int xPos, int yPos, float angle, int fgColor) {
         // vertex builder is set up for VertexMode.LINE_STRIP
         float[] cols = RenderUtils.decomposeColorF(fgColor);
 
@@ -169,10 +169,10 @@ public class PressureGaugeRenderer3D {
         float x3 = Mth.cos(angle) * RADIUS * 0.8F + xPos;
         float y3 = Mth.sin(angle) * RADIUS * 0.8F + yPos;
 
-        RenderUtils.normalLine(builder, posMat, normal, x1, y1, 0f, x2, y2, 0f, cols[0], cols[1], cols[2], cols[3], true);
-        RenderUtils.normalLine(builder, posMat, normal, x2, y2, 0f, x3, y3, 0f, cols[0], cols[1], cols[2], cols[3], true);
-        RenderUtils.normalLine(builder, posMat, normal, x3, y3, 0f, x1, y1, 0f, cols[0], cols[1], cols[2], cols[3], true);
-        RenderUtils.normalLine(builder, posMat, normal, x1, y1, 0f, x2, y2, 0f, cols[0], cols[1], cols[2], cols[3], true);
+        RenderUtils.normalLine(builder, poseStack, x1, y1, 0f, x2, y2, 0f, cols[0], cols[1], cols[2], cols[3], true);
+        RenderUtils.normalLine(builder, poseStack, x2, y2, 0f, x3, y3, 0f, cols[0], cols[1], cols[2], cols[3], true);
+        RenderUtils.normalLine(builder, poseStack, x3, y3, 0f, x1, y1, 0f, cols[0], cols[1], cols[2], cols[3], true);
+        RenderUtils.normalLine(builder, poseStack, x1, y1, 0f, x2, y2, 0f, cols[0], cols[1], cols[2], cols[3], true);
     }
 
     private static void drawText(PoseStack matrixStack, MultiBufferSource buffer, int xPos, int yPos, int fgColor, List<TextScaler> textScalers) {

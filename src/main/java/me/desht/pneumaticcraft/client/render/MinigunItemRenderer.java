@@ -7,6 +7,7 @@ import me.desht.pneumaticcraft.client.model.PNCModelLayers;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.item.minigun.MinigunItem;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
+import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.model.geom.EntityModelSet;
@@ -20,8 +21,6 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 import net.neoforged.neoforge.common.util.Lazy;
 
-import java.util.Objects;
-
 public class MinigunItemRenderer extends BlockEntityWithoutLevelRenderer {
     private final ModelMinigun model;
 
@@ -33,9 +32,9 @@ public class MinigunItemRenderer extends BlockEntityWithoutLevelRenderer {
 
     @Override
     public void renderByItem(ItemStack stack, ItemDisplayContext displayContext, PoseStack matrixStack, MultiBufferSource buffer, int combinedLightIn, int combinedOverlayIn) {
-        if (stack.getItem() instanceof MinigunItem itemMinigun && stack.hasTag()) {
+        if (stack.getItem() instanceof MinigunItem itemMinigun && stack.has(ModDataComponents.OWNER_ENTITY_ID)) {
             Minecraft mc = Minecraft.getInstance();
-            int id = Objects.requireNonNull(stack.getTag()).getInt(MinigunItem.OWNING_PLAYER_ID);
+            int id = stack.getOrDefault(ModDataComponents.OWNER_ENTITY_ID, 0);
             if (ClientUtils.getClientLevel().getEntity(id) instanceof Player player) {
                 Minigun minigun = itemMinigun.getMinigun(stack, player);
                 matrixStack.pushPose();

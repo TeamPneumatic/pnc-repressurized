@@ -20,11 +20,11 @@ package me.desht.pneumaticcraft.common.network;
 import me.desht.pneumaticcraft.common.amadron.AmadronOfferManager;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOffer;
 import me.desht.pneumaticcraft.common.recipes.amadron.OfferType;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import net.neoforged.neoforge.network.handling.PlayPayloadContext;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -39,7 +39,12 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
  * or when client requests it
  */
 public record PacketSyncAmadronOffers(Collection<AmadronOffer> activeOffers, boolean notifyPlayer) implements CustomPacketPayload {
-    public static final ResourceLocation ID = RL("sync_amadron_offers");
+    public static final Type<PacketSyncAmadronOffers> TYPE = new Type<>(RL("sync_amadron_offers"));
+
+    public static final StreamCodec<RegistryFriendlyByteBuf, PacketSyncAmadronOffers> STREAM_CODEC = StreamCodec.of(
+            PacketSyncAmadronOffers::toNetwork,
+            PacketSyncAmadronOffers::fromNetwork
+    );
 
     public static PacketSyncAmadronOffers createRequest() {
         return new PacketSyncAmadronOffers(List.of(), false);
@@ -49,9 +54,9 @@ public record PacketSyncAmadronOffers(Collection<AmadronOffer> activeOffers, boo
         return new PacketSyncAmadronOffers(AmadronOfferManager.getInstance().getActiveOffers(), notifyPlayer);
     }
 
-    public static PacketSyncAmadronOffers fromNetwork(FriendlyByteBuf buf) {
+    private static PacketSyncAmadronOffers fromNetwork(RegistryFriendlyByteBuf buf) {
         boolean notifyPlayer = buf.readBoolean();
-        List<AmadronOffer>  activeOffers = new ArrayList<>();
+        List<AmadronOffer> activeOffers = new ArrayList<>();
         int offerCount = buf.readVarInt();
         for (int i = 0; i < offerCount; i++) {
             OfferType type = buf.readEnum(OfferType.class);
@@ -60,34 +65,25 @@ public record PacketSyncAmadronOffers(Collection<AmadronOffer> activeOffers, boo
         return new PacketSyncAmadronOffers(activeOffers, notifyPlayer);
     }
 
-    @Override
-    public void write(FriendlyByteBuf buf) {
-        buf.writeBoolean(notifyPlayer);
-        buf.writeVarInt(activeOffers.size());
-        for (AmadronOffer offer : activeOffers) {
+    private static void toNetwork(RegistryFriendlyByteBuf buf, PacketSyncAmadronOffers message) {
+        buf.writeBoolean(message.notifyPlayer);
+        buf.writeVarInt(message.activeOffers.size());
+        for (AmadronOffer offer : message.activeOffers) {
             buf.writeEnum(offer.getOfferType());
             offer.getOfferType().write(buf, offer);
         }
     }
 
     @Override
-    public ResourceLocation id() {
-        return ID;
+    public Type<PacketSyncAmadronOffers> type() {
+        return TYPE;
     }
 
-    public static void handle(PacketSyncAmadronOffers message, PlayPayloadContext ctx) {
-        ctx.workHandler().submitAsync(
-                () -> {
-                    if (ctx.flow().isClientbound()) {
-                        AmadronOfferManager.getInstance().syncOffers(message.activeOffers(), message.notifyPlayer());
-                    } else {
-                        ctx.player().ifPresent(player -> {
-                            if (player instanceof ServerPlayer sp) {
-                                NetworkHandler.sendNonLocal(sp, PacketSyncAmadronOffers.create(false));
-                            }
-                        });
-                    }
-                }
-        );
+    public static void handle(PacketSyncAmadronOffers message, IPayloadContext ctx) {
+        if (ctx.flow().isClientbound()) {
+            AmadronOfferManager.getInstance().syncOffers(message.activeOffers(), message.notifyPlayer());
+        } else if (ctx.player() instanceof ServerPlayer sp) {
+            NetworkHandler.sendNonLocal(sp, PacketSyncAmadronOffers.create(false));
+        }
     }
 }

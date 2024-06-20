@@ -18,9 +18,10 @@
 package me.desht.pneumaticcraft.common.network;
 
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.network.handling.PlayPayloadContext;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
@@ -31,25 +32,25 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
  * as possible
  */
 public record PacketServerTickTime(double tickTime) implements CustomPacketPayload {
-    public static final ResourceLocation ID = RL("server_tick_time");
+    public static final Type<PacketServerTickTime> TYPE = new Type<>(RL("server_tick_time"));
 
-    public static double tickTimeMultiplier = 1;
+    public static final StreamCodec<FriendlyByteBuf, PacketServerTickTime> STREAM_CODEC = StreamCodec.composite(
+            ByteBufCodecs.DOUBLE, PacketServerTickTime::tickTime,
+            PacketServerTickTime::new
+    );
 
-    public static PacketServerTickTime fromNetwork(FriendlyByteBuf buffer) {
-        return new PacketServerTickTime(buffer.readDouble());
-    }
-
-    @Override
-    public void write(FriendlyByteBuf buffer) {
-        buffer.writeDouble(tickTime);
-    }
+    private static double tickTimeMultiplier = 1;
 
     @Override
-    public ResourceLocation id() {
-        return ID;
+    public Type<PacketServerTickTime> type() {
+        return TYPE;
     }
 
-    public static void handle(PacketServerTickTime message, PlayPayloadContext ctx) {
-        ctx.workHandler().submitAsync(() -> tickTimeMultiplier = Math.min(1, 50D / Math.max(message.tickTime(), 0.01)));
+    public static void handle(PacketServerTickTime message, IPayloadContext ignoredCtx) {
+        tickTimeMultiplier = Math.min(1, 50D / Math.max(message.tickTime(), 0.01));
+    }
+
+    public static double getTickTimeMultiplier() {
+        return tickTimeMultiplier;
     }
 }

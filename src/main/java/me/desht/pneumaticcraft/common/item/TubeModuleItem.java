@@ -29,7 +29,6 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.neoforged.api.distmarker.Dist;
@@ -55,8 +54,8 @@ public class TubeModuleItem extends Item {
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, Level world, List<Component> tooltip, TooltipFlag flag) {
-        super.appendHoverText(stack, world, tooltip, flag);
+    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
+        super.appendHoverText(stack, context, tooltip, flag);
 
         AbstractTubeModule module = createModule(Direction.UP,null);
         tooltip.add(Component.literal("In line: " + (module.isInline() ? "Yes" : "No")).withStyle(ChatFormatting.DARK_AQUA));
@@ -69,7 +68,7 @@ public class TubeModuleItem extends Item {
             BlockState state = context.getLevel().getBlockState(context.getClickedPos());
             if (state.getBlock() instanceof PressureTubeBlock) {
                 BlockHitResult brtr = new BlockHitResult(context.getClickLocation(), context.getClickedFace().getOpposite(), context.getClickedPos(), false);
-                return state.use(context.getLevel(), context.getPlayer(), context.getHand(), brtr);
+                return state.useItemOn(context.getItemInHand(), context.getLevel(), context.getPlayer(), context.getHand(), brtr).result();
             }
         }
         return super.useOn(context);

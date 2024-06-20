@@ -37,7 +37,7 @@ import me.desht.pneumaticcraft.common.item.PneumaticArmorItem;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketToggleArmorFeature;
 import me.desht.pneumaticcraft.common.network.PacketToggleArmorFeatureBulk;
-import me.desht.pneumaticcraft.common.network.PacketToggleArmorFeatureBulk.FeatureSetting;
+import me.desht.pneumaticcraft.common.network.PacketToggleArmorFeature.FeatureSetting;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
@@ -58,7 +58,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.client.event.InputEvent;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.neoforge.client.event.ScreenEvent;
-import net.neoforged.neoforge.event.TickEvent;
+import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -129,27 +129,25 @@ public enum HUDHandler implements IKeyListener {
     }
 
     @SubscribeEvent
-    public void playerTick(TickEvent.PlayerTickEvent event) {
-        if (event.phase == TickEvent.Phase.START) {
-            Minecraft mc = Minecraft.getInstance();
-            Player player = event.player;
-            if (player == mc.player && player.level().isClientSide) {
-                boolean anyArmorEquipped = false;
-                CommonArmorHandler comHudHandler = CommonArmorHandler.getHandlerForPlayer();
-                for (EquipmentSlot slot : ArmorUpgradeRegistry.ARMOR_SLOTS) {
-                    if (isPneumaticArmorPiece(player, slot)) {
-                        tickArmorPiece(mc.player, slot, comHudHandler);
-                        anyArmorEquipped = true;
-                    }
+    public void playerTick(PlayerTickEvent.Pre event) {
+        Minecraft mc = Minecraft.getInstance();
+        Player player = event.getEntity();
+        if (player == mc.player && player.level().isClientSide) {
+            boolean anyArmorEquipped = false;
+            CommonArmorHandler comHudHandler = CommonArmorHandler.getHandlerForPlayer();
+            for (EquipmentSlot slot : ArmorUpgradeRegistry.ARMOR_SLOTS) {
+                if (isPneumaticArmorPiece(player, slot)) {
+                    tickArmorPiece(mc.player, slot, comHudHandler);
+                    anyArmorEquipped = true;
                 }
-                if (anyArmorEquipped) {
-                    ensureArmorInit(player, comHudHandler);
-                    pendingMessages.forEach(ArmorMessage::tick);
-                    pendingMessages.removeIf(message -> message == null || message.isExpired());
-                } else {
-                    pendingMessages.clear();
-                    sentForceInitPacket = false;
-                }
+            }
+            if (anyArmorEquipped) {
+                ensureArmorInit(player, comHudHandler);
+                pendingMessages.forEach(ArmorMessage::tick);
+                pendingMessages.removeIf(message -> message == null || message.isExpired());
+            } else {
+                pendingMessages.clear();
+                sentForceInitPacket = false;
             }
         }
     }
@@ -162,7 +160,7 @@ public enum HUDHandler implements IKeyListener {
             // core-components is always in slot HEAD, index 0
             if (state) {
                 commonArmorHandler.setUpgradeEnabled(EquipmentSlot.HEAD, (byte) 0, true);
-                NetworkHandler.sendToServer(new PacketToggleArmorFeature(EquipmentSlot.HEAD, (byte) 0, true));
+                NetworkHandler.sendToServer(new PacketToggleArmorFeature(new FeatureSetting(EquipmentSlot.HEAD, (byte) 0, true)));
             }
             sentForceInitPacket = true;
         }
@@ -271,9 +269,9 @@ public enum HUDHandler implements IKeyListener {
     }
 
     public void addMessage(ArmorMessage message) {
-        if (pendingMessages.size() > 0) {
+        if (!pendingMessages.isEmpty()) {
             // this message is dependent on the previous one, so renders right beneath it
-            message.setDependingMessage(pendingMessages.get(pendingMessages.size() - 1).getStat());
+            message.setDependingMessage(pendingMessages.getLast().getStat());
         }
         pendingMessages.add(message);
     }

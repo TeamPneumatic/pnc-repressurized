@@ -19,10 +19,10 @@ package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronPlayerOffer;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.network.handling.PlayPayloadContext;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
@@ -32,31 +32,25 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
  * Sent by server when a custom Amadron trade is removed
  */
 public record PacketAmadronTradeRemoved(AmadronPlayerOffer offer) implements CustomPacketPayload {
-    public static final ResourceLocation ID = RL("amadron_remove_trade");
+    public static final Type<PacketAmadronTradeRemoved> TYPE = new Type<>(RL("amadron_remove_trade"));
 
-    public static PacketAmadronTradeRemoved fromNetwork(FriendlyByteBuf buffer) {
-        return new PacketAmadronTradeRemoved(AmadronPlayerOffer.playerOfferFromBuf(buffer));
-    }
-
-    @Override
-    public void write(FriendlyByteBuf buf) {
-        offer.write(buf);
-    }
+    public static final StreamCodec<RegistryFriendlyByteBuf, PacketAmadronTradeRemoved> STREAM_CODEC = StreamCodec.composite(
+            AmadronPlayerOffer.STREAM_CODEC, PacketAmadronTradeRemoved::offer,
+            PacketAmadronTradeRemoved::new
+    );
 
     @Override
-    public ResourceLocation id() {
-        return ID;
+    public Type<PacketAmadronTradeRemoved> type() {
+        return TYPE;
     }
 
-    public static void handle(PacketAmadronTradeRemoved message, PlayPayloadContext ctx) {
-        ctx.player().ifPresent(player -> ctx.workHandler().submitAsync(() -> {
-            if (ConfigHelper.common().amadron.notifyOfTradeRemoval.get())
-                player.displayClientMessage(
-                        xlate("pneumaticcraft.message.amadron.playerRemovedTrade",
-                                message.offer().getVendorName(),
-                                message.offer().getOutput().toString(),
-                                message.offer().getInput().toString()
-                        ), false);
-        }));
+    public static void handle(PacketAmadronTradeRemoved message, IPayloadContext ctx) {
+        if (ConfigHelper.common().amadron.notifyOfTradeRemoval.get())
+            ctx.player().displayClientMessage(
+                    xlate("pneumaticcraft.message.amadron.playerRemovedTrade",
+                            message.offer().getVendorName(),
+                            message.offer().getOutput().toString(),
+                            message.offer().getInput().toString()
+                    ), false);
     }
 }

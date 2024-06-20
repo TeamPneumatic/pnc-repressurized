@@ -31,6 +31,7 @@ import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
 import me.desht.pneumaticcraft.common.pneumatic_armor.JetBootsStateTracker;
 import me.desht.pneumaticcraft.common.pneumatic_armor.JetBootsStateTracker.JetBootsState;
+import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.registry.ModSounds;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
@@ -50,13 +51,14 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.event.AnvilUpdateEvent;
-import net.neoforged.neoforge.event.TickEvent;
 import net.neoforged.neoforge.event.entity.living.LivingAttackEvent;
 import net.neoforged.neoforge.event.entity.living.LivingChangeTargetEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.living.LivingEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.level.BlockEvent;
+import net.neoforged.neoforge.event.tick.PlayerTickEvent;
+import org.joml.Vector3f;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -116,7 +118,10 @@ public class PneumaticArmorHandler {
                         for (int i = 0; i < 2; i++) {
                             float sx = player.getRandom().nextFloat() * 1.5F - 0.75F;
                             float sz = player.getRandom().nextFloat() * 1.5F - 0.75F;
-                            NetworkHandler.sendToAllTracking(new PacketSpawnParticle(AirParticleData.DENSE, player.getX() + sx, player.getY() + 1, player.getZ() + sz, sx / 4, -0.2, sz / 4), player.level(), player.blockPosition());
+                            NetworkHandler.sendToAllTracking(PacketSpawnParticle.oneParticle(AirParticleData.DENSE,
+                                    player.position().toVector3f().add(sx, 1f, sz),
+                                    new Vector3f(sx / 4, -0.2f, sz / 4)
+                            ), player.level(), player.blockPosition());
                         }
                         if ((player.tickCount & 0xf) == 0) {
                             player.level().playSound(null, player.blockPosition(), ModSounds.LEAKING_GAS.get(), SoundSource.PLAYERS, 1f, 0.7f);
@@ -160,7 +165,7 @@ public class PneumaticArmorHandler {
                 return;
             }
             if (handler.upgradeUsable(CommonUpgradeHandlers.jumpBoostHandler, true)) {
-                float power = PneumaticArmorItem.getIntData(stack, PneumaticArmorItem.NBT_JUMP_BOOST, 100, 0, 100) / 100.0f;
+                float power = PneumaticArmorItem.getIntData(stack, ModDataComponents.JUMP_BOOST_PCT.get(), 100, 0, 100) / 100.0f;
                 int rangeUpgrades = handler.getUpgradeCount(EquipmentSlot.LEGS, ModUpgrades.JUMPING.get(),
                         player.isShiftKeyDown() ? 1 : PneumaticValues.PNEUMATIC_LEGS_MAX_JUMP);
                 float actualBoost = Math.max(1.0f, rangeUpgrades * power);
@@ -217,15 +222,13 @@ public class PneumaticArmorHandler {
      * Client-side: play particles for all (close enough) player entities with enabled jet boots, including the actual player.
      */
     @SubscribeEvent
-    public void onPlayerTick(TickEvent.PlayerTickEvent event) {
-        if (event.phase == TickEvent.Phase.START) return;
-
-        if (event.player.level().isClientSide) {
-            handleJetbootsPose(event.player);
-        } else if (event.player instanceof ServerPlayer
-                && event.player.level().getGameTime() % 20 == 0
-                && PneumaticArmorItem.isPneumaticArmorPiece(event.player, EquipmentSlot.HEAD)) {
-            handleTargetWarnings((ServerPlayer) event.player);
+    public void onPlayerTick(PlayerTickEvent.Post event) {
+        if (event.getEntity().level().isClientSide) {
+            handleJetbootsPose(event.getEntity());
+        } else if (event.getEntity() instanceof ServerPlayer serverPlayer
+                && event.getEntity().level().getGameTime() % 20 == 0
+                && PneumaticArmorItem.isPneumaticArmorPiece(serverPlayer, EquipmentSlot.HEAD)) {
+            handleTargetWarnings(serverPlayer);
         }
     }
 

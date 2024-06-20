@@ -18,10 +18,13 @@
 package me.desht.pneumaticcraft.common.drone.progwidgets;
 
 import com.google.common.collect.ImmutableList;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import me.desht.pneumaticcraft.api.drone.IDrone;
+import me.desht.pneumaticcraft.api.drone.IProgWidget;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
-import me.desht.pneumaticcraft.common.drone.IDroneBase;
 import me.desht.pneumaticcraft.common.drone.ai.DroneAIEnergyImport;
-import me.desht.pneumaticcraft.common.registry.ModProgWidgets;
+import me.desht.pneumaticcraft.common.registry.ModProgWidgetTypes;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.goal.Goal;
@@ -30,17 +33,30 @@ import net.minecraft.world.item.DyeColor;
 import java.util.List;
 
 public class ProgWidgetEnergyImport extends ProgWidgetInventoryBase {
+    public static final MapCodec<ProgWidgetEnergyImport> CODEC = RecordCodecBuilder.mapCodec(builder ->
+            invParts(builder).apply(builder, ProgWidgetEnergyImport::new)
+    );
+
     public ProgWidgetEnergyImport() {
-        super(ModProgWidgets.RF_IMPORT.get());
+        this(PositionFields.DEFAULT, InvBaseFields.DEFAULT);
+    }
+
+    public ProgWidgetEnergyImport(PositionFields positionFields, InvBaseFields invBaseFields) {
+        super(positionFields, invBaseFields);
     }
 
     @Override
     public List<ProgWidgetType<?>> getParameters() {
-        return ImmutableList.of(ModProgWidgets.AREA.get());
+        return ImmutableList.of(ModProgWidgetTypes.AREA.get());
     }
 
     @Override
-    public Goal getWidgetAI(IDroneBase drone, IProgWidget widget) {
+    public ProgWidgetType<?> getType() {
+        return ModProgWidgetTypes.RF_IMPORT.get();
+    }
+
+    @Override
+    public Goal getWidgetAI(IDrone drone, IProgWidget widget) {
         return new DroneAIEnergyImport(drone, (ProgWidgetInventoryBase) widget);
     }
 

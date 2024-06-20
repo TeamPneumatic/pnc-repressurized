@@ -20,6 +20,8 @@ package me.desht.pneumaticcraft.common.item;
 import me.desht.pneumaticcraft.api.item.*;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerItem;
 import me.desht.pneumaticcraft.common.capabilities.AirHandlerItemStack;
+import me.desht.pneumaticcraft.common.registry.ModDataComponents;
+import me.desht.pneumaticcraft.common.util.FluidUtils;
 import me.desht.pneumaticcraft.common.util.ItemLaunching;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Log;
@@ -27,6 +29,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.ItemLike;
+import net.neoforged.neoforge.fluids.FluidStack;
 import org.apache.commons.lang3.Validate;
 
 import javax.annotation.Nonnull;
@@ -70,7 +74,7 @@ public enum ItemRegistry implements IItemRegistry {
     @Override
     public ISpawnerCoreStats getSpawnerCoreStats(ItemStack stack) {
         Validate.isTrue(stack.getItem() instanceof SpawnerCoreItem, "item is not a Spawner Core!");
-        return SpawnerCoreItem.SpawnerCoreStats.forItemStack(stack);
+        return stack.getOrDefault(ModDataComponents.SPAWNER_CORE_STATS, SpawnerCoreItem.SpawnerCoreStats.EMPTY);
     }
 
     @Override
@@ -81,6 +85,11 @@ public enum ItemRegistry implements IItemRegistry {
     @Override
     public void registerItemLaunchBehaviour(ILaunchBehaviour behaviour) {
         ItemLaunching.registerBehaviour(behaviour);
+    }
+
+    @Override
+    public ItemStack createFluidContainingItem(ItemLike item, FluidStack fluid) {
+        return FluidUtils.createFluidContainingItem(item, fluid);
     }
 
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")

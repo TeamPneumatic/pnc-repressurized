@@ -43,7 +43,7 @@ public class Refinery implements IRecipeManager<RefineryRecipe> {
 		CraftTweakerAPI.apply(new ActionAddRecipe<>(this,
 				new RecipeHolder<>(new ResourceLocation("crafttweaker", fixRecipeName(name)),
 				new RefineryRecipeImpl(
-						CTUtils.toFluidIngredient(input),
+						CTUtils.toSizedFluidIngredient(input),
 						TemperatureRange.of(minTemp, maxTemp),
 						CTUtils.toFluidStacks(outputs))
 				)

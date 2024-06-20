@@ -20,8 +20,8 @@ package me.desht.pneumaticcraft.common.registry;
 import net.minecraft.world.food.FoodProperties;
 
 public class ModFoods {
-    public static final FoodProperties SOURDOUGH = new FoodProperties.Builder().nutrition(7).saturationMod(1.0f).build();
-    public static final FoodProperties CHIPS = new FoodProperties.Builder().nutrition(5).saturationMod(0.6f).build();
-    public static final FoodProperties COD_N_CHIPS = new FoodProperties.Builder().nutrition(12).saturationMod(1.0f).build();
-    public static final FoodProperties SALMON_TEMPURA = new FoodProperties.Builder().nutrition(12).saturationMod(1.0f).build();
+    public static final FoodProperties SOURDOUGH = new FoodProperties.Builder().nutrition(7).saturationModifier(1.0f).build();
+    public static final FoodProperties CHIPS = new FoodProperties.Builder().nutrition(5).saturationModifier(0.6f).build();
+    public static final FoodProperties COD_N_CHIPS = new FoodProperties.Builder().nutrition(12).saturationModifier(1.0f).build();
+    public static final FoodProperties SALMON_TEMPURA = new FoodProperties.Builder().nutrition(12).saturationModifier(1.0f).build();
 }

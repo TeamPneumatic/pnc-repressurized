@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.client.pneumatic_armor;
 
-import me.desht.pneumaticcraft.common.util.ITranslatableEnum;
+import me.desht.pneumaticcraft.api.misc.ITranslatableEnum;
 
 public enum ComponentInit implements ITranslatableEnum {
     ALL("all"),

@@ -250,12 +250,12 @@ public abstract class AbstractPNCBlockWithBoundingBlocks extends AbstractPneumat
     }
 
     @Override
-    public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult brtr) {
+    public InteractionResult useWithoutItem(BlockState state, Level world, BlockPos pos, Player player, BlockHitResult brtr) {
         // Prevents any interactions with bounding blocks
         if (state.getValue(BOUNDING)) {
             return InteractionResult.FAIL;
         }
 
-        return super.use(state, world, pos, player, hand, brtr);
+        return super.useWithoutItem(state, world, pos, player, brtr);
     }
 }

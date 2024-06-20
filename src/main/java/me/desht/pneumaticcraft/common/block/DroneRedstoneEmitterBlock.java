@@ -18,22 +18,17 @@
 package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.common.block.entity.drone.DroneRedstoneEmitterBlockEntity;
-import me.desht.pneumaticcraft.common.entity.drone.DroneEntity;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.EntityGetter;
 import net.minecraft.world.level.block.AirBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.AABB;
 
 import javax.annotation.Nullable;
-import java.util.Comparator;
 
 public class DroneRedstoneEmitterBlock extends AirBlock implements PneumaticCraftEntityBlock {
     public DroneRedstoneEmitterBlock() {
@@ -52,7 +47,7 @@ public class DroneRedstoneEmitterBlock extends AirBlock implements PneumaticCraf
 
     @Override
     public int getSignal(BlockState state, BlockGetter blockAccess, BlockPos pos, Direction side) {
-        return PneumaticCraftUtils.getTileEntityAt(blockAccess, pos, DroneRedstoneEmitterBlockEntity.class)
+        return PneumaticCraftUtils.getBlockEntityAt(blockAccess, pos, DroneRedstoneEmitterBlockEntity.class)
                 .map(be -> be.getSignalLevel(side))
                 .orElse(0);
     }

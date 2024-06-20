@@ -1,9 +1,9 @@
 package me.desht.pneumaticcraft.api.misc;
 
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
-import me.desht.pneumaticcraft.api.crafting.ingredient.FluidIngredient;
 import me.desht.pneumaticcraft.api.pneumatic_armor.hacking.IActiveEntityHacks;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
@@ -13,6 +13,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.neoforged.neoforge.fluids.crafting.FluidIngredient;
 import net.neoforged.neoforge.items.IItemHandler;
 
 import java.util.Optional;
@@ -56,21 +57,14 @@ public interface IMiscHelpers {
     void syncGlobalVariable(ServerPlayer player, String varName);
 
     /**
-     * Register a custom player matcher object. This is safe to call from a
-     * {@link net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent} handler. Note that matchers should be
-     * able to run on both client and server.
-     *
-     * @param type the matcher type, which is responsible for providing a codec for the matcher
-     */
-    <T extends IPlayerMatcher> void registerPlayerMatcher(IPlayerMatcher.MatcherType<T> type);
-
-    /**
      * Return a Smart Chest item handler properly deserialized from the supplied NBT. Not for general use; here
      * to help with Create compatibility, using Smart Chests as part of Create contraptions.
-     * @param tag NBT to be deserialized, previously serialized from a Smart Chest
+     *
+     * @param tag      NBT to be deserialized, previously serialized from a Smart Chest
+     * @param provider the lookup provider
      * @return an item handler deserialized by the Smart Chest
      */
-    IItemHandler deserializeSmartChest(CompoundTag tag);
+    IItemHandler deserializeSmartChest(CompoundTag tag, HolderLookup.Provider provider);
 
     /**
      * Notify tracking clients to recalculate the block shapes of all neighbours of the block at the given world

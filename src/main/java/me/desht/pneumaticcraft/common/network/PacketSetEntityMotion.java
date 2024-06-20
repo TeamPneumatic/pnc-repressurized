@@ -17,14 +17,14 @@
 
 package me.desht.pneumaticcraft.common.network;
 
-import me.desht.pneumaticcraft.client.util.ClientUtils;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.network.handling.PlayPayloadContext;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.joml.Vector3f;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
@@ -34,39 +34,33 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
  * Sent by server when an immediate update is needed to a client-side entity's motion
  */
 public record PacketSetEntityMotion(Vector3f vec, int entityId) implements CustomPacketPayload {
-    public static final ResourceLocation ID = RL("set_entity_motion");
+    public static final Type<PacketSetEntityMotion> TYPE = new Type<>(RL("set_entity_motion"));
+
+    public static final StreamCodec<FriendlyByteBuf, PacketSetEntityMotion> STREAM_CODEC = StreamCodec.composite(
+            ByteBufCodecs.VECTOR3F, PacketSetEntityMotion::vec,
+            ByteBufCodecs.INT, PacketSetEntityMotion::entityId,
+            PacketSetEntityMotion::new
+    );
 
     public static PacketSetEntityMotion create(Entity entity, Vec3 motion) {
         return new PacketSetEntityMotion(motion.toVector3f(), entity.getId());
     }
 
-    public static PacketSetEntityMotion fromNetwork(FriendlyByteBuf buffer) {
-        return new PacketSetEntityMotion(PacketUtil.readVec3f(buffer), buffer.readInt());
-    }
-
     @Override
-    public void write(FriendlyByteBuf buf) {
-        PacketUtil.writeVec3f(vec, buf);
-        buf.writeInt(entityId);
+    public Type<PacketSetEntityMotion> type() {
+        return TYPE;
     }
 
-    @Override
-    public ResourceLocation id() {
-        return ID;
-    }
-
-    public static void handle(PacketSetEntityMotion message, PlayPayloadContext ctx) {
-        ctx.workHandler().submitAsync(() -> {
-            Entity entity = ClientUtils.getClientLevel().getEntity(message.entityId());
-            if (entity != null) {
-                entity.setDeltaMovement(new Vec3(message.vec()));
-                entity.setOnGround(false);
-                entity.horizontalCollision = false;
-                entity.verticalCollision = false;
-                if (entity instanceof LivingEntity l) {
-                    l.setJumping(true);
-                }
+    public static void handle(PacketSetEntityMotion message, IPayloadContext ctx) {
+        Entity entity = ctx.player().level().getEntity(message.entityId());
+        if (entity != null) {
+            entity.setDeltaMovement(new Vec3(message.vec()));
+            entity.setOnGround(false);
+            entity.horizontalCollision = false;
+            entity.verticalCollision = false;
+            if (entity instanceof LivingEntity l) {
+                l.setJumping(true);
             }
-        });
+        }
     }
 }

@@ -22,7 +22,7 @@ import me.desht.pneumaticcraft.api.crafting.PneumaticCraftRecipeTypes;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.Ingredient;
+import net.neoforged.neoforge.common.crafting.SizedIngredient;
 
 import javax.annotation.Nonnull;
 import java.util.Locale;
@@ -32,15 +32,18 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 public abstract class AssemblyRecipe extends PneumaticCraftRecipe {
     /**
      * Get the input ingredient.
+     *
      * @return the input ingredient
      */
-    public abstract Ingredient getInput();
+    public abstract SizedIngredient getInput();
 
     /**
      * Get the number of items required/used
      * @return the number of items
      */
-    public abstract int getInputAmount();
+    public final int getInputAmount() {
+        return getInput().count();
+    }
 
     /**
      * Get the output item for this recipe.

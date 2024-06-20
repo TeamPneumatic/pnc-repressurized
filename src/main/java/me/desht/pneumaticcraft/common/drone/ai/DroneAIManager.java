@@ -18,10 +18,15 @@
 package me.desht.pneumaticcraft.common.drone.ai;
 
 import com.google.common.collect.ImmutableList;
+import me.desht.pneumaticcraft.api.drone.IDrone;
+import me.desht.pneumaticcraft.api.drone.IProgWidget;
 import me.desht.pneumaticcraft.api.drone.SpecialVariableRetrievalEvent;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.drone.IDroneBase;
-import me.desht.pneumaticcraft.common.drone.progwidgets.*;
+import me.desht.pneumaticcraft.common.drone.progwidgets.IJumpBackWidget;
+import me.desht.pneumaticcraft.common.drone.progwidgets.IVariableProvider;
+import me.desht.pneumaticcraft.common.drone.progwidgets.IVariableWidget;
+import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetStart;
 import me.desht.pneumaticcraft.common.item.ItemRegistry;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableHelper;
@@ -29,7 +34,7 @@ import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.NbtUtils;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.entity.ai.goal.Goal;
@@ -54,7 +59,7 @@ public class DroneAIManager implements IVariableProvider {
     private final List<WrappedGoal> executingGoals = new ArrayList<>();
     private final ProfilerFiller theProfiler;
     private int tickCount;
-    private final IDroneBase drone;
+    private final IDrone drone;
     private List<IProgWidget> progWidgets;
     private IProgWidget activeWidget;
     private IProgWidget startWidget;  // cache to reduce search time; this one is referenced a lot
@@ -71,17 +76,17 @@ public class DroneAIManager implements IVariableProvider {
     private static final int MAX_JUMP_STACK_SIZE = 100;
 
     public DroneAIManager(IDroneBase drone) {
-        theProfiler = drone.world().getProfiler();
+        theProfiler = drone.getDroneLevel().getProfiler();
         this.drone = drone;
-        if (!drone.world().isClientSide) {
+        if (!drone.getDroneLevel().isClientSide) {
             // we don't do much clientside, but instances can be created (programmable controller, The One Probe...)
             // don't try to set the widgets clientside because there aren't any and that messes up entity tracker info
             setWidgets(drone.getProgWidgets());
         }
     }
 
-    public DroneAIManager(IDroneBase drone, List<IProgWidget> progWidgets) {
-        theProfiler = drone.world().getProfiler();
+    public DroneAIManager(IDrone drone, List<IProgWidget> progWidgets) {
+        theProfiler = drone.getDroneLevel().getProfiler();
         this.drone = drone;
         stopWhenEndReached = true;
         setWidgets(progWidgets);
@@ -122,27 +127,35 @@ public class DroneAIManager implements IVariableProvider {
         return currentGoal;
     }
 
-    public IDroneBase getDrone() {
+    public DroneAIManager getActiveManager() {
+        return currentGoal instanceof DroneAIExternalProgram ext ? ext.getRunningAI() : this;
+    }
+
+    public IDrone getDrone() {
         return drone;
     }
 
     public CompoundTag writeToNBT(CompoundTag tag) {
         ListTag tagList = new ListTag();
         for (Map.Entry<String, BlockPos> entry : coordinateVariables.entrySet()) {
-            CompoundTag t = new CompoundTag();
-            t.putString("key", entry.getKey());
-            t.put("pos", NbtUtils.writeBlockPos(entry.getValue()));
-            tagList.add(t);
+            BlockPos.CODEC.encodeStart(NbtOps.INSTANCE, entry.getValue()).ifSuccess(posTag -> {
+                tagList.add(Util.make(new CompoundTag(), t -> {
+                    t.putString("key", entry.getKey());
+                    t.put("pos", posTag);
+                }));
+            });
         }
         tag.put("coords", tagList);
 
         ListTag tagList2 = new ListTag();
-        for (Map.Entry<String, ItemStack> entry : itemVariables.entrySet()) {
-            tagList2.add(Util.make(new CompoundTag(), t -> {
-                t.putString("key", entry.getKey());
-                t.put("item", Util.make(new CompoundTag(), t1 -> entry.getValue().save(t1)));
-            }));
-        }
+        itemVariables.forEach((name, stack) -> {
+            ItemStack.OPTIONAL_CODEC.encodeStart(NbtOps.INSTANCE, stack).ifSuccess(stackTag -> {
+                tagList2.add(Util.make(new CompoundTag(), t -> {
+                    t.putString("key", name);
+                    t.put("item", stackTag);
+                }));
+            });
+        });
         tag.put("items", tagList2);
 
         return tag;
@@ -153,13 +166,17 @@ public class DroneAIManager implements IVariableProvider {
         ListTag tagList = tag.getList("coords", Tag.TAG_COMPOUND);
         for (int i = 0; i < tagList.size(); i++) {
             CompoundTag t = tagList.getCompound(i);
-            coordinateVariables.put(t.getString("key"), NbtUtils.readBlockPos(t.getCompound("pos")));
+            BlockPos.CODEC.parse(NbtOps.INSTANCE, t.getCompound("pos")).ifSuccess(pos -> {
+                coordinateVariables.put(t.getString("key"), pos);
+            });
         }
 
         ListTag tagList2 = tag.getList("items", Tag.TAG_COMPOUND);
         for (int i = 0; i < tagList2.size(); i++) {
             CompoundTag t = tagList2.getCompound(i);
-            itemVariables.put(t.getString("key"), ItemStack.of(t.getCompound("item")));
+            ItemStack.OPTIONAL_CODEC.parse(NbtOps.INSTANCE, t.getCompound("item")).ifSuccess(stack -> {
+                itemVariables.put(t.getString("key"), stack);
+            });
         }
     }
 
@@ -191,16 +208,16 @@ public class DroneAIManager implements IVariableProvider {
         return item;
     }
 
-    public void setCoordinate(String varName, BlockPos coord) {
-        if (varName.startsWith("%") || varName.startsWith("#")) {
-            GlobalVariableHelper.setPos(drone.getOwnerUUID(), varName, coord);
-        } else if (!varName.startsWith("$")) {
-            coordinateVariables.put(varName, coord);
-            drone.onVariableChanged(varName, true);
+    public void setCoordinate(String variable, BlockPos coord) {
+        if (variable.startsWith("%") || variable.startsWith("#")) {
+            GlobalVariableHelper.setPos(drone.getOwnerUUID(), variable, coord);
+        } else if (!variable.startsWith("$")) {
+            coordinateVariables.put(variable, coord);
+            drone.onVariableChanged(variable, true);
         }
     }
 
-    public void setStack(String varName, @Nonnull ItemStack item) {
+    public void setItemStack(String varName, @Nonnull ItemStack item) {
         if (varName.startsWith("#")) {
             GlobalVariableHelper.setStack(drone.getOwnerUUID(), varName, item);
         } else if (!varName.startsWith("$")) {
@@ -341,7 +358,7 @@ public class DroneAIManager implements IVariableProvider {
             int rangeSq = range * range;
             Vec3 v = drone.getDronePos();
             AABB aabb = new AABB(v.x, v.y, v.z, v.x, v.y, v.z).inflate(range);
-            List<ItemEntity> items = drone.world().getEntitiesOfClass(ItemEntity.class, aabb,
+            List<ItemEntity> items = drone.getDroneLevel().getEntitiesOfClass(ItemEntity.class, aabb,
                     item -> item != null
                             && item.isAlive()
                             && !item.hasPickUpDelay()
@@ -466,8 +483,8 @@ public class DroneAIManager implements IVariableProvider {
         return e1.goal.getFlags().stream().noneMatch(flags::contains);
     }
 
-    public void setLabel(String label) {
-        currentLabel = label;
+    public void setLabel(String labelName) {
+        currentLabel = labelName;
         drone.updateLabel();
     }
 

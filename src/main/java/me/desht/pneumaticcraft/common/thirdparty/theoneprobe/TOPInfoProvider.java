@@ -33,6 +33,7 @@ import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.common.heat.TemperatureData;
 import me.desht.pneumaticcraft.common.item.CamoApplicatorItem;
+import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.tubemodules.AbstractTubeModule;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.common.util.IOHelper;
@@ -43,6 +44,7 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -94,10 +96,11 @@ public class TOPInfoProvider {
         IProbeInfo horiz = vert.horizontal();
         NonNullList<ItemStack> drops = semiBlock.getDrops();
         if (!drops.isEmpty()) {
-            ItemStack stack = drops.get(0);
+            ItemStack stack = drops.getFirst();
             horiz.item(stack);
             horiz.text(stack.getHoverName());
-            semiBlock.addTooltip(vert::text, player, stack.getTag(), player.isShiftKeyDown());
+            CustomData data = stack.getOrDefault(ModDataComponents.SEMIBLOCK_DATA, CustomData.EMPTY);
+            semiBlock.addTooltip(vert::text, player, data.copyTag(), player.isShiftKeyDown());
         }
     }
 
@@ -126,15 +129,15 @@ public class TOPInfoProvider {
     }
 
     private static void handleHeat(ProbeMode mode, IProbeInfo probeInfo, BlockEntity heatExchanger) {
-        TemperatureData tempData = new TemperatureData(heatExchanger);
+        TemperatureData tempData = TemperatureData.forBlockEntity(heatExchanger);
         if (tempData.isMultisided()) {
             for (Direction face : DirectionUtil.VALUES) {
                 if (tempData.hasData(face)) {
-                    probeInfo.text(HeatUtil.formatHeatString(face, (int) tempData.getTemperature(face)));
+                    probeInfo.text(HeatUtil.formatHeatString(face, tempData.getTemperatureAsInt(face)));
                 }
             }
         } else if (tempData.hasData(null)) {
-            probeInfo.text(HeatUtil.formatHeatString((int) tempData.getTemperature(null)));
+            probeInfo.text(HeatUtil.formatHeatString(tempData.getTemperatureAsInt(null)));
         }
     }
 
@@ -160,7 +163,7 @@ public class TOPInfoProvider {
                 FluidStack fluidStack = handler.getFluidInTank(i);
                 Component fluidDesc = fluidStack.isEmpty() ?
                         xlate("pneumaticcraft.gui.misc.empty") :
-                        Component.literal(fluidStack.getAmount() + "mB ").append(xlate(fluidStack.getTranslationKey()));
+                        Component.literal(fluidStack.getAmount() + "mB ").append(fluidStack.getHoverName());
                 probeInfo.text(xlate("pneumaticcraft.waila.tank", i + 1, fluidDesc.copy().withStyle(ChatFormatting.AQUA)));
             }
         }

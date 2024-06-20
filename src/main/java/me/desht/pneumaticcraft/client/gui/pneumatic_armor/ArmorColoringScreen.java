@@ -42,6 +42,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.DyedItemColor;
 
 import java.util.*;
 
@@ -69,7 +70,7 @@ public class ArmorColoringScreen extends AbstractPneumaticCraftScreen {
             ItemStack stack = player.getItemBySlot(slot);
             int idx = slot.getIndex();
             if (stack.getItem() instanceof PneumaticArmorItem armor) {
-                origColors[idx][0] = colors[idx][0] = armor.getColor(stack);
+                origColors[idx][0] = colors[idx][0] = armor.getPrimaryColor(stack);
                 origColors[idx][1] = colors[idx][1] = armor.getSecondaryColor(stack);
                 origColors[idx][2] = colors[idx][2] = armor.getEyepieceColor(stack);
             }
@@ -129,7 +130,7 @@ public class ArmorColoringScreen extends AbstractPneumaticCraftScreen {
 
     private void saveChanges() {
         ClientUtils.getClientPlayer().playSound(ModSounds.HUD_INIT_COMPLETE.get(), 1f, 1f);
-        NetworkHandler.sendToServer(PacketUpdateArmorColors.create());
+        NetworkHandler.sendToServer(PacketUpdateArmorColors.forPlayer(ClientUtils.getClientPlayer()));
         needSave = false;
     }
 
@@ -157,7 +158,7 @@ public class ArmorColoringScreen extends AbstractPneumaticCraftScreen {
         Player player = ClientUtils.getClientPlayer();
         ItemStack stack = player.getItemBySlot(slot);
         if (stack.getItem() instanceof PneumaticArmorItem armor) {
-            armor.setColor(stack, colors[slot.getIndex()][SelectorType.PRIMARY.ordinal()]);
+            armor.setPrimaryColor(stack, colors[slot.getIndex()][SelectorType.PRIMARY.ordinal()]);
             armor.setSecondaryColor(stack, colors[slot.getIndex()][SelectorType.SECONDARY.ordinal()]);
             if (slot == EquipmentSlot.HEAD) {
                 armor.setEyepieceColor(stack, colors[slot.getIndex()][SelectorType.EYEPIECE.ordinal()]);
@@ -296,10 +297,10 @@ public class ArmorColoringScreen extends AbstractPneumaticCraftScreen {
         private final String label;
         private final int defaultColor;
 
-        SelectorType(int xOffset, String label, int defaultColor) {
+        SelectorType(int xOffset, String label, DyedItemColor defaultColor) {
             this.xOffset = xOffset;
             this.label = label;
-            this.defaultColor = defaultColor;
+            this.defaultColor = defaultColor.rgb();
         }
 
         boolean showButton(EquipmentSlot slot) {

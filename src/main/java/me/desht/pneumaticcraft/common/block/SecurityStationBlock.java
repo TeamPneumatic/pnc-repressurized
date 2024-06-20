@@ -29,7 +29,6 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
@@ -99,13 +98,13 @@ public class SecurityStationBlock extends AbstractPneumaticCraftBlock implements
     }
 
     @Override
-    public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult brtr) {
+    public InteractionResult useWithoutItem(BlockState state, Level world, BlockPos pos, Player player, BlockHitResult brtr) {
         if (player.isShiftKeyDown()) {
             return InteractionResult.PASS;
         }
         if (player instanceof ServerPlayer sp && world.getBlockEntity(pos) instanceof SecurityStationBlockEntity secStation) {
             if (secStation.isPlayerOnWhiteList(player)) {
-                return super.use(state, world, pos, player, hand, brtr);
+                return super.useWithoutItem(state, world, pos, player, brtr);
             } else if (!secStation.hasValidNetwork()) {
                 player.displayClientMessage(PneumaticCraftUtils.xlate("pneumaticcraft.message.securityStation.outOfOrder").withStyle(ChatFormatting.RED), false);
             } else if (secStation.hasPlayerHacked(player)) {

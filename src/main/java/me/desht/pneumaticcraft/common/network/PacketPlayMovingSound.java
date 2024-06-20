@@ -22,11 +22,15 @@ import me.desht.pneumaticcraft.client.sound.MovingSounds;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.neoforged.neoforge.network.handling.PlayPayloadContext;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import java.util.function.Function;
 
@@ -37,52 +41,50 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
  * Sent by server to start a new MovingSound playing
  */
 public record PacketPlayMovingSound(MovingSounds.Sound sound, MovingSoundFocus source) implements CustomPacketPayload {
-    public static final ResourceLocation ID = RL("play_moving_sound");
+    public static final Type<PacketPlayMovingSound> TYPE = new Type<>(RL("play_moving_sound"));
 
-    public static PacketPlayMovingSound fromNetwork(FriendlyByteBuf buffer) {
-        return new PacketPlayMovingSound(buffer.readEnum(MovingSounds.Sound.class), MovingSoundFocus.fromNetwork(buffer));
-    }
-
-    @Override
-    public void write(FriendlyByteBuf buffer) {
-        buffer.writeEnum(sound);
-        source.toNetwork(buffer);
-    }
+    public static final StreamCodec<FriendlyByteBuf, PacketPlayMovingSound> STREAM_CODEC = StreamCodec.composite(
+            NeoForgeStreamCodecs.enumCodec(MovingSounds.Sound.class), PacketPlayMovingSound::sound,
+            MovingSoundFocus.STREAM_CODEC, PacketPlayMovingSound::source,
+            PacketPlayMovingSound::new
+    );
 
     @Override
-    public ResourceLocation id() {
-        return ID;
+    public Type<PacketPlayMovingSound> type() {
+        return TYPE;
     }
 
-    public static void handle(PacketPlayMovingSound message, PlayPayloadContext ctx) {
-        ctx.workHandler().submitAsync(() -> {
-            if (message.source() != null) message.source().handle(message.sound());
-        });
+    public static void handle(PacketPlayMovingSound message, IPayloadContext ctx) {
+        if (message.source() != null) message.source().handle(message.sound());
     }
 
-    private enum SourceType {
-        ENTITY(buf -> MovingSoundFocus.of(buf.readInt())),
-        STATIC_POS(buf -> MovingSoundFocus.of(buf.readBlockPos()));
+//    private enum SourceType {
+//        ENTITY(buf -> MovingSoundFocus.of(buf.readInt())),
+//        STATIC_POS(buf -> MovingSoundFocus.of(buf.readBlockPos()));
+//
+//        private final Function<FriendlyByteBuf, MovingSoundFocus> creator;
+//
+//        SourceType(Function<FriendlyByteBuf, MovingSoundFocus> creator) {
+//            this.creator = creator;
+//        }
+//
+//        public MovingSoundFocus getSource(FriendlyByteBuf buf) {
+//            return creator.apply(buf);
+//        }
+//    }
 
-        private final Function<FriendlyByteBuf, MovingSoundFocus> creator;
+    public record MovingSoundFocus(Either<Integer,BlockPos> entityOrPos) {
+        public static StreamCodec<FriendlyByteBuf, MovingSoundFocus> STREAM_CODEC = StreamCodec.composite(
+                ByteBufCodecs.either(ByteBufCodecs.INT, BlockPos.STREAM_CODEC), MovingSoundFocus::entityOrPos,
+                MovingSoundFocus::new
+        );
 
-        SourceType(Function<FriendlyByteBuf, MovingSoundFocus> creator) {
-            this.creator = creator;
-        }
-
-        public MovingSoundFocus getSource(FriendlyByteBuf buf) {
-            return creator.apply(buf);
-        }
-    }
-
-    public record MovingSoundFocus(Either<Entity,BlockPos> entityOrPos) {
         public static MovingSoundFocus of(Entity e) {
-            return new MovingSoundFocus(Either.left(e));
+            return new MovingSoundFocus(Either.left(e.getId()));
         }
 
         public static MovingSoundFocus of(int id) {
-            Entity e = ClientUtils.getClientLevel().getEntity(id);
-            return e == null ? null : of(e);
+            return new MovingSoundFocus(Either.left(id));
         }
 
         public static MovingSoundFocus of(BlockPos pos) {
@@ -93,29 +95,10 @@ public record PacketPlayMovingSound(MovingSounds.Sound sound, MovingSoundFocus s
             return new MovingSoundFocus(Either.right(te.getBlockPos()));
         }
 
-        public static MovingSoundFocus fromNetwork(FriendlyByteBuf buf) {
-            SourceType type = buf.readEnum(SourceType.class);
-            return type.getSource(buf);
-        }
-
-        void toNetwork(FriendlyByteBuf buf) {
-            entityOrPos.ifLeft(id -> {
-                buf.writeEnum(SourceType.ENTITY);
-                buf.writeInt(id.getId());
-            }).ifRight(pos -> {
-                buf.writeEnum(SourceType.STATIC_POS);
-                buf.writeBlockPos(pos);
-            });
-        }
-
         public void handle(MovingSounds.Sound sound) {
             entityOrPos
                     .ifLeft(e -> MovingSounds.playMovingSound(sound, e))
                     .ifRight(pos -> MovingSounds.playMovingSound(sound, pos));
         }
-
-//        public Either<Entity,BlockPos> asEntityOrPos() {
-//            return entityOrPos;
-//        }
     }
 }

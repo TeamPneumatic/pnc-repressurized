@@ -100,9 +100,9 @@ public class TumblingBlockEntity extends ThrowableProjectile {
     }
 
     @Override
-    protected void defineSynchedData() {
-        entityData.define(ORIGIN, BlockPos.ZERO);
-        entityData.define(STATE_STACK, ItemStack.EMPTY);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        builder.define(ORIGIN, BlockPos.ZERO);
+        builder.define(STATE_STACK, ItemStack.EMPTY);
     }
 
     @Override

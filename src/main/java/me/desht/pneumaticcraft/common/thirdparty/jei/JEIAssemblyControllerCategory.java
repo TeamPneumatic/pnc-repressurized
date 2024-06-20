@@ -52,7 +52,7 @@ public class JEIAssemblyControllerCategory extends AbstractPNCCategory<AssemblyR
     @Override
     public void setRecipe(IRecipeLayoutBuilder builder, AssemblyRecipe recipe, IFocusGroup focuses) {
         builder.addSlot(RecipeIngredientRole.INPUT, 29, 56)
-                .addIngredients(recipe.getInput());
+                .addIngredients(recipe.getInput().ingredient());
         builder.addSlot(RecipeIngredientRole.CATALYST, 133, 22)
                 .addItemStack(new ItemStack(AssemblyProgramItem.fromProgramType(recipe.getProgramType())));
         builder.addSlot(RecipeIngredientRole.OUTPUT, 96, 56)

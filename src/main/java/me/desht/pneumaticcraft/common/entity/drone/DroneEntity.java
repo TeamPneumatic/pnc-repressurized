@@ -18,14 +18,11 @@
 package me.desht.pneumaticcraft.common.entity.drone;
 
 import com.mojang.authlib.GameProfile;
+import com.mojang.serialization.Codec;
 import me.desht.pneumaticcraft.ForcedChunks;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.block.IPneumaticWrenchable;
-import me.desht.pneumaticcraft.api.drone.IDrone;
-import me.desht.pneumaticcraft.api.drone.IPathNavigator;
-import me.desht.pneumaticcraft.api.drone.IPathfindHandler;
-import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
-import me.desht.pneumaticcraft.api.lib.NBTKeys;
+import me.desht.pneumaticcraft.api.drone.*;
 import me.desht.pneumaticcraft.api.pneumatic_armor.hacking.IHackableEntity;
 import me.desht.pneumaticcraft.api.pressure.PressureHelper;
 import me.desht.pneumaticcraft.api.semiblock.SemiblockEvent;
@@ -43,8 +40,8 @@ import me.desht.pneumaticcraft.common.drone.ai.DroneAIManager;
 import me.desht.pneumaticcraft.common.drone.ai.DroneAIManager.WrappedGoal;
 import me.desht.pneumaticcraft.common.drone.ai.DroneGoToChargingStation;
 import me.desht.pneumaticcraft.common.drone.ai.DroneGoToOwner;
-import me.desht.pneumaticcraft.common.drone.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetGoToLocation;
+import me.desht.pneumaticcraft.common.drone.progwidgets.SavedDroneProgram;
 import me.desht.pneumaticcraft.common.drone.progwidgets.WidgetSerializer;
 import me.desht.pneumaticcraft.common.entity.semiblock.AbstractLogisticsFrameEntity;
 import me.desht.pneumaticcraft.common.item.DroneItem;
@@ -59,15 +56,13 @@ import me.desht.pneumaticcraft.common.network.PacketShowWireframe;
 import me.desht.pneumaticcraft.common.network.PacketSyncDroneProgWidgets;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
-import me.desht.pneumaticcraft.common.registry.ModBlocks;
-import me.desht.pneumaticcraft.common.registry.ModEntityTypes;
-import me.desht.pneumaticcraft.common.registry.ModItems;
-import me.desht.pneumaticcraft.common.registry.ModSounds;
+import me.desht.pneumaticcraft.common.registry.*;
 import me.desht.pneumaticcraft.common.thirdparty.RadiationSourceCheck;
-import me.desht.pneumaticcraft.common.upgrades.IUpgradeHolder;
-import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
-import me.desht.pneumaticcraft.common.upgrades.UpgradeCache;
-import me.desht.pneumaticcraft.common.util.*;
+import me.desht.pneumaticcraft.common.upgrades.*;
+import me.desht.pneumaticcraft.common.util.DirectionUtil;
+import me.desht.pneumaticcraft.common.util.DroneProgramBuilder;
+import me.desht.pneumaticcraft.common.util.IOHelper;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.fakeplayer.DroneFakePlayer;
 import me.desht.pneumaticcraft.common.util.fakeplayer.DroneItemHandler;
 import me.desht.pneumaticcraft.lib.Log;
@@ -76,18 +71,19 @@ import me.desht.pneumaticcraft.mixin.accessors.EntityAccess;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.NbtUtils;
-import net.minecraft.nbt.Tag;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.protocol.game.ClientboundLevelParticlesPacket;
 import net.minecraft.network.protocol.game.ServerboundPlayerActionPacket;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -95,6 +91,7 @@ import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
@@ -115,18 +112,18 @@ import net.minecraft.world.entity.vehicle.Boat;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
-import net.minecraft.world.level.pathfinder.BlockPathTypes;
 import net.minecraft.world.level.pathfinder.Node;
 import net.minecraft.world.level.pathfinder.Path;
 import net.minecraft.world.level.pathfinder.PathComputationType;
+import net.minecraft.world.level.pathfinder.PathType;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.util.FakePlayer;
@@ -134,8 +131,10 @@ import net.neoforged.neoforge.common.util.ITeleporter;
 import net.neoforged.neoforge.common.world.chunk.TicketController;
 import net.neoforged.neoforge.energy.IEnergyStorage;
 import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
+import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.fluids.FluidUtil;
+import net.neoforged.neoforge.fluids.SimpleFluidContent;
 import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.IItemHandlerModifiable;
@@ -153,6 +152,9 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 public class DroneEntity extends AbstractDroneEntity implements
         IManoMeasurable, IPneumaticWrenchable, IEntityWithComplexSpawn,
         IHackableEntity<DroneEntity>, IDroneBase, FlyingAnimal, IUpgradeHolder {
+
+    private static final Codec<Map<BlockPos,BlockState>> DISPLACED_LIQUIDS_CODEC
+            = Codec.unboundedMap(BlockPos.CODEC, BlockState.CODEC);
 
     private static final float LASER_EXTEND_SPEED = 0.05F;
 
@@ -226,10 +228,10 @@ public class DroneEntity extends AbstractDroneEntity implements
     private int securityUpgradeCount; // for liquid immunity: 1 = breathe in water, 2 = temporary air bubble, 3+ = permanent water removal
     private final Map<BlockPos, BlockState> displacedLiquids = new HashMap<>();  // liquid blocks displaced by security upgrade
 
-    // Although this is only used by DroneAILogistics, it is here rather than there
+    // Although this is only used by DroneAILogistics, it is here rather than there,
     // so it can persist, for performance reasons; DroneAILogistics is a short-lived object
     private LogisticsManager logisticsManager;
-    private final Map<Enchantment,Integer> stackEnchants = new HashMap<>();
+    private ItemEnchantments stackEnchants;
     private boolean carriedEntityAIdisabled;  // true if the drone's carried entity AI was already disabled
 
     private ChunkPos prevChunkPos = null;
@@ -280,31 +282,35 @@ public class DroneEntity extends AbstractDroneEntity implements
      */
     public void readFromItemStack(ItemStack droneStack) {
         Validate.isTrue(droneStack.getItem() instanceof DroneItem);
+        DroneItem droneItem = (DroneItem) droneStack.getItem();
 
-        CompoundTag stackTag = droneStack.getTag();
-        if (stackTag != null) {
-            upgradeInventory.deserializeNBT(stackTag.getCompound(UpgradableItemUtils.NBT_UPGRADE_TAG));
-            Map<Enchantment, Integer> ench = EnchantmentHelper.getEnchantments(droneStack);
-            // filter out enchantments which shouldn't really be there -
-            // https://github.com/TeamPneumatic/pnc-repressurized/issues/1073
-            // https://github.com/EnigmaticaModpacks/Enigmatica6/issues/5167
-            ench.keySet().removeIf(e -> !droneStack.getItem().canApplyAtEnchantingTable(droneStack, e));
-            stackEnchants.putAll(ench);
-            DroneItem droneItem = (DroneItem) droneStack.getItem();
-            if (droneItem.canProgram(droneStack)) {
-                progWidgets = WidgetSerializer.getWidgetsFromNBT(stackTag);
-                ProgrammerBlockEntity.updatePuzzleConnections(progWidgets);
-            }
-            setDroneColor(droneItem.getDroneColor(droneStack).getId());
-            fluidTank.setCapacity(PneumaticValues.DRONE_TANK_SIZE * (1 + getUpgrades(ModUpgrades.INVENTORY.get())));
-            droneItemHandler.setUseableSlots(1 + getUpgrades(ModUpgrades.INVENTORY.get()));
-            if (stackTag.contains("Tank")) {
-                fluidTank.readFromNBT(stackTag.getCompound("Tank"));
-            }
+        droneStack.getOrDefault(ModDataComponents.ITEM_UPGRADES, SavedUpgrades.EMPTY).fillItemHandler(upgradeInventory);
+
+        ItemEnchantments.Mutable enchantments = new ItemEnchantments.Mutable(EnchantmentHelper.getEnchantmentsForCrafting(droneStack));
+        // filter out enchantments which shouldn't really be there -
+        // https://github.com/TeamPneumatic/pnc-repressurized/issues/1073
+        // https://github.com/EnigmaticaModpacks/Enigmatica6/issues/5167
+        enchantments.keySet().removeIf(ench -> !droneStack.getItem().canApplyAtEnchantingTable(droneStack, ench.value()));
+        stackEnchants = enchantments.toImmutable();
+
+        if (droneItem.canProgram(droneStack)) {
+            progWidgets = SavedDroneProgram.forItemStack(droneStack);
+            ProgrammerBlockEntity.updatePuzzleConnections(progWidgets);
         }
+
+        setDroneColor(droneItem.getDroneColor(droneStack).getId());
+
+        fluidTank.setCapacity(PneumaticValues.DRONE_TANK_SIZE * (1 + getUpgrades(ModUpgrades.INVENTORY.get())));
+        FluidStack storedFluid = droneStack.getOrDefault(ModDataComponents.STORED_FLUID, SimpleFluidContent.EMPTY).copy();
+        fluidTank.setFluid(storedFluid);
+
+        droneItemHandler.setUseableSlots(1 + getUpgrades(ModUpgrades.INVENTORY.get()));
         int air = droneStack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM).getAir();
         getAirHandler().addAir(air);
-        if (droneStack.hasCustomHoverName()) setCustomName(droneStack.getHoverName());
+
+        if (droneStack.has(DataComponents.CUSTOM_NAME)) {
+            setCustomName(droneStack.get(DataComponents.CUSTOM_NAME));
+        }
     }
 
     /**
@@ -312,43 +318,46 @@ public class DroneEntity extends AbstractDroneEntity implements
      * @param droneStack the drone itemstack
      */
     private void writeToItemStack(ItemStack droneStack) {
-        Validate.isTrue(droneStack.getItem() instanceof DroneItem);
+        if (droneStack.getItem() instanceof DroneItem droneItem) {
+            if (droneItem.canProgram(droneStack)) {
+                droneStack.set(ModDataComponents.SAVED_DRONE_PROGRAM, SavedDroneProgram.create(progWidgets));
+            }
 
-        CompoundTag tag = new CompoundTag();
-        if (((DroneItem) droneStack.getItem()).canProgram(droneStack)) {
-            WidgetSerializer.putWidgetsToNBT(progWidgets, tag);
+            droneStack.set(ModDataComponents.DRONE_COLOR, getDroneColor());
+
+            if (!fluidTank.isEmpty()) {
+                droneStack.set(ModDataComponents.STORED_FLUID, SimpleFluidContent.copyOf(fluidTank.getFluid()));
+            }
+
+            UpgradableItemUtils.setUpgrades(droneStack, upgradeInventory);
+            EnchantmentHelper.setEnchantments(droneStack, stackEnchants);
+
+            droneStack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM).addAir(getAirHandler().getAir());
+
+            if (hasCustomName()) {
+                droneStack.set(DataComponents.CUSTOM_NAME, getCustomName());
+            }
         }
-        tag.putInt("color", getDroneColor());
-        if (!fluidTank.isEmpty()) {
-            tag.put("Tank", fluidTank.writeToNBT(new CompoundTag()));
-        }
-        droneStack.setTag(tag);
-        UpgradableItemUtils.setUpgrades(droneStack, upgradeInventory);
-        EnchantmentHelper.setEnchantments(stackEnchants, droneStack);
-
-        droneStack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM).addAir(getAirHandler().getAir());
-
-        if (hasCustomName()) droneStack.setHoverName(getCustomName());
     }
 
     @Override
-    protected void defineSynchedData() {
-        super.defineSynchedData();
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
 
-        entityData.define(PRESSURE, 0.0f);
-        entityData.define(ACCELERATING, false);
-        entityData.define(PROGRAM_KEY, "");
-        entityData.define(DUG_POS, BlockPos.ZERO);
-        entityData.define(GOING_TO_OWNER, false);
-        entityData.define(DRONE_COLOR, DyeColor.BLACK.getId());
-        entityData.define(MINIGUN_ACTIVE, false);
-        entityData.define(HAS_MINIGUN, false);
-        entityData.define(AMMO, 0xFFFFFF00);
-        entityData.define(LABEL, "");
-        entityData.define(ACTIVE_WIDGET, 0);
-        entityData.define(TARGET_POS, BlockPos.ZERO);
-        entityData.define(HELD_ITEM, ItemStack.EMPTY);
-        entityData.define(TARGET_ID, 0);
+        builder.define(PRESSURE, 0.0f);
+        builder.define(ACCELERATING, false);
+        builder.define(PROGRAM_KEY, "");
+        builder.define(DUG_POS, BlockPos.ZERO);
+        builder.define(GOING_TO_OWNER, false);
+        builder.define(DRONE_COLOR, DyeColor.BLACK.getId());
+        builder.define(MINIGUN_ACTIVE, false);
+        builder.define(HAS_MINIGUN, false);
+        builder.define(AMMO, 0xFFFFFF00);
+        builder.define(LABEL, "");
+        builder.define(ACTIVE_WIDGET, 0);
+        builder.define(TARGET_POS, BlockPos.ZERO);
+        builder.define(HELD_ITEM, ItemStack.EMPTY);
+        builder.define(TARGET_ID, 0);
     }
 
     public static AttributeSupplier.Builder prepareAttributes() {
@@ -358,37 +367,17 @@ public class DroneEntity extends AbstractDroneEntity implements
                 .add(Attributes.FOLLOW_RANGE, 75.0D);
     }
 
-//    @Nonnull
-//    @Override
-//    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> capability, Direction facing) {
-//        if (capability == Capabilities.ITEM_HANDLER) {
-//            return droneItemHandlerCap.cast();
-//        } else if (capability == Capabilities.FLUID_HANDLER) {
-//            return fluidCap.cast();
-//        } else if (capability == Capabilities.ENERGY) {
-//            return energyCap.cast();
-//        } else if (capability == PNCCapabilities.AIR_HANDLER_ENTITY) {
-//            return airCap.cast();
-//        }
-//        return super.getCapability(capability, facing);
-//    }
-
-//    @Override
-//    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-//        return NetworkHooks.getEntitySpawningPacket(this);
-//    }
-
     @Override
-    public void writeSpawnData(FriendlyByteBuf buffer) {
+    public void writeSpawnData(RegistryFriendlyByteBuf buffer) {
         buffer.writeUUID(Objects.requireNonNullElse(ownerUUID, getUUID()));
-        buffer.writeComponent(ownerName);
+        ComponentSerialization.STREAM_CODEC.encode(buffer, ownerName);
         buffer.writeVarInt(getUpgrades(ModUpgrades.SECURITY.get()));
     }
 
     @Override
-    public void readSpawnData(FriendlyByteBuf buffer) {
+    public void readSpawnData(RegistryFriendlyByteBuf buffer) {
         ownerUUID = buffer.readUUID();
-        ownerName = buffer.readComponent();
+        ownerName = ComponentSerialization.STREAM_CODEC.decode(buffer);
         securityUpgradeCount = buffer.readVarInt();
     }
 
@@ -474,6 +463,8 @@ public class DroneEntity extends AbstractDroneEntity implements
             }
 
             airHandler.addAir(-PneumaticValues.DRONE_USAGE_CHUNKLOAD*getUpgrades(ModUpgrades.CHUNKLOADER.get()));
+
+            handleDebugTick();
         } else {
             oldLaserExtension = laserExtension;
             if (getActiveProgramKey().getPath().equals("dig")) {
@@ -532,6 +523,53 @@ public class DroneEntity extends AbstractDroneEntity implements
         }
     }
 
+    private void handleDebugTick() {
+        Collection<ServerPlayer> debuggingPlayers = getDebugger().getDebuggingPlayers();
+
+        if (!ConfigHelper.common().drones.droneDebuggerPathParticles.get() || debuggingPlayers.isEmpty()) {
+            return;
+        }
+
+        PathNavigation navi = getNavigation();
+        if (level() instanceof ServerLevel && level().getGameTime() % 10 == 0) { // only generate every 0.5 seconds, to try and cut back on packet spam
+            Path path = navi.getPath();
+            if (path != null) {
+                for (int i = path.getNextNodeIndex(); i < path.getNodeCount(); i++) {
+                    //get current point
+                    BlockPos pos = path.getNode(i).asBlockPos();  // asBlockPos() = copy()
+                    //get next point (or current point)
+                    BlockPos nextPos = (i+1) != path.getNodeCount() ? path.getNode(i+1).asBlockPos() : pos;
+                    //get difference for vector
+                    BlockPos endPos = nextPos.subtract(pos);
+                    spawnDebugParticle(debuggingPlayers, ParticleTypes.HAPPY_VILLAGER,
+                            pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 0,
+                            0, 0, 0, 0);
+                    //send a particle between points for direction
+                    spawnDebugParticle(debuggingPlayers, ParticleTypes.END_ROD,
+                            pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 0,
+                            endPos.getX(), endPos.getY(), endPos.getZ(), 0.1);
+                }
+                // render end point
+                BlockPos pos = navi.getTargetPos();  // yes, this *can* be null: https://github.com/TeamPneumatic/pnc-repressurized/issues/761
+                //noinspection ConstantConditions
+                if (pos != null && getDronePos().distanceToSqr(Vec3.atCenterOf(pos)) > 1) {
+                    spawnDebugParticle(debuggingPlayers, ParticleTypes.HEART,
+                            pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 0,
+                            0, 0, 0, 0);
+                }
+            }
+        }
+    }
+
+    private static <T extends ParticleOptions> void spawnDebugParticle(Collection<ServerPlayer> players, T type, double posX, double posY, double posZ, int particleCount, double xOffset, double yOffset, double zOffset, double speed) {
+        ClientboundLevelParticlesPacket packet = new ClientboundLevelParticlesPacket(type, false,
+                posX, posY, posZ,
+                (float)xOffset, (float)yOffset, (float)zOffset,
+                (float)speed, particleCount
+        );
+        players.forEach(player -> player.connection.send(packet));
+    }
+
     private void onFirstTick() {
         if (!level().isClientSide) {
             NeoForge.EVENT_BUS.addListener(this::onSemiblockEvent);
@@ -545,7 +583,7 @@ public class DroneEntity extends AbstractDroneEntity implements
             healingInterval = getUpgrades(ModUpgrades.ITEM_LIFE.get()) > 0 ? 100 / getUpgrades(ModUpgrades.ITEM_LIFE.get()) : 0;
 
             securityUpgradeCount = getUpgrades(ModUpgrades.SECURITY.get());
-            setPathfindingMalus(BlockPathTypes.WATER, securityUpgradeCount > 0 ? 0.0f : -1.0f);
+            setPathfindingMalus(PathType.WATER, securityUpgradeCount > 0 ? 0.0f : -1.0f);
 
             energy.setCapacity(100000 + 100000 * getUpgrades(ModUpgrades.VOLUME.get()));
 
@@ -567,7 +605,7 @@ public class DroneEntity extends AbstractDroneEntity implements
             for (Direction d : DirectionUtil.VALUES) {
                 if (getEmittingRedstone(d) > 0) {
                     level().setBlockAndUpdate(blockPosition(), ModBlocks.DRONE_REDSTONE_EMITTER.get().defaultBlockState());
-                    PneumaticCraftUtils.getTileEntityAt(level(), blockPosition(), DroneRedstoneEmitterBlockEntity.class)
+                    PneumaticCraftUtils.getBlockEntityAt(level(), blockPosition(), DroneRedstoneEmitterBlockEntity.class)
                             .ifPresent(be -> be.setOwner(this));
                 }
                 break;
@@ -1011,7 +1049,7 @@ public class DroneEntity extends AbstractDroneEntity implements
         if (airHandler == null) {
             int vol = PressureHelper.getUpgradedVolume(PneumaticValues.DRONE_VOLUME, getUpgrades(ModUpgrades.VOLUME.get()));
             ItemStack stack = new ItemStack(getDroneItem());
-            EnchantmentHelper.setEnchantments(stackEnchants, stack);
+            EnchantmentHelper.setEnchantments(stack, stackEnchants);
             vol = ItemRegistry.getInstance().getModifiedVolume(stack, vol);
             airHandler = new BasicAirHandler(vol) {
                 @Override
@@ -1054,10 +1092,10 @@ public class DroneEntity extends AbstractDroneEntity implements
 
         ItemStackHandler tmpHandler = new ItemStackHandler(droneItemHandler.getSlots());
         PneumaticCraftUtils.copyItemHandler(droneItemHandler, tmpHandler, droneItemHandler.getSlots());
-        tag.put("Inventory", tmpHandler.serializeNBT());
-        tag.put(UpgradableItemUtils.NBT_UPGRADE_TAG, upgradeInventory.serializeNBT());
+        tag.put("Inventory", tmpHandler.serializeNBT(registryAccess()));
+        tag.put("upgrades", upgradeInventory.serializeNBT(registryAccess()));
 
-        fluidTank.writeToNBT(tag);
+        fluidTank.writeToNBT(registryAccess(), tag);
 
         tag.putString("owner", ownerName.getString());
         if (ownerUUID != null) {
@@ -1066,24 +1104,12 @@ public class DroneEntity extends AbstractDroneEntity implements
         }
 
         if (!stackEnchants.isEmpty()) {
-            CompoundTag eTag = new CompoundTag();
-            stackEnchants.forEach((ench, lvl) ->
-                    PneumaticCraftUtils.getRegistryName(BuiltInRegistries.ENCHANTMENT, ench)
-                            .ifPresent(regName -> eTag.putInt(regName.toString(), lvl)));
-            tag.put("stackEnchants", eTag);
+            ItemEnchantments.CODEC.encodeStart(NbtOps.INSTANCE, stackEnchants)
+                    .ifSuccess(t -> tag.put("stackEnchants", t));
         }
 
         if (!displacedLiquids.isEmpty()) {
-            ListTag disp = new ListTag();
-            for (Map.Entry<BlockPos, BlockState> entry : displacedLiquids.entrySet()) {
-                CompoundTag p = NbtUtils.writeBlockPos(entry.getKey());
-                CompoundTag s = NbtUtils.writeBlockState(entry.getValue());
-                ListTag l = new ListTag();
-                l.add(0, p);
-                l.add(1, s);
-                disp.add(0, l);
-            }
-            tag.put("displacedLiquids", disp);
+            DISPLACED_LIQUIDS_CODEC.encodeStart(NbtOps.INSTANCE, displacedLiquids).ifSuccess(t -> tag.put("displacedLiquids", t));
         }
     }
 
@@ -1100,45 +1126,31 @@ public class DroneEntity extends AbstractDroneEntity implements
         aiManager.readFromNBT(tag.getCompound("variables"));
         standby = tag.getBoolean("standby");
         allowStandbyPickup = tag.getBoolean("allowStandbyPickup");
-        upgradeInventory.deserializeNBT(tag.getCompound(UpgradableItemUtils.NBT_UPGRADE_TAG));
+        upgradeInventory.deserializeNBT(registryAccess(), tag.getCompound("upgrades"));
         upgradeCache.invalidateCache();
         getAirHandler().deserializeNBT(tag.getCompound("airHandler"));
         carriedEntityAIdisabled = tag.getBoolean("carriedEntityAIdisabled");
-        deployPos = NbtUtils.readBlockPos(tag.getCompound("deployPos"));
+        deployPos = NbtUtils.readBlockPos(tag, "deployPos").orElse(null);
 
         ItemStackHandler tmpInv = new ItemStackHandler();
-        tmpInv.deserializeNBT(tag.getCompound("Inventory"));
+        tmpInv.deserializeNBT(registryAccess(), tag.getCompound("Inventory"));
         PneumaticCraftUtils.copyItemHandler(tmpInv, droneItemHandler);
         droneItemHandler.setUseableSlots(1 + getUpgrades(ModUpgrades.INVENTORY.get()));
 
         fluidTank.setCapacity(PneumaticValues.DRONE_TANK_SIZE * (1 + getUpgrades(ModUpgrades.INVENTORY.get())));
-        fluidTank.readFromNBT(tag);
+        fluidTank.readFromNBT(registryAccess(), tag);
 
         energy.setCapacity(100000 + 100000 * getUpgrades(ModUpgrades.VOLUME.get()));
 
         if (tag.contains("owner")) ownerName = Component.literal(tag.getString("owner"));
         if (tag.contains("ownerUUID_M")) ownerUUID = new UUID(tag.getLong("ownerUUID_M"), tag.getLong("ownerUUID_L"));
 
-        if (tag.contains("stackEnchants", Tag.TAG_COMPOUND)) {
-            CompoundTag eTag = tag.getCompound("stackEnchants");
-            for (String name : eTag.getAllKeys()) {
-                Enchantment e = BuiltInRegistries.ENCHANTMENT.get(new ResourceLocation(name));
-                if (e != null) {
-                    stackEnchants.put(e, eTag.getInt(name));
-                }
-            }
-        }
+        ItemEnchantments.CODEC.parse(NbtOps.INSTANCE, tag.getCompound("stackEnchants"))
+                .ifSuccess(s -> stackEnchants = s);
 
-        if (tag.contains("displacedLiquids")) {
-            for (Tag inbt : tag.getList("displacedLiquids", Tag.TAG_LIST)) {
-                ListTag l = (ListTag) inbt;
-                CompoundTag p = l.getCompound(0);
-                CompoundTag s = l.getCompound(1);
-                BlockPos pos = NbtUtils.readBlockPos(p);
-                BlockState state = NbtUtils.readBlockState(level().holderLookup(Registries.BLOCK), s);
-                displacedLiquids.put(pos, state);
-            }
-        }
+        displacedLiquids.clear();
+        DISPLACED_LIQUIDS_CODEC.parse(NbtOps.INSTANCE, tag.getCompound("displacedLiquids"))
+                .ifSuccess(displacedLiquids::putAll);
     }
 
     // computercraft ("getOwnerName" method)
@@ -1253,7 +1265,7 @@ public class DroneEntity extends AbstractDroneEntity implements
             return securityUpgradeCount > 0;
         }
         if (checkMC181565kludge(block)) return false;
-        if (state.isPathfindable(level(), pos, PathComputationType.LAND)) return true;
+        if (state.isPathfindable(PathComputationType.LAND)) return true;
 //        if (!state.blocksMotion() && block != Blocks.LADDER) return true;
         if (DroneRegistry.getInstance().pathfindableBlocks.containsKey(block)) {
             IPathfindHandler pathfindHandler = DroneRegistry.getInstance().pathfindableBlocks.get(block);
@@ -1281,7 +1293,7 @@ public class DroneEntity extends AbstractDroneEntity implements
 
     @Override
     public void sendWireframeToClient(BlockPos pos) {
-        NetworkHandler.sendToAllTracking(PacketShowWireframe.create(this, pos), this);
+        NetworkHandler.sendToAllTracking(PacketShowWireframe.forDrone(this, pos), this);
     }
 
     /**
@@ -1394,7 +1406,7 @@ public class DroneEntity extends AbstractDroneEntity implements
     }
 
     @Override
-    public Level world() {
+    public Level getDroneLevel() {
         return level();
     }
 
@@ -1574,8 +1586,7 @@ public class DroneEntity extends AbstractDroneEntity implements
 
     @Override
     public void storeTrackerData(ItemStack stack) {
-        NBTUtils.setInteger(stack, NBTKeys.PNEUMATIC_HELMET_DEBUGGING_DRONE, getId());
-        NBTUtils.removeTag(stack, NBTKeys.PNEUMATIC_HELMET_DEBUGGING_PC);
+        stack.set(ModDataComponents.DRONE_DEBUG_TARGET, DronePacket.DroneTarget.forEntityId(getId()));
     }
 
     @Override
@@ -1643,7 +1654,7 @@ public class DroneEntity extends AbstractDroneEntity implements
 
     @Override
     public DronePacket.DroneTarget getPacketTarget() {
-        return DronePacket.DroneTarget.forEntity(getId());
+        return DronePacket.DroneTarget.forEntityId(getId());
     }
 
     public void setDroneSpeed(double droneSpeed) {

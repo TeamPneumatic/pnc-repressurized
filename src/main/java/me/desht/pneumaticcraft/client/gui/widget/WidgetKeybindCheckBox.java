@@ -30,8 +30,8 @@ import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.config.subconfig.ArmorFeatureStatus;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketToggleArmorFeature;
+import me.desht.pneumaticcraft.common.network.PacketToggleArmorFeature.FeatureSetting;
 import me.desht.pneumaticcraft.common.network.PacketToggleArmorFeatureBulk;
-import me.desht.pneumaticcraft.common.network.PacketToggleArmorFeatureBulk.FeatureSetting;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
@@ -49,7 +49,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.InputEvent;
 import net.neoforged.neoforge.client.settings.KeyModifier;
 import org.lwjgl.glfw.GLFW;
@@ -204,7 +204,7 @@ public class WidgetKeybindCheckBox extends WidgetCheckBox {
 
     private void toggleUpgrade(CommonArmorHandler commonArmorHandler, EquipmentSlot slot, byte idx) {
         // set the on/off state for this upgrade on both client and server
-        NetworkHandler.sendToServer(new PacketToggleArmorFeature(slot, idx, coreComponents.checked && checked));
+        NetworkHandler.sendToServer(new PacketToggleArmorFeature(new FeatureSetting(slot, idx, coreComponents.checked && checked)));
         commonArmorHandler.setUpgradeEnabled(slot, idx, coreComponents.checked && checked);
         HUDHandler.getInstance().addFeatureToggleMessage(IArmorUpgradeHandler.getStringKey(upgradeID), checked);
     }
@@ -291,7 +291,7 @@ public class WidgetKeybindCheckBox extends WidgetCheckBox {
         return upgradeID;
     }
 
-    @Mod.EventBusSubscriber(modid = Names.MOD_ID, value = Dist.CLIENT)
+    @EventBusSubscriber(modid = Names.MOD_ID, value = Dist.CLIENT)
     public static class KeyDispatcher {
         // maps key value + modifier to keybind widget
         private static final Map<InputRecord, WidgetKeybindCheckBox> in2checkbox = new HashMap<>();

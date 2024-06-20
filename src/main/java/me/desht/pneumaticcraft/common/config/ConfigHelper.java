@@ -17,8 +17,8 @@
 
 package me.desht.pneumaticcraft.common.config;
 
+import me.desht.pneumaticcraft.api.drone.IProgWidget;
 import me.desht.pneumaticcraft.client.pneumatic_armor.ComponentInit;
-import me.desht.pneumaticcraft.common.drone.progwidgets.IProgWidget.WidgetDifficulty;
 
 public class ConfigHelper {
     public static ClientConfig client() {
@@ -29,7 +29,7 @@ public class ConfigHelper {
         return ConfigHolder.common;
     }
 
-    public static void setProgrammerDifficulty(WidgetDifficulty difficulty) {
+    public static void setProgrammerDifficulty(IProgWidget.WidgetDifficulty difficulty) {
         ConfigHolder.client.general.programmerDifficulty.set(difficulty);
     }
 

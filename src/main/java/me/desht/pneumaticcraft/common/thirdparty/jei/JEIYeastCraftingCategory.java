@@ -17,7 +17,6 @@
 
 package me.desht.pneumaticcraft.common.thirdparty.jei;
 
-import me.desht.pneumaticcraft.api.crafting.ingredient.FluidIngredient;
 import me.desht.pneumaticcraft.common.registry.ModFluids;
 import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.lib.Textures;
@@ -32,6 +31,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
 
 import java.util.Collections;
 import java.util.List;
@@ -49,8 +49,8 @@ public class JEIYeastCraftingCategory extends AbstractPNCCategory<JEIYeastCrafti
 
     @Override
     public void setRecipe(IRecipeLayoutBuilder builder, YeastCraftingRecipe recipe, IFocusGroup focuses) {
-        List<FluidStack> yeastStack = recipe.fluidInput().getFluidStacks();
-        List<FluidStack> waterStack = Collections.singletonList(new FluidStack(Fluids.WATER, 1000));
+        List<FluidStack> yeastStack = List.of(recipe.fluidInput().getFluids());
+        List<FluidStack> waterStack = List.of(new FluidStack(Fluids.WATER, 1000));
 
         builder.addSlot(RecipeIngredientRole.INPUT, 1, 1).addItemStack(recipe.itemInput);
         builder.addSlot(RecipeIngredientRole.CATALYST, 16, 16).addIngredients(NeoForgeTypes.FLUID_STACK, yeastStack);
@@ -62,7 +62,7 @@ public class JEIYeastCraftingCategory extends AbstractPNCCategory<JEIYeastCrafti
     public static List<YeastCraftingRecipe> getAllRecipes() {
         return Collections.singletonList(new YeastCraftingRecipe(
                         new ItemStack(Items.SUGAR),
-                        FluidIngredient.of(1000, ModFluids.YEAST_CULTURE.get()),
+                        SizedFluidIngredient.of(ModFluids.YEAST_CULTURE.get(), 1000),
                         new FluidStack(ModFluids.YEAST_CULTURE.get(), 1000)
                 )
         );
@@ -73,6 +73,6 @@ public class JEIYeastCraftingCategory extends AbstractPNCCategory<JEIYeastCrafti
         return positionalTooltip(mouseX, mouseY, (x, y) -> x >= 48 && x <= 80, "pneumaticcraft.gui.jei.tooltip.yeastCrafting");
     }
 
-    record YeastCraftingRecipe(ItemStack itemInput, FluidIngredient fluidInput, FluidStack output) {
+    public record YeastCraftingRecipe(ItemStack itemInput, SizedFluidIngredient fluidInput, FluidStack output) {
     }
 }

@@ -26,7 +26,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 
 import java.lang.ref.Reference;
@@ -41,7 +41,7 @@ import java.util.stream.Stream;
  * Server side tracker to find the semiblock entities at a given world and blockpos
  * (Note that one blockpos could have up to 7 semiblocks - one non-sided plus six sided semiblocks)
  */
-@Mod.EventBusSubscriber(modid = Names.MOD_ID)
+@EventBusSubscriber(modid = Names.MOD_ID)
 public enum SemiblockTracker {
     INSTANCE;
 

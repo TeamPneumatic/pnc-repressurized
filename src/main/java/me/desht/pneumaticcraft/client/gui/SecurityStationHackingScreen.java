@@ -110,8 +110,8 @@ public class SecurityStationHackingScreen extends AbstractPneumaticCraftContaine
     }
 
     public static void addExtraHackInfoStatic(List<Component> curInfo) {
-        if (Minecraft.getInstance().screen instanceof SecurityStationHackingScreen) {
-            ((SecurityStationHackingScreen) Minecraft.getInstance().screen).addExtraHackInfo(curInfo);
+        if (Minecraft.getInstance().screen instanceof SecurityStationHackingScreen shs) {
+            shs.addExtraHackInfo(curInfo);
         }
     }
 

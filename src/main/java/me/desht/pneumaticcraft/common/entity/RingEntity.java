@@ -20,6 +20,7 @@ package me.desht.pneumaticcraft.common.entity;
 import me.desht.pneumaticcraft.client.util.ProgressingLine;
 import me.desht.pneumaticcraft.common.registry.ModEntityTypes;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -62,11 +63,6 @@ public class RingEntity extends Entity {
         }
     }
 
-//    @Override
-//    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-//        return NetworkHooks.getEntitySpawningPacket(this);
-//    }
-
     @Override
     public void tick() {
         if (targetEntity == null) return;
@@ -104,7 +100,13 @@ public class RingEntity extends Entity {
     }
 
     @Override
-    protected void defineSynchedData() {
+    public boolean isNoGravity() {
+        return true;
+    }
+
+    @Override
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        // none
     }
 
     @Override

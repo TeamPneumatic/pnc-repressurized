@@ -19,6 +19,8 @@ package me.desht.pneumaticcraft.api.item;
 
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerItem;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.ItemLike;
+import net.neoforged.neoforge.fluids.FluidStack;
 
 import javax.annotation.Nonnull;
 
@@ -107,4 +109,15 @@ public interface IItemRegistry {
      * @param behaviour the launch behaviour to register
      */
     void registerItemLaunchBehaviour(ILaunchBehaviour behaviour);
+
+    /**
+     * Create an itemstack which contains the given fluidstack. The provided itemlike must support the
+     * {@code Capabilities.FluidHandler.ITEM} capability. If the fluidstack is larger than the item's capacity,
+     * the item will be filled to its capacity.
+     *
+     * @param item the item to fill
+     * @param fluid the fluid to fill with
+     * @return a filled item, or {@code ItemStack.EMPTY} if the item does not support the fluid capability
+     */
+    ItemStack createFluidContainingItem(ItemLike item, FluidStack fluid);
 }

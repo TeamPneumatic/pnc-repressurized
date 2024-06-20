@@ -17,6 +17,7 @@
 
 package me.desht.pneumaticcraft.common.drone.ai;
 
+import me.desht.pneumaticcraft.api.drone.IDrone;
 import me.desht.pneumaticcraft.common.drone.IDroneBase;
 import me.desht.pneumaticcraft.common.drone.progwidgets.IEntityProvider;
 import net.minecraft.world.entity.Entity;
@@ -26,11 +27,11 @@ import java.util.EnumSet;
 import java.util.List;
 
 public abstract class DroneEntityBase<W extends IEntityProvider, E extends Entity> extends Goal {
-    protected final IDroneBase drone;
+    protected final IDrone drone;
     protected final W progWidget;
     protected E targetedEntity;
 
-    protected DroneEntityBase(IDroneBase drone, W progWidget) {
+    protected DroneEntityBase(IDrone drone, W progWidget) {
         this.drone = drone;
         setFlags(EnumSet.allOf(Flag.class)); // so it won't run along with other AI tasks.
         this.progWidget = progWidget;
@@ -41,7 +42,7 @@ public abstract class DroneEntityBase<W extends IEntityProvider, E extends Entit
      */
     @Override
     public boolean canUse() {
-        List<Entity> pickableItems = progWidget.getValidEntities(drone.world());
+        List<Entity> pickableItems = progWidget.getValidEntities(drone.getDroneLevel());
 
         pickableItems.sort(new DistanceEntitySorter(drone));
         for (Entity ent : pickableItems) {

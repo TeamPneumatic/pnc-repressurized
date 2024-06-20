@@ -3,7 +3,9 @@ package me.desht.pneumaticcraft.common.upgrades;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.upgrade.PNCUpgrade;
 import me.desht.pneumaticcraft.lib.ModIds;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Rarity;
 
 public enum BuiltinUpgrade {
     VOLUME("volume"),
@@ -57,6 +59,10 @@ public enum BuiltinUpgrade {
 
     public int getMaxTier() {
         return maxTier;
+    }
+
+    public Rarity getRarity() {
+        return this == CREATIVE ? Rarity.EPIC : Rarity.COMMON;
     }
 
     public PNCUpgrade registerUpgrade() {

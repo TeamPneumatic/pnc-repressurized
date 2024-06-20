@@ -23,7 +23,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -54,7 +53,7 @@ public interface IBlockTrackEntry {
      * @param te    the block entity at this blockpos (may be null)
      * @return true if this block should be tracked by this BlockTrackEntry
      */
-    boolean shouldTrackWithThisEntry(BlockGetter world, BlockPos pos, BlockState state, BlockEntity te);
+    boolean shouldTrackWithThisEntry(Level world, BlockPos pos, BlockState state, BlockEntity te);
 
     /**
      * This method controls whether to send server update requests, at 3 second intervals while the player is
@@ -79,7 +78,7 @@ public interface IBlockTrackEntry {
     /**
      * This method is called each client tick to retrieve the block's additional
      * information. The method behaves much the same as {@link net.minecraft.world.item.Item#appendHoverText(ItemStack, Level, List, TooltipFlag)}.
-     * This method is only called if {@link #shouldTrackWithThisEntry(BlockGetter, BlockPos, BlockState, BlockEntity)}
+     * This method is only called if {@link #shouldTrackWithThisEntry(Level, BlockPos, BlockState, BlockEntity)}
      * returned true, and the player is currently focused on the block.
      *
      * @param world    the world

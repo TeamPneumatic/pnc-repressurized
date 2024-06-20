@@ -17,23 +17,42 @@
 
 package me.desht.pneumaticcraft.common.drone.progwidgets.area;
 
+import com.mojang.serialization.MapCodec;
+import me.desht.pneumaticcraft.api.drone.area.AreaType;
+import me.desht.pneumaticcraft.api.drone.area.AreaTypeSerializer;
+import me.desht.pneumaticcraft.common.registry.ModProgWidgetAreaTypes;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.function.Consumer;
 
 public class AreaTypeLine extends AreaType {
+    public static final MapCodec<AreaTypeLine> CODEC = MapCodec.unit(AreaTypeLine.INSTANCE);
+    public static final StreamCodec<FriendlyByteBuf, AreaTypeLine> STREAM_CODEC = StreamCodec.unit(AreaTypeLine.INSTANCE);
 
     public static final String ID = "line";
-    
-    public AreaTypeLine(){
+
+    private static final AreaTypeLine INSTANCE = new AreaTypeLine();
+
+    public static AreaTypeLine instance() {
+        return INSTANCE;
+    }
+
+    private AreaTypeLine() {
         super(ID);
     }
 
     @Override
     public String toString() {
         return getName();
+    }
+
+    @Override
+    public AreaTypeSerializer<? extends AreaType> getSerializer() {
+        return ModProgWidgetAreaTypes.AREA_TYPE_LINE.get();
     }
 
     @Override

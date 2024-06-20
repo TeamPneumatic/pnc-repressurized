@@ -17,16 +17,16 @@
 
 package me.desht.pneumaticcraft.common.block;
 
-import me.desht.pneumaticcraft.api.lib.NBTKeys;
 import me.desht.pneumaticcraft.common.block.entity.utility.SentryTurretBlockEntity;
 import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
 import me.desht.pneumaticcraft.common.registry.ModBlocks;
+import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
+import net.minecraft.core.component.DataComponentType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.BlockGetter;
@@ -78,11 +78,11 @@ public class SentryTurretBlock extends AbstractPneumaticCraftBlock implements Pn
     }
 
     @Override
-    public void addExtraInformation(ItemStack stack, BlockGetter world, List<Component> curInfo, TooltipFlag flag) {
-        CompoundTag tag = stack.getTagElement(NBTKeys.BLOCK_ENTITY_TAG);
-        if (tag != null && tag.contains(SentryTurretBlockEntity.NBT_ENTITY_FILTER, Tag.TAG_STRING)) {
+    public void addExtraInformation(ItemStack stack, Item.TooltipContext context, List<Component> curInfo, TooltipFlag flag) {
+        String filter = stack.get(ModDataComponents.ENTITY_FILTER);
+        if (filter != null) {
             curInfo.add(Component.translatable("pneumaticcraft.gui.entityFilter")
-                    .append(": " + tag.getString(SentryTurretBlockEntity.NBT_ENTITY_FILTER)).withStyle(ChatFormatting.YELLOW));
+                    .append(": " + filter).withStyle(ChatFormatting.YELLOW));
         }
     }
 
@@ -98,5 +98,11 @@ public class SentryTurretBlock extends AbstractPneumaticCraftBlock implements Pn
     @Override
     public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
         return new SentryTurretBlockEntity(pPos, pState);
+    }
+
+    @Override
+    public void addSerializableComponents(List<DataComponentType<?>> list) {
+        super.addSerializableComponents(list);
+        list.add(ModDataComponents.ENTITY_FILTER.get());
     }
 }

@@ -20,9 +20,12 @@ package me.desht.pneumaticcraft.common.variables;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
 import me.desht.pneumaticcraft.api.lib.Names;
+import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtUtils;
 import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Player;
@@ -31,7 +34,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.LogicalSide;
-import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.util.thread.EffectiveSide;
 import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
@@ -75,9 +78,9 @@ public class GlobalVariableManager extends SavedData {
         return overworld;
     }
 
-    public static GlobalVariableManager load(CompoundTag tag) {
+    public static GlobalVariableManager load(CompoundTag tag, HolderLookup.Provider provider) {
         GlobalVariableManager gvm = new GlobalVariableManager();
-        gvm.readFromNBT(tag);
+        gvm.readFromNBT(provider, tag);
         return gvm;
     }
 
@@ -159,7 +162,7 @@ public class GlobalVariableManager extends SavedData {
         return stack == null ? ItemStack.EMPTY : stack;
     }
 
-    private void readFromNBT(CompoundTag tag) {
+    private void readFromNBT(HolderLookup.Provider provider, CompoundTag tag) {
         globalVars.clear();
         globalItemVars.clear();
         playerVars.clear();
@@ -167,7 +170,7 @@ public class GlobalVariableManager extends SavedData {
 
         globalVars.putAll(readPosList(tag.getList("globalVars", Tag.TAG_COMPOUND)));
 
-        globalItemVars.putAll(readItemList(tag.getList("globalItemVars", Tag.TAG_COMPOUND)));
+        globalItemVars.putAll(readItemList(provider, tag.getList("globalItemVars", Tag.TAG_COMPOUND)));
 
         CompoundTag playerPos = tag.getCompound("playerVars");
         for (String id : playerPos.getAllKeys()) {
@@ -176,15 +179,15 @@ public class GlobalVariableManager extends SavedData {
 
         CompoundTag playerItems = tag.getCompound("playerItemVars");
         for (String id : playerItems.getAllKeys()) {
-            readItemList(playerItems.getList(id, Tag.TAG_COMPOUND)).forEach((k, v) -> playerItemVars.put(UUID.fromString(id), k, v));
+            readItemList(provider, playerItems.getList(id, Tag.TAG_COMPOUND)).forEach((k, v) -> playerItemVars.put(UUID.fromString(id), k, v));
         }
     }
 
     @Override
-    public CompoundTag save(CompoundTag tag) {
+    public CompoundTag save(CompoundTag tag, HolderLookup.Provider provider) {
         tag.put("globalVars", writePosList(globalVars));
 
-        tag.put("globalItemVars", writeItemList(globalItemVars));
+        tag.put("globalItemVars", writeItemList(provider, globalItemVars));
 
         CompoundTag playerPos = new CompoundTag();
         for (UUID uuid : playerVars.rowKeySet()) {
@@ -194,7 +197,7 @@ public class GlobalVariableManager extends SavedData {
 
         CompoundTag playerItems = new CompoundTag();
         for (UUID uuid : playerItemVars.rowKeySet()) {
-            playerItems.put(uuid.toString(), writeItemList(playerItemVars.row(uuid)));
+            playerItems.put(uuid.toString(), writeItemList(provider, playerItemVars.row(uuid)));
         }
         tag.put("playerItemVars", playerItems);
 
@@ -205,7 +208,7 @@ public class GlobalVariableManager extends SavedData {
         Map<String,BlockPos> map = new HashMap<>();
         for (int i = 0; i < list.size(); i++) {
             CompoundTag t = list.getCompound(i);
-            map.put(t.getString("varName"), new BlockPos(t.getInt("x"), t.getInt("y"), t.getInt("z")));
+            NbtUtils.readBlockPos(t, "pos").ifPresent(pos -> map.put(t.getString("varName"), pos));
         }
         return map;
     }
@@ -213,32 +216,30 @@ public class GlobalVariableManager extends SavedData {
     private ListTag writePosList(Map<String,BlockPos> map) {
         ListTag list = new ListTag();
         map.forEach((key, pos) -> {
-            CompoundTag t = new CompoundTag();
-            t.putString("varName", key);
-            t.putInt("x", pos.getX());
-            t.putInt("y", pos.getY());
-            t.putInt("z", pos.getZ());
-            list.add(t);
+            list.add(Util.make(new CompoundTag(), t -> {
+                t.putString("varName", key);
+                t.put("pos", NbtUtils.writeBlockPos(pos));
+            }));
         });
         return list;
     }
 
-    private Map<String,ItemStack> readItemList(ListTag list) {
+    private Map<String,ItemStack> readItemList(HolderLookup.Provider provider, ListTag list) {
         Map<String,ItemStack> map = new HashMap<>();
         for (int i = 0; i < list.size(); i++) {
             CompoundTag t = list.getCompound(i);
-            map.put(t.getString("varName"), ItemStack.of(t.getCompound("item")));
+            map.put(t.getString("varName"), ItemStack.parseOptional(provider, t.getCompound("item")));
         }
         return map;
     }
 
-    private ListTag writeItemList(Map<String, ItemStack> map) {
+    private ListTag writeItemList(HolderLookup.Provider provider, Map<String, ItemStack> map) {
         ListTag list = new ListTag();
         for (Map.Entry<String, ItemStack> entry : map.entrySet()) {
             CompoundTag t = new CompoundTag();
             t.putString("varName", entry.getKey());
             CompoundTag itemTag = new CompoundTag();
-            entry.getValue().save(itemTag);
+            entry.getValue().save(provider, itemTag);
             t.put("item", itemTag);
             list.add(t);
         }
@@ -256,7 +257,7 @@ public class GlobalVariableManager extends SavedData {
         return varNames;
     }
 
-    @Mod.EventBusSubscriber(modid = Names.MOD_ID)
+    @EventBusSubscriber(modid = Names.MOD_ID)
     public static class Listener {
         @SubscribeEvent
         public static void onServerStarting(ServerAboutToStartEvent event) {

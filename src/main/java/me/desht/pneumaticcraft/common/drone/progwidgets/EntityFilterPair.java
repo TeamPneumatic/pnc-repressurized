@@ -17,6 +17,7 @@
 
 package me.desht.pneumaticcraft.common.drone.progwidgets;
 
+import me.desht.pneumaticcraft.api.drone.IProgWidget;
 import me.desht.pneumaticcraft.common.util.EntityFilter;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
@@ -30,7 +31,7 @@ import java.util.Set;
 /**
  * Represents a pair of entity filters: a whitelist and a blacklist, as used by programming puzzle pieces.
  */
-class EntityFilterPair<T extends IProgWidget & IEntityProvider> {
+class EntityFilterPair<T extends IEntityProvider & IProgWidget> {
     private final T widget;
     private final EntityFilter entityWhitelist;
     private final EntityFilter entityBlacklist;
@@ -42,7 +43,7 @@ class EntityFilterPair<T extends IProgWidget & IEntityProvider> {
         entityBlacklist = getFilter(widget, false);
     }
 
-    public static <T extends IProgWidget & IEntityProvider> void addErrors(T widget, List<Component> errors) {
+    public static <T extends IEntityProvider & IProgWidget> void addErrors(T widget, List<Component> errors) {
         EntityFilterPair<T> filter = new EntityFilterPair<>(widget);
         if (!filter.errorWhite.isEmpty()) {
             errors.add(Component.literal("Invalid whitelist filter: " + filter.errorWhite));

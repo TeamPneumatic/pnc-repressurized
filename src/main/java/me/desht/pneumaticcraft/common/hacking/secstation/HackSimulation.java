@@ -24,8 +24,11 @@ import me.desht.pneumaticcraft.common.item.NetworkComponentItem;
 import me.desht.pneumaticcraft.common.item.NetworkComponentItem.NetworkComponentType;
 import me.desht.pneumaticcraft.lib.BlockEntityConstants;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
 import org.apache.commons.lang3.Validate;
 import org.apache.commons.lang3.tuple.MutablePair;
 import org.apache.commons.lang3.tuple.Pair;
@@ -38,30 +41,16 @@ public class HackSimulation {
     public static final int GRID_HEIGHT = 7;
     public static final int GRID_SIZE = GRID_WIDTH * GRID_HEIGHT;
 
-    // lookup table which maps a node index to a list of the nodes it can connect to
-    private static final List<IntList> connectionMatrix = new ArrayList<>();
-    public static final int NODE_FORTIFICATION_TIME = 100;
+    public static final StreamCodec<FriendlyByteBuf, HackSimulation> STREAM_CODEC = StreamCodec.composite(
+            ByteBufCodecs.VAR_INT, sim -> sim.startPosition,
+            ByteBufCodecs.FLOAT, sim -> sim.baseBridgeSpeed,
+            NeoForgeStreamCodecs.enumCodec(HackingSide.class), sim -> sim.side,
+            HackSimulation::new
+    );
 
-    static {
-        for (int i = 0; i < GRID_SIZE; i++) {
-            int xPos = i % GRID_WIDTH;
-            int yPos = i / GRID_WIDTH;
-            IntList connections = new IntArrayList();
-            if (yPos > 0) {
-                connections.add(i - GRID_WIDTH);  // up
-                if (xPos > 0) connections.add(i - (GRID_WIDTH + 1));  // up-left
-                if (xPos < GRID_WIDTH - 1) connections.add(i - (GRID_WIDTH - 1));  // up-right
-            }
-            if (yPos < GRID_HEIGHT - 1) {
-                connections.add(i + GRID_WIDTH);  // down
-                if (xPos > 0) connections.add(i + (GRID_WIDTH - 1));  // down-left
-                if (xPos < GRID_WIDTH - 1) connections.add(i + (GRID_WIDTH + 1));  // down-right
-            }
-            if (xPos > 0) connections.add(i - 1);  // left
-            if (xPos < GRID_WIDTH - 1) connections.add(i + 1);  // right
-            connectionMatrix.add(connections);
-        }
-    }
+    // lookup table which maps a node index to a list of the nodes it can connect to
+    private static final List<IntList> connectionMatrix = initConnectionMatrix();
+    public static final int NODE_FORTIFICATION_TIME = 100;
 
     private final Node[] nodes = new Node[GRID_SIZE];
     private ISimulationController controller;
@@ -101,22 +90,36 @@ public class HackSimulation {
         this.stopWormTimer = 0;
     }
 
+    private HackSimulation(int startPosition, float baseBridgeSpeed, HackingSide side) {
+        this(null, startPosition, baseBridgeSpeed, side);
+    }
+
     public static HackSimulation dummySimulation() {
         // used for rendering background connection lines
         return new HackSimulation(null, -1, BlockEntityConstants.NETWORK_AI_BRIDGE_SPEED, HackingSide.AI);
     }
 
-    public static HackSimulation readFromNetwork(FriendlyByteBuf buffer) {
-        float speed = buffer.readFloat();
-        HackingSide side = buffer.readBoolean() ? HackingSide.AI : HackingSide.PLAYER;
-        int start = buffer.readVarInt();
-        return new HackSimulation(null, start, speed, side);
-    }
-
-    public void writeToNetwork(FriendlyByteBuf buffer) {
-        buffer.writeFloat(baseBridgeSpeed);
-        buffer.writeBoolean(side == HackingSide.AI);
-        buffer.writeVarInt(startPosition);
+    private static List<IntList> initConnectionMatrix() {
+        List<IntList> res = new ArrayList<>();
+        for (int i = 0; i < GRID_SIZE; i++) {
+            int xPos = i % GRID_WIDTH;
+            int yPos = i / GRID_WIDTH;
+            IntList connections = new IntArrayList();
+            if (yPos > 0) {
+                connections.add(i - GRID_WIDTH);  // up
+                if (xPos > 0) connections.add(i - (GRID_WIDTH + 1));  // up-left
+                if (xPos < GRID_WIDTH - 1) connections.add(i - (GRID_WIDTH - 1));  // up-right
+            }
+            if (yPos < GRID_HEIGHT - 1) {
+                connections.add(i + GRID_WIDTH);  // down
+                if (xPos > 0) connections.add(i + (GRID_WIDTH - 1));  // down-left
+                if (xPos < GRID_WIDTH - 1) connections.add(i + (GRID_WIDTH + 1));  // down-right
+            }
+            if (xPos > 0) connections.add(i - 1);  // left
+            if (xPos < GRID_WIDTH - 1) connections.add(i + 1);  // right
+            res.add(connections);
+        }
+        return res;
     }
 
     public void addNode(int position, NetworkComponentType type, int count) {
@@ -234,7 +237,7 @@ public class HackSimulation {
             }
             if (!found) getNodeAt(neighbour).outGoingHacks.add(Pair.of(pendingNukePos, 1f));
             getNodeAt(pos).setHackProgress(pos, 1f, false);
-            if (controller != null) controller.getHacker().playSound(SoundEvents.GENERIC_EXPLODE, 1f, 1f);
+            if (controller != null) controller.getHacker().playSound(SoundEvents.GENERIC_EXPLODE.value(), 1f, 1f);
             nukeVirusCooldown = 60;
         }
         pendingNukePos = -1;
@@ -412,25 +415,12 @@ public class HackSimulation {
         }
     }
 
-    public static class ConnectionEntry {
-        public final int from;
-        public final int to;
-        public final float progress;
-
-        ConnectionEntry(int from, int to, float progress) {
-            this.from = from;
-            this.to = to;
-            this.progress = progress;
-        }
-
-        public void write(FriendlyByteBuf buffer) {
-            buffer.writeVarInt(from);
-            buffer.writeVarInt(to);
-            buffer.writeFloat(progress);
-        }
-
-        public static ConnectionEntry readFromNetwork(FriendlyByteBuf buffer) {
-            return new ConnectionEntry(buffer.readVarInt(), buffer.readVarInt(), buffer.readFloat());
-        }
+    public record ConnectionEntry(int from, int to, float progress) {
+        public static StreamCodec<FriendlyByteBuf, ConnectionEntry> STREAM_CODEC = StreamCodec.composite(
+                ByteBufCodecs.VAR_INT, ConnectionEntry::from,
+                ByteBufCodecs.VAR_INT, ConnectionEntry::to,
+                ByteBufCodecs.FLOAT, ConnectionEntry::progress,
+                ConnectionEntry::new
+        );
     }
 }

@@ -19,7 +19,7 @@ package me.desht.pneumaticcraft.common.drone;
 
 import me.desht.pneumaticcraft.api.drone.*;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetCustomBlockInteract;
-import me.desht.pneumaticcraft.common.registry.ModProgWidgets;
+import me.desht.pneumaticcraft.common.registry.ModProgWidgetTypes;
 import me.desht.pneumaticcraft.common.util.ProgrammedDroneUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.GlobalPos;
@@ -53,8 +53,8 @@ public enum DroneRegistry implements IDroneRegistry {
 
     @Override
     public void registerCustomBlockInteractor(ICustomBlockInteract interactor) {
-        ModProgWidgets.PROG_WIDGETS_DEFERRED.register(interactor.getID(),
-                () -> ProgWidgetType.createType(() -> new ProgWidgetCustomBlockInteract().setInteractor(interactor)));
+        ModProgWidgetTypes.PROG_WIDGETS_DEFERRED.register(interactor.getID(),
+                () -> ProgWidgetType.createType(() -> new ProgWidgetCustomBlockInteract().setInteractor(interactor), ProgWidgetCustomBlockInteract.CODEC));
     }
 
     @Override

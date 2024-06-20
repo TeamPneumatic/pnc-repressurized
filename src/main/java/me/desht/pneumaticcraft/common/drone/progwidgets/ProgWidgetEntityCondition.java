@@ -18,10 +18,13 @@
 package me.desht.pneumaticcraft.common.drone.progwidgets;
 
 import com.google.common.collect.ImmutableList;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import me.desht.pneumaticcraft.api.drone.IDrone;
+import me.desht.pneumaticcraft.api.drone.IProgWidget;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
-import me.desht.pneumaticcraft.common.drone.IDroneBase;
 import me.desht.pneumaticcraft.common.drone.ai.DroneAIBlockCondition;
-import me.desht.pneumaticcraft.common.registry.ModProgWidgets;
+import me.desht.pneumaticcraft.common.registry.ModProgWidgetTypes;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
@@ -29,24 +32,34 @@ import net.minecraft.world.entity.Entity;
 import java.util.List;
 
 public class ProgWidgetEntityCondition extends ProgWidgetCondition {
+    public static final MapCodec<ProgWidgetEntityCondition> CODEC = RecordCodecBuilder.mapCodec(builder ->
+            condParts(builder).apply(builder, ProgWidgetEntityCondition::new));
 
     public ProgWidgetEntityCondition() {
-        super(ModProgWidgets.CONDITION_ENTITY.get());
+    }
+
+    public ProgWidgetEntityCondition(PositionFields pos, InvBaseFields inv, ConditionFields cond) {
+        super(pos, inv, cond);
     }
 
     @Override
     public List<ProgWidgetType<?>> getParameters() {
-        return ImmutableList.of(ModProgWidgets.AREA.get(), ModProgWidgets.TEXT.get(), ModProgWidgets.TEXT.get());
+        return ImmutableList.of(ModProgWidgetTypes.AREA.get(), ModProgWidgetTypes.TEXT.get(), ModProgWidgetTypes.TEXT.get());
     }
 
     @Override
-    protected DroneAIBlockCondition getEvaluator(IDroneBase drone, IProgWidget widget) {
+    protected DroneAIBlockCondition getEvaluator(IDrone drone, IProgWidget widget) {
         return null;
     }
 
     @Override
-    public IProgWidget getOutputWidget(IDroneBase drone, List<IProgWidget> allWidgets) {
-        List<Entity> entities = getValidEntities(drone.world());
+    public ProgWidgetType<?> getType() {
+        return ModProgWidgetTypes.CONDITION_ENTITY.get();
+    }
+
+    @Override
+    public IProgWidget getOutputWidget(IDrone drone, List<IProgWidget> allWidgets) {
+        List<Entity> entities = getValidEntities(drone.getDroneLevel());
         boolean result = getOperator() == Operator.EQ ? entities.size() == getRequiredCount() : entities.size() >= getRequiredCount();
         if (result) {
             drone.getDebugger().addEntry("pneumaticcraft.gui.progWidget.condition.evaluatedTrue");

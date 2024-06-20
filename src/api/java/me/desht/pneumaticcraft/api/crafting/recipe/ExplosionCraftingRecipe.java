@@ -19,6 +19,7 @@ package me.desht.pneumaticcraft.api.crafting.recipe;
 
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.neoforged.neoforge.common.crafting.SizedIngredient;
 
 import java.util.List;
 
@@ -28,18 +29,16 @@ public abstract class ExplosionCraftingRecipe extends PneumaticCraftRecipe {
      *
      * @return the input ingredient
      */
-    public abstract Ingredient getInput();
+    public abstract SizedIngredient getInput();
 
     /**
      * Get the number of items which will be taken from the input to create the output item.
-     * <p>
-     * This should be the number of items in any itemstack returned from {@code getInput().getMatchedStacks()}; for
-     * basic {@link Ingredient} ingredients, this will always be 1, but custom ingredient subclasses could return a
-     * large number.
      *
      * @return the number of items
      */
-    public abstract int getAmount();
+    public final int getAmount() {
+        return getInput().count();
+    }
 
     /**
      * Get a list of the output item(s).

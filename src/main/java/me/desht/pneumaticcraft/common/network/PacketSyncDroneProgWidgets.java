@@ -17,12 +17,13 @@
 
 package me.desht.pneumaticcraft.common.network;
 
+import me.desht.pneumaticcraft.api.drone.IProgWidget;
 import me.desht.pneumaticcraft.client.pneumatic_armor.upgrade_handler.DroneDebugClientHandler;
 import me.desht.pneumaticcraft.common.drone.IDroneBase;
-import me.desht.pneumaticcraft.common.drone.progwidgets.IProgWidget;
-import me.desht.pneumaticcraft.common.drone.progwidgets.WidgetSerializer;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
+import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidget;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.entity.player.Player;
 
 import java.util.List;
@@ -34,25 +35,21 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
  * Sent by server to sync a (debugged) drone's programming widgets
  */
 public record PacketSyncDroneProgWidgets(DroneTarget droneTarget, List<IProgWidget> progWidgets) implements DronePacket {
-    public static final ResourceLocation ID = RL("sync_drone_prog_widgets");
+    public static final Type<PacketSyncDroneProgWidgets> TYPE = new Type<>(RL("sync_drone_prog_widgets"));
+
+    public static final StreamCodec<RegistryFriendlyByteBuf, PacketSyncDroneProgWidgets> STREAM_CODEC = StreamCodec.composite(
+            DroneTarget.STREAM_CODEC, PacketSyncDroneProgWidgets::droneTarget,
+            ProgWidget.STREAM_CODEC.apply(ByteBufCodecs.list()), PacketSyncDroneProgWidgets::progWidgets,
+            PacketSyncDroneProgWidgets::new
+    );
 
     public static PacketSyncDroneProgWidgets create(IDroneBase drone) {
         return new PacketSyncDroneProgWidgets(drone.getPacketTarget(), drone.getActiveAIManager().widgets());
     }
 
-    public static PacketSyncDroneProgWidgets fromNetwork(FriendlyByteBuf buf) {
-        return new PacketSyncDroneProgWidgets(DroneTarget.fromNetwork(buf), WidgetSerializer.readWidgetsFromPacket(buf));
-    }
-
     @Override
-    public void write(FriendlyByteBuf buf) {
-        droneTarget.toNetwork(buf);
-        WidgetSerializer.writeProgWidgetsToPacket(progWidgets, buf);
-    }
-
-    @Override
-    public ResourceLocation id() {
-        return ID;
+    public Type<PacketSyncDroneProgWidgets> type() {
+        return TYPE;
     }
 
     @Override

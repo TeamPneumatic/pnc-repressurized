@@ -5,15 +5,14 @@ import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.item.JackHammerItem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.LayeredDraw;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.neoforge.client.gui.overlay.ExtendedGui;
-import net.neoforged.neoforge.client.gui.overlay.IGuiOverlay;
 import org.lwjgl.opengl.GL11;
 
-public class JackhammerOverlay implements IGuiOverlay {
+public class JackhammerOverlay implements LayeredDraw.Layer {
     @Override
-    public void render(ExtendedGui gui, GuiGraphics graphics, float partialTicks, int width, int height) {
+    public void render(GuiGraphics graphics, float partialTicks) {
         Player player = Minecraft.getInstance().player;
         if (player == null || !(player.getMainHandItem().getItem() instanceof JackHammerItem)
                 || !Minecraft.getInstance().options.getCameraType().isFirstPerson())
@@ -27,7 +26,7 @@ public class JackhammerOverlay implements IGuiOverlay {
             RenderSystem.setShaderColor(1f, 1f, 1f, 0.25f);
             float scaleFactor = Mth.clamp((float) Minecraft.getInstance().getWindow().getGuiScale(), 2, 3);
             graphics.pose().pushPose();
-            graphics.pose().translate(width / 2.0, height / 2.0, 0);
+            graphics.pose().translate(graphics.guiWidth() / 2.0, graphics.guiHeight() / 2.0, 0);
             graphics.pose().scale(scaleFactor, scaleFactor, scaleFactor);
             graphics.pose().translate(8, -8, 0);
             graphics.blit(digMode.getGuiIcon(), 0, 0, 0, 0, 16, 16, 16, 16);

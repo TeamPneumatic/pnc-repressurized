@@ -17,6 +17,7 @@
 
 package me.desht.pneumaticcraft.common.inventory.handler;
 
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
@@ -39,8 +40,8 @@ public class ComparatorItemStackHandler extends BaseItemStackHandler {
     }
 
     @Override
-    public void deserializeNBT(CompoundTag nbt) {
-        super.deserializeNBT(nbt);
+    public void deserializeNBT(HolderLookup.Provider provider, CompoundTag nbt) {
+        super.deserializeNBT(provider, nbt);
         signalLevel = -1;
     }
 

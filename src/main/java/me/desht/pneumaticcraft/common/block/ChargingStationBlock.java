@@ -1,14 +1,14 @@
 package me.desht.pneumaticcraft.common.block;
 
-import me.desht.pneumaticcraft.api.lib.NBTKeys;
 import me.desht.pneumaticcraft.common.block.entity.utility.ChargingStationBlockEntity;
 import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
 import me.desht.pneumaticcraft.common.registry.ModBlocks;
+import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.util.VoxelShapeUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.component.DataComponentType;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
@@ -22,6 +22,8 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
 
 public class ChargingStationBlock extends AbstractCamouflageBlock implements PneumaticCraftEntityBlock {
     public static final BooleanProperty CHARGE_PAD = BooleanProperty.create("charge_pad");
@@ -139,6 +141,12 @@ public class ChargingStationBlock extends AbstractCamouflageBlock implements Pne
         return new ChargingStationBlockEntity(pPos, pState);
     }
 
+    @Override
+    public void addSerializableComponents(List<DataComponentType<?>> list) {
+        super.addSerializableComponents(list);
+        list.add(ModDataComponents.UPGRADE_ONLY.get());
+    }
+
     public static class ItemBlockChargingStation extends BlockItem {
         public ItemBlockChargingStation(Block blockIn) {
             super(blockIn, ModItems.defaultProps());
@@ -146,12 +154,9 @@ public class ChargingStationBlock extends AbstractCamouflageBlock implements Pne
 
         @Override
         public String getDescriptionId(ItemStack stack) {
-            CompoundTag tag = stack.getTagElement(NBTKeys.BLOCK_ENTITY_TAG);
-            if (tag != null && tag.getBoolean("UpgradeOnly")) {
-                return super.getDescriptionId(stack) + ".upgrade_only";
-            } else {
-                return super.getDescriptionId(stack);
-            }
+            return stack.getOrDefault(ModDataComponents.UPGRADE_ONLY, false) ?
+                    super.getDescriptionId(stack) + ".upgrade_only" :
+                    super.getDescriptionId(stack);
         }
     }
 }

@@ -30,11 +30,12 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.event.entity.living.LivingHurtEvent;
+import org.joml.Vector3f;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 public class ElectricAttackHandler {
@@ -47,9 +48,13 @@ public class ElectricAttackHandler {
             if (drone.getUpgrades(ModUpgrades.SECURITY.get()) > 0) {
                 float dmg = event.getAmount();
                 drone.getCapability(PNCCapabilities.AIR_HANDLER_ENTITY).addAir((int)(-50 * dmg));
-                double dy = Math.min(dmg / 4, 0.5);
-                NetworkHandler.sendToAllTracking(new PacketSpawnParticle(AirParticleData.DENSE, drone.getX(), drone.getY(), drone.getZ(),
-                            0, -dy, 0, (int) (dmg), 0, 0, 0), drone);
+                float dy = Math.min(dmg / 4, 0.5F);
+                NetworkHandler.sendToAllTracking(new PacketSpawnParticle(AirParticleData.DENSE,
+                        drone.position().toVector3f(),
+                        new Vector3f(0, -dy, 0),
+                        (int) (dmg),
+                        Optional.empty()
+                ), drone);
                 event.setAmount(0f);
                 playLeakSound(drone);
             }
@@ -61,8 +66,11 @@ public class ElectricAttackHandler {
                 handler.addAir(EquipmentSlot.CHEST, (int)(-150 * event.getAmount()));
                 float sx = player.getRandom().nextFloat() * 1.5F - 0.75F;
                 float sz = player.getRandom().nextFloat() * 1.5F - 0.75F;
-                double dy = Math.min(event.getAmount() / 4, 0.5);
-                NetworkHandler.sendToAllTracking(new PacketSpawnParticle(AirParticleData.DENSE, player.getX() + sx, player.getY() + 1, player.getZ() + sz, sx / 4, -dy, sz / 4), player.level(), player.blockPosition());
+                float dy = Math.min(event.getAmount() / 4, 0.5F);
+                NetworkHandler.sendToAllTracking(PacketSpawnParticle.oneParticle(AirParticleData.DENSE,
+                        player.position().toVector3f().add(sx, 1, sz),
+                        new Vector3f(sx / 4, -dy, sz / 4)
+                ), player.level(), player.blockPosition());
                 event.setAmount(0f);
                 playLeakSound(player);
             }

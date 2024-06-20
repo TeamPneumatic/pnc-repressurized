@@ -25,7 +25,6 @@ import me.desht.pneumaticcraft.api.upgrade.IUpgradeRegistry;
 import me.desht.pneumaticcraft.api.upgrade.PNCUpgrade;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.item.UpgradeItem;
-import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import me.desht.pneumaticcraft.mixin.accessors.BlockEntityTypeAccess;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
@@ -35,6 +34,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -136,8 +136,8 @@ public enum ApplicableUpgradesDB implements IUpgradeRegistry {
     }
 
     @Override
-    public Item makeUpgradeItem(PNCUpgrade upgrade, int tier) {
-        return new UpgradeItem(upgrade, tier);
+    public Item makeUpgradeItem(PNCUpgrade upgrade, int tier, Rarity rarity) {
+        return new UpgradeItem(upgrade, tier, rarity);
     }
 
     @Override

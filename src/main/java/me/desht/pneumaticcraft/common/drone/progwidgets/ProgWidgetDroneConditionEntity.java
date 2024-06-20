@@ -18,10 +18,13 @@
 package me.desht.pneumaticcraft.common.drone.progwidgets;
 
 import com.google.common.collect.ImmutableList;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import me.desht.pneumaticcraft.api.drone.IDrone;
+import me.desht.pneumaticcraft.api.drone.IProgWidget;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.drone.IDroneBase;
-import me.desht.pneumaticcraft.common.entity.drone.DroneEntity;
-import me.desht.pneumaticcraft.common.registry.ModProgWidgets;
+import me.desht.pneumaticcraft.common.registry.ModProgWidgetTypes;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -32,16 +35,26 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ProgWidgetDroneConditionEntity extends ProgWidgetDroneCondition implements IEntityProvider {
+    public static final MapCodec<ProgWidgetDroneConditionEntity> CODEC = RecordCodecBuilder.mapCodec(builder ->
+            droneConditionParts(builder).apply(builder, ProgWidgetDroneConditionEntity::new));
 
     private EntityFilterPair<ProgWidgetDroneConditionEntity> entityFilters;
 
     public ProgWidgetDroneConditionEntity() {
-        super(ModProgWidgets.DRONE_CONDITION_ENTITY.get());
+    }
+
+    public ProgWidgetDroneConditionEntity(PositionFields pos, DroneConditionFields cond) {
+        super(pos, cond);
     }
 
     @Override
     public List<ProgWidgetType<?>> getParameters() {
-        return ImmutableList.of(ModProgWidgets.TEXT.get(), ModProgWidgets.TEXT.get());
+        return ImmutableList.of(ModProgWidgetTypes.TEXT.get(), ModProgWidgetTypes.TEXT.get());
+    }
+
+    @Override
+    public ProgWidgetType<?> getType() {
+        return ModProgWidgetTypes.DRONE_CONDITION_ENTITY.get();
     }
 
     @Override
@@ -57,10 +70,9 @@ public class ProgWidgetDroneConditionEntity extends ProgWidgetDroneCondition imp
     }
 
     @Override
-    protected int getCount(IDroneBase d, IProgWidget widget) {
-        DroneEntity drone = (DroneEntity) d;
+    protected int getCount(IDrone d, IProgWidget widget) {
         int count = 0;
-        for (Entity e : drone.getPassengers()) {
+        for (Entity e : IDroneBase.asDrone(d).getPassengers()) {
             if (((IEntityProvider) widget).isEntityValid(e)) count++;
         }
         maybeRecordMeasuredVal(d, count);

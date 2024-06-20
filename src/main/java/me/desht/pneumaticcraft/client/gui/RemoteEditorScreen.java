@@ -72,17 +72,18 @@ public class RemoteEditorScreen extends RemoteScreen {
 
     @Override
     public void init() {
-        if (pastebinGui != null && pastebinGui.outputTag != null) {
-            CompoundTag tag = remote.getOrCreateTag();
-            tag.put("actionWidgets", pastebinGui.outputTag.getList("main", Tag.TAG_COMPOUND));
+        if (pastebinGui != null && pastebinGui.getOutputWidgets() != null) {
+            // TODO rewrite for 1.21
+//            CompoundTag tag = new CompoundTag();
+//            tag.put("actionWidgets", pastebinGui.outputTag.getList("main", Tag.TAG_COMPOUND));
+//            RemoteItem.setSavedLayout(remote, tag);
         } else if (remoteLayout != null) {
-            CompoundTag tag = remote.getOrCreateTag();
-            tag.put("actionWidgets", remoteLayout.toNBT(oldGuiLeft, oldGuiTop).getList("actionWidgets", Tag.TAG_COMPOUND));
+            RemoteItem.setSavedLayout(remote, remoteLayout.toNBT(registryAccess(), oldGuiLeft, oldGuiTop));
         }
 
         if (invSearchGui != null && invSearchGui.getSearchStack().getItem() == ModItems.REMOTE.get()) {
             if (RemoteItem.hasSameSecuritySettings(remote, invSearchGui.getSearchStack())) {
-                remoteLayout = new RemoteLayout(invSearchGui.getSearchStack(), leftPos, topPos);
+                remoteLayout = new RemoteLayout(registryAccess(), invSearchGui.getSearchStack(), leftPos, topPos);
             } else {
                 ClientUtils.getClientPlayer().displayClientMessage(Component.literal("pneumaticcraft.gui.remote.differentSecuritySettings"), false);
             }
@@ -131,7 +132,7 @@ public class RemoteEditorScreen extends RemoteScreen {
 
     private void doPastebin() {
         CompoundTag mainTag = new CompoundTag();
-        mainTag.put("main", remote.hasTag() ? remote.getTag().getList("actionWidgets", Tag.TAG_COMPOUND) : new CompoundTag());
+        mainTag.put("main", RemoteItem.getSavedLayout(remote).getList("actionWidgets", Tag.TAG_COMPOUND));
         minecraft.setScreen(pastebinGui = new PastebinScreen(this, mainTag));
     }
 
@@ -166,7 +167,7 @@ public class RemoteEditorScreen extends RemoteScreen {
                 for (ActionWidget<?> actionWidget : widgetTray) {
                     if (actionWidget.getWidget().isHoveredOrFocused()) {
                         // create new widget from tray
-                        startDrag(actionWidget.copy(), x, y);
+                        startDrag(actionWidget.copy(registryAccess()), x, y);
                         remoteLayout.addWidget(draggingWidget);
                         addRenderableWidget(draggingWidget.getWidget());
                         return true;
@@ -198,7 +199,7 @@ public class RemoteEditorScreen extends RemoteScreen {
                 // middle click - copy existing widget
                 for (ActionWidget<?> actionWidget : remoteLayout.getActionWidgets()) {
                     if (actionWidget.getWidget().isHoveredOrFocused()) {
-                        startDrag(actionWidget.copy(), x, y);
+                        startDrag(actionWidget.copy(registryAccess()), x, y);
                         remoteLayout.addWidget(draggingWidget);
                         addRenderableWidget(draggingWidget.getWidget());
                         return true;
@@ -258,9 +259,9 @@ public class RemoteEditorScreen extends RemoteScreen {
     public void removed() {
         ItemStack stack = ClientUtils.getClientPlayer().getItemInHand(menu.getHand());
         if (stack.getItem() == ModItems.REMOTE.get()) {
-            CompoundTag nbt = remoteLayout.toNBT(leftPos, topPos);
-            stack.getOrCreateTag().put("actionWidgets", nbt.getList("actionWidgets", Tag.TAG_COMPOUND));
-            NetworkHandler.sendToServer(new PacketUpdateRemoteLayout(remoteLayout.toNBT(leftPos, topPos), menu.getHand()));
+            CompoundTag tag = remoteLayout.toNBT(registryAccess(), leftPos, topPos);
+            RemoteItem.setSavedLayout(stack, tag);
+            NetworkHandler.sendToServer(new PacketUpdateRemoteLayout(tag, menu.getHand()));
         }
 
         super.removed();

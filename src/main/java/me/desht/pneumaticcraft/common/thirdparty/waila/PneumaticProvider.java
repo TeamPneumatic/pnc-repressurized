@@ -28,6 +28,7 @@ import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.FloatTag;
 import net.minecraft.nbt.ListTag;
@@ -87,13 +88,13 @@ public class PneumaticProvider {
                 compoundTag.put("pressure", l);
 
                 if (IOHelper.getCap(beInfo, PNCCapabilities.HEAT_EXCHANGER_BLOCK, null).isPresent()) {
-                    compoundTag.put("heatData", new TemperatureData(beInfo).toNBT());
+                    compoundTag.put("heatData", TemperatureData.forBlockEntity(beInfo).toNBT());
                 }
 
                 IOHelper.getCap(beInfo, Capabilities.FluidHandler.BLOCK, null).ifPresent(h -> {
                     ListTag list = new ListTag();
                     for (int i = 0; i < h.getTanks(); i++) {
-                        list.add(h.getFluidInTank(i).writeToNBT(new CompoundTag()));
+                        list.add(h.getFluidInTank(i).save(blockAccessor.getLevel().registryAccess()));
                     }
                     compoundTag.put("tanks", list);
                 });
@@ -120,19 +121,19 @@ public class PneumaticProvider {
                 }
                 handleHeatData(iTooltip, tag);
                 if (blockAccessor.getPlayer().isCrouching()) {
-                    handleFluidData(iTooltip, tag);
+                    handleFluidData(iTooltip, tag, blockAccessor.getLevel().registryAccess());
                 }
             }
         }
 
-        private void handleFluidData(ITooltip tooltip, CompoundTag tag) {
+        private void handleFluidData(ITooltip tooltip, CompoundTag tag, HolderLookup.Provider provider) {
             ListTag list = tag.getList("tanks", Tag.TAG_COMPOUND);
             for (int i = 0; i < list.size(); i++) {
                 CompoundTag subtag = list.getCompound(i);
-                FluidStack fluidStack = FluidStack.loadFluidStackFromNBT(subtag);
+                FluidStack fluidStack = FluidStack.parseOptional(provider, subtag);
                 MutableComponent fluidDesc = fluidStack.isEmpty() ?
                         xlate("pneumaticcraft.gui.misc.empty") :
-                        xlate("pneumaticcraft.message.misc.fluidmB", fluidStack.getAmount()).append(" ").append(xlate(fluidStack.getTranslationKey()));
+                        xlate("pneumaticcraft.message.misc.fluidmB", fluidStack.getAmount()).append(" ").append(fluidStack.getHoverName());
                 tooltip.add(xlate("pneumaticcraft.waila.tank", i + 1, fluidDesc.copy().withStyle(ChatFormatting.AQUA)));
             }
         }
@@ -143,11 +144,11 @@ public class PneumaticProvider {
                 if (tempData.isMultisided()) {
                     for (Direction face : DirectionUtil.VALUES) {
                         if (tempData.hasData(face)) {
-                            tooltip.add(HeatUtil.formatHeatString(face, (int) tempData.getTemperature(face)));
+                            tooltip.add(HeatUtil.formatHeatString(face, tempData.getTemperatureAsInt(face)));
                         }
                     }
                 } else if (tempData.hasData(null)) {
-                    tooltip.add(HeatUtil.formatHeatString((int) tempData.getTemperature(null)));
+                    tooltip.add(HeatUtil.formatHeatString(tempData.getTemperatureAsInt(null)));
                 }
             }
         }

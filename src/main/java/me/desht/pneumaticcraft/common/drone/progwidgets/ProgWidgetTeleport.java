@@ -17,17 +17,31 @@
 
 package me.desht.pneumaticcraft.common.drone.progwidgets;
 
-import me.desht.pneumaticcraft.common.drone.IDroneBase;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import me.desht.pneumaticcraft.api.drone.IDrone;
+import me.desht.pneumaticcraft.api.drone.IProgWidget;
+import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.drone.ai.DroneAITeleport;
 import me.desht.pneumaticcraft.common.entity.drone.DroneEntity;
-import me.desht.pneumaticcraft.common.registry.ModProgWidgets;
+import me.desht.pneumaticcraft.common.registry.ModProgWidgetTypes;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.goal.Goal;
 
 public class ProgWidgetTeleport extends ProgWidgetGoToLocation {
+    public static final MapCodec<ProgWidgetTeleport> CODEC = RecordCodecBuilder.mapCodec(builder ->
+        baseParts(builder).apply(builder, ProgWidgetTeleport::new));
+
+    private ProgWidgetTeleport(PositionFields pos) {
+    }
+
     public ProgWidgetTeleport() {
-        super(ModProgWidgets.TELEPORT.get());
+    }
+
+    @Override
+    public ProgWidgetType<?> getType() {
+        return ModProgWidgetTypes.TELEPORT.get();
     }
 
     @Override
@@ -36,7 +50,7 @@ public class ProgWidgetTeleport extends ProgWidgetGoToLocation {
     }
 
     @Override
-    public Goal getWidgetAI(IDroneBase drone, IProgWidget widget) {
-        return new DroneAITeleport((DroneEntity) drone, (ProgWidget) widget);
+    public Goal getWidgetAI(IDrone drone, IProgWidget widget) {
+        return drone instanceof DroneEntity de ? new DroneAITeleport(de, (ProgWidget) widget) : null;
     }
 }

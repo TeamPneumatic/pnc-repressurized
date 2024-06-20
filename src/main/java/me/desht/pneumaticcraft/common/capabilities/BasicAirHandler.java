@@ -19,13 +19,14 @@ package me.desht.pneumaticcraft.common.capabilities;
 
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.neoforged.neoforge.common.util.INBTSerializable;
 
 /**
  * A reference implementation.  Subclass this or implement your own.
  */
-public class BasicAirHandler implements IAirHandler, INBTSerializable<CompoundTag> {
+public class BasicAirHandler implements IAirHandler {
     @GuiSynced
     private int baseVolume;
     @GuiSynced
@@ -72,14 +73,12 @@ public class BasicAirHandler implements IAirHandler, INBTSerializable<CompoundTa
         return 10f;
     }
 
-    @Override
     public CompoundTag serializeNBT() {
         CompoundTag nbt = new CompoundTag();
         nbt.putInt("Air", getAir());
         return nbt;
     }
 
-    @Override
     public void deserializeNBT(CompoundTag nbt) {
         airAmount = nbt.getInt("Air");
     }

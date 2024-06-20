@@ -123,8 +123,10 @@ public enum BlockHeatProperties implements Iterable<HeatPropertiesRecipe> {
         }
         return new HeatPropertiesRecipeImpl(
                 block,
-                Optional.ofNullable(transformHot), Optional.ofNullable(transformHotFlowing),
-                Optional.of(transformCold), Optional.of(transformColdFlowing),
+                new HeatPropertiesRecipe.Transforms(
+                        Optional.ofNullable(transformHot), Optional.of(transformCold),
+                        Optional.ofNullable(transformHotFlowing), Optional.of(transformColdFlowing)
+                ),
                 Optional.of(ConfigHelper.common().heat.defaultFluidHeatCapacity.get()),
                 temperature,
                 Optional.of(ConfigHelper.common().heat.fluidThermalResistance.get()),

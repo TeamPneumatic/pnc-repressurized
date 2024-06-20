@@ -30,7 +30,6 @@ import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.pathfinder.Node;
 import net.minecraft.world.level.pathfinder.Path;
-import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 
 public class RenderNavigator {
@@ -73,7 +72,6 @@ public class RenderNavigator {
 //            }
 //            VertexConsumer builder = buffer.getBuffer(ModRenderTypes.getNavPath(xRayEnabled, false));
             VertexConsumer builder = buffer.getBuffer(ModRenderTypes.getLineLoops(5.0));
-            Matrix3f normal = matrixStack.last().normal();
             for (int i = 1; i < path.getNodeCount(); i++) {
                 float red = 1;
                 if (path.getNodeCount() - i < 200) {
@@ -83,15 +81,15 @@ public class RenderNavigator {
                 Node pathPoint = path.getNode(i);
                 builder.vertex(posMat, lastPoint.x + 0.5F, lastPoint.y, lastPoint.z + 0.5F)
                         .color(red, 1 - red, 0, 0.5f)
-                        .normal(normal, pathPoint.x - lastPoint.x, pathPoint.y - lastPoint.y, pathPoint.z - lastPoint.z)
+                        .normal(matrixStack.last(), pathPoint.x - lastPoint.x, pathPoint.y - lastPoint.y, pathPoint.z - lastPoint.z)
                         .endVertex();
                 builder.vertex(posMat, (lastPoint.x + pathPoint.x) / 2F + 0.5F, Math.max(lastPoint.y, pathPoint.y), (lastPoint.z + pathPoint.z) / 2F + 0.5F)
                         .color(red, 1 - red, 0, 0.5f)
-                        .normal(normal, pathPoint.x - lastPoint.x, pathPoint.y - lastPoint.y, pathPoint.z - lastPoint.z)
+                        .normal(matrixStack.last(), pathPoint.x - lastPoint.x, pathPoint.y - lastPoint.y, pathPoint.z - lastPoint.z)
                         .endVertex();
                 builder.vertex(posMat, pathPoint.x + 0.5F, pathPoint.y, pathPoint.z + 0.5F)
                         .color(red, 1 - red, 0, 0.5f)
-                        .normal(normal, pathPoint.x - lastPoint.x, pathPoint.y - lastPoint.y, pathPoint.z - lastPoint.z)
+                        .normal(matrixStack.last(), pathPoint.x - lastPoint.x, pathPoint.y - lastPoint.y, pathPoint.z - lastPoint.z)
                         .endVertex();
             }
         } else {

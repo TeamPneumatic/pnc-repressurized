@@ -205,7 +205,7 @@ public class AbstractLogisticsScreen<L extends AbstractLogisticsFrameEntity> ext
     }
 
     private void syncToServer() {
-        NetworkHandler.sendToServer(PacketSyncSemiblock.create(logistics, menu.isItemContainer()));
+        NetworkHandler.sendToServer(PacketSyncSemiblock.create(logistics, menu.isItemContainer(), registryAccess()));
     }
 
     private void fluidClicked(WidgetFluidStack widget, int idx) {
@@ -217,7 +217,7 @@ public class AbstractLogisticsScreen<L extends AbstractLogisticsFrameEntity> ext
             return;
         } else if (IOHelper.getFluidHandlerForItem(menu.getCarried()).isPresent()) {
             FluidStack f = IOHelper.getFluidHandlerForItem(menu.getCarried()).orElseThrow().getFluidInTank(0);
-            logistics.setFluidFilter(idx, f.isEmpty() ? FluidStack.EMPTY : new FluidStack(f, 1000));
+            logistics.setFluidFilter(idx, f.isEmpty() ? FluidStack.EMPTY : f.copyWithAmount(1000));
             widget.setFluid(f.getFluid());
             syncToServer();
             return;

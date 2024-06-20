@@ -35,7 +35,6 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.items.ItemHandlerHelper;
 import net.neoforged.neoforge.items.ItemStackHandler;
 
 import javax.annotation.Nonnull;
@@ -91,7 +90,7 @@ public class InventorySearcherScreen extends AbstractContainerScreen<InventorySe
 
     public void setSearchStack(@Nonnull ItemStack stack) {
         if (!stack.isEmpty() && stackPredicate.test(stack)) {
-            inventory.setStackInSlot(0, ItemHandlerHelper.copyStackWithSize(stack, 1));
+            inventory.setStackInSlot(0, stack.copyWithCount(1));
         }
     }
 

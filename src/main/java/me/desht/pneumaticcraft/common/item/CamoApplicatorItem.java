@@ -22,6 +22,7 @@ import me.desht.pneumaticcraft.api.tileentity.IAirHandlerItem;
 import me.desht.pneumaticcraft.common.block.entity.CamouflageableBlockEntity;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketPlaySound;
+import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.registry.ModSounds;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -41,6 +42,7 @@ import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -153,20 +155,17 @@ public class CamoApplicatorItem extends PressurizableItem {
     }
 
     private static void setCamoState(ItemStack stack, BlockState state) {
-        CompoundTag tag = stack.getTag();
-        if (tag == null) tag = new CompoundTag();
         if (state == null) {
-            tag.remove("CamoState");
+            stack.remove(ModDataComponents.CAMO_STATE);
         } else {
-            tag.put("CamoState", NbtUtils.writeBlockState(state));
+            stack.set(ModDataComponents.CAMO_STATE, CustomData.of(NbtUtils.writeBlockState(state)));
         }
-        stack.setTag(tag);
     }
 
     private static BlockState getCamoState(ItemStack stack, Level level) {
-        CompoundTag tag = stack.getTag();
-        if (tag != null && tag.contains("CamoState")) {
-            return NbtUtils.readBlockState(level == null ? BuiltInRegistries.BLOCK.asLookup() : level.holderLookup(Registries.BLOCK), tag.getCompound("CamoState"));
+        CompoundTag tag = stack.getOrDefault(ModDataComponents.CAMO_STATE, CustomData.EMPTY).copyTag();
+        if (!tag.isEmpty()) {
+            return NbtUtils.readBlockState(level == null ? BuiltInRegistries.BLOCK.asLookup() : level.holderLookup(Registries.BLOCK), tag);
         }
         return null;
     }

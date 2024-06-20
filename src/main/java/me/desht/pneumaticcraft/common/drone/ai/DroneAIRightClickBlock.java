@@ -17,6 +17,7 @@
 
 package me.desht.pneumaticcraft.common.drone.ai;
 
+import me.desht.pneumaticcraft.api.drone.IDrone;
 import me.desht.pneumaticcraft.common.drone.IDroneBase;
 import me.desht.pneumaticcraft.common.drone.progwidgets.IBlockRightClicker;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ISidedWidget;
@@ -43,6 +44,7 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.Event;
 import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.common.util.FakePlayer;
+import net.neoforged.neoforge.common.util.TriState;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 
 import java.util.ArrayList;
@@ -52,7 +54,7 @@ public class DroneAIRightClickBlock extends DroneAIBlockInteraction<ProgWidgetAr
     private final List<BlockPos> visitedPositions = new ArrayList<>();
     private final IBlockRightClicker.RightClickType clickType;
 
-    public DroneAIRightClickBlock(IDroneBase drone, ProgWidgetAreaItemBase widget) {
+    public DroneAIRightClickBlock(IDrone drone, ProgWidgetAreaItemBase widget) {
         super(drone, widget);
 
         if (widget instanceof IBlockRightClicker rc) {
@@ -75,7 +77,7 @@ public class DroneAIRightClickBlock extends DroneAIBlockInteraction<ProgWidgetAr
                 return false;
             }
             case CLICK_BLOCK -> {
-                return DroneAIDig.isBlockValidForFilter(drone.world(), pos, drone, progWidget);
+                return DroneAIDig.isBlockValidForFilter(drone.getDroneLevel(), pos, drone, progWidget);
             }
         }
         return false;
@@ -98,7 +100,7 @@ public class DroneAIRightClickBlock extends DroneAIBlockInteraction<ProgWidgetAr
             // Fake player's inventory may have been modified by the right-click action
             // Copy the rest of the fake player's inventory back to the drone's actual inventory,
             // dropping items which don't fit (based on the inventory upgrades the drone has)
-            drone.getDroneItemHandler().copyFromFakePlayer();
+            IDroneBase.asDroneBase(drone).getDroneItemHandler().copyFromFakePlayer();
         }
 
         // always return false here; the block's been clicked and we don't care about the operation result
@@ -129,7 +131,7 @@ public class DroneAIRightClickBlock extends DroneAIBlockInteraction<ProgWidgetAr
             if (brtr == null) return false;
 
             PlayerInteractEvent.RightClickBlock event = CommonHooks.onRightClickBlock(fakePlayer, InteractionHand.MAIN_HAND, pos, brtr);
-            if (event.isCanceled() || event.getUseItem() == Event.Result.DENY) {
+            if (event.isCanceled() || event.getUseItem() == TriState.FALSE) {
                 return false;
             }
 
@@ -147,7 +149,7 @@ public class DroneAIRightClickBlock extends DroneAIBlockInteraction<ProgWidgetAr
                 }
             }
 
-            if (event.getUseItem() != Event.Result.DENY) {
+            if (event.getUseItem() != TriState.FALSE) {
                 ItemStack copyBeforeUse = stack.copy();
                 InteractionResult result = stack.useOn(new UseOnContext(fakePlayer, InteractionHand.MAIN_HAND, brtr));
                 if (result == InteractionResult.PASS) {
@@ -174,8 +176,8 @@ public class DroneAIRightClickBlock extends DroneAIBlockInteraction<ProgWidgetAr
         if (brtr != null) {
             PlayerInteractEvent.RightClickBlock event = CommonHooks.onRightClickBlock(fakePlayer, InteractionHand.MAIN_HAND, pos, brtr);
             try {
-                if (!event.isCanceled() && event.getUseItem() != Event.Result.DENY && event.getUseBlock() != Event.Result.DENY) {
-                    InteractionResult res = state.use(world, fakePlayer, InteractionHand.MAIN_HAND, brtr);
+                if (!event.isCanceled() && event.getUseItem() != TriState.FALSE && event.getUseBlock() != TriState.FALSE) {
+                    InteractionResult res = state.useWithoutItem(world, fakePlayer, brtr);
                     if (res.consumesAction()) {
                         world.sendBlockUpdated(pos, state, state, Block.UPDATE_ALL);
                         return true;
@@ -184,6 +186,7 @@ public class DroneAIRightClickBlock extends DroneAIBlockInteraction<ProgWidgetAr
             } catch (Throwable e) {
                 // crash could happen in activated logic of block, which could be from any mod...
                 Log.error("DroneAIRightClickBlock crashed! Stacktrace: ");
+                //noinspection CallToPrintStackTrace
                 e.printStackTrace();
             }
         }
@@ -211,7 +214,7 @@ public class DroneAIRightClickBlock extends DroneAIBlockInteraction<ProgWidgetAr
         Vec3 posVec = targetVec.add(side.getStepX(), side.getStepY(), side.getStepZ());
         fakePlayer.setPos(posVec.x, posVec.y, posVec.z);
         fakePlayer.lookAt(EntityAnchorArgument.Anchor.FEET, targetVec);
-        BlockHitResult brtr = drone.world().clip(new ClipContext(posVec, targetVec, ClipContext.Block.OUTLINE, ClipContext.Fluid.SOURCE_ONLY, fakePlayer));
+        BlockHitResult brtr = drone.getDroneLevel().clip(new ClipContext(posVec, targetVec, ClipContext.Block.OUTLINE, ClipContext.Fluid.SOURCE_ONLY, fakePlayer));
         fakePlayer.setPos(saved.x, saved.y, saved.z);
         if (!brtr.getBlockPos().equals(pos) || brtr.getDirection() != side) return null;
         return brtr;

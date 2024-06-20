@@ -23,6 +23,7 @@ import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -48,31 +49,31 @@ public class DisplayTableBlockEntity extends AbstractPneumaticCraftBlockEntity i
     }
 
     @Override
-    public void saveAdditional(CompoundTag tag) {
-        super.saveAdditional(tag);
-        tag.put("Items", inventory.serializeNBT());
+    public void saveAdditional(CompoundTag tag, HolderLookup.Provider provider) {
+        super.saveAdditional(tag, provider);
+        tag.put("Items", inventory.serializeNBT(provider));
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
+    public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
+        super.loadAdditional(tag, provider);
 
-        inventory.deserializeNBT(tag.getCompound("Items"));
+        inventory.deserializeNBT(provider, tag.getCompound("Items"));
         displayedStack = inventory.getStackInSlot(0);
     }
 
     @Override
-    public void writeToPacket(CompoundTag tag) {
-        super.writeToPacket(tag);
+    public void writeToPacket(CompoundTag tag, HolderLookup.Provider provider) {
+        super.writeToPacket(tag, provider);
 
-        tag.put("Item", displayedStack.save(new CompoundTag()));
+        tag.put("Item", displayedStack.save(provider));
     }
 
     @Override
-    public void readFromPacket(CompoundTag tag) {
-        super.readFromPacket(tag);
+    public void readFromPacket(CompoundTag tag, HolderLookup.Provider provider) {
+        super.readFromPacket(tag, provider);
 
-        displayedStack = ItemStack.of(tag.getCompound("Item"));
+        displayedStack = ItemStack.parseOptional(provider, tag.getCompound("Item"));
     }
 
     @Override

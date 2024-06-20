@@ -18,16 +18,19 @@
 package me.desht.pneumaticcraft.common.thirdparty.computer_common;
 
 import com.google.common.collect.ImmutableList;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import me.desht.pneumaticcraft.api.drone.IDrone;
+import me.desht.pneumaticcraft.api.drone.IProgWidget;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
-import me.desht.pneumaticcraft.common.drone.IDroneBase;
+import me.desht.pneumaticcraft.api.drone.area.EnumOldAreaType;
 import me.desht.pneumaticcraft.common.drone.progwidgets.*;
 import me.desht.pneumaticcraft.common.entity.drone.DroneEntity;
 import me.desht.pneumaticcraft.common.recipes.VanillaRecipeCache;
-import me.desht.pneumaticcraft.common.registry.ModProgWidgets;
+import me.desht.pneumaticcraft.common.registry.ModProgWidgetTypes;
 import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
 import me.desht.pneumaticcraft.common.util.DummyContainer;
 import me.desht.pneumaticcraft.common.util.LegacyAreaWidgetConverter;
-import me.desht.pneumaticcraft.common.util.LegacyAreaWidgetConverter.EnumOldAreaType;
 import me.desht.pneumaticcraft.common.util.StringFilterEntitySelector;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.core.BlockPos;
@@ -54,6 +57,9 @@ public class ProgWidgetCC extends ProgWidgetInventoryBase implements IBlockOrder
         IEntityProvider, ITextWidget, ICondition, IItemDropper, ILiquidFiltered, IRedstoneEmissionWidget,
         IRenamingWidget, ICraftingWidget, IMaxActions, IBlockRightClicker, ILiquidExport, ISignEditWidget,
         IToolUser, ICheckLineOfSight, IStandbyWidget {
+    public static final MapCodec<ProgWidgetCC> CODEC = RecordCodecBuilder.mapCodec(builder ->
+        invParts(builder).apply(builder, ProgWidgetCC::new));
+
     private Ordering order = Ordering.CLOSEST;
     private boolean[] sides = new boolean[6];
     private final Set<BlockPos> area = new HashSet<>();
@@ -85,18 +91,27 @@ public class ProgWidgetCC extends ProgWidgetInventoryBase implements IBlockOrder
     private boolean signBackSide;
     private boolean allowStandbyPickup;
 
+    private ProgWidgetCC(PositionFields pos, InvBaseFields invBaseFields) {
+        super(pos, invBaseFields);
+    }
+
     public ProgWidgetCC() {
-        super(ModProgWidgets.COMPUTER_CONTROL.get());
+        this(PositionFields.DEFAULT, InvBaseFields.DEFAULT);
     }
 
     @Override
     public List<ProgWidgetType<?>> getParameters() {
-        return ImmutableList.of(ModProgWidgets.AREA.get());
+        return ImmutableList.of(ModProgWidgetTypes.AREA.get());
     }
 
     @Override
     public DyeColor getColor() {
         return DyeColor.PURPLE;
+    }
+
+    @Override
+    public ProgWidgetType<?> getType() {
+        return ModProgWidgetTypes.COMPUTER_CONTROL.get();
     }
 
     @Override
@@ -110,12 +125,12 @@ public class ProgWidgetCC extends ProgWidgetInventoryBase implements IBlockOrder
     }
 
     @Override
-    public Goal getWidgetAI(IDroneBase drone, IProgWidget widget) {
+    public Goal getWidgetAI(IDrone drone, IProgWidget widget) {
         return new DroneAICC((DroneEntity) drone, (ProgWidgetCC) widget, false);
     }
 
     @Override
-    public Goal getWidgetTargetAI(IDroneBase drone, IProgWidget widget) {
+    public Goal getWidgetTargetAI(IDrone drone, IProgWidget widget) {
         return new DroneAICC((DroneEntity) drone, (ProgWidgetCC) widget, true);
     }
 
@@ -179,7 +194,7 @@ public class ProgWidgetCC extends ProgWidgetInventoryBase implements IBlockOrder
         ProgWidgetArea helperWidget = new ProgWidgetArea();
         helperWidget.setPos(0, new BlockPos(x1, y1, z1));
         helperWidget.setPos(1, new BlockPos(x2, y2, z2));
-        helperWidget.type = LegacyAreaWidgetConverter.convertFromLegacyFormat(type, 0);
+        helperWidget.setAreaType(LegacyAreaWidgetConverter.convertFromLegacyFormat(type, 0));
         Set<BlockPos> a = new HashSet<>();
         helperWidget.getArea(a);
         return a;
@@ -211,14 +226,14 @@ public class ProgWidgetCC extends ProgWidgetInventoryBase implements IBlockOrder
         itemBlacklist.clear();
     }
 
-    private ProgWidgetItemFilter getItemFilter(String itemName, boolean useNBT, boolean useModSimilarity) throws IllegalArgumentException {
+    private ProgWidgetItemFilter getItemFilter(String itemName, boolean matchComponents, boolean matchMod) throws IllegalArgumentException {
         if (!itemName.contains(":")) throw new IllegalArgumentException("Item/Block name doesn't contain a ':'!");
         Item item = BuiltInRegistries.ITEM.get(new ResourceLocation(itemName));
         if (item == Items.AIR) throw new IllegalArgumentException("Item not found for the name \"" + itemName + "\"!");
         ProgWidgetItemFilter itemFilter = new ProgWidgetItemFilter();
         itemFilter.setFilter(new ItemStack(item));
-        itemFilter.useNBT = useNBT;
-        itemFilter.useModSimilarity = useModSimilarity;
+        itemFilter.setMatchComponents(matchComponents);
+        itemFilter.setMatchMod(matchMod);
         return itemFilter;
     }
 
@@ -432,7 +447,7 @@ public class ProgWidgetCC extends ProgWidgetInventoryBase implements IBlockOrder
     }
 
     @Override
-    public boolean evaluate(IDroneBase drone, IProgWidget widget) {
+    public boolean evaluate(IDrone drone, IProgWidget widget) {
         return false;
     }
 

@@ -17,20 +17,54 @@
 
 package me.desht.pneumaticcraft.common.drone.progwidgets.area;
 
-import me.desht.pneumaticcraft.common.util.ITranslatableEnum;
-import me.desht.pneumaticcraft.common.util.LegacyAreaWidgetConverter;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import me.desht.pneumaticcraft.api.drone.area.AreaType;
+import me.desht.pneumaticcraft.api.drone.area.AreaTypeWidget;
+import me.desht.pneumaticcraft.api.drone.area.EnumOldAreaType;
+import me.desht.pneumaticcraft.api.drone.area.AreaTypeSerializer;
+import me.desht.pneumaticcraft.common.registry.ModProgWidgetAreaTypes;
+import me.desht.pneumaticcraft.api.misc.ITranslatableEnum;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.util.StringRepresentable;
+import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
 
 import java.util.List;
 import java.util.function.Consumer;
 
 public class AreaTypeBox extends AreaType {
+    public static final MapCodec<AreaTypeBox> CODEC = RecordCodecBuilder.mapCodec(builder -> builder.group(
+        StringRepresentable.fromEnum(EnumBoxType::values).optionalFieldOf("box_type", EnumBoxType.FILLED).forGetter(AreaTypeBox::boxType)
+    ).apply(builder, AreaTypeBox::new));
+
+    public static final StreamCodec<FriendlyByteBuf, AreaTypeBox> STREAM_CODEC = StreamCodec.composite(
+            NeoForgeStreamCodecs.enumCodec(EnumBoxType.class), AreaTypeBox::boxType,
+            AreaTypeBox::new
+    );
 
     public static final String ID = "box";
 
-    private EnumBoxType boxType = EnumBoxType.FILLED;
+    private EnumBoxType boxType;
+
+    public AreaTypeBox(EnumBoxType boxType) {
+        super(ID);
+        this.boxType = boxType;
+    }
+
+    public AreaTypeBox() {
+        this(EnumBoxType.FILLED);
+    }
+
+    public EnumBoxType boxType() {
+        return boxType;
+    }
+
+    @Override
+    public AreaTypeSerializer<? extends AreaType> getSerializer() {
+        return ModProgWidgetAreaTypes.AREA_TYPE_BOX.get();
+    }
 
     @Override
     public void addArea(Consumer<BlockPos> areaAdder, BlockPos p1, BlockPos p2, int minX, int minY, int minZ, int maxX, int maxY, int maxZ) {
@@ -74,17 +108,13 @@ public class AreaTypeBox extends AreaType {
         }
     }
 
-    public AreaTypeBox() {
-        super(ID);
-    }
-
     @Override
     public String toString() {
         return getName() + "/" + boxType;
     }
 
     @Override
-    public void convertFromLegacy(LegacyAreaWidgetConverter.EnumOldAreaType oldAreaType, int typeInfo) {
+    public void convertFromLegacy(EnumOldAreaType oldAreaType, int typeInfo) {
         switch (oldAreaType) {
             case FILL -> boxType = EnumBoxType.FILLED;
             case WALL -> boxType = EnumBoxType.HOLLOW;
@@ -96,34 +126,34 @@ public class AreaTypeBox extends AreaType {
     @Override
     public void addUIWidgets(List<AreaTypeWidget> widgets) {
         super.addUIWidgets(widgets);
-        widgets.add(new AreaTypeWidgetEnum<>("pneumaticcraft.gui.progWidget.area.type.box.boxType", EnumBoxType.class, () -> boxType, boxType -> this.boxType = boxType));
+        widgets.add(new AreaTypeWidget.EnumSelectorField<>("pneumaticcraft.gui.progWidget.area.type.box.boxType", EnumBoxType.class, () -> boxType, boxType -> this.boxType = boxType));
     }
 
-    @Override
-    public void writeToNBT(CompoundTag tag) {
-        super.writeToNBT(tag);
-        tag.putByte("boxType", (byte) boxType.ordinal());
-    }
+//    @Override
+//    public void writeToNBT(CompoundTag tag) {
+//        super.writeToNBT(tag);
+//        tag.putByte("boxType", (byte) boxType.ordinal());
+//    }
+//
+//    @Override
+//    public void readFromNBT(CompoundTag tag) {
+//        super.readFromNBT(tag);
+//        boxType = EnumBoxType.values()[tag.getByte("boxType")];
+//    }
+//
+//    @Override
+//    public void writeToPacket(FriendlyByteBuf buffer) {
+//        super.writeToPacket(buffer);
+//        buffer.writeEnum(boxType);
+//    }
+//
+//    @Override
+//    public void readFromPacket(FriendlyByteBuf buf) {
+//        super.readFromPacket(buf);
+//        boxType = buf.readEnum(EnumBoxType.class);
+//    }
 
-    @Override
-    public void readFromNBT(CompoundTag tag) {
-        super.readFromNBT(tag);
-        boxType = EnumBoxType.values()[tag.getByte("boxType")];
-    }
-
-    @Override
-    public void writeToPacket(FriendlyByteBuf buffer) {
-        super.writeToPacket(buffer);
-        buffer.writeEnum(boxType);
-    }
-
-    @Override
-    public void readFromPacket(FriendlyByteBuf buf) {
-        super.readFromPacket(buf);
-        boxType = buf.readEnum(EnumBoxType.class);
-    }
-
-    private enum EnumBoxType implements ITranslatableEnum {
+    public enum EnumBoxType implements ITranslatableEnum, StringRepresentable {
         FILLED("filled"), HOLLOW("hollow"), FRAME("frame");
 
         private final String name;
@@ -134,6 +164,11 @@ public class AreaTypeBox extends AreaType {
 
         @Override
         public String getTranslationKey() {
+            return name;
+        }
+
+        @Override
+        public String getSerializedName() {
             return name;
         }
     }

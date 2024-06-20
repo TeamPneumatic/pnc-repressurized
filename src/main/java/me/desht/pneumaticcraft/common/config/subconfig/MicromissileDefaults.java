@@ -19,11 +19,9 @@ package me.desht.pneumaticcraft.common.config.subconfig;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import me.desht.pneumaticcraft.client.util.PointXY;
-import me.desht.pneumaticcraft.common.item.MicromissilesItem;
-import me.desht.pneumaticcraft.common.item.MicromissilesItem.FireMode;
+import com.mojang.serialization.JsonOps;
+import me.desht.pneumaticcraft.common.item.MicromissilesItem.Settings;
 import me.desht.pneumaticcraft.lib.Log;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
 
 import javax.annotation.Nonnull;
@@ -34,9 +32,7 @@ import java.util.UUID;
 public class MicromissileDefaults extends AuxConfigJson {
     public static final MicromissileDefaults INSTANCE = new MicromissileDefaults();
 
-    public static final Entry FALLBACK = new Entry(1/3f, 1/3f, 1/3f, new PointXY(46, 54), "", FireMode.SMART);
-
-    private final Map<UUID, Entry> defaults = new HashMap<>();
+    private final Map<UUID, Settings> defaults = new HashMap<>();
 
     private MicromissileDefaults() {
         super(true);
@@ -45,9 +41,9 @@ public class MicromissileDefaults extends AuxConfigJson {
     @Override
     protected void writeToJson(JsonObject json) {
         JsonObject sub = new JsonObject();
-        for (Map.Entry<UUID, Entry> entry : defaults.entrySet()) {
-            sub.add(entry.getKey().toString(), entry.getValue().toJson());
-        }
+        defaults.forEach((id, settings) ->
+                Settings.CODEC.encodeStart(JsonOps.INSTANCE, settings).ifSuccess(j -> sub.add(id.toString(), j))
+        );
         json.addProperty("Description", "Stores default Micromissile settings on a per-player basis");
         json.add("defaults", sub);
     }
@@ -58,7 +54,8 @@ public class MicromissileDefaults extends AuxConfigJson {
         JsonObject sub = json.getAsJsonObject("defaults");
         for (Map.Entry<String, JsonElement> entry : sub.entrySet()) {
             if (entry.getValue().isJsonObject()) {
-                defaults.put(UUID.fromString(entry.getKey()), MicromissileDefaults.Entry.fromJson(entry.getValue().getAsJsonObject()));
+                Settings.CODEC.parse(JsonOps.INSTANCE, entry.getValue().getAsJsonObject())
+                        .ifSuccess(settings -> defaults.put(UUID.fromString(entry.getKey()), settings));
             } else {
                 Log.warning("Invalid JSON? entry '{}' in {}", entry.getKey(), getConfigFilename());
             }
@@ -75,71 +72,13 @@ public class MicromissileDefaults extends AuxConfigJson {
         return Sidedness.SERVER;
     }
 
-    public void setDefaults(Player player, Entry entry) {
-        entry.playerName = player.getName().getString();
+    public void setDefaults(Player player, Settings entry) {
         defaults.put(player.getUUID(), entry);
     }
 
     @Nonnull
-    public Entry getDefaults(Player player) {
-        return defaults.getOrDefault(player.getUUID(), FALLBACK);
+    public Settings getDefaults(Player player) {
+        return defaults.getOrDefault(player.getUUID(), Settings.DEFAULT);
     }
 
-    public static class Entry {
-        public final float topSpeed;
-        public final float turnSpeed;
-        public final float damage;
-        public final PointXY p;
-        public final String entityFilter;
-        public final FireMode fireMode;
-        String playerName = "";
-
-        public Entry(float topSpeed, float turnSpeed, float damage, PointXY p, String entityFilter, FireMode fireMode) {
-            this.topSpeed = topSpeed;
-            this.turnSpeed = turnSpeed;
-            this.damage = damage;
-            this.p = p;
-            this.entityFilter = entityFilter;
-            this.fireMode = fireMode;
-        }
-
-        static Entry fromJson(JsonObject value) {
-            Entry entry = new Entry(
-                    value.get("topSpeed").getAsFloat(),
-                    value.get("turnSpeed").getAsFloat(),
-                    value.get("damage").getAsFloat(),
-                    new PointXY(value.get("px").getAsInt(), value.get("py").getAsInt()),
-                    value.get("entityFilter").getAsString(),
-                    FireMode.fromString(value.get("fireMode").getAsString())
-            );
-            entry.playerName = value.get("playerName").getAsString();
-            return entry;
-        }
-
-
-        JsonObject toJson() {
-            JsonObject obj = new JsonObject();
-            obj.addProperty("topSpeed", topSpeed);
-            obj.addProperty("turnSpeed", turnSpeed);
-            obj.addProperty("damage", damage);
-            obj.addProperty("px", p.x());
-            obj.addProperty("py", p.y());
-            obj.addProperty("entityFilter", entityFilter);
-            obj.addProperty("playerName", playerName);
-            obj.addProperty("fireMode", fireMode.toString());
-            return obj;
-        }
-
-        public CompoundTag toNBT() {
-            CompoundTag tag = new CompoundTag();
-            tag.putFloat(MicromissilesItem.NBT_TOP_SPEED, topSpeed);
-            tag.putFloat(MicromissilesItem.NBT_TURN_SPEED, turnSpeed);
-            tag.putFloat(MicromissilesItem.NBT_DAMAGE, damage);
-            tag.putString(MicromissilesItem.NBT_FILTER, entityFilter);
-            tag.putInt(MicromissilesItem.NBT_PX, p.x());
-            tag.putInt(MicromissilesItem.NBT_PY, p.y());
-            tag.putString(MicromissilesItem.NBT_FIRE_MODE, fireMode.toString());
-            return tag;
-        }
-    }
 }

@@ -17,7 +17,6 @@
 
 package me.desht.pneumaticcraft.common.block.entity.processing;
 
-import com.google.common.collect.ImmutableMap;
 import me.desht.pneumaticcraft.api.crafting.recipe.FluidMixerRecipe;
 import me.desht.pneumaticcraft.api.pressure.PressureTier;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
@@ -31,13 +30,15 @@ import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketPlaySound;
 import me.desht.pneumaticcraft.common.recipes.RecipeCaches;
 import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
+import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.registry.ModRecipeTypes;
 import me.desht.pneumaticcraft.common.util.PNCFluidTank;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -52,6 +53,7 @@ import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidUtil;
 import net.neoforged.neoforge.fluids.IFluidTank;
+import net.neoforged.neoforge.fluids.SimpleFluidContent;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.ItemStackHandler;
@@ -167,17 +169,17 @@ public class FluidMixerBlockEntity extends AbstractAirHandlingBlockEntity implem
     }
 
     @Override
-    public void saveAdditional(CompoundTag tag) {
-        super.saveAdditional(tag);
+    public void saveAdditional(CompoundTag tag, HolderLookup.Provider provider) {
+        super.saveAdditional(tag, provider);
 
-        tag.put("Items", outputInv.serializeNBT());
+        tag.put("Items", outputInv.serializeNBT(provider));
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
+    public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
+        super.loadAdditional(tag, provider);
 
-        outputInv.deserializeNBT(tag.getCompound("Items"));
+        outputInv.deserializeNBT(provider, tag.getCompound("Items"));
     }
 
     @Override
@@ -186,13 +188,13 @@ public class FluidMixerBlockEntity extends AbstractAirHandlingBlockEntity implem
     }
 
     private boolean takeInputIngredients() {
-        if (currentRecipe.getInput1().testFluid(inputTank1.getFluid()) && currentRecipe.getInput2().testFluid(inputTank2.getFluid())) {
-            inputTank1.drain(currentRecipe.getInput1().getAmount(), IFluidHandler.FluidAction.EXECUTE);
-            inputTank2.drain(currentRecipe.getInput2().getAmount(), IFluidHandler.FluidAction.EXECUTE);
+        if (currentRecipe.getInput1().test(inputTank1.getFluid()) && currentRecipe.getInput2().test(inputTank2.getFluid())) {
+            inputTank1.drain(currentRecipe.getInput1().amount(), IFluidHandler.FluidAction.EXECUTE);
+            inputTank2.drain(currentRecipe.getInput2().amount(), IFluidHandler.FluidAction.EXECUTE);
             return true;
-        } else if (currentRecipe.getInput2().testFluid(inputTank1.getFluid()) && currentRecipe.getInput1().testFluid(inputTank2.getFluid())) {
-            inputTank1.drain(currentRecipe.getInput2().getAmount(), IFluidHandler.FluidAction.EXECUTE);
-            inputTank2.drain(currentRecipe.getInput1().getAmount(), IFluidHandler.FluidAction.EXECUTE);
+        } else if (currentRecipe.getInput2().test(inputTank1.getFluid()) && currentRecipe.getInput1().test(inputTank2.getFluid())) {
+            inputTank1.drain(currentRecipe.getInput2().amount(), IFluidHandler.FluidAction.EXECUTE);
+            inputTank2.drain(currentRecipe.getInput1().amount(), IFluidHandler.FluidAction.EXECUTE);
             return true;
         }
         return false;
@@ -236,8 +238,8 @@ public class FluidMixerBlockEntity extends AbstractAirHandlingBlockEntity implem
 
     public static void cacheRecipeFluids(List<FluidMixerRecipe> values) {
         for (FluidMixerRecipe recipe : values) {
-            for (FluidStack input1 : recipe.getInput1().getFluidStacks()) {
-                for (FluidStack input2 : recipe.getInput2().getFluidStacks()) {
+            for (FluidStack input1 : recipe.getInput1().getFluids()) {
+                for (FluidStack input2 : recipe.getInput2().getFluids()) {
                     Set<Fluid> fluidSet1 = FLUID_MATCHES.computeIfAbsent(input1.getFluid(), k -> new HashSet<>());
                     Set<Fluid> fluidSet2 = FLUID_MATCHES.computeIfAbsent(input2.getFluid(), k -> new HashSet<>());
                     fluidSet1.add(input2.getFluid());
@@ -313,8 +315,12 @@ public class FluidMixerBlockEntity extends AbstractAirHandlingBlockEntity implem
 
     @Nonnull
     @Override
-    public Map<String, PNCFluidTank> getSerializableTanks() {
-        return ImmutableMap.of("Input1", inputTank1, "Input2", inputTank2, "Output", outputTank);
+    public Map<DataComponentType<SimpleFluidContent>, PNCFluidTank> getSerializableTanks() {
+        return Map.of(
+                ModDataComponents.INPUT_TANK_1.get(), inputTank1,
+                ModDataComponents.INPUT_TANK_2.get(), inputTank2,
+                ModDataComponents.OUTPUT_TANK.get(), outputTank
+        );
     }
 
     public IFluidTank getInputTank1() {
@@ -334,16 +340,9 @@ public class FluidMixerBlockEntity extends AbstractAirHandlingBlockEntity implem
     }
 
     public int genIngredientHash() {
-        FluidStack f1 = inputTank1.getFluid();
-        FluidStack f2 = inputTank2.getFluid();
-        int n1 = f1.hasTag() ? f1.getTag().hashCode() : 0;
-        int n2 = f2.hasTag() ? f2.getTag().hashCode() : 0;
-
         return Objects.hash(
-                BuiltInRegistries.FLUID.getId(f1.getFluid()),
-                n1,
-                BuiltInRegistries.FLUID.getId(f2.getFluid()),
-                n2
+                FluidStack.hashFluidAndComponents(inputTank1.getFluid()),
+                FluidStack.hashFluidAndComponents(inputTank2.getFluid())
         );
     }
 

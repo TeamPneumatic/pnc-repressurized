@@ -24,13 +24,16 @@ import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.network.handling.PlayPayloadContext;
+import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
@@ -39,7 +42,14 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
  * Sent from client when trying to rotate a block with a wrench other than PneumaticCraft's own wrench
  */
 public record PacketModWrenchBlock(BlockPos pos, InteractionHand hand, Either<Direction,Integer> context) implements CustomPacketPayload {
-    public static final ResourceLocation ID = RL("mod_wrench_block");
+    public static final Type<PacketModWrenchBlock> TYPE = new Type<>(RL("mod_wrench_block"));
+
+    public static final StreamCodec<FriendlyByteBuf, PacketModWrenchBlock> STREAM_CODEC = StreamCodec.composite(
+            BlockPos.STREAM_CODEC, PacketModWrenchBlock::pos,
+            NeoForgeStreamCodecs.enumCodec(InteractionHand.class), PacketModWrenchBlock::hand,
+            ByteBufCodecs.either(Direction.STREAM_CODEC, ByteBufCodecs.INT), PacketModWrenchBlock::context,
+            PacketModWrenchBlock::new
+    );
 
     public static PacketModWrenchBlock forSide(BlockPos pos, InteractionHand hand, Direction side) {
         return new PacketModWrenchBlock(pos, hand, Either.left(side));
@@ -49,52 +59,31 @@ public record PacketModWrenchBlock(BlockPos pos, InteractionHand hand, Either<Di
         return new PacketModWrenchBlock(pos, hand, Either.right(entityID));
     }
 
-    public static PacketModWrenchBlock fromNetwork(FriendlyByteBuf buffer) {
-        BlockPos pos = buffer.readBlockPos();
-        var hand = buffer.readEnum(InteractionHand.class);
-        return buffer.readBoolean() ?
-                new PacketModWrenchBlock(pos, hand, Either.left(buffer.readEnum(Direction.class))) :
-                new PacketModWrenchBlock(pos, hand, Either.right(buffer.readInt()));
-    }
-
     @Override
-    public void write(FriendlyByteBuf buf) {
-        buf.writeBlockPos(pos);
-        buf.writeEnum(hand);
-        context.ifLeft(side -> {
-            buf.writeBoolean(true);
-            buf.writeEnum(side);
-        }).ifRight(id -> {
-            buf.writeBoolean(false);
-            buf.writeInt(id);
-        });
+    public Type<PacketModWrenchBlock> type() {
+        return TYPE;
     }
 
-    @Override
-    public ResourceLocation id() {
-        return ID;
-    }
+    public static void handle(PacketModWrenchBlock message, IPayloadContext ctx) {
+        Player player = ctx.player();
+        Level level = player.level();
+        BlockPos pos = message.pos();
 
-    public static void handle(PacketModWrenchBlock message, PlayPayloadContext ctx) {
-        ctx.player().ifPresent(player -> ctx.workHandler().submitAsync(() -> {
-            Level level = player.level();
-            BlockPos pos = message.pos();
-            if (level.isAreaLoaded(pos, 0) && PneumaticCraftUtils.canPlayerReach(player, pos)) {
-                InteractionHand hand = message.hand();
-                if (ModdedWrenchUtils.getInstance().isModdedWrench(player.getItemInHand(hand))) {
-                    message.context().ifLeft(side -> {
-                        BlockState state = level.getBlockState(pos);
-                        if (state.getBlock() instanceof IPneumaticWrenchable wrenchable) {
-                            wrenchable.onWrenched(level, player, pos, side, hand);
-                        }
-                    }).ifRight(entityId -> {
-                        Entity e = level.getEntity(entityId);
-                        if (e instanceof IPneumaticWrenchable wrenchable && e.isAlive()) {
-                            wrenchable.onWrenched(level, player, pos, null, hand);
-                        }
-                    });
-                }
+        if (level.isAreaLoaded(pos, 0) && PneumaticCraftUtils.canPlayerReach(player, pos)) {
+            InteractionHand hand = message.hand();
+            if (ModdedWrenchUtils.getInstance().isModdedWrench(player.getItemInHand(hand))) {
+                message.context().ifLeft(side -> {
+                    BlockState state = level.getBlockState(pos);
+                    if (state.getBlock() instanceof IPneumaticWrenchable wrenchable) {
+                        wrenchable.onWrenched(level, player, pos, side, hand);
+                    }
+                }).ifRight(entityId -> {
+                    Entity e = level.getEntity(entityId);
+                    if (e instanceof IPneumaticWrenchable wrenchable && e.isAlive()) {
+                        wrenchable.onWrenched(level, player, pos, null, hand);
+                    }
+                });
             }
-        }));
+        }
     }
 }

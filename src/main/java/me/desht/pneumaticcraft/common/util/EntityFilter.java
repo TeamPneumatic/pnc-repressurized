@@ -20,13 +20,14 @@ package me.desht.pneumaticcraft.common.util;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import joptsimple.internal.Strings;
+import me.desht.pneumaticcraft.api.drone.IProgWidget;
 import me.desht.pneumaticcraft.common.drone.progwidgets.IEntityProvider;
-import me.desht.pneumaticcraft.common.drone.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetText;
 import me.desht.pneumaticcraft.common.entity.drone.DroneEntity;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.EntityTypeTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.animal.Animal;
@@ -101,14 +102,14 @@ public class EntityFilter implements Predicate<Entity> {
      * @return an entity filter
      * @throws IllegalArgumentException if any of the attached text widgets contain an invalid filter spec
      */
-    public static <T extends IProgWidget & IEntityProvider> EntityFilter fromProgWidget(T widget, boolean whitelist) {
+    public static <T extends IEntityProvider & IProgWidget> EntityFilter fromProgWidget(T widget, boolean whitelist) {
         if (widget.getParameters().size() > 1) {
             int pos = widget.getEntityFilterPosition();
             IProgWidget w = widget.getConnectedParameters()[whitelist ? pos : widget.getParameters().size() + pos];
             if (w instanceof ProgWidgetText) {
                 List<String> l = new ArrayList<>();
-                while (w instanceof ProgWidgetText) {
-                    String str = ((ProgWidgetText) w).string;
+                while (w instanceof ProgWidgetText txt) {
+                    String str = txt.getString();
                     Validate.isTrue(!str.startsWith("!"), "'!' negation can't be used here (put blacklist filters on left of widget)");
                     l.add(str);
                     w = w.getConnectedParameters()[0];
@@ -194,17 +195,18 @@ public class EntityFilter implements Predicate<Entity> {
         AGE(ImmutableSet.of("adult", "baby"),
                 Modifier::testAge
         ),
+        // the next four are for backwards compat, since MobType is no longer a thing
         AQUATIC(ImmutableSet.of("yes", "no"),
-                (entity, val) -> testMobType(entity, val, MobType.WATER)
+                (entity, val) -> testEntityTypeTag(entity, val, EntityTypeTags.AQUATIC)
         ),
         UNDEAD(ImmutableSet.of("yes", "no"),
-                (entity, val) -> testMobType(entity, val, MobType.UNDEAD)
+                (entity, val) -> testEntityTypeTag(entity, val, EntityTypeTags.UNDEAD)
         ),
         ILLAGER(ImmutableSet.of("yes", "no"),
-                (entity, val) -> testMobType(entity, val, MobType.ILLAGER)
+                (entity, val) -> testEntityTypeTag(entity, val, EntityTypeTags.ILLAGER)
         ),
         ARTHROPOD(ImmutableSet.of("yes", "no"),
-                (entity, val) -> testMobType(entity, val, MobType.ARTHROPOD)
+                (entity, val) -> testEntityTypeTag(entity, val, EntityTypeTags.ARTHROPOD)
         ),
         BREEDABLE(ImmutableSet.of("yes", "no"),
                 Modifier::testBreedable
@@ -265,8 +267,8 @@ public class EntityFilter implements Predicate<Entity> {
             return entity instanceof Animal a && val.equalsIgnoreCase(a.getAge() == 0 ? "yes" : "no");
         }
 
-        private static boolean testMobType(Entity entity, String val, MobType type) {
-            return entity instanceof LivingEntity l && val.equalsIgnoreCase(l.getMobType() == type ? "yes" : "no");
+        private static boolean testEntityTypeTag(Entity entity, String val, TagKey<EntityType<?>> key) {
+            return val.equalsIgnoreCase(entity.getType().is(key) ? "yes" : "no");
         }
 
         private static boolean testAge(Entity entity, String val) {

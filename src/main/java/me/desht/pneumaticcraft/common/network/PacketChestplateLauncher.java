@@ -24,17 +24,16 @@ import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.util.ItemLaunching;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.items.ItemHandlerHelper;
-import net.neoforged.neoforge.network.handling.PlayPayloadContext;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
@@ -43,29 +42,22 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
  * Sent by client to launch an item from the chestplate launcher
  */
 public record PacketChestplateLauncher(float amount) implements CustomPacketPayload {
-    public static final ResourceLocation ID = RL("chestplate_launcher");
+    public static final Type<PacketChestplateLauncher> TYPE = new Type<>(RL("chestplate_launcher"));
+
+    public static final StreamCodec<FriendlyByteBuf, PacketChestplateLauncher> STREAM_CODEC = StreamCodec.composite(
+            ByteBufCodecs.FLOAT, PacketChestplateLauncher::amount,
+            PacketChestplateLauncher::new
+    );
+
     private static final float SCALE_FACTOR = 0.7f;
 
-    public static PacketChestplateLauncher fromNetwork(FriendlyByteBuf buffer) {
-        return new PacketChestplateLauncher(buffer.readFloat());
-    }
-
     @Override
-    public void write(FriendlyByteBuf buf) {
-        buf.writeFloat(amount);
+    public Type<PacketChestplateLauncher> type() {
+        return TYPE;
     }
 
-    @Override
-    public ResourceLocation id() {
-        return ID;
-    }
-
-    public static void handle(PacketChestplateLauncher message, PlayPayloadContext ctx) {
-        ctx.player().ifPresent(player -> ctx.workHandler().submitAsync(() -> message.handleLaunch(player)));
-    }
-
-    private void handleLaunch(Player player) {
-        if (!(player instanceof ServerPlayer sp)) return;
+    public static void handle(PacketChestplateLauncher message, IPayloadContext ctx) {
+        if (!(ctx.player() instanceof ServerPlayer sp)) return;
 
         ItemStack stack = sp.getOffhandItem();
         CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(sp);
@@ -78,17 +70,17 @@ public record PacketChestplateLauncher(float amount) implements CustomPacketPayl
 
             // Split stack only for items that are consumed when dispensed (not micromissiles)
             if (!(stack.getItem() == ModItems.MICROMISSILES.get())) {
-                toFire = sp.isCreative() ? ItemHandlerHelper.copyStackWithSize(stack, 1) : stack.split(1);
+                toFire = sp.isCreative() ? stack.copyWithCount(1) : stack.split(1);
             }
 
             Entity launchedEntity = ItemLaunching.getEntityToLaunch(sp.getCommandSenderWorld(), toFire, sp,true, true);
             int upgrades = handler.getUpgradeCount(EquipmentSlot.CHEST, ModUpgrades.DISPENSER.get(), PneumaticValues.PNEUMATIC_LAUNCHER_MAX_UPGRADES);
-            Vec3 velocity = sp.getLookAngle().normalize().scale(amount * upgrades * SCALE_FACTOR);
+            Vec3 velocity = sp.getLookAngle().normalize().scale(message.amount() * upgrades * SCALE_FACTOR);
 
             // Special launch case for arrows/tridents
             if (launchedEntity instanceof AbstractArrow arrow) {
                 arrow.pickup = sp.isCreative() ? AbstractArrow.Pickup.CREATIVE_ONLY : AbstractArrow.Pickup.ALLOWED;
-                arrow.setBaseDamage(arrow.getBaseDamage() + 0.25 * upgrades * amount);
+                arrow.setBaseDamage(arrow.getBaseDamage() + 0.25 * upgrades * message.amount());
             }
 
             // Launches item
@@ -96,7 +88,7 @@ public record PacketChestplateLauncher(float amount) implements CustomPacketPayl
 
             // Uses air from chestplate (unless in creative)
             if (!sp.isCreative()) {
-                int usedAir = (int) (20 * upgrades * amount);
+                int usedAir = (int) (20 * upgrades * message.amount());
                 handler.addAir(EquipmentSlot.CHEST, -usedAir);
             }
         }

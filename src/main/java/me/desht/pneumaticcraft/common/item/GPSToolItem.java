@@ -21,15 +21,13 @@ import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.item.IPositionProvider;
 import me.desht.pneumaticcraft.client.gui.GPSToolScreen;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
+import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.registry.ModSounds;
-import me.desht.pneumaticcraft.common.util.NBTUtils;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableHelper;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerPlayer;
@@ -45,7 +43,10 @@ import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 
 import javax.annotation.Nonnull;
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
@@ -75,16 +76,19 @@ public class GPSToolItem extends Item implements IPositionProvider, IGPSToolSync
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, Level worldIn, List<Component> infoList, TooltipFlag par4) {
-        super.appendHoverText(stack, worldIn, infoList, par4);
+    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> infoList, TooltipFlag par4) {
+        super.appendHoverText(stack, context, infoList, par4);
 
-        if (worldIn != null) {
+        ClientUtils.getOptionalClientLevel().ifPresent(level -> {
             ClientUtils.addGuiContextSensitiveTooltip(stack, infoList);
             getGPSLocation(ClientUtils.getClientPlayer().getUUID(), stack).ifPresent(pos -> {
-                Component translated = Component.translatable(worldIn.getBlockState(pos).getBlock().getDescriptionId());
-                MutableComponent blockName = worldIn.isLoaded(pos) ?
-                        Component.literal(" (").append(translated).append(")") :
-                        Component.empty().plainCopy();
+                MutableComponent blockName;
+                if (level.isLoaded(pos)) {
+                    Component translated = Component.translatable(level.getBlockState(pos).getBlock().getDescriptionId());
+                    blockName = Component.literal(" (").append(translated).append(")");
+                } else {
+                    blockName = Component.empty().plainCopy();
+                }
                 String str = String.format("[%d, %d, %d]", pos.getX(), pos.getY(), pos.getZ());
                 infoList.add(Component.literal(str).withStyle(ChatFormatting.YELLOW).append(blockName.withStyle(ChatFormatting.GREEN)));
             });
@@ -92,7 +96,7 @@ public class GPSToolItem extends Item implements IPositionProvider, IGPSToolSync
             if (!varName.isEmpty()) {
                 infoList.add(xlate("pneumaticcraft.gui.tooltip.gpsTool.variable", varName));
             }
-        }
+        });
     }
 
     @Override
@@ -115,15 +119,17 @@ public class GPSToolItem extends Item implements IPositionProvider, IGPSToolSync
 
     @Nonnull
     public static Optional<BlockPos> getGPSLocation(UUID playerId, ItemStack gpsTool) {
-        CompoundTag compound = gpsTool.getTag();
-        if (gpsTool.getItem() == ModItems.GPS_TOOL.get() && compound != null) {
-            BlockPos curPos = compound.contains("Pos") ? NbtUtils.readBlockPos(compound.getCompound("Pos")) : PneumaticCraftUtils.invalidPos();
+        BlockPos curPos = gpsTool.get(ModDataComponents.GPS_TOOL_POS);
+        if (gpsTool.getItem() == ModItems.GPS_TOOL.get() && curPos != null) {
             String var = getVariable(gpsTool);
             if (!var.isEmpty()) {
                 BlockPos pos = GlobalVariableHelper.getPos(playerId, var);
-                if (pos != null && !curPos.equals(pos)) setGPSLocation(playerId, gpsTool, pos, false);
+                if (pos != null && !curPos.equals(pos)) {
+                    curPos = pos;
+                    setGPSLocation(playerId, gpsTool, pos, false);
+                }
             }
-            return PneumaticCraftUtils.isValidPos(curPos) ? Optional.of(curPos) : Optional.empty();
+            return Optional.of(curPos);
         } else {
             return Optional.empty();
         }
@@ -134,7 +140,7 @@ public class GPSToolItem extends Item implements IPositionProvider, IGPSToolSync
     }
 
     public static void setGPSLocation(UUID playerId, ItemStack gpsTool, BlockPos pos, boolean updateVarManager) {
-        NBTUtils.setCompoundTag(gpsTool, "Pos", NbtUtils.writeBlockPos(pos));
+        gpsTool.set(ModDataComponents.GPS_TOOL_POS, pos);
         if (updateVarManager) {
             String var = getVariable(gpsTool);
             if (!var.isEmpty()) {
@@ -144,11 +150,11 @@ public class GPSToolItem extends Item implements IPositionProvider, IGPSToolSync
     }
 
     public static void setVariable(ItemStack gpsTool, String variable) {
-        NBTUtils.setString(gpsTool, "variable", variable);
+        gpsTool.set(ModDataComponents.GPS_TOOL_VAR, variable);
     }
 
     public static String getVariable(ItemStack gpsTool) {
-        return gpsTool.hasTag() ? Objects.requireNonNull(gpsTool.getTag()).getString("variable") : "";
+        return gpsTool.getOrDefault(ModDataComponents.GPS_TOOL_VAR, "");
     }
 
     @Override

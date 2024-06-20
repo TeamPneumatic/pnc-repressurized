@@ -66,7 +66,7 @@ public class SmartSyncTank extends PNCFluidTank {
                     int delta = tgt.getAmount() - currAmount;
                     if (delta != 0) {
                         int newAmount = Math.abs(delta) < capacity / 200 ? tgt.getAmount() : currAmount + delta / 20;
-                        Fluid newFluid = fluid.isEmpty() ? tgt.getFluid() : fluid.getFluid();
+                        Fluid newFluid = fluidStack.isEmpty() ? tgt.getFluid() : fluidStack.getFluid();
                         super.setFluid(new FluidStack(newFluid, newAmount));
                     }
                 }

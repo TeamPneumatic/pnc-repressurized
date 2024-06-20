@@ -18,10 +18,13 @@
 package me.desht.pneumaticcraft.common.drone.progwidgets;
 
 import com.google.common.collect.ImmutableList;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import me.desht.pneumaticcraft.api.drone.IDrone;
+import me.desht.pneumaticcraft.api.drone.IProgWidget;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
-import me.desht.pneumaticcraft.common.drone.IDroneBase;
 import me.desht.pneumaticcraft.common.drone.ai.DroneEntityBase;
-import me.desht.pneumaticcraft.common.registry.ModProgWidgets;
+import me.desht.pneumaticcraft.common.registry.ModProgWidgetTypes;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -42,11 +45,22 @@ import java.util.Set;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class ProgWidgetEntityRightClick extends ProgWidget implements IAreaProvider, IEntityProvider {
+    public static final MapCodec<ProgWidgetEntityRightClick> CODEC = RecordCodecBuilder.mapCodec(builder ->
+            baseParts(builder).apply(builder, ProgWidgetEntityRightClick::new));
 
     private EntityFilterPair<ProgWidgetEntityRightClick> entityFilters;
 
+    public ProgWidgetEntityRightClick(PositionFields pos) {
+        super(pos);
+    }
+
     public ProgWidgetEntityRightClick() {
-        super(ModProgWidgets.ENTITY_RIGHT_CLICK.get());
+        super(PositionFields.DEFAULT);
+    }
+
+    @Override
+    public ProgWidgetType<?> getType() {
+        return ModProgWidgetTypes.ENTITY_RIGHT_CLICK.get();
     }
 
     @Override
@@ -70,7 +84,7 @@ public class ProgWidgetEntityRightClick extends ProgWidget implements IAreaProvi
 
     @Override
     public List<ProgWidgetType<?>> getParameters() {
-        return ImmutableList.of(ModProgWidgets.AREA.get(), ModProgWidgets.TEXT.get());
+        return ImmutableList.of(ModProgWidgetTypes.AREA.get(), ModProgWidgetTypes.TEXT.get());
     }
 
     @Override
@@ -89,7 +103,7 @@ public class ProgWidgetEntityRightClick extends ProgWidget implements IAreaProvi
     }
 
     @Override
-    public Goal getWidgetAI(IDroneBase drone, IProgWidget progWidget) {
+    public Goal getWidgetAI(IDrone drone, IProgWidget progWidget) {
         return new DroneEntityBase<IEntityProvider, LivingEntity>(drone, (IEntityProvider) progWidget) {
             private final Set<Entity> visitedEntities = new HashSet<>();
 

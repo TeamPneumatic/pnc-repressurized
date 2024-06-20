@@ -154,7 +154,7 @@ public class AerialInterfaceScreen extends AbstractPneumaticCraftContainerScreen
             FluidStack fluidStack = new FluidStack(fluid, 1000);
             xpButton.setRenderStacks(FluidUtil.getFilledBucket(fluidStack));
             String modName = ModNameCache.getModName(fluid);
-            xpButton.setTooltip(Tooltip.create(fluidStack.getDisplayName().copy().append("\n")
+            xpButton.setTooltip(Tooltip.create(fluidStack.getHoverName().copy().append("\n")
                     .append(Component.literal(modName).withStyle(ChatFormatting.ITALIC, ChatFormatting.BLUE))));
         } else {
             xpButton.setRenderStacks(new ItemStack(Items.BUCKET));
@@ -174,7 +174,7 @@ public class AerialInterfaceScreen extends AbstractPneumaticCraftContainerScreen
                 String modName = ModNameCache.getModName(fluid);
                 MutableComponent modNameText = Component.literal(" (" + modName + ")");
                 liquidXpText.add(Symbols.bullet().withStyle(ChatFormatting.BLACK)
-                        .append(stack.getDisplayName().copy().withStyle(ChatFormatting.BLACK))
+                        .append(stack.getHoverName().copy().withStyle(ChatFormatting.BLACK))
                         .append(modNameText.withStyle(ChatFormatting.DARK_BLUE))
                 );
             }

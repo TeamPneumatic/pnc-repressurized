@@ -33,6 +33,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.neoforged.neoforge.common.util.FakePlayer;
 
+import java.util.Objects;
+
 public class DroneAIAttackEntity extends MeleeAttackGoal {
     private final DroneEntity attacker;
     private final AttackType attackType;
@@ -147,7 +149,7 @@ public class DroneAIAttackEntity extends MeleeAttackGoal {
                 for (AttributeModifier modifier : stack.getAttributeModifiers(EquipmentSlot.MAINHAND).get(Attributes.ATTACK_DAMAGE)) {
                     damage.addTransientModifier(modifier);
                 }
-                float f1 = EnchantmentHelper.getDamageBonus(stack, attacker.getTarget().getMobType());
+                float f1 = EnchantmentHelper.getDamageBonus(stack, Objects.requireNonNull(attacker.getTarget()).getType());
                 if (damage.getValue() + f1 > bestDmg) {
                     bestDmg = damage.getValue() + f1;
                     bestSlot = i;

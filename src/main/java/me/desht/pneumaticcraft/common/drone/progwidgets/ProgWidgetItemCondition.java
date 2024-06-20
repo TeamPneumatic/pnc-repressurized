@@ -18,9 +18,12 @@
 package me.desht.pneumaticcraft.common.drone.progwidgets;
 
 import com.google.common.collect.ImmutableList;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import me.desht.pneumaticcraft.api.drone.IDrone;
+import me.desht.pneumaticcraft.api.drone.IProgWidget;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
-import me.desht.pneumaticcraft.common.drone.IDroneBase;
-import me.desht.pneumaticcraft.common.registry.ModProgWidgets;
+import me.desht.pneumaticcraft.common.registry.ModProgWidgetTypes;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -30,14 +33,25 @@ import java.util.List;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class ProgWidgetItemCondition extends ProgWidgetConditionBase {
+    public static final MapCodec<ProgWidgetItemCondition> CODEC = RecordCodecBuilder.mapCodec(builder ->
+            baseParts(builder).apply(builder, ProgWidgetItemCondition::new));
+
+    public ProgWidgetItemCondition(PositionFields pos) {
+        super(pos);
+    }
 
     public ProgWidgetItemCondition() {
-        super(ModProgWidgets.CONDITION_ITEM.get());
+        super(PositionFields.DEFAULT);
+    }
+
+    @Override
+    public ProgWidgetType<?> getType() {
+        return ModProgWidgetTypes.CONDITION_ITEM.get();
     }
 
     @Override
     public List<ProgWidgetType<?>> getParameters() {
-        return ImmutableList.of(ModProgWidgets.ITEM_FILTER.get(), ModProgWidgets.ITEM_FILTER.get(), ModProgWidgets.TEXT.get());
+        return ImmutableList.of(ModProgWidgetTypes.ITEM_FILTER.get(), ModProgWidgetTypes.ITEM_FILTER.get(), ModProgWidgetTypes.TEXT.get());
     }
 
     @Override
@@ -52,12 +66,12 @@ public class ProgWidgetItemCondition extends ProgWidgetConditionBase {
     }
 
     @Override
-    public boolean evaluate(IDroneBase drone, IProgWidget widget) {
+    public boolean evaluate(IDrone drone, IProgWidget widget) {
         ProgWidgetItemFilter checkedFilter = (ProgWidgetItemFilter) widget.getConnectedParameters()[0];
         while (checkedFilter != null) {
             if (!ProgWidgetItemFilter.isItemValidForFilters(checkedFilter.getFilter(),
-                    getConnectedWidgetList(this, 1, ModProgWidgets.ITEM_FILTER.get()),
-                    getConnectedWidgetList(this, getParameters().size() + 1, ModProgWidgets.ITEM_FILTER.get()),
+                    getConnectedWidgetList(this, 1, ModProgWidgetTypes.ITEM_FILTER.get()),
+                    getConnectedWidgetList(this, getParameters().size() + 1, ModProgWidgetTypes.ITEM_FILTER.get()),
                     null))
                 return false;
             checkedFilter = (ProgWidgetItemFilter) checkedFilter.getConnectedParameters()[0];
@@ -66,8 +80,8 @@ public class ProgWidgetItemCondition extends ProgWidgetConditionBase {
         checkedFilter = (ProgWidgetItemFilter) widget.getConnectedParameters()[3];
         while (checkedFilter != null) {
             if (ProgWidgetItemFilter.isItemValidForFilters(checkedFilter.getFilter(),
-                    getConnectedWidgetList(this, 1, ModProgWidgets.ITEM_FILTER.get()),
-                    getConnectedWidgetList(this, getParameters().size() + 1, ModProgWidgets.ITEM_FILTER.get()),
+                    getConnectedWidgetList(this, 1, ModProgWidgetTypes.ITEM_FILTER.get()),
+                    getConnectedWidgetList(this, getParameters().size() + 1, ModProgWidgetTypes.ITEM_FILTER.get()),
                     null))
                 return false;
             checkedFilter = (ProgWidgetItemFilter) checkedFilter.getConnectedParameters()[0];

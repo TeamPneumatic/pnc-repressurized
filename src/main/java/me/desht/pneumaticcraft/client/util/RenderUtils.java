@@ -32,7 +32,6 @@ import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 
 import java.util.BitSet;
@@ -229,7 +228,6 @@ public class RenderUtils {
 
     public static void renderProgressingLine3d(ProgressingLine prev, ProgressingLine line, float partialTick, PoseStack matrixStack, VertexConsumer builder, int color) {
         float[] cols = decomposeColorF(color);
-        Matrix4f posMat = matrixStack.last().pose();
         float progress = line.getProgress();
         float lx1 = lerp(partialTick, line.startX, prev.startX);
         float ly1 = lerp(partialTick, line.startY, prev.startY);
@@ -237,35 +235,35 @@ public class RenderUtils {
         float lx2 = lerp(progress, lx1, lerp(partialTick, line.endX, prev.endX));
         float ly2 = lerp(progress, ly1, lerp(partialTick, line.endY, prev.endY));
         float lz2 = lerp(progress, lz1, lerp(partialTick, line.endZ, prev.endZ));
-        normalLine(builder, posMat, matrixStack.last().normal(), lx1, ly1, lz1, lx2, ly2, lz2, cols[0], cols[1], cols[2], cols[3], false);
+        normalLine(builder, matrixStack, lx1, ly1, lz1, lx2, ly2, lz2, cols[0], cols[1], cols[2], cols[3], false);
     }
 
-    public static void renderRing(ProgressingLine line, ProgressingLine lastLine, PoseStack matrixStackIn, MultiBufferSource bufferIn, float partialTick, float rotationYaw, float rotationPitch, int color) {
-        matrixStackIn.pushPose();
+    public static void renderRing(ProgressingLine line, ProgressingLine lastLine, PoseStack poseStack, MultiBufferSource bufferIn, float partialTick, float rotationYaw, float rotationPitch, int color) {
+        poseStack.pushPose();
 
         double renderProgress = lerp(partialTick, lastLine.progress, line.progress);
-        matrixStackIn.translate(
+        poseStack.translate(
                 (line.endX - line.startX) * renderProgress,
                 (line.endY - line.startY) * renderProgress,
                 (line.endZ - line.startZ) * renderProgress
         );
-        matrixStackIn.mulPose(Axis.YP.rotationDegrees(rotationYaw - 90));
-        matrixStackIn.mulPose(Axis.ZP.rotationDegrees(rotationPitch));
+        poseStack.mulPose(Axis.YP.rotationDegrees(rotationYaw - 90));
+        poseStack.mulPose(Axis.ZP.rotationDegrees(rotationPitch));
 
         VertexConsumer builder = bufferIn.getBuffer(ModRenderTypes.getLineLoops(1.0));
 
         int[] cols = RenderUtils.decomposeColor(0xFF000000 | color);
         double size = (1 + 4 * renderProgress) / 16;
-        Matrix4f posMat = matrixStackIn.last().pose();
+        Matrix4f posMat = poseStack.last().pose();
         for (float i = 0; i < FULL_CIRCLE; i += STEP) {
             Vec3 v1 = new Vec3(0, Mth.sin(i) * size, Mth.cos(i) * size);
             Vec3 v2 = new Vec3(0, Mth.sin(i + STEP) * size, Mth.cos(i + STEP) * size);
             RenderUtils.posF(builder, posMat, 0f, v1.y(), v1.z())
                     .color(cols[1], cols[2], cols[3], cols[0])
-                    .normal(matrixStackIn.last().normal(), 0f, (float) (v2.y() - v1.y()), (float) (v2.z() - v1.z()))
+                    .normal(poseStack.last(), 0f, (float) (v2.y() - v1.y()), (float) (v2.z() - v1.z()))
                     .endVertex();
         }
-        matrixStackIn.popPose();
+        poseStack.popPose();
     }
 
     /**
@@ -348,20 +346,20 @@ public class RenderUtils {
         fr.drawInBatch(str, x, y, color, dropShadow, matrixStack.last().pose(), buffer, disableDepthTest ? Font.DisplayMode.SEE_THROUGH : Font.DisplayMode.NORMAL, 0, FULL_BRIGHT);
     }
 
-    public static void normalLine(VertexConsumer builder, Matrix4f posMat, Matrix3f normal, float x1, float y1, float z1, float x2, float y2, float z2, float a, float r, float g, float b, boolean isStrip) {
+    public static void normalLine(VertexConsumer builder, PoseStack poseStack, float x1, float y1, float z1, float x2, float y2, float z2, float a, float r, float g, float b, boolean isStrip) {
         float nx = x2 - x1;
         float ny = y2 - y1;
         float nz = z2 - z1;
         float d = Mth.sqrt(nx * nx + ny * ny + nz * nz);
-        builder.vertex(posMat, x1, y1, z1)
+        builder.vertex(poseStack.last().pose(), x1, y1, z1)
                 .color(r, g, b, a)
-                .normal(normal, nx / d , ny / d, nz / d)
+                .normal(poseStack.last(), nx / d , ny / d, nz / d)
                 .endVertex();
         if (!isStrip) {
             // when drawing line strips, second set of x/y/z coords are just for normal calculation
-            builder.vertex(posMat, x2, y2, z2)
+            builder.vertex(poseStack.last(), x2, y2, z2)
                     .color(r, g, b, a)
-                    .normal(normal, nx / d , ny / d, nz / d)
+                    .normal(poseStack.last(), nx / d , ny / d, nz / d)
                     .endVertex();
         }
     }

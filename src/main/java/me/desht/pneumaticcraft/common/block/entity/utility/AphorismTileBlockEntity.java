@@ -17,18 +17,24 @@
 
 package me.desht.pneumaticcraft.common.block.entity.utility;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import me.desht.pneumaticcraft.api.lib.NBTKeys;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.block.AphorismTileBlock;
 import me.desht.pneumaticcraft.common.block.entity.AbstractPneumaticCraftBlockEntity;
 import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
+import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.StringTag;
-import net.minecraft.nbt.Tag;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.DyeColor;
@@ -39,19 +45,11 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.Arrays;
 import java.util.BitSet;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 public class AphorismTileBlockEntity extends AbstractPneumaticCraftBlockEntity {
-    public static final String NBT_BORDER_COLOR = "borderColor";
-    public static final String NBT_BACKGROUND_COLOR = "backgroundColor";
-    private static final String NBT_TEXT_ROTATION = "textRot";
-    public static final String NBT_TEXT_LINES = "lines";
-    public static final String NBT_MARGIN = "margin";
-    private static final String NBT_INVISIBLE = "invisible";
-
     private static final Pattern ITEM_PAT = Pattern.compile("^\\{item:(\\w+:[a-z0-9_.]+)}$");
 
     private String[] textLines = new String[]{""};
@@ -82,50 +80,52 @@ public class AphorismTileBlockEntity extends AbstractPneumaticCraftBlockEntity {
         return true;
     }
 
-    @Override
-    public void serializeExtraItemData(CompoundTag blockEntityTag, boolean preserveState) {
-        writeToPacket(blockEntityTag);
+    public void loadSavedData(SavedData savedData) {
+        if (savedData != null) {
+            setTextLines(savedData.lines().toArray(new String[0]));
+            setTextRotation(savedData.rotation());
+            setBorderColor(savedData.borderColor());
+            setBackgroundColor(savedData.bgColor());
+            setMarginSize(savedData.margin());
+            setInvisible(savedData.invisible());
+        }
     }
 
     @Override
-    public void writeToPacket(CompoundTag tag) {
-        super.writeToPacket(tag);
+    protected void applyImplicitComponents(DataComponentInput componentInput) {
+        super.applyImplicitComponents(componentInput);
 
-        CompoundTag subTag = new CompoundTag();
-        subTag.put(NBT_TEXT_LINES, Arrays.stream(textLines).map(StringTag::valueOf).collect(Collectors.toCollection(ListTag::new)));
-        subTag.putInt(NBT_TEXT_ROTATION, textRotation);
-        subTag.putInt(NBT_BORDER_COLOR, borderColor);
-        subTag.putInt(NBT_BACKGROUND_COLOR, backgroundColor);
-        subTag.putByte(NBT_MARGIN, marginSize);
-        subTag.putBoolean(NBT_INVISIBLE, invisible);
-        tag.put(NBTKeys.NBT_EXTRA, subTag);
+        SavedData savedData = componentInput.get(ModDataComponents.APHORISM_TILE_DATA);
+        loadSavedData(savedData);
     }
 
     @Override
-    public void readFromPacket(CompoundTag tag) {
-        super.readFromPacket(tag);
+    protected void collectImplicitComponents(DataComponentMap.Builder builder) {
+        super.collectImplicitComponents(builder);
+
+        builder.set(ModDataComponents.APHORISM_TILE_DATA, SavedData.forTile(this));
+    }
+
+    @Override
+    public void writeToPacket(CompoundTag tag, HolderLookup.Provider provider) {
+        super.writeToPacket(tag, provider);
+
+        SavedData.CODEC.encodeStart(NbtOps.INSTANCE, SavedData.forTile(this))
+                .ifSuccess(subTag -> tag.put(NBTKeys.NBT_EXTRA, subTag));
+    }
+
+    @Override
+    public void readFromPacket(CompoundTag tag, HolderLookup.Provider provider) {
+        super.readFromPacket(tag, provider);
 
         if (tag.contains(NBTKeys.NBT_EXTRA)) {
-            CompoundTag subTag = tag.getCompound(NBTKeys.NBT_EXTRA);
-            ListTag l = subTag.getList(NBT_TEXT_LINES, Tag.TAG_STRING);
-            if (l.isEmpty()) {
-                textLines = new String[] { "" };
-            } else {
-                textLines = new String[l.size()];
-                IntStream.range(0, textLines.length).forEach(i -> textLines[i] = l.getString(i));
-            }
-            updateLineMetadata();
-            textRotation = subTag.getInt(NBT_TEXT_ROTATION);
-            if (subTag.contains(NBT_BORDER_COLOR)) {
-                borderColor = subTag.getInt(NBT_BORDER_COLOR);
-                backgroundColor = subTag.getInt(NBT_BACKGROUND_COLOR);
-            } else {
-                borderColor = DyeColor.BLUE.getId();
-                backgroundColor = DyeColor.WHITE.getId();
-            }
-            setMarginSize(subTag.getByte(NBT_MARGIN));
-            setInvisible(subTag.getBoolean(NBT_INVISIBLE));
-            if (level != null) forceBlockEntityRerender();
+            SavedData.CODEC.parse(NbtOps.INSTANCE, tag.getCompound(NBTKeys.NBT_EXTRA)).ifSuccess(savedData -> {
+                loadSavedData(savedData);
+                updateLineMetadata();
+                if (level != null) {
+                    forceBlockEntityRerender();
+                }
+            });
         }
     }
 
@@ -134,7 +134,7 @@ public class AphorismTileBlockEntity extends AbstractPneumaticCraftBlockEntity {
     }
 
     public void setTextLines(String[] textLines) {
-        setTextLines(textLines, true);
+        setTextLines(textLines.length == 0 ? new String[] {""} : textLines, true);
     }
 
     public int getTextRotation() {
@@ -265,5 +265,32 @@ public class AphorismTileBlockEntity extends AbstractPneumaticCraftBlockEntity {
     public void setCursorPos(int cursorX, int cursorY) {
         this.cursorX = cursorX;
         this.cursorY = cursorY;
+    }
+
+    public record SavedData(List<String>lines, int rotation, int borderColor, int bgColor, int margin, boolean invisible) {
+        public static final Codec<SavedData> CODEC = RecordCodecBuilder.create(builder -> builder.group(
+                Codec.STRING.listOf().fieldOf("lines").forGetter(SavedData::lines),
+                Codec.INT.fieldOf("rotation").forGetter(SavedData::rotation),
+                Codec.INT.fieldOf("border").forGetter(SavedData::borderColor),
+                Codec.INT.fieldOf("background").forGetter(SavedData::bgColor),
+                Codec.INT.fieldOf("margin").forGetter(SavedData::margin),
+                Codec.BOOL.fieldOf("invisible").forGetter(SavedData::invisible)
+        ).apply(builder, SavedData::new));
+
+        public static final StreamCodec<FriendlyByteBuf, SavedData> STREAM_CODEC = StreamCodec.composite(
+                ByteBufCodecs.STRING_UTF8.apply(ByteBufCodecs.list()), SavedData::lines,
+                ByteBufCodecs.INT, SavedData::rotation,
+                ByteBufCodecs.INT, SavedData::borderColor,
+                ByteBufCodecs.INT, SavedData::bgColor,
+                ByteBufCodecs.VAR_INT, SavedData::margin,
+                ByteBufCodecs.BOOL, SavedData::invisible,
+                SavedData::new
+        );
+
+        static SavedData forTile(AphorismTileBlockEntity be) {
+            return new SavedData(Arrays.asList(be.textLines), be.textRotation,
+                    be.borderColor, be.backgroundColor,
+                    be.marginSize, be.invisible);
+        }
     }
 }

@@ -214,7 +214,7 @@ public class RedstoneModuleScreen extends AbstractTubeModuleScreen<RedstoneModul
         } else {
             module.setComparatorInput(comparatorInputCheckBox.checked);
         }
-        NetworkHandler.sendToServer(PacketSyncRedstoneModuleToServer.create(module));
+        NetworkHandler.sendToServer(PacketSyncRedstoneModuleToServer.forModule(module));
     }
 
     private void toggleRedstoneDirection() {

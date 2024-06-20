@@ -17,20 +17,21 @@
 
 package me.desht.pneumaticcraft.common.recipes.machine;
 
-import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import me.desht.pneumaticcraft.api.crafting.recipe.AssemblyRecipe;
 import me.desht.pneumaticcraft.common.registry.ModRecipeSerializers;
 import me.desht.pneumaticcraft.common.registry.ModRecipeTypes;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
+import net.neoforged.neoforge.common.crafting.SizedIngredient;
+import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
@@ -41,24 +42,19 @@ import java.util.Map;
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 public class AssemblyRecipeImpl extends AssemblyRecipe {
-    private final Ingredient input;
+    private final SizedIngredient input;
     private final ItemStack output;
     private final AssemblyProgramType program;
 
-    public AssemblyRecipeImpl(@Nonnull Ingredient input, @Nonnull ItemStack output, AssemblyProgramType program) {
+    public AssemblyRecipeImpl(@Nonnull SizedIngredient input, @Nonnull ItemStack output, AssemblyProgramType program) {
         this.input = input;
         this.output = output;
         this.program = program;
     }
 
     @Override
-    public Ingredient getInput() {
+    public SizedIngredient getInput() {
         return input;
-    }
-
-    @Override
-    public int getInputAmount() {
-        return input.getItems().length > 0 ? input.getItems()[0].getCount() : 0;
     }
 
     @Override
@@ -125,19 +121,27 @@ public class AssemblyRecipeImpl extends AssemblyRecipe {
         return drillLaser;
     }
 
+    public interface IFactory<T extends AssemblyRecipe> {
+        T create(@Nonnull SizedIngredient input, @Nonnull ItemStack output, AssemblyProgramType program);
+    }
+
     public static class Serializer<T extends AssemblyRecipe> implements RecipeSerializer<T> {
-        private final IFactory<T> factory;
-        private final Codec<T> codec;
+        private final MapCodec<T> codec;
+        private final StreamCodec<RegistryFriendlyByteBuf, T> streamCodec;
 
         public Serializer(IFactory<T> factory) {
-            this.factory = factory;
-
-            this.codec = RecordCodecBuilder.create(inst -> inst.group(
-                    Ingredient.CODEC.fieldOf("input").forGetter(AssemblyRecipe::getInput),
-                    ItemStack.ITEM_WITH_COUNT_CODEC.fieldOf("result").forGetter(AssemblyRecipe::getOutput),
-                    ExtraCodecs.validate(AssemblyProgramType.CODEC, Serializer::checkNotDrillAndLaser)
+            this.codec = RecordCodecBuilder.mapCodec(builder -> builder.group(
+                    SizedIngredient.FLAT_CODEC.fieldOf("input").forGetter(AssemblyRecipe::getInput),
+                    ItemStack.CODEC.fieldOf("result").forGetter(AssemblyRecipe::getOutput),
+                    AssemblyProgramType.CODEC.validate(Serializer::checkNotDrillAndLaser)
                             .fieldOf("program").forGetter(AssemblyRecipe::getProgramType)
-            ).apply(inst, factory::create));
+            ).apply(builder, factory::create));
+            this.streamCodec = StreamCodec.composite(
+                    SizedIngredient.STREAM_CODEC, AssemblyRecipe::getInput,
+                    ItemStack.STREAM_CODEC, AssemblyRecipe::getOutput,
+                    NeoForgeStreamCodecs.enumCodec(AssemblyProgramType.class), AssemblyRecipe::getProgramType,
+                    factory::create
+            );
         }
 
         @NotNull
@@ -148,27 +152,13 @@ public class AssemblyRecipeImpl extends AssemblyRecipe {
         }
 
         @Override
-        public Codec<T> codec() {
+        public MapCodec<T> codec() {
             return codec;
         }
 
         @Override
-        public T fromNetwork(FriendlyByteBuf buffer) {
-            Ingredient input = Ingredient.fromNetwork(buffer);
-            ItemStack out = buffer.readItem();
-            AssemblyProgramType program = buffer.readEnum(AssemblyProgramType.class);
-            return factory.create(input, out, program);
-        }
-
-        @Override
-        public void toNetwork(FriendlyByteBuf buffer, T recipe) {
-            recipe.getInput().toNetwork(buffer);
-            buffer.writeItem(recipe.getOutput());
-            buffer.writeEnum(recipe.getProgramType());
-        }
-
-        public interface IFactory<T extends AssemblyRecipe> {
-            T create(@Nonnull Ingredient input, @Nonnull ItemStack output, AssemblyProgramType program);
+        public StreamCodec<RegistryFriendlyByteBuf, T> streamCodec() {
+            return streamCodec;
         }
     }
 }

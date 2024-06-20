@@ -10,8 +10,8 @@ import net.neoforged.neoforge.fluids.capability.wrappers.FluidBucketWrapper;
 import java.util.function.Supplier;
 
 public class PneumaticCraftBucketItem extends BucketItem implements IFluidCapProvider {
-    public PneumaticCraftBucketItem(Supplier<? extends Fluid> supplier) {
-        super(supplier, ModItems.filledBucketProps());
+    public PneumaticCraftBucketItem(Fluid fluid) {
+        super(fluid, ModItems.filledBucketProps());
     }
 
     @Override

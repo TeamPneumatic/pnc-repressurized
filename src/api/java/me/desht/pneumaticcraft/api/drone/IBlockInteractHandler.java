@@ -19,11 +19,13 @@ package me.desht.pneumaticcraft.api.drone;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import org.jetbrains.annotations.ApiStatus;
 
 /**
  * This represents the drone's AI interaction handler. DON'T IMPLEMENT THIS, just use it when passed to
  * {@link ICustomBlockInteract#doInteract(BlockPos, IDrone, IBlockInteractHandler, boolean)}.
  */
+@ApiStatus.NonExtendable
 public interface IBlockInteractHandler {
     /**
      * Returns a boolean[6] of all sides, in order D,U,N,S,W,E; you can use {@link Direction#get3DDataValue()} to get

@@ -17,10 +17,11 @@
 
 package me.desht.pneumaticcraft.common.drone.progwidgets;
 
-import me.desht.pneumaticcraft.common.util.ITranslatableEnum;
+import me.desht.pneumaticcraft.api.misc.ITranslatableEnum;
+import net.minecraft.util.StringRepresentable;
 
 public interface IBlockOrdered {
-    enum Ordering implements ITranslatableEnum {
+    enum Ordering implements ITranslatableEnum, StringRepresentable {
         CLOSEST("closest"), LOW_TO_HIGH("lowToHigh"), HIGH_TO_LOW("highToLow");
         public final String name;
 
@@ -36,6 +37,11 @@ public interface IBlockOrdered {
         @Override
         public String getTranslationKey() {
             return "pneumaticcraft.gui.progWidget.blockOrder." + this;
+        }
+
+        @Override
+        public String getSerializedName() {
+            return name;
         }
     }
 

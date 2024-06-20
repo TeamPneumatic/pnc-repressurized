@@ -18,26 +18,38 @@
 package me.desht.pneumaticcraft.common.drone.progwidgets;
 
 import com.google.common.collect.ImmutableList;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import me.desht.pneumaticcraft.api.drone.ICustomBlockInteract;
+import me.desht.pneumaticcraft.api.drone.IDrone;
+import me.desht.pneumaticcraft.api.drone.IProgWidget;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
-import me.desht.pneumaticcraft.common.drone.IDroneBase;
+import me.desht.pneumaticcraft.api.registry.PNCRegistries;
 import me.desht.pneumaticcraft.common.drone.ai.DroneAICustomBlockInteract;
-import me.desht.pneumaticcraft.common.registry.ModProgWidgets;
+import me.desht.pneumaticcraft.common.registry.ModProgWidgetTypes;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.item.DyeColor;
-import org.apache.commons.lang3.Validate;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 public class ProgWidgetCustomBlockInteract extends ProgWidgetInventoryBase {
+    public static final MapCodec<ProgWidgetCustomBlockInteract> CODEC = RecordCodecBuilder.mapCodec(builder ->
+            invParts(builder).apply(builder, ProgWidgetCustomBlockInteract::new));
+
     private ICustomBlockInteract interactor;
     private ProgWidgetType<?> customType = null;
 
+    public ProgWidgetCustomBlockInteract(PositionFields pos, InvBaseFields invBaseFields) {
+        super(pos, invBaseFields);
+    }
+
     public ProgWidgetCustomBlockInteract() {
-        super(null);
+        super(PositionFields.DEFAULT, InvBaseFields.DEFAULT);
     }
 
     public ProgWidgetCustomBlockInteract setInteractor(ICustomBlockInteract interactor) {
@@ -48,17 +60,16 @@ public class ProgWidgetCustomBlockInteract extends ProgWidgetInventoryBase {
     @Override
     public ProgWidgetType<?> getType() {
         if (customType == null) {
-            customType = ModProgWidgets.PROG_WIDGETS_REGISTRY.get(RL(interactor.getID()));
-            Validate.notNull(customType);
+            customType = PNCRegistries.PROG_WIDGETS_REGISTRY.get(RL(interactor.getID()));
+            Objects.requireNonNull(customType);
         }
         return customType;
     }
 
     @Override
-    public IProgWidget copy() {
-        ProgWidgetCustomBlockInteract widget = (ProgWidgetCustomBlockInteract) super.copy();
-        widget.setInteractor(interactor);
-        return widget;
+    public Optional<? extends IProgWidget> copy() {
+        return super.copy()
+                .filter(w -> w instanceof ProgWidgetCustomBlockInteract).map(w -> ((ProgWidgetCustomBlockInteract) w).setInteractor(interactor));
     }
 
     @Override
@@ -67,13 +78,13 @@ public class ProgWidgetCustomBlockInteract extends ProgWidgetInventoryBase {
     }
 
     @Override
-    public Goal getWidgetAI(IDroneBase drone, IProgWidget widget) {
+    public Goal getWidgetAI(IDrone drone, IProgWidget widget) {
         return new DroneAICustomBlockInteract(drone, (ProgWidgetInventoryBase) widget, interactor);
     }
 
     @Override
     public List<ProgWidgetType<?>> getParameters() {
-        return ImmutableList.of(ModProgWidgets.AREA.get());
+        return ImmutableList.of(ModProgWidgetTypes.AREA.get());
     }
 
     @Override

@@ -19,9 +19,7 @@ package me.desht.pneumaticcraft.common.inventory;
 
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.crafting.recipe.AmadronRecipe;
-import me.desht.pneumaticcraft.common.amadron.AmadronOfferManager;
-import me.desht.pneumaticcraft.common.amadron.AmadronUtil;
-import me.desht.pneumaticcraft.common.amadron.ShoppingBasket;
+import me.desht.pneumaticcraft.common.amadron.*;
 import me.desht.pneumaticcraft.common.block.entity.AbstractPneumaticCraftBlockEntity;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.config.subconfig.AmadronPlayerOffers;
@@ -35,7 +33,7 @@ import me.desht.pneumaticcraft.common.recipes.amadron.AmadronPlayerOffer;
 import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.registry.ModMenuTypes;
 import me.desht.pneumaticcraft.common.registry.ModSounds;
-import me.desht.pneumaticcraft.common.util.ITranslatableEnum;
+import me.desht.pneumaticcraft.api.misc.ITranslatableEnum;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.core.GlobalPos;
@@ -64,7 +62,7 @@ public class AmadronMenu extends AbstractPneumaticCraftMenu<AbstractPneumaticCra
 
     // this will remain valid, because Amadron offers don't get reshuffled if anyone has a tablet GUI open
     public final List<AmadronOffer> activeOffers = new ArrayList<>(AmadronOfferManager.getInstance().getActiveOffers());
-    private final ShoppingBasket shoppingBasket = new ShoppingBasket();
+    private final MutableBasket shoppingBasket = ShoppingBasket.createMutable();
     private final InteractionHand hand;
 
     @GuiSynced
@@ -115,9 +113,9 @@ public class AmadronMenu extends AbstractPneumaticCraftMenu<AbstractPneumaticCra
 
         if (invPlayer.player instanceof ServerPlayer player) {
             ItemStack tablet = player.getItemInHand(hand);
-            ShoppingBasket savedBasket = AmadronTabletItem.loadShoppingCart(tablet);
+            ImmutableBasket savedBasket = AmadronTabletItem.loadShoppingCart(tablet);
 
-            ShoppingBasket availableOffers = new ShoppingBasket();
+            MutableBasket availableOffers = ShoppingBasket.createMutable();
             activeOffers.forEach(offer -> availableOffers.setUnits(offer.getOfferId(), Math.max(savedBasket.getUnits(offer.getOfferId()), 1)));
             availableOffers.validate(tablet, false);
 

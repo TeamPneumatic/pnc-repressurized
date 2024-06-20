@@ -64,8 +64,7 @@ public class JEISpawnerExtractionCategory extends AbstractPNCCategory<JEISpawner
         for (EntityType<?> type : ENTITY_TYPES) {
             ItemStack core = new ItemStack(ModItems.SPAWNER_CORE.get());
             ISpawnerCoreStats stats = PneumaticRegistry.getInstance().getItemRegistry().getSpawnerCoreStats(core);
-            stats.addAmount(type, 100);
-            stats.serialize(core);
+            stats.addAmount(type, 100).save(core);
             cores.add(core);
         }
 
@@ -77,6 +76,6 @@ public class JEISpawnerExtractionCategory extends AbstractPNCCategory<JEISpawner
         );
     }
 
-    record SpawnerExtractionRecipe(ItemStack itemInput, List<ItemStack> cores, ItemStack itemOutput) {
+    public record SpawnerExtractionRecipe(ItemStack itemInput, List<ItemStack> cores, ItemStack itemOutput) {
     }
 }

@@ -7,7 +7,7 @@ import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -155,30 +155,30 @@ public class DisplayTableBlock extends AbstractPneumaticCraftBlock implements Pn
     }
 
     @Override
-    public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult brtr) {
+    public ItemInteractionResult useItemOn(ItemStack heldStack, BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult brtr) {
         BlockEntity te = world.getBlockEntity(pos);
-        ItemStack heldStack = player.getItemInHand(hand);
         if (player.isShiftKeyDown() || te instanceof MenuProvider || ModdedWrenchUtils.getInstance().isWrench(heldStack)) {
-            return super.use(state, world, pos, player, hand, brtr);
-        } else if (te instanceof DisplayTableBlockEntity) {
+            return super.useItemOn(heldStack, state, world, pos, player, hand, brtr);
+        } else if (te instanceof DisplayTableBlockEntity teDT) {
             if (!world.isClientSide) {
-                DisplayTableBlockEntity teDT = (DisplayTableBlockEntity) te;
                 if (teDT.getItemHandler().getStackInSlot(0).isEmpty()) {
                     // try to put the player's held item onto the table
                     ItemStack excess = teDT.getItemHandler().insertItem(0, player.getItemInHand(hand), false);
-                    if (!player.isCreative()) player.setItemInHand(hand, excess);
+                    if (!player.isCreative()) {
+                        player.setItemInHand(hand, excess);
+                    }
                 } else {
                     // try to remove whatever is on the table
                     ItemStack stack = teDT.getItemHandler().extractItem(0, 64, false);
                     PneumaticCraftUtils.dropItemOnGroundPrecisely(stack, world, pos.getX() + 0.5, pos.getY() + getTableHeight() + 0.1, pos.getZ() + 0.5);
                 }
             }
-            return InteractionResult.SUCCESS;
+            return ItemInteractionResult.SUCCESS;
         }
-        return InteractionResult.PASS;
+        return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
     }
 
-    @org.jetbrains.annotations.Nullable
+    @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
         return new DisplayTableBlockEntity(pPos, pState);

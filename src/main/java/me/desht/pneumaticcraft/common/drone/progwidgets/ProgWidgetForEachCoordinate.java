@@ -18,16 +18,19 @@
 package me.desht.pneumaticcraft.common.drone.progwidgets;
 
 import com.google.common.collect.ImmutableList;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import me.desht.pneumaticcraft.api.drone.IDrone;
+import me.desht.pneumaticcraft.api.drone.IProgWidget;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
-import me.desht.pneumaticcraft.common.drone.IDroneBase;
 import me.desht.pneumaticcraft.common.drone.ai.DroneAIForEachCoordinate;
-import me.desht.pneumaticcraft.common.registry.ModProgWidgets;
+import me.desht.pneumaticcraft.common.registry.ModProgWidgetTypes;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.goal.Goal;
@@ -40,12 +43,22 @@ import java.util.Set;
 
 public class ProgWidgetForEachCoordinate extends ProgWidgetAreaItemBase implements IJumpBackWidget, IJump,
         IVariableSetWidget {
+    public static final MapCodec<ProgWidgetForEachCoordinate> CODEC = RecordCodecBuilder.mapCodec(builder ->
+            baseParts(builder).and(
+                    Codec.STRING.optionalFieldOf("variable", "").forGetter(ProgWidgetForEachCoordinate::getVariable)
+            ).apply(builder, ProgWidgetForEachCoordinate::new));
+
     private String elementVariable = "";
     private final Set<BlockPos> traversedPositions = new HashSet<>();
     private DroneAIForEachCoordinate ai;
 
+    private ProgWidgetForEachCoordinate(PositionFields pos, String elementVariable) {
+        super(pos);
+        this.elementVariable = elementVariable;
+    }
+
     public ProgWidgetForEachCoordinate() {
-        super(ModProgWidgets.FOR_EACH_COORDINATE.get());
+        this(PositionFields.DEFAULT, "");
     }
 
     @Override
@@ -60,7 +73,7 @@ public class ProgWidgetForEachCoordinate extends ProgWidgetAreaItemBase implemen
 
     @Override
     public List<ProgWidgetType<?>> getParameters() {
-        return ImmutableList.of(ModProgWidgets.AREA.get(), ModProgWidgets.TEXT.get());
+        return ImmutableList.of(ModProgWidgetTypes.AREA.get(), ModProgWidgetTypes.TEXT.get());
     }
 
     @Override
@@ -79,26 +92,26 @@ public class ProgWidgetForEachCoordinate extends ProgWidgetAreaItemBase implemen
         elementVariable = variable;
     }
 
-    @Override
-    public void writeToNBT(CompoundTag tag) {
-        if (!elementVariable.isEmpty()) tag.putString("variable", elementVariable);
-        super.writeToNBT(tag);
-    }
+//    @Override
+//    public void writeToNBT(CompoundTag tag, HolderLookup.Provider provider) {
+//        if (!elementVariable.isEmpty()) tag.putString("variable", elementVariable);
+//        super.writeToNBT(tag, provider);
+//    }
+//
+//    @Override
+//    public void readFromNBT(CompoundTag tag, HolderLookup.Provider provider) {
+//        elementVariable = tag.getString("variable");
+//        super.readFromNBT(tag, provider);
+//    }
 
     @Override
-    public void readFromNBT(CompoundTag tag) {
-        elementVariable = tag.getString("variable");
-        super.readFromNBT(tag);
-    }
-
-    @Override
-    public void writeToPacket(FriendlyByteBuf buf) {
+    public void writeToPacket(RegistryFriendlyByteBuf buf) {
         super.writeToPacket(buf);
         buf.writeUtf(elementVariable);
     }
 
     @Override
-    public void readFromPacket(FriendlyByteBuf buf) {
+    public void readFromPacket(RegistryFriendlyByteBuf buf) {
         super.readFromPacket(buf);
         elementVariable = buf.readUtf(GlobalVariableManager.MAX_VARIABLE_LEN);
     }
@@ -109,14 +122,14 @@ public class ProgWidgetForEachCoordinate extends ProgWidgetAreaItemBase implemen
     }
 
     @Override
-    public IProgWidget getOutputWidget(IDroneBase drone, List<IProgWidget> allWidgets) {
+    public IProgWidget getOutputWidget(IDrone drone, List<IProgWidget> allWidgets) {
         List<String> locations = getPossibleJumpLocations();
         // In 1.16.5 and earlier, setting variable to (0,0,0) broke out of the loop, which worked most of the time
         // Now in 1.18+, (0,0,0) is even more likely to be a perfectly valid blockpos
         //   So to break out of a loop now, set the variable to any position outside this world's build height
         BlockPos varPos = aiManager.getCoordinate(drone.getOwnerUUID(), elementVariable).orElse(PneumaticCraftUtils.invalidPos());
         if (!locations.isEmpty() && ai != null
-                && (traversedPositions.size() == 1 || !drone.world().isOutsideBuildHeight(varPos))) {
+                && (traversedPositions.size() == 1 || !drone.getDroneLevel().isOutsideBuildHeight(varPos))) {
             BlockPos pos = ai.getCurCoord();
             if (pos != null) {
                 aiManager.setCoordinate(elementVariable, pos);
@@ -134,7 +147,7 @@ public class ProgWidgetForEachCoordinate extends ProgWidgetAreaItemBase implemen
     }
 
     @Override
-    public Goal getWidgetAI(IDroneBase drone, IProgWidget widget) {
+    public Goal getWidgetAI(IDrone drone, IProgWidget widget) {
         return ai = new DroneAIForEachCoordinate(drone, (ProgWidgetForEachCoordinate) widget);
     }
 
@@ -143,8 +156,13 @@ public class ProgWidgetForEachCoordinate extends ProgWidgetAreaItemBase implemen
     }
 
     @Override
-    public boolean canBeRunByComputers(IDroneBase drone, IProgWidget widget) {
+    public boolean canBeRunByComputers(IDrone drone, IProgWidget widget) {
         return false;
+    }
+
+    @Override
+    public ProgWidgetType<?> getType() {
+        return ModProgWidgetTypes.FOR_EACH_COORDINATE.get();
     }
 
     @Override

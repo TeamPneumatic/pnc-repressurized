@@ -18,16 +18,17 @@
 package me.desht.pneumaticcraft.common.item;
 
 import me.desht.pneumaticcraft.api.item.IPositionProvider;
+import me.desht.pneumaticcraft.common.amadron.ImmutableBasket;
 import me.desht.pneumaticcraft.common.amadron.ShoppingBasket;
 import me.desht.pneumaticcraft.common.block.entity.utility.ChargingStationBlockEntity;
 import me.desht.pneumaticcraft.common.inventory.AmadronMenu;
+import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.registry.ModMenuTypes;
 import me.desht.pneumaticcraft.common.registry.ModSounds;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.common.util.GlobalPosHelper;
 import me.desht.pneumaticcraft.common.util.IOHelper;
-import me.desht.pneumaticcraft.common.util.NBTUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -99,8 +100,8 @@ public class AmadronTabletItem extends PressurizableItem
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, Level worldIn, List<Component> infoList, TooltipFlag flag) {
-        super.appendHoverText(stack, worldIn, infoList, flag);
+    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> infoList, TooltipFlag flag) {
+        super.appendHoverText(stack, context, infoList, flag);
         GlobalPos gPos = getItemProvidingLocation(stack);
         if (gPos != null) {
             infoList.add(xlate("pneumaticcraft.gui.tooltip.amadronTablet.itemLocation", GlobalPosHelper.prettyPrint(gPos)).withStyle(ChatFormatting.YELLOW));
@@ -129,13 +130,15 @@ public class AmadronTabletItem extends PressurizableItem
     }
 
     public static GlobalPos getItemProvidingLocation(ItemStack tablet) {
-        return tablet.hasTag() && Objects.requireNonNull(tablet.getTag()).contains("itemPos") ?
-                GlobalPosHelper.fromNBT(tablet.getTag().getCompound("itemPos")) :
-                null;
+        return tablet.get(ModDataComponents.AMADRON_ITEM_POS);
     }
 
     private static void setItemProvidingLocation(ItemStack tablet, GlobalPos globalPos) {
-        NBTUtils.setCompoundTag(tablet, "itemPos", GlobalPosHelper.toNBT(globalPos));
+        if (globalPos == null) {
+            tablet.remove(ModDataComponents.AMADRON_ITEM_POS);
+        } else {
+            tablet.set(ModDataComponents.AMADRON_ITEM_POS, globalPos);
+        }
     }
 
     public static Optional<IFluidHandler> getFluidCapability(ItemStack tablet) {
@@ -151,25 +154,24 @@ public class AmadronTabletItem extends PressurizableItem
     }
 
     public static GlobalPos getFluidProvidingLocation(ItemStack tablet) {
-        return tablet.hasTag() && Objects.requireNonNull(tablet.getTag()).contains("liquidPos") ?
-                GlobalPosHelper.fromNBT(tablet.getTag().getCompound("liquidPos")) :
-                null;
+        return tablet.get(ModDataComponents.AMADRON_FLUID_POS);
     }
 
     private static void setFluidProvidingLocation(ItemStack tablet, GlobalPos globalPos) {
-        NBTUtils.setCompoundTag(tablet, "liquidPos", GlobalPosHelper.toNBT(globalPos));
+        if (globalPos == null) {
+            tablet.remove(ModDataComponents.AMADRON_FLUID_POS);
+        } else {
+            tablet.set(ModDataComponents.AMADRON_FLUID_POS, globalPos);
+        }
     }
 
     @Nonnull
-    public static ShoppingBasket loadShoppingCart(ItemStack tablet) {
-        if (!(tablet.getItem() instanceof AmadronTabletItem)) return new ShoppingBasket();
-        return ShoppingBasket.fromNBT(tablet.getTagElement("shoppingCart"));
+    public static ImmutableBasket loadShoppingCart(ItemStack tablet) {
+        return tablet.getOrDefault(ModDataComponents.AMADRON_SHOPPING_BASKET, ShoppingBasket.empty());
     }
 
-    public static void saveShoppingCart(ItemStack tablet, ShoppingBasket cart) {
-        if (tablet.getItem() instanceof AmadronTabletItem) {
-            NBTUtils.setCompoundTag(tablet, "shoppingCart", cart.toNBT());
-        }
+    public static void saveShoppingCart(ItemStack tablet, ShoppingBasket basket) {
+        tablet.set(ModDataComponents.AMADRON_SHOPPING_BASKET, basket.toImmutable());
     }
 
     @NotNull

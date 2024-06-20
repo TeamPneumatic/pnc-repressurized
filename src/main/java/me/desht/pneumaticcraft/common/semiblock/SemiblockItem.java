@@ -19,6 +19,7 @@ package me.desht.pneumaticcraft.common.semiblock;
 
 import me.desht.pneumaticcraft.api.semiblock.IDirectionalSemiblock;
 import me.desht.pneumaticcraft.common.entity.semiblock.AbstractSemiblockEntity;
+import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Log;
@@ -32,6 +33,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 
@@ -65,7 +67,7 @@ public class SemiblockItem extends Item {
             Entity e = type.create(world);
             if (e instanceof AbstractSemiblockEntity semi) {
                 e.moveTo(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, 0f, 0f);
-                EntityType.updateCustomEntityTag(world, player, e, stack.getTag());
+                EntityType.updateCustomEntityTag(world, player, e, stack.getOrDefault(ModDataComponents.SEMIBLOCK_DATA, CustomData.EMPTY));
                 return semi;
             }
             return null;

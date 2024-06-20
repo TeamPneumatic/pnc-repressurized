@@ -17,45 +17,59 @@
 
 package me.desht.pneumaticcraft.common.drone.progwidgets.area;
 
-import me.desht.pneumaticcraft.common.util.ITranslatableEnum;
-import me.desht.pneumaticcraft.common.util.LegacyAreaWidgetConverter;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import me.desht.pneumaticcraft.api.drone.area.AreaType;
+import me.desht.pneumaticcraft.api.drone.area.AreaTypeWidget;
+import me.desht.pneumaticcraft.api.drone.area.EnumOldAreaType;
+import me.desht.pneumaticcraft.api.drone.area.AreaTypeSerializer;
+import me.desht.pneumaticcraft.common.registry.ModProgWidgetAreaTypes;
+import me.desht.pneumaticcraft.api.misc.ITranslatableEnum;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.util.StringRepresentable;
+import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
 
 import java.util.List;
 import java.util.function.Consumer;
 
 public class AreaTypeCylinder extends AreaType {
+    public static final MapCodec<AreaTypeCylinder> CODEC = RecordCodecBuilder.mapCodec(builder -> builder.group(
+            StringRepresentable.fromEnum(EnumCylinderType::values).optionalFieldOf("cylinder_type", EnumCylinderType.FILLED).forGetter(t -> t.cylinderType),
+            StringRepresentable.fromEnum(AreaAxis::values).optionalFieldOf("axis", AreaAxis.X).forGetter(t -> t.axis)
+    ).apply(builder, AreaTypeCylinder::new));
+
+    public static final StreamCodec<FriendlyByteBuf, AreaTypeCylinder> STREAM_CODEC = StreamCodec.composite(
+            NeoForgeStreamCodecs.enumCodec(EnumCylinderType.class), t -> t.cylinderType,
+            NeoForgeStreamCodecs.enumCodec(AreaAxis.class), t -> t.axis,
+            AreaTypeCylinder::new
+    );
 
     public static final String ID = "cylinder";
 
-    private EnumAxis axis = EnumAxis.X;
-    private EnumCylinderType cylinderType = EnumCylinderType.FILLED;
+    private AreaAxis axis;
+    private EnumCylinderType cylinderType;
 
-    private enum EnumCylinderType implements ITranslatableEnum {
-        FILLED("filled"), HOLLOW("hollow"), TUBE("tube");
-
-        private final String name;
-
-        EnumCylinderType(String name) {
-            this.name = "pneumaticcraft.gui.progWidget.area.type.cylinder.cylinderType." + name;
-        }
-
-        @Override
-        public String getTranslationKey() {
-            return name;
-        }
+    private AreaTypeCylinder(EnumCylinderType cylinderType, AreaAxis axis) {
+        super(ID);
+        this.axis = axis;
+        this.cylinderType = cylinderType;
     }
 
     public AreaTypeCylinder() {
-        super(ID);
+        this(EnumCylinderType.FILLED, AreaAxis.X);
     }
 
     @Override
     public String toString() {
         return getName() + "/" + cylinderType + "/" + axis;
+    }
+
+    @Override
+    public AreaTypeSerializer<? extends AreaType> getSerializer() {
+        return ModProgWidgetAreaTypes.AREA_TYPE_CYLINDER.get();
     }
 
     @Override
@@ -144,45 +158,66 @@ public class AreaTypeCylinder extends AreaType {
     @Override
     public void addUIWidgets(List<AreaTypeWidget> widgets) {
         super.addUIWidgets(widgets);
-        widgets.add(new AreaTypeWidgetEnum<>("pneumaticcraft.gui.progWidget.area.type.cylinder.cylinderType", EnumCylinderType.class, () -> cylinderType, cylinderType -> this.cylinderType = cylinderType));
-        widgets.add(new AreaTypeWidgetEnum<>("pneumaticcraft.gui.progWidget.area.type.general.axis", EnumAxis.class, () -> axis, axis -> this.axis = axis));
+        widgets.add(new AreaTypeWidget.EnumSelectorField<>("pneumaticcraft.gui.progWidget.area.type.cylinder.cylinderType", EnumCylinderType.class, () -> cylinderType, cylinderType -> this.cylinderType = cylinderType));
+        widgets.add(new AreaTypeWidget.EnumSelectorField<>("pneumaticcraft.gui.progWidget.area.type.general.axis", AreaAxis.class, () -> axis, axis -> this.axis = axis));
     }
 
-    @Override
-    public void writeToNBT(CompoundTag tag) {
-        super.writeToNBT(tag);
-        tag.putByte("axis", (byte) axis.ordinal());
-        tag.putByte("cylinderType", (byte) cylinderType.ordinal());
-    }
+//    @Override
+//    public void writeToNBT(CompoundTag tag) {
+//        super.writeToNBT(tag);
+//        tag.putByte("axis", (byte) axis.ordinal());
+//        tag.putByte("cylinderType", (byte) cylinderType.ordinal());
+//    }
+//
+//    @Override
+//    public void readFromNBT(CompoundTag tag) {
+//        super.readFromNBT(tag);
+//        axis = EnumAxis.values()[tag.getByte("axis")];
+//        cylinderType = EnumCylinderType.values()[tag.getByte("cylinderType")];
+//    }
+//
+//    @Override
+//    public void writeToPacket(FriendlyByteBuf buffer) {
+//        super.writeToPacket(buffer);
+//        buffer.writeEnum(axis);
+//        buffer.writeEnum(cylinderType);
+//    }
+//
+//    @Override
+//    public void readFromPacket(FriendlyByteBuf buf) {
+//        super.readFromPacket(buf);
+//        axis = buf.readEnum(EnumAxis.class);
+//        cylinderType = buf.readEnum(EnumCylinderType.class);
+//    }
 
     @Override
-    public void readFromNBT(CompoundTag tag) {
-        super.readFromNBT(tag);
-        axis = EnumAxis.values()[tag.getByte("axis")];
-        cylinderType = EnumCylinderType.values()[tag.getByte("cylinderType")];
-    }
-
-    @Override
-    public void writeToPacket(FriendlyByteBuf buffer) {
-        super.writeToPacket(buffer);
-        buffer.writeEnum(axis);
-        buffer.writeEnum(cylinderType);
-    }
-
-    @Override
-    public void readFromPacket(FriendlyByteBuf buf) {
-        super.readFromPacket(buf);
-        axis = buf.readEnum(EnumAxis.class);
-        cylinderType = buf.readEnum(EnumCylinderType.class);
-    }
-
-    @Override
-    public void convertFromLegacy(LegacyAreaWidgetConverter.EnumOldAreaType oldAreaType, int typeInfo) {
+    public void convertFromLegacy(EnumOldAreaType oldAreaType, int typeInfo) {
         switch (oldAreaType) {
-            case X_CYLINDER -> axis = EnumAxis.X;
-            case Y_CYLINDER -> axis = EnumAxis.Y;
-            case Z_CYLINDER -> axis = EnumAxis.Z;
+            case X_CYLINDER -> axis = AreaAxis.X;
+            case Y_CYLINDER -> axis = AreaAxis.Y;
+            case Z_CYLINDER -> axis = AreaAxis.Z;
             default -> throw new IllegalArgumentException();
         }
     }
+
+    public enum EnumCylinderType implements ITranslatableEnum, StringRepresentable {
+        FILLED("filled"), HOLLOW("hollow"), TUBE("tube");
+
+        private final String name;
+
+        EnumCylinderType(String name) {
+            this.name = "pneumaticcraft.gui.progWidget.area.type.cylinder.cylinderType." + name;
+        }
+
+        @Override
+        public String getTranslationKey() {
+            return name;
+        }
+
+        @Override
+        public String getSerializedName() {
+            return name;
+        }
+    }
+
 }

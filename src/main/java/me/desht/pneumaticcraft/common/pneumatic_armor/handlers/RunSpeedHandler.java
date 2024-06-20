@@ -25,6 +25,7 @@ import me.desht.pneumaticcraft.api.upgrade.PNCUpgrade;
 import me.desht.pneumaticcraft.common.item.PneumaticArmorItem;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
 import me.desht.pneumaticcraft.common.pneumatic_armor.JetBootsStateTracker;
+import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.resources.ResourceLocation;
@@ -98,7 +99,7 @@ public class RunSpeedHandler extends BaseArmorUpgradeHandler<IArmorExtensionData
             int speedUpgrades = commonArmorHandler.getUpgradeCount(EquipmentSlot.LEGS, ModUpgrades.SPEED.get());
             Player player = commonArmorHandler.getPlayer();
             ItemStack armorStack = player.getItemBySlot(EquipmentSlot.LEGS);
-            float speedBoostMult = PneumaticArmorItem.getIntData(armorStack, PneumaticArmorItem.NBT_SPEED_BOOST, 100, 0, 100) / 100f;
+            float speedBoostMult = PneumaticArmorItem.getIntData(armorStack, ModDataComponents.SPEED_BOOST_PCT.get(), 100, 0, 100) / 100f;
             return PneumaticValues.PNEUMATIC_LEGS_BOOST_PER_UPGRADE * speedUpgrades * speedBoostMult;
         } else {
             return 0.0;

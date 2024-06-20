@@ -18,10 +18,13 @@
 package me.desht.pneumaticcraft.common.drone.progwidgets;
 
 import com.google.common.collect.ImmutableList;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import me.desht.pneumaticcraft.api.drone.IDrone;
+import me.desht.pneumaticcraft.api.drone.IProgWidget;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
-import me.desht.pneumaticcraft.common.drone.IDroneBase;
 import me.desht.pneumaticcraft.common.drone.ai.DroneAIVoidLiquid;
-import me.desht.pneumaticcraft.common.registry.ModProgWidgets;
+import me.desht.pneumaticcraft.common.registry.ModProgWidgetTypes;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.goal.Goal;
@@ -32,12 +35,24 @@ import javax.annotation.Nonnull;
 import java.util.List;
 
 public class ProgWidgetVoidLiquid extends ProgWidget implements ILiquidFiltered {
+    public static final MapCodec<ProgWidgetVoidLiquid> CODEC = RecordCodecBuilder.mapCodec(builder ->
+            baseParts(builder).apply(builder, ProgWidgetVoidLiquid::new));
+
+    private ProgWidgetVoidLiquid(PositionFields pos) {
+        super(pos);
+    }
+
     public ProgWidgetVoidLiquid() {
-        super(ModProgWidgets.VOID_FLUID.get());
+        super(PositionFields.DEFAULT);
     }
 
     @Override
-    public Goal getWidgetAI(IDroneBase drone, IProgWidget widget) {
+    public ProgWidgetType<?> getType() {
+        return ModProgWidgetTypes.VOID_FLUID.get();
+    }
+
+    @Override
+    public Goal getWidgetAI(IDrone drone, IProgWidget widget) {
         return new DroneAIVoidLiquid(drone, (ILiquidFiltered) widget);
     }
 
@@ -59,7 +74,7 @@ public class ProgWidgetVoidLiquid extends ProgWidget implements ILiquidFiltered 
     @Nonnull
     @Override
     public List<ProgWidgetType<?>> getParameters() {
-        return ImmutableList.of(ModProgWidgets.LIQUID_FILTER.get());
+        return ImmutableList.of(ModProgWidgetTypes.LIQUID_FILTER.get());
     }
 
     @Override

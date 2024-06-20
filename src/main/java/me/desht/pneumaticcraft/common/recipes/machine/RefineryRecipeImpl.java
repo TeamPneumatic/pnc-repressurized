@@ -18,31 +18,34 @@
 package me.desht.pneumaticcraft.common.recipes.machine;
 
 import com.google.common.collect.ImmutableList;
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import me.desht.pneumaticcraft.api.crafting.TemperatureRange;
-import me.desht.pneumaticcraft.api.crafting.ingredient.FluidIngredient;
 import me.desht.pneumaticcraft.api.crafting.recipe.RefineryRecipe;
 import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.common.registry.ModBlocks;
 import me.desht.pneumaticcraft.common.registry.ModRecipeSerializers;
 import me.desht.pneumaticcraft.common.registry.ModRecipeTypes;
 import me.desht.pneumaticcraft.common.util.CodecUtil;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.crafting.FluidIngredient;
+import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
 import org.apache.commons.lang3.Validate;
 
 import java.util.List;
 
 public class RefineryRecipeImpl extends RefineryRecipe {
-	public final FluidIngredient input;
+	public final SizedFluidIngredient input;
 	public final List<FluidStack> outputs;
 	private final TemperatureRange operatingTemp;
 
-	public RefineryRecipeImpl(FluidIngredient input, TemperatureRange operatingTemp, List<FluidStack> outputs) {
+	public RefineryRecipeImpl(SizedFluidIngredient input, TemperatureRange operatingTemp, List<FluidStack> outputs) {
 		super();
 
 		this.operatingTemp = operatingTemp;
@@ -53,7 +56,7 @@ public class RefineryRecipeImpl extends RefineryRecipe {
 	}
 
 	@Override
-	public FluidIngredient getInput() {
+	public SizedFluidIngredient getInput() {
 		return input;
 	}
 
@@ -87,14 +90,17 @@ public class RefineryRecipeImpl extends RefineryRecipe {
 		return new ItemStack(ModBlocks.REFINERY.get());
 	}
 
-	public static class Serializer<T extends RefineryRecipe> implements RecipeSerializer<T> {
-		private final Codec<T> codec;
-		private final IFactory<T> factory;
+	public interface IFactory<T extends RefineryRecipe> {
+		T create(SizedFluidIngredient input, TemperatureRange operatingTemp, List<FluidStack> outputs);
+	}
 
-		public Serializer(IFactory<T> factory) {
-			this.factory = factory;
-			this.codec = RecordCodecBuilder.create(builder -> builder.group(
-					FluidIngredient.FLUID_CODEC_NON_EMPTY
+	public static class Serializer<T extends RefineryRecipe> implements RecipeSerializer<T> {
+		private final MapCodec<T> codec;
+		private final StreamCodec<RegistryFriendlyByteBuf,T> streamCodec;
+
+        public Serializer(IFactory<T> factory) {
+            this.codec = RecordCodecBuilder.mapCodec(builder -> builder.group(
+					SizedFluidIngredient.FLAT_CODEC
 							.fieldOf("input")
 							.forGetter(RefineryRecipe::getInput),
 					TemperatureRange.CODEC
@@ -104,30 +110,22 @@ public class RefineryRecipeImpl extends RefineryRecipe {
 							.fieldOf("outputs")
 							.forGetter(RefineryRecipe::getOutputs)
 			).apply(builder, factory::create));
+			this.streamCodec = StreamCodec.composite(
+					SizedFluidIngredient.STREAM_CODEC, RefineryRecipe::getInput,
+					TemperatureRange.STREAM_CODEC, RefineryRecipe::getOperatingTemp,
+					FluidStack.STREAM_CODEC.apply(ByteBufCodecs.list()), RefineryRecipe::getOutputs,
+					factory::create
+			);
 		}
 
 		@Override
-		public Codec<T> codec() {
+		public MapCodec<T> codec() {
 			return codec;
 		}
 
 		@Override
-        public T fromNetwork(FriendlyByteBuf buffer) {
-            FluidIngredient input = FluidIngredient.fluidFromNetwork(buffer);
-            TemperatureRange range = TemperatureRange.read(buffer);
-			List<FluidStack> outputs = buffer.readList(FluidStack::readFromPacket);
-            return factory.create(input, range, outputs);
-        }
-
-        @Override
-        public void toNetwork(FriendlyByteBuf buffer, T recipe) {
-			recipe.getInput().fluidToNetwork(buffer);
-			recipe.getOperatingTemp().write(buffer);
-			buffer.writeCollection(recipe.getOutputs(), (buf, fluidStack) -> fluidStack.writeToPacket(buf));
-        }
-
-        public interface IFactory<T extends RefineryRecipe> {
-        	T create(FluidIngredient input, TemperatureRange operatingTemp, List<FluidStack> outputs);
+		public StreamCodec<RegistryFriendlyByteBuf, T> streamCodec() {
+			return streamCodec;
 		}
     }
 }

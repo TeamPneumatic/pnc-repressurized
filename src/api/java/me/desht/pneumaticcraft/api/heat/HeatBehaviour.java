@@ -25,7 +25,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.common.util.INBTSerializable;
 
 import java.util.function.Supplier;
 
@@ -42,7 +41,7 @@ import java.util.function.Supplier;
  * For general blockstate transitions, datapack recipes are the preferred way to add custom heat behaviours. See
  * {@code data/pneumaticcraft/recipes/block_heat_properties/*.json}
  */
-public abstract class HeatBehaviour implements INBTSerializable<CompoundTag> {
+public abstract class HeatBehaviour {
     private IHeatExchangerLogic connectedHeatLogic;
     private Level world;
     private BlockPos pos;
@@ -116,16 +115,14 @@ public abstract class HeatBehaviour implements INBTSerializable<CompoundTag> {
      */
     public abstract void tick();
 
-    @Override
     public CompoundTag serializeNBT() {
         CompoundTag tag = new CompoundTag();
         tag.put("BlockPos", NbtUtils.writeBlockPos(pos));
         return tag;
     }
 
-    @Override
     public void deserializeNBT(CompoundTag nbt) {
-        pos = NbtUtils.readBlockPos(nbt.getCompound("BlockPos"));
+        pos = NbtUtils.readBlockPos(nbt, "BlockPos").orElse(BlockPos.ZERO);
     }
 
     @Override

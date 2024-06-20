@@ -69,8 +69,8 @@ public class ExplosiveGunAmmoItem extends AbstractGunAmmoItem {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, Level world, List<Component> infoList, TooltipFlag extraInfo) {
-        super.appendHoverText(stack, world, infoList, extraInfo);
+    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> infoList, TooltipFlag extraInfo) {
+        super.appendHoverText(stack, context, infoList, extraInfo);
         if (ConfigHelper.common().minigun.explosiveAmmoTerrainDamage.get()) {
             infoList.add(xlate("pneumaticcraft.gui.tooltip.terrainWarning"));
         } else {

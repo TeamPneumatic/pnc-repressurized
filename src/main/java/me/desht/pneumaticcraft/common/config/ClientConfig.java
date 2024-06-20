@@ -17,9 +17,9 @@
 
 package me.desht.pneumaticcraft.common.config;
 
+import me.desht.pneumaticcraft.api.drone.IProgWidget;
 import me.desht.pneumaticcraft.client.pneumatic_armor.ComponentInit;
-import me.desht.pneumaticcraft.common.drone.progwidgets.IProgWidget.WidgetDifficulty;
-import me.desht.pneumaticcraft.common.util.ITranslatableEnum;
+import me.desht.pneumaticcraft.api.misc.ITranslatableEnum;
 import net.neoforged.neoforge.common.ModConfigSpec;
 
 import java.util.Locale;
@@ -27,7 +27,7 @@ import java.util.Locale;
 public class ClientConfig {
     public static class General {
         public ModConfigSpec.BooleanValue aphorismDrama;
-        public ModConfigSpec.EnumValue<WidgetDifficulty> programmerDifficulty;
+        public ModConfigSpec.EnumValue<IProgWidget.WidgetDifficulty> programmerDifficulty;
         public ModConfigSpec.BooleanValue topShowsFluids;
         public ModConfigSpec.BooleanValue logisticsGuiTint;
         public ModConfigSpec.BooleanValue semiBlockLighting;
@@ -80,7 +80,7 @@ public class ClientConfig {
         general.programmerDifficulty = builder
                 .comment("Defines which widgets are shown in the Programmer GUI: easy, medium, or advanced")
                 .translation("pneumaticcraft.config.client.general.fancy_armor_models")
-                .defineEnum("programmer_difficulty", WidgetDifficulty.EASY);
+                .defineEnum("programmer_difficulty", IProgWidget.WidgetDifficulty.EASY);
         general.topShowsFluids = builder
                 .comment("Show tank fluids with the The One Probe when sneaking? Note that TOP has its own support for showing tanks, which by default requires a Probe to be held, or a Probe-enabled helmet to be worn.")
                 .translation("pneumaticcraft.config.client.general.top_shows_fluids")

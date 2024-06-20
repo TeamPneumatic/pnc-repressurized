@@ -84,12 +84,12 @@ public class HeatSinkBlock extends AbstractPneumaticCraftBlock implements ColorH
     public void entityInside(BlockState state, Level world, BlockPos pos, Entity entity) {
         if (!(entity instanceof LivingEntity livingEntity)) return;
 
-        PneumaticCraftUtils.getTileEntityAt(world, pos, HeatSinkBlockEntity.class).ifPresent(te -> {
+        PneumaticCraftUtils.getBlockEntityAt(world, pos, HeatSinkBlockEntity.class).ifPresent(te -> {
             double temp = te.getHeatExchanger().getTemperature();
             if (temp > 333) { // +60C
                 entity.hurt(entity.damageSources().hotFloor(), 1f + ((float) temp - 333) * 0.05f);
                 if (temp > 373) { // +100C
-                    entity.setSecondsOnFire(3);
+                    entity.igniteForSeconds(3);
                 }
             } else if (temp < 243) { // -30C
                 entity.setIsInPowderSnow(true);

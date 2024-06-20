@@ -17,9 +17,9 @@
 
 package me.desht.pneumaticcraft.common.util;
 
+import me.desht.pneumaticcraft.api.drone.IProgWidget;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.block.entity.drone.ProgrammerBlockEntity;
-import me.desht.pneumaticcraft.common.drone.progwidgets.IProgWidget;
 
 import java.util.ArrayList;
 import java.util.Arrays;

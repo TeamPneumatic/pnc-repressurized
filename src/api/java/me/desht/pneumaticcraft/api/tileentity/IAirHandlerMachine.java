@@ -21,11 +21,11 @@ import it.unimi.dsi.fastutil.floats.FloatPredicate;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.common.util.INBTSerializable;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
@@ -39,7 +39,7 @@ import java.util.List;
  * Don't implement this class yourself!  Use one of the methods in {@link IAirHandlerMachineFactory} to obtain
  * a suitable implementation for your block entity.
  */
-public interface IAirHandlerMachine extends IAirHandler, IManoMeasurable, INBTSerializable<CompoundTag> {
+public interface IAirHandlerMachine extends IAirHandler, IManoMeasurable {
     /**
      * Get the "danger" pressure level.  If air is added to the handler and the pressure level is above the danger
      * level, there is a chance of explosion, which increases as the pressure increases.
@@ -126,6 +126,10 @@ public interface IAirHandlerMachine extends IAirHandler, IManoMeasurable, INBTSe
      * @param sides the sides of the machine on which this air handler should be offered as a capability
      */
     void setConnectableFaces(Collection<Direction> sides);
+
+    Tag serializeNBT();
+
+    void deserializeNBT(CompoundTag tag);
 
     /**
      * Represents a connection to a neighbouring air handler.

@@ -26,7 +26,6 @@ import me.desht.pneumaticcraft.common.util.VoxelShapeUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.BlockGetter;
@@ -75,13 +74,13 @@ public class ProgrammerBlock extends AbstractPneumaticCraftBlock implements Pneu
     }
 
     @Override
-    public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult brtr) {
+    public InteractionResult useWithoutItem(BlockState state, Level world, BlockPos pos, Player player, BlockHitResult brtr) {
         if (!world.isClientSide && !player.isShiftKeyDown()) {
             // FIXME this should be sync'd via the container as part of the openGui() call
-            PneumaticCraftUtils.getTileEntityAt(world, pos, ProgrammerBlockEntity.class)
+            PneumaticCraftUtils.getBlockEntityAt(world, pos, ProgrammerBlockEntity.class)
                     .ifPresent(te -> NetworkHandler.sendToPlayer(PacketProgrammerSync.forBlockEntity(te), (ServerPlayer) player));
         }
-        return super.use(state, world, pos, player, hand, brtr);
+        return super.useWithoutItem(state, world, pos, player, brtr);
     }
 
     @Override

@@ -20,6 +20,7 @@ package me.desht.pneumaticcraft.client.gui.remote.actionwidget;
 import me.desht.pneumaticcraft.client.gui.RemoteEditorScreen;
 import me.desht.pneumaticcraft.client.gui.remote.BasicRemoteOptionScreen;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 
@@ -33,20 +34,23 @@ public class ActionWidgetLabel extends ActionWidget<WidgetLabelVariable> impleme
     }
 
     @Override
-    public CompoundTag toNBT(int guiLeft, int guiTop) {
-        CompoundTag tag = super.toNBT(guiLeft, guiTop);
-        tag.putString("text", Component.Serializer.toJson(widget.getMessage()));
+    public CompoundTag toNBT(HolderLookup.Provider provider, int guiLeft, int guiTop) {
+        CompoundTag tag = super.toNBT(provider, guiLeft, guiTop);
+        tag.putString("text", Component.Serializer.toJson(widget.getMessage(), provider));
         tag.putInt("x", widget.getX() - guiLeft);
         tag.putInt("y", widget.getY() - guiTop);
-        tag.putString("tooltip", Component.Serializer.toJson(getTooltipMessage()));
+        tag.putString("tooltip", Component.Serializer.toJson(getTooltipMessage(), provider));
         return tag;
     }
 
     @Override
-    public void readFromNBT(CompoundTag tag, int guiLeft, int guiTop) {
-        super.readFromNBT(tag, guiLeft, guiTop);
-        widget = new WidgetLabelVariable(tag.getInt("x") + guiLeft, tag.getInt("y") + guiTop, deserializeTextComponent(tag.getString("text")));
-        deserializeTooltip(tag.getString("tooltip"));
+    public void readFromNBT(HolderLookup.Provider provider, CompoundTag tag, int guiLeft, int guiTop) {
+        super.readFromNBT(provider, tag, guiLeft, guiTop);
+        widget = new WidgetLabelVariable(
+                tag.getInt("x") + guiLeft, tag.getInt("y") + guiTop,
+                deserializeTextComponent(tag.getString("text"), provider)
+        );
+        deserializeTooltip(tag.getString("tooltip"), provider);
     }
 
     @Override

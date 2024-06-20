@@ -30,6 +30,7 @@ import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.lib.BlockEntityConstants;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
@@ -227,7 +228,7 @@ public class AssemblyIOUnitBlockEntity extends AbstractAssemblyRobotBlockEntity 
             for (AssemblyRecipe recipe : recipeList) {
                 for (ItemStack stack : stacks) {
                     if (recipe.matches(stack)) {
-                        return ItemHandlerHelper.copyStackWithSize(stack, recipe.getInputAmount());
+                        return stack.copyWithCount(recipe.getInputAmount());
                     }
                 }
             }
@@ -284,7 +285,7 @@ public class AssemblyIOUnitBlockEntity extends AbstractAssemblyRobotBlockEntity 
                         ItemStack stack = sourceInv.getStackInSlot(i);
                         if (stack.isEmpty()) continue;
                         if (heldStack.isEmpty() && ItemStack.isSameItem(stack, searchedItemStack)
-                                || ItemHandlerHelper.canItemStacksStack(heldStack, stack)) {
+                                || ItemStack.isSameItemSameComponents(heldStack, stack)) {
                             ItemStack takenStack = sourceInv.extractItem(i, needed, false);
                             ItemStack excess = itemHandler.insertItem(0, takenStack, false);
                             needed -= (takenStack.getCount() - excess.getCount());
@@ -467,13 +468,13 @@ public class AssemblyIOUnitBlockEntity extends AbstractAssemblyRobotBlockEntity 
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
+    public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
+        super.loadAdditional(tag, provider);
 
         clawProgress = tag.getFloat("clawProgress");
         shouldClawClose = tag.getBoolean("clawClosing");
         state = tag.getByte("state");
-        itemHandler.deserializeNBT(tag.getCompound("Items"));
+        itemHandler.deserializeNBT(provider, tag.getCompound("Items"));
     }
 
     @Override
@@ -482,12 +483,12 @@ public class AssemblyIOUnitBlockEntity extends AbstractAssemblyRobotBlockEntity 
     }
 
     @Override
-    public void saveAdditional(CompoundTag tag) {
-        super.saveAdditional(tag);
+    public void saveAdditional(CompoundTag tag, HolderLookup.Provider provider) {
+        super.saveAdditional(tag, provider);
         tag.putFloat("clawProgress", clawProgress);
         tag.putBoolean("clawClosing", shouldClawClose);
         tag.putByte("state", state);
-        tag.put("Items", itemHandler.serializeNBT());
+        tag.put("Items", itemHandler.serializeNBT(provider));
     }
 
     @Override

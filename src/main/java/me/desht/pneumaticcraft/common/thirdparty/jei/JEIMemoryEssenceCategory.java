@@ -49,7 +49,7 @@ import java.util.List;
 public class JEIMemoryEssenceCategory extends AbstractPNCCategory<JEIMemoryEssenceCategory.MemoryEssenceRecipe> {
     public JEIMemoryEssenceCategory() {
         super(RecipeTypes.MEMORY_ESSENCE,
-                new FluidStack(ModFluids.MEMORY_ESSENCE.get(), 1000).getDisplayName(),
+                new FluidStack(ModFluids.MEMORY_ESSENCE.get(), 1000).getHoverName(),
                 guiHelper().createDrawable(Textures.GUI_JEI_MEMORY_ESSENCE, 0, 0, 146, 73),
                 guiHelper().createDrawableIngredient(VanillaTypes.ITEM_STACK, new ItemStack(ModItems.MEMORY_ESSENCE_BUCKET.get()))
         );

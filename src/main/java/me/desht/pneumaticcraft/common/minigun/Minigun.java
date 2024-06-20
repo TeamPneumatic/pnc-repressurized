@@ -46,6 +46,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
+import org.apache.commons.lang3.mutable.MutableBoolean;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -236,7 +237,7 @@ public abstract class Minigun {
     }
 
     public boolean tryFireMinigun(Entity target) {
-        boolean lastShotOfAmmo = false;
+        final MutableBoolean lastShotOfAmmo = new MutableBoolean(false);
         if (!ammoStack.isEmpty() && ammoStack.getDamageValue() < ammoStack.getMaxDamage() && (airCapability == null || airCapability.getPressure() > 0)) {
             setMinigunTriggerTimeOut(10);
             if (!world.isClientSide && getMinigunSpeed() == MAX_GUN_SPEED && (!requiresTarget || gunAimedAtTarget)) {
@@ -267,19 +268,19 @@ public abstract class Minigun {
                 }
                 int ammoCost = roundsUsed * ammoItem.getAmmoCost(ammoStack);
                 if (!isInfiniteAmmo()) {
-                    lastShotOfAmmo = ammoStack.hurt(ammoCost, rand, player instanceof ServerPlayer ? (ServerPlayer) player : null)
-                            && ammoStack.getEnchantmentLevel(Enchantments.UNBREAKING) == 0;
+                    ammoStack.hurtAndBreak(ammoCost, rand, player instanceof ServerPlayer sp ? sp : null,
+                            () -> lastShotOfAmmo.setValue(ammoStack.getEnchantmentLevel(Enchantments.UNBREAKING) == 0));
                 }
             }
         }
-        return lastShotOfAmmo;
+        return lastShotOfAmmo.booleanValue();
     }
 
     private boolean securityProtectedTarget(Entity target) {
-        if (target instanceof TamableAnimal) {
-            return ((TamableAnimal) target).getOwner() != null;
-        } else if (target instanceof DroneEntity) {
-            return ((DroneEntity) target).getOwner().getUUID().equals(getPlayer().getUUID());
+        if (target instanceof TamableAnimal t) {
+            return t.getOwner() != null;
+        } else if (target instanceof DroneEntity d) {
+            return d.getOwner().getUUID().equals(getPlayer().getUUID());
         } else {
             return target instanceof Player;
         }

@@ -18,6 +18,7 @@
 package me.desht.pneumaticcraft.common.network;
 
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.entity.player.Player;
 
 /**
@@ -27,7 +28,7 @@ import net.minecraft.world.entity.player.Player;
 public interface ILargePayload {
     int MAX_PAYLOAD_SIZE = 32000;
 
-    FriendlyByteBuf dumpToBuffer();
+    RegistryFriendlyByteBuf dumpToBuffer();
 
     void handleLargePayload(Player player);
 }

@@ -54,7 +54,7 @@ abstract class PlayerEventSensor implements IEventSensorSetting {
         return 0;
     }
 
-    protected abstract int emitRedstoneOnEvent(PlayerEvent event, BlockEntity sensor, int range);
+    protected abstract int emitRedstoneOnEvent(Event event, BlockEntity sensor, int range);
 
     @Override
     public int getRedstonePulseLength() {

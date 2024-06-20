@@ -23,16 +23,17 @@ import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.neoforged.neoforge.common.crafting.SizedIngredient;
 
 import javax.annotation.Nonnull;
 
 public class AssemblyRecipeBuilder extends AbstractPNCRecipeBuilder {
-    private final Ingredient input;
+    private final SizedIngredient input;
     @Nonnull
     private final ItemStack output;
     private final AssemblyRecipe.AssemblyProgramType program;
 
-    public AssemblyRecipeBuilder(Ingredient input, @Nonnull ItemStack output, AssemblyRecipe.AssemblyProgramType program) {
+    public AssemblyRecipeBuilder(SizedIngredient input, @Nonnull ItemStack output, AssemblyRecipe.AssemblyProgramType program) {
         this.input = input;
         this.output = output;
         this.program = program;

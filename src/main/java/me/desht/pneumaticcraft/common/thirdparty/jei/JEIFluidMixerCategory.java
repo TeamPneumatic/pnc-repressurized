@@ -62,8 +62,8 @@ public class JEIFluidMixerCategory extends AbstractPNCCategory<FluidMixerRecipe>
 
     @Override
     public void setRecipe(IRecipeLayoutBuilder builder, FluidMixerRecipe recipe, IFocusGroup focuses) {
-        FluidStack in1 = recipe.getInput1().getFluidStacks().get(0);
-        FluidStack in2 = recipe.getInput2().getFluidStacks().get(0);
+        FluidStack in1 = recipe.getInput1().getFluids()[0];
+        FluidStack in2 = recipe.getInput2().getFluids()[0];;
         FluidStack outF = recipe.getOutputFluid();
         int[] amounts = new int[] { in1.getAmount(), in2.getAmount(), outF.getAmount() };
         int max = Arrays.stream(amounts).max().getAsInt();
@@ -73,11 +73,11 @@ public class JEIFluidMixerCategory extends AbstractPNCCategory<FluidMixerRecipe>
         int outH = Math.min(64, outF.getAmount() * 64 / max);
 
         builder.addSlot(RecipeIngredientRole.INPUT, 5, 3 + (64 - inH1))
-                .addIngredients(NeoForgeTypes.FLUID_STACK, recipe.getInput1().getFluidStacks())
+                .addIngredients(NeoForgeTypes.FLUID_STACK, Arrays.asList(recipe.getInput1().getFluids()))
                 .setFluidRenderer(in1.getAmount(), false, 16, inH1)
                 .setOverlay(Helpers.makeTankOverlay(inH1), 0, 0);
         builder.addSlot(RecipeIngredientRole.INPUT, 28, 3 + (64 - inH2))
-                .addIngredients(NeoForgeTypes.FLUID_STACK, recipe.getInput2().getFluidStacks())
+                .addIngredients(NeoForgeTypes.FLUID_STACK, Arrays.asList(recipe.getInput2().getFluids()))
                 .setFluidRenderer(in2.getAmount(), false, 16, inH2)
                 .setOverlay(Helpers.makeTankOverlay(inH2), 0, 0);
 

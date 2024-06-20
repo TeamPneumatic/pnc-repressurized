@@ -17,6 +17,7 @@
 
 package me.desht.pneumaticcraft.common.block.entity.drone;
 
+import me.desht.pneumaticcraft.api.drone.IProgWidget;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.api.item.IProgrammable;
 import me.desht.pneumaticcraft.client.render.area.AreaRenderManager;
@@ -26,16 +27,14 @@ import me.desht.pneumaticcraft.common.drone.progwidgets.*;
 import me.desht.pneumaticcraft.common.inventory.ProgrammerMenu;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.network.*;
-import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
-import me.desht.pneumaticcraft.common.registry.ModCriterionTriggers;
-import me.desht.pneumaticcraft.common.registry.ModItems;
-import me.desht.pneumaticcraft.common.registry.ModSounds;
+import me.desht.pneumaticcraft.common.registry.*;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.common.util.IOHelper;
-import me.desht.pneumaticcraft.common.util.NBTUtils;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
@@ -94,10 +93,10 @@ public class ProgrammerBlockEntity extends AbstractTickingBlockEntity implements
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
+    public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
+        super.loadAdditional(tag, provider);
 
-        inventory.deserializeNBT(tag.getCompound("Items"));
+        inventory.deserializeNBT(provider, tag.getCompound("Items"));
         displayedStack = inventory.getStackInSlot(0);
         programOnInsert = tag.getBoolean("ProgramOnInsert");
         history = tag.getList("history", 10);
@@ -106,20 +105,19 @@ public class ProgrammerBlockEntity extends AbstractTickingBlockEntity implements
     }
 
     @Override
-    public void saveAdditional(CompoundTag tag) {
-        super.saveAdditional(tag);
-        tag.put("Items", inventory.serializeNBT());
+    public void saveAdditional(CompoundTag tag, HolderLookup.Provider provider) {
+        super.saveAdditional(tag, provider);
+        tag.put("Items", inventory.serializeNBT(provider));
         tag.put("history", history);
         tag.putBoolean("ProgramOnInsert", programOnInsert);
         writeProgWidgetsToNBT(tag);
     }
 
-    public List<IProgWidget> mergeWidgetsFromNBT(CompoundTag tag) {
-        List<IProgWidget> mergedWidgets = WidgetSerializer.getWidgetsFromNBT(tag);
+    public List<IProgWidget> mergeWidgetsFromNBT(List<IProgWidget> mergedWidgets) {
         List<IProgWidget> result = new ArrayList<>(progWidgets);
 
         if (!progWidgets.isEmpty() && !mergedWidgets.isEmpty()) {
-            // move merged widgets so they definitely don't overlap any existing widgets
+            // move merged widgets so that they definitely don't overlap any existing widgets
             PuzzleExtents extents1 = getPuzzleExtents(progWidgets);
             PuzzleExtents extents2 = getPuzzleExtents(mergedWidgets);
             for (IProgWidget w : mergedWidgets) {
@@ -135,8 +133,7 @@ public class ProgrammerBlockEntity extends AbstractTickingBlockEntity implements
                 lab.setX(w.getX());
                 lab.setY(w.getY());
                 result.add(lab);
-                ProgWidgetText text = new ProgWidgetText();
-                text.string = "Merge #" + nonNullLevel().getGameTime();
+                ProgWidgetText text = ProgWidgetText.withText("Merge #" + nonNullLevel().getGameTime());
                 text.setX(lab.getX() + lab.getWidth() / 2);
                 text.setY(lab.getY());
                 result.add(text);
@@ -276,7 +273,7 @@ public class ProgrammerBlockEntity extends AbstractTickingBlockEntity implements
     public void setText(int textFieldID, String text) {
         ItemStack stack = inventory.getStackInSlot(PROGRAM_SLOT).copy();
         if (textFieldID == 0 && !stack.isEmpty()) {
-            stack.setHoverName(Component.literal(text));
+            stack.set(DataComponents.CUSTOM_NAME, Component.literal(text));
             inventory.setStackInSlot(PROGRAM_SLOT, stack);
         }
     }
@@ -288,12 +285,13 @@ public class ProgrammerBlockEntity extends AbstractTickingBlockEntity implements
 
     private void tryImport(boolean merge) {
         ItemStack stack = inventory.getStackInSlot(PROGRAM_SLOT);
-        CompoundTag nbt = stack.isEmpty() ? null : stack.getTag();
-        if (nbt != null) {
-            List<IProgWidget> widgets = merge ? mergeWidgetsFromNBT(nbt) : WidgetSerializer.getWidgetsFromNBT(nbt);
+        SavedDroneProgram program = stack.get(ModDataComponents.SAVED_DRONE_PROGRAM);
+//        CompoundTag nbt = stack.isEmpty() ? null : stack.getTag();
+        if (program != null) {
+            List<IProgWidget> widgets = merge ? mergeWidgetsFromNBT(program.buildProgram()) : program.buildProgram();
             setProgWidgets(widgets, null);
-        } else {
-            if (!merge) setProgWidgets(Collections.emptyList(), null);
+        } else if (!merge) {
+            setProgWidgets(Collections.emptyList(), null);
         }
     }
 
@@ -314,7 +312,7 @@ public class ProgrammerBlockEntity extends AbstractTickingBlockEntity implements
                 }
             }
             ItemStack stack = inventory.getStackInSlot(PROGRAM_SLOT);
-            writeProgWidgetsToNBT(stack.getOrCreateTag());
+            stack.set(ModDataComponents.SAVED_DRONE_PROGRAM, SavedDroneProgram.create(progWidgets));
             if (player instanceof ServerPlayer sp) {
                 NetworkHandler.sendToPlayer(new PacketPlaySound(ModSounds.HUD_INIT_COMPLETE.get(), SoundSource.BLOCKS, getBlockPos(), 1.0f, 1.0f, false), sp);
                 ModCriterionTriggers.PROGRAM_DRONE.get().trigger(sp);
@@ -339,7 +337,7 @@ public class ProgrammerBlockEntity extends AbstractTickingBlockEntity implements
                 while (count > 0) {
                     int toInsert = Math.min(count, stack.getMaxStackSize());
                     int inserted = IOHelper.getInventoryForBlock(te, d.getOpposite()).map(h -> {
-                        ItemStack excess = ItemHandlerHelper.insertItem(h, ItemHandlerHelper.copyStackWithSize(stack, toInsert), false);
+                        ItemStack excess = ItemHandlerHelper.insertItem(h, stack.copyWithCount(toInsert), false);
                         return toInsert - excess.getCount();
                     }).orElse(0);
                     if (inserted == 0) break;
@@ -352,9 +350,9 @@ public class ProgrammerBlockEntity extends AbstractTickingBlockEntity implements
         while (count > 0) {
             int size = Math.min(count, stack.getMaxStackSize());
             if (player != null) {
-                ItemHandlerHelper.giveItemToPlayer(player, ItemHandlerHelper.copyStackWithSize(stack, size));
+                ItemHandlerHelper.giveItemToPlayer(player, stack.copyWithCount(size));
             } else {
-                PneumaticCraftUtils.dropItemOnGround(ItemHandlerHelper.copyStackWithSize(stack, size), getLevel(), getBlockPos());
+                PneumaticCraftUtils.dropItemOnGround(stack.copyWithCount(size), getLevel(), getBlockPos());
             }
             count -= size;
         }
@@ -379,11 +377,7 @@ public class ProgrammerBlockEntity extends AbstractTickingBlockEntity implements
     }
 
     public static List<IProgWidget> getProgWidgets(ItemStack iStack) {
-        if (NBTUtils.hasTag(iStack, IProgrammable.NBT_WIDGETS)) {
-            return WidgetSerializer.getWidgetsFromNBT(Objects.requireNonNull(iStack.getTag()));
-        } else {
-            return new ArrayList<>();
-        }
+        return iStack.getOrDefault(ModDataComponents.SAVED_DRONE_PROGRAM, SavedDroneProgram.EMPTY).buildProgram();
     }
 
     /**
@@ -480,7 +474,7 @@ public class ProgrammerBlockEntity extends AbstractTickingBlockEntity implements
                 history.remove(historyIndex + 1);
             }
             history.add(tag);
-            if (history.size() > 20) history.remove(0); // Only save up to 20 steps back.
+            if (history.size() > 20) history.removeFirst(); // Only save up to 20 steps back.
             historyIndex = history.size() - 1;
             updateUndoRedoState();
         }

@@ -19,37 +19,39 @@ package me.desht.pneumaticcraft.common.inventory.handler;
 
 import me.desht.pneumaticcraft.api.upgrade.PNCUpgrade;
 import me.desht.pneumaticcraft.common.block.entity.utility.ChargingStationBlockEntity;
+import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.upgrades.ApplicableUpgradesDB;
-import me.desht.pneumaticcraft.common.util.NBTUtils;
-import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
+import me.desht.pneumaticcraft.common.upgrades.SavedUpgrades;
+import me.desht.pneumaticcraft.common.upgrades.UpgradableItemUtils;
 import net.minecraft.world.item.ItemStack;
 
 public class ChargeableItemHandler extends BaseItemStackHandler {
     public ChargeableItemHandler(ChargingStationBlockEntity te) {
         super(te, UpgradableItemUtils.UPGRADE_INV_SIZE);
 
-        if (!NBTUtils.hasTag(getChargingStack(), UpgradableItemUtils.NBT_UPGRADE_TAG)) {
-            writeToNBT();
+        if (!getChargingStack().has(ModDataComponents.ITEM_UPGRADES)) {
+            writeToChargingStack();
         }
-        readFromNBT();
+        readFromChargingStack();
     }
 
     @Override
     protected void onContentsChanged(int slot) {
         super.onContentsChanged(slot);
-        writeToNBT();
+        writeToChargingStack();
     }
 
     private ItemStack getChargingStack() {
         return ((ChargingStationBlockEntity) te).getChargingStack();
     }
 
-    public void writeToNBT() {
+    public void writeToChargingStack() {
         UpgradableItemUtils.setUpgrades(getChargingStack(), this);
     }
 
-    private void readFromNBT() {
-        deserializeNBT(NBTUtils.getCompoundTag(getChargingStack(), UpgradableItemUtils.NBT_UPGRADE_TAG));
+    private void readFromChargingStack() {
+        getChargingStack().getOrDefault(ModDataComponents.ITEM_UPGRADES, SavedUpgrades.EMPTY)
+                        .fillItemHandler(this);
     }
 
     @Override

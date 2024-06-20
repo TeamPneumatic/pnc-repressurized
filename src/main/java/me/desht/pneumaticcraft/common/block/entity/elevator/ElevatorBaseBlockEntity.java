@@ -46,6 +46,7 @@ import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -149,7 +150,7 @@ public class ElevatorBaseBlockEntity extends AbstractAirHandlingBlockEntity impl
             chargingUpgrades = getUpgrades(ModUpgrades.CHARGING.get());  // sync'd to client to adjust elevator speed as appropriate
             MiscEventHandler.needsTPSSync(getLevel());
         } else {
-            speedMultiplier = (float) (syncedSpeedMult * PacketServerTickTime.tickTimeMultiplier);
+            speedMultiplier = (float) (syncedSpeedMult * PacketServerTickTime.getTickTimeMultiplier());
             if (prevCamoState != camoState) {
                 fakeFloorTextureUV = ClientUtils.getTextureUV(camoState, Direction.UP);
                 fakeFloorTextureTint = camoState.getBlock() instanceof ColorHandlers.ITintableBlock t ?
@@ -328,8 +329,8 @@ public class ElevatorBaseBlockEntity extends AbstractAirHandlingBlockEntity impl
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
+    public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
+        super.loadAdditional(tag, provider);
         if (tag.contains("extensionD")) {
             extension = tag.getDouble("extensionD");
             targetExtension = tag.getDouble("targetExtensionD");
@@ -341,16 +342,16 @@ public class ElevatorBaseBlockEntity extends AbstractAirHandlingBlockEntity impl
     }
 
     @Override
-    public void saveAdditional(CompoundTag tag) {
-        super.saveAdditional(tag);
+    public void saveAdditional(CompoundTag tag, HolderLookup.Provider provider) {
+        super.saveAdditional(tag, provider);
         tag.putDouble("extensionD", extension);
         tag.putDouble("targetExtensionD", targetExtension);
         tag.putInt("maxFloorHeight", maxFloorHeight);
     }
 
     @Override
-    public void readFromPacket(CompoundTag tag) {
-        super.readFromPacket(tag);
+    public void readFromPacket(CompoundTag tag, HolderLookup.Provider provider) {
+        super.readFromPacket(tag, provider);
 
         camoState = CamouflageableBlockEntity.readCamo(tag);
         floorHeights = tag.getIntArray("floorHeights");
@@ -364,8 +365,8 @@ public class ElevatorBaseBlockEntity extends AbstractAirHandlingBlockEntity impl
     }
 
     @Override
-    public void writeToPacket(CompoundTag tag) {
-        super.writeToPacket(tag);
+    public void writeToPacket(CompoundTag tag, HolderLookup.Provider provider) {
+        super.writeToPacket(tag, provider);
 
         CamouflageableBlockEntity.writeCamo(tag, camoState);
         tag.putIntArray("floorHeights", floorHeights);
@@ -559,7 +560,7 @@ public class ElevatorBaseBlockEntity extends AbstractAirHandlingBlockEntity impl
     private ElevatorBaseBlockEntity getCoreElevator() {
         if (coreElevator == null || (nonNullLevel().isClientSide && (nonNullLevel().getGameTime() & 0x3f) == 0)) {
             // bit of a hack; force a recalc every 64 ticks on the client
-            coreElevator = ElevatorBaseBlock.getCoreTileEntity(nonNullLevel(), getBlockPos());
+            coreElevator = ElevatorBaseBlock.getCoreBlockEntity(nonNullLevel(), getBlockPos()).orElse(null);
         }
         return coreElevator;
     }

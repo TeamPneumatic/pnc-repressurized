@@ -21,6 +21,7 @@ import me.desht.pneumaticcraft.client.gui.RemoteEditorScreen;
 import me.desht.pneumaticcraft.client.gui.remote.RemoteVariableOptionScreen;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 
 public abstract class ActionWidgetVariable<W extends AbstractWidget> extends ActionWidget<W> {
@@ -34,14 +35,14 @@ public abstract class ActionWidgetVariable<W extends AbstractWidget> extends Act
     }
 
     @Override
-    public void readFromNBT(CompoundTag tag, int guiLeft, int guiTop) {
-        super.readFromNBT(tag, guiLeft, guiTop);
+    public void readFromNBT(HolderLookup.Provider provider, CompoundTag tag, int guiLeft, int guiTop) {
+        super.readFromNBT(provider, tag, guiLeft, guiTop);
         variableName = tag.getString("variableName");
     }
 
     @Override
-    public CompoundTag toNBT(int guiLeft, int guiTop) {
-        CompoundTag tag = super.toNBT(guiLeft, guiTop);
+    public CompoundTag toNBT(HolderLookup.Provider provider, int guiLeft, int guiTop) {
+        CompoundTag tag = super.toNBT(provider, guiLeft, guiTop);
         tag.putString("variableName", variableName);
         return tag;
     }

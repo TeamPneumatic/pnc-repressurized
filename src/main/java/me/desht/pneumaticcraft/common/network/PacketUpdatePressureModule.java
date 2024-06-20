@@ -19,37 +19,34 @@ package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.common.tubemodules.AbstractTubeModule;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.entity.player.Player;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 /**
  * Received on: SERVER
- * Sent by client when module settings updated via GUI
+ * Sent by client when module settings are updated via GUI
  */
 public record PacketUpdatePressureModule(ModuleLocator locator, float lower, float higher, boolean advanced) implements TubeModulePacket<AbstractTubeModule> {
-    public static final ResourceLocation ID = RL("update_pressure_module");
+    public static final Type<PacketUpdatePressureModule> TYPE = new Type<>(RL("update_pressure_module"));
 
-    public static PacketUpdatePressureModule create(AbstractTubeModule module) {
+    public static final StreamCodec<FriendlyByteBuf, PacketUpdatePressureModule> STREAM_CODEC = StreamCodec.composite(
+            ModuleLocator.STREAM_CODEC, PacketUpdatePressureModule::locator,
+            ByteBufCodecs.FLOAT, PacketUpdatePressureModule::lower,
+            ByteBufCodecs.FLOAT, PacketUpdatePressureModule::higher,
+            ByteBufCodecs.BOOL, PacketUpdatePressureModule::advanced,
+            PacketUpdatePressureModule::new
+    );
+
+    public static PacketUpdatePressureModule forModule(AbstractTubeModule module) {
         return new PacketUpdatePressureModule(ModuleLocator.forModule(module), module.lowerBound, module.higherBound, module.advancedConfig);
     }
 
-    public static PacketUpdatePressureModule fromNetwork(FriendlyByteBuf buffer) {
-        return new PacketUpdatePressureModule(ModuleLocator.fromNetwork(buffer), buffer.readFloat(), buffer.readFloat(), buffer.readBoolean());
-    }
-
     @Override
-    public void write(FriendlyByteBuf buffer) {
-        locator.write(buffer);
-        buffer.writeFloat(lower);
-        buffer.writeFloat(higher);
-        buffer.writeBoolean(advanced);
-    }
-
-    @Override
-    public ResourceLocation id() {
-        return ID;
+    public Type<PacketUpdatePressureModule> type() {
+        return TYPE;
     }
 
     @Override

@@ -15,8 +15,11 @@
  *     along with pnc-repressurized.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.desht.pneumaticcraft.common.util;
+package me.desht.pneumaticcraft.api.misc;
 
+/**
+ * Enums which can provide a translation key for each of their values should implement this.
+ */
 public interface ITranslatableEnum {
     String getTranslationKey();
 }

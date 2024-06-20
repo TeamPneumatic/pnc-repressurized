@@ -36,6 +36,7 @@ import me.desht.pneumaticcraft.common.item.IChargeableContainerProvider;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
+import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.util.GlobalBlockEntityCacheManager;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -43,6 +44,8 @@ import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.MenuProvider;
@@ -244,11 +247,11 @@ public class ChargingStationBlockEntity extends AbstractAirHandlingBlockEntity i
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
+    public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
+        super.loadAdditional(tag, provider);
 
         itemHandler = new ChargingStationHandler();
-        itemHandler.deserializeNBT(tag.getCompound("Items"));
+        itemHandler.deserializeNBT(provider, tag.getCompound("Items"));
 
         ItemStack chargeSlot = getChargingStack();
         if (chargeSlot.getItem() instanceof IChargeableContainerProvider) {
@@ -258,30 +261,41 @@ public class ChargingStationBlockEntity extends AbstractAirHandlingBlockEntity i
     }
 
     @Override
-    public void saveAdditional(CompoundTag tag) {
-        super.saveAdditional(tag);
+    public void saveAdditional(CompoundTag tag, HolderLookup.Provider provider) {
+        super.saveAdditional(tag, provider);
         if (chargeableInventory != null) {
-            chargeableInventory.writeToNBT();
+            chargeableInventory.writeToChargingStack();
         }
-        tag.put("Items", itemHandler.serializeNBT());
+        tag.put("Items", itemHandler.serializeNBT(provider));
         if (upgradeOnly) tag.putBoolean("UpgradeOnly", true);
     }
 
     @Override
-    public void serializeExtraItemData(CompoundTag blockEntityTag, boolean preserveState) {
-        if (upgradeOnly) blockEntityTag.putBoolean("UpgradeOnly", true);
+    protected void applyImplicitComponents(DataComponentInput componentInput) {
+        super.applyImplicitComponents(componentInput);
+
+        upgradeOnly = componentInput.getOrDefault(ModDataComponents.UPGRADE_ONLY, false);
     }
 
     @Override
-    public void writeToPacket(CompoundTag tag) {
-        super.writeToPacket(tag);
+    protected void collectImplicitComponents(DataComponentMap.Builder builder) {
+        super.collectImplicitComponents(builder);
+
+        if (upgradeOnly) {
+            builder.set(ModDataComponents.UPGRADE_ONLY, true);
+        }
+    }
+
+    @Override
+    public void writeToPacket(CompoundTag tag, HolderLookup.Provider provider) {
+        super.writeToPacket(tag, provider);
 
         CamouflageableBlockEntity.writeCamo(tag, camoState);
     }
 
     @Override
-    public void readFromPacket(CompoundTag tag) {
-        super.readFromPacket(tag);
+    public void readFromPacket(CompoundTag tag, HolderLookup.Provider provider) {
+        super.readFromPacket(tag, provider);
 
         camoState = CamouflageableBlockEntity.readCamo(tag);
     }

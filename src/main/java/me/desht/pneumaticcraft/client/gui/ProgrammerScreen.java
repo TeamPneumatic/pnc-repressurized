@@ -20,9 +20,12 @@ package me.desht.pneumaticcraft.client.gui;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
+import me.desht.pneumaticcraft.api.drone.IProgWidget;
+import me.desht.pneumaticcraft.api.drone.IProgWidget.WidgetDifficulty;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.api.item.IPositionProvider;
 import me.desht.pneumaticcraft.api.misc.Symbols;
+import me.desht.pneumaticcraft.api.registry.PNCRegistries;
 import me.desht.pneumaticcraft.client.gui.programmer.AbstractProgWidgetScreen;
 import me.desht.pneumaticcraft.client.gui.programmer.ProgWidgetGuiManager;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
@@ -35,7 +38,6 @@ import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.block.entity.drone.ProgrammerBlockEntity;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.drone.progwidgets.*;
-import me.desht.pneumaticcraft.common.drone.progwidgets.IProgWidget.WidgetDifficulty;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetCoordinateOperator.EnumOperator;
 import me.desht.pneumaticcraft.common.inventory.ProgrammerMenu;
 import me.desht.pneumaticcraft.common.item.GPSAreaToolItem;
@@ -45,7 +47,6 @@ import me.desht.pneumaticcraft.common.network.PacketGuiButton;
 import me.desht.pneumaticcraft.common.network.PacketProgrammerSync;
 import me.desht.pneumaticcraft.common.network.PacketUpdateTextfield;
 import me.desht.pneumaticcraft.common.registry.ModItems;
-import me.desht.pneumaticcraft.common.registry.ModProgWidgets;
 import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
@@ -58,6 +59,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -126,13 +128,12 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
     public void init() {
         super.init();
 
-        if (pastebinGui != null && pastebinGui.outputTag != null) {
+        if (pastebinGui != null && pastebinGui.getOutputWidgets() != null) {
             if (pastebinGui.shouldMerge) {
-                List<IProgWidget> newWidgets = te.mergeWidgetsFromNBT(pastebinGui.outputTag);
-                ProgrammerBlockEntity.updatePuzzleConnections(newWidgets);
+                List<IProgWidget> newWidgets = te.mergeWidgetsFromNBT(pastebinGui.getOutputWidgets());
                 te.setProgWidgets(newWidgets, ClientUtils.getClientPlayer());
             } else {
-                te.readProgWidgetsFromNBT(pastebinGui.outputTag);
+                te.setProgWidgets(pastebinGui.getOutputWidgets(), ClientUtils.getClientPlayer());
             }
             pastebinGui = null;
             NetworkHandler.sendToServer(PacketProgrammerSync.forBlockEntity(te));
@@ -283,8 +284,8 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
         maxPage = 0;
         visibleSpawnWidgets.clear();
         int idx = 0;
-        int nWidgets = ModProgWidgets.PROG_WIDGETS_REGISTRY.size();
-        for (ProgWidgetType<?> type : ModProgWidgets.PROG_WIDGETS_REGISTRY) {
+        int nWidgets = PNCRegistries.PROG_WIDGETS_REGISTRY.size();
+        for (ProgWidgetType<?> type : PNCRegistries.PROG_WIDGETS_REGISTRY) {
             IProgWidget widget = IProgWidget.create(type);
             if (widget.isAvailable() && widget.isDifficultyOK(difficulty)) {
                 widget.setY(y + 40);
@@ -337,7 +338,7 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
     private void updateDroneName() {
         ItemStack stack = te.getItemInProgrammingSlot();
         if (stack != ItemStack.EMPTY && !stack.getHoverName().getString().equals(nameField.getValue())) {
-            stack.setHoverName(Component.literal(nameField.getValue()));
+            stack.set(DataComponents.CUSTOM_NAME, Component.literal(nameField.getValue()));
             sendDelayed(5);
         }
     }
@@ -372,7 +373,7 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
     }
 
     private void gotoLatest() {
-        if (te.progWidgets.size() > 0) {
+        if (!te.progWidgets.isEmpty()) {
             programmerUnit.gotoPiece(te.progWidgets.get(te.progWidgets.size() - 1));
         }
     }
@@ -441,7 +442,7 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
                 widget.getTooltip(tooltip);
                 ThirdPartyManager.instance().getDocsProvider().addTooltip(tooltip, showingAllWidgets);
                 if (Minecraft.getInstance().options.advancedItemTooltips) {
-                    ResourceLocation id = ModProgWidgets.PROG_WIDGETS_REGISTRY.getKey(widget.getType());
+                    ResourceLocation id = PNCRegistries.PROG_WIDGETS_REGISTRY.getKey(widget.getType());
                     if (id != null) tooltip.add(Component.literal(id.toString()).withStyle(ChatFormatting.DARK_GRAY));
                 }
                 if (!tooltip.isEmpty()) {
@@ -683,7 +684,7 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
                     } else {
                         List<ProgWidgetType<?>> checkingPieceParms = widget.getParameters();
                         for (int i = 0; i < checkingPieceParms.size(); i++) {
-                            if (widget.canSetParameter(i + parameters.size()) && checkingPieceParms.get(i) == parameters.get(0) && Math.abs(widget.getY() + i * 11 - draggingWidget.getY()) <= FAULT_MARGIN) {
+                            if (widget.canSetParameter(i + parameters.size()) && checkingPieceParms.get(i) == parameters.getFirst() && Math.abs(widget.getY() + i * 11 - draggingWidget.getY()) <= FAULT_MARGIN) {
                                 setConnectingWidgetsToXY(draggingWidget, widget.getX() - draggingWidget.getWidth() / 2 - (outerPiece.getX() - draggingWidget.getX()), widget.getY() + i * 11);
                             }
                         }
@@ -755,19 +756,22 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
         if (connectingWidgets != null) {
             for (int i = 0; i < connectingWidgets.length; i++) {
                 if (connectingWidgets[i] != null) {
-                    IProgWidget c = connectingWidgets[i].copy();
-                    te.progWidgets.add(c);
-                    copy.setParameter(i, c);
-                    copyAndConnectConnectingWidgets(connectingWidgets[i], c);
+                    Optional<? extends IProgWidget> c = connectingWidgets[i].copy();
+                    if (c.isPresent()) {
+                        te.progWidgets.add(c.get());
+                        copy.setParameter(i, c.get());
+                        copyAndConnectConnectingWidgets(connectingWidgets[i], c.get());
+                    }
                 }
             }
         }
         IProgWidget outputWidget = original.getOutputWidget();
         if (outputWidget != null) {
-            IProgWidget c = outputWidget.copy();
-            te.progWidgets.add(c);
-            copy.setOutputWidget(c);
-            copyAndConnectConnectingWidgets(outputWidget, c);
+            outputWidget.copy().ifPresent(c -> {
+                te.progWidgets.add(c);
+                copy.setOutputWidget(c);
+                copyAndConnectConnectingWidgets(outputWidget, c);
+            });
         }
     }
 
@@ -1071,44 +1075,43 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        double origX = mouseX;
-        double origY = mouseY;
-
-        float scale = programmerUnit.getScale();
-        mouseX = (mouseX - programmerUnit.getTranslatedX()) / scale;
-        mouseY = (mouseY - programmerUnit.getTranslatedY()) / scale;
+        final float scale = programmerUnit.getScale();
+        final double trMouseX = (mouseX - programmerUnit.getTranslatedX()) / scale;
+        final double trMouseY = (mouseY - programmerUnit.getTranslatedY()) / scale;
 
         if (button == 0) {
             // left-click
-            IProgWidget hovered = programmerUnit.getHoveredWidget((int) origX, (int) origY);
+            IProgWidget hovered = programmerUnit.getHoveredWidget((int) mouseX, (int) mouseY);
             ItemStack heldItem = ClientUtils.getClientPlayer().containerMenu.getCarried();
             if (heldItem.getItem() instanceof IPositionProvider) {
-                return mouseClickedWithPosProvider(mouseX, mouseY, hovered, heldItem);
+                return mouseClickedWithPosProvider(trMouseX, trMouseY, hovered, heldItem);
             } if (!heldItem.isEmpty()) {
-                return mouseClickedWithItem(mouseX, mouseY, hovered, heldItem);
+                return mouseClickedWithItem(trMouseX, trMouseY, hovered, heldItem);
             } else {
-                if (mouseClickedEmpty(mouseX, mouseY, origX, origY, scale, hovered))
+                if (mouseClickedEmpty(trMouseX, trMouseY, mouseX, mouseY, scale, hovered))
                     return true;
             }
         } else if (button == 2) {
             // middle-click: copy widget, or show docs if clicked on widget tray
             if (showingWidgetProgress == 0) {
-                IProgWidget widget = programmerUnit.getHoveredWidget((int) origX, (int) origY);
+                IProgWidget widget = programmerUnit.getHoveredWidget((int) mouseX, (int) mouseY);
                 if (widget != null) {
-                    draggingWidget = widget.copy();
-                    te.progWidgets.add(draggingWidget);
-                    dragMouseStartX = mouseX - leftPos;
-                    dragMouseStartY = mouseY - topPos;
-                    dragWidgetStartX = widget.getX();// - (mouseX - guiLeft);
-                    dragWidgetStartY = widget.getY();// - (mouseY - guiTop);
-                    if (Screen.hasShiftDown()) copyAndConnectConnectingWidgets(widget, draggingWidget);
+                    widget.copy().ifPresent(copy -> {
+                        draggingWidget = copy;
+                        te.progWidgets.add(draggingWidget);
+                        dragMouseStartX = trMouseX - leftPos;
+                        dragMouseStartY = trMouseY - topPos;
+                        dragWidgetStartX = widget.getX();
+                        dragWidgetStartY = widget.getY();
+                        if (Screen.hasShiftDown()) copyAndConnectConnectingWidgets(widget, draggingWidget);
+                    });
                     return true;
                 }
             } else {
                 return showWidgetDocs();
             }
         } else if (button == 1 && showingWidgetProgress == 0) {
-            IProgWidget widget = programmerUnit.getHoveredWidget((int)origX, (int)origY);
+            IProgWidget widget = programmerUnit.getHoveredWidget((int)mouseX, (int)mouseY);
             if (widget != null) {
                 // right-click a prog widget: show its options screen, if any
                 AbstractProgWidgetScreen<?> gui = ProgWidgetGuiManager.getGui(widget, this);
@@ -1118,19 +1121,19 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
                 return true;
             }
         }
-        return super.mouseClicked(origX, origY, button);
+        return super.mouseClicked(mouseX, mouseY, button);
     }
 
     private boolean mouseClickedWithPosProvider(double mouseX, double mouseY, IProgWidget hovered, ItemStack heldItem) {
         ProgWidgetArea areaToolWidget = heldItem.getItem() instanceof GPSAreaToolItem ? GPSAreaToolItem.getArea(minecraft.player, heldItem) : null;
         if (hovered != null) {
             // clicked an existing widget: update any area or coordinate widgets from the held item
-            if (areaToolWidget != null && hovered instanceof ProgWidgetArea) {
-                CompoundTag tag = new CompoundTag();
-                areaToolWidget.writeToNBT(tag);
-                tag.putInt("x", hovered.getX());
-                tag.putInt("y", hovered.getY());
-                hovered.readFromNBT(tag);
+            if (areaToolWidget != null && hovered instanceof ProgWidgetArea hoveredArea) {
+                hoveredArea.updateFrom(areaToolWidget);
+                hoveredArea.setPos(0, areaToolWidget.getPos(0).orElse(null));
+                hoveredArea.setPos(1, areaToolWidget.getPos(1).orElse(null));
+                hoveredArea.setVarName(0, areaToolWidget.getVarName(0));
+                hoveredArea.setVarName(1, areaToolWidget.getVarName(1));
                 NetworkHandler.sendToServer(PacketProgrammerSync.forBlockEntity(te));
             } else if (heldItem.getItem() == ModItems.GPS_TOOL.get()) {
                 if (hovered instanceof ProgWidgetCoordinate) {
@@ -1211,12 +1214,14 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
                         && origX <= widget.getX() + leftPos + widget.getWidth() / 2f
                         && origY <= widget.getY() + topPos + widget.getHeight() / 2f)
                 {
-                    draggingWidget = widget.copy();
-                    te.progWidgets.add(draggingWidget);
-                    dragMouseStartX = mouseX - (int) (leftPos / scale);
-                    dragMouseStartY = mouseY - (int) (topPos / scale);
-                    dragWidgetStartX = (int) ((widget.getX() - programmerUnit.getTranslatedX()) / scale);
-                    dragWidgetStartY = (int) ((widget.getY() - programmerUnit.getTranslatedY()) / scale);
+                    widget.copy().ifPresent(c -> {
+                        draggingWidget = c;
+                        te.progWidgets.add(draggingWidget);
+                        dragMouseStartX = mouseX - (int) (leftPos / scale);
+                        dragMouseStartY = mouseY - (int) (topPos / scale);
+                        dragWidgetStartX = (int) ((widget.getX() - programmerUnit.getTranslatedX()) / scale);
+                        dragWidgetStartY = (int) ((widget.getY() - programmerUnit.getTranslatedY()) / scale);
+                    });
                     return true;
                 }
             }

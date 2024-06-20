@@ -17,8 +17,8 @@
 
 package me.desht.pneumaticcraft.api.crafting.recipe;
 
-import me.desht.pneumaticcraft.api.crafting.ingredient.FluidIngredient;
 import net.minecraft.world.level.material.Fluid;
+import net.neoforged.neoforge.fluids.crafting.FluidIngredient;
 
 public abstract class FuelQualityRecipe extends PneumaticCraftRecipe {
     /**

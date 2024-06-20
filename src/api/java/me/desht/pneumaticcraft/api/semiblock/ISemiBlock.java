@@ -19,14 +19,16 @@ package me.desht.pneumaticcraft.api.semiblock;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.capabilities.EntityCapability;
@@ -75,16 +77,18 @@ public interface ISemiBlock {
 
     /**
      * Written to the dropped item (under the "EntityTag" subtag) when the semiblock is broken, to persisted entity
-     * data by {@code Entity#writeAdditional()}, and displayed by info mods such as TOP or Waila. Use this method
-     * rather than {@code writeAdditional()} for fields that either need to be serialized to the dropped item, or
+     * data by {@code Entity#addAdditionalSaveData()}, and displayed by info mods such as TOP or Waila. Use this method
+     * rather than {@code addAdditionalSaveData()} for fields that either need to be serialized to the dropped item, or
      * displayed on TOP/Waila.
      * <p>
+     *
+     * @param tag      NBT tag to write data to
+     * @param provider
      * @implNote Data written to itemstacks is automatically applied to newly-spawned entities by
-     * {@link net.minecraft.world.entity.EntityType#updateCustomEntityTag(Level, Player, Entity, CompoundTag)} when the
+     * {@link net.minecraft.world.entity.EntityType#updateCustomEntityTag(Level, Player, Entity, CustomData)} when the
      * semiblock entity is spawned from an item (i.e. placed by a player).
-     * @param tag NBT tag to write data to
      */
-    CompoundTag serializeNBT(CompoundTag tag);
+    CompoundTag serializeNBT(CompoundTag tag, HolderLookup.Provider provider);
 
     /**
      * Implement tick logic here. Always be sure to call {@code super.tick()} in subclass overrides!
@@ -160,7 +164,7 @@ public interface ISemiBlock {
      *
      * @param consumer the component consumer
      * @param player the player looking at the entity or item
-     * @param tag NBT data as saved by {@link ISemiBlock#serializeNBT(CompoundTag)}
+     * @param tag NBT data as saved by {@link ISemiBlock#serializeNBT(CompoundTag, HolderLookup.Provider)}
      * @param extended true if extended data should be shown
      */
     default void addTooltip(Consumer<Component> consumer, Player player, CompoundTag tag, boolean extended) {
@@ -170,13 +174,13 @@ public interface ISemiBlock {
      * Write this semiblock to network buffer for network sync purposes.
      * @param payload the buffer
      */
-    void writeToBuf(FriendlyByteBuf payload);
+    void writeToBuf(RegistryFriendlyByteBuf payload);
 
     /**
      * Read this semiblock from network buffer for network sync purposes.
      * @param payload the buffer
      */
-    void readFromBuf(FriendlyByteBuf payload);
+    void readFromBuf(RegistryFriendlyByteBuf payload);
 
     /**
      * A color in ARGB format.  Used for various things: GUI/item/render tinting, as well as TOP colour coding.

@@ -19,7 +19,8 @@ package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.common.tubemodules.ThermostatModule;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.entity.player.Player;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
@@ -29,9 +30,17 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
  * Sent by server to sync up the settings of a redstone module
  */
 public record PacketSyncThermostatModuleToClient(ModuleLocator locator, int channel, int level, int temperature) implements TubeModulePacket<ThermostatModule> {
-    public static final ResourceLocation ID = RL("sync_thermostat_module_to_client");
+    public static final Type<PacketSyncThermostatModuleToClient> TYPE = new Type<>(RL("sync_thermostat_module_to_client"));
 
-    public static PacketSyncThermostatModuleToClient create(ThermostatModule module) {
+    public static final StreamCodec<FriendlyByteBuf, PacketSyncThermostatModuleToClient> STREAM_CODEC = StreamCodec.composite(
+            ModuleLocator.STREAM_CODEC, PacketSyncThermostatModuleToClient::locator,
+            ByteBufCodecs.VAR_INT, PacketSyncThermostatModuleToClient::channel,
+            ByteBufCodecs.VAR_INT, PacketSyncThermostatModuleToClient::level,
+            ByteBufCodecs.INT, PacketSyncThermostatModuleToClient::temperature,
+            PacketSyncThermostatModuleToClient::new
+    );
+
+    public static PacketSyncThermostatModuleToClient forModule(ThermostatModule module) {
         return new PacketSyncThermostatModuleToClient(
                 ModuleLocator.forModule(module),
                 module.getColorChannel(),
@@ -40,26 +49,9 @@ public record PacketSyncThermostatModuleToClient(ModuleLocator locator, int chan
         );
     }
 
-    public static PacketSyncThermostatModuleToClient fromNetwork(FriendlyByteBuf buffer) {
-        return new PacketSyncThermostatModuleToClient(
-                ModuleLocator.fromNetwork(buffer),
-                buffer.readByte(),
-                buffer.readInt(),
-                buffer.readInt()
-        );
-    }
-
     @Override
-    public void write(FriendlyByteBuf buf) {
-        locator.write(buf);
-        buf.writeByte(channel);
-        buf.writeInt(level);
-        buf.writeInt(temperature);
-    }
-
-    @Override
-    public ResourceLocation id() {
-        return ID;
+    public Type<PacketSyncThermostatModuleToClient> type() {
+        return TYPE;
     }
 
     @Override

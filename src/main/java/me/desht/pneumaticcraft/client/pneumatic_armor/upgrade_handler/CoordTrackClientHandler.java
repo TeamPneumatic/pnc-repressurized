@@ -35,9 +35,11 @@ import me.desht.pneumaticcraft.common.entity.drone.DroneEntity;
 import me.desht.pneumaticcraft.common.item.PneumaticArmorItem;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdateArmorExtraData;
+import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
 import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.CoordTrackerHandler;
+import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.registry.ModEntityTypes;
 import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
@@ -47,7 +49,9 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.GlobalPos;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.Mob;
@@ -59,6 +63,7 @@ import net.minecraft.world.level.pathfinder.Node;
 import net.minecraft.world.level.pathfinder.Path;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 
@@ -193,7 +198,7 @@ public class CoordTrackClientHandler extends IArmorUpgradeClientHandler.Abstract
         return new CoordinateTrackerOptions(screen, this);
     }
 
-    @Mod.EventBusSubscriber(value = Dist.CLIENT, modid = Names.MOD_ID)
+    @EventBusSubscriber(value = Dist.CLIENT, modid = Names.MOD_ID)
     public static class Listener {
         @SubscribeEvent
         public static void onPlayerInteract(PlayerInteractEvent.RightClickBlock event) {
@@ -212,9 +217,11 @@ public class CoordTrackClientHandler extends IArmorUpgradeClientHandler.Abstract
                     handler.reset();
                     GlobalPos gPos = GlobalPosHelper.makeGlobalPos(event.getLevel(), event.getPos().relative(event.getFace()));
                     PneumaticArmorItem.setCoordTrackerPos(helmetStack, gPos);
-                    CompoundTag tag = new CompoundTag();
-                    tag.put(PneumaticArmorItem.NBT_COORD_TRACKER, GlobalPosHelper.toNBT(gPos));
-                    NetworkHandler.sendToServer(new PacketUpdateArmorExtraData(EquipmentSlot.HEAD, handler.getID(), tag));
+//                    CompoundTag tag = new CompoundTag();
+//                    tag.put(PneumaticArmorItem.NBT_COORD_TRACKER, GlobalPosHelper.toNBT(gPos));
+
+                    PacketUpdateArmorExtraData.sendToServer(CommonUpgradeHandlers.coordTrackerHandler, ModDataComponents.COORD_TRACKER.get(), gPos);
+
                     HUDHandler.getInstance().addMessage(xlate("pneumaticcraft.armor.gui.coordinateTracker.selectedTarget", PneumaticCraftUtils.posToString(gPos.pos())), Collections.emptyList(), 60, 0x8000AA00);
                 }
             }

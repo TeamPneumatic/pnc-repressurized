@@ -28,9 +28,9 @@ import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.util.BlockIndicator;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.network.handling.PlayPayloadContext;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
@@ -40,24 +40,19 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
  * Received on: CLIENT
  */
 public record PacketDebugBlock(BlockPos pos) implements CustomPacketPayload {
-    public static final ResourceLocation ID = RL("debug_block");
+    public static final Type<PacketDebugBlock> TYPE = new Type<>(RL("debug_block"));
 
-    public static PacketDebugBlock fromNetwork(FriendlyByteBuf buffer) {
-        return new PacketDebugBlock(buffer.readBlockPos());
-    }
-
-    @Override
-    public void write(FriendlyByteBuf buf) {
-        buf.writeBlockPos(pos);
-    }
+    public static final StreamCodec<FriendlyByteBuf, PacketDebugBlock> STREAM_CODEC = StreamCodec.composite(
+            BlockPos.STREAM_CODEC, PacketDebugBlock::pos,
+            PacketDebugBlock::new
+    );
 
     @Override
-    public ResourceLocation id() {
-        return ID;
+    public Type<PacketDebugBlock> type() {
+        return TYPE;
     }
 
-    public static void handle(PacketDebugBlock message, PlayPayloadContext ctx) {
-        ctx.workHandler().submitAsync(() ->
-                BlockIndicator.indicateBlock(ClientUtils.getClientLevel(), message.pos()));
+    public static void handle(PacketDebugBlock message, IPayloadContext ctx) {
+        BlockIndicator.indicateBlock(ClientUtils.getClientLevel(), message.pos());
     }
 }

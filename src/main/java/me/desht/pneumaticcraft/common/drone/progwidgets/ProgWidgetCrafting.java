@@ -18,17 +18,20 @@
 package me.desht.pneumaticcraft.common.drone.progwidgets;
 
 import com.google.common.collect.ImmutableList;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import me.desht.pneumaticcraft.api.drone.IDrone;
+import me.desht.pneumaticcraft.api.drone.IProgWidget;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
-import me.desht.pneumaticcraft.common.drone.IDroneBase;
 import me.desht.pneumaticcraft.common.drone.ai.DroneAICrafting;
 import me.desht.pneumaticcraft.common.recipes.VanillaRecipeCache;
-import me.desht.pneumaticcraft.common.registry.ModProgWidgets;
+import me.desht.pneumaticcraft.common.registry.ModProgWidgetTypes;
 import me.desht.pneumaticcraft.common.util.DummyContainer;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.goal.Goal;
@@ -47,14 +50,28 @@ import java.util.Optional;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class ProgWidgetCrafting extends ProgWidget implements ICraftingWidget, ICountWidget, ISidedWidget {
+    public static final MapCodec<ProgWidgetCrafting> CODEC = RecordCodecBuilder.mapCodec(builder ->
+            baseParts(builder).and(builder.group(
+                            Codec.BOOL.optionalFieldOf("use_count", false).forGetter(ProgWidgetCrafting::useCount),
+                            Codec.INT.optionalFieldOf("count", 1).forGetter(ProgWidgetCrafting::getCount)
+                    )
+            ).apply(builder, ProgWidgetCrafting::new));
+
     private static final boolean[] NO_SIDES = new boolean[6];
 
     private boolean useCount;
     private int count;
     private boolean usingVariables;
 
+    public ProgWidgetCrafting(PositionFields pos, boolean useCount, int count) {
+        super(pos);
+
+        this.useCount = useCount;
+        this.count = count;
+    }
+
     public ProgWidgetCrafting() {
-        super(ModProgWidgets.CRAFTING.get());
+        this(PositionFields.DEFAULT, false, 1);
     }
 
     @Override
@@ -66,6 +83,11 @@ public class ProgWidgetCrafting extends ProgWidget implements ICraftingWidget, I
         if (!usingVariables && getRecipeResult(ClientUtils.getClientLevel()).isEmpty()) {
             curInfo.add(xlate("pneumaticcraft.gui.progWidget.crafting.error.noCraftingRecipe"));
         }
+    }
+
+    @Override
+    public ProgWidgetType<?> getType() {
+        return ModProgWidgetTypes.CRAFTING.get();
     }
 
     @Override
@@ -93,7 +115,7 @@ public class ProgWidgetCrafting extends ProgWidget implements ICraftingWidget, I
 
     @Override
     public List<ProgWidgetType<?>> getParameters() {
-        return ImmutableList.of(ModProgWidgets.ITEM_FILTER.get(), ModProgWidgets.ITEM_FILTER.get(), ModProgWidgets.ITEM_FILTER.get());
+        return ImmutableList.of(ModProgWidgetTypes.ITEM_FILTER.get(), ModProgWidgetTypes.ITEM_FILTER.get(), ModProgWidgetTypes.ITEM_FILTER.get());
     }
 
     @Override
@@ -149,7 +171,7 @@ public class ProgWidgetCrafting extends ProgWidget implements ICraftingWidget, I
     }
 
     @Override
-    public Goal getWidgetAI(IDroneBase drone, IProgWidget widget) {
+    public Goal getWidgetAI(IDrone drone, IProgWidget widget) {
         return new DroneAICrafting(drone, (ICraftingWidget) widget);
     }
 
@@ -182,29 +204,29 @@ public class ProgWidgetCrafting extends ProgWidget implements ICraftingWidget, I
         this.count = count;
     }
 
-    @Override
-    public void writeToNBT(CompoundTag tag) {
-        super.writeToNBT(tag);
-        if (useCount) tag.putBoolean("useCount", true);
-        tag.putInt("count", count);
-    }
+//    @Override
+//    public void writeToNBT(CompoundTag tag, HolderLookup.Provider provider) {
+//        super.writeToNBT(tag, provider);
+//        if (useCount) tag.putBoolean("useCount", true);
+//        tag.putInt("count", count);
+//    }
+//
+//    @Override
+//    public void readFromNBT(CompoundTag tag, HolderLookup.Provider provider) {
+//        super.readFromNBT(tag, provider);
+//        useCount = tag.getBoolean("useCount");
+//        count = tag.getInt("count");
+//    }
 
     @Override
-    public void readFromNBT(CompoundTag tag) {
-        super.readFromNBT(tag);
-        useCount = tag.getBoolean("useCount");
-        count = tag.getInt("count");
-    }
-
-    @Override
-    public void writeToPacket(FriendlyByteBuf buf) {
+    public void writeToPacket(RegistryFriendlyByteBuf buf) {
         super.writeToPacket(buf);
         buf.writeBoolean(useCount);
         buf.writeVarInt(count);
     }
 
     @Override
-    public void readFromPacket(FriendlyByteBuf buf) {
+    public void readFromPacket(RegistryFriendlyByteBuf buf) {
         super.readFromPacket(buf);
         useCount = buf.readBoolean();
         count = buf.readVarInt();

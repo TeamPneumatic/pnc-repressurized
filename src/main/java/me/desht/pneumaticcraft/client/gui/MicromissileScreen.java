@@ -29,11 +29,11 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetTooltipArea;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
-import me.desht.pneumaticcraft.common.item.MicromissilesItem;
 import me.desht.pneumaticcraft.common.item.MicromissilesItem.FireMode;
+import me.desht.pneumaticcraft.common.item.MicromissilesItem.Settings;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdateMicromissileSettings;
-import me.desht.pneumaticcraft.common.registry.ModItems;
+import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.util.EntityFilter;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
@@ -41,15 +41,12 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.client.resources.language.I18n;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
 import org.joml.Matrix4f;
 import org.lwjgl.glfw.GLFW;
-
-import java.util.Objects;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
@@ -83,22 +80,14 @@ public class MicromissileScreen extends AbstractPneumaticCraftScreen {
         ySize = 191;
 
         ItemStack stack = ClientUtils.getClientPlayer().getItemInHand(hand);
-        if (stack.getItem() == ModItems.MICROMISSILES.get() && stack.hasTag()) {
-            CompoundTag tag = Objects.requireNonNull(stack.getTag());
-            topSpeed = tag.getFloat(MicromissilesItem.NBT_TOP_SPEED);
-            turnSpeed = tag.getFloat(MicromissilesItem.NBT_TURN_SPEED);
-            damage = tag.getFloat(MicromissilesItem.NBT_DAMAGE);
-            entityFilter = tag.getString(MicromissilesItem.NBT_FILTER);
-            point = new PointXY(tag.getInt(MicromissilesItem.NBT_PX), tag.getInt(MicromissilesItem.NBT_PY));
-            fireMode = FireMode.fromString(tag.getString(MicromissilesItem.NBT_FIRE_MODE));
-            this.hand = hand;
-        } else {
-            topSpeed = turnSpeed = damage = 1/3f;
-            point = new PointXY(MAX_DIST / 2, MAX_DIST / 4);
-            entityFilter = "";
-            fireMode = FireMode.SMART;
-            this.hand = InteractionHand.MAIN_HAND;
-        }
+        Settings settings = stack.getOrDefault(ModDataComponents.MICROMISSILE_SETTINGS, Settings.DEFAULT);
+        topSpeed = settings.topSpeed();
+        turnSpeed = settings.turnSpeed();
+        damage = settings.damage();
+        entityFilter = settings.entityFilter();
+        point = settings.point();
+        fireMode = settings.fireMode();
+        this.hand = hand;
     }
 
     public static void openGui(Component title, InteractionHand handIn) {
@@ -308,7 +297,9 @@ public class MicromissileScreen extends AbstractPneumaticCraftScreen {
     }
 
     private void sendSettingsToServer(boolean saveDefault) {
-        NetworkHandler.sendToServer(new PacketUpdateMicromissileSettings(topSpeed, turnSpeed, damage, point, entityFilter, fireMode, saveDefault, hand));
+        NetworkHandler.sendToServer(new PacketUpdateMicromissileSettings(
+                new Settings(topSpeed, turnSpeed, damage, point, entityFilter, fireMode), saveDefault, hand)
+        );
     }
 
     private PointXY getPoint(int mouseX, int mouseY) {

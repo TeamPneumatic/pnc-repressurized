@@ -17,13 +17,13 @@
 
 package me.desht.pneumaticcraft.common.network;
 
-import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.pneumatic_armor.JetBootsStateTracker;
 import me.desht.pneumaticcraft.common.pneumatic_armor.JetBootsStateTracker.JetBootsState;
+import net.minecraft.core.UUIDUtil;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.network.handling.PlayPayloadContext;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import java.util.UUID;
 
@@ -35,27 +35,20 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
  * Allows us to play particles, do rotations, etc. with minimum traffic.
  */
 public record PacketJetBootsStateSync(UUID playerId, JetBootsState state) implements CustomPacketPayload {
-    public static final ResourceLocation ID = RL("jetboots_state_sync");
+    public static final Type<PacketJetBootsStateSync> TYPE = new Type<>(RL("jetboots_state_sync"));
 
-    public static PacketJetBootsStateSync fromNetwork(FriendlyByteBuf buf) {
-        return new PacketJetBootsStateSync(buf.readUUID(), JetBootsState.fromNetwork(buf));
-    }
-
-    @Override
-    public void write(FriendlyByteBuf buf) {
-        buf.writeUUID(playerId);
-        state.toNetwork(buf);
-    }
+    public static final StreamCodec<FriendlyByteBuf, PacketJetBootsStateSync> STREAM_CODEC = StreamCodec.composite(
+            UUIDUtil.STREAM_CODEC, PacketJetBootsStateSync::playerId,
+            JetBootsState.STREAM_CODEC, PacketJetBootsStateSync::state,
+            PacketJetBootsStateSync::new
+    );
 
     @Override
-    public ResourceLocation id() {
-        return ID;
+    public Type<PacketJetBootsStateSync> type() {
+        return TYPE;
     }
 
-    public static void handle(PacketJetBootsStateSync message, PlayPayloadContext ctx) {
-        ctx.workHandler().submitAsync(() ->
-                JetBootsStateTracker.getTracker(ClientUtils.getClientPlayer())
-                        .syncFromServer(message.playerId(), message.state()));
+    public static void handle(PacketJetBootsStateSync message, IPayloadContext ctx) {
+        JetBootsStateTracker.getTracker(ctx.player()).syncFromServer(message.playerId(), message.state());
     }
-
 }

@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.common.drone.ai;
 
-import me.desht.pneumaticcraft.common.drone.IDroneBase;
+import me.desht.pneumaticcraft.api.drone.IDrone;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ILiquidFiltered;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetInventoryBase;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetLiquidImport;
@@ -35,9 +35,9 @@ import net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction;
 
 import static net.neoforged.neoforge.fluids.FluidType.BUCKET_VOLUME;
 
-public class DroneAILiquidImport<W extends ProgWidgetInventoryBase & ILiquidFiltered> extends DroneAIImExBase<W> {
+public class DroneAILiquidImport<W extends ProgWidgetInventoryBase & ILiquidFiltered> extends DroneAIImportExportBase<W> {
 
-    public DroneAILiquidImport(IDroneBase drone, W widget) {
+    public DroneAILiquidImport(IDrone drone, W widget) {
         super(drone, widget);
     }
 
@@ -59,9 +59,8 @@ public class DroneAILiquidImport<W extends ProgWidgetInventoryBase & ILiquidFilt
         if (!shouldVoidExcess() && drone.getFluidTank().getFluidAmount() == drone.getFluidTank().getCapacity()) {
             drone.getDebugger().addEntry("pneumaticcraft.gui.progWidget.liquidImport.debug.fullDroneTank");
             abort();
-            return false;
         } else {
-            BlockEntity te = drone.world().getBlockEntity(pos);
+            BlockEntity te = drone.getDroneLevel().getBlockEntity(pos);
             if (te != null) {
                 boolean didWork = false;
                 for (Direction side : DirectionUtil.VALUES) {
@@ -77,14 +76,14 @@ public class DroneAILiquidImport<W extends ProgWidgetInventoryBase & ILiquidFilt
 
             // try to pick up a bucket of fluid from the world
             if (!progWidget.useCount() || getRemainingCount() >= BUCKET_VOLUME) {
-                FluidState state = drone.world().getFluidState(pos);
-                BlockState blockState = drone.world().getBlockState(pos);
+                FluidState state = drone.getDroneLevel().getFluidState(pos);
+                BlockState blockState = drone.getDroneLevel().getBlockState(pos);
                 if (state.isSource() && progWidget.isFluidValid(state.getType())) {
                     FluidStack stack = new FluidStack(state.getType(), BUCKET_VOLUME);
                     if (shouldVoidExcess() || drone.getFluidTank().fill(stack, FluidAction.SIMULATE) == BUCKET_VOLUME) {
                         if (!simulate) {
                             if (blockState.getBlock() instanceof BucketPickup pickup) {
-                                pickup.pickupBlock(drone.getFakePlayer(), drone.world(), pos, blockState);
+                                pickup.pickupBlock(drone.getFakePlayer(), drone.getDroneLevel(), pos, blockState);
                                 decreaseCount(BUCKET_VOLUME);
                                 drone.getFluidTank().fill(stack, FluidAction.EXECUTE);
                                 return true;
@@ -95,8 +94,9 @@ public class DroneAILiquidImport<W extends ProgWidgetInventoryBase & ILiquidFilt
                 }
             }
 
-            return false;
         }
+
+        return false;
     }
 
     private boolean tryImportFluid(IFluidHandler sourceHandler, boolean simulate) {

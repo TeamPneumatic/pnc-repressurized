@@ -17,13 +17,13 @@
 
 package me.desht.pneumaticcraft.client.gui.programmer;
 
+import me.desht.pneumaticcraft.api.drone.IProgWidget.WidgetDifficulty;
 import me.desht.pneumaticcraft.client.gui.InventorySearcherScreen;
 import me.desht.pneumaticcraft.client.gui.ItemSearcherScreen;
 import me.desht.pneumaticcraft.client.gui.ProgrammerScreen;
 import me.desht.pneumaticcraft.client.gui.widget.*;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
-import me.desht.pneumaticcraft.common.drone.progwidgets.IProgWidget.WidgetDifficulty;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetItemFilter;
 import me.desht.pneumaticcraft.common.registry.ModMenuTypes;
 import me.desht.pneumaticcraft.common.thirdparty.ModNameCache;
@@ -90,24 +90,24 @@ public class ProgWidgetItemFilterScreen extends AbstractProgWidgetScreen<ProgWid
 
         // checkboxes shown in both modes
         addRenderableWidget(checkBoxUseDurability = new WidgetCheckBox(guiLeft + 8, guiTop + 96, 0xFF404040,
-                xlate("pneumaticcraft.gui.logistics_frame.matchDurability"), b -> progWidget.useItemDurability = b.checked)
+                xlate("pneumaticcraft.gui.logistics_frame.matchDurability"), b -> progWidget.setCheckDurability(b.checked))
                 .setTooltipKey("pneumaticcraft.gui.logistics_frame.matchDurability.tooltip")
-                .setChecked(progWidget.useItemDurability)
+                .setChecked(progWidget.isCheckDurability())
         );
         addRenderableWidget(checkBoxUseNBT = new WidgetCheckBox(guiLeft + 8, guiTop + 108, 0xFF404040,
-                xlate("pneumaticcraft.gui.logistics_frame.matchNBT"), b -> progWidget.useNBT = b.checked)
+                xlate("pneumaticcraft.gui.logistics_frame.matchNBT"), b -> progWidget.setMatchComponents(b.checked))
                 .setTooltipKey("pneumaticcraft.gui.logistics_frame.matchNBT.tooltip")
-                .setChecked(progWidget.useNBT)
+                .setChecked(progWidget.isMatchComponents())
         );
         addRenderableWidget(checkBoxUseModSimilarity = new WidgetCheckBox(guiLeft + 8, guiTop + 120, 0xFF404040,
-                xlate("pneumaticcraft.gui.logistics_frame.matchModId"), b -> progWidget.useModSimilarity = b.checked)
+                xlate("pneumaticcraft.gui.logistics_frame.matchModId"), b -> progWidget.setMatchMod(b.checked))
                 .setTooltipKey("pneumaticcraft.gui.logistics_frame.matchModId.tooltip")
-                .setChecked(progWidget.useModSimilarity)
+                .setChecked(progWidget.isMatchMod())
         );
         addRenderableWidget(checkBoxMatchBlock = new WidgetCheckBox(guiLeft + 8, guiTop + 132, 0xFF404040,
-                xlate("pneumaticcraft.gui.logistics_frame.matchBlockstate"), b -> progWidget.matchBlock = b.checked)
+                xlate("pneumaticcraft.gui.logistics_frame.matchBlockstate"), b -> progWidget.setMatchBlock(b.checked))
                 .setTooltipKey("pneumaticcraft.gui.logistics_frame.matchBlockstate.tooltip")
-                .setChecked(progWidget.matchBlock)
+                .setChecked(progWidget.isMatchBlock())
         );
 
         if (itemSearchGui != null) progWidget.setFilter(itemSearchGui.getSearchStack());

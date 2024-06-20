@@ -18,19 +18,22 @@
 package me.desht.pneumaticcraft.common.drone.progwidgets;
 
 import com.google.common.collect.ImmutableList;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import me.desht.pneumaticcraft.api.drone.IProgWidget;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.api.misc.Symbols;
 import me.desht.pneumaticcraft.common.drone.ai.DroneAIManager;
 import me.desht.pneumaticcraft.common.item.TagFilterItem;
 import me.desht.pneumaticcraft.common.registry.ModItems;
-import me.desht.pneumaticcraft.common.registry.ModProgWidgets;
+import me.desht.pneumaticcraft.common.registry.ModProgWidgetTypes;
 import me.desht.pneumaticcraft.common.thirdparty.ModNameCache;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.BlockItem;
@@ -46,16 +49,37 @@ import java.util.Set;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class ProgWidgetItemFilter extends ProgWidget implements IVariableWidget {
-    private ItemStack filter = ItemStack.EMPTY;
-    public boolean useItemDurability;
-    public boolean useNBT;
-    public boolean useModSimilarity;
-    public boolean matchBlock;
+    public static final MapCodec<ProgWidgetItemFilter> CODEC = RecordCodecBuilder.mapCodec(builder ->
+            baseParts(builder).and(builder.group(
+                            ItemStack.CODEC.optionalFieldOf("item", ItemStack.EMPTY).forGetter(ProgWidgetItemFilter::getFilter),
+                            Codec.BOOL.optionalFieldOf("durability", false).forGetter(ProgWidgetItemFilter::isCheckDurability),
+                            Codec.BOOL.optionalFieldOf("components", false).forGetter(ProgWidgetItemFilter::isMatchComponents),
+                            Codec.BOOL.optionalFieldOf("mod", false).forGetter(ProgWidgetItemFilter::isMatchMod),
+                            Codec.BOOL.optionalFieldOf("block", false).forGetter(ProgWidgetItemFilter::isMatchBlock),
+                            Codec.STRING.optionalFieldOf("durability", "").forGetter(ProgWidgetItemFilter::getVariable)
+                    )
+            ).apply(builder, ProgWidgetItemFilter::new));
+
+    private ItemStack filter;
+    private boolean checkDurability;
+    private boolean matchComponents;
+    private boolean matchMod;
+    private boolean matchBlock;
     private DroneAIManager aiManager;
     private String variable = "";
 
+    public ProgWidgetItemFilter(PositionFields pos, ItemStack filter, boolean checkDurability, boolean matchComponents, boolean matchMod, boolean matchBlock, String variable) {
+        super(pos);
+        this.filter = filter;
+        this.checkDurability = checkDurability;
+        this.matchComponents = matchComponents;
+        this.matchMod = matchMod;
+        this.matchBlock = matchBlock;
+        this.variable = variable;
+    }
+
     public ProgWidgetItemFilter() {
-        super(ModProgWidgets.ITEM_FILTER.get());
+        this(PositionFields.DEFAULT, ItemStack.EMPTY, false, false, false, false, "");
     }
 
     public static ProgWidgetItemFilter withFilter(ItemStack filter){
@@ -109,6 +133,43 @@ public class ProgWidgetItemFilter extends ProgWidget implements IVariableWidget 
         this.filter = filter.copy();
     }
 
+    public boolean isCheckDurability() {
+        return checkDurability;
+    }
+
+    public void setCheckDurability(boolean checkDurability) {
+        this.checkDurability = checkDurability;
+    }
+
+    public boolean isMatchComponents() {
+        return matchComponents;
+    }
+
+    public void setMatchComponents(boolean matchComponents) {
+        this.matchComponents = matchComponents;
+    }
+
+    public boolean isMatchMod() {
+        return matchMod;
+    }
+
+    public void setMatchMod(boolean matchMod) {
+        this.matchMod = matchMod;
+    }
+
+    public boolean isMatchBlock() {
+        return matchBlock;
+    }
+
+    public void setMatchBlock(boolean matchBlock) {
+        this.matchBlock = matchBlock;
+    }
+
+    @Override
+    public ProgWidgetType<?> getType() {
+        return ModProgWidgetTypes.ITEM_FILTER.get();
+    }
+
     @Override
     public void getTooltip(List<Component> curTooltip) {
         super.getTooltip(curTooltip);
@@ -124,16 +185,16 @@ public class ProgWidgetItemFilter extends ProgWidget implements IVariableWidget 
                         .toList());
             }
         }
-        if (useModSimilarity) {
+        if (matchMod) {
             curTooltip.add(xlate("pneumaticcraft.gui.progWidget.itemFilter.matchMod", ModNameCache.getModName(filter.getItem()))
                     .withStyle(ChatFormatting.DARK_AQUA));
         } else if (matchBlock) {
             curTooltip.add(xlate("pneumaticcraft.gui.progWidget.itemFilter.matchBlock")
                     .withStyle(ChatFormatting.DARK_AQUA));
         } else {
-            curTooltip.add(xlate("pneumaticcraft.gui.progWidget.itemFilter." + (useItemDurability ? "useDurability" : "ignoreDurability"))
+            curTooltip.add(xlate("pneumaticcraft.gui.progWidget.itemFilter." + (checkDurability ? "useDurability" : "ignoreDurability"))
                     .withStyle(ChatFormatting.DARK_AQUA));
-            curTooltip.add(xlate("pneumaticcraft.gui.progWidget.itemFilter." + (useNBT ? "useNBT" : "ignoreNBT"))
+            curTooltip.add(xlate("pneumaticcraft.gui.progWidget.itemFilter." + (matchComponents ? "useNBT" : "ignoreNBT"))
                     .withStyle(ChatFormatting.DARK_AQUA));
         }
     }
@@ -145,12 +206,12 @@ public class ProgWidgetItemFilter extends ProgWidget implements IVariableWidget 
 
     @Override
     public ProgWidgetType<?> returnType() {
-        return ModProgWidgets.ITEM_FILTER.get();
+        return ModProgWidgetTypes.ITEM_FILTER.get();
     }
 
     @Override
     public List<ProgWidgetType<?>> getParameters() {
-        return ImmutableList.of(ModProgWidgets.ITEM_FILTER.get());
+        return ImmutableList.of(ModProgWidgetTypes.ITEM_FILTER.get());
     }
 
     @Override
@@ -158,48 +219,48 @@ public class ProgWidgetItemFilter extends ProgWidget implements IVariableWidget 
         return Textures.PROG_WIDGET_ITEM_FILTER;
     }
 
-    @Override
-    public void writeToNBT(CompoundTag tag) {
-        super.writeToNBT(tag);
-        if (!filter.isEmpty()) {
-            filter.save(tag);
-        }
-        if (useItemDurability) tag.putBoolean("useMetadata", true);
-        if (useNBT) tag.putBoolean("useNBT", true);
-        if (useModSimilarity) tag.putBoolean("useModSimilarity", true);
-        if (matchBlock) tag.putBoolean("matchBlock", true);
-        if (!variable.isEmpty()) tag.putString("variable", variable);
-    }
+//    @Override
+//    public void writeToNBT(CompoundTag tag, HolderLookup.Provider provider) {
+//        super.writeToNBT(tag, provider);
+//        if (!filter.isEmpty()) {
+//            filter.save(provider, tag);
+//        }
+//        if (checkDurability) tag.putBoolean("useMetadata", true);
+//        if (matchComponents) tag.putBoolean("useNBT", true);
+//        if (matchMod) tag.putBoolean("useModSimilarity", true);
+//        if (matchBlock) tag.putBoolean("matchBlock", true);
+//        if (!variable.isEmpty()) tag.putString("variable", variable);
+//    }
+//
+//    @Override
+//    public void readFromNBT(CompoundTag tag, HolderLookup.Provider provider) {
+//        super.readFromNBT(tag, provider);
+//        filter = ItemStack.parseOptional(provider, tag);
+//        checkDurability = filter.getMaxDamage() > 0 && tag.getBoolean("useMetadata");
+//        matchComponents = tag.getBoolean("useNBT");
+//        matchMod = tag.getBoolean("useModSimilarity");
+//        matchBlock = tag.getBoolean("matchBlock");
+//        variable = tag.getString("variable");
+//    }
 
     @Override
-    public void readFromNBT(CompoundTag tag) {
-        super.readFromNBT(tag);
-        filter = ItemStack.of(tag);
-        useItemDurability = filter.getMaxDamage() > 0 && tag.getBoolean("useMetadata");
-        useNBT = tag.getBoolean("useNBT");
-        useModSimilarity = tag.getBoolean("useModSimilarity");
-        matchBlock = tag.getBoolean("matchBlock");
-        variable = tag.getString("variable");
-    }
-
-    @Override
-    public void writeToPacket(FriendlyByteBuf buf) {
+    public void writeToPacket(RegistryFriendlyByteBuf buf) {
         super.writeToPacket(buf);
-        buf.writeItem(filter);
-        buf.writeBoolean(useItemDurability);
-        buf.writeBoolean(useNBT);
-        buf.writeBoolean(useModSimilarity);
+        ItemStack.STREAM_CODEC.encode(buf, filter);
+        buf.writeBoolean(checkDurability);
+        buf.writeBoolean(matchComponents);
+        buf.writeBoolean(matchMod);
         buf.writeBoolean(matchBlock);
         buf.writeUtf(variable);
     }
 
     @Override
-    public void readFromPacket(FriendlyByteBuf buf) {
+    public void readFromPacket(RegistryFriendlyByteBuf buf) {
         super.readFromPacket(buf);
-        filter = buf.readItem();
-        useItemDurability = buf.readBoolean();
-        useNBT = buf.readBoolean();
-        useModSimilarity = buf.readBoolean();
+        filter = ItemStack.STREAM_CODEC.decode(buf);
+        checkDurability = buf.readBoolean();
+        matchComponents = buf.readBoolean();
+        matchMod = buf.readBoolean();
         matchBlock = buf.readBoolean();
         variable = buf.readUtf(GlobalVariableManager.MAX_VARIABLE_LEN);
     }
@@ -210,7 +271,7 @@ public class ProgWidgetItemFilter extends ProgWidget implements IVariableWidget 
                 if (matchFilter(item, blockState, black)) return false;
             }
         }
-        if (whitelist == null || whitelist.size() == 0) {
+        if (whitelist == null || whitelist.isEmpty()) {
             return true;
         } else {
             for (ProgWidgetItemFilter white : whitelist) {
@@ -226,8 +287,8 @@ public class ProgWidgetItemFilter extends ProgWidget implements IVariableWidget 
             return blockState.getBlock() == ((BlockItem) filter.getFilter().getItem()).getBlock();
         } else {
             // match by item
-            if (PneumaticCraftUtils.doesItemMatchFilter(filter.getFilter(), stack, filter.useItemDurability && blockState == null, filter.useNBT, filter.useModSimilarity)) {
-                return blockState == null || !filter.useItemDurability;
+            if (PneumaticCraftUtils.doesItemMatchFilter(filter.getFilter(), stack, filter.checkDurability && blockState == null, filter.matchComponents, filter.matchMod)) {
+                return blockState == null || !filter.checkDurability;
             }
         }
         return false;

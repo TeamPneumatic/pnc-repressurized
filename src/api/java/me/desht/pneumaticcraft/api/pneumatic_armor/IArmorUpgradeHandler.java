@@ -20,7 +20,7 @@ package me.desht.pneumaticcraft.api.pneumatic_armor;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IArmorUpgradeClientHandler;
 import me.desht.pneumaticcraft.api.upgrade.PNCUpgrade;
-import net.minecraft.nbt.Tag;
+import net.minecraft.core.component.DataComponentType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
 import org.jetbrains.annotations.ApiStatus;
@@ -149,14 +149,14 @@ public interface IArmorUpgradeHandler<T extends IArmorExtensionData> {
     }
 
     /**
-     * Called on both client and server when some NBT data is changed in this upgrade's armor itemstack. Can be used
-     * to cache heavily-accessed NBT data for performance reasons.
+     * Called on both client and server when some item component data is changed in this upgrade's armor itemstack. Can
+     * be used to cache heavily-accessed NBT data for performance reasons.
      *
      * @param commonArmorHandler the armor handler object
-     * @param tagName the NBT tag name
-     * @param inbt the NBT data
+     * @param componentType
+     * @param val
      */
-    default void onDataFieldUpdated(ICommonArmorHandler commonArmorHandler, String tagName, Tag inbt) {
+    default void onDataFieldUpdated(ICommonArmorHandler commonArmorHandler, DataComponentType<?> componentType, Object val) {
     }
 
     /**

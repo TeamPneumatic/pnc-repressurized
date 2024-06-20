@@ -23,14 +23,14 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.item.IItemRegistry;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.ItemHandlerHelper;
 import org.apache.commons.lang3.Validate;
 
 import java.util.Objects;
@@ -43,10 +43,13 @@ import java.util.stream.IntStream;
  */
 public record AmadronTradeResource(Either<ItemStack,FluidStack> resource) {
     public static final Codec<AmadronTradeResource> CODEC = RecordCodecBuilder.create(inst -> inst.group(
-            Codec.either(ItemStack.ITEM_WITH_COUNT_CODEC, FluidStack.CODEC).fieldOf("resource").forGetter(AmadronTradeResource::resource)
+            Codec.either(ItemStack.CODEC, FluidStack.CODEC).fieldOf("resource").forGetter(AmadronTradeResource::resource)
     ).apply(inst, AmadronTradeResource::new));
 
-    private enum Type { ITEM, FLUID }
+    public static StreamCodec<RegistryFriendlyByteBuf, AmadronTradeResource> STREAM_CODEC = StreamCodec.composite(
+            ByteBufCodecs.either(ItemStack.STREAM_CODEC, FluidStack.STREAM_CODEC), AmadronTradeResource::resource,
+            AmadronTradeResource::new
+    );
 
     public boolean isEmpty() {
         return resource.map(ItemStack::isEmpty, FluidStack::isEmpty);
@@ -70,14 +73,6 @@ public record AmadronTradeResource(Either<ItemStack,FluidStack> resource) {
 
     public static AmadronTradeResource of(FluidStack stack) {
         return new AmadronTradeResource(Either.right(stack));
-    }
-
-    public static AmadronTradeResource fromNetwork(FriendlyByteBuf pb) {
-        Type type = pb.readEnum(Type.class);
-        return switch (type) {
-            case ITEM -> AmadronTradeResource.of(pb.readItem());
-            case FLUID -> AmadronTradeResource.of(FluidStack.loadFluidStackFromNBT(pb.readNbt()));
-        };
     }
 
     /**
@@ -158,21 +153,10 @@ public record AmadronTradeResource(Either<ItemStack,FluidStack> resource) {
         return this;
     }
 
-    public void toNetwork(FriendlyByteBuf pb) {
-        resource.ifLeft(pStack -> {
-                    pb.writeEnum(Type.ITEM);
-                    pb.writeItem(pStack);
-                })
-                .ifRight(fluidStack -> {
-                    pb.writeEnum(Type.FLUID);
-                    pb.writeNbt(fluidStack.writeToNBT(new CompoundTag()));
-                });
-    }
-
     public String getName() {
         return resource.map(
                 itemStack -> itemStack.getHoverName().getString(),
-                fluidStack -> fluidStack.getDisplayName().getString()
+                fluidStack -> fluidStack.getHoverName().getString()
         );
     }
 
@@ -193,7 +177,7 @@ public record AmadronTradeResource(Either<ItemStack,FluidStack> resource) {
         if (!(o instanceof AmadronTradeResource that)) return false;
         return resource.map(
                 itemStack -> ItemStack.matches(itemStack, that.getItem()),
-                fluidStack -> fluidStack.isFluidStackIdentical(that.getFluid())
+                fluidStack -> FluidStack.matches(fluidStack, that.getFluid())
         );
     }
 
@@ -206,23 +190,23 @@ public record AmadronTradeResource(Either<ItemStack,FluidStack> resource) {
     public String toString() {
         return resource.map(
                 itemStack -> itemStack.getCount() + " x " + itemStack.getHoverName().getString(),
-                fluidStack -> fluidStack.getAmount() + "mB " + fluidStack.getDisplayName().getString()
+                fluidStack -> fluidStack.getAmount() + "mB " + fluidStack.getHoverName().getString()
         );
     }
 
     /**
      * Get the total number of matching items in the given (lazy) item handler. "Matching" means that the stacks are
-     * the same item, AND if the item in the offer has any NBT, the stack's NBT must also match.
+     * the same item, AND if the item in the offer has any component data, the stack's components must also match.
      *
      * @param item the item to look for
      * @param itemHandler the item handler
      * @return the total number of matching items
      */
     private static int countItemsInHandler(ItemStack item, IItemHandler itemHandler) {
-        boolean matchNBT = item.hasTag();
+        boolean matchComponents = !item.getComponentsPatch().isEmpty();
         IItemRegistry registry = PneumaticRegistry.getInstance().getItemRegistry();
         return IntStream.range(0, itemHandler.getSlots())
-                .filter(i -> registry.doesItemMatchFilter(item, itemHandler.getStackInSlot(i), false, matchNBT, false))
+                .filter(i -> registry.doesItemMatchFilter(item, itemHandler.getStackInSlot(i), false, matchComponents, false))
                 .map(i -> itemHandler.getStackInSlot(i).getCount())
                 .sum();
     }
@@ -240,7 +224,7 @@ public record AmadronTradeResource(Either<ItemStack,FluidStack> resource) {
 
         int remaining = totalItems;
         for (int i = 0; i < itemHandler.getSlots() && remaining > 0; i++) {
-            if (itemHandler.getStackInSlot(i).isEmpty() || ItemHandlerHelper.canItemStacksStack(itemHandler.getStackInSlot(i), item)) {
+            if (itemHandler.getStackInSlot(i).isEmpty() || ItemStack.isSameItemSameComponents(itemHandler.getStackInSlot(i), item)) {
                 remaining -= item.getMaxStackSize() - itemHandler.getStackInSlot(i).getCount();
             }
         }

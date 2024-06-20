@@ -18,11 +18,11 @@
 package me.desht.pneumaticcraft.common.entity.semiblock;
 
 import me.desht.pneumaticcraft.api.PNCCapabilities;
-import me.desht.pneumaticcraft.api.lib.NBTKeys;
 import me.desht.pneumaticcraft.api.semiblock.IDirectionalSemiblock;
 import me.desht.pneumaticcraft.api.semiblock.ISemiBlock;
 import me.desht.pneumaticcraft.api.semiblock.SemiblockEvent;
 import me.desht.pneumaticcraft.common.block.entity.IGUIButtonSensitive;
+import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.semiblock.SemiblockTracker;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -30,10 +30,11 @@ import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -51,6 +52,7 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
@@ -163,18 +165,20 @@ public abstract class AbstractSemiblockEntity extends Entity implements ISemiBlo
             }
         } else {
             // allow right-clicks to pass through to the inventory block being covered
+            InteractionResult res = player.isShiftKeyDown() ? InteractionResult.PASS : getBlockState().useWithoutItem(level(), player, brtr);
+            if (res.consumesAction() || res == InteractionResult.FAIL) {
+                return res;
+            }
             UseOnContext itemCtx = new UseOnContext(player, hand, brtr);
-            InteractionResult res = player.isShiftKeyDown() ? InteractionResult.PASS : getBlockState().use(level(), player, hand, brtr);
-            if (res.consumesAction() || res == InteractionResult.FAIL) return res;
             res = player.getItemInHand(hand).onItemUseFirst(itemCtx);
             return res == InteractionResult.PASS ? player.getItemInHand(hand).useOn(itemCtx) : res;
         }
     }
 
     @Override
-    protected void defineSynchedData() {
-        this.entityData.define(TIME_SINCE_HIT, 0);
-        this.entityData.define(DAMAGE_TAKEN, 0.0F);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        builder.define(TIME_SINCE_HIT, 0);
+        builder.define(DAMAGE_TAKEN, 0.0F);
     }
 
     @Override
@@ -239,8 +243,10 @@ public abstract class AbstractSemiblockEntity extends Entity implements ISemiBlo
         if (item != null) {
             ItemStack stack = new ItemStack(getDroppedItem());
             CompoundTag tag = new CompoundTag();
-            serializeNBT(tag);
-            if (!tag.isEmpty()) stack.getOrCreateTag().put(NBTKeys.ENTITY_TAG, tag); // see EntityType#applyItemNBT()
+            serializeNBT(tag, registryAccess());
+            if (!tag.isEmpty()) {
+                stack.set(ModDataComponents.SEMIBLOCK_DATA, CustomData.of(tag));
+            }
             drops.add(stack);
         }
         return drops;
@@ -298,7 +304,7 @@ public abstract class AbstractSemiblockEntity extends Entity implements ISemiBlo
 //    }
 
     @Override
-    public CompoundTag serializeNBT(CompoundTag tag) {
+    public CompoundTag serializeNBT(CompoundTag tag, HolderLookup.Provider provider) {
         return tag;
     }
 
@@ -308,7 +314,7 @@ public abstract class AbstractSemiblockEntity extends Entity implements ISemiBlo
 
     @Override
     protected void addAdditionalSaveData(CompoundTag compound) {
-        serializeNBT(compound);
+        serializeNBT(compound, registryAccess());
     }
 
     @Override
@@ -438,11 +444,11 @@ public abstract class AbstractSemiblockEntity extends Entity implements ISemiBlo
     }
 
     @Override
-    public void writeToBuf(FriendlyByteBuf payload) {
+    public void writeToBuf(RegistryFriendlyByteBuf payload) {
     }
 
     @Override
-    public void readFromBuf(FriendlyByteBuf payload) {
+    public void readFromBuf(RegistryFriendlyByteBuf payload) {
     }
 
     @Override

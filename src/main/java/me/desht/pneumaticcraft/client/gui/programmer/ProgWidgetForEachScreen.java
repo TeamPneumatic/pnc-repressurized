@@ -17,15 +17,15 @@
 
 package me.desht.pneumaticcraft.client.gui.programmer;
 
+import me.desht.pneumaticcraft.api.drone.IProgWidget;
 import me.desht.pneumaticcraft.client.gui.ProgrammerScreen;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetComboBox;
-import me.desht.pneumaticcraft.common.drone.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.drone.progwidgets.IVariableSetWidget;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class ProgWidgetForEachScreen<W extends IProgWidget & IVariableSetWidget> extends ProgWidgetAreaShowScreen<W> {
+public class ProgWidgetForEachScreen<W extends IVariableSetWidget & IProgWidget> extends ProgWidgetAreaShowScreen<W> {
 
     private WidgetComboBox variableField;
 

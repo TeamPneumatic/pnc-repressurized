@@ -30,6 +30,7 @@ import me.desht.pneumaticcraft.common.registry.ModSounds;
 import me.desht.pneumaticcraft.mixin.accessors.BoatItemAccess;
 import me.desht.pneumaticcraft.mixin.accessors.MinecartItemAccess;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
@@ -99,7 +100,10 @@ public class ItemLaunching {
             double velX = velocity.x * 0.4D + (world.random.nextGaussian() - 0.5D) * 0.05D;
             double velY = velocity.y * 0.4D + (world.random.nextGaussian() - 0.5D) * 0.05D;
             double velZ = velocity.z * 0.4D + (world.random.nextGaussian() - 0.5D) * 0.05D;
-            NetworkHandler.sendToAllTracking(new PacketSpawnParticle(AirParticleData.DENSE, initialPos.x, initialPos.y, initialPos.z, velX, velY, velZ), world, trackPos);
+            NetworkHandler.sendToAllTracking(PacketSpawnParticle.oneParticle(AirParticleData.DENSE,
+                    initialPos.toVector3f(),
+                    new Vec3(velX, velY, velZ).toVector3f()
+            ), world, trackPos);
         }
         world.playSound(null, initialPos.x, initialPos.y, initialPos.z, ModSounds.AIR_CANNON.get(), SoundSource.BLOCKS, 1f,world.random.nextFloat() / 4f + 0.75f);
     }
@@ -188,10 +192,10 @@ public class ItemLaunching {
                 return new Snowball(level, player);
 
             } else if (item instanceof SpawnEggItem egg) {
-                EntityType<?> type = egg.getType(stack.getTag());
+                EntityType<?> type = egg.getType(stack);
                 Entity e = type.spawn(level, stack, player, player.blockPosition(), MobSpawnType.SPAWN_EGG, false, false);
 
-                if (e instanceof LivingEntity && stack.hasCustomHoverName()) {
+                if (e instanceof LivingEntity && stack.has(DataComponents.CUSTOM_NAME)) {
                     e.setCustomName(stack.getHoverName());
                 }
 
@@ -206,11 +210,11 @@ public class ItemLaunching {
                 return new FireworkRocketEntity(level, stack, 0, 0, 0, true);
 
             } else if (item == Items.TRIDENT) {
-                stack.hurtAndBreak(1, player, playerEntity -> { });
+                stack.hurtAndBreak(1, player.getRandom(), player,  () -> { });
                 return new ThrownTrident(level, player, stack);
 
             } else if (item == ModItems.MICROMISSILES.get()) {
-                stack.hurtAndBreak(1, player, playerEntity -> { });
+                stack.hurtAndBreak(1, player.getRandom(), player,  () -> { });
                 MicromissileEntity micromissile = new MicromissileEntity(level, player, stack);
 
                 // Sets micromissile launch rotation

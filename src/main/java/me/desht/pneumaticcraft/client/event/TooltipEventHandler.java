@@ -19,21 +19,21 @@ package me.desht.pneumaticcraft.client.event;
 
 import com.mojang.datafixers.util.Either;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
+import me.desht.pneumaticcraft.api.drone.IProgWidget;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.api.item.IInventoryItem;
 import me.desht.pneumaticcraft.api.item.IProgrammable;
 import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.api.misc.Symbols;
+import me.desht.pneumaticcraft.api.registry.PNCRegistries;
 import me.desht.pneumaticcraft.client.gui.IGuiDrone;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.block.entity.drone.ProgrammerBlockEntity;
-import me.desht.pneumaticcraft.common.drone.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.item.ICustomTooltipName;
 import me.desht.pneumaticcraft.common.item.MicromissilesItem;
-import me.desht.pneumaticcraft.common.registry.ModProgWidgets;
 import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
+import me.desht.pneumaticcraft.common.upgrades.UpgradableItemUtils;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
@@ -45,7 +45,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.RenderTooltipEvent;
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 import net.neoforged.neoforge.fluids.FluidUtil;
@@ -54,7 +54,7 @@ import java.util.*;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-@Mod.EventBusSubscriber(modid = Names.MOD_ID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.FORGE)
+@EventBusSubscriber(modid = Names.MOD_ID, value = Dist.CLIENT, bus = EventBusSubscriber.Bus.GAME)
 public class TooltipEventHandler {
     @SubscribeEvent
     public static void onItemTooltip(ItemTooltipEvent event) {
@@ -124,7 +124,7 @@ public class TooltipEventHandler {
             Map<ResourceLocation, Integer> widgetMap = getPuzzleSummary(widgets);
             for (Map.Entry<ResourceLocation, Integer> entry : widgetMap.entrySet()) {
                 ChatFormatting[] prefix = new ChatFormatting[0];
-                ProgWidgetType<?> widgetType = ModProgWidgets.PROG_WIDGETS_REGISTRY.get(entry.getKey());
+                ProgWidgetType<?> widgetType = PNCRegistries.PROG_WIDGETS_REGISTRY.get(entry.getKey());
                 if (widgetType != null) {
                     Screen curScreen = Minecraft.getInstance().screen;
                     if (curScreen instanceof IGuiDrone) {
@@ -184,7 +184,6 @@ public class TooltipEventHandler {
     public static void gatherComponents(RenderTooltipEvent.GatherComponents event) {
         ItemStack stack = event.getItemStack();
         if (stack.getItem() instanceof MicromissilesItem
-                && stack.hasTag()
                 && MicromissilesItem.getFireMode(stack) == MicromissilesItem.FireMode.SMART) {
             event.getTooltipElements().add(Either.right(new MicromissilesItem.Tooltip(stack)));
         }

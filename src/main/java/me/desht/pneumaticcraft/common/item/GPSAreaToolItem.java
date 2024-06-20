@@ -23,6 +23,8 @@ import me.desht.pneumaticcraft.api.item.IPositionProvider;
 import me.desht.pneumaticcraft.client.gui.GPSAreaToolScreen;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetArea;
+import me.desht.pneumaticcraft.common.drone.progwidgets.SavedDroneProgram;
+import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.registry.ModSounds;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -43,8 +45,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import org.apache.commons.lang3.Validate;
@@ -99,25 +99,25 @@ public class GPSAreaToolItem extends Item implements IPositionProvider, IGPSTool
         return Component.literal(str).withStyle(index == 0 ? ChatFormatting.RED : ChatFormatting.GREEN).append(blockName.withStyle(ChatFormatting.GREEN));
     }
 
-    @OnlyIn(Dist.CLIENT)
     @Override
-    public void appendHoverText(ItemStack stack, Level worldIn, List<Component> infoList, TooltipFlag par4) {
-        super.appendHoverText(stack, worldIn, infoList, par4);
+    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> infoList, TooltipFlag par4) {
+        super.appendHoverText(stack, context, infoList, par4);
 
-        if (worldIn != null) {
+        ClientUtils.getOptionalClientLevel().ifPresent(level ->  {
             ClientUtils.addGuiContextSensitiveTooltip(stack, infoList);
             int n = infoList.size();
             ProgWidgetArea area = getArea(ClientUtils.getClientPlayer(), stack);
             for (int index = 0; index < 2; index++) {
                 final int i = index;
-                getGPSLocation(ClientUtils.getClientPlayer(), stack, index).ifPresent(pos -> infoList.add(getMessageText(worldIn, pos, i)));
+                getGPSLocation(ClientUtils.getClientPlayer(), stack, index)
+                        .ifPresent(pos -> infoList.add(getMessageText(level, pos, i)));
                 String varName = area.getVarName(index);
                 if (!varName.isEmpty()) {
                     infoList.add(xlate("pneumaticcraft.gui.tooltip.gpsTool.variable", varName));
                 }
             }
             if (infoList.size() - n >= 2) area.addAreaTypeTooltip(infoList);
-        }
+        });
     }
 
     @Override
@@ -140,12 +140,15 @@ public class GPSAreaToolItem extends Item implements IPositionProvider, IGPSTool
     @Nonnull
     public static ProgWidgetArea getArea(UUID playerId, ItemStack stack) {
         Validate.isTrue(stack.getItem() instanceof GPSAreaToolItem);
-        ProgWidgetArea area = new ProgWidgetArea();
-        if (stack.hasTag()) {
+//        ProgWidgetArea area = new ProgWidgetArea();
+
+        var p = SavedDroneProgram.forItemStack(stack);
+        if (!p.isEmpty() && p.getFirst() instanceof ProgWidgetArea area) {
             area.setVariableProvider(GlobalVariableHelper.getVariableProvider(), playerId);  // allows client to read vars for rendering purposes
-            area.readFromNBT(stack.getTag());
+            return area;
+        } else {
+            return new ProgWidgetArea();
         }
-        return area;
     }
 
     public static ProgWidgetArea getArea(Player player, ItemStack stack) {
@@ -163,7 +166,7 @@ public class GPSAreaToolItem extends Item implements IPositionProvider, IGPSTool
             BlockPos newPos = GlobalVariableHelper.getPos(player.getUUID(), var);
             if (pos.isEmpty() || !pos.get().equals(newPos)) {
                 area.setPos(index, newPos);
-                area.writeToNBT(gpsTool.getOrCreateTag());
+                gpsTool.set(ModDataComponents.SAVED_DRONE_PROGRAM, SavedDroneProgram.create(List.of(area)));
             }
             return Optional.of(newPos);
         }
@@ -174,7 +177,7 @@ public class GPSAreaToolItem extends Item implements IPositionProvider, IGPSTool
     private static void setGPSLocation(Player player, ItemStack gpsTool, BlockPos pos, ProgWidgetArea area, int index, boolean updateVar) {
         if (area == null) area = getArea(player, gpsTool);
         area.setPos(index, pos);
-        area.writeToNBT(gpsTool.getOrCreateTag());
+        gpsTool.set(ModDataComponents.SAVED_DRONE_PROGRAM, SavedDroneProgram.create(List.of(area)));
 
         if (updateVar) {
             String varName = area.getVarName(index);
@@ -187,7 +190,7 @@ public class GPSAreaToolItem extends Item implements IPositionProvider, IGPSTool
     public static void setVariable(Player player, ItemStack gpsTool, String variable, int index) {
         ProgWidgetArea area = getArea(player, gpsTool);
         area.setVarName(index, variable);
-        area.writeToNBT(gpsTool.getOrCreateTag());
+        gpsTool.set(ModDataComponents.SAVED_DRONE_PROGRAM, SavedDroneProgram.create(List.of(area)));
     }
 
     public static String getVariable(Player player, ItemStack gpsTool, int index) {

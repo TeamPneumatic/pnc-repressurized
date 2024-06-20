@@ -18,6 +18,7 @@
 package me.desht.pneumaticcraft.common.recipes.amadron;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import me.desht.pneumaticcraft.api.crafting.AmadronTradeResource;
 import me.desht.pneumaticcraft.api.crafting.recipe.AmadronRecipe;
@@ -26,8 +27,9 @@ import me.desht.pneumaticcraft.common.registry.ModRecipeTypes;
 import me.desht.pneumaticcraft.common.util.playerfilter.PlayerFilter;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.ChatFormatting;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
@@ -70,7 +72,6 @@ public class AmadronOffer extends AmadronRecipe {
         this.inStock = inStock;
         this.whitelist = whitelist;
         this.blacklist = blacklist;
-
     }
 
     public static AmadronOffer villagerTrade(ResourceLocation offerId, MerchantOffer merchantOffer, int level) {
@@ -143,8 +144,8 @@ public class AmadronOffer extends AmadronRecipe {
     public void onTrade(int tradingAmount, String buyingPlayer) {
     }
 
-    public static AmadronOffer offerFromBuf(FriendlyByteBuf buf) {
-        return ModRecipeSerializers.AMADRON_OFFERS.get().fromNetwork(buf);
+    static AmadronOffer offerFromBuf(RegistryFriendlyByteBuf buf) {
+        return ModRecipeSerializers.AMADRON_OFFERS.get().streamCodec().decode(buf);
     }
 
     @Override
@@ -226,18 +227,21 @@ public class AmadronOffer extends AmadronRecipe {
         return whitelist.isReal() || blacklist.isReal();
     }
 
-    public void write(FriendlyByteBuf buf) {
-        ModRecipeSerializers.AMADRON_OFFERS.get().toNetwork(buf, this);
+    public void write(RegistryFriendlyByteBuf buf) {
+        ModRecipeSerializers.AMADRON_OFFERS.get().streamCodec().encode(buf, this);
+    }
+
+    public interface IFactory<T extends AmadronRecipe> {
+        T create(ResourceLocation offerId, AmadronTradeResource input, AmadronTradeResource output, boolean isStaticOffer,
+                 boolean villagerTrade, int level, int maxStock, int inStock, PlayerFilter whitelist, PlayerFilter blacklist);
     }
 
     public static class Serializer<T extends AmadronOffer> implements RecipeSerializer<T> {
-        private final IFactory<T> factory;
-        private final Codec<T> codec;
+        private final MapCodec<T> codec;
+        private final StreamCodec<RegistryFriendlyByteBuf,T> streamCodec;
 
         public Serializer(IFactory<T> factory) {
-            this.factory = factory;
-
-            codec = RecordCodecBuilder.create(inst -> inst.group(
+            codec = RecordCodecBuilder.mapCodec(inst -> inst.group(
                     ResourceLocation.CODEC.fieldOf("offer_id").forGetter(AmadronOffer::getOfferId),
                     AmadronTradeResource.CODEC.fieldOf("input").forGetter(AmadronOffer::getInput),
                     AmadronTradeResource.CODEC.fieldOf("output").forGetter(AmadronOffer::getOutput),
@@ -249,46 +253,44 @@ public class AmadronOffer extends AmadronRecipe {
                     PlayerFilter.CODEC.optionalFieldOf("whitelist", PlayerFilter.YES).forGetter(AmadronOffer::getWhitelist),
                     PlayerFilter.CODEC.optionalFieldOf("blacklist", PlayerFilter.NO).forGetter(AmadronOffer::getBlacklist)
             ).apply(inst, factory::create));
-        }
 
-        @Override
-        public Codec<T> codec() {
-            return codec;
-        }
-
-        @Override
-        public T fromNetwork(FriendlyByteBuf buffer) {
-            return factory.create(
-                    buffer.readResourceLocation(),
-                    AmadronTradeResource.fromNetwork(buffer),
-                    AmadronTradeResource.fromNetwork(buffer),
-                    buffer.readBoolean(),
-                    buffer.readBoolean(),
-                    buffer.readByte(),
-                    buffer.readVarInt(),
-                    buffer.readVarInt(),
-                    PlayerFilter.fromNetwork(buffer),
-                    PlayerFilter.fromNetwork(buffer)
+            // too many fields for StreamCodec.composite!
+            streamCodec = StreamCodec.of(
+                    (buf, recipe) -> {
+                        buf.writeResourceLocation(recipe.getOfferId());
+                        AmadronTradeResource.STREAM_CODEC.encode(buf, recipe.getInput());
+                        AmadronTradeResource.STREAM_CODEC.encode(buf, recipe.getOutput());
+                        buf.writeBoolean(recipe.isStaticOffer());
+                        buf.writeBoolean(recipe.isVillagerTrade());
+                        buf.writeByte(recipe.getTradeLevel());
+                        buf.writeVarInt(recipe.getMaxStock());
+                        buf.writeVarInt(recipe.getStock());
+                        recipe.getWhitelist().toNetwork(buf);
+                        recipe.getBlacklist().toNetwork(buf);
+                    },
+                    buf -> factory.create(
+                            buf.readResourceLocation(),
+                            AmadronTradeResource.STREAM_CODEC.decode(buf),
+                            AmadronTradeResource.STREAM_CODEC.decode(buf),
+                            buf.readBoolean(),
+                            buf.readBoolean(),
+                            buf.readByte(),
+                            buf.readVarInt(),
+                            buf.readVarInt(),
+                            PlayerFilter.fromNetwork(buf),
+                            PlayerFilter.fromNetwork(buf)
+                    )
             );
         }
 
         @Override
-        public void toNetwork(FriendlyByteBuf buf, T recipe) {
-            buf.writeResourceLocation(recipe.getOfferId());
-            recipe.getInput().toNetwork(buf);
-            recipe.getOutput().toNetwork(buf);
-            buf.writeBoolean(recipe.isStaticOffer());
-            buf.writeBoolean(recipe.isVillagerTrade());
-            buf.writeByte(recipe.getTradeLevel());
-            buf.writeVarInt(recipe.getMaxStock());
-            buf.writeVarInt(recipe.getStock());
-            recipe.getWhitelist().toNetwork(buf);
-            recipe.getBlacklist().toNetwork(buf);
+        public MapCodec<T> codec() {
+            return codec;
         }
 
-        public interface IFactory<T extends AmadronRecipe> {
-            T create(ResourceLocation offerId, AmadronTradeResource input, AmadronTradeResource output, boolean isStaticOffer,
-                     boolean villagerTrade, int level, int maxStock, int inStock, PlayerFilter whitelist, PlayerFilter blacklist);
+        @Override
+        public StreamCodec<RegistryFriendlyByteBuf, T> streamCodec() {
+            return streamCodec;
         }
     }
 

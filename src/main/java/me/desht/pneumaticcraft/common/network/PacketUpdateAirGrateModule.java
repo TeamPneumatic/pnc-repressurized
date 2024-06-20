@@ -22,7 +22,8 @@ import me.desht.pneumaticcraft.common.tubemodules.AirGrateModule;
 import me.desht.pneumaticcraft.common.util.EntityFilter;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.entity.player.Player;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
@@ -32,25 +33,21 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
  * Update the entity filter of an air grate module
  */
 public record PacketUpdateAirGrateModule(ModuleLocator locator, String entityFilter) implements TubeModulePacket<AirGrateModule> {
-    public static final ResourceLocation ID = RL("update_air_grate");
+    public static final Type<PacketUpdateAirGrateModule> TYPE = new Type<>(RL("update_air_grate"));
 
-    public static PacketUpdateAirGrateModule create(AbstractTubeModule module, String entityFilter) {
+    public static final StreamCodec<FriendlyByteBuf, PacketUpdateAirGrateModule> STREAM_CODEC = StreamCodec.composite(
+            ModuleLocator.STREAM_CODEC, PacketUpdateAirGrateModule::locator,
+            ByteBufCodecs.STRING_UTF8, PacketUpdateAirGrateModule::entityFilter,
+            PacketUpdateAirGrateModule::new
+    );
+
+    public static PacketUpdateAirGrateModule forModule(AbstractTubeModule module, String entityFilter) {
         return new PacketUpdateAirGrateModule(ModuleLocator.forModule(module), entityFilter);
     }
 
-    public static PacketUpdateAirGrateModule fromNetwork(FriendlyByteBuf buffer) {
-        return new PacketUpdateAirGrateModule(ModuleLocator.fromNetwork(buffer), buffer.readUtf());
-    }
-
     @Override
-    public void write(FriendlyByteBuf buffer) {
-        locator.write(buffer);
-        buffer.writeUtf(entityFilter);
-    }
-
-    @Override
-    public ResourceLocation id() {
-        return ID;
+    public Type<PacketUpdateAirGrateModule> type() {
+        return TYPE;
     }
 
     @Override

@@ -28,6 +28,7 @@ import net.minecraft.world.entity.AreaEffectCloud;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
@@ -38,6 +39,9 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.Shapes;
+
+import java.util.List;
+import java.util.Optional;
 
 public class FreezingGunAmmoItem extends AbstractGunAmmoItem {
     @Override
@@ -74,7 +78,7 @@ public class FreezingGunAmmoItem extends AbstractGunAmmoItem {
     private void createFreezeCloud(Minigun minigun, Entity target) {
         Level world = target.getCommandSenderWorld();
         AreaEffectCloud cloud = new AreaEffectCloud(world, target.getX(), target.getY(), target.getZ());
-        cloud.setPotion(Potions.SLOWNESS);
+        cloud.setPotionContents(new PotionContents(Optional.of(Potions.SLOWNESS), Optional.of(0xFF00C0FF), List.of()));
         cloud.setOwner(minigun.getPlayer());
         cloud.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 100, 3));
         cloud.addEffect(new MobEffectInstance(MobEffects.WITHER, 20, 1));
@@ -82,7 +86,6 @@ public class FreezingGunAmmoItem extends AbstractGunAmmoItem {
         cloud.setDuration(60);
         cloud.setRadiusOnUse(-0.5f);
         cloud.setWaitTime(20);
-        cloud.setFixedColor(0xFF00C0FF);
         cloud.setRadiusPerTick(-cloud.getRadius() / cloud.getDuration());
         world.addFreshEntity(cloud);
     }

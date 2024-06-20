@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.common.drone.ai;
 
-import me.desht.pneumaticcraft.common.drone.IDroneBase;
+import me.desht.pneumaticcraft.api.drone.IDrone;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetInventoryBase;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.common.util.IOHelper;
@@ -25,8 +25,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
-public class DroneAIEnergyExport extends DroneAIImExBase<ProgWidgetInventoryBase> {
-    public DroneAIEnergyExport(IDroneBase drone, ProgWidgetInventoryBase widget) {
+public class DroneAIEnergyExport extends DroneAIImportExportBase<ProgWidgetInventoryBase> {
+    public DroneAIEnergyExport(IDrone drone, ProgWidgetInventoryBase widget) {
         super(drone, widget);
     }
 
@@ -46,7 +46,7 @@ public class DroneAIEnergyExport extends DroneAIImExBase<ProgWidgetInventoryBase
         if (energy == 0) {
             abort();
         } else {
-            BlockEntity te = drone.world().getBlockEntity(pos);
+            BlockEntity te = drone.getDroneLevel().getBlockEntity(pos);
             if (te != null) {
                 for (Direction face : DirectionUtil.VALUES) {
                     if (progWidget.isSideSelected(face)) {

@@ -19,7 +19,7 @@ package me.desht.pneumaticcraft.common.entity.semiblock;
 
 import me.desht.pneumaticcraft.api.semiblock.IDirectionalSemiblock;
 import me.desht.pneumaticcraft.common.util.IOHelper;
-import me.desht.pneumaticcraft.common.util.ITranslatableEnum;
+import me.desht.pneumaticcraft.api.misc.ITranslatableEnum;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -62,11 +62,11 @@ public class TransferGadgetEntity extends AbstractSemiblockEntity implements IDi
     }
 
     @Override
-    protected void defineSynchedData() {
-        super.defineSynchedData();
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
 
-        getEntityData().define(IO_MODE, IOMode.OUTPUT.ordinal());
-        getEntityData().define(SIDE, Direction.UP.get3DDataValue());
+        builder.define(IO_MODE, IOMode.OUTPUT.ordinal());
+        builder.define(SIDE, Direction.UP.get3DDataValue());
     }
 
     @Override

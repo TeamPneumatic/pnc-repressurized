@@ -260,6 +260,14 @@ public class ModItems {
         return defaultProps().stacksTo(1);
     }
 
+    public static Item.Properties pressurizableProps() {
+        return defaultProps().component(ModDataComponents.AIR, 0);
+    }
+
+    public static Item.Properties pressurizableToolProps() {
+        return toolProps().component(ModDataComponents.AIR, 0);
+    }
+
     public static Item.Properties filledBucketProps() {
         return defaultProps().stacksTo(1).craftRemainder(Items.BUCKET);
     }
@@ -285,7 +293,7 @@ public class ModItems {
     }
 
     private static DeferredItem<BucketItem> registerBucket(String name, Supplier<? extends Fluid> sup) {
-        return register(name, () -> new PneumaticCraftBucketItem(sup));
+        return register(name, () -> new PneumaticCraftBucketItem(sup.get()));
     }
 
     private static DeferredItem<Item> registerFood(final String name, FoodProperties food) {
@@ -295,7 +303,7 @@ public class ModItems {
     private static void registerUpgrade(BuiltinUpgrade builtin) {
         PNCUpgrade pncUpgrade = builtin.registerUpgrade();
         IntStream.rangeClosed(1, builtin.getMaxTier()).forEach(tier -> {
-            register(pncUpgrade.getItemRegistryName(tier).getPath(), () -> new UpgradeItem(pncUpgrade, tier));
+            register(pncUpgrade.getItemRegistryName(tier).getPath(), () -> new UpgradeItem(pncUpgrade, tier, builtin.getRarity()));
         });
     }
 }

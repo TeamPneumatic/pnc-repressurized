@@ -17,9 +17,11 @@
 
 package me.desht.pneumaticcraft.common.block.entity;
 
+import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.api.lib.NBTKeys;
+import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
 import me.desht.pneumaticcraft.api.upgrade.PNCUpgrade;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.block.AbstractCamouflageBlock;
@@ -29,18 +31,18 @@ import me.desht.pneumaticcraft.common.heat.HeatExchangerLogicAmbient;
 import me.desht.pneumaticcraft.common.inventory.AbstractPneumaticCraftMenu;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.network.*;
+import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.thirdparty.computer_common.LuaMethod;
 import me.desht.pneumaticcraft.common.thirdparty.computer_common.LuaMethodRegistry;
-import me.desht.pneumaticcraft.common.upgrades.ApplicableUpgradesDB;
-import me.desht.pneumaticcraft.common.upgrades.IUpgradeHolder;
-import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
-import me.desht.pneumaticcraft.common.upgrades.UpgradeCache;
+import me.desht.pneumaticcraft.common.upgrades.*;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
@@ -50,6 +52,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Nameable;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -62,9 +65,9 @@ import net.neoforged.neoforge.client.model.data.ModelData;
 import net.neoforged.neoforge.energy.IEnergyStorage;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidUtil;
+import net.neoforged.neoforge.fluids.SimpleFluidContent;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.ItemHandlerHelper;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -131,15 +134,15 @@ public abstract class AbstractPneumaticCraftBlockEntity extends BlockEntity
 
     // server side, chunk sending
     @Override
-    public CompoundTag getUpdateTag() {
-        CompoundTag compound = super.getUpdateTag();
-        return PacketDescription.create(this, true).writeNBT(compound);
+    public CompoundTag getUpdateTag(HolderLookup.Provider provider) {
+        CompoundTag compound = super.getUpdateTag(provider);
+        return PacketDescription.create(this, true, provider).writeNBT(compound, getLevel().registryAccess());
     }
 
     // client side, chunk sending
     @Override
-    public void handleUpdateTag(CompoundTag tag) {
-        PacketDescription.fromNBT(tag).processPacket(this);
+    public void handleUpdateTag(CompoundTag tag, HolderLookup.Provider provider) {
+        PacketDescription.fromNBT(tag, getLevel().registryAccess()).processPacket(this, getLevel().registryAccess());
     }
 
     /***********
@@ -176,7 +179,7 @@ public abstract class AbstractPneumaticCraftBlockEntity extends BlockEntity
     public final void sendDescriptionPacket() {
         if (level == null || level.isClientSide) return;
 
-        PacketDescription descPacket = PacketDescription.create(this, forceFullSync);
+        PacketDescription descPacket = PacketDescription.create(this, forceFullSync, level.registryAccess());
         if (descPacket.hasData()) {
             NetworkHandler.sendToAllTracking(descPacket, this);
         }
@@ -269,44 +272,48 @@ public abstract class AbstractPneumaticCraftBlockEntity extends BlockEntity
     }
 
     /**
-     * Encoded into the description packet. Also included in saved data written by {@link BlockEntity#saveAdditional(CompoundTag)}
-     *
+     * Encoded into the description packet. Also included in saved data written by
+     * {@link BlockEntity#saveAdditional(CompoundTag, HolderLookup.Provider)}
+     * <p>
      * Prefer to use @DescSynced where possible - use this either for complex fields not handled by @DescSynced,
      * or for non-ticking tile entities.
      *
-     * @param tag NBT tag
+     * @param tag      NBT tag
+     * @param provider lookup provider
      */
     @Override
-    public void writeToPacket(CompoundTag tag) {
-        if (this instanceof ISideConfigurable) {
-            tag.put(NBTKeys.NBT_SIDE_CONFIG, SideConfigurator.writeToNBT((ISideConfigurable) this));
+    public void writeToPacket(CompoundTag tag, HolderLookup.Provider provider) {
+        if (this instanceof ISideConfigurable sc) {
+            tag.put(NBTKeys.NBT_SIDE_CONFIG, SideConfigurator.writeToNBT(sc, provider));
         }
     }
 
     /**
-     * Encoded into the description packet. Also included in saved data read by {@link AbstractPneumaticCraftBlockEntity#load(CompoundTag)}.
+     * Encoded into the description packet. Also included in saved data read by
+     * {@link AbstractPneumaticCraftBlockEntity#loadAdditional(CompoundTag, HolderLookup.Provider)}.
      * <p>
      * Prefer to use {@code @DescSynced} where possible - use this either for complex fields not handled by {@code @DescSynced},
      * or for non-ticking tile entities.
      *
-     * @param tag NBT tag
+     * @param tag      NBT tag
+     * @param provider
      */
     @Override
-    public void readFromPacket(CompoundTag tag) {
-        if (this instanceof ISideConfigurable) {
-            SideConfigurator.readFromNBT(tag.getCompound(NBTKeys.NBT_SIDE_CONFIG), (ISideConfigurable) this);
+    public void readFromPacket(CompoundTag tag, HolderLookup.Provider provider) {
+        if (this instanceof ISideConfigurable sc) {
+            SideConfigurator.readFromNBT(tag.getCompound(NBTKeys.NBT_SIDE_CONFIG), sc, provider);
         }
     }
 
     @Override
-    public void saveAdditional(CompoundTag tag) {
-        super.saveAdditional(tag);
+    public void saveAdditional(CompoundTag tag, HolderLookup.Provider provider) {
+        super.saveAdditional(tag, provider);
 
         if (customName != null) {
-            tag.putString("CustomName", Component.Serializer.toJson(customName));
+            tag.putString("CustomName", Component.Serializer.toJson(customName, provider));
         }
         if (getUpgradeHandler().getSlots() > 0) {
-            tag.put(NBTKeys.NBT_UPGRADE_INVENTORY, getUpgradeHandler().serializeNBT());
+            tag.put(NBTKeys.NBT_UPGRADE_INVENTORY, getUpgradeHandler().serializeNBT(provider));
         }
         if (this instanceof IHeatExchangingTE he) {
             IHeatExchangerLogic logic = he.getHeatExchanger();
@@ -316,20 +323,20 @@ public abstract class AbstractPneumaticCraftBlockEntity extends BlockEntity
             rc.getRedstoneController().serialize(tag);
         }
         if (this instanceof ISerializableTanks st) {
-            tag.put(NBTKeys.NBT_SAVED_TANKS, st.serializeTanks());
+            tag.put(NBTKeys.NBT_SAVED_TANKS, st.serializeTanks(provider));
         }
-        writeToPacket(tag);
+        writeToPacket(tag, provider);
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
+    public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
+        super.loadAdditional(tag, provider);
 
         if (tag.contains("CustomName", Tag.TAG_STRING)) {
-            customName = Component.Serializer.fromJson(tag.getString("CustomName"));
+            customName = Component.Serializer.fromJson(tag.getString("CustomName"), provider);
         }
         if (tag.contains(NBTKeys.NBT_UPGRADE_INVENTORY) && getUpgradeHandler() != null) {
-            getUpgradeHandler().deserializeNBT(tag.getCompound(NBTKeys.NBT_UPGRADE_INVENTORY));
+            getUpgradeHandler().deserializeNBT(provider, tag.getCompound(NBTKeys.NBT_UPGRADE_INVENTORY));
         }
         if (this instanceof IHeatExchangingTE he) {
             IHeatExchangerLogic logic = he.getHeatExchanger();
@@ -339,9 +346,9 @@ public abstract class AbstractPneumaticCraftBlockEntity extends BlockEntity
             rc.getRedstoneController().deserialize(tag);
         }
         if (this instanceof ISerializableTanks st) {
-            st.deserializeTanks(tag.getCompound(NBTKeys.NBT_SAVED_TANKS));
+            st.deserializeTanks(provider, tag.getCompound(NBTKeys.NBT_SAVED_TANKS));
         }
-        readFromPacket(tag);
+        readFromPacket(tag, provider);
     }
 
     @Override
@@ -445,7 +452,7 @@ public abstract class AbstractPneumaticCraftBlockEntity extends BlockEntity
                 FluidStack itemContents = fluidHandlerItem.drain(Integer.MAX_VALUE, IFluidHandler.FluidAction.SIMULATE);
 
                 IOHelper.getFluidHandlerForBlock(this).ifPresent(fluidHandler -> {
-                    if (!itemContents.isEmpty() && (outputStack.isEmpty() || ItemHandlerHelper.canItemStacksStack(inputStack.getItem().getCraftingRemainingItem(inputStack), outputStack))) {
+                    if (!itemContents.isEmpty() && (outputStack.isEmpty() || ItemStack.isSameItemSameComponents(inputStack.getItem().getCraftingRemainingItem(inputStack), outputStack))) {
                         // input item contains fluid: drain from input item into tank, move to output if empty
                         // there must be only a single filled container in the input slot!
                         if (inputStack.getCount() != 1) {
@@ -468,7 +475,7 @@ public abstract class AbstractPneumaticCraftBlockEntity extends BlockEntity
                     } else if (itemHandler.getStackInSlot(outputSlot).isEmpty()) {
                         // input item is empty: drain from tank to item, move to output
                         // we allow multiple empty containers in the input slot
-                        ItemStack workStack = ItemHandlerHelper.copyStackWithSize(inputStack, 1);
+                        ItemStack workStack = inputStack.copyWithCount(1);
                         IOHelper.getFluidHandlerForItem(workStack).ifPresent(workHandler -> {
                             FluidStack transferred = FluidUtil.tryFluidTransfer(workHandler, fluidHandler, Integer.MAX_VALUE, true);
                             if (!transferred.isEmpty()) {
@@ -588,7 +595,7 @@ public abstract class AbstractPneumaticCraftBlockEntity extends BlockEntity
 
     /**
      * Should this block entity preserve its state (currently: upgrades and stored air) when broken?
-     * By default this is true when sneak-wrenched, and false when broken by pick.
+     * By default, this is true when sneak-wrenched, and false when broken by pick.
      *
      * @return true if state should be preserved, false otherwise
      */
@@ -623,15 +630,55 @@ public abstract class AbstractPneumaticCraftBlockEntity extends BlockEntity
         return upgradeCache;
     }
 
-    /**
-     * Get any extra data to be serialized onto a dropped item stack. The supplied tag is the "BlockEntityTag" subtag of
-     * the item's NBT data, so will be automatically deserialized into the BE (i.e. available to
-     * {@link BlockEntity#load(CompoundTag)} method) when the itemblock  is next placed.
-     *
-     * @param blockEntityTag the existing "BlockEntityTag" subtag to add data to
-     * @param preserveState true when dropped with a wrench, false when broken with a pickaxe etc.
-     */
-    public void serializeExtraItemData(CompoundTag blockEntityTag, boolean preserveState) {
+    @Override
+    protected void applyImplicitComponents(DataComponentInput componentInput) {
+        super.applyImplicitComponents(componentInput);
+
+        if (this instanceof ISerializableTanks st) {
+            st.getSerializableTanks().forEach((comp, tank) ->
+                    tank.loadFromContent(componentInput.getOrDefault(comp, SimpleFluidContent.EMPTY)));
+        }
+        if (this instanceof IRedstoneControl<?> rc) {
+            CustomData data = componentInput.getOrDefault(ModDataComponents.SAVED_REDSTONE_CONTROLLER, CustomData.EMPTY);
+            rc.getRedstoneController().deserialize(data.copyTag());
+        }
+        if (this instanceof ISideConfigurable sc) {
+            CustomData data = componentInput.getOrDefault(ModDataComponents.SAVED_SIDE_CONFIG, CustomData.EMPTY);
+            SideConfigurator.readFromNBT(data.copyTag(), sc, level.registryAccess());
+        }
+        if (shouldPreserveStateOnBreak()) {
+            IAirHandlerMachine handler = getLevel().getCapability(PNCCapabilities.AIR_HANDLER_MACHINE, getBlockPos(), getBlockState(), this, null);
+            if (handler != null) {
+                handler.addAir(componentInput.getOrDefault(ModDataComponents.AIR, 0) - handler.getAir());
+            }
+
+            componentInput.getOrDefault(ModDataComponents.ITEM_UPGRADES, SavedUpgrades.EMPTY).fillItemHandler(getUpgradeHandler());
+        }
+    }
+
+    @Override
+    protected void collectImplicitComponents(DataComponentMap.Builder builder) {
+        super.collectImplicitComponents(builder);
+
+        if (this instanceof ISerializableTanks st) {
+            st.getSerializableTanks().forEach((comp, tank) -> builder.set(comp, tank.getContent()));
+        }
+        if (this instanceof IRedstoneControl<?> rc) {
+            CompoundTag rcTag = rc.getRedstoneController().serialize(new CompoundTag());
+            builder.set(ModDataComponents.SAVED_REDSTONE_CONTROLLER, CustomData.of(rcTag));
+        }
+        if (this instanceof ISideConfigurable sc) {
+            CompoundTag scTag = SideConfigurator.writeToNBT(sc, level.registryAccess());
+            builder.set(ModDataComponents.SAVED_SIDE_CONFIG, CustomData.of(scTag));
+        }
+        if (shouldPreserveStateOnBreak()) {
+            IAirHandlerMachine handler = getLevel().getCapability(PNCCapabilities.AIR_HANDLER_MACHINE, getBlockPos(), getBlockState(), this, null);
+            if (handler != null) {
+                builder.set(ModDataComponents.AIR, handler.getAir());
+            }
+
+            builder.set(ModDataComponents.ITEM_UPGRADES, SavedUpgrades.fromItemHandler(getUpgradeHandler()));
+        }
     }
 
     /**

@@ -86,7 +86,7 @@ public class ProgrammedDroneUtils {
             BlockPos pos1 = dropOffArea.getPos(0).orElseThrow();
             if (!drone.isBlockValidPathfindBlock(pos1)) {
                 // Worst case scenario; there are definitely no blocks here.
-                dropOffArea.setPos(0, new BlockPos(pos1.getZ(), drone.world().getMaxBuildHeight() + 5, pos1.getZ()));
+                dropOffArea.setPos(0, new BlockPos(pos1.getZ(), drone.getDroneLevel().getMaxBuildHeight() + 5, pos1.getZ()));
             }
         }
         return dropOffArea;
@@ -135,7 +135,7 @@ public class ProgrammedDroneUtils {
             widgetImport.setUseCount(true);
             widgetImport.setCount(stack.getCount());
             ProgWidgetItemFilter filter = ProgWidgetItemFilter.withFilter(stack);
-            filter.useNBT = stack.hasTag();
+            filter.setMatchComponents(!stack.getComponentsPatch().isEmpty());
             builder.add(widgetImport, ProgWidgetArea.fromPosition(pos), filter);
         }
         builder.add(new ProgWidgetGoToLocation(), ProgWidgetArea.fromPosition(drone.blockPosition()));

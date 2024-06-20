@@ -10,7 +10,6 @@ import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.*;
-import net.minecraft.world.level.material.FlowingFluid;
 import net.minecraft.world.level.material.MapColor;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -241,7 +240,7 @@ public class ModBlocks {
     public static final DeferredBlock<Block> REINFORCED_BRICK_TILE = register("reinforced_brick_tile",
             () -> new Block(reinforcedStoneProps()));
     public static final DeferredBlock<Block> REINFORCED_BRICK_STAIRS = register("reinforced_brick_stairs",
-            () -> new StairBlock(() -> REINFORCED_BRICKS.get().defaultBlockState(),
+            () -> new StairBlock(REINFORCED_BRICKS.get().defaultBlockState(),
                     reinforcedStoneProps()));
     public static final DeferredBlock<Block> REINFORCED_BRICK_SLAB = register("reinforced_brick_slab",
             () -> new SlabBlock(reinforcedStoneProps()));
@@ -259,7 +258,7 @@ public class ModBlocks {
     public static final DeferredBlock<Block> COMPRESSED_BRICK_TILE = register("compressed_brick_tile",
             () -> new Block(reinforcedStoneProps()));
     public static final DeferredBlock<Block> COMPRESSED_BRICK_STAIRS = register("compressed_brick_stairs",
-            () -> new StairBlock(() -> COMPRESSED_BRICKS.get().defaultBlockState(),
+            () -> new StairBlock(COMPRESSED_BRICKS.get().defaultBlockState(),
                     reinforcedStoneProps()));
     public static final DeferredBlock<Block> COMPRESSED_BRICK_SLAB = register("compressed_brick_slab",
             () -> new SlabBlock(reinforcedStoneProps()));
@@ -273,29 +272,29 @@ public class ModBlocks {
     public static final DeferredBlock<FluidEtchingAcidBlock> ETCHING_ACID = registerNoItem("etching_acid",
             () -> new FluidEtchingAcidBlock(fluidProps()));
     public static final DeferredBlock<LiquidBlock> PLASTIC = registerNoItem("plastic",
-            () -> new LiquidBlock(() -> (FlowingFluid) ModFluids.PLASTIC.get(), fluidProps()));
+            () -> new LiquidBlock(ModFluids.PLASTIC.get(), fluidProps()));
     public static final DeferredBlock<LiquidBlock> LUBRICANT = registerNoItem("lubricant",
-            () -> new LiquidBlock(() -> (FlowingFluid) ModFluids.LUBRICANT.get(), fluidProps()));
+            () -> new LiquidBlock(ModFluids.LUBRICANT.get(), fluidProps()));
     public static final DeferredBlock<LiquidBlock> OIL = registerNoItem("oil",
-            () -> new LiquidBlock(() -> (FlowingFluid) ModFluids.OIL.get(),  fluidProps().mapColor(DyeColor.BLACK)));
+            () -> new LiquidBlock(ModFluids.OIL.get(),  fluidProps().mapColor(DyeColor.BLACK)));
     public static final DeferredBlock<LiquidBlock> DIESEL = registerNoItem("diesel",
-            () -> new LiquidBlock(() -> (FlowingFluid) ModFluids.DIESEL.get(), fluidProps()));
+            () -> new LiquidBlock(ModFluids.DIESEL.get(), fluidProps()));
     public static final DeferredBlock<LiquidBlock> KEROSENE = registerNoItem("kerosene",
-            () -> new LiquidBlock(() -> (FlowingFluid) ModFluids.KEROSENE.get(), fluidProps()));
+            () -> new LiquidBlock(ModFluids.KEROSENE.get(), fluidProps()));
     public static final DeferredBlock<LiquidBlock> GASOLINE = registerNoItem("gasoline",
-            () -> new LiquidBlock(() -> (FlowingFluid) ModFluids.GASOLINE.get(), fluidProps()));
+            () -> new LiquidBlock(ModFluids.GASOLINE.get(), fluidProps()));
     public static final DeferredBlock<LiquidBlock> LPG = registerNoItem("lpg",
-            () -> new LiquidBlock(() -> (FlowingFluid) ModFluids.LPG.get(), fluidProps()));
+            () -> new LiquidBlock(ModFluids.LPG.get(), fluidProps()));
     public static final DeferredBlock<LiquidBlock> MEMORY_ESSENCE = registerNoItem("memory_essence",
-            () -> new LiquidBlock(() -> (FlowingFluid) ModFluids.MEMORY_ESSENCE.get(), fluidProps()));
+            () -> new LiquidBlock(ModFluids.MEMORY_ESSENCE.get(), fluidProps()));
     public static final DeferredBlock<LiquidBlock> YEAST_CULTURE = registerNoItem("yeast_culture",
-            () -> new LiquidBlock(() -> (FlowingFluid) ModFluids.YEAST_CULTURE.get(), fluidProps()));
+            () -> new LiquidBlock(ModFluids.YEAST_CULTURE.get(), fluidProps()));
     public static final DeferredBlock<LiquidBlock> ETHANOL = registerNoItem("ethanol",
-            () -> new LiquidBlock(() -> (FlowingFluid) ModFluids.ETHANOL.get(), fluidProps()));
+            () -> new LiquidBlock(ModFluids.ETHANOL.get(), fluidProps()));
     public static final DeferredBlock<LiquidBlock> VEGETABLE_OIL = registerNoItem("vegetable_oil",
-            () -> new LiquidBlock(() -> (FlowingFluid) ModFluids.VEGETABLE_OIL.get(), fluidProps()));
+            () -> new LiquidBlock(ModFluids.VEGETABLE_OIL.get(), fluidProps()));
     public static final DeferredBlock<LiquidBlock> BIODIESEL = registerNoItem("biodiesel",
-            () -> new LiquidBlock(() -> (FlowingFluid) ModFluids.BIODIESEL.get(), fluidProps()));
+            () -> new LiquidBlock(ModFluids.BIODIESEL.get(), fluidProps()));
 
     public static DeferredBlock<PlasticBrickBlock> plasticBrick(DyeColor color) {
         return PLASTIC_BRICKS.get(color.getId());

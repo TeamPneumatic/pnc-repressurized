@@ -47,7 +47,7 @@ public class PressureChamber implements IRecipeManager<PressureChamberRecipe> {
         CraftTweakerAPI.apply(new ActionAddRecipe<>(this,
                 new RecipeHolder<>(new ResourceLocation("crafttweaker", fixRecipeName(name)),
                 new PressureChamberRecipeImpl(
-                        CTUtils.toStackedIngredientList(inputs),
+                        CTUtils.toSizedIngredientList(inputs),
                         pressure,
                         CTUtils.toItemStacks(outputs))
                 )

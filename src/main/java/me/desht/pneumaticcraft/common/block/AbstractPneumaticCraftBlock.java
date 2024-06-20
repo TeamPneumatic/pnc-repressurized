@@ -20,14 +20,11 @@ package me.desht.pneumaticcraft.common.block;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.block.IPneumaticWrenchable;
-import me.desht.pneumaticcraft.api.lib.NBTKeys;
 import me.desht.pneumaticcraft.api.misc.IPneumaticCraftProbeable;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
-import me.desht.pneumaticcraft.common.block.entity.AbstractAirHandlingBlockEntity;
-import me.desht.pneumaticcraft.common.block.entity.AbstractPneumaticCraftBlockEntity;
-import me.desht.pneumaticcraft.common.block.entity.IComparatorSupport;
-import me.desht.pneumaticcraft.common.block.entity.IHeatExchangingTE;
+import me.desht.pneumaticcraft.common.block.entity.*;
 import me.desht.pneumaticcraft.common.registry.ModCriterionTriggers;
+import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.thirdparty.ModdedWrenchUtils;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
@@ -38,23 +35,22 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Direction.Axis;
 import net.minecraft.core.NonNullList;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
+import net.minecraft.core.component.DataComponentType;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.BlockPlaceContext;
-import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.*;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -69,20 +65,19 @@ import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.common.util.FakePlayer;
 import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
+import net.neoforged.neoforge.fluids.SimpleFluidContent;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.function.Supplier;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 import static net.minecraft.world.level.block.state.properties.BlockStateProperties.*;
 
 public abstract class AbstractPneumaticCraftBlock extends Block
-        implements IPneumaticWrenchable, IPneumaticCraftProbeable, SimpleWaterloggedBlock {
+        implements IPneumaticWrenchable, IPneumaticCraftProbeable, SimpleWaterloggedBlock, SerializableComponentsProvider {
     static final VoxelShape ALMOST_FULL_SHAPE = Block.box(0.5, 0, 0.5, 15.5, 16, 15.5);
 
     public static final BooleanProperty UP = BooleanProperty.create("up");
@@ -126,30 +121,29 @@ public abstract class AbstractPneumaticCraftBlock extends Block
     }
 
     @Override
-    public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult brtr) {
-        ItemStack heldItem = player.getItemInHand(hand);
-        BlockEntity te = world.getBlockEntity(pos);
+    public ItemInteractionResult useItemOn(ItemStack heldItem, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult brtr) {
+        BlockEntity te = level.getBlockEntity(pos);
         if (player.isShiftKeyDown()
                 || !(te instanceof MenuProvider)
                 || isRotatable() && (heldItem.getItem() == ModItems.MANOMETER.get() || ModdedWrenchUtils.getInstance().isModdedWrench(heldItem))
                 || hand == InteractionHand.OFF_HAND && ModdedWrenchUtils.getInstance().isModdedWrench(player.getMainHandItem())) {
-            return InteractionResult.PASS;
+            return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
         } else {
             if (player instanceof ServerPlayer serverPlayer) {
                 if (te instanceof AbstractPneumaticCraftBlockEntity) {
                     if (FluidUtils.tryFluidInsertion(te, null, player, hand)) {
-                        world.playSound(null, pos, SoundEvents.BUCKET_EMPTY, SoundSource.BLOCKS, 1.0f, 1.0f);
-                        return InteractionResult.SUCCESS;
+                        level.playSound(null, pos, SoundEvents.BUCKET_EMPTY, SoundSource.BLOCKS, 1.0f, 1.0f);
+                        return ItemInteractionResult.sidedSuccess(false);
                     } else if (FluidUtils.tryFluidExtraction(te, null, player, hand)) {
-                        world.playSound(null, pos, SoundEvents.BUCKET_FILL, SoundSource.BLOCKS, 1.0f, 1.0f);
-                        return InteractionResult.SUCCESS;
+                        level.playSound(null, pos, SoundEvents.BUCKET_FILL, SoundSource.BLOCKS, 1.0f, 1.0f);
+                        return ItemInteractionResult.sidedSuccess(false);
                     }
                     // te must be a MenuProvider at this point: see instanceof check above
                     doOpenGui(serverPlayer, te);
                 }
             }
 
-            return InteractionResult.SUCCESS;
+            return ItemInteractionResult.sidedSuccess(true);
         }
     }
 
@@ -202,7 +196,7 @@ public abstract class AbstractPneumaticCraftBlock extends Block
         super.setPlacedBy(world, pos, state, entity, stack);
 
         BlockEntity te = world.getBlockEntity(pos);
-        if (te instanceof AbstractPneumaticCraftBlockEntity pncTE && stack.hasCustomHoverName()) {
+        if (te instanceof AbstractPneumaticCraftBlockEntity pncTE && stack.has(DataComponents.CUSTOM_NAME)) {
             pncTE.setCustomName(stack.getHoverName());
         }
         if (te instanceof IHeatExchangingTE he) {
@@ -299,7 +293,7 @@ public abstract class AbstractPneumaticCraftBlock extends Block
                         } while (!canRotateToTopOrBottom() && f.getAxis() == Axis.Y);
                         setRotation(world, pos, f);
                     }
-                    PneumaticCraftUtils.getTileEntityAt(world, pos, AbstractPneumaticCraftBlockEntity.class)
+                    PneumaticCraftUtils.getBlockEntityAt(world, pos, AbstractPneumaticCraftBlockEntity.class)
                             .ifPresent(AbstractPneumaticCraftBlockEntity::onBlockRotated);
                 }
                 return true;
@@ -329,7 +323,7 @@ public abstract class AbstractPneumaticCraftBlock extends Block
     @Override
     public void onNeighborChange(BlockState state, LevelReader world, BlockPos pos, BlockPos tilePos) {
         if (!world.isClientSide()) {
-            PneumaticCraftUtils.getTileEntityAt(world, pos, AbstractPneumaticCraftBlockEntity.class)
+            PneumaticCraftUtils.getBlockEntityAt(world, pos, AbstractPneumaticCraftBlockEntity.class)
                     .ifPresent(pncBE -> pncBE.onNeighborTileUpdate(tilePos));
         }
     }
@@ -337,41 +331,32 @@ public abstract class AbstractPneumaticCraftBlock extends Block
     @Override
     public void neighborChanged(BlockState state, Level world, BlockPos pos, Block block, BlockPos fromPos, boolean isMoving) {
         if (!world.isClientSide()) {
-            PneumaticCraftUtils.getTileEntityAt(world, pos, AbstractPneumaticCraftBlockEntity.class)
+            PneumaticCraftUtils.getBlockEntityAt(world, pos, AbstractPneumaticCraftBlockEntity.class)
                     .ifPresent(pncBE -> pncBE.onNeighborBlockUpdate(fromPos));
         }
     }
 
-    private int getSavedAir(ItemStack stack) {
-        CompoundTag tag = stack.getTagElement(NBTKeys.BLOCK_ENTITY_TAG);
-        return tag != null && tag.contains(NBTKeys.NBT_AIR_AMOUNT) ? tag.getInt(NBTKeys.NBT_AIR_AMOUNT) : 0;
-    }
-
-    @OnlyIn(Dist.CLIENT)
     @Override
-    public void appendHoverText(ItemStack stack, BlockGetter world, List<Component> curInfo, TooltipFlag flag) {
-        if (stack.hasTag()) {
-            int savedAir = getSavedAir(stack);
-            if (savedAir != 0) {
-                curInfo.add(xlate("pneumaticcraft.gui.tooltip.air", Integer.toString(savedAir)).withStyle(ChatFormatting.GREEN));
-            }
-            CompoundTag subTag = stack.getTagElement(NBTKeys.BLOCK_ENTITY_TAG);
-            if (subTag != null && subTag.contains(NBTKeys.NBT_SAVED_TANKS, Tag.TAG_COMPOUND)) {
-                CompoundTag tag = subTag.getCompound(NBTKeys.NBT_SAVED_TANKS);
-                for (String s : tag.getAllKeys()) {
-                    CompoundTag tankTag = tag.getCompound(s);
-                    FluidTank tank = new FluidTank(tankTag.getInt("Amount"));
-                    tank.readFromNBT(tankTag);
-                    FluidStack fluidStack = tank.getFluid();
-                    if (!fluidStack.isEmpty()) {
-                        curInfo.add(xlate("pneumaticcraft.gui.tooltip.fluid")
-                                .append(fluidStack.getAmount() + "mB ")
-                                .append(fluidStack.getDisplayName()).withStyle(ChatFormatting.GREEN));
-                    }
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> curInfo, TooltipFlag flag) {
+        int savedAir = stack.getOrDefault(ModDataComponents.AIR, 0);
+        if (savedAir != 0) {
+            curInfo.add(xlate("pneumaticcraft.gui.tooltip.air", Integer.toString(savedAir)).withStyle(ChatFormatting.GREEN));
+        }
+
+        ModDataComponents.TANK_COMPONENTS.forEach(component -> {
+            SimpleFluidContent content = stack.get(component);
+            if (content != null) {
+                FluidStack fluidStack = content.copy();
+                if (!fluidStack.isEmpty()) {
+                    curInfo.add(xlate("pneumaticcraft.gui.tooltip.fluid")
+                            .append(fluidStack.getAmount() + "mB ")
+                            .append(fluidStack.getHoverName()).withStyle(ChatFormatting.GREEN));
                 }
             }
-            addExtraInformation(stack, world, curInfo, flag);
-        }
+        });
+
+        addExtraInformation(stack, context, curInfo, flag);
+
         if (ClientUtils.hasShiftDown() && this instanceof EntityBlock eb) {
             BlockEntity te = eb.newBlockEntity(BlockPos.ZERO, defaultBlockState());
             if (te instanceof AbstractAirHandlingBlockEntity pneumatic) {
@@ -381,7 +366,28 @@ public abstract class AbstractPneumaticCraftBlock extends Block
         }
     }
 
-    protected void addExtraInformation(ItemStack stack, BlockGetter world, List<Component> curInfo, TooltipFlag flag) {
+    @Override
+    public void addSerializableComponents(List<DataComponentType<?>> list) {
+        if (this instanceof EntityBlock eb) {
+            BlockEntity be = eb.newBlockEntity(BlockPos.ZERO, defaultBlockState());
+            if (be instanceof ISerializableTanks) {
+                list.addAll(ModDataComponents.TANK_COMPONENTS.stream().map(Supplier::get).toList());
+            }
+            if (be instanceof IRedstoneControl<?>) {
+                list.add(ModDataComponents.SAVED_REDSTONE_CONTROLLER.get());
+            }
+            if (be instanceof ISideConfigurable) {
+                list.add(ModDataComponents.SAVED_SIDE_CONFIG.get());
+            }
+            if (be instanceof AbstractPneumaticCraftBlockEntity pncBe && pncBe.shouldPreserveStateOnBreak()) {
+                PNCCapabilities.getAirHandler(be)
+                        .ifPresent(h -> list.add(ModDataComponents.AIR.get()));
+                list.add(ModDataComponents.ITEM_UPGRADES.get());
+            }
+        }
+    }
+
+    protected void addExtraInformation(ItemStack stack, Item.TooltipContext context, List<Component> curInfo, TooltipFlag flag) {
         // override in subclasses
     }
 
@@ -403,7 +409,7 @@ public abstract class AbstractPneumaticCraftBlock extends Block
     @Override
     public void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean isMoving) {
         if (state.getBlock() != newState.getBlock()) {
-            PneumaticCraftUtils.getTileEntityAt(world, pos, AbstractPneumaticCraftBlockEntity.class).ifPresent(pncBE -> {
+            PneumaticCraftUtils.getBlockEntityAt(world, pos, AbstractPneumaticCraftBlockEntity.class).ifPresent(pncBE -> {
                 NonNullList<ItemStack> drops = NonNullList.create();
                 pncBE.getContentsToDrop(drops);
                 drops.forEach(stack -> PneumaticCraftUtils.dropItemOnGround(stack, world, pos));
@@ -436,8 +442,8 @@ public abstract class AbstractPneumaticCraftBlock extends Block
     }
 
     @Override
-    public boolean isPathfindable(BlockState state, BlockGetter worldIn, BlockPos pos, PathComputationType type) {
-        return state.getCollisionShape(worldIn, pos).isEmpty();
+    public boolean isPathfindable(BlockState state, PathComputationType type) {
+        return state.getCollisionShape(EmptyBlockGetter.INSTANCE, BlockPos.ZERO).isEmpty();
     }
 
     static void removeBlockSneakWrenched(Level world, BlockPos pos) {

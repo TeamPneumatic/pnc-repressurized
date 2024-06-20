@@ -64,6 +64,6 @@ public class HackableSecurityStation implements IHackableBlock {
     @Override
     public void onHackComplete(Level world, BlockPos pos, Player player) {
         BlockState state = world.getBlockState(pos);
-        fakeRayTrace(player, pos).ifPresent(rtr -> state.use(world, player, InteractionHand.MAIN_HAND, rtr));
+        fakeRayTrace(player, pos).ifPresent(rtr -> state.useWithoutItem(world, player, rtr));
     }
 }

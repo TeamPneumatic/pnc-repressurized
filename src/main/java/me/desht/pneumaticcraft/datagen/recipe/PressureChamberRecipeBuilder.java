@@ -17,21 +17,21 @@
 
 package me.desht.pneumaticcraft.datagen.recipe;
 
-import me.desht.pneumaticcraft.api.crafting.ingredient.StackedIngredient;
 import me.desht.pneumaticcraft.common.recipes.machine.PressureChamberRecipeImpl;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.common.crafting.SizedIngredient;
 
 import java.util.Arrays;
 import java.util.List;
 
 public class PressureChamberRecipeBuilder extends AbstractPNCRecipeBuilder {
-    private final List<StackedIngredient> inputs;
+    private final List<SizedIngredient> inputs;
     private final float requiredPressure;
     private final ItemStack[] outputs;
 
-    public PressureChamberRecipeBuilder(List<StackedIngredient> inputs, float requiredPressure, ItemStack... outputs) {
+    public PressureChamberRecipeBuilder(List<SizedIngredient> inputs, float requiredPressure, ItemStack... outputs) {
         this.inputs = inputs;
         this.requiredPressure = requiredPressure;
         this.outputs = outputs;

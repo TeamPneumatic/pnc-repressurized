@@ -25,6 +25,7 @@ import net.minecraft.core.GlobalPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -49,6 +50,10 @@ public class GlobalPosHelper {
 
     public static ServerLevel getWorldForGlobalPos(GlobalPos pos) {
         return ServerLifecycleHooks.getCurrentServer().getLevel(pos.dimension());
+    }
+
+    public static ServerLevel getWorldForGlobalPos(MinecraftServer server, GlobalPos pos) {
+        return server.getLevel(pos.dimension());
     }
 
     public static GlobalPos makeGlobalPos(Level w, BlockPos pos) {

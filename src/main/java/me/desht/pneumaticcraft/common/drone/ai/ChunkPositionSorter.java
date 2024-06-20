@@ -17,6 +17,7 @@
 
 package me.desht.pneumaticcraft.common.drone.ai;
 
+import me.desht.pneumaticcraft.api.drone.IDrone;
 import me.desht.pneumaticcraft.common.drone.IDroneBase;
 import me.desht.pneumaticcraft.common.drone.progwidgets.IBlockOrdered.Ordering;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -31,11 +32,11 @@ public class ChunkPositionSorter implements Comparator<BlockPos> {
     private final double x, y, z;
     private final Ordering order;
 
-    ChunkPositionSorter(IDroneBase entity) {
+    ChunkPositionSorter(IDrone entity) {
         this(entity, Ordering.CLOSEST);
     }
 
-    ChunkPositionSorter(IDroneBase entity, Ordering order) {
+    ChunkPositionSorter(IDrone entity, Ordering order) {
         Vec3 vec = entity.getDronePos();
         // work from middle of the block the drone is in (try to minimize inconsistency)
         x = Math.floor(vec.x) + 0.5;

@@ -21,22 +21,21 @@ import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.pressure.IPressurizableItem;
 import me.desht.pneumaticcraft.common.capabilities.AirHandlerItemStack;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
-import me.desht.pneumaticcraft.common.registry.ModAttachmentTypes;
+import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
-import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
+import me.desht.pneumaticcraft.common.upgrades.UpgradableItemUtils;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Vanishable;
 
 import java.util.Objects;
 
-public class PressurizableItem extends Item implements IPressurizableItem, Vanishable {
+public class PressurizableItem extends Item implements IPressurizableItem  {
     private final int volume;
     private final float maxPressure;
 
     public PressurizableItem(Item.Properties props, int maxAir, int volume) {
-        super(props);
+        super(props.component(ModDataComponents.AIR, 0));
 
         this.volume = volume;
         this.maxPressure = (float) maxAir / volume;
@@ -116,7 +115,7 @@ public class PressurizableItem extends Item implements IPressurizableItem, Vanis
 
     @Override
     public int getAir(ItemStack stack) {
-        return stack.getData(ModAttachmentTypes.AIR.get());
+        return stack.getOrDefault(ModDataComponents.AIR.get(), 0);
     }
 
     @Override
@@ -134,27 +133,27 @@ public class PressurizableItem extends Item implements IPressurizableItem, Vanis
         return 9;  // same as iron or compressed iron
     }
 
-    /**
-     * Get an ItemStack's NBT, rounding its air level for sync to client.
-     * Default precision of volume/10 is enough precision to display 1 decimal place of pressure,
-     * and will greatly reduce server->client chatter
-     * @param stack the itemstack being sync'd
-     * @return the item's NBT, but with the air level rounded
-     */
-    public static CompoundTag roundedPressure(ItemStack stack) {
-        if (stack.getItem() instanceof IPressurizableItem p && stack.getTag() != null && stack.getTag().contains(AirHandlerItemStack.AIR_NBT_KEY)) {
-            ItemStack stackCopy = stack.copy();
-            CompoundTag tag = Objects.requireNonNull(stackCopy.getTag());
-            // Using a capability here *should* work but it seems to fail under some odd circumstances which I haven't been
-            // able to reproduce. Hence the direct-access code above via the internal-use IPressurizableItem interface.
-            // https://github.com/TeamPneumatic/pnc-repressurized/issues/650
-            int air = tag.getInt(AirHandlerItemStack.AIR_NBT_KEY);
-            int volume = p.getEffectiveVolume(stackCopy);
-            // ok to modify tag directly here because we're working on a copy of the itemstack
-            tag.putInt(AirHandlerItemStack.AIR_NBT_KEY, air - air % (volume / ConfigHelper.common().advanced.pressureSyncPrecision.get()));
-            return tag;
-        } else {
-            return stack.getTag();
-        }
-    }
+//    /**
+//     * Get an ItemStack's NBT, rounding its air level for sync to client.
+//     * Default precision of volume/10 is enough precision to display 1 decimal place of pressure,
+//     * and will greatly reduce server->client chatter
+//     * @param stack the itemstack being sync'd
+//     * @return the item's NBT, but with the air level rounded
+//     */
+//    public static CompoundTag roundedPressure(ItemStack stack) {
+//        if (stack.getItem() instanceof IPressurizableItem p && stack.getTag() != null && stack.getTag().contains(AirHandlerItemStack.AIR_NBT_KEY)) {
+//            ItemStack stackCopy = stack.copy();
+//            CompoundTag tag = Objects.requireNonNull(stackCopy.getTag());
+//            // Using a capability here *should* work but it seems to fail under some odd circumstances which I haven't been
+//            // able to reproduce. Hence the direct-access code above via the internal-use IPressurizableItem interface.
+//            // https://github.com/TeamPneumatic/pnc-repressurized/issues/650
+//            int air = tag.getInt(AirHandlerItemStack.AIR_NBT_KEY);
+//            int volume = p.getEffectiveVolume(stackCopy);
+//            // ok to modify tag directly here because we're working on a copy of the itemstack
+//            tag.putInt(AirHandlerItemStack.AIR_NBT_KEY, air - air % (volume / ConfigHelper.common().advanced.pressureSyncPrecision.get()));
+//            return tag;
+//        } else {
+//            return stack.getTag();
+//        }
+//    }
 }

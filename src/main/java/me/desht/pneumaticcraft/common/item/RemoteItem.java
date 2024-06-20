@@ -19,14 +19,15 @@ package me.desht.pneumaticcraft.common.item;
 
 import me.desht.pneumaticcraft.common.block.entity.utility.SecurityStationBlockEntity;
 import me.desht.pneumaticcraft.common.inventory.RemoteMenu;
+import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.registry.ModMenuTypes;
 import me.desht.pneumaticcraft.common.util.GlobalPosHelper;
-import me.desht.pneumaticcraft.common.util.NBTUtils;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.GlobalPos;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -42,22 +43,18 @@ import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.List;
-import java.util.Objects;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class RemoteItem extends Item {
-    private static final String NBT_SECURITY_POS = "securityPos";
-
     public RemoteItem() {
         super(ModItems.defaultProps().stacksTo(1));
     }
@@ -99,9 +96,9 @@ public class RemoteItem extends Item {
      * allows items to add custom lines of information to the mouseover description
      */
     @Override
-    @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack remote, Level world, List<Component> curInfo, TooltipFlag moreInfo) {
-        super.appendHoverText(remote, world, curInfo, moreInfo);
+    public void appendHoverText(ItemStack remote, TooltipContext context, List<Component> curInfo, TooltipFlag moreInfo) {
+        super.appendHoverText(remote, context, curInfo, moreInfo);
+
         curInfo.add(xlate("pneumaticcraft.gui.remote.tooltip.sneakRightClickToEdit"));
         GlobalPos gPos = getSecurityStationPos(remote);
         if (gPos != null) {
@@ -142,9 +139,8 @@ public class RemoteItem extends Item {
     private boolean isAllowedToEdit(Player player, ItemStack remote) {
         GlobalPos gPos = getSecurityStationPos(remote);
         if (gPos != null) {
-            BlockEntity te = GlobalPosHelper.getTileEntity(gPos);
-            if (te instanceof SecurityStationBlockEntity) {
-                boolean canAccess = ((SecurityStationBlockEntity) te).doesAllowPlayer(player);
+            if (GlobalPosHelper.getTileEntity(gPos) instanceof SecurityStationBlockEntity teSS) {
+                boolean canAccess = teSS.doesAllowPlayer(player);
                 if (!canAccess) {
                     player.displayClientMessage(Component.translatable("pneumaticcraft.gui.remote.noEditRights", gPos).withStyle(ChatFormatting.RED), false);
                 }
@@ -154,26 +150,35 @@ public class RemoteItem extends Item {
         return true;
     }
 
+    @Nullable
     private static GlobalPos getSecurityStationPos(ItemStack stack) {
-        return stack.hasTag() && Objects.requireNonNull(stack.getTag()).contains(NBT_SECURITY_POS) ?
-                GlobalPosHelper.fromNBT(stack.getTag().getCompound(NBT_SECURITY_POS)) : null;
+        return stack.get(ModDataComponents.REMOTE_SECSTATION_POS);
     }
 
-    private static void setSecurityStationPos(ItemStack stack, GlobalPos gPos) {
-        NBTUtils.setCompoundTag(stack, NBT_SECURITY_POS, GlobalPosHelper.toNBT(gPos));
+    private static void setSecurityStationPos(ItemStack stack, @Nullable GlobalPos gPos) {
+        if (gPos == null) {
+            stack.remove(ModDataComponents.REMOTE_SECSTATION_POS);
+        } else {
+            stack.set(ModDataComponents.REMOTE_SECSTATION_POS, gPos);
+        }
     }
 
     @Override
     public void inventoryTick(ItemStack remote, Level world, Entity entity, int slot, boolean holdingItem) {
         if (!world.isClientSide) {
             GlobalPos gPos = getSecurityStationPos(remote);
-            if (gPos != null) {
-                BlockEntity te = GlobalPosHelper.getTileEntity(gPos);
-                if (!(te instanceof SecurityStationBlockEntity) && remote.hasTag()) {
-                    Objects.requireNonNull(remote.getTag()).remove(NBT_SECURITY_POS);
-                }
+            if (gPos != null && !(GlobalPosHelper.getTileEntity(gPos) instanceof SecurityStationBlockEntity)) {
+                setSecurityStationPos(remote, null);
             }
         }
+    }
+
+    public static CompoundTag getSavedLayout(ItemStack remote) {
+        return remote.getOrDefault(ModDataComponents.REMOTE_LAYOUT, CustomData.EMPTY).copyTag();
+    }
+
+    public static void setSavedLayout(ItemStack remote, CompoundTag layout) {
+        remote.set(ModDataComponents.REMOTE_LAYOUT, CustomData.of(layout));
     }
 
     static class RemoteContainerProvider implements MenuProvider {

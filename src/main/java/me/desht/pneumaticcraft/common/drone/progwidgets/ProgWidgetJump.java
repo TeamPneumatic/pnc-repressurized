@@ -18,9 +18,13 @@
 package me.desht.pneumaticcraft.common.drone.progwidgets;
 
 import com.google.common.collect.ImmutableList;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import me.desht.pneumaticcraft.api.drone.IDrone;
+import me.desht.pneumaticcraft.api.drone.IProgWidget;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.drone.IDroneBase;
-import me.desht.pneumaticcraft.common.registry.ModProgWidgets;
+import me.desht.pneumaticcraft.common.registry.ModProgWidgetTypes;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -35,8 +39,20 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class ProgWidgetJump extends ProgWidget implements IJump {
 
+    public static final MapCodec<ProgWidgetJump> CODEC = RecordCodecBuilder.mapCodec(builder ->
+            baseParts(builder).apply(builder, ProgWidgetJump::new));
+
+    public ProgWidgetJump(PositionFields pos) {
+        super(pos);
+    }
+
+    @Override
+    public ProgWidgetType<?> getType() {
+        return ModProgWidgetTypes.JUMP.get();
+    }
+
     public ProgWidgetJump() {
-        super(ModProgWidgets.JUMP.get());
+        super(PositionFields.DEFAULT);
     }
 
     @Override
@@ -56,10 +72,10 @@ public class ProgWidgetJump extends ProgWidget implements IJump {
     }
 
     @Override
-    public IProgWidget getOutputWidget(IDroneBase drone, List<IProgWidget> allWidgets) {
+    public IProgWidget getOutputWidget(IDrone drone, List<IProgWidget> allWidgets) {
         ProgWidgetText jumpedLabel = (ProgWidgetText) getConnectedParameters()[0];
         if (jumpedLabel != null) {
-            drone.getAIManager().setLabel(jumpedLabel.string);
+            IDroneBase.asDroneBase(drone).getAIManager().setLabel(jumpedLabel.string);
             IProgWidget widget = jumpToLabel(drone, allWidgets, jumpedLabel.string);
             if (widget != null) return widget;
         }
@@ -67,7 +83,7 @@ public class ProgWidgetJump extends ProgWidget implements IJump {
         return null;
     }
 
-    static IProgWidget jumpToLabel(IDroneBase drone, List<IProgWidget> allWidgets, IProgWidget conditionWidget, boolean conditionValue) {
+    static IProgWidget jumpToLabel(IDrone drone, List<IProgWidget> allWidgets, IProgWidget conditionWidget, boolean conditionValue) {
         ProgWidgetText textWidget = (ProgWidgetText) (conditionValue ?
                 conditionWidget.getConnectedParameters()[conditionWidget.getParameters().size() - 1] :
                 conditionWidget.getConnectedParameters()[conditionWidget.getParameters().size() * 2 - 1]);
@@ -80,8 +96,8 @@ public class ProgWidgetJump extends ProgWidget implements IJump {
         }
     }
 
-    static IProgWidget jumpToLabel(IDroneBase drone, List<IProgWidget> allWidgets, String label) {
-        drone.getAIManager().setLabel(label);
+    static IProgWidget jumpToLabel(IDrone drone, List<IProgWidget> allWidgets, String label) {
+        IDroneBase.asDroneBase(drone).getAIManager().setLabel(label);
         List<IProgWidget> possibleJumpLocations = new ArrayList<>();
         for (IProgWidget widget : allWidgets) {
             if (widget instanceof ILabel) {
@@ -112,7 +128,7 @@ public class ProgWidgetJump extends ProgWidget implements IJump {
 
     @Override
     public List<ProgWidgetType<?>> getParameters() {
-        return ImmutableList.of(ModProgWidgets.TEXT.get());
+        return ImmutableList.of(ModProgWidgetTypes.TEXT.get());
     }
 
     @Override

@@ -62,7 +62,7 @@ public class ModuleNetworkManager {
             BlockPos pos = pendingPositions.pop();
             BlockState state = level.getBlockState(pos);
             if (state.getBlock() instanceof ITubeNetworkConnector nc) {
-                PneumaticCraftUtils.getTileEntityAt(level, pos, PressureTubeBlockEntity.class).ifPresent(tubes::add);
+                PneumaticCraftUtils.getBlockEntityAt(level, pos, PressureTubeBlockEntity.class).ifPresent(tubes::add);
                 for (Direction dir : DirectionUtil.VALUES) {
                     BlockPos pos1 = pos.relative(dir);
                     if (!level.isLoaded(pos1)) continue;

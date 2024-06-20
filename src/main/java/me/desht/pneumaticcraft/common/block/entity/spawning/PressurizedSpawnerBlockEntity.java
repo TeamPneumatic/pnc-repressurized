@@ -17,6 +17,7 @@
 
 package me.desht.pneumaticcraft.common.block.entity.spawning;
 
+import com.mojang.datafixers.util.Either;
 import me.desht.pneumaticcraft.api.item.ISpawnerCoreStats;
 import me.desht.pneumaticcraft.api.pressure.PressureTier;
 import me.desht.pneumaticcraft.common.block.entity.*;
@@ -30,6 +31,7 @@ import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
@@ -44,9 +46,11 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.LevelEvent;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.phys.AABB;
+import net.neoforged.neoforge.common.extensions.IOwnedSpawner;
 import net.neoforged.neoforge.event.EventHooks;
 import net.neoforged.neoforge.items.IItemHandler;
 
@@ -54,8 +58,7 @@ import javax.annotation.Nullable;
 
 public class PressurizedSpawnerBlockEntity extends AbstractAirHandlingBlockEntity implements
         IMinWorkingPressure, IRedstoneControl<PressurizedSpawnerBlockEntity>,
-        MenuProvider, IRangedTE
-{
+        MenuProvider, IRangedTE, IOwnedSpawner {
     public static final int BASE_SPAWN_INTERVAL = 200;
     private static final int MAX_NEARBY_ENTITIES = 32;
 
@@ -129,13 +132,13 @@ public class PressurizedSpawnerBlockEntity extends AbstractAirHandlingBlockEntit
             double x = (double)worldPosition.getX() + (serverworld.random.nextDouble() - level.random.nextDouble()) * (double)spawnRange + 0.5D;
             double y = worldPosition.getY() + serverworld.random.nextInt(3) - 1;
             double z = (double)worldPosition.getZ() + (serverworld.random.nextDouble() - level.random.nextDouble()) * (double)spawnRange + 0.5D;
-            if (serverworld.noCollision(type.getAABB(x, y, z))) {
+            if (serverworld.noCollision(type.getSpawnAABB(x, y, z))) {
                 Entity entity = type.create(serverworld);
                 if (!(entity instanceof Mob mobentity)) return false;
                 int entityCount = serverworld.getEntitiesOfClass(Mob.class, rangeManager.getExtentsAsAABB()).size();
                 if (entityCount >= MAX_NEARBY_ENTITIES) return false;
                 entity.moveTo(x, y, z, level.random.nextFloat() * 360.0F, 0.0F);
-                EventHooks.onFinalizeSpawn(mobentity, serverworld, serverworld.getCurrentDifficultyAt(getPosition()), MobSpawnType.SPAWNER, null, null);
+                EventHooks.finalizeMobSpawnSpawner(mobentity, serverworld, serverworld.getCurrentDifficultyAt(getPosition()), MobSpawnType.SPAWNER, null, this, true);
                 if (!serverworld.tryAddFreshEntityWithPassengers(entity)) return false;
                 level.levelEvent(LevelEvent.PARTICLES_MOBBLOCK_SPAWN, worldPosition, 0);
                 mobentity.spawnAnim();
@@ -180,17 +183,17 @@ public class PressurizedSpawnerBlockEntity extends AbstractAirHandlingBlockEntit
     }
 
     @Override
-    public void saveAdditional(CompoundTag tag) {
-        super.saveAdditional(tag);
+    public void saveAdditional(CompoundTag tag, HolderLookup.Provider provider) {
+        super.saveAdditional(tag, provider);
 
-        tag.put("Inventory", inventory.serializeNBT());
+        tag.put("Inventory", inventory.serializeNBT(provider));
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
+    public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
+        super.loadAdditional(tag, provider);
 
-        inventory.deserializeNBT(tag.getCompound("Inventory"));
+        inventory.deserializeNBT(provider, tag.getCompound("Inventory"));
     }
 
     public AABB getRenderBoundingBox() {
@@ -200,5 +203,10 @@ public class PressurizedSpawnerBlockEntity extends AbstractAirHandlingBlockEntit
     @Override
     public RangeManager getRangeManager() {
         return rangeManager;
+    }
+
+    @Override
+    public Either<BlockEntity, Entity> getOwner() {
+        return Either.left(this);
     }
 }

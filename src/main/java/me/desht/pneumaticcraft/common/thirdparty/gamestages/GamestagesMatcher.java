@@ -19,11 +19,15 @@ package me.desht.pneumaticcraft.common.thirdparty.gamestages;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import me.desht.pneumaticcraft.api.misc.IPlayerMatcher;
 import net.darkhax.gamestages.GameStageHelper;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 
@@ -39,20 +43,21 @@ public record GamestagesMatcher(List<String> stages, boolean matchAll) implement
             GameStageHelper.isStageKnown(s) ? DataResult.success(s) : DataResult.error(() -> "unknown stage: " + s);
     private static final Codec<String> STAGE_CODEC = Codec.STRING.flatXmap(STAGE_CHECKER, STAGE_CHECKER);
 
-    public static final Codec<GamestagesMatcher> CODEC = RecordCodecBuilder.create(builder -> builder.group(
+    public static final MapCodec<GamestagesMatcher> CODEC = RecordCodecBuilder.mapCodec(builder -> builder.group(
             STAGE_CODEC.listOf().fieldOf("stages").forGetter(GamestagesMatcher::stages),
             Codec.BOOL.optionalFieldOf("match_all", false).forGetter(GamestagesMatcher::matchAll)
     ).apply(builder, GamestagesMatcher::new));
+    public static final StreamCodec<RegistryFriendlyByteBuf, GamestagesMatcher> STREAM_CODEC = StreamCodec.composite(
+            ByteBufCodecs.STRING_UTF8.apply(ByteBufCodecs.list()), GamestagesMatcher::stages,
+            ByteBufCodecs.BOOL, GamestagesMatcher::matchAll,
+            GamestagesMatcher::new
+    );
+
+    public static final MatcherType<GamestagesMatcher> TYPE = new MatcherType<>(CODEC, STREAM_CODEC);
 
     @Override
-    public void toNetwork(FriendlyByteBuf buffer) {
-        buffer.writeCollection(stages, FriendlyByteBuf::writeUtf);
-        buffer.writeBoolean(matchAll);
-    }
-
-    @Override
-    public MatcherType<?> getType() {
-        return GamestagesMatcherType.INSTANCE;
+    public MatcherType<? extends IPlayerMatcher> type() {
+        return TYPE;
     }
 
     @Override
@@ -70,26 +75,5 @@ public record GamestagesMatcher(List<String> stages, boolean matchAll) implement
     @Override
     public boolean test(Player playerEntity) {
         return matchAll ? GameStageHelper.hasAllOf(playerEntity, stages) : GameStageHelper.hasAnyOf(playerEntity, stages);
-    }
-
-    public enum GamestagesMatcherType implements IPlayerMatcher.MatcherType<GamestagesMatcher> {
-        INSTANCE;
-
-        private static final ResourceLocation ID = RL("gamestages");
-
-        @Override
-        public ResourceLocation getId() {
-            return ID;
-        }
-
-        @Override
-        public GamestagesMatcher fromNetwork(FriendlyByteBuf buf) {
-            return new GamestagesMatcher(buf.readList(FriendlyByteBuf::readUtf), buf.readBoolean());
-        }
-
-        @Override
-        public Codec<GamestagesMatcher> codec() {
-            return CODEC;
-        }
     }
 }

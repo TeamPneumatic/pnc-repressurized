@@ -17,22 +17,22 @@
 
 package me.desht.pneumaticcraft.datagen.recipe;
 
-import me.desht.pneumaticcraft.api.crafting.ingredient.FluidIngredient;
 import me.desht.pneumaticcraft.common.recipes.machine.FluidMixerRecipeImpl;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
 
 public class FluidMixerRecipeBuilder extends AbstractPNCRecipeBuilder {
-    private final FluidIngredient input1;
-    private final FluidIngredient input2;
+    private final SizedFluidIngredient input1;
+    private final SizedFluidIngredient input2;
     private final FluidStack outputFluid;
     private final ItemStack outputItem;
     private final float pressure;
     private final int processingTime;
 
-    public FluidMixerRecipeBuilder(FluidIngredient input1, FluidIngredient input2, FluidStack outputFluid, ItemStack outputItem, float pressure, int processingTime) {
+    public FluidMixerRecipeBuilder(SizedFluidIngredient input1, SizedFluidIngredient input2, FluidStack outputFluid, ItemStack outputItem, float pressure, int processingTime) {
         this.input1 = input1;
         this.input2 = input2;
         this.outputFluid = outputFluid;

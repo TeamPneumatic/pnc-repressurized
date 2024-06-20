@@ -1,14 +1,17 @@
 package me.desht.pneumaticcraft.common.loot;
 
 import com.google.common.base.Suppliers;
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.LootPool;
-import net.minecraft.world.level.storage.loot.entries.LootTableReference;
+import net.minecraft.world.level.storage.loot.LootTable;
+import net.minecraft.world.level.storage.loot.entries.NestedLootTable;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.neoforged.neoforge.common.loot.IGlobalLootModifier;
 import net.neoforged.neoforge.common.loot.LootModifier;
@@ -21,8 +24,8 @@ import java.util.function.Supplier;
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 public class PNCDungeonLootModifier extends LootModifier {
-    public static final Supplier<Codec<PNCDungeonLootModifier>> CODEC = Suppliers.memoize(
-            () -> RecordCodecBuilder.create(inst -> codecStart(inst).apply(inst, PNCDungeonLootModifier::new))
+    public static final Supplier<MapCodec<PNCDungeonLootModifier>> CODEC = Suppliers.memoize(
+            () -> RecordCodecBuilder.mapCodec(inst -> codecStart(inst).apply(inst, PNCDungeonLootModifier::new))
     );
 
     public PNCDungeonLootModifier(LootItemCondition[] conditions) {
@@ -38,7 +41,7 @@ public class PNCDungeonLootModifier extends LootModifier {
     }
 
     @Override
-    public Codec<? extends IGlobalLootModifier> codec() {
+    public MapCodec<? extends IGlobalLootModifier> codec() {
         return CODEC.get();
     }
 
@@ -61,8 +64,9 @@ public class PNCDungeonLootModifier extends LootModifier {
         }
 
         private static LootPool buildLootPool(String name) {
+            ResourceKey<LootTable> key = ResourceKey.create(Registries.LOOT_TABLE, RL("custom/" + name + "_dungeon_loot"));
             return LootPool.lootPool()
-                    .add(LootTableReference.lootTableReference(RL("custom/" + name + "_dungeon_loot")).setWeight(1))
+                    .add(NestedLootTable.lootTableReference(key).setWeight(1))
                     .name("pneumaticcraft_custom_" + name)
                     .build();
         }

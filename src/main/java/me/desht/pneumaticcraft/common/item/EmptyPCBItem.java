@@ -20,31 +20,29 @@ package me.desht.pneumaticcraft.common.item;
 import me.desht.pneumaticcraft.api.data.PneumaticCraftTags;
 import me.desht.pneumaticcraft.api.item.ICustomDurabilityBar;
 import me.desht.pneumaticcraft.common.block.entity.processing.UVLightBoxBlockEntity;
+import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.lib.BlockEntityConstants;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.material.MapColor;
-import org.apache.commons.lang3.Validate;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Stream;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class EmptyPCBItem extends NonDespawningItem implements ICustomDurabilityBar, CreativeTabStackProvider {
-    private static final String NBT_ETCH_PROGRESS = "pneumaticcraft:etch_progress";
-
     @Override
-    public void appendHoverText(ItemStack stack, Level player, List<Component> infoList, TooltipFlag par4) {
-        super.appendHoverText(stack, player, infoList, par4);
+    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> infoList, TooltipFlag flag) {
+        super.appendHoverText(stack, context, infoList, flag);
+
         int uvProgress = UVLightBoxBlockEntity.getExposureProgress(stack);
         int etchProgress = getEtchProgress(stack);
 
@@ -61,12 +59,11 @@ public class EmptyPCBItem extends NonDespawningItem implements ICustomDurability
     }
 
     public static int getEtchProgress(ItemStack stack) {
-        return stack.hasTag() ? Objects.requireNonNull(stack.getTag()).getInt(NBT_ETCH_PROGRESS) : 0;
+        return stack.getOrDefault(ModDataComponents.ETCH_PROGRESS, 0);
     }
 
     public static void setEtchProgress(ItemStack stack, int progress) {
-        Validate.isTrue(progress >= 0 && progress <= 100);
-        stack.getOrCreateTag().putInt(NBT_ETCH_PROGRESS, progress);
+        stack.set(ModDataComponents.ETCH_PROGRESS, Mth.clamp(progress, 0, 100));
     }
 
     @Override
@@ -91,20 +88,17 @@ public class EmptyPCBItem extends NonDespawningItem implements ICustomDurability
         super.onEntityItemUpdate(stack, entityItem);
 
         if (entityItem.level().getFluidState(entityItem.blockPosition()).getType().is(PneumaticCraftTags.Fluids.ETCHING_ACID)) {
-            if (!stack.hasTag()) {
-                stack.setTag(new CompoundTag());
-            }
             int etchProgress = getEtchProgress(stack);
             if (etchProgress < 100) {
                 if (entityItem.tickCount % (BlockEntityConstants.PCB_ETCH_TIME / 5) == 0) {
                     setEtchProgress(stack, etchProgress + 1);
                 }
-                Level world = entityItem.getCommandSenderWorld();
-                if (world.random.nextInt(15) == 0) {
-                    double x = entityItem.getX() + world.random.nextDouble() * 0.3 - 0.15;
+                Level level = entityItem.getCommandSenderWorld();
+                if (level.random.nextInt(15) == 0) {
+                    double x = entityItem.getX() + level.random.nextDouble() * 0.3 - 0.15;
                     double y = entityItem.getY() - 0.15;
-                    double z = entityItem.getZ() + world.random.nextDouble() * 0.3 - 0.15;
-                    world.addParticle(ParticleTypes.CLOUD, x, y, z, 0.0, 0.05, 0.0);
+                    double z = entityItem.getZ() + level.random.nextDouble() * 0.3 - 0.15;
+                    level.addParticle(ParticleTypes.CLOUD, x, y, z, 0.0, 0.05, 0.0);
                 }
             } else if (!entityItem.level().isClientSide) {
                 int successCount = 0;

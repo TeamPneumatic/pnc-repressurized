@@ -28,6 +28,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.language.I18n;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Mth;
 
@@ -54,8 +55,8 @@ public class ActionWidgetDropdown extends ActionWidgetVariable<WidgetComboBox> {
     }
 
     @Override
-    public void readFromNBT(CompoundTag tag, int guiLeft, int guiTop) {
-        super.readFromNBT(tag, guiLeft, guiTop);
+    public void readFromNBT(HolderLookup.Provider provider, CompoundTag tag, int guiLeft, int guiTop) {
+        super.readFromNBT(provider, tag, guiLeft, guiTop);
         x = tag.getInt("x") + guiLeft;
         y = tag.getInt("y") + guiTop;
         width = tag.getInt("width");
@@ -66,8 +67,8 @@ public class ActionWidgetDropdown extends ActionWidgetVariable<WidgetComboBox> {
     }
 
     @Override
-    public CompoundTag toNBT(int guiLeft, int guiTop) {
-        CompoundTag tag = super.toNBT(guiLeft, guiTop);
+    public CompoundTag toNBT(HolderLookup.Provider provider, int guiLeft, int guiTop) {
+        CompoundTag tag = super.toNBT(provider, guiLeft, guiTop);
         tag.putInt("x", x - guiLeft);
         tag.putInt("y", y - guiTop);
         tag.putInt("width", width);

@@ -76,11 +76,9 @@ public class ManualCompressorBlock extends AbstractPneumaticCraftBlock implement
     }
 
     @Override
-    public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult brtr) {
-        BlockEntity be = world.getBlockEntity(pos);
-
+    public InteractionResult useWithoutItem(BlockState state, Level world, BlockPos pos, Player player, BlockHitResult brtr) {
         // Triggers a pump cycle step when manual compressor is right-clicked
-        if (be instanceof ManualCompressorBlockEntity manualCompressorBlockEntity
+        if (world.getBlockEntity(pos) instanceof ManualCompressorBlockEntity manualCompressorBlockEntity && !world.isClientSide
                 // Only allows fake players to use compressor if the config is true
                 && (ConfigHelper.common().machines.manualCompressorAllowFakePlayers.get() || !(player instanceof FakePlayer))
                 // Can only pump if hunger is not empty (does not apply to creative players, or if manual compressor does not consume hunger via config)
@@ -91,6 +89,6 @@ public class ManualCompressorBlock extends AbstractPneumaticCraftBlock implement
             return InteractionResult.SUCCESS;
         }
 
-        return super.use(state, world, pos, player, hand, brtr);
+        return super.useWithoutItem(state, world, pos, player, brtr);
     }
 }

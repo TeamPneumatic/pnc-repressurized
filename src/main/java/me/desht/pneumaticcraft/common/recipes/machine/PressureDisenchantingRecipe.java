@@ -18,27 +18,30 @@
 package me.desht.pneumaticcraft.common.recipes.machine;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntList;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.registry.ModRecipeSerializers;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import net.minecraft.core.Holder;
 import net.minecraft.core.NonNullList;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.CraftingBookCategory;
-import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.neoforged.neoforge.items.IItemHandler;
 
 import javax.annotation.Nonnull;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
@@ -63,7 +66,7 @@ public class PressureDisenchantingRecipe extends PressureChamberRecipeImpl {
                 bookSlot = i;
             } else {
                 int minEnchantments = stack.getItem() == Items.ENCHANTED_BOOK ? 2 : 1;
-                if (!blacklisted(stack) && EnchantmentHelper.getEnchantments(stack).size() >= minEnchantments) {
+                if (!blacklisted(stack) && EnchantmentHelper.getEnchantmentsForCrafting(stack).size() >= minEnchantments) {
                     itemSlot = i;
                 }
             }
@@ -80,43 +83,46 @@ public class PressureDisenchantingRecipe extends PressureChamberRecipeImpl {
         if (book.isEmpty() || enchantedStack.isEmpty()) return NonNullList.create();
 
         // take a random enchantment off the enchanted item...
-        Map<Enchantment, Integer> enchantments = EnchantmentHelper.getEnchantments(enchantedStack);
-        List<Enchantment> l = new ArrayList<>(enchantments.keySet());
-        Enchantment strippedEnchantment = l.get(ThreadLocalRandom.current().nextInt(l.size()));
-        int level = enchantments.get(strippedEnchantment);
-        enchantments.remove(strippedEnchantment);
+        ItemEnchantments.Mutable enchantments = new ItemEnchantments.Mutable(EnchantmentHelper.getEnchantmentsForCrafting(enchantedStack));
+        List<Holder<Enchantment>> l = new ArrayList<>(enchantments.keySet());
+        Holder<Enchantment> strippedEnchantment = l.get(ThreadLocalRandom.current().nextInt(l.size()));
+        int level = enchantments.getLevel(strippedEnchantment.value());
+        enchantments.removeIf(e -> e.value() == strippedEnchantment.value());
         // Workaround for setEnchantments on an Enchanted Book merging enchantments instead of setting them
         if (enchantedStack.getItem() == Items.ENCHANTED_BOOK) {
             enchantedStack = new ItemStack(Items.ENCHANTED_BOOK);
         }
-        EnchantmentHelper.setEnchantments(enchantments, enchantedStack);
+        EnchantmentHelper.setEnchantments(enchantedStack, enchantments.toImmutable());
 
         // ...and create an enchanted book with it
         ItemStack enchantedBook = new ItemStack(Items.ENCHANTED_BOOK);
-        EnchantmentHelper.setEnchantments(ImmutableMap.of(strippedEnchantment, level), enchantedBook);
+        ItemEnchantments.Mutable newEnchantments = new ItemEnchantments.Mutable(ItemEnchantments.EMPTY);
+        newEnchantments.set(strippedEnchantment.value(), level);
+        EnchantmentHelper.setEnchantments(enchantedBook, newEnchantments.toImmutable());
 
         return NonNullList.of(ItemStack.EMPTY, enchantedBook, enchantedStack);
     }
 
     @Override
-    public List<Ingredient> getInputsForDisplay() {
+    public List<List<ItemStack>> getInputsForDisplay() {
         ItemStack pick = new ItemStack(Items.DIAMOND_PICKAXE);
-        pick.enchant(Enchantments.BLOCK_FORTUNE, 1);
+        pick.enchant(Enchantments.FORTUNE, 1);
         ItemStack enchantedBook = new ItemStack(Items.ENCHANTED_BOOK);
-        enchantedBook.enchant(Enchantments.BLOCK_FORTUNE, 1);
-        enchantedBook.enchant(Enchantments.BLOCK_EFFICIENCY, 1);
+        enchantedBook.enchant(Enchantments.FORTUNE, 1);
+        enchantedBook.enchant(Enchantments.EFFICIENCY, 1);
 
-        return ImmutableList.of(Ingredient.of(pick, enchantedBook), Ingredient.of(Items.BOOK));
+        return List.of(List.of(pick), List.of(new ItemStack(Items.BOOK)));
     }
 
     @Override
     public List<List<ItemStack>> getResultsForDisplay() {
         ItemStack pick = new ItemStack(Items.DIAMOND_PICKAXE);
         ItemStack enchantedBook = new ItemStack(Items.ENCHANTED_BOOK);
-        enchantedBook.enchant(Enchantments.BLOCK_EFFICIENCY, 1);
+        enchantedBook.enchant(Enchantments.EFFICIENCY, 1);
         ItemStack resultBook = new ItemStack(Items.ENCHANTED_BOOK);
-        resultBook.enchant(Enchantments.BLOCK_FORTUNE, 1);
-        return ImmutableList.of(ImmutableList.of(pick, enchantedBook), ImmutableList.of(resultBook));
+        resultBook.enchant(Enchantments.FORTUNE, 1);
+
+        return List.of(List.of(pick, enchantedBook), List.of(resultBook));
     }
 
     @Override
@@ -130,7 +136,7 @@ public class PressureDisenchantingRecipe extends PressureChamberRecipeImpl {
     @Override
     public boolean isValidInputItem(ItemStack stack) {
         return stack.getItem() == Items.BOOK
-                || stack.getItem() != Items.ENCHANTED_BOOK && !EnchantmentHelper.getEnchantments(stack).isEmpty();
+                || stack.getItem() != Items.ENCHANTED_BOOK && !EnchantmentHelper.getEnchantmentsForCrafting(stack).isEmpty();
     }
 
     @Override
@@ -154,4 +160,5 @@ public class PressureDisenchantingRecipe extends PressureChamberRecipeImpl {
                 .map(name -> blackList.stream().anyMatch(element -> element.startsWith(name.toString())))
                 .orElse(false);
     }
+
 }

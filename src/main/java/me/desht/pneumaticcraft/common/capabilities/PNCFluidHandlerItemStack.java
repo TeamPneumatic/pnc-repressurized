@@ -1,11 +1,14 @@
 package me.desht.pneumaticcraft.common.capabilities;
 
+import net.minecraft.core.component.DataComponentType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.SimpleFluidContent;
 import net.neoforged.neoforge.fluids.capability.templates.FluidHandlerItemStack;
 
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 public class PNCFluidHandlerItemStack extends FluidHandlerItemStack {
     private final Predicate<Fluid> fluidPredicate;
@@ -14,8 +17,8 @@ public class PNCFluidHandlerItemStack extends FluidHandlerItemStack {
      * @param container The container itemStack, data is stored on it directly as NBT.
      * @param capacity  The maximum capacity of this fluid tank.
      */
-    public PNCFluidHandlerItemStack(ItemStack container, int capacity, Predicate<Fluid> fluidPredicate) {
-        super(container, capacity);
+    public PNCFluidHandlerItemStack(Supplier<DataComponentType<SimpleFluidContent>> componentType, ItemStack container, int capacity, Predicate<Fluid> fluidPredicate) {
+        super(componentType, container, capacity);
         this.fluidPredicate = fluidPredicate;
     }
 

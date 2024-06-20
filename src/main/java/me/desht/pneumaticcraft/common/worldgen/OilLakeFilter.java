@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.common.worldgen;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import me.desht.pneumaticcraft.api.data.PneumaticCraftTags;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.registry.ModPlacementModifierTypes;
@@ -25,7 +25,7 @@ import net.minecraft.world.level.levelgen.structure.StructureStart;
 
 public class OilLakeFilter extends PlacementFilter {
     private static final OilLakeFilter INSTANCE = new OilLakeFilter();
-    public static final Codec<OilLakeFilter> CODEC = Codec.unit(() -> INSTANCE);
+    public static final MapCodec<OilLakeFilter> CODEC = MapCodec.unit(() -> INSTANCE);
 
     public static OilLakeFilter oilLakeFilter() {
         return INSTANCE;

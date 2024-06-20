@@ -35,208 +35,209 @@
 package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
+import me.desht.pneumaticcraft.common.item.ClassifyFilterItem;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.network.PacketDistributor;
-import net.neoforged.neoforge.network.event.RegisterPayloadHandlerEvent;
-import net.neoforged.neoforge.network.registration.IPayloadRegistrar;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
+import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.function.Consumer;
+import java.util.EnumSet;
 
-@Mod.EventBusSubscriber(modid = PneumaticRegistry.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = PneumaticRegistry.MOD_ID, bus = EventBusSubscriber.Bus.MOD)
 public class NetworkHandler {
     private static final String PROTOCOL_VERSION = "1";
 
 	@SubscribeEvent
-	public static void register(final RegisterPayloadHandlerEvent event) {
-		final IPayloadRegistrar registrar = event.registrar(PneumaticRegistry.MOD_ID)
+	public static void register(final RegisterPayloadHandlersEvent event) {
+		final PayloadRegistrar registrar = event.registrar(PneumaticRegistry.MOD_ID)
 				.versioned(PROTOCOL_VERSION);
 
 		// misc serverbound
-		registrar.play(PacketAphorismTileUpdate.ID, PacketAphorismTileUpdate::fromNetwork,
-				handler -> handler.server(PacketAphorismTileUpdate::handle));
-		registrar.play(PacketChangeGPSToolCoordinate.ID, PacketChangeGPSToolCoordinate::new,
-				handler -> handler.server(PacketChangeGPSToolCoordinate::handle));
-		registrar.play(PacketUpdateGPSAreaTool.ID, PacketUpdateGPSAreaTool::new,
-				handler -> handler.server(PacketUpdateGPSAreaTool::handle));
-		registrar.play(PacketDescriptionPacketRequest.ID, PacketDescriptionPacketRequest::new,
-				handler -> handler.server(PacketDescriptionPacketRequest::handle));
-		registrar.play(PacketGuiButton.ID, PacketGuiButton::new,
-				handler -> handler.server(PacketGuiButton::handle));
-		registrar.play(PacketUpdateTextfield.ID, PacketUpdateTextfield::fromNetwork,
-				handler -> handler.server(PacketUpdateTextfield::handle));
-		registrar.play(PacketUpdateSearchItem.ID, PacketUpdateSearchItem::fromNetwork,
-				handler -> handler.server(PacketUpdateSearchItem::handle));
-		registrar.play(PacketUpdateRemoteLayout.ID, PacketUpdateRemoteLayout::fromNetwork,
-				handler -> handler.server(PacketUpdateRemoteLayout::handle));
-		registrar.play(PacketUpdateMicromissileSettings.ID, PacketUpdateMicromissileSettings::fromNetwork,
-				handler -> handler.server(PacketUpdateMicromissileSettings::handle));
-		registrar.play(PacketModWrenchBlock.ID, PacketModWrenchBlock::fromNetwork,
-				handler -> handler.server(PacketModWrenchBlock::handle));
-		registrar.play(PacketLeftClickEmpty.ID, PacketLeftClickEmpty::fromNetwork,
-				handler -> handler.server(PacketLeftClickEmpty::handle));
-		registrar.play(PacketShiftScrollWheel.ID, PacketShiftScrollWheel::fromNetwork,
-				handler -> handler.server(PacketShiftScrollWheel::handle));
-		registrar.play(PacketSyncClassifyFilter.ID, PacketSyncClassifyFilter::fromNetwork,
-				handler -> handler.server(PacketSyncClassifyFilter::handle));
-		registrar.play(PacketTeleportCommand.ID, PacketTeleportCommand::fromNetwork,
-				handler -> handler.server(PacketTeleportCommand::handle));
+		registrar.playToServer(PacketAphorismTileUpdate.TYPE, PacketAphorismTileUpdate.STREAM_CODEC,
+				PacketAphorismTileUpdate::handle);
+		registrar.playToServer(PacketChangeGPSToolCoordinate.TYPE, PacketChangeGPSToolCoordinate.STREAM_CODEC,
+				PacketChangeGPSToolCoordinate::handle);
+		registrar.playToServer(PacketUpdateGPSAreaTool.TYPE, PacketUpdateGPSAreaTool.STREAM_CODEC,
+				PacketUpdateGPSAreaTool::handle);
+		registrar.playToServer(PacketDescriptionPacketRequest.TYPE, PacketDescriptionPacketRequest.STREAM_CODEC,
+				PacketDescriptionPacketRequest::handle);
+		registrar.playToServer(PacketGuiButton.TYPE, PacketGuiButton.STREAM_CODEC,
+				PacketGuiButton::handle);
+		registrar.playToServer(PacketUpdateTextfield.TYPE, PacketUpdateTextfield.STREAM_CODEC,
+				PacketUpdateTextfield::handle);
+		registrar.playToServer(PacketUpdateSearchItem.TYPE, PacketUpdateSearchItem.STREAM_CODEC,
+				PacketUpdateSearchItem::handle);
+		registrar.playToServer(PacketUpdateRemoteLayout.TYPE, PacketUpdateRemoteLayout.STREAM_CODEC,
+				PacketUpdateRemoteLayout::handle);
+		registrar.playToServer(PacketUpdateMicromissileSettings.TYPE, PacketUpdateMicromissileSettings.STREAM_CODEC,
+				PacketUpdateMicromissileSettings::handle);
+		registrar.playToServer(PacketModWrenchBlock.TYPE, PacketModWrenchBlock.STREAM_CODEC,
+				PacketModWrenchBlock::handle);
+		registrar.playToServer(PacketLeftClickEmpty.TYPE, PacketLeftClickEmpty.STREAM_CODEC,
+				PacketLeftClickEmpty::handle);
+		registrar.playToServer(PacketShiftScrollWheel.TYPE, PacketShiftScrollWheel.STREAM_CODEC,
+				PacketShiftScrollWheel::handle);
+		registrar.playToServer(PacketSyncClassifyFilter.TYPE, PacketSyncClassifyFilter.STREAM_CODEC,
+				PacketSyncClassifyFilter::handle);
+		registrar.playToServer(PacketTeleportCommand.TYPE, PacketTeleportCommand.STREAM_CODEC,
+				PacketTeleportCommand::handle);
 
 		// misc clientbound
-		registrar.play(PacketDescription.ID, PacketDescription::fromNetwork,
-				handler -> handler.client(PacketDescription::handle));
-		registrar.play(PacketPlaySound.ID, PacketPlaySound::new,
-				handler -> handler.client(PacketPlaySound::handle));
-		registrar.play(PacketSendNBTPacket.ID, PacketSendNBTPacket::fromNetwork,
-				handler -> handler.client(PacketSendNBTPacket::handle));
-		registrar.play(PacketSpawnParticle.ID, PacketSpawnParticle::fromNetwork,
-				handler -> handler.client(PacketSpawnParticle::handle));
-		registrar.play(PacketSpawnParticleTrail.ID, PacketSpawnParticleTrail::fromNetwork,
-				handler -> handler.client(PacketSpawnParticleTrail::handle));
-		registrar.play(PacketSpawnIndicatorParticles.ID, PacketSpawnIndicatorParticles::fromNetwork,
-				handler -> handler.client(PacketSpawnIndicatorParticles::handle));
-		registrar.play(PacketUpdatePressureBlock.ID, PacketUpdatePressureBlock::fromNetwork,
-				handler -> handler.client(PacketUpdatePressureBlock::handle));
-		registrar.play(PacketUpdateGui.ID, PacketUpdateGui::fromNetwork,
-				handler -> handler.client(PacketUpdateGui::handle));
-		registrar.play(PacketServerTickTime.ID, PacketServerTickTime::fromNetwork,
-				handler -> handler.client(PacketServerTickTime::handle));
-		registrar.play(PacketSpawnRing.ID, PacketSpawnRing::fromNetwork,
-				handler -> handler.client(PacketSpawnRing::handle));
-		registrar.play(PacketShowArea.ID, PacketShowArea::fromNetwork,
-				handler -> handler.client(PacketShowArea::handle));
-		registrar.play(PacketSetEntityMotion.ID, PacketSetEntityMotion::fromNetwork,
-				handler -> handler.client(PacketSetEntityMotion::handle));
-		registrar.play(PacketDebugBlock.ID, PacketDebugBlock::fromNetwork,
-				handler -> handler.client(PacketDebugBlock::handle));
-		registrar.play(PacketPlayMovingSound.ID, PacketPlayMovingSound::fromNetwork,
-				handler -> handler.client(PacketPlayMovingSound::handle));
-		registrar.play(PacketNotifyBlockUpdate.ID, PacketNotifyBlockUpdate::fromNetwork,
-				handler -> handler.client(PacketNotifyBlockUpdate::handle));
-		registrar.play(PacketMinigunStop.ID, PacketMinigunStop::fromNetwork,
-				handler -> handler.client(PacketMinigunStop::handle));
-		registrar.play(PacketClearRecipeCache.ID, PacketClearRecipeCache::fromNetwork,
-				handler -> handler.client(PacketClearRecipeCache::handle));
-
-
+		registrar.playToClient(PacketDescription.TYPE, PacketDescription.STREAM_CODEC,
+				PacketDescription::handle);
+		registrar.playToClient(PacketPlaySound.TYPE, PacketPlaySound.STREAM_CODEC,
+				PacketPlaySound::handle);
+		registrar.playToClient(PacketSendNBTPacket.TYPE, PacketSendNBTPacket.STREAM_CODEC,
+				PacketSendNBTPacket::handle);
+		registrar.playToClient(PacketSpawnParticle.TYPE, PacketSpawnParticle.STREAM_CODEC,
+				PacketSpawnParticle::handle);
+		registrar.playToClient(PacketSpawnParticleTrail.TYPE, PacketSpawnParticleTrail.STREAM_CODEC,
+				PacketSpawnParticleTrail::handle);
+		registrar.playToClient(PacketSpawnIndicatorParticles.TYPE, PacketSpawnIndicatorParticles.STREAM_CODEC,
+				PacketSpawnIndicatorParticles::handle);
+		registrar.playToClient(PacketUpdatePressureBlock.TYPE, PacketUpdatePressureBlock.STREAM_CODEC,
+				PacketUpdatePressureBlock::handle);
+		registrar.playToClient(PacketUpdateGui.TYPE, PacketUpdateGui.STREAM_CODEC,
+				PacketUpdateGui::handle);
+		registrar.playToClient(PacketServerTickTime.TYPE, PacketServerTickTime.STREAM_CODEC,
+				PacketServerTickTime::handle);
+		registrar.playToClient(PacketSpawnRing.TYPE, PacketSpawnRing.STREAM_CODEC,
+				PacketSpawnRing::handle);
+		registrar.playToClient(PacketShowArea.TYPE, PacketShowArea.STREAM_CODEC,
+				PacketShowArea::handle);
+		registrar.playToClient(PacketSetEntityMotion.TYPE, PacketSetEntityMotion.STREAM_CODEC,
+				PacketSetEntityMotion::handle);
+		registrar.playToClient(PacketDebugBlock.TYPE, PacketDebugBlock.STREAM_CODEC,
+				PacketDebugBlock::handle);
+		registrar.playToClient(PacketPlayMovingSound.TYPE, PacketPlayMovingSound.STREAM_CODEC,
+				PacketPlayMovingSound::handle);
+		registrar.playToClient(PacketNotifyBlockUpdate.TYPE, PacketNotifyBlockUpdate.STREAM_CODEC,
+				PacketNotifyBlockUpdate::handle);
+		registrar.playToClient(PacketMinigunStop.TYPE, PacketMinigunStop.STREAM_CODEC,
+				PacketMinigunStop::handle);
+		registrar.playToClient(PacketClearRecipeCache.TYPE, PacketClearRecipeCache.STREAM_CODEC,
+				PacketClearRecipeCache::handle);
+		
 		// misc bi-directional
-		registrar.play(PacketSetGlobalVariable.ID, PacketSetGlobalVariable::fromNetwork,
-				handler -> handler.client(PacketSetGlobalVariable::handle).server(PacketSetGlobalVariable::handle));
-		registrar.play(PacketSyncSemiblock.ID, PacketSyncSemiblock::fromNetwork,
-				handler -> handler.client(PacketSyncSemiblock::handle).server(PacketSyncSemiblock::handle));
-		registrar.play(PacketSyncSmartChest.ID, PacketSyncSmartChest::fromNetwork,
-				handler -> handler.client(PacketSyncSmartChest::handle).server(PacketSyncSmartChest::handle));
+		registrar.playBidirectional(PacketSetGlobalVariable.TYPE, PacketSetGlobalVariable.STREAM_CODEC,
+				PacketSetGlobalVariable::handle);
+		registrar.playBidirectional(PacketSyncSemiblock.TYPE, PacketSyncSemiblock.STREAM_CODEC,
+				PacketSyncSemiblock::handle);
+		registrar.playBidirectional(PacketSyncSmartChest.TYPE, PacketSyncSmartChest.STREAM_CODEC,
+				PacketSyncSmartChest::handle);
 
 		// tube modules
-		registrar.play(PacketUpdatePressureModule.ID, PacketUpdatePressureModule::fromNetwork,
-				handler -> handler.server(TubeModulePacket::handle));
-		registrar.play(PacketUpdateAirGrateModule.ID, PacketUpdateAirGrateModule::fromNetwork,
-				handler -> handler.server(TubeModulePacket::handle));
-		registrar.play(PacketTubeModuleColor.ID, PacketTubeModuleColor::fromNetwork,
-				handler -> handler.server(TubeModulePacket::handle));
-		registrar.play(PacketSyncRedstoneModuleToServer.ID, PacketSyncRedstoneModuleToServer::fromNetwork,
-				handler -> handler.server(TubeModulePacket::handle));
-		registrar.play(PacketUpdateLogisticsModule.ID, PacketUpdateLogisticsModule::fromNetwork,
-				handler -> handler.client(TubeModulePacket::handle));
-		registrar.play(PacketSyncRedstoneModuleToClient.ID, PacketSyncRedstoneModuleToClient::fromNetwork,
-				handler -> handler.client(TubeModulePacket::handle));
-		registrar.play(PacketSyncThermostatModuleToClient.ID, PacketSyncThermostatModuleToClient::fromNetwork,
-				handler -> handler.client(TubeModulePacket::handle));
-		registrar.play(PacketSyncThermostatModuleToServer.ID, PacketSyncThermostatModuleToServer::fromNetwork,
-				handler -> handler.server(TubeModulePacket::handle));
+		registrar.playToServer(PacketUpdatePressureModule.TYPE, PacketUpdatePressureModule.STREAM_CODEC,
+				TubeModulePacket::handle);
+		registrar.playToServer(PacketUpdateAirGrateModule.TYPE, PacketUpdateAirGrateModule.STREAM_CODEC,
+				TubeModulePacket::handle);
+		registrar.playToServer(PacketTubeModuleColor.TYPE, PacketTubeModuleColor.STREAM_CODEC,
+				TubeModulePacket::handle);
+		registrar.playToServer(PacketSyncRedstoneModuleToServer.TYPE, PacketSyncRedstoneModuleToServer.STREAM_CODEC,
+				TubeModulePacket::handle);
+		registrar.playToClient(PacketUpdateLogisticsModule.TYPE, PacketUpdateLogisticsModule.STREAM_CODEC,
+				TubeModulePacket::handle);
+		registrar.playToClient(PacketSyncRedstoneModuleToClient.TYPE, PacketSyncRedstoneModuleToClient.STREAM_CODEC,
+				TubeModulePacket::handle);
+		registrar.playToClient(PacketSyncThermostatModuleToClient.TYPE, PacketSyncThermostatModuleToClient.STREAM_CODEC,
+				TubeModulePacket::handle);
+		registrar.playToServer(PacketSyncThermostatModuleToServer.TYPE, PacketSyncThermostatModuleToServer.STREAM_CODEC,
+				TubeModulePacket::handle);
 
 		// amadron
-		registrar.play(PacketSyncAmadronOffers.ID, PacketSyncAmadronOffers::fromNetwork,
-				handler -> handler.client(PacketSyncAmadronOffers::handle)
-						.server(PacketSyncAmadronOffers::handle));
-		registrar.play(PacketAmadronOrderResponse.ID, PacketAmadronOrderResponse::fromNetwork,
-				handler -> handler.client(PacketAmadronOrderResponse::handle));
-		registrar.play(PacketAmadronOrderUpdate.ID, PacketAmadronOrderUpdate::fromNetwork,
-				handler -> handler.server(PacketAmadronOrderUpdate::handle));
-		registrar.play(PacketAmadronStockUpdate.ID, PacketAmadronStockUpdate::fromNetwork,
-				handler -> handler.client(PacketAmadronStockUpdate::handle));
-		registrar.play(PacketAmadronTradeNotifyDeal.ID, PacketAmadronTradeNotifyDeal::fromNetwork,
-				handler -> handler.client(PacketAmadronTradeNotifyDeal::handle));
-		registrar.play(PacketAmadronTradeRemoved.ID, PacketAmadronTradeRemoved::fromNetwork,
-				handler -> handler.client(PacketAmadronTradeRemoved::handle));
-		registrar.play(PacketAmadronTradeAddCustom.ID, PacketAmadronTradeAddCustom::fromNetwork,
-				handler -> handler.client(PacketAmadronTradeAddCustom::handle)
-						.server(PacketAmadronTradeAddCustom::handle));
+		registrar.playBidirectional(PacketSyncAmadronOffers.TYPE, PacketSyncAmadronOffers.STREAM_CODEC,
+				PacketSyncAmadronOffers::handle);
+		registrar.playToClient(PacketAmadronOrderResponse.TYPE, PacketAmadronOrderResponse.STREAM_CODEC,
+				PacketAmadronOrderResponse::handle);
+		registrar.playToServer(PacketAmadronOrderUpdate.TYPE, PacketAmadronOrderUpdate.STREAM_CODEC,
+				PacketAmadronOrderUpdate::handle);
+		registrar.playToClient(PacketAmadronStockUpdate.TYPE, PacketAmadronStockUpdate.STREAM_CODEC,
+				PacketAmadronStockUpdate::handle);
+		registrar.playToClient(PacketAmadronTradeNotifyDeal.TYPE, PacketAmadronTradeNotifyDeal.STREAM_CODEC,
+				PacketAmadronTradeNotifyDeal::handle);
+		registrar.playToClient(PacketAmadronTradeRemoved.TYPE, PacketAmadronTradeRemoved.STREAM_CODEC,
+				PacketAmadronTradeRemoved::handle);
+		registrar.playBidirectional(PacketAmadronTradeAddCustom.TYPE, PacketAmadronTradeAddCustom.STREAM_CODEC,
+				PacketAmadronTradeAddCustom::handle);
 
 		// hacking
-		registrar.play(PacketHackingBlockStart.ID, PacketHackingBlockStart::fromNetwork,
-				handler -> handler.client(PacketHackingBlockStart::handle).server(PacketHackingBlockStart::handle));
-		registrar.play(PacketHackingEntityStart.ID, PacketHackingEntityStart::fromNetwork,
-				handler -> handler.client(PacketHackingEntityStart::handle).server(PacketHackingEntityStart::handle));
-		registrar.play(PacketHackingBlockFinish.ID, PacketHackingBlockFinish::fromNetwork,
-				handler -> handler.client(PacketHackingBlockFinish::handle));
-		registrar.play(PacketHackingEntityFinish.ID, PacketHackingEntityFinish::fromNetwork,
-				handler -> handler.client(PacketHackingEntityFinish::handle));
-		registrar.play(PacketSyncHackSimulationUpdate.ID, PacketSyncHackSimulationUpdate::fromNetwork,
-				handler -> handler.client(PacketSyncHackSimulationUpdate::handle));
-		registrar.play(PacketSyncEntityHacks.ID, PacketSyncEntityHacks::fromNetwork,
-				handler -> handler.client(PacketSyncEntityHacks::handle));
+		registrar.playBidirectional(PacketHackingBlockStart.TYPE, PacketHackingBlockStart.STREAM_CODEC,
+				PacketHackingBlockStart::handle);
+		registrar.playBidirectional(PacketHackingEntityStart.TYPE, PacketHackingEntityStart.STREAM_CODEC,
+				PacketHackingEntityStart::handle);
+		registrar.playToClient(PacketHackingBlockFinish.TYPE, PacketHackingBlockFinish.STREAM_CODEC,
+				PacketHackingBlockFinish::handle);
+		registrar.playToClient(PacketHackingEntityFinish.TYPE, PacketHackingEntityFinish.STREAM_CODEC,
+				PacketHackingEntityFinish::handle);
+		registrar.playToClient(PacketSyncHackSimulationUpdate.TYPE, PacketSyncHackSimulationUpdate.STREAM_CODEC,
+				PacketSyncHackSimulationUpdate::handle);
+		registrar.playToClient(PacketSyncEntityHacks.TYPE, PacketSyncEntityHacks.STREAM_CODEC,
+				PacketSyncEntityHacks::handle);
 
 		// pneumatic armor
-		registrar.play(PacketToggleArmorFeature.ID, PacketToggleArmorFeature::fromNetwork,
-				handler -> handler.server(PacketToggleArmorFeature::handle).client(PacketToggleArmorFeature::handle));
-		registrar.play(PacketToggleArmorFeatureBulk.ID, PacketToggleArmorFeatureBulk::fromNetwork,
-				handler -> handler.server(PacketToggleArmorFeatureBulk::handle));
-		registrar.play(PacketPneumaticKick.ID, PacketPneumaticKick::fromNetwork,
-				handler -> handler.server(PacketPneumaticKick::handle));
-		registrar.play(PacketJetBootsActivate.ID, PacketJetBootsActivate::fromNetwork,
-				handler -> handler.server(PacketJetBootsActivate::handle));
-		registrar.play(PacketChestplateLauncher.ID, PacketChestplateLauncher::fromNetwork,
-				handler -> handler.server(PacketChestplateLauncher::handle));
-		registrar.play(PacketUpdateArmorColors.ID, PacketUpdateArmorColors::fromNetwork,
-				handler -> handler.server(PacketUpdateArmorColors::handle));
-		registrar.play(PacketUpdateArmorExtraData.ID, PacketUpdateArmorExtraData::fromNetwork,
-				handler -> handler.server(PacketUpdateArmorExtraData::handle));
-		registrar.play(PacketJetBootsStateSync.ID, PacketJetBootsStateSync::fromNetwork,
-				handler -> handler.client(PacketJetBootsStateSync::handle));
-		registrar.play(PacketSendArmorHUDMessage.ID, PacketSendArmorHUDMessage::fromNetwork,
-				handler -> handler.client(PacketSendArmorHUDMessage::handle));
+		registrar.playBidirectional(PacketToggleArmorFeature.TYPE, PacketToggleArmorFeature.STREAM_CODEC,
+				PacketToggleArmorFeature::handle);
+		registrar.playToServer(PacketToggleArmorFeatureBulk.TYPE, PacketToggleArmorFeatureBulk.STREAM_CODEC,
+				PacketToggleArmorFeatureBulk::handle);
+		registrar.playToServer(PacketPneumaticKick.TYPE, PacketPneumaticKick.STREAM_CODEC,
+				PacketPneumaticKick::handle);
+		registrar.playToServer(PacketJetBootsActivate.TYPE, PacketJetBootsActivate.STREAM_CODEC,
+				PacketJetBootsActivate::handle);
+		registrar.playToServer(PacketChestplateLauncher.TYPE, PacketChestplateLauncher.STREAM_CODEC,
+				PacketChestplateLauncher::handle);
+		registrar.playToServer(PacketUpdateArmorColors.TYPE, PacketUpdateArmorColors.STREAM_CODEC,
+				PacketUpdateArmorColors::handle);
+		registrar.playToServer(PacketUpdateArmorExtraData.TYPE, PacketUpdateArmorExtraData.STREAM_CODEC,
+				PacketUpdateArmorExtraData::handle);
+		registrar.playToClient(PacketJetBootsStateSync.TYPE, PacketJetBootsStateSync.STREAM_CODEC,
+				PacketJetBootsStateSync::handle);
+		registrar.playToClient(PacketSendArmorHUDMessage.TYPE, PacketSendArmorHUDMessage.STREAM_CODEC,
+				PacketSendArmorHUDMessage::handle);
 
 		// drones
-		registrar.play(PacketUpdateDebuggingDrone.ID, PacketUpdateDebuggingDrone::fromNetwork,
-				handler -> handler.server(DronePacket::handle));
-		registrar.play(PacketSendDroneDebugEntry.ID, PacketSendDroneDebugEntry::fromNetwork,
-				handler -> handler.client(DronePacket::handle));
-		registrar.play(PacketSyncDroneProgWidgets.ID, PacketSyncDroneProgWidgets::fromNetwork,
-				handler -> handler.client(DronePacket::handle));
-		registrar.play(PacketShowWireframe.ID, PacketShowWireframe::fromNetwork,
-				handler -> handler.client(PacketShowWireframe::handle));
-		registrar.play(PacketProgrammerSync.ID, PacketProgrammerSync::fromNetwork,
-				 handler -> handler.client(PacketProgrammerSync::handle).server(PacketProgrammerSync::handle));
+		registrar.playToServer(PacketUpdateDebuggingDrone.TYPE, PacketUpdateDebuggingDrone.STREAM_CODEC,
+				DronePacket::handle);
+		registrar.playToClient(PacketSendDroneDebugEntry.TYPE, PacketSendDroneDebugEntry.STREAM_CODEC,
+				DronePacket::handle);
+		registrar.playToClient(PacketSyncDroneProgWidgets.TYPE, PacketSyncDroneProgWidgets.STREAM_CODEC,
+				DronePacket::handle);
+		registrar.playToClient(PacketShowWireframe.TYPE, PacketShowWireframe.STREAM_CODEC,
+				PacketShowWireframe::handle);
+		registrar.playBidirectional(PacketProgrammerSync.TYPE, PacketProgrammerSync.STREAM_CODEC,
+				 PacketProgrammerSync::handle);
 	}
 
     public static void sendToAll(CustomPacketPayload message) {
-		sendMessage(message, msg -> PacketDistributor.ALL.noArg().send(msg));
+		PacketDistributor.sendToAllPlayers(message);
     }
 
     public static void sendToPlayer(CustomPacketPayload message, ServerPlayer player) {
-		sendMessage(message, msg -> PacketDistributor.PLAYER.with(player).send(msg));
+		PacketDistributor.sendToPlayer(player, message);
     }
 
 	public static void sendToAllTracking(CustomPacketPayload message, Entity entity) {
-    	sendMessage(message, msg -> PacketDistributor.TRACKING_ENTITY.with(entity).send(msg));
+		PacketDistributor.sendToPlayersTrackingEntity(entity, message);
 	}
 
 	public static void sendToAllTracking(CustomPacketPayload message, Level level, BlockPos pos) {
-		sendMessage(message, msg -> PacketDistributor.TRACKING_CHUNK.with(level.getChunkAt(pos)).send(msg));
+		if (level instanceof ServerLevel serverLevel) {
+			PacketDistributor.sendToPlayersTrackingChunk(serverLevel, new ChunkPos(pos), message);
+		}
 	}
 
 	public static void sendToAllTracking(CustomPacketPayload message, BlockEntity te) {
@@ -245,12 +246,12 @@ public class NetworkHandler {
 		}
     }
 
-	public static void sendToDimension(CustomPacketPayload message, ResourceKey<Level> level) {
-		sendMessage(message, msg -> PacketDistributor.DIMENSION.with(level).send(msg));
+	public static void sendToDimension(CustomPacketPayload message, ServerLevel level) {
+		PacketDistributor.sendToPlayersInDimension(level, message);
     }
 
     public static void sendToServer(CustomPacketPayload message) {
-		sendMessage(message, msg -> PacketDistributor.SERVER.noArg().send(msg));
+		PacketDistributor.sendToServer(message);
     }
 
 	/**
@@ -284,25 +285,37 @@ public class NetworkHandler {
 		}
 	}
 
-	private static void sendMessage(CustomPacketPayload message, Consumer<CustomPacketPayload> consumer) {
-		if (message instanceof ILargePayload) {
-			// see PacketMultiHeader#receivePayload for message reassembly
-			FriendlyByteBuf buf = ((ILargePayload) message).dumpToBuffer();
-			if (buf.writerIndex() < ILargePayload.MAX_PAYLOAD_SIZE) {
-				consumer.accept(message);
-			} else {
-				List<CustomPacketPayload> messageParts = new ArrayList<>();
-				messageParts.add(new PacketMultiHeader(buf.writerIndex(), message.getClass().getName()));
-				int offset = 0;
-				byte[] bytes = buf.array();
-				while (offset < buf.writerIndex()) {
-					messageParts.add(new PacketMultiPart(Arrays.copyOfRange(bytes, offset, Math.min(offset + ILargePayload.MAX_PAYLOAD_SIZE, buf.writerIndex()))));
-					offset += ILargePayload.MAX_PAYLOAD_SIZE;
-				}
-				messageParts.forEach(consumer);
-			}
-		} else {
-			consumer.accept(message);
-		}
-	}
+//
+//	/**
+//	 * Send a packet to the player, unless the player is local (i.e. player owner of the integrated server)
+//	 * @param player the player
+//	 * @param packet the packet to send
+//	 */
+//	public static void sendNonLocal(ServerPlayer player, CustomPacketPayload packet) {
+//		if (!player.server.isSingleplayerOwner(player.getGameProfile())) {
+//			sendToPlayer(packet, player);
+//		}
+//	}
+//
+//	private static void sendMessage(CustomPacketPayload message, Consumer<CustomPacketPayload> consumer) {
+//		if (message instanceof ILargePayload large) {
+//			// see PacketMultiHeader#receivePayload for message reassembly
+//			RegistryFriendlyByteBuf buf = large.dumpToBuffer();
+//			if (buf.writerIndex() < ILargePayload.MAX_PAYLOAD_SIZE) {
+//				consumer.accept(message);
+//			} else {
+//				List<CustomPacketPayload> messageParts = new ArrayList<>();
+//				messageParts.add(new PacketMultiHeader(buf.writerIndex(), message.getClass().getName()));
+//				int offset = 0;
+//				byte[] bytes = buf.array();
+//				while (offset < buf.writerIndex()) {
+//					messageParts.add(new PacketMultiPart(Arrays.copyOfRange(bytes, offset, Math.min(offset + ILargePayload.MAX_PAYLOAD_SIZE, buf.writerIndex()))));
+//					offset += ILargePayload.MAX_PAYLOAD_SIZE;
+//				}
+//				messageParts.forEach(consumer);
+//			}
+//		} else {
+//			consumer.accept(message);
+//		}
+//	}
 }

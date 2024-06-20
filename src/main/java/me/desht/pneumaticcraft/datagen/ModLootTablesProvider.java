@@ -18,15 +18,21 @@
 package me.desht.pneumaticcraft.datagen;
 
 import me.desht.pneumaticcraft.common.block.PneumaticCraftEntityBlock;
-import me.desht.pneumaticcraft.common.loot.LootFunc;
+import me.desht.pneumaticcraft.common.block.SerializableComponentsProvider;
 import me.desht.pneumaticcraft.common.registry.ModBlocks;
 import me.desht.pneumaticcraft.common.registry.ModItems;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.WritableRegistry;
+import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.loot.BlockLootSubProvider;
 import net.minecraft.data.loot.LootTableProvider;
 import net.minecraft.data.loot.LootTableSubProvider;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -40,10 +46,10 @@ import net.minecraft.world.level.storage.loot.entries.EmptyLootItem;
 import net.minecraft.world.level.storage.loot.entries.LootItem;
 import net.minecraft.world.level.storage.loot.entries.LootPoolEntryContainer;
 import net.minecraft.world.level.storage.loot.entries.LootPoolSingletonContainer;
+import net.minecraft.world.level.storage.loot.functions.CopyComponentsFunction;
 import net.minecraft.world.level.storage.loot.functions.CopyNameFunction;
 import net.minecraft.world.level.storage.loot.functions.EnchantRandomlyFunction;
 import net.minecraft.world.level.storage.loot.functions.SetItemCountFunction;
-import net.minecraft.world.level.storage.loot.functions.SetNbtFunction;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.predicates.ExplosionCondition;
 import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
@@ -51,25 +57,29 @@ import net.minecraft.world.level.storage.loot.providers.number.UniformGenerator;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.BiConsumer;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 public class ModLootTablesProvider extends LootTableProvider {
 
-    public ModLootTablesProvider(DataGenerator dataGeneratorIn) {
+    public ModLootTablesProvider(DataGenerator dataGeneratorIn, CompletableFuture<HolderLookup.Provider> lookupProvider) {
         super(dataGeneratorIn.getPackOutput(), Set.of(), List.of(
                 new LootTableProvider.SubProviderEntry(BlockLootTablePNC::new, LootContextParamSets.BLOCK),
                 new LootTableProvider.SubProviderEntry(MechanicVillagerChestLootProvider::new, LootContextParamSets.CHEST),
                 new LootTableProvider.SubProviderEntry(CustomDungeonLootProvider::new, LootContextParamSets.CHEST)
-        ));
+        ), lookupProvider);
     }
 
     @Override
-    protected void validate(Map<ResourceLocation, LootTable> map, ValidationContext validationresults) {
-        // ...
+    protected void validate(WritableRegistry<LootTable> writableregistry, ValidationContext validationcontext, ProblemReporter.Collector problemreporter$collector) {
+        // TODO
+    }
+
+    private static ResourceKey<LootTable> lootResourceKey(String id) {
+        return ResourceKey.create(Registries.LOOT_TABLE, RL(id));
     }
 
     private static class BlockLootTablePNC extends BlockLootSubProvider {
@@ -103,13 +113,24 @@ public class ModLootTablesProvider extends LootTableProvider {
         }
 
         private void addStandardSerializedDrop(Block block, ResourceLocation blockId) {
+            LootPoolSingletonContainer.Builder<?> lootBuilder = LootItem.lootTableItem(block)
+                    .apply(CopyNameFunction.copyName(CopyNameFunction.NameSource.BLOCK_ENTITY));
+
+            if (block instanceof SerializableComponentsProvider scp) {
+                List<DataComponentType<?>> components = new ArrayList<>();
+                scp.addSerializableComponents(components);
+                if (!components.isEmpty()) {
+                    CopyComponentsFunction.Builder compBuilder = CopyComponentsFunction.copyComponents(CopyComponentsFunction.Source.BLOCK_ENTITY);
+                    components.forEach(compBuilder::include);
+                    lootBuilder.apply(compBuilder);
+                }
+            }
+
             LootPool.Builder builder = LootPool.lootPool()
                     .name(blockId.getPath())
                     .when(ExplosionCondition.survivesExplosion())
                     .setRolls(ConstantValue.exactly(1))
-                    .add(LootItem.lootTableItem(block)
-                            .apply(CopyNameFunction.copyName(CopyNameFunction.NameSource.BLOCK_ENTITY))
-                            .apply(LootFunc.BlockEntitySerializerFunction.builder()));
+                    .add(lootBuilder);
             add(block, LootTable.lootTable().withPool(builder));
         }
 
@@ -117,7 +138,7 @@ public class ModLootTablesProvider extends LootTableProvider {
 
     public static class MechanicVillagerChestLootProvider implements LootTableSubProvider {
         @Override
-        public void generate(BiConsumer<ResourceLocation, LootTable.Builder> consumer) {
+        public void generate(HolderLookup.Provider provider, BiConsumer<ResourceKey<LootTable>, LootTable.Builder> consumer) {
             LootPool.Builder lootPool = LootPool.lootPool();
             lootPool.setRolls(ConstantValue.exactly(4))
                     .add(createEntry(ModItems.COMPRESSED_IRON_INGOT.get(), 10, 4, 12))
@@ -137,7 +158,7 @@ public class ModLootTablesProvider extends LootTableProvider {
 
             LootTable.Builder lootTable = LootTable.lootTable();
             lootTable.withPool(lootPool);
-            consumer.accept(RL("chests/mechanic_house"), lootTable);
+            consumer.accept(lootResourceKey("chests/mechanic_house"), lootTable);
         }
 
         private LootPoolEntryContainer.Builder<?> createEntry(ItemLike item, int weight, int min, int max) {
@@ -147,15 +168,16 @@ public class ModLootTablesProvider extends LootTableProvider {
 
         private LootPoolSingletonContainer.Builder<?> createEntry(ItemStack item, int weight) {
             LootPoolSingletonContainer.Builder<?> ret = LootItem.lootTableItem(item.getItem()).setWeight(weight);
-            if (item.hasTag())
-                ret.apply(SetNbtFunction.setTag(item.getOrCreateTag()));
+
+//            if (item.hasTag())
+//                ret.apply(SetNbtFunction.setTag(item.getOrCreateTag()));
             return ret;
         }
     }
 
     private static class CustomDungeonLootProvider implements LootTableSubProvider {
         @Override
-        public void generate(BiConsumer<ResourceLocation, LootTable.Builder> consumer) {
+        public void generate(HolderLookup.Provider provider, BiConsumer<ResourceKey<LootTable>, LootTable.Builder> consumer) {
             LootPool.Builder commonPool = LootPool.lootPool();
             commonPool.setRolls(ConstantValue.exactly(3))
                     .add(createEntry(ModItems.COMPRESSED_IRON_INGOT.get(), 10,1, 3))
@@ -165,7 +187,7 @@ public class ModLootTablesProvider extends LootTableProvider {
                     .add(EmptyLootItem.emptyItem().setWeight(20));
             LootTable.Builder commonTable = LootTable.lootTable();
             commonTable.withPool(commonPool);
-            consumer.accept(RL("custom/common_dungeon_loot"), commonTable);
+            consumer.accept(lootResourceKey("custom/common_dungeon_loot"), commonTable);
 
             LootPool.Builder uncommonPool = LootPool.lootPool();
             uncommonPool.setRolls(ConstantValue.exactly(2))
@@ -181,7 +203,7 @@ public class ModLootTablesProvider extends LootTableProvider {
                     .add(EmptyLootItem.emptyItem().setWeight(10));
             LootTable.Builder uncommonTable = LootTable.lootTable();
             uncommonTable.withPool(uncommonPool);
-            consumer.accept(RL("custom/uncommon_dungeon_loot"), uncommonTable);
+            consumer.accept(lootResourceKey("custom/uncommon_dungeon_loot"), uncommonTable);
 
             LootPool.Builder rarePool = LootPool.lootPool();
             rarePool.setRolls(ConstantValue.exactly(1))
@@ -197,7 +219,7 @@ public class ModLootTablesProvider extends LootTableProvider {
                     .add(EmptyLootItem.emptyItem().setWeight(20));
             LootTable.Builder rareTable = LootTable.lootTable();
             rareTable.withPool(rarePool);
-            consumer.accept(RL("custom/rare_dungeon_loot"), rareTable);
+            consumer.accept(lootResourceKey("custom/rare_dungeon_loot"), rareTable);
         }
 
         private LootPoolEntryContainer.Builder<?> ammo(ItemLike item) {
@@ -213,8 +235,8 @@ public class ModLootTablesProvider extends LootTableProvider {
 
         private LootPoolSingletonContainer.Builder<?> createEntry(ItemStack item, int weight) {
             LootPoolSingletonContainer.Builder<?> ret = LootItem.lootTableItem(item.getItem()).setWeight(weight);
-            if (item.hasTag())
-                ret.apply(SetNbtFunction.setTag(item.getOrCreateTag()));
+//            if (item.hasTag())
+//                ret.apply(SetNbtFunction.setTag(item.getOrCreateTag()));
             return ret;
         }
     }

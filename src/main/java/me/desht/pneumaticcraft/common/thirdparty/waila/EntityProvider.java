@@ -52,7 +52,7 @@ public class EntityProvider {
             IOHelper.getCapV(accessor.getEntity(), PNCCapabilities.HEAT_EXCHANGER_ENTITY)
                     .ifPresent(h -> compoundTag.putFloat("Temperature", h.getTemperatureAsInt()));
             if (accessor instanceof ISemiBlock s) {
-                s.serializeNBT(compoundTag);
+                s.serializeNBT(compoundTag, accessor.getEntity().registryAccess());
             }
         }
     }

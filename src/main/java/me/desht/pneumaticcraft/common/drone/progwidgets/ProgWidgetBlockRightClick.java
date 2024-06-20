@@ -17,27 +17,46 @@
 
 package me.desht.pneumaticcraft.common.drone.progwidgets;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import me.desht.pneumaticcraft.api.drone.IDrone;
+import me.desht.pneumaticcraft.api.drone.IProgWidget;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.drone.IDroneBase;
 import me.desht.pneumaticcraft.common.drone.ai.DroneAIRightClickBlock;
-import me.desht.pneumaticcraft.common.registry.ModProgWidgets;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.core.Direction;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.entity.ai.goal.Goal;
 
 import java.util.List;
 
 public class ProgWidgetBlockRightClick extends ProgWidgetPlace implements IBlockRightClicker, ISidedWidget {
+
+    public static final MapCodec<ProgWidgetBlockRightClick> CODEC = RecordCodecBuilder.mapCodec(builder ->
+            digPlaceParts(builder).and(builder.group(
+                    Direction.CODEC.optionalFieldOf("side", Direction.UP).forGetter(ProgWidgetBlockRightClick::getClickSide),
+                    Codec.BOOL.optionalFieldOf("sneaking", false).forGetter(ProgWidgetBlockRightClick::isSneaking),
+                    StringRepresentable.fromEnum(RightClickType::values).optionalFieldOf("type", RightClickType.CLICK_ITEM).forGetter(ProgWidgetBlockRightClick::getClickType)
+            )
+    ).apply(builder, ProgWidgetBlockRightClick::new));
+
     private Direction clickSide = Direction.UP;
     private boolean sneaking;
     private RightClickType clickType = RightClickType.CLICK_ITEM;
 
+    public ProgWidgetBlockRightClick(PositionFields pos, DigPlaceFields digPlaceFields, Direction clickSide, boolean sneaking, RightClickType clickType) {
+        super(pos, digPlaceFields);
+        this.clickSide = clickSide;
+        this.sneaking = sneaking;
+        this.clickType = clickType;
+    }
+
     public ProgWidgetBlockRightClick() {
-        super(ModProgWidgets.BLOCK_RIGHT_CLICK.get());
     }
 
     @Override
@@ -46,7 +65,7 @@ public class ProgWidgetBlockRightClick extends ProgWidgetPlace implements IBlock
     }
 
     @Override
-    public Goal getWidgetAI(IDroneBase drone, IProgWidget widget) {
+    public Goal getWidgetAI(IDrone drone, IProgWidget widget) {
         return setupMaxActions(new DroneAIRightClickBlock(drone, (ProgWidgetAreaItemBase) widget), (IMaxActions) widget);
     }
 
@@ -95,24 +114,24 @@ public class ProgWidgetBlockRightClick extends ProgWidgetPlace implements IBlock
                 .append(Component.translatable(clickType.getTranslationKey())));
     }
 
-    @Override
-    public void writeToNBT(CompoundTag tag) {
-        super.writeToNBT(tag);
-        if (sneaking) tag.putBoolean("sneaking", true);
-        tag.putInt("dir", clickSide.get3DDataValue());
-        tag.putString("clickType", clickType.toString());
-    }
+//    @Override
+//    public void writeToNBT(CompoundTag tag, HolderLookup.Provider provider) {
+//        super.writeToNBT(tag, provider);
+//        if (sneaking) tag.putBoolean("sneaking", true);
+//        tag.putInt("dir", clickSide.get3DDataValue());
+//        tag.putString("clickType", clickType.toString());
+//    }
+//
+//    @Override
+//    public void readFromNBT(CompoundTag tag, HolderLookup.Provider provider) {
+//        super.readFromNBT(tag, provider);
+//        sneaking = tag.getBoolean("sneaking");
+//        clickSide = Direction.from3DDataValue(tag.getInt("dir"));
+//        clickType = tag.contains("clickType") ? RightClickType.valueOf(tag.getString("clickType")) : RightClickType.CLICK_ITEM;
+//    }
 
     @Override
-    public void readFromNBT(CompoundTag tag) {
-        super.readFromNBT(tag);
-        sneaking = tag.getBoolean("sneaking");
-        clickSide = Direction.from3DDataValue(tag.getInt("dir"));
-        clickType = tag.contains("clickType") ? RightClickType.valueOf(tag.getString("clickType")) : RightClickType.CLICK_ITEM;
-    }
-
-    @Override
-    public void writeToPacket(FriendlyByteBuf buf) {
+    public void writeToPacket(RegistryFriendlyByteBuf buf) {
         super.writeToPacket(buf);
         buf.writeBoolean(sneaking);
         buf.writeEnum(clickSide);
@@ -120,7 +139,7 @@ public class ProgWidgetBlockRightClick extends ProgWidgetPlace implements IBlock
     }
 
     @Override
-    public void readFromPacket(FriendlyByteBuf buf) {
+    public void readFromPacket(RegistryFriendlyByteBuf buf) {
         super.readFromPacket(buf);
         sneaking = buf.readBoolean();
         clickSide = buf.readEnum(Direction.class);

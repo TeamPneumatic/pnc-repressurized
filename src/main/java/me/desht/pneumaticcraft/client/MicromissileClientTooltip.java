@@ -2,23 +2,20 @@ package me.desht.pneumaticcraft.client;
 
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.item.MicromissilesItem;
-import me.desht.pneumaticcraft.common.util.NBTUtils;
+import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.nbt.CompoundTag;
 import org.joml.Matrix4f;
-
-import java.util.Objects;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public record MicromissileClientTooltip(MicromissilesItem.Tooltip component) implements ClientTooltipComponent {
     @Override
     public void renderText(Font pFont, int pX, int pY, Matrix4f pMatrix4f, MultiBufferSource.BufferSource pBufferSource) {
-        if (NBTUtils.hasTag(component.stack(), MicromissilesItem.NBT_TOP_SPEED)) {
+        if (component.stack().has(ModDataComponents.MICROMISSILE_SETTINGS)) {
             pY += 3;
             @SuppressWarnings("ConstantConditions") int col = ChatFormatting.GRAY.getColor();
             pFont.drawInBatch(xlate("pneumaticcraft.gui.micromissile.topSpeed"), pX, pY, col, false, pMatrix4f, pBufferSource,
@@ -30,7 +27,8 @@ public record MicromissileClientTooltip(MicromissilesItem.Tooltip component) imp
 
     @Override
     public void renderImage(Font pFont, int pMouseX, int pMouseY, GuiGraphics graphics) {
-        if (NBTUtils.hasTag(component.stack(), MicromissilesItem.NBT_TOP_SPEED)) {
+        if (component.stack().has(ModDataComponents.MICROMISSILE_SETTINGS)) {
+            MicromissilesItem.Settings settings = component.stack().get(ModDataComponents.MICROMISSILE_SETTINGS);
             pMouseY += 3;
             int vSpace = pFont.lineHeight + 1;
             int width = pFont.width(xlate("pneumaticcraft.gui.micromissile.topSpeed"));
@@ -41,17 +39,16 @@ public record MicromissileClientTooltip(MicromissilesItem.Tooltip component) imp
             int barW = getWidth(pFont) - width - 10;
             graphics.pose().pushPose();
             graphics.pose().translate(pMouseX, pMouseY, 0);
-            CompoundTag tag = Objects.requireNonNull(component.stack().getTag());
-            drawLine(graphics, barX, barY, barW, tag.getFloat(MicromissilesItem.NBT_TOP_SPEED));
-            drawLine(graphics, barX, barY + vSpace, barW, tag.getFloat(MicromissilesItem.NBT_TURN_SPEED));
-            drawLine(graphics, barX, barY + 2 * vSpace, barW, tag.getFloat(MicromissilesItem.NBT_DAMAGE));
+            drawLine(graphics, barX, barY, barW, settings.topSpeed());
+            drawLine(graphics, barX, barY + vSpace, barW, settings.turnSpeed());
+            drawLine(graphics, barX, barY + 2 * vSpace, barW, settings.damage());
             graphics.pose().popPose();
         }
     }
 
     @Override
     public int getHeight() {
-        return NBTUtils.hasTag(component.stack(), MicromissilesItem.NBT_TOP_SPEED) ? 33 : 0;
+        return component.stack().has(ModDataComponents.MICROMISSILE_SETTINGS) ? 33 : 0;
     }
 
     @Override

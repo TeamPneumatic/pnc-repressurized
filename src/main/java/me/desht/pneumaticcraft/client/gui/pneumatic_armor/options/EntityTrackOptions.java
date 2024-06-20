@@ -27,6 +27,7 @@ import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.item.PneumaticArmorItem;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdateArmorExtraData;
+import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.util.EntityFilter;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
@@ -35,6 +36,8 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.resources.language.I18n;
+import net.minecraft.core.component.DataComponentPatch;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -101,9 +104,10 @@ public class EntityTrackOptions extends IOptionPage.SimpleOptionPage<EntityTrack
     @Override
     public void tick() {
         if (sendTimer > 0 && --sendTimer == 0) {
-            CompoundTag tag = new CompoundTag();
-            tag.putString(PneumaticArmorItem.NBT_ENTITY_FILTER, textField.getValue());
-            NetworkHandler.sendToServer(new PacketUpdateArmorExtraData(EquipmentSlot.HEAD, getClientUpgradeHandler().getID(), tag));
+            DataComponentPatch patch = DataComponentPatch.builder()
+                    .set(ModDataComponents.ENTITY_FILTER.get(), textField.getValue())
+                    .build();
+            NetworkHandler.sendToServer(new PacketUpdateArmorExtraData(EquipmentSlot.HEAD, getClientUpgradeHandler().getID(), patch));
         }
     }
 

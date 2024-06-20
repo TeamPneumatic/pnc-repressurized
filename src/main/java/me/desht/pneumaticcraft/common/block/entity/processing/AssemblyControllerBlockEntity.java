@@ -33,6 +33,7 @@ import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
@@ -205,12 +206,12 @@ public class AssemblyControllerBlockEntity extends AbstractAirHandlingBlockEntit
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
+    public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
+        super.loadAdditional(tag, provider);
 
         goingToHomePosition = tag.getBoolean("goingToHomePosition");
         displayedText = tag.getString("displayedText");
-        itemHandler.deserializeNBT(tag.getCompound("Items"));
+        itemHandler.deserializeNBT(provider, tag.getCompound("Items"));
         if (!itemHandler.getStackInSlot(PROGRAM_SLOT).isEmpty()) {
             curProgram = AssemblyProgramItem.getProgram(itemHandler.getStackInSlot(PROGRAM_SLOT));
             if (curProgram != null) curProgram.readFromNBT(tag);
@@ -218,12 +219,12 @@ public class AssemblyControllerBlockEntity extends AbstractAirHandlingBlockEntit
     }
 
     @Override
-    public void saveAdditional(CompoundTag tag) {
-        super.saveAdditional(tag);
+    public void saveAdditional(CompoundTag tag, HolderLookup.Provider provider) {
+        super.saveAdditional(tag, provider);
         tag.putBoolean("goingToHomePosition", goingToHomePosition);
         tag.putString("displayedText", displayedText);
         if (curProgram != null) curProgram.writeToNBT(tag);
-        tag.put("Items", itemHandler.serializeNBT());
+        tag.put("Items", itemHandler.serializeNBT(provider));
     }
 
     @Override

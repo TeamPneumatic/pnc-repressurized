@@ -267,7 +267,7 @@ public class RenderBlockTarget {
         }
     }
 
-    public void onHackConfirmServer() {
+    public void onHackConfirmedByServer() {
         hackTime = 1;
     }
 

@@ -17,6 +17,7 @@
 
 package me.desht.pneumaticcraft.common.drone.ai;
 
+import me.desht.pneumaticcraft.api.drone.IDrone;
 import me.desht.pneumaticcraft.common.drone.IDroneBase;
 import me.desht.pneumaticcraft.common.drone.progwidgets.IItemDropper;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetInventoryBase;
@@ -27,10 +28,10 @@ import net.minecraft.world.item.ItemStack;
 import java.util.HashSet;
 import java.util.Set;
 
-public class DroneAIDropItem<W extends ProgWidgetInventoryBase & IItemDropper> extends DroneAIImExBase<W> {
+public class DroneAIDropItem<W extends ProgWidgetInventoryBase & IItemDropper> extends DroneAIImportExportBase<W> {
     private final Set<BlockPos> visitedPositions = new HashSet<>();
 
-    public DroneAIDropItem(IDroneBase drone, W widget) {
+    public DroneAIDropItem(IDrone drone, W widget) {
         super(drone, widget);
     }
 
@@ -70,14 +71,14 @@ public class DroneAIDropItem<W extends ProgWidgetInventoryBase & IItemDropper> e
                     decreaseCount(stack.getCount());
                     drone.getInv().setStackInSlot(i, ItemStack.EMPTY);
                 }
-                ItemEntity item = new ItemEntity(drone.world(), pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, stack);
+                ItemEntity item = new ItemEntity(drone.getDroneLevel(), pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, stack);
                 if (progWidget.dropStraight()) {
                     item.setDeltaMovement(0, 0, 0);
                 }
                 if (progWidget.hasPickupDelay()) {
                     item.setPickUpDelay(40);
                 }
-                drone.world().addFreshEntity(item);
+                drone.getDroneLevel().addFreshEntity(item);
                 if (useCount() && getRemainingCount() == 0) break;
             }
         }

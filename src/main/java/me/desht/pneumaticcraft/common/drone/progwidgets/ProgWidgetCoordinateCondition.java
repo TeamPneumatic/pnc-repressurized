@@ -18,18 +18,21 @@
 package me.desht.pneumaticcraft.common.drone.progwidgets;
 
 import com.google.common.collect.ImmutableList;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import me.desht.pneumaticcraft.api.drone.IDrone;
+import me.desht.pneumaticcraft.api.drone.IProgWidget;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
-import me.desht.pneumaticcraft.common.drone.IDroneBase;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ICondition.Operator;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetCoordinateOperator.EnumOperator;
-import me.desht.pneumaticcraft.common.registry.ModProgWidgets;
+import me.desht.pneumaticcraft.common.registry.ModProgWidgetTypes;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction.Axis;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.StringRepresentable;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -39,16 +42,33 @@ import java.util.stream.Collectors;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class ProgWidgetCoordinateCondition extends ProgWidgetConditionBase {
-    private final AxisOptions axisOptions = new AxisOptions(false, false, false);
+    public static final MapCodec<ProgWidgetCoordinateCondition> CODEC = RecordCodecBuilder.mapCodec(builder ->
+            baseParts(builder).and(builder.group(
+                    AxisOptions.CODEC.fieldOf("options").forGetter(ProgWidgetCoordinateCondition::getAxisOptions),
+                    StringRepresentable.fromEnum(Operator::values).fieldOf("op").forGetter(ProgWidgetCoordinateCondition::getOperator)
+            )
+    ).apply(builder, ProgWidgetCoordinateCondition::new));
+
+    private final AxisOptions axisOptions;
     private Operator operator = Operator.GE;
 
     public ProgWidgetCoordinateCondition() {
-        super(ModProgWidgets.CONDITION_COORDINATE.get());
+        super(PositionFields.DEFAULT);
+
+        axisOptions = new AxisOptions(false, false, false);
+        operator = Operator.GE;
+    }
+
+    private ProgWidgetCoordinateCondition(PositionFields pos, AxisOptions options, Operator op) {
+        super(pos);
+
+        this.axisOptions = options;
+        this.operator = op;
     }
 
     @Override
     public List<ProgWidgetType<?>> getParameters() {
-        return ImmutableList.of(ModProgWidgets.COORDINATE.get(), ModProgWidgets.COORDINATE.get(), ModProgWidgets.TEXT.get());
+        return ImmutableList.of(ModProgWidgetTypes.COORDINATE.get(), ModProgWidgetTypes.COORDINATE.get(), ModProgWidgetTypes.TEXT.get());
     }
 
     @Override
@@ -64,7 +84,7 @@ public class ProgWidgetCoordinateCondition extends ProgWidgetConditionBase {
     }
 
     @Override
-    public boolean evaluate(IDroneBase drone, IProgWidget widget) {
+    public boolean evaluate(IDrone drone, IProgWidget widget) {
         BlockPos pos1 = ProgWidgetCoordinateOperator.calculateCoordinate(widget, 0, EnumOperator.PLUS_MINUS);
         BlockPos pos2 = ProgWidgetCoordinateOperator.calculateCoordinate(widget, 1, EnumOperator.PLUS_MINUS);
         return (!axisOptions.shouldCheck(Axis.X) || evaluate(pos1.getX(), pos2.getX()))
@@ -88,29 +108,29 @@ public class ProgWidgetCoordinateCondition extends ProgWidgetConditionBase {
         this.operator = operator;
     }
 
-    @Override
-    public void writeToNBT(CompoundTag tag) {
-        super.writeToNBT(tag);
-        axisOptions.writeToNBT(tag);
-        tag.putByte("operator", (byte) operator.ordinal());
-    }
+//    @Override
+//    public void writeToNBT(CompoundTag tag, HolderLookup.Provider provider) {
+//        super.writeToNBT(tag, provider);
+//        axisOptions.writeToNBT(tag);
+//        tag.putByte("operator", (byte) operator.ordinal());
+//    }
+//
+//    @Override
+//    public void readFromNBT(CompoundTag tag, HolderLookup.Provider provider) {
+//        super.readFromNBT(tag, provider);
+//        axisOptions.readFromNBT(tag, false);
+//        operator = Operator.values()[tag.getByte("operator")];
+//    }
 
     @Override
-    public void readFromNBT(CompoundTag tag) {
-        super.readFromNBT(tag);
-        axisOptions.readFromNBT(tag, false);
-        operator = Operator.values()[tag.getByte("operator")];
-    }
-
-    @Override
-    public void writeToPacket(FriendlyByteBuf buf) {
+    public void writeToPacket(RegistryFriendlyByteBuf buf) {
         super.writeToPacket(buf);
         axisOptions.writeToBuffer(buf);
         buf.writeByte(operator.ordinal());
     }
 
     @Override
-    public void readFromPacket(FriendlyByteBuf buf) {
+    public void readFromPacket(RegistryFriendlyByteBuf buf) {
         super.readFromPacket(buf);
         axisOptions.readFromBuffer(buf);
         operator = Operator.values()[buf.readByte()];
@@ -119,6 +139,11 @@ public class ProgWidgetCoordinateCondition extends ProgWidgetConditionBase {
     @Override
     public ResourceLocation getTexture() {
         return Textures.PROG_WIDGET_CONDITION_COORDINATE;
+    }
+
+    @Override
+    public ProgWidgetType<?> getType() {
+        return ModProgWidgetTypes.CONDITION_COORDINATE.get();
     }
 
     @Override

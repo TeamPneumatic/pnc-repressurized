@@ -23,16 +23,19 @@ import me.desht.pneumaticcraft.common.heat.HeatExchangerManager;
 import me.desht.pneumaticcraft.common.heat.HeatExtractionTracker;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSpawnParticle;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.level.Level;
+import org.joml.Vector3f;
 
 import java.util.Optional;
 
 public abstract class HeatBehaviourTransition extends HeatBehaviourLiquid {
+    private static final Vector3f VEC3F_101 = new Vector3f(1, 0, 1);
     private double maxExchangedHeat;
     private double blockTemp = -1;  // -1 = not yet init'd (init on first tick)
     private Optional<IHeatExchangerLogic> logic;
@@ -83,8 +86,12 @@ public abstract class HeatBehaviourTransition extends HeatBehaviourLiquid {
 
     void onTransition(BlockPos pos) {
         getWorld().playSound(null, pos, SoundEvents.GENERIC_EXTINGUISH_FIRE, SoundSource.BLOCKS, 0.5f, 2.6F + (getWorld().random.nextFloat() - getWorld().random.nextFloat()) * 0.8F);
-        NetworkHandler.sendToAllTracking(new PacketSpawnParticle(ParticleTypes.SMOKE, pos.getX(), pos.getY() + 1, pos.getZ(),
-                        0, 0, 0, 8, 1, 0, 1), getWorld(), pos);
+        NetworkHandler.sendToAllTracking(new PacketSpawnParticle(ParticleTypes.SMOKE,
+                new Vector3f(pos.getX(), pos.getY() + 1, pos.getZ()),
+                PneumaticCraftUtils.VEC3F_ZERO,
+                8,
+                Optional.of(VEC3F_101)
+        ), getWorld(), pos);
     }
 
     public double getExtractionProgress() {

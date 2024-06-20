@@ -17,12 +17,16 @@
 
 package me.desht.pneumaticcraft.common.drone.progwidgets;
 
-import me.desht.pneumaticcraft.common.drone.IDroneBase;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import me.desht.pneumaticcraft.api.drone.IDrone;
+import me.desht.pneumaticcraft.api.drone.IProgWidget;
+import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.drone.ai.DroneAIDropItem;
-import me.desht.pneumaticcraft.common.registry.ModProgWidgets;
+import me.desht.pneumaticcraft.common.registry.ModProgWidgetTypes;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.goal.Goal;
@@ -34,11 +38,27 @@ import java.util.List;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class ProgWidgetDropItem extends ProgWidgetInventoryBase implements IItemDropper {
+    public static final MapCodec<ProgWidgetDropItem> CODEC = RecordCodecBuilder.mapCodec(builder ->
+            invParts(builder).and(builder.group(
+                    Codec.BOOL.optionalFieldOf("drop_straight", false).forGetter(ProgWidgetDropItem::dropStraight),
+                    Codec.BOOL.optionalFieldOf("pick_delay", false).forGetter(ProgWidgetDropItem::hasPickupDelay)
+            )
+    ).apply(builder, ProgWidgetDropItem::new));
+
     private boolean dropStraight;
-    private boolean pickupDelay = true;
+    private boolean pickupDelay;
+
+    public ProgWidgetDropItem(PositionFields pos, InvBaseFields invBaseFields, boolean dropStraight, boolean pickupDelay) {
+        super(pos, invBaseFields);
+        this.dropStraight = dropStraight;
+        this.pickupDelay = pickupDelay;
+    }
 
     public ProgWidgetDropItem() {
-        super(ModProgWidgets.DROP_ITEM.get());
+        super(PositionFields.DEFAULT, InvBaseFields.DEFAULT);
+
+        this.dropStraight = false;
+        this.pickupDelay = true;
     }
 
     @Override
@@ -71,32 +91,37 @@ public class ProgWidgetDropItem extends ProgWidgetInventoryBase implements IItem
         this.pickupDelay = pickupDelay;
     }
 
-    @Override
-    public void writeToNBT(CompoundTag tag) {
-        super.writeToNBT(tag);
-        if (dropStraight) tag.putBoolean("dropStraight", true);
-        if (pickupDelay) tag.putBoolean("pickupDelay", true);
-    }
+//    @Override
+//    public void writeToNBT(CompoundTag tag, HolderLookup.Provider provider) {
+//        super.writeToNBT(tag, provider);
+//        if (dropStraight) tag.putBoolean("dropStraight", true);
+//        if (pickupDelay) tag.putBoolean("pickupDelay", true);
+//    }
+//
+//    @Override
+//    public void readFromNBT(CompoundTag tag, HolderLookup.Provider provider) {
+//        super.readFromNBT(tag, provider);
+//        dropStraight = tag.getBoolean("dropStraight");
+//        pickupDelay = tag.getBoolean("pickupDelay");
+//    }
 
     @Override
-    public void readFromNBT(CompoundTag tag) {
-        super.readFromNBT(tag);
-        dropStraight = tag.getBoolean("dropStraight");
-        pickupDelay = tag.getBoolean("pickupDelay");
-    }
-
-    @Override
-    public void writeToPacket(FriendlyByteBuf buf) {
+    public void writeToPacket(RegistryFriendlyByteBuf buf) {
         super.writeToPacket(buf);
         buf.writeBoolean(dropStraight);
         buf.writeBoolean(pickupDelay);
     }
 
     @Override
-    public void readFromPacket(FriendlyByteBuf buf) {
+    public void readFromPacket(RegistryFriendlyByteBuf buf) {
         super.readFromPacket(buf);
         dropStraight = buf.readBoolean();
         pickupDelay = buf.readBoolean();
+    }
+
+    @Override
+    public ProgWidgetType<?> getType() {
+        return ModProgWidgetTypes.DROP_ITEM.get();
     }
 
     @Override
@@ -110,7 +135,7 @@ public class ProgWidgetDropItem extends ProgWidgetInventoryBase implements IItem
     }
 
     @Override
-    public Goal getWidgetAI(IDroneBase drone, IProgWidget widget) {
+    public Goal getWidgetAI(IDrone drone, IProgWidget widget) {
         return new DroneAIDropItem(drone, (ProgWidgetInventoryBase) widget);
     }
 

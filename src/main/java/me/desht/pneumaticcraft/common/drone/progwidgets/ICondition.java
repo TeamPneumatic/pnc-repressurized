@@ -17,8 +17,13 @@
 
 package me.desht.pneumaticcraft.common.drone.progwidgets;
 
+import me.desht.pneumaticcraft.api.drone.IDrone;
 import me.desht.pneumaticcraft.common.drone.IDroneBase;
+import me.desht.pneumaticcraft.api.drone.IProgWidget;
 import net.minecraft.core.BlockPos;
+import net.minecraft.util.StringRepresentable;
+
+import java.util.Locale;
 
 public interface ICondition {
     boolean isAndFunction();
@@ -37,9 +42,9 @@ public interface ICondition {
 
     void setMeasureVar(String var);
 
-    default void maybeRecordMeasuredVal(IDroneBase drone, int val) {
-        if (!getMeasureVar().isEmpty()) {
-            drone.getAIManager().setCoordinate(getMeasureVar(), new BlockPos(val, 0, 0));
+    default void maybeRecordMeasuredVal(IDrone drone, int val) {
+        if (!getMeasureVar().isEmpty() && drone instanceof IDroneBase droneBase) {
+            droneBase.getAIManager().setCoordinate(getMeasureVar(), new BlockPos(val, 0, 0));
         }
     }
 
@@ -49,9 +54,9 @@ public interface ICondition {
      * @param drone the drone
      * @return evaluation result
      */
-    boolean evaluate(IDroneBase drone, IProgWidget widget);
+    boolean evaluate(IDrone drone, IProgWidget widget);
 
-    enum Operator {
+    enum Operator implements StringRepresentable {
         EQ("="), GE(">="), LE("<=");
 
         private final String symbol;
@@ -61,26 +66,29 @@ public interface ICondition {
         }
 
         public boolean evaluate(int count1, int count2) {
-            switch (this) {
-                case EQ: return count1 == count2;
-                case GE: return count1 >= count2;
-                case LE: return count1 <= count2;
-            }
-            return false;
+            return switch (this) {
+                case EQ -> count1 == count2;
+                case GE -> count1 >= count2;
+                case LE -> count1 <= count2;
+            };
         }
 
         public boolean evaluate(float count1, float count2) {
-            switch (this) {
-                case EQ: return count1 == count2;
-                case GE: return count1 >= count2;
-                case LE: return count1 <= count2;
-            }
-            return false;
+            return switch (this) {
+                case EQ -> count1 == count2;
+                case GE -> count1 >= count2;
+                case LE -> count1 <= count2;
+            };
         }
 
         @Override
         public String toString() {
             return symbol;
+        }
+
+        @Override
+        public String getSerializedName() {
+            return name().toLowerCase(Locale.ROOT);
         }
     }
 }

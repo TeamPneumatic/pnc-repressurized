@@ -24,11 +24,10 @@ import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorUpgradeHandler;
 import me.desht.pneumaticcraft.client.gui.widget.PNCForgeSlider;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.item.PneumaticArmorItem;
-import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdateArmorExtraData;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import net.minecraft.client.Minecraft;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.component.DataComponentType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ItemStack;
@@ -50,10 +49,11 @@ public abstract class AbstractSliderOptions<T extends IArmorUpgradeClientHandler
     }
 
     /**
-     * The NBT tag on the armor item under which this slider value should be saved.  The item used is determined
+     * The data component in which this slider value will be saved. The item it's saved to is determined
      * by {@link #getSlot()}.
+     * @return the data component type
      */
-    protected abstract String getTagName();
+    protected abstract DataComponentType<Integer> getIntegerComponent();
 
     protected abstract Component getPrefix();
 
@@ -69,7 +69,7 @@ public abstract class AbstractSliderOptions<T extends IArmorUpgradeClientHandler
         int initVal = range.getRight();
         if (Minecraft.getInstance().player != null) {
             ItemStack stack = Minecraft.getInstance().player.getItemBySlot(getSlot());
-            initVal = PneumaticArmorItem.getIntData(stack, getTagName(), range.getRight());
+            initVal = PneumaticArmorItem.getIntData(stack, getIntegerComponent(), range.getRight());
         }
         PointXY pos = getSliderPos();
         gui.addWidget(new PNCForgeSlider(pos.x(), pos.y(), 150, 20, getPrefix(), getSuffix(),
@@ -80,12 +80,10 @@ public abstract class AbstractSliderOptions<T extends IArmorUpgradeClientHandler
     public void tick() {
         if (pendingVal != null && !getGuiScreen().getScreen().isDragging()) {
             // avoid sending a stream of update packets if player is dragging slider
-            CompoundTag tag = new CompoundTag();
-            tag.putInt(getTagName(), pendingVal);
             IArmorUpgradeHandler<?> upgradeHandler = getClientUpgradeHandler().getCommonHandler();
-            NetworkHandler.sendToServer(new PacketUpdateArmorExtraData(getSlot(), upgradeHandler.getID(), tag));
+            PacketUpdateArmorExtraData.sendToServer(upgradeHandler, getIntegerComponent(), pendingVal);
             // also update the clientside handler
-            upgradeHandler.onDataFieldUpdated(CommonArmorHandler.getHandlerForPlayer(), getTagName(), tag.get(getTagName()));
+            upgradeHandler.onDataFieldUpdated(CommonArmorHandler.getHandlerForPlayer(), getIntegerComponent(), pendingVal);
             pendingVal = null;
         }
     }

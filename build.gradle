@@ -13,8 +13,8 @@ plugins {
     id 'eclipse'
     id 'idea'
     id 'maven-publish'
-    id 'net.neoforged.gradle.userdev' version '7.0.101'
-	id "me.modmuss50.mod-publish-plugin" version "0.4.5"
+    id 'net.neoforged.gradle.userdev' version '7.0.137'
+    id "me.modmuss50.mod-publish-plugin" version "0.4.5"
 }
 
 ext {
@@ -80,7 +80,7 @@ repositories {
 	}
 	maven {
 		name "FTB Maven"
-		url "https://maven.ftb.dev/releases/"
+		url "https://maven.ftb.dev/snapshots/"
 		content {
 			includeGroup "dev.ftb.mods"
 		}
@@ -91,7 +91,7 @@ base {
     archivesName = "${archive_base_name}-${mod_version}+mc${minecraft_version}"
 }
 
-java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+java.toolchain.languageVersion = JavaLanguageVersion.of(21)
 
 sourceSets {
 	api {
@@ -155,10 +155,10 @@ dependencies {
 		exclude group: "net.minecraftforge", module: "forge"
 	}
 
-	compileOnly("mezz.jei:jei-${minecraft_version}-common-api:${jei_version}")
-	compileOnly("mezz.jei:jei-${minecraft_version}-neoforge-api:${jei_version}")
-	runtimeOnly("mezz.jei:jei-${minecraft_version}-common:${jei_version}")
-	runtimeOnly("mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}")
+	compileOnly("mezz.jei:jei-1.20.4-common-api:${jei_version}")
+	compileOnly("mezz.jei:jei-1.20.4-neoforge-api:${jei_version}")
+	//runtimeOnly("mezz.jei:jei-1.20.4-common:${jei_version}")
+	//runtimeOnly("mezz.jei:jei-1.20.4-neoforge:${jei_version}")
 
 	compileOnly("top.theillusivec4.curios:curios-neoforge:${curios_version}:api")
 	runtimeOnly("top.theillusivec4.curios:curios-neoforge:${curios_version}")
@@ -167,14 +167,14 @@ dependencies {
 	//runtimeOnly("vazkii.botania:Botania:${botania_version}")
 
 	compileOnly("vazkii.patchouli:Patchouli:${patchouli_version}:api")
-	runtimeOnly("vazkii.patchouli:Patchouli:${patchouli_version}")
+	//runtimeOnly("vazkii.patchouli:Patchouli:${patchouli_version}")
 
-	compileOnly("cc.tweaked:cc-tweaked-${minecraft_version}-forge-api:${cc_tweaked_version}")
-	runtimeOnly("cc.tweaked:cc-tweaked-${minecraft_version}-forge:${cc_tweaked_version}")
+	compileOnly("cc.tweaked:cc-tweaked-1.20.5-forge-api:${cc_tweaked_version}")
+	//runtimeOnly("cc.tweaked:cc-weaked-1.20.4-forge:${cc_tweaked_version}")
 
 	compileOnly("dev.ftb.mods:ftb-filter-system-neoforge:${ffs_version}") { transitive = false }
 
-	implementation("blusunrize.immersiveengineering:ImmersiveEngineering:${immersive_engineering_version}")
+	compileOnly("blusunrize.immersiveengineering:ImmersiveEngineering:${immersive_engineering_version}")
 
 	compileOnly("mekanism:Mekanism:${mekanism_version}:api")
 	runtimeOnly("mekanism:Mekanism:${mekanism_version}")
@@ -183,7 +183,7 @@ dependencies {
 
 	implementation("curse.maven:jade-324717:${jade_curse_id}")
 
-	compileOnly("com.blamejared.crafttweaker:CraftTweaker-neoforge-${minecraft_version}:${crafttweaker_version}")
+	compileOnly("com.blamejared.crafttweaker:CraftTweaker-neoforge-1.20.4:${crafttweaker_version}")
 
 	compileOnly("curse.maven:cofh_core-69162:${cofh_core_curse_id}")
 	compileOnly("curse.maven:thermal_cultivation-271835:${thermal_cultivation_curse_id}")
@@ -215,7 +215,7 @@ tasks.withType(ProcessResources).configureEach {
     ]
     inputs.properties replaceProperties
 
-    filesMatching(['META-INF/mods.toml', 'pack.mcmeta']) {
+    filesMatching(['META-INF/neoforge.mods.toml', 'pack.mcmeta']) {
         expand replaceProperties + [project: project]
     }
 }

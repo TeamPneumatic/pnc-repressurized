@@ -29,8 +29,6 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
-import org.joml.Matrix3f;
-import org.joml.Matrix4f;
 
 public class RenderMicromissile extends EntityRenderer<MicromissileEntity> {
     public RenderMicromissile(EntityRendererProvider.Context ctx) {
@@ -50,34 +48,33 @@ public class RenderMicromissile extends EntityRenderer<MicromissileEntity> {
         matrixStackIn.translate(-4.0D, 0.0D, 0.0D);
 
         VertexConsumer builder = bufferIn.getBuffer(RenderType.entityCutout(this.getTextureLocation(entityIn)));
-        Matrix4f matrix4f = matrixStackIn.last().pose();
-        Matrix3f matrix3f = matrixStackIn.last().normal();
-        vertex(matrix4f, matrix3f, builder, -7, -2, -2, 0.0F, 0.15625F, -1, 0, 0, packedLightIn);
-        vertex(matrix4f, matrix3f, builder, -7, -2, 2, 0.15625F, 0.15625F, -1, 0, 0, packedLightIn);
-        vertex(matrix4f, matrix3f, builder, -7, 2, 2, 0.15625F, 0.3125F, -1, 0, 0, packedLightIn);
-        vertex(matrix4f, matrix3f, builder, -7, 2, -2, 0.0F, 0.3125F, -1, 0, 0, packedLightIn);
-        vertex(matrix4f, matrix3f, builder, -7, 2, -2, 0.0F, 0.15625F, 1, 0, 0, packedLightIn);
-        vertex(matrix4f, matrix3f, builder, -7, 2, 2, 0.15625F, 0.15625F, 1, 0, 0, packedLightIn);
-        vertex(matrix4f, matrix3f, builder, -7, -2, 2, 0.15625F, 0.3125F, 1, 0, 0, packedLightIn);
-        vertex(matrix4f, matrix3f, builder, -7, -2, -2, 0.0F, 0.3125F, 1, 0, 0, packedLightIn);
+        PoseStack.Pose pose = matrixStackIn.last();
+        vertex(pose, builder, -7, -2, -2, 0.0F, 0.15625F, -1, 0, 0, packedLightIn);
+        vertex(pose, builder, -7, -2, 2, 0.15625F, 0.15625F, -1, 0, 0, packedLightIn);
+        vertex(pose, builder, -7, 2, 2, 0.15625F, 0.3125F, -1, 0, 0, packedLightIn);
+        vertex(pose, builder, -7, 2, -2, 0.0F, 0.3125F, -1, 0, 0, packedLightIn);
+        vertex(pose, builder, -7, 2, -2, 0.0F, 0.15625F, 1, 0, 0, packedLightIn);
+        vertex(pose, builder, -7, 2, 2, 0.15625F, 0.15625F, 1, 0, 0, packedLightIn);
+        vertex(pose, builder, -7, -2, 2, 0.15625F, 0.3125F, 1, 0, 0, packedLightIn);
+        vertex(pose, builder, -7, -2, -2, 0.0F, 0.3125F, 1, 0, 0, packedLightIn);
 
         for (int j = 0; j < 4; ++j) {
             matrixStackIn.mulPose(Axis.XP.rotationDegrees(90.0F));
-            vertex(matrix4f, matrix3f, builder, -8, -2, 0, 0.0F, 0.0F, 0, 1, 0, packedLightIn);
-            vertex(matrix4f, matrix3f, builder, 8, -2, 0, 0.5F, 0.0F, 0, 1, 0, packedLightIn);
-            vertex(matrix4f, matrix3f, builder, 8, 2, 0, 0.5F, 0.15625F, 0, 1, 0, packedLightIn);
-            vertex(matrix4f, matrix3f, builder, -8, 2, 0, 0.0F, 0.15625F, 0, 1, 0, packedLightIn);
+            vertex(pose, builder, -8, -2, 0, 0.0F, 0.0F, 0, 1, 0, packedLightIn);
+            vertex(pose, builder, 8, -2, 0, 0.5F, 0.0F, 0, 1, 0, packedLightIn);
+            vertex(pose, builder, 8, 2, 0, 0.5F, 0.15625F, 0, 1, 0, packedLightIn);
+            vertex(pose, builder, -8, 2, 0, 0.0F, 0.15625F, 0, 1, 0, packedLightIn);
         }
 
         matrixStackIn.popPose();
     }
 
-    public void vertex(Matrix4f matrix4f, Matrix3f matrix3f, VertexConsumer builder, float x, float y, float z, float u, float v, float nx, float ny, float nz, int lightmap) {
-        builder.vertex(matrix4f, x, y, z)
+    public void vertex(PoseStack.Pose pose, VertexConsumer builder, float x, float y, float z, float u, float v, float nx, float ny, float nz, int lightmap) {
+        builder.vertex(pose.pose(), x, y, z)
                 .color(255, 255, 255, 255)
                 .uv(u, v).overlayCoords(OverlayTexture.NO_OVERLAY)
                 .uv2(lightmap)
-                .normal(matrix3f, nx, nz, ny)
+                .normal(pose, nx, nz, ny)
                 .endVertex();
     }
 

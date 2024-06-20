@@ -27,9 +27,9 @@ import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.event.config.ModConfigEvent;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.ScreenEvent;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.TickEvent;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
@@ -95,7 +95,7 @@ public class Patchouli implements IThirdParty, IDocsProvider {
         }
 
         @SubscribeEvent
-        public static void clientTick(TickEvent.ClientTickEvent event) {
+        public static void clientTick(ClientTickEvent.Post event) {
             if (scheduledTask != null) {
                 scheduledTask.run();
                 scheduledTask = null;

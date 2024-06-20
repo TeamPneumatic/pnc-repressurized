@@ -19,7 +19,7 @@ package me.desht.pneumaticcraft.api.upgrade;
 
 /**
  * Represents an item which can be used as a PneumaticCraft upgrade in machines or other items. You can implement this
- * interface on your own items, or you can use {@link IUpgradeRegistry#makeUpgradeItem(PNCUpgrade, int)} to create an
+ * interface on your own items, or you can use {@link IUpgradeRegistry#makeUpgradeItem(PNCUpgrade, int, net.minecraft.world.item.Rarity)} to create an
  * upgrade with default PneumaticCraft tooltip behaviour.
  * <p>
  * Items that you implement yourself should take a {@code Supplier&lt;PNCUpgrade&gt;} in their constructor, and

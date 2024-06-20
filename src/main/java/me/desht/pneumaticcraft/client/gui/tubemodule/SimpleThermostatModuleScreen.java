@@ -20,13 +20,10 @@ package me.desht.pneumaticcraft.client.gui.tubemodule;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetCheckBox;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetColorSelector;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetLabel;
-import me.desht.pneumaticcraft.client.gui.widget.WidgetTextField;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTextFieldNumber;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSyncThermostatModuleToServer;
 import me.desht.pneumaticcraft.common.network.PacketUpdatePressureModule;
-import me.desht.pneumaticcraft.common.network.PacketTubeModuleColor;
-import me.desht.pneumaticcraft.common.tubemodules.AbstractTubeModule;
 import me.desht.pneumaticcraft.common.tubemodules.ThermostatModule;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.gui.components.Tooltip;
@@ -70,7 +67,7 @@ public class SimpleThermostatModuleScreen extends AbstractTubeModuleScreen<Therm
             x = guiLeft + 10 + colorLabel.getWidth() + 10 + colorSelector.getWidth() + 10;
             WidgetCheckBox advancedMode = new WidgetCheckBox(x, y, 0xFF404040, Component.literal("Advanced"), b -> {
                     module.advancedConfig = b.checked;
-                    NetworkHandler.sendToServer(PacketUpdatePressureModule.create(module));
+                    NetworkHandler.sendToServer(PacketUpdatePressureModule.forModule(module));
             }).setChecked(false);
             advancedMode.setTooltip(Tooltip.create(xlate("pneumaticcraft.gui.tubeModule.advancedConfig.tooltip")));
             addRenderableWidget(advancedMode);

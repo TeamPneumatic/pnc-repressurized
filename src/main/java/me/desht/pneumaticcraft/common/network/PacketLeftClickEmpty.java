@@ -19,10 +19,11 @@ package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.common.item.ILeftClickableItem;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import net.neoforged.neoforge.network.handling.PlayPayloadContext;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
@@ -33,28 +34,18 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 public enum PacketLeftClickEmpty implements CustomPacketPayload {
     INSTANCE;
 
-    public static final ResourceLocation ID = RL("left_click_empty");
+    public static final Type<PacketLeftClickEmpty> TYPE = new Type<>(RL("left_click_empty"));
 
-    @SuppressWarnings("EmptyMethod")
-    public static PacketLeftClickEmpty fromNetwork(@SuppressWarnings("unused") FriendlyByteBuf buf) {
-        return INSTANCE;
-    }
-
-    @SuppressWarnings("EmptyMethod")
-    @Override
-    public void write(@SuppressWarnings("unused") FriendlyByteBuf buf) {
-    }
+    public static final StreamCodec<FriendlyByteBuf, PacketLeftClickEmpty> STREAM_CODEC = StreamCodec.unit(INSTANCE);
 
     @Override
-    public ResourceLocation id() {
-        return ID;
+    public Type<PacketLeftClickEmpty> type() {
+        return TYPE;
     }
 
-    public static void handle(@SuppressWarnings("unused") PacketLeftClickEmpty message, PlayPayloadContext ctx) {
-        ctx.player().ifPresent(player -> ctx.workHandler().submitAsync(() -> {
-            if (player instanceof ServerPlayer sp && sp.getMainHandItem().getItem() instanceof ILeftClickableItem lc) {
-                lc.onLeftClickEmpty(sp);
-            }
-        }));
+    public static void handle(@SuppressWarnings("unused") PacketLeftClickEmpty message, IPayloadContext ctx) {
+        if (ctx.player() instanceof ServerPlayer sp && sp.getMainHandItem().getItem() instanceof ILeftClickableItem lc) {
+            lc.onLeftClickEmpty(sp);
+        }
     }
 }

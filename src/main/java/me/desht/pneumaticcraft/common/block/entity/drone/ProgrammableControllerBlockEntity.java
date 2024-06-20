@@ -23,10 +23,11 @@ import me.desht.pneumaticcraft.ForcedChunks;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.drone.DroneConstructingEvent;
 import me.desht.pneumaticcraft.api.drone.IPathNavigator;
+import me.desht.pneumaticcraft.api.drone.IProgWidget;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.api.item.IProgrammable;
-import me.desht.pneumaticcraft.api.lib.NBTKeys;
 import me.desht.pneumaticcraft.api.pressure.PressureTier;
+import me.desht.pneumaticcraft.api.registry.PNCRegistries;
 import me.desht.pneumaticcraft.api.semiblock.SemiblockEvent;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.block.entity.*;
@@ -35,7 +36,6 @@ import me.desht.pneumaticcraft.common.debug.DroneDebugger;
 import me.desht.pneumaticcraft.common.drone.IDroneBase;
 import me.desht.pneumaticcraft.common.drone.LogisticsManager;
 import me.desht.pneumaticcraft.common.drone.ai.DroneAIManager;
-import me.desht.pneumaticcraft.common.drone.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.entity.drone.ProgrammableControllerEntity;
 import me.desht.pneumaticcraft.common.entity.semiblock.AbstractLogisticsFrameEntity;
 import me.desht.pneumaticcraft.common.inventory.ProgrammableControllerMenu;
@@ -52,10 +52,11 @@ import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -89,6 +90,7 @@ import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.IItemHandlerModifiable;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
 import net.neoforged.neoforge.items.ItemStackHandler;
+import org.joml.Vector3f;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -459,12 +461,12 @@ public class ProgrammableControllerBlockEntity extends AbstractAirHandlingBlockE
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
+    public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
+        super.loadAdditional(tag, provider);
 
-        inventory.deserializeNBT(tag.getCompound("Items"));
+        inventory.deserializeNBT(provider, tag.getCompound("Items"));
         tank.setCapacity((getUpgrades(ModUpgrades.INVENTORY.get()) + 1) * 16000);
-        tank.readFromNBT(tag.getCompound("tank"));
+        tank.readFromNBT(provider, tag.getCompound("tank"));
 
         ownerID = tag.contains("ownerID") ? UUID.fromString(tag.getString("ownerID")) : FALLBACK_UUID;
         ownerName = Component.literal(tag.contains("ownerName") ? tag.getString("ownerName") : FALLBACK_NAME);
@@ -472,7 +474,7 @@ public class ProgrammableControllerBlockEntity extends AbstractAirHandlingBlockE
 
         droneItemHandler.setUseableSlots(getUpgrades(ModUpgrades.INVENTORY.get()) + 1);
         ItemStackHandler tmpInv = new ItemStackHandler();
-        tmpInv.deserializeNBT(tag.getCompound("droneItems"));
+        tmpInv.deserializeNBT(provider, tag.getCompound("droneItems"));
         for (int i = 0; i < Math.min(tmpInv.getSlots(), droneItemHandler.getSlots()); i++) {
             droneItemHandler.setStackInSlot(i, tmpInv.getStackInSlot(i).copy());
         }
@@ -491,20 +493,20 @@ public class ProgrammableControllerBlockEntity extends AbstractAirHandlingBlockE
     }
 
     @Override
-    public void saveAdditional(CompoundTag tag) {
-        super.saveAdditional(tag);
+    public void saveAdditional(CompoundTag tag, HolderLookup.Provider provider) {
+        super.saveAdditional(tag, provider);
 
-        tag.put("Items", inventory.serializeNBT());
+        tag.put("Items", inventory.serializeNBT(provider));
 
         CompoundTag tankTag = new CompoundTag();
-        tank.writeToNBT(tankTag);
+        tank.writeToNBT(provider, tankTag);
         tag.put("tank", tankTag);
 
         ItemStackHandler handler = new ItemStackHandler(droneItemHandler.getSlots());
         for (int i = 0; i < droneItemHandler.getSlots(); i++) {
             handler.setStackInSlot(i, droneItemHandler.getStackInSlot(i));
         }
-        tag.put("droneItems", handler.serializeNBT());
+        tag.put("droneItems", handler.serializeNBT(provider));
 
         if (ownerID != null) tag.putString("ownerID", ownerID.toString());
         if (ownerName != null) tag.putString("ownerName", ownerName.getString());
@@ -553,7 +555,7 @@ public class ProgrammableControllerBlockEntity extends AbstractAirHandlingBlockE
     }
 
     @Override
-    public Level world() {
+    public Level getDroneLevel() {
         return getLevel();
     }
 
@@ -660,7 +662,7 @@ public class ProgrammableControllerBlockEntity extends AbstractAirHandlingBlockE
 
     @Override
     public boolean isProgramApplicable(ProgWidgetType<?> widgetType) {
-        return PneumaticCraftUtils.getRegistryName(ModProgWidgets.PROG_WIDGETS_REGISTRY, widgetType)
+        return PneumaticCraftUtils.getRegistryName(PNCRegistries.PROG_WIDGETS_REGISTRY, widgetType)
                 .map(regName -> !BLACKLISTED_WIDGETS.contains(regName))
                 .orElseThrow();
     }
@@ -688,7 +690,7 @@ public class ProgrammableControllerBlockEntity extends AbstractAirHandlingBlockE
         }
         ItemStack stack = inventory.getStackInSlot(0).copy();
         if (!stack.isEmpty()) {
-            stack.setHoverName(name);
+            stack.set(DataComponents.CUSTOM_NAME, name);
             inventory.setStackInSlot(0, stack);
         }
     }
@@ -734,8 +736,12 @@ public class ProgrammableControllerBlockEntity extends AbstractAirHandlingBlockE
             nonNullLevel().playSound(null, worldPosition, ModSounds.DRONE_DEATH.get(), SoundSource.BLOCKS, 1f, 1f);
         }
         NetworkHandler.sendToAllTracking(new PacketSpawnParticle(ParticleTypes.SMOKE,
-                getBlockPos().getX() - 0.5f, getBlockPos().getY() + 1, getBlockPos().getZ() - 0.5f,
-                0, 0, 0, 10, 1, 1, 1), this);
+                new Vector3f(getBlockPos().getX() - 0.5f, getBlockPos().getY() + 1, getBlockPos().getZ() - 0.5f),
+                new Vector3f(0, 0, 0),
+                10,
+                Optional.of(new Vector3f(1, 1, 1))),
+                this
+        );
     }
 
     @Override
@@ -820,9 +826,7 @@ public class ProgrammableControllerBlockEntity extends AbstractAirHandlingBlockE
 
     @Override
     public void storeTrackerData(ItemStack stack) {
-        CompoundTag tag = stack.getOrCreateTag();
-        tag.put(NBTKeys.PNEUMATIC_HELMET_DEBUGGING_PC, NbtUtils.writeBlockPos(getBlockPos()));
-        tag.remove(NBTKeys.PNEUMATIC_HELMET_DEBUGGING_DRONE);
+        stack.set(ModDataComponents.DRONE_DEBUG_TARGET, DronePacket.DroneTarget.forPos(getBlockPos()));
     }
 
     @Override

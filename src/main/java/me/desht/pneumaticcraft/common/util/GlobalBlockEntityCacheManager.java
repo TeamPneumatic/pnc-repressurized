@@ -25,6 +25,7 @@ import me.desht.pneumaticcraft.common.block.entity.utility.UniversalSensorBlockE
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.event.level.LevelEvent;
 
@@ -41,7 +42,7 @@ import java.util.stream.Stream;
  *
  * @author MineMaarten
  */
-@Mod.EventBusSubscriber(modid = Names.MOD_ID)
+@EventBusSubscriber(modid = Names.MOD_ID)
 public class GlobalBlockEntityCacheManager {
     private static final GlobalBlockEntityCacheManager CLIENT_INSTANCE = new GlobalBlockEntityCacheManager();
     private static final GlobalBlockEntityCacheManager SERVER_INSTANCE = new GlobalBlockEntityCacheManager();

@@ -25,6 +25,7 @@ import me.desht.pneumaticcraft.common.block.entity.IInfoForwarder;
 import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.chat.Component;
@@ -34,8 +35,8 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod;
-import net.neoforged.neoforge.event.TickEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import net.neoforged.neoforge.items.IItemHandler;
 import org.jetbrains.annotations.Nullable;
 
@@ -71,7 +72,10 @@ public class PressureChamberWallBlockEntity extends AbstractTickingBlockEntity i
     }
 
     void setPrimaryValve(PressureChamberValveBlockEntity newValve) {
-        boolean valveChanging = teValve != newValve || newValve == null && valvePos != null || newValve != null && valvePos == null;
+        boolean valveChanging = teValve != newValve
+                || newValve == null && valvePos != null
+                || newValve != null && valvePos == null;
+
         valvePos = newValve == null ? null : newValve.getBlockPos();
         if (valveChanging && !nonNullLevel().isClientSide) {
             teValve = newValve;
@@ -153,26 +157,18 @@ public class PressureChamberWallBlockEntity extends AbstractTickingBlockEntity i
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
+    public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
+        super.loadAdditional(tag, provider);
 
-        if (tag.getBoolean("noValve")) {
-            valvePos = null;
-        } else if (tag.contains("valvePos")) {
-            valvePos = NbtUtils.readBlockPos(tag.getCompound("valvePos"));
-        } else {
-            // legacy
-            valvePos = new BlockPos(tag.getInt("valveX"), tag.getInt("valveY"), tag.getInt("valveZ"));
-        }
+        valvePos = NbtUtils.readBlockPos(tag, "valvePos").orElse(null);
         teValve = null;
     }
 
     @Override
-    public void saveAdditional(CompoundTag tag) {
-        super.saveAdditional(tag);
-        if (valvePos == null) {
-            tag.putBoolean("noValve", true);
-        } else {
+    public void saveAdditional(CompoundTag tag, HolderLookup.Provider provider) {
+        super.saveAdditional(tag, provider);
+
+        if (valvePos != null) {
             tag.put("valvePos", NbtUtils.writeBlockPos(valvePos));
         }
     }
@@ -194,18 +190,16 @@ public class PressureChamberWallBlockEntity extends AbstractTickingBlockEntity i
         return getPrimaryValve();
     }
 
-    @Mod.EventBusSubscriber(modid = Names.MOD_ID)
+    @EventBusSubscriber(modid = Names.MOD_ID)
     public static class PressureWallStateManager
     {
         private static final Deque<WallAndValve> todo = new ArrayDeque<>();
 
         @SubscribeEvent
-        public static void onServerTick(TickEvent.ServerTickEvent event) {
-            if (event.phase == TickEvent.Phase.END) {
-                while (!todo.isEmpty()) {
-                    WallAndValve element = todo.poll();
-                    element.wall().updateBlockState(element.valve());
-                }
+        public static void onServerTick(ServerTickEvent.Post event) {
+            while (!todo.isEmpty()) {
+                WallAndValve element = todo.poll();
+                element.wall().updateBlockState(element.valve());
             }
         }
 

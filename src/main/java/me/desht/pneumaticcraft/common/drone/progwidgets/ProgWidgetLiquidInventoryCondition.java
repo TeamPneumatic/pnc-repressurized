@@ -18,10 +18,13 @@
 package me.desht.pneumaticcraft.common.drone.progwidgets;
 
 import com.google.common.collect.ImmutableList;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import me.desht.pneumaticcraft.api.drone.IDrone;
+import me.desht.pneumaticcraft.api.drone.IProgWidget;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
-import me.desht.pneumaticcraft.common.drone.IDroneBase;
 import me.desht.pneumaticcraft.common.drone.ai.DroneAIBlockCondition;
-import me.desht.pneumaticcraft.common.registry.ModProgWidgets;
+import me.desht.pneumaticcraft.common.registry.ModProgWidgetTypes;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.core.BlockPos;
@@ -35,24 +38,30 @@ import net.neoforged.neoforge.fluids.FluidStack;
 import java.util.List;
 
 public class ProgWidgetLiquidInventoryCondition extends ProgWidgetCondition {
+    public static final MapCodec<ProgWidgetLiquidInventoryCondition> CODEC = RecordCodecBuilder.mapCodec(builder ->
+        condParts(builder).apply(builder, ProgWidgetLiquidInventoryCondition::new));
+
+    private ProgWidgetLiquidInventoryCondition(PositionFields pos, InvBaseFields inv, ConditionFields cond) {
+        super(pos, inv, cond);
+    }
 
     public ProgWidgetLiquidInventoryCondition() {
-        super(ModProgWidgets.CONDITION_LIQUID_INVENTORY.get());
+        super(PositionFields.DEFAULT, InvBaseFields.DEFAULT, ConditionFields.DEFAULT);
     }
 
     @Override
     public List<ProgWidgetType<?>> getParameters() {
-        return ImmutableList.of(ModProgWidgets.AREA.get(), ModProgWidgets.LIQUID_FILTER.get(), ModProgWidgets.TEXT.get());
+        return ImmutableList.of(ModProgWidgetTypes.AREA.get(), ModProgWidgetTypes.LIQUID_FILTER.get(), ModProgWidgetTypes.TEXT.get());
     }
 
     @Override
-    protected DroneAIBlockCondition getEvaluator(IDroneBase drone, IProgWidget widget) {
+    protected DroneAIBlockCondition getEvaluator(IDrone drone, IProgWidget widget) {
         return new DroneAIBlockCondition(drone, (ProgWidgetAreaItemBase) widget) {
 
             @Override
             protected boolean evaluate(BlockPos pos) {
-                BlockEntity te = drone.world().getBlockEntity(pos);
-                int count = te == null ? countFluid(drone.world(), pos) : countFluid(te);
+                BlockEntity te = drone.getDroneLevel().getBlockEntity(pos);
+                int count = te == null ? countFluid(drone.getDroneLevel(), pos) : countFluid(te);
                 maybeRecordMeasuredVal(drone, count);
                 return ((ICondition) progWidget).getOperator().evaluate(count, ((ICondition) progWidget).getRequiredCount());
             }
@@ -86,4 +95,8 @@ public class ProgWidgetLiquidInventoryCondition extends ProgWidgetCondition {
         return Textures.PROG_WIDGET_CONDITION_LIQUID_INVENTORY;
     }
 
+    @Override
+    public ProgWidgetType<?> getType() {
+        return ModProgWidgetTypes.CONDITION_LIQUID_INVENTORY.get();
+    }
 }

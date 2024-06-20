@@ -206,7 +206,7 @@ public class ThermostatModule extends AbstractNetworkedRedstoneModule implements
 
     @Override
     protected void onInputLevelChange(int level) {
-        NetworkHandler.sendToAllTracking(PacketSyncThermostatModuleToClient.create(this), getTube());
+        NetworkHandler.sendToAllTracking(PacketSyncThermostatModuleToClient.forModule(this), getTube());
     }
 
     @Override

@@ -21,6 +21,7 @@ import me.desht.pneumaticcraft.api.drone.IDrone;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
@@ -90,7 +91,7 @@ public class DroneItemHandler extends ItemStackHandler {
      * Call this when it's safe to create a fake player (i.e. NOT when reading NBT during entity/block entity creation!)
      */
     public void setFakePlayerReady() {
-        if (!fakePlayerReady && !holder.world().isClientSide) {
+        if (!fakePlayerReady && !holder.getDroneLevel().isClientSide) {
             fakePlayerReady = true;
             for (int slot = 0; slot < getSlots(); slot++) {
                 copyItemToFakePlayer(slot);
@@ -115,7 +116,7 @@ public class DroneItemHandler extends ItemStackHandler {
                     super.setStackInSlot(slot, stack);
                 } else {
                     Vec3 v = holder.getDronePos();
-                    PneumaticCraftUtils.dropItemOnGround(stack, holder.world(), v.x(), v.y(), v.z());
+                    PneumaticCraftUtils.dropItemOnGround(stack, holder.getDroneLevel(), v.x(), v.y(), v.z());
                 }
                 fakeInv.setItem(slot, ItemStack.EMPTY);
             }
@@ -146,10 +147,21 @@ public class DroneItemHandler extends ItemStackHandler {
             // maybe one day drones will be able to change their current held-item slot
             fakePlayer.setItemInHand(InteractionHand.MAIN_HAND, newStack);
             if (!prevHeldStack.isEmpty()) {
-                fakePlayer.getAttributes().removeAttributeModifiers(prevHeldStack.getAttributeModifiers(EquipmentSlot.MAINHAND));
+                prevHeldStack.forEachModifier(EquipmentSlot.MAINHAND, (holder, modifier) -> {
+                    AttributeInstance instance = fakePlayer.getAttributes().getInstance(holder);
+                    if (instance != null) {
+                        instance.removeModifier(modifier);
+                    }
+                });
             }
             if (!newStack.isEmpty()) {
-                fakePlayer.getAttributes().addTransientAttributeModifiers(newStack.getAttributeModifiers(EquipmentSlot.MAINHAND));
+                fakePlayer.getMainHandItem().forEachModifier(EquipmentSlot.MAINHAND, (holder, modifier) -> {
+                    AttributeInstance instance = fakePlayer.getAttributes().getInstance(holder);
+                    if (instance != null) {
+                        instance.removeModifier(modifier.id());
+                        instance.addTransientModifier(modifier);
+                    }
+                });
             }
             prevHeldStack = newStack.copy();
         }

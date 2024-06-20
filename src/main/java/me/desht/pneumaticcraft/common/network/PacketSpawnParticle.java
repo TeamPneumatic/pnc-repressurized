@@ -19,91 +19,53 @@ package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import net.minecraft.core.particles.ParticleOptions;
-import net.minecraft.core.particles.ParticleType;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.network.handling.PlayPayloadContext;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
+import org.joml.Vector3f;
+
+import java.util.Optional;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 /**
  * Received on: CLIENT
- * Sent by server to spawn a particle (with support for multiple particles in an random area around the target point)
+ * Sent by server to spawn a particle (with support for multiple particles in a random area around the target point)
  */
-public record PacketSpawnParticle(ParticleOptions particle, float x, float y, float z, float dx, float dy, float dz, int numParticles, float rx, float ry, float rz) implements CustomPacketPayload {
-    public static final ResourceLocation ID = RL("spawn_particle");
+public record PacketSpawnParticle(ParticleOptions particle, Vector3f pos, Vector3f speed, int numParticles, Optional<Vector3f> randomOffset) implements CustomPacketPayload {
+    public static final Type<PacketSpawnParticle> TYPE = new Type<>(RL("spawn_particle"));
 
-    public PacketSpawnParticle(ParticleOptions particle, double x, double y, double z, double dx, double dy, double dz, int numParticles, double rx, double ry, double rz) {
-        this(particle, (float) x, (float) y, (float) z, (float) dx, (float) dy, (float) dz, numParticles, (float) rx, (float) ry, (float) rz);
-    }
+    public static final StreamCodec<RegistryFriendlyByteBuf, PacketSpawnParticle> STREAM_CODEC = StreamCodec.composite(
+            ParticleTypes.STREAM_CODEC, PacketSpawnParticle::particle,
+            ByteBufCodecs.VECTOR3F, PacketSpawnParticle::pos,
+            ByteBufCodecs.VECTOR3F, PacketSpawnParticle::speed,
+            ByteBufCodecs.VAR_INT, PacketSpawnParticle::numParticles,
+            ByteBufCodecs.optional(ByteBufCodecs.VECTOR3F), PacketSpawnParticle::randomOffset,
+            PacketSpawnParticle::new
+    );
 
-    public PacketSpawnParticle(ParticleOptions particle, double x, double y, double z, double dx, double dy, double dz) {
-        this(particle, (float) x, (float) y, (float) z, (float) dx, (float) dy, (float) dz, 1, 0f, 0f, 0f);
-    }
-
-    public static PacketSpawnParticle fromNetwork(FriendlyByteBuf buffer) {
-        ParticleType<?> type = buffer.readById(BuiltInRegistries.PARTICLE_TYPE);
-        assert type != null;
-        float x = buffer.readFloat();
-        float y = buffer.readFloat();
-        float z = buffer.readFloat();
-        float dx = buffer.readFloat();
-        float dy = buffer.readFloat();
-        float dz = buffer.readFloat();
-        int numParticles = buffer.readVarInt();
-        float rx, ry, rz;
-        if (numParticles > 1) {
-            rx = buffer.readFloat();
-            ry = buffer.readFloat();
-            rz = buffer.readFloat();
-        } else {
-            rx = ry = rz = 0f;
-        }
-        ParticleOptions particle = readParticle(type, buffer);
-
-        return new PacketSpawnParticle(particle, x, y, z, dx, dy, dz, numParticles, rx, ry, rz);
-    }
-
-    private static <T extends ParticleOptions> T readParticle(ParticleType<T> type, FriendlyByteBuf buffer) {
-        return type.getDeserializer().fromNetwork(type, buffer);
+    public static PacketSpawnParticle oneParticle(ParticleOptions particle, Vector3f pos, Vector3f speed) {
+        return new PacketSpawnParticle(particle, pos, speed, 1, Optional.empty());
     }
 
     @Override
-    public void write(FriendlyByteBuf buffer) {
-        buffer.writeId(BuiltInRegistries.PARTICLE_TYPE, particle.getType());
-        buffer.writeFloat(x);
-        buffer.writeFloat(y);
-        buffer.writeFloat(z);
-        buffer.writeFloat(dx);
-        buffer.writeFloat(dy);
-        buffer.writeFloat(dz);
-        buffer.writeVarInt(numParticles);
-        if (numParticles > 1) {
-            buffer.writeFloat(rx);
-            buffer.writeFloat(ry);
-            buffer.writeFloat(rz);
+    public Type<PacketSpawnParticle> type() {
+        return TYPE;
+    }
+
+    public static void handle(PacketSpawnParticle message, IPayloadContext ctx) {
+        Level world = ClientUtils.getClientLevel();
+        int numParticles = message.numParticles();
+        Vector3f r = message.randomOffset.orElse(new Vector3f(0f, 0f, 0f));
+        for (int i = 0; i < numParticles; i++) {
+            double x1 = message.pos.x + (numParticles == 1 ? 0 : world.random.nextDouble() * r.x);
+            double y1 = message.pos.y + (numParticles == 1 ? 0 : world.random.nextDouble() * r.y);
+            double z1 = message.pos.z + (numParticles == 1 ? 0 : world.random.nextDouble() * r.z);
+            world.addParticle(message.particle(), x1, y1, z1, message.speed.x, message.speed.y, message.speed.z);
         }
-        particle.writeToNetwork(new FriendlyByteBuf(buffer));
-    }
-
-    @Override
-    public ResourceLocation id() {
-        return ID;
-    }
-
-    public static void handle(PacketSpawnParticle message, PlayPayloadContext ctx) {
-        ctx.workHandler().submitAsync(() -> {
-            Level world = ClientUtils.getClientLevel();
-            int numParticles = message.numParticles();
-            for (int i = 0; i < numParticles; i++) {
-                double x1 = message.x() + (numParticles == 1 ? 0 : world.random.nextDouble() * message.rx());
-                double y1 = message.y() + (numParticles == 1 ? 0 : world.random.nextDouble() * message.ry());
-                double z1 = message.z() + (numParticles == 1 ? 0 : world.random.nextDouble() * message.rz());
-                world.addParticle(message.particle(), x1, y1, z1, message.dx(), message.dy(), message.dz());
-            }
-        });
     }
 }

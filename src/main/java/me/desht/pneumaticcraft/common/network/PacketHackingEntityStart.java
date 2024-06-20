@@ -23,11 +23,13 @@ import me.desht.pneumaticcraft.client.render.pneumatic_armor.RenderEntityTarget;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
-import net.neoforged.neoforge.network.handling.PlayPayloadContext;
+import net.minecraft.world.entity.player.Player;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
@@ -36,49 +38,45 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
  * Sent by client when player initiates an entity hack, and by server to confirm initiation
  */
 public record PacketHackingEntityStart(int entityId) implements CustomPacketPayload {
-    public static final ResourceLocation ID = RL("hack_entity_start");
+    public static final Type<PacketHackingEntityStart> TYPE = new Type<>(RL("hack_entity_start"));
 
-    public static PacketHackingEntityStart fromNetwork(FriendlyByteBuf buffer) {
-        return new PacketHackingEntityStart(buffer.readInt());
-    }
-
-    @Override
-    public void write(FriendlyByteBuf buf) {
-        buf.writeInt(entityId);
-    }
+    public static final StreamCodec<FriendlyByteBuf, PacketHackingEntityStart> STREAM_CODEC = StreamCodec.composite(
+            ByteBufCodecs.INT, PacketHackingEntityStart::entityId,
+            PacketHackingEntityStart::new
+    );
 
     @Override
-    public ResourceLocation id() {
-        return ID;
+    public Type<PacketHackingEntityStart> type() {
+        return TYPE;
     }
 
-    public static void handle(PacketHackingEntityStart message, PlayPayloadContext ctx) {
-        ctx.player().ifPresent(player -> ctx.workHandler().submitAsync(() -> {
-            if (ctx.flow().isClientbound()) {
-                // client
+    public static void handle(PacketHackingEntityStart message, IPayloadContext ctx) {
+        Player player = ctx.player();
+
+        if (ctx.flow().isClientbound()) {
+            // client
+            Entity entity = player.level().getEntity(message.entityId());
+            if (entity != null) {
+                CommonArmorHandler.getHandlerForPlayer(player)
+                        .getExtensionData(CommonUpgradeHandlers.hackHandler)
+                        .setHackedEntity(entity);
+                ClientArmorRegistry.getInstance()
+                        .getClientHandler(CommonUpgradeHandlers.entityTrackerHandler, EntityTrackerClientHandler.class)
+                        .getTargetsStream()
+                        .filter(target -> target.entity == entity)
+                        .findFirst()
+                        .ifPresent(RenderEntityTarget::onHackConfirmServer);
+            }
+        } else if (player instanceof ServerPlayer sp) {
+            // server
+            CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
+            if (handler.upgradeUsable(CommonUpgradeHandlers.entityTrackerHandler, true)) {
                 Entity entity = player.level().getEntity(message.entityId());
                 if (entity != null) {
-                    CommonArmorHandler.getHandlerForPlayer(player)
-                            .getExtensionData(CommonUpgradeHandlers.hackHandler)
-                            .setHackedEntity(entity);
-                    ClientArmorRegistry.getInstance()
-                            .getClientHandler(CommonUpgradeHandlers.entityTrackerHandler, EntityTrackerClientHandler.class)
-                            .getTargetsStream()
-                            .filter(target -> target.entity == entity)
-                            .findFirst()
-                            .ifPresent(RenderEntityTarget::onHackConfirmServer);
-                }
-            } else if (player instanceof ServerPlayer sp) {
-                // server
-                CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
-                if (handler.upgradeUsable(CommonUpgradeHandlers.entityTrackerHandler, true)) {
-                    Entity entity = player.level().getEntity(message.entityId());
-                    if (entity != null) {
-                        handler.getExtensionData(CommonUpgradeHandlers.hackHandler).setHackedEntity(entity);
-                        NetworkHandler.sendToPlayer(message, sp);
-                    }
+                    handler.getExtensionData(CommonUpgradeHandlers.hackHandler).setHackedEntity(entity);
+                    NetworkHandler.sendToPlayer(message, sp);
                 }
             }
-        }));
+        }
     }
 }

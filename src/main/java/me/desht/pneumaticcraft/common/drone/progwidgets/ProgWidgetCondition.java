@@ -18,23 +18,23 @@
 package me.desht.pneumaticcraft.common.drone.progwidgets;
 
 import com.google.common.collect.ImmutableList;
-import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
-import me.desht.pneumaticcraft.common.drone.IDroneBase;
+import com.mojang.datafixers.Products;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import me.desht.pneumaticcraft.api.drone.IDrone;
+import me.desht.pneumaticcraft.api.drone.IProgWidget;
 import me.desht.pneumaticcraft.common.drone.ai.DroneAIBlockCondition;
 import me.desht.pneumaticcraft.common.thirdparty.computer_common.ProgWidgetCC;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
 import me.desht.pneumaticcraft.lib.Log;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.item.DyeColor;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
@@ -42,17 +42,26 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
  * Base class for in-world conditions.
  */
 public abstract class ProgWidgetCondition extends ProgWidgetInventoryBase implements ICondition, IJump, IVariableSetWidget {
-    private DroneAIBlockCondition evaluator;
-    private boolean isAndFunction;
-    private ICondition.Operator operator = ICondition.Operator.GE;
-    private String measureVar = "";
 
-    public ProgWidgetCondition(ProgWidgetType<?> type) {
-        super(type);
+    protected static <P extends ProgWidgetCondition> Products.P3<RecordCodecBuilder.Mu<P>, PositionFields, InvBaseFields, ConditionFields> condParts(RecordCodecBuilder.Instance<P> pInstance) {
+        return invParts(pInstance).and(ConditionFields.CODEC.fieldOf("cond").forGetter(p -> p.cond));
+    }
+
+    private DroneAIBlockCondition evaluator;
+    protected ConditionFields cond;
+
+    protected ProgWidgetCondition(PositionFields pos, InvBaseFields inv, ConditionFields cond) {
+        super(pos, inv);
+
+        this.cond = cond;
+    }
+
+    protected ProgWidgetCondition() {
+        this(PositionFields.DEFAULT, InvBaseFields.DEFAULT, ConditionFields.DEFAULT);
     }
 
     @Override
-    public Goal getWidgetAI(IDroneBase drone, IProgWidget widget) {
+    public Goal getWidgetAI(IDrone drone, IProgWidget widget) {
         // when running under computer control, it appears to be important to keep the same evaluator
         //  and the reverse is true when not running under computer control (i.e. normal drone program)
         // TODO needs more investigation
@@ -62,36 +71,36 @@ public abstract class ProgWidgetCondition extends ProgWidgetInventoryBase implem
         return evaluator;
     }
 
-    protected abstract DroneAIBlockCondition getEvaluator(IDroneBase drone, IProgWidget widget);
+    protected abstract DroneAIBlockCondition getEvaluator(IDrone drone, IProgWidget widget);
 
     @Override
     public String getMeasureVar() {
-        return measureVar;
+        return Objects.requireNonNullElse(cond.measureVar, "");
     }
 
     @Override
     public void setMeasureVar(String measureVar) {
-        this.measureVar = measureVar;
+        this.cond = cond.withMeasureVar(measureVar);
     }
 
     @Override
     public void getTooltip(List<Component> curTooltip) {
         super.getTooltip(curTooltip);
-        if (!measureVar.isEmpty()) {
-            curTooltip.add(xlate("pneumaticcraft.gui.progWidget.condition.measure").append(measureVar));
+        if (!getMeasureVar().isEmpty()) {
+            curTooltip.add(xlate("pneumaticcraft.gui.progWidget.condition.measure").append(getMeasureVar()));
         }
     }
 
     @Override
     public void addErrors(List<Component> curInfo, List<IProgWidget> widgets) {
         super.addErrors(curInfo, widgets);
-        if (measureVar.isEmpty() && getConnectedParameters()[getParameters().size() - 1] == null && getConnectedParameters()[getParameters().size() * 2 - 1] == null) {
+        if (getMeasureVar().isEmpty() && getConnectedParameters()[getParameters().size() - 1] == null && getConnectedParameters()[getParameters().size() * 2 - 1] == null) {
             curInfo.add(xlate("pneumaticcraft.gui.progWidget.condition.error.noFlowControl"));
         }
     }
 
     @Override
-    public IProgWidget getOutputWidget(IDroneBase drone, List<IProgWidget> allWidgets) {
+    public IProgWidget getOutputWidget(IDrone drone, List<IProgWidget> allWidgets) {
         if (evaluator != null) {
             boolean evaluation = evaluate(drone, this);
             if (evaluation) {
@@ -107,18 +116,18 @@ public abstract class ProgWidgetCondition extends ProgWidgetInventoryBase implem
     }
 
     @Override
-    public boolean evaluate(IDroneBase drone, IProgWidget widget) {
+    public boolean evaluate(IDrone drone, IProgWidget widget) {
         return evaluator.getResult();
     }
 
     @Override
     public boolean isAndFunction() {
-        return isAndFunction;
+        return cond.isAndFunc;
     }
 
     @Override
     public void setAndFunction(boolean isAndFunction) {
-        this.isAndFunction = isAndFunction;
+        this.cond = cond.withIsAndFunc(isAndFunction);
     }
 
     @Override
@@ -150,44 +159,30 @@ public abstract class ProgWidgetCondition extends ProgWidgetInventoryBase implem
 
     @Override
     public Operator getOperator() {
-        return operator;
+        return cond.op;
     }
 
     @Override
     public void setOperator(Operator operator) {
-        this.operator = operator;
+        this.cond = cond.withOp(operator);
     }
 
     @Override
-    public void writeToNBT(CompoundTag tag) {
-        super.writeToNBT(tag);
-        if (isAndFunction) tag.putBoolean("isAndFunction", true);
-        tag.putByte("operator", (byte) operator.ordinal());
-        if (!measureVar.isEmpty()) tag.putString("measureVar", measureVar);
-    }
-
-    @Override
-    public void readFromNBT(CompoundTag tag) {
-        super.readFromNBT(tag);
-        isAndFunction = tag.getBoolean("isAndFunction");
-        operator = ICondition.Operator.values()[tag.getByte("operator")];
-        measureVar = tag.getString("measureVar");
-    }
-
-    @Override
-    public void writeToPacket(FriendlyByteBuf buf) {
+    public void writeToPacket(RegistryFriendlyByteBuf buf) {
         super.writeToPacket(buf);
-        buf.writeBoolean(isAndFunction);
-        buf.writeByte(operator.ordinal());
-        buf.writeUtf(measureVar, GlobalVariableManager.MAX_VARIABLE_LEN);
+        buf.writeBoolean(isAndFunction());
+        buf.writeEnum(getOperator());
+        buf.writeUtf(getMeasureVar(), GlobalVariableManager.MAX_VARIABLE_LEN);
     }
 
     @Override
-    public void readFromPacket(FriendlyByteBuf buf) {
+    public void readFromPacket(RegistryFriendlyByteBuf buf) {
         super.readFromPacket(buf);
-        isAndFunction = buf.readBoolean();
-        operator = Operator.values()[buf.readByte()];
-        measureVar = buf.readUtf(GlobalVariableManager.MAX_VARIABLE_LEN);
+        cond = new ConditionFields(
+                buf.readBoolean(),
+                buf.readEnum(Operator.class),
+                buf.readUtf(GlobalVariableManager.MAX_VARIABLE_LEN)
+        );
     }
 
     @Override
@@ -199,7 +194,7 @@ public abstract class ProgWidgetCondition extends ProgWidgetInventoryBase implem
     public List<Component> getExtraStringInfo() {
         MutableComponent anyAll = xlate(isAndFunction() ? "pneumaticcraft.gui.misc.all" : "pneumaticcraft.gui.misc.any")
                 .append(" " + getOperator().toString() + " " + getRequiredCount());
-        return measureVar.isEmpty() ? Collections.singletonList(anyAll) : ImmutableList.of(anyAll, varAsTextComponent(measureVar));
+        return getMeasureVar().isEmpty() ? Collections.singletonList(anyAll) : ImmutableList.of(anyAll, varAsTextComponent(getMeasureVar()));
     }
 
     @Override
@@ -222,5 +217,27 @@ public abstract class ProgWidgetCondition extends ProgWidgetInventoryBase implem
     @Override
     public void setVariable(String variable) {
         setMeasureVar(variable);
+    }
+
+    public record ConditionFields(boolean isAndFunc, Operator op, String measureVar) {
+        public static final ConditionFields DEFAULT = new ConditionFields(false, Operator.GE, "");
+
+        public static final Codec<ConditionFields> CODEC = RecordCodecBuilder.create(builder -> builder.group(
+                Codec.BOOL.optionalFieldOf("and_func", false).forGetter(ConditionFields::isAndFunc),
+                StringRepresentable.fromEnum(Operator::values).optionalFieldOf("op", Operator.GE).forGetter(ConditionFields::op),
+                Codec.STRING.optionalFieldOf("measure_var", "").forGetter(ConditionFields::measureVar)
+        ).apply(builder, ConditionFields::new));
+
+        public ConditionFields withIsAndFunc(boolean isAndFunc) {
+            return new ConditionFields(isAndFunc, op, measureVar);
+        }
+
+        public ConditionFields withOp(Operator op) {
+            return new ConditionFields(isAndFunc, op, measureVar);
+        }
+
+        public ConditionFields withMeasureVar(String measureVar) {
+            return new ConditionFields(isAndFunc, op, measureVar);
+        }
     }
 }

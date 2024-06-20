@@ -17,17 +17,23 @@
 
 package me.desht.pneumaticcraft.common.drone.progwidgets;
 
-import me.desht.pneumaticcraft.common.util.ITranslatableEnum;
+import me.desht.pneumaticcraft.api.misc.ITranslatableEnum;
+import net.minecraft.util.StringRepresentable;
 
 import java.util.Locale;
 
 public interface IBlockRightClicker {
-    enum RightClickType implements ITranslatableEnum {
+    enum RightClickType implements ITranslatableEnum, StringRepresentable {
         CLICK_ITEM, CLICK_BLOCK;
 
         @Override
         public String getTranslationKey() {
             return "pneumaticcraft.gui.progWidget.blockRightClick.clickType." + toString().toLowerCase(Locale.ROOT);
+        }
+
+        @Override
+        public String getSerializedName() {
+            return name().toLowerCase(Locale.ROOT);
         }
     }
 

@@ -17,10 +17,13 @@
 
 package me.desht.pneumaticcraft.api.drone;
 
+import me.desht.pneumaticcraft.api.drone.debug.IDroneDebugger;
 import me.desht.pneumaticcraft.api.upgrade.PNCUpgrade;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.ai.goal.GoalSelector;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -28,12 +31,14 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.common.util.FakePlayer;
 import net.neoforged.neoforge.energy.IEnergyStorage;
 import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
 import net.neoforged.neoforge.items.IItemHandlerModifiable;
+import org.jetbrains.annotations.ApiStatus;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -46,6 +51,7 @@ import java.util.UUID;
  * {@link DroneConstructingEvent}, {@link DroneSuicideEvent}), and via {@code getDrone(...)} methods in
  * {@link IDroneRegistry}.
  */
+@ApiStatus.NonExtendable
 public interface IDrone {
     /**
      * Get a count of the installed upgrades of the given type.
@@ -56,11 +62,11 @@ public interface IDrone {
     int getUpgrades(PNCUpgrade upgrade);
 
     /**
-     * Get the drone's world.
+     * Get the level this drone is in.
      *
-     * @return a world
+     * @return a level
      */
-    Level world();
+    Level getDroneLevel();
 
     /**
      * Get the drone's fluid tank.  Note that this is also accessible via the
@@ -226,4 +232,59 @@ public interface IDrone {
      * @return the deployment pos
      */
     BlockPos getDeployPos();
+
+    List<IProgWidget> getProgWidgets();
+
+    void setActiveProgram(IProgWidget widget);
+
+    boolean isProgramApplicable(ProgWidgetType<?> widgetType);
+
+    void overload(String msgKey, Object... params);
+
+    /**
+     * Sets the label that was jumped to last, with a hierarchy in case of External Programs.
+     */
+    void updateLabel();
+
+    void playSound(SoundEvent soundEvent, SoundSource category, float volume, float pitch);
+
+    void addAirToDrone(int air);
+
+    default void onVariableChanged(String varname, boolean isCoordinate) { }
+
+    int getActiveWidgetIndex();
+
+    /**
+     * {@return the debugger for this drone}
+     */
+    IDroneDebugger getDebugger();
+
+    void storeTrackerData(ItemStack stack);
+
+    /**
+     * Get the currently-active programming widget.  Used client-side for debugging and rendering.
+     *
+     * @return the currently-active programming widget
+     */
+    default IProgWidget getActiveWidget() {
+        int index = getActiveWidgetIndex();
+        if (index >= 0 && index < getProgWidgets().size()) {
+            return getProgWidgets().get(index);
+        } else {
+            return null;
+        }
+    }
+
+    String getLabel();
+
+    Component getDroneName();
+
+    boolean isDroneStillValid();
+
+    boolean canMoveIntoFluid(Fluid fluid);
+
+    default void resetAttackCount() {
+    }
+
+    float getDronePressure();
 }

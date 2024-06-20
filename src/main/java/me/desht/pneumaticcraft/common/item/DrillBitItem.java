@@ -22,9 +22,7 @@ import me.desht.pneumaticcraft.common.registry.ModItems;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.*;
-import net.minecraft.world.level.Level;
 
-import javax.annotation.Nullable;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -44,8 +42,8 @@ public class DrillBitItem extends Item {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
-        super.appendHoverText(stack, worldIn, tooltip, flagIn);
+    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flagIn) {
+        super.appendHoverText(stack, context, tooltip, flagIn);
 
         tooltip.add(xlate("pneumaticcraft.gui.tooltip.item.drillBit.tier").withStyle(ChatFormatting.YELLOW)
                 .append(Component.literal(getType().tier.toString()).withStyle(ChatFormatting.GOLD)));

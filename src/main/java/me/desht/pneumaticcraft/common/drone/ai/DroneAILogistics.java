@@ -17,6 +17,8 @@
 
 package me.desht.pneumaticcraft.common.drone.ai;
 
+import me.desht.pneumaticcraft.api.drone.IDrone;
+import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.api.semiblock.ISemiBlock;
 import me.desht.pneumaticcraft.common.drone.IDroneBase;
 import me.desht.pneumaticcraft.common.drone.LogisticsManager;
@@ -26,7 +28,7 @@ import me.desht.pneumaticcraft.common.drone.progwidgets.ILiquidFiltered;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetAreaItemBase;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetInventoryBase;
 import me.desht.pneumaticcraft.common.entity.semiblock.AbstractLogisticsFrameEntity;
-import me.desht.pneumaticcraft.common.registry.ModProgWidgets;
+import me.desht.pneumaticcraft.common.registry.ModProgWidgetTypes;
 import me.desht.pneumaticcraft.common.semiblock.SemiblockTracker;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.common.util.StreamUtils;
@@ -51,8 +53,8 @@ public class DroneAILogistics extends Goal {
     private final ProgWidgetAreaItemBase widget;
     private LogisticsTask curTask;
 
-    public DroneAILogistics(IDroneBase drone, ProgWidgetAreaItemBase widget) {
-        this.drone = drone;
+    public DroneAILogistics(IDrone drone, ProgWidgetAreaItemBase widget) {
+        this.drone = IDroneBase.asDroneBase(drone);
         this.widget = widget;
     }
 
@@ -61,7 +63,7 @@ public class DroneAILogistics extends Goal {
             // note: this is an expensive operation!  hence we cache the logistics manager object in the drone
             Set<BlockPos> area = widget.getCachedAreaSet();
             if (!area.isEmpty()) {
-                Stream<ISemiBlock> semiBlocksInArea = SemiblockTracker.getInstance().getSemiblocksInArea(drone.world(), widget.getAreaExtents());
+                Stream<ISemiBlock> semiBlocksInArea = SemiblockTracker.getInstance().getSemiblocksInArea(drone.getDroneLevel(), widget.getAreaExtents());
                 Stream<AbstractLogisticsFrameEntity> logisticFrames = StreamUtils.ofType(AbstractLogisticsFrameEntity.class, semiBlocksInArea);
                 LogisticsManager manager = new LogisticsManager();
                 logisticFrames.filter(frame -> area.contains(frame.getBlockPos())).forEach(manager::addLogisticFrame);
@@ -82,7 +84,7 @@ public class DroneAILogistics extends Goal {
         ItemStack item = drone.getInv().getStackInSlot(0);
         FluidStack fluid = drone.getFluidTank().getFluid();
         PriorityQueue<LogisticsTask> tasks = getLogisticsManager().getTasks(item.isEmpty() ? fluid : item, true);
-        if (tasks.size() > 0) {
+        if (!tasks.isEmpty()) {
             curTask = tasks.poll();
             return execute(curTask);
         }
@@ -160,7 +162,7 @@ public class DroneAILogistics extends Goal {
         private final boolean[] sides = new boolean[6];
 
         FakeWidgetLogistics(BlockPos pos, Direction side, @Nonnull ItemStack stack) {
-            super(ModProgWidgets.LOGISTICS.get());
+            super(PositionFields.DEFAULT, InvBaseFields.DEFAULT);
             this.stack = stack;
             this.fluid = FluidStack.EMPTY;
             area = new HashSet<>();
@@ -169,7 +171,7 @@ public class DroneAILogistics extends Goal {
         }
 
         FakeWidgetLogistics(BlockPos pos, Direction side, FluidStack fluid) {
-            super(ModProgWidgets.LOGISTICS.get());
+            super(PositionFields.DEFAULT, InvBaseFields.DEFAULT);
             this.stack = ItemStack.EMPTY;
             this.fluid = fluid;
             area = new HashSet<>();
@@ -236,6 +238,11 @@ public class DroneAILogistics extends Goal {
         @Override
         public boolean isPlacingFluidBlocks() {
             return false;
+        }
+
+        @Override
+        public ProgWidgetType<?> getType() {
+            return ModProgWidgetTypes.LOGISTICS.get();
         }
     }
 

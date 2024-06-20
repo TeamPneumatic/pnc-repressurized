@@ -37,6 +37,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -126,7 +127,7 @@ public class TagWorkbenchScreen extends AbstractPneumaticCraftContainerScreen<Ta
         ItemStack stack1 = menu.getSlot(1).getItem();
         if (!ItemStack.matches(stack1, lastPaperStack)) {
             if (stack1.getItem() == ModItems.TAG_FILTER.get()) {
-                Set<TagKey<Item>> s = TagFilterItem.getConfiguredTagList(stack1);
+                Set<TagKey<Item>> s = new HashSet<>(TagFilterItem.getConfiguredTagList(stack1));
                 s.addAll(selectedList.getLines().stream().map(rl -> TagKey.create(Registries.ITEM, rl)).toList());
                 selectedList.clear();
                 s.forEach(rl -> selectedList.add(rl.location()));

@@ -17,7 +17,6 @@
 
 package me.desht.pneumaticcraft.common.entity.semiblock;
 
-import me.desht.pneumaticcraft.api.lib.NBTKeys;
 import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.api.semiblock.IDirectionalSemiblock;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
@@ -26,6 +25,7 @@ import me.desht.pneumaticcraft.common.item.TagFilterItem;
 import me.desht.pneumaticcraft.common.item.logistics.AbstractLogisticsFrameItem;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSyncSemiblock;
+import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.semiblock.ISpecificRequester;
 import me.desht.pneumaticcraft.common.semiblock.SemiblockItem;
@@ -35,9 +35,11 @@ import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -50,6 +52,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -57,7 +60,7 @@ import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.phys.AABB;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.player.AttackEntityEvent;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.items.ItemStackHandler;
@@ -112,13 +115,14 @@ public abstract class AbstractLogisticsFrameEntity extends AbstractSemiblockEnti
         if (stack.getItem() instanceof SemiblockItem semiblockItem) {
             AbstractSemiblockEntity semiblock = semiblockItem.createEntity(world, stack, player, BlockPos.ZERO);
             if (semiblock instanceof AbstractLogisticsFrameEntity logisticsFrame) {
-                if (world.isClientSide && stack.hasTag()) {
-                    // client-side entity creation doesn't load in NBT from the itemstack; we need to do it ourselves in this case
+                if (world.isClientSide && stack.has(ModDataComponents.SEMIBLOCK_DATA)) {
+                    // client-side entity creation doesn't load in custom data from the itemstack; we need to do it ourselves in this case
                     // see EntityType#applyItemNBT()
                     CompoundTag tag = logisticsFrame.saveWithoutId(new CompoundTag());
                     UUID uuid = logisticsFrame.getUUID();
                     //noinspection ConstantConditions
-                    tag.merge(stack.getTag().getCompound(NBTKeys.ENTITY_TAG));
+                    CompoundTag toMerge = stack.get(ModDataComponents.SEMIBLOCK_DATA).copyTag();
+                    tag.merge(toMerge);
                     logisticsFrame.setUUID(uuid);
                     logisticsFrame.load(tag);
                 }
@@ -129,11 +133,11 @@ public abstract class AbstractLogisticsFrameEntity extends AbstractSemiblockEnti
     }
 
     @Override
-    protected void defineSynchedData() {
-        super.defineSynchedData();
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
 
-        getEntityData().define(INVISIBLE, false);
-        getEntityData().define(SIDE, Direction.SOUTH);
+        builder.define(INVISIBLE, false);
+        builder.define(SIDE, Direction.SOUTH);
     }
 
     @Override
@@ -328,8 +332,9 @@ public abstract class AbstractLogisticsFrameEntity extends AbstractSemiblockEnti
     protected void readAdditionalSaveData(CompoundTag tag) {
         super.readAdditionalSaveData(tag);
 
-        itemFilterHandler.deserializeNBT(tag.getCompound(NBT_ITEM_FILTERS));
-        fluidFilter.deserializeNBT(tag.getCompound(NBT_FLUID_FILTERS));
+        itemFilterHandler.deserializeNBT(registryAccess(), tag.getCompound(NBT_ITEM_FILTERS));
+        fluidFilter = FluidFilter.CODEC.parse(NbtOps.INSTANCE, tag.getCompound(NBT_FLUID_FILTERS)).result()
+                .orElse(new FluidFilter(FLUID_FILTER_SLOTS));
         setSemiblockInvisible(tag.getBoolean(NBT_INVISIBLE));
         setMatchNBT(tag.getBoolean(NBT_MATCH_NBT));
         setMatchDurability(tag.getBoolean(NBT_MATCH_DURABILITY));
@@ -345,24 +350,26 @@ public abstract class AbstractLogisticsFrameEntity extends AbstractSemiblockEnti
     }
 
     @Override
-    public CompoundTag serializeNBT(CompoundTag tag) {
-        tag = super.serializeNBT(tag);
+    public CompoundTag serializeNBT(CompoundTag tag, HolderLookup.Provider provider) {
+        CompoundTag tag1 = super.serializeNBT(tag, provider);
 
-        tag.put(NBT_ITEM_FILTERS, itemFilterHandler.serializeNBT());
-        tag.put(NBT_FLUID_FILTERS, fluidFilter.serializeNBT());
-        if (isSemiblockInvisible()) tag.putBoolean(NBT_INVISIBLE, true);
-        if (isMatchNBT()) tag.putBoolean(NBT_MATCH_NBT, true);
-        if (isMatchDurability()) tag.putBoolean(NBT_MATCH_DURABILITY, true);
-        if (isMatchModId()) tag.putBoolean(NBT_MATCH_MODID, true);
-        if (isItemWhiteList()) tag.putBoolean(NBT_ITEM_WHITELIST, true);
-        if (isFluidWhiteList()) tag.putBoolean(NBT_FLUID_WHITELIST, true);
-        if (getSide() != null) tag.putInt(NBT_SIDE, getSide().get3DDataValue());
+        tag1.put(NBT_ITEM_FILTERS, itemFilterHandler.serializeNBT(provider));
+        FluidFilter.CODEC.encodeStart(NbtOps.INSTANCE, fluidFilter)
+                .ifSuccess(t -> tag1.put(NBT_FLUID_FILTERS, t));
+        tag1.put(NBT_FLUID_FILTERS, FluidFilter.CODEC.encodeStart(NbtOps.INSTANCE, fluidFilter).result().orElse(new CompoundTag()));
+        if (isSemiblockInvisible()) tag1.putBoolean(NBT_INVISIBLE, true);
+        if (isMatchNBT()) tag1.putBoolean(NBT_MATCH_NBT, true);
+        if (isMatchDurability()) tag1.putBoolean(NBT_MATCH_DURABILITY, true);
+        if (isMatchModId()) tag1.putBoolean(NBT_MATCH_MODID, true);
+        if (isItemWhiteList()) tag1.putBoolean(NBT_ITEM_WHITELIST, true);
+        if (isFluidWhiteList()) tag1.putBoolean(NBT_FLUID_WHITELIST, true);
+        if (getSide() != null) tag1.putInt(NBT_SIDE, getSide().get3DDataValue());
         if (this instanceof ISpecificRequester spr) {
-            tag.putInt(ISpecificRequester.NBT_MIN_ITEMS, spr.getMinItemOrderSize());
-            tag.putInt(ISpecificRequester.NBT_MIN_FLUID, spr.getMinFluidOrderSize());
+            tag1.putInt(ISpecificRequester.NBT_MIN_ITEMS, spr.getMinItemOrderSize());
+            tag1.putInt(ISpecificRequester.NBT_MIN_FLUID, spr.getMinFluidOrderSize());
         }
 
-        return tag;
+        return tag1;
     }
 
     @Override
@@ -390,7 +397,7 @@ public abstract class AbstractLogisticsFrameEntity extends AbstractSemiblockEnti
         if (player.isShiftKeyDown()) {
             NonNullList<ItemStack> drops = getDrops();
             if (!drops.isEmpty()) {
-                AbstractLogisticsFrameItem.addLogisticsTooltip(drops.get(0), player.level(), new ArrayList<>(), true).forEach(curInfo);
+                AbstractLogisticsFrameItem.addLogisticsTooltip(drops.getFirst(), Item.TooltipContext.of(player.level()), new ArrayList<>(), true).forEach(curInfo);
             }
         }
     }
@@ -413,7 +420,7 @@ public abstract class AbstractLogisticsFrameEntity extends AbstractSemiblockEnti
                 }
             };
 
-            NetworkHandler.sendToPlayer(PacketSyncSemiblock.create(this, false), sp);
+            NetworkHandler.sendToPlayer(PacketSyncSemiblock.create(this, false, sp.registryAccess()), sp);
             sp.openMenu(provider, buffer -> buffer.writeVarInt(getId()));
         }
         return true;
@@ -433,7 +440,7 @@ public abstract class AbstractLogisticsFrameEntity extends AbstractSemiblockEnti
     }
 
     @Override
-    public void writeToBuf(FriendlyByteBuf payload) {
+    public void writeToBuf(RegistryFriendlyByteBuf payload) {
         super.writeToBuf(payload);
 
         payload.writeByte(getSide().get3DDataValue());
@@ -445,9 +452,9 @@ public abstract class AbstractLogisticsFrameEntity extends AbstractSemiblockEnti
         payload.writeBoolean(matchModId);
         payload.writeVarInt(itemFilterHandler.getSlots());
         for (int i = 0; i < itemFilterHandler.getSlots(); i++) {
-            payload.writeItem(itemFilterHandler.getStackInSlot(i));
+            ItemStack.OPTIONAL_STREAM_CODEC.encode(payload, itemFilterHandler.getStackInSlot(i));
         }
-        fluidFilter.write(payload);
+        FluidFilter.STREAM_CODEC.encode(payload, fluidFilter);
         if (this instanceof ISpecificRequester spr) {
             payload.writeVarInt(spr.getMinItemOrderSize());
             payload.writeVarInt(spr.getMinFluidOrderSize());
@@ -455,7 +462,7 @@ public abstract class AbstractLogisticsFrameEntity extends AbstractSemiblockEnti
     }
 
     @Override
-    public void readFromBuf(FriendlyByteBuf payload) {
+    public void readFromBuf(RegistryFriendlyByteBuf payload) {
         super.readFromBuf(payload);
 
         setSide(Direction.from3DDataValue(payload.readByte()));
@@ -467,9 +474,9 @@ public abstract class AbstractLogisticsFrameEntity extends AbstractSemiblockEnti
         matchModId = payload.readBoolean();
         int size = payload.readVarInt();
         for (int i = 0; i < size; i++) {
-            itemFilterHandler.setStackInSlot(i, payload.readItem());
+            itemFilterHandler.setStackInSlot(i, ItemStack.OPTIONAL_STREAM_CODEC.decode(payload));
         }
-        fluidFilter = new FluidFilter(payload);
+        fluidFilter = FluidFilter.STREAM_CODEC.decode(payload);
         if (this instanceof ISpecificRequester spr) {
             spr.setMinItemOrderSize(payload.readVarInt());
             spr.setMinFluidOrderSize(payload.readVarInt());
@@ -478,10 +485,10 @@ public abstract class AbstractLogisticsFrameEntity extends AbstractSemiblockEnti
 
     public boolean isObstructed(PathComputationType pathType) {
         BlockPos pos = getBlockPos().relative(getSide());
-        return !level().getBlockState(pos).isPathfindable(level(), pos, pathType);
+        return !level().getBlockState(pos).isPathfindable(pathType);
     }
 
-    @Mod.EventBusSubscriber(modid = Names.MOD_ID)
+    @EventBusSubscriber(modid = Names.MOD_ID)
     public static class Listener {
         @SubscribeEvent
         public static void onPlayerLeftClick(AttackEntityEvent event) {
@@ -540,8 +547,8 @@ public abstract class AbstractLogisticsFrameEntity extends AbstractSemiblockEnti
         }
 
         @Override
-        public void deserializeNBT(CompoundTag nbt) {
-            super.deserializeNBT(nbt);
+        public void deserializeNBT(HolderLookup.Provider provider, CompoundTag nbt) {
+            super.deserializeNBT(provider, nbt);
 
             buildFilterList();
         }

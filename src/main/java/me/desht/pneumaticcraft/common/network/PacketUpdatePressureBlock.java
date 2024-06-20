@@ -18,15 +18,15 @@
 package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.api.PNCCapabilities;
-import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.block.entity.AbstractAirHandlingBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.neoforged.neoforge.network.handling.PlayPayloadContext;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
@@ -38,42 +38,31 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
  * - For machine air handlers which are currently leaking
  */
 public record PacketUpdatePressureBlock(BlockPos pos, Direction handlerDir, Direction leakDir, int currentAir) implements CustomPacketPayload {
-    public static final ResourceLocation ID = RL("update_pressure_block");
+    public static final Type<PacketUpdatePressureBlock> TYPE = new Type<>(RL("update_pressure_block"));
 
-    public static PacketUpdatePressureBlock fromNetwork(FriendlyByteBuf buffer) {
-        return new PacketUpdatePressureBlock(
-                buffer.readBlockPos(),
-                buffer.readNullable(buf -> buf.readEnum(Direction.class)),
-                buffer.readNullable(buf -> buf.readEnum(Direction.class)),
-                buffer.readInt()
-        );
-    }
-
-    @Override
-    public void write(FriendlyByteBuf buf) {
-        buf.writeBlockPos(pos);
-        buf.writeNullable(handlerDir, FriendlyByteBuf::writeEnum);
-        buf.writeNullable(leakDir, FriendlyByteBuf::writeEnum);
-        buf.writeInt(currentAir);
-    }
+    public static final StreamCodec<FriendlyByteBuf, PacketUpdatePressureBlock> STREAM_CODEC = StreamCodec.composite(
+            BlockPos.STREAM_CODEC, PacketUpdatePressureBlock::pos,
+            Direction.STREAM_CODEC, PacketUpdatePressureBlock::handlerDir,
+            Direction.STREAM_CODEC, PacketUpdatePressureBlock::leakDir,
+            ByteBufCodecs.INT, PacketUpdatePressureBlock::currentAir,
+            PacketUpdatePressureBlock::new
+    );
 
     @Override
-    public ResourceLocation id() {
-        return ID;
+    public Type<PacketUpdatePressureBlock> type() {
+        return TYPE;
     }
 
-    public static void handle(PacketUpdatePressureBlock message, PlayPayloadContext ctx) {
-        ctx.workHandler().submitAsync(() -> {
-            BlockEntity blockEntity = ClientUtils.getBlockEntity(message.pos());
-            if (blockEntity != null) {
-                PNCCapabilities.getAirHandler(blockEntity, message.handlerDir()).ifPresent(handler -> {
-                    handler.setSideLeaking(message.leakDir());
-                    handler.addAir(message.currentAir() - handler.getAir());
-                    if (message.handlerDir() != null && blockEntity instanceof AbstractAirHandlingBlockEntity aah) {
-                        aah.initializeHullAirHandlerClient(message.handlerDir(), handler);
-                    }
-                });
-            }
-        });
+    public static void handle(PacketUpdatePressureBlock message, IPayloadContext ctx) {
+        BlockEntity blockEntity = ctx.player().level().getBlockEntity(message.pos());
+        if (blockEntity != null) {
+            PNCCapabilities.getAirHandler(blockEntity, message.handlerDir()).ifPresent(handler -> {
+                handler.setSideLeaking(message.leakDir());
+                handler.addAir(message.currentAir() - handler.getAir());
+                if (message.handlerDir() != null && blockEntity instanceof AbstractAirHandlingBlockEntity aah) {
+                    aah.initializeHullAirHandlerClient(message.handlerDir(), handler);
+                }
+            });
+        }
     }
 }

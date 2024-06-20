@@ -65,8 +65,8 @@ public class ModItemTagsProvider extends ItemTagsProvider {
         appendToTag(ItemTags.DOORS, PneumaticCraftTags.Items.DOORS);
         appendToTag(Tags.Items.STORAGE_BLOCKS, PneumaticCraftTags.Items.STORAGE_BLOCKS_COMPRESSED_IRON);
         appendToTag(Tags.Items.CHESTS, PneumaticCraftTags.Items.CHESTS);
-        appendToTag(Tags.Items.STONE, PneumaticCraftTags.Items.REINFORCED_STONE);
-        appendToTag(Tags.Items.STONE, PneumaticCraftTags.Items.COMPRESSED_STONE);
+        appendToTag(Tags.Items.STONES, PneumaticCraftTags.Items.REINFORCED_STONE);
+        appendToTag(Tags.Items.STONES, PneumaticCraftTags.Items.COMPRESSED_STONE);
         appendToTag(ItemTags.STONE_BRICKS, PneumaticCraftTags.Items.REINFORCED_STONE_BRICKS);
         appendToTag(ItemTags.STONE_BRICKS, PneumaticCraftTags.Items.COMPRESSED_STONE_BRICKS);
 

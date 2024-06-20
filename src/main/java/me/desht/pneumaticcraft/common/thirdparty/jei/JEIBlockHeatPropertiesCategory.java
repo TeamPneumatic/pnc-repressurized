@@ -41,6 +41,7 @@ import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag.Default;
 import net.minecraft.world.level.block.Block;
@@ -48,6 +49,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidType;
 
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -117,7 +119,7 @@ public class JEIBlockHeatPropertiesCategory extends AbstractPNCCategory<HeatProp
             if (state.getBlock() instanceof LiquidBlock l) {
                 int level = state.hasProperty(LiquidBlock.LEVEL) ? state.getValue(LiquidBlock.LEVEL) : 15;
                 if (level == 0) level = 15;
-                FluidStack stack = new FluidStack(l.getFluid(), 1000 * level / 15);
+                FluidStack stack = new FluidStack(l.fluid, FluidType.BUCKET_VOLUME * level / 15);
                 fluids.add(stack);
                 items.add(new ItemStack(Blocks.BARRIER));
             } else {
@@ -134,7 +136,7 @@ public class JEIBlockHeatPropertiesCategory extends AbstractPNCCategory<HeatProp
     private void setInputIngredient(IRecipeLayoutBuilder builder, HeatPropertiesRecipe recipe) {
         Block block = recipe.getBlock();
         if (block instanceof LiquidBlock l) {
-            FluidStack stack = new FluidStack(l.getFluid(), 1000);
+            FluidStack stack = new FluidStack(l.fluid, FluidType.BUCKET_VOLUME);
             builder.addSlot(RecipeIngredientRole.INPUT, INPUT_AREA.getX() + 2, INPUT_AREA.getY() - 1)
                             .addIngredient(NeoForgeTypes.FLUID_STACK, stack);
         } else {
@@ -232,7 +234,7 @@ public class JEIBlockHeatPropertiesCategory extends AbstractPNCCategory<HeatProp
     private void addTooltip(Block block, List<Component> list) {
         ItemStack stack = new ItemStack(block);
         list.add(stack.getHoverName());
-        stack.getItem().appendHoverText(stack, ClientUtils.getClientLevel(), list, ClientUtils.hasShiftDown() ? Default.ADVANCED : Default.NORMAL);
+        stack.getItem().appendHoverText(stack, Item.TooltipContext.of(ClientUtils.getClientLevel()), list, ClientUtils.hasShiftDown() ? Default.ADVANCED : Default.NORMAL);
         if (Minecraft.getInstance().options.advancedItemTooltips) {
             String regName = PneumaticCraftUtils.getRegistryName(stack.getItem()).map(ResourceLocation::toString).orElse("?");
             list.add(Component.literal(regName).withStyle(ChatFormatting.DARK_GRAY));

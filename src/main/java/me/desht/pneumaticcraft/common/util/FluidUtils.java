@@ -17,7 +17,6 @@
 
 package me.desht.pneumaticcraft.common.util;
 
-import me.desht.pneumaticcraft.api.crafting.ingredient.FluidIngredient;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -30,6 +29,7 @@ import net.minecraft.tags.FluidTags;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.BucketPickup;
@@ -40,11 +40,13 @@ import net.minecraft.world.level.material.FlowingFluid;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
+import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.common.SoundActions;
 import net.neoforged.neoforge.fluids.FluidActionResult;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidUtil;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
 import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
@@ -326,12 +328,15 @@ public class FluidUtils {
         }
     }
 
-    public static boolean matchFluid(FluidIngredient fluidIngredient, FluidStack fluidStack, boolean matchTags) {
-        return fluidIngredient.testFluid(fluidStack);
-    }
-
-    public static boolean matchFluid(FluidIngredient fluidIngredient, Fluid fluid, boolean matchTags) {
-        return fluidIngredient.testFluid(fluid);
+    public static ItemStack createFluidContainingItem(ItemLike item, FluidStack fluid) {
+        ItemStack tank = new ItemStack(item);
+        IFluidHandlerItem handler = tank.getCapability(Capabilities.FluidHandler.ITEM, null);
+        if (handler == null) {
+            return ItemStack.EMPTY;
+        } else {
+            handler.fill(fluid, IFluidHandler.FluidAction.EXECUTE);
+            return handler.getContainer();
+        }
     }
 
     //------------------------------- temp methods copied from Forge FluidUtil to work around a bug there ------------------
@@ -394,7 +399,7 @@ public class FluidUtils {
     @Nonnull
     private static FluidActionResult tryEmptyContainer(@Nonnull ItemStack container, IFluidHandler fluidDestination, int maxAmount, @Nullable Player player, boolean doDrain)
     {
-        ItemStack containerCopy = ItemHandlerHelper.copyStackWithSize(container, 1); // do not modify the input
+        ItemStack containerCopy = container.copyWithCount(1); // do not modify the input
         return FluidUtil.getFluidHandler(containerCopy)
                 .map(containerFluidHandler -> {
 

@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.common.drone.ai;
 
-import me.desht.pneumaticcraft.common.drone.IDroneBase;
+import me.desht.pneumaticcraft.api.drone.IDrone;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ICraftingWidget;
 import me.desht.pneumaticcraft.common.util.DummyContainer;
 import me.desht.pneumaticcraft.common.util.IOHelper;
@@ -37,11 +37,11 @@ import java.util.List;
 
 public class DroneAICrafting extends Goal {
     private final ICraftingWidget widget;
-    private final IDroneBase drone;
+    private final IDrone drone;
     private final int maxActions;
     private int actionCount;
 
-    public DroneAICrafting(IDroneBase drone, ICraftingWidget widget) {
+    public DroneAICrafting(IDrone drone, ICraftingWidget widget) {
         this.drone = drone;
         this.widget = widget;
         this.maxActions = widget.useCount() ? widget.getCount() : 0;
@@ -55,7 +55,7 @@ public class DroneAICrafting extends Goal {
         }
 
         CraftingContainer craftingGrid = widget.getCraftingGrid();
-        return widget.getRecipe(drone.world(), craftingGrid).map(recipe -> {
+        return widget.getRecipe(drone.getDroneLevel(), craftingGrid).map(recipe -> {
             List<List<ItemStack>> equivalentsList = buildEquivalentsList(craftingGrid);
             if (equivalentsList.isEmpty()) return false;
             int[] equivIndices = new int[9];
@@ -65,7 +65,7 @@ public class DroneAICrafting extends Goal {
                     ItemStack stack = equivalentsList.get(i).isEmpty() ? ItemStack.EMPTY : equivalentsList.get(i).get(equivIndices[i]);
                     craftMatrix.setItem(i, stack);
                 }
-                if (recipe.matches(craftMatrix, drone.world()) && doCrafting(recipe.assemble(craftMatrix, drone.world().registryAccess()), craftMatrix)) {
+                if (recipe.matches(craftMatrix, drone.getDroneLevel()) && doCrafting(recipe.assemble(craftMatrix, drone.getDroneLevel().registryAccess()), craftMatrix)) {
                     actionCount++;
                     return true;
                 }
@@ -143,7 +143,7 @@ public class DroneAICrafting extends Goal {
                         NeoForge.EVENT_BUS.post(new PlayerDestroyItemEvent(drone.getFakePlayer(), containerItem, InteractionHand.MAIN_HAND));
                         continue;
                     }
-                    IOHelper.insertOrDrop(drone.world(), containerItem, drone.getInv(), drone.getDronePos(), false);
+                    IOHelper.insertOrDrop(drone.getDroneLevel(), containerItem, drone.getInv(), drone.getDronePos(), false);
                 }
                 stack.shrink(1); // As this stack references to the Drones stacks in its inventory, we can do this.
             }
@@ -156,7 +156,7 @@ public class DroneAICrafting extends Goal {
             }
         }
 
-        IOHelper.insertOrDrop(drone.world(), craftedStack, drone.getInv(), drone.getDronePos(), false);
+        IOHelper.insertOrDrop(drone.getDroneLevel(), craftedStack, drone.getInv(), drone.getDronePos(), false);
 
         return true;
     }

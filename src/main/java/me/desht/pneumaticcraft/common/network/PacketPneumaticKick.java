@@ -24,8 +24,8 @@ import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -33,7 +33,8 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.network.handling.PlayPayloadContext;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
+import org.joml.Vector3f;
 
 import java.util.Comparator;
 import java.util.List;
@@ -47,31 +48,25 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 public enum PacketPneumaticKick implements CustomPacketPayload {
     INSTANCE;
 
-    public static final ResourceLocation ID = RL("pneumatic_kick");
+    public static final Type<PacketPneumaticKick> TYPE = new Type<>(RL("pneumatic_kick"));
 
-    public static PacketPneumaticKick fromNetwork(@SuppressWarnings("unused") FriendlyByteBuf buf) {
-        return INSTANCE;
-    }
+    public static final StreamCodec<FriendlyByteBuf, PacketPneumaticKick> STREAM_CODEC = StreamCodec.unit(INSTANCE);
 
-    @Override
-    public void write(FriendlyByteBuf buf) {
-    }
+    private static final Vector3f PARTICLE_SPEED = new Vector3f(1.0f, 0.0f, 0.0f);
 
     @Override
-    public ResourceLocation id() {
-        return ID;
+    public Type<PacketPneumaticKick> type() {
+        return TYPE;
     }
 
-    public static void handle(PacketPneumaticKick message, PlayPayloadContext ctx) {
-        ctx.player().ifPresent(player -> ctx.workHandler().submitAsync(() -> {
-            CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
-            if (handler.upgradeUsable(CommonUpgradeHandlers.kickHandler, false)) {
-                int upgrades = handler.getUpgradeCount(EquipmentSlot.FEET, ModUpgrades.DISPENSER.get());
-                if (upgrades > 0) {
-                    message.handleKick(player, Math.min(PneumaticValues.PNEUMATIC_KICK_MAX_UPGRADES, upgrades));
-                }
+    public static void handle(PacketPneumaticKick message, IPayloadContext ctx) {
+        CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(ctx.player());
+        if (handler.upgradeUsable(CommonUpgradeHandlers.kickHandler, false)) {
+            int upgrades = handler.getUpgradeCount(EquipmentSlot.FEET, ModUpgrades.DISPENSER.get());
+            if (upgrades > 0) {
+                message.handleKick(ctx.player(), Math.min(PneumaticValues.PNEUMATIC_KICK_MAX_UPGRADES, upgrades));
             }
-        }));
+        }
     }
 
     private void handleKick(Player player, int upgrades) {
@@ -97,7 +92,7 @@ public enum PacketPneumaticKick implements CustomPacketPayload {
         }
         player.level().playSound(null, target.getX(), target.getY(), target.getZ(), ModSounds.PUNCH.get(), SoundSource.PLAYERS, 1f, 1f);
         NetworkHandler.sendToAllTracking(PacketSetEntityMotion.create(target, target.getDeltaMovement()), target);
-        NetworkHandler.sendToAllTracking(new PacketSpawnParticle(ParticleTypes.EXPLOSION, target.getX(), target.getY(), target.getZ(), 1.0D, 0.0D, 0.0D), target);
+        NetworkHandler.sendToAllTracking(PacketSpawnParticle.oneParticle(ParticleTypes.EXPLOSION, target.position().toVector3f(), PARTICLE_SPEED), target);
         CommonArmorHandler.getHandlerForPlayer(player).addAir(EquipmentSlot.FEET, -PneumaticValues.PNEUMATIC_KICK_AIR_USAGE * upgrades);
     }
 }

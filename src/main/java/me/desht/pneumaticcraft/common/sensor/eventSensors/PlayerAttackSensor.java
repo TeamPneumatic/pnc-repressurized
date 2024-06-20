@@ -18,8 +18,8 @@
 package me.desht.pneumaticcraft.common.sensor.eventSensors;
 
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.neoforged.bus.api.Event;
 import net.neoforged.neoforge.event.entity.player.AttackEntityEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 
 public class PlayerAttackSensor extends PlayerEventSensor {
 
@@ -34,7 +34,7 @@ public class PlayerAttackSensor extends PlayerEventSensor {
     }
 
     @Override
-    public int emitRedstoneOnEvent(PlayerEvent event, BlockEntity sensor, int range) {
+    public int emitRedstoneOnEvent(Event event, BlockEntity sensor, int range) {
         return event instanceof AttackEntityEvent ? 15 : 0;
     }
 }

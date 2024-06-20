@@ -17,11 +17,14 @@
 
 package me.desht.pneumaticcraft.common.util.playerfilter;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import me.desht.pneumaticcraft.api.misc.IPlayerMatcher;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 
@@ -32,17 +35,20 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public record DimensionMatcher(List<ResourceLocation> dimensionIds) implements IPlayerMatcher {
-    public static final Codec<DimensionMatcher> CODEC = RecordCodecBuilder.create(inst -> inst.group(
+    public static final MapCodec<DimensionMatcher> CODEC = RecordCodecBuilder.mapCodec(inst -> inst.group(
             ResourceLocation.CODEC.listOf().fieldOf("dimensions").forGetter(DimensionMatcher::dimensionIds)
     ).apply(inst, DimensionMatcher::new));
 
-    @Override
-    public void toNetwork(FriendlyByteBuf buffer) {
-        buffer.writeCollection(dimensionIds, FriendlyByteBuf::writeResourceLocation);    }
+    public static final StreamCodec<RegistryFriendlyByteBuf, DimensionMatcher> STREAM_CODEC = StreamCodec.composite(
+            ResourceLocation.STREAM_CODEC.apply(ByteBufCodecs.list()), DimensionMatcher::dimensionIds,
+            DimensionMatcher::new
+    );
+
+    public static final MatcherType<DimensionMatcher> TYPE = new MatcherType<>(CODEC, STREAM_CODEC);
 
     @Override
-    public MatcherType<?> getType() {
-        return DimensionMatcherType.INSTANCE;
+    public MatcherType<? extends IPlayerMatcher> type() {
+        return TYPE;
     }
 
     @Override
@@ -56,26 +62,5 @@ public record DimensionMatcher(List<ResourceLocation> dimensionIds) implements I
     @Override
     public boolean test(Player playerEntity) {
         return dimensionIds.isEmpty() || dimensionIds.contains(playerEntity.level().dimension().location());
-    }
-
-    public enum DimensionMatcherType implements MatcherType<DimensionMatcher> {
-        INSTANCE;
-
-        private static final ResourceLocation ID = RL("dimensions");
-
-        @Override
-        public ResourceLocation getId() {
-            return ID;
-        }
-
-        @Override
-        public DimensionMatcher fromNetwork(FriendlyByteBuf buf) {
-            return new DimensionMatcher(buf.readList(FriendlyByteBuf::readResourceLocation));
-        }
-
-        @Override
-        public Codec<DimensionMatcher> codec() {
-            return CODEC;
-        }
     }
 }

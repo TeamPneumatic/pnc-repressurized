@@ -11,8 +11,9 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
@@ -26,7 +27,6 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidUtil;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
-import net.neoforged.neoforge.items.ItemHandlerHelper;
 import org.jetbrains.annotations.Nullable;
 
 public class RefineryOutputBlock extends AbstractPneumaticCraftBlock
@@ -89,26 +89,23 @@ public class RefineryOutputBlock extends AbstractPneumaticCraftBlock
     }
 
     @Override
-    public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult brtr) {
+    public ItemInteractionResult useItemOn(ItemStack heldStack, BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult brtr) {
         return world.getBlockEntity(pos, ModBlockEntityTypes.REFINERY_OUTPUT.get()).map(te -> {
             // normally, activating any refinery output block would open the controller BE's gui, but if we
             // activate with a fluid tank in hand (which can actually transfer fluid out),
             // then we must activate the actual refinery output that was clicked
-            boolean canTransferFluid = FluidUtil.getFluidHandler(ItemHandlerHelper.copyStackWithSize(player.getItemInHand(hand), 1))
+            boolean canTransferFluid = FluidUtil.getFluidHandler(heldStack.copyWithCount(1))
                     .map(heldHandler -> FluidUtil.getFluidHandler(world, pos, brtr.getDirection())
                             .map(refineryHandler -> couldTransferFluidOut(heldHandler, refineryHandler))
                             .orElse(false))
                     .orElse(false);
             if (canTransferFluid) {
-                return super.use(state, world, pos, player, hand, brtr);
+                return super.useItemOn(heldStack, state, world, pos, player, hand, brtr);
             } else if (player instanceof ServerPlayer sp) {
-                RefineryControllerBlockEntity master = te.getRefineryController();
-                if (master != null) {
-                    sp.openMenu(master, master.getBlockPos());
-                }
+                te.getRefineryController().ifPresent(controller -> sp.openMenu(controller, controller.getBlockPos()));
             }
-            return InteractionResult.SUCCESS;
-        }).orElse(InteractionResult.PASS);
+            return ItemInteractionResult.SUCCESS;
+        }).orElse(ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION);
     }
 
     private boolean couldTransferFluidOut(IFluidHandler h1, IFluidHandler h2) {
@@ -144,10 +141,9 @@ public class RefineryOutputBlock extends AbstractPneumaticCraftBlock
     }
 
     private void recache(LevelAccessor world, BlockPos pos) {
-        PneumaticCraftUtils.getTileEntityAt(world, pos, RefineryOutputBlockEntity.class).ifPresent(te -> {
-            RefineryControllerBlockEntity teC = te.getRefineryController();
-            if (teC != null) teC.clearOutputCache();
-        });
+        PneumaticCraftUtils.getBlockEntityAt(world, pos, RefineryOutputBlockEntity.class)
+                .flatMap(RefineryOutputBlockEntity::getRefineryController)
+                .ifPresent(RefineryControllerBlockEntity::clearOutputCache);
     }
 
     @Nullable

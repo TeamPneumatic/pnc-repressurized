@@ -19,9 +19,11 @@ package me.desht.pneumaticcraft.common.thirdparty.toughasnails;
 
 import me.desht.pneumaticcraft.client.pneumatic_armor.upgrade_handler.AirConClientHandler;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.network.handling.PlayPayloadContext;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
@@ -30,23 +32,25 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
  * Sent by server when air conditioning level changes so client can update the HUD gauge
  */
 public record PacketPlayerTemperatureDelta(int deltaTemp) implements CustomPacketPayload {
+    public static final Type<PacketPlayerTemperatureDelta> TYPE = new Type<>(RL("player_temp_delta"));
+
+    public static final StreamCodec<FriendlyByteBuf, PacketPlayerTemperatureDelta> STREAM_CODEC = StreamCodec.composite(
+            ByteBufCodecs.INT, PacketPlayerTemperatureDelta::deltaTemp,
+            PacketPlayerTemperatureDelta::new
+    );
+
     private static final ResourceLocation ID = RL("player_temperature_delta");
 
     public static PacketPlayerTemperatureDelta fromNetwork(FriendlyByteBuf buffer) {
         return new PacketPlayerTemperatureDelta(buffer.readByte());
     }
 
-    @Override
-    public void write(FriendlyByteBuf buf) {
-        buf.writeByte(deltaTemp);
+    public static void handle(PacketPlayerTemperatureDelta message, IPayloadContext ctx) {
+        AirConClientHandler.deltaTemp = message.deltaTemp();
     }
 
     @Override
-    public ResourceLocation id() {
-        return ID;
-    }
-
-    public static void handle(PacketPlayerTemperatureDelta message, PlayPayloadContext ctx) {
-        ctx.workHandler().submitAsync(() -> AirConClientHandler.deltaTemp = message.deltaTemp());
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
     }
 }

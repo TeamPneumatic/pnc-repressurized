@@ -18,8 +18,8 @@
 package me.desht.pneumaticcraft.common.sensor.eventSensors;
 
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.neoforged.neoforge.event.entity.player.EntityItemPickupEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.bus.api.Event;
+import net.neoforged.neoforge.event.entity.player.ItemEntityPickupEvent;
 
 public class PlayerItemPickupSensor extends PlayerEventSensor {
 
@@ -34,7 +34,7 @@ public class PlayerItemPickupSensor extends PlayerEventSensor {
     }
 
     @Override
-    public int emitRedstoneOnEvent(PlayerEvent event, BlockEntity sensor, int range) {
-        return event instanceof EntityItemPickupEvent ? 15 : 0;
+    public int emitRedstoneOnEvent(Event event, BlockEntity sensor, int range) {
+        return event instanceof ItemEntityPickupEvent ? 15 : 0;
     }
 }

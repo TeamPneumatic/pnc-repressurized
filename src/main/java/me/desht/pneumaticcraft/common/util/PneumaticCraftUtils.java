@@ -29,6 +29,7 @@ import me.desht.pneumaticcraft.common.item.ItemRegistry;
 import me.desht.pneumaticcraft.common.registry.ModFluids;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.*;
+import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
@@ -42,6 +43,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.entity.player.Inventory;
@@ -49,6 +51,10 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
@@ -59,7 +65,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.common.util.BlockSnapshot;
 import net.neoforged.neoforge.event.EventHooks;
 import net.neoforged.neoforge.fluids.FluidStack;
@@ -69,6 +74,7 @@ import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.ItemStackHandler;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import org.apache.commons.lang3.math.NumberUtils;
+import org.joml.Vector3f;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -77,6 +83,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.net.URI;
 import java.net.URL;
 import java.text.NumberFormat;
 import java.util.*;
@@ -97,12 +104,10 @@ public class PneumaticCraftUtils {
         }
     }
 
+    public static final Vector3f VEC3F_ZERO = new Vector3f();
+
     public static List<? extends Component> splitStringComponent(String text) {
         return asStringComponent(splitString(text, MAX_CHAR_PER_LINE));
-    }
-
-    public static List<? extends Component> splitStringComponent(String text, int maxCharPerLine) {
-        return asStringComponent(splitString(text, maxCharPerLine));
     }
 
     public static List<String> splitString(String text, int maxCharPerLine) {
@@ -263,7 +268,7 @@ public class PneumaticCraftUtils {
         List<ItemStack> prevInventoryItems = null;
         for (ItemStack stack : sortedStacks) {
             if (!stack.isEmpty()) {
-                if (!ItemStack.isSameItem(stack, prevItemStack) || prevInventoryItems != null && prevInventoryItems.size() > 0) {
+                if (!ItemStack.isSameItem(stack, prevItemStack) || prevInventoryItems != null && !prevInventoryItems.isEmpty()) {
                     if (!prevItemStack.isEmpty()) {
                         textList.add(prefix.copy().append(PneumaticCraftUtils.convertAmountToString(itemCount) + " x " + prevItemStack.getHoverName().getString()));
                     }
@@ -298,11 +303,11 @@ public class PneumaticCraftUtils {
      */
     public static String getPage(final String urlString) throws IOException {
         StringBuilder all = new StringBuilder();
-        URL myUrl = new URL(urlString);
+        URL myUrl = URI.create(urlString).toURL();
         try (BufferedReader in = new BufferedReader(new InputStreamReader(myUrl.openStream()))) {
             String line;
             while ((line = in.readLine()) != null) {
-                all.append(line).append(System.getProperty("line.separator"));
+                all.append(line).append(System.lineSeparator());
             }
         }
 
@@ -341,7 +346,7 @@ public class PneumaticCraftUtils {
         return distBetween(pos1, pos2.getX() + 0.5, pos2.getY() + 0.5, pos2.getZ() + 0.5);
     }
 
-    public static boolean doesItemMatchFilter(@Nonnull ItemStack filterStack, @Nonnull ItemStack stack, boolean checkDurability, boolean checkNBT, boolean checkModSimilarity) {
+    public static boolean doesItemMatchFilter(@Nonnull ItemStack filterStack, @Nonnull ItemStack stack, boolean checkDurability, boolean checkComponents, boolean checkModSimilarity) {
         if (filterStack.isEmpty() && stack.isEmpty()) return true;
         if (filterStack.isEmpty() || stack.isEmpty()) return false;
 
@@ -363,7 +368,7 @@ public class PneumaticCraftUtils {
         if (filterStack.getItem() != stack.getItem()) return false;
 
         boolean durabilityOK = !checkDurability || (filterStack.getMaxDamage() > 0 && filterStack.getDamageValue() == stack.getDamageValue());
-        boolean nbtOK = !checkNBT || Objects.equals(filterStack.getTag(), stack.getTag());
+        boolean nbtOK = !checkComponents || Objects.equals(filterStack.getComponents(), stack.getComponents());
 
         return durabilityOK && nbtOK;
     }
@@ -383,10 +388,6 @@ public class PneumaticCraftUtils {
 
         ItemEntity entityItem = new ItemEntity(world, x + dX, y + dY, z + dZ, stack.copy());
 
-        if (stack.hasTag()) {
-            entityItem.getItem().setTag(Objects.requireNonNull(stack.getTag()).copy());
-        }
-
         float factor = 0.05F;
         entityItem.setDeltaMovement(world.random.nextGaussian() * factor, world.random.nextGaussian() * factor + 0.2, world.random.nextGaussian() * factor);
         world.addFreshEntity(entityItem);
@@ -395,9 +396,6 @@ public class PneumaticCraftUtils {
     public static void dropItemOnGroundPrecisely(ItemStack stack, Level world, double x, double y, double z) {
         ItemEntity entityItem = new ItemEntity(world, x, y, z, stack.copy());
 
-        if (stack.hasTag()) {
-            entityItem.getItem().setTag(Objects.requireNonNull(stack.getTag()).copy());
-        }
         entityItem.setDeltaMovement(0, 0, 0);
         world.addFreshEntity(entityItem);
     }
@@ -564,7 +562,7 @@ public class PneumaticCraftUtils {
         return INVALID_POS;
     }
 
-    public static <T extends BlockEntity> Optional<T> getTileEntityAt(BlockGetter w, BlockPos pos, Class<T> cls) {
+    public static <T extends BlockEntity> Optional<T> getBlockEntityAt(BlockGetter w, BlockPos pos, Class<T> cls) {
         if (w != null && pos != null) {
             BlockEntity te = w.getBlockEntity(pos);
             if (te != null && cls.isAssignableFrom(te.getClass())) {
@@ -598,7 +596,7 @@ public class PneumaticCraftUtils {
 
     public static double getPlayerReachDistance(Player player) {
         if (player != null) {
-            AttributeInstance attr = player.getAttribute(NeoForgeMod.BLOCK_REACH.value());
+            AttributeInstance attr = player.getAttribute(Attributes.BLOCK_INTERACTION_RANGE);
             if (attr != null) return attr.getValue() + 1D;
         }
         return 4.5D;
@@ -739,5 +737,16 @@ public class PneumaticCraftUtils {
     public static Optional<GameProfile> getProfileForName(MinecraftServer server, String playerName) {
         if (server == null || server.getProfileCache() == null) return Optional.empty();
         return server.getProfileCache().get(playerName);
+    }
+
+    public static <T> Optional<T> getOptionalComponent(ItemStack stack, DataComponentType<T> type) {
+        return Optional.ofNullable(stack.get(type));
+    }
+
+    public static ItemStack enchant(ItemStack stack, Map<Enchantment, Integer> enchantments) {
+        ItemEnchantments.Mutable m = new ItemEnchantments.Mutable(stack.getEnchantments());
+        enchantments.forEach(m::upgrade);
+        EnchantmentHelper.setEnchantments(stack, m.toImmutable());
+        return stack;
     }
 }

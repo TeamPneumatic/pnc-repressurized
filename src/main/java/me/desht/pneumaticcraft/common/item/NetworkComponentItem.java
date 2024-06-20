@@ -19,13 +19,13 @@ package me.desht.pneumaticcraft.common.item;
 
 import me.desht.pneumaticcraft.api.item.IProgrammable;
 import me.desht.pneumaticcraft.client.gui.SecurityStationHackingScreen;
+import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.registry.ModItems;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.level.Level;
 
 import java.util.List;
 import java.util.Optional;
@@ -64,17 +64,19 @@ public class NetworkComponentItem extends Item implements IProgrammable {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, Level worldIn, List<Component> curInfo, TooltipFlag extraInfo) {
-        super.appendHoverText(stack, worldIn, curInfo, extraInfo);
+    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> curInfo, TooltipFlag extraInfo) {
+        super.appendHoverText(stack, context, curInfo, extraInfo);
 
-        if (worldIn != null && worldIn.isClientSide) {
+        if (context.registries() != null) {
             SecurityStationHackingScreen.addExtraHackInfoStatic(curInfo);
         }
     }
 
     @Override
     public boolean onEntityItemUpdate(ItemStack stack, ItemEntity entity) {
-        if (!entity.getCommandSenderWorld().isClientSide && canProgram(stack) && stack.hasTag() && stack.getTag().contains(IProgrammable.NBT_WIDGETS)) entity.setExtendedLifetime();
+        if (entity.getCommandSenderWorld().isClientSide && stack.has(ModDataComponents.SAVED_DRONE_PROGRAM)) {
+            entity.setExtendedLifetime();
+        }
         return false;
     }
 

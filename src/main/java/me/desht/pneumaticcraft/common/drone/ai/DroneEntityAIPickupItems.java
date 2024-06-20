@@ -34,13 +34,13 @@ import java.util.EnumSet;
 import java.util.List;
 
 public class DroneEntityAIPickupItems extends Goal {
-    private final IDroneBase drone;
+    private final IDrone drone;
     private final ProgWidgetAreaItemBase itemPickupWidget;
     private ItemEntity curPickingUpEntity;
     private final DistanceEntitySorter theNearestAttackableTargetSorter;
     private final boolean canSteal;
 
-    public DroneEntityAIPickupItems(IDroneBase drone, ProgWidgetAreaItemBase progWidgetPickupItem) {
+    public DroneEntityAIPickupItems(IDrone drone, ProgWidgetAreaItemBase progWidgetPickupItem) {
         this.drone = drone;
         setFlags(EnumSet.allOf(Flag.class)); // so it won't run along with other AI tasks.
         itemPickupWidget = progWidgetPickupItem;
@@ -57,7 +57,7 @@ public class DroneEntityAIPickupItems extends Goal {
      */
     @Override
     public boolean canUse() {
-        List<Entity> pickableItems = itemPickupWidget.getEntitiesInArea(drone.world(), entity -> entity instanceof ItemEntity && entity.isAlive());
+        List<Entity> pickableItems = itemPickupWidget.getEntitiesInArea(drone.getDroneLevel(), entity -> entity instanceof ItemEntity && entity.isAlive());
 
         if (pickableItems.isEmpty()) {
             drone.getDebugger().addEntry("pneumaticcraft.gui.progWidget.itemPickup.debug.noItems");

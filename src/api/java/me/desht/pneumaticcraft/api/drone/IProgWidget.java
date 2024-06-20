@@ -1,38 +1,34 @@
 /*
- * This file is part of pnc-repressurized.
+ * This file is part of pnc-repressurized API.
  *
- *     pnc-repressurized is free software: you can redistribute it and/or modify
- *     it under the terms of the GNU General Public License as published by
+ *     pnc-repressurized API is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU Lesser General Public License as published by
  *     the Free Software Foundation, either version 3 of the License, or
  *     (at your option) any later version.
  *
  *     pnc-repressurized is distributed in the hope that it will be useful,
  *     but WITHOUT ANY WARRANTY; without even the implied warranty of
  *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *     GNU General Public License for more details.
+ *     GNU Lesser General Public License for more details.
  *
- *     You should have received a copy of the GNU General Public License
- *     along with pnc-repressurized.  If not, see <https://www.gnu.org/licenses/>.
+ *     You should have received a copy of the GNU Lesser General Public License
+ *     along with pnc-repressurized API.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.desht.pneumaticcraft.common.drone.progwidgets;
+package me.desht.pneumaticcraft.api.drone;
 
-import me.desht.pneumaticcraft.api.drone.IProgWidgetBase;
-import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
-import me.desht.pneumaticcraft.common.drone.IDroneBase;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.item.DyeColor;
-import org.apache.commons.lang3.Validate;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nonnull;
 import java.util.List;
+import java.util.Optional;
 
-public interface IProgWidget extends IProgWidgetBase {
+public interface IProgWidget {
     int getX();
 
     int getY();
@@ -40,6 +36,11 @@ public interface IProgWidget extends IProgWidgetBase {
     void setX(int x);
 
     void setY(int y);
+
+    default void setPosition(int x, int y) {
+        setX(x);
+        setY(y);
+    }
 
     int getWidth();
 
@@ -69,13 +70,15 @@ public interface IProgWidget extends IProgWidgetBase {
 
     default boolean freeToUse() { return false; }
 
+    ProgWidgetType<?> getType();
+
     /**
      * Get the AI for this progwidget
      * @param drone the drone
      * @param widget will be 'this' most of the time, but not when controlled externally (e.g. ComputerCraft)
      * @return widget AI
      */
-    Goal getWidgetAI(IDroneBase drone, IProgWidget widget);
+    Goal getWidgetAI(IDrone drone, IProgWidget widget);
 
     /**
      * Get the targeting AI for this progwidget
@@ -83,7 +86,7 @@ public interface IProgWidget extends IProgWidgetBase {
      * @param widget Will be 'this' most of the time, but not when controlled externally (e.g. ComputerCraft)
      * @return widget targeting AI
      */
-    Goal getWidgetTargetAI(IDroneBase drone, IProgWidget widget);
+    Goal getWidgetTargetAI(IDrone drone, IProgWidget widget);
 
     /**
      * Set the output widget for this widget, i.e. next in the program.  Called when building the program.
@@ -101,13 +104,13 @@ public interface IProgWidget extends IProgWidgetBase {
     /**
      * Get the next widget in the program, which may or may not be the widget attached to the bottom of this one.
      * This method variant is called when running in a live program, and has access to the drone
-     * context and a view of the full program so it can deal with special conditions like jumps etc.
+     * context and a view of the full program, so it can deal with special conditions like jumps etc.
      *
      * @param drone the drone
      * @param allWidgets a list of widgets
      * @return the next widget to run
      */
-    IProgWidget getOutputWidget(IDroneBase drone, List<IProgWidget> allWidgets);
+    IProgWidget getOutputWidget(IDrone drone, List<IProgWidget> allWidgets);
 
     /**
      * For parameter widgets that are added onto the left or right of another widget, get the type of the widget
@@ -139,7 +142,6 @@ public interface IProgWidget extends IProgWidgetBase {
 
     ResourceLocation getTypeID();
 
-    @Override
     default String getTranslationKey() {
         String s = getTypeID().toString().replace(':', '.');
         return "programmingPuzzle." + s + ".name";
@@ -154,19 +156,20 @@ public interface IProgWidget extends IProgWidgetBase {
      */
     boolean isAvailable();
 
-    /**
-     * At least do <code>tag.putString("name", getTypeID().toString());</code>
-     * <p>Note that the base implementation {@link ProgWidget} does this.</p>
-     *
-     * @param tag NBT tag to write to
-     */
-    void writeToNBT(CompoundTag tag);
+//    /**
+//     * At least do <code>tag.putString("name", getTypeID().toString());</code>
+//     * <p>Note that the base implementation {@link ProgWidget} does this.</p>
+//     *
+//     * @param tag      NBT tag to write to
+//     * @param provider
+//     */
+//    void writeToNBT(CompoundTag tag, HolderLookup.Provider provider);
+//
+//    void readFromNBT(CompoundTag tag, HolderLookup.Provider provider);
 
-    void readFromNBT(CompoundTag tag);
+    Optional<? extends IProgWidget> copy();
 
-    IProgWidget copy();
-
-    boolean canBeRunByComputers(IDroneBase drone, IProgWidget widget);
+    boolean canBeRunByComputers(IDrone drone, IProgWidget widget);
 
     default boolean isDifficultyOK(WidgetDifficulty difficulty) {
         return getDifficulty().isNotMoreDifficult(difficulty);
@@ -174,14 +177,25 @@ public interface IProgWidget extends IProgWidgetBase {
 
     WidgetDifficulty getDifficulty();
 
-    ProgWidgetType<?> getType();
+    void readFromPacket(RegistryFriendlyByteBuf buf);
 
-    void readFromPacket(FriendlyByteBuf buf);
-
-    void writeToPacket(FriendlyByteBuf buf);
+    void writeToPacket(RegistryFriendlyByteBuf buf);
 
     @Nonnull
     List<Component> getExtraStringInfo();
+
+    /**
+     * Cast from the API interface to our internal interface.  Should always succeed!
+     *
+     * @param type type of the progwidget
+     * @return the internal non-API progwidget type
+     */
+    static IProgWidget create(ProgWidgetType<?> type) {
+        return type.create();
+//        IProgWidgetBase base = type.create();
+//        Validate.isTrue(base instanceof IProgWidget);
+//        return (IProgWidgetBase) base;
+    }
 
     enum WidgetDifficulty {
         EASY("easy", 0),
@@ -205,17 +219,5 @@ public interface IProgWidget extends IProgWidgetBase {
         public boolean isNotMoreDifficult(WidgetDifficulty other) {
             return this.difficultyLevel <= other.difficultyLevel;
         }
-    }
-
-    /**
-     * Cast from the API interface to our internal interface.  Should always succeed!
-     *
-     * @param type type of the progwidget
-     * @return the internal non-API progwidget type
-     */
-    static IProgWidget create(ProgWidgetType<?> type) {
-        IProgWidgetBase base = type.create();
-        Validate.isTrue(base instanceof IProgWidget);
-        return (IProgWidget) base;
     }
 }

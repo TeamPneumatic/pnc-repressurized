@@ -27,6 +27,7 @@ import me.desht.pneumaticcraft.common.registry.ModMenuTypes;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -39,7 +40,7 @@ import java.util.List;
 public class SecurityStationHackingMenu extends AbstractPneumaticCraftMenu<SecurityStationBlockEntity> {
     public static final int NODE_SPACING = 31;
 
-    public SecurityStationHackingMenu(int i, Inventory playerInventory, FriendlyByteBuf buffer) {
+    public SecurityStationHackingMenu(int i, Inventory playerInventory, RegistryFriendlyByteBuf buffer) {
         this(i, playerInventory, fromBytes(playerInventory.player, buffer));
     }
 
@@ -55,21 +56,21 @@ public class SecurityStationHackingMenu extends AbstractPneumaticCraftMenu<Secur
         }
     }
 
-    private static BlockPos fromBytes(Player player, FriendlyByteBuf buffer) {
+    private static BlockPos fromBytes(Player player, RegistryFriendlyByteBuf buffer) {
         BlockPos tilePos = buffer.readBlockPos();
 
-        HackSimulation playerSimulation = HackSimulation.readFromNetwork(buffer);
-        HackSimulation aiSimulation = HackSimulation.readFromNetwork(buffer);
+        HackSimulation playerSimulation = HackSimulation.STREAM_CODEC.decode(buffer);
+        HackSimulation aiSimulation = HackSimulation.STREAM_CODEC.decode(buffer);
 
         List<Pair<Integer, ItemStack>> nodes = new ArrayList<>();
         int nNodes = buffer.readVarInt();
         for (int i = 0; i < nNodes; i++) {
-            nodes.add(Pair.of(buffer.readVarInt(), buffer.readItem()));
+            nodes.add(Pair.of(buffer.readVarInt(), ItemStack.OPTIONAL_STREAM_CODEC.decode(buffer)));
         }
 
         boolean justTesting = buffer.readBoolean();
 
-        return PneumaticCraftUtils.getTileEntityAt(player.level(), tilePos, SecurityStationBlockEntity.class).map(teSS -> {
+        return PneumaticCraftUtils.getBlockEntityAt(player.level(), tilePos, SecurityStationBlockEntity.class).map(teSS -> {
             ISimulationController controller = new SimulationController(teSS, player, playerSimulation, aiSimulation, justTesting);
             nodes.forEach(node -> {
                 controller.getSimulation(HackingSide.PLAYER).addNode(node.getLeft(), node.getRight());

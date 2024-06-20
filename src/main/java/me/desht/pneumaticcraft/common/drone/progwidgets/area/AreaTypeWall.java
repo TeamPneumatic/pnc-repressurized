@@ -17,28 +17,53 @@
 
 package me.desht.pneumaticcraft.common.drone.progwidgets.area;
 
-import me.desht.pneumaticcraft.common.util.LegacyAreaWidgetConverter;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import me.desht.pneumaticcraft.api.drone.area.AreaType;
+import me.desht.pneumaticcraft.api.drone.area.AreaTypeSerializer;
+import me.desht.pneumaticcraft.api.drone.area.AreaTypeWidget;
+import me.desht.pneumaticcraft.api.drone.area.EnumOldAreaType;
+import me.desht.pneumaticcraft.common.registry.ModProgWidgetAreaTypes;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
 
 import java.util.List;
 import java.util.function.Consumer;
 
-public class AreaTypeWall extends AreaType{
+public class AreaTypeWall extends AreaType {
+    public static final MapCodec<AreaTypeWall> CODEC = RecordCodecBuilder.mapCodec(builder -> builder.group(
+            StringRepresentable.fromEnum(AreaAxis::values).fieldOf("axis").forGetter(t -> t.axis)
+    ).apply(builder, AreaTypeWall::new));
+    public static final StreamCodec<FriendlyByteBuf, AreaTypeWall> STREAM_CODEC = StreamCodec.composite(
+            NeoForgeStreamCodecs.enumCodec(AreaAxis.class), t -> t.axis,
+            AreaTypeWall::new
+    );
 
     public static final String ID = "wall";
 
-    private EnumAxis axis = EnumAxis.X;
+    private AreaAxis axis;
 
-    public AreaTypeWall(){
+    public AreaTypeWall() {
+        this(AreaAxis.X);
+    }
+
+    public AreaTypeWall(AreaAxis axis) {
         super(ID);
+        this.axis = axis;
     }
 
     @Override
     public String toString() {
         return getName() + "/" + axis;
+    }
+
+    @Override
+    public AreaTypeSerializer<? extends AreaType> getSerializer() {
+        return ModProgWidgetAreaTypes.AREA_TYPE_WALL.get();
     }
 
     @Override
@@ -99,39 +124,16 @@ public class AreaTypeWall extends AreaType{
     @Override
     public void addUIWidgets(List<AreaTypeWidget> widgets){
         super.addUIWidgets(widgets);
-        widgets.add(new AreaTypeWidgetEnum<>("pneumaticcraft.gui.progWidget.area.type.general.axis", EnumAxis.class, () -> axis, axis -> this.axis = axis));
+        widgets.add(new AreaTypeWidget.EnumSelectorField<>("pneumaticcraft.gui.progWidget.area.type.general.axis", AreaAxis.class,
+                () -> axis, axis -> this.axis = axis));
     }
 
     @Override
-    public void writeToNBT(CompoundTag tag){
-        super.writeToNBT(tag);
-        tag.putByte("axis", (byte)axis.ordinal());
-    }
-
-    @Override
-    public void readFromNBT(CompoundTag tag){
-        super.readFromNBT(tag);
-        axis = EnumAxis.values()[tag.getByte("axis")];
-    }
-
-    @Override
-    public void writeToPacket(FriendlyByteBuf buffer) {
-        super.writeToPacket(buffer);
-        buffer.writeEnum(axis);
-    }
-
-    @Override
-    public void readFromPacket(FriendlyByteBuf buf) {
-        super.readFromPacket(buf);
-        axis = buf.readEnum(EnumAxis.class);
-    }
-
-    @Override
-    public void convertFromLegacy(LegacyAreaWidgetConverter.EnumOldAreaType oldAreaType, int typeInfo){
+    public void convertFromLegacy(EnumOldAreaType oldAreaType, int typeInfo){
         switch (oldAreaType) {
-            case X_WALL -> axis = EnumAxis.X;
-            case Y_WALL -> axis = EnumAxis.Y;
-            case Z_WALL -> axis = EnumAxis.Z;
+            case X_WALL -> axis = AreaAxis.X;
+            case Y_WALL -> axis = AreaAxis.Y;
+            case Z_WALL -> axis = AreaAxis.Z;
             default -> throw new IllegalArgumentException();
         }
     }

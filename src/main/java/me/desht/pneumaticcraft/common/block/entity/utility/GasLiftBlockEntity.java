@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.common.block.entity.utility;
 
-import com.google.common.collect.ImmutableMap;
+import me.desht.pneumaticcraft.api.misc.ITranslatableEnum;
 import me.desht.pneumaticcraft.api.pressure.PressureTier;
 import me.desht.pneumaticcraft.common.block.entity.*;
 import me.desht.pneumaticcraft.common.inventory.GasLiftMenu;
@@ -26,10 +26,13 @@ import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
 import me.desht.pneumaticcraft.common.registry.ModBlocks;
+import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.util.*;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.component.DataComponentType;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.MenuProvider;
@@ -46,6 +49,7 @@ import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.fluids.IFluidTank;
+import net.neoforged.neoforge.fluids.SimpleFluidContent;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction;
 import net.neoforged.neoforge.items.IItemHandler;
@@ -298,19 +302,19 @@ public class GasLiftBlockEntity extends AbstractAirHandlingBlockEntity implement
     }
 
     @Override
-    public void saveAdditional(CompoundTag tag) {
-        super.saveAdditional(tag);
+    public void saveAdditional(CompoundTag tag, HolderLookup.Provider provider) {
+        super.saveAdditional(tag, provider);
 
-        tag.put("Items", inventory.serializeNBT());
+        tag.put("Items", inventory.serializeNBT(provider));
         tag.putString("mode", pumpMode.toString());
         tag.putInt("currentDepth", currentDepth);
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
+    public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
+        super.loadAdditional(tag, provider);
 
-        inventory.deserializeNBT(tag.getCompound("Items"));
+        inventory.deserializeNBT(provider, tag.getCompound("Items"));
         if (tag.contains("mode")) pumpMode = PumpMode.valueOf(tag.getString("mode"));
         currentDepth = tag.getInt("currentDepth");
     }
@@ -327,8 +331,8 @@ public class GasLiftBlockEntity extends AbstractAirHandlingBlockEntity implement
 
     @Nonnull
     @Override
-    public Map<String, PNCFluidTank> getSerializableTanks() {
-        return ImmutableMap.of("Tank", tank);
+    public Map<DataComponentType<SimpleFluidContent>, PNCFluidTank> getSerializableTanks() {
+        return Map.of(ModDataComponents.MAIN_TANK.get(), tank);
     }
 
     private class GasLiftFluidTank extends SmartSyncTank {
@@ -339,7 +343,7 @@ public class GasLiftBlockEntity extends AbstractAirHandlingBlockEntity implement
         @Nonnull
         @Override
         public FluidStack drain(int maxDrain, FluidAction action) {
-            int inTank = fluid.getAmount();
+            int inTank = fluidStack.getAmount();
             int amount = pumpMode == PumpMode.PUMP_LEAVE_FLUID ? Math.max(0, inTank - 1) : inTank;
             return super.drain(Math.min(maxDrain, amount), action);
         }

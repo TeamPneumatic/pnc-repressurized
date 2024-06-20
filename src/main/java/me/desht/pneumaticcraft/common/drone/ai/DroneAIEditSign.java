@@ -17,6 +17,7 @@
 
 package me.desht.pneumaticcraft.common.drone.ai;
 
+import me.desht.pneumaticcraft.api.drone.IDrone;
 import me.desht.pneumaticcraft.common.block.entity.utility.AphorismTileBlockEntity;
 import me.desht.pneumaticcraft.common.drone.IDroneBase;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ISignEditWidget;
@@ -29,22 +30,22 @@ import net.minecraft.world.level.block.entity.SignText;
 import net.minecraft.world.level.block.state.BlockState;
 
 public class DroneAIEditSign extends DroneAIBlockInteraction<ProgWidgetAreaItemBase> {
-    public DroneAIEditSign(IDroneBase drone, ProgWidgetAreaItemBase widget) {
+    public DroneAIEditSign(IDrone drone, ProgWidgetAreaItemBase widget) {
         super(drone, widget);
     }
 
     @Override
     protected boolean isValidPosition(BlockPos pos) {
         if (progWidget instanceof ISignEditWidget signEditWidget) {
-            BlockEntity te = drone.world().getBlockEntity(pos);
+            BlockEntity te = drone.getDroneLevel().getBlockEntity(pos);
             if (te instanceof SignBlockEntity sign) {
                 String[] lines = signEditWidget.getLines();
                 SignText signText = signEditWidget.isSignBackSide() ? sign.getBackText() : sign.getFrontText();
                 for (int i = 0; i < 4; i++) {
                     signText.setMessage(i, Component.literal(i < lines.length ? lines[i] : ""));
                 }
-                BlockState state = drone.world().getBlockState(pos);
-                drone.world().sendBlockUpdated(pos, state, state, 3);
+                BlockState state = drone.getDroneLevel().getBlockState(pos);
+                drone.getDroneLevel().sendBlockUpdated(pos, state, state, 3);
             } else if (te instanceof AphorismTileBlockEntity teAT) {
                 teAT.setTextLines(signEditWidget.getLines());
             }

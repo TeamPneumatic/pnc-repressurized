@@ -21,12 +21,12 @@ import me.desht.pneumaticcraft.client.ColorHandlers;
 import me.desht.pneumaticcraft.client.render.fluid.IFluidItemRenderInfoProvider;
 import me.desht.pneumaticcraft.client.render.fluid.RenderLiquidHopper;
 import me.desht.pneumaticcraft.common.block.entity.hopper.LiquidHopperBlockEntity;
-import me.desht.pneumaticcraft.common.capabilities.FluidHandlerSavedItemStack;
 import me.desht.pneumaticcraft.common.item.IFluidCapProvider;
 import me.desht.pneumaticcraft.common.item.IFluidRendered;
+import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
-import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
+import me.desht.pneumaticcraft.common.upgrades.UpgradableItemUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.BlockItem;
@@ -37,6 +37,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.fluids.FluidUtil;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
+import net.neoforged.neoforge.fluids.capability.templates.FluidHandlerItemStack;
 
 public class LiquidHopperBlock extends OmnidirectionalHopperBlock implements PneumaticCraftEntityBlock {
     public LiquidHopperBlock() {
@@ -86,7 +87,7 @@ public class LiquidHopperBlock extends OmnidirectionalHopperBlock implements Pne
 
         @Override
         public IFluidHandlerItem provideFluidCapability(ItemStack stack) {
-            return new FluidHandlerSavedItemStack(stack, TANK_NAME, PneumaticValues.NORMAL_TANK_CAPACITY);
+            return new FluidHandlerItemStack(ModDataComponents.MAIN_TANK, stack, PneumaticValues.NORMAL_TANK_CAPACITY);
         }
     }
 }

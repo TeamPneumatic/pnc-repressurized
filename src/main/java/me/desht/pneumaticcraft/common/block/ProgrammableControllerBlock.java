@@ -70,7 +70,7 @@ public class ProgrammableControllerBlock extends AbstractPneumaticCraftBlock imp
     @Override
     public void setPlacedBy(Level world, BlockPos pos, BlockState state, LivingEntity entity, ItemStack stack) {
         if (entity instanceof Player) {
-            PneumaticCraftUtils.getTileEntityAt(world, pos, ProgrammableControllerBlockEntity.class)
+            PneumaticCraftUtils.getBlockEntityAt(world, pos, ProgrammableControllerBlockEntity.class)
                     .ifPresent(te -> te.setOwner((Player) entity));
         }
         super.setPlacedBy(world, pos, state, entity, stack);

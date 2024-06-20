@@ -83,7 +83,7 @@ public class TOPInit implements Function<ITheOneProbe, Void> {
             @Override
             public void addProbeEntityInfo(ProbeMode mode, IProbeInfo probeInfo, Player player, Level world, Entity entity, IProbeHitEntityData data) {
                 if (entity instanceof ISemiBlock semiblock) {
-                    CompoundTag tag = semiblock.serializeNBT(new CompoundTag());
+                    CompoundTag tag = semiblock.serializeNBT(new CompoundTag(), player.registryAccess());
                     semiblock.addTooltip(probeInfo::text, player, tag, player.isShiftKeyDown());
                     BlockPos pos = semiblock.getBlockPos();
                     BlockState state = world.getBlockState(pos);

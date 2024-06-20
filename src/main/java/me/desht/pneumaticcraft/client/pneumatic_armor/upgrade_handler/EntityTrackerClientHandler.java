@@ -28,6 +28,7 @@ import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorHandler;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.options.EntityTrackOptions;
 import me.desht.pneumaticcraft.client.pneumatic_armor.ClientArmorRegistry;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.RenderEntityTarget;
+import me.desht.pneumaticcraft.common.entity.drone.DroneEntity;
 import me.desht.pneumaticcraft.common.item.PneumaticArmorItem;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
 import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.EntityTrackerHandler;
@@ -38,6 +39,7 @@ import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -71,6 +73,14 @@ public class EntityTrackerClientHandler extends IArmorUpgradeClientHandler.Abstr
 
     public EntityTrackerClientHandler() {
         super(CommonUpgradeHandlers.entityTrackerHandler);
+    }
+
+    public static void addDroneToHudHandler(DroneEntity drone, BlockPos pos) {
+        ClientArmorRegistry.getInstance()
+                .getClientHandler(CommonUpgradeHandlers.entityTrackerHandler, EntityTrackerClientHandler.class)
+                .getTargetsStream()
+                .filter(target -> target.entity == drone)
+                .forEach(target -> target.getDroneAIRenderer(drone).addBlackListEntry(drone.level(), pos));
     }
 
     @Override

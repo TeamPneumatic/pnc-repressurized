@@ -49,7 +49,7 @@ public class SimplePressureGaugeModuleScreen extends AbstractTubeModuleScreen<Ab
 
         WidgetCheckBox advancedMode = new WidgetCheckBox(guiLeft + 6, guiTop + 20, 0xFF404040, xlate("pneumaticcraft.gui.tubeModule.advancedConfig"), b -> {
             module.advancedConfig = true;
-            NetworkHandler.sendToServer(PacketUpdatePressureModule.create(module));
+            NetworkHandler.sendToServer(PacketUpdatePressureModule.forModule(module));
         }).setTooltipKey("pneumaticcraft.gui.tubeModule.advancedConfig.tooltip").setChecked(false);
         addRenderableWidget(advancedMode);
 
@@ -89,7 +89,7 @@ public class SimplePressureGaugeModuleScreen extends AbstractTubeModuleScreen<Ab
                 "pneumaticcraft.gui.tubeModule.simpleConfig.higherThan" :
                 "pneumaticcraft.gui.tubeModule.simpleConfig.lowerThan")
         );
-        NetworkHandler.sendToServer(PacketUpdatePressureModule.create(module));
+        NetworkHandler.sendToServer(PacketUpdatePressureModule.forModule(module));
     }
 
     @Override
@@ -129,7 +129,7 @@ public class SimplePressureGaugeModuleScreen extends AbstractTubeModuleScreen<Ab
     @Override
     public void removed() {
         updateThreshold();
-        NetworkHandler.sendToServer(PacketUpdatePressureModule.create(module));
+        NetworkHandler.sendToServer(PacketUpdatePressureModule.forModule(module));
         super.removed();
     }
 }

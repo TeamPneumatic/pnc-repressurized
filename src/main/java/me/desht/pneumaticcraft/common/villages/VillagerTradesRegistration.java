@@ -27,12 +27,12 @@ import me.desht.pneumaticcraft.common.util.RandomTradeBuilder;
 import net.minecraft.world.entity.npc.VillagerTrades;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.village.VillagerTradesEvent;
 
 import java.util.List;
 
-@Mod.EventBusSubscriber(modid = Names.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
+@EventBusSubscriber(modid = Names.MOD_ID, bus = EventBusSubscriber.Bus.GAME)
 public class VillagerTradesRegistration {
     public enum WhichTrades {
         NONE,

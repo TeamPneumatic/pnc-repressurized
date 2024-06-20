@@ -22,7 +22,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.EndPortalFrameBlock;
@@ -39,7 +38,7 @@ public class BlockTrackEntryEndPortalFrame implements IBlockTrackEntry {
     public static final ResourceLocation ID = RL("block_tracker.module.end_portal");
 
     @Override
-    public boolean shouldTrackWithThisEntry(BlockGetter world, BlockPos pos, BlockState state, BlockEntity te) {
+    public boolean shouldTrackWithThisEntry(Level world, BlockPos pos, BlockState state, BlockEntity te) {
         return state.getBlock() == Blocks.END_PORTAL_FRAME;
     }
 

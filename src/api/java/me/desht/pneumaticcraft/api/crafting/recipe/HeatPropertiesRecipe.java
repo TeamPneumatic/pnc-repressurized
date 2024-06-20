@@ -17,13 +17,19 @@
 
 package me.desht.pneumaticcraft.api.crafting.recipe;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidType;
 
 import java.util.Map;
 import java.util.Optional;
@@ -72,6 +78,8 @@ public abstract class HeatPropertiesRecipe extends PneumaticCraftRecipe {
      * @return the thermal resistance
      */
     public abstract Optional<Double> getThermalResistance();
+
+    public abstract Transforms getTransforms();
 
     /**
      * Get the blockstate which the input will transform to if too much heat is added to it. This may be empty if there
@@ -143,8 +151,25 @@ public abstract class HeatPropertiesRecipe extends PneumaticCraftRecipe {
      * @return some displayable text
      */
     public Component getInputDisplayName() {
-        return getBlock() instanceof LiquidBlock l ?
-                new FluidStack(l.getFluid(), 1000).getDisplayName() :
+        return getBlock() instanceof LiquidBlock liq ?
+                new FluidStack(liq.fluid, FluidType.BUCKET_VOLUME).getHoverName() :
                 new ItemStack(getBlock()).getHoverName();
+    }
+
+    public record Transforms(Optional<BlockState> hot, Optional<BlockState> cold,
+                             Optional<BlockState> hotFlowing, Optional<BlockState> coldFlowing) {
+        public static final Codec<Transforms> CODEC = RecordCodecBuilder.create(builder -> builder.group(
+                BlockState.CODEC.optionalFieldOf("hot").forGetter(Transforms::hot),
+                BlockState.CODEC.optionalFieldOf("cold").forGetter(Transforms::cold),
+                BlockState.CODEC.optionalFieldOf("hot_flowing").forGetter(Transforms::hotFlowing),
+                BlockState.CODEC.optionalFieldOf("cold_flowing").forGetter(Transforms::coldFlowing)
+        ).apply(builder, Transforms::new));
+        public static final StreamCodec<RegistryFriendlyByteBuf, Transforms> STREAM_CODEC = StreamCodec.composite(
+                ByteBufCodecs.optional(ByteBufCodecs.fromCodec(BlockState.CODEC)), Transforms::hot,
+                ByteBufCodecs.optional(ByteBufCodecs.fromCodec(BlockState.CODEC)), Transforms::cold,
+                ByteBufCodecs.optional(ByteBufCodecs.fromCodec(BlockState.CODEC)), Transforms::hotFlowing,
+                ByteBufCodecs.optional(ByteBufCodecs.fromCodec(BlockState.CODEC)), Transforms::coldFlowing,
+                Transforms::new
+        );
     }
 }

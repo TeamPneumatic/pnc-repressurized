@@ -31,13 +31,13 @@ import me.desht.pneumaticcraft.common.registry.ModBlocks;
 import me.desht.pneumaticcraft.common.registry.ModMenuTypes;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.drama.DramaGenerator;
-import net.minecraft.SharedConstants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.StringUtil;
 import net.minecraft.world.item.ItemStack;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -246,7 +246,7 @@ public class AphorismTileScreen extends Screen {
 
     @Override
     public boolean charTyped(char ch, int keyCode) {
-        if (SharedConstants.isAllowedChatCharacter(ch)) {
+        if (StringUtil.isAllowedChatCharacter(ch)) {
             if (Screen.hasAltDown()) {
                 if (ch >= 'a' && ch <= 'f' || ch >= 'l' && ch <= 'o' || ch == 'r' || ch >= '0' && ch <= '9') {
                     textLines[cursorY] = textLines[cursorY].substring(0, cursorX) + "§" + ch + textLines[cursorY].substring(cursorX);

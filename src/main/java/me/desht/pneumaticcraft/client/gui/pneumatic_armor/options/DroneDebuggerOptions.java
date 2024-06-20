@@ -20,6 +20,9 @@ package me.desht.pneumaticcraft.client.gui.pneumatic_armor.options;
 import com.google.common.collect.Sets;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IGuiScreen;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
+import me.desht.pneumaticcraft.common.drone.IDroneBase;
+import me.desht.pneumaticcraft.api.drone.IProgWidget;
+import me.desht.pneumaticcraft.api.drone.debug.DroneDebugEntry;
 import me.desht.pneumaticcraft.client.KeyHandler;
 import me.desht.pneumaticcraft.client.gui.ProgrammerScreen;
 import me.desht.pneumaticcraft.client.gui.ProgrammerWidgetAreaRenderer;
@@ -28,10 +31,7 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetCheckBox;
 import me.desht.pneumaticcraft.client.pneumatic_armor.upgrade_handler.DroneDebugClientHandler;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.block.entity.drone.ProgrammerBlockEntity;
-import me.desht.pneumaticcraft.common.debug.DroneDebugEntry;
-import me.desht.pneumaticcraft.common.drone.IDroneBase;
 import me.desht.pneumaticcraft.common.drone.progwidgets.IAreaProvider;
-import me.desht.pneumaticcraft.common.drone.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetStart;
 import me.desht.pneumaticcraft.common.item.PneumaticArmorItem;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -71,7 +71,7 @@ public class DroneDebuggerOptions extends IOptionPage.SimpleOptionPage<DroneDebu
     public DroneDebuggerOptions(IGuiScreen screen, DroneDebugClientHandler upgradeHandler) {
         super(screen, upgradeHandler);
 
-        selectedDrone = PneumaticArmorItem.getDebuggedDrone();
+        selectedDrone = PneumaticArmorItem.getDebuggedDrone(Minecraft.getInstance().player);
     }
 
     public static void clearAreaShowWidgetId() {
@@ -151,9 +151,9 @@ public class DroneDebuggerOptions extends IOptionPage.SimpleOptionPage<DroneDebu
 
             getClientUpgradeHandler().getShowingPositions().clear();
             if (areaShowingWidget != null) {
-                int widgetId = selectedDrone.getProgWidgets().indexOf(areaShowingWidget);
-                DroneDebugEntry entry = selectedDrone.getDebugger().getDebugEntry(widgetId);
-                if (entry != null && entry.hasCoords()) {
+                int widgetIdx = selectedDrone.getProgWidgets().indexOf(areaShowingWidget);
+                DroneDebugEntry entry = selectedDrone.getDebugger().getDebugEntry(widgetIdx);
+                if (entry != null && entry.hasPos()) {
                     getClientUpgradeHandler().getShowingPositions().add(entry.getPos());
                 }
             }
@@ -230,15 +230,15 @@ public class DroneDebuggerOptions extends IOptionPage.SimpleOptionPage<DroneDebu
 
             DroneDebugEntry entry = selectedDrone.getDebugger().getDebugEntry(widgetId);
             if (entry != null) {
-                long elapsed = (System.currentTimeMillis() - entry.getReceivedTime()) / 50;
+                long elapsed = (System.currentTimeMillis() - entry.receivedTime()) / 50;
                 tooltip.add((xlate("pneumaticcraft.gui.progWidget.debug.lastMessage",
                                 PneumaticCraftUtils.convertTicksToMinutesAndSeconds(elapsed, true))).withStyle(ChatFormatting.AQUA)
                 );
                 tooltip.add(Component.literal("  \"")
-                        .append(xlate(entry.getMessage()))
+                        .append(xlate(entry.message()))
                         .append("\"  ")
                         .withStyle(ChatFormatting.AQUA, ChatFormatting.ITALIC));
-                if (entry.hasCoords()) {
+                if (entry.hasPos()) {
                     tooltip.add(xlate("pneumaticcraft.gui.progWidget.debug.hasPositions").withStyle(ChatFormatting.YELLOW));
                     tooltip.add(xlate("pneumaticcraft.gui.progWidget.debug.clickToShow").withStyle(ChatFormatting.GREEN));
                 }

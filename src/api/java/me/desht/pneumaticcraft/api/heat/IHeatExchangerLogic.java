@@ -25,7 +25,6 @@ import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.common.util.INBTSerializable;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
@@ -47,7 +46,7 @@ import java.util.function.BiPredicate;
  *
  * @author MineMaarten, desht
  */
-public interface IHeatExchangerLogic extends INBTSerializable<CompoundTag> {
+public interface IHeatExchangerLogic {
     /**
      * Call this to tick this logic, and make the heat disperse itself to neighbours. Typically, this is called
      * each tick by the owning block entity's {@code tick()} method, on the server side only.
@@ -235,10 +234,8 @@ public interface IHeatExchangerLogic extends INBTSerializable<CompoundTag> {
     default void removeTemperatureListener(@NotNull TemperatureListener listener) {
     }
 
-    @Override
     default CompoundTag serializeNBT() { return new CompoundTag(); }
 
-    @Override
     default void deserializeNBT(CompoundTag nbt) {
     }
 

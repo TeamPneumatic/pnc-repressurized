@@ -17,22 +17,22 @@
 
 package me.desht.pneumaticcraft.client.gui.programmer;
 
+import me.desht.pneumaticcraft.api.drone.IProgWidget;
 import me.desht.pneumaticcraft.api.item.IPositionProvider;
 import me.desht.pneumaticcraft.client.gui.InventorySearcherScreen;
 import me.desht.pneumaticcraft.client.gui.ProgrammerScreen;
 import me.desht.pneumaticcraft.client.gui.widget.*;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
-import me.desht.pneumaticcraft.common.drone.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetArea;
-import me.desht.pneumaticcraft.common.drone.progwidgets.area.AreaType;
-import me.desht.pneumaticcraft.common.drone.progwidgets.area.AreaType.AreaTypeWidget;
-import me.desht.pneumaticcraft.common.drone.progwidgets.area.AreaType.AreaTypeWidgetEnum;
-import me.desht.pneumaticcraft.common.drone.progwidgets.area.AreaType.AreaTypeWidgetInteger;
+import me.desht.pneumaticcraft.api.drone.area.AreaType;
+import me.desht.pneumaticcraft.api.drone.area.AreaTypeWidget;
+import me.desht.pneumaticcraft.api.drone.area.AreaTypeWidget.EnumSelectorField;
+import me.desht.pneumaticcraft.api.drone.area.AreaTypeWidget.IntegerField;
 import me.desht.pneumaticcraft.common.item.GPSToolItem;
 import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.registry.ModMenuTypes;
-import me.desht.pneumaticcraft.common.util.ITranslatableEnum;
+import me.desht.pneumaticcraft.api.misc.ITranslatableEnum;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
@@ -57,7 +57,7 @@ public class ProgWidgetAreaScreen extends ProgWidgetAreaShowScreen<ProgWidgetAre
     private WidgetComboBox variableField1;
     private WidgetComboBox variableField2;
 
-    private final List<AreaType> allAreaTypes = ProgWidgetArea.getAllAreaTypes();
+    private final List<? extends AreaType> allAreaTypes = ProgWidgetArea.getAllAreaTypes();
     private final List<Pair<AreaTypeWidget, AbstractWidget>> areaTypeValueWidgets = new ArrayList<>();
     private final List<AbstractWidget> areaTypeStaticWidgets = new ArrayList<>();
 
@@ -103,16 +103,16 @@ public class ProgWidgetAreaScreen extends ProgWidgetAreaShowScreen<ProgWidgetAre
         for (int i = 0; i < allAreaTypes.size(); i++) {
             final AreaType areaType = allAreaTypes.get(i);
             WidgetRadioButton radioButton = new WidgetRadioButton(guiLeft + widgetsPerColumn + i / widgetsPerColumn * 80, guiTop + 100 + i % widgetsPerColumn * 12, 0xFF404040, xlate(areaType.getTranslationKey()), b -> {
-                progWidget.type = areaType;
+                progWidget.setAreaType(areaType);
                 switchToWidgets(areaType);
             });
-            if (progWidget.type.getClass() == areaType.getClass()) {
-                allAreaTypes.set(i, progWidget.type);
-            }
-            builder.addRadioButton(radioButton, progWidget.type.getClass() == areaType.getClass());
+//            if (progWidget.type.getClass() == areaType.getClass()) {
+//                allAreaTypes.set(i, progWidget.type);
+//            }
+            builder.addRadioButton(radioButton, progWidget.getAreaType().getName() == areaType.getName());
         }
         builder.build(this::addRenderableWidget);
-        switchToWidgets(progWidget.type);
+        switchToWidgets(progWidget.getAreaType());
 
         if (invSearchGui != null) {
             // returning from GPS selection GUI; copy the selected blockpos to the progwidget
@@ -157,29 +157,31 @@ public class ProgWidgetAreaScreen extends ProgWidgetAreaShowScreen<ProgWidgetAre
         List<AreaTypeWidget> atWidgets = new ArrayList<>();
         type.addUIWidgets(atWidgets);
         for (AreaTypeWidget areaTypeWidget : atWidgets) {
-            WidgetLabel titleWidget = new WidgetLabel(x, curY, xlate(areaTypeWidget.title));
+            WidgetLabel titleWidget = new WidgetLabel(x, curY, xlate(areaTypeWidget.getTranslationKey()));
             addRenderableWidget(titleWidget);
             areaTypeStaticWidgets.add(titleWidget);
             curY += font.lineHeight + 1;
 
-            if (areaTypeWidget instanceof AreaTypeWidgetInteger intWidget) {
-                WidgetTextFieldNumber intField = new WidgetTextFieldNumber(font, x, curY, 40, font.lineHeight + 1).setRange(0, Integer.MAX_VALUE);
-                intField.setValue(intWidget.readAction.getAsInt());
-                addRenderableWidget(intField);
-                areaTypeValueWidgets.add(new ImmutablePair<>(areaTypeWidget, intField));
+            switch (areaTypeWidget) {
+                case IntegerField intWidget -> {
+                    WidgetTextFieldNumber intField = new WidgetTextFieldNumber(font, x, curY, 40, font.lineHeight + 1).setRange(0, Integer.MAX_VALUE);
+                    intField.setValue(intWidget.readAction.getAsInt());
+                    addRenderableWidget(intField);
+                    areaTypeValueWidgets.add(new ImmutablePair<>(areaTypeWidget, intField));
 
-                curY += font.lineHeight + 20;
-            } else if (areaTypeWidget instanceof AreaTypeWidgetEnum<?> enumWidget) {
-                WidgetComboBox enumCbb = new WidgetComboBox(font, x, curY, 80, font.lineHeight + 3).setFixedOptions(true);
-                enumCbb.setElements(getEnumNames(enumWidget.enumClass));
-                String txt = xlate(enumWidget.readAction.get().getTranslationKey()).getString();
-                enumCbb.setValue(txt);
-                addRenderableWidget(enumCbb);
-                areaTypeValueWidgets.add(new ImmutablePair<>(areaTypeWidget, enumCbb));
+                    curY += font.lineHeight + 20;
+                }
+                case EnumSelectorField<?> enumWidget -> {
+                    WidgetComboBox enumCbb = new WidgetComboBox(font, x, curY, 80, font.lineHeight + 3).setFixedOptions(true);
+                    enumCbb.setElements(getEnumNames(enumWidget.enumClass));
+                    String txt = xlate(enumWidget.readAction.get().getTranslationKey()).getString();
+                    enumCbb.setValue(txt);
+                    addRenderableWidget(enumCbb);
+                    areaTypeValueWidgets.add(new ImmutablePair<>(areaTypeWidget, enumCbb));
 
-                curY += font.lineHeight + 20;
-            } else {
-                throw new IllegalStateException("Invalid widget type: " + areaTypeWidget.getClass());
+                    curY += font.lineHeight + 20;
+                }
+                default -> throw new IllegalStateException("Invalid widget type: " + areaTypeWidget.getClass());
             }
         }
     }
@@ -188,11 +190,11 @@ public class ProgWidgetAreaScreen extends ProgWidgetAreaShowScreen<ProgWidgetAre
         for (Pair<AreaTypeWidget, AbstractWidget> entry : areaTypeValueWidgets) {
             AreaTypeWidget widget = entry.getLeft();
             AbstractWidget guiWidget = entry.getRight();
-            if (widget instanceof AreaTypeWidgetInteger intWidget) {
+            if (widget instanceof IntegerField intWidget) {
                 intWidget.writeAction.accept(((WidgetTextFieldNumber) guiWidget).getIntValue());
-            } else if (widget instanceof AreaTypeWidgetEnum<? extends ITranslatableEnum>) {
+            } else if (widget instanceof EnumSelectorField<? extends ITranslatableEnum>) {
                 @SuppressWarnings("unchecked")
-                AreaTypeWidgetEnum<ITranslatableEnum> enumWidget = (AreaTypeWidgetEnum<ITranslatableEnum>) widget;
+                EnumSelectorField<ITranslatableEnum> enumWidget = (EnumSelectorField<ITranslatableEnum>) widget;
                 WidgetComboBox cbb = (WidgetComboBox) guiWidget;
                 List<String> enumNames = getEnumNames(enumWidget.enumClass);
                 Object[] enumValues = enumWidget.enumClass.getEnumConstants();

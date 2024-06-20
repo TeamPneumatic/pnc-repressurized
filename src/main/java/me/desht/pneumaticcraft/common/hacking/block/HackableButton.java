@@ -21,7 +21,6 @@ import me.desht.pneumaticcraft.api.pneumatic_armor.hacking.IHackableBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -58,6 +57,6 @@ public class HackableButton implements IHackableBlock {
     @Override
     public void onHackComplete(Level world, BlockPos pos, Player player) {
         BlockState state = world.getBlockState(pos);
-        fakeRayTrace(player, pos).ifPresent(rtr -> state.use(world, player, InteractionHand.MAIN_HAND, rtr));
+        fakeRayTrace(player, pos).ifPresent(rtr -> state.useWithoutItem(world, player, rtr));
     }
 }

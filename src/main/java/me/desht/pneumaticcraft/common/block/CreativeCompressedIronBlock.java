@@ -55,12 +55,7 @@ public class CreativeCompressedIronBlock extends AbstractPneumaticCraftBlock
 
     public static class ItemBlockCreativeCompressedIron extends BlockItem {
         public ItemBlockCreativeCompressedIron(CreativeCompressedIronBlock block) {
-            super(block, ModItems.defaultProps());
-        }
-
-        @Override
-        public Rarity getRarity(ItemStack stack) {
-            return Rarity.EPIC;
+            super(block, ModItems.defaultProps().rarity(Rarity.EPIC));
         }
     }
 }

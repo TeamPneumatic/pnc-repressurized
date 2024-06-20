@@ -25,6 +25,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
+import java.util.Objects;
+
 // Note: spawner agitator logic is handled by BaseSpawnerMixin for player-near checking,
 // and in MiscEventHandler#onMobSpawn() for tagging & mob persistence
 
@@ -39,7 +41,8 @@ public class SpawnerAgitatorEntity extends AbstractSemiblockEntity {
     }
 
     public static boolean isAgitated(BaseSpawner spawner) {
-        BlockEntity be = spawner.getSpawnerBlockEntity();
-        return be != null && SemiblockTracker.getInstance().getSemiblock(be.getLevel(), be.getBlockPos()) instanceof SpawnerAgitatorEntity;
+        return Objects.requireNonNull(spawner.getOwner()).left()
+                .map(be -> SemiblockTracker.getInstance().getSemiblock(be.getLevel(), be.getBlockPos()) instanceof SpawnerAgitatorEntity)
+                .orElse(false);
     }
 }

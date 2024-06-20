@@ -17,13 +17,14 @@
 
 package me.desht.pneumaticcraft.common.network;
 
-import me.desht.pneumaticcraft.client.util.ClientUtils;
+import me.desht.pneumaticcraft.client.pneumatic_armor.upgrade_handler.EntityTrackerClientHandler;
 import me.desht.pneumaticcraft.common.entity.drone.DroneEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.network.handling.PlayPayloadContext;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
@@ -32,9 +33,15 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
  * Sent by server to highlight a block the drone can't interact with (blacklisted)
  */
 public record PacketShowWireframe(BlockPos pos, int entityId) implements CustomPacketPayload {
-    public static final ResourceLocation ID = RL("show_wireframe");
+    public static final Type<PacketShowWireframe> TYPE = new Type<>(RL("show_wireframe"));
 
-    public static PacketShowWireframe create(DroneEntity entity, BlockPos pos) {
+    public static final StreamCodec<FriendlyByteBuf, PacketShowWireframe> STREAM_CODEC = StreamCodec.composite(
+            BlockPos.STREAM_CODEC, PacketShowWireframe::pos,
+            ByteBufCodecs.INT, PacketShowWireframe::entityId,
+            PacketShowWireframe::new
+    );
+
+    public static PacketShowWireframe forDrone(DroneEntity entity, BlockPos pos) {
         return new PacketShowWireframe(pos, entity.getId());
     }
 
@@ -43,21 +50,13 @@ public record PacketShowWireframe(BlockPos pos, int entityId) implements CustomP
     }
 
     @Override
-    public void write(FriendlyByteBuf buffer) {
-        buffer.writeBlockPos(pos);
-        buffer.writeInt(entityId);
+    public Type<PacketShowWireframe> type() {
+        return TYPE;
     }
 
-    @Override
-    public ResourceLocation id() {
-        return ID;
-    }
-
-    public static void handle(PacketShowWireframe message, PlayPayloadContext ctx) {
-        ctx.workHandler().submitAsync(() -> {
-            if (ClientUtils.getClientLevel().getEntity(message.entityId()) instanceof DroneEntity drone) {
-                ClientUtils.addDroneToHudHandler(drone, message.pos());
-            }
-        });
+    public static void handle(PacketShowWireframe message, IPayloadContext ctx) {
+        if (ctx.player().level().getEntity(message.entityId()) instanceof DroneEntity drone) {
+            EntityTrackerClientHandler.addDroneToHudHandler(drone, message.pos());
+        }
     }
 }

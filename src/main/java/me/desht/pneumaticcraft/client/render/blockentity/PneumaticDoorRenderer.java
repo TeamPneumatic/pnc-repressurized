@@ -32,7 +32,6 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.util.Mth;
-import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.phys.AABB;
 
 public class PneumaticDoorRenderer extends AbstractBlockEntityModelRenderer<PneumaticDoorBlockEntity> {
@@ -87,7 +86,7 @@ public class PneumaticDoorRenderer extends AbstractBlockEntityModelRenderer<Pneu
 
         float rotation = Mth.lerp(partialTicks, te.oldRotationAngle, te.rotationAngle);
         boolean rightGoing = te.rightGoing;
-        float[] rgb = DyeColor.byId(te.color).getTextureDiffuseColors();
+        float[] rgb = te.color.getTextureDiffuseColors();
 
         RenderUtils.rotateMatrixForDirection(matrixStackIn, te.getRotation());
 

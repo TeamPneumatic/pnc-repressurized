@@ -53,8 +53,8 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
-import net.neoforged.neoforge.event.TickEvent;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -82,7 +82,7 @@ public enum AreaRenderManager {
     }
 
     @SubscribeEvent
-    public void renderWorldLastEvent(RenderLevelStageEvent event) {
+    public void renderLevelStageEvent(RenderLevelStageEvent event) {
         if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_PARTICLES) return;
 
         Player player = ClientUtils.getClientPlayer();
@@ -112,16 +112,14 @@ public enum AreaRenderManager {
     }
 
     @SubscribeEvent
-    public void tickEnd(TickEvent.ClientTickEvent event) {
+    public void tickEnd(ClientTickEvent.Post event) {
         Player player = Minecraft.getInstance().player;
         if (player != null) {
             if (player.level() != level) {
                 level = player.level();
                 showHandlers.clear();
             } else {
-                if (event.phase == TickEvent.Phase.END) {
-                    showHandlers.keySet().removeIf(pos -> PneumaticCraftUtils.distBetweenSq(pos, player.blockPosition()) < 1024 && level.isEmptyBlock(pos));
-                }
+                showHandlers.keySet().removeIf(pos -> PneumaticCraftUtils.distBetweenSq(pos, player.blockPosition()) < 1024 && level.isEmptyBlock(pos));
             }
         }
     }
@@ -185,8 +183,8 @@ public enum AreaRenderManager {
 
     private void maybeRenderPositionProvider(PoseStack matrixStack, MultiBufferSource.BufferSource buffer, Player player) {
         ItemStack curItem = getHeldPositionProvider(player);
-        if (curItem.getItem() instanceof IPositionProvider positionProvider && curItem.hasTag()) {
-            int thisHash = Objects.requireNonNull(curItem.getTag()).hashCode();
+        if (curItem.getItem() instanceof IPositionProvider positionProvider) {
+            int thisHash = ItemStack.hashItemAndComponents(curItem);
             if (thisHash != lastItemHashCode) {
                 // Position data has changed: recache stored positions
                 lastItemHashCode = thisHash;

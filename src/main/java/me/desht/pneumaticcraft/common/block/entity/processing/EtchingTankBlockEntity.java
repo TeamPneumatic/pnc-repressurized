@@ -17,7 +17,6 @@
 
 package me.desht.pneumaticcraft.common.block.entity.processing;
 
-import com.google.common.collect.ImmutableMap;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.data.PneumaticCraftTags;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
@@ -31,12 +30,15 @@ import me.desht.pneumaticcraft.common.item.EmptyPCBItem;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
+import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.util.PNCFluidTank;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.component.DataComponentType;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Mth;
 import net.minecraft.world.MenuProvider;
@@ -48,6 +50,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.IFluidTank;
+import net.neoforged.neoforge.fluids.SimpleFluidContent;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.items.IItemHandler;
 
@@ -203,26 +206,26 @@ public class EtchingTankBlockEntity extends AbstractTickingBlockEntity
 
     @Nonnull
     @Override
-    public Map<String, PNCFluidTank> getSerializableTanks() {
-        return ImmutableMap.of("Tank", acidTank);
+    public Map<DataComponentType<SimpleFluidContent>, PNCFluidTank> getSerializableTanks() {
+        return Map.of(ModDataComponents.MAIN_TANK.get(), acidTank);
     }
 
     @Override
-    public void saveAdditional(CompoundTag tag) {
-        super.saveAdditional(tag);
+    public void saveAdditional(CompoundTag tag, HolderLookup.Provider provider) {
+        super.saveAdditional(tag, provider);
 
-        tag.put("Inventory", itemHandler.serializeNBT());
-        tag.put("Output", outputHandler.serializeNBT());
-        tag.put("Failed", failedHandler.serializeNBT());
+        tag.put("Inventory", itemHandler.serializeNBT(provider));
+        tag.put("Output", outputHandler.serializeNBT(provider));
+        tag.put("Failed", failedHandler.serializeNBT(provider));
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
+    public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
+        super.loadAdditional(tag, provider);
 
-        itemHandler.deserializeNBT(tag.getCompound("Inventory"));
-        outputHandler.deserializeNBT(tag.getCompound("Output"));
-        failedHandler.deserializeNBT(tag.getCompound("Failed"));
+        itemHandler.deserializeNBT(provider, tag.getCompound("Inventory"));
+        outputHandler.deserializeNBT(provider, tag.getCompound("Output"));
+        failedHandler.deserializeNBT(provider, tag.getCompound("Failed"));
     }
 
     @Override

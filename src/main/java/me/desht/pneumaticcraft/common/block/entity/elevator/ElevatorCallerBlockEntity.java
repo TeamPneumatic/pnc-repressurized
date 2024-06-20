@@ -25,6 +25,7 @@ import me.desht.pneumaticcraft.common.block.entity.RedstoneController;
 import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.items.IItemHandler;
@@ -69,24 +70,24 @@ public class ElevatorCallerBlockEntity extends AbstractTickingBlockEntity implem
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
+    public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
+        super.loadAdditional(tag, provider);
         emittingRedstone = tag.getBoolean("emittingRedstone");
         thisFloor = tag.getInt("thisFloor");
         shouldUpdateNeighbors = tag.getBoolean("shouldUpdateNeighbors");
     }
 
     @Override
-    public void saveAdditional(CompoundTag tag) {
-        super.saveAdditional(tag);
+    public void saveAdditional(CompoundTag tag, HolderLookup.Provider provider) {
+        super.saveAdditional(tag, provider);
         tag.putBoolean("emittingRedstone", emittingRedstone);
         tag.putInt("thisFloor", thisFloor);
         tag.putBoolean("shouldUpdateNeighbors", shouldUpdateNeighbors);
     }
 
     @Override
-    public void readFromPacket(CompoundTag tag) {
-        super.readFromPacket(tag);
+    public void readFromPacket(CompoundTag tag, HolderLookup.Provider provider) {
+        super.readFromPacket(tag, provider);
         int floorAmount = tag.getInt("floors");
         floors = new ElevatorButton[floorAmount];
         for (int i = 0; i < floorAmount; i++) {
@@ -96,8 +97,8 @@ public class ElevatorCallerBlockEntity extends AbstractTickingBlockEntity implem
     }
 
     @Override
-    public void writeToPacket(CompoundTag tag) {
-        super.writeToPacket(tag);
+    public void writeToPacket(CompoundTag tag, HolderLookup.Provider provider) {
+        super.writeToPacket(tag, provider);
         tag.putInt("floors", floors.length);
         for (ElevatorButton floor : floors) {
             tag.put("floor" + floor.floorNumber, floor.writeToNBT(new CompoundTag()));

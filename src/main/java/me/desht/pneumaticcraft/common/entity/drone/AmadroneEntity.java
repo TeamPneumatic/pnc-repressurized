@@ -26,7 +26,7 @@ import me.desht.pneumaticcraft.common.network.PacketSpawnParticle;
 import me.desht.pneumaticcraft.common.registry.ModEntityTypes;
 import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
-import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
+import me.desht.pneumaticcraft.common.upgrades.UpgradableItemUtils;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
@@ -39,12 +39,15 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.items.ItemStackHandler;
+import org.joml.Vector3f;
 
 import javax.annotation.Nonnull;
 import java.util.List;
+import java.util.Optional;
 
 public class AmadroneEntity extends DroneEntity {
     private static ItemStack amadroneStack = ItemStack.EMPTY;
+    private static final Vector3f VECTOR3F_ONE = new Vector3f(1, 1, 1);
 
     public enum AmadronAction { TAKING_PAYMENT, RESTOCKING }
 
@@ -161,7 +164,9 @@ public class AmadroneEntity extends DroneEntity {
             subTag.putString("offerId", handlingOffer.toString());
             subTag.putInt("offerTimes", offerTimes);
             subTag.putString("buyingPlayer", buyingPlayer);
-            if (!usedTablet.isEmpty()) subTag.put("usedTablet", usedTablet.save(new CompoundTag()));
+            if (!usedTablet.isEmpty()) {
+                subTag.put("usedTablet", usedTablet.save(registryAccess()));
+            }
             subTag.putString("amadronAction", amadronAction.toString());
             tag.put("amadron", subTag);
         }
@@ -174,7 +179,7 @@ public class AmadroneEntity extends DroneEntity {
         if (tag.contains("amadron")) {
             CompoundTag subTag = tag.getCompound("amadron");
             handlingOffer = new ResourceLocation(subTag.getString("offerId"));
-            usedTablet = ItemStack.of(subTag.getCompound("usedTablet"));
+            usedTablet = ItemStack.parseOptional(registryAccess(), subTag.getCompound("usedTablet"));
             offerTimes = subTag.getInt("offerTimes");
             buyingPlayer = subTag.getString("buyingPlayer");
             amadronAction = AmadronAction.valueOf(subTag.getString("amadronAction"));
@@ -188,11 +193,12 @@ public class AmadroneEntity extends DroneEntity {
 
     @Override
     public void overload(String msgKey, Object... params) {
-        NetworkHandler.sendToAllTracking(new PacketSpawnParticle(
-                ParticleTypes.CLOUD, (float) (getX() - 0.5), (float) (getY() - 0.5), (float) (getZ() - 0.5),
-                0, 0.1f, 0,
+        NetworkHandler.sendToAllTracking(new PacketSpawnParticle(ParticleTypes.CLOUD,
+                getDronePos().toVector3f().add(-0.5f, -0.5f, -0.5f),
+                new Vector3f(0, 0.1f, 0),
                 10,
-                1, 1, 1), this);
+                Optional.of(VECTOR3F_ONE)),
+                this);
         NeoForge.EVENT_BUS.unregister(this);
         discard();
     }

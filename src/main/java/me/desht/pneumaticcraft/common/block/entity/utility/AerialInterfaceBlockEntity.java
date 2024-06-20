@@ -21,6 +21,7 @@ import com.google.common.collect.ImmutableList;
 import com.mojang.authlib.GameProfile;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
+import me.desht.pneumaticcraft.api.misc.ITranslatableEnum;
 import me.desht.pneumaticcraft.api.pressure.PressureTier;
 import me.desht.pneumaticcraft.common.XPFluidManager;
 import me.desht.pneumaticcraft.common.block.entity.*;
@@ -41,12 +42,12 @@ import me.desht.pneumaticcraft.common.thirdparty.curios.CuriosUtils;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.util.*;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
-import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -235,9 +236,8 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
         if (playerName.isEmpty()) {
             gameProfileClient = null;
         } else {
-            CompoundTag tag = Util.make(new CompoundTag(), t -> t.putString("SkullOwner", playerName));
-            SkullBlockEntity.resolveGameProfile(tag);
-            gameProfileClient = NbtUtils.readGameProfile(tag);
+            SkullBlockEntity.fetchGameProfile(playerName)
+                    .thenAcceptAsync(optProfile -> gameProfileClient = optProfile.orElse(null));
         }
     }
 
@@ -362,8 +362,8 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
+    public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
+        super.loadAdditional(tag, provider);
 
         playerUUID = UUID.fromString(tag.getString("playerUUID"));
         feedMode = FeedMode.valueOf(tag.getString("feedMode"));
@@ -376,8 +376,8 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
     }
 
     @Override
-    public void saveAdditional(CompoundTag tag) {
-        super.saveAdditional(tag);
+    public void saveAdditional(CompoundTag tag, HolderLookup.Provider provider) {
+        super.saveAdditional(tag, provider);
 
         tag.putString("playerUUID", playerUUID.toString());
         tag.putString("feedMode", feedMode.toString());
@@ -653,9 +653,7 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
 
         private int getFoodValue(ItemStack stack) {
             //noinspection ConstantConditions
-            return stack.getItem().isEdible() ?
-                    getPlayer().map(player -> stack.getFoodProperties(player).getNutrition()).orElse(0) :
-                    0;
+            return stack.has(DataComponents.FOOD) ? stack.get(DataComponents.FOOD).nutrition() : 0;
         }
     }
 

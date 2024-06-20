@@ -23,9 +23,9 @@ import me.desht.pneumaticcraft.common.network.PacketSyncEntityHacks;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.neoforge.event.TickEvent;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.event.tick.LevelTickEvent;
 
 import java.util.List;
 
@@ -37,10 +37,8 @@ public enum HackEventListener {
     }
 
     @SubscribeEvent
-    public void worldTick(TickEvent.LevelTickEvent event) {
-        if (event.phase == TickEvent.Phase.END) {
-            HackTickTracker.getInstance(event.level).tick(event.level);
-        }
+    public void worldTick(LevelTickEvent.Post event) {
+        HackTickTracker.getInstance(event.getLevel()).tick(event.getLevel());
     }
 
     @SubscribeEvent

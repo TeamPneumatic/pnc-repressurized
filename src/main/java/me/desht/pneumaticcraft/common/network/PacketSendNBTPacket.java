@@ -18,14 +18,14 @@
 package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.client.pneumatic_armor.block_tracker.TrackerBlacklistManager;
-import me.desht.pneumaticcraft.client.util.ClientUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.neoforged.neoforge.network.handling.PlayPayloadContext;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
@@ -34,10 +34,16 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
  * Sent by server to give a clientside BE a copy of its NBT data
  */
 public record PacketSendNBTPacket(BlockPos pos, CompoundTag tag) implements CustomPacketPayload {
-    public static final ResourceLocation ID = RL("send_nbt_packet");
+    public static final Type<PacketSendNBTPacket> TYPE = new Type<>(RL("send_nbt_packet"));
+
+    public static final StreamCodec<FriendlyByteBuf, PacketSendNBTPacket> STREAM_CODEC = StreamCodec.composite(
+            BlockPos.STREAM_CODEC, PacketSendNBTPacket::pos,
+            ByteBufCodecs.COMPOUND_TAG, PacketSendNBTPacket::tag,
+            PacketSendNBTPacket::new
+    );
 
     public static PacketSendNBTPacket forBlockEntity(BlockEntity te) {
-        return new PacketSendNBTPacket(te.getBlockPos(), te.saveWithFullMetadata());
+        return new PacketSendNBTPacket(te.getBlockPos(), te.saveCustomOnly(te.getLevel().registryAccess()));
     }
 
     public static PacketSendNBTPacket fromNetwork(FriendlyByteBuf buffer) {
@@ -45,26 +51,18 @@ public record PacketSendNBTPacket(BlockPos pos, CompoundTag tag) implements Cust
     }
 
     @Override
-    public void write(FriendlyByteBuf buffer) {
-        buffer.writeBlockPos(pos);
-        buffer.writeNbt(tag);
+    public Type<PacketSendNBTPacket> type() {
+        return TYPE;
     }
 
-    @Override
-    public ResourceLocation id() {
-        return ID;
-    }
-
-    public static void handle(PacketSendNBTPacket message, PlayPayloadContext ctx) {
-        ctx.workHandler().submitAsync(() -> {
-            BlockEntity te = ClientUtils.getBlockEntity(message.pos());
-            if (te != null) {
-                try {
-                    te.load(message.tag());
-                } catch (Throwable e) {
-                    TrackerBlacklistManager.addInventoryTEToBlacklist(te, e);
-                }
+    public static void handle(PacketSendNBTPacket message, IPayloadContext ctx) {
+        BlockEntity te = ctx.player().level().getBlockEntity(message.pos());
+        if (te != null) {
+            try {
+                te.loadCustomOnly(message.tag(), ctx.player().registryAccess());
+            } catch (Throwable e) {
+                TrackerBlacklistManager.addInventoryTEToBlacklist(te, e);
             }
-        });
+        }
     }
 }

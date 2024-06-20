@@ -121,9 +121,8 @@ public class PneumaticWrenchItem extends PressurizableItem {
 
     @Override
     public void inventoryTick(ItemStack stack, Level worldIn, Entity entityIn, int itemSlot, boolean isSelected) {
-        if (entityIn instanceof ServerPlayer && stack.getItem() instanceof IPressurizableItem
-                && ((IPressurizableItem) stack.getItem()).getPressure(stack) >= 3f) {
-            ModCriterionTriggers.CHARGED_WRENCH.get().trigger((ServerPlayer) entityIn);
+        if (entityIn instanceof ServerPlayer sp && stack.getItem() instanceof PneumaticWrenchItem pw && pw.getPressure(stack) >= 3f) {
+            ModCriterionTriggers.CHARGED_WRENCH.get().trigger(sp);
         }
     }
 }

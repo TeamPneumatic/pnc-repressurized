@@ -17,52 +17,90 @@
 
 package me.desht.pneumaticcraft.common.drone.progwidgets;
 
+import com.mojang.datafixers.Products;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import me.desht.pneumaticcraft.api.drone.IDrone;
+import me.desht.pneumaticcraft.api.drone.IProgWidget;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
+import me.desht.pneumaticcraft.api.registry.PNCRegistries;
 import me.desht.pneumaticcraft.common.config.subconfig.ProgWidgetConfig;
-import me.desht.pneumaticcraft.common.drone.IDroneBase;
-import me.desht.pneumaticcraft.common.registry.ModProgWidgets;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.goal.Goal;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public abstract class ProgWidget implements IProgWidget {
+    public static final Codec<IProgWidget> CODEC = PNCRegistries.PROG_WIDGETS_REGISTRY.byNameCodec()
+            .dispatch(IProgWidget::getType, ProgWidgetType::codec
+    );
+    public static final Codec<List<IProgWidget>> LIST_CODEC = CODEC.listOf();
+    public static final StreamCodec<RegistryFriendlyByteBuf, IProgWidget> STREAM_CODEC = StreamCodec.of(
+            (buf, widget) -> widget.writeToPacket(buf),
+            ProgWidget::fromPacket
+    );
+    public static final StreamCodec<RegistryFriendlyByteBuf,List<IProgWidget>> LIST_STREAM_CODEC = STREAM_CODEC.apply(ByteBufCodecs.list());
+
+    protected static <P extends ProgWidget> Products.P1<RecordCodecBuilder.Mu<P>, PositionFields> baseParts(RecordCodecBuilder.Instance<P> pInstance) {
+        return pInstance.group(
+                PositionFields.CODEC.fieldOf("pos").forGetter(ProgWidget::getPosition)
+        );
+    }
+
     static final MutableComponent ALL_TEXT = xlate("pneumaticcraft.gui.misc.all");
     static final MutableComponent NONE_TEXT = xlate("pneumaticcraft.gui.misc.none");
 
-    private final ProgWidgetType<?> type;
-    private int x, y;
+    private PositionFields positionFields;
     private IProgWidget[] connectedParameters;
     private IProgWidget outputStepConnection;
     private IProgWidget parent;
     private Pair<Float,Float> maxUV = null;
 
-    public ProgWidget(ProgWidgetType<?> type) {
-        this.type = type;
+    protected ProgWidget(PositionFields pos) {
+        this.positionFields = pos;
         if (!getParameters().isEmpty())
             connectedParameters = new IProgWidget[getParameters().size() * 2]; //times two because black- and whitelist.
     }
 
-    @Override
-    public ProgWidgetType<?> getType() {
-        return type;
+    protected static byte encodeSides(boolean[] sides) {
+        int res = 0;
+        for (int i = 0; i < 6; i++) {
+            res |= sides[i] ? 1 << i : 0;
+        }
+        return (byte) res;
+    }
+
+    protected static boolean[] decodeSides(byte val) {
+        boolean[] res = new boolean[6];
+        for (int i = 0; i < 6; i++) {
+            res[i] = (val & (1 << i)) != 0;
+        }
+        return res;
     }
 
     @Override
+    public abstract ProgWidgetType<?> getType();
+
+    @Override
     public ResourceLocation getTypeID() {
-        return ModProgWidgets.PROG_WIDGETS_REGISTRY.getKey(getType());
+        return PNCRegistries.PROG_WIDGETS_REGISTRY.getKey(getType());
     }
 
     @Override
@@ -80,10 +118,8 @@ public abstract class ProgWidget implements IProgWidget {
 
     @Override
     public void addWarnings(List<Component> curInfo, List<IProgWidget> widgets) {
-        if (this instanceof IVariableWidget) {
-            Set<String> variables = new HashSet<>();
-            ((IVariableWidget) this).addVariables(variables);
-            for (String variable : variables) {
+        if (this instanceof IVariableWidget variableWidget) {
+            for (String variable : Util.make(new HashSet<>(), variableWidget::addVariables)) {
                 if (!variable.isEmpty() && !variable.startsWith("#") && !variable.startsWith("$") && !isVariableSetAnywhere(widgets, variable)) {
                     curInfo.add(xlate("pneumaticcraft.gui.progWidget.general.warning.variableNeverSet", variable));
                 }
@@ -91,12 +127,10 @@ public abstract class ProgWidget implements IProgWidget {
         }
     }
 
-    private boolean isVariableSetAnywhere(List<IProgWidget> widgets, String variable) {
-        if (variable.isEmpty()) return true;
+    private static boolean isVariableSetAnywhere(List<IProgWidget> widgets, String variable) {
         for (IProgWidget widget : widgets) {
-            if (widget instanceof IVariableSetWidget) {
-                Set<String> variables = new HashSet<>();
-                ((IVariableSetWidget) widget).addVariables(variables);
+            if (widget instanceof IVariableSetWidget vsw) {
+                Set<String> variables = Util.make(new HashSet<>(), vsw::addVariables);
                 if (variables.contains(variable)) return true;
             }
         }
@@ -115,24 +149,28 @@ public abstract class ProgWidget implements IProgWidget {
         return !ProgWidgetConfig.INSTANCE.isWidgetBlacklisted(getType());
     }
 
+    public PositionFields getPosition() {
+        return positionFields;
+    }
+
     @Override
     public int getX() {
-        return x;
+        return positionFields.x;
     }
 
     @Override
     public int getY() {
-        return y;
+        return positionFields.y;
     }
 
     @Override
     public void setX(int x) {
-        this.x = x;
+        this.positionFields = new PositionFields(x, positionFields.y);
     }
 
     @Override
     public void setY(int y) {
-        this.y = y;
+        this.positionFields = new PositionFields(positionFields.x, y);
     }
 
     @Override
@@ -178,12 +216,12 @@ public abstract class ProgWidget implements IProgWidget {
     }
 
     @Override
-    public Goal getWidgetTargetAI(IDroneBase drone, IProgWidget widget) {
+    public Goal getWidgetTargetAI(IDrone drone, IProgWidget widget) {
         return null;
     }
 
     @Override
-    public Goal getWidgetAI(IDroneBase drone, IProgWidget widget) {
+    public Goal getWidgetAI(IDrone drone, IProgWidget widget) {
         return null;
     }
 
@@ -222,50 +260,33 @@ public abstract class ProgWidget implements IProgWidget {
     }
 
     @Override
-    public IProgWidget getOutputWidget(IDroneBase drone, List<IProgWidget> allWidgets) {
+    public IProgWidget getOutputWidget(IDrone drone, List<IProgWidget> allWidgets) {
         return outputStepConnection;
     }
 
     @Override
-    public IProgWidget copy() {
-        IProgWidget copy = IProgWidget.create(getType());
-        CompoundTag tag = new CompoundTag();
-        writeToNBT(tag);
-        copy.readFromNBT(tag);
-        return copy;
-    }
+    public Optional<? extends IProgWidget> copy() {
+        try {
+            Tag tag = CODEC.encodeStart(NbtOps.INSTANCE, this).getOrThrow();
+            var copy = CODEC.parse(NbtOps.INSTANCE, tag).getOrThrow();
 
-    public final CompoundTag toNbt() {
-        return Util.make(new CompoundTag(), this::writeToNBT);
-    }
-
-    @Override
-    public void writeToNBT(CompoundTag tag) {
-        tag.putString("name", PneumaticCraftUtils.modDefaultedString(getTypeID()));
-        tag.putInt("x", x);
-        tag.putInt("y", y);
+            return copy instanceof IProgWidget p ? Optional.of(p) : Optional.empty();
+        } catch (IllegalStateException e) {
+            return Optional.empty();
+        }
     }
 
     @Override
-    public void readFromNBT(CompoundTag tag) {
-        // note: widget type ID is not read here (see ProgWidget.fromNBT() static method)
-        x = tag.getInt("x");
-        y = tag.getInt("y");
-    }
-
-    @Override
-    public void writeToPacket(FriendlyByteBuf buf) {
+    public void writeToPacket(RegistryFriendlyByteBuf buf) {
         // since most or all widgets have a 'pneumaticcraft:' namespace, omitting that saves 15 bytes per widget
         buf.writeUtf(PneumaticCraftUtils.modDefaultedString(getTypeID()));
-        buf.writeInt(x);
-        buf.writeInt(y);
+        PositionFields.STREAM_CODEC.encode(buf, positionFields);
     }
 
     @Override
-    public void readFromPacket(FriendlyByteBuf buf) {
+    public void readFromPacket(RegistryFriendlyByteBuf buf) {
         // note: widget type ID is not read here (see ProgWidget.fromPacket() static method)
-        x = buf.readInt();
-        y = buf.readInt();
+        positionFields = PositionFields.STREAM_CODEC.decode(buf);
     }
 
     static <T extends IProgWidget> List<T> getConnectedWidgetList(IProgWidget widget, int parameterIndex, ProgWidgetType<T> type) {
@@ -293,9 +314,9 @@ public abstract class ProgWidget implements IProgWidget {
         }
     }
 
-    public static IProgWidget fromPacket(FriendlyByteBuf buf) {
+    public static IProgWidget fromPacket(RegistryFriendlyByteBuf buf) {
         ResourceLocation typeID = PneumaticCraftUtils.modDefaultedRL(buf.readUtf(256));
-        ProgWidgetType<?> type = ModProgWidgets.PROG_WIDGETS_REGISTRY.get(typeID);
+        ProgWidgetType<?> type = PNCRegistries.PROG_WIDGETS_REGISTRY.get(typeID);
         if (type != null) {
             IProgWidget newWidget = IProgWidget.create(type);
             newWidget.readFromPacket(buf);
@@ -305,24 +326,46 @@ public abstract class ProgWidget implements IProgWidget {
         }
     }
 
-    public static IProgWidget fromNBT(CompoundTag widgetTag) {
-        ResourceLocation typeID = PneumaticCraftUtils.modDefaultedRL(widgetTag.getString("name"));
-        ProgWidgetType<?> type = ModProgWidgets.PROG_WIDGETS_REGISTRY.get(typeID);
-        if (type == null) {
-            Log.warning("can't read progwidget from NBT: bad widget ID: " + typeID);
-            return null;
+    public static <T extends IProgWidget> T fromPacket(RegistryFriendlyByteBuf buf, @NotNull ProgWidgetType<T> expectedType) {
+        ResourceLocation typeID = PneumaticCraftUtils.modDefaultedRL(buf.readUtf(256));
+        ProgWidgetType<?> type = PNCRegistries.PROG_WIDGETS_REGISTRY.get(typeID);
+        if (type == expectedType) {
+            IProgWidget newWidget = IProgWidget.create(type);
+            newWidget.readFromPacket(buf);
+            //noinspection unchecked
+            return (T) newWidget;
+        } else {
+            throw new IllegalStateException("can't read progwidget from packet: unexpected widget type: " + type);
         }
-        IProgWidget widget = IProgWidget.create(type);
-        widget.readFromNBT(widgetTag);
-        return widget;
+    }
+
+    public static IProgWidget fromNBT(CompoundTag widgetTag) {
+        IProgWidget widget = CODEC.parse(NbtOps.INSTANCE, widgetTag)
+                .result().orElse(null);
+        return widget instanceof IProgWidget w ? w : null;
     }
 
     @Override
-    public boolean canBeRunByComputers(IDroneBase drone, IProgWidget widget) {
+    public boolean canBeRunByComputers(IDrone drone, IProgWidget widget) {
         return getWidgetAI(drone, widget) != null;
     }
 
     Component varAsTextComponent(String var) {
         return var.isEmpty() ? Component.empty() : Component.literal("\"" + var + "\"");
+    }
+
+    public record PositionFields(int x, int y) {
+        public static final PositionFields DEFAULT = new PositionFields(0, 0);
+
+        public static final Codec<PositionFields> CODEC = RecordCodecBuilder.create(builder -> builder.group(
+            Codec.INT.fieldOf("x").forGetter(PositionFields::x),
+            Codec.INT.fieldOf("y").forGetter(PositionFields::y)
+        ).apply(builder, PositionFields::new));
+
+        public static StreamCodec<FriendlyByteBuf, PositionFields> STREAM_CODEC = StreamCodec.composite(
+                ByteBufCodecs.INT, PositionFields::x,
+                ByteBufCodecs.INT, PositionFields::y,
+                PositionFields::new
+        );
     }
 }

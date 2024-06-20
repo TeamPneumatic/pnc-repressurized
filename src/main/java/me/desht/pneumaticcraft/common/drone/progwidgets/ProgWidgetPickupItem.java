@@ -17,21 +17,35 @@
 
 package me.desht.pneumaticcraft.common.drone.progwidgets;
 
-import me.desht.pneumaticcraft.common.drone.IDroneBase;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import me.desht.pneumaticcraft.api.drone.IDrone;
+import me.desht.pneumaticcraft.api.drone.IProgWidget;
+import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.drone.ai.DroneEntityAIPickupItems;
-import me.desht.pneumaticcraft.common.registry.ModProgWidgets;
+import me.desht.pneumaticcraft.common.registry.ModProgWidgetTypes;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.item.DyeColor;
 
 public class ProgWidgetPickupItem extends ProgWidgetAreaItemBase implements IItemPickupWidget {
-    private boolean canSteal = false;
+    public static final MapCodec<ProgWidgetPickupItem> CODEC = RecordCodecBuilder.mapCodec(builder ->
+            baseParts(builder).and(Codec.BOOL.optionalFieldOf("can_steal", false).forGetter(ProgWidgetPickupItem::canSteal)
+            ).apply(builder, ProgWidgetPickupItem::new));
+
+    private boolean canSteal;
+
+    private ProgWidgetPickupItem(PositionFields pos, boolean canSteal) {
+        super(pos);
+
+        this.canSteal = canSteal;
+    }
 
     public ProgWidgetPickupItem() {
-        super(ModProgWidgets.PICKUP_ITEM.get());
+        this(PositionFields.DEFAULT, false);
     }
 
     @Override
@@ -40,7 +54,12 @@ public class ProgWidgetPickupItem extends ProgWidgetAreaItemBase implements IIte
     }
 
     @Override
-    public Goal getWidgetAI(IDroneBase drone, IProgWidget widget) {
+    public ProgWidgetType<?> getType() {
+        return ModProgWidgetTypes.PICKUP_ITEM.get();
+    }
+
+    @Override
+    public Goal getWidgetAI(IDrone drone, IProgWidget widget) {
         return new DroneEntityAIPickupItems(drone, (ProgWidgetAreaItemBase) widget);
     }
 
@@ -59,26 +78,26 @@ public class ProgWidgetPickupItem extends ProgWidgetAreaItemBase implements IIte
         this.canSteal = canSteal;
     }
 
-    @Override
-    public void writeToNBT(CompoundTag tag) {
-        super.writeToNBT(tag);
-        if (canSteal) tag.putBoolean("canSteal", true);
-    }
+//    @Override
+//    public void writeToNBT(CompoundTag tag, HolderLookup.Provider provider) {
+//        super.writeToNBT(tag, provider);
+//        if (canSteal) tag.putBoolean("canSteal", true);
+//    }
+//
+//    @Override
+//    public void readFromNBT(CompoundTag tag, HolderLookup.Provider provider) {
+//        super.readFromNBT(tag, provider);
+//        canSteal = tag.getBoolean("canSteal");
+//    }
 
     @Override
-    public void readFromNBT(CompoundTag tag) {
-        super.readFromNBT(tag);
-        canSteal = tag.getBoolean("canSteal");
-    }
-
-    @Override
-    public void writeToPacket(FriendlyByteBuf buf) {
+    public void writeToPacket(RegistryFriendlyByteBuf buf) {
         super.writeToPacket(buf);
         buf.writeBoolean(canSteal);
     }
 
     @Override
-    public void readFromPacket(FriendlyByteBuf buf) {
+    public void readFromPacket(RegistryFriendlyByteBuf buf) {
         super.readFromPacket(buf);
         canSteal = buf.readBoolean();
     }
