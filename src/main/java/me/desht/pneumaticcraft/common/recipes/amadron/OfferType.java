@@ -1,8 +1,6 @@
 package me.desht.pneumaticcraft.common.recipes.amadron;
 
 import me.desht.pneumaticcraft.api.crafting.recipe.AmadronRecipe;
-import me.desht.pneumaticcraft.client.util.ClientUtils;
-import me.desht.pneumaticcraft.common.registry.ModRecipeTypes;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.item.crafting.RecipeHolder;
 
@@ -14,8 +12,12 @@ public enum OfferType {
     RECIPE(
             // For recipe-based offers, we only need to write the offer ID - everything else is already sync'd to the
             // client recipe manager via normal vanilla recipe sync
-            (buf, offer) -> buf.writeResourceLocation(offer.getOfferId()),
-            buf -> fromHolder(ModRecipeTypes.AMADRON.get().getRecipe(ClientUtils.getClientLevel(), buf.readResourceLocation()))
+            // Update, nope: this doesn't work reliably for custom trades (datapack/KJS) for some reason
+            // Will come back to this later!
+//            (buf, offer) -> buf.writeResourceLocation(offer.getOfferId()),
+//            buf -> fromHolder(ModRecipeTypes.AMADRON.get().getRecipe(ClientUtils.getClientLevel(), buf.readResourceLocation()))
+            (buf, offer) -> offer.write(buf),
+            buf -> Optional.of(AmadronOffer.offerFromBuf(buf))
     ),
     VILLAGER(
             (buf, offer) -> offer.write(buf),
