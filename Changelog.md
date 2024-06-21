@@ -14,6 +14,8 @@ This release (and all future releases) is built for [Neoforge](https://neoforged
 * Fixed up some of the "special" crafting recipes, which weren't showing in recipe display mods
   * Patchouli manual, drone colouring/upgrading, potion ammo crafting, one probe crafting
 * Fixed issues with Regulator Module, Air Grate Module & Vacuum Module not functioning after world reload
+* Fixed Amadron offers not always sync'ing correctly to client (specifically custom offers added via datapack/KJS)
+  * Caused ArrayIndexOutOfBounds errors to be logged by client and tablet GUI not functioning correctly
 
 ## [7.0.0]
 
