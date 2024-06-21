@@ -321,9 +321,9 @@ publishMods {
         minecraftVersions.add(minecraft_version)
         projectSlug = "pneumaticcraft-repressurized"
         announcementTitle = "Download from Curseforge"
-//        optional {
-//            slug = "patchouli"
-//        }
+        optional {
+            slug = "patchouli"
+        }
     }
 
     modrinth {
@@ -331,15 +331,15 @@ publishMods {
         accessToken = providers.environmentVariable("MODRINTH_TOKEN")
         minecraftVersions.add(minecraft_version)
         announcementTitle = "Download from Modrinth"
-//        optional {
-//            id = "nU0bVIaL"
-//            slug = "patchouli"
-//        }
+        optional {
+            id = "nU0bVIaL"
+            slug = "patchouli"
+        }
     }
 
     discord {
         webhookUrl = providers.environmentVariable("DISCORD_WEBHOOK").orElse("dryrun")
-        content = changelog.map { "# A new version of PneumaticCraft: Repressurized has been released! \n" + it}
+		content = changelog.map { "# ${mod_name} v${mod_version} for MC ${minecraft_version} has been released! \n" + it}
 //        setPlatforms(platforms.curseforge, platforms.modrinth)
     }
 }
