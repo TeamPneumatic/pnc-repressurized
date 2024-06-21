@@ -27,14 +27,16 @@ jobs:
       - name: Remove any generated assets/data
         run: rm -rf ./src/generated
       - name: Generate assets & data
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/actions/setup-gradle@v3
         with:
+          cache-read-only: false
           arguments: runData --no-daemon
       - name: Validate assets
         run: test -d ./src/generated -a -d ./src/generated/resources/.cache
       - name: Build JAR
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/actions/setup-gradle@v3
         with:
+          cache-read-only: false
           arguments: build --no-daemon
         env:
           BUILD_NUMBER: ${{ github.run_number }}
