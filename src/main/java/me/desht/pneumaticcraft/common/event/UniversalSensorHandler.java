@@ -43,7 +43,7 @@ public class UniversalSensorHandler {
     }
 
     @SubscribeEvent
-    public void onItemPickUp(ItemEntityPickupEvent event) {
+    public void onItemPickUp(ItemEntityPickupEvent.Post event) {
         sendEventToSensors(event.getItemEntity().level(), event);
     }
 

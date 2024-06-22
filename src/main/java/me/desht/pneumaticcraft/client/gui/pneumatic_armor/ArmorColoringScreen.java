@@ -49,6 +49,13 @@ import java.util.*;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class ArmorColoringScreen extends AbstractPneumaticCraftScreen {
+    private static final EquipmentSlot[] EQUIPMENT_SLOTS = new EquipmentSlot[] {
+            EquipmentSlot.FEET,
+            EquipmentSlot.LEGS,
+            EquipmentSlot.CHEST,
+            EquipmentSlot.HEAD
+    };
+
     private boolean needSave = false;
     private final int[][] origColors = new int[4][SelectorType.values().length]; // primary & secondary for each slot
     private final int[][] colors = new int[4][SelectorType.values().length]; // primary & secondary for each slot
@@ -139,7 +146,7 @@ public class ArmorColoringScreen extends AbstractPneumaticCraftScreen {
             if (i != selectedSlot.getIndex()) {
                 colors[i][selectorType.ordinal()] = getCurrentColor();
             }
-            updateClientSideArmor(EquipmentSlot.byTypeAndIndex(EquipmentSlot.Type.ARMOR, i));
+            updateClientSideArmor(EQUIPMENT_SLOTS[i]);
         }
     }
 
@@ -148,7 +155,7 @@ public class ArmorColoringScreen extends AbstractPneumaticCraftScreen {
             for (SelectorType type : SelectorType.values()) {
                 colors[i][type.ordinal()] = factorySettings ? type.defaultColor : origColors[i][type.ordinal()];
             }
-            updateClientSideArmor(EquipmentSlot.byTypeAndIndex(EquipmentSlot.Type.ARMOR, i));
+            updateClientSideArmor(EQUIPMENT_SLOTS[i]);
         }
         updateSliders();
         needSave = factorySettings;

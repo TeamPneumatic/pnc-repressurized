@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "C": {
+      "item": "pneumaticcraft:air_canister"
+    },
+    "I": {
+      "tag": "c:ingots/compressed_iron"
+    },
+    "T": {
+      "item": "pneumaticcraft:advanced_pressure_tube"
+    }
+  },
+  "pattern": [
+    " T ",
+    "ICI",
+    "III"
+  ],
+  "result": {
+    "count": 1,
+    "id": "pneumaticcraft:reinforced_air_canister"
+  }
+}

@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.client.render.overlays;
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.item.JackHammerItem;
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.LayeredDraw;
@@ -12,7 +13,7 @@ import org.lwjgl.opengl.GL11;
 
 public class JackhammerOverlay implements LayeredDraw.Layer {
     @Override
-    public void render(GuiGraphics graphics, float partialTicks) {
+    public void render(GuiGraphics graphics, DeltaTracker partialTicks) {
         Player player = Minecraft.getInstance().player;
         if (player == null || !(player.getMainHandItem().getItem() instanceof JackHammerItem)
                 || !Minecraft.getInstance().options.getCameraType().isFirstPerson())
@@ -20,7 +21,7 @@ public class JackhammerOverlay implements LayeredDraw.Layer {
         long timeDelta = player.level().getGameTime() - JackHammerItem.getLastModeSwitchTime();
         JackHammerItem.DigMode digMode = JackHammerItem.getDigMode(player.getMainHandItem());
         boolean showHud = ConfigHelper.client().general.jackHammerHud.get();
-        if (digMode != null && (digMode.atLeast(JackHammerItem.DigMode.MODE_1X2) && showHud || timeDelta < 30 || player.isCrouching())) {
+        if (digMode.atLeast(JackHammerItem.DigMode.MODE_1X2) && showHud || timeDelta < 30 || player.isCrouching()) {
             RenderSystem.enableBlend();
             RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
             RenderSystem.setShaderColor(1f, 1f, 1f, 0.25f);

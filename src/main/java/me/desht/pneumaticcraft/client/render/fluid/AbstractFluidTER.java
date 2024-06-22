@@ -77,10 +77,10 @@ public abstract class AbstractFluidTER<T extends AbstractPneumaticCraftBlockEnti
             float u2 = still.getU(x2);
             float v1 = still.getV(z1);
             float v2 = still.getV(z2);
-            builder.vertex(posMat, x1, y1, z2).color(cols[1], cols[2], cols[3], cols[0]).uv(u1, v2).overlayCoords(combinedOverlay).uv2(combinedLight).normal(0f, -1f, 0f).endVertex();
-            builder.vertex(posMat, x1, y1, z1).color(cols[1], cols[2], cols[3], cols[0]).uv(u1, v1).overlayCoords(combinedOverlay).uv2(combinedLight).normal(0f, -1f, 0f).endVertex();
-            builder.vertex(posMat, x2, y1, z1).color(cols[1], cols[2], cols[3], cols[0]).uv(u2, v1).overlayCoords(combinedOverlay).uv2(combinedLight).normal(0f, -1f, 0f).endVertex();
-            builder.vertex(posMat, x2, y1, z2).color(cols[1], cols[2], cols[3], cols[0]).uv(u2, v2).overlayCoords(combinedOverlay).uv2(combinedLight).normal(0f, -1f, 0f).endVertex();
+            builder.addVertex(posMat, x1, y1, z2).setColor(cols[1], cols[2], cols[3], cols[0]).setUv(u1, v2).setOverlay(combinedOverlay).setLight(combinedLight).setNormal(0f, -1f, 0f);
+            builder.addVertex(posMat, x1, y1, z1).setColor(cols[1], cols[2], cols[3], cols[0]).setUv(u1, v1).setOverlay(combinedOverlay).setLight(combinedLight).setNormal(0f, -1f, 0f);
+            builder.addVertex(posMat, x2, y1, z1).setColor(cols[1], cols[2], cols[3], cols[0]).setUv(u2, v1).setOverlay(combinedOverlay).setLight(combinedLight).setNormal(0f, -1f, 0f);
+            builder.addVertex(posMat, x2, y1, z2).setColor(cols[1], cols[2], cols[3], cols[0]).setUv(u2, v2).setOverlay(combinedOverlay).setLight(combinedLight).setNormal(0f, -1f, 0f);
         }
 
         if (tankRenderInfo.shouldRender(Direction.UP)) {
@@ -88,10 +88,10 @@ public abstract class AbstractFluidTER<T extends AbstractPneumaticCraftBlockEnti
             float u2 = still.getU(x2);
             float v1 = still.getV(z1);
             float v2 = still.getV(z2);
-            builder.vertex(posMat, x1, y2, z2).color(cols[1], cols[2], cols[3], cols[0]).uv(u1, v2).overlayCoords(combinedOverlay).uv2(combinedLight).normal(0f, 1f, 0f).endVertex();
-            builder.vertex(posMat, x2, y2, z2).color(cols[1], cols[2], cols[3], cols[0]).uv(u2, v2).overlayCoords(combinedOverlay).uv2(combinedLight).normal(0f, 1f, 0f).endVertex();
-            builder.vertex(posMat, x2, y2, z1).color(cols[1], cols[2], cols[3], cols[0]).uv(u2, v1).overlayCoords(combinedOverlay).uv2(combinedLight).normal(0f, 1f, 0f).endVertex();
-            builder.vertex(posMat, x1, y2, z1).color(cols[1], cols[2], cols[3], cols[0]).uv(u1, v1).overlayCoords(combinedOverlay).uv2(combinedLight).normal(0f, 1f, 0f).endVertex();
+            builder.addVertex(posMat, x1, y2, z2).setColor(cols[1], cols[2], cols[3], cols[0]).setUv(u1, v2).setOverlay(combinedOverlay).setLight(combinedLight).setNormal(0f, 1f, 0f);
+            builder.addVertex(posMat, x2, y2, z2).setColor(cols[1], cols[2], cols[3], cols[0]).setUv(u2, v2).setOverlay(combinedOverlay).setLight(combinedLight).setNormal(0f, 1f, 0f);
+            builder.addVertex(posMat, x2, y2, z1).setColor(cols[1], cols[2], cols[3], cols[0]).setUv(u2, v1).setOverlay(combinedOverlay).setLight(combinedLight).setNormal(0f, 1f, 0f);
+            builder.addVertex(posMat, x1, y2, z1).setColor(cols[1], cols[2], cols[3], cols[0]).setUv(u1, v1).setOverlay(combinedOverlay).setLight(combinedLight).setNormal(0f, 1f, 0f);
         }
 
         if (tankRenderInfo.shouldRender(Direction.NORTH)) {
@@ -99,10 +99,10 @@ public abstract class AbstractFluidTER<T extends AbstractPneumaticCraftBlockEnti
             float u2 = still.getU(x2);
             float v1 = still.getV(y1);
             float v2 = still.getV(y2);
-            builder.vertex(posMat, x1, y1, z1).color(cols[1], cols[2], cols[3], cols[0]).uv(u1, v1).overlayCoords(combinedOverlay).uv2(combinedLight).normal(0f, 0f, -1f).endVertex();
-            builder.vertex(posMat, x1, y2, z1).color(cols[1], cols[2], cols[3], cols[0]).uv(u1, v2).overlayCoords(combinedOverlay).uv2(combinedLight).normal(0f, 0f, -1f).endVertex();
-            builder.vertex(posMat, x2, y2, z1).color(cols[1], cols[2], cols[3], cols[0]).uv(u2, v2).overlayCoords(combinedOverlay).uv2(combinedLight).normal(0f, 0f, -1f).endVertex();
-            builder.vertex(posMat, x2, y1, z1).color(cols[1], cols[2], cols[3], cols[0]).uv(u2, v1).overlayCoords(combinedOverlay).uv2(combinedLight).normal(0f, 0f, -1f).endVertex();
+            builder.addVertex(posMat, x1, y1, z1).setColor(cols[1], cols[2], cols[3], cols[0]).setUv(u1, v1).setOverlay(combinedOverlay).setLight(combinedLight).setNormal(0f, 0f, -1f);
+            builder.addVertex(posMat, x1, y2, z1).setColor(cols[1], cols[2], cols[3], cols[0]).setUv(u1, v2).setOverlay(combinedOverlay).setLight(combinedLight).setNormal(0f, 0f, -1f);
+            builder.addVertex(posMat, x2, y2, z1).setColor(cols[1], cols[2], cols[3], cols[0]).setUv(u2, v2).setOverlay(combinedOverlay).setLight(combinedLight).setNormal(0f, 0f, -1f);
+            builder.addVertex(posMat, x2, y1, z1).setColor(cols[1], cols[2], cols[3], cols[0]).setUv(u2, v1).setOverlay(combinedOverlay).setLight(combinedLight).setNormal(0f, 0f, -1f);
         }
 
         if (tankRenderInfo.shouldRender(Direction.SOUTH)) {
@@ -110,10 +110,10 @@ public abstract class AbstractFluidTER<T extends AbstractPneumaticCraftBlockEnti
             float u2 = still.getU(x2);
             float v1 = still.getV(y1);
             float v2 = still.getV(y2);
-            builder.vertex(posMat, x2, y1, z2).color(cols[1], cols[2], cols[3], cols[0]).uv(u2, v1).overlayCoords(combinedOverlay).uv2(combinedLight).normal(0f, 0f, 1f).endVertex();
-            builder.vertex(posMat, x2, y2, z2).color(cols[1], cols[2], cols[3], cols[0]).uv(u2, v2).overlayCoords(combinedOverlay).uv2(combinedLight).normal(0f, 0f, 1f).endVertex();
-            builder.vertex(posMat, x1, y2, z2).color(cols[1], cols[2], cols[3], cols[0]).uv(u1, v2).overlayCoords(combinedOverlay).uv2(combinedLight).normal(0f, 0f, 1f).endVertex();
-            builder.vertex(posMat, x1, y1, z2).color(cols[1], cols[2], cols[3], cols[0]).uv(u1, v1).overlayCoords(combinedOverlay).uv2(combinedLight).normal(0f, 0f, 1f).endVertex();
+            builder.addVertex(posMat, x2, y1, z2).setColor(cols[1], cols[2], cols[3], cols[0]).setUv(u2, v1).setOverlay(combinedOverlay).setLight(combinedLight).setNormal(0f, 0f, 1f);
+            builder.addVertex(posMat, x2, y2, z2).setColor(cols[1], cols[2], cols[3], cols[0]).setUv(u2, v2).setOverlay(combinedOverlay).setLight(combinedLight).setNormal(0f, 0f, 1f);
+            builder.addVertex(posMat, x1, y2, z2).setColor(cols[1], cols[2], cols[3], cols[0]).setUv(u1, v2).setOverlay(combinedOverlay).setLight(combinedLight).setNormal(0f, 0f, 1f);
+            builder.addVertex(posMat, x1, y1, z2).setColor(cols[1], cols[2], cols[3], cols[0]).setUv(u1, v1).setOverlay(combinedOverlay).setLight(combinedLight).setNormal(0f, 0f, 1f);
         }
 
         if (tankRenderInfo.shouldRender(Direction.WEST)) {
@@ -121,10 +121,10 @@ public abstract class AbstractFluidTER<T extends AbstractPneumaticCraftBlockEnti
             float u2 = still.getU(y2);
             float v1 = still.getV(z1);
             float v2 = still.getV(z2);
-            builder.vertex(posMat, x1, y1, z2).color(cols[1], cols[2], cols[3], cols[0]).uv(u1, v2).overlayCoords(combinedOverlay).uv2(combinedLight).normal(-1f, 0f, 0f).endVertex();
-            builder.vertex(posMat, x1, y2, z2).color(cols[1], cols[2], cols[3], cols[0]).uv(u2, v2).overlayCoords(combinedOverlay).uv2(combinedLight).normal(-1f, 0f, 0f).endVertex();
-            builder.vertex(posMat, x1, y2, z1).color(cols[1], cols[2], cols[3], cols[0]).uv(u2, v1).overlayCoords(combinedOverlay).uv2(combinedLight).normal(-1f, 0f, 0f).endVertex();
-            builder.vertex(posMat, x1, y1, z1).color(cols[1], cols[2], cols[3], cols[0]).uv(u1, v1).overlayCoords(combinedOverlay).uv2(combinedLight).normal(-1f, 0f, 0f).endVertex();
+            builder.addVertex(posMat, x1, y1, z2).setColor(cols[1], cols[2], cols[3], cols[0]).setUv(u1, v2).setOverlay(combinedOverlay).setLight(combinedLight).setNormal(-1f, 0f, 0f);
+            builder.addVertex(posMat, x1, y2, z2).setColor(cols[1], cols[2], cols[3], cols[0]).setUv(u2, v2).setOverlay(combinedOverlay).setLight(combinedLight).setNormal(-1f, 0f, 0f);
+            builder.addVertex(posMat, x1, y2, z1).setColor(cols[1], cols[2], cols[3], cols[0]).setUv(u2, v1).setOverlay(combinedOverlay).setLight(combinedLight).setNormal(-1f, 0f, 0f);
+            builder.addVertex(posMat, x1, y1, z1).setColor(cols[1], cols[2], cols[3], cols[0]).setUv(u1, v1).setOverlay(combinedOverlay).setLight(combinedLight).setNormal(-1f, 0f, 0f);
         }
 
         if (tankRenderInfo.shouldRender(Direction.EAST)) {
@@ -132,10 +132,10 @@ public abstract class AbstractFluidTER<T extends AbstractPneumaticCraftBlockEnti
             float u2 = still.getU(y2);
             float v1 = still.getV(z1);
             float v2 = still.getV(z2);
-            builder.vertex(posMat, x2, y1, z1).color(cols[1], cols[2], cols[3], cols[0]).uv(u1, v1).overlayCoords(combinedOverlay).uv2(combinedLight).normal(1f, 0f, 0f).endVertex();
-            builder.vertex(posMat, x2, y2, z1).color(cols[1], cols[2], cols[3], cols[0]).uv(u2, v1).overlayCoords(combinedOverlay).uv2(combinedLight).normal(1f, 0f, 0f).endVertex();
-            builder.vertex(posMat, x2, y2, z2).color(cols[1], cols[2], cols[3], cols[0]).uv(u2, v2).overlayCoords(combinedOverlay).uv2(combinedLight).normal(1f, 0f, 0f).endVertex();
-            builder.vertex(posMat, x2, y1, z2).color(cols[1], cols[2], cols[3], cols[0]).uv(u1, v2).overlayCoords(combinedOverlay).uv2(combinedLight).normal(1f, 0f, 0f).endVertex();
+            builder.addVertex(posMat, x2, y1, z1).setColor(cols[1], cols[2], cols[3], cols[0]).setUv(u1, v1).setOverlay(combinedOverlay).setLight(combinedLight).setNormal(1f, 0f, 0f);
+            builder.addVertex(posMat, x2, y2, z1).setColor(cols[1], cols[2], cols[3], cols[0]).setUv(u2, v1).setOverlay(combinedOverlay).setLight(combinedLight).setNormal(1f, 0f, 0f);
+            builder.addVertex(posMat, x2, y2, z2).setColor(cols[1], cols[2], cols[3], cols[0]).setUv(u2, v2).setOverlay(combinedOverlay).setLight(combinedLight).setNormal(1f, 0f, 0f);
+            builder.addVertex(posMat, x2, y1, z2).setColor(cols[1], cols[2], cols[3], cols[0]).setUv(u1, v2).setOverlay(combinedOverlay).setLight(combinedLight).setNormal(1f, 0f, 0f);
         }
     }
 

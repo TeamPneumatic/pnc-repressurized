@@ -8,10 +8,10 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.CustomData;
+import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.ShapedRecipe;
 import org.jetbrains.annotations.NotNull;
@@ -45,7 +45,7 @@ public class CompressorUpgradeCrafting extends WrappedShapedRecipe {
 
     @NotNull
     @Override
-    public ItemStack assemble(CraftingContainer inv, HolderLookup.Provider registryAccess) {
+    public ItemStack assemble(CraftingInput inv, HolderLookup.Provider registryAccess) {
         ItemStack result = wrapped.assemble(inv, registryAccess);
 
         int index = getMainItem(inv);
@@ -62,11 +62,11 @@ public class CompressorUpgradeCrafting extends WrappedShapedRecipe {
         return result;
     }
 
-    private int getMainItem(CraftingContainer container) {
+    private int getMainItem(CraftingInput container) {
         int i;
         boolean matchFound = false;
 
-        for (i = 0; i < container.getContainerSize(); i++) {
+        for (i = 0; i < container.size(); i++) {
             ItemStack item = container.getItem(i);
             if (COMPRESSORS.get().contains(item.getItem())) {
                 matchFound = true;

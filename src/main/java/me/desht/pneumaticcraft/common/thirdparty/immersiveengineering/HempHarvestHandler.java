@@ -8,7 +8,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 
 public class HempHarvestHandler extends HarvestHandlerCactusLike {
-    private static final ResourceLocation HEMP_ID = new ResourceLocation(ModIds.IMMERSIVE_ENGINEERING, "hemp");
+    private static final ResourceLocation HEMP_ID = ResourceLocation.fromNamespaceAndPath(ModIds.IMMERSIVE_ENGINEERING, "hemp");
     private static Block HEMP = null;
 
     public HempHarvestHandler() {

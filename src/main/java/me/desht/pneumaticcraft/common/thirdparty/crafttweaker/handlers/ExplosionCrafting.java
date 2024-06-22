@@ -45,7 +45,7 @@ public class ExplosionCrafting implements IRecipeManager<ExplosionCraftingRecipe
     @ZenCodeType.Method
     public void addRecipe(String name, IIngredientWithAmount input, IItemStack[] outputs, int lossRate) {
         CraftTweakerAPI.apply(new ActionAddRecipe<>(this,
-                new RecipeHolder<>(new ResourceLocation("crafttweaker", fixRecipeName(name)),
+                new RecipeHolder<>(ResourceLocation.fromNamespaceAndPath("crafttweaker", fixRecipeName(name)),
                 new ExplosionCraftingRecipeImpl(
                         CTUtils.toSizedIngredient(input),
                         lossRate,

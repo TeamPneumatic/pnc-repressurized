@@ -1,0 +1,30 @@
+{
+  "parent": "pneumaticcraft:pneumatic_wrench",
+  "criteria": {
+    "0": {
+      "conditions": {
+        "id": "pneumaticcraft:machine_vandal"
+      },
+      "trigger": "pneumaticcraft:machine_vandal"
+    }
+  },
+  "display": {
+    "background": "pneumaticcraft:textures/gui/advancement_bg.png",
+    "description": {
+      "translate": "pneumaticcraft.advancement.machine_vandal.desc"
+    },
+    "icon": {
+      "count": 1,
+      "id": "minecraft:iron_pickaxe"
+    },
+    "title": {
+      "translate": "pneumaticcraft.advancement.machine_vandal"
+    }
+  },
+  "requirements": [
+    [
+      "0"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

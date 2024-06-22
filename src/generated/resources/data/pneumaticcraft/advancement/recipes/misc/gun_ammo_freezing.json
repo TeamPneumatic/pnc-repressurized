@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_gun_ammo": {
+      "conditions": {
+        "items": [
+          {
+            "items": "pneumaticcraft:gun_ammo"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "pneumaticcraft:gun_ammo_freezing"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_gun_ammo"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "pneumaticcraft:gun_ammo_freezing"
+    ]
+  }
+}

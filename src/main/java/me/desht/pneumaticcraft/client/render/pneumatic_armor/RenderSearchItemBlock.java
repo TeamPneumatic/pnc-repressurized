@@ -24,6 +24,7 @@ import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.item.ItemRegistry;
 import me.desht.pneumaticcraft.common.item.PneumaticArmorItem;
 import me.desht.pneumaticcraft.common.util.IOHelper;
+import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -33,8 +34,6 @@ import net.minecraft.world.level.Level;
 import org.joml.Matrix4f;
 
 import java.util.List;
-
-import static me.desht.pneumaticcraft.client.util.RenderUtils.FULL_BRIGHT;
 
 public class RenderSearchItemBlock {
 
@@ -96,10 +95,22 @@ public class RenderSearchItemBlock {
         float f = ((ClientUtils.getClientLevel().getGameTime() & 0x1f) + partialTicks) / 5.092f;  // 0 .. 2*pi every 32 ticks
         float alpha = 0.65F + Mth.sin(f) * 0.15f;
         Matrix4f posMat = matrixStack.last().pose();
-        builder.vertex(posMat, -size, size, 0).color(0, 1, 0, alpha).uv(0, 1).uv2(FULL_BRIGHT).endVertex();
-        builder.vertex(posMat, size, size, 0).color(0, 1, 0, alpha).uv(1, 1).uv2(FULL_BRIGHT).endVertex();
-        builder.vertex(posMat, size, -size, 0).color(0, 1, 0, alpha).uv(1, 0).uv2(FULL_BRIGHT).endVertex();
-        builder.vertex(posMat, -size, -size, 0).color(0, 1, 0, alpha).uv(0, 0).uv2(FULL_BRIGHT).endVertex();
+        builder.addVertex(posMat, -size, size, 0)
+                .setColor(0, 1, 0, alpha)
+                .setUv(0, 1)
+                .setLight(LightTexture.FULL_BRIGHT);
+        builder.addVertex(posMat, size, size, 0)
+                .setColor(0, 1, 0, alpha)
+                .setUv(1, 1)
+                .setLight(LightTexture.FULL_BRIGHT);
+        builder.addVertex(posMat, size, -size, 0)
+                .setColor(0, 1, 0, alpha)
+                .setUv(1, 0)
+                .setLight(LightTexture.FULL_BRIGHT);
+        builder.addVertex(posMat, -size, -size, 0)
+                .setColor(0, 1, 0, alpha)
+                .setUv(0, 0)
+                .setLight(LightTexture.FULL_BRIGHT);
 
         matrixStack.popPose();
     }

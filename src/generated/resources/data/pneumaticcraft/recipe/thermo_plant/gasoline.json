@@ -1,0 +1,20 @@
+{
+  "type": "pneumaticcraft:thermo_plant",
+  "inputs": {
+    "fluid": {
+      "amount": 100,
+      "tag": "c:fuels/kerosene"
+    },
+    "item": []
+  },
+  "outputs": {
+    "fluid_output": {
+      "amount": 80,
+      "id": "pneumaticcraft:gasoline"
+    }
+  },
+  "pressure": 2.0,
+  "temperature": {
+    "min": 573
+  }
+}

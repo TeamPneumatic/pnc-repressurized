@@ -22,6 +22,7 @@ import com.blamejared.crafttweaker.api.fluid.MCFluidStack;
 import com.blamejared.crafttweaker.api.ingredient.IIngredientWithAmount;
 import com.blamejared.crafttweaker.api.item.IItemStack;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.common.crafting.SizedIngredient;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.crafting.FluidIngredient;
@@ -29,10 +30,11 @@ import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Stream;
 
 public class CTUtils {
     public static SizedIngredient toSizedIngredient(IIngredientWithAmount ingredient) {
-        return new SizedIngredient(ingredient.getIngredient().asVanillaIngredient(), ingredient.getAmount());
+        return new SizedIngredient(ingredient.ingredient().asVanillaIngredient(), ingredient.amount());
     }
 
     public static List<SizedIngredient> toSizedIngredientList(IIngredientWithAmount[] ingredients) {
@@ -48,18 +50,26 @@ public class CTUtils {
     }
 
     public static FluidIngredient toFluidIngredient(CTFluidIngredient ingredient) {
-        // TODO when CT updates
-        return FluidIngredient.empty();
-
-//        return ingredient.mapTo(
-//                fStack -> FluidIngredient.of(new FluidStack(fStack.getFluid(), (int)fStack.getAmount())),
-//                (tag, amount) -> FluidIngredient.of(amount, tag),
-//                FluidIngredient::ofFluidStream
-//        );
+        return ingredient.mapTo(
+                fStack -> FluidIngredient.of(new FluidStack(fStack.getFluid(), (int) fStack.getAmount())),
+                (tag, amount) -> FluidIngredient.tag(tag),
+                CTUtils::flattenIngredients
+        );
     }
 
     public static SizedFluidIngredient toSizedFluidIngredient(CTFluidIngredient ingredient) {
-        // TODO when CT updates
-        return SizedFluidIngredient.of(FluidStack.EMPTY);
+        return ingredient.mapTo(
+                fluidStack -> SizedFluidIngredient.of(fluidStack.getFluid(), (int) fluidStack.getAmount()),
+                SizedFluidIngredient::of,
+                stream -> stream.findFirst().map(ingr -> new SizedFluidIngredient(ingr.ingredient(), ingr.amount())).orElseThrow()
+        );
+    }
+
+    private static FluidIngredient flattenIngredients(Stream<FluidIngredient> stream) {
+        return FluidIngredient.of(stream.flatMap(ingredient -> Arrays.stream(ingredient.getStacks()))
+                .map(FluidStack::getFluid)
+                .distinct()
+                .toArray(Fluid[]::new)
+        );
     }
 }

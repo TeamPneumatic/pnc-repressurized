@@ -39,7 +39,7 @@ public class FuelQuality implements IRecipeManager<FuelQualityRecipe> {
     @ZenCodeType.Method
     public void addRecipe(String name, CTFluidIngredient ingredient, int airPerBucket, @ZenCodeType.OptionalFloat(1f) float burnRate) {
         CraftTweakerAPI.apply(new ActionAddRecipe<>(this,
-                new RecipeHolder<>(new ResourceLocation("crafttweaker", fixRecipeName(name)),
+                new RecipeHolder<>(ResourceLocation.fromNamespaceAndPath("crafttweaker", fixRecipeName(name)),
                         new FuelQualityRecipeImpl(
                                 CTUtils.toFluidIngredient(ingredient),
                                 airPerBucket,

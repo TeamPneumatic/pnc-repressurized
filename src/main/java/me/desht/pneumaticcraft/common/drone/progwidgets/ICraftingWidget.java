@@ -17,14 +17,14 @@
 
 package me.desht.pneumaticcraft.common.drone.progwidgets;
 
-import net.minecraft.world.inventory.CraftingContainer;
+import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.level.Level;
 
 import java.util.Optional;
 
 public interface ICraftingWidget extends ICountWidget {
-    CraftingContainer getCraftingGrid();
+    CraftingInput getCraftingGrid();
 
-    Optional<CraftingRecipe> getRecipe(Level world, CraftingContainer grid);
+    Optional<CraftingRecipe> getRecipe(Level world, CraftingInput grid);
 }

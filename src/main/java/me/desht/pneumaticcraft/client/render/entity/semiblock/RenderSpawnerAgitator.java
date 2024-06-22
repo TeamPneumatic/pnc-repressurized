@@ -12,6 +12,7 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.FastColor;
 import net.minecraft.util.Mth;
 
 public class RenderSpawnerAgitator extends RenderSemiblockBase<SpawnerAgitatorEntity> {
@@ -36,7 +37,8 @@ public class RenderSpawnerAgitator extends RenderSemiblockBase<SpawnerAgitatorEn
             wobble(entity, partialTicks, matrixStackIn);
         }
         VertexConsumer builder = bufferIn.getBuffer(RenderType.entityCutout(getTextureLocation(entity)));
-        model.renderToBuffer(matrixStackIn, builder, packedLightIn, OverlayTexture.pack(0F, false), BRIGHTNESS, 0.8f + g, BRIGHTNESS, 1f);
+        int color = FastColor.ARGB32.color(255, 51, (int) (255 * (0.8f + g)), 51);
+        model.renderToBuffer(matrixStackIn, builder, packedLightIn, OverlayTexture.pack(0F, false), color);
         matrixStackIn.popPose();
 
     }

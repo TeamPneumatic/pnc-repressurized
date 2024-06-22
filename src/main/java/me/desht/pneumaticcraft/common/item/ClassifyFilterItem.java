@@ -3,12 +3,12 @@ package me.desht.pneumaticcraft.common.item;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import me.desht.pneumaticcraft.api.item.IFilteringItem;
+import me.desht.pneumaticcraft.api.misc.ITranslatableEnum;
 import me.desht.pneumaticcraft.api.misc.Symbols;
 import me.desht.pneumaticcraft.client.gui.ClassifyFilterScreen;
 import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.util.IOHelper;
-import me.desht.pneumaticcraft.api.misc.ITranslatableEnum;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.FriendlyByteBuf;
@@ -17,14 +17,13 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.util.StringRepresentable;
-import net.minecraft.world.Container;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
-import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.crafting.AbstractCookingRecipe;
 import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.item.crafting.SingleRecipeInput;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
@@ -77,10 +76,9 @@ public class ClassifyFilterItem extends Item implements IFilteringItem {
         Level level = ServerLifecycleHooks.getCurrentServer().overworld();
         //noinspection ConstantConditions
         if (level == null) return false;
-        Container c = new SimpleContainer(1);
-        c.setItem(0, stack);
+        SingleRecipeInput input = new SingleRecipeInput(stack);
         // TODO cache this
-        return level.getRecipeManager().getRecipeFor(type, c, level).isPresent();
+        return level.getRecipeManager().getRecipeFor(type, input, level).isPresent();
     }
 
     public static MutableComponent xlateMatch(boolean matchAll) {

@@ -13,6 +13,7 @@ import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.FastColor;
 
 public class ChargingRenderer extends AbstractTubeModuleRenderer<ChargingModule> {
     private final ModelPart tip;
@@ -73,14 +74,15 @@ public class ChargingRenderer extends AbstractTubeModuleRenderer<ChargingModule>
 
 
     @Override
-    protected void render(ChargingModule module, PoseStack matrixStack, VertexConsumer builder, float partialTicks, int combinedLight, int combinedOverlay, float alpha) {
-        tip.render(matrixStack, builder, combinedLight, combinedOverlay, 1f, 1f, 1f, alpha);
-        body.render(matrixStack, builder, combinedLight, combinedOverlay, 1f, 1f, 1f, alpha);
-        tubeConnector.render(matrixStack, builder, combinedLight, combinedOverlay, 1f, 1f, 1f, alpha);
-        tipBottom.render(matrixStack, builder, combinedLight, combinedOverlay, 1f, 1f, 1f, alpha);
-        tipTop.render(matrixStack, builder, combinedLight, combinedOverlay, 1f, 1f, 1f, alpha);
-        tipRight.render(matrixStack, builder, combinedLight, combinedOverlay, 1f, 1f, 1f, alpha);
-        tipLeft.render(matrixStack, builder, combinedLight, combinedOverlay, 1f, 1f, 1f, alpha);
+    protected void render(ChargingModule module, PoseStack matrixStack, VertexConsumer builder, float partialTicks, int combinedLight, int combinedOverlay, int alpha) {
+        int color = FastColor.ARGB32.color(alpha, 0xFFFFFF);
+        tip.render(matrixStack, builder, combinedLight, combinedOverlay, color);
+        body.render(matrixStack, builder, combinedLight, combinedOverlay, color);
+        tubeConnector.render(matrixStack, builder, combinedLight, combinedOverlay, color);
+        tipBottom.render(matrixStack, builder, combinedLight, combinedOverlay, color);
+        tipTop.render(matrixStack, builder, combinedLight, combinedOverlay, color);
+        tipRight.render(matrixStack, builder, combinedLight, combinedOverlay, color);
+        tipLeft.render(matrixStack, builder, combinedLight, combinedOverlay, color);
     }
 
     @Override

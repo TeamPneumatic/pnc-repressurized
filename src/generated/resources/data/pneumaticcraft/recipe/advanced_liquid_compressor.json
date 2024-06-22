@@ -1,0 +1,24 @@
+{
+  "type": "pneumaticcraft:compressor_upgrade_crafting",
+  "category": "misc",
+  "key": {
+    "C": {
+      "item": "pneumaticcraft:liquid_compressor"
+    },
+    "I": {
+      "tag": "c:ingots/compressed_iron"
+    },
+    "T": {
+      "item": "pneumaticcraft:advanced_pressure_tube"
+    }
+  },
+  "pattern": [
+    "III",
+    "ITT",
+    "ICI"
+  ],
+  "result": {
+    "count": 1,
+    "id": "pneumaticcraft:advanced_liquid_compressor"
+  }
+}

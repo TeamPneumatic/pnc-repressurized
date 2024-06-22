@@ -56,6 +56,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
+import static net.minecraft.client.renderer.LightTexture.FULL_BRIGHT;
 
 public class RenderBlockTarget {
     private static final int SERVER_REQUEST_INTERVAL = 30; // ticks
@@ -246,7 +247,7 @@ public class RenderBlockTarget {
 
         matrixStack.pushPose();
         matrixStack.translate(-0.5, -0.5, -0.5);
-        RenderType type = RenderUtils.renderFrame(matrixStack, buffer, aabb, 1/64f, 0.25f, 0.75f, 0.75f, alpha, RenderUtils.FULL_BRIGHT);
+        RenderType type = RenderUtils.renderFrame(matrixStack, buffer, aabb, 1/64f, 0.25f, 0.75f, 0.75f, alpha, FULL_BRIGHT);
         RenderUtils.finishBuffer(buffer, type);
         matrixStack.popPose();
     }

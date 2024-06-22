@@ -22,6 +22,7 @@ import me.desht.pneumaticcraft.common.item.MicromissilesItem;
 import me.desht.pneumaticcraft.common.item.minigun.AbstractGunAmmoItem;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import net.minecraft.commands.arguments.EntityAnchorArgument;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
@@ -32,6 +33,7 @@ import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.neoforged.neoforge.common.util.FakePlayer;
+import org.apache.logging.log4j.core.jmx.Server;
 
 import java.util.Objects;
 
@@ -149,9 +151,9 @@ public class DroneAIAttackEntity extends MeleeAttackGoal {
                 for (AttributeModifier modifier : stack.getAttributeModifiers(EquipmentSlot.MAINHAND).get(Attributes.ATTACK_DAMAGE)) {
                     damage.addTransientModifier(modifier);
                 }
-                float f1 = EnchantmentHelper.getDamageBonus(stack, Objects.requireNonNull(attacker.getTarget()).getType());
-                if (damage.getValue() + f1 > bestDmg) {
-                    bestDmg = damage.getValue() + f1;
+                float modified = EnchantmentHelper.modifyDamage((ServerLevel) attacker.level(), stack, attacker.getTarget(), attacker.damageSources().mobAttack(attacker), (float) damage.getValue());
+                if (modified > bestDmg) {
+                    bestDmg = modified;
                     bestSlot = i;
                 }
             }

@@ -58,7 +58,6 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.client.renderer.texture.Tickable;
 import net.minecraft.client.resources.language.I18n;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
@@ -576,7 +575,7 @@ public abstract class AbstractPneumaticCraftContainerScreen<C extends AbstractPn
     <R extends PneumaticCraftRecipe> Optional<RecipeHolder<R>> getCurrentRecipe(PneumaticCraftRecipeType<R> type) {
         String id = te.getCurrentRecipeIdSynced();
         return id.isEmpty() ? Optional.empty() :
-                type.getRecipe(ClientUtils.getClientLevel(), new ResourceLocation(id));
+                type.getRecipe(ClientUtils.getClientLevel(), ResourceLocation.parse(id));
     }
 
     protected RegistryAccess registryAccess() {

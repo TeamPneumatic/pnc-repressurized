@@ -178,7 +178,7 @@ public class AmadroneEntity extends DroneEntity {
 
         if (tag.contains("amadron")) {
             CompoundTag subTag = tag.getCompound("amadron");
-            handlingOffer = new ResourceLocation(subTag.getString("offerId"));
+            handlingOffer = ResourceLocation.parse(subTag.getString("offerId"));
             usedTablet = ItemStack.parseOptional(registryAccess(), subTag.getCompound("usedTablet"));
             offerTimes = subTag.getInt("offerTimes");
             buyingPlayer = subTag.getString("buyingPlayer");

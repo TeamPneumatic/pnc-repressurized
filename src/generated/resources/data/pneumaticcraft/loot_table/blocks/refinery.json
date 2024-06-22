@@ -1,0 +1,39 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "bonus_rolls": 0.0,
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
+      ],
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "function": "minecraft:copy_name",
+              "source": "block_entity"
+            },
+            {
+              "function": "minecraft:copy_components",
+              "include": [
+                "pneumaticcraft:main_tank",
+                "pneumaticcraft:input_tank_1",
+                "pneumaticcraft:input_tank_2",
+                "pneumaticcraft:output_tank",
+                "pneumaticcraft:be_saved_rc"
+              ],
+              "source": "block_entity"
+            }
+          ],
+          "name": "pneumaticcraft:refinery"
+        }
+      ],
+      "name": "refinery",
+      "rolls": 1.0
+    }
+  ],
+  "random_sequence": "pneumaticcraft:blocks/refinery"
+}

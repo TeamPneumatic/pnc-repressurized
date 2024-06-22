@@ -44,6 +44,7 @@ import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
@@ -228,7 +229,7 @@ public class ProgWidgetCC extends ProgWidgetInventoryBase implements IBlockOrder
 
     private ProgWidgetItemFilter getItemFilter(String itemName, boolean matchComponents, boolean matchMod) throws IllegalArgumentException {
         if (!itemName.contains(":")) throw new IllegalArgumentException("Item/Block name doesn't contain a ':'!");
-        Item item = BuiltInRegistries.ITEM.get(new ResourceLocation(itemName));
+        Item item = BuiltInRegistries.ITEM.get(ResourceLocation.parse(itemName));
         if (item == Items.AIR) throw new IllegalArgumentException("Item not found for the name \"" + itemName + "\"!");
         ProgWidgetItemFilter itemFilter = new ProgWidgetItemFilter();
         itemFilter.setFilter(new ItemStack(item));
@@ -346,7 +347,7 @@ public class ProgWidgetCC extends ProgWidgetInventoryBase implements IBlockOrder
     }
 
     private ProgWidgetLiquidFilter getFilterForArgs(String fluidName) throws IllegalArgumentException {
-        Fluid fluid = BuiltInRegistries.FLUID.get(new ResourceLocation(fluidName));
+        Fluid fluid = BuiltInRegistries.FLUID.get(ResourceLocation.parse(fluidName));
         if (fluid == Fluids.EMPTY) throw new IllegalArgumentException("Can't find fluid for the name \"" + fluidName + "\"!");
         return ProgWidgetLiquidFilter.withFilter(fluid);
     }
@@ -471,16 +472,12 @@ public class ProgWidgetCC extends ProgWidgetInventoryBase implements IBlockOrder
     }
 
     @Override
-    public CraftingContainer getCraftingGrid() {
-        CraftingContainer invCrafting = new TransientCraftingContainer(new DummyContainer(), 3, 3);
-        for (int i = 0; i < 9; i++) {
-            invCrafting.setItem(i, craftingGrid[i]);
-        }
-        return invCrafting;
+    public CraftingInput getCraftingGrid() {
+        return CraftingInput.of(3, 3, List.of(craftingGrid));
     }
 
     @Override
-    public Optional<CraftingRecipe> getRecipe(Level world, CraftingContainer grid) {
+    public Optional<CraftingRecipe> getRecipe(Level world, CraftingInput grid) {
         return VanillaRecipeCache.CRAFTING.getCachedRecipe(world, grid);
     }
 

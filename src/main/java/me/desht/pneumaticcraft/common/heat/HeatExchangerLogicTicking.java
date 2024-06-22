@@ -163,7 +163,7 @@ public class HeatExchangerLogicTicking implements IHeatExchangerLogic {
         ListTag tagList = nbt.getList("behaviours", Tag.TAG_COMPOUND);
         for (int i = 0; i < tagList.size(); i++) {
             CompoundTag t = tagList.getCompound(i);
-            HeatBehaviour behaviour = HeatBehaviourManager.getInstance().createBehaviour(new ResourceLocation(t.getString("id")));
+            HeatBehaviour behaviour = HeatBehaviourManager.getInstance().createBehaviour(ResourceLocation.parse(t.getString("id")));
             if (behaviour != null) {
                 behaviour.deserializeNBT(t);
                 behaviours.add(behaviour);

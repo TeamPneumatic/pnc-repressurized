@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "B": {
+      "item": "minecraft:stone_button"
+    },
+    "P": {
+      "tag": "pneumaticcraft:plastic_sheets"
+    },
+    "R": {
+      "tag": "c:stones"
+    }
+  },
+  "pattern": [
+    "BPB",
+    "PRP",
+    "BPB"
+  ],
+  "result": {
+    "count": 1,
+    "id": "pneumaticcraft:elevator_caller"
+  }
+}

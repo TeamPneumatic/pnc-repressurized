@@ -1,0 +1,34 @@
+{
+  "parent": "pneumaticcraft:programmer",
+  "criteria": {
+    "0": {
+      "conditions": {
+        "items": [
+          {
+            "items": "pneumaticcraft:programming_puzzle"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "background": "pneumaticcraft:textures/gui/advancement_bg.png",
+    "description": {
+      "translate": "pneumaticcraft.advancement.programming_puzzle.desc"
+    },
+    "icon": {
+      "count": 1,
+      "id": "pneumaticcraft:programming_puzzle"
+    },
+    "title": {
+      "translate": "pneumaticcraft.advancement.programming_puzzle"
+    }
+  },
+  "requirements": [
+    [
+      "0"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

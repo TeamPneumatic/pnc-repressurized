@@ -28,22 +28,22 @@ import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.drone.ai.DroneAICrafting;
 import me.desht.pneumaticcraft.common.recipes.VanillaRecipeCache;
 import me.desht.pneumaticcraft.common.registry.ModProgWidgetTypes;
-import me.desht.pneumaticcraft.common.util.DummyContainer;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.goal.Goal;
-import net.minecraft.world.inventory.CraftingContainer;
-import net.minecraft.world.inventory.TransientCraftingContainer;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -139,34 +139,37 @@ public class ProgWidgetCrafting extends ProgWidget implements ICraftingWidget, I
     }
 
     @Override
-    public CraftingContainer getCraftingGrid() {
+    public CraftingInput getCraftingGrid() {
         usingVariables = false;
-        CraftingContainer invCrafting = new TransientCraftingContainer(new DummyContainer(), 3, 3);
+
+        List<ItemStack> stacks = new ArrayList<>(Collections.nCopies(9, ItemStack.EMPTY));
         for (int y = 0; y < 3; y++) {
             ProgWidgetItemFilter itemFilter = (ProgWidgetItemFilter) getConnectedParameters()[y];
             for (int x = 0; x < 3 && itemFilter != null; x++) {
-                if (!itemFilter.getVariable().isEmpty()) usingVariables = true;
-                invCrafting.setItem(y * 3 + x, itemFilter.getFilter());
+                if (!itemFilter.getVariable().isEmpty()) {
+                    usingVariables = true;
+                }
+                stacks.set(y * 3 + x, itemFilter.getFilter());
                 itemFilter = (ProgWidgetItemFilter) itemFilter.getConnectedParameters()[0];
             }
         }
-        return invCrafting;
+        return CraftingInput.of(3, 3, stacks);
     }
 
     public ItemStack getRecipeResult(Level world) {
-        CraftingContainer grid = getCraftingGrid();
+        CraftingInput grid = getCraftingGrid();
         return getRecipe(world, grid).map(r -> r.assemble(grid, world.registryAccess())).orElse(ItemStack.EMPTY);
     }
 
     @Override
-    public Optional<CraftingRecipe> getRecipe(Level world, CraftingContainer grid) {
+    public Optional<CraftingRecipe> getRecipe(Level world, CraftingInput grid) {
         // no caching if using variables, because the item can change at any item
         return usingVariables ?
                 world.getRecipeManager().getRecipeFor(RecipeType.CRAFTING, grid, world).flatMap(holder -> Optional.of(holder.value())) :
                 VanillaRecipeCache.CRAFTING.getCachedRecipe(world, grid);
     }
 
-    public static Recipe<CraftingContainer> getRecipe(Level world, ICraftingWidget widget) {
+    public static Recipe<CraftingInput> getRecipe(Level world, ICraftingWidget widget) {
         return widget.getRecipe(world, widget.getCraftingGrid()).orElse(null);
     }
 
@@ -203,20 +206,6 @@ public class ProgWidgetCrafting extends ProgWidget implements ICraftingWidget, I
     public void setCount(int count) {
         this.count = count;
     }
-
-//    @Override
-//    public void writeToNBT(CompoundTag tag, HolderLookup.Provider provider) {
-//        super.writeToNBT(tag, provider);
-//        if (useCount) tag.putBoolean("useCount", true);
-//        tag.putInt("count", count);
-//    }
-//
-//    @Override
-//    public void readFromNBT(CompoundTag tag, HolderLookup.Provider provider) {
-//        super.readFromNBT(tag, provider);
-//        useCount = tag.getBoolean("useCount");
-//        count = tag.getInt("count");
-//    }
 
     @Override
     public void writeToPacket(RegistryFriendlyByteBuf buf) {

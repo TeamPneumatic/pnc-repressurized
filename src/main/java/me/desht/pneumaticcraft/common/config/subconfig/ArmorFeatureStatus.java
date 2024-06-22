@@ -57,7 +57,7 @@ public class ArmorFeatureStatus extends AuxConfigJson {
             JsonObject features = json.getAsJsonObject("features");
             for (var entry : features.entrySet()) {
                 try {
-                    activeUpgrades.put(new ResourceLocation(entry.getKey()), entry.getValue().getAsBoolean());
+                    activeUpgrades.put(ResourceLocation.parse(entry.getKey()), entry.getValue().getAsBoolean());
                 } catch (ResourceLocationException | ClassCastException | IllegalStateException e) {
                     Log.error("ignoring invalid entry '{}' in ArmorFeatureStatus.json: {}", entry.getKey(), e.getMessage());
                 }
@@ -73,7 +73,7 @@ public class ArmorFeatureStatus extends AuxConfigJson {
     public boolean isUpgradeEnabled(ResourceLocation upgradeID) {
         if (!activeUpgrades.containsKey(upgradeID)) {
             String[] parts = upgradeID.getPath().split("\\.");
-            IArmorUpgradeClientHandler<?> handler = ClientArmorRegistry.getInstance().getClientHandler(new ResourceLocation(upgradeID.getNamespace(), parts[0]));
+            IArmorUpgradeClientHandler<?> handler = ClientArmorRegistry.getInstance().getClientHandler(ResourceLocation.fromNamespaceAndPath(upgradeID.getNamespace(), parts[0]));
             if (handler == null) {
                 Log.warning("attempt to retrieve enablement for unknown upgrade ID '{}'", upgradeID);
                 return false;

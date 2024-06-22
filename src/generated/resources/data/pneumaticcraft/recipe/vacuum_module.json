@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "T": {
+      "item": "pneumaticcraft:pressure_tube"
+    },
+    "V": {
+      "item": "pneumaticcraft:vacuum_pump"
+    }
+  },
+  "pattern": [
+    "TVT"
+  ],
+  "result": {
+    "count": 1,
+    "id": "pneumaticcraft:vacuum_module"
+  }
+}

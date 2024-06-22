@@ -1,0 +1,14 @@
+{
+  "type": "pneumaticcraft:heat_frame_cooling",
+  "bonusLimit": 0.75,
+  "bonusMultiplier": 0.01,
+  "input": {
+    "amount": 1000,
+    "tag": "pneumaticcraft:plastic"
+  },
+  "output": {
+    "count": 1,
+    "id": "pneumaticcraft:plastic"
+  },
+  "temperature": 273
+}

@@ -35,7 +35,7 @@ public class ProcessorAmadronTrade implements IComponentProcessor {
 
     @Override
     public void setup(Level level, IVariableProvider iVariableProvider) {
-        ResourceLocation recipeId = new ResourceLocation(iVariableProvider.get("recipe").asString());
+        ResourceLocation recipeId = ResourceLocation.parse(iVariableProvider.get("recipe").asString());
         ModRecipeTypes.AMADRON.get().getRecipe(Minecraft.getInstance().level, recipeId)
                 .ifPresentOrElse(holder -> recipe = holder.value(),
                         () -> Log.warning("Missing amadron offer recipe: " + recipeId));

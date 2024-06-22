@@ -69,7 +69,7 @@ public final class PneumaticRegistry {
      * @return a mod-specific ResourceLocation for the given path
      */
     public static ResourceLocation RL(String path) {
-        return new ResourceLocation(MOD_ID, path);
+        return ResourceLocation.fromNamespaceAndPath(MOD_ID, path);
     }
 
     /**

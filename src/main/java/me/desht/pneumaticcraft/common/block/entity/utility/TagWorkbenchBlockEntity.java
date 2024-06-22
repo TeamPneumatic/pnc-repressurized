@@ -77,7 +77,7 @@ public class TagWorkbenchBlockEntity extends DisplayTableBlockEntity implements 
             if (!outputStack.isEmpty()) {
                 Set<TagKey<Item>> tags = new HashSet<>(TagFilterItem.getConfiguredTagList(outputStack));
                 for (String s : data) {
-                    tags.add(TagKey.create(Registries.ITEM, new ResourceLocation(s)));
+                    tags.add(TagKey.create(Registries.ITEM, ResourceLocation.parse(s)));
                 }
                 TagFilterItem.setConfiguredTagList(outputStack, tags);
                 inventory.setStackInSlot(OUTPUT_SLOT, outputStack);

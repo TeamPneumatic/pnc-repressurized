@@ -3,9 +3,9 @@ package me.desht.pneumaticcraft.common.upgrades;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.upgrade.PNCUpgrade;
 import me.desht.pneumaticcraft.lib.ModIds;
-import net.minecraft.nbt.NbtOps;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Rarity;
+
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 public enum BuiltinUpgrade {
     VOLUME("volume"),
@@ -67,7 +67,7 @@ public enum BuiltinUpgrade {
 
     public PNCUpgrade registerUpgrade() {
         PNCUpgrade upgrade = PneumaticRegistry.getInstance().getUpgradeRegistry()
-                .registerUpgrade(new ResourceLocation(PneumaticRegistry.MOD_ID, name), maxTier, depModIds);
+                .registerUpgrade(RL(name), maxTier, depModIds);
         return ModUpgrades.registerBuiltin(this, upgrade);
     }
 }

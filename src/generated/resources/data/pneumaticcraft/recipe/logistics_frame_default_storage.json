@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "C": {
+      "item": "pneumaticcraft:logistics_core"
+    },
+    "D": {
+      "tag": "c:dyes/green"
+    },
+    "P": {
+      "item": "minecraft:stick"
+    }
+  },
+  "pattern": [
+    "PPP",
+    "PDP",
+    "PCP"
+  ],
+  "result": {
+    "count": 8,
+    "id": "pneumaticcraft:logistics_frame_default_storage"
+  }
+}

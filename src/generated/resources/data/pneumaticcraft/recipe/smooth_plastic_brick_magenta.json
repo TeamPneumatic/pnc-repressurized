@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "pneumaticcraft:plastic_brick_magenta"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "pneumaticcraft:smooth_plastic_brick_magenta"
+  }
+}

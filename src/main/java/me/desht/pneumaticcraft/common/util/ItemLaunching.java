@@ -79,14 +79,15 @@ public class ItemLaunching {
 
         NetworkHandler.sendToAllTracking(PacketSetEntityMotion.create(launchedEntity, velocity), world, trackPos);
 
-        if (launchedEntity instanceof Fireball fireball) {
+        if (launchedEntity instanceof AbstractHurtingProjectile hurtingProjectile) {
             // fireball velocity is handled a little differently...
-            fireball.xPower = velocity.x * 0.05;
-            fireball.yPower = velocity.y * 0.05;
-            fireball.zPower = velocity.z * 0.05;
-        } else {
-            launchedEntity.setDeltaMovement(velocity);
+            hurtingProjectile.accelerationPower = 0.1;  // TODO needs testing
+//            fireball.xPower = velocity.x * 0.05;
+//            fireball.yPower = velocity.y * 0.05;
+//            fireball.zPower = velocity.z * 0.05;
         }
+
+        launchedEntity.setDeltaMovement(velocity);
 
         launchedEntity.setOnGround(false);
         launchedEntity.horizontalCollision = false;
@@ -159,7 +160,7 @@ public class ItemLaunching {
                 return armorStand;
 
             } else if (item instanceof ArrowItem arrowItem) {
-                return arrowItem.createArrow(level, stack, player);
+                return arrowItem.createArrow(level, stack, player, null);
 
             } else if (item instanceof BoatItem boatItem) {
                 HitResult dummyHitResult = new EntityHitResult(player, new Vec3(0, 0, 0));
@@ -184,7 +185,7 @@ public class ItemLaunching {
                 return new ThrownEgg(level, player);
 
             } else if (item == Items.FIRE_CHARGE) {
-                SmallFireball e = new SmallFireball(level, player, 0, 0, 0);
+                SmallFireball e = new SmallFireball(level, player, Vec3.ZERO);
                 e.setItem(stack);
                 return e;
 
@@ -210,11 +211,11 @@ public class ItemLaunching {
                 return new FireworkRocketEntity(level, stack, 0, 0, 0, true);
 
             } else if (item == Items.TRIDENT) {
-                stack.hurtAndBreak(1, player.getRandom(), player,  () -> { });
+                stack.hurtAndBreak(1, (ServerLevel) player.level(), player, i -> { });
                 return new ThrownTrident(level, player, stack);
 
             } else if (item == ModItems.MICROMISSILES.get()) {
-                stack.hurtAndBreak(1, player.getRandom(), player,  () -> { });
+                stack.hurtAndBreak(1, (ServerLevel) player.level(), player, i -> { });
                 MicromissileEntity micromissile = new MicromissileEntity(level, player, stack);
 
                 // Sets micromissile launch rotation

@@ -61,7 +61,7 @@ public class ModelTransferGadget extends EntityModel<TransferGadgetEntity> {
     }
 
     @Override
-    public void renderToBuffer(PoseStack matrixStack, VertexConsumer buffer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
+    public void renderToBuffer(PoseStack matrixStack, VertexConsumer buffer, int packedLight, int packedOverlay, int color) {
         inPart1.render(matrixStack, buffer, packedLight, packedOverlay);
         inPart2.render(matrixStack, buffer, packedLight, packedOverlay);
         betweenPart.render(matrixStack, buffer, packedLight, packedOverlay);

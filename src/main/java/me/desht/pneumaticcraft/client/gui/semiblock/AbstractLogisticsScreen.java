@@ -267,7 +267,7 @@ public class AbstractLogisticsScreen<L extends AbstractLogisticsFrameEntity> ext
         float[] hsb = TintColor.RGBtoHSB((c & 0xFF0000) >> 16, (c & 0xFF00) >> 8, c & 0xFF, null);
         TintColor color = TintColor.getHSBColor(hsb[0], hsb[1] * 0.2f, hsb[2]);
         if (hsb[2] < 0.7) color = color.brighter();
-        return OptionalInt.of(color.getRGB());
+        return OptionalInt.of(color.getARGB());
     }
 
     @Override

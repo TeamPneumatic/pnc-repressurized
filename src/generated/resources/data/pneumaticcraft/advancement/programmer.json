@@ -1,0 +1,34 @@
+{
+  "parent": "pneumaticcraft:printed_circuit_board",
+  "criteria": {
+    "0": {
+      "conditions": {
+        "items": [
+          {
+            "items": "pneumaticcraft:programmer"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "background": "pneumaticcraft:textures/gui/advancement_bg.png",
+    "description": {
+      "translate": "pneumaticcraft.advancement.programmer.desc"
+    },
+    "icon": {
+      "count": 1,
+      "id": "pneumaticcraft:programmer"
+    },
+    "title": {
+      "translate": "pneumaticcraft.advancement.programmer"
+    }
+  },
+  "requirements": [
+    [
+      "0"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

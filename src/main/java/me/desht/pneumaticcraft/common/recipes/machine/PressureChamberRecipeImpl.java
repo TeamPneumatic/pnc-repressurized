@@ -28,6 +28,7 @@ import me.desht.pneumaticcraft.api.crafting.recipe.PressureChamberRecipe;
 import me.desht.pneumaticcraft.common.registry.ModBlocks;
 import me.desht.pneumaticcraft.common.registry.ModRecipeSerializers;
 import me.desht.pneumaticcraft.common.registry.ModRecipeTypes;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -107,7 +108,7 @@ public class PressureChamberRecipeImpl extends PressureChamberRecipe {
     }
 
     @Override
-    public List<List<ItemStack>> getInputsForDisplay() {
+    public List<List<ItemStack>> getInputsForDisplay(HolderLookup.Provider provider) {
         if (displayStacks == null) {
             displayStacks = inputs.stream().map(ingredient -> Arrays.asList(ingredient.getItems())).toList();
         }
@@ -115,7 +116,7 @@ public class PressureChamberRecipeImpl extends PressureChamberRecipe {
     }
 
     @Override
-    protected List<ItemStack> getSingleResultsForDisplay() {
+    protected List<ItemStack> getSingleResultsForDisplay(HolderLookup.Provider provider) {
         return outputs;
     }
 

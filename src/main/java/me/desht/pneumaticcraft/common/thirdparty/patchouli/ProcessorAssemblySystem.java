@@ -36,7 +36,7 @@ public class ProcessorAssemblySystem implements IComponentProcessor {
 
     @Override
     public void setup(Level level, IVariableProvider iVariableProvider) {
-        ResourceLocation recipeId = new ResourceLocation(iVariableProvider.get("recipe").asString());
+        ResourceLocation recipeId = ResourceLocation.parse(iVariableProvider.get("recipe").asString());
 
         ModRecipeTypes.ASSEMBLY_DRILL_LASER.get().getRecipe(Minecraft.getInstance().level, recipeId)
                 .ifPresentOrElse(h -> recipe = h.value(),

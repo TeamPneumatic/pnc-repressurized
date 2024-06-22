@@ -11,7 +11,7 @@ import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 
 public class FFSSetup {
     public static void registerCaps(RegisterCapabilitiesEvent event) {
-        Item ftbFilterItem = BuiltInRegistries.ITEM.get(new ResourceLocation(ModIds.FFS, "smart_filter"));
+        Item ftbFilterItem = FTBFilterSystemAPI.api().filterItem();
         if (ftbFilterItem != Items.AIR) {
             event.registerItem(PNCCapabilities.ITEM_FILTERING, (stack, ctx) ->
                     (filterStack, item) -> FTBFilterSystemAPI.api().doesFilterMatch(filterStack, item),

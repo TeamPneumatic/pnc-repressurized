@@ -59,6 +59,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.IFluidTank;
 import net.neoforged.neoforge.fluids.SimpleFluidContent;
@@ -174,8 +175,8 @@ public class VacuumTrapBlockEntity extends AbstractAirHandlingBlockEntity implem
     }
 
     private boolean isApplicable(LivingEntity e) {
-        return e.getType().is(PneumaticCraftTags.EntityTypes.VACUUM_TRAP_WHITELISTED)
-                || e.canChangeDimensions()
+        return e.getType().is(PneumaticCraftTags.EntityTypes.VACUUM_TRAP_WHITELISTED) ||
+                !e.getType().is(Tags.EntityTypes.BOSSES)
                 && !(e instanceof DroneEntity)
                 && !(e instanceof Warden)
                 && !(e instanceof TamableAnimal t && t.isTame())

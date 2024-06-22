@@ -33,7 +33,7 @@ public class ModGLMProvider extends GlobalLootModifierProvider {
         Validate.isTrue(chests.length > 0);
         LootItemCondition.Builder condition = null;
         for (String s : chests) {
-            LootTableIdCondition.Builder b = LootTableIdCondition.builder(new ResourceLocation("chests/" + s));
+            LootTableIdCondition.Builder b = LootTableIdCondition.builder(ResourceLocation.parse("chests/" + s));
             condition = condition == null ? b : condition.or(b);
         }
         return condition.build();

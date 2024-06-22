@@ -42,7 +42,7 @@ public class HeatFrameCooling implements IRecipeManager<HeatFrameCoolingRecipe> 
     @ZenCodeType.Method
     public void addRecipe(String name, IIngredient input, IItemStack output, int temperature, @ZenCodeType.OptionalFloat float bonusMult, @ZenCodeType.OptionalFloat float bonusLimit) {
         CraftTweakerAPI.apply(new ActionAddRecipe<>(this,
-                new RecipeHolder<>(new ResourceLocation("crafttweaker", fixRecipeName(name)),
+                new RecipeHolder<>(ResourceLocation.fromNamespaceAndPath("crafttweaker", fixRecipeName(name)),
                         new HeatFrameCoolingRecipeImpl(
                                 Either.left(input.asVanillaIngredient()),
                                 temperature,
@@ -55,7 +55,7 @@ public class HeatFrameCooling implements IRecipeManager<HeatFrameCoolingRecipe> 
     @ZenCodeType.Method
     public void addRecipe(String name, CTFluidIngredient inputFluid, IItemStack output, int temperature, @ZenCodeType.OptionalFloat float bonusMult, @ZenCodeType.OptionalFloat float bonusLimit) {
         CraftTweakerAPI.apply(new ActionAddRecipe<>(this,
-                new RecipeHolder<>(new ResourceLocation("crafttweaker", fixRecipeName(name)),
+                new RecipeHolder<>(ResourceLocation.fromNamespaceAndPath("crafttweaker", fixRecipeName(name)),
                         new HeatFrameCoolingRecipeImpl(
                                 Either.right(CTUtils.toSizedFluidIngredient(inputFluid)),
                                 temperature,

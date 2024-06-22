@@ -32,10 +32,10 @@ import java.util.Optional;
  * LRU recipe cache for quick lookup of recipes based on inventory contents.
  * Currently used for vanilla crafting and smelting recipes.
  */
-public class VanillaRecipeCache<T extends RecipeType<R>, R extends Recipe<C>, C extends Container> {
-    public static final VanillaRecipeCache<RecipeType<CraftingRecipe>, CraftingRecipe, CraftingContainer> CRAFTING
+public class VanillaRecipeCache<T extends RecipeType<R>, R extends Recipe<C>, C extends RecipeInput> {
+    public static final VanillaRecipeCache<RecipeType<CraftingRecipe>, CraftingRecipe, CraftingInput> CRAFTING
             = new VanillaRecipeCache<>(RecipeType.CRAFTING, true);
-    public static final VanillaRecipeCache<RecipeType<SmeltingRecipe>, SmeltingRecipe, Container> SMELTING
+    public static final VanillaRecipeCache<RecipeType<SmeltingRecipe>, SmeltingRecipe, SingleRecipeInput> SMELTING
             = new VanillaRecipeCache<>(RecipeType.SMELTING, false);
 
     private static final int MAX_CACHE_SIZE = 1024;
@@ -74,7 +74,7 @@ public class VanillaRecipeCache<T extends RecipeType<R>, R extends Recipe<C>, C 
 
     private int makeKey(C inv) {
         IntList c = new IntArrayList();
-        for (int i = 0; i < inv.getContainerSize(); i++) {
+        for (int i = 0; i < inv.size(); i++) {
             ItemStack stack = inv.getItem(i);
             if (!stack.isEmpty()) {
                 c.add(checkComponents ? ItemStack.hashItemAndComponents(stack) : stack.getItem().hashCode());

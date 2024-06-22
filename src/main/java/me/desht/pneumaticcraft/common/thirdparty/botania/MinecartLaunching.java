@@ -29,8 +29,8 @@ public class MinecartLaunching {
      * @param itemIDString item ID of item/entity to add to launch map
      */
     private static void register(String itemIDString) {
-        ResourceLocation itemId = new ResourceLocation(ModIds.BOTANIA, itemIDString);
-        ResourceLocation entityId = new ResourceLocation(ModIds.BOTANIA, itemIDString);
+        ResourceLocation itemId = ResourceLocation.fromNamespaceAndPath(ModIds.BOTANIA, itemIDString);
+        ResourceLocation entityId = ResourceLocation.fromNamespaceAndPath(ModIds.BOTANIA, itemIDString);
         BuiltInRegistries.ENTITY_TYPE.getOptional(entityId).ifPresent(entityType -> launchMap.put(itemId, entityType));
     }
 }

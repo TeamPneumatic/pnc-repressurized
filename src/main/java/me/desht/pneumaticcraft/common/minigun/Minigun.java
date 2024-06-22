@@ -31,6 +31,7 @@ import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.RayTraceUtils;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.Mth;
@@ -267,9 +268,11 @@ public abstract class Minigun {
                     roundsUsed = ammoItem.onBlockHit(this, ammoStack, brtr);
                 }
                 int ammoCost = roundsUsed * ammoItem.getAmmoCost(ammoStack);
-                if (!isInfiniteAmmo()) {
-                    ammoStack.hurtAndBreak(ammoCost, rand, player instanceof ServerPlayer sp ? sp : null,
-                            () -> lastShotOfAmmo.setValue(ammoStack.getEnchantmentLevel(Enchantments.UNBREAKING) == 0));
+                if (!isInfiniteAmmo() && player instanceof ServerPlayer serverPlayer) {
+                    boolean hasUnbreaking = player.registryAccess().registryOrThrow(Registries.ENCHANTMENT).getHolder(Enchantments.UNBREAKING)
+                            .map(ench -> ammoStack.getEnchantmentLevel(ench) > 0).orElse(false);
+                    ammoStack.hurtAndBreak(ammoCost, serverPlayer.serverLevel(), serverPlayer,
+                            item -> lastShotOfAmmo.setValue(hasUnbreaking));
                 }
             }
         }

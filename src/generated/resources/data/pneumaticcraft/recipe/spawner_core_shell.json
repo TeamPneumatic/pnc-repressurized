@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "E": {
+      "tag": "c:gems/emerald"
+    },
+    "G": {
+      "item": "pneumaticcraft:pressure_chamber_glass"
+    },
+    "I": {
+      "tag": "c:ingots/compressed_iron"
+    }
+  },
+  "pattern": [
+    "IGI",
+    "GEG",
+    "IGI"
+  ],
+  "result": {
+    "count": 1,
+    "id": "pneumaticcraft:spawner_core_shell"
+  }
+}

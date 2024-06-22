@@ -60,7 +60,8 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraft.world.item.enchantment.EnchantmentEffectComponents;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.SkullBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -367,7 +368,7 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
 
         playerUUID = UUID.fromString(tag.getString("playerUUID"));
         feedMode = FeedMode.valueOf(tag.getString("feedMode"));
-        curXpFluid = tag.contains("curXpFluid") ? BuiltInRegistries.FLUID.get(new ResourceLocation(tag.getString("curXpFluid"))) : Fluids.EMPTY;
+        curXpFluid = tag.contains("curXpFluid") ? BuiltInRegistries.FLUID.get(ResourceLocation.parse(tag.getString("curXpFluid"))) : Fluids.EMPTY;
         curXpRatio = XPFluidManager.getInstance().getXPRatio(curXpFluid);
         energyStorage.readFromNBT(tag);
 
@@ -553,7 +554,7 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
         @Override
         public ItemStack extractItem(int slot, int amount, boolean simulate) {
             ItemStack stack = getStackInSlot(slot);
-            return stack.getEnchantmentLevel(Enchantments.BINDING_CURSE) > 0 ?
+            return EnchantmentHelper.has(stack, EnchantmentEffectComponents.PREVENT_ARMOR_CHANGE) ?
                     ItemStack.EMPTY :
                     super.extractItem(slot, amount, simulate);
         }

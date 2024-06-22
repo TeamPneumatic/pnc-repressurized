@@ -19,15 +19,20 @@ package me.desht.pneumaticcraft.common.drone.ai;
 
 import me.desht.pneumaticcraft.api.drone.IDrone;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ICraftingWidget;
-import me.desht.pneumaticcraft.common.util.DummyContainer;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.ItemTagMatcher;
+import net.minecraft.core.NonNullList;
+import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.player.StackedContents;
 import net.minecraft.world.inventory.CraftingContainer;
-import net.minecraft.world.inventory.TransientCraftingContainer;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.CraftingInput;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.common.crafting.CraftingHelper;
 import net.neoforged.neoforge.event.EventHooks;
 import net.neoforged.neoforge.event.entity.player.PlayerDestroyItemEvent;
 
@@ -54,18 +59,19 @@ public class DroneAICrafting extends Goal {
             return false;
         }
 
-        CraftingContainer craftingGrid = widget.getCraftingGrid();
+        CraftingInput craftingGrid = widget.getCraftingGrid();
         return widget.getRecipe(drone.getDroneLevel(), craftingGrid).map(recipe -> {
             List<List<ItemStack>> equivalentsList = buildEquivalentsList(craftingGrid);
             if (equivalentsList.isEmpty()) return false;
             int[] equivIndices = new int[9];
-            CraftingContainer craftMatrix = new TransientCraftingContainer(new DummyContainer(), 3, 3);
             do {
+                NonNullList<ItemStack> stacks = NonNullList.withSize(equivalentsList.size(), ItemStack.EMPTY);
                 for (int i = 0; i < equivalentsList.size(); i++) {
                     ItemStack stack = equivalentsList.get(i).isEmpty() ? ItemStack.EMPTY : equivalentsList.get(i).get(equivIndices[i]);
-                    craftMatrix.setItem(i, stack);
+                    stacks.set(i, stack);
                 }
-                if (recipe.matches(craftMatrix, drone.getDroneLevel()) && doCrafting(recipe.assemble(craftMatrix, drone.getDroneLevel().registryAccess()), craftMatrix)) {
+                CraftingInput input = CraftingInput.of(3, 3, stacks);
+                if (recipe.matches(input, drone.getDroneLevel()) && doCrafting(recipe.assemble(input, drone.getDroneLevel().registryAccess()), input)) {
                     actionCount++;
                     return true;
                 }
@@ -79,14 +85,14 @@ public class DroneAICrafting extends Goal {
      * crafting inventory that is passed.  Each sub-list contains the itemstacks from the drone's inventory
      * which match the crafting grid (either direct item match or via item tag).  The elements of each sub-list are direct
      * references to itemstacks in the drone's inventory; shrinking those stacks (as is done in
-     * {@link #doCrafting(ItemStack, CraftingContainer)}  will remove items from the drone.
+     * {@link #doCrafting(ItemStack, CraftingInput)}  will remove items from the drone.
      *
      * @param craftingGrid the crafting grid, set up from the item filter widgets attached to the crafting widget
      * @return a list of 9 lists of itemstack
      */
-    private List<List<ItemStack>> buildEquivalentsList(CraftingContainer craftingGrid) {
+    private List<List<ItemStack>> buildEquivalentsList(CraftingInput craftingGrid) {
         List<List<ItemStack>> equivalentsList = new ArrayList<>();
-        for (int i = 0; i < craftingGrid.getContainerSize(); i++) {
+        for (int i = 0; i < craftingGrid.size(); i++) {
             equivalentsList.add(new ArrayList<>());
             ItemStack recipeStack = craftingGrid.getItem(i);
             if (!recipeStack.isEmpty()) {
@@ -117,12 +123,12 @@ public class DroneAICrafting extends Goal {
         return false;
     }
 
-    public boolean doCrafting(ItemStack craftedStack, CraftingContainer craftMatrix) {
-        for (int i = 0; i < craftMatrix.getContainerSize(); i++) {
+    public boolean doCrafting(ItemStack craftedStack, CraftingInput craftMatrix) {
+        for (int i = 0; i < craftMatrix.size(); i++) {
             int requiredCount = 0;
             ItemStack stack = craftMatrix.getItem(i);
             if (!stack.isEmpty()) {
-                for (int j = 0; j < craftMatrix.getContainerSize(); j++) {
+                for (int j = 0; j < craftMatrix.size(); j++) {
                     if (stack == craftMatrix.getItem(j)) {
                         requiredCount++;
                     }
@@ -131,9 +137,9 @@ public class DroneAICrafting extends Goal {
             }
         }
 
-        EventHooks.firePlayerCraftingEvent(drone.getFakePlayer(), craftedStack, craftMatrix);
+        EventHooks.firePlayerCraftingEvent(drone.getFakePlayer(), craftedStack, new SimpleContainer(craftMatrix.items().toArray(new ItemStack[0])));
 
-        for (int i = 0; i < craftMatrix.getContainerSize(); ++i) {
+        for (int i = 0; i < craftMatrix.size(); ++i) {
             ItemStack stack = craftMatrix.getItem(i);
 
             if (!stack.isEmpty()) {

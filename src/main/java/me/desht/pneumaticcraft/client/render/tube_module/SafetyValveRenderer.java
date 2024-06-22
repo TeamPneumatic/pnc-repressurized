@@ -13,6 +13,7 @@ import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.FastColor;
 
 public class SafetyValveRenderer extends AbstractTubeModuleRenderer<SafetyValveModule> {
     private final ModelPart tubeConnector;
@@ -55,11 +56,12 @@ public class SafetyValveRenderer extends AbstractTubeModuleRenderer<SafetyValveM
 
 
     @Override
-    protected void render(SafetyValveModule module, PoseStack matrixStack, VertexConsumer builder, float partialTicks, int combinedLight, int combinedOverlay, float alpha) {
-        tubeConnector.render(matrixStack, builder, combinedLight, combinedOverlay, 1f, 1f, 1f, alpha);
-        valve.render(matrixStack, builder, combinedLight, combinedOverlay, 1f, 1f, 1f, alpha);
-        valveHandle.render(matrixStack, builder, combinedLight, combinedOverlay, 1f, 1f, 1f, alpha);
-        valveLid.render(matrixStack, builder, combinedLight, combinedOverlay, 1f, 1f, 1f, alpha);
+    protected void render(SafetyValveModule module, PoseStack matrixStack, VertexConsumer builder, float partialTicks, int combinedLight, int combinedOverlay, int alpha) {
+        int baseColor = FastColor.ARGB32.color(alpha, 0xFFFFFF);
+        tubeConnector.render(matrixStack, builder, combinedLight, combinedOverlay, baseColor);
+        valve.render(matrixStack, builder, combinedLight, combinedOverlay, baseColor);
+        valveHandle.render(matrixStack, builder, combinedLight, combinedOverlay, baseColor);
+        valveLid.render(matrixStack, builder, combinedLight, combinedOverlay, baseColor);
     }
 
     @Override

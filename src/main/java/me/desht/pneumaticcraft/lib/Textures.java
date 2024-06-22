@@ -235,12 +235,12 @@ public class Textures {
 
 
     // misc rendering textures
-    public static final ResourceLocation MINIGUN_CROSSHAIR = new ResourceLocation(RENDER_LOCATION + "minigun_crosshair.png");
-    public static final ResourceLocation RENDER_LASER = new ResourceLocation(RENDER_LOCATION + "laser/laser.png");
-    public static final ResourceLocation RENDER_LASER_OVERLAY = new ResourceLocation(RENDER_LOCATION + "laser/laser_overlay.png");
-    public static final ResourceLocation RENDER_LASER_START = new ResourceLocation(RENDER_LOCATION + "laser/laser_start.png");
-    public static final ResourceLocation RENDER_LASER_START_OVERLAY = new ResourceLocation(RENDER_LOCATION + "laser/laser_start_overlay.png");
-    public static final ResourceLocation GLOW_RESOURCE = new ResourceLocation(RENDER_LOCATION + "blur.png");
+    public static final ResourceLocation MINIGUN_CROSSHAIR = ResourceLocation.parse(RENDER_LOCATION + "minigun_crosshair.png");
+    public static final ResourceLocation RENDER_LASER = ResourceLocation.parse(RENDER_LOCATION + "laser/laser.png");
+    public static final ResourceLocation RENDER_LASER_OVERLAY = ResourceLocation.parse(RENDER_LOCATION + "laser/laser_overlay.png");
+    public static final ResourceLocation RENDER_LASER_START = ResourceLocation.parse(RENDER_LOCATION + "laser/laser_start.png");
+    public static final ResourceLocation RENDER_LASER_START_OVERLAY = ResourceLocation.parse(RENDER_LOCATION + "laser/laser_start_overlay.png");
+    public static final ResourceLocation GLOW_RESOURCE = ResourceLocation.parse(RENDER_LOCATION + "blur.png");
 
     // entities
     public static final ResourceLocation DRONE_ENTITY = droneTexture("default_drone.png");
@@ -253,30 +253,30 @@ public class Textures {
     public static final ResourceLocation MICROMISSILE_ENTITY = entityTexture("micromissile.png");
 
     private static ResourceLocation guiTexture(String img) {
-        return new ResourceLocation(GUI_LOCATION + img);
+        return ResourceLocation.parse(GUI_LOCATION + img);
     }
 
     public static ResourceLocation guiIconTexture(String img) {
-        return new ResourceLocation(GUI_LOCATION + "icon/" + img);
+        return ResourceLocation.parse(GUI_LOCATION + "icon/" + img);
     }
 
     public static ResourceLocation modelTexture(String img) {
-        return new ResourceLocation(MODEL_LOCATION + img);
+        return ResourceLocation.parse(MODEL_LOCATION + img);
     }
 
     private static ResourceLocation tubeModuleTexture(String img) {
-        return new ResourceLocation(TUBE_MODULE_MODEL_LOCATION + img);
+        return ResourceLocation.parse(TUBE_MODULE_MODEL_LOCATION + img);
     }
 
     public static ResourceLocation progWidgetTexture(String img) {
-        return new ResourceLocation(PROG_WIDGET_LOCATION + img);
+        return ResourceLocation.parse(PROG_WIDGET_LOCATION + img);
     }
 
     public static ResourceLocation entityTexture(String img) {
-        return new ResourceLocation(ENTITY_LOCATION + img);
+        return ResourceLocation.parse(ENTITY_LOCATION + img);
     }
 
     public static ResourceLocation droneTexture(String img) {
-        return new ResourceLocation(DRONE_LOCATION + img);
+        return ResourceLocation.parse(DRONE_LOCATION + img);
     }
 }

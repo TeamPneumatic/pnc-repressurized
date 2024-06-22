@@ -18,10 +18,7 @@
 package me.desht.pneumaticcraft.client.gui;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.Tesselator;
-import com.mojang.blaze3d.vertex.VertexFormat;
+import com.mojang.blaze3d.vertex.*;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetLabel;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTextField;
@@ -180,29 +177,28 @@ public class MicromissileScreen extends AbstractPneumaticCraftScreen {
             int size = dragging ? 5 : 3;
             RenderSystem.lineWidth(2);
 
-            BufferBuilder wr = Tesselator.getInstance().getBuilder();
             Matrix4f posMat = graphics.pose().last().pose();
-            wr.begin(VertexFormat.Mode.DEBUG_LINES, DefaultVertexFormat.POSITION_COLOR);
-            wr.vertex(posMat, px - size, py, 0).color(32, 32, 32, 255).endVertex();
-            wr.vertex(posMat, px + size, py, 0).color(32, 32, 32, 255).endVertex();
-            wr.vertex(posMat, px, py - size, 0).color(32, 32, 32, 255).endVertex();
-            wr.vertex(posMat, px, py + size, 0).color(32, 32, 32, 255).endVertex();
-            Tesselator.getInstance().end();
+            BufferBuilder wr = Tesselator.getInstance().begin(VertexFormat.Mode.DEBUG_LINES, DefaultVertexFormat.POSITION_COLOR);
+            wr.addVertex(posMat, px - size, py, 0).setColor(32, 32, 32, 255);
+            wr.addVertex(posMat, px + size, py, 0).setColor(32, 32, 32, 255);
+            wr.addVertex(posMat, px, py - size, 0).setColor(32, 32, 32, 255);
+            wr.addVertex(posMat, px, py + size, 0).setColor(32, 32, 32, 255);
+            BufferUploader.drawWithShader(wr.buildOrThrow());
 
             RenderSystem.enableBlend();
             RenderSystem.defaultBlendFunc();
             RenderSystem.lineWidth(1);
-            wr.begin(VertexFormat.Mode.DEBUG_LINES, DefaultVertexFormat.POSITION_COLOR);
+            wr = Tesselator.getInstance().begin(VertexFormat.Mode.DEBUG_LINES, DefaultVertexFormat.POSITION_COLOR);
             // speed line
-            wr.vertex(posMat, px, py, 0).color(32, 32, 32, 128).endVertex();
-            wr.vertex(posMat, SELECTOR_BOUNDS.getWidth() / 2f, 0, 0).color(32, 32, 32, 128).endVertex();
+            wr.addVertex(posMat, px, py, 0).setColor(32, 32, 32, 128);
+            wr.addVertex(posMat, SELECTOR_BOUNDS.getWidth() / 2f, 0, 0).setColor(32, 32, 32, 128);
             // turn speed line
-            wr.vertex(posMat, px, py, 0).color(32, 32, 32, 128).endVertex();
-            wr.vertex(posMat, 0, SELECTOR_BOUNDS.getHeight(), 0).color(32, 32, 32, 128).endVertex();
+            wr.addVertex(posMat, px, py, 0).setColor(32, 32, 32, 128);
+            wr.addVertex(posMat, 0, SELECTOR_BOUNDS.getHeight(), 0).setColor(32, 32, 32, 128);
             // damage line
-            wr.vertex(posMat, px, py, 0).color(32, 32, 32, 128).endVertex();
-            wr.vertex(posMat, SELECTOR_BOUNDS.getWidth(), SELECTOR_BOUNDS.getHeight(), 0).color(32, 32, 32, 128).endVertex();
-            Tesselator.getInstance().end();
+            wr.addVertex(posMat, px, py, 0).setColor(32, 32, 32, 128);
+            wr.addVertex(posMat, SELECTOR_BOUNDS.getWidth(), SELECTOR_BOUNDS.getHeight(), 0).setColor(32, 32, 32, 128);
+            BufferUploader.drawWithShader(wr.buildOrThrow());
             RenderSystem.disableBlend();
 
             graphics.pose().popPose();

@@ -52,7 +52,7 @@ public class HackTickTracker extends SavedData {
             CompoundTag sub = list.getCompound(i);
             NbtUtils.readBlockPos(sub, "pos").ifPresent(pos -> {
                 try {
-                    ResourceLocation id = new ResourceLocation(sub.getString("id"));
+                    ResourceLocation id = ResourceLocation.parse(sub.getString("id"));
                     CommonArmorRegistry.getInstance().getHackableBlockForId(id).ifPresentOrElse(
                             hackable -> hackedBlocks.put(pos, hackable),
                             () -> Log.error("unknown hackable block ID '{}'", id)

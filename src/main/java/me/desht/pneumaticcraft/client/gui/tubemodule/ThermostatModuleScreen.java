@@ -19,10 +19,7 @@ package me.desht.pneumaticcraft.client.gui.tubemodule;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.Tesselator;
-import com.mojang.blaze3d.vertex.VertexFormat;
+import com.mojang.blaze3d.vertex.*;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetCheckBox;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetColorSelector;
@@ -166,8 +163,7 @@ public class ThermostatModuleScreen extends AbstractTubeModuleScreen<ThermostatM
 
         // the actual graph data
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
-        BufferBuilder bufferBuilder = Tesselator.getInstance().getBuilder();
-        bufferBuilder.begin(VertexFormat.Mode.DEBUG_LINE_STRIP, DefaultVertexFormat.POSITION_COLOR);
+        BufferBuilder bufferBuilder = Tesselator.getInstance().begin(VertexFormat.Mode.DEBUG_LINE_STRIP, DefaultVertexFormat.POSITION_COLOR);
         RenderSystem.enableBlend();
         RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
         Matrix4f posMat = graphics.pose().last().pose();
@@ -175,9 +171,9 @@ public class ThermostatModuleScreen extends AbstractTubeModuleScreen<ThermostatM
         for (int i = 0; i < 16; i++) {
             float y = graphHighY + (graphLowY - graphHighY) * (15 - i) / 15f;
             float x = graphLeft + (graphRight - graphLeft) * (module.getTemperatureForLevel(i) - ThermostatModule.MIN_VALUE) / temperatureRange;
-            bufferBuilder.vertex(posMat, x, y, 90f).color(0.25f + i * 0.05f, 0f, 0f, 1.0f).endVertex();
+            bufferBuilder.addVertex(posMat, x, y, 90f).setColor(0.25f + i * 0.05f, 0f, 0f, 1.0f);
         }
-        Tesselator.getInstance().end();
+        BufferUploader.drawWithShader(bufferBuilder.buildOrThrow());
         RenderSystem.disableBlend();
 
     }

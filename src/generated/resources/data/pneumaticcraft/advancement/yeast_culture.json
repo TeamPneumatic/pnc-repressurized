@@ -1,0 +1,37 @@
+{
+  "parent": "pneumaticcraft:tp_plant",
+  "criteria": {
+    "0": {
+      "conditions": {
+        "items": [
+          {
+            "items": "pneumaticcraft:yeast_culture_bucket"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "background": "pneumaticcraft:textures/gui/advancement_bg.png",
+    "description": {
+      "translate": "pneumaticcraft.advancement.yeast_culture.desc"
+    },
+    "icon": {
+      "count": 1,
+      "id": "pneumaticcraft:yeast_culture_bucket"
+    },
+    "title": {
+      "translate": "pneumaticcraft.advancement.yeast_culture"
+    }
+  },
+  "requirements": [
+    [
+      "0"
+    ]
+  ],
+  "rewards": {
+    "experience": 10
+  },
+  "sends_telemetry_event": true
+}

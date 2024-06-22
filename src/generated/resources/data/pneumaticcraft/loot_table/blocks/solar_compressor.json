@@ -1,0 +1,35 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "bonus_rolls": 0.0,
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
+      ],
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "function": "minecraft:copy_name",
+              "source": "block_entity"
+            },
+            {
+              "function": "minecraft:copy_components",
+              "include": [
+                "pneumaticcraft:solar_broken"
+              ],
+              "source": "block_entity"
+            }
+          ],
+          "name": "pneumaticcraft:solar_compressor"
+        }
+      ],
+      "name": "solar_compressor",
+      "rolls": 1.0
+    }
+  ],
+  "random_sequence": "pneumaticcraft:blocks/solar_compressor"
+}

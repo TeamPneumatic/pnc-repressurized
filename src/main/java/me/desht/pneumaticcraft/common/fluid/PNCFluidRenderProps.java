@@ -32,8 +32,8 @@ public class PNCFluidRenderProps implements IClientFluidTypeExtensions {
     }
 
     public PNCFluidRenderProps(String still, String flowing, int colorTint) {
-        this.still = still.indexOf(':') > 0 ? new ResourceLocation(still) : RL("block/fluid/" + still);
-        this.flowing = flowing.indexOf(':') > 0 ? new ResourceLocation(flowing) : RL("block/fluid/" + flowing);
+        this.still = still.indexOf(':') > 0 ? ResourceLocation.parse(still) : RL("block/fluid/" + still);
+        this.flowing = flowing.indexOf(':') > 0 ? ResourceLocation.parse(flowing) : RL("block/fluid/" + flowing);
         this.colorTint = colorTint;
     }
 

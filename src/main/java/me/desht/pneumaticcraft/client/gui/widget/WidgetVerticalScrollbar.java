@@ -24,13 +24,15 @@ import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import org.apache.commons.lang3.Validate;
 import org.joml.Matrix4f;
 
-import static me.desht.pneumaticcraft.client.util.RenderUtils.*;
+import static me.desht.pneumaticcraft.client.util.RenderUtils.posF;
+import static me.desht.pneumaticcraft.client.util.RenderUtils.renderWithTypeAndFinish;
 
 public class WidgetVerticalScrollbar extends AbstractWidget implements ICanRender3d {
     public float currentScroll;
@@ -135,25 +137,21 @@ public class WidgetVerticalScrollbar extends AbstractWidget implements ICanRende
         float v2 = (float) (textureY + height) / textureHeight;
 
         posF(builder, posMat, x, y + height, 0)
-                .color(255, 255, 255, 255)
-                .uv(u1, v2)
-                .uv2(FULL_BRIGHT)
-                .endVertex();
+                .setColor(255, 255, 255, 255)
+                .setUv(u1, v2)
+                .setLight(LightTexture.FULL_BRIGHT);
         posF(builder, posMat, x + width, y + height, 0)
-                .color(255, 255, 255, 255)
-                .uv(u2, v2)
-                .uv2(FULL_BRIGHT)
-                .endVertex();
+                .setColor(255, 255, 255, 255)
+                .setUv(u2, v2)
+                .setLight(LightTexture.FULL_BRIGHT);
         posF(builder, posMat, x + width, y, 0)
-                .color(255, 255, 255, 255)
-                .uv(u2, v1)
-                .uv2(FULL_BRIGHT)
-                .endVertex();
+                .setColor(255, 255, 255, 255)
+                .setUv(u2, v1)
+                .setLight(LightTexture.FULL_BRIGHT);
         posF(builder, posMat, x, y, 0)
-                .color(255, 255, 255, 255)
-                .uv(u1, v1)
-                .uv2(FULL_BRIGHT)
-                .endVertex();
+                .setColor(255, 255, 255, 255)
+                .setUv(u1, v1)
+                .setLight(LightTexture.FULL_BRIGHT);
     }
 
     @Override

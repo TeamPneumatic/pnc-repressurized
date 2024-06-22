@@ -53,23 +53,23 @@ public class TintColor {
         }
     }
 
-    public int getRGB() {
+    public int getARGB() {
         return value;
     }
 
     public int getRed() {
-        return (getRGB() >> 16) & 0xFF;
+        return (getARGB() >> 16) & 0xFF;
     }
 
     public int getGreen() {
-        return (getRGB() >> 8) & 0xFF;
+        return (getARGB() >> 8) & 0xFF;
     }
 
     public int getBlue() {
-        return getRGB() & 0xFF;
+        return getARGB() & 0xFF;
     }
 
-    public int getAlpha() { return (getRGB() >> 24) & 0xFF; }
+    public int getAlpha() { return (getARGB() >> 24) & 0xFF; }
 
     public static float[] RGBtoHSB(int r, int g, int b, float[] hsbvals) {
         float hue, saturation, brightness;

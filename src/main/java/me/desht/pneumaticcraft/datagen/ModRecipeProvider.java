@@ -19,7 +19,6 @@ import me.desht.pneumaticcraft.common.recipes.special.OneProbeCrafting;
 import me.desht.pneumaticcraft.common.registry.ModBlocks;
 import me.desht.pneumaticcraft.common.registry.ModFluids;
 import me.desht.pneumaticcraft.common.registry.ModItems;
-import me.desht.pneumaticcraft.common.thirdparty.patchouli.PatchouliBookCrafting;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.playerfilter.PlayerFilter;
@@ -306,14 +305,14 @@ public class ModRecipeProvider extends RecipeProvider {
                 'P', ModItems.PRINTED_CIRCUIT_BOARD.get()
         ).save(consumer);
 
-        Item ccModem = BuiltInRegistries.ITEM.get(new ResourceLocation("computercraft:wireless_modem_normal"));
-        shaped(ModBlocks.DRONE_INTERFACE.get(), ModItems.PRINTED_CIRCUIT_BOARD.get(),
-                " U /MP /III",
-                'I', PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON,
-                'U', ModUpgrades.RANGE.get().getItem(),
-                'P', ModItems.PRINTED_CIRCUIT_BOARD.get(),
-                'M', ccModem
-        ).save(consumer.withConditions(new ModLoadedCondition(ModIds.COMPUTERCRAFT)), RL("drone_interface"));
+//        Item ccModem = BuiltInRegistries.ITEM.get(ResourceLocation.parse("computercraft:wireless_modem_normal"));
+//        shaped(ModBlocks.DRONE_INTERFACE.get(), ModItems.PRINTED_CIRCUIT_BOARD.get(),
+//                " U /MP /III",
+//                'I', PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON,
+//                'U', ModUpgrades.RANGE.get().getItem(),
+//                'P', ModItems.PRINTED_CIRCUIT_BOARD.get(),
+//                'M', ccModem
+//        ).save(consumer.withConditions(new ModLoadedCondition(ModIds.COMPUTERCRAFT)), RL("drone_interface"));
 
         shaped(ModBlocks.ELECTROSTATIC_COMPRESSOR.get(), ModItems.TURBINE_ROTOR.get(),
                 "BPB/PRP/BCB",
@@ -1128,13 +1127,13 @@ public class ModRecipeProvider extends RecipeProvider {
                 'C', ModItems.PNEUMATIC_CYLINDER.get()
         ).save(consumer);
 
-        Item mekRadShield = BuiltInRegistries.ITEM.get(new ResourceLocation("mekanism:module_radiation_shielding_unit"));
-        shaped(ModUpgrades.RADIATION_SHIELDING.get().getItem(), ModItems.PRINTED_CIRCUIT_BOARD.get(),
-                "LIL/IRI/LIL",
-                'I', PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON,
-                'L', PneumaticCraftTags.Items.UPGRADE_COMPONENTS,
-                'R', mekRadShield
-        ).save(consumer.withConditions(new ModLoadedCondition(ModIds.MEKANISM)));
+//        Item mekRadShield = BuiltInRegistries.ITEM.get(ResourceLocation.parse("mekanism:module_radiation_shielding_unit"));
+//        shaped(ModUpgrades.RADIATION_SHIELDING.get().getItem(), ModItems.PRINTED_CIRCUIT_BOARD.get(),
+//                "LIL/IRI/LIL",
+//                'I', PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON,
+//                'L', PneumaticCraftTags.Items.UPGRADE_COMPONENTS,
+//                'R', mekRadShield
+//        ).save(consumer.withConditions(new ModLoadedCondition(ModIds.MEKANISM)));
 
         // bricks etc.
         shaped(ModBlocks.REINFORCED_STONE.get(), 8, ModItems.COMPRESSED_IRON_INGOT.get(),
@@ -1282,8 +1281,8 @@ public class ModRecipeProvider extends RecipeProvider {
         }
 
         // specials
-        shapeless(PatchouliBookCrafting.makeGuideBook(), ModItems.COMPRESSED_IRON_INGOT.get(), Items.BOOK)
-                .save(consumer.withConditions(new ModLoadedCondition(ModIds.PATCHOULI)));
+//        shapeless(PatchouliBookCrafting.makeGuideBook(), ModItems.COMPRESSED_IRON_INGOT.get(), Items.BOOK)
+//                .save(consumer.withConditions(new ModLoadedCondition(ModIds.PATCHOULI)));
         SpecialRecipeBuilder.special(DroneColorCrafting::new)
                 .save(consumer, getId("drone_color"));
         SpecialRecipeBuilder.special(DroneUpgradeCrafting::new)
@@ -1482,11 +1481,11 @@ public class ModRecipeProvider extends RecipeProvider {
                 new FluidStack(ModFluids.ETHANOL.get(), 20), ItemStack.EMPTY,
                 TemperatureRange.of(303, 333), 0f, 0.4f, 1.0f, true
         ).save(consumer, RL("thermo_plant/ethanol_from_sweet_berries"));
-        thermoPlant(SizedFluidIngredient.of(FluidStack.EMPTY), Ingredient.of(Tags.Items.SEEDS),
+        thermoPlant(null, Ingredient.of(Tags.Items.SEEDS),
                 new FluidStack(ModFluids.VEGETABLE_OIL.get(), 50), ItemStack.EMPTY,
                 TemperatureRange.any(), 2f, 0.5f, 1.0f, false
         ).save(consumer, RL("thermo_plant/vegetable_oil_from_seeds"));
-        thermoPlant(SizedFluidIngredient.of(FluidStack.EMPTY), Ingredient.of(Tags.Items.CROPS),
+        thermoPlant(null, Ingredient.of(Tags.Items.CROPS),
                 new FluidStack(ModFluids.VEGETABLE_OIL.get(), 20), ItemStack.EMPTY,
                 TemperatureRange.any(), 2f, 0.5f, 1.0f, false
         ).save(consumer, RL("thermo_plant/vegetable_oil_from_crops"));
@@ -1623,10 +1622,10 @@ public class ModRecipeProvider extends RecipeProvider {
                 .save(consumer, RL("pneumaticcraft_fuels/ethanol"));
 
         // non-pneumaticcraft fuel compat
-        fuelQuality(FluidIngredient.tag(PneumaticCraftTags.Fluids.forgeTag("ethene")), 1_800_800, 1.25f)
-                .save(consumer.withConditions(new FluidTagPresentCondition("forge:ethene")), RL("pneumaticcraft_fuels/ethylene"));
-        fuelQuality(FluidIngredient.tag(PneumaticCraftTags.Fluids.forgeTag("hydrogen")), 300_000, 1.5f)
-                .save(consumer.withConditions(new FluidTagPresentCondition("forge:hydrogen")), RL("pneumaticcraft_fuels/hydrogen"));
+        fuelQuality(FluidIngredient.tag(PneumaticCraftTags.Fluids.commonTag("ethene")), 1_800_800, 1.25f)
+                .save(consumer.withConditions(new FluidTagPresentCondition("c:fuels/ethene")), RL("pneumaticcraft_fuels/ethylene"));
+        fuelQuality(FluidIngredient.tag(PneumaticCraftTags.Fluids.commonTag("hydrogen")), 300_000, 1.5f)
+                .save(consumer.withConditions(new FluidTagPresentCondition("c:fuels/hydrogen")), RL("pneumaticcraft_fuels/hydrogen"));
 
 //        ModLoadedCondition thermalLoaded = new ModLoadedCondition("thermal");
 //        conditionalFuelQuality(consumer, RL("pneumaticcraft_fuels/cofh_biofuel"), thermalLoaded,
@@ -1720,6 +1719,7 @@ public class ModRecipeProvider extends RecipeProvider {
                         builder.define((Character) keys[i], (TagKey<Item>) v);
                 case ItemLike itemLike -> builder.define((Character) keys[i], itemLike);
                 case Ingredient ingredient -> builder.define((Character) keys[i], ingredient);
+                case FluidContainerIngredient fc -> builder.define((Character) keys[i], fc.toVanilla());
                 case null, default -> throw new IllegalArgumentException("bad type for recipe ingredient " + v);
             }
         }

@@ -1,0 +1,37 @@
+{
+  "parent": "pneumaticcraft:vortex_tube",
+  "criteria": {
+    "0": {
+      "conditions": {
+        "items": [
+          {
+            "items": "pneumaticcraft:lpg_bucket"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "background": "pneumaticcraft:textures/gui/advancement_bg.png",
+    "description": {
+      "translate": "pneumaticcraft.advancement.lpg_bucket.desc"
+    },
+    "icon": {
+      "count": 1,
+      "id": "pneumaticcraft:lpg_bucket"
+    },
+    "title": {
+      "translate": "pneumaticcraft.advancement.lpg_bucket"
+    }
+  },
+  "requirements": [
+    [
+      "0"
+    ]
+  ],
+  "rewards": {
+    "experience": 20
+  },
+  "sends_telemetry_event": true
+}

@@ -1,0 +1,33 @@
+{
+  "parent": "pneumaticcraft:printed_circuit_board",
+  "criteria": {
+    "0": {
+      "conditions": {
+        "id": "pneumaticcraft:pneumatic_armor"
+      },
+      "trigger": "pneumaticcraft:pneumatic_armor"
+    }
+  },
+  "display": {
+    "background": "pneumaticcraft:textures/gui/advancement_bg.png",
+    "description": {
+      "translate": "pneumaticcraft.advancement.pneumatic_armor.desc"
+    },
+    "icon": {
+      "count": 1,
+      "id": "pneumaticcraft:pneumatic_helmet"
+    },
+    "title": {
+      "translate": "pneumaticcraft.advancement.pneumatic_armor"
+    }
+  },
+  "requirements": [
+    [
+      "0"
+    ]
+  ],
+  "rewards": {
+    "experience": 20
+  },
+  "sends_telemetry_event": true
+}

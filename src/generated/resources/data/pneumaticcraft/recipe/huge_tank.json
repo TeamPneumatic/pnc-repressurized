@@ -1,0 +1,38 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "N": {
+      "tag": "c:ingots/netherite"
+    },
+    "R": {
+      "item": "pneumaticcraft:reinforced_air_canister"
+    },
+    "T": {
+      "type": "neoforge:components",
+      "components": {
+        "minecraft:attribute_modifiers": {
+          "modifiers": []
+        },
+        "minecraft:enchantments": {
+          "levels": {}
+        },
+        "minecraft:lore": [],
+        "minecraft:max_stack_size": 64,
+        "minecraft:rarity": "common",
+        "minecraft:repair_cost": 0
+      },
+      "items": "pneumaticcraft:large_tank",
+      "strict": true
+    }
+  },
+  "pattern": [
+    "NTN",
+    "TRT",
+    "NTN"
+  ],
+  "result": {
+    "count": 1,
+    "id": "pneumaticcraft:huge_tank"
+  }
+}

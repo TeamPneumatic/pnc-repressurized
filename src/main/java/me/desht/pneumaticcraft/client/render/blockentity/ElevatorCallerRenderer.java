@@ -51,22 +51,18 @@ public class ElevatorCallerRenderer implements BlockEntityRenderer<ElevatorCalle
         for (ElevatorCallerBlockEntity.ElevatorButton button : te.getFloors()) {
             // button background
             VertexConsumer builder = bufferIn.getBuffer(ModRenderTypes.UNTEXTURED_QUAD);
-            builder.vertex(posMat, button.posX + 0.5F, button.posY + 0.5F, Z_OFFSET)
-                    .color(button.red, button.green, button.blue, 0.1F)
-                    .uv2(0x00F000A0)
-                    .endVertex();
-            builder.vertex(posMat, button.posX + 0.5F, button.posY + button.height + 0.5F, Z_OFFSET)
-                    .color(button.red, button.green, button.blue, 0.1F)
-                    .uv2(0x00F000A0)
-                    .endVertex();
-            builder.vertex(posMat, button.posX + button.width + 0.5F, button.posY + button.height + 0.5F, Z_OFFSET)
-                    .color(button.red, button.green, button.blue, 0.1F)
-                    .uv2(0x00F000A0)
-                    .endVertex();
-            builder.vertex(posMat, button.posX + button.width + 0.5F, button.posY + 0.5F, Z_OFFSET)
-                    .color(button.red, button.green, button.blue, 0.1F)
-                    .uv2(0x00F000A0)
-                    .endVertex();
+            builder.addVertex(posMat, button.posX + 0.5F, button.posY + 0.5F, Z_OFFSET)
+                    .setColor(button.red, button.green, button.blue, 0.1F)
+                    .setLight(0x00F000A0);
+            builder.addVertex(posMat, button.posX + 0.5F, button.posY + button.height + 0.5F, Z_OFFSET)
+                    .setColor(button.red, button.green, button.blue, 0.1F)
+                    .setLight(0x00F000A0);
+            builder.addVertex(posMat, button.posX + button.width + 0.5F, button.posY + button.height + 0.5F, Z_OFFSET)
+                    .setColor(button.red, button.green, button.blue, 0.1F)
+                    .setLight(0x00F000A0);
+            builder.addVertex(posMat, button.posX + button.width + 0.5F, button.posY + 0.5F, Z_OFFSET)
+                    .setColor(button.red, button.green, button.blue, 0.1F)
+                    .setLight(0x00F000A0);
 
             // button text
             matrixStackIn.pushPose();

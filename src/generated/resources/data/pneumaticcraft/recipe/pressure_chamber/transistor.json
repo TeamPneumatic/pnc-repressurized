@@ -1,0 +1,24 @@
+{
+  "type": "pneumaticcraft:pressure_chamber",
+  "inputs": [
+    {
+      "count": 3,
+      "tag": "pneumaticcraft:wiring"
+    },
+    {
+      "count": 1,
+      "tag": "c:dusts/redstone"
+    },
+    {
+      "count": 1,
+      "item": "pneumaticcraft:plastic"
+    }
+  ],
+  "pressure": 1.0,
+  "results": [
+    {
+      "count": 1,
+      "id": "pneumaticcraft:transistor"
+    }
+  ]
+}

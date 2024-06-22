@@ -1,0 +1,24 @@
+{
+  "type": "pneumaticcraft:thermo_plant",
+  "exothermic": true,
+  "inputs": {
+    "fluid": {
+      "amount": 100,
+      "tag": "pneumaticcraft:yeast_culture"
+    },
+    "item": {
+      "item": "minecraft:apple"
+    }
+  },
+  "outputs": {
+    "fluid_output": {
+      "amount": 50,
+      "id": "pneumaticcraft:ethanol"
+    }
+  },
+  "speed": 0.25,
+  "temperature": {
+    "max": 333,
+    "min": 303
+  }
+}

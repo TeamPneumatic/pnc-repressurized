@@ -40,7 +40,7 @@ public class AssemblyDrill implements IRecipeManager<AssemblyRecipe> {
     @ZenCodeType.Method
     public void addRecipe(String name, IIngredientWithAmount input, IItemStack output) {
         CraftTweakerAPI.apply(new ActionAddRecipe<>(this,
-                new RecipeHolder<>(new ResourceLocation("crafttweaker", fixRecipeName(name)),
+                new RecipeHolder<>(ResourceLocation.fromNamespaceAndPath("crafttweaker", fixRecipeName(name)),
                         new AssemblyRecipeImpl(
                                 CTUtils.toSizedIngredient(input),
                                 output.getImmutableInternal(),

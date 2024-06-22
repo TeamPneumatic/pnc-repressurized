@@ -21,7 +21,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import me.desht.pneumaticcraft.client.model.PNCModelLayers;
 import me.desht.pneumaticcraft.client.render.ModRenderTypes;
-import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.item.PneumaticArmorItem;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.Model;
@@ -39,6 +38,7 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.client.ClientHooks;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
+import static net.minecraft.client.renderer.LightTexture.FULL_BRIGHT;
 
 public class PneumaticArmorLayer<E extends LivingEntity, M extends HumanoidModel<E>> extends RenderLayer<E, M> {
     private final HumanoidModel<E> modelLeggings;
@@ -62,7 +62,7 @@ public class PneumaticArmorLayer<E extends LivingEntity, M extends HumanoidModel
                 partialTicks, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
     }
 
-    private void renderSlot(PoseStack matrixStack, MultiBufferSource buffer, E entity, EquipmentSlot slot, int light, HumanoidModel<E> model, float partialTicks, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
+    private void renderSlot(PoseStack poseStack, MultiBufferSource buffer, E entity, EquipmentSlot slot, int light, HumanoidModel<E> model, float partialTicks, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
         ItemStack stack = entity.getItemBySlot(slot);
         if (stack.getItem() instanceof PneumaticArmorItem armor && armor.getType().getSlot() == slot) {
             this.getParentModel().copyPropertiesTo(model);
@@ -70,29 +70,34 @@ public class PneumaticArmorLayer<E extends LivingEntity, M extends HumanoidModel
             model.setupAnim(entity, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
             this.setModelSlotVisible(model, slot);
             Model model1 = ClientHooks.getArmorModel(entity, stack, slot, model);
-            boolean glint = stack.hasFoil();
 
             // secondary texture layer in all slots
-            float[] secondary = RenderUtils.decomposeColorF(armor.getSecondaryColor(stack));
-            this.doRender(matrixStack, buffer, light, glint, model1, secondary[1], secondary[2], secondary[3], slot, ExtraLayer.SECONDARY_COLOR);
+            this.doRender(poseStack, buffer, light, model1, armor.getSecondaryColor(stack), slot, ExtraLayer.SECONDARY_COLOR);
 
             if (slot == EquipmentSlot.CHEST) {
                 // currently just the chestpiece "core" - untinted
-                this.doRender(matrixStack, buffer, RenderUtils.FULL_BRIGHT, glint, model1, 1f, 1f, 1f, slot, ExtraLayer.TRANSLUCENT);
+                this.doRender(poseStack, buffer, FULL_BRIGHT, model1, 0xFFFFFFFF, slot, ExtraLayer.TRANSLUCENT);
             }
 
             if (slot == EquipmentSlot.HEAD) {
                 // eyepiece in head slot only
-                float[] eyepiece = RenderUtils.decomposeColorF(armor.getEyepieceColor(stack));
-                this.doRender(matrixStack, buffer, RenderUtils.FULL_BRIGHT, false, model1, eyepiece[1], eyepiece[2], eyepiece[3], slot, ExtraLayer.EYEPIECE);
+                this.doRender(poseStack, buffer, FULL_BRIGHT, model1, armor.getEyepieceColor(stack), slot, ExtraLayer.EYEPIECE);
+            }
+
+            if (stack.hasFoil()) {
+                this.renderGlint(poseStack, buffer, light, model);
             }
         }
     }
 
-    private void doRender(PoseStack matrixStack, MultiBufferSource buffer, int light, boolean glint, Model model, float r, float g, float b, EquipmentSlot slot, ExtraLayer extraLayer) {
+    private void doRender(PoseStack matrixStack, MultiBufferSource buffer, int light, Model model, int color, EquipmentSlot slot, ExtraLayer extraLayer) {
         ResourceLocation armorResource = extraLayer.getArmorResource(slot);
-        VertexConsumer vertexConsumer = ItemRenderer.getArmorFoilBuffer(buffer, extraLayer.getRenderType(armorResource), false, glint);
-        model.renderToBuffer(matrixStack, vertexConsumer, light, OverlayTexture.NO_OVERLAY, r, g, b, 1.0F);
+        VertexConsumer vertexConsumer = ItemRenderer.getArmorFoilBuffer(buffer, extraLayer.getRenderType(armorResource), false);
+        model.renderToBuffer(matrixStack, vertexConsumer, light, OverlayTexture.NO_OVERLAY, color);
+    }
+
+    private void renderGlint(PoseStack poseStack, MultiBufferSource buffer, int light, net.minecraft.client.model.Model model) {
+        model.renderToBuffer(poseStack, buffer.getBuffer(RenderType.armorEntityGlint()), light, OverlayTexture.NO_OVERLAY);
     }
 
     protected void setModelSlotVisible(HumanoidModel<E> model, EquipmentSlot slotIn) {

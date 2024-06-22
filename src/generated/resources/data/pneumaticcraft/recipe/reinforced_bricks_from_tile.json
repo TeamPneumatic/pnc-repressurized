@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "pneumaticcraft:reinforced_brick_tile"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "pneumaticcraft:reinforced_bricks"
+  }
+}

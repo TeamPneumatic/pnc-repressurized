@@ -1,0 +1,36 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "bonus_rolls": 0.0,
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
+      ],
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "function": "minecraft:copy_name",
+              "source": "block_entity"
+            },
+            {
+              "function": "minecraft:copy_components",
+              "include": [
+                "pneumaticcraft:upgrades",
+                "pneumaticcraft:door_color"
+              ],
+              "source": "block_entity"
+            }
+          ],
+          "name": "pneumaticcraft:pneumatic_door"
+        }
+      ],
+      "name": "pneumatic_door",
+      "rolls": 1.0
+    }
+  ],
+  "random_sequence": "pneumaticcraft:blocks/pneumatic_door"
+}

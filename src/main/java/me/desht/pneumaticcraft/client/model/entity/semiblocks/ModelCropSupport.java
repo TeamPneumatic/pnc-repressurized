@@ -93,7 +93,7 @@ public class ModelCropSupport extends EntityModel<CropSupportEntity> {
     }
 
     @Override
-    public void renderToBuffer(PoseStack matrixStack, VertexConsumer buffer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
+    public void renderToBuffer(PoseStack matrixStack, VertexConsumer buffer, int packedLight, int packedOverlay, int color) {
         stick1.render(matrixStack, buffer, packedLight, packedOverlay);
         stick2.render(matrixStack, buffer, packedLight, packedOverlay);
         stick3.render(matrixStack, buffer, packedLight, packedOverlay);

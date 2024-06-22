@@ -57,7 +57,7 @@ public class PNCUpgradeImpl implements PNCUpgrade {
     public final ResourceLocation getItemRegistryName(int tier) {
         Validate.isTrue(tier > 0 && tier <= maxTier, "tier must be in range 1 .. " + maxTier + "!");
         String path = id.getPath() + "_upgrade" + (maxTier > 1 ? "_" + tier : "");
-        return new ResourceLocation(id.getNamespace(), path);
+        return ResourceLocation.fromNamespaceAndPath(id.getNamespace(), path);
     }
 
     @Override

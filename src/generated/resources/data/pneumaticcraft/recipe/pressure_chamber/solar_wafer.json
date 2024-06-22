@@ -1,0 +1,20 @@
+{
+  "type": "pneumaticcraft:pressure_chamber",
+  "inputs": [
+    {
+      "count": 1,
+      "item": "pneumaticcraft:upgrade_matrix"
+    },
+    {
+      "count": 1,
+      "item": "minecraft:amethyst_shard"
+    }
+  ],
+  "pressure": 2.5,
+  "results": [
+    {
+      "count": 1,
+      "id": "pneumaticcraft:solar_wafer"
+    }
+  ]
+}

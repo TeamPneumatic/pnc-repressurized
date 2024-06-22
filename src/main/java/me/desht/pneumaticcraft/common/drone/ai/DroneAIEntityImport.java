@@ -19,7 +19,6 @@ package me.desht.pneumaticcraft.common.drone.ai;
 
 import me.desht.pneumaticcraft.api.drone.IDrone;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
-import me.desht.pneumaticcraft.common.drone.IDroneBase;
 import me.desht.pneumaticcraft.common.drone.progwidgets.IEntityProvider;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.world.entity.Entity;
@@ -28,7 +27,8 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.vehicle.AbstractMinecart;
 import net.minecraft.world.entity.vehicle.Boat;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraft.world.item.enchantment.EnchantmentEffectComponents;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction;
 
 public class DroneAIEntityImport extends DroneEntityBase<IEntityProvider, Entity> {
@@ -51,7 +51,7 @@ public class DroneAIEntityImport extends DroneEntityBase<IEntityProvider, Entity
     protected boolean doAction() {
         if (ConfigHelper.common().drones.dronesCanImportXPOrbs.get() && targetedEntity instanceof ExperienceOrb orb) {
             ItemStack heldStack = drone.getInv().getStackInSlot(0);
-            if (!heldStack.isEmpty() && heldStack.isDamaged() && heldStack.getEnchantmentLevel(Enchantments.MENDING) > 0) {
+            if (!heldStack.isEmpty() && heldStack.isDamaged() && EnchantmentHelper.has(heldStack, EnchantmentEffectComponents.REPAIR_WITH_XP)) {
                 int toRepair = Math.min((int)(orb.value * heldStack.getXpRepairRatio()), heldStack.getDamageValue());
                 orb.value -= toRepair / 2;  // see ExperienceOrbEntity#durabilityToXp()
                 heldStack.setDamageValue(heldStack.getDamageValue() - toRepair);

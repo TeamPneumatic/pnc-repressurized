@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.client.pneumatic_armor.entity_tracker;
 
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IEntityTrackEntry;
-import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
@@ -20,8 +20,10 @@ public class EntityTrackEntryPainting implements IEntityTrackEntry {
     @Override
     public void addInfo(Entity entity, List<Component> curInfo, boolean isLookingAtTarget) {
         if (entity instanceof Painting painting && painting.getVariant().isBound()) {
-            ResourceLocation rl = BuiltInRegistries.PAINTING_VARIANT.getKey(painting.getVariant().value());
-            curInfo.add(xlate("pneumaticcraft.entityTracker.info.painting.art", rl.toString()));
+            ResourceLocation rl = entity.registryAccess().registryOrThrow(Registries.PAINTING_VARIANT).getKey(painting.getVariant().value());
+            if (rl != null) {
+                curInfo.add(xlate("pneumaticcraft.entityTracker.info.painting.art", rl.toString()));
+            }
         }
     }
 }

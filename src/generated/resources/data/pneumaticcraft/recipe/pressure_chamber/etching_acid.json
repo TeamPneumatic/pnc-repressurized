@@ -1,0 +1,28 @@
+{
+  "type": "pneumaticcraft:pressure_chamber",
+  "inputs": [
+    {
+      "count": 1,
+      "item": "pneumaticcraft:plastic_bucket"
+    },
+    {
+      "count": 2,
+      "item": "minecraft:rotten_flesh"
+    },
+    {
+      "count": 2,
+      "item": "minecraft:spider_eye"
+    },
+    {
+      "count": 2,
+      "tag": "c:gunpowders"
+    }
+  ],
+  "pressure": 1.0,
+  "results": [
+    {
+      "count": 1,
+      "id": "pneumaticcraft:etching_acid_bucket"
+    }
+  ]
+}

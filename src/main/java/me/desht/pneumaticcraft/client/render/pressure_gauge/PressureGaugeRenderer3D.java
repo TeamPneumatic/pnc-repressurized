@@ -89,7 +89,7 @@ public class PressureGaugeRenderer3D {
         // vertex builder is set up to draw GL_TRIANGLE_FAN
         float[] color = RED;
 
-        builder.vertex(posMat, xPos, yPos, 0f).color(0.5f, 0.5f, 0.1f, 1f).endVertex();
+        builder.addVertex(posMat, xPos, yPos, 0f).setColor(0.5f, 0.5f, 0.1f, 1f);
 
         int explodeBoundary = GAUGE_POINTS - (int) ((dangerPressure - minPressure) / (maxPressure - minPressure) * GAUGE_POINTS);
         int workingBoundary = GAUGE_POINTS - (int) ((minWorkingPressure - minPressure) / (maxPressure - minPressure) * GAUGE_POINTS);
@@ -100,20 +100,20 @@ public class PressureGaugeRenderer3D {
         for (int i = 0; i < GAUGE_POINTS; i++) {
             if (i == explodeBoundary && !changedColorGreen) {
                 color = minWorkingPressure < 0 && minWorkingPressure >= -1 ? YELLOW : GREEN;
-                builder.vertex(posMat, xPos, yPos, 0f).color(color[0], color[1], color[2], color[3]).endVertex();
+                builder.addVertex(posMat, xPos, yPos, 0f).setColor(color[0], color[1], color[2], color[3]);
                 i--;
                 changedColorGreen = true;
             }
             if (i == workingBoundary && !changedColorYellow) {
                 color = minWorkingPressure < 0 && minWorkingPressure >= -1 ? GREEN : YELLOW;
-                builder.vertex(posMat, xPos, yPos, 0f).color(color[0], color[1], color[2], color[3]).endVertex();
+                builder.addVertex(posMat, xPos, yPos, 0f).setColor(color[0], color[1], color[2], color[3]);
                 i--;
                 changedColorYellow = true;
             }
             float angle = -i / (float) CIRCLE_POINTS * 2F * PI_F - STOP_ANGLE;
-            builder.vertex(posMat, Mth.cos(angle) * RADIUS + xPos, Mth.sin(angle) * RADIUS + yPos, 0f)
-                    .color(color[0], color[1], color[2], color[3])
-                    .endVertex();
+            builder.addVertex(posMat, Mth.cos(angle) * RADIUS + xPos, Mth.sin(angle) * RADIUS + yPos, 0f)
+                    .setColor(color[0], color[1], color[2], color[3])
+                    ;
         }
     }
 

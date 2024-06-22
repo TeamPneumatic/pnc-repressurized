@@ -53,7 +53,7 @@ public class RenderTransferGadget extends RenderSemiblockBase<TransferGadgetEnti
         }
 
         VertexConsumer builder = bufferIn.getBuffer(RenderType.entityCutout(getTextureLocation(entity)));
-        model.renderToBuffer(matrixStackIn, builder, kludgeLightingLevel(entity, packedLightIn), OverlayTexture.pack(0F, false), 1f, 1f, 1f, 1f);
+        model.renderToBuffer(matrixStackIn, builder, kludgeLightingLevel(entity, packedLightIn), OverlayTexture.pack(0F, false), 0xFFFFFFFF);
 
         matrixStackIn.popPose();
     }

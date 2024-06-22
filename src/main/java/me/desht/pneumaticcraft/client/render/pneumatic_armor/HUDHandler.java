@@ -118,7 +118,7 @@ public enum HUDHandler implements IKeyListener {
                     for (int i = 0; i < clientHandlers.size(); i++) {
                         if (commonArmorHandler.isUpgradeInserted(slot, i)
                                 && WidgetKeybindCheckBox.forUpgrade(clientHandlers.get(i)).checked) {
-                            clientHandlers.get(i).render3D(poseStack, buffer, event.getPartialTick());
+                            clientHandlers.get(i).render3D(poseStack, buffer, event.getPartialTick().getGameTimeDeltaPartialTick(true));
                         }
                     }
                 }

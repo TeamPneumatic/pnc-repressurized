@@ -39,7 +39,7 @@ public class FlowDetectorRenderer extends AbstractTubeModuleRenderer<FlowDetecto
     }
 
     @Override
-    protected void render(FlowDetectorModule module, PoseStack matrixStack, VertexConsumer builder, float partialTicks, int combinedLight, int combinedOverlay, float alpha) {
+    protected void render(FlowDetectorModule module, PoseStack matrixStack, VertexConsumer builder, float partialTicks, int combinedLight, int combinedOverlay, int alpha) {
         float rot = module != null ? Mth.lerp(partialTicks, module.oldRotation, module.rotation) : 0f;
         for (int i = 0; i < TUBE_PARTS; i++) {
             face.zRot = (float)i / TUBE_PARTS * 2 * (float)Math.PI + rot;

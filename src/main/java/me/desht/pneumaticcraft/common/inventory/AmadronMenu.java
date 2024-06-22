@@ -230,7 +230,7 @@ public class AmadronMenu extends AbstractPneumaticCraftMenu<AbstractPneumaticCra
         } else if (tag.equals("addPlayerTrade")) {
             openTradeGui(player);
         } else if (tag.startsWith("remove:") && shiftHeld) {
-            AmadronRecipe offer = AmadronOfferManager.getInstance().getOffer(new ResourceLocation(tag.substring(7)));
+            AmadronRecipe offer = AmadronOfferManager.getInstance().getOffer(ResourceLocation.parse(tag.substring(7)));
             if (offer instanceof AmadronPlayerOffer) {
                 tryRemoveCustomOffer(player, (AmadronPlayerOffer) offer);
             }

@@ -1,0 +1,17 @@
+{
+  "type": "pneumaticcraft:amadron",
+  "input": {
+    "resource": {
+      "amount": 1000,
+      "id": "pneumaticcraft:lpg"
+    }
+  },
+  "level": 0,
+  "offer_id": "pneumaticcraft:amadron/lpg_to_emerald",
+  "output": {
+    "resource": {
+      "count": 1,
+      "id": "minecraft:emerald"
+    }
+  }
+}

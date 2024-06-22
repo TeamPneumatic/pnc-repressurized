@@ -48,7 +48,7 @@ public class BlockHeatProperties implements IRecipeManager<HeatPropertiesRecipe>
     @ZenCodeType.Method
     public void addRecipe(String name, Block block, Map<String,String> matchProps, int temperature, double thermalResistance) {
         CraftTweakerAPI.apply(new ActionAddRecipe<>(this,
-                new RecipeHolder<>(new ResourceLocation("crafttweaker", fixRecipeName(name)),
+                new RecipeHolder<>(ResourceLocation.fromNamespaceAndPath("crafttweaker", fixRecipeName(name)),
                         new HeatPropertiesRecipeImpl(block, new HeatPropertiesRecipe.Transforms(
                                 Optional.empty(), Optional.empty(),
                                 Optional.empty(), Optional.empty()
@@ -65,7 +65,7 @@ public class BlockHeatProperties implements IRecipeManager<HeatPropertiesRecipe>
                           @ZenCodeType.Nullable BlockState transformCold, @ZenCodeType.Nullable BlockState transformColdFlowing,
                           @ZenCodeType.OptionalString String descriptionKey) {
         CraftTweakerAPI.apply(new ActionAddRecipe<>(this,
-                new RecipeHolder<>(new ResourceLocation("crafttweaker", fixRecipeName(name)),
+                new RecipeHolder<>(ResourceLocation.fromNamespaceAndPath("crafttweaker", fixRecipeName(name)),
                         new HeatPropertiesRecipeImpl(block,
                                 new HeatPropertiesRecipe.Transforms(
                                         Optional.ofNullable(transformHot), Optional.ofNullable(transformHotFlowing),

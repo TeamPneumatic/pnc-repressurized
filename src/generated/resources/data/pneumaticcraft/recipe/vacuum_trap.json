@@ -1,0 +1,33 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "E": {
+      "item": "minecraft:ender_eye"
+    },
+    "I": {
+      "tag": "c:ingots/compressed_iron"
+    },
+    "P": {
+      "item": "pneumaticcraft:pressure_tube"
+    },
+    "S": {
+      "item": "pneumaticcraft:reinforced_stone_slab"
+    },
+    "T": {
+      "item": "minecraft:iron_trapdoor"
+    },
+    "W": {
+      "item": "pneumaticcraft:reinforced_brick_wall"
+    }
+  },
+  "pattern": [
+    "ITI",
+    "WEP",
+    "SSS"
+  ],
+  "result": {
+    "count": 1,
+    "id": "pneumaticcraft:vacuum_trap"
+  }
+}

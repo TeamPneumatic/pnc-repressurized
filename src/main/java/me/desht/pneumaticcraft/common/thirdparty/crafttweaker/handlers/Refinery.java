@@ -41,7 +41,7 @@ public class Refinery implements IRecipeManager<RefineryRecipe> {
 	@ZenCodeType.Method
 	public void addRecipe(String name, CTFluidIngredient input, MCFluidStack[] outputs, int minTemp, @ZenCodeType.OptionalInt(Integer.MAX_VALUE) int maxTemp) {
 		CraftTweakerAPI.apply(new ActionAddRecipe<>(this,
-				new RecipeHolder<>(new ResourceLocation("crafttweaker", fixRecipeName(name)),
+				new RecipeHolder<>(ResourceLocation.fromNamespaceAndPath("crafttweaker", fixRecipeName(name)),
 				new RefineryRecipeImpl(
 						CTUtils.toSizedFluidIngredient(input),
 						TemperatureRange.of(minTemp, maxTemp),

@@ -1,0 +1,34 @@
+{
+  "parent": "pneumaticcraft:root",
+  "criteria": {
+    "0": {
+      "conditions": {
+        "items": [
+          {
+            "items": "pneumaticcraft:oil_bucket"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "background": "pneumaticcraft:textures/gui/advancement_bg.png",
+    "description": {
+      "translate": "pneumaticcraft.advancement.oil_bucket.desc"
+    },
+    "icon": {
+      "count": 1,
+      "id": "pneumaticcraft:oil_bucket"
+    },
+    "title": {
+      "translate": "pneumaticcraft.advancement.oil_bucket"
+    }
+  },
+  "requirements": [
+    [
+      "0"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

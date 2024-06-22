@@ -29,8 +29,8 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 
-import static me.desht.pneumaticcraft.client.util.RenderUtils.FULL_BRIGHT;
 import static me.desht.pneumaticcraft.client.util.RenderUtils.normalLine;
+import static net.minecraft.client.renderer.LightTexture.FULL_BRIGHT;
 
 public class ProgressBarRenderer {
     public static void render3d(PoseStack poseStack, MultiBufferSource buffer, float minX, float minY, float maxX, float maxY, float zLevel, float progress, int color1, int color2) {
@@ -42,10 +42,10 @@ public class ProgressBarRenderer {
 
         // draw the bar
         RenderUtils.renderWithTypeAndFinish(poseStack, buffer, ModRenderTypes.UNTEXTURED_QUAD_NO_DEPTH, (posMat, builder) -> {
-            builder.vertex(posMat, minX, minY, zLevel).color(f1[0], f1[1], f1[2], f1[3]).uv2(FULL_BRIGHT).endVertex();
-            builder.vertex(posMat, minX, minY + (maxY - minY), zLevel).color(f1[0], f1[1], f1[2], f1[3]).uv2(FULL_BRIGHT).endVertex();
-            builder.vertex(posMat, x, minY + (maxY - minY), zLevel).color(f2[0], f2[1], f2[2], f2[3]).uv2(FULL_BRIGHT).endVertex();
-            builder.vertex(posMat, x, minY, zLevel).color(f2[0], f2[1], f2[2], f2[3]).uv2(FULL_BRIGHT).endVertex();
+            builder.addVertex(posMat, minX, minY, zLevel).setColor(f1[0], f1[1], f1[2], f1[3]).setLight(FULL_BRIGHT);
+            builder.addVertex(posMat, minX, minY + (maxY - minY), zLevel).setColor(f1[0], f1[1], f1[2], f1[3]).setLight(FULL_BRIGHT);
+            builder.addVertex(posMat, x, minY + (maxY - minY), zLevel).setColor(f2[0], f2[1], f2[2], f2[3]).setLight(FULL_BRIGHT);
+            builder.addVertex(posMat, x, minY, zLevel).setColor(f2[0], f2[1], f2[2], f2[3]).setLight(FULL_BRIGHT);
         });
 
         // draw the outline
@@ -69,21 +69,20 @@ public class ProgressBarRenderer {
 
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
 
-        BufferBuilder builder = Tesselator.getInstance().getBuilder();
-        builder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
-        builder.vertex(posMat, minX, minY, zLevel).color(f1[0], f1[1], f1[2], f1[3]).endVertex();
-        builder.vertex(posMat, minX, minY + (maxY - minY), zLevel).color(f1[0], f1[1], f1[2], f1[3]).endVertex();
-        builder.vertex(posMat, x, minY + (maxY - minY), zLevel).color(f2[0], f2[1], f2[2], f2[3]).endVertex();
-        builder.vertex(posMat, x, minY, zLevel).color(f2[0], f2[1], f2[2], f2[3]).endVertex();
-        Tesselator.getInstance().end();
+        BufferBuilder builder = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
+        builder.addVertex(posMat, minX, minY, zLevel).setColor(f1[0], f1[1], f1[2], f1[3]);
+        builder.addVertex(posMat, minX, minY + (maxY - minY), zLevel).setColor(f1[0], f1[1], f1[2], f1[3]);
+        builder.addVertex(posMat, x, minY + (maxY - minY), zLevel).setColor(f2[0], f2[1], f2[2], f2[3]);
+        builder.addVertex(posMat, x, minY, zLevel).setColor(f2[0], f2[1], f2[2], f2[3]);
+        BufferUploader.drawWithShader(builder.buildOrThrow());
 
         RenderSystem.lineWidth(2.0f);
-        builder.begin(VertexFormat.Mode.DEBUG_LINE_STRIP, DefaultVertexFormat.POSITION_COLOR);
-        builder.vertex(posMat, minX, minY, zLevel).color(0, 0, 0, 1f).endVertex();
-        builder.vertex(posMat, minX, maxY, zLevel).color(0, 0, 0, 1f).endVertex();
-        builder.vertex(posMat, maxX, maxY, zLevel).color(0, 0, 0, 1f).endVertex();
-        builder.vertex(posMat, maxX, minY, zLevel).color(0, 0, 0, 1f).endVertex();
-        Tesselator.getInstance().end();
+        builder = Tesselator.getInstance().begin(VertexFormat.Mode.DEBUG_LINE_STRIP, DefaultVertexFormat.POSITION_COLOR);
+        builder.addVertex(posMat, minX, minY, zLevel).setColor(0, 0, 0, 1f);
+        builder.addVertex(posMat, minX, maxY, zLevel).setColor(0, 0, 0, 1f);
+        builder.addVertex(posMat, maxX, maxY, zLevel).setColor(0, 0, 0, 1f);
+        builder.addVertex(posMat, maxX, minY, zLevel).setColor(0, 0, 0, 1f);
+        BufferUploader.drawWithShader(builder.buildOrThrow());
     }
 
     private static Pair<float[], float[]> calcColors(int color1, int color2, float progress) {

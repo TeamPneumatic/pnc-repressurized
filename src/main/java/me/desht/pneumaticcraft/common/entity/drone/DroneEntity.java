@@ -124,10 +124,10 @@ import net.minecraft.world.level.pathfinder.Node;
 import net.minecraft.world.level.pathfinder.Path;
 import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.level.pathfinder.PathType;
+import net.minecraft.world.level.portal.DimensionTransition;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.util.FakePlayer;
-import net.neoforged.neoforge.common.util.ITeleporter;
 import net.neoforged.neoforge.common.world.chunk.TicketController;
 import net.neoforged.neoforge.energy.IEnergyStorage;
 import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
@@ -290,7 +290,7 @@ public class DroneEntity extends AbstractDroneEntity implements
         // filter out enchantments which shouldn't really be there -
         // https://github.com/TeamPneumatic/pnc-repressurized/issues/1073
         // https://github.com/EnigmaticaModpacks/Enigmatica6/issues/5167
-        enchantments.keySet().removeIf(ench -> !droneStack.getItem().canApplyAtEnchantingTable(droneStack, ench.value()));
+        enchantments.keySet().removeIf(ench -> !droneStack.isPrimaryItemFor(ench));
         stackEnchants = enchantments.toImmutable();
 
         if (droneItem.canProgram(droneStack)) {
@@ -727,7 +727,7 @@ public class DroneEntity extends AbstractDroneEntity implements
     }
 
     private ResourceLocation getActiveProgramKey() {
-        return new ResourceLocation(entityData.get(PROGRAM_KEY));
+        return ResourceLocation.parse(entityData.get(PROGRAM_KEY));
     }
 
     @Override
@@ -935,8 +935,8 @@ public class DroneEntity extends AbstractDroneEntity implements
 
     @Nullable
     @Override
-    public Entity changeDimension(ServerLevel p_241206_1_, ITeleporter teleporter) {
-        Entity entity = super.changeDimension(p_241206_1_, teleporter);
+    public Entity changeDimension(DimensionTransition transition) {
+        Entity entity = super.changeDimension(transition);
         if (entity != null) {
             restoreFluidBlocks(false);
         }

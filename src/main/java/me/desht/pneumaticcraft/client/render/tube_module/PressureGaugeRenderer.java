@@ -23,6 +23,7 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.FastColor;
 
 public class PressureGaugeRenderer extends AbstractTubeModuleRenderer<PressureGaugeModule> {
     private static final float GAUGE_SCALE = 0.007f;
@@ -113,18 +114,19 @@ public class PressureGaugeRenderer extends AbstractTubeModuleRenderer<PressureGa
 
 
     @Override
-    protected void render(PressureGaugeModule module, PoseStack matrixStack, VertexConsumer builder, float partialTicks, int combinedLight, int combinedOverlay, float alpha) {
-        tubeConnector1.render(matrixStack, builder, combinedLight, combinedOverlay, 1f, 1f, 1f, alpha);
-        tubeConnector2.render(matrixStack, builder, combinedLight, combinedOverlay, 1f, 1f, 1f, alpha);
-        faceplate.render(matrixStack, builder, combinedLight, combinedOverlay, 1f, 1f, 1f, alpha);
-        gauge1.render(matrixStack, builder, combinedLight, combinedOverlay, 1f, 1f, 1f, alpha);
-        gauge2.render(matrixStack, builder, combinedLight, combinedOverlay, 1f, 1f, 1f, alpha);
-        gauge3.render(matrixStack, builder, combinedLight, combinedOverlay, 1f, 1f, 1f, alpha);
-        gauge4.render(matrixStack, builder, combinedLight, combinedOverlay, 1f, 1f, 1f, alpha);
-        gauge5.render(matrixStack, builder, combinedLight, combinedOverlay, 1f, 1f, 1f, alpha);
-        gauge6.render(matrixStack, builder, combinedLight, combinedOverlay, 1f, 1f, 1f, alpha);
-        gauge7.render(matrixStack, builder, combinedLight, combinedOverlay, 1f, 1f, 1f, alpha);
-        gauge8.render(matrixStack, builder, combinedLight, combinedOverlay, 1f, 1f, 1f, alpha);
+    protected void render(PressureGaugeModule module, PoseStack matrixStack, VertexConsumer builder, float partialTicks, int combinedLight, int combinedOverlay, int alpha) {
+        int baseColor = FastColor.ARGB32.color(alpha, 0xFFFFFF);
+        tubeConnector1.render(matrixStack, builder, combinedLight, combinedOverlay, baseColor);
+        tubeConnector2.render(matrixStack, builder, combinedLight, combinedOverlay, baseColor);
+        faceplate.render(matrixStack, builder, combinedLight, combinedOverlay, baseColor);
+        gauge1.render(matrixStack, builder, combinedLight, combinedOverlay, baseColor);
+        gauge2.render(matrixStack, builder, combinedLight, combinedOverlay, baseColor);
+        gauge3.render(matrixStack, builder, combinedLight, combinedOverlay, baseColor);
+        gauge4.render(matrixStack, builder, combinedLight, combinedOverlay, baseColor);
+        gauge5.render(matrixStack, builder, combinedLight, combinedOverlay, baseColor);
+        gauge6.render(matrixStack, builder, combinedLight, combinedOverlay, baseColor);
+        gauge7.render(matrixStack, builder, combinedLight, combinedOverlay, baseColor);
+        gauge8.render(matrixStack, builder, combinedLight, combinedOverlay, baseColor);
     }
 
     @Override

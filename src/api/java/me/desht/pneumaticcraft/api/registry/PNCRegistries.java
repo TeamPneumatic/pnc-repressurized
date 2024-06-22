@@ -15,7 +15,7 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 public class PNCRegistries {
     // Keys
     public static final ResourceKey<Registry<AreaTypeSerializer<?>>> AREA_TYPE_SERIALIZER_KEY
-            = ResourceKey.createRegistryKey(RL("prog_widget_area_serializer"));
+            = ResourceKey.createRegistryKey(RL("prog_widget_area_types"));
     public static final ResourceKey<Registry<HarvestHandler>> HARVEST_HANDLERS_KEY
             = ResourceKey.createRegistryKey(RL("harvest_handlers"));
     public static final ResourceKey<Registry<HoeHandler>> HOE_HANDLERS_KEY
@@ -27,7 +27,7 @@ public class PNCRegistries {
 
     // Registries
     public static final Registry<AreaTypeSerializer<? extends AreaType>> AREA_TYPE_SERIALIZER_REGISTRY
-            = new RegistryBuilder<>(AREA_TYPE_SERIALIZER_KEY).create();
+            = new RegistryBuilder<>(AREA_TYPE_SERIALIZER_KEY).sync(true).create();
     public static final Registry<HarvestHandler> HARVEST_HANDLER_REGISTRY
             = new RegistryBuilder<>(HARVEST_HANDLERS_KEY).create();
     public static final Registry<HoeHandler> HOE_HANDLER_REGISTRY
@@ -35,5 +35,5 @@ public class PNCRegistries {
     public static final Registry<IPlayerMatcher.MatcherType<?>> PLAYER_MATCHER_REGISTRY
             = new RegistryBuilder<>(PLAYER_MATCHER_KEY).create();
     public static final Registry<ProgWidgetType<?>> PROG_WIDGETS_REGISTRY
-            = new RegistryBuilder<>(PROG_WIDGETS_KEY).create();
+            = new RegistryBuilder<>(PROG_WIDGETS_KEY).sync(true).create();
 }

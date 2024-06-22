@@ -1,0 +1,17 @@
+{
+  "type": "pneumaticcraft:amadron",
+  "input": {
+    "resource": {
+      "amount": 4000,
+      "id": "pneumaticcraft:diesel"
+    }
+  },
+  "level": 0,
+  "offer_id": "pneumaticcraft:amadron/diesel_to_emerald",
+  "output": {
+    "resource": {
+      "count": 1,
+      "id": "minecraft:emerald"
+    }
+  }
+}

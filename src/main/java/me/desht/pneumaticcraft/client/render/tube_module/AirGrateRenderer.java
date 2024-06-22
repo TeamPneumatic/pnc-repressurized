@@ -13,6 +13,7 @@ import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.FastColor;
 
 public class AirGrateRenderer extends AbstractTubeModuleRenderer<AirGrateModule> {
     private final ModelPart top;
@@ -84,14 +85,15 @@ public class AirGrateRenderer extends AbstractTubeModuleRenderer<AirGrateModule>
     }
 
     @Override
-    protected void render(AirGrateModule module, PoseStack matrixStack, VertexConsumer builder, float partialTicks, int combinedLight, int combinedOverlay, float alpha) {
-        top.render(matrixStack, builder, combinedLight, combinedOverlay, 1f, 1f, 1f, alpha);
-        side1.render(matrixStack, builder, combinedLight, combinedOverlay, 1f, 1f, 1f, alpha);
-        side2.render(matrixStack, builder, combinedLight, combinedOverlay, 1f, 1f, 1f, alpha);
-        side3.render(matrixStack, builder, combinedLight, combinedOverlay, 1f, 1f, 1f, alpha);
-        side4.render(matrixStack, builder, combinedLight, combinedOverlay, 1f, 1f, 1f, alpha);
-        base1.render(matrixStack, builder, combinedLight, combinedOverlay, 1f, 1f, 1f, alpha);
-        base2.render(matrixStack, builder, combinedLight, combinedOverlay, 1f, 1f, 1f, alpha);
-        base3.render(matrixStack, builder, combinedLight, combinedOverlay, 1f, 1f, 1f, alpha);
+    protected void render(AirGrateModule module, PoseStack matrixStack, VertexConsumer builder, float partialTicks, int combinedLight, int combinedOverlay, int alpha) {
+        int color = FastColor.ARGB32.color(alpha, 0xFFFFFF);
+        top.render(matrixStack, builder, combinedLight, combinedOverlay, color);
+        side1.render(matrixStack, builder, combinedLight, combinedOverlay, color);
+        side2.render(matrixStack, builder, combinedLight, combinedOverlay, color);
+        side3.render(matrixStack, builder, combinedLight, combinedOverlay, color);
+        side4.render(matrixStack, builder, combinedLight, combinedOverlay, color);
+        base1.render(matrixStack, builder, combinedLight, combinedOverlay, color);
+        base2.render(matrixStack, builder, combinedLight, combinedOverlay, color);
+        base3.render(matrixStack, builder, combinedLight, combinedOverlay, color);
     }
 }

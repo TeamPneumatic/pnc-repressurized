@@ -57,6 +57,8 @@ import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
+import static net.minecraft.client.renderer.LightTexture.FULL_BRIGHT;
+
 public class RenderEntityTarget {
     private static final float STAT_SCALE = 0.02f;
 
@@ -309,13 +311,11 @@ public class RenderEntityTarget {
                 RenderUtils.renderWithTypeAndFinish(poseStack, buffer, ModRenderTypes.TARGET_CIRCLE, (posMat, builder) -> {
                     for (float i = 0; i < QUARTER_CIRCLE; i += STEP) {
                         RenderUtils.posF(builder, posMat,Mth.cos(i) * size, Mth.sin(i) * size, 0)
-                                .color(cols[0], cols[1], cols[2], alpha)
-                                .uv2(RenderUtils.FULL_BRIGHT)
-                                .endVertex();
+                                .setColor(cols[0], cols[1], cols[2], alpha)
+                                .setLight(FULL_BRIGHT);
                         RenderUtils.posF(builder, posMat,Mth.cos(i) * (size + 0.1F), Mth.sin(i) * (size + 0.1F), 0)
-                                .color(cols[0], cols[1], cols[2], alpha)
-                                .uv2(RenderUtils.FULL_BRIGHT)
-                                .endVertex();
+                                .setColor(cols[0], cols[1], cols[2], alpha)
+                                .setLight(FULL_BRIGHT);
                     }
                 });
 
@@ -325,17 +325,15 @@ public class RenderEntityTarget {
                             Vec3 v1 = new Vec3(Mth.cos(i) * size, Mth.sin(i) * size, 0);
                             Vec3 v2 = new Vec3(Mth.cos(i + STEP) * size, Mth.sin(i + STEP) * size, 0);
                             RenderUtils.posF(builder, posMat, v1.x(), v1.y(), 0)
-                                    .color(255, 0, 0, 255)
-                                    .normal(poseStack.last(), (float) (v2.x() - v1.x()), (float) (v2.y() - v1.y()), 0f)
-                                    .endVertex();
+                                    .setColor(255, 0, 0, 255)
+                                    .setNormal(poseStack.last(), (float) (v2.x() - v1.x()), (float) (v2.y() - v1.y()), 0f);
                         }
                         for (float i = QUARTER_CIRCLE - STEP; i >= 0f; i -= STEP) {
                             Vec3 v1 = new Vec3(Mth.cos(i) * size, Mth.sin(i) * size, 0);
                             Vec3 v2 = new Vec3(Mth.cos(i + STEP) * size, Mth.sin(i + STEP) * size, 0);
                             RenderUtils.posF(builder, posMat, v1.x(), v1.y(), 0)
-                                    .color(255, 0, 0, 255)
-                                    .normal(poseStack.last(), (float) (v2.x() - v1.x()), (float) (v2.y() - v1.y()), 0f)
-                                    .endVertex();
+                                    .setColor(255, 0, 0, 255)
+                                    .setNormal(poseStack.last(), (float) (v2.x() - v1.x()), (float) (v2.y() - v1.y()), 0f);
                         }
                     });
                 }

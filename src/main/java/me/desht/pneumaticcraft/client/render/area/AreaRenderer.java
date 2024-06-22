@@ -102,66 +102,66 @@ public class AreaRenderer {
                 float y2 = (float) y2d;
                 float z1 = (float) z1d;
                 float z2 = (float) z2d;
-                wr.vertex(posMat, x1, y1, z1).color(cols[1], cols[2], cols[3], cols[0]).endVertex();
-                wr.vertex(posMat, x1, y2, z1).color(cols[1], cols[2], cols[3], cols[0]).endVertex();
-                wr.vertex(posMat, x2, y2, z1).color(cols[1], cols[2], cols[3], cols[0]).endVertex();
-                wr.vertex(posMat, x2, y1, z1).color(cols[1], cols[2], cols[3], cols[0]).endVertex();
+                wr.addVertex(posMat, x1, y1, z1).setColor(cols[1], cols[2], cols[3], cols[0]);
+                wr.addVertex(posMat, x1, y2, z1).setColor(cols[1], cols[2], cols[3], cols[0]);
+                wr.addVertex(posMat, x2, y2, z1).setColor(cols[1], cols[2], cols[3], cols[0]);
+                wr.addVertex(posMat, x2, y1, z1).setColor(cols[1], cols[2], cols[3], cols[0]);
 
-                wr.vertex(posMat, x2, y1, z2).color(cols[1], cols[2], cols[3], cols[0]).endVertex();
-                wr.vertex(posMat, x2, y2, z2).color(cols[1], cols[2], cols[3], cols[0]).endVertex();
-                wr.vertex(posMat, x1, y2, z2).color(cols[1], cols[2], cols[3], cols[0]).endVertex();
-                wr.vertex(posMat, x1, y1, z2).color(cols[1], cols[2], cols[3], cols[0]).endVertex();
+                wr.addVertex(posMat, x2, y1, z2).setColor(cols[1], cols[2], cols[3], cols[0]);
+                wr.addVertex(posMat, x2, y2, z2).setColor(cols[1], cols[2], cols[3], cols[0]);
+                wr.addVertex(posMat, x1, y2, z2).setColor(cols[1], cols[2], cols[3], cols[0]);
+                wr.addVertex(posMat, x1, y1, z2).setColor(cols[1], cols[2], cols[3], cols[0]);
 
-                wr.vertex(posMat, x1, y1, z1).color(cols[1], cols[2], cols[3], cols[0]).endVertex();
-                wr.vertex(posMat, x1, y1, z2).color(cols[1], cols[2], cols[3], cols[0]).endVertex();
-                wr.vertex(posMat, x1, y2, z2).color(cols[1], cols[2], cols[3], cols[0]).endVertex();
-                wr.vertex(posMat, x1, y2, z1).color(cols[1], cols[2], cols[3], cols[0]).endVertex();
+                wr.addVertex(posMat, x1, y1, z1).setColor(cols[1], cols[2], cols[3], cols[0]);
+                wr.addVertex(posMat, x1, y1, z2).setColor(cols[1], cols[2], cols[3], cols[0]);
+                wr.addVertex(posMat, x1, y2, z2).setColor(cols[1], cols[2], cols[3], cols[0]);
+                wr.addVertex(posMat, x1, y2, z1).setColor(cols[1], cols[2], cols[3], cols[0]);
 
-                wr.vertex(posMat, x2, y2, z1).color(cols[1], cols[2], cols[3], cols[0]).endVertex();
-                wr.vertex(posMat, x2, y2, z2).color(cols[1], cols[2], cols[3], cols[0]).endVertex();
-                wr.vertex(posMat, x2, y1, z2).color(cols[1], cols[2], cols[3], cols[0]).endVertex();
-                wr.vertex(posMat, x2, y1, z1).color(cols[1], cols[2], cols[3], cols[0]).endVertex();
+                wr.addVertex(posMat, x2, y2, z1).setColor(cols[1], cols[2], cols[3], cols[0]);
+                wr.addVertex(posMat, x2, y2, z2).setColor(cols[1], cols[2], cols[3], cols[0]);
+                wr.addVertex(posMat, x2, y1, z2).setColor(cols[1], cols[2], cols[3], cols[0]);
+                wr.addVertex(posMat, x2, y1, z1).setColor(cols[1], cols[2], cols[3], cols[0]);
 
-                wr.vertex(posMat, x1, y1, z1).color(cols[1], cols[2], cols[3], cols[0]).endVertex();
-                wr.vertex(posMat, x2, y1, z1).color(cols[1], cols[2], cols[3], cols[0]).endVertex();
-                wr.vertex(posMat, x2, y1, z2).color(cols[1], cols[2], cols[3], cols[0]).endVertex();
-                wr.vertex(posMat, x1, y1, z2).color(cols[1], cols[2], cols[3], cols[0]).endVertex();
+                wr.addVertex(posMat, x1, y1, z1).setColor(cols[1], cols[2], cols[3], cols[0]);
+                wr.addVertex(posMat, x2, y1, z1).setColor(cols[1], cols[2], cols[3], cols[0]);
+                wr.addVertex(posMat, x2, y1, z2).setColor(cols[1], cols[2], cols[3], cols[0]);
+                wr.addVertex(posMat, x1, y1, z2).setColor(cols[1], cols[2], cols[3], cols[0]);
 
-                wr.vertex(posMat, x1, y2, z2).color(cols[1], cols[2], cols[3], cols[0]).endVertex();
-                wr.vertex(posMat, x2, y2, z2).color(cols[1], cols[2], cols[3], cols[0]).endVertex();
-                wr.vertex(posMat, x2, y2, z1).color(cols[1], cols[2], cols[3], cols[0]).endVertex();
-                wr.vertex(posMat, x1, y2, z1).color(cols[1], cols[2], cols[3], cols[0]).endVertex();
+                wr.addVertex(posMat, x1, y2, z2).setColor(cols[1], cols[2], cols[3], cols[0]);
+                wr.addVertex(posMat, x2, y2, z2).setColor(cols[1], cols[2], cols[3], cols[0]);
+                wr.addVertex(posMat, x2, y2, z1).setColor(cols[1], cols[2], cols[3], cols[0]);
+                wr.addVertex(posMat, x1, y2, z1).setColor(cols[1], cols[2], cols[3], cols[0]);
             });
         } else {
-            wr.vertex(posMat, 0, 0, 0).color(cols[1], cols[2], cols[3], cols[0]).endVertex();
-            wr.vertex(posMat, 0, size, 0).color(cols[1], cols[2], cols[3], cols[0]).endVertex();
-            wr.vertex(posMat, size, size, 0).color(cols[1], cols[2], cols[3], cols[0]).endVertex();
-            wr.vertex(posMat, size, 0, 0).color(cols[1], cols[2], cols[3], cols[0]).endVertex();
+            wr.addVertex(posMat, 0, 0, 0).setColor(cols[1], cols[2], cols[3], cols[0]);
+            wr.addVertex(posMat, 0, size, 0).setColor(cols[1], cols[2], cols[3], cols[0]);
+            wr.addVertex(posMat, size, size, 0).setColor(cols[1], cols[2], cols[3], cols[0]);
+            wr.addVertex(posMat, size, 0, 0).setColor(cols[1], cols[2], cols[3], cols[0]);
 
-            wr.vertex(posMat, size, 0, size).color(cols[1], cols[2], cols[3], cols[0]).endVertex();
-            wr.vertex(posMat, size, size, size).color(cols[1], cols[2], cols[3], cols[0]).endVertex();
-            wr.vertex(posMat, 0, size, size).color(cols[1], cols[2], cols[3], cols[0]).endVertex();
-            wr.vertex(posMat, 0, 0, size).color(cols[1], cols[2], cols[3], cols[0]).endVertex();
+            wr.addVertex(posMat, size, 0, size).setColor(cols[1], cols[2], cols[3], cols[0]);
+            wr.addVertex(posMat, size, size, size).setColor(cols[1], cols[2], cols[3], cols[0]);
+            wr.addVertex(posMat, 0, size, size).setColor(cols[1], cols[2], cols[3], cols[0]);
+            wr.addVertex(posMat, 0, 0, size).setColor(cols[1], cols[2], cols[3], cols[0]);
 
-            wr.vertex(posMat, 0, 0, 0).color(cols[1], cols[2], cols[3], cols[0]).endVertex();
-            wr.vertex(posMat, 0, 0, size).color(cols[1], cols[2], cols[3], cols[0]).endVertex();
-            wr.vertex(posMat, 0, size, size).color(cols[1], cols[2], cols[3], cols[0]).endVertex();
-            wr.vertex(posMat, 0, size, 0).color(cols[1], cols[2], cols[3], cols[0]).endVertex();
+            wr.addVertex(posMat, 0, 0, 0).setColor(cols[1], cols[2], cols[3], cols[0]);
+            wr.addVertex(posMat, 0, 0, size).setColor(cols[1], cols[2], cols[3], cols[0]);
+            wr.addVertex(posMat, 0, size, size).setColor(cols[1], cols[2], cols[3], cols[0]);
+            wr.addVertex(posMat, 0, size, 0).setColor(cols[1], cols[2], cols[3], cols[0]);
 
-            wr.vertex(posMat, size, size, 0).color(cols[1], cols[2], cols[3], cols[0]).endVertex();
-            wr.vertex(posMat, size, size, size).color(cols[1], cols[2], cols[3], cols[0]).endVertex();
-            wr.vertex(posMat, size, 0, size).color(cols[1], cols[2], cols[3], cols[0]).endVertex();
-            wr.vertex(posMat, size, 0, 0).color(cols[1], cols[2], cols[3], cols[0]).endVertex();
+            wr.addVertex(posMat, size, size, 0).setColor(cols[1], cols[2], cols[3], cols[0]);
+            wr.addVertex(posMat, size, size, size).setColor(cols[1], cols[2], cols[3], cols[0]);
+            wr.addVertex(posMat, size, 0, size).setColor(cols[1], cols[2], cols[3], cols[0]);
+            wr.addVertex(posMat, size, 0, 0).setColor(cols[1], cols[2], cols[3], cols[0]);
 
-            wr.vertex(posMat, 0, 0, 0).color(cols[1], cols[2], cols[3], cols[0]).endVertex();
-            wr.vertex(posMat, size, 0, 0).color(cols[1], cols[2], cols[3], cols[0]).endVertex();
-            wr.vertex(posMat, size, 0, size).color(cols[1], cols[2], cols[3], cols[0]).endVertex();
-            wr.vertex(posMat, 0, 0, size).color(cols[1], cols[2], cols[3], cols[0]).endVertex();
+            wr.addVertex(posMat, 0, 0, 0).setColor(cols[1], cols[2], cols[3], cols[0]);
+            wr.addVertex(posMat, size, 0, 0).setColor(cols[1], cols[2], cols[3], cols[0]);
+            wr.addVertex(posMat, size, 0, size).setColor(cols[1], cols[2], cols[3], cols[0]);
+            wr.addVertex(posMat, 0, 0, size).setColor(cols[1], cols[2], cols[3], cols[0]);
 
-            wr.vertex(posMat, 0, size, size).color(cols[1], cols[2], cols[3], cols[0]).endVertex();
-            wr.vertex(posMat, size, size, size).color(cols[1], cols[2], cols[3], cols[0]).endVertex();
-            wr.vertex(posMat, size, size, 0).color(cols[1], cols[2], cols[3], cols[0]).endVertex();
-            wr.vertex(posMat, 0, size, 0).color(cols[1], cols[2], cols[3], cols[0]).endVertex();
+            wr.addVertex(posMat, 0, size, size).setColor(cols[1], cols[2], cols[3], cols[0]);
+            wr.addVertex(posMat, size, size, size).setColor(cols[1], cols[2], cols[3], cols[0]);
+            wr.addVertex(posMat, size, size, 0).setColor(cols[1], cols[2], cols[3], cols[0]);
+            wr.addVertex(posMat, 0, size, 0).setColor(cols[1], cols[2], cols[3], cols[0]);
         }
     }
 

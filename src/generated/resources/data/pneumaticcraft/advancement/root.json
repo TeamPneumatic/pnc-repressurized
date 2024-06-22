@@ -1,0 +1,36 @@
+{
+  "criteria": {
+    "0": {
+      "conditions": {
+        "items": [
+          {
+            "items": "pneumaticcraft:ingot_iron_compressed"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "background": "pneumaticcraft:textures/gui/advancement_bg.png",
+    "description": {
+      "translate": "pneumaticcraft.advancement.root.desc"
+    },
+    "icon": {
+      "count": 1,
+      "id": "pneumaticcraft:ingot_iron_compressed"
+    },
+    "title": {
+      "translate": "pneumaticcraft.advancement.root"
+    }
+  },
+  "requirements": [
+    [
+      "0"
+    ]
+  ],
+  "rewards": {
+    "experience": 10
+  },
+  "sends_telemetry_event": true
+}

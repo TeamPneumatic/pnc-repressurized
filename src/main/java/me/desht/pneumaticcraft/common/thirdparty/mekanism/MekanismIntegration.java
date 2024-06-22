@@ -46,9 +46,9 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 public class MekanismIntegration {
     public static final BlockCapability<IHeatHandler, Direction> CAPABILITY_HEAT_HANDLER
-            = BlockCapability.createSided(new ResourceLocation(ModIds.MEKANISM, "heat_handler"), IHeatHandler.class);
+            = BlockCapability.createSided(ResourceLocation.fromNamespaceAndPath(ModIds.MEKANISM, "heat_handler"), IHeatHandler.class);
     public static final ItemCapability<IRadiationShielding,Void> CAPABILITY_RADIATION_SHIELDING
-        = ItemCapability.createVoid(new ResourceLocation(ModIds.MEKANISM, "radiation_shielding"), IRadiationShielding.class);
+        = ItemCapability.createVoid(ResourceLocation.fromNamespaceAndPath(ModIds.MEKANISM, "radiation_shielding"), IRadiationShielding.class);
 
     static void mekSetup() {
         RadiationSourceCheck.INSTANCE.registerRadiationSource((registryAccess, dmgSource)
@@ -73,7 +73,7 @@ public class MekanismIntegration {
     }
 
     static void registerMekanismBlockEntityHeat(RegisterCapabilitiesEvent event, String id) {
-        BlockEntityType<?> type = BuiltInRegistries.BLOCK_ENTITY_TYPE.get(new ResourceLocation(ModIds.MEKANISM, id));
+        BlockEntityType<?> type = BuiltInRegistries.BLOCK_ENTITY_TYPE.get(ResourceLocation.fromNamespaceAndPath(ModIds.MEKANISM, id));
         if (type != null) {
             event.registerBlockEntity(PNCCapabilities.HEAT_EXCHANGER_BLOCK, type, Mek2PNCHeatAdapter::maybe);
         }

@@ -19,6 +19,7 @@ package me.desht.pneumaticcraft.common.thirdparty.patchouli;
 
 import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.api.crafting.recipe.PressureChamberRecipe;
+import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.registry.ModRecipeTypes;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Log;
@@ -40,7 +41,7 @@ public class ProcessorPressureChamber implements IComponentProcessor {
 
     @Override
     public void setup(Level level, IVariableProvider iVariableProvider) {
-        ResourceLocation recipeId = new ResourceLocation(iVariableProvider.get("recipe").asString());
+        ResourceLocation recipeId = ResourceLocation.parse(iVariableProvider.get("recipe").asString());
         ModRecipeTypes.PRESSURE_CHAMBER.get().getRecipe(Minecraft.getInstance().level, recipeId)
                 .ifPresentOrElse(h -> recipe = h.value(),
                         () -> Log.warning("Missing pressure chamber recipe: " + recipeId));
@@ -55,12 +56,12 @@ public class ProcessorPressureChamber implements IComponentProcessor {
             return IVariable.wrap(header.isEmpty() ? defaultHeader() : header);
         } else if (s.startsWith("input")) {
             int index = Integer.parseInt(s.substring(5)) - 1;
-            if (index >= 0 && index < recipe.getInputsForDisplay().size()) {
-                return PatchouliAccess.getStacks(recipe.getInputsForDisplay().get(index));
+            if (index >= 0 && index < recipe.getInputsForDisplay(ClientUtils.getClientLevel().registryAccess()).size()) {
+                return PatchouliAccess.getStacks(recipe.getInputsForDisplay(ClientUtils.getClientLevel().registryAccess()).get(index));
             }
         } else if (s.startsWith("output")) {
             int index = Integer.parseInt(s.substring(6)) - 1;
-            List<? extends List<ItemStack>> results = recipe.getResultsForDisplay();
+            List<? extends List<ItemStack>> results = recipe.getResultsForDisplay(ClientUtils.getClientLevel().registryAccess());
             if (index >= 0 && index < results.size()) {
                 return IVariable.wrapList(results.get(index).stream().map(IVariable::from).collect(ImmutableList.toImmutableList()));
             }
@@ -74,11 +75,11 @@ public class ProcessorPressureChamber implements IComponentProcessor {
 
     private String defaultHeader() {
         // note: only returns first item. use a custom "header" if needed
-        List<? extends List<ItemStack>> results = recipe.getResultsForDisplay();
+        List<? extends List<ItemStack>> results = recipe.getResultsForDisplay(ClientUtils.getClientLevel().registryAccess());
         if (!results.isEmpty()) {
-            List<ItemStack> stacks = results.get(0);
+            List<ItemStack> stacks = results.getFirst();
             if (!stacks.isEmpty()) {
-                return stacks.get(0).getHoverName().getString();
+                return stacks.getFirst().getHoverName().getString();
             }
         }
         return "";

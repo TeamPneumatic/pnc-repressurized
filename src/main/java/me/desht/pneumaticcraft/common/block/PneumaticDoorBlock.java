@@ -318,8 +318,7 @@ public class PneumaticDoorBlock extends AbstractPneumaticCraftBlock implements P
         @Override
         public int getTintColor(ItemStack stack, int tintIndex) {
             if (tintIndex == 0) {
-                DyeColor color = stack.getOrDefault(ModDataComponents.DOOR_COLOR, DyeColor.WHITE);
-                return PneumaticCraftUtils.getDyeColorAsRGB(color);
+                return stack.getOrDefault(ModDataComponents.DOOR_COLOR, DyeColor.WHITE).getTextureDiffuseColor();
             }
             return 0xFFFFFFFF;
         }

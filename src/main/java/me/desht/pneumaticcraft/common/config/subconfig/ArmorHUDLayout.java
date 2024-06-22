@@ -55,7 +55,7 @@ public class ArmorHUDLayout extends AuxConfigJson {
             JsonObject sub = json.getAsJsonObject(HUD_LAYOUT);
             sub.entrySet().forEach(entry -> {
                 try {
-                    ResourceLocation id = new ResourceLocation(entry.getKey());
+                    ResourceLocation id = ResourceLocation.parse(entry.getKey());
                     layouts.put(id, StatPanelLayout.CODEC.parse(JsonOps.INSTANCE, entry.getValue().getAsJsonObject()).result().orElseThrow());
                 } catch (ResourceLocationException e) {
                     Log.error("invalid stat panel key (not a resource location) {} in {}}!", entry.getKey(), getConfigFilename());

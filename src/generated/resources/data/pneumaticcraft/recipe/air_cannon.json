@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "B": {
+      "item": "pneumaticcraft:cannon_barrel"
+    },
+    "H": {
+      "item": "pneumaticcraft:reinforced_stone_slab"
+    },
+    "S": {
+      "item": "pneumaticcraft:stone_base"
+    },
+    "T": {
+      "item": "pneumaticcraft:pressure_tube"
+    }
+  },
+  "pattern": [
+    " B ",
+    " ST",
+    "HHH"
+  ],
+  "result": {
+    "count": 1,
+    "id": "pneumaticcraft:air_cannon"
+  }
+}

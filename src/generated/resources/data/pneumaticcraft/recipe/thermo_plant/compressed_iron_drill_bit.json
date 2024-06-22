@@ -1,0 +1,24 @@
+{
+  "type": "pneumaticcraft:thermo_plant",
+  "air_use_multiplier": 5.0,
+  "inputs": {
+    "fluid": {
+      "amount": 4000,
+      "tag": "c:lubricant"
+    },
+    "item": {
+      "tag": "c:ingots/compressed_iron"
+    }
+  },
+  "outputs": {
+    "item_output": {
+      "count": 1,
+      "id": "pneumaticcraft:drill_bit_compressed_iron"
+    }
+  },
+  "pressure": 4.0,
+  "speed": 0.25,
+  "temperature": {
+    "min": 573
+  }
+}

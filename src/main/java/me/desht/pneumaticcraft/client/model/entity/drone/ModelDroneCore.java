@@ -39,7 +39,7 @@ public class ModelDroneCore extends EntityModel<AbstractDroneEntity> {
     }
 
     @Override
-    public void renderToBuffer(PoseStack matrixStackIn, VertexConsumer bufferIn, int packedLightIn, int packedOverlayIn, float red, float green, float blue, float alpha) {
-        drone.render(matrixStackIn, bufferIn, packedLightIn, packedOverlayIn, red, green, blue, alpha);
+    public void renderToBuffer(PoseStack matrixStackIn, VertexConsumer bufferIn, int packedLightIn, int packedOverlayIn, int color) {
+        drone.render(matrixStackIn, bufferIn, packedLightIn, packedOverlayIn, color);
     }
 }

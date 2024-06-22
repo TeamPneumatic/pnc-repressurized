@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.common.hacking.entity;
 
 import me.desht.pneumaticcraft.api.pneumatic_armor.hacking.IHackableEntity;
-import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.decoration.Painting;
@@ -65,8 +65,8 @@ public class HackablePainting implements IHackableEntity<Painting> {
     public void onHackFinished(Painting entity, Player player) {
         PaintingVariant art = entity.getVariant().value();
 
-        var candidates = BuiltInRegistries.PAINTING_VARIANT.holders()
-                .filter(h -> h.value().getHeight() == art.getHeight() && h.value().getWidth() == art.getWidth())
+        var candidates = entity.registryAccess().registryOrThrow(Registries.PAINTING_VARIANT).holders()
+                .filter(h -> h.value().height() == art.height() && h.value().width() == art.width())
                 .toList();
         entity.setVariant(candidates.get(entity.level().random.nextInt(candidates.size())));
     }

@@ -1,0 +1,17 @@
+{
+  "type": "pneumaticcraft:amadron",
+  "input": {
+    "resource": {
+      "count": 8,
+      "id": "minecraft:emerald"
+    }
+  },
+  "level": 0,
+  "offer_id": "pneumaticcraft:amadron/assembly_program_drill",
+  "output": {
+    "resource": {
+      "count": 1,
+      "id": "pneumaticcraft:assembly_program_drill"
+    }
+  }
+}

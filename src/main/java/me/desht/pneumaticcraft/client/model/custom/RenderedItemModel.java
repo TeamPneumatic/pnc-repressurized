@@ -101,8 +101,8 @@ public class RenderedItemModel implements IDynamicBakedModel {
 
     private record Geometry(BlockModel baseModel) implements IUnbakedGeometry<Geometry> {
         @Override
-        public BakedModel bake(IGeometryBakingContext owner, ModelBaker bakery, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelTransform, ItemOverrides overrides, ResourceLocation modelLocation) {
-            return new RenderedItemModel(baseModel.bake(bakery, baseModel, spriteGetter, modelTransform, modelLocation, true));
+        public BakedModel bake(IGeometryBakingContext owner, ModelBaker bakery, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelTransform, ItemOverrides overrides) {
+            return new RenderedItemModel(baseModel.bake(bakery, baseModel, spriteGetter, modelTransform, true));
         }
 
         @Override

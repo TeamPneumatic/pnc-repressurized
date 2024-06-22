@@ -25,8 +25,8 @@ import me.desht.pneumaticcraft.common.util.IOHelper;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.ShapedRecipe;
 
@@ -39,12 +39,12 @@ public class ShapedPressurizableRecipe extends WrappedShapedRecipe {
     }
 
     @Override
-    public ItemStack assemble(CraftingContainer inv, HolderLookup.Provider registryAccess) {
+    public ItemStack assemble(CraftingInput inv, HolderLookup.Provider registryAccess) {
         ItemStack newOutput = this.getResultItem(registryAccess).copy();
 
         IOHelper.getCap(newOutput, PNCCapabilities.AIR_HANDLER_ITEM).ifPresent(outputHandler -> {
             int totalAir = 0;
-            for (int i = 0; i < inv.getContainerSize(); ++i) {
+            for (int i = 0; i < inv.size(); ++i) {
                 ItemStack stack = inv.getItem(i);
                 totalAir += IOHelper.getCap(stack, PNCCapabilities.AIR_HANDLER_ITEM)
                         .map(IAirHandler::getAir).orElse(0);

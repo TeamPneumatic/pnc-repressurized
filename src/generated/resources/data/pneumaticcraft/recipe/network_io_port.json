@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "C": {
+      "tag": "c:dyes/cyan"
+    },
+    "E": {
+      "item": "pneumaticcraft:capacitor"
+    },
+    "X": {
+      "tag": "c:chests/wooden"
+    }
+  },
+  "pattern": [
+    "CEC",
+    "EXE",
+    "CEC"
+  ],
+  "result": {
+    "count": 1,
+    "id": "pneumaticcraft:network_io_port"
+  }
+}

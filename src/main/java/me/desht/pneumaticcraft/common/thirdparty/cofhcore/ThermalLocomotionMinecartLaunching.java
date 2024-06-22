@@ -39,8 +39,8 @@ public class ThermalLocomotionMinecartLaunching {
      * @param itemIDString item ID of item/entity to add to launch map
      */
     private static void register(String itemIDString) {
-        ResourceLocation itemId = new ResourceLocation(ModIds.THERMAL, itemIDString);
-        ResourceLocation entityId = new ResourceLocation(ModIds.THERMAL, itemIDString);
+        ResourceLocation itemId = ResourceLocation.fromNamespaceAndPath(ModIds.THERMAL, itemIDString);
+        ResourceLocation entityId = ResourceLocation.fromNamespaceAndPath(ModIds.THERMAL, itemIDString);
         BuiltInRegistries.ENTITY_TYPE.getOptional(entityId).ifPresent(entityType -> launchMap.put(itemId, entityType));
     }
 }

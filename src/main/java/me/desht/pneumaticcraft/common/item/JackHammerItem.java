@@ -18,6 +18,7 @@
 package me.desht.pneumaticcraft.common.item;
 
 import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.data.PneumaticCraftTags;
@@ -44,8 +45,10 @@ import me.desht.pneumaticcraft.common.util.RayTraceUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
+import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -62,6 +65,7 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.ItemContainerContents;
+import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
@@ -76,7 +80,6 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.level.BlockEvent;
-import org.apache.commons.lang3.mutable.MutableBoolean;
 
 import javax.annotation.Nonnull;
 import java.util.*;
@@ -436,12 +439,11 @@ public class JackHammerItem extends PressurizableItem
             this.jackhammerStack = jackhammerStack;
 
             ItemEnchantments ench = EnchantmentHelper.getEnchantmentsForCrafting(jackhammerStack);
-            for (var entry : ench.entrySet()) {
-                if (entry.getKey() == Enchantments.SILK_TOUCH || entry.getKey() == Enchantments.FORTUNE) {
-                    ItemStack book = PneumaticCraftUtils.enchant(
-                            new ItemStack(Items.ENCHANTED_BOOK), Map.of(entry.getKey().value(), entry.getIntValue())
-                    );
-                    setStackInSlot(0, book);
+            for (Object2IntMap.Entry<Holder<Enchantment>> entry : ench.entrySet()) {
+                if (entry.getKey().is(Enchantments.SILK_TOUCH) || entry.getKey().is(Enchantments.FORTUNE)) {
+                    setStackInSlot(0, Util.make(new ItemStack(Items.ENCHANTED_BOOK),
+                            stack -> stack.enchant(entry.getKey(), entry.getIntValue())
+                    ));
                     break;
                 }
             }
@@ -456,10 +458,10 @@ public class JackHammerItem extends PressurizableItem
             // replace any silk touch or fortune enchant, but leave any other enchants untouched
             ItemStack bookStack = getStackInSlot(0);
             ItemEnchantments.Mutable currentEnchants = new ItemEnchantments.Mutable(EnchantmentHelper.getEnchantmentsForCrafting(jackhammerStack));
-            currentEnchants.removeIf(h -> h.value() == Enchantments.SILK_TOUCH || h.value() == Enchantments.FORTUNE);
+            currentEnchants.removeIf(h -> h.is(Enchantments.SILK_TOUCH) || h.is(Enchantments.FORTUNE));
             if (validateBook(bookStack)) {
                 EnchantmentHelper.getEnchantmentsForCrafting(bookStack).entrySet()
-                        .forEach(entry -> currentEnchants.set(entry.getKey().value(), entry.getIntValue()));
+                        .forEach(entry -> currentEnchants.set(entry.getKey(), entry.getIntValue()));
             }
             EnchantmentHelper.setEnchantments(jackhammerStack, currentEnchants.toImmutable());
         }
@@ -467,8 +469,11 @@ public class JackHammerItem extends PressurizableItem
         public static boolean validateBook(ItemStack bookStack) {
             // must be an enchanted book with Silk Touch or Fortune and nothing else
             if (bookStack.getItem() == Items.ENCHANTED_BOOK) {
-                var ench = EnchantmentHelper.getEnchantmentsForCrafting(bookStack);
-                return ench.size() == 1 && (ench.getLevel(Enchantments.FORTUNE) > 0 || ench.getLevel(Enchantments.SILK_TOUCH) > 0);
+                var enchantments = EnchantmentHelper.getEnchantmentsForCrafting(bookStack);
+                if (enchantments.size() == 1) {
+                    var entry = enchantments.entrySet().stream().findFirst().orElseThrow();
+                    return entry.getIntValue() > 0 && (entry.getKey().is(Enchantments.FORTUNE) || entry.getKey().is(Enchantments.SILK_TOUCH));
+                }
             }
             return false;
         }
@@ -530,8 +535,8 @@ public class JackHammerItem extends PressurizableItem
                                 BlockState state1 = level.getBlockState(pos1);
                                 if (state1.getDestroySpeed(level, pos1) < 0) continue;
 
-                                int exp = CommonHooks.fireBlockBreak(serverPlayer.level(), serverPlayer.gameMode.getGameModeForPlayer(), serverPlayer, pos1, state1);
-                                if (exp == -1) {
+                                BlockEvent.BreakEvent breakEvent = CommonHooks.fireBlockBreak(serverPlayer.level(), serverPlayer.gameMode.getGameModeForPlayer(), serverPlayer, pos1, state1);
+                                if (breakEvent.isCanceled()) {
                                     continue;
                                 }
                                 if (level.getBlockEntity(pos1) != null) {
@@ -546,9 +551,9 @@ public class JackHammerItem extends PressurizableItem
                                     } else {
                                         block.playerDestroy(level, serverPlayer, pos1, state1, null, itemstack);
                                     }
-                                    if (exp > 0 && level instanceof ServerLevel) {
-                                        block.popExperience((ServerLevel) level, magnet ? pos : pos1, exp);
-                                    }
+//                                    if (exp > 0 && level instanceof ServerLevel) {
+//                                        block.popExperience((ServerLevel) level, magnet ? pos : pos1, exp);
+//                                    }
                                     air -= usage;
                                     serverPlayer.awardStat(Stats.ITEM_USED.get(itemstack.getItem()));
                                 }

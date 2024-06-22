@@ -1,0 +1,8 @@
+{
+  "type": "pneumaticcraft:fuel_quality",
+  "air_per_bucket": 1000000,
+  "burn_rate": 0.8,
+  "fluid": {
+    "tag": "c:fuels/biodiesel"
+  }
+}

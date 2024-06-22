@@ -1,0 +1,24 @@
+{
+  "type": "pneumaticcraft:refinery",
+  "input": {
+    "amount": 10,
+    "tag": "c:fuels/crude_oil"
+  },
+  "outputs": [
+    {
+      "amount": 2,
+      "id": "pneumaticcraft:diesel"
+    },
+    {
+      "amount": 3,
+      "id": "pneumaticcraft:kerosene"
+    },
+    {
+      "amount": 2,
+      "id": "pneumaticcraft:lpg"
+    }
+  ],
+  "temperature": {
+    "min": 373
+  }
+}

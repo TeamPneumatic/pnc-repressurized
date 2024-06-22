@@ -1,0 +1,37 @@
+{
+  "parent": "pneumaticcraft:logistics_frame",
+  "criteria": {
+    "0": {
+      "conditions": {
+        "items": [
+          {
+            "items": "pneumaticcraft:logistics_configurator"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "background": "pneumaticcraft:textures/gui/advancement_bg.png",
+    "description": {
+      "translate": "pneumaticcraft.advancement.logistics_configurator.desc"
+    },
+    "icon": {
+      "count": 1,
+      "id": "pneumaticcraft:logistics_configurator"
+    },
+    "title": {
+      "translate": "pneumaticcraft.advancement.logistics_configurator"
+    }
+  },
+  "requirements": [
+    [
+      "0"
+    ]
+  ],
+  "rewards": {
+    "experience": 10
+  },
+  "sends_telemetry_event": true
+}

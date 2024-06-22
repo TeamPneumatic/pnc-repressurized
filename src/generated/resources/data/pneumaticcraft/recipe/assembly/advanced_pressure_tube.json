@@ -1,0 +1,12 @@
+{
+  "type": "pneumaticcraft:assembly_laser",
+  "input": {
+    "count": 20,
+    "item": "pneumaticcraft:pressure_chamber_valve"
+  },
+  "program": "laser",
+  "result": {
+    "count": 8,
+    "id": "pneumaticcraft:advanced_pressure_tube"
+  }
+}

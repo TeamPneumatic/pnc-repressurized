@@ -18,6 +18,10 @@
 package me.desht.pneumaticcraft.common.util;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.EnchantedBookItem;
 import net.minecraft.world.item.ItemStack;
@@ -111,8 +115,12 @@ public class EnchantmentUtils {
         return world.getBlockState(pos).getEnchantPowerBonus(world, pos);
     }
 
-    public static void addAllBooks(Enchantment enchantment, List<ItemStack> items) {
-        for (int i = enchantment.getMinLevel(); i <= enchantment.getMaxLevel(); i++)
-            items.add(EnchantedBookItem.createForEnchantment(new EnchantmentInstance(enchantment, i)));
+//    public static void addAllBooks(Enchantment enchantment, List<ItemStack> items) {
+//        for (int i = enchantment.getMinLevel(); i <= enchantment.getMaxLevel(); i++)
+//            items.add(EnchantedBookItem.createForEnchantment(new EnchantmentInstance(enchantment, i)));
+//    }
+
+    public static Holder<Enchantment> getEnchantment(HolderLookup.Provider provider, ResourceKey<Enchantment> key) {
+        return provider.lookup(Registries.ENCHANTMENT).orElseThrow().getOrThrow(key);
     }
 }

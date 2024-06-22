@@ -39,6 +39,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.EnchantmentEffectComponents;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -217,7 +218,7 @@ public class OmnidirectionalHopperBlockEntity extends AbstractHopperBlockEntity<
         for (int i = 0; i < inv.getSlots(); i++) {
             if (inv.getStackInSlot(i).isEmpty()) continue;
             ItemStack toExtract = inv.extractItem(i, remaining, true);
-            if (playerArmor && EnchantmentHelper.hasBindingCurse(toExtract)) {
+            if (playerArmor && EnchantmentHelper.has(toExtract, EnchantmentEffectComponents.PREVENT_ARMOR_CHANGE)) {
                 continue;
             }
             ItemStack excess = ItemHandlerHelper.insertItemStacked(itemHandler, toExtract, false);

@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.client;
 
-import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.item.MicromissilesItem;
 import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import net.minecraft.ChatFormatting;
@@ -11,6 +10,7 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import org.joml.Matrix4f;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
+import static net.minecraft.client.renderer.LightTexture.FULL_BRIGHT;
 
 public record MicromissileClientTooltip(MicromissilesItem.Tooltip component) implements ClientTooltipComponent {
     @Override
@@ -19,9 +19,9 @@ public record MicromissileClientTooltip(MicromissilesItem.Tooltip component) imp
             pY += 3;
             @SuppressWarnings("ConstantConditions") int col = ChatFormatting.GRAY.getColor();
             pFont.drawInBatch(xlate("pneumaticcraft.gui.micromissile.topSpeed"), pX, pY, col, false, pMatrix4f, pBufferSource,
-                    Font.DisplayMode.NORMAL, 0, RenderUtils.FULL_BRIGHT);
-            pFont.drawInBatch(xlate("pneumaticcraft.gui.micromissile.turnSpeed"), pX, pY + pFont.lineHeight + 1, col, false, pMatrix4f, pBufferSource, Font.DisplayMode.NORMAL, 0, RenderUtils.FULL_BRIGHT);
-            pFont.drawInBatch(xlate("pneumaticcraft.gui.micromissile.damage"), pX, pY + pFont.lineHeight * 2 + 2, col, false, pMatrix4f, pBufferSource, Font.DisplayMode.NORMAL, 0, RenderUtils.FULL_BRIGHT);
+                    Font.DisplayMode.NORMAL, 0, FULL_BRIGHT);
+            pFont.drawInBatch(xlate("pneumaticcraft.gui.micromissile.turnSpeed"), pX, pY + pFont.lineHeight + 1, col, false, pMatrix4f, pBufferSource, Font.DisplayMode.NORMAL, 0, FULL_BRIGHT);
+            pFont.drawInBatch(xlate("pneumaticcraft.gui.micromissile.damage"), pX, pY + pFont.lineHeight * 2 + 2, col, false, pMatrix4f, pBufferSource, Font.DisplayMode.NORMAL, 0, FULL_BRIGHT);
         }
     }
 

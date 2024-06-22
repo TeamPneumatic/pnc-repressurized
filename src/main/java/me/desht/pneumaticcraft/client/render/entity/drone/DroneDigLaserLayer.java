@@ -36,6 +36,8 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.joml.Matrix4f;
 
+import static net.minecraft.client.renderer.LightTexture.FULL_BRIGHT;
+
 public class DroneDigLaserLayer extends RenderLayer<AbstractDroneEntity, ModelDrone> {
     private static final float LASER_SIZE = 0.4f;
 
@@ -116,9 +118,9 @@ public class DroneDigLaserLayer extends RenderLayer<AbstractDroneEntity, ModelDr
     }
 
     private void renderQuad(Matrix4f posMat, VertexConsumer builder, int[] cols) {
-        builder.vertex(posMat,-0.5f, 0f, 0f).color(cols[1], cols[2], cols[3], cols[0]).uv(0, 0).uv2(RenderUtils.FULL_BRIGHT).endVertex();
-        builder.vertex(posMat,-0.5f, 1f, 0f).color(cols[1], cols[2], cols[3], cols[0]).uv(0, 1).uv2(RenderUtils.FULL_BRIGHT).endVertex();
-        builder.vertex(posMat, 0.5f, 1f, 0f).color(cols[1], cols[2], cols[3], cols[0]).uv(1, 1).uv2(RenderUtils.FULL_BRIGHT).endVertex();
-        builder.vertex(posMat, 0.5f, 0f, 0f).color(cols[1], cols[2], cols[3], cols[0]).uv(1, 0).uv2(RenderUtils.FULL_BRIGHT).endVertex();
+        builder.addVertex(posMat,-0.5f, 0f, 0f).setColor(cols[1], cols[2], cols[3], cols[0]).setUv(0, 0).setLight(FULL_BRIGHT);
+        builder.addVertex(posMat,-0.5f, 1f, 0f).setColor(cols[1], cols[2], cols[3], cols[0]).setUv(0, 1).setLight(FULL_BRIGHT);
+        builder.addVertex(posMat, 0.5f, 1f, 0f).setColor(cols[1], cols[2], cols[3], cols[0]).setUv(1, 1).setLight(FULL_BRIGHT);
+        builder.addVertex(posMat, 0.5f, 0f, 0f).setColor(cols[1], cols[2], cols[3], cols[0]).setUv(1, 0).setLight(FULL_BRIGHT);
     }
 }

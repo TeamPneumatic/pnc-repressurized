@@ -6,6 +6,7 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.tags.EntityTypeTagsProvider;
 import net.minecraft.world.entity.EntityType;
+import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import org.jetbrains.annotations.Nullable;
 
@@ -18,7 +19,7 @@ public class ModEntityTypeTagsProvider extends EntityTypeTagsProvider {
 
     @Override
     protected void addTags(HolderLookup.Provider pProvider) {
-        tag(PneumaticCraftTags.EntityTypes.VACUUM_TRAP_BLACKLISTED);
+        tag(PneumaticCraftTags.EntityTypes.VACUUM_TRAP_BLACKLISTED).addTag(Tags.EntityTypes.CAPTURING_NOT_SUPPORTED);
         tag(PneumaticCraftTags.EntityTypes.VACUUM_TRAP_WHITELISTED);
         tag(PneumaticCraftTags.EntityTypes.OMNIHOPPER_BLACKLISTED).add(EntityType.VILLAGER);
     }

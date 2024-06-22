@@ -40,7 +40,7 @@ import org.joml.Matrix4f;
 
 public class ElevatorBaseRenderer extends AbstractBlockEntityModelRenderer<ElevatorBaseBlockEntity> {
     private static final float FACTOR = 9F / 16;
-    private static final float[] SHADE = new float[] { 1f, 0.85f, 0.7f, 0.55f };
+    private static final int[] SHADE = new int[] { 0xFFFFFFFF, 0xFFD8D8D8, 0xFFC0C0C0, 0xFF8C8C8C };
 
     private final ModelPart pole1;
     private final ModelPart pole2;
@@ -116,14 +116,14 @@ public class ElevatorBaseRenderer extends AbstractBlockEntityModelRenderer<Eleva
             float uMax = te.fakeFloorTextureUV[2];
             float vMax = te.fakeFloorTextureUV[3];
             Matrix4f posMat = matrixStack.last().pose();
-            builder.vertex(posMat,0, 0, 1).color(te.fakeFloorTextureTint)
-                    .uv(uMin, vMax).uv2(te.lightAbove).endVertex();
-            builder.vertex(posMat,1, 0, 1).color(te.fakeFloorTextureTint)
-                    .uv(uMax, vMax).uv2(te.lightAbove).endVertex();
-            builder.vertex(posMat,1, 0, 0).color(te.fakeFloorTextureTint)
-                    .uv(uMax, vMin).uv2(te.lightAbove).endVertex();
-            builder.vertex(posMat,0, 0, 0).color(te.fakeFloorTextureTint)
-                    .uv(uMin, vMin).uv2(te.lightAbove).endVertex();
+            builder.addVertex(posMat,0, 0, 1).setColor(te.fakeFloorTextureTint)
+                    .setUv(uMin, vMax).setLight(te.lightAbove);
+            builder.addVertex(posMat,1, 0, 1).setColor(te.fakeFloorTextureTint)
+                    .setUv(uMax, vMax).setLight(te.lightAbove);
+            builder.addVertex(posMat,1, 0, 0).setColor(te.fakeFloorTextureTint)
+                    .setUv(uMax, vMin).setLight(te.lightAbove);
+            builder.addVertex(posMat,0, 0, 0).setColor(te.fakeFloorTextureTint)
+                    .setUv(uMin, vMin).setLight(te.lightAbove);
             matrixStack.popPose();
         }
     }
@@ -134,7 +134,7 @@ public class ElevatorBaseRenderer extends AbstractBlockEntityModelRenderer<Eleva
         matrixStackIn.translate(0, FACTOR, 0);
         matrixStackIn.scale(1, (float) (extension * 16 / 14 / 4), 1);
         matrixStackIn.translate(0, -FACTOR, 0);
-        pole.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn, SHADE[idx], SHADE[idx], SHADE[idx], 1);
+        pole.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn, SHADE[idx]);
         matrixStackIn.popPose();
     }
 

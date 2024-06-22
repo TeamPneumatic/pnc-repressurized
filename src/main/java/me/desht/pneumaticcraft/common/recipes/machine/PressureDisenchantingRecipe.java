@@ -23,8 +23,10 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntList;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.registry.ModRecipeSerializers;
+import me.desht.pneumaticcraft.common.util.EnchantmentUtils;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.core.Holder;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -86,7 +88,7 @@ public class PressureDisenchantingRecipe extends PressureChamberRecipeImpl {
         ItemEnchantments.Mutable enchantments = new ItemEnchantments.Mutable(EnchantmentHelper.getEnchantmentsForCrafting(enchantedStack));
         List<Holder<Enchantment>> l = new ArrayList<>(enchantments.keySet());
         Holder<Enchantment> strippedEnchantment = l.get(ThreadLocalRandom.current().nextInt(l.size()));
-        int level = enchantments.getLevel(strippedEnchantment.value());
+        int level = enchantments.getLevel(strippedEnchantment);
         enchantments.removeIf(e -> e.value() == strippedEnchantment.value());
         // Workaround for setEnchantments on an Enchanted Book merging enchantments instead of setting them
         if (enchantedStack.getItem() == Items.ENCHANTED_BOOK) {
@@ -97,30 +99,34 @@ public class PressureDisenchantingRecipe extends PressureChamberRecipeImpl {
         // ...and create an enchanted book with it
         ItemStack enchantedBook = new ItemStack(Items.ENCHANTED_BOOK);
         ItemEnchantments.Mutable newEnchantments = new ItemEnchantments.Mutable(ItemEnchantments.EMPTY);
-        newEnchantments.set(strippedEnchantment.value(), level);
+        newEnchantments.set(strippedEnchantment, level);
         EnchantmentHelper.setEnchantments(enchantedBook, newEnchantments.toImmutable());
 
         return NonNullList.of(ItemStack.EMPTY, enchantedBook, enchantedStack);
     }
 
     @Override
-    public List<List<ItemStack>> getInputsForDisplay() {
+    public List<List<ItemStack>> getInputsForDisplay(HolderLookup.Provider provider) {
+        Holder<Enchantment> fortune = EnchantmentUtils.getEnchantment(provider, Enchantments.FORTUNE);
+        Holder<Enchantment> efficiency = EnchantmentUtils.getEnchantment(provider, Enchantments.EFFICIENCY);
         ItemStack pick = new ItemStack(Items.DIAMOND_PICKAXE);
-        pick.enchant(Enchantments.FORTUNE, 1);
+        pick.enchant(fortune, 1);
         ItemStack enchantedBook = new ItemStack(Items.ENCHANTED_BOOK);
-        enchantedBook.enchant(Enchantments.FORTUNE, 1);
-        enchantedBook.enchant(Enchantments.EFFICIENCY, 1);
+        enchantedBook.enchant(fortune, 1);
+        enchantedBook.enchant(efficiency, 1);
 
         return List.of(List.of(pick), List.of(new ItemStack(Items.BOOK)));
     }
 
     @Override
-    public List<List<ItemStack>> getResultsForDisplay() {
+    public List<List<ItemStack>> getResultsForDisplay(HolderLookup.Provider provider) {
+        Holder<Enchantment> fortune = EnchantmentUtils.getEnchantment(provider, Enchantments.FORTUNE);
+        Holder<Enchantment> efficiency = EnchantmentUtils.getEnchantment(provider, Enchantments.EFFICIENCY);
         ItemStack pick = new ItemStack(Items.DIAMOND_PICKAXE);
         ItemStack enchantedBook = new ItemStack(Items.ENCHANTED_BOOK);
-        enchantedBook.enchant(Enchantments.EFFICIENCY, 1);
+        enchantedBook.enchant(efficiency, 1);
         ItemStack resultBook = new ItemStack(Items.ENCHANTED_BOOK);
-        resultBook.enchant(Enchantments.FORTUNE, 1);
+        resultBook.enchant(fortune, 1);
 
         return List.of(List.of(pick, enchantedBook), List.of(resultBook));
     }

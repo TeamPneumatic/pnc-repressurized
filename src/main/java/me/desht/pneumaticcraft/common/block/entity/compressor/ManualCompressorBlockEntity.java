@@ -19,7 +19,6 @@ import org.jetbrains.annotations.Nullable;
 public class ManualCompressorBlockEntity extends AbstractAirHandlingBlockEntity {
     public static final int TICKS_PER_PUMP_STEP = 4; // Should be multiple of 4 to match hold-right click frequency
     public int ticksUntilNextPumpStep = 0;
-    private final static int airPerPumpCycle = ConfigHelper.common().machines.manualCompressorAirPerCycle.get();
     private final int effectiveVolume = airHandler.getVolume() * 5;
     @DescSynced
     public int pumpCycleProgress = 0;
@@ -92,7 +91,7 @@ public class ManualCompressorBlockEntity extends AbstractAirHandlingBlockEntity 
     public void setPumprodVerticalOffset() {
         // Changes the position of the pumprod relative to the pump cycle's progress
         // 0% = 0, 100% = 6.75
-        double pumprodVerticalOffset = pumpCycleProgress / (400/27.0);
+        double pumprodVerticalOffset = pumpCycleProgress / (400 / 27.0);
 
         // Updates previous and then current offsets
         if (pumprodVerticalOffsetPrevious != pumprodVerticalOffset) {
@@ -152,18 +151,17 @@ public class ManualCompressorBlockEntity extends AbstractAirHandlingBlockEntity 
     public void onPumpCycleComplete() {
         // Adds just enough air to completely fill the compressor if adding the default amount
         // would cause the compressor to overfill
-        if (airHandler.getAir() + airPerPumpCycle > effectiveVolume)
-        {
-            addAir(effectiveVolume - airHandler.getAir());
-        }
+        int airPerPumpCycle = ConfigHelper.common().machines.manualCompressorAirPerCycle.get();
 
-        // Adds the default amount of air
-        else {
+        if (airHandler.getAir() + airPerPumpCycle > effectiveVolume) {
+            addAir(effectiveVolume - airHandler.getAir());
+        } else {
+            // Adds the default amount of air
             addAir(airPerPumpCycle);
         }
 
         // Plays sound to denote a finished cycle
-        level.playSound(null, getBlockPos(), ModSounds.SHORT_HISS.get(), SoundSource.BLOCKS, 1 ,1);
+        level.playSound(null, getBlockPos(), ModSounds.SHORT_HISS.get(), SoundSource.BLOCKS, 1, 1);
     }
 
     @Override

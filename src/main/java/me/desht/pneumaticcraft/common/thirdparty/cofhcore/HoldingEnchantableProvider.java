@@ -22,6 +22,7 @@ import me.desht.pneumaticcraft.api.item.ItemVolumeModifier;
 import me.desht.pneumaticcraft.api.misc.Symbols;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.lib.ModIds;
+import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -32,12 +33,14 @@ import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import java.util.List;
 
 public class HoldingEnchantableProvider {
-    static Enchantment holdingEnchantment = null;
+    static Holder<Enchantment> holdingEnchantment = null;
     private static final boolean holdingEnabled = ConfigHelper.common().integration.cofhHoldingMultiplier.get() > 0;
 
     static void registerVolumeModifier() {
+        // TODO figure out how to init this now that enchantments are in a datapack registry
+
         // Gets if Holding enchantment has been registered
-        holdingEnchantment = BuiltInRegistries.ENCHANTMENT.get(new ResourceLocation(ModIds.COFH_CORE, "holding"));
+        holdingEnchantment = null; // BuiltInRegistries.ENCHANTMENT.get(ResourceLocation.fromNamespaceAndPath(ModIds.COFH_CORE, "holding"));
 
         // Registers the volume modifier for the Holding enchant if it's present and config-enabled
         if (holdingEnchantment != null && holdingEnabled) {
@@ -45,7 +48,7 @@ public class HoldingEnchantableProvider {
         }
     }
 
-    public record C0FHVolumeModifier(Enchantment holding) implements ItemVolumeModifier {
+    public record C0FHVolumeModifier(Holder<Enchantment> holding) implements ItemVolumeModifier {
         @Override
         public int getNewVolume(ItemStack stack, int oldVolume) {
             // finalVolume = baseVolume * ((1 + level_of_holding_enchantment) * configMultiplier)
@@ -55,9 +58,9 @@ public class HoldingEnchantableProvider {
 
         @Override
         public void addInfo(ItemStack stack, List<Component> text) {
-            int nHolding = stack.getEnchantmentLevel(holding);
-            if (nHolding > 0) {
-                text.add(Component.literal(Symbols.TRIANGLE_RIGHT + " ").append(holding.getFullname(nHolding)));
+            int count = stack.getEnchantmentLevel(holding);
+            if (count > 0) {
+                text.add(Component.literal(Symbols.TRIANGLE_RIGHT + " ").append(Enchantment.getFullname(holding, count)));
             }
         }
     }

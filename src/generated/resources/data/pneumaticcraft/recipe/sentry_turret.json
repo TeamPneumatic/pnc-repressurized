@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "I": {
+      "tag": "c:ingots/compressed_iron"
+    },
+    "M": {
+      "item": "pneumaticcraft:minigun"
+    },
+    "P": {
+      "tag": "pneumaticcraft:plastic_sheets"
+    }
+  },
+  "pattern": [
+    " M ",
+    "PIP",
+    "I I"
+  ],
+  "result": {
+    "count": 1,
+    "id": "pneumaticcraft:sentry_turret"
+  }
+}

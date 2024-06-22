@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "pneumaticcraft:logistics_frame_requester"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "pneumaticcraft:logistics_frame_requester"
+  }
+}

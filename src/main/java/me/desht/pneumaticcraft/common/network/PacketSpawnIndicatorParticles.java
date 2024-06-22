@@ -17,6 +17,7 @@
 
 package me.desht.pneumaticcraft.common.network;
 
+import me.desht.pneumaticcraft.client.util.RenderUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.particles.ParticleOptions;
@@ -69,7 +70,7 @@ public record PacketSpawnIndicatorParticles(BlockPos pos0, DyeColor dyeColor, Li
 
     public static void handle(PacketSpawnIndicatorParticles message, IPayloadContext ctx) {
         Level world = ctx.player().level();
-        float[] cols = message.dyeColor().getTextureDiffuseColors();
+        float[] cols = RenderUtils.decomposeColorF(message.dyeColor().getTextureDiffuseColor());
         ParticleOptions particle = new DustParticleOptions(new Vector3f(cols[0], cols[1], cols[2]), 1f);
         BlockPos pos0 = message.pos0();
         world.addParticle(particle, pos0.getX() + 0.5, pos0.getY() + 0.5, pos0.getZ() + 0.5, 0, 0, 0);

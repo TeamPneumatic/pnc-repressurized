@@ -36,7 +36,7 @@ public class RenderHeatFrame extends RenderSemiblockBase<HeatFrameEntity> {
         }
 
         VertexConsumer builder = bufferIn.getBuffer(RenderType.entityCutout(getTextureLocation(entityIn)));
-        model.renderToBuffer(matrixStackIn, builder, kludgeLightingLevel(entityIn, packedLightIn), OverlayTexture.pack(0F, false), 0, 0, 0, 1);
+        model.renderToBuffer(matrixStackIn, builder, kludgeLightingLevel(entityIn, packedLightIn), OverlayTexture.pack(0F, false), 0xFF000000);
         matrixStackIn.popPose();
     }
 

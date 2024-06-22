@@ -86,7 +86,7 @@ public class HackableMobDisarm implements IHackableEntity<Mob> {
         if (entity.getItemBySlot(slot).isEmpty()) return false;
 
         MobAccess access = (MobAccess)entity;
-        float[] dropChances = slot.getType() == EquipmentSlot.Type.ARMOR ? access.getArmorDropChances() : access.getHandDropChances();
+        float[] dropChances = slot.getType() == EquipmentSlot.Type.HUMANOID_ARMOR ? access.getArmorDropChances() : access.getHandDropChances();
         int slotIdx = slot.getIndex();
         boolean noDamage = dropChances[slotIdx] > 1f;
         ItemStack stack = entity.getItemBySlot(slot);

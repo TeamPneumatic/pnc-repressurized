@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "pneumaticcraft:pressure_tube"
+    },
+    {
+      "item": "pneumaticcraft:pressure_chamber_wall"
+    },
+    {
+      "item": "pneumaticcraft:pressure_chamber_wall"
+    },
+    {
+      "item": "pneumaticcraft:pressure_chamber_wall"
+    },
+    {
+      "item": "pneumaticcraft:pressure_chamber_wall"
+    }
+  ],
+  "result": {
+    "count": 4,
+    "id": "pneumaticcraft:pressure_chamber_valve"
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "type": "pneumaticcraft:fuel_quality",
+  "air_per_bucket": 1500000,
+  "burn_rate": 1.5,
+  "fluid": {
+    "tag": "c:fuels/gasoline"
+  }
+}

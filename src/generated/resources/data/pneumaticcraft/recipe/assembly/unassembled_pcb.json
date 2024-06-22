@@ -1,0 +1,12 @@
+{
+  "type": "pneumaticcraft:assembly_laser",
+  "input": {
+    "count": 1,
+    "item": "pneumaticcraft:empty_pcb"
+  },
+  "program": "laser",
+  "result": {
+    "count": 1,
+    "id": "pneumaticcraft:unassembled_pcb"
+  }
+}

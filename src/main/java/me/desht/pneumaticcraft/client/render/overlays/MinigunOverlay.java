@@ -6,6 +6,7 @@ import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.item.minigun.MinigunItem;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
 import me.desht.pneumaticcraft.lib.Textures;
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.LayeredDraw;
@@ -22,7 +23,7 @@ public class MinigunOverlay implements LayeredDraw.Layer {
     private static final float MINIGUN_TEXT_SIZE = 0.55f;
 
     @Override
-    public void render(GuiGraphics graphics, float partialTicks) {
+    public void render(GuiGraphics graphics, DeltaTracker partialTicks) {
         Minecraft mc = Minecraft.getInstance();
         int width = graphics.guiWidth();
         int height = graphics.guiHeight();

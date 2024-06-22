@@ -1,0 +1,37 @@
+{
+  "parent": "pneumaticcraft:advanced_pressure_tube",
+  "criteria": {
+    "0": {
+      "conditions": {
+        "items": [
+          {
+            "items": "pneumaticcraft:flux_compressor"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "background": "pneumaticcraft:textures/gui/advancement_bg.png",
+    "description": {
+      "translate": "pneumaticcraft.advancement.flux_compressor.desc"
+    },
+    "icon": {
+      "count": 1,
+      "id": "pneumaticcraft:flux_compressor"
+    },
+    "title": {
+      "translate": "pneumaticcraft.advancement.flux_compressor"
+    }
+  },
+  "requirements": [
+    [
+      "0"
+    ]
+  ],
+  "rewards": {
+    "experience": 10
+  },
+  "sends_telemetry_event": true
+}

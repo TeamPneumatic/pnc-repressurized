@@ -19,11 +19,12 @@ package me.desht.pneumaticcraft.common.thirdparty.mekanism;
 
 import me.desht.pneumaticcraft.api.harvesting.HoeHandler;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.ItemStack;
 
 public class PaxelHandler extends HoeHandler {
     public PaxelHandler() {
-        super(PaxelHandler::isMekanismPaxel, (stack, player) -> stack.hurtAndBreak(1, player.getRandom(), player, () -> { }));
+        super(PaxelHandler::isMekanismPaxel, (stack, player) -> stack.hurtAndBreak(1, (ServerLevel) player.level(), player, item -> { }));
     }
 
     private static boolean isMekanismPaxel(ItemStack stack) {

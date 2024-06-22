@@ -70,7 +70,7 @@ public class ModDataComponents {
             = register("saved_inv", ItemContainerContents.CODEC, ItemContainerContents.STREAM_CODEC);
     // Extended Smart Chest saved inventory
     public static final Supplier<DataComponentType<SmartChestBlockEntity.SavedData>> SMART_CHEST_SAVED
-            = register("saved_inv", SmartChestBlockEntity.SavedData.CODEC, SmartChestBlockEntity.SavedData.STREAM_CODEC);
+            = register("smartchest_saved_inv", SmartChestBlockEntity.SavedData.CODEC, SmartChestBlockEntity.SavedData.STREAM_CODEC);
 
 
     // Amadron

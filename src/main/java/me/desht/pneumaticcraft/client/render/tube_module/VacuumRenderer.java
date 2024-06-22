@@ -11,6 +11,7 @@ import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.FastColor;
 import net.minecraft.util.Mth;
 
 public class VacuumRenderer extends AbstractTubeModuleRenderer<VacuumModule> {
@@ -48,8 +49,9 @@ public class VacuumRenderer extends AbstractTubeModuleRenderer<VacuumModule> {
     }
 
     @Override
-    protected void render(VacuumModule module, PoseStack matrixStack, VertexConsumer builder, float partialTicks, int combinedLight, int combinedOverlay, float alpha) {
-        mainPart.render(matrixStack, builder, combinedLight, combinedOverlay, 1f, 1f, 1f, alpha);
+    protected void render(VacuumModule module, PoseStack matrixStack, VertexConsumer builder, float partialTicks, int combinedLight, int combinedOverlay, int alpha) {
+        int baseColor = FastColor.ARGB32.color(alpha, 0xFFFFFF);
+        mainPart.render(matrixStack, builder, combinedLight, combinedOverlay, baseColor);
 
         matrixStack.mulPose(Axis.XP.rotationDegrees(-90));
         float rotation = Mth.lerp(partialTicks, module.oldRotation, module.rotation);
@@ -60,7 +62,7 @@ public class VacuumRenderer extends AbstractTubeModuleRenderer<VacuumModule> {
             matrixStack.pushPose();
             matrixStack.mulPose(Axis.YP.rotationDegrees(rotation * 2 + (i + 0.5F) / BLADE_COUNT * 360));
             matrixStack.translate(0, 0, 1D / 16D);
-            blade.render(matrixStack, builder, combinedLight, combinedOverlay, 1f, 1f, 1f, alpha);
+            blade.render(matrixStack, builder, combinedLight, combinedOverlay, baseColor);
             matrixStack.popPose();
         }
         matrixStack.popPose();

@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "B": {
+      "item": "pneumaticcraft:printed_circuit_board"
+    },
+    "G": {
+      "item": "minecraft:black_stained_glass_pane"
+    },
+    "P": {
+      "tag": "pneumaticcraft:plastic_sheets"
+    },
+    "R": {
+      "tag": "c:dyes/red"
+    },
+    "T": {
+      "item": "pneumaticcraft:turbine_rotor"
+    }
+  },
+  "pattern": [
+    "RGR",
+    "TBT",
+    "P P"
+  ],
+  "result": {
+    "count": 1,
+    "id": "pneumaticcraft:programmer"
+  }
+}

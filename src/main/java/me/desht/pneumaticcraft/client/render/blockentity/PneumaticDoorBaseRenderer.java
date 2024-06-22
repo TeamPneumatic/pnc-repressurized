@@ -92,8 +92,8 @@ public class PneumaticDoorBaseRenderer extends AbstractBlockEntityModelRenderer<
         int l = ClientUtils.getLightAt(te.getBlockPos().relative(te.getRotation()));  // avoid cylinders rendering unlit
         cylinder1.render(matrixStackIn, builder, l, combinedOverlayIn);
         matrixStackIn.translate(0, 0, extensionPart);
-        cylinder2.render(matrixStackIn, builder, l, combinedOverlayIn, 0.8f, 0.8f, 0.8f, 1.0f);
+        cylinder2.render(matrixStackIn, builder, l, combinedOverlayIn, 0xFFCCCCCC);
         matrixStackIn.translate(0, 0, extensionPart);
-        cylinder3.render(matrixStackIn, builder, l, combinedOverlayIn, 0.6f, 0.6f, 0.6f, 1.0f);
+        cylinder3.render(matrixStackIn, builder, l, combinedOverlayIn, 0xFF989898);
     }
 }

@@ -1,0 +1,16 @@
+{
+  "type": "pneumaticcraft:thermo_plant",
+  "inputs": {
+    "item": {
+      "tag": "c:seeds"
+    }
+  },
+  "outputs": {
+    "fluid_output": {
+      "amount": 50,
+      "id": "pneumaticcraft:vegetable_oil"
+    }
+  },
+  "pressure": 2.0,
+  "speed": 0.5
+}

@@ -52,7 +52,7 @@ public class FluidStackVariableSerializer implements IVariableSerializer<FluidSt
             id = split[0];
             count = Integer.parseInt(split[1]);
         }
-        ResourceLocation fluidId = new ResourceLocation(id);
+        ResourceLocation fluidId = ResourceLocation.parse(id);
         if (!BuiltInRegistries.FLUID.containsKey(fluidId)) {
             throw new RuntimeException("Unknown fluid: " + id);
         }

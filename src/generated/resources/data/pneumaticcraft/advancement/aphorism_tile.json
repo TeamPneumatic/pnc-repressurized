@@ -1,0 +1,34 @@
+{
+  "parent": "pneumaticcraft:assembly_controller",
+  "criteria": {
+    "0": {
+      "conditions": {
+        "items": [
+          {
+            "items": "pneumaticcraft:aphorism_tile"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "background": "pneumaticcraft:textures/gui/advancement_bg.png",
+    "description": {
+      "translate": "pneumaticcraft.advancement.aphorism_tile.desc"
+    },
+    "icon": {
+      "count": 1,
+      "id": "pneumaticcraft:aphorism_tile"
+    },
+    "title": {
+      "translate": "pneumaticcraft.advancement.aphorism_tile"
+    }
+  },
+  "requirements": [
+    [
+      "0"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

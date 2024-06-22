@@ -1,7 +1,0 @@
-{
-  "type": "pneumaticcraft:fuel_quality",
-  "air_per_bucket": 1100000,
-  "fluid": {
-    "tag": "forge:kerosene"
-  }
-}

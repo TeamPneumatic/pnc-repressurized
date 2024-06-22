@@ -1,0 +1,38 @@
+{
+  "parent": "pneumaticcraft:tp_plant",
+  "criteria": {
+    "0": {
+      "conditions": {
+        "items": [
+          {
+            "items": "pneumaticcraft:plastic"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "background": "pneumaticcraft:textures/gui/advancement_bg.png",
+    "description": {
+      "translate": "pneumaticcraft.advancement.plastic.desc"
+    },
+    "frame": "goal",
+    "icon": {
+      "count": 1,
+      "id": "pneumaticcraft:plastic"
+    },
+    "title": {
+      "translate": "pneumaticcraft.advancement.plastic"
+    }
+  },
+  "requirements": [
+    [
+      "0"
+    ]
+  ],
+  "rewards": {
+    "experience": 10
+  },
+  "sends_telemetry_event": true
+}

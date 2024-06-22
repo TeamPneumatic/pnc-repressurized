@@ -1,0 +1,24 @@
+{
+  "type": "pneumaticcraft:crafting_shaped_pressurizable",
+  "category": "misc",
+  "key": {
+    "A": {
+      "item": "pneumaticcraft:compressed_iron_helmet"
+    },
+    "C": {
+      "item": "pneumaticcraft:air_canister"
+    },
+    "P": {
+      "item": "pneumaticcraft:printed_circuit_board"
+    }
+  },
+  "pattern": [
+    "CPC",
+    "CAC",
+    "CCC"
+  ],
+  "result": {
+    "count": 1,
+    "id": "pneumaticcraft:pneumatic_helmet"
+  }
+}

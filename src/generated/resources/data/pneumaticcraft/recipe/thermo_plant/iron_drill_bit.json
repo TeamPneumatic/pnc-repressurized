@@ -1,0 +1,21 @@
+{
+  "type": "pneumaticcraft:thermo_plant",
+  "air_use_multiplier": 2.0,
+  "inputs": {
+    "fluid": {
+      "amount": 2000,
+      "tag": "c:lubricant"
+    },
+    "item": {
+      "tag": "c:ingots/iron"
+    }
+  },
+  "outputs": {
+    "item_output": {
+      "count": 1,
+      "id": "pneumaticcraft:drill_bit_iron"
+    }
+  },
+  "pressure": 3.0,
+  "speed": 0.5
+}

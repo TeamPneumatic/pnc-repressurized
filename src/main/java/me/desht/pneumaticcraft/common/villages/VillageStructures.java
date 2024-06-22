@@ -76,7 +76,7 @@ public class VillageStructures {
         int weight = ConfigHelper.common().villagers.mechanicHouseWeight.get();
         if (weight > 0) {
             Holder<StructureProcessorList> emptyProcessor = event.getServer().registryAccess().registryOrThrow(Registries.PROCESSOR_LIST)
-                    .getHolderOrThrow(ResourceKey.create(Registries.PROCESSOR_LIST, new ResourceLocation("minecraft:empty")));
+                    .getHolderOrThrow(ResourceKey.create(Registries.PROCESSOR_LIST, ResourceLocation.parse("minecraft:empty")));
 
             Registry<StructureTemplatePool> templatePoolRegistry = event.getServer().registryAccess().registryOrThrow(Registries.TEMPLATE_POOL);
 
@@ -88,13 +88,13 @@ public class VillageStructures {
                     // note: in this case, our mechanic house is in the custom pneumaticcraft:village/<biome>/houses
                     //   template pool JSON, so doesn't need to be added in code
                     addPieceToPool(templatePoolRegistry, emptyProcessor,
-                            new ResourceLocation("village/" + v.getBiomeName() + "/streets"),
+                            ResourceLocation.parse("village/" + v.getBiomeName() + "/streets"),
                             Names.MOD_ID + ":villages/custom_street_" + v.getBiomeName(),
                             StructureTemplatePool.Projection.TERRAIN_MATCHING, Math.max(1, weight / 4));
                 } else {
                     // add the house to the vanilla minecraft:village/<biome>/houses pool
                     addPieceToPool(templatePoolRegistry, emptyProcessor,
-                            new ResourceLocation("village/" + v.getBiomeName() + "/houses"),
+                            ResourceLocation.parse("village/" + v.getBiomeName() + "/houses"),
                             Names.MOD_ID + ":villages/mechanic_house_" + v.getBiomeName(),
                             StructureTemplatePool.Projection.RIGID, weight
                     );

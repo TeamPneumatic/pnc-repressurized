@@ -32,14 +32,12 @@ import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.Util;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.resources.language.I18n;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
-import net.minecraft.world.item.enchantment.Enchantments;
-import net.minecraft.world.item.enchantment.ItemEnchantments;
 
 import java.util.Collections;
 import java.util.List;
@@ -51,18 +49,15 @@ public class ProgrammableControllerScreen extends AbstractPneumaticCraftContaine
         implements IGuiDrone
 {
     private static final ItemStack EYE_OFF = new ItemStack(Items.ENDER_EYE);
-    private static final ItemStack EYE_ON = Util.make(new ItemStack(Items.ENDER_EYE), stack -> {
-        ItemEnchantments.Mutable m = new ItemEnchantments.Mutable(ItemEnchantments.EMPTY);
-        m.set(Enchantments.SILK_TOUCH, 1);
-        EnchantmentHelper.setEnchantments(stack, m.toImmutable());
-    });
+    private static final ItemStack EYE_ON = Util.make(new ItemStack(Items.ENDER_EYE),
+            stack -> stack.set(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, true)
+    );
 
     private WidgetAnimatedStat chunkTab;
     private WidgetCheckBox shouldCharge;
     private WidgetCheckBox chunkloadSelf;
     private WidgetCheckBox chunkloadWork;
     private WidgetCheckBox chunkloadWork3x3;
-
 
     public ProgrammableControllerScreen(ProgrammableControllerMenu container, Inventory inv, Component displayString) {
         super(container, inv, displayString);

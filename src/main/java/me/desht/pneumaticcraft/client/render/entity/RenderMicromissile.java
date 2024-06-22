@@ -69,13 +69,13 @@ public class RenderMicromissile extends EntityRenderer<MicromissileEntity> {
         matrixStackIn.popPose();
     }
 
-    public void vertex(PoseStack.Pose pose, VertexConsumer builder, float x, float y, float z, float u, float v, float nx, float ny, float nz, int lightmap) {
-        builder.vertex(pose.pose(), x, y, z)
-                .color(255, 255, 255, 255)
-                .uv(u, v).overlayCoords(OverlayTexture.NO_OVERLAY)
-                .uv2(lightmap)
-                .normal(pose, nx, nz, ny)
-                .endVertex();
+    private static void vertex(PoseStack.Pose pose, VertexConsumer builder, float x, float y, float z, float u, float v, float nx, float ny, float nz, int lightmap) {
+        builder.addVertex(pose.pose(), x, y, z)
+                .setColor(255, 255, 255, 255)
+                .setUv(u, v)
+                .setOverlay(OverlayTexture.NO_OVERLAY)
+                .setLight(lightmap)
+                .setNormal(pose, nx, nz, ny);
     }
 
     @Override

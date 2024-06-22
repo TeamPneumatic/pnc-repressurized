@@ -18,12 +18,12 @@
 package me.desht.pneumaticcraft.api.crafting.recipe;
 
 import net.minecraft.core.HolderLookup;
-import net.minecraft.core.RegistryAccess;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.player.StackedContents;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingBookCategory;
+import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.level.Level;
 
@@ -37,12 +37,12 @@ public abstract class PneumaticCraftRecipe implements CraftingRecipe {
     }
 
     @Override
-    public boolean matches(CraftingContainer container, Level level) {
+    public boolean matches(CraftingInput container, Level level) {
         return true;
     }
 
     @Override
-    public ItemStack assemble(CraftingContainer container, HolderLookup.Provider registryAccess) {
+    public ItemStack assemble(CraftingInput container, HolderLookup.Provider registryAccess) {
         return ItemStack.EMPTY;
     }
 
@@ -65,7 +65,8 @@ public abstract class PneumaticCraftRecipe implements CraftingRecipe {
     public CraftingBookCategory category() {
         return CraftingBookCategory.MISC;
     }
-/**
+
+    /**
      * Just to keep vanilla happy...
      */
     public static class DummyIInventory implements CraftingContainer {

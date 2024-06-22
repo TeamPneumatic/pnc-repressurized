@@ -257,7 +257,7 @@ public class MiscEventHandler {
                 } else if (event.getFrom().getItem() instanceof MinigunItem) {
                     ((MinigunItem) event.getFrom().getItem()).onEquipmentChange(player, event.getFrom(), false);
                 }
-            } else if (event.getSlot().getType() == EquipmentSlot.Type.ARMOR) {
+            } else if (event.getSlot().getType() == EquipmentSlot.Type.HUMANOID_ARMOR) {
                 // trigger the "compressed iron man" advancement if wearing a full suit
                 for (ItemStack stack : player.getArmorSlots()) {
                     if (!(stack.getItem() instanceof PneumaticArmorItem)) {

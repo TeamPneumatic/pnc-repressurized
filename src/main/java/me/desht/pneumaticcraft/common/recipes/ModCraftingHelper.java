@@ -27,6 +27,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.fluids.FluidStack;
@@ -75,13 +76,13 @@ public class ModCraftingHelper {
 //        return json;
     }
 
-    public static List<ItemStack> findItems(CraftingContainer inv, List<Predicate<ItemStack>> predicates) {
+    public static List<ItemStack> findItems(CraftingInput inv, List<Predicate<ItemStack>> predicates) {
         List<ItemStack> res = new ArrayList<>();
-        BitSet matchedSlots = new BitSet(inv.getContainerSize());
+        BitSet matchedSlots = new BitSet(inv.size());
 
         for (var pred : predicates) {
             boolean found = false;
-            for (int i = 0; i < inv.getContainerSize(); i++) {
+            for (int i = 0; i < inv.size(); i++) {
                 if (!matchedSlots.get(i)) {
                     ItemStack stack = inv.getItem(i);
                     if (pred.test(stack)) {
@@ -96,14 +97,14 @@ public class ModCraftingHelper {
         }
 
         // check any unmatched slots for extraneous items
-        for (int i = 0; i < inv.getContainerSize(); i++) {
+        for (int i = 0; i < inv.size(); i++) {
             if (!matchedSlots.get(i) && !inv.getItem(i).isEmpty()) return List.of();
         }
 
         return res;
     }
 
-    public static boolean allPresent(CraftingContainer inv, List<Predicate<ItemStack>> predicates) {
+    public static boolean allPresent(CraftingInput inv, List<Predicate<ItemStack>> predicates) {
         return findItems(inv, predicates).size() == predicates.size();
     }
 }

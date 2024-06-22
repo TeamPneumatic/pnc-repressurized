@@ -64,6 +64,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static net.minecraft.client.renderer.LightTexture.FULL_BRIGHT;
+
 public class WidgetAnimatedStat extends AbstractWidget implements IGuiAnimatedStat {
     private static final int MIN_WIDTH_HEIGHT = 17;
     private static final int MAX_VISIBLE_LINES = 12;
@@ -461,8 +463,8 @@ public class WidgetAnimatedStat extends AbstractWidget implements IGuiAnimatedSt
             xOff = -1;
         }
         graphics.fill(renderBaseX, renderAffectedY, renderBaseX + renderWidth, renderAffectedY + renderHeight, backGroundColor);
-        int sideU = bgColorHi.getRGB();
-        int sideD = bgColorLo.getRGB();
+        int sideU = bgColorHi.getARGB();
+        int sideD = bgColorLo.getARGB();
         int sideL = leftSided ? sideD : sideU;
         int sideR = leftSided ? sideU : sideD;
         graphics.fill(renderBaseX, renderAffectedY - 1, renderBaseX + renderWidth, renderAffectedY, sideU);
@@ -529,22 +531,18 @@ public class WidgetAnimatedStat extends AbstractWidget implements IGuiAnimatedSt
         int[] cols = RenderUtils.decomposeColor(backGroundColor);
         RenderUtils.renderWithTypeAndFinish(poseStack, buffer, ModRenderTypes.UNTEXTURED_QUAD_NO_DEPTH, (posMat, builder) -> {
             int rw = leftSided ? -renderWidth : renderWidth;
-            builder.vertex(posMat, (float)renderBaseX, (float)renderEffectiveY + renderHeight, 0.0F)
-                    .color(cols[1], cols[2], cols[3], cols[0])
-                    .uv2(RenderUtils.FULL_BRIGHT)
-                    .endVertex();
-            builder.vertex(posMat, (float)renderBaseX + rw, (float)renderEffectiveY + renderHeight, 0.0F)
-                    .color(cols[1], cols[2], cols[3], cols[0])
-                    .uv2(RenderUtils.FULL_BRIGHT)
-                    .endVertex();
-            builder.vertex(posMat, (float)renderBaseX + rw, (float)renderEffectiveY, 0.0F)
-                    .color(cols[1], cols[2], cols[3], cols[0])
-                    .uv2(RenderUtils.FULL_BRIGHT)
-                    .endVertex();
-            builder.vertex(posMat, (float)renderBaseX, (float)renderEffectiveY, 0.0F)
-                    .color(cols[1], cols[2], cols[3], cols[0])
-                    .uv2(RenderUtils.FULL_BRIGHT)
-                    .endVertex();
+            builder.addVertex(posMat, (float)renderBaseX, (float)renderEffectiveY + renderHeight, 0.0F)
+                    .setColor(cols[1], cols[2], cols[3], cols[0])
+                    .setLight(FULL_BRIGHT);
+            builder.addVertex(posMat, (float)renderBaseX + rw, (float)renderEffectiveY + renderHeight, 0.0F)
+                    .setColor(cols[1], cols[2], cols[3], cols[0])
+                    .setLight(FULL_BRIGHT);
+            builder.addVertex(posMat, (float)renderBaseX + rw, (float)renderEffectiveY, 0.0F)
+                    .setColor(cols[1], cols[2], cols[3], cols[0])
+                    .setLight(FULL_BRIGHT);
+            builder.addVertex(posMat, (float)renderBaseX, (float)renderEffectiveY, 0.0F)
+                    .setColor(cols[1], cols[2], cols[3], cols[0])
+                    .setLight(FULL_BRIGHT);
         });
 
         // line loops border
@@ -836,11 +834,11 @@ public class WidgetAnimatedStat extends AbstractWidget implements IGuiAnimatedSt
                 matrixStack.scale(15, 15, 1);
                 ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
                 BakedModel ibakedmodel = itemRenderer.getModel(stack, ClientUtils.getClientLevel(), null, 0);
-                itemRenderer.render(stack, ItemDisplayContext.GUI, true, matrixStack, buffer, RenderUtils.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, ibakedmodel);
+                itemRenderer.render(stack, ItemDisplayContext.GUI, true, matrixStack, buffer, FULL_BRIGHT, OverlayTexture.NO_OVERLAY, ibakedmodel);
                 matrixStack.popPose();
             }).ifRight(resLoc ->
                     RenderUtils.renderWithTypeAndFinish(matrixStack, buffer, ModRenderTypes.getTextureRenderColored(resLoc),
-                            (posMat, builder) -> RenderUtils.drawTexture(matrixStack, builder, x, y, RenderUtils.FULL_BRIGHT)));
+                            (posMat, builder) -> RenderUtils.drawTexture(matrixStack, builder, x, y, FULL_BRIGHT)));
         }
     }
 

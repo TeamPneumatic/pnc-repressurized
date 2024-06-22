@@ -91,7 +91,9 @@ public class PNCCapabilities {
      * @return the optional air handler
      */
     public static Optional<IAirHandlerMachine> getAirHandler(BlockEntity blockEntity, Direction direction) {
-        return Optional.ofNullable(blockEntity.getLevel().getCapability(AIR_HANDLER_MACHINE, blockEntity.getBlockPos(), direction));
+        return blockEntity.getLevel() == null ?
+                Optional.empty() :
+                Optional.ofNullable(blockEntity.getLevel().getCapability(AIR_HANDLER_MACHINE, blockEntity.getBlockPos(), direction));
     }
 
     /**

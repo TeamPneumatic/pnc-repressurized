@@ -86,7 +86,6 @@ public class PneumaticDoorRenderer extends AbstractBlockEntityModelRenderer<Pneu
 
         float rotation = Mth.lerp(partialTicks, te.oldRotationAngle, te.rotationAngle);
         boolean rightGoing = te.rightGoing;
-        float[] rgb = te.color.getTextureDiffuseColors();
 
         RenderUtils.rotateMatrixForDirection(matrixStackIn, te.getRotation());
 
@@ -99,7 +98,7 @@ public class PneumaticDoorRenderer extends AbstractBlockEntityModelRenderer<Pneu
             matrixStackIn.mulPose(Axis.YP.rotationDegrees(180));
             matrixStackIn.translate(0, 0, 6.5/16F);
         }
-        door.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn, rgb[0], rgb[1], rgb[2], 1f);
+        door.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn, 0xFF000000 | te.color.getTextureDiffuseColor());
     }
 
     @Override

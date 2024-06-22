@@ -1,0 +1,33 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "B": {
+      "tag": "c:storage_blocks/compressed_iron"
+    },
+    "C": {
+      "item": "pneumaticcraft:pneumatic_cylinder"
+    },
+    "D": {
+      "tag": "c:gems/diamond"
+    },
+    "I": {
+      "tag": "c:ingots/compressed_iron"
+    },
+    "P": {
+      "item": "pneumaticcraft:plastic"
+    },
+    "T": {
+      "item": "pneumaticcraft:pressure_tube"
+    }
+  },
+  "pattern": [
+    "PBP",
+    "ITI",
+    "DCD"
+  ],
+  "result": {
+    "count": 1,
+    "id": "pneumaticcraft:jackhammer"
+  }
+}

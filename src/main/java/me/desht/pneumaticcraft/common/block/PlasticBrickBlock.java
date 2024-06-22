@@ -68,7 +68,7 @@ public class PlasticBrickBlock extends Block implements ColorHandlers.ITintableB
         super(props);
 
         this.dyeColor = dyeColor;
-        this.tintColor = PneumaticCraftUtils.getDyeColorAsRGB(dyeColor);
+        this.tintColor = dyeColor.getTextureDiffuseColor();
 
         registerDefaultState(defaultBlockState()
                 .setValue(X_PART, PartType.NONE)

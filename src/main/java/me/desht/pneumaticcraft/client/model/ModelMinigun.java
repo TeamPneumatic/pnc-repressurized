@@ -9,7 +9,6 @@ package me.desht.pneumaticcraft.client.model;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
-import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.model.Model;
@@ -21,6 +20,7 @@ import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.util.Mth;
 
 /**
  * Used in three different places:
@@ -150,7 +150,7 @@ public class ModelMinigun extends Model {
 
         float barrelRotation = 0;
         if (minigun != null) {
-            barrelRotation = minigun.getOldMinigunRotation() + partialTick * (minigun.getMinigunRotation() - minigun.getOldMinigunRotation());
+            barrelRotation = Mth.lerp(partialTick, minigun.getOldMinigunRotation(), minigun.getMinigunRotation());
             float yaw = minigun.oldMinigunYaw + partialTick * Minigun.clampYaw(minigun.minigunYaw - minigun.oldMinigunYaw);
             float pitch = minigun.oldMinigunPitch + partialTick * (minigun.minigunPitch - minigun.oldMinigunPitch);
 
@@ -178,8 +178,7 @@ public class ModelMinigun extends Model {
         magazine.render(matrixStack, builder, combinedLight, combinedOverlay);
         main.render(matrixStack, builder, combinedLight, combinedOverlay);
 
-        float[] cols = RenderUtils.decomposeColorF(minigun != null ? 0xFF000000 | minigun.getAmmoColor() : 0xFF313131);
-        magazineColor.render(matrixStack, builder, combinedLight, combinedOverlay, cols[1], cols[2], cols[3], cols[0]);
+        magazineColor.render(matrixStack, builder, combinedLight, combinedOverlay, minigun != null ? 0xFF000000 | minigun.getAmmoColor() : 0xFF313131);
 
         matrixStack.popPose();
     }
@@ -191,6 +190,6 @@ public class ModelMinigun extends Model {
     }
 
     @Override
-    public void renderToBuffer(PoseStack pPoseStack, VertexConsumer pBuffer, int pPackedLight, int pPackedOverlay, float pRed, float pGreen, float pBlue, float pAlpha) {
+    public void renderToBuffer(PoseStack pPoseStack, VertexConsumer pBuffer, int pPackedLight, int pPackedOverlay, int color) {
     }
 }

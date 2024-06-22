@@ -32,7 +32,7 @@ public class PatchouliBookCrafting {
     private static final String NBT_VAL = "pneumaticcraft:book";
 
     private static final Supplier<Item> guideBook
-            = Suppliers.memoize(() -> BuiltInRegistries.ITEM.get(new ResourceLocation(ModIds.PATCHOULI, "guide_book")));
+            = Suppliers.memoize(() -> BuiltInRegistries.ITEM.get(ResourceLocation.fromNamespaceAndPath(ModIds.PATCHOULI, "guide_book")));
 
     public static ItemStack makeGuideBook() {
 //        return Util.make(new ItemStack(guideBook.get()), s -> s.getOrCreateTag().putString(NBT_KEY, NBT_VAL));

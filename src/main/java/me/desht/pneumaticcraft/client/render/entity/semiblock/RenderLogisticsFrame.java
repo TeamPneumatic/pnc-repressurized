@@ -12,6 +12,7 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.FastColor;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
@@ -64,7 +65,8 @@ public class RenderLogisticsFrame extends RenderSemiblockBase<AbstractLogisticsF
         }
 
         VertexConsumer builder = bufferIn.getBuffer(RenderType.entityTranslucent(getTextureLocation(entity)));
-        model.renderToBuffer(matrixStackIn, builder, kludgeLightingLevel(entity, packedLightIn), OverlayTexture.pack(0F, false), 1f, 1f, 1f, alpha);
+        int color = FastColor.ARGB32.color((int) (255 * alpha), 255, 255, 255);
+        model.renderToBuffer(matrixStackIn, builder, kludgeLightingLevel(entity, packedLightIn), OverlayTexture.pack(0F, false), color);
 
         matrixStackIn.popPose();
     }

@@ -17,7 +17,7 @@ public abstract class AbstractTubeModuleRenderer<T extends AbstractTubeModule> {
         matrixStack.scale(1f, -1f, -1f);
 
         RenderUtils.rotateMatrixForDirection(matrixStack, module.getDirection());
-        float alpha = module.isFake() ? 0.3f : 1f;
+        int alpha = module.isFake() ? 80 : 255;
 
         VertexConsumer builder = module.isFake() ?
                 buffer.getBuffer(RenderType.entityTranslucent(getTexture(module.isUpgraded()))) :
@@ -29,7 +29,7 @@ public abstract class AbstractTubeModuleRenderer<T extends AbstractTubeModule> {
         renderExtras(module, matrixStack, buffer, partialTicks, combinedLight, combinedOverlay);
     }
 
-    protected abstract void render(T module, PoseStack matrixStack, VertexConsumer builder, float partialTicks, int combinedLight, int combinedOverlay, float alpha);
+    protected abstract void render(T module, PoseStack matrixStack, VertexConsumer builder, float partialTicks, int combinedLight, int combinedOverlay, int alpha);
 
     protected abstract ResourceLocation getTexture(boolean isUpgraded);
 

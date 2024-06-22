@@ -97,7 +97,7 @@ public class ReinforcedChestBlockEntity extends AbstractPneumaticCraftBlockEntit
         super.loadAdditional(tag, provider);
 
         if (tag.contains(NBT_LOOT_TABLE, Tag.TAG_STRING)) {
-            lootTable = ResourceKey.create(Registries.LOOT_TABLE, new ResourceLocation(tag.getString(NBT_LOOT_TABLE)));
+            lootTable = ResourceKey.create(Registries.LOOT_TABLE, ResourceLocation.parse(tag.getString(NBT_LOOT_TABLE)));
             lootTableSeed = tag.getLong(NBT_LOOT_TABLE_SEED);
         } else {
             inventory.deserializeNBT(provider, tag.getCompound(NBT_ITEMS));

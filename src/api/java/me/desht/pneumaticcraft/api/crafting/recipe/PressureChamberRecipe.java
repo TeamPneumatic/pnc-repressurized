@@ -21,6 +21,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntList;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.common.crafting.SizedIngredient;
 import net.neoforged.neoforge.items.IItemHandler;
@@ -50,7 +51,7 @@ public abstract class PressureChamberRecipe extends PneumaticCraftRecipe {
     public abstract float getCraftingPressure(IItemHandler chamberHandler, IntList ingredientSlots);
 
     /**
-     * Get the required crafting pressure for the items specified by {@link #getInputsForDisplay()}, for display
+     * Get the required crafting pressure for the items specified by {@link #getInputsForDisplay(HolderLookup.Provider)}, for display
      * purposes only (e.g. for JEI)
      */
     public abstract float getCraftingPressureForDisplay();
@@ -73,15 +74,18 @@ public abstract class PressureChamberRecipe extends PneumaticCraftRecipe {
     /**
      * Get the input items for this recipe. This is primarily intended for recipe display purposes by
      * JEI or any other recipe display mod.
+     *
+     * @param provider lookup provider
      */
-    public abstract List<List<ItemStack>> getInputsForDisplay();
+    public abstract List<List<ItemStack>> getInputsForDisplay(HolderLookup.Provider provider);
 
     /**
      * Implement if no output slots display more than one stack.
      *
-     * @see PressureChamberRecipe#getResultsForDisplay()
+     * @param provider lookup provider
+     * @see PressureChamberRecipe#getResultsForDisplay(HolderLookup.Provider)
      */
-    protected List<ItemStack> getSingleResultsForDisplay() {
+    protected List<ItemStack> getSingleResultsForDisplay(HolderLookup.Provider provider) {
         return ImmutableList.of();
     }
 
@@ -90,10 +94,10 @@ public abstract class PressureChamberRecipe extends PneumaticCraftRecipe {
      * JEI, Patchouli, or any other recipe display mod.
      * <p>
      * If overriding and no output slots display more than one stack then can override
-     * {@link PressureChamberRecipe#getSingleResultsForDisplay()} instead.
+     * {@link PressureChamberRecipe#getSingleResultsForDisplay(HolderLookup.Provider)} instead.
      */
-    public List<List<ItemStack>> getResultsForDisplay() {
-        return getSingleResultsForDisplay().stream()
+    public List<List<ItemStack>> getResultsForDisplay(HolderLookup.Provider provider) {
+        return getSingleResultsForDisplay(provider).stream()
                 .map(ImmutableList::of)
                 .collect(ImmutableList.toImmutableList());
     }

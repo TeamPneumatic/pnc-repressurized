@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "pneumaticcraft:compressed_iron_block"
+    }
+  ],
+  "result": {
+    "count": 9,
+    "id": "pneumaticcraft:ingot_iron_compressed"
+  }
+}

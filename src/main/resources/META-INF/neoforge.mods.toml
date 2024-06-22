@@ -1,0 +1,44 @@
+license="GNU GPLv3"
+modLoader="javafml"
+loaderVersion="${loader_version_range}"
+issueTrackerURL="https://github.com/TeamPneumatic/pnc-repressurized/issues"
+displayURL="https://minecraft.curseforge.com/projects/pneumaticcraft-repressurized"
+logoFile="pncr_logo.png"
+credits=""
+authors="desht, MineMaarten"
+
+[[mods]]
+    modId="pneumaticcraft"
+    version="${mod_version}"
+    displayName="PneumaticCraft: Repressurized"
+    updateJSONURL="https://raw.githubusercontent.com/TeamPneumatic/pnc-repressurized/${minecraft_version}/release_info.json" #optional
+    description='''
+PneumaticCraft: Repressurized: doing cool stuff with compressed air.'''
+
+[[dependencies.pneumaticcraft]]
+    modId="neoforge" #mandatory
+    type="required" #mandatory
+    versionRange="${neo_version_range}" #mandatory
+    ordering="NONE"
+    side="BOTH"
+[[dependencies.pneumaticcraft]]
+    modId="minecraft"
+    type="required"
+    versionRange="${minecraft_version_range}"
+    ordering="NONE"
+    side="BOTH"
+[[dependencies.pneumaticcraft]]
+    modId="patchouli"
+    type="optional"
+    versionRange="[1.20.4-85,)"
+    ordering="NONE"
+    side="BOTH"
+[[dependencies.pneumaticcraft]]
+    modId="jei"
+    type="optional"
+    versionRange="[17.3.0,)"
+    ordering="NONE"
+    side="BOTH"
+
+[[mixins]]
+    config = "mixins.pneumaticcraft.json"

@@ -3,7 +3,6 @@ package me.desht.pneumaticcraft.client.render.tube_module;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import me.desht.pneumaticcraft.client.model.PNCModelLayers;
-import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.tubemodules.LogisticsModule;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.model.geom.ModelPart;
@@ -14,7 +13,10 @@ import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.FastColor;
 import net.minecraft.world.item.DyeColor;
+
+import static net.minecraft.client.renderer.LightTexture.FULL_BRIGHT;
 
 public class LogisticsRenderer extends AbstractTubeModuleRenderer<LogisticsModule> {
     private final ModelPart base2;
@@ -86,7 +88,7 @@ public class LogisticsRenderer extends AbstractTubeModuleRenderer<LogisticsModul
     }
 
     @Override
-    protected void render(LogisticsModule module, PoseStack matrixStack, VertexConsumer builder, float partialTicks, int combinedLight, int combinedOverlay, float alpha) {
+    protected void render(LogisticsModule module, PoseStack matrixStack, VertexConsumer builder, float partialTicks, int combinedLight, int combinedOverlay, int alpha) {
         ModelPart base;
         if (module.getTicksSinceAction() >= 0) {
             base = action;
@@ -95,15 +97,17 @@ public class LogisticsRenderer extends AbstractTubeModuleRenderer<LogisticsModul
         } else {
             base = module.hasPower() ? powered : notPowered;
         }
-        base.render(matrixStack, builder, RenderUtils.FULL_BRIGHT, combinedOverlay, 1f, 1f, 1f, alpha);
-        base2.render(matrixStack, builder, combinedLight, combinedOverlay, 1f, 1f, 1f, alpha);
+
+        int baseColor = FastColor.ARGB32.color(alpha, 0xFFFFFF);
+        base.render(matrixStack, builder, FULL_BRIGHT, combinedOverlay, baseColor);
+        base2.render(matrixStack, builder, combinedLight, combinedOverlay, baseColor);
 
         // the coloured frame
-        float[] cols = DyeColor.byId(module.getColorChannel()).getTextureDiffuseColors();
-        shape1.render(matrixStack, builder, combinedLight, combinedOverlay, cols[0], cols[1], cols[2], alpha);
-        shape2.render(matrixStack, builder, combinedLight, combinedOverlay, cols[0], cols[1], cols[2], alpha);
-        shape3.render(matrixStack, builder, combinedLight, combinedOverlay, cols[0], cols[1], cols[2], alpha);
-        shape4.render(matrixStack, builder, combinedLight, combinedOverlay, cols[0], cols[1], cols[2], alpha);
+        int frameColor = FastColor.ARGB32.color(alpha, DyeColor.byId(module.getColorChannel()).getTextureDiffuseColor());
+        shape1.render(matrixStack, builder, combinedLight, combinedOverlay, frameColor);
+        shape2.render(matrixStack, builder, combinedLight, combinedOverlay, frameColor);
+        shape3.render(matrixStack, builder, combinedLight, combinedOverlay, frameColor);
+        shape4.render(matrixStack, builder, combinedLight, combinedOverlay, frameColor);
     }
 
     @Override

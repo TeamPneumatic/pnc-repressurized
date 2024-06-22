@@ -93,14 +93,14 @@ public class RenderEntityVortex extends EntityRenderer<VortexEntity> {
 
         Matrix4f posMat = matrixStackIn.last().pose();
 
-        wr.vertex(posMat, -7.0F, -2.0F, -2.0F).color(1f, 1f, 1f, 0.5f).uv(u1, v1).uv2(packedLightIn).endVertex();
-        wr.vertex(posMat, -7.0F, -2.0F, 2.0F).color(1f, 1f, 1f, 0.5f).uv(u2, v1).uv2(packedLightIn).endVertex();
-        wr.vertex(posMat, -7.0F, 2.0F, 2.0F).color(1f, 1f, 1f, 0.5f).uv(u2, v2).uv2(packedLightIn).endVertex();
-        wr.vertex(posMat, -7.0F, 2.0F, -2.0F).color(1f, 1f, 1f, 0.5f).uv(u1, v2).uv2(packedLightIn).endVertex();
+        wr.addVertex(posMat, -7.0F, -2.0F, -2.0F).setColor(1f, 1f, 1f, 0.5f).setUv(u1, v1).setLight(packedLightIn);
+        wr.addVertex(posMat, -7.0F, -2.0F, 2.0F).setColor(1f, 1f, 1f, 0.5f).setUv(u2, v1).setLight(packedLightIn);
+        wr.addVertex(posMat, -7.0F, 2.0F, 2.0F).setColor(1f, 1f, 1f, 0.5f).setUv(u2, v2).setLight(packedLightIn);
+        wr.addVertex(posMat, -7.0F, 2.0F, -2.0F).setColor(1f, 1f, 1f, 0.5f).setUv(u1, v2).setLight(packedLightIn);
 
-        wr.vertex(posMat, -7.0F, 2.0F, -2.0F).color(1f, 1f, 1f, 0.5f).uv(u1, v1).uv2(packedLightIn).endVertex();
-        wr.vertex(posMat, -7.0F, 2.0F, 2.0F).color(1f, 1f, 1f, 0.5f).uv(u2, v1).uv2(packedLightIn).endVertex();
-        wr.vertex(posMat, -7.0F, -2.0F, 2.0F).color(1f, 1f, 1f, 0.5f).uv(u2, v2).uv2(packedLightIn).endVertex();
-        wr.vertex(posMat, -7.0F, -2.0F, -2.0F).color(1f, 1f, 1f, 0.5f).uv(u1, v2).uv2(packedLightIn).endVertex();
+        wr.addVertex(posMat, -7.0F, 2.0F, -2.0F).setColor(1f, 1f, 1f, 0.5f).setUv(u1, v1).setLight(packedLightIn);
+        wr.addVertex(posMat, -7.0F, 2.0F, 2.0F).setColor(1f, 1f, 1f, 0.5f).setUv(u2, v1).setLight(packedLightIn);
+        wr.addVertex(posMat, -7.0F, -2.0F, 2.0F).setColor(1f, 1f, 1f, 0.5f).setUv(u2, v2).setLight(packedLightIn);
+        wr.addVertex(posMat, -7.0F, -2.0F, -2.0F).setColor(1f, 1f, 1f, 0.5f).setUv(u1, v2).setLight(packedLightIn);
     }
 }

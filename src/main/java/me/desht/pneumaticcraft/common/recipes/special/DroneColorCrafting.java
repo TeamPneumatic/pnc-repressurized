@@ -24,13 +24,9 @@ import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.registry.ModRecipeSerializers;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
-import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.CraftingBookCategory;
-import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.crafting.RecipeSerializer;
-import net.minecraft.world.item.crafting.ShapelessRecipe;
+import net.minecraft.world.item.crafting.*;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.common.Tags;
 
@@ -50,12 +46,12 @@ public class DroneColorCrafting extends ShapelessRecipe {
     }
 
     @Override
-    public boolean matches(CraftingContainer container, Level level) {
+    public boolean matches(CraftingInput container, Level level) {
         return ModCraftingHelper.allPresent(container, ITEM_PREDICATES);
     }
 
     @Override
-    public ItemStack assemble(CraftingContainer container, HolderLookup.Provider registryAccess) {
+    public ItemStack assemble(CraftingInput container, HolderLookup.Provider registryAccess) {
         List<ItemStack> stacks = ModCraftingHelper.findItems(container, ITEM_PREDICATES);
         ItemStack drone = stacks.get(0).copy();
         DyeColor dyeColor = DyeColor.getColor(stacks.get(1));

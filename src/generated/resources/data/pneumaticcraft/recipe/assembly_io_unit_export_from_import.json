@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "pneumaticcraft:assembly_io_unit_import"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "pneumaticcraft:assembly_io_unit_export"
+  }
+}

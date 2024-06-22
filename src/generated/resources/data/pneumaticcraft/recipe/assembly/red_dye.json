@@ -1,0 +1,12 @@
+{
+  "type": "pneumaticcraft:assembly_drill",
+  "input": {
+    "count": 1,
+    "tag": "c:dusts/redstone"
+  },
+  "program": "drill",
+  "result": {
+    "count": 2,
+    "id": "minecraft:red_dye"
+  }
+}

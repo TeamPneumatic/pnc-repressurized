@@ -152,7 +152,7 @@ public class DroneItem extends PressurizableItem
 
     @Override
     public int getTintColor(ItemStack stack, int tintIndex) {
-        return tintIndex == 1 ? PneumaticCraftUtils.getDyeColorAsRGB(getDroneColor(stack)) : -1;
+        return tintIndex == 1 ? getDroneColor(stack).getTextureDiffuseColor() : 0xFFFFFFFF;
     }
 
     public static boolean isBasicDrone(ItemStack stack) {

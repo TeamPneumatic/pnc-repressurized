@@ -50,18 +50,22 @@ public class PneumaticCraftTags {
         public static final TagKey<Block> JACKHAMMER_ORES = modTag("jackhammer_ores");
         public static final TagKey<Block> ELECTROSTATIC_GRID = modTag("electrostatic_grid");
 
-        public static final TagKey<Block> STORAGE_BLOCKS_COMPRESSED_IRON = forgeTag("storage_blocks/compressed_iron");
+        public static final TagKey<Block> STORAGE_BLOCKS_COMPRESSED_IRON = commonTag("storage_blocks/compressed_iron");
 
         static TagKey<Block> tag(String modid, String name) {
-            return TagKey.create(Registries.BLOCK, new ResourceLocation(modid, name));
+            return TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath(modid, name));
         }
 
         static TagKey<Block> modTag(String name) {
             return tag(Names.MOD_ID, name);
         }
 
-        static TagKey<Block> forgeTag(String name) {
-            return tag("forge", name);
+        static TagKey<Block> neoforgeTag(String name) {
+            return tag("neoforge", name);
+        }
+
+        static TagKey<Block> commonTag(String name) {
+            return tag("c", name);
         }
     }
 
@@ -85,44 +89,47 @@ public class PneumaticCraftTags {
         public static final TagKey<Item> UPGRADE_COMPONENTS = modTag("upgrade_components");
         public static final TagKey<Item> BASIC_DRONES = modTag("basic_drones");
         public static final TagKey<Item> PLASTIC_SHEETS = modTag("plastic_sheets");
-        public static final TagKey<Item> FLOUR = forgeTag("dusts/flour");
+        public static final TagKey<Item> FLOUR = commonTag("dusts/flour");
 
-        public static final TagKey<Item> INGOTS_COMPRESSED_IRON = forgeTag("ingots/compressed_iron");
-        public static final TagKey<Item> STORAGE_BLOCKS_COMPRESSED_IRON = forgeTag("storage_blocks/compressed_iron");
-        public static final TagKey<Item> GEARS = forgeTag("gears");
-        public static final TagKey<Item> GEARS_COMPRESSED_IRON = forgeTag("gears/compressed_iron");
-        public static final TagKey<Item> NUGGETS_COPPER = forgeTag("nuggets/copper");
+        public static final TagKey<Item> INGOTS_COMPRESSED_IRON = commonTag("ingots/compressed_iron");
+        public static final TagKey<Item> STORAGE_BLOCKS_COMPRESSED_IRON = commonTag("storage_blocks/compressed_iron");
+        public static final TagKey<Item> GEARS = commonTag("gears");
+        public static final TagKey<Item> GEARS_COMPRESSED_IRON = commonTag("gears/compressed_iron");
+        public static final TagKey<Item> NUGGETS_COPPER = commonTag("nuggets/copper");
 
         public static final TagKey<Item> CURIO = tag("curios", "curio");
 
-        public static final TagKey<Item> BREAD = forgeTag("bread");
-
-        public static final TagKey<Item> WRENCHES = forgeTag("tools/wrench");
+        public static final TagKey<Item> WRENCHES = commonTag("tools/wrench");
 
         static TagKey<Item> tag(String modid, String name) {
-            return TagKey.create(Registries.ITEM, new ResourceLocation(modid, name));
+            return TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(modid, name));
         }
 
         static TagKey<Item> modTag(String name) {
             return tag(Names.MOD_ID, name);
         }
 
-        static TagKey<Item> forgeTag(String name) {
-            return tag("forge", name);
+        static TagKey<Item> neoforgeTag(String name) {
+            return tag("neoforge", name);
+        }
+
+        static TagKey<Item> commonTag(String name) {
+            return tag("c", name);
         }
     }
 
     public static class Fluids extends PneumaticCraftTags {
-        public static final TagKey<Fluid> CRUDE_OIL = forgeTag("crude_oil");
-        public static final TagKey<Fluid> LUBRICANT = forgeTag("lubricant");
-        public static final TagKey<Fluid> ETHANOL = forgeTag("ethanol");
-        public static final TagKey<Fluid> DIESEL = forgeTag("diesel");
-        public static final TagKey<Fluid> KEROSENE = forgeTag("kerosene");
-        public static final TagKey<Fluid> GASOLINE = forgeTag("gasoline");
-        public static final TagKey<Fluid> LPG = forgeTag("lpg");
-        public static final TagKey<Fluid> BIODIESEL = forgeTag("biodiesel");
-        public static final TagKey<Fluid> PLANT_OIL = forgeTag("plantoil");
-        public static final TagKey<Fluid> EXPERIENCE = forgeTag("experience");
+        public static final TagKey<Fluid> CRUDE_OIL = commonTag("fuels/crude_oil");
+        public static final TagKey<Fluid> ETHANOL = commonTag("fuels/ethanol");
+        public static final TagKey<Fluid> DIESEL = commonTag("fuels/diesel");
+        public static final TagKey<Fluid> KEROSENE = commonTag("fuels/kerosene");
+        public static final TagKey<Fluid> GASOLINE = commonTag("fuels/gasoline");
+        public static final TagKey<Fluid> LPG = commonTag("fuels/lpg");
+        public static final TagKey<Fluid> BIODIESEL = commonTag("fuels/biodiesel");
+
+        public static final TagKey<Fluid> LUBRICANT = commonTag("lubricant");
+        public static final TagKey<Fluid> PLANT_OIL = commonTag("plantoil");
+        public static final TagKey<Fluid> EXPERIENCE = commonTag("experience");
 
         public static final TagKey<Fluid> ETCHING_ACID = modTag("etching_acid");
         public static final TagKey<Fluid> PLASTIC = modTag("plastic");
@@ -131,15 +138,15 @@ public class PneumaticCraftTags {
         public static final TagKey<Fluid> SEISMIC = modTag("seismic_sensor_interesting");
 
         static TagKey<Fluid> tag(String modid, String name) {
-            return TagKey.create(Registries.FLUID, new ResourceLocation(modid, name));
+            return TagKey.create(Registries.FLUID, ResourceLocation.fromNamespaceAndPath(modid, name));
         }
 
         static TagKey<Fluid> modTag(String name) {
             return tag(Names.MOD_ID, name);
         }
 
-        public static TagKey<Fluid> forgeTag(String name) {
-            return tag("forge", name);
+        public static TagKey<Fluid> commonTag(String name) {
+            return tag("c", name);
         }
     }
 
@@ -149,7 +156,7 @@ public class PneumaticCraftTags {
         public static final TagKey<EntityType<?>> OMNIHOPPER_BLACKLISTED = modTag("omnihopper_blacklisted");
 
         static TagKey<EntityType<?>> tag(String modid, String name) {
-            return TagKey.create(Registries.ENTITY_TYPE, new ResourceLocation(modid, name));
+            return TagKey.create(Registries.ENTITY_TYPE, ResourceLocation.fromNamespaceAndPath(modid, name));
         }
 
         static TagKey<EntityType<?>> modTag(String name) {
@@ -162,7 +169,7 @@ public class PneumaticCraftTags {
         public static final TagKey<Biome> OIL_LAKES_UNDERGROUND = modTag("has_underground_oil_lakes");
 
         static TagKey<Biome> tag(String modid, String name) {
-            return TagKey.create(Registries.BIOME, new ResourceLocation(modid, name));
+            return TagKey.create(Registries.BIOME, ResourceLocation.fromNamespaceAndPath(modid, name));
         }
 
         static TagKey<Biome> modTag(String name) {
@@ -174,7 +181,7 @@ public class PneumaticCraftTags {
         public static final TagKey<Structure> NO_OIL_LAKES = modTag("no_oil_lakes");
 
         static TagKey<Structure> tag(String modid, String name) {
-            return TagKey.create(Registries.STRUCTURE, new ResourceLocation(modid, name));
+            return TagKey.create(Registries.STRUCTURE, ResourceLocation.fromNamespaceAndPath(modid, name));
         }
 
         static TagKey<Structure> modTag(String name) {
@@ -190,7 +197,7 @@ public class PneumaticCraftTags {
         public static final TagKey<DamageType> MINIGUN = modTag("minigun");
 
         static TagKey<DamageType> tag(String modid, String name) {
-            return TagKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(modid, name));
+            return TagKey.create(Registries.DAMAGE_TYPE, ResourceLocation.fromNamespaceAndPath(modid, name));
         }
 
         static TagKey<DamageType> modTag(String name) {

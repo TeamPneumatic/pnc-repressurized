@@ -67,7 +67,7 @@ public enum ModdedWrenchUtils implements IWrenchRegistry {
     }
 
     private void registerWrench(String wrenchId) {
-        wrenches.add(new ResourceLocation(wrenchId));
+        wrenches.add(ResourceLocation.parse(wrenchId));
     }
 
     @Override

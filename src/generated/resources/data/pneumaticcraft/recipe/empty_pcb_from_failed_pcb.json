@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:blasting",
+  "category": "misc",
+  "cookingtime": 100,
+  "experience": 0.25,
+  "ingredient": {
+    "item": "pneumaticcraft:failed_pcb"
+  },
+  "result": {
+    "count": 1,
+    "id": "pneumaticcraft:empty_pcb"
+  }
+}

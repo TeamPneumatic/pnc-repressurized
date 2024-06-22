@@ -1,0 +1,21 @@
+{
+  "type": "pneumaticcraft:thermo_plant",
+  "air_use_multiplier": 3.0,
+  "inputs": {
+    "fluid": {
+      "amount": 4000,
+      "tag": "c:experience"
+    },
+    "item": {
+      "item": "pneumaticcraft:spawner_core_shell"
+    }
+  },
+  "outputs": {
+    "item_output": {
+      "count": 1,
+      "id": "pneumaticcraft:spawner_core"
+    }
+  },
+  "pressure": 3.0,
+  "speed": 0.5
+}

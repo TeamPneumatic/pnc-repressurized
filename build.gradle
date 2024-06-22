@@ -4,7 +4,6 @@ buildscript {
 	dependencies {
 		classpath 'org.parchmentmc:librarian:1.+'
 		classpath "org.jfrog.buildinfo:build-info-extractor-gradle:4+"
-//		classpath 'net.neoforged.gradle.mixin' version '[7.0.5,)'
 	}
 }
 
@@ -13,8 +12,8 @@ plugins {
     id 'eclipse'
     id 'idea'
     id 'maven-publish'
-    id 'net.neoforged.gradle.userdev' version '7.0.137'
-    id "me.modmuss50.mod-publish-plugin" version "0.4.5"
+    id 'net.neoforged.gradle.userdev' version '7.0.145'
+    id "me.modmuss50.mod-publish-plugin" version "0.5.1"
 }
 
 ext {
@@ -80,7 +79,7 @@ repositories {
 	}
 	maven {
 		name "FTB Maven"
-		url "https://maven.ftb.dev/snapshots/"
+		url "https://maven.ftb.dev/releases/"
 		content {
 			includeGroup "dev.ftb.mods"
 		}
@@ -155,13 +154,13 @@ dependencies {
 		exclude group: "net.minecraftforge", module: "forge"
 	}
 
-	compileOnly("mezz.jei:jei-1.20.4-common-api:${jei_version}")
-	compileOnly("mezz.jei:jei-1.20.4-neoforge-api:${jei_version}")
-	//runtimeOnly("mezz.jei:jei-1.20.4-common:${jei_version}")
-	//runtimeOnly("mezz.jei:jei-1.20.4-neoforge:${jei_version}")
+	compileOnly("mezz.jei:jei-${minecraft_version}-common-api:${jei_version}")
+	compileOnly("mezz.jei:jei-${minecraft_version}-neoforge-api:${jei_version}")
+//	runtimeOnly("mezz.jei:jei-${minecraft_version}-common:${jei_version}")
+//	runtimeOnly("mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}")
 
 	compileOnly("top.theillusivec4.curios:curios-neoforge:${curios_version}:api")
-	runtimeOnly("top.theillusivec4.curios:curios-neoforge:${curios_version}")
+//	runtimeOnly("top.theillusivec4.curios:curios-neoforge:${curios_version}")
 
 	compileOnly("vazkii.botania:Botania:${botania_version}:api")
 	//runtimeOnly("vazkii.botania:Botania:${botania_version}")
@@ -169,7 +168,7 @@ dependencies {
 	compileOnly("vazkii.patchouli:Patchouli:${patchouli_version}:api")
 	//runtimeOnly("vazkii.patchouli:Patchouli:${patchouli_version}")
 
-	compileOnly("cc.tweaked:cc-tweaked-1.20.5-forge-api:${cc_tweaked_version}")
+	compileOnly("cc.tweaked:cc-tweaked-1.20.6-forge-api:${cc_tweaked_version}")
 	//runtimeOnly("cc.tweaked:cc-weaked-1.20.4-forge:${cc_tweaked_version}")
 
 	compileOnly("dev.ftb.mods:ftb-filter-system-neoforge:${ffs_version}") { transitive = false }
@@ -177,13 +176,13 @@ dependencies {
 	compileOnly("blusunrize.immersiveengineering:ImmersiveEngineering:${immersive_engineering_version}")
 
 	compileOnly("mekanism:Mekanism:${mekanism_version}:api")
-	runtimeOnly("mekanism:Mekanism:${mekanism_version}")
+//	runtimeOnly("mekanism:Mekanism:${mekanism_version}")
 
 	compileOnly("com.simibubi.create:create-1.20.1:${create_version}:slim") { transitive = false }
 
 	implementation("curse.maven:jade-324717:${jade_curse_id}")
 
-	compileOnly("com.blamejared.crafttweaker:CraftTweaker-neoforge-1.20.4:${crafttweaker_version}")
+	compileOnly("com.blamejared.crafttweaker:CraftTweaker-neoforge-1.21:${crafttweaker_version}")
 
 	compileOnly("curse.maven:cofh_core-69162:${cofh_core_curse_id}")
 	compileOnly("curse.maven:thermal_cultivation-271835:${thermal_cultivation_curse_id}")
@@ -223,48 +222,6 @@ tasks.withType(ProcessResources).configureEach {
 jar {
 	from sourceSets.api.output
 }
-
-//configurations {
-//	apiImplementation.extendsFrom(implementation)
-//}
-
-//configurations {
-//	//Make sure all our sub source set stuff extends the proper base methods so that
-//	// they can see all the dependencies we have in dependencies including forge
-//	extendConfigurations(implementation, apiImplementation, testImplementation)
-//	extendConfigurations(compileOnly, apiCompileOnly, testCompileOnly)
-//	extendConfigurations(runtimeOnly, apiRuntimeOnly)
-//}
-//static void extendConfigurations(Configuration base, Configuration... configurations) {
-//	for (def configuration : configurations) {
-//		configuration.extendsFrom(base)
-//	}
-//}
-
-//configurations {
-////	apiImplementation.extendsFrom(implementation)
-////	apiRuntimeOnly.extendsFrom(runtimeOnly)
-//	api {
-//		extendsFrom = implementation
-//	}
-////	apiImplementation.extendsFrom(minecraft)
-//}
-
-//mixin {
-//	// Refmaps for each SourceSet
-//	add sourceSets.main, 'mixins.pneumaticcraft.refmap.json'
-//
-//	// Configs to add to runs and jars
-//	config 'mixins.pneumaticcraft.json'
-//
-//	// Specify options for dev run configs
-//	debug.verbose = true
-//	debug.export = true
-//	dumpTargetOnFailure = true
-//
-//	// Options for the Annotation Processor
-//	quiet
-//}
 
 javadoc {
 	source = [sourceSets.main.allJava, sourceSets.api.allJava]

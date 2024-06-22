@@ -1,0 +1,16 @@
+{
+  "type": "pneumaticcraft:pressure_chamber",
+  "inputs": [
+    {
+      "count": 1,
+      "tag": "c:crops/wheat"
+    }
+  ],
+  "pressure": 1.5,
+  "results": [
+    {
+      "count": 3,
+      "id": "pneumaticcraft:wheat_flour"
+    }
+  ]
+}

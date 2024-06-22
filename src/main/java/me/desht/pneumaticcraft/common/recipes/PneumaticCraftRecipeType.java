@@ -37,6 +37,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.profiling.ProfilerFiller;
+import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.item.crafting.RecipeType;
@@ -82,7 +83,7 @@ public class PneumaticCraftRecipeType<T extends PneumaticCraftRecipe> implements
 
         if (cachedRecipes.isEmpty()) {
             RecipeManager recipeManager = level.getRecipeManager();
-            List<RecipeHolder<T>> recipes = recipeManager.getRecipesFor(this, PneumaticCraftRecipe.DummyIInventory.getInstance(), level);
+            List<RecipeHolder<T>> recipes = recipeManager.getRecipesFor(this, CraftingInput.EMPTY, level);
             recipes.forEach(recipe -> cachedRecipes.put(recipe.id(), recipe));
 
             if (this == ModRecipeTypes.ASSEMBLY_DRILL_LASER.get()) {

@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "C": {
+      "item": "pneumaticcraft:advanced_air_compressor"
+    },
+    "L": {
+      "tag": "pneumaticcraft:upgrade_components"
+    },
+    "T": {
+      "item": "pneumaticcraft:advanced_pressure_tube"
+    },
+    "V": {
+      "item": "pneumaticcraft:vortex_cannon"
+    }
+  },
+  "pattern": [
+    "LTL",
+    "VCV",
+    "LTL"
+  ],
+  "result": {
+    "count": 1,
+    "id": "pneumaticcraft:jet_boots_upgrade_1"
+  }
+}

@@ -51,10 +51,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.enchantment.Enchantment;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
-import net.minecraft.world.item.enchantment.Enchantments;
-import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
@@ -90,19 +86,13 @@ import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
+
 public class PneumaticCraftUtils {
     // an impossible blockpos to indicate invalid positions
     private static final BlockPos INVALID_POS = new BlockPos(0, Integer.MIN_VALUE, 0);
 
     private static final int MAX_CHAR_PER_LINE = 45;
-
-    private static final int[] DYE_COLORS = new int[DyeColor.values().length];
-    static {
-        for (DyeColor color : DyeColor.values()) {
-            float[] rgb = color.getTextureDiffuseColors();
-            DYE_COLORS[color.getId()] = (int) (rgb[0] * 255) << 16 | ((int) (rgb[1] * 255) << 8) | (int) (rgb[2] * 255);
-        }
-    }
 
     public static final Vector3f VEC3F_ZERO = new Vector3f();
 
@@ -646,7 +636,7 @@ public class PneumaticCraftUtils {
      * @return a resource location
      */
     public static ResourceLocation modDefaultedRL(String str) {
-        return str.indexOf(':') > 0 ? new ResourceLocation(str) : new ResourceLocation(Names.MOD_ID, str);
+        return str.indexOf(':') > 0 ? ResourceLocation.parse(str) : RL(str);
     }
 
     /**
@@ -657,15 +647,6 @@ public class PneumaticCraftUtils {
      */
     public static String modDefaultedString(ResourceLocation rl) {
         return rl.getNamespace().equals(Names.MOD_ID) ? rl.getPath() : rl.toString();
-    }
-
-    /**
-     * Convert a DyeColor to packed RGB integer (top 8 bits - alpha - are 0)
-     * @param dyeColor the dye color
-     * @return packed RGB integer
-     */
-    public static int getDyeColorAsRGB(DyeColor dyeColor) {
-        return DYE_COLORS[dyeColor.getId()];
     }
 
     /**
@@ -743,10 +724,4 @@ public class PneumaticCraftUtils {
         return Optional.ofNullable(stack.get(type));
     }
 
-    public static ItemStack enchant(ItemStack stack, Map<Enchantment, Integer> enchantments) {
-        ItemEnchantments.Mutable m = new ItemEnchantments.Mutable(stack.getEnchantments());
-        enchantments.forEach(m::upgrade);
-        EnchantmentHelper.setEnchantments(stack, m.toImmutable());
-        return stack;
-    }
 }

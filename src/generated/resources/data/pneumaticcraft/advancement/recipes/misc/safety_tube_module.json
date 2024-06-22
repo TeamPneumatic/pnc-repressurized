@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_pressure_gauge": {
+      "conditions": {
+        "items": [
+          {
+            "items": "pneumaticcraft:pressure_gauge"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "pneumaticcraft:safety_tube_module"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_pressure_gauge"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "pneumaticcraft:safety_tube_module"
+    ]
+  }
+}

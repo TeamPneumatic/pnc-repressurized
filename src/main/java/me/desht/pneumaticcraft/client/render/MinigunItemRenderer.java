@@ -72,7 +72,7 @@ public class MinigunItemRenderer extends BlockEntityWithoutLevelRenderer {
                         }
                     }
                 }
-                model.renderMinigun(matrixStack, buffer, combinedLightIn, combinedOverlayIn, minigun, mc.getFrameTime(), false);
+                model.renderMinigun(matrixStack, buffer, combinedLightIn, combinedOverlayIn, minigun, mc.getTimer().getGameTimeDeltaPartialTick(true), false);
                 matrixStack.popPose();
             }
         }

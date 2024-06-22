@@ -1,0 +1,16 @@
+{
+  "type": "pneumaticcraft:pressure_chamber",
+  "inputs": [
+    {
+      "count": 4,
+      "item": "minecraft:packed_ice"
+    }
+  ],
+  "pressure": 2.5,
+  "results": [
+    {
+      "count": 1,
+      "id": "minecraft:blue_ice"
+    }
+  ]
+}

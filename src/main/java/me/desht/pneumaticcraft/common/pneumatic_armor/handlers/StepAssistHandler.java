@@ -29,12 +29,11 @@ import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.neoforge.common.NeoForgeMod;
 
-import java.util.UUID;
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 public class StepAssistHandler extends BaseArmorUpgradeHandler<IArmorExtensionData> {
-    private static final UUID STEP_ASSIST_MODIFIER_ID = UUID.fromString("30bc8c6e-4f40-41e5-8b11-4001a9a85afb");
+    private static final ResourceLocation STEP_ASSIST_MODIFIER_ID = RL("step_assist");
 
     @Override
     public ResourceLocation getID() {
@@ -70,7 +69,7 @@ public class StepAssistHandler extends BaseArmorUpgradeHandler<IArmorExtensionDa
                 attributeInstance.removeModifier(currentModifier.id());
             }
             if (stepBoost > 0) {
-                attributeInstance.addTransientModifier(new AttributeModifier(STEP_ASSIST_MODIFIER_ID, "Step Assist", stepBoost, AttributeModifier.Operation.ADD_VALUE));
+                attributeInstance.addTransientModifier(new AttributeModifier(STEP_ASSIST_MODIFIER_ID, stepBoost, AttributeModifier.Operation.ADD_VALUE));
             }
         }
     }

@@ -1,0 +1,37 @@
+{
+  "parent": "pneumaticcraft:lpg_bucket",
+  "criteria": {
+    "0": {
+      "conditions": {
+        "items": [
+          {
+            "items": "pneumaticcraft:thermopneumatic_processing_plant"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "background": "pneumaticcraft:textures/gui/advancement_bg.png",
+    "description": {
+      "translate": "pneumaticcraft.advancement.tp_plant.desc"
+    },
+    "icon": {
+      "count": 1,
+      "id": "pneumaticcraft:thermopneumatic_processing_plant"
+    },
+    "title": {
+      "translate": "pneumaticcraft.advancement.tp_plant"
+    }
+  },
+  "requirements": [
+    [
+      "0"
+    ]
+  ],
+  "rewards": {
+    "experience": 10
+  },
+  "sends_telemetry_event": true
+}

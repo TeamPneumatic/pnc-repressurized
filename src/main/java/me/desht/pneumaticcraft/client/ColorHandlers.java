@@ -35,7 +35,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
 import net.neoforged.neoforge.client.model.DynamicFluidContainerModel;
 
@@ -82,7 +81,7 @@ public class ColorHandlers {
         float[] hsb = TintColor.RGBtoHSB((c & 0xFF0000) >> 16, (c & 0xFF00) >> 8, c & 0xFF, null);
         TintColor color = TintColor.getHSBColor(hsb[0], hsb[1] * 0.4f, hsb[2]);
         if (hsb[2] < 0.7) color = color.brighter();
-        return color.getRGB();
+        return color.getARGB();
     }
 
     /**
@@ -105,7 +104,7 @@ public class ColorHandlers {
             if (world != null && pos != null) {
                 BlockEntity te = world.getBlockEntity(pos);
                 TintColor tint = te instanceof IHeatTinted ? ((IHeatTinted) te).getColorForTintIndex(tintIndex) : TintColor.WHITE;
-                return tint.getRGB();
+                return tint.getARGB();
             }
             return 0xFFFFFFFF;
         }

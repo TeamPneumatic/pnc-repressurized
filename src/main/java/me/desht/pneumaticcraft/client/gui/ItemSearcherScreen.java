@@ -60,7 +60,7 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class ItemSearcherScreen extends AbstractContainerScreen<ItemSearcherMenu> {
     private static final ResourceLocation GUI_TEXTURE = Textures.GUI_ITEM_SEARCHER;
-    private static final ResourceLocation SCROLL_TEXTURE = new ResourceLocation("textures/gui/container/creative_inventory/tabs.png");
+    private static final ResourceLocation SCROLL_TEXTURE = ResourceLocation.parse("textures/gui/container/creative_inventory/tabs.png");
     private static final int SEARCH_SLOT = 48;
 
     private static List<SearchEntry> cachedSearchEntries;
@@ -170,11 +170,11 @@ public class ItemSearcherScreen extends AbstractContainerScreen<ItemSearcherMenu
                 && searchField.canConsumeInput() || super.keyPressed(keyCode, scanCode, modifiers);
     }
 
-    private void getAllEnchantedBooks(Enchantment enchantment, NonNullList<ItemStack> list) {
-        for (int i = enchantment.getMinLevel(); i <= enchantment.getMaxLevel(); ++i) {
-            list.add(EnchantedBookItem.createForEnchantment(new EnchantmentInstance(enchantment, i)));
-        }
-    }
+//    private void getAllEnchantedBooks(Enchantment enchantment, NonNullList<ItemStack> list) {
+//        for (int i = enchantment.getMinLevel(); i <= enchantment.getMaxLevel(); ++i) {
+//            list.add(EnchantedBookItem.createForEnchantment(new EnchantmentInstance(enchantment, i)));
+//        }
+//    }
 
     private Stream<SearchEntry> getSearchEntries() {
         if (cachedSearchEntries == null) {

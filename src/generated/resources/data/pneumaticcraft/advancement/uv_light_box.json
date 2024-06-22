@@ -1,0 +1,34 @@
+{
+  "parent": "pneumaticcraft:pcb_blueprint",
+  "criteria": {
+    "0": {
+      "conditions": {
+        "items": [
+          {
+            "items": "pneumaticcraft:uv_light_box"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "background": "pneumaticcraft:textures/gui/advancement_bg.png",
+    "description": {
+      "translate": "pneumaticcraft.advancement.uv_light_box.desc"
+    },
+    "icon": {
+      "count": 1,
+      "id": "pneumaticcraft:uv_light_box"
+    },
+    "title": {
+      "translate": "pneumaticcraft.advancement.uv_light_box"
+    }
+  },
+  "requirements": [
+    [
+      "0"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

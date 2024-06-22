@@ -30,11 +30,12 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 
-import java.util.UUID;
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 public class ReachDistanceHandler extends BaseArmorUpgradeHandler<IArmorExtensionData> {
-    private static final UUID REACH_DIST_BOOST_ID = UUID.fromString("c9dce729-70c4-4c0f-95d4-31d2e50bc826");
-    public static final AttributeModifier REACH_DIST_BOOST = new AttributeModifier(REACH_DIST_BOOST_ID, "Pneumatic Reach Boost", 3.5D, AttributeModifier.Operation.ADD_VALUE);
+    private static final ResourceLocation REACH_BOOST_ID = RL("reach_boost");
+
+    public static final AttributeModifier REACH_DIST_BOOST = new AttributeModifier(REACH_BOOST_ID, 3.5D, AttributeModifier.Operation.ADD_VALUE);
 
     @Override
     public ResourceLocation getID() {
@@ -62,7 +63,7 @@ public class ReachDistanceHandler extends BaseArmorUpgradeHandler<IArmorExtensio
         if ((player.level().getGameTime() & 0xf) == 0) {
             AttributeInstance attr = player.getAttribute(Attributes.BLOCK_INTERACTION_RANGE);
             if (attr != null) {
-                attr.removeModifier(REACH_DIST_BOOST_ID);
+                attr.removeModifier(REACH_BOOST_ID);
                 if (enabled && commonArmorHandler.hasMinPressure(EquipmentSlot.CHEST) && commonArmorHandler.isArmorEnabled()) {
                     attr.addTransientModifier(REACH_DIST_BOOST);
                 }
@@ -75,7 +76,7 @@ public class ReachDistanceHandler extends BaseArmorUpgradeHandler<IArmorExtensio
         if (!newState) {
             AttributeInstance attr = commonArmorHandler.getPlayer().getAttribute(Attributes.BLOCK_INTERACTION_RANGE);
             if (attr != null) {
-                attr.removeModifier(ReachDistanceHandler.REACH_DIST_BOOST_ID);
+                attr.removeModifier(REACH_BOOST_ID);
             }
         }
     }
@@ -84,7 +85,7 @@ public class ReachDistanceHandler extends BaseArmorUpgradeHandler<IArmorExtensio
     public void onShutdown(ICommonArmorHandler commonArmorHandler) {
         AttributeInstance attr = commonArmorHandler.getPlayer().getAttribute(Attributes.BLOCK_INTERACTION_RANGE);
         if (attr != null) {
-            attr.removeModifier(REACH_DIST_BOOST_ID);
+            attr.removeModifier(REACH_BOOST_ID);
         }
     }
 }

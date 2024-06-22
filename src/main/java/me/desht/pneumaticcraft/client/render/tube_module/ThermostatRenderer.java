@@ -10,6 +10,7 @@ import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.FastColor;
 import net.minecraft.world.item.DyeColor;
 
 public class ThermostatRenderer extends AbstractTubeModuleRenderer<ThermostatModule> {
@@ -54,12 +55,13 @@ public class ThermostatRenderer extends AbstractTubeModuleRenderer<ThermostatMod
     }
 
     @Override
-    protected void render(ThermostatModule module, PoseStack matrixStack, VertexConsumer builder, float partialTicks, int combinedLight, int combinedOverlay, float alpha) {
-        connector.render(matrixStack, builder, combinedLight, combinedOverlay, 1f, 1f, 1f, alpha);
-        faceplate.render(matrixStack, builder, combinedLight, combinedOverlay, 1f, 1f, 1f, alpha);
+    protected void render(ThermostatModule module, PoseStack matrixStack, VertexConsumer builder, float partialTicks, int combinedLight, int combinedOverlay, int alpha) {
+        int baseColor = FastColor.ARGB32.color(alpha, 0xFFFFFF);
+        connector.render(matrixStack, builder, combinedLight, combinedOverlay, baseColor);
+        faceplate.render(matrixStack, builder, combinedLight, combinedOverlay, baseColor);
 
-        float[] cols = DyeColor.byId(module.getColorChannel()).getTextureDiffuseColors();
-        frame.render(matrixStack, builder, combinedLight, combinedOverlay, cols[0], cols[1], cols[2], alpha);
+        int frameColor = FastColor.ARGB32.color(alpha, DyeColor.byId(module.getColorChannel()).getTextureDiffuseColor());
+        frame.render(matrixStack, builder, combinedLight, combinedOverlay, frameColor);
     }
 
     @Override

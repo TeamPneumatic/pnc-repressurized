@@ -50,9 +50,9 @@ public class ModelLogisticsFrame extends EntityModel<AbstractLogisticsFrameEntit
 	}
 
 	@Override
-	public void renderToBuffer(PoseStack matrixStack, VertexConsumer buffer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha){
-		frame.render(matrixStack, buffer, packedLight, packedOverlay, red, green, blue, alpha);
-		face.render(matrixStack, buffer, packedLight, packedOverlay, red, green, blue, alpha);
+	public void renderToBuffer(PoseStack matrixStack, VertexConsumer buffer, int packedLight, int packedOverlay, int color) {
+		frame.render(matrixStack, buffer, packedLight, packedOverlay, color);
+		face.render(matrixStack, buffer, packedLight, packedOverlay, color);
 	}
 
 	public void setRotationAngle(ModelPart modelRenderer, float x, float y, float z) {

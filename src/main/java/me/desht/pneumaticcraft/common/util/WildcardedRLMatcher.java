@@ -33,7 +33,7 @@ public class WildcardedRLMatcher implements Predicate<ResourceLocation> {
             if (s.endsWith(":*")) {
                 namespaces.add(s.split(":")[0]);
             } else {
-                reslocs.add(new ResourceLocation(s));
+                reslocs.add(ResourceLocation.parse(s));
             }
         }
     }

@@ -1,0 +1,14 @@
+{
+  "type": "pneumaticcraft:explosion_crafting",
+  "input": {
+    "count": 1,
+    "tag": "c:storage_blocks/iron"
+  },
+  "loss_rate": 20,
+  "results": [
+    {
+      "count": 1,
+      "id": "pneumaticcraft:compressed_iron_block"
+    }
+  ]
+}

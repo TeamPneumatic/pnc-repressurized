@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "I": {
+      "tag": "c:ingots/compressed_iron"
+    },
+    "S": {
+      "item": "pneumaticcraft:reinforced_stone_slab"
+    }
+  },
+  "pattern": [
+    "SSS",
+    "I I"
+  ],
+  "result": {
+    "count": 1,
+    "id": "pneumaticcraft:display_table"
+  }
+}

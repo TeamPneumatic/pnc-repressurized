@@ -73,7 +73,7 @@ public class ProgWidgetConfig extends AuxConfigJson {
         JsonArray array = json.get("blacklist").getAsJsonArray();
         blacklistedPieces.clear();
         for (JsonElement element : array) {
-            blacklistedPieces.add(new ResourceLocation(element.getAsString()));
+            blacklistedPieces.add(ResourceLocation.parse(element.getAsString()));
         }
     }
 

@@ -35,6 +35,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
@@ -105,7 +106,7 @@ public class MicromissilesItem extends Item {
         }
 
         if (!playerIn.isCreative()) {
-            stack.hurtAndBreak(1, playerIn.getRandom(), playerIn, () -> { });
+            stack.hurtAndBreak(1, (ServerLevel)playerIn.level(), playerIn, item -> { });
         }
         return InteractionResultHolder.success(stack);
     }

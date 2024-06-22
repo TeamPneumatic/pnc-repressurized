@@ -41,7 +41,7 @@ public class FluidMixer implements IRecipeManager<FluidMixerRecipe> {
     @ZenCodeType.Method
     public void addRecipe(String name, CTFluidIngredient input1, CTFluidIngredient input2, IFluidStack outputFluid, IItemStack outputItem, float pressure, int processingTime) {
         CraftTweakerAPI.apply(new ActionAddRecipe<>(this,
-                new RecipeHolder<>(new ResourceLocation("crafttweaker", fixRecipeName(name)),
+                new RecipeHolder<>(ResourceLocation.fromNamespaceAndPath("crafttweaker", fixRecipeName(name)),
                 new FluidMixerRecipeImpl(
                         CTUtils.toSizedFluidIngredient(input1),
                         CTUtils.toSizedFluidIngredient(input2),

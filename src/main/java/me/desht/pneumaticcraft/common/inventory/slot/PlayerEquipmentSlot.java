@@ -25,6 +25,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.EnchantmentEffectComponents;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 
 public class PlayerEquipmentSlot extends Slot {
@@ -56,18 +57,18 @@ public class PlayerEquipmentSlot extends Slot {
         if (slotType == EquipmentSlot.OFFHAND) return super.mayPickup(playerIn);
 
         ItemStack itemstack = this.getItem();
-        return (itemstack.isEmpty() || playerIn.isCreative() || !EnchantmentHelper.hasBindingCurse(itemstack)) && super.mayPickup(playerIn);
+        return (itemstack.isEmpty() || playerIn.isCreative() || !EnchantmentHelper.has(itemstack, EnchantmentEffectComponents.PREVENT_ARMOR_CHANGE)) && super.mayPickup(playerIn);
     }
 
     @Override
     public Pair<ResourceLocation, ResourceLocation> getNoItemIcon() {
-        return slotType.getType() == EquipmentSlot.Type.ARMOR ?
+        return slotType.getType() == EquipmentSlot.Type.HUMANOID_ARMOR ?
                 Pair.of(InventoryMenu.BLOCK_ATLAS, ARMOR_SLOT_TEXTURES[slotType.getIndex()]) :
                 Pair.of(InventoryMenu.BLOCK_ATLAS, InventoryMenu.EMPTY_ARMOR_SLOT_SHIELD);
     }
 
     private static int getIndexForSlot(EquipmentSlot type) {
-        if (type.getType() == EquipmentSlot.Type.ARMOR) {
+        if (type.getType() == EquipmentSlot.Type.HUMANOID_ARMOR) {
             return 36 + type.getIndex();
         } else if (type == EquipmentSlot.OFFHAND) {
             return 40;

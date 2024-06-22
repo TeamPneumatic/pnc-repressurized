@@ -132,7 +132,7 @@ public class FluidItemModel implements IDynamicBakedModel {
     }
 
     private BakedQuad createQuad(List<Vec3> vecs, float[] cols, TextureAtlasSprite sprite, Direction face, float u1, float u2, float v1, float v2) {
-        QuadBakingVertexConsumer.Buffered quadBaker = new QuadBakingVertexConsumer.Buffered();
+        QuadBakingVertexConsumer quadBaker = new QuadBakingVertexConsumer();
         Vec3 normal = Vec3.atLowerCornerOf(face.getNormal());
 
         putVertex(quadBaker, normal, vecs.get(0).x, vecs.get(0).y, vecs.get(0).z, u1, v1, sprite, cols, face);
@@ -140,18 +140,17 @@ public class FluidItemModel implements IDynamicBakedModel {
         putVertex(quadBaker, normal, vecs.get(2).x, vecs.get(2).y, vecs.get(2).z, u2, v2, sprite, cols, face);
         putVertex(quadBaker, normal, vecs.get(3).x, vecs.get(3).y, vecs.get(3).z, u2, v1, sprite, cols, face);
 
-        return quadBaker.getQuad();
+        return quadBaker.bakeQuad();
     }
 
     private void putVertex(QuadBakingVertexConsumer quadBaker, Vec3 normal,
                            double x, double y, double z, float u, float v, TextureAtlasSprite sprite, float[] cols, Direction face) {
-        quadBaker.vertex(x, y, z);
-        quadBaker.normal((float) normal.x, (float) normal.y, (float) normal.z);
-        quadBaker.color(cols[1], cols[2], cols[3], cols[0]);
-        quadBaker.uv(sprite.getU(u), sprite.getV(v));
+        quadBaker.addVertex((float) x, (float) y, (float) z);
+        quadBaker.setNormal((float) normal.x, (float) normal.y, (float) normal.z);
+        quadBaker.setColor(cols[1], cols[2], cols[3], cols[0]);
+        quadBaker.setUv(sprite.getU(u), sprite.getV(v));
         quadBaker.setSprite(sprite);
         quadBaker.setDirection(face);
-        quadBaker.endVertex();
     }
 
     @Override
@@ -200,10 +199,10 @@ public class FluidItemModel implements IDynamicBakedModel {
         return this;
     }
 
-    private record Geometry(BlockModel baseModel) implements IUnbakedGeometry<Geometry> {
+    public record Geometry(BlockModel baseModel) implements IUnbakedGeometry<Geometry> {
         @Override
-        public BakedModel bake(IGeometryBakingContext owner, ModelBaker baker, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelTransform, ItemOverrides overrides, ResourceLocation modelLocation) {
-            return new FluidItemModel(baseModel.bake(baker, Objects.requireNonNull(baseModel.parent), spriteGetter, modelTransform, modelLocation, true));
+        public BakedModel bake(IGeometryBakingContext owner, ModelBaker baker, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelTransform, ItemOverrides overrides) {
+            return new FluidItemModel(baseModel.bake(baker, Objects.requireNonNull(baseModel.parent), spriteGetter, modelTransform, true));
         }
 
         @Override

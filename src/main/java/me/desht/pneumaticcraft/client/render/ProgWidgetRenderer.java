@@ -41,8 +41,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
 
-import static me.desht.pneumaticcraft.client.util.RenderUtils.FULL_BRIGHT;
 import static me.desht.pneumaticcraft.client.util.RenderUtils.renderWithTypeAndFinish;
+import static net.minecraft.client.renderer.LightTexture.FULL_BRIGHT;
 
 public class ProgWidgetRenderer {
     private static final Map<ProgWidgetType<?>, BiConsumer<GuiGraphics, IProgWidget>> ITEM_RENDERERS = new HashMap<>();
@@ -57,7 +57,7 @@ public class ProgWidgetRenderer {
      * @param alpha transparerncy
      */
     public static void renderProgWidget2d(GuiGraphics graphics, IProgWidget progWidget, int alpha) {
-        RenderSystem.setShader(GameRenderer::getPositionColorTexShader);
+        RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
         RenderSystem.setShaderTexture(0, progWidget.getTexture());
         int width = progWidget.getWidth() + (progWidget.getParameters().isEmpty() ? 0 : 10);
         int height = progWidget.getHeight() + (progWidget.hasStepOutput() ? 10 : 0);
@@ -65,13 +65,20 @@ public class ProgWidgetRenderer {
         float u = maxUV.getLeft();
         float v = maxUV.getRight();
         Matrix4f posMat = graphics.pose().last().pose();
-        BufferBuilder wr = Tesselator.getInstance().getBuilder();
-        wr.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR_TEX);
-        wr.vertex(posMat, 0, 0, 0).color(255, 255, 255, alpha).uv(0, 0).endVertex();
-        wr.vertex(posMat, 0, height, 0).color(255, 255, 255, alpha).uv(0, v).endVertex();
-        wr.vertex(posMat, width, height, 0).color(255, 255, 255, alpha).uv(u, v).endVertex();
-        wr.vertex(posMat, width, 0, 0).color(255, 255, 255, alpha).uv(u, 0).endVertex();
-        Tesselator.getInstance().end();
+        BufferBuilder wr = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
+        wr.addVertex(posMat, 0, 0, 0)
+                .setUv(0, 0)
+                .setColor(255, 255, 255, alpha);
+        wr.addVertex(posMat, 0, height, 0)
+                .setUv(0, v)
+                .setColor(255, 255, 255, alpha);
+        wr.addVertex(posMat, width, height, 0)
+                .setUv(u, v)
+                .setColor(255, 255, 255, alpha);
+        wr.addVertex(posMat, width, 0, 0)
+                .setUv(u, 0)
+                .setColor(255, 255, 255, alpha);
+        BufferUploader.drawWithShader(wr.buildOrThrow());
     }
 
     public static void renderProgWidget2d(GuiGraphics graphics, IProgWidget progWidget) {
@@ -91,10 +98,22 @@ public class ProgWidgetRenderer {
         float u = maxUV.getLeft();
         float v = maxUV.getRight();
         renderWithTypeAndFinish(matrixStack, buffer, ModRenderTypes.getTextureRenderColored(progWidget.getTexture()), (posMat, builder) -> {
-            builder.vertex(posMat, 0, 0, 0).color(255, 255, 255, 255).uv(0, 0).uv2(FULL_BRIGHT).endVertex();
-            builder.vertex(posMat, width, 0, 0).color(255, 255, 255, 255).uv(u, 0).uv2(FULL_BRIGHT).endVertex();
-            builder.vertex(posMat, width, height, 0).color(255, 255, 255, 255).uv(u, v).uv2(FULL_BRIGHT).endVertex();
-            builder.vertex(posMat, 0, height, 0).color(255, 255, 255, 255).uv(0, v).uv2(FULL_BRIGHT).endVertex();
+            builder.addVertex(posMat, 0, 0, 0)
+                    .setColor(    255, 255, 255, 255)
+                    .setUv(0, 0)
+                    .setLight(FULL_BRIGHT);
+            builder.addVertex(posMat, width, 0, 0)
+                    .setColor(255, 255, 255, 255)
+                    .setUv(u, 0)
+                    .setLight(FULL_BRIGHT);
+            builder.addVertex(posMat, width, height, 0)
+                    .setColor(255, 255, 255, 255)
+                    .setUv(u, v)
+                    .setLight(FULL_BRIGHT);
+            builder.addVertex(posMat, 0, height, 0)
+                    .setColor(255, 255, 255, 255)
+                    .setUv(0, v)
+                    .setLight(FULL_BRIGHT);
         });
     }
 

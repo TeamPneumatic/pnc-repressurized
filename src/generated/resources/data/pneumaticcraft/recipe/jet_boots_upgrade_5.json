@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "D": {
+      "item": "minecraft:dragon_breath"
+    },
+    "E": {
+      "item": "minecraft:elytra"
+    },
+    "R": {
+      "item": "minecraft:end_rod"
+    },
+    "U": {
+      "item": "pneumaticcraft:jet_boots_upgrade_4"
+    },
+    "V": {
+      "item": "pneumaticcraft:vortex_cannon"
+    }
+  },
+  "pattern": [
+    "RER",
+    "VUV",
+    "RDR"
+  ],
+  "result": {
+    "count": 1,
+    "id": "pneumaticcraft:jet_boots_upgrade_5"
+  }
+}

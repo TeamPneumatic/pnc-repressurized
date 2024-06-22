@@ -26,6 +26,7 @@ import me.desht.pneumaticcraft.api.crafting.recipe.PressureChamberRecipe;
 import me.desht.pneumaticcraft.api.crafting.recipe.PressureChamberRecipe.RecipeSlot;
 import me.desht.pneumaticcraft.api.crafting.recipe.PressureChamberRecipe.SlotCycle;
 import me.desht.pneumaticcraft.client.render.pressure_gauge.PressureGaugeRenderer2D;
+import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.registry.ModBlocks;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
@@ -71,9 +72,9 @@ public class JEIPressureChamberRecipeCategory extends AbstractPNCCategory<Pressu
         List<List<ItemStack>> slots;
         RecipeIngredientRole role = focus.getRole();
         if (role == RecipeIngredientRole.INPUT) {
-            slots = recipe.getInputsForDisplay(); //.stream().map(ingr -> Arrays.asList(ingr.getItems())).toList();
+            slots = recipe.getInputsForDisplay(ClientUtils.getClientLevel().registryAccess()); //.stream().map(ingr -> Arrays.asList(ingr.getItems())).toList();
         } else if (role == RecipeIngredientRole.OUTPUT) {
-            slots = new ArrayList<>(recipe.getResultsForDisplay());
+            slots = new ArrayList<>(recipe.getResultsForDisplay(ClientUtils.getClientLevel().registryAccess()));
         } else {
             return Optional.empty();
         }
@@ -127,7 +128,7 @@ public class JEIPressureChamberRecipeCategory extends AbstractPNCCategory<Pressu
         Map<RecipeSlot, IntList> overrides = getMatchingCycle(recipe, focus)
                 .map(recipe::getSyncForDisplay)
                 .orElseGet(ImmutableMap::of);
-        List<List<ItemStack>> l = recipe.getInputsForDisplay();//.stream().map(i -> Arrays.asList(i.getItems())).toList();
+        List<List<ItemStack>> l = recipe.getInputsForDisplay(ClientUtils.getClientLevel().registryAccess());//.stream().map(i -> Arrays.asList(i.getItems())).toList();
         List<List<ItemStack>> inputs = applyOverrides(true, l, overrides);
         for (int i = 0; i < inputs.size(); i++) {
             int posX = 19 + i % 3 * 17;
@@ -138,7 +139,7 @@ public class JEIPressureChamberRecipeCategory extends AbstractPNCCategory<Pressu
                     .addTooltipCallback(new Tooltip(recipe));
         }
 
-        List<List<ItemStack>> outputs = applyOverrides(false, recipe.getResultsForDisplay(), overrides);
+        List<List<ItemStack>> outputs = applyOverrides(false, recipe.getResultsForDisplay(ClientUtils.getClientLevel().registryAccess()), overrides);
         for (int i = 0; i < outputs.size(); i++) {
             builder.addSlot(RecipeIngredientRole.OUTPUT, 101 + i % 3 * 18, 59 + i / 3 * 18)
                     .setSlotName("out" + i)

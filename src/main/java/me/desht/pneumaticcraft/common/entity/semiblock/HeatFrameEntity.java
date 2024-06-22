@@ -37,10 +37,10 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.SingleRecipeInput;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
@@ -176,7 +176,7 @@ public class HeatFrameEntity extends AbstractSemiblockEntity {
         if (slot >= 0 & slot < handler.getSlots()) {
             ItemStack stack = handler.getStackInSlot(slot);
             if (!stack.isEmpty()) {
-                return VanillaRecipeCache.SMELTING.getCachedRecipe(level(), new SimpleContainer(stack)).map(recipe -> {
+                return VanillaRecipeCache.SMELTING.getCachedRecipe(level(), new SingleRecipeInput(stack)).map(recipe -> {
                     ItemStack result = recipe.getResultItem(level().registryAccess()).copy();
                     if (!result.isEmpty()) {
                         ItemStack remainder = ItemHandlerHelper.insertItem(handler, result, true);

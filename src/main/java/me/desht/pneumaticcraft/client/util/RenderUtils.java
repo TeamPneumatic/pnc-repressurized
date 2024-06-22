@@ -18,12 +18,12 @@
 package me.desht.pneumaticcraft.client.util;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.blaze3d.vertex.*;
 import com.mojang.math.Axis;
 import me.desht.pneumaticcraft.client.render.ModRenderTypes;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.Direction;
@@ -36,11 +36,11 @@ import org.joml.Matrix4f;
 
 import java.util.BitSet;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 import static net.minecraft.util.Mth.lerp;
 
 public class RenderUtils {
-    public static final int FULL_BRIGHT = 0x00F000F0;
     private static final float FULL_CIRCLE = (float)(Math.PI * 2);
     private static final float STEP = FULL_CIRCLE / 25f;
 
@@ -66,49 +66,6 @@ public class RenderUtils {
         res[3] = (color       & 0xff) / 255f;
         return res;
     }
-
-//    public static void render3DArrow() {
-//        GlStateManager.disableTexture();
-//        double arrowTipLength = 0.2;
-//        double arrowTipRadius = 0.25;
-//        double baseLength = 0.3;
-//        double baseRadius = 0.15;
-//
-//        BufferBuilder wr = Tessellator.getInstance().getBuffer();
-//        wr.begin(GL11.GL_POLYGON, DefaultVertexFormats.POSITION);
-//        for (int i = PneumaticCraftUtils.sin.length - 1; i >= 0; i--) {
-//            double sin = PneumaticCraftUtils.sin[i] * baseRadius;
-//            double cos = PneumaticCraftUtils.cos[i] * baseRadius;
-//            wr.pos(sin, 0, cos).endVertex();
-//        }
-//        Tessellator.getInstance().draw();
-//        wr.begin(GL11.GL_POLYGON, DefaultVertexFormats.POSITION);
-//        for (int i = PneumaticCraftUtils.sin.length - 1; i >= 0; i--) {
-//            double sin = PneumaticCraftUtils.sin[i] * arrowTipRadius;
-//            double cos = PneumaticCraftUtils.cos[i] * arrowTipRadius;
-//            wr.pos(sin, baseLength, cos).endVertex();
-//        }
-//        Tessellator.getInstance().draw();
-//        wr.begin(GL11.GL_QUAD_STRIP, DefaultVertexFormats.POSITION);
-//        for (int i = PneumaticCraftUtils.sin.length - 1; i >= 0; i--) {
-//            double sin = PneumaticCraftUtils.sin[i] * baseRadius;
-//            double cos = PneumaticCraftUtils.cos[i] * baseRadius;
-//            wr.pos(sin, 0, cos).endVertex();
-//            wr.pos(sin, baseLength, cos).endVertex();
-//        }
-//        Tessellator.getInstance().draw();
-//
-//        wr.begin(GL11.GL_TRIANGLE_FAN, DefaultVertexFormats.POSITION);
-//        wr.pos(0, baseLength + arrowTipLength, 0).endVertex();
-//        for (int i = 0; i < PneumaticCraftUtils.sin.length; i++) {
-//            double sin = PneumaticCraftUtils.sin[i] * arrowTipRadius;
-//            double cos = PneumaticCraftUtils.cos[i] * arrowTipRadius;
-//            wr.pos(sin, baseLength, cos).endVertex();
-//        }
-//        wr.pos(0, baseLength, arrowTipRadius).endVertex();
-//        Tessellator.getInstance().draw();
-//        GlStateManager.enableTexture();
-//    }
 
     private static boolean drawSide(BitSet mask, Direction d1, Direction d2) {
         return mask.get(d1.get3DDataValue()) || mask.get(d2.get3DDataValue());
@@ -166,35 +123,35 @@ public class RenderUtils {
 
     private static void renderOffsetAABB(Matrix4f posMat, VertexConsumer builder, float x1, float y1, float z1, float x2, float y2, float z2, float r, float g, float b, float a, int packedLightIn) {
 
-        builder.vertex(posMat, x1, y2, z1).color(r, g, b, a).normal(0, 0, -1).uv2(packedLightIn).endVertex();
-        builder.vertex(posMat, x2, y2, z1).color(r, g, b, a).normal(0, 0, -1).uv2(packedLightIn).endVertex();
-        builder.vertex(posMat, x2, y1, z1).color(r, g, b, a).normal(0, 0, -1).uv2(packedLightIn).endVertex();
-        builder.vertex(posMat, x1, y1, z1).color(r, g, b, a).normal(0, 0, -1).uv2(packedLightIn).endVertex();
+        builder.addVertex(posMat, x1, y2, z1).setColor(r, g, b, a).setNormal(0, 0, -1).setLight(packedLightIn);
+        builder.addVertex(posMat, x2, y2, z1).setColor(r, g, b, a).setNormal(0, 0, -1).setLight(packedLightIn);
+        builder.addVertex(posMat, x2, y1, z1).setColor(r, g, b, a).setNormal(0, 0, -1).setLight(packedLightIn);
+        builder.addVertex(posMat, x1, y1, z1).setColor(r, g, b, a).setNormal(0, 0, -1).setLight(packedLightIn);
 
-        builder.vertex(posMat, x1, y1, z2).color(r, g, b, a).normal(0, 0, 1).uv2(packedLightIn).endVertex();
-        builder.vertex(posMat, x2, y1, z2).color(r, g, b, a).normal(0, 0, 1).uv2(packedLightIn).endVertex();
-        builder.vertex(posMat, x2, y2, z2).color(r, g, b, a).normal(0, 0, 1).uv2(packedLightIn).endVertex();
-        builder.vertex(posMat, x1, y2, z2).color(r, g, b, a).normal(0, 0, 1).uv2(packedLightIn).endVertex();
+        builder.addVertex(posMat, x1, y1, z2).setColor(r, g, b, a).setNormal(0, 0, 1).setLight(packedLightIn);
+        builder.addVertex(posMat, x2, y1, z2).setColor(r, g, b, a).setNormal(0, 0, 1).setLight(packedLightIn);
+        builder.addVertex(posMat, x2, y2, z2).setColor(r, g, b, a).setNormal(0, 0, 1).setLight(packedLightIn);
+        builder.addVertex(posMat, x1, y2, z2).setColor(r, g, b, a).setNormal(0, 0, 1).setLight(packedLightIn);
 
-        builder.vertex(posMat, x1, y1, z1).color(r, g, b, a).normal(0, -1, 0).uv2(packedLightIn).endVertex();
-        builder.vertex(posMat, x2, y1, z1).color(r, g, b, a).normal(0, -1, 0).uv2(packedLightIn).endVertex();
-        builder.vertex(posMat, x2, y1, z2).color(r, g, b, a).normal(0, -1, 0).uv2(packedLightIn).endVertex();
-        builder.vertex(posMat, x1, y1, z2).color(r, g, b, a).normal(0, -1, 0).uv2(packedLightIn).endVertex();
+        builder.addVertex(posMat, x1, y1, z1).setColor(r, g, b, a).setNormal(0, -1, 0).setLight(packedLightIn);
+        builder.addVertex(posMat, x2, y1, z1).setColor(r, g, b, a).setNormal(0, -1, 0).setLight(packedLightIn);
+        builder.addVertex(posMat, x2, y1, z2).setColor(r, g, b, a).setNormal(0, -1, 0).setLight(packedLightIn);
+        builder.addVertex(posMat, x1, y1, z2).setColor(r, g, b, a).setNormal(0, -1, 0).setLight(packedLightIn);
 
-        builder.vertex(posMat, x1, y2, z2).color(r, g, b, a).normal(0, 1, 0).uv2(packedLightIn).endVertex();
-        builder.vertex(posMat, x2, y2, z2).color(r, g, b, a).normal(0, 1, 0).uv2(packedLightIn).endVertex();
-        builder.vertex(posMat, x2, y2, z1).color(r, g, b, a).normal(0, 1, 0).uv2(packedLightIn).endVertex();
-        builder.vertex(posMat, x1, y2, z1).color(r, g, b, a).normal(0, 1, 0).uv2(packedLightIn).endVertex();
+        builder.addVertex(posMat, x1, y2, z2).setColor(r, g, b, a).setNormal(0, 1, 0).setLight(packedLightIn);
+        builder.addVertex(posMat, x2, y2, z2).setColor(r, g, b, a).setNormal(0, 1, 0).setLight(packedLightIn);
+        builder.addVertex(posMat, x2, y2, z1).setColor(r, g, b, a).setNormal(0, 1, 0).setLight(packedLightIn);
+        builder.addVertex(posMat, x1, y2, z1).setColor(r, g, b, a).setNormal(0, 1, 0).setLight(packedLightIn);
 
-        builder.vertex(posMat, x1, y1, z2).color(r, g, b, a).normal(-1, 0, 0).uv2(packedLightIn).endVertex();
-        builder.vertex(posMat, x1, y2, z2).color(r, g, b, a).normal(-1, 0, 0).uv2(packedLightIn).endVertex();
-        builder.vertex(posMat, x1, y2, z1).color(r, g, b, a).normal(-1, 0, 0).uv2(packedLightIn).endVertex();
-        builder.vertex(posMat, x1, y1, z1).color(r, g, b, a).normal(-1, 0, 0).uv2(packedLightIn).endVertex();
+        builder.addVertex(posMat, x1, y1, z2).setColor(r, g, b, a).setNormal(-1, 0, 0).setLight(packedLightIn);
+        builder.addVertex(posMat, x1, y2, z2).setColor(r, g, b, a).setNormal(-1, 0, 0).setLight(packedLightIn);
+        builder.addVertex(posMat, x1, y2, z1).setColor(r, g, b, a).setNormal(-1, 0, 0).setLight(packedLightIn);
+        builder.addVertex(posMat, x1, y1, z1).setColor(r, g, b, a).setNormal(-1, 0, 0).setLight(packedLightIn);
 
-        builder.vertex(posMat, x2, y1, z1).color(r, g, b, a).normal(1, 0, 0).uv2(packedLightIn).endVertex();
-        builder.vertex(posMat, x2, y2, z1).color(r, g, b, a).normal(1, 0, 0).uv2(packedLightIn).endVertex();
-        builder.vertex(posMat, x2, y2, z2).color(r, g, b, a).normal(1, 0, 0).uv2(packedLightIn).endVertex();
-        builder.vertex(posMat, x2, y1, z2).color(r, g, b, a).normal(1, 0, 0).uv2(packedLightIn).endVertex();
+        builder.addVertex(posMat, x2, y1, z1).setColor(r, g, b, a).setNormal(1, 0, 0).setLight(packedLightIn);
+        builder.addVertex(posMat, x2, y2, z1).setColor(r, g, b, a).setNormal(1, 0, 0).setLight(packedLightIn);
+        builder.addVertex(posMat, x2, y2, z2).setColor(r, g, b, a).setNormal(1, 0, 0).setLight(packedLightIn);
+        builder.addVertex(posMat, x2, y1, z2).setColor(r, g, b, a).setNormal(1, 0, 0).setLight(packedLightIn);
     }
 
     /**
@@ -259,9 +216,8 @@ public class RenderUtils {
             Vec3 v1 = new Vec3(0, Mth.sin(i) * size, Mth.cos(i) * size);
             Vec3 v2 = new Vec3(0, Mth.sin(i + STEP) * size, Mth.cos(i + STEP) * size);
             RenderUtils.posF(builder, posMat, 0f, v1.y(), v1.z())
-                    .color(cols[1], cols[2], cols[3], cols[0])
-                    .normal(poseStack.last(), 0f, (float) (v2.y() - v1.y()), (float) (v2.z() - v1.z()))
-                    .endVertex();
+                    .setColor(cols[1], cols[2], cols[3], cols[0])
+                    .setNormal(poseStack.last(), 0f, (float) (v2.y() - v1.y()), (float) (v2.z() - v1.z()));
         }
         poseStack.popPose();
     }
@@ -283,30 +239,26 @@ public class RenderUtils {
 
     public static void drawTexture(PoseStack matrixStack, VertexConsumer builder, int x, int y, float u1, float v1, float u2, float v2, int packedLightIn) {
         Matrix4f posMat = matrixStack.last().pose();
-        builder.vertex(posMat, x, y + 16, 0)
-                .color(1f, 1f, 1f, 1f)
-                .uv(u1, v2)
-                .uv2(packedLightIn)
-                .endVertex();
-        builder.vertex(posMat, x + 16, y + 16, 0)
-                .color(1f, 1f, 1f, 1f)
-                .uv(u2, v2)
-                .uv2(packedLightIn)
-                .endVertex();
-        builder.vertex(posMat, x + 16, y, 0)
-                .color(1f, 1f, 1f, 1f)
-                .uv(u2, v1)
-                .uv2(packedLightIn)
-                .endVertex();
-        builder.vertex(posMat, x, y, 0)
-                .color(1f, 1f, 1f, 1f)
-                .uv(u1, v1)
-                .uv2(packedLightIn)
-                .endVertex();
+        builder.addVertex(posMat, x, y + 16, 0)
+                .setColor(1f, 1f, 1f, 1f)
+                .setUv(u1, v2)
+                .setLight(packedLightIn);
+        builder.addVertex(posMat, x + 16, y + 16, 0)
+                .setColor(1f, 1f, 1f, 1f)
+                .setUv(u2, v2)
+                .setLight(packedLightIn);
+        builder.addVertex(posMat, x + 16, y, 0)
+                .setColor(1f, 1f, 1f, 1f)
+                .setUv(u2, v1)
+                .setLight(packedLightIn);
+        builder.addVertex(posMat, x, y, 0)
+                .setColor(1f, 1f, 1f, 1f)
+                .setUv(u1, v1)
+                .setLight(packedLightIn);
     }
 
     /**
-     * Convenience method to get double coords into {@link VertexConsumer#vertex(Matrix4f, float, float, float)}
+     * Convenience method to get double coords into {@link VertexConsumer#addVertex(float, float, float)}
      * @param builder the vertex builder
      * @param posMat the positioning matrix
      * @param x X
@@ -315,7 +267,7 @@ public class RenderUtils {
      * @return the vertex builder, for method chaining
      */
     public static VertexConsumer posF(VertexConsumer builder, Matrix4f posMat, double x, double y, double z) {
-        return builder.vertex(posMat, (float)x, (float)y, (float)z);
+        return builder.addVertex(posMat, (float)x, (float)y, (float)z);
     }
 
     public static void finishBuffer(MultiBufferSource buffer, RenderType type) {
@@ -338,12 +290,12 @@ public class RenderUtils {
 
     public static void renderString3d(Component str, float x, float y, int color, PoseStack matrixStack, MultiBufferSource buffer, boolean dropShadow, boolean disableDepthTest) {
         Font fr = Minecraft.getInstance().font;
-        fr.drawInBatch(str, x, y, color, dropShadow, matrixStack.last().pose(), buffer, disableDepthTest ? Font.DisplayMode.SEE_THROUGH : Font.DisplayMode.NORMAL, 0, FULL_BRIGHT);
+        fr.drawInBatch(str, x, y, color, dropShadow, matrixStack.last().pose(), buffer, disableDepthTest ? Font.DisplayMode.SEE_THROUGH : Font.DisplayMode.NORMAL, 0, LightTexture.FULL_BRIGHT);
     }
 
     public static void renderString3d(FormattedCharSequence str, float x, float y, int color, PoseStack matrixStack, MultiBufferSource buffer, boolean dropShadow, boolean disableDepthTest) {
         Font fr = Minecraft.getInstance().font;
-        fr.drawInBatch(str, x, y, color, dropShadow, matrixStack.last().pose(), buffer, disableDepthTest ? Font.DisplayMode.SEE_THROUGH : Font.DisplayMode.NORMAL, 0, FULL_BRIGHT);
+        fr.drawInBatch(str, x, y, color, dropShadow, matrixStack.last().pose(), buffer, disableDepthTest ? Font.DisplayMode.SEE_THROUGH : Font.DisplayMode.NORMAL, 0, LightTexture.FULL_BRIGHT);
     }
 
     public static void normalLine(VertexConsumer builder, PoseStack poseStack, float x1, float y1, float z1, float x2, float y2, float z2, float a, float r, float g, float b, boolean isStrip) {
@@ -351,16 +303,20 @@ public class RenderUtils {
         float ny = y2 - y1;
         float nz = z2 - z1;
         float d = Mth.sqrt(nx * nx + ny * ny + nz * nz);
-        builder.vertex(poseStack.last().pose(), x1, y1, z1)
-                .color(r, g, b, a)
-                .normal(poseStack.last(), nx / d , ny / d, nz / d)
-                .endVertex();
+        builder.addVertex(poseStack.last().pose(), x1, y1, z1)
+                .setColor(r, g, b, a)
+                .setNormal(poseStack.last(), nx / d , ny / d, nz / d);
         if (!isStrip) {
             // when drawing line strips, second set of x/y/z coords are just for normal calculation
-            builder.vertex(poseStack.last(), x2, y2, z2)
-                    .color(r, g, b, a)
-                    .normal(poseStack.last(), nx / d , ny / d, nz / d)
-                    .endVertex();
+            builder.addVertex(poseStack.last(), x2, y2, z2)
+                    .setColor(r, g, b, a)
+                    .setNormal(poseStack.last(), nx / d , ny / d, nz / d);
         }
+    }
+
+    public static void drawWithTesselator(VertexFormat.Mode mode, VertexFormat format, Consumer<BufferBuilder> consumer) {
+        BufferBuilder builder = Tesselator.getInstance().begin(mode, format);
+        consumer.accept(builder);
+        BufferUploader.drawWithShader(builder.buildOrThrow());
     }
 }

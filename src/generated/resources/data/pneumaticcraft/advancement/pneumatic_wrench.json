@@ -1,0 +1,43 @@
+{
+  "parent": "pneumaticcraft:pressure_tube",
+  "criteria": {
+    "0": {
+      "conditions": {
+        "items": [
+          {
+            "count": {
+              "min": 1
+            },
+            "items": "pneumaticcraft:pneumatic_wrench",
+            "predicates": {
+              "minecraft:damage": {}
+            }
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "background": "pneumaticcraft:textures/gui/advancement_bg.png",
+    "description": {
+      "translate": "pneumaticcraft.advancement.pneumatic_wrench.desc"
+    },
+    "icon": {
+      "count": 1,
+      "id": "pneumaticcraft:pneumatic_wrench"
+    },
+    "title": {
+      "translate": "pneumaticcraft.advancement.pneumatic_wrench"
+    }
+  },
+  "requirements": [
+    [
+      "0"
+    ]
+  ],
+  "rewards": {
+    "experience": 10
+  },
+  "sends_telemetry_event": true
+}

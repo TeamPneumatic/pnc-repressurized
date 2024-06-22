@@ -63,7 +63,7 @@ public class WidgetColorSelector extends WidgetButtonExtended implements IDrawAf
         super.renderWidget(graphics, mouseX, mouseY, partialTick);
 
         int x = getX(), y = getY();
-        graphics.fill(x + 3, y + 3, x + width - 4, y + height - 4, 0xFF000000 | PneumaticCraftUtils.getDyeColorAsRGB(color));
+        graphics.fill(x + 3, y + 3, x + width - 4, y + height - 4, 0xFF000000 | color.getTextureDiffuseColor());
         graphics.hLine(x + 3, x + width - 3, y + height - 4, 0xFF606060);
         graphics.vLine(x + width - 4, y + 3, y + height - 3, 0xFF606060);
     }
@@ -77,7 +77,7 @@ public class WidgetColorSelector extends WidgetButtonExtended implements IDrawAf
             for (DyeColor color : DyeColor.values()) {
                 int dx = x + (color.getId() % 4) * 16;
                 int dy = y - 1 + height + (color.getId() / 4) * 16;
-                graphics.fill(dx + 3, dy + 3, dx + 13, dy + 13, 0xFF000000 | PneumaticCraftUtils.getDyeColorAsRGB(color));
+                graphics.fill(dx + 3, dy + 3, dx + 13, dy + 13, 0xFF000000 | color.getTextureDiffuseColor());
                 graphics.hLine(dx + 3, dx + 13, dy + 13, 0xFF606060);
                 graphics.vLine(dx + 13, dy + 3, dy + 13, 0xFF606060);
             }

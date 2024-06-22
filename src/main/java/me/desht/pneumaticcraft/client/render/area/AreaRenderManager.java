@@ -36,6 +36,7 @@ import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.CoordTrackerHandl
 import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.core.BlockPos;
@@ -124,12 +125,12 @@ public enum AreaRenderManager {
         }
     }
 
-    private void maybeRenderCoordinateTracker(PoseStack matrixStack, MultiBufferSource.BufferSource buffer, Player player, float partialTicks) {
+    private void maybeRenderCoordinateTracker(PoseStack matrixStack, MultiBufferSource.BufferSource buffer, Player player, DeltaTracker partialTicks) {
         CoordTrackerHandler handler = CommonUpgradeHandlers.coordTrackerHandler;
         if (CommonArmorHandler.getHandlerForPlayer().upgradeUsable(handler, true)) {
             BlockPos pos = ClientArmorRegistry.getInstance().getClientHandler(handler, CoordTrackClientHandler.class).getTrackedPos();
             if (pos != null) {
-                float progress = (player.level().getGameTime() % 20 + partialTicks) / 20;
+                float progress = (player.level().getGameTime() % 20 + partialTicks.getGameTimeDeltaPartialTick(false)) / 20;
                 float g = progress < 0.5F ? progress + 0.5F : 1.5F - progress;
                 int col = 0xA00000FF | (int)(g * 255) << 8;
                 Vec3 targetVec = Vec3.atCenterOf(pos);

@@ -47,6 +47,7 @@ import me.desht.pneumaticcraft.common.util.GlobalPosHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.ChatFormatting;
+import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.GlobalPos;
 import net.minecraft.core.component.DataComponentType;
@@ -70,10 +71,12 @@ import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 
 import javax.annotation.Nullable;
+import java.util.EnumMap;
 import java.util.List;
-import java.util.UUID;
+import java.util.Map;
 import java.util.function.Consumer;
 
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class PneumaticArmorItem extends ArmorItem implements
@@ -81,12 +84,13 @@ public class PneumaticArmorItem extends ArmorItem implements
         ColorHandlers.ITintableItem
         /*, IVisDiscountGear, IGoggles, IRevealer,*/
 {
-    private static final UUID[] PNEUMATIC_ARMOR_MODIFIERS = new UUID[] {
-            UUID.fromString("4a6bf01d-2e83-4b13-aaf0-a4c05958ea3c"),
-            UUID.fromString("ad78a169-0409-47fb-8ca2-126b19196b56"),
-            UUID.fromString("87bf456d-7360-407d-8592-5a2583eb948c"),
-            UUID.fromString("e836e6c9-355e-49f2-87fc-331fadfdd642")
-    };
+    private static final Map<EquipmentSlotGroup,ResourceLocation> MODIFIER_IDS = Util.make(
+            new EnumMap<>(EquipmentSlotGroup.class), map -> {
+                map.put(EquipmentSlotGroup.HEAD, RL("armor_mod_head"));
+                map.put(EquipmentSlotGroup.CHEST, RL("armor_mod_chest"));
+                map.put(EquipmentSlotGroup.LEGS, RL("armor_mod_legs"));
+                map.put(EquipmentSlotGroup.FEET, RL("armor_mod_feet"));
+            });
 
     private static final int[] ARMOR_VOLUMES = new int[] {
             PneumaticValues.PNEUMATIC_BOOTS_VOLUME,
@@ -192,18 +196,20 @@ public class PneumaticArmorItem extends ArmorItem implements
     }
 
     @Override
-    public ItemAttributeModifiers getAttributeModifiers(ItemStack stack) {
-        ItemAttributeModifiers modifiers = super.getAttributeModifiers(stack);
+    public ItemAttributeModifiers getDefaultAttributeModifiers(ItemStack stack) {
+        ItemAttributeModifiers modifiers = super.getDefaultAttributeModifiers(stack);
 
         if (stack.getEquipmentSlot() == type.getSlot()) {
             int upgrades = UpgradableItemUtils.getUpgradeCount(stack, ModUpgrades.ARMOR.get());
             if (upgrades > 0) {
                 EquipmentSlotGroup group = EquipmentSlotGroup.bySlot(type.getSlot());
-                AttributeModifier armor = new AttributeModifier("FIXME", upgrades / 2d, AttributeModifier.Operation.ADD_VALUE);
-                AttributeModifier armorToughness = new AttributeModifier("FIXME2", upgrades, AttributeModifier.Operation.ADD_VALUE);
-                return modifiers
-                        .withModifierAdded(Attributes.ARMOR, armor, group)
-                        .withModifierAdded(Attributes.ARMOR_TOUGHNESS, armorToughness, group);
+                if (MODIFIER_IDS.containsKey(group)) {
+                    AttributeModifier armor = new AttributeModifier(MODIFIER_IDS.get(group), upgrades / 2d, AttributeModifier.Operation.ADD_VALUE);
+                    AttributeModifier armorToughness = new AttributeModifier(MODIFIER_IDS.get(group), upgrades, AttributeModifier.Operation.ADD_VALUE);
+                    return modifiers
+                            .withModifierAdded(Attributes.ARMOR, armor, group)
+                            .withModifierAdded(Attributes.ARMOR_TOUGHNESS, armorToughness, group);
+                }
             }
         }
 

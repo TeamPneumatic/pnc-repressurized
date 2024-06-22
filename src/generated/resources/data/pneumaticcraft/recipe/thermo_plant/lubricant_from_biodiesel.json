@@ -1,0 +1,21 @@
+{
+  "type": "pneumaticcraft:thermo_plant",
+  "inputs": {
+    "fluid": {
+      "amount": 1000,
+      "tag": "c:fuels/biodiesel"
+    },
+    "item": {
+      "tag": "c:dusts/redstone"
+    }
+  },
+  "outputs": {
+    "fluid_output": {
+      "amount": 1000,
+      "id": "pneumaticcraft:lubricant"
+    }
+  },
+  "temperature": {
+    "min": 373
+  }
+}

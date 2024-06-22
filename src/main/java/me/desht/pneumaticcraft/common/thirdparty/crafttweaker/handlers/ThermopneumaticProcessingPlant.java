@@ -48,7 +48,7 @@ public class ThermopneumaticProcessingPlant implements IRecipeManager<ThermoPlan
                           @ZenCodeType.OptionalFloat(1f) float recipeSpeed, @ZenCodeType.OptionalFloat(1f) float airUseMultiplier,
                           @ZenCodeType.OptionalBoolean() boolean exothermic) {
         CraftTweakerAPI.apply(new ActionAddRecipe<>(this,
-                new RecipeHolder<>(new ResourceLocation("crafttweaker", fixRecipeName(name)),
+                new RecipeHolder<>(ResourceLocation.fromNamespaceAndPath("crafttweaker", fixRecipeName(name)),
                         new ThermoPlantRecipeImpl(
                                 new ThermoPlantRecipe.Inputs(
                                         Optional.ofNullable(CTUtils.toSizedFluidIngredient(inputFluid)),

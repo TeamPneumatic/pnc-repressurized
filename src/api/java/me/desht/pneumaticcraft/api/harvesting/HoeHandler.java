@@ -17,6 +17,7 @@
 
 package me.desht.pneumaticcraft.api.harvesting;
 
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.HoeItem;
 import net.minecraft.world.item.ItemStack;
@@ -54,7 +55,7 @@ public class HoeHandler implements Predicate<ItemStack> {
      */
     public static class DefaultHoeHandler extends HoeHandler {
         public DefaultHoeHandler() {
-            super(stack -> stack.getItem() instanceof HoeItem, (stack, player) -> stack.hurtAndBreak(1, player.getRandom(), player, () -> { }));
+            super(stack -> stack.getItem() instanceof HoeItem, (stack, player) -> stack.hurtAndBreak(1, (ServerLevel) player.level(), player, item -> { }));
         }
     }
 }

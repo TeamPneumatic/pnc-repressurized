@@ -60,15 +60,12 @@ public class ActiveEntityHacks implements IActiveEntityHacks, INBTSerializable<C
         ListTag tagList = nbt.getList("hackables", Tag.TAG_COMPOUND);
         for (int i = 0; i < tagList.size(); i++) {
             String id = tagList.getCompound(i).getString("id");
-            if (ResourceLocation.isValidResourceLocation(id)) {
-                ResourceLocation hackableId = new ResourceLocation(id);
+            ResourceLocation.read(id).result().ifPresentOrElse(hackableId -> {
                 CommonArmorRegistry.getInstance().getHackableEntityForId(hackableId).ifPresentOrElse(
                         this::addHackable,
                         () -> Log.error("entity-hackable '{}' not found when deserializing IHacking capability?", hackableId)
                 );
-            } else {
-                Log.error("invalid hackable id '{}': not a resource location", id);
-            }
+            }, () -> Log.error("invalid hackable id '{}': not a resource location", id));
         }
     }
 }

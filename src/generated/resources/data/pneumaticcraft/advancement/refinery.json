@@ -1,0 +1,53 @@
+{
+  "parent": "pneumaticcraft:oil_bucket",
+  "criteria": {
+    "0": {
+      "conditions": {
+        "items": [
+          {
+            "count": {
+              "min": 1
+            },
+            "items": "pneumaticcraft:refinery",
+            "predicates": {
+              "minecraft:damage": {}
+            }
+          },
+          {
+            "count": {
+              "min": 2
+            },
+            "items": "pneumaticcraft:refinery_output",
+            "predicates": {
+              "minecraft:damage": {}
+            }
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "background": "pneumaticcraft:textures/gui/advancement_bg.png",
+    "description": {
+      "translate": "pneumaticcraft.advancement.refinery.desc"
+    },
+    "frame": "goal",
+    "icon": {
+      "count": 1,
+      "id": "pneumaticcraft:refinery"
+    },
+    "title": {
+      "translate": "pneumaticcraft.advancement.refinery"
+    }
+  },
+  "requirements": [
+    [
+      "0"
+    ]
+  ],
+  "rewards": {
+    "experience": 20
+  },
+  "sends_telemetry_event": true
+}

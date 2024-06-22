@@ -1,0 +1,34 @@
+{
+  "parent": "pneumaticcraft:logistics_configurator",
+  "criteria": {
+    "0": {
+      "conditions": {
+        "id": "pneumaticcraft:logistics_drone_deployed"
+      },
+      "trigger": "pneumaticcraft:logistics_drone_deployed"
+    }
+  },
+  "display": {
+    "background": "pneumaticcraft:textures/gui/advancement_bg.png",
+    "description": {
+      "translate": "pneumaticcraft.advancement.logistics_drone_deployed.desc"
+    },
+    "frame": "goal",
+    "icon": {
+      "count": 1,
+      "id": "pneumaticcraft:logistics_drone"
+    },
+    "title": {
+      "translate": "pneumaticcraft.advancement.logistics_drone_deployed"
+    }
+  },
+  "requirements": [
+    [
+      "0"
+    ]
+  ],
+  "rewards": {
+    "experience": 10
+  },
+  "sends_telemetry_event": true
+}

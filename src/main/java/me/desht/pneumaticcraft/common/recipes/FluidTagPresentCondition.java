@@ -38,7 +38,7 @@ public class FluidTagPresentCondition implements ICondition {
     }
 
     public FluidTagPresentCondition(String tagName) {
-        this(new ResourceLocation(tagName));
+        this(ResourceLocation.parse(tagName));
     }
 
     private ResourceLocation location() {

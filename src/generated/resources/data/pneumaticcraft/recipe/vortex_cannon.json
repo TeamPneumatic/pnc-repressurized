@@ -1,0 +1,27 @@
+{
+  "type": "pneumaticcraft:crafting_shaped_pressurizable",
+  "category": "misc",
+  "key": {
+    "C": {
+      "item": "pneumaticcraft:air_canister"
+    },
+    "D": {
+      "tag": "c:dyes/yellow"
+    },
+    "I": {
+      "tag": "c:ingots/compressed_iron"
+    },
+    "L": {
+      "item": "minecraft:lever"
+    }
+  },
+  "pattern": [
+    "IDI",
+    "C  ",
+    "ILI"
+  ],
+  "result": {
+    "count": 1,
+    "id": "pneumaticcraft:vortex_cannon"
+  }
+}

@@ -21,7 +21,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import me.desht.pneumaticcraft.client.pneumatic_armor.upgrade_handler.CoordTrackClientHandler;
 import me.desht.pneumaticcraft.client.render.ModRenderTypes;
-import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -31,6 +30,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.pathfinder.Node;
 import net.minecraft.world.level.pathfinder.Path;
 import org.joml.Matrix4f;
+
+import static net.minecraft.client.renderer.LightTexture.FULL_BRIGHT;
 
 public class RenderNavigator {
     private final BlockPos targetPos;
@@ -79,18 +80,15 @@ public class RenderNavigator {
                 }
                 Node lastPoint = path.getNode(i - 1);
                 Node pathPoint = path.getNode(i);
-                builder.vertex(posMat, lastPoint.x + 0.5F, lastPoint.y, lastPoint.z + 0.5F)
-                        .color(red, 1 - red, 0, 0.5f)
-                        .normal(matrixStack.last(), pathPoint.x - lastPoint.x, pathPoint.y - lastPoint.y, pathPoint.z - lastPoint.z)
-                        .endVertex();
-                builder.vertex(posMat, (lastPoint.x + pathPoint.x) / 2F + 0.5F, Math.max(lastPoint.y, pathPoint.y), (lastPoint.z + pathPoint.z) / 2F + 0.5F)
-                        .color(red, 1 - red, 0, 0.5f)
-                        .normal(matrixStack.last(), pathPoint.x - lastPoint.x, pathPoint.y - lastPoint.y, pathPoint.z - lastPoint.z)
-                        .endVertex();
-                builder.vertex(posMat, pathPoint.x + 0.5F, pathPoint.y, pathPoint.z + 0.5F)
-                        .color(red, 1 - red, 0, 0.5f)
-                        .normal(matrixStack.last(), pathPoint.x - lastPoint.x, pathPoint.y - lastPoint.y, pathPoint.z - lastPoint.z)
-                        .endVertex();
+                builder.addVertex(posMat, lastPoint.x + 0.5F, lastPoint.y, lastPoint.z + 0.5F)
+                        .setColor(red, 1 - red, 0, 0.5f)
+                        .setNormal(matrixStack.last(), pathPoint.x - lastPoint.x, pathPoint.y - lastPoint.y, pathPoint.z - lastPoint.z);
+                builder.addVertex(posMat, (lastPoint.x + pathPoint.x) / 2F + 0.5F, Math.max(lastPoint.y, pathPoint.y), (lastPoint.z + pathPoint.z) / 2F + 0.5F)
+                        .setColor(red, 1 - red, 0, 0.5f)
+                        .setNormal(matrixStack.last(), pathPoint.x - lastPoint.x, pathPoint.y - lastPoint.y, pathPoint.z - lastPoint.z);
+                builder.addVertex(posMat, pathPoint.x + 0.5F, pathPoint.y, pathPoint.z + 0.5F)
+                        .setColor(red, 1 - red, 0, 0.5f)
+                        .setNormal(matrixStack.last(), pathPoint.x - lastPoint.x, pathPoint.y - lastPoint.y, pathPoint.z - lastPoint.z);
             }
         } else {
             VertexConsumer builder = buffer.getBuffer(xRayEnabled ? ModRenderTypes.UNTEXTURED_QUAD_NO_DEPTH : ModRenderTypes.UNTEXTURED_QUAD);
@@ -111,18 +109,18 @@ public class RenderNavigator {
                     red = (path.getNodeCount() - i) * 0.005F;
                 }
                 Node pathPoint = path.getNode(i);
-                builder.vertex(posMat, pathPoint.x, pathPoint.y, pathPoint.z).color(red, 1 - red, 0, alphaValue)
-                        .uv2(RenderUtils.FULL_BRIGHT)
-                        .endVertex();
-                builder.vertex(posMat, pathPoint.x, pathPoint.y, pathPoint.z + 1).color(red, 1 - red, 0, alphaValue)
-                        .uv2(RenderUtils.FULL_BRIGHT)
-                        .endVertex();
-                builder.vertex(posMat, pathPoint.x + 1, pathPoint.y, pathPoint.z + 1).color(red, 1 - red, 0, alphaValue)
-                        .uv2(RenderUtils.FULL_BRIGHT)
-                        .endVertex();
-                builder.vertex(posMat, pathPoint.x + 1, pathPoint.y, pathPoint.z).color(red, 1 - red, 0, alphaValue)
-                        .uv2(RenderUtils.FULL_BRIGHT)
-                        .endVertex();
+                builder.addVertex(posMat, pathPoint.x, pathPoint.y, pathPoint.z)
+                        .setColor(red, 1 - red, 0, alphaValue)
+                        .setLight(FULL_BRIGHT);
+                builder.addVertex(posMat, pathPoint.x, pathPoint.y, pathPoint.z + 1)
+                        .setColor(red, 1 - red, 0, alphaValue)
+                        .setLight(FULL_BRIGHT);
+                builder.addVertex(posMat, pathPoint.x + 1, pathPoint.y, pathPoint.z + 1)
+                        .setColor(red, 1 - red, 0, alphaValue)
+                        .setLight(FULL_BRIGHT);
+                builder.addVertex(posMat, pathPoint.x + 1, pathPoint.y, pathPoint.z)
+                        .setColor(red, 1 - red, 0, alphaValue)
+                        .setLight(FULL_BRIGHT);
             }
         }
 

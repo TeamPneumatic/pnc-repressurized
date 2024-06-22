@@ -19,10 +19,7 @@ package me.desht.pneumaticcraft.client.gui.widget;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.Tesselator;
-import com.mojang.blaze3d.vertex.VertexFormat;
+import com.mojang.blaze3d.vertex.*;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -86,19 +83,18 @@ public class WidgetRadioButton extends PNCWidget<WidgetRadioButton> {
     private static final float N_POINTS = 12f;
 
     private void drawCircle(GuiGraphics graphics, float x, float y, float radius, int color) {
-        BufferBuilder wr = Tesselator.getInstance().getBuilder();
         int[] cols = RenderUtils.decomposeColor(color);
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
         RenderSystem.enableBlend();
         RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-        wr.begin(VertexFormat.Mode.TRIANGLE_FAN, DefaultVertexFormat.POSITION_COLOR);
+        BufferBuilder wr = Tesselator.getInstance().begin(VertexFormat.Mode.TRIANGLE_FAN, DefaultVertexFormat.POSITION_COLOR);
         Matrix4f posMat = graphics.pose().last().pose();
         for (int i = 0; i < N_POINTS; i++) {
             float sin = Mth.sin(i / N_POINTS * (float) Math.PI * 2f);
             float cos = Mth.cos(i / N_POINTS * (float) Math.PI * 2f);
-            wr.vertex(posMat, x + sin * radius, y + cos * radius, 0f).color(cols[1], cols[2], cols[3], cols[0]).endVertex();
+            wr.addVertex(posMat, x + sin * radius, y + cos * radius, 0f).setColor(cols[1], cols[2], cols[3], cols[0]);
         }
-        Tesselator.getInstance().end();
+        BufferUploader.drawWithShader(wr.buildOrThrow());
         RenderSystem.disableBlend();
     }
 

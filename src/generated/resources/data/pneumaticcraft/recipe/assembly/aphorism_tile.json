@@ -1,0 +1,12 @@
+{
+  "type": "pneumaticcraft:assembly_laser",
+  "input": {
+    "count": 1,
+    "item": "minecraft:quartz_block"
+  },
+  "program": "laser",
+  "result": {
+    "count": 4,
+    "id": "pneumaticcraft:aphorism_tile"
+  }
+}

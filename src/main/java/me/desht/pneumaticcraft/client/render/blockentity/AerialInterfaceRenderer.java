@@ -17,6 +17,8 @@ import net.minecraft.client.resources.PlayerSkin;
 import net.minecraft.client.resources.SkinManager;
 import net.minecraft.core.Direction;
 
+import static net.minecraft.client.renderer.LightTexture.FULL_BRIGHT;
+
 public class AerialInterfaceRenderer implements BlockEntityRenderer<AerialInterfaceBlockEntity> {
     private final SkullModel headModel;
 
@@ -41,8 +43,7 @@ public class AerialInterfaceRenderer implements BlockEntityRenderer<AerialInterf
             matrixStackIn.scale(-1.0F, -1.0F, 1.0F);
             VertexConsumer builder = bufferIn.getBuffer(renderType);
             headModel.setupAnim(0F, dir.getOpposite().get2DDataValue() * 90F, -90F);  // setRotations?
-            headModel.renderToBuffer(matrixStackIn, builder, RenderUtils.FULL_BRIGHT, OverlayTexture.NO_OVERLAY,
-                    1.0F, 1.0F, 1.0F, 1.0F);
+            headModel.renderToBuffer(matrixStackIn, builder, FULL_BRIGHT, OverlayTexture.NO_OVERLAY, 0xFFFFFFFF);
             matrixStackIn.popPose();
         }
     }

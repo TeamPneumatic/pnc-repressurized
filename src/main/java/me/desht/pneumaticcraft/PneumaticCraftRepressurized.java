@@ -105,6 +105,8 @@ public class PneumaticCraftRepressurized {
         event.register(PNCRegistries.HOE_HANDLER_REGISTRY);
         event.register(PNCRegistries.HARVEST_HANDLER_REGISTRY);
         event.register(PNCRegistries.PROG_WIDGETS_REGISTRY);
+        event.register(PNCRegistries.PLAYER_MATCHER_REGISTRY);
+        event.register(PNCRegistries.AREA_TYPE_SERIALIZER_REGISTRY);
     }
 
     private void registerAllDeferredRegistryObjects(IEventBus modBus) {

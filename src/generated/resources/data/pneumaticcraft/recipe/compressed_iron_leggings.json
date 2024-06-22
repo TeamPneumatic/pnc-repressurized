@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "I": {
+      "tag": "c:ingots/compressed_iron"
+    },
+    "L": {
+      "item": "minecraft:leather_leggings"
+    }
+  },
+  "pattern": [
+    "III",
+    "ILI",
+    "I I"
+  ],
+  "result": {
+    "count": 1,
+    "id": "pneumaticcraft:compressed_iron_leggings"
+  }
+}

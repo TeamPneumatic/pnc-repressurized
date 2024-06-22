@@ -194,8 +194,6 @@ public class ProgrammerWidgetAreaRenderer {
 
         if (showFlow) showFlow(graphics);
 
-//        RenderSystem.enableBlend();
-//        RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
         for (IProgWidget widget : progWidgets) {
             poseStack.pushPose();
             poseStack.translate(widget.getX() + guiLeft, widget.getY() + guiTop, 0);
@@ -271,8 +269,7 @@ public class ProgrammerWidgetAreaRenderer {
         RenderSystem.lineWidth(1);
 
         RenderSystem.setShader(GameRenderer::getPositionShader);
-        BufferBuilder wr = Tesselator.getInstance().getBuilder();
-        wr.begin(VertexFormat.Mode.DEBUG_LINES, DefaultVertexFormat.POSITION);
+        BufferBuilder wr = Tesselator.getInstance().begin(VertexFormat.Mode.DEBUG_LINES, DefaultVertexFormat.POSITION);
 
         Map<String, List<IProgWidget>> labelWidgets = new HashMap<>();
         for (IProgWidget w : progWidgets) {
@@ -292,22 +289,21 @@ public class ProgrammerWidgetAreaRenderer {
                         int y2 = labelWidget.getY() + labelWidget.getHeight() / 4;
                         float midX = (x2 + x1) / 2F;
                         float midY = (y2 + y1) / 2F;
-                        wr.vertex(posMat,guiLeft + x1, guiTop + y1, 0.0f).endVertex();
-                        wr.vertex(posMat,guiLeft + x2, guiTop + y2, 0.0f).endVertex();
+                        wr.addVertex(posMat,guiLeft + x1, guiTop + y1, 0.0f);
+                        wr.addVertex(posMat,guiLeft + x2, guiTop + y2, 0.0f);
                         Vec3 arrowVec = new Vec3(x1 - x2, y1 - y2, 0).normalize();
                         arrowVec = new Vec3(arrowVec.x * ARROW_SIZE, 0, arrowVec.y * ARROW_SIZE);
                         arrowVec = arrowVec.yRot(ARROW_ANGLE);
-                        wr.vertex(posMat,guiLeft + midX, guiTop + midY, 0.0f).endVertex();
-                        wr.vertex(posMat,guiLeft + midX + (float)arrowVec.x, guiTop + midY + (float)arrowVec.z, 0.0f).endVertex();
+                        wr.addVertex(posMat,guiLeft + midX, guiTop + midY, 0.0f);
+                        wr.addVertex(posMat,guiLeft + midX + (float)arrowVec.x, guiTop + midY + (float)arrowVec.z, 0.0f);
                         arrowVec = arrowVec.yRot(-2 * ARROW_ANGLE);
-                        wr.vertex(posMat,guiLeft + midX, guiTop + midY, 0.0f).endVertex();
-                        wr.vertex(posMat,guiLeft + midX + (float)arrowVec.x, guiTop + midY + (float)arrowVec.z, 0.0f).endVertex();
+                        wr.addVertex(posMat,guiLeft + midX, guiTop + midY, 0.0f);
+                        wr.addVertex(posMat,guiLeft + midX + (float)arrowVec.x, guiTop + midY + (float)arrowVec.z, 0.0f);
                     }
                 }
             }
         }
-
-        Tesselator.getInstance().end();
+        BufferUploader.drawWithShader(wr.buildOrThrow());
     }
 
     public float getScale() {
@@ -316,8 +312,8 @@ public class ProgrammerWidgetAreaRenderer {
 
     boolean isOutsideProgrammingArea(IProgWidget widget) {
         float scale = getScale();
-        int x = (int) ((widget.getX() + guiLeft) * scale);
-        int y = (int) ((widget.getY() + guiTop) * scale);
+        double x = (int) ((widget.getX() + guiLeft) * scale);
+        double y = (int) ((widget.getY() + guiTop) * scale);
         x += translatedX - guiLeft;
         y += translatedY - guiTop;
 

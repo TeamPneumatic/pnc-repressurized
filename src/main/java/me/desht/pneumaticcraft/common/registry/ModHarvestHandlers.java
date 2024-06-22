@@ -71,7 +71,7 @@ public class ModHarvestHandlers {
          */
         public Block convert(Block in, TreePart to) {
             return PneumaticCraftUtils.getRegistryName(in).map(rlIn -> {
-                ResourceLocation rlOut = new ResourceLocation(rlIn.getNamespace(), pattern.matcher(rlIn.getPath()).replaceAll(to.suffix));
+                ResourceLocation rlOut = ResourceLocation.fromNamespaceAndPath(rlIn.getNamespace(), pattern.matcher(rlIn.getPath()).replaceAll(to.suffix));
                 return BuiltInRegistries.BLOCK.get(rlOut);
             }).orElse(Blocks.AIR);
         }

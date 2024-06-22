@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "C": {
+      "tag": "c:chests/wooden"
+    },
+    "G": {
+      "tag": "c:nuggets/gold"
+    },
+    "I": {
+      "tag": "c:ingots/compressed_iron"
+    },
+    "O": {
+      "tag": "c:obsidians"
+    },
+    "W": {
+      "item": "pneumaticcraft:reinforced_brick_wall"
+    }
+  },
+  "pattern": [
+    "IGI",
+    "WCW",
+    "IOI"
+  ],
+  "result": {
+    "count": 1,
+    "id": "pneumaticcraft:reinforced_chest"
+  }
+}

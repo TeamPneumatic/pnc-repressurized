@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "C": {
+      "item": "pneumaticcraft:logistics_core"
+    },
+    "R": {
+      "tag": "c:dusts/redstone"
+    },
+    "T": {
+      "item": "pneumaticcraft:pressure_tube"
+    }
+  },
+  "pattern": [
+    " R ",
+    "RCR",
+    "TRT"
+  ],
+  "result": {
+    "count": 1,
+    "id": "pneumaticcraft:logistics_module"
+  }
+}

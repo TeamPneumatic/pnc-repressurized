@@ -15,6 +15,7 @@ import me.desht.pneumaticcraft.common.item.PneumaticArmorItem;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.registry.ModSounds;
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.LayeredDraw;
@@ -37,7 +38,7 @@ public class PneumaticArmorHUDOverlay implements LayeredDraw.Layer {
     private final boolean[] gaveLowPressureWarning = new boolean[4];  // per-slot
 
     @Override
-    public void render(GuiGraphics graphics, float partialTicks) {
+    public void render(GuiGraphics graphics, DeltaTracker deltaTracker) {
         Minecraft mc = Minecraft.getInstance();
         Player player = mc.player;
 
@@ -59,6 +60,8 @@ public class PneumaticArmorHUDOverlay implements LayeredDraw.Layer {
                 break;
             }
         }
+
+        float partialTicks = deltaTracker.getGameTimeDeltaPartialTick(true);
 
         for (EquipmentSlot slot : ArmorUpgradeRegistry.ARMOR_SLOTS) {
             ItemStack armorStack = player.getItemBySlot(slot);

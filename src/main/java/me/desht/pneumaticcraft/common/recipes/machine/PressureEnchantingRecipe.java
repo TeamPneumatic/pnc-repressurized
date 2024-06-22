@@ -21,7 +21,9 @@ import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntList;
 import me.desht.pneumaticcraft.common.registry.ModRecipeSerializers;
+import me.desht.pneumaticcraft.common.util.EnchantmentUtils;
 import net.minecraft.core.Holder;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -80,8 +82,8 @@ public class PressureEnchantingRecipe extends PressureChamberRecipeImpl {
         // if the enchantment is applicable, AND the item doesn't have an existing enchantment of the
         // same type which is equal to or stronger than the book's enchantment level...
         return bookMap.entrySet().stream()
-                .anyMatch(entry -> enchantable.canApplyAtEnchantingTable(entry.getKey().value())
-                        && enchantable.getEnchantmentLevel(entry.getKey().value()) < entry.getIntValue());
+                .anyMatch(entry -> enchantable.isPrimaryItemFor(entry.getKey())
+                        && enchantable.getEnchantmentLevel(entry.getKey()) < entry.getIntValue());
     }
 
     @Override
@@ -96,8 +98,8 @@ public class PressureEnchantingRecipe extends PressureChamberRecipeImpl {
 
         bookEnchantments.keySet().forEach(entry -> {
             Enchantment enchantment = entry.value();
-            if (enchantment.canEnchant(enchantable) && itemEnchantments.stream().allMatch(e -> e.value().isCompatibleWith(enchantment))) {
-                enchantable.enchant(enchantment, bookEnchantments.getLevel(enchantment));
+            if (enchantment.canEnchant(enchantable) && itemEnchantments.stream().allMatch(e -> Enchantment.areCompatible(e, entry))) {
+                enchantable.enchant(entry, bookEnchantments.getLevel(entry));
                 toTransfer.add(entry);
             }
         });
@@ -125,17 +127,19 @@ public class PressureEnchantingRecipe extends PressureChamberRecipeImpl {
     }
 
     @Override
-    public List<List<ItemStack>> getInputsForDisplay() {
+    public List<List<ItemStack>> getInputsForDisplay(HolderLookup.Provider provider) {
+        Holder<Enchantment> fortune = EnchantmentUtils.getEnchantment(provider, Enchantments.FORTUNE);
         ItemStack enchBook = new ItemStack(Items.ENCHANTED_BOOK);
-        enchBook.enchant(Enchantments.FORTUNE, 1);
+        enchBook.enchant(fortune, 1);
 
         return List.of(List.of(new ItemStack(Items.DIAMOND_PICKAXE)), List.of(enchBook));
     }
 
     @Override
-    public List<ItemStack> getSingleResultsForDisplay() {
+    public List<ItemStack> getSingleResultsForDisplay(HolderLookup.Provider provider) {
+        Holder<Enchantment> fortune = EnchantmentUtils.getEnchantment(provider, Enchantments.FORTUNE);
         ItemStack pick = new ItemStack(Items.DIAMOND_PICKAXE);
-        pick.enchant(Enchantments.FORTUNE, 1);
+        pick.enchant(fortune, 1);
 
         return List.of(pick, new ItemStack(Items.BOOK));
     }

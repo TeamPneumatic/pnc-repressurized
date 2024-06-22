@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "1": {
+      "tag": "c:rods/blaze"
+    },
+    "2": {
+      "tag": "c:rods/blaze"
+    },
+    "A": {
+      "item": "pneumaticcraft:gun_ammo"
+    },
+    "C": {
+      "tag": "c:ingots/compressed_iron"
+    }
+  },
+  "pattern": [
+    " A ",
+    "C1C",
+    "C2C"
+  ],
+  "result": {
+    "count": 1,
+    "id": "pneumaticcraft:gun_ammo_incendiary"
+  }
+}

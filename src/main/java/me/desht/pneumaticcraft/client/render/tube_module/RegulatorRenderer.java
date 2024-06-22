@@ -13,6 +13,7 @@ import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.FastColor;
 
 public class RegulatorRenderer extends AbstractTubeModuleRenderer<RegulatorModule> {
     private final ModelPart tubeConnector;
@@ -49,10 +50,11 @@ public class RegulatorRenderer extends AbstractTubeModuleRenderer<RegulatorModul
 
 
     @Override
-    protected void render(RegulatorModule module, PoseStack matrixStack, VertexConsumer builder, float partialTicks, int combinedLight, int combinedOverlay, float alpha) {
-        tubeConnector.render(matrixStack, builder, combinedLight, combinedOverlay, 1f, 1f, 1f, alpha);
-        valve1.render(matrixStack, builder, combinedLight, combinedOverlay, 1f, 1f, 1f, alpha);
-        valve2.render(matrixStack, builder, combinedLight, combinedOverlay, 1f, 1f, 1f, alpha);
+    protected void render(RegulatorModule module, PoseStack matrixStack, VertexConsumer builder, float partialTicks, int combinedLight, int combinedOverlay, int alpha) {
+        int baseColor = FastColor.ARGB32.color(alpha, 0xFFFFFF);
+        tubeConnector.render(matrixStack, builder, combinedLight, combinedOverlay, baseColor);
+        valve1.render(matrixStack, builder, combinedLight, combinedOverlay, baseColor);
+        valve2.render(matrixStack, builder, combinedLight, combinedOverlay, baseColor);
     }
 
     @Override

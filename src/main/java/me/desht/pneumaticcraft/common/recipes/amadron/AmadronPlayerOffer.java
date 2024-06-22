@@ -306,7 +306,7 @@ public class AmadronPlayerOffer extends AmadronOffer {
     public static ResourceLocation getReversedId(ResourceLocation id) {
         String s = id.toString();
         return s.endsWith("_rev") ?
-                new ResourceLocation(s.replaceFirst("_rev$", "")):
-                new ResourceLocation(s + "_rev");
+                ResourceLocation.parse(s.replaceFirst("_rev$", "")):
+                ResourceLocation.parse(s + "_rev");
     }
 }

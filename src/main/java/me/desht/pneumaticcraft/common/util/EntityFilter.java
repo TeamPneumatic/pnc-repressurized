@@ -217,11 +217,11 @@ public class EntityFilter implements Predicate<Entity> {
         COLOR(DYE_COLORS,
                 Modifier::hasColor
         ),
-        HOLDING((item) -> BuiltInRegistries.ITEM.containsKey(new ResourceLocation(item)),
+        HOLDING((item) -> BuiltInRegistries.ITEM.containsKey(ResourceLocation.parse(item)),
                 "any valid item ID, e.g. 'minecraft:cobblestone'",
                 (entity, val) -> isHeldItem(entity, val, true)
         ),
-        HOLDING_OFFHAND((item) -> BuiltInRegistries.ITEM.containsKey(new ResourceLocation(item)),
+        HOLDING_OFFHAND((item) -> BuiltInRegistries.ITEM.containsKey(ResourceLocation.parse(item)),
                 "any valid item ID, e.g. 'minecraft:cobblestone'",
                 (entity, val) -> isHeldItem(entity, val, false)
         ),
@@ -231,7 +231,7 @@ public class EntityFilter implements Predicate<Entity> {
         ENTITY_TAG((str) -> true,
                 "any string tag (added to entities with the /tag command)",
                 Modifier::testEntityTag),
-        TYPE_TAG(ResourceLocation::isValidResourceLocation,
+        TYPE_TAG(rl -> ResourceLocation.tryParse(rl) != null,
                 "any known entity type tag, e.g 'minecraft:skeletons'",
                 Modifier::testTypeTag),
         TEAM((str) -> true,
@@ -259,7 +259,7 @@ public class EntityFilter implements Predicate<Entity> {
 
         private static boolean testShearable(Entity entity, String val) {
             return entity instanceof IShearable s
-                    && s.isShearable(new ItemStack(Items.SHEARS), entity.getCommandSenderWorld(), entity.blockPosition()) ?
+                    && s.isShearable(null, new ItemStack(Items.SHEARS), entity.getCommandSenderWorld(), entity.blockPosition()) ?
                     val.equalsIgnoreCase("yes") : val.equalsIgnoreCase("no");
         }
 
@@ -285,9 +285,9 @@ public class EntityFilter implements Predicate<Entity> {
         }
 
         private static boolean testTypeTag(Entity entity, String val) {
-            if (!ResourceLocation.isValidResourceLocation(val)) return false;
-            TagKey<EntityType<?>> key = TagKey.create(Registries.ENTITY_TYPE, new ResourceLocation(val));
-            return entity.getType().is(key);
+            return ResourceLocation.read(val).result()
+                    .map(rl -> entity.getType().is(TagKey.create(Registries.ENTITY_TYPE, rl)))
+                    .orElse(false);
         }
 
         private static boolean testTeamName(Entity entity, String val) {

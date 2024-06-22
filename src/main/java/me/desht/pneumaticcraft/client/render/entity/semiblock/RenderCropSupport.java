@@ -36,7 +36,7 @@ public class RenderCropSupport extends RenderSemiblockBase<CropSupportEntity> {
             wobble(entityIn, partialTicks, matrixStackIn);
         }
         matrixStackIn.scale((float)(aabb.maxX - aabb.minX), (float)(aabb.maxY - aabb.minY), (float)(aabb.maxZ - aabb.minZ));
-        model.renderToBuffer(matrixStackIn, builder, packedLightIn, OverlayTexture.pack(0F, false), 0.33f, 0.25f, 0.12f, 1F);
+        model.renderToBuffer(matrixStackIn, builder, packedLightIn, OverlayTexture.pack(0F, false), 0xFF544020);
 
         matrixStackIn.popPose();
     }

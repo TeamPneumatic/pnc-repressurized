@@ -3,7 +3,6 @@ package me.desht.pneumaticcraft.client.render.tube_module;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import me.desht.pneumaticcraft.client.model.PNCModelLayers;
-import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.tubemodules.RedstoneModule;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.model.geom.ModelPart;
@@ -14,6 +13,7 @@ import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.FastColor;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.DyeColor;
 
@@ -106,33 +106,33 @@ public class RedstoneRenderer extends AbstractTubeModuleRenderer<RedstoneModule>
 
 
     @Override
-    protected void render(RedstoneModule module, PoseStack matrixStack, VertexConsumer builder, float partialTicks, int combinedLight, int combinedOverlay, float alpha) {
-        tubeConnector1.render(matrixStack, builder, combinedLight, combinedOverlay, 1f, 1f, 1f, alpha);
-        tubeConnector2.render(matrixStack, builder, combinedLight, combinedOverlay, 1f, 1f, 1f, alpha);
-        tubeConnector3.render(matrixStack, builder, combinedLight, combinedOverlay, 1f, 1f, 1f, alpha);
-        tubeConnector4.render(matrixStack, builder, combinedLight, combinedOverlay, 1f, 1f, 1f, alpha);
-        tubeConnector5.render(matrixStack, builder, combinedLight, combinedOverlay, 1f, 1f, 1f, alpha);
-        tubeConnector6.render(matrixStack, builder, combinedLight, combinedOverlay, 1f, 1f, 1f, alpha);
-        faceplate.render(matrixStack, builder, combinedLight, combinedOverlay, 1f, 1f, 1f, alpha);
+    protected void render(RedstoneModule module, PoseStack poseStack, VertexConsumer builder, float partialTicks, int combinedLight, int combinedOverlay, int alpha) {
+        int baseColor = FastColor.ARGB32.color(alpha, 0xFFFFFF);
+        tubeConnector1.render(poseStack, builder, combinedLight, combinedOverlay, baseColor);
+        tubeConnector2.render(poseStack, builder, combinedLight, combinedOverlay, baseColor);
+        tubeConnector3.render(poseStack, builder, combinedLight, combinedOverlay, baseColor);
+        tubeConnector4.render(poseStack, builder, combinedLight, combinedOverlay, baseColor);
+        tubeConnector5.render(poseStack, builder, combinedLight, combinedOverlay, baseColor);
+        tubeConnector6.render(poseStack, builder, combinedLight, combinedOverlay, baseColor);
+        faceplate.render(poseStack, builder, combinedLight, combinedOverlay, baseColor);
 
-        float[] cols = { 1f, 1f, 1f, 1f };
-        if (!module.isFake()) {
-            int l = module.getRedstoneDirection() == RedstoneModule.EnumRedstoneDirection.INPUT ? module.getInputLevel() : module.getRedstoneLevel();
-            cols = RenderUtils.decomposeColorF(0xFF300000 | (l * 13 << 16));
-            matrixStack.pushPose();
-            matrixStack.translate(0, 0, 5.2 / 16);
-            matrixStack.scale(1, 1, 0.25f + 0.72f * Mth.lerp(partialTicks, module.lastExtension, module.extension));
-            matrixStack.translate(0, 0, -5.2 / 16);
+        if (module.isFake()) {
+            redstoneConnector.render(poseStack, builder, combinedLight, combinedOverlay, 0xFFFFFFFF);
+        } else {
+            int rsLevel = module.getRedstoneDirection() == RedstoneModule.EnumRedstoneDirection.INPUT ? module.getInputLevel() : module.getRedstoneLevel();
+            poseStack.pushPose();
+            poseStack.translate(0, 0, 5.2 / 16);
+            poseStack.scale(1, 1, 0.25f + 0.72f * Mth.lerp(partialTicks, module.lastExtension, module.extension));
+            poseStack.translate(0, 0, -5.2 / 16);
+            redstoneConnector.render(poseStack, builder, combinedLight, combinedOverlay, 0xFF300000 | (rsLevel * 13 << 16));
+            poseStack.popPose();
         }
-        redstoneConnector.render(matrixStack, builder, combinedLight, combinedOverlay, cols[1], cols[2], cols[3], cols[0]);
-        if (!module.isFake()) {
-            matrixStack.popPose();
-        }
-        cols = DyeColor.byId(module.getColorChannel()).getTextureDiffuseColors();
-        frame1.render(matrixStack, builder, combinedLight, combinedOverlay, cols[0], cols[1], cols[2], alpha);
-        frame2.render(matrixStack, builder, combinedLight, combinedOverlay, cols[0], cols[1], cols[2], alpha);
-        frame3.render(matrixStack, builder, combinedLight, combinedOverlay, cols[0], cols[1], cols[2], alpha);
-        frame4.render(matrixStack, builder, combinedLight, combinedOverlay, cols[0], cols[1], cols[2], alpha);
+
+        int frameColor = FastColor.ARGB32.color(alpha, DyeColor.byId(module.getColorChannel()).getTextureDiffuseColor());
+        frame1.render(poseStack, builder, combinedLight, combinedOverlay, frameColor);
+        frame2.render(poseStack, builder, combinedLight, combinedOverlay, frameColor);
+        frame3.render(poseStack, builder, combinedLight, combinedOverlay, frameColor);
+        frame4.render(poseStack, builder, combinedLight, combinedOverlay, frameColor);
     }
 
     @Override

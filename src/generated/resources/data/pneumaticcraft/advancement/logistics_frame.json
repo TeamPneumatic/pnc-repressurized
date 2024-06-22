@@ -1,0 +1,52 @@
+{
+  "parent": "pneumaticcraft:root",
+  "criteria": {
+    "0": {
+      "conditions": {
+        "items": [
+          {
+            "count": {
+              "min": 1
+            },
+            "items": "pneumaticcraft:logistics_frame_passive_provider",
+            "predicates": {
+              "minecraft:damage": {}
+            }
+          },
+          {
+            "count": {
+              "min": 1
+            },
+            "items": "pneumaticcraft:logistics_frame_requester",
+            "predicates": {
+              "minecraft:damage": {}
+            }
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "background": "pneumaticcraft:textures/gui/advancement_bg.png",
+    "description": {
+      "translate": "pneumaticcraft.advancement.logistics_frame.desc"
+    },
+    "icon": {
+      "count": 1,
+      "id": "pneumaticcraft:logistics_frame_passive_provider"
+    },
+    "title": {
+      "translate": "pneumaticcraft.advancement.logistics_frame"
+    }
+  },
+  "requirements": [
+    [
+      "0"
+    ]
+  ],
+  "rewards": {
+    "experience": 20
+  },
+  "sends_telemetry_event": true
+}

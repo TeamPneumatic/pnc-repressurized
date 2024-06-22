@@ -54,6 +54,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static net.minecraft.client.renderer.LightTexture.FULL_BRIGHT;
 import static net.minecraft.util.Mth.lerp;
 
 public class GuiUtils {
@@ -78,7 +79,7 @@ public class GuiUtils {
 
         poseStack.translate(0, 0, -1);
 
-        mc.getBlockRenderer().renderSingleBlock(block, poseStack, graphics.bufferSource(), RenderUtils.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, ModelData.EMPTY, null);
+        mc.getBlockRenderer().renderSingleBlock(block, poseStack, graphics.bufferSource(), FULL_BRIGHT, OverlayTexture.NO_OVERLAY, ModelData.EMPTY, null);
 
         poseStack.popPose();
     }
@@ -109,7 +110,7 @@ public class GuiUtils {
         }
         scaledAmount = Math.min(scaledAmount, bounds.getHeight());
 
-        RenderSystem.setShader(GameRenderer::getPositionColorTexShader);
+        RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
         RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
         RenderSystem.setShaderTexture(0, TextureAtlas.LOCATION_BLOCKS);
         RenderSystem.enableBlend();
@@ -143,22 +144,28 @@ public class GuiUtils {
 
     private static void drawFluidTexture(GuiGraphics graphics, float xCoord, float yCoord, TextureAtlasSprite textureSprite, int maskTop, int maskRight, float zLevel, int[] cols) {
         float uMin = textureSprite.getU0();
-        float uMax = textureSprite.getU1();
         float vMin = textureSprite.getV0();
-        float vMax = textureSprite.getV1();
-        uMax = uMax - maskRight / 16.0f * (uMax - uMin);
-        vMax = vMax - maskTop / 16.0f * (vMax - vMin);
+        float uMax0 = textureSprite.getU1();
+        float vMax0 = textureSprite.getV1();
+        float uMax = uMax0 - maskRight / 16.0f * (uMax0 - uMin);
+        float vMax = vMax0 - maskTop / 16.0f * (vMax0 - vMin);
 
         Matrix4f posMat = graphics.pose().last().pose();
 
-        Tesselator tessellator = Tesselator.getInstance();
-        BufferBuilder worldrenderer = tessellator.getBuilder();
-        worldrenderer.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR_TEX);
-        worldrenderer.vertex(posMat, xCoord, yCoord + 16, zLevel).color(cols[1], cols[2], cols[3], cols[0]).uv(uMin, vMax).endVertex();
-        worldrenderer.vertex(posMat,xCoord + 16 - maskRight, yCoord + 16, zLevel).color(cols[1], cols[2], cols[3], cols[0]).uv(uMax, vMax).endVertex();
-        worldrenderer.vertex(posMat, xCoord + 16 - maskRight, yCoord + maskTop, zLevel).color(cols[1], cols[2], cols[3], cols[0]).uv(uMax, vMin).endVertex();
-        worldrenderer.vertex(posMat, xCoord, yCoord + maskTop, zLevel).color(cols[1], cols[2], cols[3], cols[0]).uv(uMin, vMin).endVertex();
-        tessellator.end();
+        RenderUtils.drawWithTesselator(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR, b -> {
+            b.addVertex(posMat, xCoord, yCoord + 16, zLevel)
+                    .setUv(uMin, vMax)
+                    .setColor(cols[1], cols[2], cols[3], cols[0]);
+            b.addVertex(posMat,xCoord + 16 - maskRight, yCoord + 16, zLevel)
+                    .setUv(uMax, vMax)
+                    .setColor(cols[1], cols[2], cols[3], cols[0]);
+            b.addVertex(posMat, xCoord + 16 - maskRight, yCoord + maskTop, zLevel)
+                    .setUv(uMax, vMin)
+                    .setColor(cols[1], cols[2], cols[3], cols[0]);
+            b.addVertex(posMat, xCoord, yCoord + maskTop, zLevel)
+                    .setUv(uMin, vMin)
+                    .setColor(cols[1], cols[2], cols[3], cols[0]);
+        });
     }
 
     public static Rect2i showPopupHelpScreen(GuiGraphics graphics, Screen screen, Font fontRenderer, List<Component> helpText) {
@@ -246,16 +253,14 @@ public class GuiUtils {
         float progress = line.getProgress();
 
         Matrix4f posMat = graphics.pose().last().pose();
-        BufferBuilder wr = Tesselator.getInstance().getBuilder();
         RenderSystem.lineWidth(lineWidth);
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
-        wr.begin(VertexFormat.Mode.DEBUG_LINES, DefaultVertexFormat.POSITION_COLOR);
-        wr.vertex(posMat, line.startX, line.startY, line.startZ)
-                .color(cols[1], cols[2], cols[3], cols[0])
-                .endVertex();
-        wr.vertex(posMat, lerp(progress, line.startX, line.endX), lerp(progress, line.startY, line.endY), lerp(progress, line.startZ,line.endZ))
-                .color(cols[1], cols[2], cols[3], cols[0])
-                .endVertex();
-        Tesselator.getInstance().end();
+
+        RenderUtils.drawWithTesselator(VertexFormat.Mode.DEBUG_LINES, DefaultVertexFormat.POSITION_COLOR, wr -> {
+            wr.addVertex(posMat, line.startX, line.startY, line.startZ)
+                    .setColor(cols[1], cols[2], cols[3], cols[0]);
+            wr.addVertex(posMat, lerp(progress, line.startX, line.endX), lerp(progress, line.startY, line.endY), lerp(progress, line.startZ,line.endZ))
+                    .setColor(cols[1], cols[2], cols[3], cols[0]);
+        });
     }
 }

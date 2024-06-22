@@ -1,0 +1,23 @@
+{
+  "type": "pneumaticcraft:thermo_plant",
+  "inputs": {
+    "fluid": {
+      "amount": 1000,
+      "fluid": "minecraft:water"
+    },
+    "item": {
+      "tag": "c:mushrooms"
+    }
+  },
+  "outputs": {
+    "fluid_output": {
+      "amount": 250,
+      "id": "pneumaticcraft:yeast_culture"
+    }
+  },
+  "speed": 0.1,
+  "temperature": {
+    "max": 333,
+    "min": 303
+  }
+}
