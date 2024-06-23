@@ -152,10 +152,8 @@ public class EtchingTankBlockEntity extends AbstractTickingBlockEntity
                 } else {
                     itemIdStr = itemIdStr.replace("_empty_pcb", "");
                     itemIdStr += "_unassembled_pcb";
-                    String outputId = modId + ":" + itemIdStr;
                     ResourceLocation outputResourceLocation = new ResourceLocation(modId, itemIdStr);
                     Item item = ForgeRegistries.ITEMS.getValue(outputResourceLocation);
-                    Log.info("custom pcb " + outputId);
                     excess = outputHandler.insertItem(0, new ItemStack(Objects.requireNonNullElseGet(item, ModItems.UNASSEMBLED_PCB)), false);
                 }
             } else {
@@ -164,10 +162,8 @@ public class EtchingTankBlockEntity extends AbstractTickingBlockEntity
                 } else {
                     itemIdStr = itemIdStr.replace("_empty_pcb", "");
                     itemIdStr += "_failed_pcb";
-                    String outputId = modId + ":" + itemIdStr;
                     ResourceLocation outputResourceLocation = new ResourceLocation(modId, itemIdStr);
                     Item item = ForgeRegistries.ITEMS.getValue(outputResourceLocation);
-                    Log.info("custom pcb " + outputId);
                     excess = failedHandler.insertItem(0, new ItemStack(Objects.requireNonNullElseGet(item, ModItems.FAILED_PCB)), false);
                 }
             }
@@ -293,7 +289,7 @@ public class EtchingTankBlockEntity extends AbstractTickingBlockEntity
 
         @Override
         public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
-            return stack.getItem() == ModItems.UNASSEMBLED_PCB.get();
+            return Objects.requireNonNull(ForgeRegistries.ITEMS.getKey(stack.getItem())).toString().contains("unassembled_pcb");
         }
     }
 
@@ -304,7 +300,7 @@ public class EtchingTankBlockEntity extends AbstractTickingBlockEntity
 
         @Override
         public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
-            return stack.getItem() == ModItems.FAILED_PCB.get();
+            return Objects.requireNonNull(ForgeRegistries.ITEMS.getKey(stack.getItem())).toString().contains("failed_pcb");
         }
     }
 
