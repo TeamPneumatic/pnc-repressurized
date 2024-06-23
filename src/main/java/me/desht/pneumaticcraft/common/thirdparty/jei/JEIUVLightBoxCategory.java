@@ -20,6 +20,7 @@ package me.desht.pneumaticcraft.common.thirdparty.jei;
 import me.desht.pneumaticcraft.common.block.entity.UVLightBoxBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
+import me.desht.pneumaticcraft.common.item.EmptyPCBItem;
 import me.desht.pneumaticcraft.common.recipes.machine.UVLightBoxRecipe;
 import me.desht.pneumaticcraft.lib.Textures;
 import mezz.jei.api.constants.VanillaTypes;
@@ -33,7 +34,9 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraftforge.registries.ForgeRegistries;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -44,10 +47,18 @@ public class JEIUVLightBoxCategory extends AbstractPNCCategory<UVLightBoxRecipe>
 
     private static final List<UVLightBoxRecipe> UV_LIGHT_BOX_RECIPES;
     static {
-        ItemStack out = new ItemStack(ModItems.EMPTY_PCB.get());
-        UVLightBoxBlockEntity.setExposureProgress(out, 100);
-        UVLightBoxRecipe recipe = new UVLightBoxRecipe(Ingredient.of(ModItems.EMPTY_PCB.get()), out);
-        UV_LIGHT_BOX_RECIPES = Collections.singletonList(recipe);
+        List<UVLightBoxRecipe> recipes = new ArrayList<>();
+        ForgeRegistries.ITEMS.getValues().stream()
+                .filter(item -> item instanceof EmptyPCBItem)
+                .forEach(item -> {
+                    ItemStack out = new ItemStack(item);
+                    ItemStack in = new ItemStack(item);
+                    UVLightBoxBlockEntity.setExposureProgress(out, 100);
+                    UVLightBoxRecipe recipe = new UVLightBoxRecipe(Ingredient.of(in), out);
+                    recipes.add(recipe);
+                });
+        // add recipes to list
+        UV_LIGHT_BOX_RECIPES = Collections.unmodifiableList(recipes);
     }
 
     JEIUVLightBoxCategory() {
