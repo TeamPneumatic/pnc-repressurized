@@ -247,7 +247,7 @@ public class EtchingTankBlockEntity extends AbstractTickingBlockEntity
 
         @Override
         public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
-            return stack.getItem() == ModItems.EMPTY_PCB.get() && UVLightBoxBlockEntity.getExposureProgress(stack) > 0;
+            return stack.getItem() instanceof EmptyPCBItem && UVLightBoxBlockEntity.getExposureProgress(stack) > 0;
         }
 
         @Override
