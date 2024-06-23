@@ -20,7 +20,6 @@
     "accessors.ShulkerAccess",
     "accessors.StructureTemplatePoolAccess",
     "accessors.WitchAccess",
-    "accessors.WorldGenRegionAccess",
     "coremods.BaseSpawnerMixin",
     "coremods.LivingEntityMixin"
   ],

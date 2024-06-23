@@ -5,7 +5,6 @@ import me.desht.pneumaticcraft.api.data.PneumaticCraftTags;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.registry.ModPlacementModifierTypes;
 import me.desht.pneumaticcraft.common.util.WildcardedRLMatcher;
-import me.desht.pneumaticcraft.mixin.accessors.WorldGenRegionAccess;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
@@ -41,10 +40,10 @@ public class OilLakeFilter extends PlacementFilter {
         // don't allow oil lakes to generate within any structure feature in pneumaticcraft:no_oil_lakes tag
         if (context.getLevel() instanceof WorldGenRegion region) {
             SectionPos sectionPos = SectionPos.of(origin);
-            ChunkAccess chunkAccess = context.getLevel().getChunk(origin);
+            ChunkAccess chunkAccess = region.getChunk(origin);
 
-            Registry<Structure> reg = context.getLevel().registryAccess().registryOrThrow(Registries.STRUCTURE);
-            StructureManager sfManager = ((WorldGenRegionAccess)region).getStructureManager();
+            Registry<Structure> reg = region.registryAccess().registryOrThrow(Registries.STRUCTURE);
+            StructureManager sfManager = region.getLevel().structureManager().forWorldGenRegion(region);
 
             for (Holder<Structure> structureHolder : reg.getOrCreateTag(PneumaticCraftTags.Structures.NO_OIL_LAKES)) {
                 StructureStart startForFeature = sfManager.getStartForStructure(sectionPos, structureHolder.value(), chunkAccess);
