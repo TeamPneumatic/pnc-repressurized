@@ -30,15 +30,19 @@ import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.util.PNCFluidTank;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
@@ -47,11 +51,13 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidTank;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Map;
+import java.util.Objects;
 
 public class EtchingTankBlockEntity extends AbstractTickingBlockEntity
         implements MenuProvider, ISerializableTanks, IHeatExchangingTE {
@@ -136,10 +142,34 @@ public class EtchingTankBlockEntity extends AbstractTickingBlockEntity
         ItemStack stack = itemHandler.extractItem(slot, 1, true);
         if (!stack.isEmpty()) {
             ItemStack excess;
+            ResourceLocation itemId = ForgeRegistries.ITEMS.getKey(stack.getItem());
+            assert itemId != null;
+            String itemIdStr = itemId.getPath();
+            String modId = itemId.getNamespace();
             if (success) {
-                excess = outputHandler.insertItem(0, new ItemStack(ModItems.UNASSEMBLED_PCB.get()), false);
+                if (itemIdStr.startsWith("empty_")) {
+                    excess = outputHandler.insertItem(0, new ItemStack(ModItems.UNASSEMBLED_PCB.get()), false);
+                } else {
+                    itemIdStr = itemIdStr.replace("_empty_pcb", "");
+                    itemIdStr += "_unassembled_pcb";
+                    String outputId = modId + ":" + itemIdStr;
+                    ResourceLocation outputResourceLocation = new ResourceLocation(modId, itemIdStr);
+                    Item item = ForgeRegistries.ITEMS.getValue(outputResourceLocation);
+                    Log.info("custom pcb " + outputId);
+                    excess = outputHandler.insertItem(0, new ItemStack(Objects.requireNonNullElseGet(item, ModItems.UNASSEMBLED_PCB)), false);
+                }
             } else {
-                excess = failedHandler.insertItem(0, new ItemStack(ModItems.FAILED_PCB.get()), false);
+                if (itemIdStr.startsWith("empty_")) {
+                    excess = failedHandler.insertItem(0, new ItemStack(ModItems.FAILED_PCB.get()), false);
+                } else {
+                    itemIdStr = itemIdStr.replace("_empty_pcb", "");
+                    itemIdStr += "_failed_pcb";
+                    String outputId = modId + ":" + itemIdStr;
+                    ResourceLocation outputResourceLocation = new ResourceLocation(modId, itemIdStr);
+                    Item item = ForgeRegistries.ITEMS.getValue(outputResourceLocation);
+                    Log.info("custom pcb " + outputId);
+                    excess = failedHandler.insertItem(0, new ItemStack(Objects.requireNonNullElseGet(item, ModItems.FAILED_PCB)), false);
+                }
             }
             if (excess.isEmpty()) {
                 itemHandler.extractItem(slot, 1, false);
