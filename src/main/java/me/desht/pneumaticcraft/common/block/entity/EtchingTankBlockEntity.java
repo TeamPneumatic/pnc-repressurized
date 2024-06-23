@@ -21,6 +21,7 @@ import com.google.common.collect.ImmutableMap;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.data.PneumaticCraftTags;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
+import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.inventory.EtchingTankMenu;
@@ -147,7 +148,7 @@ public class EtchingTankBlockEntity extends AbstractTickingBlockEntity
             String itemIdStr = itemId.getPath();
             String modId = itemId.getNamespace();
             if (success) {
-                if (itemIdStr.startsWith("empty_")) {
+                if (modId.equals(Names.MOD_ID)) {
                     excess = outputHandler.insertItem(0, new ItemStack(ModItems.UNASSEMBLED_PCB.get()), false);
                 } else {
                     itemIdStr = itemIdStr.replace("_empty_pcb", "");
@@ -157,7 +158,7 @@ public class EtchingTankBlockEntity extends AbstractTickingBlockEntity
                     excess = outputHandler.insertItem(0, new ItemStack(Objects.requireNonNullElseGet(item, ModItems.UNASSEMBLED_PCB)), false);
                 }
             } else {
-                if (itemIdStr.startsWith("empty_")) {
+                if (modId.equals(Names.MOD_ID)) {
                     excess = failedHandler.insertItem(0, new ItemStack(ModItems.FAILED_PCB.get()), false);
                 } else {
                     itemIdStr = itemIdStr.replace("_empty_pcb", "");
