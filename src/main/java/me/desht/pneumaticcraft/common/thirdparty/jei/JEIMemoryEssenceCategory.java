@@ -97,7 +97,7 @@ public class JEIMemoryEssenceCategory extends AbstractPNCCategory<JEIMemoryEssen
         );
     }
 
-    static class MemoryEssenceRecipe {
+    public static class MemoryEssenceRecipe {
         final ItemStack input1;
         final ItemStack input2;
         final String[] tooltips = new String[] {"", ""};

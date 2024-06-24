@@ -133,18 +133,27 @@ public class EtchingTankBlockEntity extends AbstractTickingBlockEntity
     }
 
     private void tryMoveFinishedItem(int slot, boolean success) {
-        ItemStack stack = itemHandler.extractItem(slot, 1, true);
-        if (!stack.isEmpty()) {
+        ItemStack inputStack = itemHandler.extractItem(slot, 1, true);
+        if (!inputStack.isEmpty()) {
+            ItemStack result = getResultItem(inputStack, success);
             ItemStack excess;
             if (success) {
-                excess = outputHandler.insertItem(0, new ItemStack(ModItems.UNASSEMBLED_PCB.get()), false);
+                excess = outputHandler.insertItem(0, result, false);
             } else {
-                excess = failedHandler.insertItem(0, new ItemStack(ModItems.FAILED_PCB.get()), false);
+                excess = failedHandler.insertItem(0, result, false);
             }
             if (excess.isEmpty()) {
                 itemHandler.extractItem(slot, 1, false);
             }
         }
+    }
+
+    private ItemStack getResultItem(ItemStack inputStack, boolean success) {
+        if (inputStack.getItem() instanceof EmptyPCBItem emptyPCB) {
+            return success ? emptyPCB.getSuccessItem() : emptyPCB.getFailedItem();
+        }
+        // shouldn't happen, but just in case
+        return success ? ModItems.EMPTY_PCB.get().getSuccessItem() : ModItems.EMPTY_PCB.get().getFailedItem();
     }
 
     public boolean isOutputFull() {
@@ -247,7 +256,7 @@ public class EtchingTankBlockEntity extends AbstractTickingBlockEntity
 
         @Override
         public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
-            return stack.getItem() == ModItems.EMPTY_PCB.get() && UVLightBoxBlockEntity.getExposureProgress(stack) > 0;
+            return stack.getItem() instanceof EmptyPCBItem && UVLightBoxBlockEntity.getExposureProgress(stack) > 0;
         }
 
         @Override
@@ -260,24 +269,18 @@ public class EtchingTankBlockEntity extends AbstractTickingBlockEntity
         OutputItemHandler() {
             super(EtchingTankBlockEntity.this, 1);
         }
-
-        @Override
-        public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
-            return stack.getItem() == ModItems.UNASSEMBLED_PCB.get();
-        }
     }
 
     private class FailedItemHandler extends BaseItemStackHandler {
         FailedItemHandler() {
             super(EtchingTankBlockEntity.this, 1);
         }
-
-        @Override
-        public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
-            return stack.getItem() == ModItems.FAILED_PCB.get();
-        }
     }
 
+    /**
+     * Wrapped item handler exposed via capability. Slot 0 is the output slot (success for side access, failed for
+     * top/bottom access), and slots 1 -> ETCHING_SLOTS + 1 are the input slots.
+     */
     private class WrappedInvHandler implements IItemHandler {
         private final IItemHandler output;
 

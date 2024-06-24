@@ -20,7 +20,7 @@ package me.desht.pneumaticcraft.common.thirdparty.jei;
 import me.desht.pneumaticcraft.common.block.entity.UVLightBoxBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModFluids;
-import me.desht.pneumaticcraft.common.core.ModItems;
+import me.desht.pneumaticcraft.common.item.EmptyPCBItem;
 import me.desht.pneumaticcraft.lib.Textures;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.forge.ForgeTypes;
@@ -31,10 +31,13 @@ import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.registries.ForgeRegistries;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -71,17 +74,22 @@ public class JEIEtchingTankCategory extends AbstractPNCCategory<JEIEtchingTankCa
     }
 
     static List<EtchingTankRecipe> getAllRecipes() {
-        ItemStack[] input = new ItemStack[4];
-        for (int i = 0; i < input.length; i++) {
-            input[i] = new ItemStack(ModItems.EMPTY_PCB.get());
-            UVLightBoxBlockEntity.setExposureProgress(input[i], 25 + 25 * i);
+        List<EtchingTankRecipe> recipes = new ArrayList<>();
+        for (Item item : ForgeRegistries.ITEMS.getValues()) {
+            if (item instanceof EmptyPCBItem emptyPCBItem) {
+                ItemStack[] inputs = new ItemStack[4];
+                for (int i = 0; i < inputs.length; i++) {
+                    inputs[i] = new ItemStack(emptyPCBItem);
+                    UVLightBoxBlockEntity.setExposureProgress(inputs[i], 25 + 25 * i);
+                }
+                recipes.add(new EtchingTankRecipe(
+                        Ingredient.of(inputs),
+                        emptyPCBItem.getSuccessItem(),
+                        emptyPCBItem.getFailedItem())
+                );
+            }
         }
-
-        return Collections.singletonList(new EtchingTankRecipe(
-                Ingredient.of(input),
-                new ItemStack(ModItems.UNASSEMBLED_PCB.get()),
-                new ItemStack(ModItems.FAILED_PCB.get()))
-        );
+        return recipes;
     }
 
     // pseudo-recipe

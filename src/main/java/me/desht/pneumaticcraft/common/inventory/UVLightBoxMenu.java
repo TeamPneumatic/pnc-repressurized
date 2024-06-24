@@ -59,7 +59,7 @@ public class UVLightBoxMenu extends AbstractPneumaticCraftMenu<UVLightBoxBlockEn
 
         @Override
         public boolean mayPlace(@Nonnull ItemStack stack) {
-            return stack.getItem() == ModItems.EMPTY_PCB.get() && EmptyPCBItem.getEtchProgress(stack) == 0;
+            return stack.getItem() instanceof EmptyPCBItem && EmptyPCBItem.getEtchProgress(stack) == 0;
         }
 
         @Override

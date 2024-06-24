@@ -169,4 +169,18 @@ public class EmptyPCBItem extends NonDespawningItem implements ICustomDurability
         ItemStack stack2 = UVLightBoxBlockEntity.setExposureProgress(stack.copy(), 100);
         return Stream.of(stack, stack2);
     }
+
+    /**
+     * {@return an itemstack for the item produced on successful etching in the Etching Tank}
+     */
+    public ItemStack getSuccessItem() {
+        return new ItemStack(ModItems.UNASSEMBLED_PCB.get());
+    }
+
+    /**
+     * {@return an itemstack for the item produced on failed etching in the Etching Tank}
+     */
+    public ItemStack getFailedItem() {
+        return new ItemStack(ModItems.FAILED_PCB.get());
+    }
 }
