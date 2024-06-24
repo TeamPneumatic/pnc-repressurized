@@ -8,6 +8,12 @@ Changes are in reverse chronological order; newest changes at the top.
 
 This release (and all future releases) is built for [Neoforge](https://neoforged.net/), and will _not_ work on [MinecraftForge](https://files.minecraftforge.net/)!
 
+## [7.0.2]
+
+### Fixed
+* Fixed a problem with recipes that take an empty Small Fluid Tank not working correctly
+  * Recipe wasn't distinguishing between "empty NBT tag" and "no NBT tag"
+
 ## [7.0.1]
 
 ### Fixed
