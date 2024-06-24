@@ -20,7 +20,7 @@ package me.desht.pneumaticcraft.common.inventory;
 import me.desht.pneumaticcraft.common.block.entity.processing.EtchingTankBlockEntity;
 import me.desht.pneumaticcraft.common.block.entity.processing.UVLightBoxBlockEntity;
 import me.desht.pneumaticcraft.common.inventory.slot.OutputOnlySlot;
-import me.desht.pneumaticcraft.common.registry.ModItems;
+import me.desht.pneumaticcraft.common.item.EmptyPCBItem;
 import me.desht.pneumaticcraft.common.registry.ModMenuTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
@@ -59,7 +59,7 @@ public class EtchingTankMenu extends AbstractPneumaticCraftMenu<EtchingTankBlock
 
         @Override
         public boolean mayPlace(@Nonnull ItemStack stack) {
-            return stack.getItem() == ModItems.EMPTY_PCB.get() && UVLightBoxBlockEntity.getExposureProgress(stack) > 0;
+            return stack.getItem() instanceof EmptyPCBItem && UVLightBoxBlockEntity.getExposureProgress(stack) > 0;
         }
 
         @Override

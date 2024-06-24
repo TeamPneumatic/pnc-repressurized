@@ -21,6 +21,7 @@ import me.desht.pneumaticcraft.api.data.PneumaticCraftTags;
 import me.desht.pneumaticcraft.api.item.ICustomDurabilityBar;
 import me.desht.pneumaticcraft.common.block.entity.processing.UVLightBoxBlockEntity;
 import me.desht.pneumaticcraft.common.registry.ModDataComponents;
+import me.desht.pneumaticcraft.common.registry.ModFluids;
 import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.lib.BlockEntityConstants;
 import net.minecraft.ChatFormatting;
@@ -32,6 +33,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.material.MapColor;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidType;
 
 import java.util.List;
 import java.util.stream.Stream;
@@ -158,5 +161,23 @@ public class EmptyPCBItem extends NonDespawningItem implements ICustomDurability
         ItemStack stack = new ItemStack(this);
         ItemStack stack2 = UVLightBoxBlockEntity.setExposureProgress(stack.copy(), 100);
         return Stream.of(stack, stack2);
+    }
+
+    /**
+     * {@return an itemstack for the item produced on successful etching in the Etching Tank}
+     */
+    public ItemStack getSuccessItem() {
+        return new ItemStack(ModItems.UNASSEMBLED_PCB.get());
+    }
+
+    /**
+     * {@return an itemstack for the item produced on failed etching in the Etching Tank}
+     */
+    public ItemStack getFailedItem() {
+        return new ItemStack(ModItems.FAILED_PCB.get());
+    }
+
+    public static FluidStack getEtchingFluid() {
+        return new FluidStack(ModFluids.ETCHING_ACID.get(), FluidType.BUCKET_VOLUME);
     }
 }

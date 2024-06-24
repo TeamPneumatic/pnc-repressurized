@@ -18,9 +18,8 @@
 package me.desht.pneumaticcraft.common.thirdparty.jei;
 
 import me.desht.pneumaticcraft.common.block.entity.processing.UVLightBoxBlockEntity;
+import me.desht.pneumaticcraft.common.item.EmptyPCBItem;
 import me.desht.pneumaticcraft.common.registry.ModBlocks;
-import me.desht.pneumaticcraft.common.registry.ModFluids;
-import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.lib.Textures;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
@@ -31,11 +30,14 @@ import mezz.jei.api.neoforge.NeoForgeTypes;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidType;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
@@ -58,7 +60,7 @@ public class JEIEtchingTankCategory extends AbstractPNCCategory<JEIEtchingTankCa
         builder.addSlot(RecipeIngredientRole.INPUT, 1, 13)
                 .addIngredients(recipe.input);
         builder.addSlot(RecipeIngredientRole.INPUT, 26, 13)
-                .addIngredients(NeoForgeTypes.FLUID_STACK, Collections.singletonList(new FluidStack(ModFluids.ETCHING_ACID.get(), 1000)));
+                .addIngredients(NeoForgeTypes.FLUID_STACK, List.of(recipe.etchingFluid().copyWithAmount(FluidType.BUCKET_VOLUME)));
         builder.addSlot(RecipeIngredientRole.OUTPUT, 66, 1)
                 .addItemStack(recipe.output);
         builder.addSlot(RecipeIngredientRole.OUTPUT, 66, 25)
@@ -71,20 +73,26 @@ public class JEIEtchingTankCategory extends AbstractPNCCategory<JEIEtchingTankCa
     }
 
     static List<EtchingTankRecipe> getAllRecipes() {
-        ItemStack[] input = new ItemStack[4];
-        for (int i = 0; i < input.length; i++) {
-            input[i] = new ItemStack(ModItems.EMPTY_PCB.get());
-            UVLightBoxBlockEntity.setExposureProgress(input[i], 25 + 25 * i);
+        List<EtchingTankRecipe> recipes = new ArrayList<>();
+        for (Item item : BuiltInRegistries.ITEM) {
+            if (item instanceof EmptyPCBItem emptyPCBItem) {
+                ItemStack[] inputs = new ItemStack[4];
+                for (int i = 0; i < inputs.length; i++) {
+                    inputs[i] = new ItemStack(emptyPCBItem);
+                    UVLightBoxBlockEntity.setExposureProgress(inputs[i], 25 + 25 * i);
+                }
+                recipes.add(new EtchingTankRecipe(
+                        Ingredient.of(inputs),
+                        emptyPCBItem.getSuccessItem(),
+                        emptyPCBItem.getFailedItem(),
+                        EmptyPCBItem.getEtchingFluid())
+                );
+            }
         }
-
-        return Collections.singletonList(new EtchingTankRecipe(
-                Ingredient.of(input),
-                new ItemStack(ModItems.UNASSEMBLED_PCB.get()),
-                new ItemStack(ModItems.FAILED_PCB.get()))
-        );
+        return recipes;
     }
 
     // pseudo-recipe
-    public record EtchingTankRecipe(Ingredient input, ItemStack output, ItemStack failed) {
+    public record EtchingTankRecipe(Ingredient input, ItemStack output, ItemStack failed, FluidStack etchingFluid) {
     }
 }
