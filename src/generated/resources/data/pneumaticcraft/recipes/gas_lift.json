@@ -5,8 +5,7 @@
     "G": {
       "type": "neoforge:nbt",
       "item": "pneumaticcraft:small_tank",
-      "strict": true,
-      "tag": "{}"
+      "strict": true
     },
     "S": {
       "item": "pneumaticcraft:reinforced_stone_slab"

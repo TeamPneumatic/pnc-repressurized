@@ -11,8 +11,7 @@
     "S": {
       "type": "neoforge:nbt",
       "item": "pneumaticcraft:small_tank",
-      "strict": true,
-      "tag": "{}"
+      "strict": true
     },
     "T": {
       "item": "pneumaticcraft:pressure_tube"

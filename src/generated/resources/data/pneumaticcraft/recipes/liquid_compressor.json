@@ -5,8 +5,7 @@
     "B": {
       "type": "neoforge:nbt",
       "item": "pneumaticcraft:small_tank",
-      "strict": true,
-      "tag": "{}"
+      "strict": true
     },
     "C": {
       "item": "pneumaticcraft:air_compressor"

@@ -18,7 +18,6 @@ import me.desht.pneumaticcraft.common.recipes.special.OneProbeCrafting;
 import me.desht.pneumaticcraft.common.registry.ModBlocks;
 import me.desht.pneumaticcraft.common.registry.ModFluids;
 import me.desht.pneumaticcraft.common.registry.ModItems;
-import me.desht.pneumaticcraft.common.thirdparty.patchouli.Patchouli;
 import me.desht.pneumaticcraft.common.thirdparty.patchouli.PatchouliBookCrafting;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -345,7 +344,7 @@ public class ModRecipeProvider extends RecipeProvider {
                 "OGO/WTW/SSS",
                 'O', Tags.Blocks.OBSIDIAN,
                 'W', ModBlocks.REINFORCED_BRICK_WALL.get(),
-                'T', NBTIngredient.of(true, new ItemStack(ModBlocks.TANK_SMALL.get())),
+                'T', NBTIngredient.of(true, null, ModBlocks.TANK_SMALL.get()),
                 'S', ModBlocks.REINFORCED_BRICK_SLAB.get(),
                 'G', Tags.Items.GLASS_PANES
         ).save(consumer);
@@ -373,7 +372,7 @@ public class ModRecipeProvider extends RecipeProvider {
 
         shaped(ModBlocks.FLUID_MIXER.get(), ModBlocks.TANK_SMALL.get(),
                 " T /WRW/TPT",
-                'T', ModBlocks.TANK_SMALL.get(),
+                'T', NBTIngredient.of(true, null, ModBlocks.TANK_SMALL.get()),
                 'W', ModBlocks.REINFORCED_BRICK_WALL.get(),
                 'R', ModItems.TURBINE_ROTOR.get(),
                 'P', ModBlocks.PRESSURE_TUBE.get()
@@ -382,7 +381,7 @@ public class ModRecipeProvider extends RecipeProvider {
         shaped(ModBlocks.GAS_LIFT.get(), ModItems.COMPRESSED_IRON_INGOT.get(),
                 " T /TGT/SSS",
                 'T', ModBlocks.PRESSURE_TUBE.get(),
-                'G', NBTIngredient.of(true, new ItemStack(ModBlocks.TANK_SMALL.get())),
+                'G', NBTIngredient.of(true, null, ModBlocks.TANK_SMALL.get()),
                 'S', ModBlocks.REINFORCED_STONE_SLAB.get()
         ).save(consumer);
 
@@ -458,20 +457,20 @@ public class ModRecipeProvider extends RecipeProvider {
                 " I /G G/IBI",
                 'I', PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON,
                 'G', Tags.Items.GLASS_PANES,
-                'B', NBTIngredient.of(true, new ItemStack(ModBlocks.TANK_SMALL.get()))
+                'B', NBTIngredient.of(true, null, ModBlocks.TANK_SMALL.get())
         ).save(consumer);
 
         shaped(ModBlocks.LIQUID_COMPRESSOR.get(), ModItems.COMPRESSED_IRON_INGOT.get(),
                 "PBP/LCL",
                 'P', ModBlocks.PRESSURE_TUBE.get(),
-                'B', NBTIngredient.of(true, new ItemStack(ModBlocks.TANK_SMALL.get())),
+                'B', NBTIngredient.of(true, null, ModBlocks.TANK_SMALL.get()),
                 'L', Tags.Items.LEATHER,
                 'C', ModBlocks.AIR_COMPRESSOR.get()
         ).save(consumer);
 
         shaped(ModBlocks.LIQUID_HOPPER.get(), ModItems.COMPRESSED_IRON_INGOT.get(),
                 "T/H",
-                'T', NBTIngredient.of(true, new ItemStack(ModBlocks.TANK_SMALL.get())),
+                'T', NBTIngredient.of(true, null, ModBlocks.TANK_SMALL.get()),
                 'H', Blocks.HOPPER
         ).save(consumer);
 
@@ -716,7 +715,7 @@ public class ModRecipeProvider extends RecipeProvider {
         shaped(ModBlocks.REFINERY.get(), ModItems.COMPRESSED_IRON_INGOT.get(),
                 "SSS/RTR/SSS",
                 'S', ModBlocks.REINFORCED_STONE_SLAB.get(),
-                'T', NBTIngredient.of(true, new ItemStack(ModBlocks.TANK_SMALL.get())),
+                'T', NBTIngredient.of(true, null, ModBlocks.TANK_SMALL.get()),
                 'R', Tags.Items.DUSTS_REDSTONE
         ).save(consumer);
 
@@ -868,14 +867,14 @@ public class ModRecipeProvider extends RecipeProvider {
         shaped(ModBlocks.TANK_MEDIUM.get(), ModItems.PLASTIC.get(),
                 "PSP/ITI/PSP",
                 'P', PneumaticCraftTags.Items.PLASTIC_SHEETS,
-                'S', NBTIngredient.of(true, new ItemStack(ModBlocks.TANK_SMALL.get())),
+                'S', NBTIngredient.of(true, null, ModBlocks.TANK_SMALL.get()),
                 'I', Tags.Items.INGOTS_GOLD,
                 'T', ModBlocks.PRESSURE_TUBE.get()
         ).save(consumer);
 
         shaped(ModBlocks.TANK_LARGE.get(), ModBlocks.ADVANCED_PRESSURE_TUBE.get(),
                 "PMP/DTD/PMP",
-                'M', NBTIngredient.of(true, new ItemStack(ModBlocks.TANK_MEDIUM.get())),
+                'M', NBTIngredient.of(true, null, ModBlocks.TANK_MEDIUM.get()),
                 'P', PneumaticCraftTags.Items.PLASTIC_SHEETS,
                 'D', Tags.Items.GEMS_DIAMOND,
                 'T', ModBlocks.ADVANCED_PRESSURE_TUBE.get()
@@ -883,7 +882,7 @@ public class ModRecipeProvider extends RecipeProvider {
 
         shaped(ModBlocks.TANK_HUGE.get(), ModBlocks.ADVANCED_PRESSURE_TUBE.get(),
                 "NTN/TRT/NTN",
-                'T', NBTIngredient.of(true, new ItemStack(ModBlocks.TANK_LARGE.get())),
+                'T', NBTIngredient.of(true, null, ModBlocks.TANK_LARGE.get()),
                 'R', ModItems.REINFORCED_AIR_CANISTER.get(),
                 'N', Tags.Items.INGOTS_NETHERITE
         ).save(consumer);
@@ -905,7 +904,7 @@ public class ModRecipeProvider extends RecipeProvider {
         shaped(ModBlocks.THERMOPNEUMATIC_PROCESSING_PLANT.get(), ModItems.COMPRESSED_IRON_INGOT.get(),
                 "SSS/TPT/SSS",
                 'S', ModBlocks.REINFORCED_STONE_SLAB.get(),
-                'T', NBTIngredient.of(true, new ItemStack(ModBlocks.TANK_SMALL.get())),
+                'T', NBTIngredient.of(true, null, ModBlocks.TANK_SMALL.get()),
                 'P', ModBlocks.PRESSURE_TUBE.get()
         ).save(consumer);
 

@@ -11,8 +11,7 @@
     "T": {
       "type": "neoforge:nbt",
       "item": "pneumaticcraft:large_tank",
-      "strict": true,
-      "tag": "{}"
+      "strict": true
     }
   },
   "pattern": [

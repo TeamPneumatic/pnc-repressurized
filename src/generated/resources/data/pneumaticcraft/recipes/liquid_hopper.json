@@ -8,8 +8,7 @@
     "T": {
       "type": "neoforge:nbt",
       "item": "pneumaticcraft:small_tank",
-      "strict": true,
-      "tag": "{}"
+      "strict": true
     }
   },
   "pattern": [

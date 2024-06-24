@@ -9,7 +9,9 @@
       "item": "pneumaticcraft:turbine_rotor"
     },
     "T": {
-      "item": "pneumaticcraft:small_tank"
+      "type": "neoforge:nbt",
+      "item": "pneumaticcraft:small_tank",
+      "strict": true
     },
     "W": {
       "item": "pneumaticcraft:reinforced_brick_wall"

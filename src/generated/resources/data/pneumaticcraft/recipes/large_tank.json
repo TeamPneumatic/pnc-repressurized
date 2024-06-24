@@ -8,8 +8,7 @@
     "M": {
       "type": "neoforge:nbt",
       "item": "pneumaticcraft:medium_tank",
-      "strict": true,
-      "tag": "{}"
+      "strict": true
     },
     "P": {
       "tag": "pneumaticcraft:plastic_sheets"
