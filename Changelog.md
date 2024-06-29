@@ -6,6 +6,13 @@ Changes are in reverse chronological order; newest changes at the top.
 
 # Minecraft 1.20.1
 
+## [6.0.16]
+
+### Added
+* Some internal changes to Empty PCB items to make it possible for addon mods to add custom empty PCB's
+  * UV Lightbox and Etching Tank now accept any item which extends `EmptyPCBItem`
+  * Added `EmptyPCBItem#getSuccessItem()` and `EmptyPCBItem#getFailedItem()` which are used by the Etching Tank to determine the successful/failed etching outcomes
+
 ## [6.0.15]
 
 ### Added
@@ -18,6 +25,7 @@ Changes are in reverse chronological order; newest changes at the top.
 * Fixed some outdated manual text regarding Pressure Chamber Interface descriptions
 * Fixed Radiation Shielding Upgrade (for Mekanism radiation) recipe
 * Fixed Reach Distance armor upgrade not getting reset if Pneumatic Chestplate is removed
+* Fixed Drone redstone emission not working
 
 ## [6.0.14]
 

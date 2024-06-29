@@ -341,6 +341,10 @@ tasks.withType(GenerateModuleMetadata) {
 	enabled = false
 }
 
+tasks.withType(JavaCompile).configureEach {
+	options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
+}
+
 // with thanks to AE2
 def mavenVer = ext.releaseTag == "" ? "${version}-SNAPSHOT" : "${version}"
 publishing {

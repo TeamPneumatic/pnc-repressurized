@@ -21,7 +21,6 @@ import com.google.common.collect.ImmutableMap;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.data.PneumaticCraftTags;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
-import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.inventory.EtchingTankMenu;
@@ -31,19 +30,15 @@ import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.util.PNCFluidTank;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
-import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
@@ -52,13 +47,11 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidTank;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Map;
-import java.util.Objects;
 
 public class EtchingTankBlockEntity extends AbstractTickingBlockEntity
         implements MenuProvider, ISerializableTanks, IHeatExchangingTE {
@@ -140,38 +133,27 @@ public class EtchingTankBlockEntity extends AbstractTickingBlockEntity
     }
 
     private void tryMoveFinishedItem(int slot, boolean success) {
-        ItemStack stack = itemHandler.extractItem(slot, 1, true);
-        if (!stack.isEmpty()) {
+        ItemStack inputStack = itemHandler.extractItem(slot, 1, true);
+        if (!inputStack.isEmpty()) {
+            ItemStack result = getResultItem(inputStack, success);
             ItemStack excess;
-            ResourceLocation itemId = ForgeRegistries.ITEMS.getKey(stack.getItem());
-            assert itemId != null;
-            String itemIdStr = itemId.getPath();
-            String modId = itemId.getNamespace();
             if (success) {
-                if (modId.equals(Names.MOD_ID)) {
-                    excess = outputHandler.insertItem(0, new ItemStack(ModItems.UNASSEMBLED_PCB.get()), false);
-                } else {
-                    itemIdStr = itemIdStr.replace("_empty_pcb", "");
-                    itemIdStr += "_unassembled_pcb";
-                    ResourceLocation outputResourceLocation = new ResourceLocation(modId, itemIdStr);
-                    Item item = ForgeRegistries.ITEMS.getValue(outputResourceLocation);
-                    excess = outputHandler.insertItem(0, new ItemStack(Objects.requireNonNullElseGet(item, ModItems.UNASSEMBLED_PCB)), false);
-                }
+                excess = outputHandler.insertItem(0, result, false);
             } else {
-                if (modId.equals(Names.MOD_ID)) {
-                    excess = failedHandler.insertItem(0, new ItemStack(ModItems.FAILED_PCB.get()), false);
-                } else {
-                    itemIdStr = itemIdStr.replace("_empty_pcb", "");
-                    itemIdStr += "_failed_pcb";
-                    ResourceLocation outputResourceLocation = new ResourceLocation(modId, itemIdStr);
-                    Item item = ForgeRegistries.ITEMS.getValue(outputResourceLocation);
-                    excess = failedHandler.insertItem(0, new ItemStack(Objects.requireNonNullElseGet(item, ModItems.FAILED_PCB)), false);
-                }
+                excess = failedHandler.insertItem(0, result, false);
             }
             if (excess.isEmpty()) {
                 itemHandler.extractItem(slot, 1, false);
             }
         }
+    }
+
+    private ItemStack getResultItem(ItemStack inputStack, boolean success) {
+        if (inputStack.getItem() instanceof EmptyPCBItem emptyPCB) {
+            return success ? emptyPCB.getSuccessItem() : emptyPCB.getFailedItem();
+        }
+        // shouldn't happen, but just in case
+        return success ? ModItems.EMPTY_PCB.get().getSuccessItem() : ModItems.EMPTY_PCB.get().getFailedItem();
     }
 
     public boolean isOutputFull() {
@@ -287,24 +269,18 @@ public class EtchingTankBlockEntity extends AbstractTickingBlockEntity
         OutputItemHandler() {
             super(EtchingTankBlockEntity.this, 1);
         }
-
-        @Override
-        public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
-            return Objects.requireNonNull(ForgeRegistries.ITEMS.getKey(stack.getItem())).toString().contains("unassembled_pcb");
-        }
     }
 
     private class FailedItemHandler extends BaseItemStackHandler {
         FailedItemHandler() {
             super(EtchingTankBlockEntity.this, 1);
         }
-
-        @Override
-        public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
-            return Objects.requireNonNull(ForgeRegistries.ITEMS.getKey(stack.getItem())).toString().contains("failed_pcb");
-        }
     }
 
+    /**
+     * Wrapped item handler exposed via capability. Slot 0 is the output slot (success for side access, failed for
+     * top/bottom access), and slots 1 -> ETCHING_SLOTS + 1 are the input slots.
+     */
     private class WrappedInvHandler implements IItemHandler {
         private final IItemHandler output;
 
