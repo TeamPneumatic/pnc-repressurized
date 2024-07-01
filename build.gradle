@@ -332,7 +332,6 @@ publishMods {
         minecraftVersions.add(minecraft_version)
         announcementTitle = "Download from Modrinth"
         optional {
-            id = "nU0bVIaL"
             slug = "patchouli"
         }
     }
