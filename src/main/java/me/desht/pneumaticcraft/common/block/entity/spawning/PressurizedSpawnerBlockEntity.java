@@ -102,12 +102,12 @@ public class PressurizedSpawnerBlockEntity extends AbstractAirHandlingBlockEntit
     public void tickServer() {
         super.tickServer();
 
-        ISpawnerCoreStats stats = inventory.getStats();
         running = false;
         problem = VacuumTrapBlockEntity.Problems.OK;
-        if (stats == null) {
+        if (!inventory.isCorePresent()) {
             problem = VacuumTrapBlockEntity.Problems.NO_CORE;
         } else if (getPressure() > getMinWorkingPressure() && rsController.shouldRun()) {
+            ISpawnerCoreStats stats = inventory.getStats();
             running = true;
             if (--counter <= 0) {
                 if (!trySpawnSomething(stats) && level instanceof ServerLevel serverLevel) {
@@ -127,19 +127,19 @@ public class PressurizedSpawnerBlockEntity extends AbstractAirHandlingBlockEntit
 
     private boolean trySpawnSomething(ISpawnerCoreStats stats) {
         EntityType<?> type = stats.pickEntity(true);
-        if (type != null && level instanceof ServerLevel serverworld) {
+        if (type != null && level instanceof ServerLevel serverLevel) {
             int spawnRange = getRange();
-            double x = (double)worldPosition.getX() + (serverworld.random.nextDouble() - level.random.nextDouble()) * (double)spawnRange + 0.5D;
-            double y = worldPosition.getY() + serverworld.random.nextInt(3) - 1;
-            double z = (double)worldPosition.getZ() + (serverworld.random.nextDouble() - level.random.nextDouble()) * (double)spawnRange + 0.5D;
-            if (serverworld.noCollision(type.getSpawnAABB(x, y, z))) {
-                Entity entity = type.create(serverworld);
+            double x = (double)worldPosition.getX() + (serverLevel.random.nextDouble() - level.random.nextDouble()) * (double)spawnRange + 0.5D;
+            double y = worldPosition.getY() + serverLevel.random.nextInt(3) - 1;
+            double z = (double)worldPosition.getZ() + (serverLevel.random.nextDouble() - level.random.nextDouble()) * (double)spawnRange + 0.5D;
+            if (serverLevel.noCollision(type.getSpawnAABB(x, y, z))) {
+                Entity entity = type.create(serverLevel);
                 if (!(entity instanceof Mob mobentity)) return false;
-                int entityCount = serverworld.getEntitiesOfClass(Mob.class, rangeManager.getExtentsAsAABB()).size();
+                int entityCount = serverLevel.getEntitiesOfClass(Mob.class, rangeManager.getExtentsAsAABB()).size();
                 if (entityCount >= MAX_NEARBY_ENTITIES) return false;
                 entity.moveTo(x, y, z, level.random.nextFloat() * 360.0F, 0.0F);
-                EventHooks.finalizeMobSpawnSpawner(mobentity, serverworld, serverworld.getCurrentDifficultyAt(getPosition()), MobSpawnType.SPAWNER, null, this, true);
-                if (!serverworld.tryAddFreshEntityWithPassengers(entity)) return false;
+                EventHooks.finalizeMobSpawnSpawner(mobentity, serverLevel, serverLevel.getCurrentDifficultyAt(getPosition()), MobSpawnType.SPAWNER, null, this, true);
+                if (!serverLevel.tryAddFreshEntityWithPassengers(entity)) return false;
                 level.levelEvent(LevelEvent.PARTICLES_MOBBLOCK_SPAWN, worldPosition, 0);
                 mobentity.spawnAnim();
                 mobentity.setPersistenceRequired();

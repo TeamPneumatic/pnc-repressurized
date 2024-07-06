@@ -46,6 +46,11 @@ public class AreaTypeLine extends AreaType {
     }
 
     @Override
+    public AreaType copy() {
+        return new AreaTypeLine();
+    }
+
+    @Override
     public String toString() {
         return getName();
     }
@@ -71,4 +76,5 @@ public class AreaTypeLine extends AreaType {
             areaAdder.accept(BlockPos.containing(curX, curY, curZ));
         }
     }
+
 }

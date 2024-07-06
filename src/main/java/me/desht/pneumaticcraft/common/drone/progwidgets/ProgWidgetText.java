@@ -21,11 +21,14 @@ import com.google.common.collect.ImmutableList;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import me.desht.pneumaticcraft.api.drone.IProgWidget;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.registry.ModProgWidgetTypes;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.DyeColor;
 
@@ -37,6 +40,11 @@ public class ProgWidgetText extends ProgWidget {
             baseParts(builder).and(
                     Codec.STRING.fieldOf("string").forGetter(ProgWidgetText::getString)
             ).apply(builder, ProgWidgetText::new));
+    public static final StreamCodec<RegistryFriendlyByteBuf, ProgWidgetText> STREAM_CODEC = StreamCodec.composite(
+            PositionFields.STREAM_CODEC, ProgWidget::getPosition,
+            ByteBufCodecs.STRING_UTF8, ProgWidgetText::getString,
+            ProgWidgetText::new
+    );
 
     protected String string = "";
 
@@ -48,6 +56,11 @@ public class ProgWidgetText extends ProgWidget {
         super(positionFields);
 
         this.string = string;
+    }
+
+    @Override
+    public IProgWidget copyWidget() {
+        return new ProgWidgetText(getPosition(), string);
     }
 
     public String getString() {
@@ -104,31 +117,6 @@ public class ProgWidgetText extends ProgWidget {
     @Override
     public ResourceLocation getTexture() {
         return Textures.PROG_WIDGET_TEXT;
-    }
-
-//    @Override
-//    public void writeToNBT(CompoundTag tag, HolderLookup.Provider provider) {
-//        super.writeToNBT(tag, provider);
-//        tag.putString("string", string);
-//    }
-//
-//    @Override
-//    public void readFromNBT(CompoundTag tag, HolderLookup.Provider provider) {
-//        super.readFromNBT(tag, provider);
-//        string = tag.getString("string");
-//    }
-
-    @Override
-    public void writeToPacket(RegistryFriendlyByteBuf buf) {
-        super.writeToPacket(buf);
-        buf.writeUtf(string);
-    }
-
-    @Override
-    public void readFromPacket(RegistryFriendlyByteBuf buf) {
-        super.readFromPacket(buf);
-        string = buf.readUtf(32768);
-
     }
 
     @Override

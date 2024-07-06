@@ -109,8 +109,9 @@ public class AirGrateModule extends AbstractTubeModule {
     private void onGrateRangeChanged() {
         if (!pressureTube.nonNullLevel().isClientSide) {
             PNCCapabilities.getAirHandler(getTube()).ifPresent(h ->
-                    NetworkHandler.sendToAllTracking(new PacketUpdatePressureBlock(getTube().getBlockPos(), null,
-                            h.getSideLeaking(), h.getAir()), getTube()));
+                    NetworkHandler.sendToAllTracking(PacketUpdatePressureBlock.create(getTube().getBlockPos(),
+                            null, h.getSideLeaking(), h.getAir()), getTube())
+            );
         } else {
             if (showRange) {
                 AreaRenderManager.getInstance().showArea(RangeManager.getFrame(getAffectedBoundingBox()), 0x60FFC060, pressureTube, false);

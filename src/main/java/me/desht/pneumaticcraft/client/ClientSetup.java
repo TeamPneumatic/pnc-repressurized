@@ -46,11 +46,13 @@ import me.desht.pneumaticcraft.common.item.MicromissilesItem;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
 import me.desht.pneumaticcraft.common.registry.*;
 import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.geom.EntityModelSet;
 import net.minecraft.client.model.geom.LayerDefinitions;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.particle.ParticleEngine;
+import net.minecraft.client.particle.TerrainParticle;
 import net.minecraft.client.renderer.entity.ArmorStandRenderer;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.HumanoidMobRenderer;
@@ -58,12 +60,16 @@ import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.client.resources.PlayerSkin;
+import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.*;
+import net.neoforged.neoforge.client.extensions.common.IClientBlockExtensions;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 import net.neoforged.neoforge.common.NeoForge;
 
@@ -135,13 +141,15 @@ public class ClientSetup {
     }
 
     public static void registerRenderLayers(EntityRenderersEvent.AddLayers event) {
-        for (EntityRenderer<?> entityRenderer : Minecraft.getInstance().getEntityRenderDispatcher().renderers.values()) {
+        event.getEntityTypes().forEach(type -> {
+            var entityRenderer = event.getRenderer(type);
             if (entityRenderer instanceof HumanoidMobRenderer<?, ?> hmr) {
                 addPneumaticArmorRenderLayer(hmr, event.getEntityModels());
             } else if (entityRenderer instanceof ArmorStandRenderer asr) {
                 addPneumaticArmorRenderLayer(asr, event.getEntityModels());
             }
-        }
+        });
+
         for (PlayerSkin.Model skin : event.getSkins()) {
             EntityRenderer<?> render = event.getSkin(skin);
             if (render instanceof PlayerRenderer pr) {
@@ -461,4 +469,37 @@ public class ClientSetup {
         cr.registerUpgradeHandler(CommonUpgradeHandlers.stompHandler, new StompClientHandler());
         cr.registerUpgradeHandler(CommonUpgradeHandlers.fallProtectionHandler, new FallProtectionClientHandler());
     }
+
+    public static final IClientBlockExtensions PARTICLE_HANDLER = new IClientBlockExtensions() {
+        @Override
+        public boolean addDestroyEffects(BlockState state, Level Level, BlockPos pos, ParticleEngine manager) {
+            //Copy of ParticleManager#addBlockDestroyEffects, but removes the minimum number of particles each voxel shape produces
+            state.getShape(Level, pos).forAllBoxes((minX, minY, minZ, maxX, maxY, maxZ) -> {
+                double xDif = Math.min(1, maxX - minX);
+                double yDif = Math.min(1, maxY - minY);
+                double zDif = Math.min(1, maxZ - minZ);
+                //Don't force the counts to be at least two
+                int xCount = Mth.ceil(xDif / 0.25);
+                int yCount = Mth.ceil(yDif / 0.25);
+                int zCount = Mth.ceil(zDif / 0.25);
+                if (xCount > 0 && yCount > 0 && zCount > 0) {
+                    for (int x = 0; x < xCount; x++) {
+                        for (int y = 0; y < yCount; y++) {
+                            for (int z = 0; z < zCount; z++) {
+                                double d4 = (x + 0.5) / xCount;
+                                double d5 = (y + 0.5) / yCount;
+                                double d6 = (z + 0.5) / zCount;
+                                double d7 = d4 * xDif + minX;
+                                double d8 = d5 * yDif + minY;
+                                double d9 = d6 * zDif + minZ;
+                                manager.add(new TerrainParticle((ClientLevel) Level, pos.getX() + d7, pos.getY() + d8,
+                                        pos.getZ() + d9, d4 - 0.5, d5 - 0.5, d6 - 0.5, state).updateSprite(state, pos));
+                            }
+                        }
+                    }
+                }
+            });
+            return true;
+        }
+    };
 }

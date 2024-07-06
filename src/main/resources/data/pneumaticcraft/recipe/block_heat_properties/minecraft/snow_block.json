@@ -1,0 +1,10 @@
+{
+   "transforms" : {
+      "hot" : "minecraft:snow"
+   },
+   "heatCapacity" : 2000,
+   "temperature" : 268,
+   "thermalResistance" : 500,
+   "type" : "pneumaticcraft:heat_properties",
+   "block" : "minecraft:snow_block"
+}

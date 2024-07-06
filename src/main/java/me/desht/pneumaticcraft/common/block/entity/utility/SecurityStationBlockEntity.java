@@ -20,6 +20,7 @@ package me.desht.pneumaticcraft.common.block.entity.utility;
 import com.google.common.collect.ImmutableList;
 import com.mojang.authlib.GameProfile;
 import me.desht.pneumaticcraft.api.lib.Names;
+import me.desht.pneumaticcraft.api.misc.ITranslatableEnum;
 import me.desht.pneumaticcraft.common.PNCDamageSource;
 import me.desht.pneumaticcraft.common.block.entity.*;
 import me.desht.pneumaticcraft.common.block.entity.RedstoneController.EmittingRedstoneMode;
@@ -43,7 +44,6 @@ import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.registry.ModSounds;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.util.GlobalBlockEntityCacheManager;
-import me.desht.pneumaticcraft.api.misc.ITranslatableEnum;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.BlockEntityConstants;
 import me.desht.pneumaticcraft.lib.Log;
@@ -75,7 +75,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.AABB;
+import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -170,7 +170,7 @@ public class SecurityStationBlockEntity extends AbstractTickingBlockEntity imple
     }
 
     private boolean isOwner(Player player) {
-        return !sharedUsers.isEmpty() && player.getGameProfile().equals(sharedUsers.get(0));
+        return !sharedUsers.isEmpty() && player.getGameProfile().equals(sharedUsers.getFirst());
     }
 
     public void rebootStation() {
@@ -317,8 +317,8 @@ public class SecurityStationBlockEntity extends AbstractTickingBlockEntity imple
         return !hackedUsers.isEmpty();
     }
 
-    public AABB getSecurityCoverage() {
-        return rangeManager.getExtentsAsAABB();
+    public BoundingBox getSecurityCoverage() {
+        return rangeManager.getExtents();
     }
 
     @Override
@@ -618,13 +618,13 @@ public class SecurityStationBlockEntity extends AbstractTickingBlockEntity imple
 
     private static boolean isValidAndInRange(Level world, BlockPos pos, boolean isPlacingSecurityStation, SecurityStationBlockEntity teSS) {
         if (!teSS.isRemoved() && teSS.nonNullLevel().dimension().compareTo(world.dimension()) == 0 && teSS.hasValidNetwork()) {
-            AABB aabb = teSS.getSecurityCoverage();
+            BoundingBox boundingBox = teSS.getSecurityCoverage();
             // prevent security stations of different owners from being placed too near each other
-            if (isPlacingSecurityStation) aabb = aabb.inflate(16);
+            if (isPlacingSecurityStation) boundingBox = boundingBox.inflatedBy(16);
             // can't just use AxisAlignedBB#contains here; it will miss blocks on the positive X/Z edges of the box
-            return aabb.minX <= pos.getX() && aabb.maxX >= pos.getX()
-                    && aabb.minY <= pos.getY() && aabb.maxY >= pos.getY()
-                    && aabb.minZ <= pos.getZ() && aabb.maxZ >= pos.getZ();
+            return boundingBox.minX() <= pos.getX() && boundingBox.maxX() >= pos.getX()
+                    && boundingBox.minY() <= pos.getY() && boundingBox.maxY() >= pos.getY()
+                    && boundingBox.minZ() <= pos.getZ() && boundingBox.maxZ() >= pos.getZ();
         }
         return false;
     }
@@ -684,7 +684,7 @@ public class SecurityStationBlockEntity extends AbstractTickingBlockEntity imple
 
         private static boolean handleInteraction(PlayerInteractEvent event) {
             if (!(event.getEntity() instanceof ServerPlayer player) || !event.getLevel().isLoaded(event.getPos())) {
-                return false;
+                return true;
             }
 
             ItemStack heldItem = player.getItemInHand(event.getHand());

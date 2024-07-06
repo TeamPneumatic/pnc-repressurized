@@ -26,18 +26,17 @@ import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.thirdparty.RadiationSourceCheck;
 import me.desht.pneumaticcraft.lib.ModIds;
 import mekanism.api.heat.IHeatHandler;
-import mekanism.api.heat.IMekanismHeatHandler;
 import mekanism.api.radiation.IRadiationManager;
 import mekanism.api.radiation.capability.IRadiationShielding;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.neoforged.neoforge.capabilities.BlockCapability;
 import net.neoforged.neoforge.capabilities.ItemCapability;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.registries.RegisterEvent;
+import org.jline.utils.Log;
 
 import java.util.List;
 import java.util.function.Supplier;
@@ -76,14 +75,12 @@ public class MekanismIntegration {
         BlockEntityType<?> type = BuiltInRegistries.BLOCK_ENTITY_TYPE.get(ResourceLocation.fromNamespaceAndPath(ModIds.MEKANISM, id));
         if (type != null) {
             event.registerBlockEntity(PNCCapabilities.HEAT_EXCHANGER_BLOCK, type, Mek2PNCHeatAdapter::maybe);
+        } else {
+            Log.warn("unknown Mekanism block entity type: {}", id);
         }
     }
 
     static void registerPaxelHandler(RegisterEvent event) {
         event.register(ModHoeHandlers.HOE_HANDLERS_DEFERRED.getRegistryKey(), RL("mekanism_paxels"), PaxelHandler::new);
-    }
-
-    static boolean isMekHeatHandler(BlockEntity blockEntity) {
-        return blockEntity instanceof IMekanismHeatHandler;
     }
 }

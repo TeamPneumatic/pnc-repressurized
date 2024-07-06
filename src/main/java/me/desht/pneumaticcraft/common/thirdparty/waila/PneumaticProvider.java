@@ -94,7 +94,7 @@ public class PneumaticProvider {
                 IOHelper.getCap(beInfo, Capabilities.FluidHandler.BLOCK, null).ifPresent(h -> {
                     ListTag list = new ListTag();
                     for (int i = 0; i < h.getTanks(); i++) {
-                        list.add(h.getFluidInTank(i).save(blockAccessor.getLevel().registryAccess()));
+                        list.add(h.getFluidInTank(i).saveOptional(blockAccessor.getLevel().registryAccess()));
                     }
                     compoundTag.put("tanks", list);
                 });

@@ -27,7 +27,9 @@ import me.desht.pneumaticcraft.common.drone.ai.DroneAIManager;
 import me.desht.pneumaticcraft.common.registry.ModProgWidgetTypes;
 import me.desht.pneumaticcraft.common.variables.TextVariableParser;
 import me.desht.pneumaticcraft.lib.Textures;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.item.DyeColor;
@@ -40,6 +42,10 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 public class ProgWidgetRename extends ProgWidget implements IRenamingWidget, IVariableWidget {
     public static final MapCodec<ProgWidgetRename> CODEC = RecordCodecBuilder.mapCodec(builder ->
             baseParts(builder).apply(builder, ProgWidgetRename::new));
+    public static final StreamCodec<RegistryFriendlyByteBuf, ProgWidgetRename> STREAM_CODEC = StreamCodec.composite(
+            PositionFields.STREAM_CODEC, ProgWidget::getPosition,
+            ProgWidgetRename::new
+    );
 
     private DroneAIManager aiManager;
 
@@ -49,6 +55,11 @@ public class ProgWidgetRename extends ProgWidget implements IRenamingWidget, IVa
 
     public ProgWidgetRename() {
         super(PositionFields.DEFAULT);
+    }
+
+    @Override
+    public IProgWidget copyWidget() {
+        return new ProgWidgetRename(getPosition());
     }
 
     @Override

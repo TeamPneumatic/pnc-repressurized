@@ -61,7 +61,7 @@ public enum XPFluidManager {
             for (FluidStack fluidStack: pair.getLeft().getStacks()) {
                 Fluid fluid = fluidStack.getFluid();
                 if (fluid.isSource(fluid.defaultFluidState()) && fluidStack.getAmount() > 0) {
-                    registerXPFluid(fluid, pair.getRight() / fluidStack.getAmount());
+                    registerXPFluid(fluid, pair.getRight());
                 }
             }
         }

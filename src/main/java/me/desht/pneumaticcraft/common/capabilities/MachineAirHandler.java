@@ -65,6 +65,7 @@ public class MachineAirHandler extends BasicAirHandler implements IAirHandlerMac
     private boolean safetyLeaking;   // is the handler venting right now?
     private Direction safetyLeakDir; // direction handler would vent in (non-null does not mean actively venting)
     private FloatPredicate safetyPredicate;  // for determining when safety venting is needed
+    private int pendingAir;
 
     public MachineAirHandler(PressureTier tier, int volume) {
         super(volume);
@@ -125,7 +126,19 @@ public class MachineAirHandler extends BasicAirHandler implements IAirHandlerMac
     public void tick(BlockEntity ownerTE) {
         Level world = Objects.requireNonNull(ownerTE.getLevel());
         Direction actualLeakDir = leakDir;
+
         if (!world.isClientSide) {
+            if (pendingAir != 0) {
+                // add any saved air if this is being restored from item stack component data
+                // need to wait till now to ensure saved volume upgrades are also accounted for
+                addAir(pendingAir);
+                pendingAir = 0;
+                if (getPressure() > getDangerPressure()) {
+                    // shouldn't happen but just in case
+                    setPressure(getDangerPressure() - 0.1f);
+                }
+            }
+
             // server
             disperseAir(ownerTE);
 
@@ -151,7 +164,9 @@ public class MachineAirHandler extends BasicAirHandler implements IAirHandlerMac
             if (prevLeakDir != actualLeakDir || actualLeakDir != null && (world.getGameTime() & 0x1f) == 0) {
                 // if leak status changes, sync pressure & leak dir to the client
                 // OR if already leaking, periodically sync pressure & leak dir to the client
-                NetworkHandler.sendToAllTracking(new PacketUpdatePressureBlock(ownerTE.getBlockPos(), anyConnectableFace(), actualLeakDir, getAir()), ownerTE);
+                NetworkHandler.sendToAllTracking(PacketUpdatePressureBlock.create(ownerTE.getBlockPos(),
+                        anyConnectableFace(), actualLeakDir, getAir()
+                ), ownerTE);
             }
 
             prevAir = getAir();
@@ -315,6 +330,11 @@ public class MachineAirHandler extends BasicAirHandler implements IAirHandlerMac
     public void deserializeNBT(CompoundTag nbt) {
         super.deserializeNBT(nbt);
         leakDir = nbt.contains("Leaking") ? Direction.from3DDataValue(nbt.getByte("Leaking")) : null;
+    }
+
+    @Override
+    public void addPendingAir(int pendingAir) {
+        this.pendingAir = pendingAir;
     }
 
     @Override

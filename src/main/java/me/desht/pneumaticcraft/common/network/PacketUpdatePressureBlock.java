@@ -27,6 +27,9 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.Optional;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
@@ -37,16 +40,20 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
  * - For air grate modules, when the pressure changes enough to modify the range
  * - For machine air handlers which are currently leaking
  */
-public record PacketUpdatePressureBlock(BlockPos pos, Direction handlerDir, Direction leakDir, int currentAir) implements CustomPacketPayload {
+public record PacketUpdatePressureBlock(BlockPos pos, Optional<Direction> handlerDir, Optional<Direction> leakDir, int currentAir) implements CustomPacketPayload {
     public static final Type<PacketUpdatePressureBlock> TYPE = new Type<>(RL("update_pressure_block"));
 
     public static final StreamCodec<FriendlyByteBuf, PacketUpdatePressureBlock> STREAM_CODEC = StreamCodec.composite(
             BlockPos.STREAM_CODEC, PacketUpdatePressureBlock::pos,
-            Direction.STREAM_CODEC, PacketUpdatePressureBlock::handlerDir,
-            Direction.STREAM_CODEC, PacketUpdatePressureBlock::leakDir,
+            ByteBufCodecs.optional(Direction.STREAM_CODEC), PacketUpdatePressureBlock::handlerDir,
+            ByteBufCodecs.optional(Direction.STREAM_CODEC), PacketUpdatePressureBlock::leakDir,
             ByteBufCodecs.INT, PacketUpdatePressureBlock::currentAir,
             PacketUpdatePressureBlock::new
     );
+
+    public static PacketUpdatePressureBlock create(BlockPos pos, @Nullable Direction handlerDir, @Nullable Direction leakDir, int currentAir) {
+        return new PacketUpdatePressureBlock(pos, Optional.ofNullable(handlerDir), Optional.ofNullable(leakDir), currentAir);
+    }
 
     @Override
     public Type<PacketUpdatePressureBlock> type() {
@@ -56,11 +63,12 @@ public record PacketUpdatePressureBlock(BlockPos pos, Direction handlerDir, Dire
     public static void handle(PacketUpdatePressureBlock message, IPayloadContext ctx) {
         BlockEntity blockEntity = ctx.player().level().getBlockEntity(message.pos());
         if (blockEntity != null) {
-            PNCCapabilities.getAirHandler(blockEntity, message.handlerDir()).ifPresent(handler -> {
-                handler.setSideLeaking(message.leakDir());
+            Direction handlerDir = message.handlerDir().orElse(null);
+            PNCCapabilities.getAirHandler(blockEntity, handlerDir).ifPresent(handler -> {
+                handler.setSideLeaking(message.leakDir().orElse(null));
                 handler.addAir(message.currentAir() - handler.getAir());
-                if (message.handlerDir() != null && blockEntity instanceof AbstractAirHandlingBlockEntity aah) {
-                    aah.initializeHullAirHandlerClient(message.handlerDir(), handler);
+                if (handlerDir != null && blockEntity instanceof AbstractAirHandlingBlockEntity aah) {
+                    aah.initializeHullAirHandlerClient(handlerDir, handler);
                 }
             });
         }

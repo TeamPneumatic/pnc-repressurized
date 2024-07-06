@@ -148,7 +148,7 @@ public class SpawnerExtractorBlockEntity extends AbstractAirHandlingBlockEntity
         super.tickServer();
 
         int defenderChance = nonNullLevel().getDifficulty() == Difficulty.EASY ? 40 : 20;
-        if (mode == Mode.RUNNING) {
+        if (mode == Mode.RUNNING && getPressure() <= getMinWorkingPressure()) {
             addAir(PneumaticValues.USAGE_SPAWNER_EXTRACTOR);
             if (progress >= 1f) {
                 extractSpawnerCore();

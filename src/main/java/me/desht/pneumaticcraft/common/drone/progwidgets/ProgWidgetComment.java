@@ -23,7 +23,10 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.registry.ModProgWidgetTypes;
 import me.desht.pneumaticcraft.lib.Textures;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.DyeColor;
 
@@ -34,6 +37,11 @@ public class ProgWidgetComment extends ProgWidgetText {
             baseParts(builder).and(
                     Codec.STRING.fieldOf("string").forGetter(ProgWidgetComment::getString)
             ).apply(builder, ProgWidgetComment::new));
+    public static final StreamCodec<RegistryFriendlyByteBuf, ProgWidgetComment> STREAM_CODEC = StreamCodec.composite(
+            PositionFields.STREAM_CODEC, ProgWidget::getPosition,
+            ByteBufCodecs.STRING_UTF8, ProgWidgetComment::getString,
+            ProgWidgetComment::new
+    );
 
     public ProgWidgetComment() {
     }

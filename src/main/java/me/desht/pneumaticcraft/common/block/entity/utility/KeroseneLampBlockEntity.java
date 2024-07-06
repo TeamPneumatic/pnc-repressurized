@@ -121,7 +121,7 @@ public class KeroseneLampBlockEntity extends AbstractTickingBlockEntity implemen
     };
 
     @DescSynced
-    private float fuelQuality = -1f; // the quality of the liquid currently in the tank; basically, its burn time
+    private float fuelQuality = -1f; // the quality (burn time) of the liquid currently in the tank
 
     private final ItemStackHandler inventory = new BaseItemStackHandler(this, INVENTORY_SIZE) {
         @Override

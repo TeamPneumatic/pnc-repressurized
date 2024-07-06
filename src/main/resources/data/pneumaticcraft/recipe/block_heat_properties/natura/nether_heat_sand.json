@@ -1,0 +1,16 @@
+{
+   "neoforge:conditions": [
+      {
+         "type": "neoforge:mod_loaded",
+         "modid": "natura"
+      }
+   ],
+   "block" : "natura:nether_heat_sand",
+   "temperature" : 750,
+   "thermalResistance" : 500,
+   "type" : "pneumaticcraft:heat_properties",
+   "transforms" : {
+      "cold" : "minecraft:sand"
+   },
+   "heatCapacity" : 2500
+}

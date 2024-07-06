@@ -199,14 +199,18 @@ public class ArmorMainScreen extends AbstractPneumaticCraftScreen implements IGu
     }
 
     @Override
-    public void render(GuiGraphics graphics, int x, int y, float partialTicks) {
+    public void renderBackground(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        renderTransparentBackground(graphics);
+    }
+
+    @Override
+    protected void drawForeground(GuiGraphics graphics, int x, int y, float partialTicks) {
         IOptionPage optionPage = getCurrentOptionsPage().page;
         optionPage.renderPre(graphics, x, y, partialTicks);
         graphics.drawCenteredString(font, getCurrentOptionsPage().page.getPageName().copy().withStyle(TITLE_PREFIX), 100, 12, 0xFFFFFFFF);
         if (optionPage.displaySettingsHeader()) {
             graphics.drawCenteredString(font, xlate("pneumaticcraft.armor.gui.misc.settings").withStyle(ChatFormatting.DARK_AQUA), 100, optionPage.settingsYposition(), 0xFFFFFFFF);
         }
-        super.render(graphics, x, y, partialTicks);
         optionPage.renderPost(graphics, x, y, partialTicks);
     }
 

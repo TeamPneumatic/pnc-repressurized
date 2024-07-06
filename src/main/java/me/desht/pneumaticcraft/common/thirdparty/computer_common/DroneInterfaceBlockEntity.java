@@ -611,7 +611,7 @@ public class DroneInterfaceBlockEntity extends AbstractTickingBlockEntity
                         "No action with the name '" + widgetName + "'!");
                 IProgWidget widget = IProgWidget.create(type);
                 Validate.isTrue(widget.isAvailable(),
-                        "Widget '" + widget.getTypeID() + "' is not available in this instance!");
+                        "Widget '" + id + "' is not available in this instance!");
                 Goal ai = widget.getWidgetAI(drone, getWidget());
                 Validate.isTrue(ai != null && widget.canBeRunByComputers(drone, getWidget()),
                         "Parsed action '" + widgetName + "' is not a runnable action!");

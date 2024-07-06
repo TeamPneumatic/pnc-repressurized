@@ -30,6 +30,8 @@ import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.energy.IEnergyStorage;
@@ -39,12 +41,23 @@ import java.util.List;
 public class ProgWidgetEnergyCondition extends ProgWidgetCondition {
     public static final MapCodec<ProgWidgetEnergyCondition> CODEC = RecordCodecBuilder.mapCodec(builder ->
             condParts(builder).apply(builder, ProgWidgetEnergyCondition::new));
+    public static final StreamCodec<RegistryFriendlyByteBuf, ProgWidgetEnergyCondition> STREAM_CODEC = StreamCodec.composite(
+            PositionFields.STREAM_CODEC, ProgWidget::getPosition,
+            InvBaseFields.STREAM_CODEC, ProgWidgetInventoryBase::invBaseFields,
+            ConditionFields.STREAM_CODEC, ProgWidgetCondition::conditionFields,
+            ProgWidgetEnergyCondition::new
+    );
 
     public ProgWidgetEnergyCondition() {
     }
 
     public ProgWidgetEnergyCondition(PositionFields pos, InvBaseFields inv, ConditionFields cond) {
         super(pos, inv, cond);
+    }
+
+    @Override
+    public IProgWidget copyWidget() {
+        return new ProgWidgetEnergyCondition(getPosition(), invBaseFields().copy(), conditionFields());
     }
 
     @Override

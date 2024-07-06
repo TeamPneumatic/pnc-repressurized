@@ -17,7 +17,7 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.EntityCollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.neoforged.neoforge.common.ToolActions;
+import net.neoforged.neoforge.common.ItemAbilities;
 
 import javax.annotation.Nullable;
 
@@ -45,7 +45,7 @@ public class ThermalLaggingBlock extends AbstractPneumaticCraftBlock {
         if (selectionContext instanceof EntityCollisionContext ecc && ecc.getEntity() instanceof LivingEntity livingEntity) {
             ItemStack stack = livingEntity.getMainHandItem();
             return ModdedWrenchUtils.getInstance().isWrench(stack)
-                    || stack.getItem().canPerformAction(stack, ToolActions.PICKAXE_DIG)
+                    || stack.getItem().canPerformAction(stack, ItemAbilities.PICKAXE_DIG)
                     || livingEntity.isCrouching() ?
                     SHAPES[getRotation(state).get3DDataValue()] : Shapes.empty();
         }

@@ -48,10 +48,12 @@ public abstract class AreaType {
 
     public abstract AreaTypeSerializer<? extends AreaType> getSerializer();
 
-    public AreaType copy() {
-        // TODO copy via codec
-        return this;
-    }
+    /**
+     * Implement this to return a copy of this area type, ensuring any mutable fields of the object are copied!
+     *
+     * @return a copy of this area type
+     */
+    public abstract AreaType copy();
 
     public String getName() {
         return name;
@@ -104,12 +106,12 @@ public abstract class AreaType {
         private final String name;
 
         AreaAxis(String name) {
-            this.name = "pneumaticcraft.gui.progWidget.area.type.axis." + name;
+            this.name = name;
         }
 
         @Override
         public String getTranslationKey() {
-            return name;
+            return "pneumaticcraft.gui.progWidget.area.type.axis." + name;
         }
 
         @Override

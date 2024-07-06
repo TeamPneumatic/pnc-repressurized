@@ -84,8 +84,7 @@ public record PacketUpdateArmorColors(int[][] cols, int eyepiece) implements Cus
         for (EquipmentSlot slot : ArmorUpgradeRegistry.ARMOR_SLOTS) {
             ItemStack stack = ctx.player().getItemBySlot(slot);
             if (stack.getItem() instanceof PneumaticArmorItem p) {
-                stack.set(DataComponents.DYED_COLOR, new DyedItemColor(message.cols()[slot.getIndex()][0], true));
-                p.setPrimaryColor(stack, message.cols()[slot.getIndex()][1]);
+                p.setPrimaryColor(stack, message.cols()[slot.getIndex()][0]);
                 p.setSecondaryColor(stack, message.cols()[slot.getIndex()][1]);
             }
         }

@@ -1,0 +1,16 @@
+{
+   "neoforge:conditions": [
+      {
+         "type": "neoforge:mod_loaded",
+         "modid": "immersiveengineering"
+      }
+   ],
+   "transforms" : {
+      "cold" : "immersiveengineering:storage_lead"
+   },
+   "heatCapacity" : 500000,
+   "type" : "pneumaticcraft:heat_properties",
+   "temperature" : 438,
+   "block" : "immersiveengineering:storage_uranium",
+   "thermalResistance" : 500
+}

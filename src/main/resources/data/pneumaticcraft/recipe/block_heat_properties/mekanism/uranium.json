@@ -1,0 +1,16 @@
+{
+   "neoforge:conditions": [
+      {
+         "type": "neoforge:mod_loaded",
+         "modid": "mekanism"
+      }
+   ],
+   "transforms" : {
+      "cold" : "mekanism:block_lead"
+   },
+   "heatCapacity" : 500000,
+   "block" : "mekanism:block_uranium",
+   "temperature" : 438,
+   "thermalResistance" : 500,
+   "type" : "pneumaticcraft:heat_properties"
+}

@@ -89,13 +89,13 @@ public class VillageStructures {
                     //   template pool JSON, so doesn't need to be added in code
                     addPieceToPool(templatePoolRegistry, emptyProcessor,
                             ResourceLocation.parse("village/" + v.getBiomeName() + "/streets"),
-                            Names.MOD_ID + ":villages/custom_street_" + v.getBiomeName(),
+                            Names.MOD_ID + ":village/custom_street_" + v.getBiomeName(),
                             StructureTemplatePool.Projection.TERRAIN_MATCHING, Math.max(1, weight / 4));
                 } else {
                     // add the house to the vanilla minecraft:village/<biome>/houses pool
                     addPieceToPool(templatePoolRegistry, emptyProcessor,
                             ResourceLocation.parse("village/" + v.getBiomeName() + "/houses"),
-                            Names.MOD_ID + ":villages/mechanic_house_" + v.getBiomeName(),
+                            Names.MOD_ID + ":village/mechanic_house_" + v.getBiomeName(),
                             StructureTemplatePool.Projection.RIGID, weight
                     );
                 }

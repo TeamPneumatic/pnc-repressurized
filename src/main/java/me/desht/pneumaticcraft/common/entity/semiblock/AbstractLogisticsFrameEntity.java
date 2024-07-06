@@ -333,7 +333,7 @@ public abstract class AbstractLogisticsFrameEntity extends AbstractSemiblockEnti
         super.readAdditionalSaveData(tag);
 
         itemFilterHandler.deserializeNBT(registryAccess(), tag.getCompound(NBT_ITEM_FILTERS));
-        fluidFilter = FluidFilter.CODEC.parse(NbtOps.INSTANCE, tag.getCompound(NBT_FLUID_FILTERS)).result()
+        fluidFilter = FluidFilter.CODEC.parse(registryAccess().createSerializationContext(NbtOps.INSTANCE), tag.getCompound(NBT_FLUID_FILTERS)).result()
                 .orElse(new FluidFilter(FLUID_FILTER_SLOTS));
         setSemiblockInvisible(tag.getBoolean(NBT_INVISIBLE));
         setMatchNBT(tag.getBoolean(NBT_MATCH_NBT));
@@ -354,9 +354,9 @@ public abstract class AbstractLogisticsFrameEntity extends AbstractSemiblockEnti
         CompoundTag tag1 = super.serializeNBT(tag, provider);
 
         tag1.put(NBT_ITEM_FILTERS, itemFilterHandler.serializeNBT(provider));
-        FluidFilter.CODEC.encodeStart(NbtOps.INSTANCE, fluidFilter)
+        FluidFilter.CODEC.encodeStart(registryAccess().createSerializationContext(NbtOps.INSTANCE), fluidFilter)
                 .ifSuccess(t -> tag1.put(NBT_FLUID_FILTERS, t));
-        tag1.put(NBT_FLUID_FILTERS, FluidFilter.CODEC.encodeStart(NbtOps.INSTANCE, fluidFilter).result().orElse(new CompoundTag()));
+        tag1.put(NBT_FLUID_FILTERS, FluidFilter.CODEC.encodeStart(provider.createSerializationContext(NbtOps.INSTANCE), fluidFilter).result().orElse(new CompoundTag()));
         if (isSemiblockInvisible()) tag1.putBoolean(NBT_INVISIBLE, true);
         if (isMatchNBT()) tag1.putBoolean(NBT_MATCH_NBT, true);
         if (isMatchDurability()) tag1.putBoolean(NBT_MATCH_DURABILITY, true);
@@ -393,7 +393,8 @@ public abstract class AbstractLogisticsFrameEntity extends AbstractSemiblockEnti
 
     @Override
     public void addTooltip(Consumer<Component> curInfo, Player player, CompoundTag tag, boolean extended) {
-        curInfo.accept(PneumaticCraftUtils.xlate("pneumaticcraft.gui.logistics_frame.facing", getSide()));
+        Component dir = Component.translatable("pneumaticcraft.gui.tooltip.direction." + getSide().getName());
+        curInfo.accept(PneumaticCraftUtils.xlate("pneumaticcraft.gui.logistics_frame.facing", dir));
         if (player.isShiftKeyDown()) {
             NonNullList<ItemStack> drops = getDrops();
             if (!drops.isEmpty()) {

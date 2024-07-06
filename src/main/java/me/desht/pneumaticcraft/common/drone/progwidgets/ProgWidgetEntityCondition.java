@@ -26,6 +26,8 @@ import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.drone.ai.DroneAIBlockCondition;
 import me.desht.pneumaticcraft.common.registry.ModProgWidgetTypes;
 import me.desht.pneumaticcraft.lib.Textures;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 
@@ -34,12 +36,23 @@ import java.util.List;
 public class ProgWidgetEntityCondition extends ProgWidgetCondition {
     public static final MapCodec<ProgWidgetEntityCondition> CODEC = RecordCodecBuilder.mapCodec(builder ->
             condParts(builder).apply(builder, ProgWidgetEntityCondition::new));
+    public static final StreamCodec<RegistryFriendlyByteBuf, ProgWidgetEntityCondition> STREAM_CODEC = StreamCodec.composite(
+            PositionFields.STREAM_CODEC, ProgWidget::getPosition,
+            InvBaseFields.STREAM_CODEC, ProgWidgetInventoryBase::invBaseFields,
+            ConditionFields.STREAM_CODEC, ProgWidgetCondition::conditionFields,
+            ProgWidgetEntityCondition::new
+    );
 
     public ProgWidgetEntityCondition() {
     }
 
     public ProgWidgetEntityCondition(PositionFields pos, InvBaseFields inv, ConditionFields cond) {
         super(pos, inv, cond);
+    }
+
+    @Override
+    public IProgWidget copyWidget() {
+        return new ProgWidgetEntityCondition(getPosition(), invBaseFields().copy(), conditionFields());
     }
 
     @Override

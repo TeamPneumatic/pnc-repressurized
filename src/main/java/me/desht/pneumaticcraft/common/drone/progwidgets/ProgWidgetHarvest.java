@@ -28,6 +28,8 @@ import me.desht.pneumaticcraft.common.registry.ModProgWidgetTypes;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.item.DyeColor;
@@ -42,6 +44,12 @@ public class ProgWidgetHarvest extends ProgWidgetDigAndPlace implements IToolUse
                     Codec.BOOL.optionalFieldOf("require_hoe", false).forGetter(ProgWidgetHarvest::requiresTool)
             ).apply(builder, ProgWidgetHarvest::new)
     );
+    public static final StreamCodec<RegistryFriendlyByteBuf, ProgWidgetHarvest> STREAM_CODEC = StreamCodec.composite(
+            PositionFields.STREAM_CODEC, ProgWidget::getPosition,
+            DigPlaceFields.STREAM_CODEC, p -> p.digPlaceFields,
+            ByteBufCodecs.BOOL, ProgWidgetHarvest::requiresTool,
+            ProgWidgetHarvest::new
+    );
 
     private boolean requireHoe;
 
@@ -53,6 +61,11 @@ public class ProgWidgetHarvest extends ProgWidgetDigAndPlace implements IToolUse
 
     public ProgWidgetHarvest() {
         super(PositionFields.DEFAULT, DigPlaceFields.makeDefault(Ordering.CLOSEST));
+    }
+
+    @Override
+    public IProgWidget copyWidget() {
+        return new ProgWidgetHarvest(getPosition(), digPlaceFields, requireHoe);
     }
 
     @Override
@@ -93,28 +106,5 @@ public class ProgWidgetHarvest extends ProgWidgetDigAndPlace implements IToolUse
             curTooltip.add(xlate("pneumaticcraft.gui.progWidget.harvest.requiresHoe"));
         }
     }
-    
-//    @Override
-//    public void writeToNBT(CompoundTag tag, HolderLookup.Provider provider){
-//        super.writeToNBT(tag, provider);
-//        if (requireHoe) tag.putBoolean("requireHoe", true);
-//    }
-//
-//    @Override
-//    public void readFromNBT(CompoundTag tag, HolderLookup.Provider provider){
-//        super.readFromNBT(tag, provider);
-//        requireHoe = tag.getBoolean("requireHoe");
-//    }
 
-    @Override
-    public void writeToPacket(RegistryFriendlyByteBuf buf) {
-        super.writeToPacket(buf);
-        buf.writeBoolean(requireHoe);
-    }
-
-    @Override
-    public void readFromPacket(RegistryFriendlyByteBuf buf) {
-        super.readFromPacket(buf);
-        requireHoe = buf.readBoolean();
-    }
 }

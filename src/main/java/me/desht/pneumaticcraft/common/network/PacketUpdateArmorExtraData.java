@@ -94,7 +94,7 @@ public record PacketUpdateArmorExtraData(EquipmentSlot slot, ResourceLocation up
                         pdcm.applyPatch(message.patch);
                         IArmorUpgradeHandler<?> upgradeHandler = ArmorUpgradeRegistry.getInstance().getUpgradeEntry(message.upgradeID());
                         if (upgradeHandler != null) {
-                            upgradeHandler.onDataFieldUpdated(handler, entry.getKey(), entry.getValue());
+                            entry.getValue().ifPresent(val -> upgradeHandler.onDataFieldUpdated(handler, entry.getKey(), val));
                         }
                     }
                 });

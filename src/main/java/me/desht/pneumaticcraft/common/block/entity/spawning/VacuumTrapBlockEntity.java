@@ -26,6 +26,7 @@ import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.block.entity.*;
 import me.desht.pneumaticcraft.common.entity.drone.DroneEntity;
 import me.desht.pneumaticcraft.common.inventory.VacuumTrapMenu;
+import me.desht.pneumaticcraft.common.item.SpawnerCoreItem;
 import me.desht.pneumaticcraft.common.item.SpawnerCoreItem.SpawnerCoreItemHandler;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
@@ -123,7 +124,7 @@ public class VacuumTrapBlockEntity extends AbstractAirHandlingBlockEntity implem
     public void tickServer() {
         super.tickServer();
 
-        isCoreLoaded = inv.getStats() != null;
+        isCoreLoaded = inv.isCorePresent();
 
         if (isOpen() && isCoreLoaded && inv.getStats().getUnusedPercentage() > 0 && getPressure() <= getMinWorkingPressure()) {
             if ((nonNullLevel().getGameTime() & 0xf) == 0) {
@@ -160,8 +161,12 @@ public class VacuumTrapBlockEntity extends AbstractAirHandlingBlockEntity implem
         ISpawnerCoreStats newStats = inv.getStats().addAmount(e.getType(), toAdd);
         if (newStats != inv.getStats()) {
             e.discard();
-            if (toAdd > 1) xpTank.drain(MEMORY_ESSENCE_AMOUNT, IFluidHandler.FluidAction.EXECUTE);
-            inv.getStackInSlot(0).set(ModDataComponents.SPAWNER_CORE_STATS, newStats);
+            if (toAdd > 1) {
+                xpTank.drain(MEMORY_ESSENCE_AMOUNT, IFluidHandler.FluidAction.EXECUTE);
+            }
+            ItemStack stack = inv.getStackInSlot(0);
+            stack.set(ModDataComponents.SPAWNER_CORE_STATS, newStats);
+            inv.setStackInSlot(0, stack);
             e.level().playSound(null, worldPosition, SoundEvents.PORTAL_TRIGGER, SoundSource.BLOCKS, 1f, 2f);
             if (level instanceof ServerLevel) {
                 ((ServerLevel) level).sendParticles(ParticleTypes.CLOUD, e.getX(), e.getY() + 0.5, e.getZ(), 5, 0, 1, 0, 0);

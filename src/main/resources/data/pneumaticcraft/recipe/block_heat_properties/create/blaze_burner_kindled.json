@@ -1,0 +1,16 @@
+{
+   "neoforge:conditions": [
+      {
+         "type": "neoforge:mod_loaded",
+         "modid": "create"
+      }
+   ],
+   "type" : "pneumaticcraft:heat_properties",
+   "predicates" : {
+      "blaze" : "kindled"
+   },
+   "thermalResistance" : 500,
+   "temperature" : 1700,
+   "block" : "create:blaze_burner",
+   "description" : "pneumaticcraft.gui.jei.description.create_blaze_burner.kindled"
+}

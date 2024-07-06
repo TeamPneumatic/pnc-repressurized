@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.api.drone;
 
-import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.goal.Goal;
@@ -156,18 +156,9 @@ public interface IProgWidget {
      */
     boolean isAvailable();
 
-//    /**
-//     * At least do <code>tag.putString("name", getTypeID().toString());</code>
-//     * <p>Note that the base implementation {@link ProgWidget} does this.</p>
-//     *
-//     * @param tag      NBT tag to write to
-//     * @param provider
-//     */
-//    void writeToNBT(CompoundTag tag, HolderLookup.Provider provider);
-//
-//    void readFromNBT(CompoundTag tag, HolderLookup.Provider provider);
+    Optional<? extends IProgWidget> copy(HolderLookup.Provider provider);
 
-    Optional<? extends IProgWidget> copy();
+    IProgWidget copyWidget();
 
     boolean canBeRunByComputers(IDrone drone, IProgWidget widget);
 
@@ -176,10 +167,6 @@ public interface IProgWidget {
     }
 
     WidgetDifficulty getDifficulty();
-
-    void readFromPacket(RegistryFriendlyByteBuf buf);
-
-    void writeToPacket(RegistryFriendlyByteBuf buf);
 
     @Nonnull
     List<Component> getExtraStringInfo();

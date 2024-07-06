@@ -117,8 +117,15 @@ public abstract class ThermoPlantRecipe extends PneumaticCraftRecipe {
         return getInputFluid().map(SizedFluidIngredient::amount).orElse(0);
     }
 
+    /**
+     * Test if this fluid is OK for this recipe. The fluid amount of the itemstack is ignored here; we're just
+     * interested if the fluid is acceptable.
+     * @param fluid the fluid stack to check
+     * @return true if this recipe accepts this fluid type, false otherwise
+     */
     public final boolean testFluid(FluidStack fluid) {
-        return getInputFluid().map(i -> i.test(fluid)).orElse(false);
+        // map sized ingredient to plain ingredient because we're not interested in amount here, just the fluid type
+        return getInputFluid().map(i -> i.ingredient().test(fluid)).orElse(false);
     }
 
     public final boolean testItem(ItemStack stack) {
@@ -155,8 +162,8 @@ public abstract class ThermoPlantRecipe extends PneumaticCraftRecipe {
                         .forGetter(Outputs::outputItem)
         ).apply(builder, Outputs::new));
         public static StreamCodec<RegistryFriendlyByteBuf, Outputs> STREAM_CODEC = StreamCodec.composite(
-                FluidStack.STREAM_CODEC, Outputs::outputFluid,
-                ItemStack.STREAM_CODEC, Outputs::outputItem,
+                FluidStack.OPTIONAL_STREAM_CODEC, Outputs::outputFluid,
+                ItemStack.OPTIONAL_STREAM_CODEC, Outputs::outputItem,
                 Outputs::new
         );
     }

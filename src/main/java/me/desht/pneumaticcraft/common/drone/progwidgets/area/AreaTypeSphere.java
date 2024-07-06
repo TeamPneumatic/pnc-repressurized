@@ -32,6 +32,7 @@ import net.minecraft.util.StringRepresentable;
 import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 public class AreaTypeSphere extends AreaType {
@@ -54,6 +55,11 @@ public class AreaTypeSphere extends AreaType {
     public AreaTypeSphere(SphereType sphereType) {
         super(ID);
         this.sphereType = sphereType;
+    }
+
+    @Override
+    public AreaType copy() {
+        return new AreaTypeSphere(sphereType);
     }
 
     @Override
@@ -95,43 +101,32 @@ public class AreaTypeSphere extends AreaType {
         super.addUIWidgets(widgets);
         widgets.add(new AreaTypeWidget.EnumSelectorField<>("pneumaticcraft.gui.progWidget.area.type.sphere.sphereType", SphereType.class, () -> sphereType, sphereType -> this.sphereType = sphereType));
     }
-    
-//    @Override
-//    public void writeToNBT(CompoundTag tag){
-//        super.writeToNBT(tag);
-//        tag.putByte("sphereType", (byte)sphereType.ordinal());
-//    }
-//
-//    @Override
-//    public void readFromNBT(CompoundTag tag){
-//        super.readFromNBT(tag);
-//        sphereType = SphereType.values()[tag.getByte("sphereType")];
-//    }
-//
-//    @Override
-//    public void writeToPacket(FriendlyByteBuf buffer) {
-//        super.writeToPacket(buffer);
-//        buffer.writeEnum(sphereType);
-//    }
-//
-//    @Override
-//    public void readFromPacket(FriendlyByteBuf buf) {
-//        super.readFromPacket(buf);
-//        sphereType = buf.readEnum(SphereType.class);
-//    }
 
-    private enum SphereType implements ITranslatableEnum, StringRepresentable {
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        AreaTypeSphere that = (AreaTypeSphere) o;
+        return sphereType == that.sphereType;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(sphereType);
+    }
+
+    public enum SphereType implements ITranslatableEnum, StringRepresentable {
         FILLED("filled"), HOLLOW("hollow");
 
         private final String name;
 
         SphereType(String name) {
-            this.name = "pneumaticcraft.gui.progWidget.area.type.sphere.sphereType." + name;
+            this.name = name;
         }
 
         @Override
         public String getTranslationKey() {
-            return name;
+            return "pneumaticcraft.gui.progWidget.area.type.sphere.sphereType." + name;
         }
 
         @Override

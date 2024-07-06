@@ -24,6 +24,7 @@ import net.minecraft.server.level.ServerPlayer;
 
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Objects;
 
 public abstract class ShoppingBasket implements Iterable<ResourceLocation> {
     protected final Map<ResourceLocation, Integer> basket;
@@ -39,25 +40,6 @@ public abstract class ShoppingBasket implements Iterable<ResourceLocation> {
     protected ShoppingBasket(Map<ResourceLocation,Integer> basket) {
         this.basket = basket;
     }
-
-//    public static ShoppingBasket fromNBT(CompoundTag subTag) {
-//        ShoppingBasket res = new ShoppingBasket();
-//        if (subTag != null) {
-//            for (String key : subTag.getAllKeys()) {
-//                int count = subTag.getInt(key);
-//                if (count > 0) res.setUnits(new ResourceLocation(key), count);
-//            }
-//        }
-//        return res;
-//    }
-//
-//    public CompoundTag toNBT() {
-//        CompoundTag subTag = new CompoundTag();
-//        basket.forEach((key, value) -> {
-//            if (value > 0) subTag.putInt(key.toString(), value);
-//        });
-//        return subTag;
-//    }
 
     public int getUnits(ResourceLocation offerId) {
         return basket.getOrDefault(offerId, 0);
@@ -78,4 +60,16 @@ public abstract class ShoppingBasket implements Iterable<ResourceLocation> {
 
     public abstract ImmutableBasket toImmutable();
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ShoppingBasket that = (ShoppingBasket) o;
+        return Objects.equals(basket, that.basket);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(basket);
+    }
 }

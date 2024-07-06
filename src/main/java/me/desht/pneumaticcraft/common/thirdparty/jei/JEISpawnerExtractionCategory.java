@@ -68,7 +68,7 @@ public class JEISpawnerExtractionCategory extends AbstractPNCCategory<JEISpawner
             cores.add(core);
         }
 
-        return Collections.singletonList(new SpawnerExtractionRecipe(
+        return List.of(new SpawnerExtractionRecipe(
                         new ItemStack(ModBlocks.SPAWNER_EXTRACTOR.get()),
                         cores,
                         new ItemStack(ModBlocks.EMPTY_SPAWNER.get())

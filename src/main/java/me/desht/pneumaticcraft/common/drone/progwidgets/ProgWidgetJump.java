@@ -26,7 +26,9 @@ import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.drone.IDroneBase;
 import me.desht.pneumaticcraft.common.registry.ModProgWidgetTypes;
 import me.desht.pneumaticcraft.lib.Textures;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.DyeColor;
 
@@ -38,12 +40,20 @@ import java.util.concurrent.ThreadLocalRandom;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class ProgWidgetJump extends ProgWidget implements IJump {
-
     public static final MapCodec<ProgWidgetJump> CODEC = RecordCodecBuilder.mapCodec(builder ->
             baseParts(builder).apply(builder, ProgWidgetJump::new));
+    public static final StreamCodec<RegistryFriendlyByteBuf, ProgWidgetJump> STREAM_CODEC = StreamCodec.composite(
+            PositionFields.STREAM_CODEC, ProgWidget::getPosition,
+            ProgWidgetJump::new
+    );
 
     public ProgWidgetJump(PositionFields pos) {
         super(pos);
+    }
+
+    @Override
+    public IProgWidget copyWidget() {
+        return new ProgWidgetJump(getPosition());
     }
 
     @Override
@@ -107,7 +117,7 @@ public class ProgWidgetJump extends ProgWidget implements IJump {
                 }
             }
         }
-        if (possibleJumpLocations.size() == 0) {
+        if (possibleJumpLocations.isEmpty()) {
             drone.getDebugger().addEntry("pneumaticcraft.gui.progWidget.jump.nowhereToJump");
             return null;
         } else {

@@ -31,8 +31,10 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction.Axis;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.StringRepresentable;
+import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -48,9 +50,15 @@ public class ProgWidgetCoordinateCondition extends ProgWidgetConditionBase {
                     StringRepresentable.fromEnum(Operator::values).fieldOf("op").forGetter(ProgWidgetCoordinateCondition::getOperator)
             )
     ).apply(builder, ProgWidgetCoordinateCondition::new));
+    public static final StreamCodec<RegistryFriendlyByteBuf, ProgWidgetCoordinateCondition> STREAM_CODEC = StreamCodec.composite(
+            PositionFields.STREAM_CODEC, ProgWidget::getPosition,
+            AxisOptions.STREAM_CODEC, ProgWidgetCoordinateCondition::getAxisOptions,
+            NeoForgeStreamCodecs.enumCodec(Operator.class), ProgWidgetCoordinateCondition::getOperator,
+            ProgWidgetCoordinateCondition::new
+    );
 
     private final AxisOptions axisOptions;
-    private Operator operator = Operator.GE;
+    private Operator operator;
 
     public ProgWidgetCoordinateCondition() {
         super(PositionFields.DEFAULT);
@@ -64,6 +72,11 @@ public class ProgWidgetCoordinateCondition extends ProgWidgetConditionBase {
 
         this.axisOptions = options;
         this.operator = op;
+    }
+
+    @Override
+    public IProgWidget copyWidget() {
+        return new ProgWidgetCoordinateCondition(getPosition(), axisOptions.copy(), operator);
     }
 
     @Override
@@ -106,34 +119,6 @@ public class ProgWidgetCoordinateCondition extends ProgWidgetConditionBase {
 
     public void setOperator(Operator operator) {
         this.operator = operator;
-    }
-
-//    @Override
-//    public void writeToNBT(CompoundTag tag, HolderLookup.Provider provider) {
-//        super.writeToNBT(tag, provider);
-//        axisOptions.writeToNBT(tag);
-//        tag.putByte("operator", (byte) operator.ordinal());
-//    }
-//
-//    @Override
-//    public void readFromNBT(CompoundTag tag, HolderLookup.Provider provider) {
-//        super.readFromNBT(tag, provider);
-//        axisOptions.readFromNBT(tag, false);
-//        operator = Operator.values()[tag.getByte("operator")];
-//    }
-
-    @Override
-    public void writeToPacket(RegistryFriendlyByteBuf buf) {
-        super.writeToPacket(buf);
-        axisOptions.writeToBuffer(buf);
-        buf.writeByte(operator.ordinal());
-    }
-
-    @Override
-    public void readFromPacket(RegistryFriendlyByteBuf buf) {
-        super.readFromPacket(buf);
-        axisOptions.readFromBuffer(buf);
-        operator = Operator.values()[buf.readByte()];
     }
 
     @Override

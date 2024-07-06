@@ -646,13 +646,12 @@ public abstract class AbstractPneumaticCraftBlockEntity extends BlockEntity
             CustomData data = componentInput.getOrDefault(ModDataComponents.SAVED_SIDE_CONFIG, CustomData.EMPTY);
             SideConfigurator.readFromNBT(data.copyTag(), sc, level.registryAccess());
         }
-        if (shouldPreserveStateOnBreak()) {
-            IAirHandlerMachine handler = getLevel().getCapability(PNCCapabilities.AIR_HANDLER_MACHINE, getBlockPos(), getBlockState(), this, null);
-            if (handler != null) {
-                handler.addAir(componentInput.getOrDefault(ModDataComponents.AIR, 0) - handler.getAir());
-            }
 
-            componentInput.getOrDefault(ModDataComponents.ITEM_UPGRADES, SavedUpgrades.EMPTY).fillItemHandler(getUpgradeHandler());
+        componentInput.getOrDefault(ModDataComponents.ITEM_UPGRADES, SavedUpgrades.EMPTY).fillItemHandler(getUpgradeHandler());
+
+        IAirHandlerMachine handler = getLevel().getCapability(PNCCapabilities.AIR_HANDLER_MACHINE, getBlockPos(), getBlockState(), this, null);
+        if (handler != null) {
+            handler.addPendingAir(componentInput.getOrDefault(ModDataComponents.AIR, 0));
         }
     }
 

@@ -187,7 +187,7 @@ public class ProgrammableControllerBlockEntity extends AbstractAirHandlingBlockE
         itemHandlerSideConfigurator.registerHandler("programmableInv", new ItemStack(ModItems.NETWORK_API.get()),
                 Capabilities.ItemHandler.BLOCK, () -> inventory,
                 SideConfigurator.RelativeFace.BOTTOM);
-        itemHandlerSideConfigurator.setNullFaceHandler("droneInv");
+        itemHandlerSideConfigurator.setNullFaceHandler("programmableInv");
     }
 
     private TicketController ticketController() {

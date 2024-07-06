@@ -27,6 +27,10 @@ import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.api.registry.PNCRegistries;
 import me.desht.pneumaticcraft.common.drone.ai.DroneAICustomBlockInteract;
 import me.desht.pneumaticcraft.common.registry.ModProgWidgetTypes;
+import net.minecraft.Util;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.item.DyeColor;
@@ -40,6 +44,11 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 public class ProgWidgetCustomBlockInteract extends ProgWidgetInventoryBase {
     public static final MapCodec<ProgWidgetCustomBlockInteract> CODEC = RecordCodecBuilder.mapCodec(builder ->
             invParts(builder).apply(builder, ProgWidgetCustomBlockInteract::new));
+    public static final StreamCodec<RegistryFriendlyByteBuf, ProgWidgetCustomBlockInteract> STREAM_CODEC = StreamCodec.composite(
+            PositionFields.STREAM_CODEC, ProgWidget::getPosition,
+            InvBaseFields.STREAM_CODEC, ProgWidgetInventoryBase::invBaseFields,
+            ProgWidgetCustomBlockInteract::new
+    );
 
     private ICustomBlockInteract interactor;
     private ProgWidgetType<?> customType = null;
@@ -50,6 +59,11 @@ public class ProgWidgetCustomBlockInteract extends ProgWidgetInventoryBase {
 
     public ProgWidgetCustomBlockInteract() {
         super(PositionFields.DEFAULT, InvBaseFields.DEFAULT);
+    }
+
+    @Override
+    public IProgWidget copyWidget() {
+        return Util.make(new ProgWidgetCustomBlockInteract(getPosition(), invBaseFields().copy()), w -> w.setInteractor(interactor));
     }
 
     public ProgWidgetCustomBlockInteract setInteractor(ICustomBlockInteract interactor) {
@@ -67,9 +81,10 @@ public class ProgWidgetCustomBlockInteract extends ProgWidgetInventoryBase {
     }
 
     @Override
-    public Optional<? extends IProgWidget> copy() {
-        return super.copy()
-                .filter(w -> w instanceof ProgWidgetCustomBlockInteract).map(w -> ((ProgWidgetCustomBlockInteract) w).setInteractor(interactor));
+    public Optional<? extends IProgWidget> copy(HolderLookup.Provider provider) {
+        return super.copy(provider)
+                .filter(w -> w instanceof ProgWidgetCustomBlockInteract)
+                .map(w -> ((ProgWidgetCustomBlockInteract) w).setInteractor(interactor));
     }
 
     @Override

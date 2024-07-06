@@ -1,0 +1,16 @@
+{
+   "neoforge:conditions": [
+      {
+         "type": "neoforge:mod_loaded",
+         "modid": "powah"
+      }
+   ],
+   "heatCapacity" : 20000,
+   "transforms" : {
+      "hot" : "minecraft:blue_ice"
+   },
+   "thermalResistance" : 200,
+   "temperature" : 173,
+   "type" : "pneumaticcraft:heat_properties",
+   "block" : "powah:dry_ice"
+}

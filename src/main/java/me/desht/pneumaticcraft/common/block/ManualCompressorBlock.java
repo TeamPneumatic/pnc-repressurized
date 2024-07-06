@@ -78,7 +78,7 @@ public class ManualCompressorBlock extends AbstractPneumaticCraftBlock implement
     @Override
     public InteractionResult useWithoutItem(BlockState state, Level world, BlockPos pos, Player player, BlockHitResult brtr) {
         // Triggers a pump cycle step when manual compressor is right-clicked
-        if (world.getBlockEntity(pos) instanceof ManualCompressorBlockEntity manualCompressorBlockEntity && !world.isClientSide
+        if (world.getBlockEntity(pos) instanceof ManualCompressorBlockEntity manualCompressorBlockEntity /*&& !world.isClientSide*/
                 // Only allows fake players to use compressor if the config is true
                 && (ConfigHelper.common().machines.manualCompressorAllowFakePlayers.get() || !(player instanceof FakePlayer))
                 // Can only pump if hunger is not empty (does not apply to creative players, or if manual compressor does not consume hunger via config)

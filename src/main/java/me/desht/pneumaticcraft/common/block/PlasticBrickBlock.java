@@ -17,11 +17,17 @@
 
 package me.desht.pneumaticcraft.common.block;
 
+import me.desht.pneumaticcraft.api.drone.IDrone;
+import me.desht.pneumaticcraft.api.upgrade.PNCUpgrade;
 import me.desht.pneumaticcraft.client.ColorHandlers;
 import me.desht.pneumaticcraft.common.PNCDamageSource;
+import me.desht.pneumaticcraft.common.config.ConfigHelper;
+import me.desht.pneumaticcraft.common.entity.drone.DroneEntity;
 import me.desht.pneumaticcraft.common.item.ICustomTooltipName;
 import me.desht.pneumaticcraft.common.registry.ModBlocks;
 import me.desht.pneumaticcraft.common.registry.ModItems;
+import me.desht.pneumaticcraft.common.upgrades.BuiltinUpgrade;
+import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -144,12 +150,16 @@ public class PlasticBrickBlock extends Block implements ColorHandlers.ITintableB
     @Override
     public void entityInside(BlockState state, Level worldIn, BlockPos pos, Entity entityIn) {
         if (hurtsToStepOn() && entityIn instanceof LivingEntity livingEntity) {
-            ItemStack stack = livingEntity.getItemBySlot(EquipmentSlot.FEET);
-            if (stack.isEmpty()) {
-                entityIn.hurt(PNCDamageSource.plasticBlock(worldIn), 3);
+            if (!isEntitySafe(livingEntity)) {
+                entityIn.hurt(PNCDamageSource.plasticBlock(worldIn), ConfigHelper.common().general.plasticBrickDamage.get().floatValue());
                 livingEntity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 40, 1));
             }
         }
+    }
+
+    private boolean isEntitySafe(LivingEntity entity) {
+        return !entity.getItemBySlot(EquipmentSlot.FEET).isEmpty()
+                || entity instanceof IDrone drone && drone.getUpgrades(ModUpgrades.ARMOR.get()) > 0;
     }
 
     @Override

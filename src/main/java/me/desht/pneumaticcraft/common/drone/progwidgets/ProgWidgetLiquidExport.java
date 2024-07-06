@@ -28,6 +28,8 @@ import me.desht.pneumaticcraft.common.drone.ai.DroneAILiquidExport;
 import me.desht.pneumaticcraft.common.registry.ModProgWidgetTypes;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.item.DyeColor;
@@ -40,7 +42,12 @@ public class ProgWidgetLiquidExport extends ProgWidgetInventoryBase implements I
             invParts(builder).and(
                     Codec.BOOL.optionalFieldOf("place_fluid_blocks", false).forGetter(ProgWidgetLiquidExport::isPlacingFluidBlocks)
     ).apply(builder, ProgWidgetLiquidExport::new));
-
+    public static final StreamCodec<RegistryFriendlyByteBuf, ProgWidgetLiquidExport> STREAM_CODEC = StreamCodec.composite(
+            PositionFields.STREAM_CODEC, ProgWidget::getPosition,
+            InvBaseFields.STREAM_CODEC, ProgWidgetInventoryBase::invBaseFields,
+            ByteBufCodecs.BOOL, ProgWidgetLiquidExport::isPlacingFluidBlocks,
+            ProgWidgetLiquidExport::new
+    );
     private boolean placeFluidBlocks;
 
     public ProgWidgetLiquidExport() {
@@ -51,6 +58,11 @@ public class ProgWidgetLiquidExport extends ProgWidgetInventoryBase implements I
         super(pos, invBaseFields);
 
         this.placeFluidBlocks = placeFluidBlocks;
+    }
+
+    @Override
+    public IProgWidget copyWidget() {
+        return new ProgWidgetLiquidExport(getPosition(), invBaseFields().copy(), placeFluidBlocks);
     }
 
     @Override
@@ -76,30 +88,6 @@ public class ProgWidgetLiquidExport extends ProgWidgetInventoryBase implements I
     @Override
     public DyeColor getColor() {
         return DyeColor.ORANGE;
-    }
-
-//    @Override
-//    public void writeToNBT(CompoundTag tag, HolderLookup.Provider provider) {
-//        super.writeToNBT(tag, provider);
-//        if (placeFluidBlocks) tag.putBoolean("placeFluidBlocks", true);
-//    }
-//
-//    @Override
-//    public void readFromNBT(CompoundTag tag, HolderLookup.Provider provider) {
-//        super.readFromNBT(tag, provider);
-//        placeFluidBlocks = tag.getBoolean("placeFluidBlocks");
-//    }
-
-    @Override
-    public void writeToPacket(RegistryFriendlyByteBuf buf) {
-        super.writeToPacket(buf);
-        buf.writeBoolean(placeFluidBlocks);
-    }
-
-    @Override
-    public void readFromPacket(RegistryFriendlyByteBuf buf) {
-        super.readFromPacket(buf);
-        placeFluidBlocks = buf.readBoolean();
     }
 
     @Override

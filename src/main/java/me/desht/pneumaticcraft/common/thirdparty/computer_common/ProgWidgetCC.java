@@ -29,17 +29,16 @@ import me.desht.pneumaticcraft.common.entity.drone.DroneEntity;
 import me.desht.pneumaticcraft.common.recipes.VanillaRecipeCache;
 import me.desht.pneumaticcraft.common.registry.ModProgWidgetTypes;
 import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
-import me.desht.pneumaticcraft.common.util.DummyContainer;
 import me.desht.pneumaticcraft.common.util.LegacyAreaWidgetConverter;
 import me.desht.pneumaticcraft.common.util.StringFilterEntitySelector;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.ai.goal.Goal;
-import net.minecraft.world.inventory.CraftingContainer;
-import net.minecraft.world.inventory.TransientCraftingContainer;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -60,6 +59,11 @@ public class ProgWidgetCC extends ProgWidgetInventoryBase implements IBlockOrder
         IToolUser, ICheckLineOfSight, IStandbyWidget {
     public static final MapCodec<ProgWidgetCC> CODEC = RecordCodecBuilder.mapCodec(builder ->
         invParts(builder).apply(builder, ProgWidgetCC::new));
+    public static final StreamCodec<RegistryFriendlyByteBuf, ProgWidgetCC> STREAM_CODEC = StreamCodec.composite(
+            PositionFields.STREAM_CODEC, ProgWidget::getPosition,
+            InvBaseFields.STREAM_CODEC, ProgWidgetInventoryBase::invBaseFields,
+            ProgWidgetCC::new
+    );
 
     private Ordering order = Ordering.CLOSEST;
     private boolean[] sides = new boolean[6];
@@ -98,6 +102,11 @@ public class ProgWidgetCC extends ProgWidgetInventoryBase implements IBlockOrder
 
     public ProgWidgetCC() {
         this(PositionFields.DEFAULT, InvBaseFields.DEFAULT);
+    }
+
+    @Override
+    public IProgWidget copyWidget() {
+        return new ProgWidgetCC(getPosition(), invBaseFields());
     }
 
     @Override

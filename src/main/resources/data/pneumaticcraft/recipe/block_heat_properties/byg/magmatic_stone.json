@@ -1,0 +1,16 @@
+{
+   "neoforge:conditions": [
+      {
+         "type": "neoforge:mod_loaded",
+         "modid": "byg"
+      }
+   ],
+   "transforms" : {
+      "cold" : "minecraft:blackstone"
+   },
+   "heatCapacity" : 10000,
+   "temperature" : 1300,
+   "thermalResistance" : 500,
+   "type" : "pneumaticcraft:heat_properties",
+   "block" : "byg:magmatic_stone"
+}

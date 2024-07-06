@@ -29,6 +29,8 @@ import me.desht.pneumaticcraft.common.registry.ModProgWidgetTypes;
 import me.desht.pneumaticcraft.common.variables.TextVariableParser;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.item.DyeColor;
@@ -40,6 +42,11 @@ public class ProgWidgetEditSign extends ProgWidgetAreaItemBase implements ISignE
     public static final MapCodec<ProgWidgetEditSign> CODEC = RecordCodecBuilder.mapCodec(builder ->
             baseParts(builder).and(Codec.BOOL.optionalFieldOf("back_side", false).forGetter(ProgWidgetEditSign::isSignBackSide)
     ).apply(builder, ProgWidgetEditSign::new));
+    public static final StreamCodec<RegistryFriendlyByteBuf, ProgWidgetEditSign> STREAM_CODEC = StreamCodec.composite(
+            PositionFields.STREAM_CODEC, ProgWidget::getPosition,
+            ByteBufCodecs.BOOL, ProgWidgetEditSign::isSignBackSide,
+            ProgWidgetEditSign::new
+    );
 
     private boolean backSide;
 
@@ -52,6 +59,11 @@ public class ProgWidgetEditSign extends ProgWidgetAreaItemBase implements ISignE
         super(PositionFields.DEFAULT);
 
         backSide = false;
+    }
+
+    @Override
+    public IProgWidget copyWidget() {
+        return new ProgWidgetEditSign(getPosition(), isSignBackSide());
     }
 
     @Override
@@ -105,27 +117,4 @@ public class ProgWidgetEditSign extends ProgWidgetAreaItemBase implements ISignE
         this.backSide = backSide;
     }
 
-//    @Override
-//    public void writeToNBT(CompoundTag tag, HolderLookup.Provider provider) {
-//        super.writeToNBT(tag, provider);
-//        if (backSide) tag.putBoolean("back", isSignBackSide());
-//    }
-//
-//    @Override
-//    public void readFromNBT(CompoundTag tag, HolderLookup.Provider provider) {
-//        super.readFromNBT(tag, provider);
-//        backSide = tag.getBoolean("back");
-//    }
-
-    @Override
-    public void writeToPacket(RegistryFriendlyByteBuf buf) {
-        super.writeToPacket(buf);
-        buf.writeBoolean(backSide);
-    }
-
-    @Override
-    public void readFromPacket(RegistryFriendlyByteBuf buf) {
-        super.readFromPacket(buf);
-        backSide = buf.readBoolean();
-    }
 }

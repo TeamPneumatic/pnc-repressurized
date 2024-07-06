@@ -39,7 +39,7 @@ public class ProgrammableControllerMenu extends AbstractPneumaticCraftMenu<Progr
 
         addSlot(new SlotItemHandler(blockEntity.getItemHandler(), 0, 89, 36));
 
-        addUpgradeSlots(39, 29);
+        addUpgradeSlots(39, 28);
 
         addPlayerSlots(playerInventory, 84);
 

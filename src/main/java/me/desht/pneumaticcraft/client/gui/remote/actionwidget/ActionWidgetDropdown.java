@@ -17,7 +17,11 @@
 
 package me.desht.pneumaticcraft.client.gui.remote.actionwidget;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import me.desht.pneumaticcraft.client.gui.RemoteEditorScreen;
+import me.desht.pneumaticcraft.client.gui.RemoteScreen;
 import me.desht.pneumaticcraft.client.gui.remote.RemoteDropdownOptionScreen;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetComboBox;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
@@ -25,63 +29,42 @@ import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSetGlobalVariable;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableHelper;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.resources.language.I18n;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Mth;
 
-import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
+import java.util.Arrays;
+import java.util.List;
 
 public class ActionWidgetDropdown extends ActionWidgetVariable<WidgetComboBox> {
+    public static final MapCodec<ActionWidgetDropdown> CODEC = RecordCodecBuilder.mapCodec(builder ->
+            varParts(builder).and(builder.group(
+                    Codec.STRING.listOf().fieldOf("elements").forGetter(ActionWidgetDropdown::getDropDownElements),
+                    Codec.BOOL.optionalFieldOf("sorted", false).forGetter(ActionWidgetDropdown::getSorted)
+            )).apply(builder, ActionWidgetDropdown::new));
+    public static final String ID = "dropdown";
 
-    private int x, y, width, height;
-    private String dropDownElements = "";
+    private List<String> dropDownElements;
     private boolean sorted;
 
-    public ActionWidgetDropdown() {
-        super();
+    public ActionWidgetDropdown(RemoteEditorScreen remoteEditorScreen, WidgetComboBox widgetComboBox) {
+        super(BaseSettings.DEFAULT, WidgetSettings.forWidget(remoteEditorScreen, widgetComboBox), "");
     }
 
-    public ActionWidgetDropdown(WidgetComboBox widget) {
-        super(widget);
-        x = widget.getX();
-        y = widget.getY();
-        width = widget.getWidth();
-        height = widget.getHeight();
-        widget.setValue(I18n.get("pneumaticcraft.gui.remote.tray.dropdown.name"));
-        widget.setTooltip(Tooltip.create(xlate("pneumaticcraft.gui.remote.tray.dropdown.tooltip")));
+    public ActionWidgetDropdown(BaseSettings baseSettings, WidgetSettings widgetSettings, String variableName, List<String> elements, boolean sorted) {
+        super(baseSettings, widgetSettings, variableName);
+
+        this.dropDownElements = elements;
+        this.sorted = sorted;
     }
 
     @Override
-    public void readFromNBT(HolderLookup.Provider provider, CompoundTag tag, int guiLeft, int guiTop) {
-        super.readFromNBT(provider, tag, guiLeft, guiTop);
-        x = tag.getInt("x") + guiLeft;
-        y = tag.getInt("y") + guiTop;
-        width = tag.getInt("width");
-        height = tag.getInt("height");
-        dropDownElements = tag.getString("dropDownElements");
-        sorted = tag.getBoolean("sorted");
-        updateWidget();
-    }
-
-    @Override
-    public CompoundTag toNBT(HolderLookup.Provider provider, int guiLeft, int guiTop) {
-        CompoundTag tag = super.toNBT(provider, guiLeft, guiTop);
-        tag.putInt("x", x - guiLeft);
-        tag.putInt("y", y - guiTop);
-        tag.putInt("width", width);
-        tag.putInt("height", height);
-        tag.putString("dropDownElements", dropDownElements);
-        tag.putBoolean("sorted", sorted);
-
-        return tag;
+    public MapCodec<? extends ActionWidget<WidgetComboBox>> codec() {
+        return CODEC;
     }
 
     @Override
     public String getId() {
-        return "dropdown";
+        return ID;
     }
 
     @Override
@@ -91,26 +74,22 @@ public class ActionWidgetDropdown extends ActionWidgetVariable<WidgetComboBox> {
 
     @Override
     public void onVariableChange() {
-        updateWidget();
-    }
-
-    @Override
-    public void setWidgetPos(int x, int y) {
-        this.x = x;
-        this.y = y;
-        updateWidget();
-    }
-
-    @Override
-    public WidgetComboBox getWidget() {
-        if (widget == null) {
-            widget = new WidgetComboBox(Minecraft.getInstance().font, x, y, width, height, this::onPressed);
-            widget.setElements(getDropdownElements());
-            widget.setFixedOptions(true);
-            widget.setShouldSort(sorted);
-            updateWidget();
+        if (widget != null) {
+            widget.setValue(getSelectedElement());
         }
-        return widget;
+    }
+
+    @Override
+    protected WidgetComboBox createMinecraftWidget(RemoteScreen screen) {
+        WidgetComboBox res = new WidgetComboBox(Minecraft.getInstance().font,
+                widgetSettings.getX(), widgetSettings.getY(), widgetSettings.getWidth(), widgetSettings.getHeight(),
+                this::onPressed
+        );
+        res.setElements(dropDownElements);
+        res.setFixedOptions(true);
+        res.setShouldSort(sorted);
+        res.setValue(getSelectedElement());
+        return res;
     }
 
     private void onPressed(WidgetComboBox comboBox) {
@@ -119,35 +98,25 @@ public class ActionWidgetDropdown extends ActionWidgetVariable<WidgetComboBox> {
         }
     }
 
-    private String[] getDropdownElements() {
-        return dropDownElements.split(",");
-    }
-
-    private void updateWidget() {
-        String[] elements = getDropdownElements();
+    private String getSelectedElement() {
         int idx = GlobalVariableHelper.getInt(ClientUtils.getClientPlayer().getUUID(), getVariableName());
-        String selectedElement = elements[Mth.clamp(idx, 0, elements.length - 1)];
-
-        if (widget != null) {
-            widget.setPosition(x, y);
-            widget.setWidth(width);
-            widget.setHeight(height);
-            widget.setElements(getDropdownElements());
-            widget.setValue(selectedElement);
-            widget.setShouldSort(sorted);
-        }
+        return dropDownElements.get(Mth.clamp(idx, 0, dropDownElements.size() - 1));
     }
 
     @Override
     public void onActionPerformed() {
+        // nothing
     }
 
-    public void setDropDownElements(String dropDownElements) {
-        this.dropDownElements = dropDownElements;
-        updateWidget();
+    public void setDropDownElements(String[] dropDownElements) {
+        this.dropDownElements = Arrays.asList(dropDownElements);
+        if (widget != null) {
+            widget.setElements(dropDownElements);
+            widget.setValue(getSelectedElement());
+        }
     }
 
-    public String getDropDownElements() {
+    public List<String> getDropDownElements() {
         return dropDownElements;
     }
 
@@ -157,19 +126,24 @@ public class ActionWidgetDropdown extends ActionWidgetVariable<WidgetComboBox> {
 
     public void setSorted(boolean sorted) {
         this.sorted = sorted;
+        if (widget != null) {
+            widget.setShouldSort(sorted);
+        }
     }
 
     public void setWidth(int width) {
-        this.width = width;
-        updateWidget();
+        widgetSettings.setWidth(width);
+        if (widget != null) {
+            widget.setWidth(width);
+        }
     }
 
     public int getWidth() {
-        return width;
+        return widgetSettings.getWidth();
     }
 
     @Override
-    public Screen getGui(RemoteEditorScreen guiRemote) {
+    public Screen createConfigurationGui(RemoteEditorScreen guiRemote) {
         return new RemoteDropdownOptionScreen(this, guiRemote);
     }
 }

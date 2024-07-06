@@ -13,18 +13,19 @@ import java.util.List;
 
 public class FluidFilter {
     public static final Codec<FluidFilter> CODEC = RecordCodecBuilder.create(builder -> builder.group(
-        FluidStack.CODEC.listOf().fieldOf("stacks").forGetter(filter -> filter.fluidStacks)
+        FluidStack.OPTIONAL_CODEC.listOf().fieldOf("stacks").forGetter(filter -> filter.fluidStacks)
     ).apply(builder, FluidFilter::new));
 
     public static final StreamCodec<RegistryFriendlyByteBuf, FluidFilter> STREAM_CODEC = StreamCodec.composite(
-            FluidStack.STREAM_CODEC.apply(ByteBufCodecs.list()), filter -> filter.fluidStacks,
+            FluidStack.OPTIONAL_STREAM_CODEC.apply(ByteBufCodecs.list()), filter -> filter.fluidStacks,
             FluidFilter::new
     );
 
     private final NonNullList<FluidStack> fluidStacks;
 
     private FluidFilter(List<FluidStack> stacks) {
-        this.fluidStacks = NonNullList.copyOf(stacks);
+        this.fluidStacks = NonNullList.createWithCapacity(stacks.size());
+        fluidStacks.addAll(stacks);
     }
 
     public FluidFilter(int size) {

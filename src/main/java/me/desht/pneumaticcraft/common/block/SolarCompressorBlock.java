@@ -122,7 +122,7 @@ public class SolarCompressorBlock extends AbstractPNCBlockWithBoundingBlocks {
         }
 
         // Allows other interactions if we cannot do repair interaction
-        return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+        return super.useItemOn(stack, state, level, pos, player, hand, brtr);
     }
 
     @Override

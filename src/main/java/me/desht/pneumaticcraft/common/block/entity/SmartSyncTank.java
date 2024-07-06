@@ -25,6 +25,7 @@ import me.desht.pneumaticcraft.common.util.PNCFluidTank;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.SimpleFluidContent;
 
 import java.lang.ref.WeakReference;
 
@@ -146,5 +147,14 @@ public class SmartSyncTank extends PNCFluidTank {
         onFluidChange(stack);
 
         super.setFluid(stack);
+    }
+
+    @Override
+    public void loadFromContent(SimpleFluidContent contents) {
+        super.loadFromContent(contents);
+
+        pending = true;
+        syncedFluidStackGui = fluidStack.copy();
+
     }
 }

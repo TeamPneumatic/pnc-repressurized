@@ -30,16 +30,18 @@ import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.registry.ModProgWidgetTypes;
 import me.desht.pneumaticcraft.common.thirdparty.ModNameCache;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
+import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
 
 import javax.annotation.Nonnull;
 import java.util.Collections;
@@ -59,6 +61,16 @@ public class ProgWidgetItemFilter extends ProgWidget implements IVariableWidget 
                             Codec.STRING.optionalFieldOf("durability", "").forGetter(ProgWidgetItemFilter::getVariable)
                     )
             ).apply(builder, ProgWidgetItemFilter::new));
+    public static final StreamCodec<RegistryFriendlyByteBuf, ProgWidgetItemFilter> STREAM_CODEC = NeoForgeStreamCodecs.composite(
+            PositionFields.STREAM_CODEC, ProgWidget::getPosition,
+            ItemStack.OPTIONAL_STREAM_CODEC, ProgWidgetItemFilter::getFilter,
+            ByteBufCodecs.BOOL, ProgWidgetItemFilter::isCheckDurability,
+            ByteBufCodecs.BOOL, ProgWidgetItemFilter::isMatchComponents,
+            ByteBufCodecs.BOOL, ProgWidgetItemFilter::isMatchMod,
+            ByteBufCodecs.BOOL, ProgWidgetItemFilter::isMatchBlock,
+            ByteBufCodecs.STRING_UTF8, ProgWidgetItemFilter::getVariable,
+            ProgWidgetItemFilter::new
+    );
 
     private ItemStack filter;
     private boolean checkDurability;
@@ -66,7 +78,7 @@ public class ProgWidgetItemFilter extends ProgWidget implements IVariableWidget 
     private boolean matchMod;
     private boolean matchBlock;
     private DroneAIManager aiManager;
-    private String variable = "";
+    private String variable;
 
     public ProgWidgetItemFilter(PositionFields pos, ItemStack filter, boolean checkDurability, boolean matchComponents, boolean matchMod, boolean matchBlock, String variable) {
         super(pos);
@@ -80,6 +92,11 @@ public class ProgWidgetItemFilter extends ProgWidget implements IVariableWidget 
 
     public ProgWidgetItemFilter() {
         this(PositionFields.DEFAULT, ItemStack.EMPTY, false, false, false, false, "");
+    }
+
+    @Override
+    public IProgWidget copyWidget() {
+        return new ProgWidgetItemFilter(getPosition(), filter.copy(), checkDurability, matchComponents, matchMod, matchBlock, variable);
     }
 
     public static ProgWidgetItemFilter withFilter(ItemStack filter){
@@ -217,52 +234,6 @@ public class ProgWidgetItemFilter extends ProgWidget implements IVariableWidget 
     @Override
     public ResourceLocation getTexture() {
         return Textures.PROG_WIDGET_ITEM_FILTER;
-    }
-
-//    @Override
-//    public void writeToNBT(CompoundTag tag, HolderLookup.Provider provider) {
-//        super.writeToNBT(tag, provider);
-//        if (!filter.isEmpty()) {
-//            filter.save(provider, tag);
-//        }
-//        if (checkDurability) tag.putBoolean("useMetadata", true);
-//        if (matchComponents) tag.putBoolean("useNBT", true);
-//        if (matchMod) tag.putBoolean("useModSimilarity", true);
-//        if (matchBlock) tag.putBoolean("matchBlock", true);
-//        if (!variable.isEmpty()) tag.putString("variable", variable);
-//    }
-//
-//    @Override
-//    public void readFromNBT(CompoundTag tag, HolderLookup.Provider provider) {
-//        super.readFromNBT(tag, provider);
-//        filter = ItemStack.parseOptional(provider, tag);
-//        checkDurability = filter.getMaxDamage() > 0 && tag.getBoolean("useMetadata");
-//        matchComponents = tag.getBoolean("useNBT");
-//        matchMod = tag.getBoolean("useModSimilarity");
-//        matchBlock = tag.getBoolean("matchBlock");
-//        variable = tag.getString("variable");
-//    }
-
-    @Override
-    public void writeToPacket(RegistryFriendlyByteBuf buf) {
-        super.writeToPacket(buf);
-        ItemStack.STREAM_CODEC.encode(buf, filter);
-        buf.writeBoolean(checkDurability);
-        buf.writeBoolean(matchComponents);
-        buf.writeBoolean(matchMod);
-        buf.writeBoolean(matchBlock);
-        buf.writeUtf(variable);
-    }
-
-    @Override
-    public void readFromPacket(RegistryFriendlyByteBuf buf) {
-        super.readFromPacket(buf);
-        filter = ItemStack.STREAM_CODEC.decode(buf);
-        checkDurability = buf.readBoolean();
-        matchComponents = buf.readBoolean();
-        matchMod = buf.readBoolean();
-        matchBlock = buf.readBoolean();
-        variable = buf.readUtf(GlobalVariableManager.MAX_VARIABLE_LEN);
     }
 
     public static boolean isItemValidForFilters(ItemStack item, List<ProgWidgetItemFilter> whitelist, List<ProgWidgetItemFilter> blacklist, BlockState blockState) {

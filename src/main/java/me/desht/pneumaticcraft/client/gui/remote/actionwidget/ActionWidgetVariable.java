@@ -17,34 +17,25 @@
 
 package me.desht.pneumaticcraft.client.gui.remote.actionwidget;
 
+import com.mojang.datafixers.Products;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import me.desht.pneumaticcraft.client.gui.RemoteEditorScreen;
 import me.desht.pneumaticcraft.client.gui.remote.RemoteVariableOptionScreen;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.nbt.CompoundTag;
 
 public abstract class ActionWidgetVariable<W extends AbstractWidget> extends ActionWidget<W> {
-    private String variableName = "";
-
-    ActionWidgetVariable(W widget) {
-        super(widget);
+    protected static <P extends ActionWidgetVariable<?>> Products.P3<RecordCodecBuilder.Mu<P>, BaseSettings, WidgetSettings, String> varParts(RecordCodecBuilder.Instance<P> pInstance) {
+        return baseParts(pInstance).and(Codec.STRING.fieldOf("variableName").forGetter(p -> p.variableName));
     }
 
-    ActionWidgetVariable() {
-    }
+    protected String variableName = "";
 
-    @Override
-    public void readFromNBT(HolderLookup.Provider provider, CompoundTag tag, int guiLeft, int guiTop) {
-        super.readFromNBT(provider, tag, guiLeft, guiTop);
-        variableName = tag.getString("variableName");
-    }
+    public ActionWidgetVariable(BaseSettings baseSettings, WidgetSettings widgetSettings, String variableName) {
+        super(baseSettings, widgetSettings);
 
-    @Override
-    public CompoundTag toNBT(HolderLookup.Provider provider, int guiLeft, int guiTop) {
-        CompoundTag tag = super.toNBT(provider, guiLeft, guiTop);
-        tag.putString("variableName", variableName);
-        return tag;
+        this.variableName = variableName;
     }
 
     public String getVariableName() {
@@ -56,7 +47,7 @@ public abstract class ActionWidgetVariable<W extends AbstractWidget> extends Act
     }
 
     @Override
-    public Screen getGui(RemoteEditorScreen guiRemote) {
+    public Screen createConfigurationGui(RemoteEditorScreen guiRemote) {
         return new RemoteVariableOptionScreen<>(this, guiRemote);
     }
 

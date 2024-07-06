@@ -1,0 +1,16 @@
+{
+   "neoforge:conditions": [
+      {
+         "type": "neoforge:mod_loaded",
+         "modid": "create"
+      }
+   ],
+   "thermalResistance" : 1000,
+   "temperature" : 1700,
+   "type" : "pneumaticcraft:heat_properties",
+   "predicates" : {
+      "blaze" : "fading"
+   },
+   "description" : "pneumaticcraft.gui.jei.description.create_blaze_burner.fading",
+   "block" : "create:blaze_burner"
+}

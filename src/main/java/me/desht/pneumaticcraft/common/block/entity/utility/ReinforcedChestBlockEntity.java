@@ -24,6 +24,7 @@ import me.desht.pneumaticcraft.common.inventory.handler.ComparatorItemStackHandl
 import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
 import me.desht.pneumaticcraft.common.registry.ModBlocks;
 import me.desht.pneumaticcraft.common.registry.ModDataComponents;
+import me.desht.pneumaticcraft.common.util.ContainerWrappedItemHandler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
@@ -48,7 +49,6 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.wrapper.RecipeWrapper;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -145,7 +145,7 @@ public class ReinforcedChestBlockEntity extends AbstractPneumaticCraftBlockEntit
             if (player != null) {
                 builder.withLuck(player.getLuck()).withParameter(LootContextParams.THIS_ENTITY, player);
             }
-            RecipeWrapper invWrapper = new RecipeWrapper(inventory);
+            ContainerWrappedItemHandler invWrapper = new ContainerWrappedItemHandler(inventory);
             table.fill(invWrapper, builder.create(LootContextParamSets.CHEST), lootTableSeed);
 
             setChanged();

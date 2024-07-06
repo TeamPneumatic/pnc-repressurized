@@ -24,7 +24,9 @@ import me.desht.pneumaticcraft.api.drone.IProgWidget;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.registry.ModProgWidgetTypes;
 import me.desht.pneumaticcraft.lib.Textures;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.DyeColor;
 
@@ -35,6 +37,10 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 public class ProgWidgetLabel extends ProgWidget implements ILabel {
     public static final MapCodec<ProgWidgetLabel> CODEC = RecordCodecBuilder.mapCodec(builder ->
             baseParts(builder).apply(builder, ProgWidgetLabel::new));
+    public static final StreamCodec<RegistryFriendlyByteBuf, ProgWidgetLabel> STREAM_CODEC = StreamCodec.composite(
+            PositionFields.STREAM_CODEC, ProgWidget::getPosition,
+            ProgWidgetLabel::new
+    );
 
     public ProgWidgetLabel(PositionFields pos) {
         super(pos);
@@ -42,6 +48,11 @@ public class ProgWidgetLabel extends ProgWidget implements ILabel {
 
     public ProgWidgetLabel() {
         super(PositionFields.DEFAULT);
+    }
+
+    @Override
+    public IProgWidget copyWidget() {
+        return new ProgWidgetLabel(getPosition());
     }
 
     @Override

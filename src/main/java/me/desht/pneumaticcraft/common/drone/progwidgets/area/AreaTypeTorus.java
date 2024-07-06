@@ -32,6 +32,7 @@ import net.minecraft.util.StringRepresentable;
 import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 public class AreaTypeTorus extends AreaType {
@@ -54,6 +55,11 @@ public class AreaTypeTorus extends AreaType {
         super(ID);
         this.axis = axis;
         this.torusType = torusType;
+    }
+
+    @Override
+    public AreaType copy() {
+        return new AreaTypeTorus(axis, torusType);
     }
 
     public AreaTypeTorus() {
@@ -81,7 +87,7 @@ public class AreaTypeTorus extends AreaType {
                 // Major radius (R) is from center of torus to center of tube
                 double radMajor = Math.round(PneumaticCraftUtils.distBetween(p1.getY(), p1.getZ(), p2.getY(), p2.getZ()));
                 // Minor radius (r) is radius of tube
-                double radMinor = (double)Math.abs(p1.getX() - p2.getX());
+                double radMinor = Math.abs(p1.getX() - p2.getX());
 
                 int RSq = (int)(radMajor*radMajor);
                 int rSq = (int)(radMinor*radMinor);
@@ -124,7 +130,7 @@ public class AreaTypeTorus extends AreaType {
                 // Major radius (R) is from center of torus to center of tube
                 double radMajor = Math.round(PneumaticCraftUtils.distBetween(p1.getX(), p1.getZ(), p2.getX(), p2.getZ()));
                 // Minor radius (r) is radius of tube
-                double radMinor = (double)Math.abs(p1.getY() - p2.getY());
+                double radMinor = Math.abs(p1.getY() - p2.getY());
 
                 int RSq = (int)(radMajor*radMajor);
                 int rSq = (int)(radMinor*radMinor);
@@ -167,7 +173,7 @@ public class AreaTypeTorus extends AreaType {
                 // Major radius (R) is from center of torus to center of tube
                 double radMajor = Math.round(PneumaticCraftUtils.distBetween(p1.getX(), p1.getY(), p2.getX(), p2.getY()));
                 // Minor radius (r) is radius of tube
-                double radMinor = (double)Math.abs(p1.getZ() - p2.getZ());
+                double radMinor = Math.abs(p1.getZ() - p2.getZ());
 
                 int RSq = (int)(radMajor*radMajor);
                 int rSq = (int)(radMinor*radMinor);
@@ -213,18 +219,31 @@ public class AreaTypeTorus extends AreaType {
         widgets.add(new AreaTypeWidget.EnumSelectorField<>("pneumaticcraft.gui.progWidget.area.type.general.axis", AreaAxis.class, () -> axis, axis -> this.axis = axis));
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        AreaTypeTorus that = (AreaTypeTorus) o;
+        return axis == that.axis && torusType == that.torusType;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(axis, torusType);
+    }
+
     public enum TorusType implements ITranslatableEnum, StringRepresentable {
         FILLED("filled"), HOLLOW("hollow");
 
         private final String name;
 
         TorusType(String name) {
-            this.name = "pneumaticcraft.gui.progWidget.area.type.torus.torusType." + name;
+            this.name = name;
         }
 
         @Override
         public String getTranslationKey() {
-            return name;
+            return "pneumaticcraft.gui.progWidget.area.type.torus.torusType." + name;
         }
 
         @Override

@@ -31,10 +31,11 @@ import java.util.List;
 
 public class UpgradesDBSetup {
     private static final int MAX_VOLUME = 25;
+    public static final int MAX_INVENTORY = 35;
 
     private static final Builder DRONE_UPGRADES = new Builder()
             .with(ModUpgrades.VOLUME.get(), MAX_VOLUME)
-            .with(ModUpgrades.INVENTORY.get(), 35)
+            .with(ModUpgrades.INVENTORY.get(), MAX_INVENTORY)
             .with(ModUpgrades.ITEM_LIFE.get(), 10)
             .with(ModUpgrades.SECURITY.get(), 3)
             .with(ModUpgrades.SPEED.get(), 10)
@@ -50,21 +51,21 @@ public class UpgradesDBSetup {
             .with(ModUpgrades.ITEM_LIFE.get(), 10)
             .with(ModUpgrades.SECURITY.get(), 3)
             .with(ModUpgrades.SPEED.get(), 10)
+            .with(ModUpgrades.ARMOR.get(), 15)
             .with(ModUpgrades.STANDBY.get(), 1);
 
     private static final Builder GUARD_DRONE_UPGRADES = Builder.copyOf(BASIC_DRONE_UPGRADES)
             .with(ModUpgrades.MINIGUN.get(), 1)
-            .with(ModUpgrades.ARMOR.get(), 15)
             .with(ModUpgrades.RANGE.get(), 16)
             .with(ModUpgrades.CREATIVE.get(), 1);
 
     private static final Builder COLLECTOR_DRONE_UPGRADES = Builder.copyOf(BASIC_DRONE_UPGRADES)
             .with(ModUpgrades.MAGNET.get(), 6)
             .with(ModUpgrades.RANGE.get(), 16)
-            .with(ModUpgrades.INVENTORY.get(), 35);
+            .with(ModUpgrades.INVENTORY.get(), MAX_INVENTORY);
 
     private static final Builder LOGISTICS_DRONE_UPGRADES = Builder.copyOf(BASIC_DRONE_UPGRADES)
-            .with(ModUpgrades.INVENTORY.get(), 35);
+            .with(ModUpgrades.INVENTORY.get(), MAX_INVENTORY);
 
     public static void init() {
         initTileEntities();
@@ -228,7 +229,7 @@ public class UpgradesDBSetup {
                 .with(ModUpgrades.MAGNET.get(), 6)
                 .with(ModUpgrades.VOLUME.get(), MAX_VOLUME)
                 .with(ModUpgrades.SPEED.get(), 10)
-                .with(ModUpgrades.INVENTORY.get(), 35));
+                .with(ModUpgrades.INVENTORY.get(), MAX_INVENTORY));
         db.addApplicableUpgrades(ModBlockEntityTypes.GAS_LIFT.get(), new Builder()
                 .with(ModUpgrades.SECURITY.get(), 1)
                 .with(ModUpgrades.VOLUME.get(), MAX_VOLUME)

@@ -148,23 +148,23 @@ public class AphorismTileBlock extends AbstractPneumaticCraftBlock implements Co
     }
 
     @Override
-    public ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult brtr) {
-        BlockEntity te = world.getBlockEntity(pos);
+    public ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult brtr) {
+        BlockEntity te = level.getBlockEntity(pos);
         if (!(te instanceof AphorismTileBlockEntity teAT)) {
             return ItemInteractionResult.FAIL;
         }
 
-        if (!world.isClientSide && player.getItemInHand(hand).is(Tags.Items.DYES) && !teAT.isInvisible()) {
+        if (!level.isClientSide && player.getItemInHand(hand).is(Tags.Items.DYES) && !teAT.isInvisible()) {
             return tryDyeTile(state, player, hand, brtr, teAT);
         }
 
-        return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+        return stack.isEmpty() ? ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION : ItemInteractionResult.sidedSuccess(level.isClientSide);
     }
 
     @Override
-    protected InteractionResult useWithoutItem(BlockState state, Level world, BlockPos pos, Player player, BlockHitResult hitResult) {
-        if (world.isClientSide) {
-            return world.getBlockEntity(pos) instanceof AphorismTileBlockEntity teAT ?
+    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
+        if (level.isClientSide) {
+            return level.getBlockEntity(pos) instanceof AphorismTileBlockEntity teAT ?
                     openEditorGui(player, teAT) :
                     InteractionResult.FAIL;
         }

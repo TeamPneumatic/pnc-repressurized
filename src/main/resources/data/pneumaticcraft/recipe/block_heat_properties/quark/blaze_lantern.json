@@ -1,0 +1,15 @@
+{
+   "neoforge:conditions": [
+      {
+         "type": "neoforge:mod_loaded",
+         "modid": "quark"
+      }
+   ],
+   "type" : "pneumaticcraft:heat_properties",
+   "temperature" : 773,
+   "block" : "quark:blaze_lantern",
+   "transforms" : {
+      "cold" : "minecraft:glowstone"
+   },
+   "heatCapacity" : 9675
+}

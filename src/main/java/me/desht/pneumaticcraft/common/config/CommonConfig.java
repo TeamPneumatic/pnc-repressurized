@@ -34,6 +34,7 @@ public class CommonConfig {
         public ModConfigSpec.IntValue bandageCooldown;
         public ModConfigSpec.IntValue bandageUseTime;
         public ModConfigSpec.DoubleValue bandageHealthRestored;
+        public ModConfigSpec.DoubleValue plasticBrickDamage;
     }
     public static class Worldgen {
         public ModConfigSpec.ConfigValue<List<String>> oilWorldGenDimensionWhitelist;
@@ -230,6 +231,10 @@ public class CommonConfig {
                 .comment("Health points restored on bandage use (1 health = half a heart).")
                 .translation("pneumaticcraft.config.common.general.bandage_health_restored")
                 .defineInRange("bandage_health_restored", 6.0, 1.0, Double.MAX_VALUE);
+        general.plasticBrickDamage = builder
+                .comment("Damage inflicted by stepping on a Plastic Construction Brick™ without any protection")
+                .translation("pneumaticcraft.config.common.general.plastic_brick_damage")
+                .defineInRange("plastic_brick_damage", 3.0, 0.0, Double.MAX_VALUE);
         builder.pop();
 
         builder.push("Worldgen");
@@ -452,7 +457,7 @@ public class CommonConfig {
         minigun.armorPiercingAmmoCartridgeSize = builder
                 .comment("Armor Piercing Ammo cartridge size")
                 .translation("pneumaticcraft.config.common.minigun_properties.armor_piercing_ammo_cartridge_size")
-                .defineInRange("armor_piercing_ammo_cartridge_size", 250, 1, 30000);
+                .defineInRange("armor_piercing_ammo_cartridge_size", 500, 1, 30000);
         minigun.baseDamage = builder
                 .comment("Base bullet damage of the Sentry Gun, Handheld Minigun, and Drone Minigun, before ammo bonuses are considered")
                 .translation("pneumaticcraft.config.common.minigun_properties.base_damage")
@@ -464,7 +469,7 @@ public class CommonConfig {
         minigun.explosiveAmmoCartridgeSize = builder
                 .comment("Explosive Ammo cartridge size")
                 .translation("pneumaticcraft.config.common.minigun_properties.explosive_ammo_cartridge_size")
-                .defineInRange("explosive_ammo_cartridge_size", 125, 1, 30000);
+                .defineInRange("explosive_ammo_cartridge_size", 250, 1, 30000);
         minigun.explosiveAmmoDamageMultiplier = builder
                 .comment("Minigun Explosive Ammo damage multiplier (relative to standard ammo)")
                 .translation("pneumaticcraft.config.common.minigun_properties.explosive_ammo_damage_multiplier")
@@ -488,7 +493,7 @@ public class CommonConfig {
         minigun.freezingAmmoCartridgeSize = builder
                 .comment("Freezing Ammo cartridge size")
                 .translation("pneumaticcraft.config.common.minigun_properties.freezing_ammo_cartridge_size")
-                .defineInRange("freezing_ammo_cartridge_size", 500, 0, Integer.MAX_VALUE);
+                .defineInRange("freezing_ammo_cartridge_size", 1000, 0, Integer.MAX_VALUE);
         minigun.freezingAmmoEntityIceChance = builder
                 .comment("Freezing Ammo base percentage chance to form ice on entities which have been hit")
                 .translation("pneumaticcraft.config.common.minigun_properties.freezing_ammo_entity_ice_chance")
@@ -504,7 +509,7 @@ public class CommonConfig {
         minigun.incendiaryAmmoCartridgeSize = builder
                 .comment("Incendiary Ammo cartridge size")
                 .translation("pneumaticcraft.config.common.minigun_properties.incendiary_ammo_cartridge_size")
-                .defineInRange("incendiary_ammo_cartridge_size", 500, 1, 30000);
+                .defineInRange("incendiary_ammo_cartridge_size", 1000, 1, 30000);
         minigun.incendiaryAmmoEntityIgniteChance = builder
                 .comment("Incendiary ammo base percentage chance to ignite entities")
                 .translation("pneumaticcraft.config.common.minigun_properties.incendiary_ammo_entity_ignite_chance")
@@ -520,7 +525,7 @@ public class CommonConfig {
         minigun.standardAmmoCartridgeSize = builder
                 .comment("Standard Ammo cartridge size")
                 .translation("pneumaticcraft.config.common.minigun_properties.standard_ammo_cartridge_size")
-                .defineInRange("standard_ammo_cartridge_size", 1000, 1, 30000);
+                .defineInRange("standard_ammo_cartridge_size", 2000, 1, 30000);
         minigun.weightedAmmoAirUsageMultiplier = builder
                 .comment("Weighted Ammo air usage multiplier (relative to standard ammo)")
                 .translation("pneumaticcraft.config.common.minigun_properties.weighted_ammo_air_usage_multiplier")
@@ -528,7 +533,7 @@ public class CommonConfig {
         minigun.weightedAmmoCartridgeSize = builder
                 .comment("Weighted Ammo cartridge size")
                 .translation("pneumaticcraft.config.common.minigun_properties.weighted_ammo_cartridge_size")
-                .defineInRange("weighted_ammo_cartridge_size", 250, 1, 30000);
+                .defineInRange("weighted_ammo_cartridge_size", 500, 1, 30000);
         minigun.weightedAmmoDamageMultiplier = builder
                 .comment("Weighted Ammo damage multiplier (relative to standard ammo)")
                 .translation("pneumaticcraft.config.common.minigun_properties.weighted_ammo_damage_multiplier")

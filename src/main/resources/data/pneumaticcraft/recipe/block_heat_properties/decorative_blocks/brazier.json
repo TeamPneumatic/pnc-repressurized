@@ -1,0 +1,19 @@
+{
+   "neoforge:conditions": [
+      {
+         "type": "neoforge:mod_loaded",
+         "modid": "decorative_blocks"
+      }
+   ],
+   "transforms" : {
+      "cold" : "decorative_blocks:brazier[lit=false]"
+   },
+   "heatCapacity" : 10000,
+   "predicates" : {
+      "lit" : "true"
+   },
+   "type" : "pneumaticcraft:heat_properties",
+   "temperature" : 1700,
+   "thermalResistance" : 1000,
+   "block" : "decorative_blocks:brazier"
+}

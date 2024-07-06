@@ -1,0 +1,11 @@
+{
+  "values": [
+    "#minecraft:crops",
+    "#minecraft:saplings",
+    "#minecraft:bamboo_blocks",
+    "minecraft:red_mushroom",
+    "minecraft:brown_mushroom",
+    "minecraft:nether_wart",
+    "minecraft:sweet_berry_bush"
+  ]
+}

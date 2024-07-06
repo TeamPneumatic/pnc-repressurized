@@ -1,0 +1,16 @@
+{
+   "neoforge:conditions": [
+      {
+         "type": "neoforge:mod_loaded",
+         "modid": "create"
+      }
+   ],
+   "block" : "create:blaze_burner",
+   "description" : "pneumaticcraft.gui.jei.description.create_blaze_burner.smouldering",
+   "predicates" : {
+      "blaze" : "smouldering"
+   },
+   "type" : "pneumaticcraft:heat_properties",
+   "temperature" : 1700,
+   "thermalResistance" : 100000
+}

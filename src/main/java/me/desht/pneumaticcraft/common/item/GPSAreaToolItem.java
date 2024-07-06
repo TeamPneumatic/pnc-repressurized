@@ -33,7 +33,6 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.protocol.game.ClientboundSetCarriedItemPacket;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -82,7 +81,7 @@ public class GPSAreaToolItem extends Item implements IPositionProvider, IGPSTool
         if (player instanceof ServerPlayer sp) {
             player.displayClientMessage(Component.literal(ChatFormatting.AQUA + String.format("[%s] ", stack.getDisplayName().getString()))
                     .append(getMessageText(player.level(), pos, index)), false);
-            sp.connection.send(new ClientboundSetCarriedItemPacket(player.getInventory().selected));
+//            sp.connection.send(new ClientboundSetCarriedItemPacket(player.getInventory().selected));
         }
     }
 
@@ -140,15 +139,10 @@ public class GPSAreaToolItem extends Item implements IPositionProvider, IGPSTool
     @Nonnull
     public static ProgWidgetArea getArea(UUID playerId, ItemStack stack) {
         Validate.isTrue(stack.getItem() instanceof GPSAreaToolItem);
-//        ProgWidgetArea area = new ProgWidgetArea();
 
-        var p = SavedDroneProgram.forItemStack(stack);
-        if (!p.isEmpty() && p.getFirst() instanceof ProgWidgetArea area) {
-            area.setVariableProvider(GlobalVariableHelper.getVariableProvider(), playerId);  // allows client to read vars for rendering purposes
-            return area;
-        } else {
-            return new ProgWidgetArea();
-        }
+        ProgWidgetArea area = stack.getOrDefault(ModDataComponents.AREA_WIDGET, ProgWidgetArea.Immutable.DEFAULT).toMutable();
+        area.setVariableProvider(GlobalVariableHelper.getVariableProvider(), playerId);  // allows client to read vars for rendering purposes
+        return area;
     }
 
     public static ProgWidgetArea getArea(Player player, ItemStack stack) {
@@ -166,7 +160,7 @@ public class GPSAreaToolItem extends Item implements IPositionProvider, IGPSTool
             BlockPos newPos = GlobalVariableHelper.getPos(player.getUUID(), var);
             if (pos.isEmpty() || !pos.get().equals(newPos)) {
                 area.setPos(index, newPos);
-                gpsTool.set(ModDataComponents.SAVED_DRONE_PROGRAM, SavedDroneProgram.create(List.of(area)));
+                setArea(gpsTool, area);
             }
             return Optional.of(newPos);
         }
@@ -177,7 +171,7 @@ public class GPSAreaToolItem extends Item implements IPositionProvider, IGPSTool
     private static void setGPSLocation(Player player, ItemStack gpsTool, BlockPos pos, ProgWidgetArea area, int index, boolean updateVar) {
         if (area == null) area = getArea(player, gpsTool);
         area.setPos(index, pos);
-        gpsTool.set(ModDataComponents.SAVED_DRONE_PROGRAM, SavedDroneProgram.create(List.of(area)));
+        setArea(gpsTool, area);
 
         if (updateVar) {
             String varName = area.getVarName(index);
@@ -190,7 +184,11 @@ public class GPSAreaToolItem extends Item implements IPositionProvider, IGPSTool
     public static void setVariable(Player player, ItemStack gpsTool, String variable, int index) {
         ProgWidgetArea area = getArea(player, gpsTool);
         area.setVarName(index, variable);
-        gpsTool.set(ModDataComponents.SAVED_DRONE_PROGRAM, SavedDroneProgram.create(List.of(area)));
+        setArea(gpsTool, area);
+    }
+
+    public static void setArea(ItemStack gpsTool, ProgWidgetArea area) {
+        gpsTool.set(ModDataComponents.AREA_WIDGET, area.toImmutable());
     }
 
     public static String getVariable(Player player, ItemStack gpsTool, int index) {

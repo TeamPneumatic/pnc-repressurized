@@ -19,6 +19,7 @@ package me.desht.pneumaticcraft.common.util;
 
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.IFluidTank;
@@ -85,9 +86,8 @@ public class PNCFluidTank implements IFluidHandler, IFluidTank {
         return this;
     }
 
-    public CompoundTag writeToNBT(HolderLookup.Provider provider, CompoundTag nbt) {
-        fluidStack.save(provider, nbt);
-        return nbt;
+    public Tag writeToNBT(HolderLookup.Provider provider) {
+        return fluidStack.saveOptional(provider);
     }
 
     @Override

@@ -23,6 +23,7 @@ import me.desht.pneumaticcraft.ForcedChunks;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.block.IPneumaticWrenchable;
 import me.desht.pneumaticcraft.api.drone.*;
+import me.desht.pneumaticcraft.api.item.IProgrammable;
 import me.desht.pneumaticcraft.api.pneumatic_armor.hacking.IHackableEntity;
 import me.desht.pneumaticcraft.api.pressure.PressureHelper;
 import me.desht.pneumaticcraft.api.semiblock.SemiblockEvent;
@@ -42,7 +43,7 @@ import me.desht.pneumaticcraft.common.drone.ai.DroneGoToChargingStation;
 import me.desht.pneumaticcraft.common.drone.ai.DroneGoToOwner;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetGoToLocation;
 import me.desht.pneumaticcraft.common.drone.progwidgets.SavedDroneProgram;
-import me.desht.pneumaticcraft.common.drone.progwidgets.WidgetSerializer;
+import me.desht.pneumaticcraft.common.drone.ProgWidgetSerializer;
 import me.desht.pneumaticcraft.common.entity.semiblock.AbstractLogisticsFrameEntity;
 import me.desht.pneumaticcraft.common.item.DroneItem;
 import me.desht.pneumaticcraft.common.item.GPSToolItem;
@@ -79,6 +80,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.NbtUtils;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
@@ -175,8 +177,6 @@ public class DroneEntity extends AbstractDroneEntity implements
 
     private static final MutableComponent DEF_DRONE_NAME = Component.literal("Drone");
 
-    public static final String NBT_DRONE_COLOR = "color";
-
     private static final HashMap<Component, Integer> LASER_COLOR_MAP = new HashMap<>();
     static {
         LASER_COLOR_MAP.put(Component.literal("aureylian"), 0xff69b4);
@@ -231,7 +231,7 @@ public class DroneEntity extends AbstractDroneEntity implements
     // Although this is only used by DroneAILogistics, it is here rather than there,
     // so it can persist, for performance reasons; DroneAILogistics is a short-lived object
     private LogisticsManager logisticsManager;
-    private ItemEnchantments stackEnchants;
+    private ItemEnchantments stackEnchants = ItemEnchantments.EMPTY;
     private boolean carriedEntityAIdisabled;  // true if the drone's carried entity AI was already disabled
 
     private ChunkPos prevChunkPos = null;
@@ -1078,7 +1078,7 @@ public class DroneEntity extends AbstractDroneEntity implements
     public void addAdditionalSaveData(CompoundTag tag) {
         super.addAdditionalSaveData(tag);
 
-        WidgetSerializer.putWidgetsToNBT(progWidgets, tag);
+        tag.put(IProgrammable.NBT_WIDGETS, ProgWidgetSerializer.putWidgetsToNBT(registryAccess(), progWidgets));
         tag.put("airHandler", getAirHandler().serializeNBT());
         tag.putFloat("propSpeed", propSpeed);
         if (disabledByHacking) tag.putBoolean("disabledByHacking", true);
@@ -1117,7 +1117,7 @@ public class DroneEntity extends AbstractDroneEntity implements
     public void readAdditionalSaveData(CompoundTag tag) {
         super.readAdditionalSaveData(tag);
 
-        progWidgets = WidgetSerializer.getWidgetsFromNBT(tag);
+        progWidgets = ProgWidgetSerializer.getWidgetsFromNBT(registryAccess(), tag.getList(IProgrammable.NBT_WIDGETS, Tag.TAG_COMPOUND));
         ProgrammerBlockEntity.updatePuzzleConnections(progWidgets);
         propSpeed = tag.getFloat("propSpeed");
         disabledByHacking = tag.getBoolean("disabledByHacking");
@@ -1145,8 +1145,8 @@ public class DroneEntity extends AbstractDroneEntity implements
         if (tag.contains("owner")) ownerName = Component.literal(tag.getString("owner"));
         if (tag.contains("ownerUUID_M")) ownerUUID = new UUID(tag.getLong("ownerUUID_M"), tag.getLong("ownerUUID_L"));
 
-        ItemEnchantments.CODEC.parse(NbtOps.INSTANCE, tag.getCompound("stackEnchants"))
-                .ifSuccess(s -> stackEnchants = s);
+        stackEnchants = ItemEnchantments.CODEC.parse(NbtOps.INSTANCE, tag.getCompound("stackEnchants"))
+                .result().orElse(ItemEnchantments.EMPTY);
 
         displacedLiquids.clear();
         DISPLACED_LIQUIDS_CODEC.parse(NbtOps.INSTANCE, tag.getCompound("displacedLiquids"))

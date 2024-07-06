@@ -31,7 +31,7 @@ import java.util.Set;
 /**
  * Represents a pair of entity filters: a whitelist and a blacklist, as used by programming puzzle pieces.
  */
-class EntityFilterPair<T extends IEntityProvider & IProgWidget> {
+public class EntityFilterPair<T extends IEntityProvider & IProgWidget> {
     private final T widget;
     private final EntityFilter entityWhitelist;
     private final EntityFilter entityBlacklist;

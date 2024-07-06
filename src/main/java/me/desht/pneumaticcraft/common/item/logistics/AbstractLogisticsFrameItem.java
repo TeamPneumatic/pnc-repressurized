@@ -26,6 +26,7 @@ import me.desht.pneumaticcraft.common.semiblock.SemiblockItem;
 import me.desht.pneumaticcraft.common.util.FluidFilter;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.chat.Component;
@@ -80,7 +81,8 @@ public abstract class AbstractLogisticsFrameItem extends SemiblockItem {
     }
 
     public static List<Component> addLogisticsTooltip(ItemStack stack, TooltipContext context, List<Component> curInfo, boolean sneaking) {
-        if (stack.has(ModDataComponents.SEMIBLOCK_DATA) && stack.getItem() instanceof SemiblockItem && context.registries() != null) {
+        HolderLookup.Provider provider = context.registries();
+        if (stack.has(ModDataComponents.SEMIBLOCK_DATA) && stack.getItem() instanceof SemiblockItem && provider != null) {
             if (sneaking) {
                 CompoundTag tag = stack.getOrDefault(ModDataComponents.SEMIBLOCK_DATA, CustomData.EMPTY).copyTag();
                 if (tag.getBoolean(AbstractLogisticsFrameEntity.NBT_INVISIBLE)) {
@@ -101,7 +103,7 @@ public abstract class AbstractLogisticsFrameItem extends SemiblockItem {
                         .append(":").withStyle(ChatFormatting.YELLOW));
 
                 ItemStackHandler handler = new ItemStackHandler();
-                handler.deserializeNBT(context.registries(), tag.getCompound(AbstractLogisticsFrameEntity.NBT_ITEM_FILTERS));
+                handler.deserializeNBT(provider, tag.getCompound(AbstractLogisticsFrameEntity.NBT_ITEM_FILTERS));
                 List<ItemStack> stacks = new ArrayList<>();
                 for (int i = 0; i < handler.getSlots(); i++) {
                     if (!handler.getStackInSlot(i).isEmpty()) stacks.add(handler.getStackInSlot(i));
@@ -118,14 +120,15 @@ public abstract class AbstractLogisticsFrameItem extends SemiblockItem {
                 curInfo.add(xlate("pneumaticcraft.gui.logistics_frame." + (whitelist ? "fluidWhitelist" : "fluidBlacklist"))
                         .append(":").withStyle(ChatFormatting.YELLOW));
 
-                FluidFilter.CODEC.parse(NbtOps.INSTANCE, tag.getCompound(AbstractLogisticsFrameEntity.NBT_FLUID_FILTERS)).ifSuccess(fluidFilter -> {
-                    for (int i = 0; i < fluidFilter.size(); i++) {
-                        FluidStack fluid = fluidFilter.getFluid(i);
-                        if (!fluid.isEmpty()) {
-                            curInfo.add(bullet().append(fluid.getAmount() + "mB ").append(fluid.getHoverName()).withStyle(ChatFormatting.GOLD));
-                        }
-                    }
-                });
+                FluidFilter.CODEC.parse(provider.createSerializationContext(NbtOps.INSTANCE), tag.getCompound(AbstractLogisticsFrameEntity.NBT_FLUID_FILTERS))
+                        .ifSuccess(fluidFilter -> {
+                            for (int i = 0; i < fluidFilter.size(); i++) {
+                                FluidStack fluid = fluidFilter.getFluid(i);
+                                if (!fluid.isEmpty()) {
+                                    curInfo.add(bullet().append(fluid.getAmount() + "mB ").append(fluid.getHoverName()).withStyle(ChatFormatting.GOLD));
+                                }
+                            }
+                        });
 
                 if (curInfo.size() == tooltipSize) {
                     curInfo.add(bullet().withStyle(ChatFormatting.GOLD)

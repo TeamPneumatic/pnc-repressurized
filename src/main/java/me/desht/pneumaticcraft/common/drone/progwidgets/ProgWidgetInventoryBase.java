@@ -27,8 +27,11 @@ import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.util.CodecUtil;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import net.minecraft.Util;
-import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.core.Direction;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 
 import java.util.Arrays;
 import java.util.BitSet;
@@ -56,6 +59,10 @@ public abstract class ProgWidgetInventoryBase extends ProgWidgetAreaItemBase imp
 
     public BitSet getAccessingSides() {
         return invBaseFields.accessingSides;
+    }
+
+    public InvBaseFields invBaseFields() {
+        return invBaseFields;
     }
 
     @Override
@@ -124,43 +131,8 @@ public abstract class ProgWidgetInventoryBase extends ProgWidgetAreaItemBase imp
         }
     }
 
-//    @Override
-//    public void writeToNBT(CompoundTag tag, HolderLookup.Provider provider) {
-//        super.writeToNBT(tag, provider);
-//        for (int i = 0; i < 6; i++) {
-//            if (accessingSides.get(i)) tag.putBoolean(Direction.from3DDataValue(i).name(), true);
-//        }
-//        if (useCount) tag.putBoolean("useCount", true);
-//        tag.putInt("count", count);
-//    }
-//
-//    @Override
-//    public void readFromNBT(CompoundTag tag, HolderLookup.Provider provider) {
-//        super.readFromNBT(tag, provider);
-//        for (int i = 0; i < 6; i++) {
-//            accessingSides.set(i, tag.getBoolean(Direction.from3DDataValue(i).name()));
-//        }
-//        useCount = tag.getBoolean("useCount");
-//        count = tag.getInt("count");
-//    }
-
-    @Override
-    public void writeToPacket(RegistryFriendlyByteBuf buf) {
-        super.writeToPacket(buf);
-        buf.writeByte(getAccessingSides().toByteArray()[0]);
-        buf.writeBoolean(useCount());
-        buf.writeVarInt(getCount());
-    }
-
-    @Override
-    public void readFromPacket(RegistryFriendlyByteBuf buf) {
-        super.readFromPacket(buf);
-
-        invBaseFields = new InvBaseFields(BitSet.valueOf(new byte[] { buf.readByte() }), buf.readBoolean(), buf.readVarInt());
-    }
-
     public record InvBaseFields(BitSet accessingSides, boolean useCount, int count) {
-        private static final BitSet DEFAULT_SIDES = Util.make(new BitSet(6), bs -> bs.set(1)); // UP face
+        private static final BitSet DEFAULT_SIDES = Util.make(new BitSet(6), bs -> bs.set(Direction.UP.get3DDataValue()));
         public static final InvBaseFields DEFAULT = new InvBaseFields(DEFAULT_SIDES, false, 1);
 
         public static final Codec<InvBaseFields> CODEC = RecordCodecBuilder.create(builder -> builder.group(
@@ -168,6 +140,13 @@ public abstract class ProgWidgetInventoryBase extends ProgWidgetAreaItemBase imp
                 Codec.BOOL.optionalFieldOf("use_count", false).forGetter(InvBaseFields::useCount),
                 Codec.INT.optionalFieldOf("count", 1).forGetter(InvBaseFields::count)
         ).apply(builder, InvBaseFields::new));
+
+        public static final StreamCodec<FriendlyByteBuf, InvBaseFields> STREAM_CODEC = StreamCodec.composite(
+                CodecUtil.bitSetStreamCodec(6), InvBaseFields::accessingSides,
+                ByteBufCodecs.BOOL, InvBaseFields::useCount,
+                ByteBufCodecs.VAR_INT, InvBaseFields::count,
+                InvBaseFields::new
+        );
 
         public InvBaseFields withSides(BitSet accessingSides) {
             return new InvBaseFields(accessingSides, useCount, count);
@@ -179,6 +158,10 @@ public abstract class ProgWidgetInventoryBase extends ProgWidgetAreaItemBase imp
 
         public InvBaseFields withCount(int count) {
             return new InvBaseFields(accessingSides, useCount, count);
+        }
+
+        public InvBaseFields copy() {
+            return new InvBaseFields(BitSet.valueOf(accessingSides.toByteArray()), useCount, count);
         }
     }
 

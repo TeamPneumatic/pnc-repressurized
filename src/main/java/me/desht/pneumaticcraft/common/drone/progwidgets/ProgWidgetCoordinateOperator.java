@@ -27,15 +27,17 @@ import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.drone.ai.DroneAIManager;
 import me.desht.pneumaticcraft.common.registry.ModProgWidgetTypes;
 import me.desht.pneumaticcraft.api.misc.ITranslatableEnum;
-import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction.Axis;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.item.DyeColor;
+import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
 
 import java.util.Arrays;
 import java.util.List;
@@ -53,9 +55,16 @@ public class ProgWidgetCoordinateOperator extends ProgWidget implements IVariabl
                 AxisOptions.CODEC.optionalFieldOf("axis_options", AxisOptions.TRUE).forGetter(ProgWidgetCoordinateOperator::getAxisOptions)
         )
     ).apply(builder, ProgWidgetCoordinateOperator::new));
+    public static final StreamCodec<RegistryFriendlyByteBuf, ProgWidgetCoordinateOperator> STREAM_CODEC = StreamCodec.composite(
+            PositionFields.STREAM_CODEC, ProgWidget::getPosition,
+            ByteBufCodecs.STRING_UTF8, ProgWidgetCoordinateOperator::getVariable,
+            NeoForgeStreamCodecs.enumCodec(EnumOperator.class), ProgWidgetCoordinateOperator::getOperator,
+            AxisOptions.STREAM_CODEC, ProgWidgetCoordinateOperator::getAxisOptions,
+            ProgWidgetCoordinateOperator::new
+    );
 
     private EnumOperator operator;
-    private String variable = "";
+    private String variable;
     private DroneAIManager aiManager;
     private final AxisOptions axisOptions;
 
@@ -68,6 +77,11 @@ public class ProgWidgetCoordinateOperator extends ProgWidget implements IVariabl
         this.operator = operator;
         this.variable = variable;
         this.axisOptions = axisOptions;
+    }
+
+    @Override
+    public IProgWidget copyWidget() {
+        return new ProgWidgetCoordinateOperator(getPosition(), variable, operator, axisOptions.copy());
     }
 
     @Override
@@ -128,7 +142,7 @@ public class ProgWidgetCoordinateOperator extends ProgWidget implements IVariabl
 
     @Override
     public IProgWidget getOutputWidget(IDrone drone, List<IProgWidget> allWidgets) {
-        if (!variable.equals("")) {
+        if (!variable.isEmpty()) {
             BlockPos curPos = calculateCoordinate(this, 0, operator, axisOptions);
             aiManager.setCoordinate(variable, curPos);
         }
@@ -178,38 +192,6 @@ public class ProgWidgetCoordinateOperator extends ProgWidget implements IVariabl
     @Override
     public ResourceLocation getTexture() {
         return operator.texture;
-    }
-
-//    @Override
-//    public void writeToNBT(CompoundTag tag, HolderLookup.Provider provider) {
-//        super.writeToNBT(tag, provider);
-//        if (!variable.isEmpty()) tag.putString("variable", variable);
-//        tag.putByte("operator", (byte) operator.ordinal());
-//        axisOptions.writeToNBT(tag);
-//    }
-//
-//    @Override
-//    public void readFromNBT(CompoundTag tag, HolderLookup.Provider provider) {
-//        super.readFromNBT(tag, provider);
-//        variable = tag.getString("variable");
-//        operator = EnumOperator.values()[tag.getByte("operator")];
-//        axisOptions.readFromNBT(tag, true);
-//    }
-
-    @Override
-    public void writeToPacket(RegistryFriendlyByteBuf buf) {
-        super.writeToPacket(buf);
-        buf.writeUtf(variable);
-        buf.writeByte(operator.ordinal());
-        axisOptions.writeToBuffer(buf);
-    }
-
-    @Override
-    public void readFromPacket(RegistryFriendlyByteBuf buf) {
-        super.readFromPacket(buf);
-        variable = buf.readUtf(GlobalVariableManager.MAX_VARIABLE_LEN);
-        operator = EnumOperator.values()[buf.readByte()];
-        axisOptions.readFromBuffer(buf);
     }
 
     public EnumOperator getOperator() {

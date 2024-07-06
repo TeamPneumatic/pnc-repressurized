@@ -26,6 +26,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import org.jetbrains.annotations.ApiStatus;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
@@ -130,6 +131,9 @@ public interface IAirHandlerMachine extends IAirHandler, IManoMeasurable {
     Tag serializeNBT();
 
     void deserializeNBT(CompoundTag tag);
+
+    @ApiStatus.Internal
+    void addPendingAir(int pendingAir);
 
     /**
      * Represents a connection to a neighbouring air handler.

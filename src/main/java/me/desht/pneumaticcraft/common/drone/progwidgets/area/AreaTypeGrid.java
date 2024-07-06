@@ -31,6 +31,7 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 public class AreaTypeGrid extends AreaType {
@@ -54,6 +55,11 @@ public class AreaTypeGrid extends AreaType {
 
     public AreaTypeGrid() {
         this(0);
+    }
+
+    @Override
+    public AreaType copy() {
+        return new AreaTypeGrid(interval);
     }
 
     @Override
@@ -92,5 +98,18 @@ public class AreaTypeGrid extends AreaType {
     @Override
     public void convertFromLegacy(EnumOldAreaType oldAreaType, int typeInfo){
         interval = typeInfo;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        AreaTypeGrid that = (AreaTypeGrid) o;
+        return interval == that.interval;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(interval);
     }
 }

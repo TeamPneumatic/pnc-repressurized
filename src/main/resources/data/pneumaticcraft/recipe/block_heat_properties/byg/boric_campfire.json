@@ -1,0 +1,19 @@
+{
+   "neoforge:conditions": [
+      {
+         "type": "neoforge:mod_loaded",
+         "modid": "byg"
+      }
+   ],
+   "block" : "byg:boric_campfire",
+   "heatCapacity" : 10000,
+   "transforms" : {
+      "cold" : "byg:boric_campfire[lit=false]"
+   },
+   "type" : "pneumaticcraft:heat_properties",
+   "predicates" : {
+      "lit" : "true"
+   },
+   "thermalResistance" : 2500,
+   "temperature" : 1700
+}

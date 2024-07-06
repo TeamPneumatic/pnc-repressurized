@@ -28,6 +28,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
@@ -37,10 +38,7 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.Slot;
-import net.minecraft.world.item.CreativeModeTabs;
-import net.minecraft.world.item.EnchantedBookItem;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.*;
 import net.minecraft.world.item.TooltipFlag.Default;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentInstance;
@@ -52,6 +50,7 @@ import org.lwjgl.glfw.GLFW;
 import javax.annotation.Nonnull;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -178,6 +177,10 @@ public class ItemSearcherScreen extends AbstractContainerScreen<ItemSearcherMenu
 
     private Stream<SearchEntry> getSearchEntries() {
         if (cachedSearchEntries == null) {
+            LocalPlayer player = Minecraft.getInstance().player;
+            if (player != null) {  // should always be the case at this point
+                CreativeModeTabs.tryRebuildTabContents(player.connection.enabledFeatures(), Minecraft.getInstance().options.operatorItemsTab().get(), player.clientLevel.registryAccess());
+            }
             cachedSearchEntries = CreativeModeTabs.searchTab().getDisplayItems().stream()
                     .map(SearchEntry::new)
                     .toList();

@@ -28,14 +28,13 @@ import net.minecraft.world.entity.projectile.ThrowableProjectile;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.LeavesBlock;
 import net.minecraft.world.level.block.SnowLayerBlock;
 import net.minecraft.world.level.block.WebBlock;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
-import net.neoforged.neoforge.common.IPlantable;
 
 public class VortexEntity extends ThrowableProjectile {
     private int hitCounter = 0;
@@ -56,11 +55,11 @@ public class VortexEntity extends ThrowableProjectile {
         // onImpact() is no longer called for blocks with no collision box, like shrubs & crops, as of MC 1.16.2
         if (!level().isClientSide) {
             BlockPos.betweenClosedStream(getBoundingBox())
-                    .filter(pos -> vortexBreakable(level().getBlockState(pos).getBlock()))
+                    .filter(pos -> vortexBreakable(level(), pos))
                     .forEach(this::handleVortexCollision);
         }
 
-        setDeltaMovement(getDeltaMovement().scale(0.95));
+        setDeltaMovement(getDeltaMovement().scale(0.99));
         if (getDeltaMovement().lengthSqr() < 0.1D) {
             discard();
         }
@@ -85,24 +84,21 @@ public class VortexEntity extends ThrowableProjectile {
     }
 
     @Override
-    protected void onHit(HitResult rtr) {
-        if (rtr.getType() == HitResult.Type.ENTITY) {
-            Entity entity = ((EntityHitResult) rtr).getEntity();
+    protected void onHit(HitResult hitResult) {
+        if (hitResult instanceof EntityHitResult entityHitResult) {
+            Entity entity = entityHitResult.getEntity();
             if (entity instanceof Player player && (!player.level().isClientSide() || boostedRecently(player))) {
                 return;
             }
             // for players, doing this client-side only does work as expected
             entity.setDeltaMovement(entity.getDeltaMovement().add(this.getDeltaMovement().add(0, 0.4, 0)));
-            ItemStack shears = new ItemStack(Items.SHEARS);
-            // getOwner = getShooter
-            if (entity instanceof LivingEntity) {
-                Player shooter = getOwner() instanceof Player ? (Player) getOwner() : null;
-                if (shooter != null) shears.getItem().interactLivingEntity(shears, shooter, (LivingEntity) entity, InteractionHand.MAIN_HAND);
+            if (entity instanceof LivingEntity livingEntity && getOwner() instanceof Player shooter) {
+                ItemStack shears = new ItemStack(Items.SHEARS);
+                shears.getItem().interactLivingEntity(shears, shooter, livingEntity, InteractionHand.MAIN_HAND);
             }
-        } else if (rtr.getType() == HitResult.Type.BLOCK) {
-            BlockPos pos = ((BlockHitResult) rtr).getBlockPos();
-            Block block = level().getBlockState(pos).getBlock();
-            if (vortexBreakable(block)) {
+        } else if (hitResult instanceof BlockHitResult blockHitResult) {
+            BlockPos pos = blockHitResult.getBlockPos();
+            if (vortexBreakable(level(), pos)) {
                 if (!level().isClientSide) {
                     handleVortexCollision(pos);
                 }
@@ -110,8 +106,9 @@ public class VortexEntity extends ThrowableProjectile {
                 discard();
             }
         }
-        hitCounter++;
-        if (hitCounter > 20) discard();
+        if (++hitCounter > 20) {
+            discard();
+        }
     }
 
     private boolean boostedRecently(Player player) {
@@ -127,8 +124,12 @@ public class VortexEntity extends ThrowableProjectile {
         setDeltaMovement(getDeltaMovement().scale(0.85D));
     }
 
-    private boolean vortexBreakable(Block block) {
-        return block instanceof IPlantable || block instanceof LeavesBlock || block instanceof WebBlock || block instanceof SnowLayerBlock;
+    private boolean vortexBreakable(Level level, BlockPos pos) {
+        BlockState state = level.getBlockState(pos);
+        return !state.isAir() && state.getDestroySpeed(level, pos) == 0f
+                || state.getBlock() instanceof LeavesBlock
+                || state.getBlock() instanceof WebBlock
+                || state.getBlock() instanceof SnowLayerBlock;
     }
 
     @Override

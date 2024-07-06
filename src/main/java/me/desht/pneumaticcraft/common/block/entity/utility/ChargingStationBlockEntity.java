@@ -81,7 +81,6 @@ public class ChargingStationBlockEntity extends AbstractAirHandlingBlockEntity i
     private ItemStack chargingStackSynced = ItemStack.EMPTY;  // the item being charged, minus any nbt - for client display purposes
 
     private ChargingStationHandler itemHandler = new ChargingStationHandler();  // holds the item being charged
-//    private final LazyOptional<IItemHandler> inventoryCap = LazyOptional.of(() -> itemHandler);
 
     private ChargeableItemHandler chargeableInventory;  // inventory of the item being charged
 
@@ -217,9 +216,8 @@ public class ChargingStationBlockEntity extends AbstractAirHandlingBlockEntity i
 
         switch (tag) {
             case "open_upgrades":
-                if (getChargingStack().getItem() instanceof IChargeableContainerProvider) {
-                    MenuProvider provider = ((IChargeableContainerProvider) getChargingStack().getItem()).getContainerProvider(this);
-                    player.openMenu(provider, getBlockPos());
+                if (getChargingStack().getItem() instanceof IChargeableContainerProvider ccp) {
+                    player.openMenu(ccp.getContainerProvider(this), getBlockPos());
                 }
                 break;
             case "close_upgrades":

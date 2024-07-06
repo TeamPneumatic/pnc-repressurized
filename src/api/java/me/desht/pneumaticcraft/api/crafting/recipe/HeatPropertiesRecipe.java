@@ -17,9 +17,13 @@
 
 package me.desht.pneumaticcraft.api.crafting.recipe;
 
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
+import net.minecraft.commands.arguments.blocks.BlockStateParser;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -33,6 +37,7 @@ import net.neoforged.neoforge.fluids.FluidType;
 
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 
 /**
  * Recipes which define the heat properties of a block; its temperature, thermal resistance, heat capacity, and the
@@ -156,13 +161,24 @@ public abstract class HeatPropertiesRecipe extends PneumaticCraftRecipe {
                 new ItemStack(getBlock()).getHoverName();
     }
 
+    private static final Codec<BlockState> BLOCKSTATE_STRING_CODEC = Codec.STRING.comapFlatMap(
+            string -> {
+                try {
+                    return DataResult.success(BlockStateParser.parseForBlock(BuiltInRegistries.BLOCK.asLookup(), string, false).blockState());
+                } catch (CommandSyntaxException e) {
+                    return DataResult.error(() -> "invalid blockstate definition: " + string);
+                }
+            },
+            BlockStateParser::serialize
+    );
+
     public record Transforms(Optional<BlockState> hot, Optional<BlockState> cold,
                              Optional<BlockState> hotFlowing, Optional<BlockState> coldFlowing) {
         public static final Codec<Transforms> CODEC = RecordCodecBuilder.create(builder -> builder.group(
-                BlockState.CODEC.optionalFieldOf("hot").forGetter(Transforms::hot),
-                BlockState.CODEC.optionalFieldOf("cold").forGetter(Transforms::cold),
-                BlockState.CODEC.optionalFieldOf("hot_flowing").forGetter(Transforms::hotFlowing),
-                BlockState.CODEC.optionalFieldOf("cold_flowing").forGetter(Transforms::coldFlowing)
+                BLOCKSTATE_STRING_CODEC.optionalFieldOf("hot").forGetter(Transforms::hot),
+                BLOCKSTATE_STRING_CODEC.optionalFieldOf("cold").forGetter(Transforms::cold),
+                BLOCKSTATE_STRING_CODEC.optionalFieldOf("hot_flowing").forGetter(Transforms::hotFlowing),
+                BLOCKSTATE_STRING_CODEC.optionalFieldOf("cold_flowing").forGetter(Transforms::coldFlowing)
         ).apply(builder, Transforms::new));
         public static final StreamCodec<RegistryFriendlyByteBuf, Transforms> STREAM_CODEC = StreamCodec.composite(
                 ByteBufCodecs.optional(ByteBufCodecs.fromCodec(BlockState.CODEC)), Transforms::hot,
@@ -170,6 +186,11 @@ public abstract class HeatPropertiesRecipe extends PneumaticCraftRecipe {
                 ByteBufCodecs.optional(ByteBufCodecs.fromCodec(BlockState.CODEC)), Transforms::hotFlowing,
                 ByteBufCodecs.optional(ByteBufCodecs.fromCodec(BlockState.CODEC)), Transforms::coldFlowing,
                 Transforms::new
+        );
+
+        public static final Transforms NONE = new Transforms(
+                Optional.empty(), Optional.empty(),
+                Optional.empty(), Optional.empty()
         );
     }
 }

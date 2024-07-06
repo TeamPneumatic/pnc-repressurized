@@ -1,0 +1,19 @@
+{
+   "neoforge:conditions": [
+      {
+         "type": "neoforge:mod_loaded",
+         "modid": "valhelsia_structures"
+      }
+   ],
+   "temperature" : 1700,
+   "thermalResistance" : 1000,
+   "predicates" : {
+      "lit" : "true"
+   },
+   "type" : "pneumaticcraft:heat_properties",
+   "transforms" : {
+      "cold" : "valhelsia_structures:brazier[lit=false]"
+   },
+   "heatCapacity" : 10000,
+   "block" : "valhelsia_structures:brazier"
+}

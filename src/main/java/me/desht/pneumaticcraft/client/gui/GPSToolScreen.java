@@ -84,7 +84,7 @@ public class GPSToolScreen extends AbstractPneumaticCraftScreen {
         for (int i = 0; i < 3; i++) {
             int min = i == 1 ? ClientUtils.getClientLevel().getMinBuildHeight(): Integer.MIN_VALUE;
             int max = i == 1 ? ClientUtils.getClientLevel().getMaxBuildHeight() : Integer.MAX_VALUE;
-            textFields[i] = new WidgetTextFieldNumber(font, xMiddle - TEXTFIELD_WIDTH / 2, yMiddle - 15 + i * 22, TEXTFIELD_WIDTH, font.lineHeight + 2)
+            textFields[i] = new WidgetTextFieldNumber(font, xMiddle - TEXTFIELD_WIDTH / 2, yMiddle - 16 + i * 22, TEXTFIELD_WIDTH, font.lineHeight + 3)
                     .setValue(oldText[i])
                     .setRange(min, max)
                     .setAdjustments(1, 10);
@@ -104,7 +104,7 @@ public class GPSToolScreen extends AbstractPneumaticCraftScreen {
         }
 
         if (variableField != null) oldVarName = variableField.getValue();
-        variableField = new WidgetTextField(font, xMiddle - 50, yMiddle + 60, 100, font.lineHeight + 1);
+        variableField = new WidgetTextField(font, xMiddle - 50, yMiddle + 59, 100, font.lineHeight + 3);
         playerGlobal = !oldVarName.startsWith("%");
         oldVarName = GlobalVariableHelper.stripVarPrefix(oldVarName);
         variableField.setFilter(s -> VAR_PATTERN.matcher(s).matches());

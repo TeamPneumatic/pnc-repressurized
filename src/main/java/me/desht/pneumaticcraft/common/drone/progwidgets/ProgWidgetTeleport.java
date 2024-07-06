@@ -26,17 +26,30 @@ import me.desht.pneumaticcraft.common.drone.ai.DroneAITeleport;
 import me.desht.pneumaticcraft.common.entity.drone.DroneEntity;
 import me.desht.pneumaticcraft.common.registry.ModProgWidgetTypes;
 import me.desht.pneumaticcraft.lib.Textures;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.goal.Goal;
 
 public class ProgWidgetTeleport extends ProgWidgetGoToLocation {
     public static final MapCodec<ProgWidgetTeleport> CODEC = RecordCodecBuilder.mapCodec(builder ->
         baseParts(builder).apply(builder, ProgWidgetTeleport::new));
+    public static final StreamCodec<RegistryFriendlyByteBuf, ProgWidgetTeleport> STREAM_CODEC = StreamCodec.composite(
+            PositionFields.STREAM_CODEC, ProgWidget::getPosition,
+            ProgWidgetTeleport::new
+    );
 
     private ProgWidgetTeleport(PositionFields pos) {
+        super(pos, false);
     }
 
     public ProgWidgetTeleport() {
+        this(PositionFields.DEFAULT);
+    }
+
+    @Override
+    public IProgWidget copyWidget() {
+        return new ProgWidgetTeleport(getPosition());
     }
 
     @Override

@@ -20,7 +20,9 @@
               "function": "minecraft:copy_components",
               "include": [
                 "pneumaticcraft:be_saved_rc",
-                "pneumaticcraft:be_saved_sideconfig"
+                "pneumaticcraft:be_saved_sideconfig",
+                "pneumaticcraft:air",
+                "pneumaticcraft:upgrades"
               ],
               "source": "block_entity"
             }

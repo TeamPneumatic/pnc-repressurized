@@ -25,6 +25,8 @@ import me.desht.pneumaticcraft.api.drone.IProgWidget;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.registry.ModProgWidgetTypes;
 import me.desht.pneumaticcraft.lib.Textures;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.item.DyeColor;
@@ -35,6 +37,10 @@ import java.util.List;
 public class ProgWidgetWait extends ProgWidget {
     public static final MapCodec<ProgWidgetWait> CODEC = RecordCodecBuilder.mapCodec(builder ->
             baseParts(builder).apply(builder, ProgWidgetWait::new));
+    public static final StreamCodec<RegistryFriendlyByteBuf, ProgWidgetWait> STREAM_CODEC = StreamCodec.composite(
+            PositionFields.STREAM_CODEC, ProgWidget::getPosition,
+            ProgWidgetWait::new
+    );
 
     public ProgWidgetWait(PositionFields pos) {
         super(pos);
@@ -42,6 +48,11 @@ public class ProgWidgetWait extends ProgWidget {
 
     public ProgWidgetWait() {
         super(PositionFields.DEFAULT);
+    }
+
+    @Override
+    public IProgWidget copyWidget() {
+        return new ProgWidgetWait(getPosition());
     }
 
     @Override

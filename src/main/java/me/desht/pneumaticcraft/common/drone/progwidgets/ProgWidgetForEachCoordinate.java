@@ -27,11 +27,12 @@ import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.drone.ai.DroneAIForEachCoordinate;
 import me.desht.pneumaticcraft.common.registry.ModProgWidgetTypes;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.item.DyeColor;
@@ -47,8 +48,13 @@ public class ProgWidgetForEachCoordinate extends ProgWidgetAreaItemBase implemen
             baseParts(builder).and(
                     Codec.STRING.optionalFieldOf("variable", "").forGetter(ProgWidgetForEachCoordinate::getVariable)
             ).apply(builder, ProgWidgetForEachCoordinate::new));
+    public static final StreamCodec<RegistryFriendlyByteBuf, ProgWidgetForEachCoordinate> STREAM_CODEC = StreamCodec.composite(
+            PositionFields.STREAM_CODEC, ProgWidget::getPosition,
+            ByteBufCodecs.STRING_UTF8, ProgWidgetForEachCoordinate::getVariable,
+            ProgWidgetForEachCoordinate::new
+    );
 
-    private String elementVariable = "";
+    private String elementVariable;
     private final Set<BlockPos> traversedPositions = new HashSet<>();
     private DroneAIForEachCoordinate ai;
 
@@ -59,6 +65,11 @@ public class ProgWidgetForEachCoordinate extends ProgWidgetAreaItemBase implemen
 
     public ProgWidgetForEachCoordinate() {
         this(PositionFields.DEFAULT, "");
+    }
+
+    @Override
+    public IProgWidget copyWidget() {
+        return new ProgWidgetForEachCoordinate(getPosition(), elementVariable);
     }
 
     @Override
@@ -92,30 +103,6 @@ public class ProgWidgetForEachCoordinate extends ProgWidgetAreaItemBase implemen
         elementVariable = variable;
     }
 
-//    @Override
-//    public void writeToNBT(CompoundTag tag, HolderLookup.Provider provider) {
-//        if (!elementVariable.isEmpty()) tag.putString("variable", elementVariable);
-//        super.writeToNBT(tag, provider);
-//    }
-//
-//    @Override
-//    public void readFromNBT(CompoundTag tag, HolderLookup.Provider provider) {
-//        elementVariable = tag.getString("variable");
-//        super.readFromNBT(tag, provider);
-//    }
-
-    @Override
-    public void writeToPacket(RegistryFriendlyByteBuf buf) {
-        super.writeToPacket(buf);
-        buf.writeUtf(elementVariable);
-    }
-
-    @Override
-    public void readFromPacket(RegistryFriendlyByteBuf buf) {
-        super.readFromPacket(buf);
-        elementVariable = buf.readUtf(GlobalVariableManager.MAX_VARIABLE_LEN);
-    }
-
     @Override
     public WidgetDifficulty getDifficulty() {
         return WidgetDifficulty.ADVANCED;
@@ -133,7 +120,7 @@ public class ProgWidgetForEachCoordinate extends ProgWidgetAreaItemBase implemen
             BlockPos pos = ai.getCurCoord();
             if (pos != null) {
                 aiManager.setCoordinate(elementVariable, pos);
-                return ProgWidgetJump.jumpToLabel(drone, allWidgets, locations.get(0));
+                return ProgWidgetJump.jumpToLabel(drone, allWidgets, locations.getFirst());
             }
         }
         traversedPositions.clear();

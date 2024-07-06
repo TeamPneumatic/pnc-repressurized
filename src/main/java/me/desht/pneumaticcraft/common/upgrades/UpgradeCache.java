@@ -83,20 +83,6 @@ public class UpgradeCache {
         holder.onUpgradesChanged();
     }
 
-    public CompoundTag toNBT() {
-        IItemHandler handler = holder.getUpgradeHandler();
-        CompoundTag tag = new CompoundTag();
-        for (int i = 0; i < handler.getSlots(); i++) {
-            ItemStack stack = handler.getStackInSlot(i);
-            if (stack.getItem() instanceof IUpgradeItem upgradeItem) {
-                String key = PneumaticCraftUtils.modDefaultedString(upgradeItem.getUpgradeType().getId());
-                int count = upgradeItem.getUpgradeTier() * stack.getCount();
-                tag.put(key, IntTag.valueOf(count));
-            }
-        }
-        return tag;
-    }
-
     private int largestID() {
         int max = 0;
         for (PNCUpgrade upgrade : PneumaticRegistry.getInstance().getUpgradeRegistry().getKnownUpgrades()) {

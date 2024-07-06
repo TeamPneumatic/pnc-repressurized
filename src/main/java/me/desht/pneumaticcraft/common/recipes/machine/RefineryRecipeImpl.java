@@ -106,14 +106,14 @@ public class RefineryRecipeImpl extends RefineryRecipe {
 					TemperatureRange.CODEC
 							.optionalFieldOf("temperature", TemperatureRange.min(373))
 							.forGetter(RefineryRecipe::getOperatingTemp),
-					CodecUtil.listWithSizeBound(FluidStack.CODEC.listOf(), 2, RefineryRecipe.MAX_OUTPUTS)
+					FluidStack.CODEC.listOf(2, RefineryRecipe.MAX_OUTPUTS)
 							.fieldOf("outputs")
 							.forGetter(RefineryRecipe::getOutputs)
 			).apply(builder, factory::create));
 			this.streamCodec = StreamCodec.composite(
 					SizedFluidIngredient.STREAM_CODEC, RefineryRecipe::getInput,
 					TemperatureRange.STREAM_CODEC, RefineryRecipe::getOperatingTemp,
-					FluidStack.STREAM_CODEC.apply(ByteBufCodecs.list()), RefineryRecipe::getOutputs,
+					FluidStack.OPTIONAL_STREAM_CODEC.apply(ByteBufCodecs.list()), RefineryRecipe::getOutputs,
 					factory::create
 			);
 		}

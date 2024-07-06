@@ -17,59 +17,53 @@
 
 package me.desht.pneumaticcraft.client.gui;
 
-import com.google.common.base.CaseFormat;
-import com.google.gson.*;
-import com.mojang.serialization.JsonOps;
-import me.desht.pneumaticcraft.api.drone.IProgWidget;
-import me.desht.pneumaticcraft.api.drone.area.AreaType;
-import me.desht.pneumaticcraft.api.drone.area.EnumOldAreaType;
-import me.desht.pneumaticcraft.api.lib.Names;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetCheckBox;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTextField;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidget;
-import me.desht.pneumaticcraft.common.util.LegacyAreaWidgetConverter;
-import me.desht.pneumaticcraft.common.util.NBTToJsonConverter;
 import me.desht.pneumaticcraft.common.util.PastebinHandler;
+import me.desht.pneumaticcraft.common.util.legacyconv.ConversionType;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class PastebinScreen extends AbstractPneumaticCraftScreen {
+    private final ConversionType conversionType;
     private WidgetTextField usernameBox, passwordBox;
     private WidgetTextField pastebinBox;
-    private WidgetCheckBox prettyCB;
-    private final CompoundTag pastingNBT;
     private final Screen parentScreen;
     private Component statusMessage = Component.empty();
     private Component lastMessage = Component.empty();
     private int messageTimer;
     private EnumState state = EnumState.NONE;
-    private List<IProgWidget> outputWidgets;
     boolean shouldMerge;
 
-    public static final int JSON_VERSION = 3;
+    private final JsonElement input;
+    private JsonElement output;
 
     private enum EnumState {
         NONE, GETTING, PUTTING, LOGIN, LOGOUT
     }
 
-    PastebinScreen(Screen parentScreen, CompoundTag tag) {
+    PastebinScreen(Screen parentScreen, JsonElement input, ConversionType conversionType) {
         super(Component.literal("Pastebin"));
+
         xSize = 183;
         ySize = 202;
-        this.pastingNBT = tag;
+
+        this.conversionType = conversionType;
         this.parentScreen = parentScreen;
+        this.input = input;
     }
 
     @Override
@@ -108,9 +102,11 @@ public class PastebinScreen extends AbstractPneumaticCraftScreen {
         };
         addRenderableWidget(pastebinBox);
 
-        WidgetButtonExtended pasteButton = new WidgetButtonExtended(guiLeft + 31, guiTop + 78, 120, 20, xlate("pneumaticcraft.gui.pastebin.button.upload"), b -> sendToPastebin());
+        WidgetButtonExtended pasteButton = new WidgetButtonExtended(guiLeft + 31, guiTop + 78, 120, 20,
+                xlate("pneumaticcraft.gui.pastebin.button.upload"), b -> sendToPastebin());
         addRenderableWidget(pasteButton);
-        WidgetButtonExtended getButton = new WidgetButtonExtended(guiLeft + 31, guiTop + 167, 120, 20, xlate("pneumaticcraft.gui.pastebin.button.get"), b -> getFromPastebin());
+        WidgetButtonExtended getButton = new WidgetButtonExtended(guiLeft + 31, guiTop + 167, 120, 20,
+                xlate("pneumaticcraft.gui.pastebin.button.get"), b -> getFromPastebin());
         addRenderableWidget(getButton);
 
         WidgetButtonExtended putInClipBoard = new WidgetButtonExtended(guiLeft + 8, guiTop + 78, 20, 20, Component.empty(), b -> putToClipboard());
@@ -121,12 +117,6 @@ public class PastebinScreen extends AbstractPneumaticCraftScreen {
         retrieveFromClipboard.setRenderedIcon(Textures.GUI_PASTE_ICON_LOCATION);
         retrieveFromClipboard.setTooltipText(xlate("pneumaticcraft.gui.pastebin.button.loadFromClipboard"));
         addRenderableWidget(retrieveFromClipboard);
-
-        prettyCB = new WidgetCheckBox(0, guiTop + 102, 0xFF404040, xlate("pneumaticcraft.gui.pastebin.pretty"),
-                b -> shouldMerge = b.checked);
-        prettyCB.setX(guiLeft + (170 - prettyCB.getWidth()));
-        prettyCB.setTooltip(Tooltip.create(xlate("pneumaticcraft.gui.pastebin.pretty.tooltip")));
-        addRenderableWidget(prettyCB);
 
         if (parentScreen instanceof ProgrammerScreen) {
             WidgetCheckBox mergeCB = new WidgetCheckBox(0, guiTop + 155, 0xFF404040, xlate("pneumaticcraft.gui.pastebin.merge"),
@@ -139,8 +129,8 @@ public class PastebinScreen extends AbstractPneumaticCraftScreen {
         addLabel(xlate("pneumaticcraft.gui.pastebin.pastebinLink"), guiLeft + 10, guiTop + 120);
     }
 
-    public List<IProgWidget> getOutputWidgets() {
-        return outputWidgets;
+    public JsonElement getOutput() {
+        return output;
     }
 
     private void login() {
@@ -155,20 +145,20 @@ public class PastebinScreen extends AbstractPneumaticCraftScreen {
     }
 
     private void sendToPastebin() {
-        PastebinHandler.put(new NBTToJsonConverter(pastingNBT).convert(prettyCB.checked));
+        PastebinHandler.put(input.toString());
         state = EnumState.PUTTING;
         statusMessage = xlate("pneumaticcraft.gui.pastebin.uploadingToPastebin");
+    }
+
+    private void putToClipboard() {
+        minecraft.keyboardHandler.setClipboard(input.toString());
+        statusMessage = xlate("pneumaticcraft.gui.pastebin.clipboardSetToContents");
     }
 
     private void getFromPastebin() {
         PastebinHandler.get(pastebinBox.getValue());
         state = EnumState.GETTING;
         statusMessage = xlate("pneumaticcraft.gui.pastebin.retrievingFromPastebin");
-    }
-
-    private void putToClipboard() {
-        minecraft.keyboardHandler.setClipboard(new NBTToJsonConverter(pastingNBT).convert(prettyCB.checked));
-        statusMessage = xlate("pneumaticcraft.gui.pastebin.clipboardSetToContents");
     }
 
     private void getFromClipboard() {
@@ -232,111 +222,24 @@ public class PastebinScreen extends AbstractPneumaticCraftScreen {
     private void readFromString(String string) {
         try {
             JsonObject json = JsonParser.parseString(string).getAsJsonObject();
-            int version = determineVersion(json);
-            if (version < JSON_VERSION) {
-                for (int i = version; i < JSON_VERSION; i++) {
-                    convertLegacy(json, i);
+            int version = conversionType.determineVersion(json);
+
+            if (version < ProgWidget.JSON_VERSION) {
+                for (int i = version; i < ProgWidget.JSON_VERSION; i++) {
+                    conversionType.convertLegacy(json, i);
                 }
-            } else if (version > JSON_VERSION) {
-                throw new JsonSyntaxException("unexpected progwidget version " + version + ": latest is " + JSON_VERSION);
-            }
-            JsonArray widgets = json.getAsJsonObject().getAsJsonArray("widgets");
-
-            outputWidgets = new ArrayList<>();
-            for (JsonElement element : widgets) {
-                ProgWidget.CODEC.parse(JsonOps.INSTANCE, element)
-                        .ifSuccess(widget -> outputWidgets.add(widget));
+            } else if (version > ProgWidget.JSON_VERSION) {
+                throw new JsonSyntaxException("unexpected input version " + version + ": current is " + ProgWidget.JSON_VERSION);
             }
 
-//            outputTag = new JsonToNBTConverter(string).convert();
-//            if (outputTag.contains("widgets")) {
-//                doLegacyConversion(outputTag);
-//            }
+            output = json;
+
             setTempMessage(xlate("pneumaticcraft.gui.pastebin.retrievedFromPastebin"));
         } catch (Exception e) {
             setTempMessage(xlate("pneumaticcraft.gui.pastebin.invalidFormattedPastebin").withStyle(ChatFormatting.GOLD));
         }
     }
 
-    private int determineVersion(JsonObject json) {
-        if (json.has("version")) {
-            // 1.20.6 and newer
-            return json.get("version").getAsInt();
-        } else if (json.has("pneumaticcraft:progWidgets")) {
-            // 1.14 - 1.20
-            return 2;
-        } else if (json.has("widgets")) {
-            // 1.12.2 and older
-            return 1;
-        } else {
-            throw new JsonSyntaxException("can't determine saved progwidget version!");
-        }
-    }
-
-    private void convertLegacy(JsonObject json, int oldVersion) {
-        switch (oldVersion) {
-            case 1 -> convertFromLegacy(json);
-            case 2 -> convertToModern(json);
-            default -> {
-            }
-        }
-    }
-
-    private void convertToModern(JsonObject json) {
-        // TODO
-    }
-
-
-    /**
-     * Handle legacy conversion: PNC 1.12.2 and older used a simple (mixed case) widget string
-     * but now ProgWidgets are registry entries and use a ResourceLocation.  Also, convert any
-     * Area widgets from the old-style format if necessary.
-     *
-     * @param json the legacy data to convert
-     */
-    private void convertFromLegacy(JsonObject json) {
-        JsonObject sub = json.getAsJsonObject("widgets");
-        JsonArray values = sub.getAsJsonArray("value");
-
-        for (JsonElement el : values) {
-            JsonObject value = el.getAsJsonObject();
-            JsonObject nameObj = value.getAsJsonObject("name");
-            String newName = CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, nameObj.get("value").getAsString());
-            nameObj.addProperty("value", Names.MOD_ID + ":" + newName);
-            if (newName.equals("area")) {
-                JsonObject typeObj = value.getAsJsonObject("type");
-                EnumOldAreaType oldType = EnumOldAreaType.values()[typeObj.get("value").getAsInt()];
-                AreaType newType = LegacyAreaWidgetConverter.convertFromLegacyFormat(oldType, value.getAsJsonObject("typeInfo").get("value").getAsInt());
-                typeObj.addProperty("type", 8);
-                typeObj.addProperty("value", newType.getName());
-            }
-        }
-
-        json.add("pneumaticcraft:progWidgets", values);
-        json.remove("widgets");
-    }
-//
-//    private void doLegacyConversion(CompoundTag nbt) {
-//        ListTag l = nbt.getList("widgets", Tag.TAG_COMPOUND);
-//        int areaConversions = 0;
-//        for (int i = 0; i < l.size(); i++) {
-//            CompoundTag subTag = l.getCompound(i);
-//            String newName = CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, subTag.getString("name"));
-//            subTag.putString("name", Names.MOD_ID + ":" + newName);
-//            if (newName.equals("area")) {
-//                EnumOldAreaType oldType = EnumOldAreaType.values()[subTag.getInt("type")];
-//                AreaType newType = LegacyAreaWidgetConverter.convertFromLegacyFormat(oldType, subTag.getInt("typeInfo"));
-//                subTag.putString("type", newType.getName());
-//                newType.writeToNBT(subTag);
-//                areaConversions++;
-//            }
-//        }
-//        nbt.put(IProgrammable.NBT_WIDGETS, l);
-//        nbt.remove("widgets");
-//        if (areaConversions > 0) {
-//            Log.info("Pastebin import: converted {} legacy area widgets", areaConversions);
-//        }
-//    }
 
     @Override
     public void render(GuiGraphics graphics, int x, int y, float partialTicks) {
@@ -365,4 +268,5 @@ public class PastebinScreen extends AbstractPneumaticCraftScreen {
     public boolean isPauseScreen() {
         return false;
     }
+
 }

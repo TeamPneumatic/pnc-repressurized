@@ -26,13 +26,18 @@ import me.desht.pneumaticcraft.common.upgrades.UpgradableItemUtils;
 import net.minecraft.world.item.ItemStack;
 
 public class ChargeableItemHandler extends BaseItemStackHandler {
+    private boolean inInit = true;
+
     public ChargeableItemHandler(ChargingStationBlockEntity te) {
         super(te, UpgradableItemUtils.UPGRADE_INV_SIZE);
 
-        if (!getChargingStack().has(ModDataComponents.ITEM_UPGRADES)) {
-            writeToChargingStack();
-        }
+//        if (!getChargingStack().has(ModDataComponents.ITEM_UPGRADES)) {
+//            writeToChargingStack();
+//        }
+
         readFromChargingStack();
+
+        inInit = false;
     }
 
     @Override
@@ -46,7 +51,9 @@ public class ChargeableItemHandler extends BaseItemStackHandler {
     }
 
     public void writeToChargingStack() {
-        UpgradableItemUtils.setUpgrades(getChargingStack(), this);
+        if (!inInit) {
+            UpgradableItemUtils.setUpgrades(getChargingStack(), this);
+        }
     }
 
     private void readFromChargingStack() {

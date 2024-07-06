@@ -97,7 +97,12 @@ public record PacketPlayMovingSound(MovingSounds.Sound sound, MovingSoundFocus s
 
         public void handle(MovingSounds.Sound sound) {
             entityOrPos
-                    .ifLeft(e -> MovingSounds.playMovingSound(sound, e))
+                    .ifLeft(id -> {
+                        Entity e = ClientUtils.getClientLevel().getEntity(id);
+                        if (e != null) {
+                            MovingSounds.playMovingSound(sound, e);
+                        }
+                    })
                     .ifRight(pos -> MovingSounds.playMovingSound(sound, pos));
         }
     }

@@ -65,15 +65,21 @@ public class ModItemTagsProvider extends ItemTagsProvider {
         appendToTag(ItemTags.DOORS, PneumaticCraftTags.Items.DOORS);
         appendToTag(Tags.Items.STORAGE_BLOCKS, PneumaticCraftTags.Items.STORAGE_BLOCKS_COMPRESSED_IRON);
         appendToTag(Tags.Items.CHESTS, PneumaticCraftTags.Items.CHESTS);
-        appendToTag(Tags.Items.STONES, PneumaticCraftTags.Items.REINFORCED_STONE);
-        appendToTag(Tags.Items.STONES, PneumaticCraftTags.Items.COMPRESSED_STONE);
-        appendToTag(ItemTags.STONE_BRICKS, PneumaticCraftTags.Items.REINFORCED_STONE_BRICKS);
-        appendToTag(ItemTags.STONE_BRICKS, PneumaticCraftTags.Items.COMPRESSED_STONE_BRICKS);
+        appendToTag(Tags.Items.STONES, PneumaticCraftTags.Items.REINFORCED_STONE, PneumaticCraftTags.Items.COMPRESSED_STONE);
+        appendToTag(ItemTags.STONE_BRICKS, PneumaticCraftTags.Items.REINFORCED_STONE_BRICKS, PneumaticCraftTags.Items.COMPRESSED_STONE_BRICKS);
 
         addItemsToTag(PneumaticCraftTags.Items.PLASTIC_SHEETS, ModItems.PLASTIC);
         addItemsToTag(PneumaticCraftTags.Items.FLOUR, ModItems.WHEAT_FLOUR);
         addItemsToTag(Tags.Items.NUGGETS, ModItems.COPPER_NUGGET);
         addItemsToTag(PneumaticCraftTags.Items.NUGGETS_COPPER, ModItems.COPPER_NUGGET);
+        addItemsToTag(ItemTags.DYEABLE,
+                ModItems.PNEUMATIC_HELMET, ModItems.PNEUMATIC_CHESTPLATE, ModItems.PNEUMATIC_LEGGINGS, ModItems.PNEUMATIC_BOOTS
+        );
+
+        addItemsToTag(ItemTags.HEAD_ARMOR, ModItems.COMPRESSED_IRON_HELMET, ModItems.PNEUMATIC_HELMET);
+        addItemsToTag(ItemTags.CHEST_ARMOR, ModItems.COMPRESSED_IRON_CHESTPLATE, ModItems.PNEUMATIC_CHESTPLATE);
+        addItemsToTag(ItemTags.LEG_ARMOR, ModItems.COMPRESSED_IRON_LEGGINGS, ModItems.PNEUMATIC_LEGGINGS);
+        addItemsToTag(ItemTags.FOOT_ARMOR, ModItems.COMPRESSED_IRON_BOOTS, ModItems.PNEUMATIC_BOOTS);
 
         appendToTag(PneumaticCraftTags.Items.WIRING, Tags.Items.NUGGETS_GOLD);
         appendToTag(PneumaticCraftTags.Items.WIRING, PneumaticCraftTags.Items.NUGGETS_COPPER);

@@ -54,7 +54,9 @@ public enum DroneRegistry implements IDroneRegistry {
     @Override
     public void registerCustomBlockInteractor(ICustomBlockInteract interactor) {
         ModProgWidgetTypes.PROG_WIDGETS_DEFERRED.register(interactor.getID(),
-                () -> ProgWidgetType.createType(() -> new ProgWidgetCustomBlockInteract().setInteractor(interactor), ProgWidgetCustomBlockInteract.CODEC));
+                () -> ProgWidgetType.createType(() -> new ProgWidgetCustomBlockInteract().setInteractor(interactor),
+                        ProgWidgetCustomBlockInteract.CODEC, ProgWidgetCustomBlockInteract.STREAM_CODEC)
+        );
     }
 
     @Override

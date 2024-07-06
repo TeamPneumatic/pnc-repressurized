@@ -26,6 +26,8 @@ import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.drone.ai.DroneAIVoidItem;
 import me.desht.pneumaticcraft.common.registry.ModProgWidgetTypes;
 import me.desht.pneumaticcraft.lib.Textures;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.item.DyeColor;
@@ -37,6 +39,10 @@ import java.util.List;
 public class ProgWidgetVoidItem extends ProgWidget implements IItemFiltering {
     public static final MapCodec<ProgWidgetVoidItem> CODEC = RecordCodecBuilder.mapCodec(builder ->
             baseParts(builder).apply(builder, ProgWidgetVoidItem::new));
+    public static final StreamCodec<RegistryFriendlyByteBuf, ProgWidgetVoidItem> STREAM_CODEC = StreamCodec.composite(
+            PositionFields.STREAM_CODEC, ProgWidget::getPosition,
+            ProgWidgetVoidItem::new
+    );
 
     private ProgWidgetVoidItem(PositionFields pos) {
         super(pos);
@@ -44,6 +50,11 @@ public class ProgWidgetVoidItem extends ProgWidget implements IItemFiltering {
 
     public ProgWidgetVoidItem() {
         super(PositionFields.DEFAULT);
+    }
+
+    @Override
+    public IProgWidget copyWidget() {
+        return new ProgWidgetVoidItem(getPosition());
     }
 
     @Override

@@ -51,10 +51,10 @@ public class ModArmorMaterials {
             SoundEvents.ARMOR_EQUIP_IRON,
             () -> Ingredient.of(ModItems.COMPRESSED_IRON_INGOT.get()),
             List.of(
-                    new ArmorMaterial.Layer(RL("pneumatic")),
-                    new ArmorMaterial.Layer(RL("pneumatic"), "_overlay", true),
-                    new ArmorMaterial.Layer(RL("pneumatic"), "_eyepiece", true),
-                    new ArmorMaterial.Layer(RL("pneumatic"), "_translucent", false)
+                    new ArmorMaterial.Layer(RL("pneumatic"), "", true)
+//                    new ArmorMaterial.Layer(RL("pneumatic"), "_overlay", true),
+//                    new ArmorMaterial.Layer(RL("pneumatic"), "_eyepiece", true),
+//                    new ArmorMaterial.Layer(RL("pneumatic"), "_translucent", false)
             ),
             1.0f,
             0.2f

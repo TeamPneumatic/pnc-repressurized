@@ -1,0 +1,17 @@
+{
+   "neoforge:conditions": [
+      {
+         "type": "neoforge:mod_loaded",
+         "modid": "betterendforge"
+      }
+   ],
+   "transforms" : {
+      "hot" : "betterendforge:emerald_ice",
+      "cold" : "betterendforge:ancient_emerald_ice"
+   },
+   "heatCapacity" : 10000,
+   "temperature" : 233,
+   "thermalResistance" : 200,
+   "type" : "pneumaticcraft:heat_properties",
+   "block" : "betterendforge:dense_emerald_ice"
+}

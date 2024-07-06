@@ -27,11 +27,12 @@ import me.desht.pneumaticcraft.common.drone.ai.DroneAIManager;
 import me.desht.pneumaticcraft.common.item.GPSToolItem;
 import me.desht.pneumaticcraft.common.registry.ModProgWidgetTypes;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
@@ -50,6 +51,13 @@ public class ProgWidgetCoordinate extends ProgWidget implements IVariableWidget 
                     Codec.STRING.optionalFieldOf("var", "").forGetter(ProgWidgetCoordinate::getVariable),
                     Codec.BOOL.optionalFieldOf("using_var", false).forGetter(ProgWidgetCoordinate::isUsingVariable)
             )).apply(builder, ProgWidgetCoordinate::new));
+    public static final StreamCodec<RegistryFriendlyByteBuf, ProgWidgetCoordinate> STREAM_CODEC = StreamCodec.composite(
+            PositionFields.STREAM_CODEC, ProgWidget::getPosition,
+            BlockPos.STREAM_CODEC, p -> p.coord,
+            ByteBufCodecs.STRING_UTF8, ProgWidgetCoordinate::getVariable,
+            ByteBufCodecs.BOOL, ProgWidgetCoordinate::isUsingVariable,
+            ProgWidgetCoordinate::new
+    );
 
     private BlockPos coord;
     private String variable = "";
@@ -78,6 +86,11 @@ public class ProgWidgetCoordinate extends ProgWidget implements IVariableWidget 
         ProgWidgetCoordinate w = new ProgWidgetCoordinate();
         w.loadFromGPSTool(gpsTool);
         return w;
+    }
+
+    @Override
+    public IProgWidget copyWidget() {
+        return new ProgWidgetCoordinate(getPosition(), coord, variable, useVariable);
     }
 
     @Override
@@ -124,47 +137,6 @@ public class ProgWidgetCoordinate extends ProgWidget implements IVariableWidget 
     @Override
     public ResourceLocation getTexture() {
         return Textures.PROG_WIDGET_COORDINATE;
-    }
-
-//    @Override
-//    public void writeToNBT(CompoundTag tag, HolderLookup.Provider provider) {
-//        super.writeToNBT(tag, provider);
-//        if (coord != null) {
-//            tag.put("coord", NbtUtils.writeBlockPos(coord));
-//        }
-//        if (!variable.isEmpty()) tag.putString("variable", variable);
-//        if (useVariable) tag.putBoolean("useVariable", true);
-//    }
-//
-//    @Override
-//    public void readFromNBT(CompoundTag tag, HolderLookup.Provider provider) {
-//        super.readFromNBT(tag, provider);
-//        if (tag.contains("coord")) {
-//            coord = NbtUtils.readBlockPos(tag.getCompound("coord"));
-//        } else if (tag.contains("posX")) {
-//            // legacy import
-//            coord = new BlockPos(tag.getInt("posX"), tag.getInt("posY"), tag.getInt("posZ"));
-//        } else {
-//            coord = null;
-//        }
-//        variable = tag.getString("variable");
-//        useVariable = tag.getBoolean("useVariable");
-//    }
-
-    @Override
-    public void writeToPacket(RegistryFriendlyByteBuf buf) {
-        super.writeToPacket(buf);
-        BlockPos.STREAM_CODEC.encode(buf, coord);
-        buf.writeUtf(variable);
-        buf.writeBoolean(useVariable);
-    }
-
-    @Override
-    public void readFromPacket(RegistryFriendlyByteBuf buf) {
-        super.readFromPacket(buf);
-        coord = BlockPos.STREAM_CODEC.decode(buf);
-        variable = buf.readUtf(GlobalVariableManager.MAX_VARIABLE_LEN);
-        useVariable = buf.readBoolean();
     }
 
     @Override

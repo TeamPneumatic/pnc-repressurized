@@ -32,6 +32,7 @@ import net.minecraft.util.StringRepresentable;
 import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 public class AreaTypeBox extends AreaType {
@@ -55,6 +56,11 @@ public class AreaTypeBox extends AreaType {
 
     public AreaTypeBox() {
         this(EnumBoxType.FILLED);
+    }
+
+    @Override
+    public AreaType copy() {
+        return new AreaTypeBox(boxType);
     }
 
     public EnumBoxType boxType() {
@@ -129,29 +135,18 @@ public class AreaTypeBox extends AreaType {
         widgets.add(new AreaTypeWidget.EnumSelectorField<>("pneumaticcraft.gui.progWidget.area.type.box.boxType", EnumBoxType.class, () -> boxType, boxType -> this.boxType = boxType));
     }
 
-//    @Override
-//    public void writeToNBT(CompoundTag tag) {
-//        super.writeToNBT(tag);
-//        tag.putByte("boxType", (byte) boxType.ordinal());
-//    }
-//
-//    @Override
-//    public void readFromNBT(CompoundTag tag) {
-//        super.readFromNBT(tag);
-//        boxType = EnumBoxType.values()[tag.getByte("boxType")];
-//    }
-//
-//    @Override
-//    public void writeToPacket(FriendlyByteBuf buffer) {
-//        super.writeToPacket(buffer);
-//        buffer.writeEnum(boxType);
-//    }
-//
-//    @Override
-//    public void readFromPacket(FriendlyByteBuf buf) {
-//        super.readFromPacket(buf);
-//        boxType = buf.readEnum(EnumBoxType.class);
-//    }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        AreaTypeBox that = (AreaTypeBox) o;
+        return boxType == that.boxType;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(boxType);
+    }
 
     public enum EnumBoxType implements ITranslatableEnum, StringRepresentable {
         FILLED("filled"), HOLLOW("hollow"), FRAME("frame");
@@ -159,12 +154,12 @@ public class AreaTypeBox extends AreaType {
         private final String name;
 
         EnumBoxType(String name) {
-            this.name = "pneumaticcraft.gui.progWidget.area.type.box.boxType." + name;
+            this.name = name;
         }
 
         @Override
         public String getTranslationKey() {
-            return name;
+            return "pneumaticcraft.gui.progWidget.area.type.box.boxType." + name;
         }
 
         @Override

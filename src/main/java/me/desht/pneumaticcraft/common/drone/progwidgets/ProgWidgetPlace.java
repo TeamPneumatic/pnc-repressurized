@@ -25,6 +25,8 @@ import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.drone.ai.DroneAIPlace;
 import me.desht.pneumaticcraft.common.registry.ModProgWidgetTypes;
 import me.desht.pneumaticcraft.lib.Textures;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.item.DyeColor;
@@ -33,6 +35,11 @@ public class ProgWidgetPlace extends ProgWidgetDigAndPlace {
     public static final MapCodec<ProgWidgetPlace> CODEC = RecordCodecBuilder.mapCodec(builder ->
             digPlaceParts(builder).apply(builder, ProgWidgetPlace::new)
     );
+    public static final StreamCodec<RegistryFriendlyByteBuf, ProgWidgetPlace> STREAM_CODEC = StreamCodec.composite(
+            PositionFields.STREAM_CODEC, ProgWidget::getPosition,
+            DigPlaceFields.STREAM_CODEC, p -> p.digPlaceFields,
+            ProgWidgetPlace::new
+    );
 
     public ProgWidgetPlace(PositionFields pos, DigPlaceFields digPlaceFields) {
         super(pos, digPlaceFields);
@@ -40,6 +47,11 @@ public class ProgWidgetPlace extends ProgWidgetDigAndPlace {
 
     public ProgWidgetPlace() {
         super(PositionFields.DEFAULT, DigPlaceFields.makeDefault(Ordering.LOW_TO_HIGH));
+    }
+
+    @Override
+    public IProgWidget copyWidget() {
+        return new ProgWidgetPlace(getPosition(), digPlaceFields);
     }
 
     @Override

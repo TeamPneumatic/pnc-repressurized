@@ -1,0 +1,13 @@
+{
+   "block" : "minecraft:campfire",
+   "type" : "pneumaticcraft:heat_properties",
+   "predicates" : {
+      "lit" : "true"
+   },
+   "thermalResistance" : 5000,
+   "temperature" : 1700,
+   "heatCapacity" : 10000,
+   "transforms" : {
+      "cold" : "minecraft:campfire[lit=false]"
+   }
+}

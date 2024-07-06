@@ -95,7 +95,7 @@ public class MicromissilesItem extends Item {
 
         playerIn.getCooldowns().addCooldown(this, ConfigHelper.common().micromissiles.launchCooldown.get());
 
-        if (!worldIn.isClientSide) {
+        if (playerIn.level() instanceof ServerLevel serverLevel) {
             HitResult res = RayTraceUtils.getMouseOverServer(playerIn, 100);
             if (res instanceof EntityHitResult ertr) {
                 if (missile.isValidTarget(ertr.getEntity())) {
@@ -103,12 +103,13 @@ public class MicromissilesItem extends Item {
                 }
             }
             worldIn.addFreshEntity(missile);
+
+            if (!playerIn.isCreative()) {
+                stack.hurtAndBreak(1, serverLevel, playerIn, item -> { });
+            }
         }
 
-        if (!playerIn.isCreative()) {
-            stack.hurtAndBreak(1, (ServerLevel)playerIn.level(), playerIn, item -> { });
-        }
-        return InteractionResultHolder.success(stack);
+        return InteractionResultHolder.sidedSuccess(stack, playerIn.level().isClientSide());
     }
 
     private float getInitialVelocity(ItemStack stack) {

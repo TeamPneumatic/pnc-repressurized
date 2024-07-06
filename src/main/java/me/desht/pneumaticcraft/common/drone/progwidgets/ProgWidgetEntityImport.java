@@ -27,7 +27,9 @@ import me.desht.pneumaticcraft.common.drone.ai.DroneAIEntityImport;
 import me.desht.pneumaticcraft.common.registry.ModProgWidgetTypes;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.ai.goal.Goal;
@@ -42,6 +44,10 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 public class ProgWidgetEntityImport extends ProgWidget implements IAreaProvider, IEntityProvider, IProgWidget {
     public static final MapCodec<ProgWidgetEntityImport> CODEC = RecordCodecBuilder.mapCodec(builder ->
             baseParts(builder).apply(builder, ProgWidgetEntityImport::new));
+    public static final StreamCodec<RegistryFriendlyByteBuf, ProgWidgetEntityImport> STREAM_CODEC = StreamCodec.composite(
+            PositionFields.STREAM_CODEC, ProgWidget::getPosition,
+            ProgWidgetEntityImport::new
+    );
 
     private EntityFilterPair<ProgWidgetEntityImport> entityFilters;
 
@@ -51,6 +57,11 @@ public class ProgWidgetEntityImport extends ProgWidget implements IAreaProvider,
 
     public ProgWidgetEntityImport() {
         super(PositionFields.DEFAULT);
+    }
+
+    @Override
+    public IProgWidget copyWidget() {
+        return new ProgWidgetEntityImport(getPosition());
     }
 
     @Override

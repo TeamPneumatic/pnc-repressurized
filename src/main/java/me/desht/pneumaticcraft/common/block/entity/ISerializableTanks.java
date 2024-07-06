@@ -18,6 +18,7 @@
 package me.desht.pneumaticcraft.common.block.entity;
 
 import me.desht.pneumaticcraft.common.util.PNCFluidTank;
+import net.minecraft.Util;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.nbt.CompoundTag;
@@ -27,8 +28,8 @@ import javax.annotation.Nonnull;
 import java.util.Map;
 
 /**
- * Represents a block entity which stores tank data that should be serialized onto the dropped item stack when the block
- * is broken, and deserialized back to the block entity when the block is placed down again.
+ * Represents a block entity which stores tank data that should be serialized to NBT when the block is saved, and onto
+ * the dropped item stack when the block is broken.
  */
 @FunctionalInterface
 public interface ISerializableTanks {
@@ -42,16 +43,16 @@ public interface ISerializableTanks {
     Map<DataComponentType<SimpleFluidContent>, PNCFluidTank> getSerializableTanks();
 
     default void deserializeTanks(HolderLookup.Provider provider, CompoundTag tag) {
-        getSerializableTanks().forEach((comp, tank) -> tank.readFromNBT(provider, tag.getCompound(comp.toString())));
+        getSerializableTanks().forEach((comp, tank) ->
+                tank.readFromNBT(provider, tag.getCompound(comp.toString()))
+        );
     }
 
     default CompoundTag serializeTanks(HolderLookup.Provider provider) {
-        CompoundTag tag = new CompoundTag();
-        getSerializableTanks().forEach((comp, tank) -> {
+        return Util.make(new CompoundTag(), tag -> getSerializableTanks().forEach((comp, tank) -> {
             if (!tank.getFluid().isEmpty()) {
-                tag.put(comp.toString(), tank.writeToNBT(provider, new CompoundTag()));
+                tag.put(comp.toString(), tank.writeToNBT(provider));
             }
-        });
-        return tag;
+        }));
     }
 }

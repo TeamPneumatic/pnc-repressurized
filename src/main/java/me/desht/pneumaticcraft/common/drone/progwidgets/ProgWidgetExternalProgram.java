@@ -28,6 +28,8 @@ import me.desht.pneumaticcraft.common.drone.ai.DroneAIExternalProgram;
 import me.desht.pneumaticcraft.common.registry.ModProgWidgetTypes;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.item.DyeColor;
@@ -39,6 +41,11 @@ public class ProgWidgetExternalProgram extends ProgWidgetAreaItemBase {
             baseParts(builder).and(
                     Codec.BOOL.optionalFieldOf("share_variables", false).forGetter(ProgWidgetExternalProgram::isShareVariables)
             ).apply(builder, ProgWidgetExternalProgram::new));
+    public static final StreamCodec<RegistryFriendlyByteBuf, ProgWidgetExternalProgram> STREAM_CODEC = StreamCodec.composite(
+            PositionFields.STREAM_CODEC, ProgWidget::getPosition,
+            ByteBufCodecs.BOOL, ProgWidgetExternalProgram::isShareVariables,
+            ProgWidgetExternalProgram::new
+    );
 
     public boolean shareVariables;
 
@@ -50,6 +57,11 @@ public class ProgWidgetExternalProgram extends ProgWidgetAreaItemBase {
 
     public ProgWidgetExternalProgram() {
         this(PositionFields.DEFAULT, false);
+    }
+
+    @Override
+    public IProgWidget copyWidget() {
+        return new ProgWidgetExternalProgram(getPosition(), shareVariables);
     }
 
     @Override
@@ -79,30 +91,6 @@ public class ProgWidgetExternalProgram extends ProgWidgetAreaItemBase {
 
     public boolean isShareVariables() {
         return shareVariables;
-    }
-
-//    @Override
-//    public void writeToNBT(CompoundTag tag, HolderLookup.Provider provider) {
-//        super.writeToNBT(tag, provider);
-//        if (shareVariables) tag.putBoolean("shareVariables", true);
-//    }
-//
-//    @Override
-//    public void readFromNBT(CompoundTag tag, HolderLookup.Provider provider) {
-//        super.readFromNBT(tag, provider);
-//        shareVariables = tag.getBoolean("shareVariables");
-//    }
-
-    @Override
-    public void writeToPacket(RegistryFriendlyByteBuf buf) {
-        super.writeToPacket(buf);
-        buf.writeBoolean(shareVariables);
-    }
-
-    @Override
-    public void readFromPacket(RegistryFriendlyByteBuf buf) {
-        super.readFromPacket(buf);
-        shareVariables = buf.readBoolean();
     }
 
     @Override

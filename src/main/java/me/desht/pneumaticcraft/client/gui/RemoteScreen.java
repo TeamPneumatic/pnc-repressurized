@@ -59,9 +59,10 @@ public class RemoteScreen extends AbstractPneumaticCraftContainerScreen<RemoteMe
         super.init();
 
         if (remoteLayout == null) {
-            remoteLayout = new RemoteLayout(registryAccess(), remote, leftPos, topPos);
+            remoteLayout = RemoteLayout.createEmpty();
         }
-        remoteLayout.getWidgets(!(this instanceof RemoteEditorScreen)).forEach(this::addRenderableWidget);
+        remoteLayout.getOrCreateMinecraftWidgets(this, !(this instanceof RemoteEditorScreen))
+                .forEach(this::addRenderableWidget);
     }
 
     @Override

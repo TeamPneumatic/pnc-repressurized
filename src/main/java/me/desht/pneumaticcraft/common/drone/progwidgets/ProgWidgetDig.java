@@ -28,6 +28,8 @@ import me.desht.pneumaticcraft.common.registry.ModProgWidgetTypes;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.item.DyeColor;
@@ -42,6 +44,12 @@ public class ProgWidgetDig extends ProgWidgetDigAndPlace implements IToolUser {
                     Codec.BOOL.optionalFieldOf("require_tool", false).forGetter(ProgWidgetDig::requiresTool)
             ).apply(builder, ProgWidgetDig::new)
     );
+    public static final StreamCodec<RegistryFriendlyByteBuf, ProgWidgetDig> STREAM_CODEC = StreamCodec.composite(
+            PositionFields.STREAM_CODEC, ProgWidget::getPosition,
+            DigPlaceFields.STREAM_CODEC, p -> p.digPlaceFields,
+            ByteBufCodecs.BOOL, ProgWidgetDig::requiresTool,
+            ProgWidgetDig::new
+    );
 
     private boolean requireDiggingTool;
 
@@ -53,6 +61,11 @@ public class ProgWidgetDig extends ProgWidgetDigAndPlace implements IToolUser {
 
     public ProgWidgetDig() {
         super(PositionFields.DEFAULT, DigPlaceFields.makeDefault(Ordering.CLOSEST));
+    }
+
+    @Override
+    public IProgWidget copyWidget() {
+        return new ProgWidgetDig(getPosition(), digPlaceFields, requireDiggingTool);
     }
 
     @Override
@@ -94,27 +107,4 @@ public class ProgWidgetDig extends ProgWidgetDigAndPlace implements IToolUser {
         }
     }
 
-//    @Override
-//    public void writeToNBT(CompoundTag tag, HolderLookup.Provider provider){
-//        super.writeToNBT(tag, provider);
-//        if (requireDiggingTool) tag.putBoolean("requireDiggingTool", true);
-//    }
-//
-//    @Override
-//    public void readFromNBT(CompoundTag tag, HolderLookup.Provider provider){
-//        super.readFromNBT(tag, provider);
-//        requireDiggingTool = tag.getBoolean("requireDiggingTool");
-//    }
-
-    @Override
-    public void writeToPacket(RegistryFriendlyByteBuf buf) {
-        super.writeToPacket(buf);
-        buf.writeBoolean(requireDiggingTool);
-    }
-
-    @Override
-    public void readFromPacket(RegistryFriendlyByteBuf buf) {
-        super.readFromPacket(buf);
-        requireDiggingTool = buf.readBoolean();
-    }
 }

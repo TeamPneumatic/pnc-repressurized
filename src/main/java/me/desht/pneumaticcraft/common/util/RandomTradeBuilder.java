@@ -24,12 +24,16 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.trading.ItemCost;
 import net.minecraft.world.item.trading.MerchantOffer;
+import org.jetbrains.annotations.Nullable;
 
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 
 public class RandomTradeBuilder {
+    @Nullable
     private Function<RandomSource, ItemCost> price;
+    @Nullable
     private Function<RandomSource, ItemCost> price2;
     private Function<RandomSource, ItemStack> forSale;
 
@@ -38,9 +42,9 @@ public class RandomTradeBuilder {
     private final float priceMult;
 
     public RandomTradeBuilder(int maxTrades, int xp, float priceMult) {
-        this.price = null;
-        this.price2 = null;
-        this.forSale = null;
+        price = null;
+        price2 = null;
+        forSale = null;
         this.maxTrades = maxTrades;
         this.xp = xp;
         this.priceMult = priceMult;
@@ -52,7 +56,7 @@ public class RandomTradeBuilder {
     }
 
     public RandomTradeBuilder setPrice(Item item, int min, int max) {
-        return this.setPrice(RandomTradeBuilder.createCost(item, min, max));
+        return setPrice(RandomTradeBuilder.createCost(item, min, max));
     }
 
     public RandomTradeBuilder setPrice2(Function<RandomSource, ItemCost> price2) {
@@ -61,7 +65,7 @@ public class RandomTradeBuilder {
     }
 
     public RandomTradeBuilder setPrice2(Item item, int min, int max) {
-        return this.setPrice2(RandomTradeBuilder.createCost(item, min, max));
+        return setPrice2(RandomTradeBuilder.createCost(item, min, max));
     }
 
     public RandomTradeBuilder setForSale(Function<RandomSource, ItemStack> forSale) {
@@ -70,43 +74,49 @@ public class RandomTradeBuilder {
     }
 
     public RandomTradeBuilder setForSale(Item item, int min, int max) {
-        return this.setForSale(RandomTradeBuilder.createResult(item, min, max));
+        return setForSale(RandomTradeBuilder.createResult(item, min, max));
     }
 
     public RandomTradeBuilder setEmeraldPrice(int emeralds) {
-        return this.setPrice(random -> new ItemCost(Items.EMERALD, emeralds));
+        return setPrice(random -> new ItemCost(Items.EMERALD, emeralds));
     }
 
     public RandomTradeBuilder setEmeraldPriceFor(int emeralds, Item item, int amt) {
-        this.setEmeraldPrice(emeralds);
-        return this.setForSale(random -> new ItemStack(item, amt));
+        setEmeraldPrice(emeralds);
+        return setForSale(random -> new ItemStack(item, amt));
     }
 
     public RandomTradeBuilder setEmeraldPriceFor(int emeralds, Item item) {
-        return this.setEmeraldPriceFor(emeralds, item, 1);
+        return setEmeraldPriceFor(emeralds, item, 1);
     }
 
     public RandomTradeBuilder setEmeraldPrice(int min, int max) {
-        return this.setPrice(Items.EMERALD, min, max);
+        return setPrice(Items.EMERALD, min, max);
     }
 
     public RandomTradeBuilder setEmeraldPriceFor(int min, int max, Item item, int amt) {
-        this.setEmeraldPrice(min, max);
-        return this.setForSale(random -> new ItemStack(item, amt));
+        setEmeraldPrice(min, max);
+        return setForSale(random -> new ItemStack(item, amt));
     }
 
     public RandomTradeBuilder setEmeraldPriceFor(int min, int max, Item item) {
-        return this.setEmeraldPriceFor(min, max, item, 1);
+        return setEmeraldPriceFor(min, max, item, 1);
     }
 
     public boolean canBuild() {
-        return this.price != null && this.forSale != null;
+        return price != null && forSale != null;
     }
 
     public VillagerTrades.ItemListing build() {
-        return (entity, random) -> this.canBuild() ?
-                new MerchantOffer(this.price.apply(random), Optional.ofNullable(this.price2.apply(random)), this.forSale.apply(random), this.maxTrades, this.xp, this.priceMult) :
-                null;
+        return (entity, random) -> canBuild() ?
+                new MerchantOffer(
+                        Objects.requireNonNull(price).apply(random),
+                        Optional.ofNullable(price2).map(p -> p.apply(random)),
+                        forSale.apply(random),
+                        maxTrades,
+                        xp, 
+                        priceMult
+                ) : null;
     }
 
     public static Function<RandomSource, ItemCost> createCost(Item item, int min, int max) {

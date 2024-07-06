@@ -29,11 +29,14 @@ import me.desht.pneumaticcraft.common.registry.ModProgWidgetTypes;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.material.Fluid;
+import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
 
 import java.util.List;
 
@@ -46,6 +49,13 @@ public class ProgWidgetLiquidImport extends ProgWidgetInventoryBase implements I
                 Codec.BOOL.optionalFieldOf("void_excess", false).forGetter(ProgWidgetLiquidImport::shouldVoidExcess)
         )
     ).apply(builder, ProgWidgetLiquidImport::new));
+    public static final StreamCodec<RegistryFriendlyByteBuf, ProgWidgetLiquidImport> STREAM_CODEC = StreamCodec.composite(
+            PositionFields.STREAM_CODEC, ProgWidget::getPosition,
+            InvBaseFields.STREAM_CODEC, ProgWidgetInventoryBase::invBaseFields,
+            NeoForgeStreamCodecs.enumCodec(Ordering.class), ProgWidgetLiquidImport::getOrder,
+            ByteBufCodecs.BOOL, ProgWidgetLiquidImport::shouldVoidExcess,
+            ProgWidgetLiquidImport::new
+    );
 
     private Ordering order;
     private boolean voidExcess;
@@ -58,6 +68,11 @@ public class ProgWidgetLiquidImport extends ProgWidgetInventoryBase implements I
 
     public ProgWidgetLiquidImport() {
         this(PositionFields.DEFAULT, InvBaseFields.DEFAULT, Ordering.HIGH_TO_LOW, false);
+    }
+
+    @Override
+    public IProgWidget copyWidget() {
+        return new ProgWidgetLiquidImport(getPosition(), invBaseFields().copy(), order, voidExcess);
     }
 
     @Override
@@ -117,31 +132,4 @@ public class ProgWidgetLiquidImport extends ProgWidgetInventoryBase implements I
         }
     }
 
-//    @Override
-//    public void writeToNBT(CompoundTag tag, HolderLookup.Provider provider) {
-//        super.writeToNBT(tag, provider);
-//        tag.putInt("order", order.ordinal());
-//        if (voidExcess) tag.putBoolean("voidExcess", true);
-//    }
-//
-//    @Override
-//    public void readFromNBT(CompoundTag tag, HolderLookup.Provider provider) {
-//        super.readFromNBT(tag, provider);
-//        order = Ordering.values()[tag.getInt("order")];
-//        voidExcess = tag.getBoolean("voidExcess");
-//    }
-
-    @Override
-    public void writeToPacket(RegistryFriendlyByteBuf buf) {
-        super.writeToPacket(buf);
-        buf.writeByte(order.ordinal());
-        buf.writeBoolean(voidExcess);
-    }
-
-    @Override
-    public void readFromPacket(RegistryFriendlyByteBuf buf) {
-        super.readFromPacket(buf);
-        order = Ordering.values()[buf.readByte()];
-        voidExcess = buf.readBoolean();
-    }
 }

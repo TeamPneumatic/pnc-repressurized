@@ -23,6 +23,7 @@ import me.desht.pneumaticcraft.api.item.IProgrammable;
 import me.desht.pneumaticcraft.client.render.area.AreaRenderManager;
 import me.desht.pneumaticcraft.common.block.entity.AbstractTickingBlockEntity;
 import me.desht.pneumaticcraft.common.block.entity.IGUITextFieldSensitive;
+import me.desht.pneumaticcraft.common.drone.ProgWidgetSerializer;
 import me.desht.pneumaticcraft.common.drone.progwidgets.*;
 import me.desht.pneumaticcraft.common.inventory.ProgrammerMenu;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
@@ -31,12 +32,14 @@ import me.desht.pneumaticcraft.common.registry.*;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
@@ -59,6 +62,7 @@ import java.util.*;
 public class ProgrammerBlockEntity extends AbstractTickingBlockEntity implements IGUITextFieldSensitive, MenuProvider {
     private static final int PROGRAM_SLOT = 0;
     private static final int INVENTORY_SIZE = 1;
+    private static final int MAX_HISTORY_SIZE = 20;
 
     public final List<IProgWidget> progWidgets = new ArrayList<>();
 
@@ -83,13 +87,13 @@ public class ProgrammerBlockEntity extends AbstractTickingBlockEntity implements
     @DescSynced
     public ItemStack displayedStack = ItemStack.EMPTY;
 
-    private ListTag history = new ListTag(); //Used to undo/redo.
+    private final List<Tag> history = new LinkedList<>(); // Used to undo/redo.
     private int historyIndex;
 
     public ProgrammerBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntityTypes.PROGRAMMER.get(), pos, state);
 
-        saveToHistory();
+        history.add(new ListTag());
     }
 
     @Override
@@ -99,18 +103,20 @@ public class ProgrammerBlockEntity extends AbstractTickingBlockEntity implements
         inventory.deserializeNBT(provider, tag.getCompound("Items"));
         displayedStack = inventory.getStackInSlot(0);
         programOnInsert = tag.getBoolean("ProgramOnInsert");
-        history = tag.getList("history", 10);
-        if (history.isEmpty()) saveToHistory();
-        readProgWidgetsFromNBT(tag);
+        history.addAll(tag.getList("history", Tag.TAG_LIST));
+        if (history.isEmpty()) {
+            history.add(new ListTag());
+        }
+        readProgWidgetsFromNBT(tag.getList(IProgrammable.NBT_WIDGETS, Tag.TAG_COMPOUND), provider);
     }
 
     @Override
     public void saveAdditional(CompoundTag tag, HolderLookup.Provider provider) {
         super.saveAdditional(tag, provider);
         tag.put("Items", inventory.serializeNBT(provider));
-        tag.put("history", history);
+        tag.put("history", Util.make(new ListTag(), l -> l.addAll(history)));
         tag.putBoolean("ProgramOnInsert", programOnInsert);
-        writeProgWidgetsToNBT(tag);
+        tag.put(IProgrammable.NBT_WIDGETS, ProgWidgetSerializer.putWidgetsToNBT(provider, progWidgets));
     }
 
     public List<IProgWidget> mergeWidgetsFromNBT(List<IProgWidget> mergedWidgets) {
@@ -166,15 +172,10 @@ public class ProgrammerBlockEntity extends AbstractTickingBlockEntity implements
         return new PuzzleExtents(minX, minY, maxX - minX, maxY - minY);
     }
 
-    public void readProgWidgetsFromNBT(CompoundTag tag) {
+    public void readProgWidgetsFromNBT(Tag tag, HolderLookup.Provider provider) {
         progWidgets.clear();
-        progWidgets.addAll(WidgetSerializer.getWidgetsFromNBT(tag));
+        progWidgets.addAll(ProgWidgetSerializer.getWidgetsFromNBT(provider, tag));
         updatePuzzleConnections(progWidgets);
-    }
-
-    public CompoundTag writeProgWidgetsToNBT(CompoundTag tag) {
-        WidgetSerializer.putWidgetsToNBT(progWidgets, tag);
-        return tag;
     }
 
     public static void updatePuzzleConnections(List<IProgWidget> progWidgets) {
@@ -466,15 +467,16 @@ public class ProgrammerBlockEntity extends AbstractTickingBlockEntity implements
         }
     }
 
-    private void saveToHistory() {
-        CompoundTag tag = new CompoundTag();
-        writeProgWidgetsToNBT(tag);
-        if (history.isEmpty() || !history.getCompound(historyIndex).equals(tag)) {
+    private void saveToHistory(HolderLookup.Provider provider) {
+        Tag tag = ProgWidgetSerializer.putWidgetsToNBT(provider, progWidgets);
+        if (history.isEmpty() || !history.get(historyIndex).equals(tag)) {
             while (history.size() > historyIndex + 1) {
                 history.remove(historyIndex + 1);
             }
             history.add(tag);
-            if (history.size() > 20) history.removeFirst(); // Only save up to 20 steps back.
+            if (history.size() > MAX_HISTORY_SIZE) {
+                history.removeFirst();
+            }
             historyIndex = history.size() - 1;
             updateUndoRedoState();
         }
@@ -483,7 +485,7 @@ public class ProgrammerBlockEntity extends AbstractTickingBlockEntity implements
     private void undo() {
         if (canUndo) {
             historyIndex--;
-            readProgWidgetsFromNBT(history.getCompound(historyIndex));
+            readProgWidgetsFromNBT(history.get(historyIndex), nonNullLevel().registryAccess());
             updateUndoRedoState();
             syncToClient(null);
         }
@@ -492,7 +494,7 @@ public class ProgrammerBlockEntity extends AbstractTickingBlockEntity implements
     private void redo() {
         if (canRedo) {
             historyIndex++;
-            readProgWidgetsFromNBT(history.getCompound(historyIndex));
+            readProgWidgetsFromNBT(history.get(historyIndex), nonNullLevel().registryAccess());
             updateUndoRedoState();
             syncToClient(null);
         }
@@ -522,7 +524,7 @@ public class ProgrammerBlockEntity extends AbstractTickingBlockEntity implements
         updatePuzzleConnections(progWidgets);
         if (!nonNullLevel().isClientSide) {
             setChanged();
-            saveToHistory();
+            saveToHistory(nonNullLevel().registryAccess());
             syncToClient(player);
         }
     }
@@ -560,7 +562,7 @@ public class ProgrammerBlockEntity extends AbstractTickingBlockEntity implements
 
         @Override
         public boolean isItemValid(int slot, ItemStack itemStack) {
-            return itemStack.getItem() instanceof IProgrammable && ((IProgrammable) itemStack.getItem()).canProgram(itemStack);
+            return itemStack.getItem() instanceof IProgrammable p && p.canProgram(itemStack);
         }
     }
 

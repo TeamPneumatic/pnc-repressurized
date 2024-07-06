@@ -28,6 +28,8 @@ import me.desht.pneumaticcraft.common.registry.ModProgWidgetTypes;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.item.DyeColor;
@@ -44,6 +46,13 @@ public class ProgWidgetDropItem extends ProgWidgetInventoryBase implements IItem
                     Codec.BOOL.optionalFieldOf("pick_delay", false).forGetter(ProgWidgetDropItem::hasPickupDelay)
             )
     ).apply(builder, ProgWidgetDropItem::new));
+    public static final StreamCodec<RegistryFriendlyByteBuf, ProgWidgetDropItem> STREAM_CODEC = StreamCodec.composite(
+            PositionFields.STREAM_CODEC, ProgWidget::getPosition,
+            InvBaseFields.STREAM_CODEC, ProgWidgetInventoryBase::invBaseFields,
+            ByteBufCodecs.BOOL, ProgWidgetDropItem::dropStraight,
+            ByteBufCodecs.BOOL, ProgWidgetDropItem::hasPickupDelay,
+            ProgWidgetDropItem::new
+    );
 
     private boolean dropStraight;
     private boolean pickupDelay;
@@ -59,6 +68,11 @@ public class ProgWidgetDropItem extends ProgWidgetInventoryBase implements IItem
 
         this.dropStraight = false;
         this.pickupDelay = true;
+    }
+
+    @Override
+    public IProgWidget copyWidget() {
+        return new ProgWidgetDropItem(getPosition(), invBaseFields(), dropStraight, pickupDelay);
     }
 
     @Override
@@ -89,34 +103,6 @@ public class ProgWidgetDropItem extends ProgWidgetInventoryBase implements IItem
     @Override
     public void setPickupDelay(boolean pickupDelay) {
         this.pickupDelay = pickupDelay;
-    }
-
-//    @Override
-//    public void writeToNBT(CompoundTag tag, HolderLookup.Provider provider) {
-//        super.writeToNBT(tag, provider);
-//        if (dropStraight) tag.putBoolean("dropStraight", true);
-//        if (pickupDelay) tag.putBoolean("pickupDelay", true);
-//    }
-//
-//    @Override
-//    public void readFromNBT(CompoundTag tag, HolderLookup.Provider provider) {
-//        super.readFromNBT(tag, provider);
-//        dropStraight = tag.getBoolean("dropStraight");
-//        pickupDelay = tag.getBoolean("pickupDelay");
-//    }
-
-    @Override
-    public void writeToPacket(RegistryFriendlyByteBuf buf) {
-        super.writeToPacket(buf);
-        buf.writeBoolean(dropStraight);
-        buf.writeBoolean(pickupDelay);
-    }
-
-    @Override
-    public void readFromPacket(RegistryFriendlyByteBuf buf) {
-        super.readFromPacket(buf);
-        dropStraight = buf.readBoolean();
-        pickupDelay = buf.readBoolean();
     }
 
     @Override

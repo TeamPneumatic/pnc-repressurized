@@ -19,6 +19,8 @@
             {
               "function": "minecraft:copy_components",
               "include": [
+                "pneumaticcraft:air",
+                "pneumaticcraft:upgrades",
                 "pneumaticcraft:solar_broken"
               ],
               "source": "block_entity"

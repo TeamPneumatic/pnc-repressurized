@@ -227,9 +227,9 @@ public class PneumaticDoorBlock extends AbstractPneumaticCraftBlock implements P
 
     @Override
     public ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult brtr) {
-        if (!world.isClientSide) {
-            DyeColor dyeColor =  DyeColor.getColor(player.getItemInHand(hand));
-            if (dyeColor != null) {
+        DyeColor dyeColor =  DyeColor.getColor(player.getItemInHand(hand));
+        if (dyeColor != null) {
+            if (!world.isClientSide) {
                 BlockEntity te = world.getBlockEntity(isTopDoor(state) ? pos.below() : pos);
                 if (te instanceof PneumaticDoorBlockEntity teDoor) {
                     if (teDoor.setColor(dyeColor) && ConfigHelper.common().general.useUpDyesWhenColoring.get()) {
@@ -237,8 +237,9 @@ public class PneumaticDoorBlock extends AbstractPneumaticCraftBlock implements P
                     }
                 }
             }
+            return ItemInteractionResult.sidedSuccess(world.isClientSide);
         }
-        return ItemInteractionResult.sidedSuccess(world.isClientSide);
+        return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
     }
 
     @Override

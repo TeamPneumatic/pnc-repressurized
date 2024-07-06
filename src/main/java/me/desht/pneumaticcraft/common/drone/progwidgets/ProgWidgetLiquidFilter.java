@@ -27,6 +27,7 @@ import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.material.Fluid;
@@ -42,6 +43,11 @@ public class ProgWidgetLiquidFilter extends ProgWidget {
         baseParts(builder).and(
                 FluidStack.OPTIONAL_CODEC.optionalFieldOf("fluid", FluidStack.EMPTY).forGetter(ProgWidgetLiquidFilter::getFluidStack)
     ).apply(builder, ProgWidgetLiquidFilter::new));
+    public static final StreamCodec<RegistryFriendlyByteBuf, ProgWidgetLiquidFilter> STREAM_CODEC = StreamCodec.composite(
+            PositionFields.STREAM_CODEC, ProgWidget::getPosition,
+            FluidStack.OPTIONAL_STREAM_CODEC, ProgWidgetLiquidFilter::getFluidStack,
+            ProgWidgetLiquidFilter::new
+    );
 
     private FluidStack fluidStack;
 
@@ -53,6 +59,11 @@ public class ProgWidgetLiquidFilter extends ProgWidget {
 
     public ProgWidgetLiquidFilter() {
         this(PositionFields.DEFAULT, FluidStack.EMPTY);
+    }
+
+    @Override
+    public IProgWidget copyWidget() {
+        return new ProgWidgetLiquidFilter(getPosition(), fluidStack.copy());
     }
 
     public static ProgWidgetLiquidFilter withFilter(Fluid fluid) {
@@ -92,32 +103,6 @@ public class ProgWidgetLiquidFilter extends ProgWidget {
     @Override
     public ResourceLocation getTexture() {
         return Textures.PROG_WIDGET_LIQUID_FILTER;
-    }
-
-//    @Override
-//    public void readFromNBT(CompoundTag tag, HolderLookup.Provider provider) {
-//        super.readFromNBT(tag, provider);
-//        fluidStack = tag.contains("fluid") ?
-//                BuiltInRegistries.FLUID.get(new ResourceLocation(tag.getString("fluid"))) :
-//                Fluids.EMPTY;
-//    }
-//
-//    @Override
-//    public void writeToNBT(CompoundTag tag, HolderLookup.Provider provider) {
-//        super.writeToNBT(tag, provider);
-//        if (fluidStack != Fluids.EMPTY) tag.putString("fluid", PneumaticCraftUtils.getRegistryName(fluidStack).orElseThrow().toString());
-//    }
-
-    @Override
-    public void writeToPacket(RegistryFriendlyByteBuf buf) {
-        super.writeToPacket(buf);
-        FluidStack.OPTIONAL_STREAM_CODEC.encode(buf, fluidStack);
-    }
-
-    @Override
-    public void readFromPacket(RegistryFriendlyByteBuf buf) {
-        super.readFromPacket(buf);
-        fluidStack = FluidStack.OPTIONAL_STREAM_CODEC.decode(buf);
     }
 
     @Override
@@ -191,4 +176,5 @@ public class ProgWidgetLiquidFilter extends ProgWidget {
     public DyeColor getColor() {
         return DyeColor.RED;
     }
+
 }

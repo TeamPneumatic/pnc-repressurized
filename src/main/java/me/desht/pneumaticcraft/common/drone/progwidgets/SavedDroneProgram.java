@@ -16,6 +16,8 @@ import net.minecraft.world.item.ItemStack;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.function.Supplier;
 
 public class SavedDroneProgram {
     public static final Codec<SavedDroneProgram> CODEC = RecordCodecBuilder.create(builder -> builder.group(
@@ -31,6 +33,10 @@ public class SavedDroneProgram {
 
     private final List<CompoundTag> widgetNBT;
     private final int hashCode;
+
+    public static SavedDroneProgram create(IProgWidget widget) {
+        return create(List.of(widget));
+    }
 
     public static SavedDroneProgram create(List<IProgWidget> widgets) {
         ImmutableList.Builder<CompoundTag> builder = ImmutableList.builder();
@@ -52,6 +58,15 @@ public class SavedDroneProgram {
 
     public static List<IProgWidget> forItemStack(ItemStack stack) {
         return stack.getOrDefault(ModDataComponents.SAVED_DRONE_PROGRAM, EMPTY).buildProgram();
+    }
+
+    public static <T extends ProgWidget> T getOneWidget(ItemStack stack, Supplier<T> def) {
+        List<IProgWidget> l = forItemStack(stack);
+        if (!l.isEmpty() && def.getClass().isAssignableFrom(l.getFirst().getClass())) {
+            return (T) def.getClass().cast(l.getFirst());
+        } else {
+            return def.get();
+        }
     }
 
     @Override

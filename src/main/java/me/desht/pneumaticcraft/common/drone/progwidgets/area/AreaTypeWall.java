@@ -32,6 +32,7 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 public class AreaTypeWall extends AreaType {
@@ -54,6 +55,11 @@ public class AreaTypeWall extends AreaType {
     public AreaTypeWall(AreaAxis axis) {
         super(ID);
         this.axis = axis;
+    }
+
+    @Override
+    public AreaType copy() {
+        return new AreaTypeWall(axis);
     }
 
     @Override
@@ -136,5 +142,18 @@ public class AreaTypeWall extends AreaType {
             case Z_WALL -> axis = AreaAxis.Z;
             default -> throw new IllegalArgumentException();
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        AreaTypeWall that = (AreaTypeWall) o;
+        return axis == that.axis;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(axis);
     }
 }

@@ -9,13 +9,11 @@ import me.desht.pneumaticcraft.common.block.entity.utility.SmartChestBlockEntity
 import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetArea;
 import me.desht.pneumaticcraft.common.drone.progwidgets.SavedDroneProgram;
 import me.desht.pneumaticcraft.common.item.ClassifyFilterItem;
-import me.desht.pneumaticcraft.common.item.JackHammerItem;
 import me.desht.pneumaticcraft.common.item.JackHammerItem.DigMode;
 import me.desht.pneumaticcraft.common.item.MicromissilesItem;
 import me.desht.pneumaticcraft.common.item.SpawnerCoreItem;
 import me.desht.pneumaticcraft.common.network.DronePacket;
 import me.desht.pneumaticcraft.common.upgrades.SavedUpgrades;
-import mezz.jei.api.neoforge.NeoForgeTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.GlobalPos;
@@ -53,7 +51,7 @@ public class ModDataComponents {
 
     // Stored air in pneumatic items
     public static final Supplier<DataComponentType<Integer>> AIR
-            = register("air", ExtraCodecs.NON_NEGATIVE_INT, ByteBufCodecs.INT);
+            = register("air", Codec.INT, ByteBufCodecs.INT);
 
     // Minigun
     public static final Supplier<DataComponentType<Integer>> OWNER_ENTITY_ID
@@ -82,8 +80,8 @@ public class ModDataComponents {
             = register("amadron_basket", ImmutableBasket.CODEC, ImmutableBasket.STREAM_CODEC);
 
     // GPS Area Tool
-    public static final Supplier<DataComponentType<ProgWidgetArea>> AREA_WIDGET
-            = register("area_widget", ProgWidgetArea.CODEC.codec(), ProgWidgetArea.STREAM_CODEC);
+    public static final Supplier<DataComponentType<ProgWidgetArea.Immutable>> AREA_WIDGET
+            = register("area_widget", ProgWidgetArea.Immutable.CODEC, ProgWidgetArea.Immutable.STREAM_CODEC);
 
     // Tag Filter
     public static final Supplier<DataComponentType<List<ResourceLocation>>> TAG_FILTER_KEYS

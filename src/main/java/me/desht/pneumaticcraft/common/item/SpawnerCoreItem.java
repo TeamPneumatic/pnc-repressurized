@@ -52,10 +52,13 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.ItemContainerContents;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnull;
 import java.util.*;
@@ -211,7 +214,7 @@ public class SpawnerCoreItem extends Item implements ColorHandlers.ITintableItem
 
             List<WeightedEntity> weightedEntities = new ArrayList<>();
             map.forEach((type, amount) -> weightedEntities.add(new WeightedEntity(type, amount)));
-            if (includeUnused) {
+            if (includeUnused && unused > 0) {
                 weightedEntities.add(new WeightedEntity(null, unused));
             }
 
@@ -254,24 +257,35 @@ public class SpawnerCoreItem extends Item implements ColorHandlers.ITintableItem
         protected void onContentsChanged(int slot) {
             super.onContentsChanged(slot);
 
-            if (slot == 0) {
-                readSpawnerCoreStats();
-            }
+            stats = null;
         }
 
         @Override
         public void deserializeNBT(HolderLookup.Provider provider, CompoundTag nbt) {
             super.deserializeNBT(provider, nbt);
 
-            readSpawnerCoreStats();
+            stats = null;
         }
 
+        @Override
+        public void loadContainerContents(@Nullable ItemContainerContents contents) {
+            super.loadContainerContents(contents);
+
+            stats = null;
+        }
+
+        @NotNull
         public ISpawnerCoreStats getStats() {
+            if (stats == null) {
+                stats = getStackInSlot(0).isEmpty() ?
+                        SpawnerCoreStats.EMPTY :
+                        getStackInSlot(0).getOrDefault(ModDataComponents.SPAWNER_CORE_STATS, SpawnerCoreStats.EMPTY);
+            }
             return stats;
         }
 
-        private void readSpawnerCoreStats() {
-            stats = getStackInSlot(0).isEmpty() ? null : getStackInSlot(0).get(ModDataComponents.SPAWNER_CORE_STATS);
+        public boolean isCorePresent() {
+            return getStackInSlot(0).getItem() instanceof SpawnerCoreItem;
         }
     }
 }

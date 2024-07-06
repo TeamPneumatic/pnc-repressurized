@@ -17,80 +17,99 @@
 
 package me.desht.pneumaticcraft.client.gui.remote;
 
-import me.desht.pneumaticcraft.client.gui.remote.actionwidget.*;
-import me.desht.pneumaticcraft.common.item.RemoteItem;
+import com.google.gson.JsonElement;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.JsonOps;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import me.desht.pneumaticcraft.client.gui.RemoteScreen;
+import me.desht.pneumaticcraft.client.gui.remote.actionwidget.ActionWidget;
+import me.desht.pneumaticcraft.client.gui.remote.actionwidget.ActionWidgets;
+import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.resources.RegistryOps;
 
-import java.util.*;
-import java.util.function.Supplier;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class RemoteLayout {
-    private final List<ActionWidget<?>> actionWidgets = new ArrayList<>();
-    private static final Map<String, Supplier<ActionWidget<?>>> registeredWidgets = new HashMap<>();
+    public static final int JSON_VERSION = 3;
 
-    static {
-        registerWidget(ActionWidgetCheckBox::new);
-        registerWidget(ActionWidgetLabel::new);
-        registerWidget(ActionWidgetButton::new);
-        registerWidget(ActionWidgetDropdown::new);
+    public static final Codec<RemoteLayout.Versioned> VERSIONED_SAVE_CODEC = RecordCodecBuilder.create(builder -> builder.group(
+            Codec.INT.fieldOf("version").forGetter(RemoteLayout.Versioned::version),
+            ActionWidgets.LIST_CODEC.fieldOf("widgets").forGetter(RemoteLayout.Versioned::widgets)
+    ).apply(builder, RemoteLayout.Versioned::new));
+
+    // Note: this is a mutable list
+    private final List<ActionWidget<?>> actionWidgets;
+
+    private RemoteLayout(List<ActionWidget<?>> list) {
+        actionWidgets = new ArrayList<>(list);
     }
 
-    private static void registerWidget(Supplier<ActionWidget<?>> supplier) {
-        ActionWidget<?> widget = supplier.get();
-        registeredWidgets.put(widget.getId(), supplier);
+    public static RemoteLayout createEmpty() {
+        return new RemoteLayout(List.of());
     }
 
-    public static Optional<ActionWidget<?>> createWidget(String id) {
-        Supplier<ActionWidget<?>> sup = registeredWidgets.get(id);
-        return sup == null ? Optional.empty() : Optional.of(sup.get());
+    public static RemoteLayout fromNBT(HolderLookup.Provider provider, CompoundTag tag) {
+        RegistryOps<Tag> ops = provider.createSerializationContext(NbtOps.INSTANCE);
+        var saved = Saved.CODEC.parse(ops, tag)
+                .resultOrPartial(err -> Log.warning("can't parse remote layout NBT: " + err))
+                .orElse(Saved.EMPTY);
+        return new RemoteLayout(saved.widgets());
     }
 
-    public RemoteLayout(HolderLookup.Provider provider, ItemStack remote, int guiLeft, int guiTop) {
-        CompoundTag tag = RemoteItem.getSavedLayout(remote);
-        if (!tag.isEmpty()) {
-            ListTag tagList = tag.getList("actionWidgets", Tag.TAG_COMPOUND);
-            for (int i = 0; i < tagList.size(); i++) {
-                CompoundTag widgetTag = tagList.getCompound(i);
-                createWidget(widgetTag.getString("id")).ifPresent(actionWidget -> {
-                    actionWidget.readFromNBT(provider, widgetTag, guiLeft, guiTop);
-                    actionWidgets.add(actionWidget);
-                });
-            }
-        }
+    public static RemoteLayout fromJson(HolderLookup.Provider provider, JsonElement json) {
+        RegistryOps<JsonElement> ops = provider.createSerializationContext(JsonOps.INSTANCE);
+        return VERSIONED_SAVE_CODEC.parse(ops, json)
+                .resultOrPartial(err -> Log.warning("can't parse remote layout JSON: " + err))
+                .map(v -> new RemoteLayout(v.widgets))
+                .orElse(createEmpty());
     }
 
-    public CompoundTag toNBT(HolderLookup.Provider provider, int guiLeft, int guiTop) {
-        CompoundTag tag = new CompoundTag();
-
-        ListTag tagList = new ListTag();
-        for (ActionWidget<?> actionWidget : actionWidgets) {
-            tagList.add(actionWidget.toNBT(provider, guiLeft, guiTop));
-        }
-        tag.put("actionWidgets", tagList);
-        return tag;
+    public CompoundTag toNBT(HolderLookup.Provider provider) {
+        RegistryOps<Tag> ops = provider.createSerializationContext(NbtOps.INSTANCE);
+        Tag tag = Saved.CODEC.encodeStart(ops, new Saved(actionWidgets)).result().orElseThrow();
+        return tag instanceof CompoundTag c ? c : new CompoundTag();
     }
 
-    public void addWidget(ActionWidget<?> widget) {
-        actionWidgets.add(widget);
+    public JsonElement toJson(HolderLookup.Provider provider) {
+        RegistryOps<JsonElement> ops = provider.createSerializationContext(JsonOps.INSTANCE);
+        return VERSIONED_SAVE_CODEC.encodeStart(ops, new Versioned(JSON_VERSION, actionWidgets)).result().orElseThrow();
+    }
+
+    public void addActionWidget(ActionWidget<?> actionWidget) {
+        actionWidgets.add(actionWidget);
+    }
+
+    public void removeActionWidget(ActionWidget<?> actionWidget) {
+        actionWidgets.remove(actionWidget);
     }
 
     public List<ActionWidget<?>> getActionWidgets() {
-        return actionWidgets;
+        return Collections.unmodifiableList(actionWidgets);
     }
 
-    public List<AbstractWidget> getWidgets(boolean filterDisabledWidgets) {
-        List<AbstractWidget> widgets = new ArrayList<>();
-        for (ActionWidget<?> actionWidget : actionWidgets) {
-            if (!filterDisabledWidgets || actionWidget.isEnabled()) {
-                widgets.add(actionWidget.getWidget());
-            }
-        }
-        return widgets;
+    public List<AbstractWidget> getOrCreateMinecraftWidgets(RemoteScreen screen, boolean filterDisabledWidgets) {
+        return actionWidgets.stream()
+                .filter(actionWidget -> !filterDisabledWidgets || actionWidget.isEnabled())
+                .map(actionWidget -> actionWidget.getOrCreateMinecraftWidget(screen))
+                .collect(Collectors.toList());
     }
 
+    public record Saved(List<ActionWidget<?>> widgets) {
+        public static final Codec<Saved> CODEC = RecordCodecBuilder.create(builder -> builder.group(
+            ActionWidgets.CODEC.listOf().fieldOf("widgets").forGetter(Saved::widgets)
+        ).apply(builder, Saved::new));
+
+        public static Saved EMPTY = new Saved(List.of());
+    }
+
+    public record Versioned(int version, List<ActionWidget<?>> widgets) {
+    }
 }

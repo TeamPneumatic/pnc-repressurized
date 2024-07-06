@@ -76,14 +76,14 @@ public interface ISemiBlock {
     BlockEntity getCachedTileEntity();
 
     /**
-     * Written to the dropped item (under the "EntityTag" subtag) when the semiblock is broken, to persisted entity
-     * data by {@code Entity#addAdditionalSaveData()}, and displayed by info mods such as TOP or Waila. Use this method
-     * rather than {@code addAdditionalSaveData()} for fields that either need to be serialized to the dropped item, or
-     * displayed on TOP/Waila.
+     * Written to the dropped item (in the "pneumaticcraft:semiblock_data" component) when the semiblock is broken,
+     * to persisted entity data by {@code Entity#addAdditionalSaveData()}, and displayed by info mods such as TOP or
+     * Waila. Use this method rather than {@code addAdditionalSaveData()} for fields that either need to be serialized
+     * to the dropped item, or displayed on TOP/Waila.
      * <p>
      *
      * @param tag      NBT tag to write data to
-     * @param provider
+     * @param provider the lookup provider
      * @implNote Data written to itemstacks is automatically applied to newly-spawned entities by
      * {@link net.minecraft.world.entity.EntityType#updateCustomEntityTag(Level, Player, Entity, CustomData)} when the
      * semiblock entity is spawned from an item (i.e. placed by a player).

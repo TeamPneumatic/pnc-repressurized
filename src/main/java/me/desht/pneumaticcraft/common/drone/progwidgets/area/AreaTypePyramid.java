@@ -33,6 +33,7 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 public class AreaTypePyramid extends AreaType {
@@ -48,8 +49,8 @@ public class AreaTypePyramid extends AreaType {
 
     public static final String ID = "pyramid";
 
-    private AreaAxis axis = AreaAxis.X;
-    private PyramidType pyramidType = PyramidType.FILLED;
+    private AreaAxis axis;
+    private PyramidType pyramidType;
 
     public AreaTypePyramid() {
         this(AreaAxis.X, PyramidType.FILLED);
@@ -59,6 +60,11 @@ public class AreaTypePyramid extends AreaType {
         super(ID);
         this.axis = axis;
         this.pyramidType = pyramidType;
+    }
+
+    @Override
+    public AreaType copy() {
+        return new AreaTypePyramid(axis, pyramidType);
     }
 
     @Override
@@ -191,46 +197,31 @@ public class AreaTypePyramid extends AreaType {
         widgets.add(new AreaTypeWidget.EnumSelectorField<>("pneumaticcraft.gui.progWidget.area.type.pyramid.pyramidType", PyramidType.class, () -> pyramidType, pyramidType -> this.pyramidType = pyramidType));
     }
 
-//    @Override
-//    public void writeToNBT(CompoundTag tag) {
-//        super.writeToNBT(tag);
-//        tag.putByte("axis", (byte) axis.ordinal());
-//        tag.putByte("pyramidType", (byte) pyramidType.ordinal());
-//    }
-//
-//    @Override
-//    public void readFromNBT(CompoundTag tag) {
-//        super.readFromNBT(tag);
-//        axis = EnumAxis.values()[tag.getByte("axis")];
-//        pyramidType = EnumAreaTypePyramid.values()[tag.getByte("pyramidType")];
-//    }
-//
-//    @Override
-//    public void writeToPacket(FriendlyByteBuf buffer) {
-//        super.writeToPacket(buffer);
-//        buffer.writeEnum(axis);
-//        buffer.writeEnum(pyramidType);
-//    }
-//
-//    @Override
-//    public void readFromPacket(FriendlyByteBuf buf) {
-//        super.readFromPacket(buf);
-//        axis = buf.readEnum(EnumAxis.class);
-//        pyramidType = buf.readEnum(EnumAreaTypePyramid.class);
-//    }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        AreaTypePyramid that = (AreaTypePyramid) o;
+        return axis == that.axis && pyramidType == that.pyramidType;
+    }
 
-    private enum PyramidType implements ITranslatableEnum, StringRepresentable {
+    @Override
+    public int hashCode() {
+        return Objects.hash(axis, pyramidType);
+    }
+
+    public enum PyramidType implements ITranslatableEnum, StringRepresentable {
         FILLED("filled"), HOLLOW("hollow");
 
         private final String name;
 
         PyramidType(String name) {
-            this.name = "pneumaticcraft.gui.progWidget.area.type.pyramid.pyramidType." + name;
+            this.name = name;
         }
 
         @Override
         public String getTranslationKey() {
-            return name;
+            return "pneumaticcraft.gui.progWidget.area.type.pyramid.pyramidType." + name;
         }
 
         @Override

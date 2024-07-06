@@ -19,10 +19,11 @@ package me.desht.pneumaticcraft.common.drone.progwidgets;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import io.netty.buffer.ByteBuf;
 import me.desht.pneumaticcraft.common.util.CodecUtil;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 
 import java.util.BitSet;
 
@@ -30,6 +31,10 @@ public class AxisOptions {
     public static final Codec<AxisOptions> CODEC = RecordCodecBuilder.create(builder -> builder.group(
             CodecUtil.bitSetCodec(3).fieldOf("axes").forGetter(a -> a.options)
     ).apply(builder, AxisOptions::new));
+    public static final StreamCodec<ByteBuf, AxisOptions> STREAM_CODEC = StreamCodec.composite(
+            CodecUtil.bitSetStreamCodec(3), a -> a.options,
+            AxisOptions::new
+    );
 
     public static final AxisOptions TRUE = new AxisOptions(true, true, true);
 
@@ -66,12 +71,7 @@ public class AxisOptions {
         setCheck(Direction.Axis.Z, nbt.contains("checkZ") ? nbt.getBoolean("checkZ") : def);
     }
 
-    public void writeToBuffer(FriendlyByteBuf buffer) {
-        buffer.writeByte(options.toByteArray()[0]);
-    }
-
-    public void readFromBuffer(FriendlyByteBuf buffer) {
-        options.clear();
-        options.or(BitSet.valueOf(new byte[] { buffer.readByte() }));
+    public AxisOptions copy() {
+        return new AxisOptions(BitSet.valueOf(options.toByteArray()));
     }
 }

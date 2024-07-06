@@ -25,14 +25,16 @@ import me.desht.pneumaticcraft.api.drone.IDrone;
 import me.desht.pneumaticcraft.api.drone.IProgWidget;
 import me.desht.pneumaticcraft.common.drone.ai.DroneAIBlockCondition;
 import me.desht.pneumaticcraft.common.thirdparty.computer_common.ProgWidgetCC;
-import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
 import me.desht.pneumaticcraft.lib.Log;
-import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.item.DyeColor;
+import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
 
 import java.util.*;
 
@@ -42,7 +44,6 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
  * Base class for in-world conditions.
  */
 public abstract class ProgWidgetCondition extends ProgWidgetInventoryBase implements ICondition, IJump, IVariableSetWidget {
-
     protected static <P extends ProgWidgetCondition> Products.P3<RecordCodecBuilder.Mu<P>, PositionFields, InvBaseFields, ConditionFields> condParts(RecordCodecBuilder.Instance<P> pInstance) {
         return invParts(pInstance).and(ConditionFields.CODEC.fieldOf("cond").forGetter(p -> p.cond));
     }
@@ -168,24 +169,6 @@ public abstract class ProgWidgetCondition extends ProgWidgetInventoryBase implem
     }
 
     @Override
-    public void writeToPacket(RegistryFriendlyByteBuf buf) {
-        super.writeToPacket(buf);
-        buf.writeBoolean(isAndFunction());
-        buf.writeEnum(getOperator());
-        buf.writeUtf(getMeasureVar(), GlobalVariableManager.MAX_VARIABLE_LEN);
-    }
-
-    @Override
-    public void readFromPacket(RegistryFriendlyByteBuf buf) {
-        super.readFromPacket(buf);
-        cond = new ConditionFields(
-                buf.readBoolean(),
-                buf.readEnum(Operator.class),
-                buf.readUtf(GlobalVariableManager.MAX_VARIABLE_LEN)
-        );
-    }
-
-    @Override
     protected boolean isUsingSides() {
         return false;
     }
@@ -219,6 +202,10 @@ public abstract class ProgWidgetCondition extends ProgWidgetInventoryBase implem
         setMeasureVar(variable);
     }
 
+    public ConditionFields conditionFields() {
+        return cond;
+    }
+
     public record ConditionFields(boolean isAndFunc, Operator op, String measureVar) {
         public static final ConditionFields DEFAULT = new ConditionFields(false, Operator.GE, "");
 
@@ -227,6 +214,12 @@ public abstract class ProgWidgetCondition extends ProgWidgetInventoryBase implem
                 StringRepresentable.fromEnum(Operator::values).optionalFieldOf("op", Operator.GE).forGetter(ConditionFields::op),
                 Codec.STRING.optionalFieldOf("measure_var", "").forGetter(ConditionFields::measureVar)
         ).apply(builder, ConditionFields::new));
+        public static final StreamCodec<FriendlyByteBuf, ConditionFields> STREAM_CODEC = StreamCodec.composite(
+                ByteBufCodecs.BOOL, ConditionFields::isAndFunc,
+                NeoForgeStreamCodecs.enumCodec(Operator.class), ConditionFields::op,
+                ByteBufCodecs.STRING_UTF8, ConditionFields::measureVar,
+                ConditionFields::new
+        );
 
         public ConditionFields withIsAndFunc(boolean isAndFunc) {
             return new ConditionFields(isAndFunc, op, measureVar);

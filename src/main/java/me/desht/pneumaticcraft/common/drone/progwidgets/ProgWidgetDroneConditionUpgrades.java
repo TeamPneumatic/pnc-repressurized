@@ -26,6 +26,8 @@ import me.desht.pneumaticcraft.api.drone.IProgWidget;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.registry.ModProgWidgetTypes;
 import me.desht.pneumaticcraft.lib.Textures;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 
@@ -34,12 +36,22 @@ import java.util.List;
 public class ProgWidgetDroneConditionUpgrades extends ProgWidgetDroneCondition implements IItemFiltering {
     public static final MapCodec<ProgWidgetDroneConditionUpgrades> CODEC = RecordCodecBuilder.mapCodec(builder ->
             droneConditionParts(builder).apply(builder, ProgWidgetDroneConditionUpgrades::new));
+    public static final StreamCodec<RegistryFriendlyByteBuf, ProgWidgetDroneConditionUpgrades> STREAM_CODEC = StreamCodec.composite(
+            PositionFields.STREAM_CODEC, ProgWidget::getPosition,
+            DroneConditionFields.STREAM_CODEC, ProgWidgetDroneCondition::droneConditionFields,
+            ProgWidgetDroneConditionUpgrades::new
+    );
 
     public ProgWidgetDroneConditionUpgrades() {
     }
 
     public ProgWidgetDroneConditionUpgrades(PositionFields pos, DroneConditionFields cond) {
         super(pos, cond);
+    }
+
+    @Override
+    public IProgWidget copyWidget() {
+        return new ProgWidgetDroneConditionUpgrades(getPosition(), droneConditionFields());
     }
 
     @Override

@@ -303,7 +303,10 @@ public class ProgrammerWidgetAreaRenderer {
                 }
             }
         }
-        BufferUploader.drawWithShader(wr.buildOrThrow());
+        MeshData meshData = wr.build();
+        if (meshData != null) {
+            BufferUploader.drawWithShader(meshData);
+        }
     }
 
     public float getScale() {

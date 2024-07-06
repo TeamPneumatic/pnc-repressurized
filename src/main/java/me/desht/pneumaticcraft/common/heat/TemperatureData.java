@@ -49,11 +49,6 @@ public class TemperatureData {
         }
     }
 
-    private TemperatureData(boolean isMultisided, Double[] temp) {
-        this.isMultisided = isMultisided;
-        this.temp = temp;
-    }
-
     public static TemperatureData forBlockEntity(BlockEntity provider) {
         Set<IHeatExchangerLogic> heatExchangers = new HashSet<>();
         for (Direction face : DirectionUtil.VALUES) {
@@ -75,20 +70,29 @@ public class TemperatureData {
         return new TemperatureData(false, temp);
     }
 
+    private TemperatureData(boolean isMultisided, Double[] temp) {
+        this.isMultisided = isMultisided;
+        this.temp = temp;
+    }
+
     public boolean isMultisided() {
         return isMultisided;
     }
 
-    public Double getTemperature(Direction face) {
-        return temp[face.get3DDataValue()];
+    public double getTemperature(Direction face) {
+        return Objects.requireNonNullElse(temp[getIdxForFace(face)], 0d);
     }
 
     public int getTemperatureAsInt(Direction face) {
-        return hasData(face) ? temp[face.get3DDataValue()].intValue() : 0;
+        return (int) getTemperature(face);
     }
 
     public boolean hasData(Direction face) {
-        return face == null ? temp[6] != null : temp[face.get3DDataValue()] != null;
+        return temp[getIdxForFace(face)] != null;
+    }
+
+    private int getIdxForFace(Direction face) {
+        return face == null ? 6 : face.get3DDataValue();
     }
 
     public CompoundTag toNBT() {

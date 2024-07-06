@@ -32,13 +32,14 @@ import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.item.crafting.CraftingRecipe;
-import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 
@@ -56,6 +57,12 @@ public class ProgWidgetCrafting extends ProgWidget implements ICraftingWidget, I
                             Codec.INT.optionalFieldOf("count", 1).forGetter(ProgWidgetCrafting::getCount)
                     )
             ).apply(builder, ProgWidgetCrafting::new));
+    public static final StreamCodec<RegistryFriendlyByteBuf, ProgWidgetCrafting> STREAM_CODEC = StreamCodec.composite(
+            PositionFields.STREAM_CODEC, ProgWidget::getPosition,
+            ByteBufCodecs.BOOL, ProgWidgetCrafting::useCount,
+            ByteBufCodecs.VAR_INT, ProgWidgetCrafting::getCount,
+            ProgWidgetCrafting::new
+    );
 
     private static final boolean[] NO_SIDES = new boolean[6];
 
@@ -72,6 +79,11 @@ public class ProgWidgetCrafting extends ProgWidget implements ICraftingWidget, I
 
     public ProgWidgetCrafting() {
         this(PositionFields.DEFAULT, false, 1);
+    }
+
+    @Override
+    public IProgWidget copyWidget() {
+        return new ProgWidgetCrafting(getPosition(), useCount, count);
     }
 
     @Override
@@ -169,9 +181,9 @@ public class ProgWidgetCrafting extends ProgWidget implements ICraftingWidget, I
                 VanillaRecipeCache.CRAFTING.getCachedRecipe(world, grid);
     }
 
-    public static Recipe<CraftingInput> getRecipe(Level world, ICraftingWidget widget) {
-        return widget.getRecipe(world, widget.getCraftingGrid()).orElse(null);
-    }
+//    public static Recipe<CraftingInput> getRecipe(Level world, ICraftingWidget widget) {
+//        return widget.getRecipe(world, widget.getCraftingGrid()).orElse(null);
+//    }
 
     @Override
     public Goal getWidgetAI(IDrone drone, IProgWidget widget) {
@@ -207,17 +219,4 @@ public class ProgWidgetCrafting extends ProgWidget implements ICraftingWidget, I
         this.count = count;
     }
 
-    @Override
-    public void writeToPacket(RegistryFriendlyByteBuf buf) {
-        super.writeToPacket(buf);
-        buf.writeBoolean(useCount);
-        buf.writeVarInt(count);
-    }
-
-    @Override
-    public void readFromPacket(RegistryFriendlyByteBuf buf) {
-        super.readFromPacket(buf);
-        useCount = buf.readBoolean();
-        count = buf.readVarInt();
-    }
 }

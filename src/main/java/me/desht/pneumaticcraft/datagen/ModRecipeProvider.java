@@ -305,14 +305,14 @@ public class ModRecipeProvider extends RecipeProvider {
                 'P', ModItems.PRINTED_CIRCUIT_BOARD.get()
         ).save(consumer);
 
-//        Item ccModem = BuiltInRegistries.ITEM.get(ResourceLocation.parse("computercraft:wireless_modem_normal"));
-//        shaped(ModBlocks.DRONE_INTERFACE.get(), ModItems.PRINTED_CIRCUIT_BOARD.get(),
-//                " U /MP /III",
-//                'I', PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON,
-//                'U', ModUpgrades.RANGE.get().getItem(),
-//                'P', ModItems.PRINTED_CIRCUIT_BOARD.get(),
-//                'M', ccModem
-//        ).save(consumer.withConditions(new ModLoadedCondition(ModIds.COMPUTERCRAFT)), RL("drone_interface"));
+        Item ccModem = BuiltInRegistries.ITEM.get(ResourceLocation.parse("computercraft:wireless_modem_normal"));
+        shaped(ModBlocks.DRONE_INTERFACE.get(), ModItems.PRINTED_CIRCUIT_BOARD.get(),
+                " U /MP /III",
+                'I', PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON,
+                'U', ModUpgrades.RANGE.get().getItem(),
+                'P', ModItems.PRINTED_CIRCUIT_BOARD.get(),
+                'M', ccModem
+        ).save(consumer.withConditions(new ModLoadedCondition(ModIds.COMPUTERCRAFT)), RL("drone_interface"));
 
         shaped(ModBlocks.ELECTROSTATIC_COMPRESSOR.get(), ModItems.TURBINE_ROTOR.get(),
                 "BPB/PRP/BCB",

@@ -1,0 +1,11 @@
+{
+   "thermalResistance" : 250,
+   "temperature" : 253,
+   "type" : "pneumaticcraft:heat_properties",
+   "heatCapacity" : 7500,
+   "transforms" : {
+      "hot" : "minecraft:ice",
+      "cold" : "minecraft:blue_ice"
+   },
+   "block" : "minecraft:packed_ice"
+}

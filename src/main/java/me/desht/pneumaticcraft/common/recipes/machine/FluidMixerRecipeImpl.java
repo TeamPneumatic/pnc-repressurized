@@ -117,8 +117,8 @@ public class FluidMixerRecipeImpl extends FluidMixerRecipe {
             streamCodec = StreamCodec.composite(
                     SizedFluidIngredient.STREAM_CODEC, FluidMixerRecipe::getInput1,
                     SizedFluidIngredient.STREAM_CODEC, FluidMixerRecipe::getInput2,
-                    FluidStack.STREAM_CODEC, FluidMixerRecipe::getOutputFluid,
-                    ItemStack.STREAM_CODEC, FluidMixerRecipe::getOutputItem,
+                    FluidStack.OPTIONAL_STREAM_CODEC, FluidMixerRecipe::getOutputFluid,
+                    ItemStack.OPTIONAL_STREAM_CODEC, FluidMixerRecipe::getOutputItem,
                     ByteBufCodecs.FLOAT, FluidMixerRecipe::getRequiredPressure,
                     ByteBufCodecs.VAR_INT, FluidMixerRecipe::getProcessingTime,
                     factory::create

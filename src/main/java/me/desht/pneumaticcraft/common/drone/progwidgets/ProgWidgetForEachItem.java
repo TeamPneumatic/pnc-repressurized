@@ -26,10 +26,11 @@ import me.desht.pneumaticcraft.api.drone.IProgWidget;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.drone.ai.DroneAIManager;
 import me.desht.pneumaticcraft.common.registry.ModProgWidgetTypes;
-import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
@@ -45,8 +46,13 @@ public class ProgWidgetForEachItem extends ProgWidget implements IJumpBackWidget
             baseParts(builder).and(
                     Codec.STRING.optionalFieldOf("variable", "").forGetter(ProgWidgetForEachItem::getVariable)
             ).apply(builder, ProgWidgetForEachItem::new));
+    public static final StreamCodec<RegistryFriendlyByteBuf, ProgWidgetForEachItem> STREAM_CODEC = StreamCodec.composite(
+            PositionFields.STREAM_CODEC, ProgWidget::getPosition,
+            ByteBufCodecs.STRING_UTF8, ProgWidgetForEachItem::getVariable,
+            ProgWidgetForEachItem::new
+    );
 
-    private String elementVariable = "";
+    private String elementVariable;
     private int curIndex; //iterator index
     private DroneAIManager aiManager;
 
@@ -57,6 +63,11 @@ public class ProgWidgetForEachItem extends ProgWidget implements IJumpBackWidget
 
     public ProgWidgetForEachItem() {
         this(PositionFields.DEFAULT, "");
+    }
+
+    @Override
+    public IProgWidget copyWidget() {
+        return new ProgWidgetForEachItem(getPosition(), elementVariable);
     }
 
     @Override
@@ -87,30 +98,6 @@ public class ProgWidgetForEachItem extends ProgWidget implements IJumpBackWidget
     @Override
     public void setVariable(String variable) {
         elementVariable = variable;
-    }
-
-//    @Override
-//    public void writeToNBT(CompoundTag tag, HolderLookup.Provider provider) {
-//        if (!elementVariable.isEmpty()) tag.putString("variable", elementVariable);
-//        super.writeToNBT(tag, provider);
-//    }
-//
-//    @Override
-//    public void readFromNBT(CompoundTag tag, HolderLookup.Provider provider) {
-//        elementVariable = tag.getString("variable");
-//        super.readFromNBT(tag, provider);
-//    }
-
-    @Override
-    public void writeToPacket(RegistryFriendlyByteBuf buf) {
-        super.writeToPacket(buf);
-        buf.writeUtf(elementVariable);
-    }
-
-    @Override
-    public void readFromPacket(RegistryFriendlyByteBuf buf) {
-        super.readFromPacket(buf);
-        elementVariable = buf.readUtf(GlobalVariableManager.MAX_VARIABLE_LEN);
     }
 
     @Override

@@ -17,8 +17,12 @@
 
 package me.desht.pneumaticcraft.client.gui.remote.actionwidget;
 
+import com.mojang.datafixers.Products;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import me.desht.pneumaticcraft.client.gui.RemoteEditorScreen;
-import me.desht.pneumaticcraft.client.gui.remote.RemoteLayout;
+import me.desht.pneumaticcraft.client.gui.RemoteScreen;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableHelper;
 import me.desht.pneumaticcraft.lib.Log;
@@ -28,82 +32,90 @@ import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtUtils;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
-
-import java.util.function.Supplier;
+import net.minecraft.resources.RegistryOps;
 
 public abstract class ActionWidget<W extends AbstractWidget> {
-    private static final BlockPos ONE_ZERO_ZERO = new BlockPos(1, 0, 0);
     protected W widget;
-    private String enableVariable = "";
-    private BlockPos enablingValue = BlockPos.ZERO;
+    protected BaseSettings baseSettings;
+    protected final WidgetSettings widgetSettings;
 
-    ActionWidget(W widget) {
-        this.widget = widget;
+    protected static <P extends ActionWidget<?>> Products.P2<RecordCodecBuilder.Mu<P>, BaseSettings, WidgetSettings> baseParts(RecordCodecBuilder.Instance<P> pInstance) {
+        return pInstance.group(
+                BaseSettings.CODEC.fieldOf("base").forGetter(a -> a.baseSettings),
+                WidgetSettings.CODEC.fieldOf("widget").forGetter(a -> a.widgetSettings)
+        );
     }
 
-    ActionWidget() {
+    protected ActionWidget(BaseSettings baseSettings, WidgetSettings widgetSettings) {
+        this.baseSettings = baseSettings;
+        this.widgetSettings = widgetSettings;
     }
 
-    public void readFromNBT(HolderLookup.Provider provider, CompoundTag tag, int guiLeft, int guiTop) {
-        enableVariable = tag.getString("enableVariable");
-        enablingValue = NbtUtils.readBlockPos(tag, "enablingVal").orElse(ONE_ZERO_ZERO);
+    protected ActionWidget(WidgetSettings widgetSettings) {
+        this(BaseSettings.DEFAULT, widgetSettings);
     }
 
-    public CompoundTag toNBT(HolderLookup.Provider provider, int guiLeft, int guiTop) {
-        CompoundTag tag = new CompoundTag();
-        tag.putString("id", getId());
-        tag.putString("enableVariable", enableVariable);
-        tag.put("enablingVal", NbtUtils.writeBlockPos(enablingValue));
-        return tag;
-    }
+    public abstract MapCodec<? extends ActionWidget<W>> codec();
+
+    public abstract String getId();
 
     public ActionWidget<?> copy(HolderLookup.Provider provider) {
         try {
-            ActionWidget<?> copy = RemoteLayout.createWidget(getId())
-                    .orElseThrow(() -> new IllegalArgumentException("unknown id"));
-            copy.readFromNBT(provider, toNBT(provider, 0, 0), 0, 0);
-            return copy;
+            RegistryOps<Tag> ops = provider.createSerializationContext(NbtOps.INSTANCE);
+            Tag tag = ActionWidgets.CODEC.encodeStart(ops, this).getOrThrow();
+            return ActionWidgets.CODEC.parse(ops, tag).getOrThrow();
         } catch (Exception e) {
             Log.error("Error occurred when trying to copy a {} action widget: {}", getId(), e.getMessage());
             return null;
         }
     }
 
-    public W getWidget() {
+    public final W getOrCreateMinecraftWidget(RemoteScreen screen) {
+        if (widget == null) {
+            widget = createMinecraftWidget(screen);
+        }
         return widget;
     }
 
-    public abstract void setWidgetPos(int x, int y);
+    protected abstract W createMinecraftWidget(RemoteScreen screen);
 
-    public abstract String getId();
+    public abstract Screen createConfigurationGui(RemoteEditorScreen guiRemote);
 
-    public Screen getGui(RemoteEditorScreen guiRemote) {
-        return null;
+    public final void setWidgetPos(RemoteEditorScreen screen, int absX, int absY) {
+        // widget X/Y are stored relative to screen left/top
+        widgetSettings.setX(absX - screen.getGuiLeft());
+        widgetSettings.setY(absY - screen.getGuiTop());
+
+        if (widget != null) {
+            widget.setPosition(absX, absY);
+        }
     }
 
     public void setEnableVariable(String varName) {
-        this.enableVariable = varName;
+        baseSettings = baseSettings.withVariable(varName);
     }
 
     public String getEnableVariable() {
-        return enableVariable;
+        return baseSettings.enableVariable;
     }
 
     public boolean isEnabled() {
-        if (enableVariable.isEmpty()) return true;
-        BlockPos pos = GlobalVariableHelper.getPos(ClientUtils.getClientPlayer().getUUID(), enableVariable, BlockPos.ZERO);
-        return pos.equals(enablingValue);
+        if (getEnableVariable().isEmpty()) {
+            return true;
+        }
+        BlockPos pos = GlobalVariableHelper.getPos(ClientUtils.getClientPlayer().getUUID(), getEnableVariable(), BlockPos.ZERO);
+        return pos.equals(getEnablingValue());
     }
 
     public void setEnablingValue(int x, int y, int z) {
-        enablingValue = new BlockPos(x, y, z);
+        baseSettings = baseSettings.withEnablingValue(new BlockPos(x, y, z));
     }
 
     public BlockPos getEnablingValue() {
-        return enablingValue;
+        return baseSettings.enablingValue;
     }
 
     public void setTooltip(Tooltip tooltip) {
@@ -114,17 +126,25 @@ public abstract class ActionWidget<W extends AbstractWidget> {
         return widget.getTooltip();
     }
 
-    public Component getTooltipMessage() {
-        Tooltip tooltip = getWidget().getTooltip();
+    public Component getTooltipMessage(RemoteScreen screen) {
+        Tooltip tooltip = getOrCreateMinecraftWidget(screen).getTooltip();
         return tooltip == null ? Component.empty() : ((TooltipAccess) tooltip).getMessage();
     }
 
-    void deserializeTooltip(String val, HolderLookup.Provider provider) {
-        if (!val.isEmpty()) {
-            Component c = Component.Serializer.fromJson(val, provider);
-            widget.setTooltip(c == null ? null : Tooltip.create(c));
-        } else {
-            widget.setTooltip(null);
+    protected record BaseSettings(String enableVariable, BlockPos enablingValue) {
+        public static final Codec<BaseSettings> CODEC = RecordCodecBuilder.create(builder -> builder.group(
+                Codec.STRING.fieldOf("enable_var").forGetter(BaseSettings::enableVariable),
+                BlockPos.CODEC.fieldOf("pos").forGetter(BaseSettings::enablingValue)
+        ).apply(builder, BaseSettings::new));
+
+        public static final BaseSettings DEFAULT = new BaseSettings("", BlockPos.ZERO);
+
+        public BaseSettings withVariable(String var) {
+            return new BaseSettings(var, enablingValue);
+        }
+
+        public BaseSettings withEnablingValue(BlockPos value) {
+            return new BaseSettings(enableVariable, value);
         }
     }
 }

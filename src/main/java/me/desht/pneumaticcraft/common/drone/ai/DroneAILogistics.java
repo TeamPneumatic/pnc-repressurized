@@ -18,6 +18,7 @@
 package me.desht.pneumaticcraft.common.drone.ai;
 
 import me.desht.pneumaticcraft.api.drone.IDrone;
+import me.desht.pneumaticcraft.api.drone.IProgWidget;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.api.semiblock.ISemiBlock;
 import me.desht.pneumaticcraft.common.drone.IDroneBase;
@@ -42,7 +43,7 @@ import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.fluids.FluidStack;
 
 import javax.annotation.Nonnull;
-import java.util.HashSet;
+import java.util.Arrays;
 import java.util.PriorityQueue;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -165,8 +166,7 @@ public class DroneAILogistics extends Goal {
             super(PositionFields.DEFAULT, InvBaseFields.DEFAULT);
             this.stack = stack;
             this.fluid = FluidStack.EMPTY;
-            area = new HashSet<>();
-            area.add(pos);
+            this.area = Set.of(pos);
             sides[side.get3DDataValue()] = true;
         }
 
@@ -174,9 +174,21 @@ public class DroneAILogistics extends Goal {
             super(PositionFields.DEFAULT, InvBaseFields.DEFAULT);
             this.stack = ItemStack.EMPTY;
             this.fluid = fluid;
-            area = new HashSet<>();
-            area.add(pos);
+            this.area = Set.of(pos);
             sides[side.get3DDataValue()] = true;
+        }
+
+        private FakeWidgetLogistics(PositionFields pos, InvBaseFields invBaseFields, ItemStack stack, FluidStack fluid, Set<BlockPos> area, boolean[] sides) {
+            super(pos, invBaseFields);
+            this.stack = stack;
+            this.fluid = fluid;
+            this.area = Set.copyOf(area);
+            System.arraycopy(sides, 0, this.sides, 0, 6);
+        }
+
+        @Override
+        public IProgWidget copyWidget() {
+            return new FakeWidgetLogistics(getPosition(), invBaseFields().copy(), stack.copy(), fluid.copy(), Set.copyOf(area), Arrays.copyOf(sides, sides.length));
         }
 
         @Override

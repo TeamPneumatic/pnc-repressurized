@@ -23,15 +23,17 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import me.desht.pneumaticcraft.api.drone.IDrone;
 import me.desht.pneumaticcraft.api.drone.IProgWidget;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
-import me.desht.pneumaticcraft.common.drone.IDroneBase;
 import me.desht.pneumaticcraft.common.drone.ai.DroneAIRightClickBlock;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.core.Direction;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.entity.ai.goal.Goal;
+import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
 
 import java.util.List;
 
@@ -44,6 +46,14 @@ public class ProgWidgetBlockRightClick extends ProgWidgetPlace implements IBlock
                     StringRepresentable.fromEnum(RightClickType::values).optionalFieldOf("type", RightClickType.CLICK_ITEM).forGetter(ProgWidgetBlockRightClick::getClickType)
             )
     ).apply(builder, ProgWidgetBlockRightClick::new));
+    public static final StreamCodec<RegistryFriendlyByteBuf, ProgWidgetBlockRightClick> STREAM_CODEC = StreamCodec.composite(
+            PositionFields.STREAM_CODEC, ProgWidget::getPosition,
+            DigPlaceFields.STREAM_CODEC, p -> p.digPlaceFields,
+            Direction.STREAM_CODEC, ProgWidgetBlockRightClick::getClickSide,
+            ByteBufCodecs.BOOL, ProgWidgetBlockRightClick::isSneaking,
+            NeoForgeStreamCodecs.enumCodec(RightClickType.class), ProgWidgetBlockRightClick::getClickType,
+            ProgWidgetBlockRightClick::new
+    );
 
     private Direction clickSide = Direction.UP;
     private boolean sneaking;
@@ -112,38 +122,6 @@ public class ProgWidgetBlockRightClick extends ProgWidgetPlace implements IBlock
         curTooltip.add(Component.translatable("pneumaticcraft.gui.progWidget.blockRightClick.operation")
                 .append(": ")
                 .append(Component.translatable(clickType.getTranslationKey())));
-    }
-
-//    @Override
-//    public void writeToNBT(CompoundTag tag, HolderLookup.Provider provider) {
-//        super.writeToNBT(tag, provider);
-//        if (sneaking) tag.putBoolean("sneaking", true);
-//        tag.putInt("dir", clickSide.get3DDataValue());
-//        tag.putString("clickType", clickType.toString());
-//    }
-//
-//    @Override
-//    public void readFromNBT(CompoundTag tag, HolderLookup.Provider provider) {
-//        super.readFromNBT(tag, provider);
-//        sneaking = tag.getBoolean("sneaking");
-//        clickSide = Direction.from3DDataValue(tag.getInt("dir"));
-//        clickType = tag.contains("clickType") ? RightClickType.valueOf(tag.getString("clickType")) : RightClickType.CLICK_ITEM;
-//    }
-
-    @Override
-    public void writeToPacket(RegistryFriendlyByteBuf buf) {
-        super.writeToPacket(buf);
-        buf.writeBoolean(sneaking);
-        buf.writeEnum(clickSide);
-        buf.writeEnum(clickType);
-    }
-
-    @Override
-    public void readFromPacket(RegistryFriendlyByteBuf buf) {
-        super.readFromPacket(buf);
-        sneaking = buf.readBoolean();
-        clickSide = buf.readEnum(Direction.class);
-        clickType = buf.readEnum(RightClickType.class);
     }
 
     @Override

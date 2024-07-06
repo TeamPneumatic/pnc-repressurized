@@ -148,9 +148,14 @@ public class DroneAIAttackEntity extends MeleeAttackGoal {
             ItemStack stack = attacker.getInv().getStackInSlot(i);
             if (!stack.isEmpty()) {
                 AttributeInstance damage = new AttributeInstance(Attributes.ATTACK_DAMAGE, c -> {});
-                for (AttributeModifier modifier : stack.getAttributeModifiers(EquipmentSlot.MAINHAND).get(Attributes.ATTACK_DAMAGE)) {
-                    damage.addTransientModifier(modifier);
-                }
+                stack.getAttributeModifiers().forEach(EquipmentSlot.MAINHAND, (attr, mod) -> {
+                    if (attr.is(Attributes.ATTACK_DAMAGE)) {
+                        damage.addTransientModifier(mod);
+                    }
+                });
+//                for (AttributeModifier modifier : stack.getAttributeModifiers(EquipmentSlot.MAINHAND).get(Attributes.ATTACK_DAMAGE)) {
+//                    damage.addTransientModifier(modifier);
+//                }
                 float modified = EnchantmentHelper.modifyDamage((ServerLevel) attacker.level(), stack, attacker.getTarget(), attacker.damageSources().mobAttack(attacker), (float) damage.getValue());
                 if (modified > bestDmg) {
                     bestDmg = modified;

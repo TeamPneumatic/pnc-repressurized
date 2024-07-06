@@ -15,6 +15,14 @@
             {
               "function": "minecraft:copy_name",
               "source": "block_entity"
+            },
+            {
+              "function": "minecraft:copy_components",
+              "include": [
+                "pneumaticcraft:air",
+                "pneumaticcraft:upgrades"
+              ],
+              "source": "block_entity"
             }
           ],
           "name": "pneumaticcraft:tube_junction"

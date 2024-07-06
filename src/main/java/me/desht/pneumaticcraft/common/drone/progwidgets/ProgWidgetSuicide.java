@@ -25,6 +25,8 @@ import me.desht.pneumaticcraft.api.drone.IProgWidget;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.registry.ModProgWidgetTypes;
 import me.desht.pneumaticcraft.lib.Textures;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.item.DyeColor;
@@ -36,6 +38,10 @@ import java.util.List;
 public class ProgWidgetSuicide extends ProgWidget {
     public static final MapCodec<ProgWidgetSuicide> CODEC = RecordCodecBuilder.mapCodec(builder ->
         baseParts(builder).apply(builder, ProgWidgetSuicide::new));
+    public static final StreamCodec<RegistryFriendlyByteBuf, ProgWidgetSuicide> STREAM_CODEC = StreamCodec.composite(
+            PositionFields.STREAM_CODEC, ProgWidget::getPosition,
+            ProgWidgetSuicide::new
+    );
 
     private ProgWidgetSuicide(PositionFields pos) {
         super(pos);
@@ -43,6 +49,11 @@ public class ProgWidgetSuicide extends ProgWidget {
 
     public ProgWidgetSuicide() {
         super(PositionFields.DEFAULT);
+    }
+
+    @Override
+    public IProgWidget copyWidget() {
+        return new ProgWidgetSuicide(getPosition());
     }
 
     @Override

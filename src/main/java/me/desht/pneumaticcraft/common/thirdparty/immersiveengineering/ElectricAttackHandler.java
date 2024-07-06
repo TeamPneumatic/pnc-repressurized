@@ -30,7 +30,7 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.neoforge.event.entity.living.LivingHurtEvent;
+import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import org.joml.Vector3f;
 
 import java.util.HashMap;
@@ -41,7 +41,7 @@ import java.util.UUID;
 public class ElectricAttackHandler {
     private static final Map<UUID, Long> sounds = new HashMap<>();
 
-    public static void onElectricalAttack(LivingHurtEvent event) {
+    public static void onElectricalAttack(LivingIncomingDamageEvent event) {
         if (!event.getSource().is(Lib.DamageTypes.WIRE_SHOCK)) return;
 
         if (event.getEntity() instanceof DroneEntity drone) {

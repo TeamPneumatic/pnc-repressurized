@@ -22,7 +22,6 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import me.desht.pneumaticcraft.common.drone.ai.DroneAIBlockInteraction;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -40,10 +39,6 @@ public abstract class ProgWidgetDigAndPlace extends ProgWidgetAreaItemBase imple
                 ProgWidgetDigAndPlace.DigPlaceFields.CODEC.fieldOf("inv").forGetter(p -> p.digPlaceFields)
         );
     }
-
-//    private Ordering order;
-//    private int maxActions = 1;
-//    private boolean useMaxActions;
 
     protected DigPlaceFields digPlaceFields;
 
@@ -89,36 +84,6 @@ public abstract class ProgWidgetDigAndPlace extends ProgWidgetAreaItemBase imple
         curTooltip.add(xlate("pneumaticcraft.message.misc.order", xlate(getOrder().getTranslationKey())));
     }
 
-//    @Override
-//    public void writeToNBT(CompoundTag tag, HolderLookup.Provider provider) {
-//        super.writeToNBT(tag, provider);
-//        tag.putInt("order", order.ordinal());
-//        if (useMaxActions) tag.putBoolean("useMaxActions", true);
-//        tag.putInt("maxActions", maxActions);
-//    }
-//
-//    @Override
-//    public void readFromNBT(CompoundTag tag, HolderLookup.Provider provider) {
-//        super.readFromNBT(tag, provider);
-//        order = Ordering.values()[tag.getInt("order")];
-//        useMaxActions = tag.getBoolean("useMaxActions");
-//        maxActions = tag.getInt("maxActions");
-//    }
-
-    @Override
-    public void writeToPacket(RegistryFriendlyByteBuf buf) {
-        super.writeToPacket(buf);
-
-        DigPlaceFields.STREAM_CODEC.encode(buf, digPlaceFields);
-    }
-
-    @Override
-    public void readFromPacket(RegistryFriendlyByteBuf buf) {
-        super.readFromPacket(buf);
-
-        digPlaceFields = DigPlaceFields.STREAM_CODEC.decode(buf);
-    }
-
     @Override
     public List<Component> getExtraStringInfo() {
         return Collections.singletonList(xlate(getOrder().getTranslationKey()));
@@ -139,7 +104,7 @@ public abstract class ProgWidgetDigAndPlace extends ProgWidgetAreaItemBase imple
                 Codec.BOOL.optionalFieldOf("use_max_actions", false).forGetter(DigPlaceFields::useMaxActions)
         ).apply(builder, DigPlaceFields::new));
 
-        public static StreamCodec<FriendlyByteBuf, DigPlaceFields> STREAM_CODEC = StreamCodec.composite(
+        public static final StreamCodec<FriendlyByteBuf, DigPlaceFields> STREAM_CODEC = StreamCodec.composite(
                 NeoForgeStreamCodecs.enumCodec(Ordering.class), DigPlaceFields::order,
                 ByteBufCodecs.VAR_INT, DigPlaceFields::maxActions,
                 ByteBufCodecs.BOOL, DigPlaceFields::useMaxActions,

@@ -17,6 +17,7 @@
 
 package me.desht.pneumaticcraft.common.entity.semiblock;
 
+import me.desht.pneumaticcraft.api.data.PneumaticCraftTags;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -34,7 +35,6 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.common.IPlantable;
 
 public class CropSupportEntity extends AbstractSemiblockEntity {
     private static final AABB BOUNDS = new AABB(3 / 16D, 0D, 3 / 16D, 13 / 16D, 9 / 16D, 13 / 16D);
@@ -65,13 +65,14 @@ public class CropSupportEntity extends AbstractSemiblockEntity {
     @Override
     public boolean canPlace(Direction facing) {
         BlockState state = getBlockState();
-        return (state.isAir() || state.getBlock() instanceof IPlantable) && canStay();
+        return (state.isAir() || state.is(PneumaticCraftTags.Blocks.CROP_SUPPORT_GROWABLE)) && canStay();
     }
 
     @Override
     public boolean canStay() {
         BlockState state = getBlockState();
         if (!state.isAir()) {
+            // allows for a crop support to remain "embedded" in a tree which has just grown
             return true;
         }
 

@@ -26,6 +26,8 @@ import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.drone.ai.DroneAIEnergyImport;
 import me.desht.pneumaticcraft.common.registry.ModProgWidgetTypes;
 import me.desht.pneumaticcraft.lib.Textures;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.item.DyeColor;
@@ -36,6 +38,11 @@ public class ProgWidgetEnergyImport extends ProgWidgetInventoryBase {
     public static final MapCodec<ProgWidgetEnergyImport> CODEC = RecordCodecBuilder.mapCodec(builder ->
             invParts(builder).apply(builder, ProgWidgetEnergyImport::new)
     );
+    public static final StreamCodec<RegistryFriendlyByteBuf, ProgWidgetEnergyImport> STREAM_CODEC = StreamCodec.composite(
+            PositionFields.STREAM_CODEC, ProgWidget::getPosition,
+            InvBaseFields.STREAM_CODEC, ProgWidgetInventoryBase::invBaseFields,
+            ProgWidgetEnergyImport::new
+    );
 
     public ProgWidgetEnergyImport() {
         this(PositionFields.DEFAULT, InvBaseFields.DEFAULT);
@@ -43,6 +50,11 @@ public class ProgWidgetEnergyImport extends ProgWidgetInventoryBase {
 
     public ProgWidgetEnergyImport(PositionFields positionFields, InvBaseFields invBaseFields) {
         super(positionFields, invBaseFields);
+    }
+
+    @Override
+    public IProgWidget copyWidget() {
+        return new ProgWidgetEnergyImport(getPosition(), invBaseFields().copy());
     }
 
     @Override

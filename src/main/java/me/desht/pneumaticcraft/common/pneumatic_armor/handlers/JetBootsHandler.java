@@ -221,15 +221,15 @@ public class JetBootsHandler extends BaseArmorUpgradeHandler<JetBootsHandler.Jet
         Player player = commonArmorHandler.getPlayer();
         JetBootsHandler.JetBootsLocalState jbLocal = commonArmorHandler.getExtensionData(this);
         if (componentType == ModDataComponents.JET_BOOTS_BUILDER_MODE.get()) {
-            JetBootsStateTracker.getTracker(player).getJetBootsState(player).setBuilderMode((boolean) val);
+            JetBootsStateTracker.getTracker(player).getJetBootsState(player).setBuilderMode((Boolean) val);
         } else if (componentType == ModDataComponents.JET_BOOTS_PCT.get()) {
-            jbLocal.jetBootsPower = Mth.clamp((int) val / 100f, 0f, 1f);
+            jbLocal.jetBootsPower = Mth.clamp((Integer) val / 100f, 0f, 1f);
         } else if (componentType == ModDataComponents.JET_BOOTS_STABILIZERS.get()) {
-            jbLocal.flightStabilizers = (boolean) val;
+            jbLocal.flightStabilizers = (Boolean) val;
         } else if (componentType == ModDataComponents.JET_BOOTS_HOVER.get()) {
-            jbLocal.hover = (boolean) val;
+            jbLocal.hover = (Boolean) val;
         } else if (componentType == ModDataComponents.JET_BOOTS_SMART_HOVER.get()) {
-            jbLocal.smartHover = (boolean) val;
+            jbLocal.smartHover = (Boolean) val;
         }
     }
 

@@ -28,6 +28,8 @@ import me.desht.pneumaticcraft.common.registry.ModProgWidgetTypes;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.item.DyeColor;
@@ -41,6 +43,11 @@ public class ProgWidgetStandby extends ProgWidget implements IStandbyWidget {
     public static final MapCodec<ProgWidgetStandby> CODEC = RecordCodecBuilder.mapCodec(builder ->
         baseParts(builder).and(Codec.BOOL.optionalFieldOf("allow_pickup", false).forGetter(ProgWidgetStandby::allowPickupOnStandby)
     ).apply(builder, ProgWidgetStandby::new));
+    public static final StreamCodec<RegistryFriendlyByteBuf, ProgWidgetStandby> STREAM_CODEC = StreamCodec.composite(
+            PositionFields.STREAM_CODEC, ProgWidget::getPosition,
+            ByteBufCodecs.BOOL, ProgWidgetStandby::allowPickupOnStandby,
+            ProgWidgetStandby::new
+    );
 
     private boolean allowStandbyPickup;
 
@@ -51,6 +58,11 @@ public class ProgWidgetStandby extends ProgWidget implements IStandbyWidget {
 
     public ProgWidgetStandby() {
         this(PositionFields.DEFAULT, false);
+    }
+
+    @Override
+    public IProgWidget copyWidget() {
+        return new ProgWidgetStandby(getPosition(), allowStandbyPickup);
     }
 
     @Override
@@ -110,30 +122,6 @@ public class ProgWidgetStandby extends ProgWidget implements IStandbyWidget {
     @Override
     public void setAllowStandbyPickup(boolean allowStandbyPickup) {
         this.allowStandbyPickup = allowStandbyPickup;
-    }
-
-//    @Override
-//    public void writeToNBT(CompoundTag tag, HolderLookup.Provider provider) {
-//        super.writeToNBT(tag, provider);
-//        if (allowStandbyPickup) tag.putBoolean("allowStandbyPickup", true);
-//    }
-//
-//    @Override
-//    public void readFromNBT(CompoundTag tag, HolderLookup.Provider provider) {
-//        super.readFromNBT(tag, provider);
-//        allowStandbyPickup = tag.getBoolean("allowStandbyPickup");
-//    }
-
-    @Override
-    public void writeToPacket(RegistryFriendlyByteBuf buf) {
-        super.writeToPacket(buf);
-        buf.writeBoolean(allowStandbyPickup);
-    }
-
-    @Override
-    public void readFromPacket(RegistryFriendlyByteBuf buf) {
-        super.readFromPacket(buf);
-        allowStandbyPickup = buf.readBoolean();
     }
 
     public static class DroneAIStandby extends Goal {

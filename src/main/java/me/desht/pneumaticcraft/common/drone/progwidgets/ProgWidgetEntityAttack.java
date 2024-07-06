@@ -33,6 +33,8 @@ import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.ai.goal.Goal;
@@ -55,6 +57,13 @@ public class ProgWidgetEntityAttack extends ProgWidget
                     Codec.BOOL.optionalFieldOf("check_sight", false).forGetter(ProgWidgetEntityAttack::isCheckSight)
             )
     ).apply(builder, ProgWidgetEntityAttack::new));
+    public static final StreamCodec<RegistryFriendlyByteBuf, ProgWidgetEntityAttack> STREAM_CODEC = StreamCodec.composite(
+            PositionFields.STREAM_CODEC, ProgWidget::getPosition,
+            ByteBufCodecs.BOOL, ProgWidgetEntityAttack::useMaxActions,
+            ByteBufCodecs.VAR_INT, ProgWidgetEntityAttack::getMaxActions,
+            ByteBufCodecs.BOOL, ProgWidgetEntityAttack::isCheckSight,
+            ProgWidgetEntityAttack::new
+    );
 
     private EntityFilterPair<ProgWidgetEntityAttack> entityFilters;
     private int maxActions;
@@ -166,6 +175,11 @@ public class ProgWidgetEntityAttack extends ProgWidget
     }
 
     @Override
+    public IProgWidget copyWidget() {
+        return new ProgWidgetEntityAttack(getPosition(), useMaxActions, maxActions, checkSight);
+    }
+
+    @Override
     public void setMaxActions(int maxActions) {
         this.maxActions = maxActions;
     }
@@ -193,38 +207,6 @@ public class ProgWidgetEntityAttack extends ProgWidget
     @Override
     public boolean isCheckSight() {
         return checkSight;
-    }
-
-//    @Override
-//    public void writeToNBT(CompoundTag tag, HolderLookup.Provider provider) {
-//        super.writeToNBT(tag, provider);
-//        if (useMaxActions) tag.putBoolean("useMaxActions", true);
-//        if (checkSight) tag.putBoolean("checkSight", true);
-//        tag.putInt("maxActions", maxActions);
-//    }
-//
-//    @Override
-//    public void readFromNBT(CompoundTag tag, HolderLookup.Provider provider) {
-//        super.readFromNBT(tag, provider);
-//        useMaxActions = tag.getBoolean("useMaxActions");
-//        checkSight = tag.getBoolean("checkSight");
-//        maxActions = tag.getInt("maxActions");
-//    }
-
-    @Override
-    public void writeToPacket(RegistryFriendlyByteBuf buf) {
-        super.writeToPacket(buf);
-        buf.writeBoolean(useMaxActions);
-        buf.writeVarInt(maxActions);
-        buf.writeBoolean(checkSight);
-    }
-
-    @Override
-    public void readFromPacket(RegistryFriendlyByteBuf buf) {
-        super.readFromPacket(buf);
-        useMaxActions = buf.readBoolean();
-        maxActions = buf.readVarInt();
-        checkSight = buf.readBoolean();
     }
 
 }

@@ -1,0 +1,15 @@
+{
+   "neoforge:conditions": [
+      {
+         "type": "neoforge:mod_loaded",
+         "modid": "quark"
+      }
+   ],
+   "transforms" : {
+      "hot" : "minecraft:cobblestone"
+   },
+   "heatCapacity" : 5000,
+   "type" : "pneumaticcraft:heat_properties",
+   "temperature" : 223,
+   "block" : "quark:permafrost"
+}

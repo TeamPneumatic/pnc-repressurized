@@ -18,6 +18,8 @@
 package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetArea;
+import me.desht.pneumaticcraft.common.drone.progwidgets.SavedDroneProgram;
+import me.desht.pneumaticcraft.common.item.GPSAreaToolItem;
 import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.registry.ModItems;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -46,7 +48,7 @@ public record PacketUpdateGPSAreaTool(ProgWidgetArea widget, InteractionHand han
     public static void handle(PacketUpdateGPSAreaTool message, IPayloadContext ctx) {
         ItemStack stack = ctx.player().getItemInHand(message.hand);
         if (stack.getItem() == ModItems.GPS_AREA_TOOL.get()) {
-            stack.set(ModDataComponents.AREA_WIDGET, message.widget);
+            GPSAreaToolItem.setArea(stack, message.widget);
         }
     }
 

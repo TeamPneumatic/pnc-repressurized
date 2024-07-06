@@ -1,8 +1,0 @@
-{
-   "heatCapacity" : 10000,
-   "temperature" : 1300,
-   "thermalResistance" : 500,
-   "transformCold" : "minecraft:blackstone",
-   "type" : "pneumaticcraft:heat_properties",
-   "block" : "byg:magmatic_stone"
-}

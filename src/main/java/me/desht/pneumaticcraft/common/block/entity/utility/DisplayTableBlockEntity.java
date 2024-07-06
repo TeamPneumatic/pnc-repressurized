@@ -66,7 +66,7 @@ public class DisplayTableBlockEntity extends AbstractPneumaticCraftBlockEntity i
     public void writeToPacket(CompoundTag tag, HolderLookup.Provider provider) {
         super.writeToPacket(tag, provider);
 
-        tag.put("Item", displayedStack.save(provider));
+        tag.put("Item", displayedStack.saveOptional(provider));
     }
 
     @Override

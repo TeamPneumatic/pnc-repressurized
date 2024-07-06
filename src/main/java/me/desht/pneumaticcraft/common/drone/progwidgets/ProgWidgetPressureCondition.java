@@ -31,6 +31,8 @@ import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
@@ -39,12 +41,23 @@ import java.util.List;
 public class ProgWidgetPressureCondition extends ProgWidgetCondition {
     public static final MapCodec<ProgWidgetPressureCondition> CODEC = RecordCodecBuilder.mapCodec(builder ->
             condParts(builder).apply(builder, ProgWidgetPressureCondition::new));
+    public static final StreamCodec<RegistryFriendlyByteBuf, ProgWidgetPressureCondition> STREAM_CODEC = StreamCodec.composite(
+            PositionFields.STREAM_CODEC, ProgWidget::getPosition,
+            InvBaseFields.STREAM_CODEC, ProgWidgetInventoryBase::invBaseFields,
+            ConditionFields.STREAM_CODEC, ProgWidgetCondition::conditionFields,
+            ProgWidgetPressureCondition::new
+    );
 
     public ProgWidgetPressureCondition() {
     }
 
     public ProgWidgetPressureCondition(PositionFields pos, InvBaseFields inv, ConditionFields cond) {
         super(pos, inv, cond);
+    }
+
+    @Override
+    public IProgWidget copyWidget() {
+        return new ProgWidgetPressureCondition(getPosition(), invBaseFields().copy(), conditionFields());
     }
 
     @Override

@@ -31,6 +31,8 @@ import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.List;
@@ -42,6 +44,14 @@ public class ProgWidgetBlockCondition extends ProgWidgetCondition {
                             Codec.BOOL.optionalFieldOf("check_liquid", false).forGetter(p -> p.checkingForLiquids)
                     )
             ).apply(builder, ProgWidgetBlockCondition::new));
+    public static final StreamCodec<RegistryFriendlyByteBuf, ProgWidgetBlockCondition> STREAM_CODEC = StreamCodec.composite(
+            PositionFields.STREAM_CODEC, ProgWidget::getPosition,
+            InvBaseFields.STREAM_CODEC, ProgWidgetInventoryBase::invBaseFields,
+            ConditionFields.STREAM_CODEC, ProgWidgetCondition::conditionFields,
+            ByteBufCodecs.BOOL, p -> p.checkingForAir,
+            ByteBufCodecs.BOOL, p -> p.checkingForLiquids,
+            ProgWidgetBlockCondition::new
+    );
 
     public boolean checkingForAir;
     public boolean checkingForLiquids;
@@ -54,6 +64,11 @@ public class ProgWidgetBlockCondition extends ProgWidgetCondition {
 
         this.checkingForAir = checkingForAir;
         this.checkingForLiquids = checkingForLiquids;
+    }
+
+    @Override
+    public IProgWidget copyWidget() {
+        return new ProgWidgetBlockCondition(getPosition(), invBaseFields().copy(), conditionFields(), checkingForAir, checkingForLiquids);
     }
 
     @Override
@@ -85,36 +100,9 @@ public class ProgWidgetBlockCondition extends ProgWidgetCondition {
         return Textures.PROG_WIDGET_CONDITION_BLOCK;
     }
 
-//    @Override
-//    public void writeToNBT(CompoundTag tag, HolderLookup.Provider provider) {
-//        super.writeToNBT(tag, provider);
-//        if (checkingForAir) tag.putBoolean("checkingForAir", true);
-//        if (checkingForLiquids) tag.putBoolean("checkingForLiquids", true);
-//    }
-//
-//    @Override
-//    public void readFromNBT(CompoundTag tag, HolderLookup.Provider provider) {
-//        super.readFromNBT(tag, provider);
-//        checkingForAir = tag.getBoolean("checkingForAir");
-//        checkingForLiquids = tag.getBoolean("checkingForLiquids");
-//    }
-
     @Override
     public ProgWidgetType<?> getType() {
         return ModProgWidgetTypes.CONDITION_BLOCK.get();
     }
 
-    @Override
-    public void writeToPacket(RegistryFriendlyByteBuf buf) {
-        super.writeToPacket(buf);
-        buf.writeBoolean(checkingForAir);
-        buf.writeBoolean(checkingForLiquids);
-    }
-
-    @Override
-    public void readFromPacket(RegistryFriendlyByteBuf buf) {
-        super.readFromPacket(buf);
-        checkingForAir = buf.readBoolean();
-        checkingForLiquids = buf.readBoolean();
-    }
 }

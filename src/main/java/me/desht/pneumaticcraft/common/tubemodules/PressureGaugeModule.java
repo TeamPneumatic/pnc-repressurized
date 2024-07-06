@@ -51,8 +51,9 @@ public class PressureGaugeModule extends AbstractRedstoneEmittingModule {
 
         if (pressureTube.nonNullLevel().getGameTime() % 20 == 0) {
             PNCCapabilities.getAirHandler(pressureTube).ifPresent(handler ->
-                    NetworkHandler.sendToAllTracking(new PacketUpdatePressureBlock(pressureTube.getBlockPos(), null,
-                            handler.getSideLeaking(), handler.getAir()), pressureTube));
+                    NetworkHandler.sendToAllTracking(PacketUpdatePressureBlock.create(pressureTube.getBlockPos(),
+                            null, handler.getSideLeaking(), handler.getAir()), pressureTube)
+            );
         }
         if (setRedstone(getRedstone(pressureTube.getPressure()))) {
             // force a recalc on next tick

@@ -17,15 +17,10 @@
 
 package me.desht.pneumaticcraft.client.gui.remote.actionwidget;
 
-import net.minecraft.core.HolderLookup;
 import net.minecraft.network.chat.Component;
 
 public interface IActionWidgetLabeled {
     void setText(Component text);
 
     Component getText();
-
-    default Component deserializeTextComponent(String s, HolderLookup.Provider provider) {
-        return Component.Serializer.fromJson(s, provider);
-    }
 }

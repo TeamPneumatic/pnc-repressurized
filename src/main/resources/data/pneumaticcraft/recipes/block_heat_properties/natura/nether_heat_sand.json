@@ -1,8 +1,0 @@
-{
-   "transformCold" : "minecraft:sand",
-   "thermalResistance" : 500,
-   "temperature" : 750,
-   "block" : "natura:nether_heat_sand",
-   "type" : "pneumaticcraft:heat_properties",
-   "heatCapacity" : 2500
-}

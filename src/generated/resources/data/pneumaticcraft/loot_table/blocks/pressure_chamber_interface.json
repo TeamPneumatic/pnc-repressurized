@@ -19,7 +19,8 @@
             {
               "function": "minecraft:copy_components",
               "include": [
-                "pneumaticcraft:be_saved_rc"
+                "pneumaticcraft:be_saved_rc",
+                "pneumaticcraft:upgrades"
               ],
               "source": "block_entity"
             }

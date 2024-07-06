@@ -17,45 +17,66 @@
 
 package me.desht.pneumaticcraft.client.gui.remote.actionwidget;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import me.desht.pneumaticcraft.client.gui.RemoteEditorScreen;
+import me.desht.pneumaticcraft.client.gui.RemoteScreen;
 import me.desht.pneumaticcraft.client.gui.remote.BasicRemoteOptionScreen;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 
 public class ActionWidgetLabel extends ActionWidget<WidgetLabelVariable> implements IActionWidgetLabeled {
+    public static final MapCodec<ActionWidgetLabel> CODEC = RecordCodecBuilder.mapCodec(builder ->
+        baseParts(builder).apply(builder, ActionWidgetLabel::new)
+    );
+    public static final String ID = "label";
 
-    public ActionWidgetLabel(WidgetLabelVariable widget) {
-        super(widget);
+    public ActionWidgetLabel(RemoteEditorScreen remoteEditorScreen, WidgetLabelVariable widget) {
+        super(WidgetSettings.forWidget(remoteEditorScreen, widget));
     }
 
-    public ActionWidgetLabel() {
-    }
-
-    @Override
-    public CompoundTag toNBT(HolderLookup.Provider provider, int guiLeft, int guiTop) {
-        CompoundTag tag = super.toNBT(provider, guiLeft, guiTop);
-        tag.putString("text", Component.Serializer.toJson(widget.getMessage(), provider));
-        tag.putInt("x", widget.getX() - guiLeft);
-        tag.putInt("y", widget.getY() - guiTop);
-        tag.putString("tooltip", Component.Serializer.toJson(getTooltipMessage(), provider));
-        return tag;
+    public ActionWidgetLabel(BaseSettings baseSettings, WidgetSettings widgetSettings) {
+        super(baseSettings, widgetSettings);
     }
 
     @Override
-    public void readFromNBT(HolderLookup.Provider provider, CompoundTag tag, int guiLeft, int guiTop) {
-        super.readFromNBT(provider, tag, guiLeft, guiTop);
-        widget = new WidgetLabelVariable(
-                tag.getInt("x") + guiLeft, tag.getInt("y") + guiTop,
-                deserializeTextComponent(tag.getString("text"), provider)
+    public MapCodec<? extends ActionWidget<WidgetLabelVariable>> codec() {
+        return CODEC;
+    }
+
+    @Override
+    protected WidgetLabelVariable createMinecraftWidget(RemoteScreen screen) {
+        return  new WidgetLabelVariable(
+                widgetSettings.getX() + screen.getGuiLeft(),
+                widgetSettings.getY() + screen.getGuiTop(),
+                widgetSettings.getTitle()
         );
-        deserializeTooltip(tag.getString("tooltip"), provider);
     }
+
+//    @Override
+//    public CompoundTag toNBT(HolderLookup.Provider provider, int guiLeft, int guiTop) {
+//        CompoundTag tag = super.toNBT(provider, guiLeft, guiTop);
+//        tag.putString("text", Component.Serializer.toJson(widget.getMessage(), provider));
+//        tag.putInt("x", widget.getX() - guiLeft);
+//        tag.putInt("y", widget.getY() - guiTop);
+//        tag.putString("tooltip", Component.Serializer.toJson(getTooltipMessage(), provider));
+//        return tag;
+//    }
+//
+//    @Override
+//    public void readFromNBT(HolderLookup.Provider provider, CompoundTag tag, int guiLeft, int guiTop) {
+//        super.readFromNBT(provider, tag, guiLeft, guiTop);
+//        widget = new WidgetLabelVariable(
+//                tag.getInt("x") + guiLeft, tag.getInt("y") + guiTop,
+//                deserializeTextComponent(tag.getString("text"), provider)
+//        );
+//        deserializeTooltip(tag.getString("tooltip"), provider);
+//    }
 
     @Override
     public String getId() {
-        return "label";
+        return ID;
     }
 
     @Override
@@ -69,13 +90,7 @@ public class ActionWidgetLabel extends ActionWidget<WidgetLabelVariable> impleme
     }
 
     @Override
-    public Screen getGui(RemoteEditorScreen guiRemote) {
+    public Screen createConfigurationGui(RemoteEditorScreen guiRemote) {
         return new BasicRemoteOptionScreen<>(this, guiRemote);
     }
-
-    @Override
-    public void setWidgetPos(int x, int y) {
-        widget.setPosition(x, y);
-    }
-
 }

@@ -32,6 +32,7 @@ public class JackhammerOverlay implements LayeredDraw.Layer {
             graphics.pose().translate(8, -8, 0);
             graphics.blit(digMode.getGuiIcon(), 0, 0, 0, 0, 16, 16, 16, 16);
             graphics.pose().popPose();
+            RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
         }
     }
 }

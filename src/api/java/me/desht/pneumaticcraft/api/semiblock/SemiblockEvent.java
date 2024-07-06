@@ -27,7 +27,7 @@ public class SemiblockEvent extends Event {
     private final BlockPos pos;
     private final ISemiBlock semiblock;
 
-    private SemiblockEvent(Level world, BlockPos pos, ISemiBlock semiblock) {
+    protected SemiblockEvent(Level world, BlockPos pos, ISemiBlock semiblock) {
         this.world = world;
         this.pos = pos;
         this.semiblock = semiblock;

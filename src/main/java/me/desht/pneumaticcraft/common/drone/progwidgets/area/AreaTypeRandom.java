@@ -31,6 +31,7 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Consumer;
@@ -53,6 +54,11 @@ public class AreaTypeRandom extends AreaType {
     public AreaTypeRandom(int pickedAmount) {
         super(ID);
         this.pickedAmount = pickedAmount;
+    }
+
+    @Override
+    public AreaType copy() {
+        return new AreaTypeRandom(pickedAmount);
     }
 
     @Override
@@ -98,32 +104,21 @@ public class AreaTypeRandom extends AreaType {
                 () -> pickedAmount, amount -> pickedAmount = amount));
     }
 
-//    @Override
-//    public void writeToNBT(CompoundTag tag) {
-//        super.writeToNBT(tag);
-//        tag.putInt("pickedAmount", pickedAmount);
-//    }
-//
-//    @Override
-//    public void readFromNBT(CompoundTag tag) {
-//        super.readFromNBT(tag);
-//        pickedAmount = tag.getInt("pickedAmount");
-//    }
-//
-//    @Override
-//    public void writeToPacket(FriendlyByteBuf buffer) {
-//        super.writeToPacket(buffer);
-//        buffer.writeVarInt(pickedAmount);
-//    }
-//
-//    @Override
-//    public void readFromPacket(FriendlyByteBuf buf) {
-//        super.readFromPacket(buf);
-//        pickedAmount = buf.readVarInt();
-//    }
-
     @Override
     public void convertFromLegacy(EnumOldAreaType oldAreaType, int typeInfo) {
         pickedAmount = typeInfo;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        AreaTypeRandom that = (AreaTypeRandom) o;
+        return pickedAmount == that.pickedAmount;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(pickedAmount);
     }
 }

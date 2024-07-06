@@ -25,7 +25,9 @@ import me.desht.pneumaticcraft.api.drone.IProgWidget;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.registry.ModProgWidgetTypes;
 import me.desht.pneumaticcraft.lib.Textures;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.DyeColor;
 
@@ -35,14 +37,22 @@ import java.util.List;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class ProgWidgetJumpSub extends ProgWidget implements IJumpBackWidget, IJump {
-
     public static final MapCodec<ProgWidgetJumpSub> CODEC = RecordCodecBuilder.mapCodec(builder ->
             baseParts(builder).apply(builder, ProgWidgetJumpSub::new));
+    public static final StreamCodec<RegistryFriendlyByteBuf, ProgWidgetJumpSub> STREAM_CODEC = StreamCodec.composite(
+            PositionFields.STREAM_CODEC, ProgWidget::getPosition,
+            ProgWidgetJumpSub::new
+    );
 
     private boolean jumpBack;
 
     public ProgWidgetJumpSub(PositionFields pos) {
         super(pos);
+    }
+
+    @Override
+    public IProgWidget copyWidget() {
+        return new ProgWidgetJumpSub(getPosition());
     }
 
     @Override

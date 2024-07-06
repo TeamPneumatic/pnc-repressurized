@@ -29,6 +29,8 @@ import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -41,12 +43,23 @@ import java.util.Set;
 public class ProgWidgetItemInventoryCondition extends ProgWidgetCondition {
     public static final MapCodec<ProgWidgetItemInventoryCondition> CODEC = RecordCodecBuilder.mapCodec(builder ->
             condParts(builder).apply(builder, ProgWidgetItemInventoryCondition::new));
+    public static final StreamCodec<RegistryFriendlyByteBuf, ProgWidgetItemInventoryCondition> STREAM_CODEC = StreamCodec.composite(
+            PositionFields.STREAM_CODEC, ProgWidget::getPosition,
+            InvBaseFields.STREAM_CODEC, ProgWidgetInventoryBase::invBaseFields,
+            ConditionFields.STREAM_CODEC, ProgWidgetCondition::conditionFields,
+            ProgWidgetItemInventoryCondition::new
+    );
 
     public ProgWidgetItemInventoryCondition() {
     }
 
     public ProgWidgetItemInventoryCondition(PositionFields pos, InvBaseFields inv, ConditionFields cond) {
         super(pos, inv, cond);
+    }
+
+    @Override
+    public IProgWidget copyWidget() {
+        return new ProgWidgetItemInventoryCondition(getPosition(), invBaseFields().copy(), conditionFields());
     }
 
     @Override

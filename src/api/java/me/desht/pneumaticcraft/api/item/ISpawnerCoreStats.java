@@ -17,13 +17,11 @@
 
 package me.desht.pneumaticcraft.api.item;
 
-import net.minecraft.core.component.DataComponentType;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Represents the entity types contained in a Spawner Core. Retrieve an instance of this with
@@ -37,7 +35,7 @@ public interface ISpawnerCoreStats {
     /**
      * Get an unmodifiable set of the entity types stored in this spawner core.
      *
-     * @return a set of entity types
+     * @return a map of entity type to percentage occupied
      */
     Map<EntityType<?>,Integer> getEntities();
 
@@ -57,18 +55,20 @@ public interface ISpawnerCoreStats {
     int getUnusedPercentage();
 
     /**
-     * Update the percentage level for the given entity type. The update level will be clamped so that does not go
+     * Update the percentage occupation for the given entity type. The update level will be clamped so that does not go
      * below zero, or leaves the total occupation of the core greater than 100%.
-     * <p>
-     * The updated level is not automatically serialized to an ItemStack; use
-     * {@link #saveSpawnerCoreStats(ItemStack, ISpawnerCoreStats)} for that.
      *
      * @param type an entity type
      * @param toAdd the amount to adjust by, may be negative
-     * @return a new stats object, which may or may not have been modified
+     * @return a new stats object if a modification was made, otherwise this object
      */
     ISpawnerCoreStats addAmount(EntityType<?> type, int toAdd);
 
+    /**
+     * Serialize this object onto a ItemStack via data component.
+     *
+     * @param stack the stack to save onto
+     */
     void save(ItemStack stack);
 
     /**
@@ -84,12 +84,4 @@ public interface ISpawnerCoreStats {
      * {@return an empty spawner core stats object}
      */
     ISpawnerCoreStats empty();
-
-//    /**
-//     * Serialize the current stats onto the given ItemStack, which must be a Spawner Core
-//     *
-//     * @param stack an ItemStack
-//     * @throws IllegalArgumentException if the ItemStack is not a Spawner Core
-//     */
-//    void serialize(ItemStack stack);
 }

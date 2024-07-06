@@ -100,7 +100,7 @@ public class ClassifyFilterItem extends Item implements IFilteringItem {
         );
 
         public static FilterSettings fromStack(ItemStack filterStack) {
-            return filterStack.get(ModDataComponents.CLASSIFY_FILTER_SETTINGS);
+            return filterStack.getOrDefault(ModDataComponents.CLASSIFY_FILTER_SETTINGS, FilterSettings.NONE);
         }
 
         public void save(ItemStack stack) {

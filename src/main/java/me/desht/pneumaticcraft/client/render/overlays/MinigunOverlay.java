@@ -53,6 +53,7 @@ public class MinigunOverlay implements LayeredDraw.Layer {
         RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
         RenderSystem.setShaderColor(0.2f, 0.7f, 0.2f, 0.75f);
         graphics.blit(Textures.MINIGUN_CROSSHAIR, width / 2 - 7, height / 2 - 7, 0, 0, 16, 16, 16, 16);
+        RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
     }
 
     @EventBusSubscriber(modid = Names.MOD_ID, value = Dist.CLIENT)

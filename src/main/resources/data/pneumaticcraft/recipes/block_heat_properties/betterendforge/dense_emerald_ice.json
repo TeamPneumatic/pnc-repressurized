@@ -1,9 +1,0 @@
-{
-   "heatCapacity" : 10000,
-   "transformHot" : "betterendforge:emerald_ice",
-   "thermalResistance" : 200,
-   "transformCold" : "betterendforge:ancient_emerald_ice",
-   "temperature" : 233,
-   "block" : "betterendforge:dense_emerald_ice",
-   "type" : "pneumaticcraft:heat_properties"
-}

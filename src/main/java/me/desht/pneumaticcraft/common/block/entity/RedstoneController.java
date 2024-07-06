@@ -31,7 +31,6 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import org.apache.commons.lang3.Validate;
 
-import java.lang.ref.WeakReference;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Predicate;
@@ -46,7 +45,7 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 public class RedstoneController<T extends BlockEntity & IRedstoneControl<T>> {
     private static final Pattern RS_TAG_PATTERN = Pattern.compile("^redstone:(\\d+)$");
 
-    private final WeakReference<T> teRef;
+    private final T te;
     private final List<RedstoneMode<T>> modes;
     @GuiSynced
     private int currentMode;
@@ -54,13 +53,13 @@ public class RedstoneController<T extends BlockEntity & IRedstoneControl<T>> {
     private int currentRedstonePower = -1; // current power level for the block entity's block (< 0 means "unknown")
 
     public RedstoneController(T te) {
-        this.teRef = new WeakReference<>(te);
+        this.te = te;
         this.modes = new StandardReceivingModes<T>().modes();
     }
 
     public RedstoneController(T te, List<RedstoneMode<T>> modes) {
         Validate.isTrue(modes.size() >= 2, "must have at least 2 modes!");
-        this.teRef = new WeakReference<>(te);
+        this.te = te;
         this.modes = modes;
     }
 
@@ -79,7 +78,6 @@ public class RedstoneController<T extends BlockEntity & IRedstoneControl<T>> {
     public void setCurrentMode(int currentMode) {
         if (currentMode != this.currentMode && currentMode >= 0 && currentMode < modes.size()) {
             this.currentMode = currentMode;
-            T te = teRef.get();
             if (te != null) {
                 te.onRedstoneModeChanged(this.currentMode);
                 te.setChanged();
@@ -95,12 +93,10 @@ public class RedstoneController<T extends BlockEntity & IRedstoneControl<T>> {
     }
 
     public boolean shouldRun() {
-        T te = teRef.get();
         return te != null && modes.get(currentMode).runPredicate.test(te);
     }
 
     public boolean shouldEmit() {
-        T te = teRef.get();
         return te != null && modes.get(currentMode).emissionPredicate.test(te);
     }
 
@@ -133,23 +129,20 @@ public class RedstoneController<T extends BlockEntity & IRedstoneControl<T>> {
     }
 
     public void updateRedstonePower() {
-        T te = teRef.get();
         if (te != null) {
             currentRedstonePower = Objects.requireNonNull(te.getLevel()).getBestNeighborSignal(te.getBlockPos());
         }
     }
 
     public boolean isEmitter() {
-        return !modes.isEmpty() && modes.get(0) instanceof EmittingRedstoneMode;
+        return !modes.isEmpty() && modes.getFirst() instanceof EmittingRedstoneMode;
     }
 
     public Component getRedstoneTabTitle() {
-        T te = teRef.get();
         return te != null ? te.getRedstoneTabTitle() : Component.empty();
     }
 
     public Component getDescription() {
-        T te = teRef.get();
         if (te != null) {
             return te.getRedstoneTabTitle().append(": ").append(xlate(modes.get(currentMode).getTranslationKey()).withStyle(ChatFormatting.YELLOW));
         } else {

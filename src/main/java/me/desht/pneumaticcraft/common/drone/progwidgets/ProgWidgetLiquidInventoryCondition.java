@@ -28,6 +28,8 @@ import me.desht.pneumaticcraft.common.registry.ModProgWidgetTypes;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -40,6 +42,12 @@ import java.util.List;
 public class ProgWidgetLiquidInventoryCondition extends ProgWidgetCondition {
     public static final MapCodec<ProgWidgetLiquidInventoryCondition> CODEC = RecordCodecBuilder.mapCodec(builder ->
         condParts(builder).apply(builder, ProgWidgetLiquidInventoryCondition::new));
+    public static final StreamCodec<RegistryFriendlyByteBuf, ProgWidgetLiquidInventoryCondition> STREAM_CODEC = StreamCodec.composite(
+            PositionFields.STREAM_CODEC, ProgWidget::getPosition,
+            InvBaseFields.STREAM_CODEC, ProgWidgetInventoryBase::invBaseFields,
+            ConditionFields.STREAM_CODEC, ProgWidgetCondition::conditionFields,
+            ProgWidgetLiquidInventoryCondition::new
+    );
 
     private ProgWidgetLiquidInventoryCondition(PositionFields pos, InvBaseFields inv, ConditionFields cond) {
         super(pos, inv, cond);
@@ -47,6 +55,11 @@ public class ProgWidgetLiquidInventoryCondition extends ProgWidgetCondition {
 
     public ProgWidgetLiquidInventoryCondition() {
         super(PositionFields.DEFAULT, InvBaseFields.DEFAULT, ConditionFields.DEFAULT);
+    }
+
+    @Override
+    public IProgWidget copyWidget() {
+        return new ProgWidgetLiquidInventoryCondition(getPosition(), invBaseFields().copy(), conditionFields());
     }
 
     @Override

@@ -51,10 +51,10 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.event.AnvilUpdateEvent;
-import net.neoforged.neoforge.event.entity.living.LivingAttackEvent;
 import net.neoforged.neoforge.event.entity.living.LivingChangeTargetEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.living.LivingEvent;
+import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
@@ -105,7 +105,7 @@ public class PneumaticArmorHandler {
     }
 
     @SubscribeEvent
-    public void onLivingAttack(LivingAttackEvent event) {
+    public void onLivingAttack(LivingIncomingDamageEvent event) {
         if (event.getEntity() instanceof Player player) {
             if (isPneumaticArmorPiece(player, EquipmentSlot.CHEST) && event.getSource().is(DamageTypeTags.IS_FIRE) && !(player.isCreative() || player.isSpectator())) {
                 // security upgrade in chestplate protects from fire

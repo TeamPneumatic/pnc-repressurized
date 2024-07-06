@@ -18,24 +18,28 @@
 package me.desht.pneumaticcraft.api.drone;
 
 import com.mojang.serialization.MapCodec;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 
 import java.util.function.Supplier;
 
 /**
- * Represents the type of a progwidget. You do not need to use this directly.
+ * Handles serialization of progwidgets, as well as default instance creation.
  */
 public class ProgWidgetType<P extends IProgWidget> {
     private final Supplier<? extends P> defaultSupplier;
     private final MapCodec<? extends IProgWidget> codec;
+    private final StreamCodec<RegistryFriendlyByteBuf,? extends IProgWidget> streamCodec;
     private String descriptionId;
 
-    private ProgWidgetType(Supplier<P> defaultSupplier, MapCodec<P> codec) {
+    private ProgWidgetType(Supplier<P> defaultSupplier, MapCodec<P> codec, StreamCodec<RegistryFriendlyByteBuf,P> streamCodec) {
         this.defaultSupplier = defaultSupplier;
         this.codec = codec;
+        this.streamCodec = streamCodec;
     }
 
-    public static <P extends IProgWidget> ProgWidgetType<P> createType(Supplier<P> factory, MapCodec<P> codec) {
-        return new ProgWidgetType<>(factory, codec);
+    public static <P extends IProgWidget> ProgWidgetType<P> createType(Supplier<P> factory, MapCodec<P> codec, StreamCodec<RegistryFriendlyByteBuf,P> streamCodec) {
+        return new ProgWidgetType<>(factory, codec, streamCodec);
     }
 
     public P create() {
@@ -56,5 +60,9 @@ public class ProgWidgetType<P extends IProgWidget> {
 
     public MapCodec<? extends IProgWidget> codec() {
         return codec;
+    }
+
+    public StreamCodec<RegistryFriendlyByteBuf, ? extends IProgWidget> streamCodec() {
+        return streamCodec;
     }
 }

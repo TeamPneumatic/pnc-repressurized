@@ -32,6 +32,8 @@ import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.core.Direction;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.item.DyeColor;
@@ -49,6 +51,11 @@ public class ProgWidgetEmitRedstone extends ProgWidget implements IRedstoneEmiss
                     Codec.BYTE.xmap(ProgWidget::decodeSides, ProgWidget::encodeSides)
                             .optionalFieldOf("sides", ALL_SIDES).forGetter(ProgWidgetEmitRedstone::getSides)
     ).apply(builder, ProgWidgetEmitRedstone::new));
+    public static final StreamCodec<RegistryFriendlyByteBuf, ProgWidgetEmitRedstone> STREAM_CODEC = StreamCodec.composite(
+            PositionFields.STREAM_CODEC, ProgWidget::getPosition,
+            ByteBufCodecs.BYTE.map(ProgWidget::decodeSides, ProgWidget::encodeSides), ProgWidgetEmitRedstone::getSides,
+            ProgWidgetEmitRedstone::new
+    );
 
     private boolean[] accessingSides = new boolean[]{true, true, true, true, true, true};
 
@@ -59,6 +66,11 @@ public class ProgWidgetEmitRedstone extends ProgWidget implements IRedstoneEmiss
 
     public ProgWidgetEmitRedstone() {
         super(PositionFields.DEFAULT);
+    }
+
+    @Override
+    public IProgWidget copyWidget() {
+        return new ProgWidgetEmitRedstone(getPosition(), Arrays.copyOf(accessingSides, accessingSides.length));
     }
 
     @Override
@@ -125,36 +137,6 @@ public class ProgWidgetEmitRedstone extends ProgWidget implements IRedstoneEmiss
                     .toList();
             return Collections.singletonList(Component.literal(Strings.join(l, ", ")));
         }
-    }
-
-//    @Override
-//    public void writeToNBT(CompoundTag tag, HolderLookup.Provider provider) {
-//        super.writeToNBT(tag, provider);
-//        for (int i = 0; i < 6; i++) {
-//            if (accessingSides[i]) tag.putBoolean(Direction.from3DDataValue(i).name(), true);
-//        }
-//    }
-//
-//    @Override
-//    public void readFromNBT(CompoundTag tag, HolderLookup.Provider provider) {
-//        super.readFromNBT(tag, provider);
-//        for (int i = 0; i < 6; i++) {
-//            accessingSides[i] = tag.getBoolean(Direction.from3DDataValue(i).name());
-//        }
-//    }
-
-    @Override
-    public void writeToPacket(RegistryFriendlyByteBuf buf) {
-        super.writeToPacket(buf);
-
-        buf.writeByte(encodeSides(accessingSides));
-    }
-
-    @Override
-    public void readFromPacket(RegistryFriendlyByteBuf buf) {
-        super.readFromPacket(buf);
-
-        accessingSides = decodeSides(buf.readByte());
     }
 
     @Override

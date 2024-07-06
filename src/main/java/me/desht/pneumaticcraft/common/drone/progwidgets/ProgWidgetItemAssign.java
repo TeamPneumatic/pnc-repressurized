@@ -26,10 +26,11 @@ import me.desht.pneumaticcraft.api.drone.IProgWidget;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.drone.ai.DroneAIManager;
 import me.desht.pneumaticcraft.common.registry.ModProgWidgetTypes;
-import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.DyeColor;
 
@@ -43,8 +44,13 @@ public class ProgWidgetItemAssign extends ProgWidget implements IVariableSetWidg
     public static final MapCodec<ProgWidgetItemAssign> CODEC = RecordCodecBuilder.mapCodec(builder ->
             baseParts(builder).and(Codec.STRING.optionalFieldOf("variable", "").forGetter(ProgWidgetItemAssign::getVariable)
     ).apply(builder, ProgWidgetItemAssign::new));
+    public static final StreamCodec<RegistryFriendlyByteBuf, ProgWidgetItemAssign> STREAM_CODEC = StreamCodec.composite(
+            PositionFields.STREAM_CODEC, ProgWidget::getPosition,
+            ByteBufCodecs.STRING_UTF8, ProgWidgetItemAssign::getVariable,
+            ProgWidgetItemAssign::new
+    );
 
-    private String variable = "";
+    private String variable;
     private DroneAIManager aiManager;
 
     private ProgWidgetItemAssign(PositionFields pos, String variable) {
@@ -54,6 +60,11 @@ public class ProgWidgetItemAssign extends ProgWidget implements IVariableSetWidg
 
     public ProgWidgetItemAssign() {
         this(PositionFields.DEFAULT, "");
+    }
+
+    @Override
+    public IProgWidget copyWidget() {
+        return new ProgWidgetItemAssign(getPosition(), variable);
     }
 
     @Override
@@ -111,30 +122,6 @@ public class ProgWidgetItemAssign extends ProgWidget implements IVariableSetWidg
             aiManager.setItemStack(variable, filter != null ? filter.getFilter() : drone.getInv().getStackInSlot(0).copy());
         }
         return super.getOutputWidget(drone, allWidgets);
-    }
-
-//    @Override
-//    public void writeToNBT(CompoundTag tag, HolderLookup.Provider provider) {
-//        super.writeToNBT(tag, provider);
-//        tag.putString("variable", variable);
-//    }
-//
-//    @Override
-//    public void readFromNBT(CompoundTag tag, HolderLookup.Provider provider) {
-//        super.readFromNBT(tag, provider);
-//        variable = tag.getString("variable");
-//    }
-
-    @Override
-    public void writeToPacket(RegistryFriendlyByteBuf buf) {
-        super.writeToPacket(buf);
-        buf.writeUtf(variable);
-    }
-
-    @Override
-    public void readFromPacket(RegistryFriendlyByteBuf buf) {
-        super.readFromPacket(buf);
-        variable = buf.readUtf(GlobalVariableManager.MAX_VARIABLE_LEN);
     }
 
     @Override

@@ -30,6 +30,8 @@ import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.item.DyeColor;
@@ -44,10 +46,15 @@ public class ProgWidgetGoToLocation extends ProgWidget implements IGotoWidget, I
             baseParts(builder).and(
                     Codec.BOOL.optionalFieldOf("done_when_depart", false).forGetter(ProgWidgetGoToLocation::doneWhenDeparting)
             ).apply(builder, ProgWidgetGoToLocation::new));
+    public static final StreamCodec<RegistryFriendlyByteBuf, ProgWidgetGoToLocation> STREAM_CODEC = StreamCodec.composite(
+            PositionFields.STREAM_CODEC, ProgWidget::getPosition,
+            ByteBufCodecs.BOOL, ProgWidgetGoToLocation::doneWhenDeparting,
+            ProgWidgetGoToLocation::new
+    );
 
     private boolean doneWhenDeparting;
 
-    private ProgWidgetGoToLocation(PositionFields pos, boolean doneWhenDeparting) {
+    protected ProgWidgetGoToLocation(PositionFields pos, boolean doneWhenDeparting) {
         super(pos);
         this.doneWhenDeparting = doneWhenDeparting;
     }
@@ -115,30 +122,6 @@ public class ProgWidgetGoToLocation extends ProgWidget implements IGotoWidget, I
         ProgWidgetAreaItemBase.getArea(area, (ProgWidgetArea) getConnectedParameters()[0], (ProgWidgetArea) getConnectedParameters()[getParameters().size()]);
     }
 
-//    @Override
-//    public void writeToNBT(CompoundTag tag, HolderLookup.Provider provider) {
-//        super.writeToNBT(tag, provider);
-//        if (doneWhenDeparting) tag.putBoolean("doneWhenDeparting", true);
-//    }
-//
-//    @Override
-//    public void readFromNBT(CompoundTag tag, HolderLookup.Provider provider) {
-//        super.readFromNBT(tag, provider);
-//        doneWhenDeparting = tag.getBoolean("doneWhenDeparting");
-//    }
-
-    @Override
-    public void writeToPacket(RegistryFriendlyByteBuf buf) {
-        super.writeToPacket(buf);
-        buf.writeBoolean(doneWhenDeparting);
-    }
-
-    @Override
-    public void readFromPacket(RegistryFriendlyByteBuf buf) {
-        super.readFromPacket(buf);
-        doneWhenDeparting = buf.readBoolean();
-    }
-
     @Override
     public WidgetDifficulty getDifficulty() {
         return WidgetDifficulty.EASY;
@@ -147,5 +130,10 @@ public class ProgWidgetGoToLocation extends ProgWidget implements IGotoWidget, I
     @Override
     public DyeColor getColor() {
         return DyeColor.LIGHT_BLUE;
+    }
+
+    @Override
+    public IProgWidget copyWidget() {
+        return new ProgWidgetGoToLocation(getPosition(), doneWhenDeparting);
     }
 }

@@ -25,7 +25,9 @@ import me.desht.pneumaticcraft.api.drone.IProgWidget;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.registry.ModProgWidgetTypes;
 import me.desht.pneumaticcraft.lib.Textures;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.List;
@@ -35,6 +37,10 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 public class ProgWidgetItemCondition extends ProgWidgetConditionBase {
     public static final MapCodec<ProgWidgetItemCondition> CODEC = RecordCodecBuilder.mapCodec(builder ->
             baseParts(builder).apply(builder, ProgWidgetItemCondition::new));
+    public static final StreamCodec<RegistryFriendlyByteBuf, ProgWidgetItemCondition> STREAM_CODEC = StreamCodec.composite(
+            PositionFields.STREAM_CODEC, ProgWidget::getPosition,
+            ProgWidgetItemCondition::new
+    );
 
     public ProgWidgetItemCondition(PositionFields pos) {
         super(pos);
@@ -42,6 +48,11 @@ public class ProgWidgetItemCondition extends ProgWidgetConditionBase {
 
     public ProgWidgetItemCondition() {
         super(PositionFields.DEFAULT);
+    }
+
+    @Override
+    public IProgWidget copyWidget() {
+        return new ProgWidgetItemCondition(getPosition());
     }
 
     @Override

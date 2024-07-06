@@ -1,0 +1,16 @@
+{
+   "neoforge:conditions": [
+      {
+         "type": "neoforge:mod_loaded",
+         "modid": "occultism"
+      }
+   ],
+   "heatCapacity" : 5000,
+   "transforms" : {
+      "cold" : "minecraft:air"
+   },
+   "type" : "pneumaticcraft:heat_properties",
+   "thermalResistance" : 1000,
+   "block" : "occultism:spirit_fire",
+   "temperature" : 1700
+}

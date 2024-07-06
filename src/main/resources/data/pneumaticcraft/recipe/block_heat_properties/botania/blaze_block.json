@@ -1,0 +1,15 @@
+{
+   "neoforge:conditions": [
+      {
+         "type": "neoforge:mod_loaded",
+         "modid": "botania"
+      }
+   ],
+   "heatCapacity" : 13500,
+   "transforms" : {
+      "cold" : "minecraft:glowstone"
+   },
+   "type" : "pneumaticcraft:heat_properties",
+   "block" : "botania:blaze_block",
+   "temperature" : 773
+}

@@ -26,8 +26,11 @@ import me.desht.pneumaticcraft.common.util.VoxelShapeUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -74,13 +77,13 @@ public class ProgrammerBlock extends AbstractPneumaticCraftBlock implements Pneu
     }
 
     @Override
-    public InteractionResult useWithoutItem(BlockState state, Level world, BlockPos pos, Player player, BlockHitResult brtr) {
-        if (!world.isClientSide && !player.isShiftKeyDown()) {
+    public ItemInteractionResult useItemOn(ItemStack heldItem, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult brtr) {
+        if (!level.isClientSide && !player.isShiftKeyDown()) {
             // FIXME this should be sync'd via the container as part of the openGui() call
-            PneumaticCraftUtils.getBlockEntityAt(world, pos, ProgrammerBlockEntity.class)
+            PneumaticCraftUtils.getBlockEntityAt(level, pos, ProgrammerBlockEntity.class)
                     .ifPresent(te -> NetworkHandler.sendToPlayer(PacketProgrammerSync.forBlockEntity(te), (ServerPlayer) player));
         }
-        return super.useWithoutItem(state, world, pos, player, brtr);
+        return super.useItemOn(heldItem, state, level, pos, player, hand, brtr);
     }
 
     @Override

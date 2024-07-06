@@ -49,6 +49,7 @@ public class PneumaticCraftTags {
         public static final TagKey<Block> PROBE_TARGET = modTag("probe_target");
         public static final TagKey<Block> JACKHAMMER_ORES = modTag("jackhammer_ores");
         public static final TagKey<Block> ELECTROSTATIC_GRID = modTag("electrostatic_grid");
+        public static final TagKey<Block> CROP_SUPPORT_GROWABLE = modTag("crop_support_growable");
 
         public static final TagKey<Block> STORAGE_BLOCKS_COMPRESSED_IRON = commonTag("storage_blocks/compressed_iron");
 

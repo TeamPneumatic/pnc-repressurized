@@ -44,11 +44,10 @@ import java.util.List;
 import java.util.function.Function;
 
 /**
- * An item with a TEISR (ISTER) with a base (static) model.  When in hand, the item will have an empty static model,
- * otherwise it will use the base model.  And isBuiltinRenderer() is true to allow ISTER drawing to happen.
+ * An item with a BEWLR with a base (static) model.  When in hand, the item will have an empty static model,
+ * otherwise it will use the base model.  And isCustomRenderer() is true to allow BEWLR drawing to happen.
  */
 public class RenderedItemModel implements IDynamicBakedModel {
-    //    private static final TextureAtlasSprite MISSING = MissingTextureSprite.func_217790_a();
     private final BakedModel bakedBaseModel;
 
     private RenderedItemModel(BakedModel bakedBaseModel) {
@@ -99,7 +98,7 @@ public class RenderedItemModel implements IDynamicBakedModel {
         };
     }
 
-    private record Geometry(BlockModel baseModel) implements IUnbakedGeometry<Geometry> {
+    public record Geometry(BlockModel baseModel) implements IUnbakedGeometry<Geometry> {
         @Override
         public BakedModel bake(IGeometryBakingContext owner, ModelBaker bakery, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelTransform, ItemOverrides overrides) {
             return new RenderedItemModel(baseModel.bake(bakery, baseModel, spriteGetter, modelTransform, true));

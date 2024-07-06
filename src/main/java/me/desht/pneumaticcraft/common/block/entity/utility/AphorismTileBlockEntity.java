@@ -82,12 +82,14 @@ public class AphorismTileBlockEntity extends AbstractPneumaticCraftBlockEntity {
 
     public void loadSavedData(SavedData savedData) {
         if (savedData != null) {
-            setTextLines(savedData.lines().toArray(new String[0]));
-            setTextRotation(savedData.rotation());
-            setBorderColor(savedData.borderColor());
-            setBackgroundColor(savedData.bgColor());
-            setMarginSize(savedData.margin());
-            setInvisible(savedData.invisible());
+            // note: not using setter methods here; this happens before level is set, and setters need non-null level
+            textLines = savedData.lines.toArray(new String[0]);
+            textRotation = savedData.rotation;
+            borderColor = savedData.borderColor;
+            backgroundColor = savedData.bgColor;
+            marginSize = (byte) savedData.margin;
+            invisible = savedData.invisible;
+            updateLineMetadata();
         }
     }
 
@@ -149,11 +151,13 @@ public class AphorismTileBlockEntity extends AbstractPneumaticCraftBlockEntity {
         this.textLines = textLines;
         this.maxLineWidth = -1; // force recalc
         icons = new ItemStack[textLines.length];
-        if (nonNullLevel().isClientSide) {
-            updateLineMetadata();
-        } else {
-            // server
-            if (notifyClient) sendDescriptionPacket();
+        if (level != null) {
+            if (level.isClientSide) {
+                updateLineMetadata();
+            } else {
+                // server
+                if (notifyClient) sendDescriptionPacket();
+            }
         }
     }
 

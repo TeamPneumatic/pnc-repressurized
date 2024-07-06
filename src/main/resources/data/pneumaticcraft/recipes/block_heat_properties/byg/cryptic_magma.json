@@ -1,8 +1,0 @@
-{
-   "block" : "byg:cryptic_magma_block",
-   "type" : "pneumaticcraft:heat_properties",
-   "transformCold" : "byg:cryptic_stone",
-   "thermalResistance" : 500,
-   "temperature" : 1300,
-   "heatCapacity" : 10000
-}

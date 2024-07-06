@@ -20,6 +20,7 @@ package me.desht.pneumaticcraft.common.recipes.other;
 import com.google.common.collect.ImmutableMap;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import me.desht.pneumaticcraft.api.crafting.recipe.HeatPropertiesRecipe;
@@ -45,6 +46,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 
 @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
 public class HeatPropertiesRecipeImpl extends HeatPropertiesRecipe {
@@ -200,7 +202,7 @@ public class HeatPropertiesRecipeImpl extends HeatPropertiesRecipe {
         public Serializer(IFactory<T> factory) {
             this.codec = RecordCodecBuilder.mapCodec(builder -> builder.group(
                     BuiltInRegistries.BLOCK.byNameCodec().fieldOf("block").forGetter(HeatPropertiesRecipe::getBlock),
-                    Transforms.CODEC.fieldOf("transforms").forGetter(HeatPropertiesRecipe::getTransforms),
+                    Transforms.CODEC.optionalFieldOf("transforms", Transforms.NONE).forGetter(HeatPropertiesRecipe::getTransforms),
                     ExtraCodecs.NON_NEGATIVE_INT.optionalFieldOf("heatCapacity").forGetter(HeatPropertiesRecipe::getHeatCapacity),
                     ExtraCodecs.NON_NEGATIVE_INT.optionalFieldOf("temperature", 0).forGetter(HeatPropertiesRecipe::getTemperature),
                     Codec.DOUBLE.optionalFieldOf("thermalResistance").forGetter(HeatPropertiesRecipe::getThermalResistance),

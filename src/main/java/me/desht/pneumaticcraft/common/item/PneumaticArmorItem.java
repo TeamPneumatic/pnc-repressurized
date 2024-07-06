@@ -46,6 +46,7 @@ import me.desht.pneumaticcraft.common.upgrades.UpgradableItemUtils;
 import me.desht.pneumaticcraft.common.util.GlobalPosHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
+import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
@@ -105,7 +106,7 @@ public class PneumaticArmorItem extends ArmorItem implements
     public static final DyedItemColor DEFAULT_EYEPIECE_COLOR = new DyedItemColor(0xFF00AA00, false);
 
     public PneumaticArmorItem(ArmorItem.Type equipmentSlotIn) {
-        super(ModArmorMaterials.PNEUMATIC.getDelegate(), equipmentSlotIn, ModItems.defaultProps());
+        super(ModArmorMaterials.PNEUMATIC.getDelegate(), equipmentSlotIn, ModItems.pressurizableToolProps());
     }
 
     @Override
@@ -153,15 +154,9 @@ public class PneumaticArmorItem extends ArmorItem implements
     @Override
     @Nullable
     public ResourceLocation getArmorTexture(ItemStack stack, Entity entity, EquipmentSlot slot, ArmorMaterial.Layer layer, boolean innerModel) {
-        return super.getArmorTexture(stack, entity, slot, layer, innerModel);
+        String s = slot == EquipmentSlot.LEGS ? Textures.ARMOR_PNEUMATIC + "_2.png" : Textures.ARMOR_PNEUMATIC + "_1.png";
+        return ResourceLocation.parse(s);
     }
-
-//    @Nullable
-//    @Override
-//    public String getArmorTexture(ItemStack stack, Entity entity, EquipmentSlot slot, String type) {
-//        String s = slot == EquipmentSlot.LEGS ? Textures.ARMOR_PNEUMATIC + "_2" : Textures.ARMOR_PNEUMATIC + "_1";
-//        return type == null ? s + ".png" : s + "_" + type + ".png";
-//    }
 
     @Override
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flagIn) {

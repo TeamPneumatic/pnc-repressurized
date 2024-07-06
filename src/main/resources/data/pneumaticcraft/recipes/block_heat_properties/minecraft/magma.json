@@ -1,8 +1,0 @@
-{
-   "heatCapacity" : 10000,
-   "block" : "minecraft:magma_block",
-   "type" : "pneumaticcraft:heat_properties",
-   "thermalResistance" : 500,
-   "transformCold" : "minecraft:netherrack",
-   "temperature" : 1300
-}

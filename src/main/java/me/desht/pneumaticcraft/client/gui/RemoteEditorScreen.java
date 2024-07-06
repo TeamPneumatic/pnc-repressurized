@@ -17,6 +17,8 @@
 
 package me.desht.pneumaticcraft.client.gui;
 
+import com.google.gson.JsonElement;
+import com.mojang.serialization.JsonOps;
 import me.desht.pneumaticcraft.client.gui.remote.RemoteLayout;
 import me.desht.pneumaticcraft.client.gui.remote.actionwidget.*;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
@@ -30,8 +32,10 @@ import me.desht.pneumaticcraft.common.inventory.RemoteMenu;
 import me.desht.pneumaticcraft.common.item.RemoteItem;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdateRemoteLayout;
+import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.registry.ModMenuTypes;
+import me.desht.pneumaticcraft.common.util.legacyconv.ConversionType;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
@@ -39,11 +43,11 @@ import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomData;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -72,18 +76,17 @@ public class RemoteEditorScreen extends RemoteScreen {
 
     @Override
     public void init() {
-        if (pastebinGui != null && pastebinGui.getOutputWidgets() != null) {
-            // TODO rewrite for 1.21
-//            CompoundTag tag = new CompoundTag();
-//            tag.put("actionWidgets", pastebinGui.outputTag.getList("main", Tag.TAG_COMPOUND));
-//            RemoteItem.setSavedLayout(remote, tag);
+        if (pastebinGui != null && pastebinGui.getOutput() != null) {
+            RemoteLayout layout = RemoteLayout.fromJson(registryAccess(), pastebinGui.getOutput());
+            RemoteItem.setSavedLayout(remote, layout.toNBT(registryAccess()));
         } else if (remoteLayout != null) {
-            RemoteItem.setSavedLayout(remote, remoteLayout.toNBT(registryAccess(), oldGuiLeft, oldGuiTop));
+            RemoteItem.setSavedLayout(remote, remoteLayout.toNBT(registryAccess()));
         }
 
         if (invSearchGui != null && invSearchGui.getSearchStack().getItem() == ModItems.REMOTE.get()) {
             if (RemoteItem.hasSameSecuritySettings(remote, invSearchGui.getSearchStack())) {
-                remoteLayout = new RemoteLayout(registryAccess(), invSearchGui.getSearchStack(), leftPos, topPos);
+                CustomData data = invSearchGui.getSearchStack().getOrDefault(ModDataComponents.REMOTE_LAYOUT, CustomData.EMPTY);
+                remoteLayout = RemoteLayout.fromNBT(registryAccess(), data.copyTag());
             } else {
                 ClientUtils.getClientPlayer().displayClientMessage(Component.literal("pneumaticcraft.gui.remote.differentSecuritySettings"), false);
             }
@@ -95,13 +98,13 @@ public class RemoteEditorScreen extends RemoteScreen {
         oldGuiTop = topPos;
 
         widgetTray.clear();
-        widgetTray.add(new ActionWidgetCheckBox(new WidgetCheckBox(leftPos + 200, topPos + 23, 0xFF404040, xlate("pneumaticcraft.gui.remote.tray.checkbox.name"))));
-        widgetTray.add(new ActionWidgetLabel(new WidgetLabelVariable(leftPos + 200, topPos + 38, xlate("pneumaticcraft.gui.remote.tray.label.name"))));
-        widgetTray.add(new ActionWidgetButton(new WidgetButtonExtended(leftPos + 200, topPos + 53, 50, 20, xlate("pneumaticcraft.gui.remote.tray.button.name"))));
-        widgetTray.add(new ActionWidgetDropdown(new WidgetComboBox(font, leftPos + 200, topPos + 79, 70, font.lineHeight + 3).setFixedOptions(true)));
+        widgetTray.add(new ActionWidgetCheckBox(this, new WidgetCheckBox(leftPos + 200, topPos + 23, 0xFF404040, xlate("pneumaticcraft.gui.remote.tray.checkbox.name"))));
+        widgetTray.add(new ActionWidgetLabel(this, new WidgetLabelVariable(leftPos + 200, topPos + 38, xlate("pneumaticcraft.gui.remote.tray.label.name"))));
+        widgetTray.add(new ActionWidgetButton(this, new WidgetButtonExtended(leftPos + 200, topPos + 53, 50, 20, xlate("pneumaticcraft.gui.remote.tray.button.name"))));
+        widgetTray.add(new ActionWidgetDropdown(this, new WidgetComboBox(font, leftPos + 200, topPos + 79, 70, font.lineHeight + 3).setFixedOptions(true)));
 
         for (ActionWidget<?> actionWidget : widgetTray) {
-            addRenderableWidget(actionWidget.getWidget());
+            addRenderableWidget(actionWidget.getOrCreateMinecraftWidget(this));
         }
 
         var importBtn = new WidgetButtonExtended(leftPos - 24, topPos, 20, 20, Component.empty(), b -> doImport())
@@ -131,9 +134,8 @@ public class RemoteEditorScreen extends RemoteScreen {
     }
 
     private void doPastebin() {
-        CompoundTag mainTag = new CompoundTag();
-        mainTag.put("main", RemoteItem.getSavedLayout(remote).getList("actionWidgets", Tag.TAG_COMPOUND));
-        minecraft.setScreen(pastebinGui = new PastebinScreen(this, mainTag));
+        JsonElement json = remoteLayout.toJson(registryAccess());
+        minecraft.setScreen(pastebinGui = new PastebinScreen(this, json, ConversionType.ACTION_WIDGET));
     }
 
     @Override
@@ -152,7 +154,7 @@ public class RemoteEditorScreen extends RemoteScreen {
     }
 
     private boolean isOutsideProgrammingArea(ActionWidget<?> actionWidget) {
-        AbstractWidget w = actionWidget.getWidget();
+        AbstractWidget w = actionWidget.getOrCreateMinecraftWidget(this);
         return w.getX() < leftPos || w.getY() < topPos || w.getX() + w.getWidth() > leftPos + 183 || w.getY() + w.getHeight() > topPos + imageHeight;
     }
 
@@ -165,17 +167,17 @@ public class RemoteEditorScreen extends RemoteScreen {
             case 0 -> {
                 // left click - drag widget
                 for (ActionWidget<?> actionWidget : widgetTray) {
-                    if (actionWidget.getWidget().isHoveredOrFocused()) {
+                    if (actionWidget.getOrCreateMinecraftWidget(this).isHoveredOrFocused()) {
                         // create new widget from tray
                         startDrag(actionWidget.copy(registryAccess()), x, y);
-                        remoteLayout.addWidget(draggingWidget);
-                        addRenderableWidget(draggingWidget.getWidget());
+                        remoteLayout.addActionWidget(draggingWidget);
+                        addRenderableWidget(draggingWidget.getOrCreateMinecraftWidget(this));
                         return true;
                     }
                 }
                 if (draggingWidget == null) {
                     for (ActionWidget<?> actionWidget : remoteLayout.getActionWidgets()) {
-                        if (actionWidget.getWidget().isHoveredOrFocused()) {
+                        if (actionWidget.getOrCreateMinecraftWidget(this).isHoveredOrFocused()) {
                             // move existing widget
                             startDrag(actionWidget, x, y);
                             return true;
@@ -187,8 +189,8 @@ public class RemoteEditorScreen extends RemoteScreen {
                 // right click - configure widget
                 for (ActionWidget<?> actionWidget : remoteLayout.getActionWidgets()) {
                     if (!isOutsideProgrammingArea(actionWidget)) {
-                        if (actionWidget.getWidget().isHoveredOrFocused()) {
-                            Screen screen = actionWidget.getGui(this);
+                        if (actionWidget.getOrCreateMinecraftWidget(this).isHoveredOrFocused()) {
+                            Screen screen = actionWidget.createConfigurationGui(this);
                             if (screen != null) minecraft.setScreen(screen);
                             return true;
                         }
@@ -198,10 +200,10 @@ public class RemoteEditorScreen extends RemoteScreen {
             case 2 -> {
                 // middle click - copy existing widget
                 for (ActionWidget<?> actionWidget : remoteLayout.getActionWidgets()) {
-                    if (actionWidget.getWidget().isHoveredOrFocused()) {
+                    if (actionWidget.getOrCreateMinecraftWidget(this).isHoveredOrFocused()) {
                         startDrag(actionWidget.copy(registryAccess()), x, y);
-                        remoteLayout.addWidget(draggingWidget);
-                        addRenderableWidget(draggingWidget.getWidget());
+                        remoteLayout.addActionWidget(draggingWidget);
+                        addRenderableWidget(draggingWidget.getOrCreateMinecraftWidget(this));
                         return true;
                     }
                 }
@@ -214,15 +216,16 @@ public class RemoteEditorScreen extends RemoteScreen {
         draggingWidget = widget;
         dragMouseStartX = x;
         dragMouseStartY = y;
-        dragWidgetStartX = widget.getWidget().getX();
-        dragWidgetStartY = widget.getWidget().getY();
+        dragWidgetStartX = widget.getOrCreateMinecraftWidget(this).getX();
+        dragWidgetStartY = widget.getOrCreateMinecraftWidget(this).getY();
     }
 
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
         if (draggingWidget != null && isOutsideProgrammingArea(draggingWidget)) {
-            remoteLayout.getActionWidgets().remove(draggingWidget);
-            removeWidget(draggingWidget.getWidget());
+            remoteLayout.removeActionWidget(draggingWidget);
+//            remoteLayout.getActionWidgets().remove(draggingWidget);
+            removeWidget(draggingWidget.getOrCreateMinecraftWidget(this));
         }
         draggingWidget = null;
 
@@ -240,7 +243,7 @@ public class RemoteEditorScreen extends RemoteScreen {
                 x1 = (x1 / 4) * 4;
                 y1 = (y1 / 4) * 4;
             }
-            draggingWidget.setWidgetPos(x1, y1);
+            draggingWidget.setWidgetPos(this,x1, y1);
             return true;
         }
         return super.mouseDragged(mouseX, mouseY, mouseButton, dragX, dragY);
@@ -259,7 +262,7 @@ public class RemoteEditorScreen extends RemoteScreen {
     public void removed() {
         ItemStack stack = ClientUtils.getClientPlayer().getItemInHand(menu.getHand());
         if (stack.getItem() == ModItems.REMOTE.get()) {
-            CompoundTag tag = remoteLayout.toNBT(registryAccess(), leftPos, topPos);
+            CompoundTag tag = remoteLayout.toNBT(registryAccess());
             RemoteItem.setSavedLayout(stack, tag);
             NetworkHandler.sendToServer(new PacketUpdateRemoteLayout(tag, menu.getHand()));
         }

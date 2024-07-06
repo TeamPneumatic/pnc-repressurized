@@ -24,24 +24,25 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import me.desht.pneumaticcraft.api.drone.IDrone;
 import me.desht.pneumaticcraft.api.drone.IProgWidget;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
+import me.desht.pneumaticcraft.api.drone.area.AreaType;
+import me.desht.pneumaticcraft.api.drone.area.AreaTypeSerializer;
 import me.desht.pneumaticcraft.api.drone.area.AreaTypeWidget;
 import me.desht.pneumaticcraft.api.registry.PNCRegistries;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.drone.ai.DroneAIManager;
 import me.desht.pneumaticcraft.common.drone.progwidgets.area.AreaTooBigException;
-import me.desht.pneumaticcraft.api.drone.area.AreaType;
 import me.desht.pneumaticcraft.common.drone.progwidgets.area.AreaTypeBox;
-import me.desht.pneumaticcraft.api.drone.area.AreaTypeSerializer;
 import me.desht.pneumaticcraft.common.registry.ModProgWidgetTypes;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
 import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
@@ -60,18 +61,23 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
  */
 public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariableWidget {
     public static final MapCodec<ProgWidgetArea> CODEC = RecordCodecBuilder.mapCodec(builder ->
-        baseParts(builder).and(builder.group(
-              BlockPos.CODEC.optionalFieldOf("pos1").forGetter(p -> p.getPos(0)),
-              BlockPos.CODEC.optionalFieldOf("pos2").forGetter(p -> p.getPos(1)),
-              AreaType.CODEC.fieldOf("type").forGetter(p -> p.areaType),
-              Codec.STRING.optionalFieldOf("var1", "").forGetter(p -> p.getVarName(0)),
-              Codec.STRING.optionalFieldOf("var2", "").forGetter(p -> p.getVarName(1))
-        )
-    ).apply(builder, ProgWidgetArea::new));
+            baseParts(builder).and(builder.group(
+                            BlockPos.CODEC.optionalFieldOf("pos1").forGetter(p -> p.getPos(0)),
+                            BlockPos.CODEC.optionalFieldOf("pos2").forGetter(p -> p.getPos(1)),
+                            AreaType.CODEC.fieldOf("area_type").forGetter(p -> p.areaType),
+                            Codec.STRING.optionalFieldOf("var1", "").forGetter(p -> p.getVarName(0)),
+                            Codec.STRING.optionalFieldOf("var2", "").forGetter(p -> p.getVarName(1))
+                    )
+            ).apply(builder, ProgWidgetArea::new));
 
-    public static StreamCodec<RegistryFriendlyByteBuf, ProgWidgetArea> STREAM_CODEC = StreamCodec.of(
-            (buf, widgetArea) -> widgetArea.writeToPacket(buf),
-            buf -> ProgWidget.fromPacket(buf, ModProgWidgetTypes.AREA.get())
+    public static final StreamCodec<RegistryFriendlyByteBuf, ProgWidgetArea> STREAM_CODEC = StreamCodec.composite(
+            PositionFields.STREAM_CODEC, ProgWidget::getPosition,
+            ByteBufCodecs.optional(BlockPos.STREAM_CODEC), p -> p.getPos(0),
+            ByteBufCodecs.optional(BlockPos.STREAM_CODEC), p -> p.getPos(1),
+            AreaType.STREAM_CODEC, p -> p.areaType,
+            ByteBufCodecs.STRING_UTF8, p -> p.getVarName(0),
+            ByteBufCodecs.STRING_UTF8, p -> p.getVarName(1),
+            ProgWidgetArea::new
     );
 
     private DroneAIManager aiManager;
@@ -86,7 +92,7 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
     }
 
     @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-    public ProgWidgetArea(PositionFields pos, Optional<BlockPos> pos1, Optional<BlockPos> pos2, AreaType areaType, String varName1, String varName2) {
+    private ProgWidgetArea(PositionFields pos, Optional<BlockPos> pos1, Optional<BlockPos> pos2, AreaType areaType, String varName1, String varName2) {
         super(pos);
 
         setPos(0, pos1.orElse(null));
@@ -94,6 +100,11 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
         this.areaType = areaType;
         setVarName(0, varName1);
         setVarName(1, varName2);
+    }
+
+    @Override
+    public IProgWidget copyWidget() {
+        return new ProgWidgetArea(getPosition(), getPos(0), getPos(1), areaType.copy(), getVarName(0), getVarName(1));
     }
 
     public static List<? extends AreaType> getAllAreaTypes() {
@@ -345,87 +356,6 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
     }
 
     @Override
-    public void writeToPacket(RegistryFriendlyByteBuf buf) {
-        super.writeToPacket(buf);
-        BlockPos pos1 = getPos(0).orElse(BlockPos.ZERO);
-        BlockPos pos2 = getPos(1).orElse(BlockPos.ZERO);
-        buf.writeBlockPos(pos1);
-        // looks weird but this ensures the vast majority of offsets can be encoded into one byte
-        // (keep numbers positive for best varint results)
-        BlockPos offset = pos1.subtract(pos2).offset(127, 127, 127);
-        buf.writeBlockPos(offset);
-        AreaType.STREAM_CODEC.encode(buf, areaType);
-//        buf.writeVarInt(areaTypeToID.get(type.getName()));
-//        type.writeToPacket(buf);
-        buf.writeUtf(varNames[0]);
-        buf.writeUtf(varNames[1]);
-    }
-
-    @Override
-    public void readFromPacket(RegistryFriendlyByteBuf buf) {
-        super.readFromPacket(buf);
-        pos[0] = buf.readBlockPos();
-        BlockPos offset = buf.readBlockPos().offset(-127, -127, -127);
-        pos[1] = pos[0].subtract(offset);
-        areaType = AreaType.STREAM_CODEC.decode(buf);
-//        type = createType(buf.readVarInt());
-//        type.readFromPacket(buf);
-        varNames[0] = buf.readUtf(GlobalVariableManager.MAX_VARIABLE_LEN);
-        varNames[1] = buf.readUtf(GlobalVariableManager.MAX_VARIABLE_LEN);
-    }
-
-//    @Override
-//    public void writeToNBT(CompoundTag tag, HolderLookup.Provider provider) {
-//        super.writeToNBT(tag, provider);
-//        getPos(0).ifPresent(pos -> tag.put("pos1", NbtUtils.writeBlockPos(pos)));
-//        getPos(1).ifPresent(pos -> tag.put("pos2", NbtUtils.writeBlockPos(pos)));
-//        tag.putString("type", type.getName());
-//        type.writeToNBT(tag);
-//        if (!varNames[0].isEmpty()) {
-//            tag.putString("var1", varNames[0]);
-//        } else {
-//            tag.remove("var1");
-//        }
-//        if (!varNames[1].isEmpty()) {
-//            tag.putString("var2", varNames[1]);
-//        } else {
-//            tag.remove("var2");
-//        }
-//    }
-//
-//    @Override
-//    public void readFromNBT(CompoundTag tag, HolderLookup.Provider provider) {
-//        super.readFromNBT(tag, provider);
-//
-//        if (tag.contains("x1")) {
-//            // legacy import
-//            pos[0] = new BlockPos(tag.getInt("x1"), tag.getInt("y1"), tag.getInt("z1"));
-//            pos[1] = new BlockPos(tag.getInt("x2"), tag.getInt("y2"), tag.getInt("z2"));
-//            varNames[0] = tag.getString("coord1Variable");
-//            varNames[1] = tag.getString("coord2Variable");
-//        } else {
-//            pos[0] = NbtUtils.readBlockPos(tag.getCompound("pos1"));
-//            pos[1] = NbtUtils.readBlockPos(tag.getCompound("pos2"));
-//            varNames[0] = tag.getString("var1");
-//            varNames[1] = tag.getString("var2");
-//        }
-//        type = createType(tag.getString("type"));
-//        type.readFromNBT(tag);
-//    }
-
-//    public static AreaType createType(String id) {
-//        if (!areaTypeToID.containsKey(id)) {
-//            Log.error("No Area type found for id '{}'! Substituting Box!", id);
-//            return new AreaTypeBox();
-//        }
-//        return createType(areaTypeToID.get(id));
-//    }
-//
-//    public static AreaType createType(int id) {
-//        return areaTypeFactories.get(id).get();
-//    }
-
-    @Override
     public WidgetDifficulty getDifficulty() {
         return WidgetDifficulty.EASY;
     }
@@ -474,5 +404,50 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
         areaType = otherArea.areaType.copy();
         setVarName(0, otherArea.getVarName(0));
         setVarName(1, otherArea.getVarName(1));
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ProgWidgetArea that = (ProgWidgetArea) o;
+        return Objects.deepEquals(pos, that.pos) && Objects.deepEquals(varNames, that.varNames) && Objects.equals(areaType, that.areaType);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(Arrays.hashCode(pos), Arrays.hashCode(varNames), areaType);
+    }
+
+    public Immutable toImmutable() {
+        return new Immutable(getPos(0), getPos(1), areaType.copy(), getVarName(0), getVarName(1));
+    }
+
+    public record Immutable(Optional<BlockPos> pos1, Optional<BlockPos> pos2, AreaType areaType, String var1, String var2) {
+        public static final Codec<Immutable> CODEC = RecordCodecBuilder.create(builder -> builder.group(
+                BlockPos.CODEC.optionalFieldOf("pos1").forGetter(Immutable::pos1),
+                BlockPos.CODEC.optionalFieldOf("pos2").forGetter(Immutable::pos2),
+                AreaType.CODEC.fieldOf("area_type").forGetter(Immutable::areaType),
+                Codec.STRING.fieldOf("var1").forGetter(Immutable::var1),
+                Codec.STRING.fieldOf("var1").forGetter(Immutable::var2)
+        ).apply(builder, Immutable::new));
+        public static final StreamCodec<RegistryFriendlyByteBuf, Immutable> STREAM_CODEC = StreamCodec.composite(
+                ByteBufCodecs.optional(BlockPos.STREAM_CODEC), Immutable::pos1,
+                ByteBufCodecs.optional(BlockPos.STREAM_CODEC), Immutable::pos2,
+                AreaType.STREAM_CODEC, Immutable::areaType,
+                ByteBufCodecs.STRING_UTF8, Immutable::var1,
+                ByteBufCodecs.STRING_UTF8, Immutable::var2,
+                Immutable::new
+        );
+        public static final Immutable DEFAULT = new Immutable(Optional.empty(), Optional.empty(),
+                new AreaTypeBox(AreaTypeBox.EnumBoxType.FILLED), "", "");
+
+        public AreaType areaType() {
+            return areaType.copy();
+        }
+
+        public ProgWidgetArea toMutable() {
+            return new ProgWidgetArea(PositionFields.DEFAULT, pos1, pos2, areaType(), var1, var2);
+        }
     }
 }

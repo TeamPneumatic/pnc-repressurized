@@ -120,7 +120,7 @@ public class BasicRemoteOptionScreen<A extends ActionWidget<?>> extends Abstract
             addRenderableWidget(labelField);
 
             tooltipField = new WidgetTextField(font, guiLeft + 10, guiTop + 55, 160, textFieldHeight);
-            tooltipField.setValue(actionWidget.getTooltipMessage().getString());
+            tooltipField.setValue(actionWidget.getTooltipMessage(guiRemote).getString());
             addRenderableWidget(tooltipField);
         }
     }
@@ -129,8 +129,8 @@ public class BasicRemoteOptionScreen<A extends ActionWidget<?>> extends Abstract
     public void removed() {
         actionWidget.setEnableVariable(GlobalVariableHelper.getPrefixedVar(enableField.getValue(), playerGlobalEnableVar));
         actionWidget.setEnablingValue(xValueField.getIntValue(), yValueField.getIntValue(), zValueField.getIntValue());
-        if (actionWidget instanceof IActionWidgetLabeled) {
-            ((IActionWidgetLabeled) actionWidget).setText(Component.literal(labelField.getValue()));
+        if (actionWidget instanceof IActionWidgetLabeled labeled) {
+            labeled.setText(Component.literal(labelField.getValue()));
             if (tooltipField.getValue().isEmpty()) {
                 actionWidget.setTooltip(null);
             } else {

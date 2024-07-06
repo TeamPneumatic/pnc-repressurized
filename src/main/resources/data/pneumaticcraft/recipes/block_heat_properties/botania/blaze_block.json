@@ -1,7 +1,0 @@
-{
-   "temperature" : 773,
-   "heatCapacity" : 13500,
-   "transformCold" : "minecraft:glowstone",
-   "type" : "pneumaticcraft:heat_properties",
-   "block" : "botania:blaze_block"
-}

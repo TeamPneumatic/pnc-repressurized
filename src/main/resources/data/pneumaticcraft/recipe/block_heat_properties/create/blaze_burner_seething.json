@@ -1,0 +1,16 @@
+{
+   "neoforge:conditions": [
+      {
+         "type": "neoforge:mod_loaded",
+         "modid": "create"
+      }
+   ],
+   "description" : "pneumaticcraft.gui.jei.description.create_blaze_burner.seething",
+   "type" : "pneumaticcraft:heat_properties",
+   "predicates" : {
+      "blaze" : "seething"
+   },
+   "thermalResistance" : 50,
+   "temperature" : 1700,
+   "block" : "create:blaze_burner"
+}

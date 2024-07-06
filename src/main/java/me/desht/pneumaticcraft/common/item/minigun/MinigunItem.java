@@ -71,7 +71,7 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
-import net.neoforged.neoforge.event.entity.living.LivingAttackEvent;
+import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.NotNull;
 
@@ -339,7 +339,7 @@ public class MinigunItem extends PressurizableItem implements
     @EventBusSubscriber(modid = Names.MOD_ID)
     public static class Listener {
         @SubscribeEvent
-        public static void onLivingAttack(LivingAttackEvent event) {
+        public static void onLivingAttack(LivingIncomingDamageEvent event) {
             if (event.getEntity() instanceof Player player
                     && event.getSource().getEntity() != null && event.getSource().is(DamageTypes.THORNS)) {
                 // don't take thorns damage when attacking with minigun (it applies direct damage, but it's effectively ranged...)

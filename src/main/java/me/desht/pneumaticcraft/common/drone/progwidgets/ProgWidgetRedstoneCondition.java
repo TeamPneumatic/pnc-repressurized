@@ -27,6 +27,8 @@ import me.desht.pneumaticcraft.common.drone.ai.DroneAIBlockCondition;
 import me.desht.pneumaticcraft.common.registry.ModProgWidgetTypes;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.List;
@@ -34,12 +36,23 @@ import java.util.List;
 public class ProgWidgetRedstoneCondition extends ProgWidgetCondition {
     public static final MapCodec<ProgWidgetRedstoneCondition> CODEC = RecordCodecBuilder.mapCodec(builder ->
             condParts(builder).apply(builder, ProgWidgetRedstoneCondition::new));
+    public static final StreamCodec<RegistryFriendlyByteBuf, ProgWidgetRedstoneCondition> STREAM_CODEC = StreamCodec.composite(
+            PositionFields.STREAM_CODEC, ProgWidget::getPosition,
+            InvBaseFields.STREAM_CODEC, ProgWidgetInventoryBase::invBaseFields,
+            ConditionFields.STREAM_CODEC, ProgWidgetCondition::conditionFields,
+            ProgWidgetRedstoneCondition::new
+    );
 
     public ProgWidgetRedstoneCondition() {
     }
 
     public ProgWidgetRedstoneCondition(PositionFields pos, InvBaseFields inv, ConditionFields cond) {
         super(pos, inv, cond);
+    }
+
+    @Override
+    public IProgWidget copyWidget() {
+        return new ProgWidgetRedstoneCondition(getPosition(), invBaseFields().copy(), conditionFields());
     }
 
     @Override

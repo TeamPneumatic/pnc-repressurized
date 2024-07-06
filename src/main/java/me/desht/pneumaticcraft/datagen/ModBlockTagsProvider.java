@@ -92,8 +92,19 @@ public class ModBlockTagsProvider extends BlockTagsProvider {
 
         tag(Tags.Blocks.ORES);
         tag(BlockTags.LOGS);
-        tag(PneumaticCraftTags.Blocks.JACKHAMMER_ORES).addTag(Tags.Blocks.ORES).addTag(BlockTags.LOGS);
-        tag(PneumaticCraftTags.Blocks.ELECTROSTATIC_GRID).add(Blocks.IRON_BARS);
+        tag(PneumaticCraftTags.Blocks.JACKHAMMER_ORES)
+                .addTag(Tags.Blocks.ORES)
+                .addTag(BlockTags.LOGS);
+        tag(PneumaticCraftTags.Blocks.ELECTROSTATIC_GRID)
+                .add(Blocks.IRON_BARS);
+        tag(PneumaticCraftTags.Blocks.CROP_SUPPORT_GROWABLE)
+                .addTag(BlockTags.CROPS)
+                .addTag(BlockTags.SAPLINGS)
+                .addTag(BlockTags.BAMBOO_BLOCKS)
+                .add(Blocks.RED_MUSHROOM)
+                .add(Blocks.BROWN_MUSHROOM)
+                .add(Blocks.NETHER_WART)
+                .add(Blocks.SWEET_BERRY_BUSH);
 
         ModBlocks.BLOCKS.getEntries().forEach(ro -> {
             Block block = ro.get();

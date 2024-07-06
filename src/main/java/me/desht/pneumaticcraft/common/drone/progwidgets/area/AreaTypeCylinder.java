@@ -33,6 +33,7 @@ import net.minecraft.util.StringRepresentable;
 import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 public class AreaTypeCylinder extends AreaType {
@@ -60,6 +61,11 @@ public class AreaTypeCylinder extends AreaType {
 
     public AreaTypeCylinder() {
         this(EnumCylinderType.FILLED, AreaAxis.X);
+    }
+
+    @Override
+    public AreaType copy() {
+        return new AreaTypeCylinder(cylinderType, axis);
     }
 
     @Override
@@ -162,34 +168,6 @@ public class AreaTypeCylinder extends AreaType {
         widgets.add(new AreaTypeWidget.EnumSelectorField<>("pneumaticcraft.gui.progWidget.area.type.general.axis", AreaAxis.class, () -> axis, axis -> this.axis = axis));
     }
 
-//    @Override
-//    public void writeToNBT(CompoundTag tag) {
-//        super.writeToNBT(tag);
-//        tag.putByte("axis", (byte) axis.ordinal());
-//        tag.putByte("cylinderType", (byte) cylinderType.ordinal());
-//    }
-//
-//    @Override
-//    public void readFromNBT(CompoundTag tag) {
-//        super.readFromNBT(tag);
-//        axis = EnumAxis.values()[tag.getByte("axis")];
-//        cylinderType = EnumCylinderType.values()[tag.getByte("cylinderType")];
-//    }
-//
-//    @Override
-//    public void writeToPacket(FriendlyByteBuf buffer) {
-//        super.writeToPacket(buffer);
-//        buffer.writeEnum(axis);
-//        buffer.writeEnum(cylinderType);
-//    }
-//
-//    @Override
-//    public void readFromPacket(FriendlyByteBuf buf) {
-//        super.readFromPacket(buf);
-//        axis = buf.readEnum(EnumAxis.class);
-//        cylinderType = buf.readEnum(EnumCylinderType.class);
-//    }
-
     @Override
     public void convertFromLegacy(EnumOldAreaType oldAreaType, int typeInfo) {
         switch (oldAreaType) {
@@ -200,18 +178,31 @@ public class AreaTypeCylinder extends AreaType {
         }
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        AreaTypeCylinder that = (AreaTypeCylinder) o;
+        return axis == that.axis && cylinderType == that.cylinderType;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(axis, cylinderType);
+    }
+
     public enum EnumCylinderType implements ITranslatableEnum, StringRepresentable {
         FILLED("filled"), HOLLOW("hollow"), TUBE("tube");
 
         private final String name;
 
         EnumCylinderType(String name) {
-            this.name = "pneumaticcraft.gui.progWidget.area.type.cylinder.cylinderType." + name;
+            this.name = name;
         }
 
         @Override
         public String getTranslationKey() {
-            return name;
+            return "pneumaticcraft.gui.progWidget.area.type.cylinder.cylinderType." + name;
         }
 
         @Override

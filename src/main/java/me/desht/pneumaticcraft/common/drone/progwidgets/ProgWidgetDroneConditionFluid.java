@@ -25,6 +25,8 @@ import me.desht.pneumaticcraft.api.drone.IProgWidget;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.registry.ModProgWidgetTypes;
 import me.desht.pneumaticcraft.lib.Textures;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.material.Fluid;
 
@@ -33,12 +35,22 @@ import java.util.List;
 public class ProgWidgetDroneConditionFluid extends ProgWidgetDroneCondition implements ILiquidFiltered {
     public static final MapCodec<ProgWidgetDroneConditionFluid> CODEC = RecordCodecBuilder.mapCodec(builder ->
             droneConditionParts(builder).apply(builder, ProgWidgetDroneConditionFluid::new));
+    public static final StreamCodec<RegistryFriendlyByteBuf, ProgWidgetDroneConditionFluid> STREAM_CODEC = StreamCodec.composite(
+            PositionFields.STREAM_CODEC, ProgWidget::getPosition,
+            DroneConditionFields.STREAM_CODEC, ProgWidgetDroneCondition::droneConditionFields,
+            ProgWidgetDroneConditionFluid::new
+    );
 
     public ProgWidgetDroneConditionFluid() {
     }
 
     public ProgWidgetDroneConditionFluid(PositionFields pos, DroneConditionFields cond) {
         super(pos, cond);
+    }
+
+    @Override
+    public IProgWidget copyWidget() {
+        return new ProgWidgetDroneConditionFluid(getPosition(), droneConditionFields());
     }
 
     @Override

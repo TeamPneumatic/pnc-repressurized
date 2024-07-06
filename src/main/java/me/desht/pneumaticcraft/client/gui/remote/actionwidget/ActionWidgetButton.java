@@ -17,62 +17,50 @@
 
 package me.desht.pneumaticcraft.client.gui.remote.actionwidget;
 
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import me.desht.pneumaticcraft.client.gui.RemoteEditorScreen;
+import me.desht.pneumaticcraft.client.gui.RemoteScreen;
 import me.desht.pneumaticcraft.client.gui.remote.RemoteButtonOptionScreen;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSetGlobalVariable;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.chat.Component;
 
 public class ActionWidgetButton extends ActionWidgetVariable<WidgetButtonExtended> implements IActionWidgetLabeled {
+    public static final MapCodec<ActionWidgetButton> CODEC = RecordCodecBuilder.mapCodec(builder ->
+            varParts(builder).and(
+                BlockPos.CODEC.fieldOf("settingPos").forGetter(a -> a.settingPos)
+            ).apply(builder, ActionWidgetButton::new));
+    public static final String ID = "button";
+
     public BlockPos settingPos = BlockPos.ZERO; // The coordinate the variable is set to when the button is pressed.
 
-    public ActionWidgetButton() {
+    public ActionWidgetButton(RemoteEditorScreen screen, WidgetButtonExtended widget) {
+        super(BaseSettings.DEFAULT, WidgetSettings.forWidget(screen, widget), "");
     }
 
-    public ActionWidgetButton(WidgetButtonExtended widget) {
-        super(widget);
-    }
+    public ActionWidgetButton(BaseSettings baseSettings, WidgetSettings widgetSettings, String s, BlockPos settingPos) {
+        super(baseSettings, widgetSettings, s);
 
-    @Override
-    public void readFromNBT(HolderLookup.Provider provider, CompoundTag tag, int guiLeft, int guiTop) {
-        super.readFromNBT(provider, tag, guiLeft, guiTop);
-
-        widget = new WidgetButtonExtended(
-                tag.getInt("x") + guiLeft, tag.getInt("y") + guiTop,
-                tag.getInt("width"), tag.getInt("height"),
-                deserializeTextComponent(tag.getString("text"), provider),
-                b -> onActionPerformed()
-        );
-        settingPos = NbtUtils.readBlockPos(tag, "settingPos").orElse(BlockPos.ZERO);
-        deserializeTooltip(tag.getString("tooltip"), provider);
+        this.settingPos = settingPos;
     }
 
     @Override
-    public CompoundTag toNBT(HolderLookup.Provider provider, int guiLeft, int guiTop) {
-        CompoundTag tag = super.toNBT(provider, guiLeft, guiTop);
-        tag.putInt("x", widget.getX() - guiLeft);
-        tag.putInt("y", widget.getY() - guiTop);
-        tag.putInt("width", widget.getWidth());
-        tag.putInt("height", widget.getHeight());
-        tag.putString("text", Component.Serializer.toJson(widget.getMessage(), provider));
-        tag.put("settingPos", NbtUtils.writeBlockPos(settingPos));
-        tag.putString("tooltip", Component.Serializer.toJson(getTooltipMessage(), provider));
-        return tag;
+    public MapCodec<? extends ActionWidget<WidgetButtonExtended>> codec() {
+        return CODEC;
     }
 
     @Override
     public String getId() {
-        return "button";
+        return ID;
     }
 
     @Override
     public void setText(Component text) {
+        widgetSettings.setTitle(text);
         widget.setMessage(text);
     }
 
@@ -83,7 +71,9 @@ public class ActionWidgetButton extends ActionWidgetVariable<WidgetButtonExtende
 
     @Override
     public void onActionPerformed() {
-        if (!getVariableName().isEmpty()) NetworkHandler.sendToServer(PacketSetGlobalVariable.forPos(getVariableName(), settingPos));
+        if (!getVariableName().isEmpty()) {
+            NetworkHandler.sendToServer(PacketSetGlobalVariable.forPos(getVariableName(), settingPos));
+        }
     }
 
     @Override
@@ -92,13 +82,20 @@ public class ActionWidgetButton extends ActionWidgetVariable<WidgetButtonExtende
     }
 
     @Override
-    public Screen getGui(RemoteEditorScreen guiRemote) {
+    public Screen createConfigurationGui(RemoteEditorScreen guiRemote) {
         return new RemoteButtonOptionScreen(this, guiRemote);
     }
 
     @Override
-    public void setWidgetPos(int x, int y) {
-        widget.setPosition(x, y);
+    protected WidgetButtonExtended createMinecraftWidget(RemoteScreen screen) {
+        return new WidgetButtonExtended(
+                widgetSettings.getX() + screen.getGuiLeft(),
+                widgetSettings.getY() + screen.getGuiTop(),
+                widgetSettings.getWidth(),
+                widgetSettings.getHeight(),
+                widgetSettings.getTitle(),
+                b -> onActionPerformed()
+        );
     }
 
     public void setWidth(int width) {

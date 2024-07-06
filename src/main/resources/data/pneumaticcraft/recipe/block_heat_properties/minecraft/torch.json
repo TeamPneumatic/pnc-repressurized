@@ -1,0 +1,6 @@
+{
+   "block" : "minecraft:torch",
+   "temperature" : 1700,
+   "thermalResistance" : 100000,
+   "type" : "pneumaticcraft:heat_properties"
+}

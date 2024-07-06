@@ -1,0 +1,11 @@
+{
+   "block" : "minecraft:ice",
+   "transforms" : {
+      "hot" : "minecraft:water",
+      "cold" : "minecraft:packed_ice"
+   },
+   "heatCapacity" : 5000,
+   "type" : "pneumaticcraft:heat_properties",
+   "temperature" : 263,
+   "thermalResistance" : 500
+}

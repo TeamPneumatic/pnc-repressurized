@@ -17,10 +17,7 @@ import net.minecraft.world.item.component.ItemContainerContents;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.ItemStackHandler;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class SavedUpgrades {
     private static final Codec<PNCUpgrade> UPGRADE_CODEC
@@ -38,7 +35,7 @@ public class SavedUpgrades {
             SavedUpgrades::new
     );
 
-    public static final SavedUpgrades EMPTY = new SavedUpgrades(ItemContainerContents.fromItems(List.of()), Map.of());
+    public static final SavedUpgrades EMPTY = new SavedUpgrades(ItemContainerContents.EMPTY, Map.of());
 
     private final ItemContainerContents contents;
     private final Map<PNCUpgrade,Integer> map;
@@ -78,9 +75,22 @@ public class SavedUpgrades {
     }
 
     public void fillItemHandler(ItemStackHandler handler) {
-        handler.setSize(contents.getSlots());
-        for (int i = 0; i < contents.getSlots(); i++) {
+        // handler is expected to be large enough to hold the upgrades
+        for (int i = 0; i < contents.getSlots() && i < handler.getSlots(); i++) {
             handler.setStackInSlot(i, contents.getStackInSlot(i));
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        SavedUpgrades that = (SavedUpgrades) o;
+        return Objects.equals(contents, that.contents) && Objects.equals(map, that.map);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(contents, map);
     }
 }

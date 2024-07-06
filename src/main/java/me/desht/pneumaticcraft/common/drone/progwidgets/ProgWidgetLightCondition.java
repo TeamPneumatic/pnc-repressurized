@@ -27,6 +27,8 @@ import me.desht.pneumaticcraft.common.drone.ai.DroneAIBlockCondition;
 import me.desht.pneumaticcraft.common.registry.ModProgWidgetTypes;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.List;
@@ -34,12 +36,23 @@ import java.util.List;
 public class ProgWidgetLightCondition extends ProgWidgetCondition {
     public static final MapCodec<ProgWidgetLightCondition> CODEC = RecordCodecBuilder.mapCodec(builder ->
             condParts(builder).apply(builder, ProgWidgetLightCondition::new));
+    public static final StreamCodec<RegistryFriendlyByteBuf, ProgWidgetLightCondition> STREAM_CODEC = StreamCodec.composite(
+            PositionFields.STREAM_CODEC, ProgWidget::getPosition,
+            InvBaseFields.STREAM_CODEC, ProgWidgetInventoryBase::invBaseFields,
+            ConditionFields.STREAM_CODEC, ProgWidgetCondition::conditionFields,
+            ProgWidgetLightCondition::new
+    );
 
     public ProgWidgetLightCondition() {
     }
 
     public ProgWidgetLightCondition(PositionFields pos, InvBaseFields inv, ConditionFields cond) {
         super(pos, inv, cond);
+    }
+
+    @Override
+    public IProgWidget copyWidget() {
+        return new ProgWidgetLightCondition(getPosition(), invBaseFields().copy(), conditionFields());
     }
 
     @Override

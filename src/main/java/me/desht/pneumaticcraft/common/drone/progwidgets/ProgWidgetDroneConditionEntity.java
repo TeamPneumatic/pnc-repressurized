@@ -26,7 +26,9 @@ import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.drone.IDroneBase;
 import me.desht.pneumaticcraft.common.registry.ModProgWidgetTypes;
 import me.desht.pneumaticcraft.lib.Textures;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
@@ -37,6 +39,11 @@ import java.util.List;
 public class ProgWidgetDroneConditionEntity extends ProgWidgetDroneCondition implements IEntityProvider {
     public static final MapCodec<ProgWidgetDroneConditionEntity> CODEC = RecordCodecBuilder.mapCodec(builder ->
             droneConditionParts(builder).apply(builder, ProgWidgetDroneConditionEntity::new));
+    public static final StreamCodec<RegistryFriendlyByteBuf, ProgWidgetDroneConditionEntity> STREAM_CODEC = StreamCodec.composite(
+            PositionFields.STREAM_CODEC, ProgWidget::getPosition,
+            DroneConditionFields.STREAM_CODEC, ProgWidgetDroneCondition::droneConditionFields,
+            ProgWidgetDroneConditionEntity::new
+    );
 
     private EntityFilterPair<ProgWidgetDroneConditionEntity> entityFilters;
 
@@ -45,6 +52,11 @@ public class ProgWidgetDroneConditionEntity extends ProgWidgetDroneCondition imp
 
     public ProgWidgetDroneConditionEntity(PositionFields pos, DroneConditionFields cond) {
         super(pos, cond);
+    }
+
+    @Override
+    public IProgWidget copyWidget() {
+        return new ProgWidgetDroneConditionEntity(getPosition(), droneConditionFields());
     }
 
     @Override
