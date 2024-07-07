@@ -7,6 +7,7 @@ import me.desht.pneumaticcraft.mixin.accessors.TooltipAccess;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
@@ -17,7 +18,7 @@ public final class WidgetSettings {
             Codec.INT.fieldOf("width").forGetter(WidgetSettings::getWidth),
             Codec.INT.fieldOf("height").forGetter(WidgetSettings::getHeight),
             ComponentSerialization.CODEC.fieldOf("title").forGetter(WidgetSettings::getTitle),
-            ComponentSerialization.CODEC.fieldOf("tooltip").forGetter(WidgetSettings::getTooltip)
+            ComponentSerialization.CODEC.optionalFieldOf("tooltip", Component.empty()).forGetter(WidgetSettings::getTooltip)
     ).apply(builder, WidgetSettings::new));
 
     private int x;
@@ -27,18 +28,20 @@ public final class WidgetSettings {
     private Component title;
     private Component tooltip;
 
-    public WidgetSettings(int x, int y, int width, int height, Component title, Component tooltip) {
+    public WidgetSettings(int x, int y, int width, int height, @NotNull Component title, @NotNull Component tooltip) {
         this.x = x;
         this.y = y;
         this.width = width;
         this.height = height;
         this.title = title;
+        this.tooltip = tooltip;
     }
 
     public static WidgetSettings forWidget(RemoteEditorScreen screen, AbstractWidget widget) {
         return new WidgetSettings(widget.getX() - screen.getGuiLeft(), widget.getY() - screen.getGuiTop(), widget.getWidth(), widget.getHeight(), widget.getMessage(), getTooltip(widget));
     }
 
+    @NotNull
     private static Component getTooltip(AbstractWidget widget) {
         return widget.getTooltip() == null ? Component.empty() : ((TooltipAccess) widget.getTooltip()).getMessage();
     }
@@ -79,7 +82,7 @@ public final class WidgetSettings {
         return title;
     }
 
-    public void setTitle(Component title) {
+    public void setTitle(@NotNull Component title) {
         this.title = title;
     }
 
@@ -87,7 +90,7 @@ public final class WidgetSettings {
         return tooltip;
     }
 
-    public void setTooltip(Component tooltip) {
+    public void setTooltip(@NotNull Component tooltip) {
         this.tooltip = tooltip;
     }
 
@@ -100,12 +103,13 @@ public final class WidgetSettings {
                 this.y == that.y &&
                 this.width == that.width &&
                 this.height == that.height &&
-                Objects.equals(this.title, that.title);
+                Objects.equals(this.title, that.title) &&
+                Objects.equals(this.tooltip, that.tooltip);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(x, y, width, height, title);
+        return Objects.hash(x, y, width, height, title, tooltip);
     }
 
     @Override
@@ -115,7 +119,8 @@ public final class WidgetSettings {
                 "y=" + y + ", " +
                 "width=" + width + ", " +
                 "height=" + height + ", " +
-                "title=" + title + ']';
+                "title=" + title.getString() + ", " +
+                "tooltip=" + tooltip.getString() + ']';
     }
 
 }

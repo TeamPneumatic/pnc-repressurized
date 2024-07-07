@@ -145,8 +145,8 @@ public class WidgetComboBox extends WidgetTextField implements IDrawAfterRender 
 
         if (enabled && expanded && keyCode == GLFW.GLFW_KEY_TAB) { // Tab completion
             List<String> applicableElements = getApplicableElements();
-            if (applicableElements.size() > 0) {
-                setValue(applicableElements.get(0));
+            if (!applicableElements.isEmpty()) {
+                setValue(applicableElements.getFirst());
                 return true;
             }
         }

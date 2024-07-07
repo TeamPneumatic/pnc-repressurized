@@ -31,6 +31,7 @@ import me.desht.pneumaticcraft.common.variables.GlobalVariableHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.util.Mth;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.List;
@@ -43,7 +44,7 @@ public class ActionWidgetDropdown extends ActionWidgetVariable<WidgetComboBox> {
             )).apply(builder, ActionWidgetDropdown::new));
     public static final String ID = "dropdown";
 
-    private List<String> dropDownElements;
+    private List<String> dropDownElements = List.of();
     private boolean sorted;
 
     public ActionWidgetDropdown(RemoteEditorScreen remoteEditorScreen, WidgetComboBox widgetComboBox) {
@@ -82,7 +83,9 @@ public class ActionWidgetDropdown extends ActionWidgetVariable<WidgetComboBox> {
     @Override
     protected WidgetComboBox createMinecraftWidget(RemoteScreen screen) {
         WidgetComboBox res = new WidgetComboBox(Minecraft.getInstance().font,
-                widgetSettings.getX(), widgetSettings.getY(), widgetSettings.getWidth(), widgetSettings.getHeight(),
+                widgetSettings.getX() + screen.getGuiLeft(),
+                widgetSettings.getY() + screen.getGuiTop(),
+                widgetSettings.getWidth(), widgetSettings.getHeight(),
                 this::onPressed
         );
         res.setElements(dropDownElements);
@@ -99,8 +102,12 @@ public class ActionWidgetDropdown extends ActionWidgetVariable<WidgetComboBox> {
     }
 
     private String getSelectedElement() {
-        int idx = GlobalVariableHelper.getInt(ClientUtils.getClientPlayer().getUUID(), getVariableName());
-        return dropDownElements.get(Mth.clamp(idx, 0, dropDownElements.size() - 1));
+        if (dropDownElements.isEmpty()) {
+            return "";
+        } else {
+            int idx = GlobalVariableHelper.getInt(ClientUtils.getClientPlayer().getUUID(), getVariableName());
+            return dropDownElements.get(Mth.clamp(idx, 0, dropDownElements.size() - 1));
+        }
     }
 
     @Override
@@ -108,7 +115,7 @@ public class ActionWidgetDropdown extends ActionWidgetVariable<WidgetComboBox> {
         // nothing
     }
 
-    public void setDropDownElements(String[] dropDownElements) {
+    public void setDropDownElements(@NotNull String[] dropDownElements) {
         this.dropDownElements = Arrays.asList(dropDownElements);
         if (widget != null) {
             widget.setElements(dropDownElements);

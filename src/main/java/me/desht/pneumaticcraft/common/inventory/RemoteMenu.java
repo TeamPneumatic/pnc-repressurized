@@ -17,11 +17,12 @@
 
 package me.desht.pneumaticcraft.common.inventory;
 
+import me.desht.pneumaticcraft.client.gui.remote.RemoteLayout;
+import me.desht.pneumaticcraft.client.gui.remote.actionwidget.ActionWidgetVariable;
 import me.desht.pneumaticcraft.common.block.entity.AbstractPneumaticCraftBlockEntity;
 import me.desht.pneumaticcraft.common.item.RemoteItem;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSetGlobalVariable;
-import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.registry.ModMenuTypes;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -39,7 +40,6 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.component.CustomData;
 
 import javax.annotation.Nonnull;
 import java.util.*;
@@ -87,19 +87,10 @@ public class RemoteMenu extends AbstractPneumaticCraftMenu<AbstractPneumaticCraf
     }
 
     private Set<String> getRelevantVariableNames(Player player, @Nonnull ItemStack remote) {
+        RemoteLayout layout = RemoteLayout.fromNBT(player.registryAccess(), RemoteItem.getSavedLayout(remote));
+
         Set<String> variables = new HashSet<>();
-        CompoundTag tag = RemoteItem.getSavedLayout(remote);
-        if (!tag.isEmpty()) {
-            ListTag tagList = tag.getList("actionWidgets", Tag.TAG_COMPOUND);
-            for (int i = 0; i < tagList.size(); i++) {
-                CompoundTag widgetTag = tagList.getCompound(i);
-                if (widgetTag.contains("variableName")) variables.add(widgetTag.getString("variableName"));
-                if (widgetTag.contains("enableVariable")) variables.add(widgetTag.getString("enableVariable"));
-                TextVariableParser parser = new TextVariableParser(widgetTag.getString("text"), playerId);
-                parser.parse(); // discover any ${variable} references in the text
-                variables.addAll(parser.getRelevantVariables());
-            }
-        }
+        layout.getActionWidgets().forEach(w -> w.discoverVariables(variables, playerId));
 
         Set<String> result = new HashSet<>();
         variables.forEach(varName -> {

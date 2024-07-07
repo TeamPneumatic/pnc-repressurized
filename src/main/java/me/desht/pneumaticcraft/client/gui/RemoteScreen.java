@@ -22,12 +22,15 @@ import me.desht.pneumaticcraft.client.gui.remote.actionwidget.ActionWidgetVariab
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.block.entity.AbstractPneumaticCraftBlockEntity;
 import me.desht.pneumaticcraft.common.inventory.RemoteMenu;
+import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomData;
 
 public class RemoteScreen extends AbstractPneumaticCraftContainerScreen<RemoteMenu, AbstractPneumaticCraftBlockEntity> {
 
@@ -59,7 +62,8 @@ public class RemoteScreen extends AbstractPneumaticCraftContainerScreen<RemoteMe
         super.init();
 
         if (remoteLayout == null) {
-            remoteLayout = RemoteLayout.createEmpty();
+            CompoundTag tag = remote.getOrDefault(ModDataComponents.REMOTE_LAYOUT, CustomData.EMPTY).copyTag();
+            remoteLayout = RemoteLayout.fromNBT(registryAccess(), tag);
         }
         remoteLayout.getOrCreateMinecraftWidgets(this, !(this instanceof RemoteEditorScreen))
                 .forEach(this::addRenderableWidget);

@@ -48,7 +48,7 @@ public class ActionWidgetCheckBox extends ActionWidgetVariable<WidgetCheckBox> i
 
     @Override
     protected WidgetCheckBox createMinecraftWidget(RemoteScreen screen) {
-        return  new WidgetCheckBox(
+        return new WidgetCheckBox(
                 widgetSettings.getX() + screen.getGuiLeft(),
                 widgetSettings.getY() + screen.getGuiTop(),
                 0xFF404040, widgetSettings.getTitle(),
@@ -63,7 +63,10 @@ public class ActionWidgetCheckBox extends ActionWidgetVariable<WidgetCheckBox> i
 
     @Override
     public void setText(Component text) {
-        widget.setMessage(text);
+        widgetSettings.setTitle(text);
+        if (widget != null) {
+            widget.setMessage(text);
+        }
     }
 
     @Override
@@ -80,6 +83,8 @@ public class ActionWidgetCheckBox extends ActionWidgetVariable<WidgetCheckBox> i
 
     @Override
     public void onVariableChange() {
-        widget.checked = GlobalVariableHelper.getBool(ClientUtils.getClientPlayer().getUUID(), getVariableName());
+        if (widget != null) {
+            widget.checked = GlobalVariableHelper.getBool(ClientUtils.getClientPlayer().getUUID(), getVariableName());
+        }
     }
 }

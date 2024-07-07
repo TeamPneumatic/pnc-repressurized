@@ -23,22 +23,32 @@ import me.desht.pneumaticcraft.common.variables.TextVariableParser;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.FormattedText;
+import net.minecraft.network.chat.MutableComponent;
+
+import java.util.Optional;
+import java.util.UUID;
 
 public class WidgetLabelVariable extends WidgetLabel {
-    private final TextVariableParser parser;
+    private final MutableComponent displayedMessage;
 
     public WidgetLabelVariable(int x, int y, Component text) {
         super(x, y, text);
 
-        this.parser = new TextVariableParser(text.getString(), ClientUtils.getClientPlayer().getUUID());
-        this.width = Minecraft.getInstance().font.width(parser.parse());
+        displayedMessage = Component.empty();
+        UUID uuid = ClientUtils.getClientPlayer().getUUID();
+        text.visit((style, string) -> {
+            TextVariableParser p = new TextVariableParser(string, uuid);
+            displayedMessage.append(Component.literal(p.parse()).withStyle(style));
+            return Optional.empty();
+        }, text.getStyle());
     }
 
     @Override
     public void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        Component oldText = getMessage();
-        setMessage(Component.literal(parser.parse()));
+        Component origText = getMessage();
+        setMessage(displayedMessage);
         super.renderWidget(graphics, mouseX, mouseY, partialTick);
-        setMessage(oldText);
+        setMessage(origText);
     }
 }

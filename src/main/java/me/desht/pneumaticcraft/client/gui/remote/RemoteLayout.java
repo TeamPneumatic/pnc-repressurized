@@ -42,7 +42,7 @@ public class RemoteLayout {
 
     public static final Codec<RemoteLayout.Versioned> VERSIONED_SAVE_CODEC = RecordCodecBuilder.create(builder -> builder.group(
             Codec.INT.fieldOf("version").forGetter(RemoteLayout.Versioned::version),
-            ActionWidgets.LIST_CODEC.fieldOf("widgets").forGetter(RemoteLayout.Versioned::widgets)
+            ActionWidgets.LIST_CODEC.fieldOf("action_widgets").forGetter(RemoteLayout.Versioned::widgets)
     ).apply(builder, RemoteLayout.Versioned::new));
 
     // Note: this is a mutable list

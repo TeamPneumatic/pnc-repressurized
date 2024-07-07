@@ -25,6 +25,9 @@ import me.desht.pneumaticcraft.client.gui.remote.RemoteVariableOptionScreen;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.screens.Screen;
 
+import java.util.Set;
+import java.util.UUID;
+
 public abstract class ActionWidgetVariable<W extends AbstractWidget> extends ActionWidget<W> {
     protected static <P extends ActionWidgetVariable<?>> Products.P3<RecordCodecBuilder.Mu<P>, BaseSettings, WidgetSettings, String> varParts(RecordCodecBuilder.Instance<P> pInstance) {
         return baseParts(pInstance).and(Codec.STRING.fieldOf("variableName").forGetter(p -> p.variableName));
@@ -57,4 +60,13 @@ public abstract class ActionWidgetVariable<W extends AbstractWidget> extends Act
     }
 
     public abstract void onVariableChange();
+
+    @Override
+    public void discoverVariables(Set<String> variables, UUID playerId) {
+        super.discoverVariables(variables, playerId);
+
+        if (!getVariableName().isEmpty()) {
+            variables.add(getVariableName());
+        }
+    }
 }

@@ -25,6 +25,7 @@ import me.desht.pneumaticcraft.client.gui.RemoteEditorScreen;
 import me.desht.pneumaticcraft.client.gui.RemoteScreen;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableHelper;
+import me.desht.pneumaticcraft.common.variables.TextVariableParser;
 import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.mixin.accessors.TooltipAccess;
 import net.minecraft.client.gui.components.AbstractWidget;
@@ -37,6 +38,10 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.RegistryOps;
 
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
+
 public abstract class ActionWidget<W extends AbstractWidget> {
     protected W widget;
     protected BaseSettings baseSettings;
@@ -44,7 +49,7 @@ public abstract class ActionWidget<W extends AbstractWidget> {
 
     protected static <P extends ActionWidget<?>> Products.P2<RecordCodecBuilder.Mu<P>, BaseSettings, WidgetSettings> baseParts(RecordCodecBuilder.Instance<P> pInstance) {
         return pInstance.group(
-                BaseSettings.CODEC.fieldOf("base").forGetter(a -> a.baseSettings),
+                BaseSettings.CODEC.optionalFieldOf("base", BaseSettings.DEFAULT).forGetter(a -> a.baseSettings),
                 WidgetSettings.CODEC.fieldOf("widget").forGetter(a -> a.widgetSettings)
         );
     }
@@ -118,6 +123,10 @@ public abstract class ActionWidget<W extends AbstractWidget> {
         return baseSettings.enablingValue;
     }
 
+    public Component getTitle() {
+        return widgetSettings.getTitle();
+    }
+
     public void setTooltip(Tooltip tooltip) {
         widget.setTooltip(tooltip);
     }
@@ -131,10 +140,22 @@ public abstract class ActionWidget<W extends AbstractWidget> {
         return tooltip == null ? Component.empty() : ((TooltipAccess) tooltip).getMessage();
     }
 
+    public void discoverVariables(Set<String> variables, UUID playerId) {
+        if (!getEnableVariable().isEmpty()) {
+            variables.add(getEnableVariable());
+        }
+        getTitle().visit(string -> {
+            TextVariableParser parser = new TextVariableParser(string, playerId);
+            parser.parse();
+            variables.addAll(parser.getRelevantVariables());
+            return Optional.empty();
+        });
+    }
+
     protected record BaseSettings(String enableVariable, BlockPos enablingValue) {
         public static final Codec<BaseSettings> CODEC = RecordCodecBuilder.create(builder -> builder.group(
-                Codec.STRING.fieldOf("enable_var").forGetter(BaseSettings::enableVariable),
-                BlockPos.CODEC.fieldOf("pos").forGetter(BaseSettings::enablingValue)
+                Codec.STRING.optionalFieldOf("enable_var", "").forGetter(BaseSettings::enableVariable),
+                BlockPos.CODEC.optionalFieldOf("pos", BlockPos.ZERO).forGetter(BaseSettings::enablingValue)
         ).apply(builder, BaseSettings::new));
 
         public static final BaseSettings DEFAULT = new BaseSettings("", BlockPos.ZERO);

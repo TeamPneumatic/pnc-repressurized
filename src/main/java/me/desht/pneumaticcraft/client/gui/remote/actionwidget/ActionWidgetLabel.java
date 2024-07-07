@@ -17,7 +17,6 @@
 
 package me.desht.pneumaticcraft.client.gui.remote.actionwidget;
 
-import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import me.desht.pneumaticcraft.client.gui.RemoteEditorScreen;
@@ -54,26 +53,6 @@ public class ActionWidgetLabel extends ActionWidget<WidgetLabelVariable> impleme
         );
     }
 
-//    @Override
-//    public CompoundTag toNBT(HolderLookup.Provider provider, int guiLeft, int guiTop) {
-//        CompoundTag tag = super.toNBT(provider, guiLeft, guiTop);
-//        tag.putString("text", Component.Serializer.toJson(widget.getMessage(), provider));
-//        tag.putInt("x", widget.getX() - guiLeft);
-//        tag.putInt("y", widget.getY() - guiTop);
-//        tag.putString("tooltip", Component.Serializer.toJson(getTooltipMessage(), provider));
-//        return tag;
-//    }
-//
-//    @Override
-//    public void readFromNBT(HolderLookup.Provider provider, CompoundTag tag, int guiLeft, int guiTop) {
-//        super.readFromNBT(provider, tag, guiLeft, guiTop);
-//        widget = new WidgetLabelVariable(
-//                tag.getInt("x") + guiLeft, tag.getInt("y") + guiTop,
-//                deserializeTextComponent(tag.getString("text"), provider)
-//        );
-//        deserializeTooltip(tag.getString("tooltip"), provider);
-//    }
-
     @Override
     public String getId() {
         return ID;
@@ -81,6 +60,7 @@ public class ActionWidgetLabel extends ActionWidget<WidgetLabelVariable> impleme
 
     @Override
     public void setText(Component text) {
+        widgetSettings.setTitle(text);
         widget.setMessage(text);
     }
 
