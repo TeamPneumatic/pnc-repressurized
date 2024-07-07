@@ -155,7 +155,7 @@ public abstract class ActionWidget<W extends AbstractWidget> {
     protected record BaseSettings(String enableVariable, BlockPos enablingValue) {
         public static final Codec<BaseSettings> CODEC = RecordCodecBuilder.create(builder -> builder.group(
                 Codec.STRING.optionalFieldOf("enable_var", "").forGetter(BaseSettings::enableVariable),
-                BlockPos.CODEC.optionalFieldOf("pos", BlockPos.ZERO).forGetter(BaseSettings::enablingValue)
+                BlockPos.CODEC.optionalFieldOf("enable_pos", BlockPos.ZERO).forGetter(BaseSettings::enablingValue)
         ).apply(builder, BaseSettings::new));
 
         public static final BaseSettings DEFAULT = new BaseSettings("", BlockPos.ZERO);

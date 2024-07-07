@@ -38,7 +38,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class RemoteLayout {
-    public static final int JSON_VERSION = 3;
+    public static final int JSON_VERSION = 2;
 
     public static final Codec<RemoteLayout.Versioned> VERSIONED_SAVE_CODEC = RecordCodecBuilder.create(builder -> builder.group(
             Codec.INT.fieldOf("version").forGetter(RemoteLayout.Versioned::version),
@@ -57,6 +57,10 @@ public class RemoteLayout {
     }
 
     public static RemoteLayout fromNBT(HolderLookup.Provider provider, CompoundTag tag) {
+        if (tag.isEmpty()) {
+            return new RemoteLayout(List.of());
+        }
+
         RegistryOps<Tag> ops = provider.createSerializationContext(NbtOps.INSTANCE);
         var saved = Saved.CODEC.parse(ops, tag)
                 .resultOrPartial(err -> Log.warning("can't parse remote layout NBT: " + err))

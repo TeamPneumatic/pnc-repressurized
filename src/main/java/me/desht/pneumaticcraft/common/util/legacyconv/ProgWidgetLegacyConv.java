@@ -43,50 +43,28 @@ public class ProgWidgetLegacyConv {
      * @param json the legacy data to convert
      */
     private static void convertV1toV2(JsonObject json) {
-        JsonObject sub = json.getAsJsonObject("widgets");
-        JsonArray values = sub.getAsJsonArray("value");
+        JsonArray entries = json.getAsJsonObject("widgets").getAsJsonArray("value");
 
-        for (JsonElement el : values) {
-            JsonObject value = el.getAsJsonObject();
-            JsonObject nameObj = value.getAsJsonObject("name");
+        for (JsonElement el : entries) {
+            JsonObject oldEntry = el.getAsJsonObject();
+
+            JsonObject nameObj = oldEntry.getAsJsonObject("name");
             String newName = CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, nameObj.get("value").getAsString());
             nameObj.addProperty("value", Names.MOD_ID + ":" + newName);
+
             if (newName.equals("area")) {
-                JsonObject typeObj = value.getAsJsonObject("type");
+                // special handling for area widget area types
+                JsonObject typeObj = oldEntry.getAsJsonObject("type");
                 EnumOldAreaType oldType = EnumOldAreaType.values()[typeObj.get("value").getAsInt()];
-                AreaType newType = LegacyAreaWidgetConverter.convertFromLegacyFormat(oldType, value.getAsJsonObject("typeInfo").get("value").getAsInt());
+                AreaType newType = LegacyAreaWidgetConverter.convertFromLegacyFormat(oldType, oldEntry.getAsJsonObject("typeInfo").get("value").getAsInt());
                 typeObj.addProperty("type", 8);
                 typeObj.addProperty("value", newType.getName());
             }
         }
 
-        json.add("pneumaticcraft:progWidgets", values);
+        json.add("pneumaticcraft:progWidgets", entries);
         json.remove("widgets");
     }
-
-
-    //
-//    private void doLegacyConversion(CompoundTag nbt) {
-//        ListTag l = nbt.getList("widgets", Tag.TAG_COMPOUND);
-//        int areaConversions = 0;
-//        for (int i = 0; i < l.size(); i++) {
-//            CompoundTag subTag = l.getCompound(i);
-//            String newName = CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, subTag.getString("name"));
-//            subTag.putString("name", Names.MOD_ID + ":" + newName);
-//            if (newName.equals("area")) {
-//                EnumOldAreaType oldType = EnumOldAreaType.values()[subTag.getInt("type")];
-//                AreaType newType = LegacyAreaWidgetConverter.convertFromLegacyFormat(oldType, subTag.getInt("typeInfo"));
-//                subTag.putString("type", newType.getName());
-//                newType.writeToNBT(subTag);
-//                areaConversions++;
-//            }
-//        }
-//        nbt.put(IProgrammable.NBT_WIDGETS, l);
-//        nbt.remove("widgets");
-//        if (areaConversions > 0) {
-//            Log.info("Pastebin import: converted {} legacy area widgets", areaConversions);
-//        }
-//    }
 
     /**
      * Handle version 2 (1.14-1.20) -> version 3 (1.21+) progwidget conversion

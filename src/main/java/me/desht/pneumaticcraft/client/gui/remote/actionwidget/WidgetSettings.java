@@ -15,8 +15,8 @@ public final class WidgetSettings {
     public static final Codec<WidgetSettings> CODEC = RecordCodecBuilder.create(builder -> builder.group(
             Codec.INT.fieldOf("x").forGetter(WidgetSettings::getX),
             Codec.INT.fieldOf("y").forGetter(WidgetSettings::getY),
-            Codec.INT.fieldOf("width").forGetter(WidgetSettings::getWidth),
-            Codec.INT.fieldOf("height").forGetter(WidgetSettings::getHeight),
+            Codec.INT.optionalFieldOf("width", 0).forGetter(WidgetSettings::getWidth),
+            Codec.INT.optionalFieldOf("height", 0).forGetter(WidgetSettings::getHeight),
             ComponentSerialization.CODEC.fieldOf("title").forGetter(WidgetSettings::getTitle),
             ComponentSerialization.CODEC.optionalFieldOf("tooltip", Component.empty()).forGetter(WidgetSettings::getTooltip)
     ).apply(builder, WidgetSettings::new));

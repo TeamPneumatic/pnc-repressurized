@@ -30,7 +30,7 @@ import java.util.UUID;
 
 public abstract class ActionWidgetVariable<W extends AbstractWidget> extends ActionWidget<W> {
     protected static <P extends ActionWidgetVariable<?>> Products.P3<RecordCodecBuilder.Mu<P>, BaseSettings, WidgetSettings, String> varParts(RecordCodecBuilder.Instance<P> pInstance) {
-        return baseParts(pInstance).and(Codec.STRING.fieldOf("variableName").forGetter(p -> p.variableName));
+        return baseParts(pInstance).and(Codec.STRING.fieldOf("var_name").forGetter(p -> p.variableName));
     }
 
     protected String variableName = "";

@@ -32,7 +32,7 @@ import net.minecraft.network.chat.Component;
 public class ActionWidgetButton extends ActionWidgetVariable<WidgetButtonExtended> implements IActionWidgetLabeled {
     public static final MapCodec<ActionWidgetButton> CODEC = RecordCodecBuilder.mapCodec(builder ->
             varParts(builder).and(
-                BlockPos.CODEC.fieldOf("settingPos").forGetter(a -> a.settingPos)
+                BlockPos.CODEC.fieldOf("set_pos").forGetter(a -> a.settingPos)
             ).apply(builder, ActionWidgetButton::new));
     public static final String ID = "button";
 
