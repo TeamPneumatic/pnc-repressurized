@@ -83,17 +83,17 @@ public class PneumaticArmorHandler {
         // so we need to track locally what is targeting whom, and only warn the player if the mob is newly
         // targeting them - otherwise, massive spam.
         int mobId = event.getEntity().getId();
-        if (event.getNewTarget() instanceof ServerPlayer player) {
-            if (isPneumaticArmorPiece(player, EquipmentSlot.HEAD)) {
-                if (!targetingTracker.containsKey(mobId) || targetingTracker.get(mobId) != event.getNewTarget().getId()) {
-                    CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
+        if (event.getNewAboutToBeSetTarget() instanceof ServerPlayer targetPlayer) {
+            if (isPneumaticArmorPiece(targetPlayer, EquipmentSlot.HEAD)) {
+                if (!targetingTracker.containsKey(mobId) || targetingTracker.get(mobId) != targetPlayer.getId()) {
+                    CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(targetPlayer);
                     if (handler.upgradeUsable(CommonUpgradeHandlers.entityTrackerHandler, true)) {
-                        Map<String, Integer> map = targetWarnings.computeIfAbsent(player.getUUID(), k -> new HashMap<>());
+                        Map<String, Integer> map = targetWarnings.computeIfAbsent(targetPlayer.getUUID(), k -> new HashMap<>());
                         map.merge(event.getEntity().getName().getString(), 1, Integer::sum);
                     }
                 }
             }
-            targetingTracker.put(mobId, event.getNewTarget().getId());
+            targetingTracker.put(mobId, targetPlayer.getId());
         } else {
             targetingTracker.remove(mobId);
         }
