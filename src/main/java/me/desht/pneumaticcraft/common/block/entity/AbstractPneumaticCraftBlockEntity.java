@@ -246,11 +246,6 @@ public abstract class AbstractPneumaticCraftBlockEntity extends BlockEntity
     }
 
     public void onBlockRotated() {
-        if (this instanceof ISideConfigurable c) {
-            for (SideConfigurator<?> sc : c.getSideConfigurators()) {
-                sc.setupFacingMatrix();
-            }
-        }
         if (!nonNullLevel().isClientSide) {
             PneumaticRegistry.getInstance().getMiscHelpers().forceClientShapeRecalculation(level, worldPosition);
         }

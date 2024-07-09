@@ -42,6 +42,9 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 public class SideConfigurator<T> implements INBTSerializable<CompoundTag> {
     public static final String BASE_BUTTON_TAG = "SideConf";
 
+    // lookup matrix for converting absolute to relative facing based on block's rotation
+    private static final RelativeFace[][] FACING_MATRIX = setupFacingMatrix();
+
     private final List<ConnectionEntry<T>> entries = new ArrayList<>();
     private final String id;
     private final ISideConfigurable sideConfigurable;
@@ -54,9 +57,6 @@ public class SideConfigurator<T> implements INBTSerializable<CompoundTag> {
     // default face configuration, used to decide if NBT needs to be saved
     private final byte[] defaultFaces = new byte[RelativeFace.values().length];
 
-    // lookup matrix for converting absolute to relative facing based on block's rotation
-    private final RelativeFace[][] facingMatrix = new RelativeFace[4][];
-
     /**
      * Constructor
      *
@@ -67,8 +67,6 @@ public class SideConfigurator<T> implements INBTSerializable<CompoundTag> {
         this.id = id;
         this.sideConfigurable = sideConfigurable;
         entries.add(null);  // null represents "unconnected"
-
-        setupFacingMatrix();
     }
 
     public int registerHandler(String id, ItemStack textureStack, BaseCapability<T,?> cap, Supplier<T> handler, RelativeFace... defaultRelativeFaces) {
@@ -99,13 +97,6 @@ public class SideConfigurator<T> implements INBTSerializable<CompoundTag> {
 
     private boolean shouldSaveNBT() {
         return !Arrays.equals(faces, defaultFaces);
-    }
-
-    public void updateHandler(String id, Supplier<T> handler) {
-        int idx = idxMap.get(id);
-        ConnectionEntry<T> e = entries.get(idx);
-        entries.set(idx, new ConnectionEntry<>(e.id, e.texture, e.cap, handler));
-        setNullFaceHandler(id);
     }
 
     public boolean handleButtonPress(String tag, boolean hasShiftDown) {
@@ -156,17 +147,19 @@ public class SideConfigurator<T> implements INBTSerializable<CompoundTag> {
         return c == null ? null : c.handler.get();
     }
 
-    void setupFacingMatrix() {
+    private static RelativeFace[][] setupFacingMatrix() {
+        RelativeFace[][] result = new RelativeFace[4][];
         for (Direction f : DirectionUtil.HORIZONTALS) {
-            facingMatrix[f.get2DDataValue()] = new RelativeFace[4];
+            result[f.get2DDataValue()] = new RelativeFace[4];
             for (RelativeFace rf : RelativeFace.HORIZONTALS) {
                 Direction f2 = rot(f, rf);
-                facingMatrix[f.get2DDataValue()][f2.get2DDataValue()] = rf;
+                result[f.get2DDataValue()][f2.get2DDataValue()] = rf;
             }
         }
+        return result;
     }
 
-    private Direction rot(Direction in, RelativeFace rf) {
+    private static Direction rot(Direction in, RelativeFace rf) {
         return switch (rf) {
             case RIGHT -> in.getCounterClockWise();
             case LEFT -> in.getClockWise();
@@ -176,13 +169,11 @@ public class SideConfigurator<T> implements INBTSerializable<CompoundTag> {
     }
 
     private RelativeFace getRelativeFace(Direction facing) {
-        if (facing == Direction.UP) {
-            return RelativeFace.TOP;
-        } else if (facing == Direction.DOWN) {
-            return RelativeFace.BOTTOM;
-        } else {
-            return facingMatrix[sideConfigurable.byIndex().get2DDataValue()][facing.get2DDataValue()];
-        }
+        return switch (facing) {
+            case UP -> RelativeFace.TOP;
+            case DOWN -> RelativeFace.BOTTOM;
+            default -> FACING_MATRIX[sideConfigurable.byIndex().get2DDataValue()][facing.get2DDataValue()];
+        };
     }
 
     public Component getFaceLabel(RelativeFace relativeFace) {

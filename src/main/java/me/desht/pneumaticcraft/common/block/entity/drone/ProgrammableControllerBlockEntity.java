@@ -181,11 +181,12 @@ public class ProgrammableControllerBlockEntity extends AbstractAirHandlingBlockE
         itemHandlerSideConfigurator = new SideConfigurator<>("items", this);
         itemHandlerSideConfigurator.registerHandler("droneInv", new ItemStack(ModItems.DRONE.get()),
                 Capabilities.ItemHandler.BLOCK, () -> droneItemHandler,
-                SideConfigurator.RelativeFace.TOP, SideConfigurator.RelativeFace.FRONT, SideConfigurator.RelativeFace.BACK, SideConfigurator.RelativeFace.LEFT, SideConfigurator.RelativeFace.RIGHT);
+                SideConfigurator.RelativeFace.TOP, SideConfigurator.RelativeFace.FRONT, SideConfigurator.RelativeFace.BACK,
+                SideConfigurator.RelativeFace.LEFT, SideConfigurator.RelativeFace.RIGHT);
         itemHandlerSideConfigurator.registerHandler("programmableInv", new ItemStack(ModItems.NETWORK_API.get()),
                 Capabilities.ItemHandler.BLOCK, () -> inventory,
                 SideConfigurator.RelativeFace.BOTTOM);
-        itemHandlerSideConfigurator.setNullFaceHandler("droneInv");
+        itemHandlerSideConfigurator.setNullFaceHandler("programmableInv");
     }
 
     private TicketController ticketController() {
@@ -478,8 +479,6 @@ public class ProgrammableControllerBlockEntity extends AbstractAirHandlingBlockE
         }
 
         energy.readFromNBT(tag);
-
-        itemHandlerSideConfigurator.updateHandler("droneInv", () -> droneItemHandler);
 
         shouldChargeHeldItem = tag.getBoolean("chargeHeld");
 
