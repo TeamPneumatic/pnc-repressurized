@@ -8,6 +8,11 @@ Changes are in reverse chronological order; newest changes at the top.
 
 This release (and all future releases) is built for [Neoforge](https://neoforged.net/), and will _not_ work on [MinecraftForge](https://files.minecraftforge.net/)!
 
+## [7.0.3]
+
+### Fixed
+* Fixed Programmable Controller GUI slot not functioning (putting a Drone or Network API into the slot did nothing)
+
 ## [7.0.2]
 
 ### Fixed
