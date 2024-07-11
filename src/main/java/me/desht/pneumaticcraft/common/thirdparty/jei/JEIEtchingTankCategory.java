@@ -61,7 +61,7 @@ public class JEIEtchingTankCategory extends AbstractPNCCategory<JEIEtchingTankCa
         builder.addSlot(RecipeIngredientRole.INPUT, 1, 13)
                 .addIngredients(recipe.input);
         builder.addSlot(RecipeIngredientRole.INPUT, 26, 13)
-                .addIngredients(ForgeTypes.FLUID_STACK, Collections.singletonList(new FluidStack(ModFluids.ETCHING_ACID.get(), 1000)));
+                .addIngredients(ForgeTypes.FLUID_STACK, Collections.singletonList(new FluidStack(recipe.etchingFluid, 1000)));
         builder.addSlot(RecipeIngredientRole.OUTPUT, 66, 1)
                 .addItemStack(recipe.output);
         builder.addSlot(RecipeIngredientRole.OUTPUT, 66, 25)
@@ -85,7 +85,8 @@ public class JEIEtchingTankCategory extends AbstractPNCCategory<JEIEtchingTankCa
                 recipes.add(new EtchingTankRecipe(
                         Ingredient.of(inputs),
                         emptyPCBItem.getSuccessItem(),
-                        emptyPCBItem.getFailedItem())
+                        emptyPCBItem.getFailedItem(),
+                        EmptyPCBItem.getEtchingFluid())
                 );
             }
         }
@@ -93,6 +94,6 @@ public class JEIEtchingTankCategory extends AbstractPNCCategory<JEIEtchingTankCa
     }
 
     // pseudo-recipe
-    record EtchingTankRecipe(Ingredient input, ItemStack output, ItemStack failed) {
+    record EtchingTankRecipe(Ingredient input, ItemStack output, ItemStack failed, FluidStack etchingFluid) {
     }
 }

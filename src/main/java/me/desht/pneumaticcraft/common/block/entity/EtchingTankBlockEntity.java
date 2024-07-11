@@ -328,8 +328,8 @@ public class EtchingTankBlockEntity extends AbstractTickingBlockEntity
         }
 
         @Override
-        public boolean isFluidValid(FluidStack stack) {
-            return stack.getFluid().is(PneumaticCraftTags.Fluids.ETCHING_ACID);
+        public boolean isFluidValid(FluidStack fluidStack) {
+            return EmptyPCBItem.getEtchingFluid().isFluidEqual(fluidStack);
         }
     }
 }
