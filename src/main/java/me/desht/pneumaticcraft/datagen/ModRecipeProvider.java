@@ -1420,15 +1420,15 @@ public class ModRecipeProvider extends RecipeProvider {
         ).save(consumer, RL("refinery/oil_4"));
 
         // thermopneumatic processing plant
-        thermoPlant(FluidIngredient.of(100, PneumaticCraftTags.Fluids.DIESEL), Ingredient.EMPTY,
+        thermoPlant(FluidIngredient.of(100, PneumaticCraftTags.Fluids.DIESEL), null,
                 new FluidStack(ModFluids.KEROSENE.get(), 80), ItemStack.EMPTY,
                 TemperatureRange.min(573), 2.0f, 1.0f, 1.0f, false
         ).save(consumer, RL("thermo_plant/kerosene"));
-        thermoPlant(FluidIngredient.of(100, PneumaticCraftTags.Fluids.KEROSENE), Ingredient.EMPTY,
+        thermoPlant(FluidIngredient.of(100, PneumaticCraftTags.Fluids.KEROSENE), null,
                 new FluidStack(ModFluids.GASOLINE.get(), 80), ItemStack.EMPTY,
                 TemperatureRange.min(573), 2.0f, 1.0f, 1.0f, false
         ).save(consumer, RL("thermo_plant/gasoline"));
-        thermoPlant(FluidIngredient.of(100, PneumaticCraftTags.Fluids.GASOLINE), Ingredient.EMPTY,
+        thermoPlant(FluidIngredient.of(100, PneumaticCraftTags.Fluids.GASOLINE), null,
                 new FluidStack(ModFluids.LPG.get(), 80), ItemStack.EMPTY,
                 TemperatureRange.min(573), 2.0f, 1.0f, 1.0f, false
         ).save(consumer, RL("thermo_plant/lpg"));
@@ -1480,11 +1480,11 @@ public class ModRecipeProvider extends RecipeProvider {
                 new FluidStack(ModFluids.ETHANOL.get(), 20), ItemStack.EMPTY,
                 TemperatureRange.of(303, 333), 0f, 0.4f, 1.0f, true
         ).save(consumer, RL("thermo_plant/ethanol_from_sweet_berries"));
-        thermoPlant(FluidIngredient.EMPTY, Ingredient.of(Tags.Items.SEEDS),
+        thermoPlant(null, Ingredient.of(Tags.Items.SEEDS),
                 new FluidStack(ModFluids.VEGETABLE_OIL.get(), 50), ItemStack.EMPTY,
                 TemperatureRange.any(), 2f, 0.5f, 1.0f, false
         ).save(consumer, RL("thermo_plant/vegetable_oil_from_seeds"));
-        thermoPlant(FluidIngredient.EMPTY, Ingredient.of(Tags.Items.CROPS),
+        thermoPlant(null    , Ingredient.of(Tags.Items.CROPS),
                 new FluidStack(ModFluids.VEGETABLE_OIL.get(), 20), ItemStack.EMPTY,
                 TemperatureRange.any(), 2f, 0.5f, 1.0f, false
         ).save(consumer, RL("thermo_plant/vegetable_oil_from_crops"));

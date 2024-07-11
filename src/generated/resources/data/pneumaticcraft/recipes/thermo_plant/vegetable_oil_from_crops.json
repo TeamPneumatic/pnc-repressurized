@@ -1,6 +1,5 @@
 {
   "type": "pneumaticcraft:thermo_plant",
-  "fluid_input": [],
   "fluid_output": {
     "Amount": 20,
     "FluidName": "pneumaticcraft:vegetable_oil"

@@ -8,7 +8,6 @@
     "Amount": 80,
     "FluidName": "pneumaticcraft:kerosene"
   },
-  "item_input": [],
   "pressure": 2.0,
   "temperature": {
     "min": 573
