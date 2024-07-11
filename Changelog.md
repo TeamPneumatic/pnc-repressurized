@@ -12,6 +12,7 @@ This release (and all future releases) is built for [Neoforge](https://neoforged
 
 ### Fixed
 * Fixed Programmable Controller GUI slot not functioning (putting a Drone or Network API into the slot did nothing)
+* Fixed Thermopneumatic Processing Plant recipes for Diesel->Kerosene->Gasoline->LPG cracking
 
 ## [7.0.2]
 
