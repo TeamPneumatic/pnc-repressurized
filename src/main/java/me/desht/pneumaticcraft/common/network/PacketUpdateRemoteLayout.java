@@ -18,19 +18,14 @@
 package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.common.item.RemoteItem;
-import me.desht.pneumaticcraft.common.registry.ModDataComponents;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.codec.ByteBufCodecs;
+import me.desht.pneumaticcraft.common.remote.SavedRemoteLayout;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.component.CustomData;
 import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
-
-import java.rmi.Remote;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
@@ -38,11 +33,11 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
  * Received on: SERVER
  * Sent by client to update the layout of a Remote item from the Remote GUI
  */
-public record PacketUpdateRemoteLayout(CompoundTag layout, InteractionHand hand) implements CustomPacketPayload {
+public record PacketUpdateRemoteLayout(SavedRemoteLayout layout, InteractionHand hand) implements CustomPacketPayload {
     public static final Type<PacketUpdateRemoteLayout> TYPE = new Type<>(RL("update_remote_layout"));
 
-    public static final StreamCodec<FriendlyByteBuf, PacketUpdateRemoteLayout> STREAM_CODEC = StreamCodec.composite(
-            ByteBufCodecs.COMPOUND_TAG, PacketUpdateRemoteLayout::layout,
+    public static final StreamCodec<RegistryFriendlyByteBuf, PacketUpdateRemoteLayout> STREAM_CODEC = StreamCodec.composite(
+            SavedRemoteLayout.STREAM_CODEC, PacketUpdateRemoteLayout::layout,
             NeoForgeStreamCodecs.enumCodec(InteractionHand.class), PacketUpdateRemoteLayout::hand,
             PacketUpdateRemoteLayout::new
     );
@@ -55,7 +50,7 @@ public record PacketUpdateRemoteLayout(CompoundTag layout, InteractionHand hand)
     public static void handle(PacketUpdateRemoteLayout message, IPayloadContext ctx) {
         ItemStack remote = ctx.player().getItemInHand(message.hand);
         if (remote.getItem() instanceof RemoteItem) {
-            RemoteItem.setSavedLayout(remote, message.layout);
+            RemoteItem.saveToItem(remote, message.layout);
         }
     }
 }

@@ -170,7 +170,7 @@ dependencies {
 	//runtimeOnly("vazkii.patchouli:Patchouli:${patchouli_version}")
 
 	compileOnly("cc.tweaked:cc-tweaked-1.21-forge-api:${cc_tweaked_version}")
-	runtimeOnly("cc.tweaked:cc-tweaked-1.21-forge:${cc_tweaked_version}")
+//	runtimeOnly("cc.tweaked:cc-tweaked-1.21-forge:${cc_tweaked_version}")
 
 	compileOnly("dev.ftb.mods:ftb-filter-system-neoforge:${ffs_version}") { transitive = false }
 

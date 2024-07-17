@@ -22,13 +22,12 @@ import me.desht.pneumaticcraft.common.inventory.RemoteMenu;
 import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.registry.ModMenuTypes;
+import me.desht.pneumaticcraft.common.remote.SavedRemoteLayout;
 import me.desht.pneumaticcraft.common.util.GlobalPosHelper;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.GlobalPos;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -44,13 +43,11 @@ import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
 import javax.annotation.Nullable;
-import java.util.Collection;
 import java.util.List;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
@@ -70,24 +67,27 @@ public class RemoteItem extends Item {
     }
 
     @Override
-    public InteractionResult onItemUseFirst(ItemStack remote, UseOnContext ctx) {
+    public InteractionResult useOn(UseOnContext ctx) {
         Player player = ctx.getPlayer();
         Level world = ctx.getLevel();
         BlockPos pos = ctx.getClickedPos();
         BlockEntity te = world.getBlockEntity(pos);
+        ItemStack remote = ctx.getItemInHand();
 
         if (te instanceof SecurityStationBlockEntity teSS && player instanceof ServerPlayer && player.isCrouching() && isAllowedToEdit(player, remote)) {
             if (teSS.doesAllowPlayer(player)) {
                 GlobalPos gPos = GlobalPosHelper.makeGlobalPos(world, pos);
                 setSecurityStationPos(remote, gPos);
-                player.displayClientMessage(xlate("pneumaticcraft.gui.remote.boundSecurityStation", GlobalPosHelper.prettyPrint(gPos)), false);
-                return InteractionResult.SUCCESS;
+                Component posComp = Component.literal(GlobalPosHelper.prettyPrint(gPos)).withStyle(ChatFormatting.YELLOW);
+                player.displayClientMessage(xlate("pneumaticcraft.gui.remote.boundSecurityStation", posComp), false);
+                return InteractionResult.CONSUME;
             } else {
                 player.displayClientMessage(xlate("pneumaticcraft.gui.remote.cantBindSecurityStation"), true);
                 return InteractionResult.FAIL;
             }
         } else if (player instanceof ServerPlayer sp) {
             openGui(sp, remote, ctx.getHand());
+            return InteractionResult.CONSUME;
         }
 
         return InteractionResult.SUCCESS;
@@ -120,12 +120,10 @@ public class RemoteItem extends Item {
     }
 
     private void toBytes(FriendlyByteBuf buf, Player player, InteractionHand hand, boolean syncGlobals) {
-        // see RemoteMenu constructor for corresponding deserialisation
-        buf.writeBoolean(hand == InteractionHand.MAIN_HAND);
+        // see RemoteMenu constructor for corresponding deserialization
+        buf.writeEnum(hand);
         if (syncGlobals) {
-            Collection<String> variables = GlobalVariableManager.getInstance().getAllActiveVariableNames(player);
-            buf.writeVarInt(variables.size());
-            variables.forEach(buf::writeUtf);
+            buf.writeCollection(GlobalVariableManager.getInstance().getAllActiveVariableNames(player), FriendlyByteBuf::writeUtf);
         } else {
             buf.writeVarInt(0);
         }
@@ -174,12 +172,8 @@ public class RemoteItem extends Item {
         }
     }
 
-    public static CompoundTag getSavedLayout(ItemStack remote) {
-        return remote.getOrDefault(ModDataComponents.REMOTE_LAYOUT, CustomData.EMPTY).copyTag();
-    }
-
-    public static void setSavedLayout(ItemStack remote, CompoundTag layout) {
-        remote.set(ModDataComponents.REMOTE_LAYOUT, CustomData.of(layout));
+    public static void saveToItem(ItemStack remote, SavedRemoteLayout layout) {
+        remote.set(ModDataComponents.REMOTE_LAYOUT, layout);
     }
 
     static class RemoteContainerProvider implements MenuProvider {

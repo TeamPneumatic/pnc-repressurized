@@ -4,7 +4,8 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
-import me.desht.pneumaticcraft.client.gui.remote.RemoteLayout;
+import me.desht.pneumaticcraft.api.lib.Names;
+import me.desht.pneumaticcraft.common.remote.SavedRemoteLayout;
 import me.desht.pneumaticcraft.lib.Log;
 
 import static me.desht.pneumaticcraft.common.util.legacyconv.ConversionUtil.*;
@@ -52,7 +53,7 @@ public class ActionWidgetLegacyConv {
             newEntry.add("base", base);
             newEntry.add("widget", widget);
 
-            getString(oldEntry, "id").ifPresent(val -> newEntry.addProperty("type", val));
+            getString(oldEntry, "id").ifPresent(val -> newEntry.addProperty("type", Names.MOD_ID + ":" + val));
             getString(oldEntry, "variableName").ifPresent(val -> newEntry.addProperty("var_name", prefixVar(val)));
             convXYZ(oldEntry, newEntry, "setting", "set_pos");
             getString(oldEntry, "dropDownElements").ifPresent(val -> newEntry.addProperty("elements", val));
@@ -61,9 +62,9 @@ public class ActionWidgetLegacyConv {
             newDoc.add(newEntry);
         }
 
-        json.add("action_widgets", newDoc);
+        json.add("widgets", newDoc);
         json.remove("main");
-        json.addProperty("version", RemoteLayout.JSON_VERSION);
+        json.addProperty("version", SavedRemoteLayout.JSON_VERSION);
 
         Log.info("Pastebin Remote import (V1 -> V2): converted {} legacy widgets", newDoc.size());
     }

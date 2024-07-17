@@ -107,6 +107,7 @@ public class PneumaticCraftRepressurized {
         event.register(PNCRegistries.PROG_WIDGETS_REGISTRY);
         event.register(PNCRegistries.PLAYER_MATCHER_REGISTRY);
         event.register(PNCRegistries.AREA_TYPE_SERIALIZER_REGISTRY);
+        event.register(PNCRegistries.REMOTE_WIDGETS_REGISTRY);
     }
 
     private void registerAllDeferredRegistryObjects(IEventBus modBus) {
@@ -139,6 +140,7 @@ public class PneumaticCraftRepressurized {
         ModProgWidgetTypes.PROG_WIDGETS_DEFERRED.register(modBus);
         ModProgWidgetAreaTypes.PROG_WIDGET_AREA_SERIALIZER_DEFERRED.register(modBus);
         ModPlayerMatchers.PLAYER_MATCHERS_DEFERRED.register(modBus);
+        ModRemoteWidgetTypes.REMOTE_WIDGETS.register(modBus);
 
         ModCreativeModeTab.TABS.register(modBus);
     }

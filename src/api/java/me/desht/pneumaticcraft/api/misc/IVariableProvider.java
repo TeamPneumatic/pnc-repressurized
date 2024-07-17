@@ -15,16 +15,18 @@
  *     along with pnc-repressurized.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.desht.pneumaticcraft.common.drone.progwidgets;
+package me.desht.pneumaticcraft.api.misc;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.ApiStatus;
 
 import javax.annotation.Nonnull;
 import java.util.Optional;
 import java.util.UUID;
 
-public interface IVariableProvider{
+@ApiStatus.NonExtendable
+public interface IVariableProvider {
     Optional<BlockPos> getCoordinate(UUID id, String varName);
 
     @Nonnull

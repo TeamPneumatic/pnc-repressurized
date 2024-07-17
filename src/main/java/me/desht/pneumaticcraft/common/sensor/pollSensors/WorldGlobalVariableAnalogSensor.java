@@ -30,6 +30,6 @@ public class WorldGlobalVariableAnalogSensor extends WorldGlobalVariableSensor {
 
     @Override
     public int getRedstoneValue(Level level, BlockPos pos, int sensorRange, String textBoxText) {
-        return Mth.clamp(GlobalVariableHelper.getInt(playerID, textBoxText), 0, 15);
+        return Mth.clamp(GlobalVariableHelper.getInstance().getInt(playerID, textBoxText), 0, 15);
     }
 }

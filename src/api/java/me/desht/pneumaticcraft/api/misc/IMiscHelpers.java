@@ -107,4 +107,11 @@ public interface IMiscHelpers {
      */
     Optional<? extends IActiveEntityHacks> getHackingForEntity(Entity entity, boolean create);
 
+    /**
+     * Get the global variable helper; this helper allows querying and modifying global variables, as used by drones,
+     * the Universal Sensor, and the Remote item.
+     *
+     * @return the global variable helper
+     */
+    IGlobalVariableHelper getGlobalVariableHelper();
 }

@@ -15,24 +15,31 @@
  *     along with pnc-repressurized.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.desht.pneumaticcraft.client.gui.remote;
+package me.desht.pneumaticcraft.client.gui.remote.config;
 
-import me.desht.pneumaticcraft.client.gui.RemoteEditorScreen;
-import me.desht.pneumaticcraft.client.gui.remote.actionwidget.ActionWidgetButton;
+import me.desht.pneumaticcraft.api.remote.WidgetSettings;
+import me.desht.pneumaticcraft.client.gui.remote.AbstractRemoteScreen;
+import me.desht.pneumaticcraft.client.gui.remote.RemoteClientRegistry;
+import me.desht.pneumaticcraft.client.gui.remote.RemoteEditorScreen;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetLabel;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTextFieldNumber;
+import me.desht.pneumaticcraft.common.network.NetworkHandler;
+import me.desht.pneumaticcraft.common.network.PacketSetGlobalVariable;
+import me.desht.pneumaticcraft.common.remote.RemoteWidgetButton;
 import net.minecraft.client.gui.components.Tooltip;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class RemoteButtonOptionScreen extends RemoteVariableOptionScreen<ActionWidgetButton> {
+public class RemoteButtonOptionScreen extends AbstractRemoteVariableConfigScreen<RemoteWidgetButton> {
     private WidgetTextFieldNumber widthField;
     private WidgetTextFieldNumber heightField;
     private WidgetTextFieldNumber xValueField, yValueField, zValueField;
 
-    public RemoteButtonOptionScreen(ActionWidgetButton widget, RemoteEditorScreen guiRemote) {
+    public RemoteButtonOptionScreen(RemoteWidgetButton widget, RemoteEditorScreen guiRemote) {
         super(widget, guiRemote);
     }
 
@@ -55,41 +62,65 @@ public class RemoteButtonOptionScreen extends RemoteVariableOptionScreen<ActionW
         Component valueTooltip = xlate("pneumaticcraft.gui.remote.button.value.tooltip");
 
         xValueField = new WidgetTextFieldNumber(font, guiLeft + 20, guiTop + 104, 38, textFieldHeight);
-        xValueField.setValue(actionWidget.settingPos.getX());
+        xValueField.setValue(remoteWidget.settingPos().getX());
         xValueField.setTooltip(Tooltip.create(valueTooltip));
         addRenderableWidget(xValueField);
 
         yValueField = new WidgetTextFieldNumber(font, guiLeft + 78, guiTop + 104, 38, textFieldHeight);
-        yValueField.setValue(actionWidget.settingPos.getY());
+        yValueField.setValue(remoteWidget.settingPos().getY());
         yValueField.setTooltip(Tooltip.create(valueTooltip));
         addRenderableWidget(yValueField);
 
         zValueField = new WidgetTextFieldNumber(font, guiLeft + 136, guiTop + 104, 38, textFieldHeight);
-        zValueField.setValue(actionWidget.settingPos.getZ());
+        zValueField.setValue(remoteWidget.settingPos().getZ());
         zValueField.setTooltip(Tooltip.create(valueTooltip));
         addRenderableWidget(zValueField);
 
         widthField = new WidgetTextFieldNumber(font, xOff, guiTop + 121, 35, textFieldHeight)
                 .setRange(10, Integer.MAX_VALUE).setAdjustments(1, 10);
-        widthField.setValue(actionWidget.getWidth());
+        widthField.setValue(remoteWidget.widgetSettings().width());
         widthField.minValue = 10;
         addRenderableWidget(widthField);
 
         heightField = new WidgetTextFieldNumber(font, xOff, guiTop + 134, 35, textFieldHeight)
                 .setRange(10, Integer.MAX_VALUE).setAdjustments(1, 10);
-        heightField.setValue(actionWidget.getHeight());
+        heightField.setValue(remoteWidget.widgetSettings().height());
         heightField.minValue = 10;
         heightField.maxValue = 20;
         addRenderableWidget(heightField);
-
     }
 
     @Override
-    public void removed() {
-        actionWidget.settingPos = new BlockPos(xValueField.getIntValue(), yValueField.getIntValue(), zValueField.getIntValue());
-        actionWidget.setWidth(widthField.getIntValue());
-        actionWidget.setHeight(heightField.getIntValue());
+    protected RemoteWidgetButton makeUpdatedRemoteWidget() {
+        return new RemoteWidgetButton(
+                makeBaseSettings(),
+                makeWidgetSettings().resize(widthField.getIntValue(), heightField.getIntValue()),
+                makeVarName(),
+                new BlockPos(xValueField.getIntValue(), yValueField.getIntValue(), zValueField.getIntValue())
+        );
+    }
 
-        super.removed();
+    public enum Factory implements RemoteClientRegistry.Factory<RemoteWidgetButton,WidgetButtonExtended> {
+        INSTANCE;
+
+        @Override
+        public WidgetButtonExtended createMinecraftWidget(RemoteWidgetButton remoteWidget, AbstractRemoteScreen screen) {
+            WidgetSettings widgetSettings = remoteWidget.widgetSettings();
+            return new WidgetButtonExtended(
+                    widgetSettings.x() + screen.getGuiLeft(), widgetSettings.y() + screen.getGuiTop(),
+                    widgetSettings.width(), widgetSettings.height(),
+                    widgetSettings.title(),
+                    btn -> {
+                        if (!remoteWidget.varName().isEmpty()) {
+                            NetworkHandler.sendToServer(PacketSetGlobalVariable.forPos(remoteWidget.varName(), remoteWidget.settingPos()));
+                        }
+                    }
+            ).setTooltipText(remoteWidget.widgetSettings().tooltip());
+        }
+
+        @Override
+        public Screen createConfigurationScreen(RemoteWidgetButton remoteWidget, RemoteEditorScreen screen) {
+            return new RemoteButtonOptionScreen(remoteWidget, screen);
+        }
     }
 }

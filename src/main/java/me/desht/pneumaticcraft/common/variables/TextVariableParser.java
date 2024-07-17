@@ -17,8 +17,8 @@
 
 package me.desht.pneumaticcraft.common.variables;
 
+import me.desht.pneumaticcraft.api.misc.IVariableProvider;
 import me.desht.pneumaticcraft.common.drone.ai.DroneAIManager;
-import me.desht.pneumaticcraft.common.drone.progwidgets.IVariableProvider;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.ItemStack;
@@ -44,7 +44,7 @@ public class TextVariableParser {
 
     public TextVariableParser(String str, UUID playerID) {
         this.orig = str;
-        this.variableProvider = GlobalVariableHelper.getVariableProvider();
+        this.variableProvider = GlobalVariableHelper.getInstance().getVariableProvider();
         this.playerID = playerID;
     }
 

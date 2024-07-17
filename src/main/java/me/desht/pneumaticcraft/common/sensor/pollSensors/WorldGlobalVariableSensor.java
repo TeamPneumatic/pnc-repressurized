@@ -58,7 +58,7 @@ public class WorldGlobalVariableSensor implements IPollSensorSetting {
 
     @Override
     public int getRedstoneValue(Level level, BlockPos pos, int sensorRange, String textBoxText) {
-        return GlobalVariableHelper.getBool(playerID, textBoxText) ? 15 : 0;
+        return GlobalVariableHelper.getInstance().getBool(playerID, textBoxText) ? 15 : 0;
     }
 
     @Override

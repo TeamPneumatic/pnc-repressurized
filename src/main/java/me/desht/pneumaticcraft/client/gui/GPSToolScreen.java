@@ -106,7 +106,7 @@ public class GPSToolScreen extends AbstractPneumaticCraftScreen {
         if (variableField != null) oldVarName = variableField.getValue();
         variableField = new WidgetTextField(font, xMiddle - 50, yMiddle + 59, 100, font.lineHeight + 3);
         playerGlobal = !oldVarName.startsWith("%");
-        oldVarName = GlobalVariableHelper.stripVarPrefix(oldVarName);
+        oldVarName = GlobalVariableHelper.getInstance().stripVarPrefix(oldVarName);
         variableField.setFilter(s -> VAR_PATTERN.matcher(s).matches());
         variableField.setValue(oldVarName);
         addRenderableWidget(variableField);
@@ -134,7 +134,7 @@ public class GPSToolScreen extends AbstractPneumaticCraftScreen {
 
     protected void toggleVarType() {
         playerGlobal = !playerGlobal;
-        varTypeButton.setMessage(Component.literal(GlobalVariableHelper.getVarPrefix(playerGlobal)));
+        varTypeButton.setMessage(Component.literal(GlobalVariableHelper.getInstance().getVarPrefix(playerGlobal)));
     }
 
     private void updateTextField(int idx, int amount) {
@@ -162,7 +162,7 @@ public class GPSToolScreen extends AbstractPneumaticCraftScreen {
     }
 
     protected void syncToServer() {
-        String varName = GlobalVariableHelper.getPrefixedVar(GlobalVariableHelper.stripVarPrefix(variableField.getValue()), playerGlobal);
+        String varName = GlobalVariableHelper.getInstance().getPrefixedVar(GlobalVariableHelper.getInstance().stripVarPrefix(variableField.getValue()), playerGlobal);
         NetworkHandler.sendToServer(new PacketChangeGPSToolCoordinate(getBlockPos(), hand, varName, getIndex()));
     }
 

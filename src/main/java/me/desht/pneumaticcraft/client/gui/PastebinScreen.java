@@ -55,7 +55,7 @@ public class PastebinScreen extends AbstractPneumaticCraftScreen {
         NONE, GETTING, PUTTING, LOGIN, LOGOUT
     }
 
-    PastebinScreen(Screen parentScreen, JsonElement input, ConversionType conversionType) {
+    public PastebinScreen(Screen parentScreen, JsonElement input, ConversionType conversionType) {
         super(Component.literal("Pastebin"));
 
         xSize = 183;

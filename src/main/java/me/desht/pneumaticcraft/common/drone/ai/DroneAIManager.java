@@ -21,10 +21,10 @@ import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.api.drone.IDrone;
 import me.desht.pneumaticcraft.api.drone.IProgWidget;
 import me.desht.pneumaticcraft.api.drone.SpecialVariableRetrievalEvent;
+import me.desht.pneumaticcraft.api.misc.IVariableProvider;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.drone.IDroneBase;
 import me.desht.pneumaticcraft.common.drone.progwidgets.IJumpBackWidget;
-import me.desht.pneumaticcraft.common.drone.progwidgets.IVariableProvider;
 import me.desht.pneumaticcraft.common.drone.progwidgets.IVariableWidget;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetStart;
 import me.desht.pneumaticcraft.common.item.ItemRegistry;
@@ -187,7 +187,7 @@ public class DroneAIManager implements IVariableProvider {
             NeoForge.EVENT_BUS.post(event);
             return Optional.ofNullable(event.getCoordinate());
         } else if (varName.startsWith("%") || varName.startsWith("#")) {
-            return Optional.ofNullable(GlobalVariableHelper.getPos(drone.getOwnerUUID(), varName));
+            return Optional.ofNullable(GlobalVariableHelper.getInstance().getPos(drone.getOwnerUUID(), varName));
         } else {
             return Optional.ofNullable(coordinateVariables.get(varName));
         }
@@ -201,7 +201,7 @@ public class DroneAIManager implements IVariableProvider {
             NeoForge.EVENT_BUS.post(event);
             item = event.getItem();
         } else if (varName.startsWith("#") || varName.startsWith("%")) {
-            item = GlobalVariableHelper.getStack(drone.getOwnerUUID(), varName);
+            item = GlobalVariableHelper.getInstance().getStack(drone.getOwnerUUID(), varName);
         } else {
             item = itemVariables.getOrDefault(varName, ItemStack.EMPTY);
         }
@@ -210,7 +210,7 @@ public class DroneAIManager implements IVariableProvider {
 
     public void setCoordinate(String variable, BlockPos coord) {
         if (variable.startsWith("%") || variable.startsWith("#")) {
-            GlobalVariableHelper.setPos(drone.getOwnerUUID(), variable, coord);
+            GlobalVariableHelper.getInstance().setPos(drone.getOwnerUUID(), variable, coord);
         } else if (!variable.startsWith("$")) {
             coordinateVariables.put(variable, coord);
             drone.onVariableChanged(variable, true);
@@ -219,7 +219,7 @@ public class DroneAIManager implements IVariableProvider {
 
     public void setItemStack(String varName, @Nonnull ItemStack item) {
         if (varName.startsWith("#")) {
-            GlobalVariableHelper.setStack(drone.getOwnerUUID(), varName, item);
+            GlobalVariableHelper.getInstance().setStack(drone.getOwnerUUID(), varName, item);
         } else if (!varName.startsWith("$")) {
             itemVariables.put(varName, item);
             drone.onVariableChanged(varName, false);

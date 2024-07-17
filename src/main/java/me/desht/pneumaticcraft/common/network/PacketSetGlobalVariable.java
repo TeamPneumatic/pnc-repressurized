@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.common.network;
 
 import com.mojang.datafixers.util.Either;
-import me.desht.pneumaticcraft.client.gui.RemoteScreen;
+import me.desht.pneumaticcraft.client.gui.remote.AbstractRemoteScreen;
 import me.desht.pneumaticcraft.client.render.area.AreaRenderManager;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableHelper;
 import net.minecraft.core.BlockPos;
@@ -49,14 +49,13 @@ public record PacketSetGlobalVariable(String varName, Either<BlockPos, ItemStack
     );
 
     public static PacketSetGlobalVariable forPos(String varName, @Nullable BlockPos value) {
-        if (!GlobalVariableHelper.hasPrefix(varName)) varName = "#" + varName;
-        varName = varName.startsWith("#") ? varName.substring(1) : varName;
+        if (!GlobalVariableHelper.getInstance().hasPrefix(varName)) varName = "#" + varName;
 
         return new PacketSetGlobalVariable(varName, Either.left(value));
     }
 
     public static PacketSetGlobalVariable forItem(String varName, @Nonnull ItemStack stack) {
-        if (!GlobalVariableHelper.hasPrefix(varName)) varName = "#" + varName;
+        if (!GlobalVariableHelper.getInstance().hasPrefix(varName)) varName = "#" + varName;
 
         return new PacketSetGlobalVariable(varName, Either.right(stack));
     }
@@ -78,11 +77,11 @@ public record PacketSetGlobalVariable(String varName, Either<BlockPos, ItemStack
         Player player = ctx.player();
 
         message.value()
-                .ifLeft(pos -> GlobalVariableHelper.setPos(player.getUUID(), message.varName(), pos))
-                .ifRight(stack -> GlobalVariableHelper.setStack(player.getUUID(), message.varName(), stack));
+                .ifLeft(pos -> GlobalVariableHelper.getInstance().setPos(player.getUUID(), message.varName(), pos))
+                .ifRight(stack -> GlobalVariableHelper.getInstance().setStack(player.getUUID(), message.varName(), stack));
 
         if (ctx.flow().isClientbound()) {
-            RemoteScreen.handleVariableChangeIfOpen(message.varName());
+            AbstractRemoteScreen.handleVariableChangeIfOpen(message.varName());
             AreaRenderManager.getInstance().clearPosProviderCache();
         }
     }

@@ -5,6 +5,9 @@ import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IClientArmorRegistry;
 import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.client.gui.*;
 import me.desht.pneumaticcraft.client.gui.programmer.*;
+import me.desht.pneumaticcraft.client.gui.remote.RemoteClientRegistry;
+import me.desht.pneumaticcraft.client.gui.remote.RemoteEditorScreen;
+import me.desht.pneumaticcraft.client.gui.remote.RemoteScreen;
 import me.desht.pneumaticcraft.client.gui.semiblock.LogisticsProviderScreen;
 import me.desht.pneumaticcraft.client.gui.semiblock.LogisticsRequesterScreen;
 import me.desht.pneumaticcraft.client.gui.semiblock.LogisticsStorageScreen;
@@ -102,6 +105,7 @@ public class ClientSetup {
         registerProgWidgetScreenFactories();
         registerTubeModuleFactories();
         registerArmorClientUpgradeHandlers();
+        RemoteClientRegistry.INSTANCE.registerClientFactories();
 
         event.enqueueWork(ClientSetup::initLate);
     }

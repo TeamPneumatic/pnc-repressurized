@@ -32,10 +32,6 @@ import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * A player filter is a collection of individual matcher objects with either match-any or match-all behaviour.
- * Custom matcher objects can be registered and have full codec/stream-codec support, so can be used in recipes etc.
- */
 public record PlayerFilter(Op op, List<IPlayerMatcher> matchers) implements IPlayerFilter {
     public static final Codec<PlayerFilter> CODEC = RecordCodecBuilder.create(inst -> inst.group(
             StringRepresentable.fromEnum(Op::values).fieldOf("op").forGetter(PlayerFilter::op),

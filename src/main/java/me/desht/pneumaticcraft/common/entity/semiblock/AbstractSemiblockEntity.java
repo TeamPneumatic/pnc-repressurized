@@ -194,7 +194,7 @@ public abstract class AbstractSemiblockEntity extends Entity implements ISemiBlo
     @Override
     public void setPos(double x, double y, double z) {
         // a semiblock is positioned when added to world, and not again
-        if (!isAddedToWorld()) {
+        if (!isAddedToLevel()) {
             super.setPos(x, y, z);
             this.blockPos = BlockPos.containing(x, y, z);
         }
@@ -323,8 +323,8 @@ public abstract class AbstractSemiblockEntity extends Entity implements ISemiBlo
     }
 
     @Override
-    public void onAddedToWorld() {
-        super.onAddedToWorld();
+    public void onAddedToLevel() {
+        super.onAddedToLevel();
 
         Level level = level();
         if (!level.isClientSide) {
@@ -339,7 +339,7 @@ public abstract class AbstractSemiblockEntity extends Entity implements ISemiBlo
     }
 
     @Override
-    public void onRemovedFromWorld() {
+    public void onRemovedFromLevel() {
         Level level = level();
         if (!level.isClientSide) {
             Direction dir = this instanceof IDirectionalSemiblock d ? d.getSide() : null;
@@ -358,7 +358,7 @@ public abstract class AbstractSemiblockEntity extends Entity implements ISemiBlo
 
         doExtraCleanupTasks(beingRemoved);
 
-        super.onRemovedFromWorld();
+        super.onRemovedFromLevel();
     }
 
     /**
@@ -380,7 +380,7 @@ public abstract class AbstractSemiblockEntity extends Entity implements ISemiBlo
 
     @Override
     public int getTrackingId() {
-        return isAddedToWorld() ? getId() : -1;
+        return isAddedToLevel() ? getId() : -1;
     }
 
     @Override

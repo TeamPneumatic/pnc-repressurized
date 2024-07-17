@@ -17,22 +17,16 @@
 
 package me.desht.pneumaticcraft.common.inventory;
 
-import me.desht.pneumaticcraft.client.gui.remote.RemoteLayout;
-import me.desht.pneumaticcraft.client.gui.remote.actionwidget.ActionWidgetVariable;
 import me.desht.pneumaticcraft.common.block.entity.AbstractPneumaticCraftBlockEntity;
-import me.desht.pneumaticcraft.common.item.RemoteItem;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSetGlobalVariable;
 import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.registry.ModMenuTypes;
+import me.desht.pneumaticcraft.common.remote.SavedRemoteLayout;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableHelper;
-import me.desht.pneumaticcraft.common.variables.TextVariableParser;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -42,7 +36,10 @@ import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.ItemStack;
 
 import javax.annotation.Nonnull;
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
@@ -50,31 +47,28 @@ public class RemoteMenu extends AbstractPneumaticCraftMenu<AbstractPneumaticCraf
     private final List<String> syncedVars;
     private final BlockPos[] lastValues;
     private final InteractionHand hand;
-    public final String[] variables;
+    private final List<String> allKnownGlobalVars;
     private final UUID playerId;
 
     public RemoteMenu(MenuType<? extends RemoteMenu> type, int windowId, Inventory playerInventory, InteractionHand hand) {
         super(type, windowId, playerInventory);
 
         this.hand = hand;
-        this.variables = new String[0];
+        this.allKnownGlobalVars = List.of();
         this.playerId = playerInventory.player.getUUID();
-        this.syncedVars = new ArrayList<>(getRelevantVariableNames(playerInventory.player, playerInventory.player.getItemInHand(hand)));
+        this.syncedVars = List.copyOf(getRelevantVariableNames(playerInventory.player, playerInventory.player.getItemInHand(hand)));
         this.lastValues = new BlockPos[syncedVars.size()];
     }
 
     private RemoteMenu(MenuType<RemoteMenu> type, int windowId, Inventory playerInventory, FriendlyByteBuf buffer) {
         super(type, windowId, playerInventory);
 
-        this.hand = buffer.readBoolean() ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND;
-
-        this.variables = new String[buffer.readVarInt()];
-        for (int i = 0; i < variables.length; i++) {
-            variables[i] = buffer.readUtf();
-        }
+        // see RemoteItem#toBytes for corresponding serialization
+        this.hand = buffer.readEnum(InteractionHand.class);
+        this.allKnownGlobalVars = buffer.readList(FriendlyByteBuf::readUtf);
 
         this.playerId = playerInventory.player.getUUID();
-        this.syncedVars = new ArrayList<>(getRelevantVariableNames(playerInventory.player, playerInventory.player.getItemInHand(hand)));
+        this.syncedVars = List.copyOf(getRelevantVariableNames(playerInventory.player, playerInventory.player.getItemInHand(hand)));
         this.lastValues = new BlockPos[syncedVars.size()];
     }
 
@@ -87,15 +81,15 @@ public class RemoteMenu extends AbstractPneumaticCraftMenu<AbstractPneumaticCraf
     }
 
     private Set<String> getRelevantVariableNames(Player player, @Nonnull ItemStack remote) {
-        RemoteLayout layout = RemoteLayout.fromNBT(player.registryAccess(), RemoteItem.getSavedLayout(remote));
+        SavedRemoteLayout layout = SavedRemoteLayout.fromItem(remote);
 
         Set<String> variables = new HashSet<>();
-        layout.getActionWidgets().forEach(w -> w.discoverVariables(variables, playerId));
+        layout.getWidgets().forEach(w -> w.discoverVariables(variables, playerId));
 
         Set<String> result = new HashSet<>();
         variables.forEach(varName -> {
             if (!varName.isEmpty()) {
-                if (!GlobalVariableHelper.hasPrefix(varName)) {
+                if (!GlobalVariableHelper.getInstance().hasPrefix(varName)) {
                     if (!player.level().isClientSide) {
                         player.displayClientMessage(xlate("pneumaticcraft.command.globalVariable.prefixReminder", varName).withStyle(ChatFormatting.GOLD), false);
                     }
@@ -114,7 +108,7 @@ public class RemoteMenu extends AbstractPneumaticCraftMenu<AbstractPneumaticCraf
         for (int i = 0; i < lastValues.length; i++) {
             String varName = syncedVars.get(i);
             if (varName.isEmpty()) continue;
-            BlockPos newValue = GlobalVariableHelper.getPos(playerId, varName);
+            BlockPos newValue = GlobalVariableHelper.getInstance().getPos(playerId, varName);
             if (newValue != null && !newValue.equals(lastValues[i])) {
                 lastValues[i] = newValue;
                 ServerPlayer serverPlayer = PneumaticCraftUtils.getPlayerFromId(playerId);
@@ -132,5 +126,9 @@ public class RemoteMenu extends AbstractPneumaticCraftMenu<AbstractPneumaticCraf
 
     public InteractionHand getHand() {
         return hand;
+    }
+
+    public List<String> allKnownGlobalVars() {
+        return allKnownGlobalVars;
     }
 }

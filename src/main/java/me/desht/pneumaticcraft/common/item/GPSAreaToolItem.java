@@ -23,7 +23,6 @@ import me.desht.pneumaticcraft.api.item.IPositionProvider;
 import me.desht.pneumaticcraft.client.gui.GPSAreaToolScreen;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetArea;
-import me.desht.pneumaticcraft.common.drone.progwidgets.SavedDroneProgram;
 import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.registry.ModSounds;
@@ -127,7 +126,7 @@ public class GPSAreaToolItem extends Item implements IPositionProvider, IGPSTool
                 String varName = area.getVarName(index);
                 if (!varName.isEmpty()) {
                     BlockPos curPos = area.getPos(index).orElse(PneumaticCraftUtils.invalidPos());
-                    BlockPos pos = GlobalVariableHelper.getPos(entity.getUUID(), varName, PneumaticCraftUtils.invalidPos());
+                    BlockPos pos = GlobalVariableHelper.getInstance().getPos(entity.getUUID(), varName, PneumaticCraftUtils.invalidPos());
                     if (!curPos.equals(pos)) {
                         setGPSLocation(p, stack, pos, area, index, false);
                     }
@@ -141,7 +140,7 @@ public class GPSAreaToolItem extends Item implements IPositionProvider, IGPSTool
         Validate.isTrue(stack.getItem() instanceof GPSAreaToolItem);
 
         ProgWidgetArea area = stack.getOrDefault(ModDataComponents.AREA_WIDGET, ProgWidgetArea.Immutable.DEFAULT).toMutable();
-        area.setVariableProvider(GlobalVariableHelper.getVariableProvider(), playerId);  // allows client to read vars for rendering purposes
+        area.setVariableProvider(GlobalVariableHelper.getInstance().getVariableProvider(), playerId);  // allows client to read vars for rendering purposes
         return area;
     }
 
@@ -157,7 +156,7 @@ public class GPSAreaToolItem extends Item implements IPositionProvider, IGPSTool
         // if there's a variable set for this index, use its value instead (and update the stored position)
         String var = area.getVarName(index);
         if (!var.isEmpty() && !player.level().isClientSide) {
-            BlockPos newPos = GlobalVariableHelper.getPos(player.getUUID(), var);
+            BlockPos newPos = GlobalVariableHelper.getInstance().getPos(player.getUUID(), var);
             if (pos.isEmpty() || !pos.get().equals(newPos)) {
                 area.setPos(index, newPos);
                 setArea(gpsTool, area);
@@ -176,7 +175,7 @@ public class GPSAreaToolItem extends Item implements IPositionProvider, IGPSTool
         if (updateVar) {
             String varName = area.getVarName(index);
             if (!varName.isEmpty()) {
-                GlobalVariableHelper.setPos(player.getUUID(), varName, pos);
+                GlobalVariableHelper.getInstance().setPos(player.getUUID(), varName, pos);
             }
         }
     }
@@ -200,8 +199,8 @@ public class GPSAreaToolItem extends Item implements IPositionProvider, IGPSTool
         ProgWidgetArea area = getArea(player, stack);
         String v1 = area.getVarName(0);
         String v2 = area.getVarName(1);
-        if (GlobalVariableHelper.hasPrefix(v1)) PneumaticRegistry.getInstance().getMiscHelpers().syncGlobalVariable(player, v1);
-        if (GlobalVariableHelper.hasPrefix(v2)) PneumaticRegistry.getInstance().getMiscHelpers().syncGlobalVariable(player, v2);
+        if (GlobalVariableHelper.getInstance().hasPrefix(v1)) PneumaticRegistry.getInstance().getMiscHelpers().syncGlobalVariable(player, v1);
+        if (GlobalVariableHelper.getInstance().hasPrefix(v2)) PneumaticRegistry.getInstance().getMiscHelpers().syncGlobalVariable(player, v2);
     }
 
     @Override
@@ -232,7 +231,7 @@ public class GPSAreaToolItem extends Item implements IPositionProvider, IGPSTool
         GPSAreaToolItem.setVariable(player, stack, varName, index);
         GPSAreaToolItem.setGPSPosAndNotify(player, stack, pos, index);
         if (!varName.isEmpty()) {
-            GlobalVariableHelper.setPos(player.getUUID(), varName, pos);
+            GlobalVariableHelper.getInstance().setPos(player.getUUID(), varName, pos);
         }
     }
 

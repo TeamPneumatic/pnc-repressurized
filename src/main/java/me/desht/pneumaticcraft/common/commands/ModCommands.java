@@ -241,8 +241,8 @@ public class ModCommands {
         Collection<String> varNames = GlobalVariableManager.getInstance().getAllActiveVariableNames(playerEntity);
         source.sendSuccess(() -> Component.literal(varNames.size() + " vars").withStyle(ChatFormatting.GREEN, ChatFormatting.UNDERLINE), false);
         varNames.stream().sorted().forEach(var -> {
-            BlockPos pos = GlobalVariableHelper.getPos(id, var);
-            ItemStack stack = GlobalVariableHelper.getStack(id, var);
+            BlockPos pos = GlobalVariableHelper.getInstance().getPos(id, var);
+            ItemStack stack = GlobalVariableHelper.getInstance().getStack(id, var);
             String val = PneumaticCraftUtils.posToString(pos) + (stack.isEmpty() ? "" : " / " + PneumaticCraftUtils.getRegistryName(stack.getItem()).orElse(UNKNOWN_ITEM));
             source.sendSuccess(() -> Component.literal(var).append(" = [").append(val).append("]"), false);
         });
@@ -252,15 +252,15 @@ public class ModCommands {
     private static int getGlobalVar(CommandContext<CommandSourceStack> ctx, String varName0) {
         CommandSourceStack source = ctx.getSource();
         String varName;
-        if (!GlobalVariableHelper.hasPrefix(varName0)) {
+        if (!GlobalVariableHelper.getInstance().hasPrefix(varName0)) {
             source.sendSuccess(() -> xlate("pneumaticcraft.command.globalVariable.prefixReminder", varName0).withStyle(ChatFormatting.GOLD), false);
             varName = "#" + varName0;
         } else {
             varName = varName0;
         }
         UUID id = varName.startsWith("%") || !(ctx.getSource().getEntity() instanceof Player player) ? null : player.getUUID();
-        BlockPos pos = GlobalVariableHelper.getPos(id, varName);
-        ItemStack stack = GlobalVariableHelper.getStack(id, varName);
+        BlockPos pos = GlobalVariableHelper.getInstance().getPos(id, varName);
+        ItemStack stack = GlobalVariableHelper.getInstance().getStack(id, varName);
         String val = PneumaticCraftUtils.posToString(pos) + (stack.isEmpty() ? "" : " / " + PneumaticCraftUtils.getRegistryName(stack.getItem()).orElse(UNKNOWN_ITEM));
         if (pos == null && stack.isEmpty()) {
             source.sendFailure(xlate("pneumaticcraft.command.globalVariable.missing", varName));
@@ -275,7 +275,7 @@ public class ModCommands {
         CommandSourceStack source = ctx.getSource();
 
         String varName;
-        if (!GlobalVariableHelper.hasPrefix(varName0)) {
+        if (!GlobalVariableHelper.getInstance().hasPrefix(varName0)) {
             source.sendSuccess(() -> xlate("pneumaticcraft.command.globalVariable.prefixReminder", varName0).withStyle(ChatFormatting.GOLD), false);
             varName = "#" + varName0;
         } else {
@@ -286,11 +286,11 @@ public class ModCommands {
             UUID id = varName.startsWith("%") ? null : ctx.getSource().getPlayerOrException().getUUID();
             final String v = varName;
             posOrItem.ifLeft(pos -> {
-                GlobalVariableHelper.setPos(id, v, pos);
+                GlobalVariableHelper.getInstance().setPos(id, v, pos);
                 source.sendSuccess(() -> xlate("pneumaticcraft.command.globalVariable.output", v, PneumaticCraftUtils.posToString(pos)), true);
             }).ifRight(item -> {
                 ItemStack stack = new ItemStack(item.getItem());
-                GlobalVariableHelper.setStack(id, v, stack);
+                GlobalVariableHelper.getInstance().setStack(id, v, stack);
                 source.sendSuccess(() -> xlate("pneumaticcraft.command.globalVariable.output", v, PneumaticCraftUtils.getRegistryName(stack.getItem()).orElse(UNKNOWN_ITEM)), true);
             });
         } catch (CommandSyntaxException e) {
@@ -304,7 +304,7 @@ public class ModCommands {
         CommandSourceStack source = ctx.getSource();
 
         String varName;
-        if (!GlobalVariableHelper.hasPrefix(varName0)) {
+        if (!GlobalVariableHelper.getInstance().hasPrefix(varName0)) {
             source.sendSuccess(() -> xlate("pneumaticcraft.command.globalVariable.prefixReminder", varName0).withStyle(ChatFormatting.GOLD), false);
             varName = "#" + varName0;
         } else {
@@ -313,11 +313,11 @@ public class ModCommands {
 
         try {
             UUID id = varName.startsWith("%") ? null : ctx.getSource().getPlayerOrException().getUUID();
-            if (GlobalVariableHelper.getPos(id, varName) == null && GlobalVariableHelper.getStack(id, varName).isEmpty()) {
+            if (GlobalVariableHelper.getInstance().getPos(id, varName) == null && GlobalVariableHelper.getInstance().getStack(id, varName).isEmpty()) {
                 source.sendFailure(xlate("pneumaticcraft.command.globalVariable.missing", varName));
             } else {
-                GlobalVariableHelper.setPos(id, varName, null);
-                GlobalVariableHelper.setStack(id, varName, ItemStack.EMPTY);
+                GlobalVariableHelper.getInstance().setPos(id, varName, null);
+                GlobalVariableHelper.getInstance().setStack(id, varName, ItemStack.EMPTY);
                 // global var deletions need to get sync'd to players; syncing normally happens when remote/gps tool/etc GUI's
                 // are opened, but deleted vars won't get sync'd there, so could wrongly hang around on the client
                 if (id != null) {

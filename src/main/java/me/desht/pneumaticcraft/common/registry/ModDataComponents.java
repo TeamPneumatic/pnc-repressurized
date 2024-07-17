@@ -13,6 +13,7 @@ import me.desht.pneumaticcraft.common.item.JackHammerItem.DigMode;
 import me.desht.pneumaticcraft.common.item.MicromissilesItem;
 import me.desht.pneumaticcraft.common.item.SpawnerCoreItem;
 import me.desht.pneumaticcraft.common.network.DronePacket;
+import me.desht.pneumaticcraft.common.remote.SavedRemoteLayout;
 import me.desht.pneumaticcraft.common.upgrades.SavedUpgrades;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -142,8 +143,8 @@ public class ModDataComponents {
             = register("micromissile_settings", MicromissilesItem.Settings.CODEC, MicromissilesItem.Settings.STREAM_CODEC);
 
     // Remote Layout
-    public static final Supplier<DataComponentType<CustomData>> REMOTE_LAYOUT
-            = register("remote_layout", CustomData.CODEC, CustomData.STREAM_CODEC);
+    public static final Supplier<DataComponentType<SavedRemoteLayout>> REMOTE_LAYOUT
+            = register("remote_layout", SavedRemoteLayout.CODEC, SavedRemoteLayout.STREAM_CODEC);
     // Remote security station position
     public static final Supplier<DataComponentType<GlobalPos>> REMOTE_SECSTATION_POS
             = register("remote_secstation_pos", GlobalPos.CODEC, GlobalPos.STREAM_CODEC);

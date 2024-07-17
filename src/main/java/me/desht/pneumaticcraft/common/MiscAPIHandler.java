@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.common;
 
 import me.desht.pneumaticcraft.api.PNCCapabilities;
+import me.desht.pneumaticcraft.api.misc.IGlobalVariableHelper;
 import me.desht.pneumaticcraft.api.misc.IMiscHelpers;
 import me.desht.pneumaticcraft.api.pneumatic_armor.hacking.IActiveEntityHacks;
 import me.desht.pneumaticcraft.common.block.entity.utility.SecurityStationBlockEntity;
@@ -54,7 +55,7 @@ public enum MiscAPIHandler implements IMiscHelpers {
 
     @Override
     public void syncGlobalVariable(ServerPlayer player, String varName) {
-        BlockPos pos = GlobalVariableHelper.getPos(player.getUUID(), varName);
+        BlockPos pos = getGlobalVariableHelper().getPos(player.getUUID(), varName);
         NetworkHandler.sendToPlayer(PacketSetGlobalVariable.forPos(varName, pos), player);
         // TODO should we sync item variables too?
         //  right now there isn't really a need for it, so it would just be extra network chatter
@@ -97,5 +98,10 @@ public enum MiscAPIHandler implements IMiscHelpers {
     @Override
     public Optional<? extends IActiveEntityHacks> getHackingForEntity(Entity entity, boolean create) {
         return create ? HackManager.getOrCreateActiveHacks(entity) : HackManager.getActiveHacks(entity);
+    }
+
+    @Override
+    public IGlobalVariableHelper getGlobalVariableHelper() {
+        return GlobalVariableHelper.getInstance();
     }
 }

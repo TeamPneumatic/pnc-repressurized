@@ -27,9 +27,9 @@ import java.util.function.Supplier;
  * Handles serialization of progwidgets, as well as default instance creation.
  */
 public class ProgWidgetType<P extends IProgWidget> {
-    private final Supplier<? extends P> defaultSupplier;
-    private final MapCodec<? extends IProgWidget> codec;
-    private final StreamCodec<RegistryFriendlyByteBuf,? extends IProgWidget> streamCodec;
+    private final Supplier<P> defaultSupplier;
+    private final MapCodec<P> codec;
+    private final StreamCodec<RegistryFriendlyByteBuf,P> streamCodec;
     private String descriptionId;
 
     private ProgWidgetType(Supplier<P> defaultSupplier, MapCodec<P> codec, StreamCodec<RegistryFriendlyByteBuf,P> streamCodec) {

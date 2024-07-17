@@ -56,7 +56,7 @@ public class GPSAreaToolScreen extends GPSToolScreen {
             p1p2Pos[i] = GPSAreaToolItem.getGPSLocation(Minecraft.getInstance().player, stack, i).orElse(ClientUtils.getClientPlayer().blockPosition());
             vars[i] = GPSAreaToolItem.getVariable(Minecraft.getInstance().player, stack, i);
             playerGlobals[i] = !vars[i].startsWith("%");
-            vars[i] = GlobalVariableHelper.stripVarPrefix(vars[i]);
+            vars[i] = GlobalVariableHelper.getInstance().stripVarPrefix(vars[i]);
         }
     }
 
@@ -94,7 +94,7 @@ public class GPSAreaToolScreen extends GPSToolScreen {
         vars[index] = variableField.getValue();
         for (int i = 0; i <= 1; i++) {
             if (changed(i)) {
-                String varName = GlobalVariableHelper.getPrefixedVar(vars[i], playerGlobals[i]);
+                String varName = GlobalVariableHelper.getInstance().getPrefixedVar(vars[i], playerGlobals[i]);
                 NetworkHandler.sendToServer(new PacketChangeGPSToolCoordinate(p1p2Pos[i], hand, varName, i));
             }
         }
@@ -104,14 +104,14 @@ public class GPSAreaToolScreen extends GPSToolScreen {
         ItemStack stack = ClientUtils.getClientPlayer().getItemInHand(hand);
         BlockPos p = GPSAreaToolItem.getGPSLocation(ClientUtils.getClientPlayer(), stack, index).orElse(PneumaticCraftUtils.invalidPos());
         String var = GPSAreaToolItem.getVariable(ClientUtils.getClientPlayer(), stack, index);
-        String var2 = GlobalVariableHelper.getPrefixedVar(vars[index], playerGlobals[index]);
+        String var2 = GlobalVariableHelper.getInstance().getPrefixedVar(vars[index], playerGlobals[index]);
         return !p.equals(p1p2Pos[index]) || !var.equals(var2);
     }
 
     @Override
     protected void toggleVarType() {
         playerGlobals[index] = !playerGlobals[index];
-        varTypeButton.setMessage(Component.literal(GlobalVariableHelper.getVarPrefix(playerGlobals[index])));
+        varTypeButton.setMessage(Component.literal(GlobalVariableHelper.getInstance().getVarPrefix(playerGlobals[index])));
     }
 
     private void toggleP1P2(Button b) {
@@ -127,7 +127,7 @@ public class GPSAreaToolScreen extends GPSToolScreen {
             textFields[1].setValue(p1p2Pos[index].getY());
             textFields[2].setValue(p1p2Pos[index].getZ());
             variableField.setValue(vars[index]);
-            varTypeButton.setMessage(Component.literal(GlobalVariableHelper.getVarPrefix(playerGlobals[index])));
+            varTypeButton.setMessage(Component.literal(GlobalVariableHelper.getInstance().getVarPrefix(playerGlobals[index])));
             if (teleportButton != null) {
                 BlockPos pos = getBlockPos();
                 teleportButton.setTooltipText(Component.literal(String.format("/tp %d %d %d", pos.getX(), pos.getY(), pos.getZ())).withStyle(ChatFormatting.YELLOW));

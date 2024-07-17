@@ -104,7 +104,7 @@ public class GPSToolItem extends Item implements IPositionProvider, IGPSToolSync
         String var = getVariable(stack);
         if (!var.isEmpty() && !world.isClientSide && entity instanceof Player) {
             getGPSLocation(entity.getUUID(), stack).ifPresent(curPos -> {
-                BlockPos varPos = GlobalVariableHelper.getPos(entity.getUUID(), var, PneumaticCraftUtils.invalidPos());
+                BlockPos varPos = GlobalVariableHelper.getInstance().getPos(entity.getUUID(), var, PneumaticCraftUtils.invalidPos());
                 if (!varPos.equals(curPos)) {
                     setGPSLocation(entity.getUUID(), stack, varPos, false);
                 }
@@ -123,7 +123,7 @@ public class GPSToolItem extends Item implements IPositionProvider, IGPSToolSync
         if (gpsTool.getItem() == ModItems.GPS_TOOL.get() && curPos != null) {
             String var = getVariable(gpsTool);
             if (!var.isEmpty()) {
-                BlockPos pos = GlobalVariableHelper.getPos(playerId, var);
+                BlockPos pos = GlobalVariableHelper.getInstance().getPos(playerId, var);
                 if (pos != null && !curPos.equals(pos)) {
                     curPos = pos;
                     setGPSLocation(playerId, gpsTool, pos, false);
@@ -144,7 +144,7 @@ public class GPSToolItem extends Item implements IPositionProvider, IGPSToolSync
         if (updateVarManager) {
             String var = getVariable(gpsTool);
             if (!var.isEmpty()) {
-                GlobalVariableHelper.setPos(playerId, var, pos);
+                GlobalVariableHelper.getInstance().setPos(playerId, var, pos);
             }
         }
     }
@@ -170,7 +170,7 @@ public class GPSToolItem extends Item implements IPositionProvider, IGPSToolSync
     @Override
     public void syncVariables(ServerPlayer player, ItemStack stack) {
         String varName = getVariable(stack);
-        if (GlobalVariableHelper.hasPrefix(varName)) PneumaticRegistry.getInstance().getMiscHelpers().syncGlobalVariable(player, varName);
+        if (GlobalVariableHelper.getInstance().hasPrefix(varName)) PneumaticRegistry.getInstance().getMiscHelpers().syncGlobalVariable(player, varName);
     }
 
     @Override
@@ -178,7 +178,7 @@ public class GPSToolItem extends Item implements IPositionProvider, IGPSToolSync
         GPSToolItem.setVariable(stack, varName);
         GPSToolItem.setGPSLocation(player.getUUID(), stack, pos);
         if (!varName.isEmpty()) {
-            GlobalVariableHelper.setPos(player.getUUID(), varName, pos);
+            GlobalVariableHelper.getInstance().setPos(player.getUUID(), varName, pos);
         }
     }
 }
