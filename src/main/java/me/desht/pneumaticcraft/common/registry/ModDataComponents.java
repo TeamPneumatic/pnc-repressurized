@@ -32,6 +32,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.component.DyedItemColor;
 import net.minecraft.world.item.component.ItemContainerContents;
+import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.fluids.SimpleFluidContent;
 import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -205,8 +206,8 @@ public class ModDataComponents {
             = register("door_color", DyeColor.CODEC, DyeColor.STREAM_CODEC);
 
     // Camouflage Applicator blockstate
-    public static final Supplier<DataComponentType<CustomData>> CAMO_STATE
-            = register("camo_state", CustomData.CODEC, CustomData.STREAM_CODEC);
+    public static final Supplier<DataComponentType<BlockState>> CAMO_STATE
+            = register("camo_state", BlockState.CODEC, ByteBufCodecs.fromCodec(BlockState.CODEC));
 
     // PCB Etch progress
     public static final Supplier<DataComponentType<Integer>> ETCH_PROGRESS

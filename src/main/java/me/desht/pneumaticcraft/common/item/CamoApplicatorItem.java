@@ -29,10 +29,6 @@ import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -42,13 +38,14 @@ import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.LevelEvent;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class CamoApplicatorItem extends PressurizableItem {
     public CamoApplicatorItem() {
@@ -57,13 +54,11 @@ public class CamoApplicatorItem extends PressurizableItem {
 
     @Override
     public Component getName(ItemStack stack) {
-        BlockState camoState = getCamoState(stack, null);
+        BlockState camoState = getCamoState(stack);
         Component disp = super.getName(stack);
-        if (camoState != null) {
-            return disp.copy().append(": ").append(getCamoStateDisplayName(camoState)).withStyle(ChatFormatting.YELLOW);
-        } else {
-            return disp;
-        }
+        return camoState != null ?
+                disp.copy().append(": ").append(getCamoStateDisplayName(camoState)).withStyle(ChatFormatting.YELLOW) :
+                disp;
     }
 
     @Override
@@ -72,7 +67,7 @@ public class CamoApplicatorItem extends PressurizableItem {
             if (!worldIn.isClientSide) {
                 setCamoState(playerIn.getItemInHand(handIn), null);
             } else {
-                if (getCamoState(playerIn.getItemInHand(handIn), playerIn.level()) != null) {
+                if (getCamoState(playerIn.getItemInHand(handIn)) != null) {
                     playerIn.playSound(ModSounds.CHIRP.get(), 1.0f, 1.0f);
                 }
             }
@@ -108,7 +103,7 @@ public class CamoApplicatorItem extends PressurizableItem {
                         return InteractionResult.FAIL;
                     }
 
-                    BlockState newCamo = getCamoState(stack, level);
+                    BlockState newCamo = getCamoState(stack);
                     BlockState existingCamo = camoTE.getCamouflage();
 
                     if (existingCamo == newCamo) {
@@ -120,8 +115,7 @@ public class CamoApplicatorItem extends PressurizableItem {
                     if (newCamo != null && !player.isCreative()) {
                         ItemStack camoStack = CamouflageableBlockEntity.getStackForState(newCamo);
                         if (!PneumaticCraftUtils.consumeInventoryItem(player.getInventory(), camoStack)) {
-                            player.displayClientMessage(Component.translatable("pneumaticcraft.message.camo.notEnoughBlocks")
-                                    .append(camoStack.getHoverName())
+                            player.displayClientMessage(xlate("pneumaticcraft.message.camo.notEnoughBlocks", camoStack.getHoverName())
                                     .withStyle(ChatFormatting.RED), true);
                             NetworkHandler.sendToAllTracking(new PacketPlaySound(ModSounds.MINIGUN_STOP.get(), SoundSource.PLAYERS,
                                     pos, 1.0F, 2.0F, true), level, pos);
@@ -158,23 +152,18 @@ public class CamoApplicatorItem extends PressurizableItem {
         if (state == null) {
             stack.remove(ModDataComponents.CAMO_STATE);
         } else {
-            stack.set(ModDataComponents.CAMO_STATE, CustomData.of(NbtUtils.writeBlockState(state)));
+            stack.set(ModDataComponents.CAMO_STATE, state);
         }
     }
 
-    private static BlockState getCamoState(ItemStack stack, Level level) {
-        CompoundTag tag = stack.getOrDefault(ModDataComponents.CAMO_STATE, CustomData.EMPTY).copyTag();
-        if (!tag.isEmpty()) {
-            return NbtUtils.readBlockState(level == null ? BuiltInRegistries.BLOCK.asLookup() : level.holderLookup(Registries.BLOCK), tag);
-        }
-        return null;
+    private static BlockState getCamoState(ItemStack stack) {
+        return stack.get(ModDataComponents.CAMO_STATE);
     }
 
     public static Component getCamoStateDisplayName(BlockState state) {
-        if (state != null) {
-            return new ItemStack(state.getBlock().asItem()).getHoverName();
-        }
-        return Component.literal("<?>");
+        return state != null ?
+                new ItemStack(state.getBlock().asItem()).getHoverName() :
+                Component.literal("<?>");
     }
 
 }
