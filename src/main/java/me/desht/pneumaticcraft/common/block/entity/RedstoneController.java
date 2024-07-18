@@ -19,13 +19,21 @@ package me.desht.pneumaticcraft.common.block.entity;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.datafixers.util.Either;
-import me.desht.pneumaticcraft.api.lib.NBTKeys;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import io.netty.buffer.ByteBuf;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -100,16 +108,12 @@ public class RedstoneController<T extends BlockEntity & IRedstoneControl<T>> {
         return te != null && modes.get(currentMode).emissionPredicate.test(te);
     }
 
-    public CompoundTag serialize(CompoundTag tag) {
-        // don't write default mode 0; avoid messy NBT
-        if (currentMode != 0) {
-            tag.putInt(NBTKeys.NBT_REDSTONE_MODE, currentMode);
-        }
-        return tag;
+    public Saved save() {
+        return new Saved(currentMode);
     }
 
-    public void deserialize(CompoundTag tag) {
-        currentMode = tag.getInt(NBTKeys.NBT_REDSTONE_MODE);
+    public void restore(Saved data) {
+        currentMode = data.mode();
     }
 
     /**
@@ -213,6 +217,27 @@ public class RedstoneController<T extends BlockEntity & IRedstoneControl<T>> {
                             te -> te.getCurrentRedstonePower() > 0),
                     new ReceivingRedstoneMode<>("standard.low_signal",  new ItemStack(Items.REDSTONE_TORCH),
                             te -> te.getCurrentRedstonePower() == 0));
+        }
+    }
+
+    public record Saved(int mode) {
+        // just one int field right now, but using a record for potential future flexibility
+        public static final Codec<Saved> CODEC = RecordCodecBuilder.create(builder -> builder.group(
+                ExtraCodecs.NON_NEGATIVE_INT.fieldOf("mode").forGetter(Saved::mode)
+        ).apply(builder, Saved::new));
+
+        public static final StreamCodec<ByteBuf, Saved> STREAM_CODEC = StreamCodec.composite(
+                ByteBufCodecs.VAR_INT, Saved::mode,
+                Saved::new
+        );
+        public static final Saved DEFAULT = new Saved(0);
+
+        public static Saved fromNBT(HolderLookup.Provider provider, CompoundTag tag) {
+            return CODEC.parse(provider.createSerializationContext(NbtOps.INSTANCE), tag).result().orElse(DEFAULT);
+        }
+
+        public Tag toNBT(HolderLookup.Provider provider) {
+            return CODEC.encodeStart(provider.createSerializationContext(NbtOps.INSTANCE), this).getOrThrow();
         }
     }
 }

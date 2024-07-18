@@ -320,7 +320,7 @@ public abstract class AbstractPneumaticCraftBlockEntity extends BlockEntity
             if (logic != null) tag.put(NBTKeys.NBT_HEAT_EXCHANGER, logic.serializeNBT());
         }
         if (this instanceof IRedstoneControl<?> rc) {
-            rc.getRedstoneController().serialize(tag);
+            tag.put(NBTKeys.NBT_REDSTONE_MODE, rc.getRedstoneController().save().toNBT(provider));
         }
         if (this instanceof ISerializableTanks st) {
             tag.put(NBTKeys.NBT_SAVED_TANKS, st.serializeTanks(provider));
@@ -343,7 +343,7 @@ public abstract class AbstractPneumaticCraftBlockEntity extends BlockEntity
             if (logic != null) logic.deserializeNBT(tag.getCompound(NBTKeys.NBT_HEAT_EXCHANGER));
         }
         if (this instanceof IRedstoneControl<?> rc) {
-            rc.getRedstoneController().deserialize(tag);
+            rc.getRedstoneController().restore(RedstoneController.Saved.fromNBT(provider, tag.getCompound(NBTKeys.NBT_REDSTONE_MODE)));
         }
         if (this instanceof ISerializableTanks st) {
             st.deserializeTanks(provider, tag.getCompound(NBTKeys.NBT_SAVED_TANKS));
@@ -639,8 +639,8 @@ public abstract class AbstractPneumaticCraftBlockEntity extends BlockEntity
                     tank.loadFromContent(componentInput.getOrDefault(comp, SimpleFluidContent.EMPTY)));
         }
         if (this instanceof IRedstoneControl<?> rc) {
-            CustomData data = componentInput.getOrDefault(ModDataComponents.SAVED_REDSTONE_CONTROLLER, CustomData.EMPTY);
-            rc.getRedstoneController().deserialize(data.copyTag());
+            RedstoneController.Saved data = componentInput.getOrDefault(ModDataComponents.SAVED_REDSTONE_CONTROLLER, RedstoneController.Saved.DEFAULT);
+            rc.getRedstoneController().restore(data);
         }
         if (this instanceof ISideConfigurable sc) {
             CustomData data = componentInput.getOrDefault(ModDataComponents.SAVED_SIDE_CONFIG, CustomData.EMPTY);
@@ -663,8 +663,7 @@ public abstract class AbstractPneumaticCraftBlockEntity extends BlockEntity
             st.getSerializableTanks().forEach((comp, tank) -> builder.set(comp, tank.getContent()));
         }
         if (this instanceof IRedstoneControl<?> rc) {
-            CompoundTag rcTag = rc.getRedstoneController().serialize(new CompoundTag());
-            builder.set(ModDataComponents.SAVED_REDSTONE_CONTROLLER, CustomData.of(rcTag));
+            builder.set(ModDataComponents.SAVED_REDSTONE_CONTROLLER, rc.getRedstoneController().save());
         }
         if (this instanceof ISideConfigurable sc) {
             CompoundTag scTag = SideConfigurator.writeToNBT(sc, level.registryAccess());

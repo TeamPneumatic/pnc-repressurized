@@ -4,6 +4,7 @@ import com.mojang.serialization.Codec;
 import me.desht.pneumaticcraft.api.item.ISpawnerCoreStats;
 import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.common.amadron.ImmutableBasket;
+import me.desht.pneumaticcraft.common.block.entity.RedstoneController;
 import me.desht.pneumaticcraft.common.block.entity.utility.AphorismTileBlockEntity;
 import me.desht.pneumaticcraft.common.block.entity.utility.SmartChestBlockEntity;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetArea;
@@ -190,8 +191,8 @@ public class ModDataComponents {
     // General block entity saved side config & redstone settings
     public static final Supplier<DataComponentType<CustomData>> SAVED_SIDE_CONFIG
             = register("be_saved_sideconfig", CustomData.CODEC, CustomData.STREAM_CODEC);
-    public static final Supplier<DataComponentType<CustomData>> SAVED_REDSTONE_CONTROLLER
-            = register("be_saved_rc", CustomData.CODEC, CustomData.STREAM_CODEC);
+    public static final Supplier<DataComponentType<RedstoneController.Saved>> SAVED_REDSTONE_CONTROLLER
+            = register("be_saved_rc", RedstoneController.Saved.CODEC, RedstoneController.Saved.STREAM_CODEC);
 
     // Solar compressor broken
     public static final Supplier<DataComponentType<Boolean>> SOLAR_BROKEN
