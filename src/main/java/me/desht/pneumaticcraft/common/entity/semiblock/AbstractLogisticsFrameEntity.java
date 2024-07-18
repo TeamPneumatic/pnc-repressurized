@@ -72,7 +72,7 @@ import java.util.function.Consumer;
 
 public abstract class AbstractLogisticsFrameEntity extends AbstractSemiblockEntity implements IDirectionalSemiblock {
     public static final String NBT_INVISIBLE = "invisible";
-    public static final String NBT_MATCH_NBT = "matchNBT";
+    public static final String NBT_MATCH_COMPONENTS = "matchComponents";
     public static final String NBT_MATCH_DURABILITY = "matchDurability";
     public static final String NBT_MATCH_MODID = "matchModID";
     public static final String NBT_ITEM_WHITELIST = "whitelist";
@@ -92,7 +92,7 @@ public abstract class AbstractLogisticsFrameEntity extends AbstractSemiblockEnti
     private final Map<FluidStack, Integer> incomingFluid = new IdentityHashMap<>();
     private final ItemFilterHandler itemFilterHandler = new ItemFilterHandler(ITEM_FILTER_SLOTS);
     private FluidFilter fluidFilter = new FluidFilter(FLUID_FILTER_SLOTS);
-    private boolean matchNBT = false;
+    private boolean matchComponents = false;
     private boolean matchDurability = false;
     private boolean matchModId = false;
     private boolean itemWhiteList = false;
@@ -222,12 +222,12 @@ public abstract class AbstractLogisticsFrameEntity extends AbstractSemiblockEnti
         this.fluidWhiteList = whiteList;
     }
 
-    public boolean isMatchNBT() {
-        return matchNBT;
+    public boolean isMatchComponents() {
+        return matchComponents;
     }
 
-    public void setMatchNBT(boolean matchNBT) {
-        this.matchNBT = matchNBT;
+    public void setMatchComponents(boolean matchComponents) {
+        this.matchComponents = matchComponents;
     }
 
     public boolean isMatchDurability() {
@@ -273,7 +273,7 @@ public abstract class AbstractLogisticsFrameEntity extends AbstractSemiblockEnti
             }
 
         } else {
-            if (isSemiblockInvisible() && !playerIsHoldingLogisticItems()) {
+            if (isSemiblockInvisible() && !isClientPlayerHoldingLogisticItems()) {
                 alpha = Math.max(0, alpha - 9);
             } else {
                 alpha = Math.min(255, alpha + 9);
@@ -336,7 +336,7 @@ public abstract class AbstractLogisticsFrameEntity extends AbstractSemiblockEnti
         fluidFilter = FluidFilter.CODEC.parse(registryAccess().createSerializationContext(NbtOps.INSTANCE), tag.getCompound(NBT_FLUID_FILTERS)).result()
                 .orElse(new FluidFilter(FLUID_FILTER_SLOTS));
         setSemiblockInvisible(tag.getBoolean(NBT_INVISIBLE));
-        setMatchNBT(tag.getBoolean(NBT_MATCH_NBT));
+        setMatchComponents(tag.getBoolean(NBT_MATCH_COMPONENTS));
         setMatchDurability(tag.getBoolean(NBT_MATCH_DURABILITY));
         setMatchModId(tag.getBoolean(NBT_MATCH_MODID));
         setItemWhiteList(tag.getBoolean(NBT_ITEM_WHITELIST));
@@ -358,7 +358,7 @@ public abstract class AbstractLogisticsFrameEntity extends AbstractSemiblockEnti
                 .ifSuccess(t -> tag1.put(NBT_FLUID_FILTERS, t));
         tag1.put(NBT_FLUID_FILTERS, FluidFilter.CODEC.encodeStart(provider.createSerializationContext(NbtOps.INSTANCE), fluidFilter).result().orElse(new CompoundTag()));
         if (isSemiblockInvisible()) tag1.putBoolean(NBT_INVISIBLE, true);
-        if (isMatchNBT()) tag1.putBoolean(NBT_MATCH_NBT, true);
+        if (isMatchComponents()) tag1.putBoolean(NBT_MATCH_COMPONENTS, true);
         if (isMatchDurability()) tag1.putBoolean(NBT_MATCH_DURABILITY, true);
         if (isMatchModId()) tag1.putBoolean(NBT_MATCH_MODID, true);
         if (isItemWhiteList()) tag1.putBoolean(NBT_ITEM_WHITELIST, true);
@@ -427,7 +427,7 @@ public abstract class AbstractLogisticsFrameEntity extends AbstractSemiblockEnti
         return true;
     }
 
-    private boolean playerIsHoldingLogisticItems() {
+    private boolean isClientPlayerHoldingLogisticItems() {
         // only call this client-side!
         Player player = ClientUtils.getClientPlayer();
         ItemStack stack = player.getMainHandItem();
@@ -448,7 +448,7 @@ public abstract class AbstractLogisticsFrameEntity extends AbstractSemiblockEnti
         payload.writeBoolean(isSemiblockInvisible());
         payload.writeBoolean(itemWhiteList);
         payload.writeBoolean(fluidWhiteList);
-        payload.writeBoolean(matchNBT);
+        payload.writeBoolean(matchComponents);
         payload.writeBoolean(matchDurability);
         payload.writeBoolean(matchModId);
         payload.writeVarInt(itemFilterHandler.getSlots());
@@ -470,7 +470,7 @@ public abstract class AbstractLogisticsFrameEntity extends AbstractSemiblockEnti
         setSemiblockInvisible(payload.readBoolean());
         itemWhiteList = payload.readBoolean();
         fluidWhiteList = payload.readBoolean();
-        matchNBT = payload.readBoolean();
+        matchComponents = payload.readBoolean();
         matchDurability = payload.readBoolean();
         matchModId = payload.readBoolean();
         int size = payload.readVarInt();
@@ -535,7 +535,7 @@ public abstract class AbstractLogisticsFrameEntity extends AbstractSemiblockEnti
          */
         boolean matchOneItem(ItemStack filterStack, ItemStack stack) {
             return !filterStack.isEmpty()
-                    && PneumaticCraftUtils.doesItemMatchFilter(filterStack, stack, isMatchDurability(), isMatchNBT(), isMatchModId());
+                    && PneumaticCraftUtils.doesItemMatchFilter(filterStack, stack, isMatchDurability(), isMatchComponents(), isMatchModId());
         }
 
         private void buildFilterList() {

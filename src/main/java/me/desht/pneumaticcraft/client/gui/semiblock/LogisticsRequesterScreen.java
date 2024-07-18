@@ -47,6 +47,11 @@ public class LogisticsRequesterScreen extends AbstractLogisticsScreen<LogisticsR
 //        }
     }
 
+    @Override
+    protected void updateLabels() {
+        itemLabel.setMessage(xlate("pneumaticcraft.gui.logistics_frame.requesting_items"));
+        fluidLabel.setMessage(xlate("pneumaticcraft.gui.logistics_frame.requesting_fluids"));
+    }
 
 //    private void addAE2Tab() {
 //        Item item = AE2PNCAddon.glassCable();

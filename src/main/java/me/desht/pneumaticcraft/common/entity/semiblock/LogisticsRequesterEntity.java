@@ -55,8 +55,8 @@ public class LogisticsRequesterEntity extends AbstractLogisticsFrameEntity imple
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
         super.defineSynchedData(builder);
 
+        builder.define(AE2_ENABLED, false);
         if (AE2Integration.isAvailable()) {
-            builder.define(AE2_ENABLED, false);
         }
     }
 

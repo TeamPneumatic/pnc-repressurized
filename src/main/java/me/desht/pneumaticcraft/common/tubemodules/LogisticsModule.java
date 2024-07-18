@@ -226,7 +226,8 @@ public class LogisticsModule extends AbstractTubeModule implements INetworkedMod
     }
 
     private void tryItemTransfer(LogisticsModule providingModule, LogisticsModule requestingModule, IItemHandler providingHandler, IItemHandler requestingHandler, ItemStack toTransfer) {
-        ItemStack extractedStack = IOHelper.extract(providingHandler, toTransfer, IOHelper.ExtractCount.UP_TO, true, requestingModule.getFrame().isMatchNBT());
+        boolean matchComponents = requestingModule.getFrame().isMatchComponents();
+        ItemStack extractedStack = IOHelper.extract(providingHandler, toTransfer, IOHelper.ExtractCount.UP_TO, true, matchComponents);
         if (extractedStack.isEmpty()) return;
 
         PNCCapabilities.getAirHandler(requestingModule.getTube()).ifPresent(receiverAirHandler -> {
@@ -246,7 +247,7 @@ public class LogisticsModule extends AbstractTubeModule implements INetworkedMod
                 sendModuleUpdate(providingModule, true);
                 sendModuleUpdate(requestingModule, true);
                 receiverAirHandler.addAir(-airUsed);
-                IOHelper.extract(providingHandler, extractedStack, IOHelper.ExtractCount.EXACT, false, requestingModule.getFrame().isMatchNBT());
+                IOHelper.extract(providingHandler, extractedStack, IOHelper.ExtractCount.EXACT, false, matchComponents);
                 ItemHandlerHelper.insertItem(requestingHandler, extractedStack, false);
                 ticksUntilNextCycle = 20;
             }

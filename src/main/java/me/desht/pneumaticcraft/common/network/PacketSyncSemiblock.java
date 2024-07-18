@@ -29,6 +29,7 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
+import net.neoforged.neoforge.network.connection.ConnectionType;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.apache.commons.lang3.Validate;
 
@@ -49,7 +50,7 @@ public record PacketSyncSemiblock(int entityID, RegistryFriendlyByteBuf payload)
     );
 
     public static PacketSyncSemiblock create(ISemiBlock semiBlock, boolean itemContainer, RegistryAccess registryAccess) {
-        RegistryFriendlyByteBuf payload = Util.make(new RegistryFriendlyByteBuf(Unpooled.buffer(), registryAccess), semiBlock::writeToBuf);
+        RegistryFriendlyByteBuf payload = Util.make(new RegistryFriendlyByteBuf(Unpooled.buffer(), registryAccess, ConnectionType.NEOFORGE), semiBlock::writeToBuf);
 
         return new PacketSyncSemiblock(itemContainer ? -1 : semiBlock.getTrackingId(), payload);
     }
@@ -64,7 +65,7 @@ public record PacketSyncSemiblock(int entityID, RegistryFriendlyByteBuf payload)
     private static PacketSyncSemiblock fromNetwork(RegistryFriendlyByteBuf buffer) {
         int entityID = buffer.readInt();
         int size = buffer.readVarInt();
-        RegistryFriendlyByteBuf payload = new RegistryFriendlyByteBuf(Unpooled.buffer(size), buffer.registryAccess());
+        RegistryFriendlyByteBuf payload = new RegistryFriendlyByteBuf(Unpooled.buffer(size), buffer.registryAccess(), ConnectionType.NEOFORGE);
         buffer.readBytes(payload, size);
 
         return new PacketSyncSemiblock(entityID, payload);
@@ -81,6 +82,7 @@ public record PacketSyncSemiblock(int entityID, RegistryFriendlyByteBuf payload)
         } else if (ctx.player() instanceof ServerPlayer sp) {
             message.handleServer(sp);
         }
+        message.payload.release();
     }
 
     private void handleServer(ServerPlayer sender) {
@@ -88,7 +90,7 @@ public record PacketSyncSemiblock(int entityID, RegistryFriendlyByteBuf payload)
             if (sender.containerMenu instanceof ISyncableSemiblockItem syncable) {
                 syncable.syncSemiblockItemFromClient(sender, payload);
             } else {
-                Log.warning("PacketSyncSemiblock: received packet with entity -1, but player is not holding a semiblock item?");
+                Log.warning("PacketSyncSemiblock: received packet with entity id -1, but player is not holding a semiblock item?");
             }
         } else {
             processEntity(sender.level());

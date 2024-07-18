@@ -65,7 +65,7 @@ public class AmadronAddTradeScreen extends AbstractPneumaticCraftContainerScreen
     private LogisticsLiquidFilterScreen fluidGui;
     private int settingSlot;
 
-    private final WidgetFluidFilter[] fluidFilters = new WidgetFluidFilter[2];
+    private final WidgetFluidStack[] fluidFilters = new WidgetFluidStack[2];
     private final WidgetTextFieldNumber[] amountFields = new WidgetTextFieldNumber[2];
     private final BlockPos[] positions = new BlockPos[2];
     private Button addButton;
@@ -130,7 +130,7 @@ public class AmadronAddTradeScreen extends AbstractPneumaticCraftContainerScreen
                 xlate("pneumaticcraft.gui.misc.searchFluid"), b -> openFluidSearchGui(slot)));
 
         Fluid prev = fluidFilters[slot] != null ? fluidFilters[slot].getFluid() : Fluids.EMPTY;
-        addRenderableWidget(fluidFilters[slot] = new WidgetFluidFilter(leftPos + 37 + xOffset, topPos + 90, prev));
+        addRenderableWidget(fluidFilters[slot] = new WidgetFluidStack(leftPos + 37 + xOffset, topPos + 90, prev, null));
 
         String tip = slot == INPUT_SLOT ? "pneumaticcraft.gui.amadron.button.selectSellingBlock.tooltip" : "pneumaticcraft.gui.amadron.button.selectPaymentBlock.tooltip";
         addRenderableWidget(new WidgetButtonExtended(leftPos + 10 + xOffset, topPos + 115, 20, 20, "", b -> openGPSGui(slot))

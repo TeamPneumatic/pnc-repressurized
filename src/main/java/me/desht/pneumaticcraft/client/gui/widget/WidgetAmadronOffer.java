@@ -61,11 +61,11 @@ public class WidgetAmadronOffer extends AbstractWidget {
 
         offer.getInput().accept(
                 itemStack -> subWidgets.add(new WidgetItemStack(x + 6, y + 13, itemStack)),
-                fluidStack -> subWidgets.add(new WidgetFluidStack(x + 6, y + 15, fluidStack.copy(), null))
+                fluidStack -> subWidgets.add(new WidgetFluidStack(x + 6, y + 15, fluidStack.copy(), null).setShowAmount())
         );
         offer.getOutput().accept(
                 itemStack -> subWidgets.add(new WidgetItemStack(x + 51, y + 13, itemStack)),
-                fluidStack -> subWidgets.add(new WidgetFluidStack(x + 51, y + 15, fluidStack.copy(), null))
+                fluidStack -> subWidgets.add(new WidgetFluidStack(x + 51, y + 15, fluidStack.copy(), null).setShowAmount())
         );
 
         if (offer.isRemovableBy(Minecraft.getInstance().player)) {

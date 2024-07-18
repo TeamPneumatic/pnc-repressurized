@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.client.gui.programmer;
 
 import me.desht.pneumaticcraft.client.gui.ProgrammerScreen;
-import me.desht.pneumaticcraft.client.gui.widget.WidgetFluidFilter;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetFluidStack;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTextField;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetVerticalScrollbar;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetLiquidFilter;
@@ -36,11 +36,11 @@ import java.util.List;
 public class ProgWidgetLiquidFilterScreen extends AbstractProgWidgetScreen<ProgWidgetLiquidFilter> {
     private static final int GRID_WIDTH = 8;
     private static final int GRID_HEIGHT = 6;
-    private WidgetFluidFilter mainFilter;
+    private WidgetFluidStack mainFilter;
     private WidgetVerticalScrollbar scrollbar;
     private WidgetTextField searchField;
     private int lastScroll;
-    private final List<WidgetFluidFilter> visibleFluidWidgets = new ArrayList<>();
+    private final List<WidgetFluidStack> visibleFluidWidgets = new ArrayList<>();
     private int textTimer = 0;
 
     public ProgWidgetLiquidFilterScreen(ProgWidgetLiquidFilter widget, ProgrammerScreen guiProgrammer) {
@@ -59,7 +59,7 @@ public class ProgWidgetLiquidFilterScreen extends AbstractProgWidgetScreen<ProgW
     public void init() {
         super.init();
 
-        mainFilter = new WidgetFluidFilter(guiLeft + 148, guiTop + 12, progWidget.getFluidStack().getFluid(), b -> {
+        mainFilter = new WidgetFluidStack(guiLeft + 148, guiTop + 12, progWidget.getFluidStack().getFluid(), b -> {
             b.setFluid(Fluids.EMPTY);
             progWidget.setFluidStack(FluidStack.EMPTY);
         });
@@ -67,7 +67,7 @@ public class ProgWidgetLiquidFilterScreen extends AbstractProgWidgetScreen<ProgW
 
         for (int y = 0; y < GRID_HEIGHT; y++) {
             for (int x = 0; x < GRID_WIDTH; x++) {
-                WidgetFluidFilter f = new WidgetFluidFilter(guiLeft + 8 + x * 18, guiTop + 52 + y * 18, Fluids.EMPTY, b -> {
+                WidgetFluidStack f = new WidgetFluidStack(guiLeft + 8 + x * 18, guiTop + 52 + y * 18, Fluids.EMPTY, b -> {
                     mainFilter.setFluid(b.getFluid());
                     progWidget.setFluidStack(b.getFluidStack().copy());
                 });

@@ -23,27 +23,47 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Tooltip;
+import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidType;
 
 import java.util.function.Consumer;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class WidgetFluidStack extends WidgetFluidFilter {
+public class WidgetFluidStack extends AbstractWidget {
     private static final float TEXT_SCALE = 0.5f;
+    final Consumer<WidgetFluidStack> pressable;
+    private FluidStack fluidStack;
 
     private boolean adjustable = false;
+    private boolean showAmount = false;
 
-    public WidgetFluidStack(int x, int y, FluidStack stack, Consumer<WidgetFluidFilter> pressable) {
-        super(x, y, stack, pressable);
+    public WidgetFluidStack(int x, int y, Fluid fluid, Consumer<WidgetFluidStack> pressable) {
+        this(x, y, new FluidStack(fluid, FluidType.BUCKET_VOLUME), pressable);
+    }
+
+    public WidgetFluidStack(int x, int y, FluidStack fluidStack, Consumer<WidgetFluidStack> pressable) {
+        super(x, y, 16, 16, Component.empty());
+        this.pressable = pressable;
+        this.fluidStack = fluidStack;
     }
 
     public WidgetFluidStack setAdjustable() {
         this.adjustable = true;
+        return this;
+    }
+
+    public WidgetFluidStack setShowAmount() {
+        this.showAmount = true;
         return this;
     }
 
@@ -56,24 +76,32 @@ public class WidgetFluidStack extends WidgetFluidFilter {
         return this;
     }
 
+    public Fluid getFluid() {
+        return fluidStack.getFluid();
+    }
+
+    public WidgetFluidStack setFluid(Fluid fluid) {
+        this.fluidStack = fluid == Fluids.EMPTY ? FluidStack.EMPTY : new FluidStack(fluid, 1000);
+        return this;
+    }
+
     @Override
     public void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        super.renderWidget(graphics, mouseX, mouseY, partialTick);
-
         if (!fluidStack.isEmpty()) {
-            int fluidAmount = fluidStack.getAmount() / 1000;
-            if (fluidAmount > 1 || adjustable) {
+            GuiUtils.drawFluid(graphics, new Rect2i(getX(), getY(), 16, 16), fluidStack.copyWithAmount(1000), null);
+
+            if (adjustable || showAmount) {
                 Font font = Minecraft.getInstance().font;
-                Component str = Component.literal(fluidAmount + "B");
-                GuiUtils.drawScaledText(graphics, font, str, (int) (getX() - font.width(str) * TEXT_SCALE + 16), (int) (getY() + 16 - font.lineHeight * TEXT_SCALE), 0xFFFFFF, TEXT_SCALE, true);
-//                graphics.pose().pushPose();
-//                graphics.translate(getX() - font.width(str) * TEXT_SCALE + 16, getY() + 16 - font.lineHeight * TEXT_SCALE, 200);
-//                graphics.scale(TEXT_SCALE, TEXT_SCALE, TEXT_SCALE);
-//                font.drawShadow(graphics, str, 0, 0, 0xFFFFFFFF);
-//                graphics.popPose();
+                Component str = Component.literal(String.format("%.1fB", fluidStack.getAmount() / 1000f));
+                graphics.pose().translate(0, 0, 200);
+                GuiUtils.drawScaledText(graphics, font, str,
+                        (int) (getX() - font.width(str) * TEXT_SCALE + 16), (int) (getY() + 16 - font.lineHeight * TEXT_SCALE),
+                        0xFFFFFF, TEXT_SCALE, true);
+                graphics.pose().translate(0, 0, -200);
             }
+
             MutableComponent c = fluidStack.copyWithAmount(1).getHoverName().copy();
-            if (adjustable) {
+            if (adjustable || showAmount) {
                 c.append("\n").append(xlate("pneumaticcraft.message.misc.fluidmB", fluidStack.getAmount()).withStyle(ChatFormatting.GRAY));
             }
             c.append("\n").append(Component.literal(ModNameCache.getModName(fluidStack.getFluid()))
@@ -103,7 +131,38 @@ public class WidgetFluidStack extends WidgetFluidFilter {
             if (pressable != null) pressable.accept(this);
             return true;
         } else {
-            return false;
+            return super.mouseClicked(mouseX, mouseY, button);
         }
+    }
+
+    @Override
+    public boolean mouseScrolled(double pMouseX, double pMouseY, double pScrollX, double pScrollY) {
+        if (this.clicked(pMouseX, pMouseY)) {
+            int incr = 0;
+            if (!fluidStack.isEmpty() && adjustable) {
+                incr = pScrollY > 0 ? 1000 : -1000;
+                if (Screen.hasShiftDown()) {
+                    incr /= 10;
+                }
+            }
+            if (incr != 0) {
+                int newAmount = Math.max(0, fluidStack.getAmount() + incr);
+                fluidStack.setAmount(newAmount);
+                if (pressable != null) pressable.accept(this);
+                return true;
+            }
+        }
+        return super.mouseScrolled(pMouseX, pMouseY, pScrollX, pScrollY);
+    }
+
+    @Override
+    public void onClick(double x, double y, int button) {
+        super.onClick(x, y, button);
+
+        if (pressable != null) pressable.accept(this);
+    }
+
+    @Override
+    public void updateWidgetNarration(NarrationElementOutput pNarrationElementOutput) {
     }
 }

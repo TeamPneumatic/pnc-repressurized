@@ -36,6 +36,7 @@ import me.desht.pneumaticcraft.common.registry.ModMenuTypes;
 import me.desht.pneumaticcraft.common.semiblock.ISpecificRequester;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.lib.Textures;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
@@ -43,7 +44,6 @@ import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.fluids.FluidStack;
 
 import java.util.ArrayList;
@@ -59,8 +59,8 @@ public class AbstractLogisticsScreen<L extends AbstractLogisticsFrameEntity> ext
     private ItemSearcherScreen itemSearchGui;
     private LogisticsLiquidFilterScreen fluidSearchGui;
     private int editingSlot; // used for both fluid & item search.
-    private WidgetLabel itemLabel;
-    private WidgetLabel fluidLabel;
+    protected WidgetLabel itemLabel;
+    protected WidgetLabel fluidLabel;
     private WidgetButtonExtended itemWhitelist;
     private WidgetButtonExtended fluidWhitelist;
     private final List<WidgetFluidStack> fluidWidgets = new ArrayList<>();
@@ -128,7 +128,7 @@ public class AbstractLogisticsScreen<L extends AbstractLogisticsFrameEntity> ext
         IntStream.range(0, AbstractLogisticsFrameEntity.FLUID_FILTER_SLOTS).forEach(i -> {
             FluidStack stack = logistics.getFluidFilter(i);
             PointXY p = getFluidSlotPos(i);
-            WidgetFluidStack widgetFluidStack = new WidgetFluidStack(p.x(), p.y(), stack.copy(), w -> fluidClicked((WidgetFluidStack) w, i));
+            WidgetFluidStack widgetFluidStack = new WidgetFluidStack(p.x(), p.y(), stack.copy(), b -> fluidClicked(b, i));
             if (logistics instanceof LogisticsRequesterEntity) {
                 widgetFluidStack.setAdjustable();
             }
@@ -197,7 +197,7 @@ public class AbstractLogisticsScreen<L extends AbstractLogisticsFrameEntity> ext
         return new PointXY(leftPos + slot * 18 + 8, topPos + 101);
     }
 
-    private void updateLabels() {
+    protected void updateLabels() {
         itemLabel.setMessage(xlate("pneumaticcraft.gui.logistics_frame." + (logistics.isItemWhiteList() ? "itemWhitelist" : "itemBlacklist")));
         fluidLabel.setMessage(xlate("pneumaticcraft.gui.logistics_frame." + (logistics.isFluidWhiteList() ? "fluidWhitelist" : "fluidBlacklist")));
         itemWhitelist.setRenderedIcon(logistics.isItemWhiteList() ? Textures.GUI_WHITELIST : Textures.GUI_BLACKLIST);
@@ -211,8 +211,7 @@ public class AbstractLogisticsScreen<L extends AbstractLogisticsFrameEntity> ext
     private void fluidClicked(WidgetFluidStack widget, int idx) {
         FluidStack stack = logistics.getFluidFilter(idx);
         if (!stack.isEmpty()) {
-            logistics.setFluidFilter(idx, FluidStack.EMPTY);
-            widget.setFluid(Fluids.EMPTY);
+            logistics.setFluidFilter(idx, widget.getFluidStack().copy());
             syncToServer();
             return;
         } else if (IOHelper.getFluidHandlerForItem(menu.getCarried()).isPresent()) {
@@ -241,13 +240,13 @@ public class AbstractLogisticsScreen<L extends AbstractLogisticsFrameEntity> ext
                 .setChecked(logistics.isMatchDurability());
         filterTab.addSubWidget(matchDurability);
 
-        WidgetCheckBox matchNBT = new WidgetCheckBox(5, 36, 0xFFFFFFFF, xlate("pneumaticcraft.gui.logistics_frame.matchNBT"), b -> {
-            logistics.setMatchNBT(b.checked);
+        WidgetCheckBox matchComponents = new WidgetCheckBox(5, 36, 0xFFFFFFFF, xlate("pneumaticcraft.gui.logistics_frame.matchComponents"), b -> {
+            logistics.setMatchComponents(b.checked);
             syncToServer();
         })
-                .setTooltipKey("pneumaticcraft.gui.logistics_frame.matchNBT.tooltip")
-                .setChecked(logistics.isMatchNBT());
-        filterTab.addSubWidget(matchNBT);
+                .setTooltipKey("pneumaticcraft.gui.logistics_frame.matchComponents.tooltip")
+                .setChecked(logistics.isMatchComponents());
+        filterTab.addSubWidget(matchComponents);
 
         WidgetCheckBox matchModId = new WidgetCheckBox(5, 52, 0xFFFFFFFF, xlate("pneumaticcraft.gui.logistics_frame.matchModId"), b -> {
             logistics.setMatchModId(b.checked);
@@ -294,5 +293,36 @@ public class AbstractLogisticsScreen<L extends AbstractLogisticsFrameEntity> ext
         } else {
             super.slotClicked(slot, slotId, clickedButton, clickType);
         }
+    }
+
+    @Override
+    public boolean mouseScrolled(double pMouseX, double pMouseY, double pScrollX, double pScrollY) {
+        Slot slot = findSlot(pMouseX, pMouseY);
+        if (slot != null) {
+            if (pScrollY > 0) {
+                if (Screen.hasShiftDown()) {
+                    slotClicked(slot, slot.index, 1, ClickType.QUICK_MOVE);
+                } else {
+                    slotClicked(slot, slot.index, 1, ClickType.PICKUP);
+                }
+            } else if (pScrollY < 0) {
+                if (Screen.hasShiftDown()) {
+                    slotClicked(slot, slot.index, 0, ClickType.QUICK_MOVE);
+                } else {
+                    slotClicked(slot, slot.index, 0, ClickType.PICKUP);
+                }
+            }
+            return true;
+        }
+
+        return super.mouseScrolled(pMouseX, pMouseY, pScrollX, pScrollY);
+    }
+
+    private Slot findSlot(double pMouseX, double pMouseY) {
+        return menu.slots.stream()
+                .filter(slot -> isHovering(slot.x, slot.y, 16, 16, pMouseX, pMouseY) && slot.isActive())
+                .findFirst()
+                .orElse(null);
+
     }
 }

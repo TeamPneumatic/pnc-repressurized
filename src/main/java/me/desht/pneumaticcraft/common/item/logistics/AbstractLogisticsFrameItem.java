@@ -91,7 +91,7 @@ public abstract class AbstractLogisticsFrameItem extends SemiblockItem {
                 if (tag.getBoolean(AbstractLogisticsFrameEntity.NBT_MATCH_DURABILITY)) {
                     curInfo.add(bullet().append(xlate("pneumaticcraft.gui.logistics_frame.matchDurability")).withStyle(ChatFormatting.YELLOW));
                 }
-                if (tag.getBoolean(AbstractLogisticsFrameEntity.NBT_MATCH_NBT)) {
+                if (tag.getBoolean(AbstractLogisticsFrameEntity.NBT_MATCH_COMPONENTS)) {
                     curInfo.add(bullet().append(xlate("pneumaticcraft.gui.logistics_frame.matchNBT")).withStyle(ChatFormatting.YELLOW));
                 }
                 if (tag.getBoolean(AbstractLogisticsFrameEntity.NBT_MATCH_MODID)) {
