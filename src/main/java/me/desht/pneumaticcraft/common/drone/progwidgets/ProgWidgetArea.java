@@ -424,12 +424,13 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
     }
 
     public record Immutable(Optional<BlockPos> pos1, Optional<BlockPos> pos2, AreaType areaType, String var1, String var2) {
+        private static final AreaTypeBox BOX_FILLED = new AreaTypeBox(AreaTypeBox.EnumBoxType.FILLED);
         public static final Codec<Immutable> CODEC = RecordCodecBuilder.create(builder -> builder.group(
                 BlockPos.CODEC.optionalFieldOf("pos1").forGetter(Immutable::pos1),
                 BlockPos.CODEC.optionalFieldOf("pos2").forGetter(Immutable::pos2),
-                AreaType.CODEC.fieldOf("area_type").forGetter(Immutable::areaType),
-                Codec.STRING.fieldOf("var1").forGetter(Immutable::var1),
-                Codec.STRING.fieldOf("var1").forGetter(Immutable::var2)
+                AreaType.CODEC.optionalFieldOf("area_type", BOX_FILLED).forGetter(Immutable::areaType),
+                Codec.STRING.optionalFieldOf("var1", "").forGetter(Immutable::var1),
+                Codec.STRING.optionalFieldOf("var2", "").forGetter(Immutable::var2)
         ).apply(builder, Immutable::new));
         public static final StreamCodec<RegistryFriendlyByteBuf, Immutable> STREAM_CODEC = StreamCodec.composite(
                 ByteBufCodecs.optional(BlockPos.STREAM_CODEC), Immutable::pos1,
@@ -440,7 +441,7 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
                 Immutable::new
         );
         public static final Immutable DEFAULT = new Immutable(Optional.empty(), Optional.empty(),
-                new AreaTypeBox(AreaTypeBox.EnumBoxType.FILLED), "", "");
+                BOX_FILLED, "", "");
 
         public AreaType areaType() {
             return areaType.copy();

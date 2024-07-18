@@ -45,7 +45,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.entity.BlockEntity;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -54,7 +53,9 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class RemoteItem extends Item {
     public RemoteItem() {
-        super(ModItems.defaultProps().stacksTo(1));
+        super(ModItems.defaultProps().stacksTo(1)
+                .component(ModDataComponents.REMOTE_LAYOUT, SavedRemoteLayout.EMPTY)
+        );
     }
 
     @Override
@@ -71,10 +72,9 @@ public class RemoteItem extends Item {
         Player player = ctx.getPlayer();
         Level world = ctx.getLevel();
         BlockPos pos = ctx.getClickedPos();
-        BlockEntity te = world.getBlockEntity(pos);
         ItemStack remote = ctx.getItemInHand();
 
-        if (te instanceof SecurityStationBlockEntity teSS && player instanceof ServerPlayer && player.isCrouching() && isAllowedToEdit(player, remote)) {
+        if (world.getBlockEntity(pos) instanceof SecurityStationBlockEntity teSS && player instanceof ServerPlayer && player.isCrouching() && isAllowedToEdit(player, remote)) {
             if (teSS.doesAllowPlayer(player)) {
                 GlobalPos gPos = GlobalPosHelper.makeGlobalPos(world, pos);
                 setSecurityStationPos(remote, gPos);
@@ -93,9 +93,6 @@ public class RemoteItem extends Item {
         return InteractionResult.SUCCESS;
     }
 
-    /**
-     * allows items to add custom lines of information to the mouseover description
-     */
     @Override
     public void appendHoverText(ItemStack remote, TooltipContext context, List<Component> curInfo, TooltipFlag moreInfo) {
         super.appendHoverText(remote, context, curInfo, moreInfo);

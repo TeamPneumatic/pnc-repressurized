@@ -26,7 +26,6 @@ import me.desht.pneumaticcraft.common.registry.ModCriterionTriggers;
 import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.registry.ModMenuTypes;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -60,7 +59,10 @@ public class DroneItem extends PressurizableItem
     private final DyeColor defaultColor;
 
     public DroneItem(BiFunction<Level, Player, DroneEntity> droneCreator, boolean programmable, DyeColor defaultColor) {
-        super(ModItems.defaultProps(), (int)(PneumaticValues.DRONE_MAX_PRESSURE * PneumaticValues.DRONE_VOLUME), PneumaticValues.DRONE_VOLUME);
+        super(ModItems.defaultProps()
+                        .component(ModDataComponents.DRONE_COLOR, defaultColor.getId())
+                        .component(ModDataComponents.STORED_FLUID, SimpleFluidContent.EMPTY),
+                (int)(PneumaticValues.DRONE_MAX_PRESSURE * PneumaticValues.DRONE_VOLUME), PneumaticValues.DRONE_VOLUME);
         this.droneCreator = droneCreator;
         this.programmable = programmable;
         this.defaultColor = defaultColor;
@@ -96,7 +98,7 @@ public class DroneItem extends PressurizableItem
         super.appendHoverText(stack, context, tooltip, flagIn);
 
         SimpleFluidContent storedFluid = stack.get(ModDataComponents.STORED_FLUID);
-        if (storedFluid != null) {
+        if (storedFluid != null && !storedFluid.isEmpty()) {
             FluidStack fluidStack = storedFluid.copy();
             if (!fluidStack.isEmpty()) {
                 tooltip.add(Component.translatable("pneumaticcraft.gui.tooltip.fluid")

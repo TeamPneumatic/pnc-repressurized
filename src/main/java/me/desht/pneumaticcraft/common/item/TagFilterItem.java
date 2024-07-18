@@ -41,7 +41,7 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class TagFilterItem extends Item implements IFilteringItem {
     public TagFilterItem() {
-        super(ModItems.defaultProps().stacksTo(1));
+        super(ModItems.defaultProps().stacksTo(1).component(ModDataComponents.TAG_FILTER_KEYS, List.of()));
     }
 
     @Override

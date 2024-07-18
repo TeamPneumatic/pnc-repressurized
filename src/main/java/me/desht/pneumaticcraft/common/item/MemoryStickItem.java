@@ -49,6 +49,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerXpEvent;
 import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.SimpleFluidContent;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
 
@@ -66,7 +67,10 @@ public class MemoryStickItem extends Item implements ColorHandlers.ITintableItem
     };
 
     public MemoryStickItem() {
-        super(ModItems.defaultProps().stacksTo(1));
+        super(ModItems.defaultProps().stacksTo(1)
+                .component(ModDataComponents.ABSORB_ORBS, false)
+                .component(ModDataComponents.STORED_FLUID, SimpleFluidContent.EMPTY)
+        );
     }
 
     @Override
@@ -284,18 +288,6 @@ public class MemoryStickItem extends Item implements ColorHandlers.ITintableItem
                 return CuriosUtils.getStack(player, invName, slot);
             }
             return ItemStack.EMPTY;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (!(o instanceof MemoryStickLocator that)) return false;
-            return slot == that.slot && invName.equals(that.invName);
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(invName, slot);
         }
     }
 }

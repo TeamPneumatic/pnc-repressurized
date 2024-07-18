@@ -54,7 +54,9 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class GPSAreaToolItem extends Item implements IPositionProvider, IGPSToolSync {
     public GPSAreaToolItem() {
-        super(ModItems.defaultProps());
+        super(ModItems.defaultProps()
+                .component(ModDataComponents.AREA_WIDGET, ProgWidgetArea.Immutable.DEFAULT)
+        );
     }
 
     @Override
@@ -77,10 +79,9 @@ public class GPSAreaToolItem extends Item implements IPositionProvider, IGPSTool
 
     public static void setGPSPosAndNotify(Player player, ItemStack stack, BlockPos pos, int index) {
         setGPSLocation(player, stack, pos, null, index, true);
-        if (player instanceof ServerPlayer sp) {
+        if (player instanceof ServerPlayer) {
             player.displayClientMessage(Component.literal(ChatFormatting.AQUA + String.format("[%s] ", stack.getDisplayName().getString()))
                     .append(getMessageText(player.level(), pos, index)), false);
-//            sp.connection.send(new ClientboundSetCarriedItemPacket(player.getInventory().selected));
         }
     }
 

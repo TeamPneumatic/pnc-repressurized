@@ -39,6 +39,13 @@ import java.util.stream.Stream;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class EmptyPCBItem extends NonDespawningItem implements ICustomDurabilityBar, CreativeTabStackProvider {
+    public EmptyPCBItem() {
+        super(ModItems.defaultProps()
+                .component(ModDataComponents.ETCH_PROGRESS, 0)
+                .component(ModDataComponents.UV_EXPOSURE, 0)
+        );
+    }
+
     @Override
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> infoList, TooltipFlag flag) {
         super.appendHoverText(stack, context, infoList, flag);
@@ -125,17 +132,6 @@ public class EmptyPCBItem extends NonDespawningItem implements ICustomDurability
         }
         return false;
     }
-
-//    @Override
-//    public void fillItemCategory(CreativeModeTab group, NonNullList<ItemStack> items) {
-//        if (this.allowedIn(group)) {
-//            items.add(new ItemStack(this));
-//
-//            ItemStack stack = new ItemStack(this);
-//            UVLightBoxBlockEntity.setExposureProgress(stack, 100);
-//            items.add(stack);
-//        }
-//    }
 
     @Override
     public boolean shouldShowCustomDurabilityBar(ItemStack stack) {

@@ -85,13 +85,11 @@ public class MinigunItem extends PressurizableItem implements
         IChargeableContainerProvider, IFOVModifierItem,
         IInventoryItem, IShiftScrollable {
     public static final int MAGAZINE_SIZE = 4;
-
-    private static final String NBT_MAGAZINE = "Magazine";
-    public static final String NBT_LOCKED_SLOT = "LockedSlot";
-    public static final String OWNING_PLAYER_ID = "owningPlayerId";
+    private static final int NOT_LOCKED = -1;
 
     public MinigunItem() {
-        super(ModItems.toolProps(), PneumaticValues.AIR_CANISTER_MAX_AIR, PneumaticValues.AIR_CANISTER_VOLUME);
+        super(ModItems.toolProps().component(ModDataComponents.MINIGUN_LOCKED_SLOT, NOT_LOCKED),
+                PneumaticValues.AIR_CANISTER_MAX_AIR, PneumaticValues.AIR_CANISTER_VOLUME);
     }
 
     @Override
@@ -325,7 +323,7 @@ public class MinigunItem extends PressurizableItem implements
 
     public static int getLockedSlot(ItemStack stack) {
         if (stack.has(ModDataComponents.MINIGUN_LOCKED_SLOT)) {
-            int slot = stack.get(ModDataComponents.MINIGUN_LOCKED_SLOT);
+            int slot = stack.getOrDefault(ModDataComponents.MINIGUN_LOCKED_SLOT, NOT_LOCKED);
             if (slot >= 0 && slot < MAGAZINE_SIZE) {
                 return slot;
             } else {
@@ -333,7 +331,7 @@ public class MinigunItem extends PressurizableItem implements
                 stack.remove(ModDataComponents.MINIGUN_LOCKED_SLOT);
             }
         }
-        return -1;
+        return NOT_LOCKED;
     }
 
     @EventBusSubscriber(modid = Names.MOD_ID)

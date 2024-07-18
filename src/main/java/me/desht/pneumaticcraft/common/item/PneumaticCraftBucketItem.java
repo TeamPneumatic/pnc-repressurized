@@ -7,8 +7,6 @@ import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
 import net.neoforged.neoforge.fluids.capability.wrappers.FluidBucketWrapper;
 
-import java.util.function.Supplier;
-
 public class PneumaticCraftBucketItem extends BucketItem implements IFluidCapProvider {
     public PneumaticCraftBucketItem(Fluid fluid) {
         super(fluid, ModItems.filledBucketProps());
@@ -18,9 +16,4 @@ public class PneumaticCraftBucketItem extends BucketItem implements IFluidCapPro
     public IFluidHandlerItem provideFluidCapability(ItemStack stack) {
         return new FluidBucketWrapper(stack);
     }
-
-//    @Override
-//    public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundTag nbt) {
-//        return new FluidBucketWrapper(stack);
-//    }
 }

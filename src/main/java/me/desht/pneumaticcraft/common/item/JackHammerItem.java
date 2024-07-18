@@ -51,7 +51,6 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.stats.Stats;
 import net.minecraft.util.StringRepresentable;
@@ -74,7 +73,6 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
-import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.common.CommonHooks;
@@ -114,7 +112,11 @@ public class JackHammerItem extends PressurizableItem
     private static long lastModeSwitchTime; // client-side: when player last scrolled to change mode
 
     public JackHammerItem() {
-        super(ModItems.toolProps(), PneumaticValues.VOLUME_JACKHAMMER * 10, PneumaticValues.VOLUME_JACKHAMMER);
+        super(ModItems.toolProps()
+                .component(ModDataComponents.JACKHAMMER_DIG_MODE, DigMode.MODE_1X1)
+                .component(ModDataComponents.JACKHAMMER_DRILL_BIT, ItemContainerContents.EMPTY),
+                PneumaticValues.VOLUME_JACKHAMMER * 10, PneumaticValues.VOLUME_JACKHAMMER
+        );
     }
 
     public static long getLastModeSwitchTime() {

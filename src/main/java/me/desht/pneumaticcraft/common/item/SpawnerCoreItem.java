@@ -66,33 +66,29 @@ import java.util.*;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class SpawnerCoreItem extends Item implements ColorHandlers.ITintableItem {
-    private static final String NBT_SPAWNER_CORE = "pneumaticcraft:SpawnerCoreStats";
-
     public SpawnerCoreItem() {
-        super(ModItems.defaultProps());
+        super(ModItems.defaultProps().component(ModDataComponents.SPAWNER_CORE_STATS, SpawnerCoreStats.EMPTY));
     }
 
     @Override
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flagIn) {
         super.appendHoverText(stack, context, tooltip, flagIn);
 
-        ISpawnerCoreStats stats = stack.get(ModDataComponents.SPAWNER_CORE_STATS);
-        if (stats != null) {
-            if (stats.getUnusedPercentage() < 100) {
-                stats.getEntities().keySet().stream()
-                        .sorted(Comparator.comparing(t -> I18n.get(t.getDescriptionId())))
-                        .forEach(type -> tooltip.add(Symbols.bullet()
-                                .append(xlate(type.getDescriptionId()).withStyle(ChatFormatting.YELLOW))
-                                .append(": " + stats.getPercentage(type) + "%").withStyle(ChatFormatting.WHITE))
-                        );
-                if (stats.getUnusedPercentage() > 0) {
-                    tooltip.add(Symbols.bullet()
-                            .append(xlate("pneumaticcraft.gui.misc.empty").withStyle(ChatFormatting.YELLOW, ChatFormatting.ITALIC))
-                            .append(": " + stats.getUnusedPercentage() + "%").withStyle(ChatFormatting.WHITE));
-                }
-            } else {
-                tooltip.add(xlate("pneumaticcraft.gui.misc.empty").withStyle(ChatFormatting.YELLOW));
+        ISpawnerCoreStats stats = stack.getOrDefault(ModDataComponents.SPAWNER_CORE_STATS, SpawnerCoreStats.EMPTY);
+        if (stats.getUnusedPercentage() < 100) {
+            stats.getEntities().keySet().stream()
+                    .sorted(Comparator.comparing(t -> I18n.get(t.getDescriptionId())))
+                    .forEach(type -> tooltip.add(Symbols.bullet()
+                            .append(xlate(type.getDescriptionId()).withStyle(ChatFormatting.YELLOW))
+                            .append(": " + stats.getPercentage(type) + "%").withStyle(ChatFormatting.WHITE))
+                    );
+            if (stats.getUnusedPercentage() > 0) {
+                tooltip.add(Symbols.bullet()
+                        .append(xlate("pneumaticcraft.gui.misc.empty").withStyle(ChatFormatting.YELLOW, ChatFormatting.ITALIC))
+                        .append(": " + stats.getUnusedPercentage() + "%").withStyle(ChatFormatting.WHITE));
             }
+        } else {
+            tooltip.add(xlate("pneumaticcraft.gui.misc.empty").withStyle(ChatFormatting.YELLOW));
         }
     }
 

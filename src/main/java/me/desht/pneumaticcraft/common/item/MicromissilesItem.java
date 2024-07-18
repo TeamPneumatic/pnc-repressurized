@@ -20,6 +20,7 @@ package me.desht.pneumaticcraft.common.item;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import me.desht.pneumaticcraft.api.lib.Names;
+import me.desht.pneumaticcraft.api.misc.ITranslatableEnum;
 import me.desht.pneumaticcraft.client.gui.MicromissileScreen;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
@@ -27,7 +28,6 @@ import me.desht.pneumaticcraft.common.config.subconfig.MicromissileDefaults;
 import me.desht.pneumaticcraft.common.entity.projectile.MicromissileEntity;
 import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.registry.ModItems;
-import me.desht.pneumaticcraft.api.misc.ITranslatableEnum;
 import me.desht.pneumaticcraft.common.util.RayTraceUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.component.DataComponents;
@@ -60,7 +60,11 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class MicromissilesItem extends Item {
     public MicromissilesItem() {
-        super(ModItems.defaultProps().stacksTo(1).durability(100));
+        super(ModItems.defaultProps()
+                .stacksTo(1)
+                .durability(100)
+                .component(ModDataComponents.MICROMISSILE_SETTINGS, Settings.DEFAULT)
+        );
     }
 
     @Override
@@ -77,7 +81,7 @@ public class MicromissilesItem extends Item {
     public InteractionResultHolder<ItemStack> use(Level worldIn, Player playerIn, InteractionHand handIn) {
         ItemStack stack = playerIn.getItemInHand(handIn);
 
-        if (!stack.has(ModDataComponents.MICROMISSILE_SETTINGS)) {
+        if (stack.get(ModDataComponents.MICROMISSILE_SETTINGS) == Settings.DEFAULT) {
             stack.set(ModDataComponents.MICROMISSILE_SETTINGS, MicromissileDefaults.INSTANCE.getDefaults(playerIn));
         }
 

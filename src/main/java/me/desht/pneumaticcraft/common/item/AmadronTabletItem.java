@@ -53,14 +53,18 @@ import net.neoforged.neoforge.items.IItemHandler;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class AmadronTabletItem extends PressurizableItem
         implements IPositionProvider, IChargeableContainerProvider {
     public AmadronTabletItem() {
-        super(ModItems.toolProps(), PneumaticValues.AIR_CANISTER_MAX_AIR, PneumaticValues.AIR_CANISTER_VOLUME);
+        super(ModItems.toolProps().component(ModDataComponents.AMADRON_SHOPPING_BASKET, ShoppingBasket.empty()),
+                PneumaticValues.AIR_CANISTER_MAX_AIR, PneumaticValues.AIR_CANISTER_VOLUME);
     }
 
     @Override

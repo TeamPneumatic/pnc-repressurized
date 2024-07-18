@@ -42,7 +42,7 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 public class ClassifyFilterItem extends Item implements IFilteringItem {
 
     public ClassifyFilterItem() {
-        super(ModItems.defaultProps());
+        super(ModItems.defaultProps().component(ModDataComponents.CLASSIFY_FILTER_SETTINGS, FilterSettings.NONE));
     }
 
     @Override
