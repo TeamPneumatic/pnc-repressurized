@@ -52,7 +52,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Nameable;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -73,6 +72,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.BitSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 public abstract class AbstractPneumaticCraftBlockEntity extends BlockEntity
@@ -643,8 +643,8 @@ public abstract class AbstractPneumaticCraftBlockEntity extends BlockEntity
             rc.getRedstoneController().restore(data);
         }
         if (this instanceof ISideConfigurable sc) {
-            CustomData data = componentInput.getOrDefault(ModDataComponents.SAVED_SIDE_CONFIG, CustomData.EMPTY);
-            SideConfigurator.readFromNBT(data.copyTag(), sc, level.registryAccess());
+            Map<String, SideConfigurator.Saved> data = componentInput.getOrDefault(ModDataComponents.SAVED_SIDE_CONFIG, Map.of());
+            SideConfigurator.loadSavedData(sc, data);
         }
 
         componentInput.getOrDefault(ModDataComponents.ITEM_UPGRADES, SavedUpgrades.EMPTY).fillItemHandler(getUpgradeHandler());
@@ -666,8 +666,7 @@ public abstract class AbstractPneumaticCraftBlockEntity extends BlockEntity
             builder.set(ModDataComponents.SAVED_REDSTONE_CONTROLLER, rc.getRedstoneController().save());
         }
         if (this instanceof ISideConfigurable sc) {
-            CompoundTag scTag = SideConfigurator.writeToNBT(sc, level.registryAccess());
-            builder.set(ModDataComponents.SAVED_SIDE_CONFIG, CustomData.of(scTag));
+            builder.set(ModDataComponents.SAVED_SIDE_CONFIG, SideConfigurator.buildSavedMap(sc));
         }
         if (shouldPreserveStateOnBreak()) {
             IAirHandlerMachine handler = getLevel().getCapability(PNCCapabilities.AIR_HANDLER_MACHINE, getBlockPos(), getBlockState(), this, null);
