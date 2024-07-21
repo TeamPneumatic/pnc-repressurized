@@ -24,9 +24,9 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import me.desht.pneumaticcraft.api.drone.IDrone;
 import me.desht.pneumaticcraft.api.drone.IProgWidget;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
+import me.desht.pneumaticcraft.api.misc.ITranslatableEnum;
 import me.desht.pneumaticcraft.common.drone.ai.DroneAIManager;
 import me.desht.pneumaticcraft.common.registry.ModProgWidgetTypes;
-import me.desht.pneumaticcraft.api.misc.ITranslatableEnum;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction.Axis;
@@ -50,8 +50,8 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 public class ProgWidgetCoordinateOperator extends ProgWidget implements IVariableSetWidget {
     public static final MapCodec<ProgWidgetCoordinateOperator> CODEC = RecordCodecBuilder.mapCodec(builder ->
         baseParts(builder).and(builder.group(
-                Codec.STRING.optionalFieldOf("variable", "").forGetter(ProgWidgetCoordinateOperator::getVariable),
-                StringRepresentable.fromEnum(EnumOperator::values).optionalFieldOf("op", EnumOperator.PLUS_MINUS).forGetter(ProgWidgetCoordinateOperator::getOperator),
+                Codec.STRING.optionalFieldOf("var", "").forGetter(ProgWidgetCoordinateOperator::getVariable),
+                StringRepresentable.fromEnum(EnumOperator::values).optionalFieldOf("coord_op", EnumOperator.PLUS_MINUS).forGetter(ProgWidgetCoordinateOperator::getOperator),
                 AxisOptions.CODEC.optionalFieldOf("axis_options", AxisOptions.TRUE).forGetter(ProgWidgetCoordinateOperator::getAxisOptions)
         )
     ).apply(builder, ProgWidgetCoordinateOperator::new));

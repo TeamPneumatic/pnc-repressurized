@@ -27,6 +27,7 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetTextField;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidget;
 import me.desht.pneumaticcraft.common.util.PastebinHandler;
 import me.desht.pneumaticcraft.common.util.legacyconv.ConversionType;
+import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
@@ -236,6 +237,7 @@ public class PastebinScreen extends AbstractPneumaticCraftScreen {
 
             setTempMessage(xlate("pneumaticcraft.gui.pastebin.retrievedFromPastebin"));
         } catch (Exception e) {
+            Log.error("JSON parse error: {}", e.getMessage());
             setTempMessage(xlate("pneumaticcraft.gui.pastebin.invalidFormattedPastebin").withStyle(ChatFormatting.GOLD));
         }
     }

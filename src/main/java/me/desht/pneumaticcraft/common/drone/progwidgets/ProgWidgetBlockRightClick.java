@@ -43,7 +43,7 @@ public class ProgWidgetBlockRightClick extends ProgWidgetPlace implements IBlock
             digPlaceParts(builder).and(builder.group(
                     Direction.CODEC.optionalFieldOf("side", Direction.UP).forGetter(ProgWidgetBlockRightClick::getClickSide),
                     Codec.BOOL.optionalFieldOf("sneaking", false).forGetter(ProgWidgetBlockRightClick::isSneaking),
-                    StringRepresentable.fromEnum(RightClickType::values).optionalFieldOf("type", RightClickType.CLICK_ITEM).forGetter(ProgWidgetBlockRightClick::getClickType)
+                    StringRepresentable.fromEnum(RightClickType::values).optionalFieldOf("click_type", RightClickType.CLICK_ITEM).forGetter(ProgWidgetBlockRightClick::getClickType)
             )
     ).apply(builder, ProgWidgetBlockRightClick::new));
     public static final StreamCodec<RegistryFriendlyByteBuf, ProgWidgetBlockRightClick> STREAM_CODEC = StreamCodec.composite(

@@ -20,11 +20,11 @@ package me.desht.pneumaticcraft.common.drone.progwidgets.area;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import me.desht.pneumaticcraft.api.drone.area.AreaType;
+import me.desht.pneumaticcraft.api.drone.area.AreaTypeSerializer;
 import me.desht.pneumaticcraft.api.drone.area.AreaTypeWidget;
 import me.desht.pneumaticcraft.api.drone.area.EnumOldAreaType;
-import me.desht.pneumaticcraft.api.drone.area.AreaTypeSerializer;
-import me.desht.pneumaticcraft.common.registry.ModProgWidgetAreaTypes;
 import me.desht.pneumaticcraft.api.misc.ITranslatableEnum;
+import me.desht.pneumaticcraft.common.registry.ModProgWidgetAreaTypes;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
@@ -38,12 +38,12 @@ import java.util.function.Consumer;
 
 public class AreaTypeCylinder extends AreaType {
     public static final MapCodec<AreaTypeCylinder> CODEC = RecordCodecBuilder.mapCodec(builder -> builder.group(
-            StringRepresentable.fromEnum(EnumCylinderType::values).optionalFieldOf("cylinder_type", EnumCylinderType.FILLED).forGetter(t -> t.cylinderType),
+            StringRepresentable.fromEnum(CylinderType::values).optionalFieldOf("cylinder_type", CylinderType.FILLED).forGetter(t -> t.cylinderType),
             StringRepresentable.fromEnum(AreaAxis::values).optionalFieldOf("axis", AreaAxis.X).forGetter(t -> t.axis)
     ).apply(builder, AreaTypeCylinder::new));
 
     public static final StreamCodec<FriendlyByteBuf, AreaTypeCylinder> STREAM_CODEC = StreamCodec.composite(
-            NeoForgeStreamCodecs.enumCodec(EnumCylinderType.class), t -> t.cylinderType,
+            NeoForgeStreamCodecs.enumCodec(CylinderType.class), t -> t.cylinderType,
             NeoForgeStreamCodecs.enumCodec(AreaAxis.class), t -> t.axis,
             AreaTypeCylinder::new
     );
@@ -51,16 +51,16 @@ public class AreaTypeCylinder extends AreaType {
     public static final String ID = "cylinder";
 
     private AreaAxis axis;
-    private EnumCylinderType cylinderType;
+    private CylinderType cylinderType;
 
-    private AreaTypeCylinder(EnumCylinderType cylinderType, AreaAxis axis) {
+    private AreaTypeCylinder(CylinderType cylinderType, AreaAxis axis) {
         super(ID);
         this.axis = axis;
         this.cylinderType = cylinderType;
     }
 
     public AreaTypeCylinder() {
-        this(EnumCylinderType.FILLED, AreaAxis.X);
+        this(CylinderType.FILLED, AreaAxis.X);
     }
 
     @Override
@@ -97,8 +97,8 @@ public class AreaTypeCylinder extends AreaType {
                         if (centerDistSq <= radSq) {
                             for (int x = minX; x <= maxX; x++) {
                                 if (centerDistSq >= innerRadiusSq ||
-                                        cylinderType == EnumCylinderType.FILLED ||
-                                        cylinderType == EnumCylinderType.HOLLOW && (x == minX || x == maxX)) {
+                                        cylinderType == CylinderType.FILLED ||
+                                        cylinderType == CylinderType.HOLLOW && (x == minX || x == maxX)) {
 
                                     areaAdder.accept(new BlockPos(x, y, z));
                                 }
@@ -122,8 +122,8 @@ public class AreaTypeCylinder extends AreaType {
                         if (centerDistSq <= radSq) {
                             for (int y = minY; y <= maxY; y++) {
                                 if (centerDistSq >= innerRadiusSq ||
-                                        cylinderType == EnumCylinderType.FILLED ||
-                                        cylinderType == EnumCylinderType.HOLLOW && (y == minY || y == maxY)) {
+                                        cylinderType == CylinderType.FILLED ||
+                                        cylinderType == CylinderType.HOLLOW && (y == minY || y == maxY)) {
 
                                     areaAdder.accept(new BlockPos(x, y, z));
                                 }
@@ -147,8 +147,8 @@ public class AreaTypeCylinder extends AreaType {
                         if (centerDistSq <= radSq) {
                             for (int z = minZ; z <= maxZ; z++) {
                                 if (centerDistSq >= innerRadiusSq ||
-                                        cylinderType == EnumCylinderType.FILLED ||
-                                        cylinderType == EnumCylinderType.HOLLOW && (z == minZ || z == maxZ)) {
+                                        cylinderType == CylinderType.FILLED ||
+                                        cylinderType == CylinderType.HOLLOW && (z == minZ || z == maxZ)) {
 
                                     areaAdder.accept(new BlockPos(x, y, z));
                                 }
@@ -164,7 +164,7 @@ public class AreaTypeCylinder extends AreaType {
     @Override
     public void addUIWidgets(List<AreaTypeWidget> widgets) {
         super.addUIWidgets(widgets);
-        widgets.add(new AreaTypeWidget.EnumSelectorField<>("pneumaticcraft.gui.progWidget.area.type.cylinder.cylinderType", EnumCylinderType.class, () -> cylinderType, cylinderType -> this.cylinderType = cylinderType));
+        widgets.add(new AreaTypeWidget.EnumSelectorField<>("pneumaticcraft.gui.progWidget.area.type.cylinder.cylinderType", CylinderType.class, () -> cylinderType, cylinderType -> this.cylinderType = cylinderType));
         widgets.add(new AreaTypeWidget.EnumSelectorField<>("pneumaticcraft.gui.progWidget.area.type.general.axis", AreaAxis.class, () -> axis, axis -> this.axis = axis));
     }
 
@@ -191,12 +191,12 @@ public class AreaTypeCylinder extends AreaType {
         return Objects.hash(axis, cylinderType);
     }
 
-    public enum EnumCylinderType implements ITranslatableEnum, StringRepresentable {
+    public enum CylinderType implements ITranslatableEnum, StringRepresentable {
         FILLED("filled"), HOLLOW("hollow"), TUBE("tube");
 
         private final String name;
 
-        EnumCylinderType(String name) {
+        CylinderType(String name) {
             this.name = name;
         }
 

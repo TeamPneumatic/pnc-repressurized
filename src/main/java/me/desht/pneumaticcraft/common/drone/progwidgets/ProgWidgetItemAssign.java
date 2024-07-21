@@ -42,7 +42,7 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class ProgWidgetItemAssign extends ProgWidget implements IVariableSetWidget {
     public static final MapCodec<ProgWidgetItemAssign> CODEC = RecordCodecBuilder.mapCodec(builder ->
-            baseParts(builder).and(Codec.STRING.optionalFieldOf("variable", "").forGetter(ProgWidgetItemAssign::getVariable)
+            baseParts(builder).and(Codec.STRING.optionalFieldOf("var", "").forGetter(ProgWidgetItemAssign::getVariable)
     ).apply(builder, ProgWidgetItemAssign::new));
     public static final StreamCodec<RegistryFriendlyByteBuf, ProgWidgetItemAssign> STREAM_CODEC = StreamCodec.composite(
             PositionFields.STREAM_CODEC, ProgWidget::getPosition,

@@ -44,7 +44,7 @@ import java.util.Set;
 public class ProgWidgetForEachItem extends ProgWidget implements IJumpBackWidget, IJump, IVariableSetWidget {
     public static final MapCodec<ProgWidgetForEachItem> CODEC = RecordCodecBuilder.mapCodec(builder ->
             baseParts(builder).and(
-                    Codec.STRING.optionalFieldOf("variable", "").forGetter(ProgWidgetForEachItem::getVariable)
+                    Codec.STRING.optionalFieldOf("var", "").forGetter(ProgWidgetForEachItem::getVariable)
             ).apply(builder, ProgWidgetForEachItem::new));
     public static final StreamCodec<RegistryFriendlyByteBuf, ProgWidgetForEachItem> STREAM_CODEC = StreamCodec.composite(
             PositionFields.STREAM_CODEC, ProgWidget::getPosition,

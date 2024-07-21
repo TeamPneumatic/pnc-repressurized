@@ -424,7 +424,7 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
     }
 
     public record Immutable(Optional<BlockPos> pos1, Optional<BlockPos> pos2, AreaType areaType, String var1, String var2) {
-        private static final AreaTypeBox BOX_FILLED = new AreaTypeBox(AreaTypeBox.EnumBoxType.FILLED);
+        private static final AreaTypeBox BOX_FILLED = new AreaTypeBox(AreaTypeBox.BoxType.FILLED);
         public static final Codec<Immutable> CODEC = RecordCodecBuilder.create(builder -> builder.group(
                 BlockPos.CODEC.optionalFieldOf("pos1").forGetter(Immutable::pos1),
                 BlockPos.CODEC.optionalFieldOf("pos2").forGetter(Immutable::pos2),

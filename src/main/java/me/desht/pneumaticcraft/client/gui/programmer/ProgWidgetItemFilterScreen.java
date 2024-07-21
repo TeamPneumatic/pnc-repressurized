@@ -95,8 +95,8 @@ public class ProgWidgetItemFilterScreen extends AbstractProgWidgetScreen<ProgWid
                 .setChecked(progWidget.isCheckDurability())
         );
         addRenderableWidget(checkBoxUseNBT = new WidgetCheckBox(guiLeft + 8, guiTop + 108, 0xFF404040,
-                xlate("pneumaticcraft.gui.logistics_frame.matchNBT"), b -> progWidget.setMatchComponents(b.checked))
-                .setTooltipKey("pneumaticcraft.gui.logistics_frame.matchNBT.tooltip")
+                xlate("pneumaticcraft.gui.logistics_frame.matchComponents"), b -> progWidget.setMatchComponents(b.checked))
+                .setTooltipKey("pneumaticcraft.gui.logistics_frame.matchComponents.tooltip")
                 .setChecked(progWidget.isMatchComponents())
         );
         addRenderableWidget(checkBoxUseModSimilarity = new WidgetCheckBox(guiLeft + 8, guiTop + 120, 0xFF404040,

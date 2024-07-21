@@ -46,7 +46,7 @@ public class ProgWidgetForEachCoordinate extends ProgWidgetAreaItemBase implemen
         IVariableSetWidget {
     public static final MapCodec<ProgWidgetForEachCoordinate> CODEC = RecordCodecBuilder.mapCodec(builder ->
             baseParts(builder).and(
-                    Codec.STRING.optionalFieldOf("variable", "").forGetter(ProgWidgetForEachCoordinate::getVariable)
+                    Codec.STRING.optionalFieldOf("var", "").forGetter(ProgWidgetForEachCoordinate::getVariable)
             ).apply(builder, ProgWidgetForEachCoordinate::new));
     public static final StreamCodec<RegistryFriendlyByteBuf, ProgWidgetForEachCoordinate> STREAM_CODEC = StreamCodec.composite(
             PositionFields.STREAM_CODEC, ProgWidget::getPosition,

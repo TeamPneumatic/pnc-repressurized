@@ -13,7 +13,7 @@ public class ConversionUtil {
     static OptionalInt getInt(JsonObject json, String fieldName) {
         if (json.has(fieldName)) {
             JsonObject sub = json.get(fieldName).getAsJsonObject();
-            if (sub.has("type") && sub.get("type").getAsInt() == Tag.TAG_INT) {
+            if (sub.has("type") && (sub.get("type").getAsInt() == Tag.TAG_INT || sub.get("type").getAsInt() == Tag.TAG_BYTE)) {
                 return OptionalInt.of(sub.get("value").getAsInt());
             }
         }
@@ -34,7 +34,7 @@ public class ConversionUtil {
         if (json.has(fieldName)) {
             JsonObject sub = json.get(fieldName).getAsJsonObject();
             if (sub.has("type") && sub.get("type").getAsInt() == Tag.TAG_BYTE) {
-                return Optional.of(sub.get("value").getAsBoolean());
+                return Optional.of(sub.get("value").getAsByte() != 0);
             }
         }
         return Optional.empty();

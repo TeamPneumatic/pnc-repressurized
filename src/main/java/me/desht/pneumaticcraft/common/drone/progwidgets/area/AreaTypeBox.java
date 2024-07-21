@@ -20,11 +20,11 @@ package me.desht.pneumaticcraft.common.drone.progwidgets.area;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import me.desht.pneumaticcraft.api.drone.area.AreaType;
+import me.desht.pneumaticcraft.api.drone.area.AreaTypeSerializer;
 import me.desht.pneumaticcraft.api.drone.area.AreaTypeWidget;
 import me.desht.pneumaticcraft.api.drone.area.EnumOldAreaType;
-import me.desht.pneumaticcraft.api.drone.area.AreaTypeSerializer;
-import me.desht.pneumaticcraft.common.registry.ModProgWidgetAreaTypes;
 import me.desht.pneumaticcraft.api.misc.ITranslatableEnum;
+import me.desht.pneumaticcraft.common.registry.ModProgWidgetAreaTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
@@ -37,25 +37,25 @@ import java.util.function.Consumer;
 
 public class AreaTypeBox extends AreaType {
     public static final MapCodec<AreaTypeBox> CODEC = RecordCodecBuilder.mapCodec(builder -> builder.group(
-        StringRepresentable.fromEnum(EnumBoxType::values).optionalFieldOf("box_type", EnumBoxType.FILLED).forGetter(AreaTypeBox::boxType)
+        StringRepresentable.fromEnum(BoxType::values).optionalFieldOf("box_type", BoxType.FILLED).forGetter(AreaTypeBox::boxType)
     ).apply(builder, AreaTypeBox::new));
 
     public static final StreamCodec<FriendlyByteBuf, AreaTypeBox> STREAM_CODEC = StreamCodec.composite(
-            NeoForgeStreamCodecs.enumCodec(EnumBoxType.class), AreaTypeBox::boxType,
+            NeoForgeStreamCodecs.enumCodec(BoxType.class), AreaTypeBox::boxType,
             AreaTypeBox::new
     );
 
     public static final String ID = "box";
 
-    private EnumBoxType boxType;
+    private BoxType boxType;
 
-    public AreaTypeBox(EnumBoxType boxType) {
+    public AreaTypeBox(BoxType boxType) {
         super(ID);
         this.boxType = boxType;
     }
 
     public AreaTypeBox() {
-        this(EnumBoxType.FILLED);
+        this(BoxType.FILLED);
     }
 
     @Override
@@ -63,7 +63,7 @@ public class AreaTypeBox extends AreaType {
         return new AreaTypeBox(boxType);
     }
 
-    public EnumBoxType boxType() {
+    public BoxType boxType() {
         return boxType;
     }
 
@@ -122,9 +122,9 @@ public class AreaTypeBox extends AreaType {
     @Override
     public void convertFromLegacy(EnumOldAreaType oldAreaType, int typeInfo) {
         switch (oldAreaType) {
-            case FILL -> boxType = EnumBoxType.FILLED;
-            case WALL -> boxType = EnumBoxType.HOLLOW;
-            case FRAME -> boxType = EnumBoxType.FRAME;
+            case FILL -> boxType = BoxType.FILLED;
+            case WALL -> boxType = BoxType.HOLLOW;
+            case FRAME -> boxType = BoxType.FRAME;
             default -> throw new IllegalArgumentException();
         }
     }
@@ -132,7 +132,7 @@ public class AreaTypeBox extends AreaType {
     @Override
     public void addUIWidgets(List<AreaTypeWidget> widgets) {
         super.addUIWidgets(widgets);
-        widgets.add(new AreaTypeWidget.EnumSelectorField<>("pneumaticcraft.gui.progWidget.area.type.box.boxType", EnumBoxType.class, () -> boxType, boxType -> this.boxType = boxType));
+        widgets.add(new AreaTypeWidget.EnumSelectorField<>("pneumaticcraft.gui.progWidget.area.type.box.boxType", BoxType.class, () -> boxType, boxType -> this.boxType = boxType));
     }
 
     @Override
@@ -148,12 +148,12 @@ public class AreaTypeBox extends AreaType {
         return Objects.hashCode(boxType);
     }
 
-    public enum EnumBoxType implements ITranslatableEnum, StringRepresentable {
+    public enum BoxType implements ITranslatableEnum, StringRepresentable {
         FILLED("filled"), HOLLOW("hollow"), FRAME("frame");
 
         private final String name;
 
-        EnumBoxType(String name) {
+        BoxType(String name) {
             this.name = name;
         }
 

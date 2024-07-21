@@ -47,7 +47,7 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 public class ProgWidgetCoordinate extends ProgWidget implements IVariableWidget {
     public static final MapCodec<ProgWidgetCoordinate> CODEC = RecordCodecBuilder.mapCodec(builder ->
             baseParts(builder).and(builder.group(
-                    BlockPos.CODEC.optionalFieldOf("pos", null).forGetter(p -> p.coord),
+                    BlockPos.CODEC.optionalFieldOf("coord", BlockPos.ZERO).forGetter(p -> p.coord),
                     Codec.STRING.optionalFieldOf("var", "").forGetter(ProgWidgetCoordinate::getVariable),
                     Codec.BOOL.optionalFieldOf("using_var", false).forGetter(ProgWidgetCoordinate::isUsingVariable)
             )).apply(builder, ProgWidgetCoordinate::new));
@@ -59,7 +59,7 @@ public class ProgWidgetCoordinate extends ProgWidget implements IVariableWidget 
             ProgWidgetCoordinate::new
     );
 
-    private BlockPos coord;
+    private BlockPos coord = BlockPos.ZERO;
     private String variable = "";
     private boolean useVariable;
     private DroneAIManager aiManager;

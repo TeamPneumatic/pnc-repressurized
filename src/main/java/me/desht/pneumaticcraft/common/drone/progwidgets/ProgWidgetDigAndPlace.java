@@ -36,7 +36,7 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 public abstract class ProgWidgetDigAndPlace extends ProgWidgetAreaItemBase implements IBlockOrdered, IMaxActions {
     protected static <P extends ProgWidgetDigAndPlace> Products.P2<RecordCodecBuilder.Mu<P>, PositionFields, ProgWidgetDigAndPlace.DigPlaceFields> digPlaceParts(RecordCodecBuilder.Instance<P> pInstance) {
         return baseParts(pInstance).and(
-                ProgWidgetDigAndPlace.DigPlaceFields.CODEC.fieldOf("inv").forGetter(p -> p.digPlaceFields)
+                ProgWidgetDigAndPlace.DigPlaceFields.CODEC.fieldOf("dig_place").forGetter(p -> p.digPlaceFields)
         );
     }
 

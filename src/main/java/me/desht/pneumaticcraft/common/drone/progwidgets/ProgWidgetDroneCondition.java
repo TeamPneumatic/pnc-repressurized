@@ -41,7 +41,7 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public abstract class ProgWidgetDroneCondition extends ProgWidgetConditionBase implements ICondition, IVariableSetWidget {
     protected static <P extends ProgWidgetDroneCondition> Products.P2<RecordCodecBuilder.Mu<P>, PositionFields, DroneConditionFields> droneConditionParts(RecordCodecBuilder.Instance<P> pInstance) {
-        return baseParts(pInstance).and(DroneConditionFields.CODEC.fieldOf("cond").forGetter(p -> p.cond));
+        return baseParts(pInstance).and(DroneConditionFields.CODEC.fieldOf("drone_cond").forGetter(p -> p.cond));
     }
 
     protected DroneConditionFields cond;
@@ -162,7 +162,7 @@ public abstract class ProgWidgetDroneCondition extends ProgWidgetConditionBase i
 
         public static final Codec<DroneConditionFields> CODEC = RecordCodecBuilder.create(builder -> builder.group(
                 Codec.BOOL.optionalFieldOf("and_func", false).forGetter(DroneConditionFields::isAndFunc),
-                StringRepresentable.fromEnum(Operator::values).optionalFieldOf("op", Operator.GE).forGetter(DroneConditionFields::op),
+                StringRepresentable.fromEnum(Operator::values).optionalFieldOf("cond_op", Operator.GE).forGetter(DroneConditionFields::op),
                 Codec.INT.optionalFieldOf("required_count", 1).forGetter(DroneConditionFields::requiredCount),
                 Codec.STRING.optionalFieldOf("measure_var", "").forGetter(DroneConditionFields::measureVar)
         ).apply(builder, DroneConditionFields::new));

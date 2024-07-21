@@ -53,12 +53,12 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 public class ProgWidgetItemFilter extends ProgWidget implements IVariableWidget {
     public static final MapCodec<ProgWidgetItemFilter> CODEC = RecordCodecBuilder.mapCodec(builder ->
             baseParts(builder).and(builder.group(
-                            ItemStack.CODEC.optionalFieldOf("item", ItemStack.EMPTY).forGetter(ProgWidgetItemFilter::getFilter),
-                            Codec.BOOL.optionalFieldOf("durability", false).forGetter(ProgWidgetItemFilter::isCheckDurability),
-                            Codec.BOOL.optionalFieldOf("components", false).forGetter(ProgWidgetItemFilter::isMatchComponents),
-                            Codec.BOOL.optionalFieldOf("mod", false).forGetter(ProgWidgetItemFilter::isMatchMod),
-                            Codec.BOOL.optionalFieldOf("block", false).forGetter(ProgWidgetItemFilter::isMatchBlock),
-                            Codec.STRING.optionalFieldOf("durability", "").forGetter(ProgWidgetItemFilter::getVariable)
+                            ItemStack.CODEC.optionalFieldOf("chk_item", ItemStack.EMPTY).forGetter(ProgWidgetItemFilter::getFilter),
+                            Codec.BOOL.optionalFieldOf("chk_durability", false).forGetter(ProgWidgetItemFilter::isCheckDurability),
+                            Codec.BOOL.optionalFieldOf("chk_components", false).forGetter(ProgWidgetItemFilter::isMatchComponents),
+                            Codec.BOOL.optionalFieldOf("chk_mod", false).forGetter(ProgWidgetItemFilter::isMatchMod),
+                            Codec.BOOL.optionalFieldOf("chk_block", false).forGetter(ProgWidgetItemFilter::isMatchBlock),
+                            Codec.STRING.optionalFieldOf("var", "").forGetter(ProgWidgetItemFilter::getVariable)
                     )
             ).apply(builder, ProgWidgetItemFilter::new));
     public static final StreamCodec<RegistryFriendlyByteBuf, ProgWidgetItemFilter> STREAM_CODEC = NeoForgeStreamCodecs.composite(

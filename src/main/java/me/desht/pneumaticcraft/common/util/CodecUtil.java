@@ -5,19 +5,10 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.MapCodec;
 import io.netty.buffer.ByteBuf;
-import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetInventoryBase;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.network.codec.StreamDecoder;
-import net.minecraft.network.codec.StreamEncoder;
-import net.minecraft.util.ExtraCodecs;
 import org.apache.commons.lang3.Validate;
-import org.checkerframework.checker.units.qual.K;
 
-import javax.xml.validation.Validator;
 import java.util.BitSet;
-import java.util.List;
-import java.util.function.BiFunction;
-import java.util.function.Function;
 
 public class CodecUtil {
     public static Codec<BitSet> bitSetCodec(int nBits) {
@@ -42,7 +33,8 @@ public class CodecUtil {
     }
 
     private static byte toByte(BitSet set) {
-        return set.toByteArray()[0];
+        byte[] a = set.toByteArray();
+        return a.length == 0 ? 0 : a[0];
     }
 
     public static <K,T> Codec<MapCodec<? extends T>> simpleDispatchCodec(Codec<K> keyCodec, BiMap<K,MapCodec<? extends T>> map) {

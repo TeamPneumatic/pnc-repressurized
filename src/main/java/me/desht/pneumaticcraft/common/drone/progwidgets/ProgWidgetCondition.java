@@ -211,7 +211,7 @@ public abstract class ProgWidgetCondition extends ProgWidgetInventoryBase implem
 
         public static final Codec<ConditionFields> CODEC = RecordCodecBuilder.create(builder -> builder.group(
                 Codec.BOOL.optionalFieldOf("and_func", false).forGetter(ConditionFields::isAndFunc),
-                StringRepresentable.fromEnum(Operator::values).optionalFieldOf("op", Operator.GE).forGetter(ConditionFields::op),
+                StringRepresentable.fromEnum(Operator::values).optionalFieldOf("cond_op", Operator.GE).forGetter(ConditionFields::op),
                 Codec.STRING.optionalFieldOf("measure_var", "").forGetter(ConditionFields::measureVar)
         ).apply(builder, ConditionFields::new));
         public static final StreamCodec<FriendlyByteBuf, ConditionFields> STREAM_CODEC = StreamCodec.composite(

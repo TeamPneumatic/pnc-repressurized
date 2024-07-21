@@ -46,8 +46,8 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 public class ProgWidgetCoordinateCondition extends ProgWidgetConditionBase {
     public static final MapCodec<ProgWidgetCoordinateCondition> CODEC = RecordCodecBuilder.mapCodec(builder ->
             baseParts(builder).and(builder.group(
-                    AxisOptions.CODEC.fieldOf("options").forGetter(ProgWidgetCoordinateCondition::getAxisOptions),
-                    StringRepresentable.fromEnum(Operator::values).fieldOf("op").forGetter(ProgWidgetCoordinateCondition::getOperator)
+                    AxisOptions.CODEC.fieldOf("axis_options").forGetter(ProgWidgetCoordinateCondition::getAxisOptions),
+                    StringRepresentable.fromEnum(Operator::values).fieldOf("cond_op").forGetter(ProgWidgetCoordinateCondition::getOperator)
             )
     ).apply(builder, ProgWidgetCoordinateCondition::new));
     public static final StreamCodec<RegistryFriendlyByteBuf, ProgWidgetCoordinateCondition> STREAM_CODEC = StreamCodec.composite(
