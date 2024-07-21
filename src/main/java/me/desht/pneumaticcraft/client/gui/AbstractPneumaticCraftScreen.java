@@ -75,8 +75,9 @@ public abstract class AbstractPneumaticCraftScreen extends Screen {
 
     @Override
     public void renderBackground(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        super.renderBackground(graphics, mouseX, mouseY, partialTick);
+//        super.renderBackground(graphics, mouseX, mouseY, partialTick);
 
+        renderTransparentBackground(graphics);
         if (getTexture() != null) {
             graphics.blit(getTexture(), guiLeft, guiTop, 0, 0, xSize, ySize);
         }
