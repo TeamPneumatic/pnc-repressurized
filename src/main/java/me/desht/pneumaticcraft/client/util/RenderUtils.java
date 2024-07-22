@@ -18,7 +18,8 @@
 package me.desht.pneumaticcraft.client.util;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.*;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import me.desht.pneumaticcraft.client.render.ModRenderTypes;
 import net.minecraft.client.Minecraft;
@@ -36,7 +37,6 @@ import org.joml.Matrix4f;
 
 import java.util.BitSet;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 
 import static net.minecraft.util.Mth.lerp;
 
@@ -314,9 +314,4 @@ public class RenderUtils {
         }
     }
 
-    public static void drawWithTesselator(VertexFormat.Mode mode, VertexFormat format, Consumer<BufferBuilder> consumer) {
-        BufferBuilder builder = Tesselator.getInstance().begin(mode, format);
-        consumer.accept(builder);
-        BufferUploader.drawWithShader(builder.buildOrThrow());
-    }
 }

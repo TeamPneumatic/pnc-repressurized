@@ -18,12 +18,12 @@
 package me.desht.pneumaticcraft.client.gui;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.*;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.VertexFormat;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
-import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.block.entity.utility.ChargingStationBlockEntity;
 import me.desht.pneumaticcraft.common.inventory.ChargingStationMenu;
 import me.desht.pneumaticcraft.common.item.IChargeableContainerProvider;
@@ -179,7 +179,7 @@ public class ChargingStationScreen extends AbstractPneumaticCraftContainerScreen
 
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
         Matrix4f posMat = graphics.pose().last().pose();
-        RenderUtils.drawWithTesselator(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR, b -> {
+        GuiUtils.drawWithTesselator(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR, b -> {
             b.addVertex(posMat, result.x() - 1f, result.y() + 1f, 0.0F)
                     .setColor(0.7f, 0.8f, 0.9f, 1f);
             b.addVertex(posMat, result.x() + 1f, result.y() + 1f, 0.0F)

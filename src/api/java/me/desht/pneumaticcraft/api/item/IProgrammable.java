@@ -29,7 +29,8 @@ public interface IProgrammable {
     String NBT_WIDGETS = "pneumaticcraft:progWidgets";
 
     /**
-     * When returned true, this stack may be programmed.  Can be used to limit programmability by NBT data, for example.
+     * If this method returns true, this stack may be programmed.  Can be used to limit programmability by data components,
+     * for example.
      *
      * @param stack the item stack to check
      * @return true if the item can be programmed, false otherwise
@@ -52,4 +53,12 @@ public interface IProgrammable {
      */
     boolean showProgramTooltip();
 
+    /**
+     * Convenience method to check if an arbitrary itemstack is programmable.
+     * @param stack the stack to check
+     * @return true if programmable, false otherwise
+     */
+    static boolean isProgrammable(ItemStack stack) {
+        return stack.getItem() instanceof IProgrammable p && p.canProgram(stack);
+    }
 }

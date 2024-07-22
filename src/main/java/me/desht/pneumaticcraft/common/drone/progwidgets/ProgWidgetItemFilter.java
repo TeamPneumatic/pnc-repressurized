@@ -211,7 +211,7 @@ public class ProgWidgetItemFilter extends ProgWidget implements IVariableWidget 
         } else {
             curTooltip.add(xlate("pneumaticcraft.gui.progWidget.itemFilter." + (checkDurability ? "useDurability" : "ignoreDurability"))
                     .withStyle(ChatFormatting.DARK_AQUA));
-            curTooltip.add(xlate("pneumaticcraft.gui.progWidget.itemFilter." + (matchComponents ? "useNBT" : "ignoreNBT"))
+            curTooltip.add(xlate("pneumaticcraft.gui.progWidget.itemFilter." + (matchComponents ? "useComponents" : "ignoreComponents"))
                     .withStyle(ChatFormatting.DARK_AQUA));
         }
     }

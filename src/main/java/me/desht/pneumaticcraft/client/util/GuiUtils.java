@@ -21,6 +21,7 @@ import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import com.mojang.math.Axis;
+import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -52,6 +53,7 @@ import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import static net.minecraft.client.renderer.LightTexture.FULL_BRIGHT;
@@ -152,7 +154,7 @@ public class GuiUtils {
 
         Matrix4f posMat = graphics.pose().last().pose();
 
-        RenderUtils.drawWithTesselator(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR, b -> {
+        drawWithTesselator(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR, b -> {
             b.addVertex(posMat, xCoord, yCoord + 16, zLevel)
                     .setUv(uMin, vMax)
                     .setColor(cols[1], cols[2], cols[3], cols[0]);
@@ -256,11 +258,88 @@ public class GuiUtils {
         RenderSystem.lineWidth(lineWidth);
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
 
-        RenderUtils.drawWithTesselator(VertexFormat.Mode.DEBUG_LINES, DefaultVertexFormat.POSITION_COLOR, wr -> {
+        drawWithTesselator(VertexFormat.Mode.DEBUG_LINES, DefaultVertexFormat.POSITION_COLOR, wr -> {
             wr.addVertex(posMat, line.startX, line.startY, line.startZ)
                     .setColor(cols[1], cols[2], cols[3], cols[0]);
             wr.addVertex(posMat, lerp(progress, line.startX, line.endX), lerp(progress, line.startY, line.endY), lerp(progress, line.startZ,line.endZ))
                     .setColor(cols[1], cols[2], cols[3], cols[0]);
         });
+    }
+
+    public static void drawWithTesselator(VertexFormat.Mode mode, VertexFormat format, Consumer<BufferBuilder> consumer) {
+        BufferBuilder builder = Tesselator.getInstance().begin(mode, format);
+        consumer.accept(builder);
+        BufferUploader.drawWithShader(builder.buildOrThrow());
+    }
+
+    public static void drawPlayerSlots(GuiGraphics graphics, int x, int y) {
+        graphics.blit(Textures.GUI_SLOTS_9x3, x, y, 0, 0, 162, 54, 162, 54);
+        graphics.blit(Textures.GUI_SLOTS_9x1, x, y + 58, 0, 0, 162, 18, 162, 18);
+    }
+
+    public static void drawInsetPanel(GuiGraphics graphics, int x, int y, int width, int height) {
+        GuiUtils.drawNineSliced(graphics, Textures.GUI_INSET_PANEL, x, y, 0, width, height, 256, 128, 1);
+    }
+
+    public static void drawNineSliced(GuiGraphics graphics, ResourceLocation texture, int x, int y, int z, int width, int height, int texWidth, int texHeight, int corner) {
+        RenderSystem.setShaderTexture(0, texture);
+        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+
+        graphics.pose().pushPose();
+        graphics.pose().translate(x, y, z);
+
+        Matrix4f posMat = graphics.pose().last().pose();
+
+        int centreWidth = texWidth - corner * 2;
+        int centreHeight = texHeight - corner * 2;
+
+        drawWithTesselator(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX, wr -> {
+            // corners
+            addQuad(wr, posMat, 0, 0, 0, 0, corner, corner);
+            addQuad(wr, posMat, width - corner, 0, texWidth - corner, 0, corner, corner);
+            addQuad(wr, posMat, 0, height - corner, 0, texHeight - corner, corner, corner);
+            addQuad(wr, posMat, width - corner, height - corner, texWidth - corner, texHeight - corner, corner, corner);
+
+            // top & bottom edges
+            for (int i = 0; i <= width / centreWidth; i++) {
+                int x1 = corner + centreWidth * i;
+                int w1 = Math.min(centreWidth, width - (i * centreWidth) - (corner * 2));
+                addQuad(wr, posMat, x1, 0, corner, 0, w1, corner);
+                addQuad(wr, posMat, x1, height - corner, corner, texHeight - corner, w1, corner);
+            }
+            // left & right edges
+            for (int i = 0; i <= height / centreHeight; i++) {
+                int y1 = corner + centreHeight * i;
+                int h1 = Math.min(centreHeight, height - (i * centreHeight) - (corner * 2));
+                addQuad(wr, posMat, 0, y1, 0, corner, corner, h1);
+                addQuad(wr, posMat, width - corner, y1, texWidth - corner, corner, corner, h1);
+            }
+
+            // centre
+            int cw = (width - (corner * 2)) / texWidth;
+            int ch = (height - (corner * 2)) / texHeight;
+            for (int ix = 0; ix <= cw; ix++) {
+                for (int iy = 0; iy <= ch; iy++) {
+                    int x1 = corner + (ix * centreWidth);
+                    int y1 = corner + (iy * centreHeight);
+                    int w1 = Math.min(centreWidth, width - (ix * centreWidth) - (corner * 2));
+                    int h1 = Math.min(centreHeight, height - (iy * centreHeight) - (corner * 2));
+                    addQuad(wr, posMat, x1, y1, corner, corner, w1, h1);
+                }
+            }
+        });
+
+        graphics.pose().popPose();
+    }
+
+    public static void addQuad(BufferBuilder wr, Matrix4f posMat, float x, float y, float texX, float texY, float w, float h) {
+        float u1 = texX / 256F;
+        float u2 = u1 + (w / 256F);
+        float v1 = texY / 256F;
+        float v2 = v1 + (h / 256F);
+        wr.addVertex(posMat, x, y, 0).setUv(u1, v1);
+        wr.addVertex(posMat, x, y + h, 0).setUv(u1, v2);
+        wr.addVertex(posMat, x + w, y + h, 0).setUv(u2, v2);
+        wr.addVertex(posMat, x + w, y, 0).setUv(u2, v1);
     }
 }

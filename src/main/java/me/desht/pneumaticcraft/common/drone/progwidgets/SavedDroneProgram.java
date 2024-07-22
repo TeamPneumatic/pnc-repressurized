@@ -16,8 +16,6 @@ import net.minecraft.world.item.ItemStack;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
-import java.util.function.Supplier;
 
 public class SavedDroneProgram {
     public static final Codec<SavedDroneProgram> CODEC = RecordCodecBuilder.create(builder -> builder.group(
@@ -31,6 +29,8 @@ public class SavedDroneProgram {
 
     public static final SavedDroneProgram EMPTY = new SavedDroneProgram(List.of());
 
+    // TODO: would be much better to store actual progwidgets here, but that requires a working copy() for
+    //       every progwidget type, as well as equals()/hashCode() correctly overridden for every type
     private final List<CompoundTag> widgetNBT;
     private final int hashCode;
 
@@ -58,15 +58,6 @@ public class SavedDroneProgram {
 
     public static List<IProgWidget> forItemStack(ItemStack stack) {
         return stack.getOrDefault(ModDataComponents.SAVED_DRONE_PROGRAM, EMPTY).buildProgram();
-    }
-
-    public static <T extends ProgWidget> T getOneWidget(ItemStack stack, Supplier<T> def) {
-        List<IProgWidget> l = forItemStack(stack);
-        if (!l.isEmpty() && def.getClass().isAssignableFrom(l.getFirst().getClass())) {
-            return (T) def.getClass().cast(l.getFirst());
-        } else {
-            return def.get();
-        }
     }
 
     @Override

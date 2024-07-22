@@ -130,6 +130,7 @@ public class Textures {
     public static final ResourceLocation PROG_WIDGET_VOID_LIQUID = progWidgetTexture("void_fluid_piece.png");
 
     // GUI background textures
+    public static final ResourceLocation GUI_BLANK_256 = guiTexture("blank256.png");
     public static final ResourceLocation GUI_AIR_COMPRESSOR = guiTexture("gui_air_compressor.png");
     public static final ResourceLocation GUI_ADVANCED_AIR_COMPRESSOR = guiTexture("gui_advanced_air_compressor.png");
     public static final ResourceLocation GUI_SOLAR_COMPRESSOR_INACTIVE = guiTexture("gui_solar_compressor_inactive.png");
@@ -151,8 +152,6 @@ public class Textures {
     public static final ResourceLocation GUI_PNEUMATIC_DOOR = guiTexture("gui_pneumatic_door_base.png");
     public static final ResourceLocation GUI_BUILDCRAFT_ENERGY = guiTexture("gui_buildcraft_energy.png");
     public static final ResourceLocation GUI_OMNIDIRECTIONAL_HOPPER = guiTexture("gui_omnidirectional_hopper.png");
-    public static final ResourceLocation GUI_PROGRAMMER_STD = guiTexture("gui_programmer.png");
-    public static final ResourceLocation GUI_PROGRAMMER_LARGE = guiTexture("gui_programmer_large.png");
     public static final ResourceLocation GUI_LIQUID_COMPRESSOR = guiTexture("gui_liquid_compressor.png");
     public static final ResourceLocation GUI_ADVANCED_LIQUID_COMPRESSOR = guiTexture("gui_advanced_liquid_compressor.png");
     public static final ResourceLocation GUI_LIQUID_HOPPER = guiTexture( "gui_liquid_hopper.png");
@@ -185,6 +184,8 @@ public class Textures {
     public static final ResourceLocation GUI_JACKHAMMER_SETUP = guiTexture("gui_jackhammer_setup.png");
     public static final ResourceLocation GUI_VACUUM_TRAP = guiTexture("gui_vacuum_trap.png");
     public static final ResourceLocation GUI_PRESSURIZED_SPAWNER = guiTexture("gui_pressurized_spawner.png");
+    public static final ResourceLocation GUI_INSET_PANEL = guiTexture("inset_panel.png");
+    public static final ResourceLocation GUI_WIDGET_TRAY = guiTexture("widget_tray.png");
 
     public static final ResourceLocation GUI_JEI_PRESSURE_CHAMBER = guiTexture("jei/gui_jei_pressure_chamber.png");
     public static final ResourceLocation GUI_JEI_ASSEMBLY_CONTROLLER = guiTexture("jei/gui_jei_assembly_controller.png");
@@ -223,6 +224,8 @@ public class Textures {
     public static final ResourceLocation GUI_BAD_LOCATION = guiIconTexture("gui_bad_location.png");
     public static final ResourceLocation GUI_OK_LOCATION = guiIconTexture("gui_ok_location.png");
     public static final ResourceLocation GUI_GREEN_PROBLEMS_TEXTURE = guiIconTexture("gui_green_problem.png");
+    public static final ResourceLocation GUI_SLOTS_9x3 = guiIconTexture("slots_9x3.png");
+    public static final ResourceLocation GUI_SLOTS_9x1 = guiIconTexture("slots_9x1.png");
 
     // widget textures
     public static final ResourceLocation WIDGET_ENERGY = guiTexture("widget/widget_energy.png");

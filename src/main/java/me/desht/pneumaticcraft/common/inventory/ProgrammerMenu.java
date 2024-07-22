@@ -19,7 +19,6 @@ package me.desht.pneumaticcraft.common.inventory;
 
 import me.desht.pneumaticcraft.api.item.IProgrammable;
 import me.desht.pneumaticcraft.client.gui.ProgrammerScreen;
-import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.block.entity.drone.ProgrammerBlockEntity;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSendNBTPacket;
@@ -42,38 +41,26 @@ import javax.annotation.Nonnull;
 import java.util.List;
 
 public class ProgrammerMenu extends AbstractPneumaticCraftMenu<ProgrammerBlockEntity> {
-
-    private final boolean hiRes;
-
     public ProgrammerMenu(int i, Inventory playerInventory, BlockPos pos) {
         super(ModMenuTypes.PROGRAMMER.get(), i, playerInventory, pos);
 
         // server side doesn't care about slot positioning, so doesn't care about screen res either
-        this.hiRes = playerInventory.player.level().isClientSide && ClientUtils.isScreenHiRes();
-        int xBase = hiRes ? 270 : 95;
-        int yBase = hiRes ? 430 : 174;
+        boolean isClient = playerInventory.player.level().isClientSide;
+        AreaGeometry geometry = isClient ? ProgrammerScreen.calculateAreaBounds() : AreaGeometry.DUMMY;
 
-        addSlot(new SlotItemHandler(blockEntity.getItemHandler(), 0, hiRes ? 676 : 326, 15) {
+        addSlot(new SlotItemHandler(blockEntity.getItemHandler(), 0, geometry.x + geometry.width + 24, geometry.y - 8) {
             @Override
             public boolean mayPlace(@Nonnull ItemStack stack) {
-                return isProgrammableItem(stack);
+                return IProgrammable.isProgrammable(stack);
             }
         });
 
         // Add the player's inventory slots to the container
-        addPlayerSlots(playerInventory, xBase, yBase);
+        addPlayerSlots(playerInventory, geometry.x + 93, geometry.y + geometry.height + 6);
     }
 
-    public ProgrammerMenu(int i, Inventory playerInventory, FriendlyByteBuf buffer) {
-        this(i, playerInventory, getTilePos(buffer));
-    }
-
-    public boolean isHiRes() {
-        return hiRes;
-    }
-
-    private static boolean isProgrammableItem(@Nonnull ItemStack stack) {
-        return stack.getItem() instanceof IProgrammable && ((IProgrammable) stack.getItem()).canProgram(stack);
+    public ProgrammerMenu(int windowId, Inventory playerInventory, FriendlyByteBuf buffer) {
+        this(windowId, playerInventory, getTilePos(buffer));
     }
 
     @Override
@@ -111,7 +98,7 @@ public class ProgrammerMenu extends AbstractPneumaticCraftMenu<ProgrammerBlockEn
             if (slotIndex == 0) {
                 if (!moveItemStackTo(stackInSlot, 1, 36, false)) return ItemStack.EMPTY;
                 srcSlot.onQuickCraft(stackInSlot, stack);
-            } else if (isProgrammableItem(stack)) {
+            } else if (IProgrammable.isProgrammable(stack)) {
                 if (!moveItemStackTo(stackInSlot, 0, 1, false)) return ItemStack.EMPTY;
                 srcSlot.onQuickCraft(stackInSlot, stack);
             }
@@ -134,5 +121,11 @@ public class ProgrammerMenu extends AbstractPneumaticCraftMenu<ProgrammerBlockEn
         super.removed(playerIn);
 
         if (playerIn.level().isClientSide) ProgrammerScreen.onCloseFromContainer();
+    }
+
+    public record AreaGeometry(int x, int y, int width, int height) {
+        // dummy value used on server-side for slot position calculation where it doesn't matter
+        // see ProgrammerScreen.calculateAreaBounds() for client-side calculation
+        public static final AreaGeometry DUMMY = new AreaGeometry(5, 17, 100, 100);
     }
 }

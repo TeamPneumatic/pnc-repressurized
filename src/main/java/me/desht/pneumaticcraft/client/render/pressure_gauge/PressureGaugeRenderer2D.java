@@ -18,7 +18,10 @@
 package me.desht.pneumaticcraft.client.render.pressure_gauge;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.*;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.blaze3d.vertex.VertexFormat;
+import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -64,23 +67,23 @@ public class PressureGaugeRenderer2D {
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
 
         // Draw the green and red surface in the gauge.
-        RenderUtils.drawWithTesselator(VertexFormat.Mode.TRIANGLE_FAN, DefaultVertexFormat.POSITION_COLOR, builder ->
+        GuiUtils.drawWithTesselator(VertexFormat.Mode.TRIANGLE_FAN, DefaultVertexFormat.POSITION_COLOR, builder ->
                 drawGaugeBackground(graphics, builder, minPressure, maxPressure, dangerPressure, minWorkingPressure, xPos, yPos));
 
         // Draw the surrounding circle in the foreground colour
-        RenderUtils.drawWithTesselator(VertexFormat.Mode.DEBUG_LINE_STRIP, DefaultVertexFormat.POSITION_COLOR, wr ->
+        GuiUtils.drawWithTesselator(VertexFormat.Mode.DEBUG_LINE_STRIP, DefaultVertexFormat.POSITION_COLOR, wr ->
                 drawGaugeSurround(graphics, wr, xPos, yPos, fgColor));
 
         // Draw the scale
         int currentScale = (int) maxPressure;
         List<TextScaler> textScalers = new ArrayList<>();
-        RenderUtils.drawWithTesselator(VertexFormat.Mode.DEBUG_LINES, DefaultVertexFormat.POSITION_COLOR, wr ->
+        GuiUtils.drawWithTesselator(VertexFormat.Mode.DEBUG_LINES, DefaultVertexFormat.POSITION_COLOR, wr ->
                 drawScale(graphics, wr, minPressure, maxPressure, xPos, yPos, currentScale, textScalers));
 
         // Draw the needle.
         float angleIndicator0 = GAUGE_POINTS - (int) ((currentPressure - minPressure) / (maxPressure - minPressure) * GAUGE_POINTS);
         float angleIndicator = -angleIndicator0 / CIRCLE_POINTS * 2F * PI_F - STOP_ANGLE;
-        RenderUtils.drawWithTesselator(VertexFormat.Mode.DEBUG_LINE_STRIP, DefaultVertexFormat.POSITION_COLOR, wr ->
+        GuiUtils.drawWithTesselator(VertexFormat.Mode.DEBUG_LINE_STRIP, DefaultVertexFormat.POSITION_COLOR, wr ->
                 drawNeedle(graphics, wr, xPos, yPos, angleIndicator, fgColor));
 
         // draw the numbers next to the scaler.

@@ -18,6 +18,7 @@
 package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.api.drone.IProgWidget;
+import me.desht.pneumaticcraft.client.gui.ProgrammerScreen;
 import me.desht.pneumaticcraft.common.block.entity.drone.ProgrammerBlockEntity;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidget;
 import me.desht.pneumaticcraft.common.inventory.ProgrammerMenu;
@@ -60,6 +61,9 @@ public record PacketProgrammerSync(BlockPos pos, List<IProgWidget> widgets) impl
         if (ctx.player().isLocalPlayer() || ctx.player().containerMenu instanceof ProgrammerMenu) {
             PacketUtil.getBlockEntity(ctx.player(), message.pos, ProgrammerBlockEntity.class)
                     .ifPresent(te -> te.setProgWidgets(message.widgets, ctx.player()));
+            if (ctx.player().level().isClientSide()) {
+                ProgrammerScreen.updateProgramNameIfOpen();
+            }
         }
     }
 }

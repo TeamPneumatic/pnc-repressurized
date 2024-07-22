@@ -72,7 +72,7 @@ public class ProgrammerWidgetAreaRenderer {
         this.translatedY = translatedY;
         this.lastZoom = lastZoom;
 
-        scaleScroll = new WidgetVerticalScrollbar(guiLeft + areaWidth + 8, guiTop + 40, areaHeight - 25)
+        scaleScroll = new WidgetVerticalScrollbar(guiLeft + areaWidth + 8, guiTop + 40, areaHeight - 21)
                 .setStates((int)((2.0F / SCALE_PER_STEP) - 1))
                 .setCurrentState(lastZoom)
                 .setListening(true);

@@ -19,8 +19,10 @@ package me.desht.pneumaticcraft.client.gui;
 
 import com.google.gson.JsonElement;
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
+import it.unimi.dsi.fastutil.ints.IntIntPair;
 import me.desht.pneumaticcraft.api.drone.IProgWidget;
 import me.desht.pneumaticcraft.api.drone.IProgWidget.WidgetDifficulty;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
@@ -29,12 +31,10 @@ import me.desht.pneumaticcraft.api.misc.Symbols;
 import me.desht.pneumaticcraft.api.registry.PNCRegistries;
 import me.desht.pneumaticcraft.client.gui.programmer.AbstractProgWidgetScreen;
 import me.desht.pneumaticcraft.client.gui.programmer.ProgWidgetGuiManager;
-import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
-import me.desht.pneumaticcraft.client.gui.widget.WidgetCheckBox;
-import me.desht.pneumaticcraft.client.gui.widget.WidgetRadioButton;
-import me.desht.pneumaticcraft.client.gui.widget.WidgetTextField;
+import me.desht.pneumaticcraft.client.gui.widget.*;
 import me.desht.pneumaticcraft.client.render.ProgWidgetRenderer;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
+import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.block.entity.drone.ProgrammerBlockEntity;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
@@ -108,22 +108,30 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
     private int showingWidgetProgress;
     private int oldShowingWidgetProgress;
 
-    private static final Rect2i PROGRAMMER_STD_RES = new Rect2i(5, 17, 294, 154);
-    private static final Rect2i PROGRAMMER_HI_RES = new Rect2i(5, 17, 644, 410);
+    private final Rect2i programmerBounds;
 
     private static final int WIDGET_X_SPACING = 22; // x size of widgets in the widget tray
 
-    private final boolean hiRes;
     private WidgetDifficulty programmerDifficulty;
 
     public ProgrammerScreen(ProgrammerMenu container, Inventory inv, Component displayString) {
         super(container, inv, displayString);
 
-        hiRes = container.isHiRes();
-        imageWidth = hiRes ? 700 : 350;
-        imageHeight = hiRes ? 512 : 256;
+        IntIntPair size = calculateScreenSize();
+        imageWidth = size.firstInt();
+        imageHeight = size.secondInt();
+
+        ProgrammerMenu.AreaGeometry geometry = calculateAreaBounds();
+        programmerBounds = new Rect2i(geometry.x(), geometry.y(), geometry.width(), geometry.height());
 
         programmerDifficulty = ConfigHelper.client().general.programmerDifficulty.get();
+    }
+
+    public static void updateProgramNameIfOpen() {
+        if (Minecraft.getInstance().screen instanceof ProgrammerScreen programmerScreen) {
+            ItemStack stack = programmerScreen.te.getItemInProgrammingSlot();
+            programmerScreen.nameField.setValue(stack.getHoverName().getString());
+        }
     }
 
     @Override
@@ -154,62 +162,55 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
                 bounds, te.translatedX, te.translatedY, te.zoomState);
         addRenderableWidget(programmerUnit.getScrollBar());
 
-        int xStart = (width - imageWidth) / 2;
-        int yStart = (height - imageHeight) / 2;
-
         // right and bottom edges of the programming area
-        int xRight = getProgrammerBounds().getX() + getProgrammerBounds().getWidth(); // 299 or 649
-        int yBottom = getProgrammerBounds().getY() + getProgrammerBounds().getHeight() + 3; // 171 or 427
+        int xRight = getProgrammerBounds().getX() + getProgrammerBounds().getWidth();
+        int yBottom = getProgrammerBounds().getY() + getProgrammerBounds().getHeight() + 3;
 
-        importButton = new WidgetButtonExtended(xStart + xRight + 2, yStart + 3, 20, 15, Symbols.ARROW_LEFT)
+        importButton = new WidgetButtonExtended(leftPos + xRight + 4, topPos + 3, 15, 15, Symbols.ARROW_LEFT)
                 .withTag("import")
                 .setTooltipKey("pneumaticcraft.gui.programmer.button.import");
         addRenderableWidget(importButton);
 
-        exportButton = new WidgetButtonExtended(xStart + xRight + 2, yStart + 20, 20, 15, Symbols.ARROW_RIGHT)
+        exportButton = new WidgetButtonExtended(leftPos + xRight + 4, topPos + 20, 15, 15, Symbols.ARROW_RIGHT)
                 .withTag("export")
                 .withCustomTooltip(this::updateExportButtonTooltip);
         addRenderableWidget(exportButton);
 
-        addRenderableWidget(new WidgetButtonExtended(xStart + xRight - 3, yStart + yBottom, 13, 10, Symbols.TRIANGLE_LEFT, b -> adjustPage(-1)));
-        addRenderableWidget(new WidgetButtonExtended(xStart + xRight + 34, yStart + yBottom, 13, 10, Symbols.TRIANGLE_RIGHT, b -> adjustPage(1)));
+        var lb = addRenderableWidget(new WidgetButtonExtended(leftPos + xRight - 13, topPos + yBottom, 13, 10,
+                Symbols.TRIANGLE_LEFT, b -> adjustPage(-1)));
+        addRenderableWidget(new WidgetButtonExtended(leftPos + xRight + 30, topPos + yBottom, 13, 10,
+                Symbols.TRIANGLE_RIGHT, b -> adjustPage(1)));
 
-        allWidgetsButton = new WidgetButtonExtended(xStart + xRight + 22, yStart + yBottom - 18, 12, 12, Symbols.TRIANGLE_UP_LEFT, b -> toggleShowWidgets());
+        allWidgetsButton = new WidgetButtonExtended(leftPos + xRight + 20, topPos + yBottom - 15, 12, 12,
+                Symbols.TRIANGLE_UP_LEFT, b -> toggleShowWidgets());
         allWidgetsButton.setTooltipText(xlate("pneumaticcraft.gui.programmer.button.openPanel.tooltip"));
         addRenderableWidget(allWidgetsButton);
 
-        WidgetRadioButton.Builder<DifficultyButton> rbb = WidgetRadioButton.Builder.create();
-        for (WidgetDifficulty wd : WidgetDifficulty.values()) {
-            DifficultyButton dButton = new DifficultyButton(xStart + xRight - 36, yStart + yBottom + 29 + wd.ordinal() * 12,
-                    0xFF404040, wd, b -> updateDifficulty(wd));
-            dButton.setTooltip(Tooltip.create(xlate(wd.getTooltipTranslationKey())));
-            rbb.addRadioButton(dButton, wd == programmerDifficulty);
-        }
-        rbb.build(this::addRenderableWidget);
+        addDifficultyButtons(lb.getY() + lb.getHeight() + 3);
 
-        addRenderableWidget(new WidgetButtonExtended(xStart + 5, yStart + yBottom + 4, 87, 20,
+        addRenderableWidget(new WidgetButtonExtended(leftPos + 5, topPos + yBottom + 4, 87, 20,
                 xlate("pneumaticcraft.gui.programmer.button.showStart"), b -> gotoStart())
                 .setTooltipText(xlate("pneumaticcraft.gui.programmer.button.showStart.tooltip")));
-        addRenderableWidget(new WidgetButtonExtended(xStart + 5, yStart + yBottom + 26, 87, 20,
+        addRenderableWidget(new WidgetButtonExtended(leftPos + 5, topPos + yBottom + 26, 87, 20,
                 xlate("pneumaticcraft.gui.programmer.button.showLatest"), b -> gotoLatest())
                 .setTooltipText(xlate("pneumaticcraft.gui.programmer.button.showLatest.tooltip")));
-        addRenderableWidget(showInfo = new WidgetCheckBox(xStart + 5, yStart + yBottom + 49, 0xFF404040,
+        addRenderableWidget(showInfo = new WidgetCheckBox(leftPos + 5, topPos + yBottom + 49, 0xFF404040,
                 xlate("pneumaticcraft.gui.programmer.checkbox.showInfo")).setChecked(te.showInfo));
-        addRenderableWidget(showFlow = new WidgetCheckBox(xStart + 5, yStart + yBottom + 61, 0xFF404040,
+        addRenderableWidget(showFlow = new WidgetCheckBox(leftPos + 5, topPos + yBottom + 61, 0xFF404040,
                 xlate("pneumaticcraft.gui.programmer.checkbox.showFlow")).setChecked(te.showFlow));
 
-        WidgetButtonExtended pastebinButton = new WidgetButtonExtended(leftPos - 24, topPos + 44, 20, 20, "",
+        WidgetButtonExtended pastebinButton = new WidgetButtonExtended(leftPos - 22, topPos + 44, 20, 20, "",
                 b -> pastebin());
         pastebinButton.setTooltipText(xlate("pneumaticcraft.gui.remote.button.pastebinButton"));
         pastebinButton.setRenderedIcon(Textures.GUI_PASTEBIN_ICON_LOCATION);
         addRenderableWidget(pastebinButton);
 
-        undoButton = new WidgetButtonExtended(leftPos - 24, topPos + 2, 20, 20, "").withTag("undo");
-        redoButton = new WidgetButtonExtended(leftPos - 24, topPos + 23, 20, 20, "").withTag("redo");
-        WidgetButtonExtended clearAllButton = new WidgetButtonExtended(leftPos - 24, topPos + 65, 20, 20, Component.empty(), b -> clear());
-        convertToRelativeButton = new WidgetButtonExtended(leftPos - 24, topPos + 86, 20, 20, "R", b -> convertToRelative())
+        undoButton = new WidgetButtonExtended(leftPos - 22, topPos + 2, 20, 20, "").withTag("undo");
+        redoButton = new WidgetButtonExtended(leftPos - 22, topPos + 23, 20, 20, "").withTag("redo");
+        WidgetButtonExtended clearAllButton = new WidgetButtonExtended(leftPos - 22, topPos + 65, 20, 20, Component.empty(), b -> clear());
+        convertToRelativeButton = new WidgetButtonExtended(leftPos - 22, topPos + 86, 20, 20, "R", b -> convertToRelative())
                 .withCustomTooltip(this::buildConvertButtonTooltip);
-        rotateCoordsButton = new WidgetButtonExtended(leftPos - 24, topPos + 107, 20, 20, "90", b -> rotateCoords90())
+        rotateCoordsButton = new WidgetButtonExtended(leftPos - 22, topPos + 107, 20, 20, "90", b -> rotateCoords90())
                 .setTooltipText(xlate("pneumaticcraft.gui.programmer.button.rotate90button.tooltip"));
 
         undoButton.setRenderedIcon(Textures.GUI_UNDO_ICON_LOCATION);
@@ -226,21 +227,22 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
         addRenderableWidget(convertToRelativeButton);
         addRenderableWidget(rotateCoordsButton);
 
-        addLabel(title, leftPos + 7, topPos + 5, 0xFF404040);
+        addLabel(title, leftPos + 7, topPos + 6, 0xFF404040);
 
-        nameField = new WidgetTextField(font, leftPos + xRight - 99, topPos + 4, 98, font.lineHeight + 2);
+        nameField = new WidgetTextField(font, leftPos + xRight - 99, topPos + 4, 98, font.lineHeight + 3);
+        nameField.setValue(te.displayedStack.getHoverName().getString());
         nameField.setResponder(s -> updateDroneName());
         addRenderableWidget(nameField);
 
-        filterField = new FilterTextField(font, leftPos + 78, topPos + 25, 100, font.lineHeight + 2);
+        filterField = new FilterTextField(font, leftPos + 78, topPos + 24, 100, font.lineHeight + 3);
         filterField.setResponder(s -> filterSpawnWidgets());
 
         addRenderableWidget(filterField);
 
         Component name = xlate("pneumaticcraft.gui.programmer.name");
-        addLabel(name, leftPos + xRight - 102 - font.width(name), topPos + 5, 0xFF404040);
+        addLabel(name, leftPos + xRight - 102 - font.width(name), topPos + 6, 0xFF404040);
 
-        updateVisibleProgWidgets();
+        updateWidgetTrayLayout();
 
         for (IProgWidget widget : te.progWidgets) {
             if (!programmerUnit.isOutsideProgrammingArea(widget)) {
@@ -248,6 +250,25 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
             }
         }
         programmerUnit.gotoPiece(findWidget(te.progWidgets, ProgWidgetStart.class));
+    }
+
+    private void addDifficultyButtons(int y0) {
+        int widestRB = Math.max(font.width(xlate("pneumaticcraft.gui.programmer.difficulty")),
+                Arrays.stream(WidgetDifficulty.values())
+                        .map(wd -> font.width(xlate(wd.getTranslationKey())))
+                        .max(Comparator.comparingInt(o -> o)).orElse(0)
+        );
+        int fh = font.lineHeight + 2;
+        WidgetLabel label = addRenderableWidget(new WidgetLabel(getGuiLeft() + imageWidth - widestRB - 20, y0, xlate("pneumaticcraft.gui.programmer.difficulty")));
+        WidgetRadioButton.Builder<DifficultyButton> rbb = WidgetRadioButton.Builder.create();
+        for (WidgetDifficulty wd : WidgetDifficulty.values()) {
+            y0 += fh;
+            DifficultyButton dButton = new DifficultyButton(label.getX(), y0,
+                    0xFF404040, wd, b -> updateDifficulty(wd));
+            dButton.setTooltip(Tooltip.create(xlate(wd.getTooltipTranslationKey())));
+            rbb.addRadioButton(dButton, wd == programmerDifficulty);
+        }
+        rbb.build(this::addRenderableWidget);
     }
 
     @Override
@@ -262,25 +283,21 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
     }
 
     public Rect2i getProgrammerBounds() {
-        return hiRes ? PROGRAMMER_HI_RES : PROGRAMMER_STD_RES;
+        return programmerBounds;
     }
 
     private int getWidgetTrayRight() {
-        return hiRes ? 672 : 322;
+        return programmerBounds.getX() + programmerBounds.getWidth() + 20;
     }
 
     @Override
     protected ResourceLocation getGuiTexture() {
-        return hiRes ? Textures.GUI_PROGRAMMER_LARGE : Textures.GUI_PROGRAMMER_STD;
+        return Textures.GUI_BLANK_256; // dummy, not actually used
     }
 
-    private void updateVisibleProgWidgets() {
-        updateVisibleProgWidgets(programmerDifficulty);
-    }
-
-    private void updateVisibleProgWidgets(WidgetDifficulty difficulty) {
-        int y = 0, page = 0;
-        int x = getWidgetTrayRight() - maxPage * WIDGET_X_SPACING;
+    private void updateWidgetTrayLayout() {
+        int y = 40, page = 0;
+        int x = getWidgetTrayRight() - maxPage * WIDGET_X_SPACING + 2;
         boolean showAllWidgets = showingWidgetProgress == WIDGET_X_SPACING * maxPage && showingAllWidgets;
         filterField.setVisible(showAllWidgets);
 
@@ -290,8 +307,8 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
         int nWidgets = PNCRegistries.PROG_WIDGETS_REGISTRY.size();
         for (ProgWidgetType<?> type : PNCRegistries.PROG_WIDGETS_REGISTRY) {
             IProgWidget widget = IProgWidget.create(type);
-            if (widget.isAvailable() && widget.isDifficultyOK(difficulty)) {
-                widget.setY(y + 40);
+            if (widget.isAvailable() && widget.isDifficultyOK(programmerDifficulty)) {
+                widget.setY(y);
                 widget.setX(showAllWidgets ? x : getWidgetTrayRight());
                 int widgetHeight = widget.getHeight() / 2 + (widget.hasStepOutput() ? 5 : 0) + 1;
                 y += widgetHeight;
@@ -299,8 +316,8 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
                 if (showAllWidgets || page == widgetPage) {
                     visibleSpawnWidgets.add(widget);
                 }
-                if (y > imageHeight - (hiRes ? 260 : 160)) {
-                    y = 0;
+                if (y > getProgrammerBounds().getHeight() - 20) {
+                    y = 40;
                     x += WIDGET_X_SPACING;
                     page++;
                     if (idx < nWidgets - 1) maxPage++;
@@ -310,12 +327,12 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
         }
         maxPage++;
 
-        filterField.setX(Math.min(leftPos + getWidgetTrayRight() - 25 - filterField.getWidth(), leftPos + getWidgetTrayRight() - (maxPage * WIDGET_X_SPACING) - 2));
+        filterField.setX(Math.min(leftPos + getWidgetTrayRight() - 25 - filterField.getWidth(), leftPos + getWidgetTrayRight() - (maxPage * WIDGET_X_SPACING)));
         filterSpawnWidgets();
 
         if (widgetPage >= maxPage) {
             widgetPage = maxPage - 1;
-            updateVisibleProgWidgets();
+            updateWidgetTrayLayout();
         }
     }
 
@@ -355,7 +372,7 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
         widgetPage += dir;
         if (widgetPage < 0) widgetPage = maxPage -1;
         else if (widgetPage >= maxPage) widgetPage = 0;
-        updateVisibleProgWidgets();
+        updateWidgetTrayLayout();
     }
 
     private static final Component TDR = Component.literal(Symbols.TRIANGLE_DOWN_RIGHT);
@@ -364,7 +381,7 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
     private void toggleShowWidgets() {
         showingAllWidgets = !showingAllWidgets;
         allWidgetsButton.setMessage(showingAllWidgets ? TDR : TUL);
-        updateVisibleProgWidgets();
+        updateWidgetTrayLayout();
         if (showingAllWidgets) setFocused(filterField);
     }
 
@@ -374,7 +391,7 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
         if (showingAllWidgets) {
             toggleShowWidgets();
         }
-        updateVisibleProgWidgets(difficulty);
+        updateWidgetTrayLayout();
     }
 
     private void gotoLatest() {
@@ -423,25 +440,24 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
     }
 
     @Override
-    protected void renderLabels(GuiGraphics graphics, int x, int y) {
-        super.renderLabels(graphics, x, y);
+    protected void renderLabels(GuiGraphics graphics, int mouseX, int mouseY) {
+        super.renderLabels(graphics, mouseX, mouseY);
 
         int xRight = getProgrammerBounds().getX() + getProgrammerBounds().getWidth(); // 299 or 649
         int yBottom = getProgrammerBounds().getY() + getProgrammerBounds().getHeight(); // 171 or 427
 
         String str = widgetPage + 1 + "/" + maxPage;
-        graphics.drawString(font, str, xRight + 22 - font.width(str) / 2f, yBottom + 4, 0x404040, false);
-        graphics.drawString(font, xlate("pneumaticcraft.gui.programmer.difficulty"), xRight - 36, yBottom + 20, 0x404040, false);
+        graphics.drawString(font, str, xRight + 15 - font.width(str) / 2f, yBottom + 4, 0x404040, false);
 
         if (showingWidgetProgress == 0) {
-            programmerUnit.renderForeground(graphics, x, y, draggingWidget, font);
+            programmerUnit.renderForeground(graphics, mouseX, mouseY, draggingWidget, font);
         }
 
         for (int i = 0; i < visibleSpawnWidgets.size(); i++) {
             IProgWidget widget = visibleSpawnWidgets.get(i);
-            if (widget != draggingWidget && x - leftPos >= widget.getX()
-                    && y - topPos >= widget.getY() && x - leftPos <= widget.getX() + widget.getWidth() / 2
-                    && y - topPos <= widget.getY() + widget.getHeight() / 2
+            if (widget != draggingWidget && mouseX - leftPos >= widget.getX()
+                    && mouseY - topPos >= widget.getY() && mouseX - leftPos <= widget.getX() + widget.getWidth() / 2
+                    && mouseY - topPos <= widget.getY() + widget.getHeight() / 2
                     && (!showingAllWidgets || filteredSpawnWidgets == null || filteredSpawnWidgets.get(i))) {
                 List<Component> tooltip = new ArrayList<>();
                 widget.getTooltip(tooltip);
@@ -451,7 +467,8 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
                     if (id != null) tooltip.add(Component.literal(id.toString()).withStyle(ChatFormatting.DARK_GRAY));
                 }
                 if (!tooltip.isEmpty()) {
-                    graphics.renderComponentTooltip(font, tooltip, x - leftPos, y - topPos);
+                    int tw = tooltip.stream().map(l -> font.width(l)).max(Comparator.naturalOrder()).orElse(0) + 16;
+                    graphics.renderComponentTooltip(font, tooltip, Math.min(mouseX, minecraft.getWindow().getGuiScaledWidth() - tw) - leftPos, mouseY - topPos);
                 }
             }
         }
@@ -462,61 +479,72 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
         lastMouseX = mouseX;
         lastMouseY = mouseY;
 
-//        renderBackground(graphics, mouseX, mouseY, partialTicks);
-        int xStart = (width - imageWidth) / 2;
-        int yStart = (height - imageHeight) / 2;
-        graphics.blit(getGuiTexture(), xStart, yStart, 0, 0, imageWidth, imageHeight, imageWidth, imageHeight);
-        super.renderBg(graphics, partialTicks, mouseX, mouseY);
+        GuiUtils.drawNineSliced(graphics, Textures.GUI_BLANK_256, getGuiLeft(), getGuiTop(), 0, imageWidth, imageHeight, 256, 256, 4);
+        GuiUtils.drawPlayerSlots(graphics, getGuiLeft() + menu.slots.get(1).x - 1, getGuiTop() + menu.slots.get(1).y - 1);
+        GuiUtils.drawInsetPanel(graphics,
+                getGuiLeft() + getProgrammerBounds().getX() - 1, getGuiTop() + getProgrammerBounds().getY() - 1,
+                getProgrammerBounds().getWidth() + 2, getProgrammerBounds().getHeight() + 2);
+        GuiUtils.drawInsetPanel(graphics, getGuiLeft() + menu.slots.get(0).x - 1, getGuiTop() + menu.slots.get(0).y - 1, 18, 18);
 
         programmerUnit.render(graphics, mouseX, mouseY, showFlow.checked, showInfo.checked && showingWidgetProgress == 0);
 
         // draw expanding widget tray
+        int xRight = getProgrammerBounds().getX() + getProgrammerBounds().getWidth() + 20;
+        int yBottom = getProgrammerBounds().getY() + getProgrammerBounds().getHeight();
         if (showingWidgetProgress > 0) {
-            int xRight = getProgrammerBounds().getX() + getProgrammerBounds().getWidth(); // 299 or 649
-            int yBottom = getProgrammerBounds().getY() + getProgrammerBounds().getHeight(); // 171 or 427
-
             int width = (int)Mth.lerp(partialTicks, (float)oldShowingWidgetProgress, (float)showingWidgetProgress);
-            for (int i = 0; i < width; i++) {
-                graphics.blit(getGuiTexture(), xStart + xRight + 21 - i, yStart + 36, xRight + 24, 36, 1, yBottom - 35, imageWidth, imageHeight);
+            GuiUtils.drawNineSliced(graphics, Textures.GUI_WIDGET_TRAY, getGuiLeft() + xRight - width, getGuiTop() + 36, 0,
+                    width, yBottom - 35,
+                    256, 128, 2);
+            if (showingAllWidgets && draggingWidget != null) {
+                toggleShowWidgets();
             }
-            graphics.blit(getGuiTexture(), xStart + xRight + 20 - width, yStart + 36, xRight + 20, 36, 2, yBottom - 35, imageWidth, imageHeight);
-
-            if (showingAllWidgets && draggingWidget != null) toggleShowWidgets();
+        } else {
+            GuiUtils.drawNineSliced(graphics, Textures.GUI_WIDGET_TRAY, getGuiLeft() + xRight - 3, getGuiTop() + 36, 0,
+                    22, yBottom - 35,
+                    256, 128, 2);
         }
+
         // draw widgets in the widget tray
         RenderSystem.enableBlend();
         RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
         PoseStack poseStack = graphics.pose();
+        int maxProgress = maxPage * WIDGET_X_SPACING;
         for (int i = 0; i < visibleSpawnWidgets.size(); i++) {
             IProgWidget widget = visibleSpawnWidgets.get(i);
             poseStack.pushPose();
             poseStack.translate(widget.getX() + leftPos, widget.getY() + topPos, 0);
             poseStack.scale(0.5f, 0.5f, 1f);
+            int alpha = 255;
             if (showingAllWidgets && filteredSpawnWidgets != null && !filteredSpawnWidgets.get(i)) {
-                ProgWidgetRenderer.renderProgWidget2d(graphics, widget, 48);
-            } else {
-                ProgWidgetRenderer.renderProgWidget2d(graphics, widget);
+                alpha = 48;
+            } else if (showingWidgetProgress > 0 && showingWidgetProgress < maxProgress) {
+                float p = (float) showingWidgetProgress / maxProgress;
+                alpha = 32 + (int) (223 * (1 - p));
             }
+            ProgWidgetRenderer.renderProgWidget2d(graphics, widget, alpha);
             poseStack.popPose();
         }
 
         // draw the widget currently being dragged, if any
-        float scale = programmerUnit.getScale();
-        poseStack.pushPose();
-        poseStack.translate(programmerUnit.getTranslatedX(), programmerUnit.getTranslatedY(), 0);
-        poseStack.scale(scale, scale, 1f);
         if (draggingWidget != null) {
+            float scale = programmerUnit.getScale();
+            poseStack.pushPose();
+            poseStack.translate(programmerUnit.getTranslatedX(), programmerUnit.getTranslatedY(), 0);
+            poseStack.scale(scale, scale, 1f);
             poseStack.pushPose();
             poseStack.translate(draggingWidget.getX() + leftPos, draggingWidget.getY() + topPos, 0);
             poseStack.scale(0.5f, 0.5f, 1f);
             ProgWidgetRenderer.renderProgWidget2d(graphics, draggingWidget);
             poseStack.popPose();
+            poseStack.popPose();
         }
-        poseStack.popPose();
 
         RenderSystem.disableBlend();
 
-        if (!removingWidgets.isEmpty()) drawRemovingWidgets(graphics);
+        if (!removingWidgets.isEmpty()) {
+            drawRemovingWidgets(graphics);
+        }
     }
 
     /**
@@ -553,6 +581,17 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
     }
 
     @Override
+    public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
+//        if (nameField.isFocused()) {
+//            return nameField.keyReleased(keyCode, scanCode, modifiers);
+//        } else if (filterField.isFocused() && keyCode != GLFW.GLFW_KEY_TAB) {
+//            return filterField.keyReleased(keyCode, scanCode, modifiers);
+//        } else {
+            return super.keyReleased(keyCode, scanCode, modifiers);
+//        }
+    }
+
+    @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         if (keyCode == GLFW.GLFW_KEY_ESCAPE) return super.keyPressed(keyCode, scanCode, modifiers);
 
@@ -562,18 +601,19 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
             return filterField.keyPressed(keyCode, scanCode, modifiers);
         }
 
-        switch (keyCode) {
-            case GLFW.GLFW_KEY_I:
-                return showWidgetDocs();
-            case GLFW.GLFW_KEY_R:
+        return switch (keyCode) {
+            case GLFW.GLFW_KEY_I -> showWidgetDocs();
+            case GLFW.GLFW_KEY_R -> {
                 if (exportButton.isHoveredOrFocused()) {
                     NetworkHandler.sendToServer(new PacketGuiButton("program_when"));
                 }
-                return true;
-            case GLFW.GLFW_KEY_TAB:
+                yield true;
+            }
+            case GLFW.GLFW_KEY_TAB -> {
                 toggleShowWidgets();
-                return true;
-            case GLFW.GLFW_KEY_DELETE:
+                yield true;
+            }
+            case GLFW.GLFW_KEY_DELETE -> {
                 if (ClientUtils.hasShiftDown()) {
                     clear();
                 } else {
@@ -584,22 +624,30 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
                         NetworkHandler.sendToServer(PacketProgrammerSync.forBlockEntity(te));
                     }
                 }
-                return true;
-            case GLFW.GLFW_KEY_Z:
+                yield true;
+            }
+            case GLFW.GLFW_KEY_Z -> {
                 NetworkHandler.sendToServer(new PacketGuiButton("undo"));
-                return true;
-            case GLFW.GLFW_KEY_Y:
+                yield true;
+            }
+            case GLFW.GLFW_KEY_Y -> {
                 NetworkHandler.sendToServer(new PacketGuiButton("redo"));
-                return true;
-            case GLFW.GLFW_KEY_HOME:
+                yield true;
+            }
+            case GLFW.GLFW_KEY_HOME -> {
                 gotoStart();
-                break;
-            case GLFW.GLFW_KEY_END:
+                yield true;
+            }
+            case GLFW.GLFW_KEY_END -> {
                 gotoLatest();
-                break;
-
-        }
-        return super.keyPressed(keyCode, scanCode, modifiers);
+                yield true;
+            }
+            case GLFW.GLFW_KEY_P -> {
+                pastebin();
+                yield true;
+            }
+            default -> super.keyPressed(keyCode, scanCode, modifiers);
+        };
     }
 
     private boolean showWidgetDocs() {
@@ -826,7 +874,7 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
                 showingWidgetProgress += maxProgress / 5;
                 if (showingWidgetProgress >= maxProgress) {
                     showingWidgetProgress = maxProgress;
-                    updateVisibleProgWidgets();
+                    updateWidgetTrayLayout();
                 }
             } else {
                 setFocused(filterField);
@@ -845,9 +893,9 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
 
         if (!programmedItem.isEmpty()) {
             nameField.setEditable(true);
-            if (!nameField.getValue().equals(programmedItem.getHoverName().getString())) {
-                nameField.setValue(programmedItem.getHoverName().getString());
-            }
+//            if (!nameField.getValue().equals(programmedItem.getHoverName().getString())) {
+//                nameField.setValue(programmedItem.getHoverName().getString());
+//            }
         } else {
             nameField.setEditable(false);
             nameField.setValue("");
@@ -1355,5 +1403,18 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
             tx += velX;
             velY += 0.35;
         }
+    }
+
+    private static IntIntPair calculateScreenSize() {
+        Window window = Minecraft.getInstance().getWindow();
+        int guiWidth = window.getGuiScaledWidth() * 82 / 100;  // leave a little space on the side for JEI etc.
+        int guiHeight = window.getGuiScaledHeight() * 39 / 40;
+        //noinspection SuspiciousNameCombination
+        return IntIntPair.of(guiWidth, guiHeight);
+    }
+
+    public static ProgrammerMenu.AreaGeometry calculateAreaBounds() {
+        IntIntPair size = calculateScreenSize();
+        return new ProgrammerMenu.AreaGeometry(6, 18, size.firstInt() - 53, size.secondInt() - 105);
     }
 }

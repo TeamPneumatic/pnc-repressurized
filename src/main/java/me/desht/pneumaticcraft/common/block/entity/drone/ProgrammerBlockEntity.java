@@ -562,7 +562,7 @@ public class ProgrammerBlockEntity extends AbstractTickingBlockEntity implements
 
         @Override
         public boolean isItemValid(int slot, ItemStack itemStack) {
-            return itemStack.getItem() instanceof IProgrammable p && p.canProgram(itemStack);
+            return IProgrammable.isProgrammable(itemStack);
         }
     }
 
