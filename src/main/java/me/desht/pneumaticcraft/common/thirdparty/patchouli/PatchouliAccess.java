@@ -4,6 +4,7 @@ import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.registry.ModBlocks;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -94,19 +95,19 @@ public class PatchouliAccess {
         return Patchouli.PNC_BOOK.equals(PatchouliAPI.get().getOpenBookGui());
     }
 
-    static IVariable getStacks(SizedIngredient ingr) {
-        return IVariable.wrapList(Arrays.stream(ingr.getItems()).map(IVariable::from).toList());
+    static IVariable getStacks(SizedIngredient ingr, HolderLookup.Provider lookup) {
+        return IVariable.wrapList(Arrays.stream(ingr.getItems()).map((ItemStack object) -> IVariable.from(object, lookup)).toList(), lookup);
     }
 
-    static IVariable getStacks(Ingredient ingr) {
-        return IVariable.wrapList(Arrays.stream(ingr.getItems()).map(IVariable::from).toList());
+    static IVariable getStacks(Ingredient ingr, HolderLookup.Provider lookup) {
+        return IVariable.wrapList(Arrays.stream(ingr.getItems()).map((ItemStack object) -> IVariable.from(object, lookup)).toList(), lookup);
     }
 
-    static IVariable getStacks(List<ItemStack> stacks) {
-        return IVariable.wrapList(stacks.stream().map(IVariable::from).toList());
+    static IVariable getStacks(List<ItemStack> stacks, HolderLookup.Provider lookup) {
+        return IVariable.wrapList(stacks.stream().map((ItemStack object) -> IVariable.from(object, lookup)).toList(), lookup);
     }
 
-    public static IVariable getFluidStacks(SizedFluidIngredient ingr) {
-        return IVariable.wrapList(Arrays.stream(ingr.getFluids()).map(IVariable::from).toList());
+    public static IVariable getFluidStacks(SizedFluidIngredient ingr, HolderLookup.Provider lookup) {
+        return IVariable.wrapList(Arrays.stream(ingr.getFluids()).map((FluidStack object) -> IVariable.from(object, lookup)).toList(), lookup);
     }
 }

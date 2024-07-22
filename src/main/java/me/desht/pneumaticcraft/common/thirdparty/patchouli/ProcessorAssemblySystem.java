@@ -36,7 +36,7 @@ public class ProcessorAssemblySystem implements IComponentProcessor {
 
     @Override
     public void setup(Level level, IVariableProvider iVariableProvider) {
-        ResourceLocation recipeId = ResourceLocation.parse(iVariableProvider.get("recipe").asString());
+        ResourceLocation recipeId = ResourceLocation.parse(iVariableProvider.get("recipe", level.registryAccess()).asString());
 
         ModRecipeTypes.ASSEMBLY_DRILL_LASER.get().getRecipe(Minecraft.getInstance().level, recipeId)
                 .ifPresentOrElse(h -> recipe = h.value(),
@@ -52,9 +52,9 @@ public class ProcessorAssemblySystem implements IComponentProcessor {
 
         ItemStack programStack = new ItemStack(AssemblyProgramItem.fromProgramType(recipe.getProgramType()));
         return switch (key) {
-            case "input" -> PatchouliAccess.getStacks(recipe.getInput());
-            case "output" -> IVariable.from(recipe.getOutput());
-            case "program" -> IVariable.from(programStack);
+            case "input" -> PatchouliAccess.getStacks(recipe.getInput(), level.registryAccess());
+            case "output" -> IVariable.from(recipe.getOutput(), level.registryAccess());
+            case "program" -> IVariable.from(programStack, level.registryAccess());
             case "name" -> IVariable.wrap(recipe.getOutput().getHoverName().getString());
             case "desc" -> IVariable.wrap(xlate("pneumaticcraft.patchouli.processor.assembly.desc",
                     recipe.getOutput().getHoverName(),

@@ -17,25 +17,15 @@
 
 package me.desht.pneumaticcraft.common.thirdparty.patchouli;
 
-import com.google.common.base.Suppliers;
-import me.desht.pneumaticcraft.lib.ModIds;
-import net.minecraft.core.registries.BuiltInRegistries;
+import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-
-import java.util.function.Supplier;
+import vazkii.patchouli.api.PatchouliAPI;
 
 public class PatchouliBookCrafting {
-    private static final String NBT_KEY = "patchouli:book";
-    private static final String NBT_VAL = "pneumaticcraft:book";
-
-    private static final Supplier<Item> guideBook
-            = Suppliers.memoize(() -> BuiltInRegistries.ITEM.get(ResourceLocation.fromNamespaceAndPath(ModIds.PATCHOULI, "guide_book")));
+    private static final ResourceLocation BOOK_ID = PneumaticRegistry.RL("book");
 
     public static ItemStack makeGuideBook() {
-//        return Util.make(new ItemStack(guideBook.get()), s -> s.getOrCreateTag().putString(NBT_KEY, NBT_VAL));
-        // TODO patchouli will presumable add a data component for this?
-        return new ItemStack(guideBook.get());
+        return PatchouliAPI.get().getBookStack(BOOK_ID);
     }
 }

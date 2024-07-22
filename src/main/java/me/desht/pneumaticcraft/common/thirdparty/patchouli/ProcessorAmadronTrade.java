@@ -35,12 +35,12 @@ public class ProcessorAmadronTrade implements IComponentProcessor {
 
     @Override
     public void setup(Level level, IVariableProvider iVariableProvider) {
-        ResourceLocation recipeId = ResourceLocation.parse(iVariableProvider.get("recipe").asString());
+        ResourceLocation recipeId = ResourceLocation.parse(iVariableProvider.get("recipe", level.registryAccess()).asString());
         ModRecipeTypes.AMADRON.get().getRecipe(Minecraft.getInstance().level, recipeId)
                 .ifPresentOrElse(holder -> recipe = holder.value(),
                         () -> Log.warning("Missing amadron offer recipe: " + recipeId));
 
-        text = iVariableProvider.has("text") ? iVariableProvider.get("text").asString() : null;
+        text = iVariableProvider.has("text") ? iVariableProvider.get("text", level.registryAccess()).asString() : null;
     }
 
     @Override
@@ -48,8 +48,8 @@ public class ProcessorAmadronTrade implements IComponentProcessor {
         if (recipe == null) return null;
 
         return switch (key) {
-            case "input" -> IVariable.from(recipe.getInput().apply(itemStack -> itemStack, fluidStack -> fluidStack));
-            case "output" -> IVariable.from(recipe.getOutput().apply(itemStack -> itemStack, fluidStack -> fluidStack));
+            case "input" -> IVariable.from(recipe.getInput().apply(itemStack -> itemStack, fluidStack -> fluidStack), level.registryAccess());
+            case "output" -> IVariable.from(recipe.getOutput().apply(itemStack -> itemStack, fluidStack -> fluidStack), level.registryAccess());
             case "name" -> IVariable.wrap(recipe.getOutput().getName());
             case "text" -> IVariable.wrap(text == null ? "" : I18n.get(text));
             default -> null;

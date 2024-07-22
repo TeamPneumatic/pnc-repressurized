@@ -40,11 +40,11 @@ public class ProcessorThermoPlant implements IComponentProcessor {
 
     @Override
     public void setup(Level level, IVariableProvider iVariableProvider) {
-        ResourceLocation recipeId = ResourceLocation.parse(iVariableProvider.get("recipe").asString());
+        ResourceLocation recipeId = ResourceLocation.parse(iVariableProvider.get("recipe", level.registryAccess()).asString());
         ModRecipeTypes.THERMO_PLANT.get().getRecipe(Minecraft.getInstance().level, recipeId)
                 .ifPresentOrElse(h -> recipe = h.value(),
                         () -> Log.warning("Missing thermoplant recipe: " + recipeId));
-        this.header = iVariableProvider.has("header") ? iVariableProvider.get("header").asString() : "";
+        this.header = iVariableProvider.has("header") ? iVariableProvider.get("header", level.registryAccess()).asString() : "";
     }
 
     @Override
@@ -55,13 +55,13 @@ public class ProcessorThermoPlant implements IComponentProcessor {
             case "header":
                 return IVariable.wrap(header.isEmpty() ? defaultHeader() : header);
             case "item_input":
-                return PatchouliAccess.getStacks(recipe.getInputItem().orElse(Ingredient.EMPTY));
+                return PatchouliAccess.getStacks(recipe.getInputItem().orElse(Ingredient.EMPTY), level.registryAccess());
             case "fluid_input":
-                return PatchouliAccess.getFluidStacks(recipe.getInputFluid().orElse(SizedFluidIngredient.of(FluidStack.EMPTY)));
+                return PatchouliAccess.getFluidStacks(recipe.getInputFluid().orElse(SizedFluidIngredient.of(FluidStack.EMPTY)), level.registryAccess());
             case "item_output":
-                return IVariable.from(recipe.getOutputItem());
+                return IVariable.from(recipe.getOutputItem(), level.registryAccess());
             case "fluid_output":
-                return IVariable.from(recipe.getOutputFluid());
+                return IVariable.from(recipe.getOutputFluid(), level.registryAccess());
             case "text":
                 String pr = PneumaticCraftUtils.roundNumberTo(recipe.getRequiredPressure(), 1);
                 String temp = recipe.getOperatingTemperature().asString(TemperatureRange.TemperatureScale.CELSIUS);

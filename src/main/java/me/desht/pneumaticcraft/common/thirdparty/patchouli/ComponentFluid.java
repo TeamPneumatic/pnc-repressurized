@@ -18,6 +18,7 @@
 package me.desht.pneumaticcraft.common.thirdparty.patchouli;
 
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTank;
+import me.desht.pneumaticcraft.client.util.ClientUtils;
 import net.minecraft.client.gui.GuiGraphics;
 import net.neoforged.neoforge.fluids.FluidStack;
 import vazkii.patchouli.api.IComponentRenderContext;
@@ -38,7 +39,7 @@ public class ComponentFluid implements ICustomComponent {
 
     @Override
     public void build(int componentX, int componentY, int pageNum) {
-        tankWidget = new WidgetTank(componentX, componentY, 16, 64, fluidStacks.isEmpty() ? FluidStack.EMPTY : fluidStacks.get(0), scaleParsed);
+        tankWidget = new WidgetTank(componentX, componentY, 16, 64, fluidStacks.isEmpty() ? FluidStack.EMPTY : fluidStacks.getFirst(), scaleParsed);
     }
 
     @Override
@@ -56,7 +57,7 @@ public class ComponentFluid implements ICustomComponent {
 
     @Override
     public void onVariablesAvailable(UnaryOperator<IVariable> lookup) {
-        fluidStacks = lookup.apply(this.fluid).asStreamOrSingleton()
+        fluidStacks = lookup.apply(this.fluid).asStreamOrSingleton(ClientUtils.getClientLevel().registryAccess())
                 .map((x) -> x.as(FluidStack.class))
                 .collect(Collectors.toList());
         String scaleStr = lookup.apply(scale).asString();

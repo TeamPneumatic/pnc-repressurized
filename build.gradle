@@ -167,7 +167,7 @@ dependencies {
 	//runtimeOnly("vazkii.botania:Botania:${botania_version}")
 
 	compileOnly("vazkii.patchouli:Patchouli:${patchouli_version}:api")
-	//runtimeOnly("vazkii.patchouli:Patchouli:${patchouli_version}")
+	runtimeOnly("vazkii.patchouli:Patchouli:${patchouli_version}")
 
 	compileOnly("cc.tweaked:cc-tweaked-1.21-forge-api:${cc_tweaked_version}")
 //	runtimeOnly("cc.tweaked:cc-tweaked-1.21-forge:${cc_tweaked_version}")

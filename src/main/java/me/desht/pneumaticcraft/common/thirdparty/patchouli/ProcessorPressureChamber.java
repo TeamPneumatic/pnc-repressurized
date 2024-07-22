@@ -41,11 +41,11 @@ public class ProcessorPressureChamber implements IComponentProcessor {
 
     @Override
     public void setup(Level level, IVariableProvider iVariableProvider) {
-        ResourceLocation recipeId = ResourceLocation.parse(iVariableProvider.get("recipe").asString());
+        ResourceLocation recipeId = ResourceLocation.parse(iVariableProvider.get("recipe", level.registryAccess()).asString());
         ModRecipeTypes.PRESSURE_CHAMBER.get().getRecipe(Minecraft.getInstance().level, recipeId)
                 .ifPresentOrElse(h -> recipe = h.value(),
                         () -> Log.warning("Missing pressure chamber recipe: " + recipeId));
-        this.header = iVariableProvider.has("header") ? iVariableProvider.get("header").asString() : "";
+        this.header = iVariableProvider.has("header") ? iVariableProvider.get("header", level.registryAccess()).asString() : "";
     }
 
     @Override
@@ -57,13 +57,17 @@ public class ProcessorPressureChamber implements IComponentProcessor {
         } else if (s.startsWith("input")) {
             int index = Integer.parseInt(s.substring(5)) - 1;
             if (index >= 0 && index < recipe.getInputsForDisplay(ClientUtils.getClientLevel().registryAccess()).size()) {
-                return PatchouliAccess.getStacks(recipe.getInputsForDisplay(ClientUtils.getClientLevel().registryAccess()).get(index));
+                return PatchouliAccess.getStacks(recipe.getInputsForDisplay(ClientUtils.getClientLevel().registryAccess()).get(index), level.registryAccess());
             }
         } else if (s.startsWith("output")) {
             int index = Integer.parseInt(s.substring(6)) - 1;
             List<? extends List<ItemStack>> results = recipe.getResultsForDisplay(ClientUtils.getClientLevel().registryAccess());
             if (index >= 0 && index < results.size()) {
-                return IVariable.wrapList(results.get(index).stream().map(IVariable::from).collect(ImmutableList.toImmutableList()));
+                return IVariable.wrapList(results.get(index).stream()
+                        .map((ItemStack object) -> IVariable.from(object, level.registryAccess()))
+                        .collect(ImmutableList.toImmutableList()),
+                        level.registryAccess()
+                );
             }
         } else if (s.equals("pressure")) {
             String pr = PneumaticCraftUtils.roundNumberTo(recipe.getCraftingPressureForDisplay(), 1);
