@@ -146,6 +146,7 @@ public class PastebinHandler extends Thread {
         List<NameValuePair> params = new ArrayList<>();
         params.add(new BasicNameValuePair("api_dev_key", DEV_KEY));
         params.add(new BasicNameValuePair("api_paste_code", contents));
+        params.add(new BasicNameValuePair("api_paste_format", "json"));
         params.add(new BasicNameValuePair("api_option", "paste"));
         if (isLoggedIn()) params.add(new BasicNameValuePair("api_user_key", userKey));
         try {
