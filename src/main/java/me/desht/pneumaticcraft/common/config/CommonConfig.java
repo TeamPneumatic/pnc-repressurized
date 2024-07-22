@@ -35,6 +35,7 @@ public class CommonConfig {
         public ModConfigSpec.IntValue bandageUseTime;
         public ModConfigSpec.DoubleValue bandageHealthRestored;
         public ModConfigSpec.DoubleValue plasticBrickDamage;
+        public ModConfigSpec.BooleanValue topShowsFluids;
     }
     public static class Worldgen {
         public ModConfigSpec.ConfigValue<List<String>> oilWorldGenDimensionWhitelist;
@@ -235,6 +236,10 @@ public class CommonConfig {
                 .comment("Damage inflicted by stepping on a Plastic Construction Brick™ without any protection")
                 .translation("pneumaticcraft.config.common.general.plastic_brick_damage")
                 .defineInRange("plastic_brick_damage", 3.0, 0.0, Double.MAX_VALUE);
+        general.topShowsFluids = builder
+                .comment("Show tank fluids with the The One Probe when sneaking? Note that TOP has its own support for showing tanks, which by default requires a Probe to be held, or a Probe-enabled helmet to be worn.")
+                .translation("pneumaticcraft.config.client.general.top_shows_fluids")
+                .define("top_shows_fluids", false);
         builder.pop();
 
         builder.push("Worldgen");

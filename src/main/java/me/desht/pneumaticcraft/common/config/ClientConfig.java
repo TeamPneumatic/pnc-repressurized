@@ -28,7 +28,6 @@ public class ClientConfig {
     public static class General {
         public ModConfigSpec.BooleanValue aphorismDrama;
         public ModConfigSpec.EnumValue<IProgWidget.WidgetDifficulty> programmerDifficulty;
-        public ModConfigSpec.BooleanValue topShowsFluids;
         public ModConfigSpec.BooleanValue logisticsGuiTint;
         public ModConfigSpec.BooleanValue semiBlockLighting;
         public ModConfigSpec.BooleanValue guiBevel;
@@ -81,10 +80,6 @@ public class ClientConfig {
                 .comment("Defines which widgets are shown in the Programmer GUI: easy, medium, or advanced")
                 .translation("pneumaticcraft.config.client.general.fancy_armor_models")
                 .defineEnum("programmer_difficulty", IProgWidget.WidgetDifficulty.EASY);
-        general.topShowsFluids = builder
-                .comment("Show tank fluids with the The One Probe when sneaking? Note that TOP has its own support for showing tanks, which by default requires a Probe to be held, or a Probe-enabled helmet to be worn.")
-                .translation("pneumaticcraft.config.client.general.top_shows_fluids")
-                .define("top_shows_fluids", false);
         general.logisticsGuiTint = builder
                 .comment("Tint Logistics configuration GUI backgrounds according to the colour of the logistics frame you are configuring.")
                 .translation("pneumaticcraft.config.client.general.logistics_gui_tint")

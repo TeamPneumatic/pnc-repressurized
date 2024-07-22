@@ -266,14 +266,6 @@ public class ModAdvancementProvider extends AdvancementProvider {
                     .addCriterion("0", new Criterion<>(trigger, trigger.getInstance()));
         }
 
-//        private Advancement.Builder customAdvancement(CustomTrigger trigger, String name, AdvancementType type, ItemLike itemDisp) {
-//            return Advancement.Builder.advancement()
-//                    .display(itemDisp,
-//                            xlate("pneumaticcraft.advancement." + name),
-//                            xlate("pneumaticcraft.advancement." + name + ".desc"),
-//                            BACKGROUND_TEXTURE, type, true, true, false)
-//                    .addCriterion("0", new Criterion<>(trigger, trigger.getInstance()));
-//        }
         private Advancement.Builder itemAdvancement(String name, AdvancementType type, ItemLike... items) {
             Validate.isTrue(items.length > 0);
             return Advancement.Builder.advancement()

@@ -76,7 +76,7 @@ public class TOPInfoProvider {
         if (IOHelper.getCap(te, PNCCapabilities.HEAT_EXCHANGER_BLOCK, null).isPresent()) {
             handleHeat(mode, probeInfo, te);
         }
-        if (ConfigHelper.client().general.topShowsFluids.get()) {
+        if (ConfigHelper.common().general.topShowsFluids.get()) {
             IOHelper.getCap(te, Capabilities.FluidHandler.BLOCK, data.getSideHit())
                     .ifPresent(handler -> handleFluidTanks(mode, probeInfo, handler));
         }
