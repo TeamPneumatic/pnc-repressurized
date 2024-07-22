@@ -20,11 +20,7 @@ package me.desht.pneumaticcraft.client.gui.tubemodule;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
-import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
-import me.desht.pneumaticcraft.client.gui.widget.WidgetCheckBox;
-import me.desht.pneumaticcraft.client.gui.widget.WidgetColorSelector;
-import me.desht.pneumaticcraft.client.gui.widget.WidgetLabel;
-import me.desht.pneumaticcraft.client.gui.widget.WidgetTooltipArea;
+import me.desht.pneumaticcraft.client.gui.widget.*;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSyncThermostatModuleToServer;
 import me.desht.pneumaticcraft.common.network.PacketUpdatePressureModule;
@@ -42,7 +38,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.DyeColor;
-
 import org.joml.Matrix4f;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;

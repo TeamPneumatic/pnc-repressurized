@@ -17,7 +17,6 @@
 
 package me.desht.pneumaticcraft.common.hacking.secstation;
 
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.entity.player.Player;
 

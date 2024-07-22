@@ -18,21 +18,21 @@
 package me.desht.pneumaticcraft.client.gui.programmer;
 
 import me.desht.pneumaticcraft.api.drone.IProgWidget;
+import me.desht.pneumaticcraft.api.drone.area.AreaType;
+import me.desht.pneumaticcraft.api.drone.area.AreaTypeWidget;
+import me.desht.pneumaticcraft.api.drone.area.AreaTypeWidget.EnumSelectorField;
+import me.desht.pneumaticcraft.api.drone.area.AreaTypeWidget.IntegerField;
 import me.desht.pneumaticcraft.api.item.IPositionProvider;
+import me.desht.pneumaticcraft.api.misc.ITranslatableEnum;
 import me.desht.pneumaticcraft.client.gui.InventorySearcherScreen;
 import me.desht.pneumaticcraft.client.gui.ProgrammerScreen;
 import me.desht.pneumaticcraft.client.gui.widget.*;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetArea;
-import me.desht.pneumaticcraft.api.drone.area.AreaType;
-import me.desht.pneumaticcraft.api.drone.area.AreaTypeWidget;
-import me.desht.pneumaticcraft.api.drone.area.AreaTypeWidget.EnumSelectorField;
-import me.desht.pneumaticcraft.api.drone.area.AreaTypeWidget.IntegerField;
 import me.desht.pneumaticcraft.common.item.GPSToolItem;
 import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.registry.ModMenuTypes;
-import me.desht.pneumaticcraft.api.misc.ITranslatableEnum;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;

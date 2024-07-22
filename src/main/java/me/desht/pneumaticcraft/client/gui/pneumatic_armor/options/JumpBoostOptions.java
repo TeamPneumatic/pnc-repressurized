@@ -19,7 +19,6 @@ package me.desht.pneumaticcraft.client.gui.pneumatic_armor.options;
 
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IGuiScreen;
 import me.desht.pneumaticcraft.client.pneumatic_armor.upgrade_handler.JumpBoostClientHandler;
-import me.desht.pneumaticcraft.common.item.PneumaticArmorItem;
 import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.network.chat.Component;

@@ -17,8 +17,6 @@
 
 package me.desht.pneumaticcraft.common.block.entity.hopper;
 
-import com.google.common.collect.ImmutableMap;
-import me.desht.pneumaticcraft.common.block.LiquidHopperBlock;
 import me.desht.pneumaticcraft.common.block.entity.ISerializableTanks;
 import me.desht.pneumaticcraft.common.block.entity.RedstoneController;
 import me.desht.pneumaticcraft.common.block.entity.SmartSyncTank;

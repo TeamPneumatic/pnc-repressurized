@@ -28,18 +28,14 @@ import dan200.computercraft.api.peripheral.PeripheralCapability;
 import me.desht.pneumaticcraft.common.block.entity.ILuaMethodProvider;
 import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
 import me.desht.pneumaticcraft.common.thirdparty.computer_common.ComputerEventManager;
-import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.neoforged.neoforge.capabilities.BlockCapability;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
-
-import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 public class PneumaticTilePeripheral implements IDynamicPeripheral, ComputerEventManager.IComputerEventSender {
     private final ILuaMethodProvider provider;

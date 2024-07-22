@@ -17,7 +17,6 @@
 
 package me.desht.pneumaticcraft.common.block.entity.compressor;
 
-import com.google.common.collect.ImmutableMap;
 import me.desht.pneumaticcraft.api.block.PNCBlockStateProperties;
 import me.desht.pneumaticcraft.api.pressure.PressureTier;
 import me.desht.pneumaticcraft.client.util.ClientUtils;

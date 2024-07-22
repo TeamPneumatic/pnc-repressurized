@@ -18,8 +18,8 @@
 package me.desht.pneumaticcraft.common.drone.progwidgets;
 
 import me.desht.pneumaticcraft.api.drone.IDrone;
-import me.desht.pneumaticcraft.common.drone.IDroneBase;
 import me.desht.pneumaticcraft.api.drone.IProgWidget;
+import me.desht.pneumaticcraft.common.drone.IDroneBase;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.StringRepresentable;
 

@@ -3,7 +3,6 @@ package me.desht.pneumaticcraft.client.render.blockentity;
 import com.mojang.authlib.GameProfile;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.block.entity.utility.AerialInterfaceBlockEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.SkullModel;

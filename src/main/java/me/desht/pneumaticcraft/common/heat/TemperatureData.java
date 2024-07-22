@@ -28,7 +28,9 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
 
 public class TemperatureData {
     private final Double[] temp;// = new Double[7];  // 6 faces plus null "face"

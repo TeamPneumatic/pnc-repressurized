@@ -17,7 +17,6 @@
 
 package me.desht.pneumaticcraft.client.gui.widget;
 
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;

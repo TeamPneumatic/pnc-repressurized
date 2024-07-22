@@ -43,7 +43,6 @@ import me.desht.pneumaticcraft.common.drone.ai.DroneGoToChargingStation;
 import me.desht.pneumaticcraft.common.drone.ai.DroneGoToOwner;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetGoToLocation;
 import me.desht.pneumaticcraft.common.drone.progwidgets.SavedDroneProgram;
-import me.desht.pneumaticcraft.common.drone.ProgWidgetSerializer;
 import me.desht.pneumaticcraft.common.entity.semiblock.AbstractLogisticsFrameEntity;
 import me.desht.pneumaticcraft.common.item.DroneItem;
 import me.desht.pneumaticcraft.common.item.GPSToolItem;

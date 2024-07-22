@@ -20,7 +20,6 @@ package me.desht.pneumaticcraft.common.util.playerfilter;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import me.desht.pneumaticcraft.api.misc.IPlayerMatcher;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -31,7 +30,6 @@ import net.minecraft.world.entity.player.Player;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public record DimensionMatcher(List<ResourceLocation> dimensionIds) implements IPlayerMatcher {

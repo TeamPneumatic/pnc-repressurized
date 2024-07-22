@@ -21,13 +21,9 @@ import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
-import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.entity.vehicle.Minecart;
 import net.neoforged.neoforge.energy.IEnergyStorage;
-
-import java.util.Optional;
 
 public class WidgetEnergy extends AbstractWidget {
     private static final int DEFAULT_SCALE = 42;

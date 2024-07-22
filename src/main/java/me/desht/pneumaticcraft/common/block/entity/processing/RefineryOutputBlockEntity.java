@@ -17,7 +17,6 @@
 
 package me.desht.pneumaticcraft.common.block.entity.processing;
 
-import com.google.common.collect.ImmutableMap;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.common.block.entity.*;

@@ -22,8 +22,6 @@ import me.desht.pneumaticcraft.api.crafting.recipe.ThermoPlantRecipe;
 import me.desht.pneumaticcraft.common.recipes.machine.ThermoPlantRecipeImpl;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.fluids.FluidStack;
 
 public class ThermoPlantRecipeBuilder extends AbstractPNCRecipeBuilder {
     private final ThermoPlantRecipe.Inputs inputs;

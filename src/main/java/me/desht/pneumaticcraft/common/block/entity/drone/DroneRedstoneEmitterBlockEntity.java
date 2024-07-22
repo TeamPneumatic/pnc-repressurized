@@ -18,8 +18,8 @@
 package me.desht.pneumaticcraft.common.block.entity.drone;
 
 import me.desht.pneumaticcraft.common.block.entity.AbstractTickingBlockEntity;
-import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
 import me.desht.pneumaticcraft.common.drone.IDroneBase;
+import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;

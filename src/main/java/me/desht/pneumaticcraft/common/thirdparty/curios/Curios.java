@@ -20,7 +20,6 @@ package me.desht.pneumaticcraft.common.thirdparty.curios;
 import me.desht.pneumaticcraft.common.thirdparty.IThirdParty;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
-import net.neoforged.neoforge.common.NeoForge;
 
 public class Curios implements IThirdParty {
     public static boolean available = false;

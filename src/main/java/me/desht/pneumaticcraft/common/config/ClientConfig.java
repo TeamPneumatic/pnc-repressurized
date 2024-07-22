@@ -18,8 +18,8 @@
 package me.desht.pneumaticcraft.common.config;
 
 import me.desht.pneumaticcraft.api.drone.IProgWidget;
-import me.desht.pneumaticcraft.client.pneumatic_armor.ComponentInit;
 import me.desht.pneumaticcraft.api.misc.ITranslatableEnum;
+import me.desht.pneumaticcraft.client.pneumatic_armor.ComponentInit;
 import net.neoforged.neoforge.common.ModConfigSpec;
 
 import java.util.Locale;

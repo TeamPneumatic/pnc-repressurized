@@ -18,9 +18,7 @@
 package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetArea;
-import me.desht.pneumaticcraft.common.drone.progwidgets.SavedDroneProgram;
 import me.desht.pneumaticcraft.common.item.GPSAreaToolItem;
-import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.registry.ModItems;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;

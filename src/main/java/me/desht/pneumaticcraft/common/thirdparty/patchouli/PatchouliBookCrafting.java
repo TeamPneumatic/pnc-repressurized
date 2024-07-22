@@ -19,7 +19,6 @@ package me.desht.pneumaticcraft.common.thirdparty.patchouli;
 
 import com.google.common.base.Suppliers;
 import me.desht.pneumaticcraft.lib.ModIds;
-import net.minecraft.Util;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;

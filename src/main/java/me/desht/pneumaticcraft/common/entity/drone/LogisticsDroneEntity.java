@@ -18,8 +18,11 @@
 package me.desht.pneumaticcraft.common.entity.drone;
 
 import me.desht.pneumaticcraft.api.drone.IProgWidget;
+import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetLogistics;
+import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetStart;
+import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetText;
+import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetWait;
 import me.desht.pneumaticcraft.common.registry.ModEntityTypes;
-import me.desht.pneumaticcraft.common.drone.progwidgets.*;
 import me.desht.pneumaticcraft.common.util.DroneProgramBuilder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
