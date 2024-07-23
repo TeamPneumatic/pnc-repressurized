@@ -27,8 +27,6 @@ import net.minecraft.client.resources.language.I18n;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
 import vazkii.patchouli.api.IComponentProcessor;
 import vazkii.patchouli.api.IVariable;
 import vazkii.patchouli.api.IVariableProvider;
@@ -57,7 +55,7 @@ public class ProcessorThermoPlant implements IComponentProcessor {
             case "item_input":
                 return PatchouliAccess.getStacks(recipe.getInputItem().orElse(Ingredient.EMPTY), level.registryAccess());
             case "fluid_input":
-                return PatchouliAccess.getFluidStacks(recipe.getInputFluid().orElse(SizedFluidIngredient.of(FluidStack.EMPTY)), level.registryAccess());
+                return recipe.getInputFluid().map(ingr -> PatchouliAccess.getFluidStacks(ingr, level.registryAccess())).orElse(IVariable.empty());
             case "item_output":
                 return IVariable.from(recipe.getOutputItem(), level.registryAccess());
             case "fluid_output":

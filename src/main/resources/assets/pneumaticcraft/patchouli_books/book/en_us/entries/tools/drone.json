@@ -1,6 +1,6 @@
 {
   "name": "Drone",
-  "icon": "pneumaticcraft:drone",
+  "icon": "pneumaticcraft:drone[pneumaticcraft:air=120000]",
   "category": "pneumaticcraft:tools",
   "advancement": "pneumaticcraft:printed_circuit_board",
   "pages": [

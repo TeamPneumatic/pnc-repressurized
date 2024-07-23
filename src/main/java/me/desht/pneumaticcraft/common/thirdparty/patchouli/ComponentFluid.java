@@ -18,8 +18,8 @@
 package me.desht.pneumaticcraft.common.thirdparty.patchouli;
 
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTank;
-import me.desht.pneumaticcraft.client.util.ClientUtils;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.core.HolderLookup;
 import net.neoforged.neoforge.fluids.FluidStack;
 import vazkii.patchouli.api.IComponentRenderContext;
 import vazkii.patchouli.api.ICustomComponent;
@@ -56,8 +56,8 @@ public class ComponentFluid implements ICustomComponent {
     }
 
     @Override
-    public void onVariablesAvailable(UnaryOperator<IVariable> lookup) {
-        fluidStacks = lookup.apply(this.fluid).asStreamOrSingleton(ClientUtils.getClientLevel().registryAccess())
+    public void onVariablesAvailable(UnaryOperator<IVariable> lookup, HolderLookup.Provider provider) {
+        fluidStacks = lookup.apply(this.fluid).asStreamOrSingleton(provider)
                 .map((x) -> x.as(FluidStack.class))
                 .collect(Collectors.toList());
         String scaleStr = lookup.apply(scale).asString();

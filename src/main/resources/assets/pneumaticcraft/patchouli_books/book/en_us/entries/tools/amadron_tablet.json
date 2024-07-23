@@ -1,6 +1,6 @@
 {
   "name": "Amadron Tablet",
-  "icon": "pneumaticcraft:amadron_tablet",
+  "icon": "pneumaticcraft:amadron_tablet[pneumaticcraft:air=30000]",
   "category": "pneumaticcraft:tools",
   "advancement": "pneumaticcraft:plastic",
   "pages": [

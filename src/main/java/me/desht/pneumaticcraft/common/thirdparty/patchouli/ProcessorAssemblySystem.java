@@ -55,11 +55,11 @@ public class ProcessorAssemblySystem implements IComponentProcessor {
             case "input" -> PatchouliAccess.getStacks(recipe.getInput(), level.registryAccess());
             case "output" -> IVariable.from(recipe.getOutput(), level.registryAccess());
             case "program" -> IVariable.from(programStack, level.registryAccess());
-            case "name" -> IVariable.wrap(recipe.getOutput().getHoverName().getString());
+            case "name" -> IVariable.wrap(recipe.getOutput().getHoverName().getString(), level.registryAccess());
             case "desc" -> IVariable.wrap(xlate("pneumaticcraft.patchouli.processor.assembly.desc",
                     recipe.getOutput().getHoverName(),
                     programStack.getHoverName()
-            ).getString());
+            ).getString(), level.registryAccess());
             default -> null;
         };
 

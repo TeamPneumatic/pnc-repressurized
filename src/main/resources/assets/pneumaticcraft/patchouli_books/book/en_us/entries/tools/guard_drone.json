@@ -1,6 +1,6 @@
 {
   "name": "Guard Drone",
-  "icon": "pneumaticcraft:guard_drone",
+  "icon": "pneumaticcraft:guard_drone[pneumaticcraft:air=120000]",
   "category": "pneumaticcraft:tools",
   "advancement": "pneumaticcraft:pressure_chamber",
   "pages": [

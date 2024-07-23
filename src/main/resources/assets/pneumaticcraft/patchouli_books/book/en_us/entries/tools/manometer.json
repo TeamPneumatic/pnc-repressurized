@@ -1,6 +1,6 @@
 {
   "name": "Manometer",
-  "icon": "pneumaticcraft:manometer",
+  "icon": "pneumaticcraft:manometer[pneumaticcraft:air=30000]",
   "category": "pneumaticcraft:tools",
   "advancement": "pneumaticcraft:pressure_tube",
   "pages": [

@@ -50,8 +50,8 @@ public class ProcessorAmadronTrade implements IComponentProcessor {
         return switch (key) {
             case "input" -> IVariable.from(recipe.getInput().apply(itemStack -> itemStack, fluidStack -> fluidStack), level.registryAccess());
             case "output" -> IVariable.from(recipe.getOutput().apply(itemStack -> itemStack, fluidStack -> fluidStack), level.registryAccess());
-            case "name" -> IVariable.wrap(recipe.getOutput().getName());
-            case "text" -> IVariable.wrap(text == null ? "" : I18n.get(text));
+            case "name" -> IVariable.wrap(recipe.getOutput().getName(), level.registryAccess());
+            case "text" -> IVariable.wrap(text == null ? "" : I18n.get(text), level.registryAccess());
             default -> null;
         };
 

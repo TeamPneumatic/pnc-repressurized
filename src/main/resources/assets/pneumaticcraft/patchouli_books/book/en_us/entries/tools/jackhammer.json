@@ -1,6 +1,6 @@
 {
   "name": "Pneumatic Jackhammer",
-  "icon": "pneumaticcraft:jackhammer",
+  "icon": "pneumaticcraft:jackhammer[pneumaticcraft:air=120000]",
   "category": "pneumaticcraft:tools",
   "advancement": "pneumaticcraft:plastic",
   "pages": [

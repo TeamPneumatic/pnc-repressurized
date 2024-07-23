@@ -1,6 +1,6 @@
 {
   "name": "Vortex Cannon",
-  "icon": "pneumaticcraft:vortex_cannon",
+  "icon": "pneumaticcraft:vortex_cannon[pneumaticcraft:air=30000]",
   "category": "pneumaticcraft:tools",
   "advancement": "pneumaticcraft:pressure_tube",
   "pages": [

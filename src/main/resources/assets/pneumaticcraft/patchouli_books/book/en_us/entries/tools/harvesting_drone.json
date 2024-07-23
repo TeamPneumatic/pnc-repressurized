@@ -1,6 +1,6 @@
 {
   "name": "Harvesting Drone",
-  "icon": "pneumaticcraft:harvesting_drone",
+  "icon": "pneumaticcraft:harvesting_drone[pneumaticcraft:air=120000]",
   "category": "pneumaticcraft:tools",
   "advancement": "pneumaticcraft:pressure_chamber",
   "pages": [

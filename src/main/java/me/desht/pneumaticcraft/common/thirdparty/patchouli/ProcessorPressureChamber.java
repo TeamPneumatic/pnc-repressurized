@@ -53,7 +53,7 @@ public class ProcessorPressureChamber implements IComponentProcessor {
         if (recipe == null) return null;
 
         if (s.equals("header")) {
-            return IVariable.wrap(header.isEmpty() ? defaultHeader() : header);
+            return IVariable.wrap(header.isEmpty() ? defaultHeader() : header, level.registryAccess());
         } else if (s.startsWith("input")) {
             int index = Integer.parseInt(s.substring(5)) - 1;
             if (index >= 0 && index < recipe.getInputsForDisplay(ClientUtils.getClientLevel().registryAccess()).size()) {
@@ -71,7 +71,7 @@ public class ProcessorPressureChamber implements IComponentProcessor {
             }
         } else if (s.equals("pressure")) {
             String pr = PneumaticCraftUtils.roundNumberTo(recipe.getCraftingPressureForDisplay(), 1);
-            return IVariable.wrap(I18n.get("pneumaticcraft.patchouli.processor.pressureChamber.desc", pr));
+            return IVariable.wrap(I18n.get("pneumaticcraft.patchouli.processor.pressureChamber.desc", pr), level.registryAccess());
         }
 
         return null;
