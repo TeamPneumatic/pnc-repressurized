@@ -28,7 +28,6 @@ import me.desht.pneumaticcraft.api.registry.PNCRegistries;
 import me.desht.pneumaticcraft.common.drone.ai.DroneAICustomBlockInteract;
 import me.desht.pneumaticcraft.common.registry.ModProgWidgetTypes;
 import net.minecraft.Util;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
@@ -37,7 +36,6 @@ import net.minecraft.world.item.DyeColor;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
@@ -78,13 +76,6 @@ public class ProgWidgetCustomBlockInteract extends ProgWidgetInventoryBase {
             Objects.requireNonNull(customType);
         }
         return customType;
-    }
-
-    @Override
-    public Optional<? extends IProgWidget> copy(HolderLookup.Provider provider) {
-        return super.copy(provider)
-                .filter(w -> w instanceof ProgWidgetCustomBlockInteract)
-                .map(w -> ((ProgWidgetCustomBlockInteract) w).setInteractor(interactor));
     }
 
     @Override

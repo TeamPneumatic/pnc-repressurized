@@ -17,7 +17,6 @@
 
 package me.desht.pneumaticcraft.api.drone;
 
-import net.minecraft.core.HolderLookup;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.goal.Goal;
@@ -26,7 +25,6 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nonnull;
 import java.util.List;
-import java.util.Optional;
 
 public interface IProgWidget {
     int getX();
@@ -155,8 +153,6 @@ public interface IProgWidget {
      * @return true if the widget is available for use by players
      */
     boolean isAvailable();
-
-    Optional<? extends IProgWidget> copy(HolderLookup.Provider provider);
 
     IProgWidget copyWidget();
 

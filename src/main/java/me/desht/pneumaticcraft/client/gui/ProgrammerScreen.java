@@ -587,7 +587,7 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
 //        } else if (filterField.isFocused() && keyCode != GLFW.GLFW_KEY_TAB) {
 //            return filterField.keyReleased(keyCode, scanCode, modifiers);
 //        } else {
-            return super.keyReleased(keyCode, scanCode, modifiers);
+        return super.keyReleased(keyCode, scanCode, modifiers);
 //        }
     }
 
@@ -799,32 +799,29 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
     }
 
     /**
-     * Called when shift + middle-clicking: copy this widget and all connecting widgets to the side or below (but not
-     * above).
+     * Called when shift + middle-clicking: copy this widget and all connecting widgets to the side and/or below
+     * (but not above).
      * @param original original widget being copied
      * @param copy new copy of the widget
      */
-    private void copyAndConnectConnectingWidgets(IProgWidget original, IProgWidget copy) {
-        IProgWidget[] connectingWidgets = original.getConnectedParameters();
-        if (connectingWidgets != null) {
-            for (int i = 0; i < connectingWidgets.length; i++) {
-                if (connectingWidgets[i] != null) {
-                    Optional<? extends IProgWidget> c = connectingWidgets[i].copy(registryAccess());
-                    if (c.isPresent()) {
-                        te.progWidgets.add(c.get());
-                        copy.setParameter(i, c.get());
-                        copyAndConnectConnectingWidgets(connectingWidgets[i], c.get());
-                    }
+    private void copyWidgetRecursively(IProgWidget original, IProgWidget copy) {
+        IProgWidget[] connectedWidgets = original.getConnectedParameters();
+        if (connectedWidgets != null) {
+            for (int i = 0; i < connectedWidgets.length; i++) {
+                if (connectedWidgets[i] != null) {
+                    IProgWidget connectedCopy = connectedWidgets[i].copyWidget();
+                    te.progWidgets.add(connectedCopy);
+                    copy.setParameter(i, connectedCopy);
+                    copyWidgetRecursively(connectedWidgets[i], connectedCopy);
                 }
             }
         }
         IProgWidget outputWidget = original.getOutputWidget();
         if (outputWidget != null) {
-            outputWidget.copy(registryAccess()).ifPresent(c -> {
-                te.progWidgets.add(c);
-                copy.setOutputWidget(c);
-                copyAndConnectConnectingWidgets(outputWidget, c);
-            });
+            IProgWidget outputCopy = outputWidget.copyWidget();
+            te.progWidgets.add(outputCopy);
+            copy.setOutputWidget(outputCopy);
+            copyWidgetRecursively(outputWidget, outputCopy);
         }
     }
 
@@ -1149,15 +1146,13 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
             if (showingWidgetProgress == 0) {
                 IProgWidget widget = programmerUnit.getHoveredWidget((int) mouseX, (int) mouseY);
                 if (widget != null) {
-                    widget.copy(registryAccess()).ifPresent(copy -> {
-                        draggingWidget = copy;
-                        te.progWidgets.add(draggingWidget);
-                        dragMouseStartX = trMouseX - leftPos;
-                        dragMouseStartY = trMouseY - topPos;
-                        dragWidgetStartX = widget.getX();
-                        dragWidgetStartY = widget.getY();
-                        if (Screen.hasShiftDown()) copyAndConnectConnectingWidgets(widget, draggingWidget);
-                    });
+                    draggingWidget = widget.copyWidget();
+                    te.progWidgets.add(draggingWidget);
+                    dragMouseStartX = trMouseX - leftPos;
+                    dragMouseStartY = trMouseY - topPos;
+                    dragWidgetStartX = widget.getX();
+                    dragWidgetStartY = widget.getY();
+                    if (Screen.hasShiftDown()) copyWidgetRecursively(widget, draggingWidget);
                     return true;
                 }
             } else {
@@ -1267,14 +1262,12 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
                         && origX <= widget.getX() + leftPos + widget.getWidth() / 2f
                         && origY <= widget.getY() + topPos + widget.getHeight() / 2f)
                 {
-                    widget.copy(registryAccess()).ifPresent(c -> {
-                        draggingWidget = c;
-                        te.progWidgets.add(draggingWidget);
-                        dragMouseStartX = mouseX - (int) (leftPos / scale);
-                        dragMouseStartY = mouseY - (int) (topPos / scale);
-                        dragWidgetStartX = (int) ((widget.getX() - programmerUnit.getTranslatedX()) / scale);
-                        dragWidgetStartY = (int) ((widget.getY() - programmerUnit.getTranslatedY()) / scale);
-                    });
+                    draggingWidget = widget.copyWidget();
+                    te.progWidgets.add(draggingWidget);
+                    dragMouseStartX = mouseX - (int) (leftPos / scale);
+                    dragMouseStartY = mouseY - (int) (topPos / scale);
+                    dragWidgetStartX = (int) ((widget.getX() - programmerUnit.getTranslatedX()) / scale);
+                    dragWidgetStartY = (int) ((widget.getY() - programmerUnit.getTranslatedY()) / scale);
                     return true;
                 }
             }

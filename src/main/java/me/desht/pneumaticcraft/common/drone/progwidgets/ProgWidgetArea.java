@@ -411,12 +411,12 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ProgWidgetArea that = (ProgWidgetArea) o;
-        return Objects.deepEquals(pos, that.pos) && Objects.deepEquals(varNames, that.varNames) && Objects.equals(areaType, that.areaType);
+        return Objects.equals(getPosition(), that.getPosition()) && Objects.deepEquals(pos, that.pos) && Objects.deepEquals(varNames, that.varNames) && Objects.equals(areaType, that.areaType);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(Arrays.hashCode(pos), Arrays.hashCode(varNames), areaType);
+        return Objects.hash(getPosition(), Arrays.hashCode(pos), Arrays.hashCode(varNames), areaType);
     }
 
     public Immutable toImmutable() {

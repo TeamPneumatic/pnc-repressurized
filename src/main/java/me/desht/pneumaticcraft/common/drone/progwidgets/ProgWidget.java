@@ -27,16 +27,12 @@ import me.desht.pneumaticcraft.api.registry.PNCRegistries;
 import me.desht.pneumaticcraft.common.config.subconfig.ProgWidgetConfig;
 import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.nbt.NbtOps;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.goal.Goal;
 import org.apache.commons.lang3.tuple.ImmutablePair;
@@ -264,18 +260,6 @@ public abstract class ProgWidget implements IProgWidget {
     @Override
     public IProgWidget getOutputWidget(IDrone drone, List<IProgWidget> allWidgets) {
         return outputStepConnection;
-    }
-
-    @Override
-    public Optional<? extends IProgWidget> copy(HolderLookup.Provider provider) {
-        try {
-            RegistryOps<Tag> ops = provider.createSerializationContext(NbtOps.INSTANCE);
-            Tag tag = CODEC.encodeStart(ops, this).getOrThrow();
-            var copy = CODEC.parse(ops, tag).getOrThrow();
-            return copy instanceof IProgWidget p ? Optional.of(p) : Optional.empty();
-        } catch (IllegalStateException e) {
-            return Optional.empty();
-        }
     }
 
     static <T extends IProgWidget> List<T> getConnectedWidgetList(IProgWidget widget, int parameterIndex, ProgWidgetType<T> type) {
