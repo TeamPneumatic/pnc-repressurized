@@ -32,6 +32,7 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Optional;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
@@ -39,19 +40,19 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
  * Received on: BOTH
  * Sync's global variable data between server and client
  */
-public record PacketSetGlobalVariable(String varName, Either<BlockPos, ItemStack> value) implements CustomPacketPayload {
+public record PacketSetGlobalVariable(String varName, Either<Optional<BlockPos>, ItemStack> value) implements CustomPacketPayload {
     public static final Type<PacketSetGlobalVariable> TYPE = new Type<>(RL("set_global_variable"));
 
     public static final StreamCodec<RegistryFriendlyByteBuf, PacketSetGlobalVariable> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.STRING_UTF8, PacketSetGlobalVariable::varName,
-            ByteBufCodecs.either(BlockPos.STREAM_CODEC, ItemStack.OPTIONAL_STREAM_CODEC), PacketSetGlobalVariable::value,
+            ByteBufCodecs.either(ByteBufCodecs.optional(BlockPos.STREAM_CODEC), ItemStack.OPTIONAL_STREAM_CODEC), PacketSetGlobalVariable::value,
             PacketSetGlobalVariable::new
     );
 
     public static PacketSetGlobalVariable forPos(String varName, @Nullable BlockPos value) {
         if (!GlobalVariableHelper.getInstance().hasPrefix(varName)) varName = "#" + varName;
 
-        return new PacketSetGlobalVariable(varName, Either.left(value));
+        return new PacketSetGlobalVariable(varName, Either.left(Optional.ofNullable(value)));
     }
 
     public static PacketSetGlobalVariable forItem(String varName, @Nonnull ItemStack stack) {
@@ -77,7 +78,7 @@ public record PacketSetGlobalVariable(String varName, Either<BlockPos, ItemStack
         Player player = ctx.player();
 
         message.value()
-                .ifLeft(pos -> GlobalVariableHelper.getInstance().setPos(player.getUUID(), message.varName(), pos))
+                .ifLeft(pos -> GlobalVariableHelper.getInstance().setPos(player.getUUID(), message.varName(), pos.orElse(null)))
                 .ifRight(stack -> GlobalVariableHelper.getInstance().setStack(player.getUUID(), message.varName(), stack));
 
         if (ctx.flow().isClientbound()) {
