@@ -27,6 +27,7 @@ import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.block.AbstractFurnaceBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SimpleWaterloggedBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -93,8 +94,11 @@ public class HeatPipeBlock extends AbstractCamouflageBlock implements SimpleWate
         if (worldIn instanceof Level level) {
             for (Direction dir : DirectionUtil.VALUES) {
                 BooleanProperty prop = AbstractPneumaticCraftBlock.connectionProperty(dir);
-                boolean connected = HeatExchangerManager.getInstance().getLogic(level, currentPos.relative(dir),
-                        dir.getOpposite(), HeatPipeBlockEntity.NO_AIR_OR_LIQUIDS).isPresent();
+                BlockPos neighborPos = currentPos.relative(dir);
+                // yeah, this is a kludge, but we don't necessarily have any access to heat behaviour information at this point
+                boolean connected = level.getBlockState(neighborPos).getBlock() instanceof AbstractFurnaceBlock
+                        || HeatExchangerManager.getInstance().getLogic(
+                                level, neighborPos, dir.getOpposite(), HeatPipeBlockEntity.NO_AIR_OR_LIQUIDS).isPresent();
                 stateIn = stateIn.setValue(prop, connected);
             }
         }

@@ -67,7 +67,7 @@ public enum HeatExchangerManager implements IHeatRegistry {
                     .filter(s -> s.getSemiblockCapability(PNCCapabilities.HEAT_EXCHANGER_ENTITY).isPresent())
                     .toList();
             if (!l.isEmpty()) {
-                return l.get(0).getSemiblockCapability(PNCCapabilities.HEAT_EXCHANGER_ENTITY);
+                return l.getFirst().getSemiblockCapability(PNCCapabilities.HEAT_EXCHANGER_ENTITY);
             }
             if (world.isEmptyBlock(pos)) {
                 return Optional.of(HeatExchangerLogicAmbient.atPosition(world, pos));
