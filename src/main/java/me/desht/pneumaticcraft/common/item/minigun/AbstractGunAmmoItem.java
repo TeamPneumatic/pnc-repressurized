@@ -42,7 +42,7 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 public abstract class AbstractGunAmmoItem extends Item {
     public AbstractGunAmmoItem() {
         // note: max uses (MAX_DAMAGE component) for each ammo type is set in config, which isn't available at this point
-        //       hence the arbitrary durability value, which is overridden bye getMaxDamage() for each ammo type
+        //       hence the arbitrary durability value, which is overridden by getMaxDamage() for each ammo type
         super(ModItems.defaultProps().setNoRepair().durability(2000));
     }
 

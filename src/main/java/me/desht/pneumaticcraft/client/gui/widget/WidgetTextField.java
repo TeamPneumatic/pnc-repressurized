@@ -52,7 +52,7 @@ public class WidgetTextField extends EditBox {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (canConsumeInput() && button == 1) {
+        if (isHovered() && button == 1) {
             setValue("");
             return true;
         }

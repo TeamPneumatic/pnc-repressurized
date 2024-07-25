@@ -59,26 +59,24 @@ public class JackHammerSetupScreen extends AbstractPneumaticCraftContainerScreen
 
         DigMode digMode = JackHammerItem.getDigMode(hammerStack);
 
-        if (digMode != null) {
-            addRenderableWidget(selectorButton = new WidgetButtonExtended(leftPos + 127, topPos + 67, 20, 20,
-                    Component.empty(), b -> toggleShowChoices()))
-                    .setRenderedIcon(digMode.getGuiIcon());
+        addRenderableWidget(selectorButton = new WidgetButtonExtended(leftPos + 127, topPos + 67, 20, 20,
+                Component.empty(), b -> toggleShowChoices()))
+                .setRenderedIcon(digMode.getGuiIcon());
 
-            int xBase = 147 - 20 * DigMode.values().length;
-            for (DigMode dm : DigMode.values()) {
-                WidgetButtonExtended button = new WidgetButtonExtended(leftPos + xBase, topPos + 47, 20, 20,
-                        Component.empty(), b -> selectDigMode(dm))
-                        .setRenderedIcon(dm.getGuiIcon())
-                        .withTag("digmode:" + dm);
-                xBase += 20;
-                button.visible = false;
-                typeButtons.put(dm, button);
-                addRenderableWidget(button);
-            }
+        int xBase = 147 - 20 * DigMode.values().length;
+        for (DigMode dm : DigMode.values()) {
+            WidgetButtonExtended button = new WidgetButtonExtended(leftPos + xBase, topPos + 47, 20, 20,
+                    Component.empty(), b -> selectDigMode(dm))
+                    .setRenderedIcon(dm.getGuiIcon())
+                    .withTag("digmode:" + dm);
+            xBase += 20;
+            button.visible = false;
+            typeButtons.put(dm, button);
+            addRenderableWidget(button);
         }
 
         addRenderableWidget(new WidgetTooltipArea(leftPos + 96, topPos + 19, 18, 18,
-                () -> menu.slots.get(1).hasItem() ? Tooltip.create(xlate("pneumaticcraft.gui.tooltip.jackhammer.enchantedBookTip")) : null)
+                () -> !menu.slots.get(1).hasItem() ? Tooltip.create(xlate("pneumaticcraft.gui.tooltip.jackhammer.enchantedBookTip")) : null)
         );
     }
 
@@ -107,7 +105,6 @@ public class JackHammerSetupScreen extends AbstractPneumaticCraftContainerScreen
 
         ItemStack hammerStack = ClientUtils.getClientPlayer().getItemInHand(menu.getHand());
         DigMode digMode = JackHammerItem.getDigMode(hammerStack);
-        if (digMode == null) digMode = DigMode.MODE_1X1;
 
         typeButtons.forEach((dm, button) -> button.active = bitType.getBitQuality() >= dm.getBitType().getBitQuality());
 

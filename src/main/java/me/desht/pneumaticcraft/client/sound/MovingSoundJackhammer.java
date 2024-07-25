@@ -19,6 +19,8 @@ package me.desht.pneumaticcraft.client.sound;
 
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.registry.ModSounds;
+import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
+import me.desht.pneumaticcraft.common.upgrades.UpgradableItemUtils;
 import net.minecraft.client.resources.sounds.AbstractTickableSoundInstance;
 import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.sounds.SoundSource;
@@ -40,7 +42,8 @@ public class MovingSoundJackhammer extends AbstractTickableSoundInstance {
         z = player.getZ();
         looping = true;
         delay = 0;
-        volume = ConfigHelper.client().sound.jackhammerVolume.get().floatValue();
+        int nm = UpgradableItemUtils.getUpgradeCount(player.getMainHandItem(), ModUpgrades.MUFFLER.get());
+        volume = ModUpgrades.getMuffledVolume(ConfigHelper.client().sound.jackhammerVolume.get().floatValue(), nm);
     }
 
     static MovingSoundJackhammer startOrContinue(Player player) {

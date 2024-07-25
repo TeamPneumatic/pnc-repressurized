@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "C": {
+      "tag": "minecraft:wool"
+    },
+    "L": {
+      "tag": "pneumaticcraft:upgrade_components"
+    },
+    "X": {
+      "tag": "minecraft:wool_carpets"
+    }
+  },
+  "pattern": [
+    "LXL",
+    "XCX",
+    "LXL"
+  ],
+  "result": {
+    "count": 4,
+    "id": "pneumaticcraft:muffler_upgrade"
+  }
+}

@@ -19,13 +19,17 @@ package me.desht.pneumaticcraft.client.sound;
 
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
+import me.desht.pneumaticcraft.common.block.entity.AbstractPneumaticCraftBlockEntity;
 import me.desht.pneumaticcraft.common.block.entity.utility.SentryTurretBlockEntity;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.entity.drone.DroneEntity;
+import me.desht.pneumaticcraft.common.item.minigun.MinigunItem;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
 import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.registry.ModParticleTypes;
 import me.desht.pneumaticcraft.common.registry.ModSounds;
+import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
+import me.desht.pneumaticcraft.common.upgrades.UpgradableItemUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.resources.sounds.AbstractTickableSoundInstance;
@@ -41,26 +45,39 @@ import net.minecraft.world.phys.Vec3;
 
 public class MovingSoundMinigun extends AbstractTickableSoundInstance {
     private final Entity entity;
-    private final BlockEntity tileEntity;
+    private final BlockEntity blockEntity;
     private boolean finished = false;
 
     MovingSoundMinigun(Entity entity) {
         super(ModSounds.MINIGUN.get(), SoundSource.NEUTRAL, SoundInstance.createUnseededRandom());
         this.entity = entity;
-        this.tileEntity = null;
-        init(entity instanceof DroneEntity ?
+        this.blockEntity = null;
+
+        float baseVol = entity instanceof DroneEntity ?
                 ConfigHelper.client().sound.minigunVolumeDrone.get().floatValue() :
-                ConfigHelper.client().sound.minigunVolumeHeld.get().floatValue());
+                ConfigHelper.client().sound.minigunVolumeHeld.get().floatValue();
+
+        if (entity instanceof DroneEntity drone && drone.hasMinigun()) {
+            int nm = drone.getMinigun().getUpgrades(ModUpgrades.MUFFLER.get());
+            init(ModUpgrades.getMuffledVolume(baseVol, nm));
+        } else if (entity instanceof Player player && player.getMainHandItem().getItem() instanceof MinigunItem) {
+            int nm = UpgradableItemUtils.getUpgradeCount(player.getMainHandItem(), ModUpgrades.MUFFLER.get());
+            init(ModUpgrades.getMuffledVolume(baseVol, nm));
+        } else {
+            init(baseVol);
+        }
     }
 
     MovingSoundMinigun(BlockEntity te) {
         super(ModSounds.MINIGUN.get(), SoundSource.NEUTRAL, SoundInstance.createUnseededRandom());
         this.entity = null;
-        this.tileEntity = te;
-        x = tileEntity.getBlockPos().getX();
-        y = tileEntity.getBlockPos().getY();
-        z = tileEntity.getBlockPos().getZ();
-        init(ConfigHelper.client().sound.minigunVolumeSentryTurret.get().floatValue());
+        this.blockEntity = te;
+        x = blockEntity.getBlockPos().getX();
+        y = blockEntity.getBlockPos().getY();
+        z = blockEntity.getBlockPos().getZ();
+        float baseVol = ConfigHelper.client().sound.minigunVolumeSentryTurret.get().floatValue();
+        float actualVol = te instanceof AbstractPneumaticCraftBlockEntity be ? be.getMuffledVolume(baseVol) : baseVol;
+        init(actualVol);
     }
 
     private void init(float volume) {
@@ -91,12 +108,12 @@ public class MovingSoundMinigun extends AbstractTickableSoundInstance {
 
 
             }
-        } else if (tileEntity != null) {
-            if (tileEntity.isRemoved()) {
+        } else if (blockEntity != null) {
+            if (blockEntity.isRemoved()) {
                 finished = true;
             } else {
-                if (tileEntity instanceof SentryTurretBlockEntity) {
-                    minigun = ((SentryTurretBlockEntity) tileEntity).getMinigun();
+                if (blockEntity instanceof SentryTurretBlockEntity) {
+                    minigun = ((SentryTurretBlockEntity) blockEntity).getMinigun();
                 }
             }
         }

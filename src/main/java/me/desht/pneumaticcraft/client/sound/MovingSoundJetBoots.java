@@ -20,11 +20,14 @@ package me.desht.pneumaticcraft.client.sound;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.particle.AirParticleData;
+import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.JetBootsStateTracker;
 import me.desht.pneumaticcraft.common.registry.ModSounds;
+import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import net.minecraft.client.resources.sounds.AbstractTickableSoundInstance;
 import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 
@@ -35,6 +38,7 @@ public class MovingSoundJetBoots extends AbstractTickableSoundInstance {
     private final Player player;
     private float targetPitch;
     private int endTimer = Integer.MAX_VALUE;
+    private final int nMufflers;
 
     public MovingSoundJetBoots(Player player) {
         super(ModSounds.LEAKING_GAS_LOW.get(), SoundSource.NEUTRAL, SoundInstance.createUnseededRandom());
@@ -44,6 +48,8 @@ public class MovingSoundJetBoots extends AbstractTickableSoundInstance {
         this.delay = 0;
         this.targetPitch = 0.7F;
         this.pitch = 0.5F;
+
+        this.nMufflers = CommonArmorHandler.getHandlerForPlayer(player).getUpgradeCount(EquipmentSlot.FEET, ModUpgrades.MUFFLER.get());
         this.volume = volumeFromConfig(JetBootsStateTracker.getClientTracker().getJetBootsState(player).isBuilderMode());
 
         // kludge: tiny bit of upward displacement allows player to walk off an edge and back on again
@@ -117,6 +123,9 @@ public class MovingSoundJetBoots extends AbstractTickableSoundInstance {
     }
 
     private float volumeFromConfig(boolean builderMode) {
-        return builderMode ? ConfigHelper.client().sound.jetbootsVolumeBuilderMode.get().floatValue() : ConfigHelper.client().sound.jetbootsVolume.get().floatValue();
+        return ModUpgrades.getMuffledVolume(builderMode ?
+                        ConfigHelper.client().sound.jetbootsVolumeBuilderMode.get().floatValue() :
+                        ConfigHelper.client().sound.jetbootsVolume.get().floatValue(),
+                nMufflers);
     }
 }

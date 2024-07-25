@@ -54,21 +54,6 @@ public record PacketPlayMovingSound(MovingSounds.Sound sound, MovingSoundFocus s
         if (message.source() != null) message.source().handle(message.sound());
     }
 
-//    private enum SourceType {
-//        ENTITY(buf -> MovingSoundFocus.of(buf.readInt())),
-//        STATIC_POS(buf -> MovingSoundFocus.of(buf.readBlockPos()));
-//
-//        private final Function<FriendlyByteBuf, MovingSoundFocus> creator;
-//
-//        SourceType(Function<FriendlyByteBuf, MovingSoundFocus> creator) {
-//            this.creator = creator;
-//        }
-//
-//        public MovingSoundFocus getSource(FriendlyByteBuf buf) {
-//            return creator.apply(buf);
-//        }
-//    }
-
     public record MovingSoundFocus(Either<Integer,BlockPos> entityOrPos) {
         public static StreamCodec<FriendlyByteBuf, MovingSoundFocus> STREAM_CODEC = StreamCodec.composite(
                 ByteBufCodecs.either(ByteBufCodecs.INT, BlockPos.STREAM_CODEC), MovingSoundFocus::entityOrPos,

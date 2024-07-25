@@ -1026,6 +1026,7 @@ public class ModRecipeProvider extends RecipeProvider {
         standardUpgrade(ModUpgrades.ITEM_LIFE.get(), Items.CLOCK, Items.APPLE).save(consumer);
         standardUpgrade(ModUpgrades.MAGNET.get(), PneumaticCraftTags.Items.PLASTIC_SHEETS, PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON).save(consumer);
         standardUpgrade(ModUpgrades.MINIGUN.get(), ModItems.MINIGUN.get(), Tags.Items.GUNPOWDERS).save(consumer);
+        standardUpgrade(ModUpgrades.MUFFLER.get(), 4, ItemTags.WOOL, ItemTags.WOOL_CARPETS).save(consumer);
         standardUpgrade(ModUpgrades.RANGE.get(), Items.BOW, ItemTags.ARROWS).save(consumer);
         standardUpgrade(ModUpgrades.SEARCH.get(), Items.GOLDEN_CARROT, Items.ENDER_EYE).save(consumer);
         standardUpgrade(ModUpgrades.SECURITY.get(), ModItems.SAFETY_TUBE_MODULE.get(), Tags.Items.OBSIDIANS).save(consumer);

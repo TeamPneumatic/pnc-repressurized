@@ -37,7 +37,8 @@ public enum BuiltinUpgrade {
     ENDER_VISOR("ender_visor"),
     STOMP("stomp"),
     ELYTRA("elytra"),
-    CHUNKLOADER("chunkloader");
+    CHUNKLOADER("chunkloader"),
+    MUFFLER("muffler");
 
     private final String name;
     private final int maxTier;

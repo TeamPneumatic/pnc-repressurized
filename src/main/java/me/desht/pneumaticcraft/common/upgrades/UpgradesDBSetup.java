@@ -44,7 +44,8 @@ public class UpgradesDBSetup {
             .with(ModUpgrades.ARMOR.get(), 15)
             .with(ModUpgrades.RANGE.get(), 16)
             .with(ModUpgrades.CREATIVE.get(), 1)
-            .with(ModUpgrades.CHUNKLOADER.get(), 3);
+            .with(ModUpgrades.CHUNKLOADER.get(), 3)
+            .with(ModUpgrades.MUFFLER.get(), 4);
 
     private static final Builder BASIC_DRONE_UPGRADES = new Builder()
             .with(ModUpgrades.VOLUME.get(), MAX_VOLUME)
@@ -57,7 +58,8 @@ public class UpgradesDBSetup {
     private static final Builder GUARD_DRONE_UPGRADES = Builder.copyOf(BASIC_DRONE_UPGRADES)
             .with(ModUpgrades.MINIGUN.get(), 1)
             .with(ModUpgrades.RANGE.get(), 16)
-            .with(ModUpgrades.CREATIVE.get(), 1);
+            .with(ModUpgrades.CREATIVE.get(), 1)
+            .with(ModUpgrades.MUFFLER.get(), 4);
 
     private static final Builder COLLECTOR_DRONE_UPGRADES = Builder.copyOf(BASIC_DRONE_UPGRADES)
             .with(ModUpgrades.MAGNET.get(), 6)
@@ -90,12 +92,15 @@ public class UpgradesDBSetup {
                 .with(ModUpgrades.ITEM_LIFE.get(), 4)
                 .with(ModUpgrades.ENTITY_TRACKER.get(), 4)
                 .with(ModUpgrades.SECURITY.get(), 1)
-                .with(ModUpgrades.CREATIVE.get(), 1));
+                .with(ModUpgrades.CREATIVE.get(), 1)
+                .with(ModUpgrades.MUFFLER.get(), 4)
+        );
 
         db.addApplicableUpgrades(ModItems.JACKHAMMER.get(), new Builder()
                 .with(ModUpgrades.SPEED.get(), 10)
                 .with(ModUpgrades.VOLUME.get(), MAX_VOLUME)
                 .with(ModUpgrades.MAGNET.get(), 1)
+                .with(ModUpgrades.MUFFLER.get(), 4)
         );
 
         db.addApplicableUpgrades(ModItems.AMADRON_TABLET.get(), new Builder()
@@ -124,6 +129,7 @@ public class UpgradesDBSetup {
         armor.get(EquipmentSlot.HEAD.getIndex()).with(ModUpgrades.RANGE.get(), 5).with(ModUpgrades.SECURITY.get(), 64);
         armor.get(EquipmentSlot.CHEST.getIndex()).with(ModUpgrades.SECURITY.get(), 1);
         armor.get(EquipmentSlot.FEET.getIndex()).with(ModUpgrades.FLIPPERS.get(), 1);
+        armor.get(EquipmentSlot.FEET.getIndex()).with(ModUpgrades.MUFFLER.get(), 4);
 
         db.addApplicableUpgrades(ModItems.PNEUMATIC_HELMET.get(), armor.get(EquipmentSlot.HEAD.getIndex()));
         db.addApplicableUpgrades(ModItems.PNEUMATIC_CHESTPLATE.get(), armor.get(EquipmentSlot.CHEST.getIndex()));
@@ -241,7 +247,8 @@ public class UpgradesDBSetup {
                 .with(ModUpgrades.DISPENSER.get(), 1));
         db.addApplicableUpgrades(ModBlockEntityTypes.SENTRY_TURRET.get(), new Builder()
                 .with(ModUpgrades.CREATIVE.get(), 1)
-                .with(ModUpgrades.RANGE.get(), 16));
+                .with(ModUpgrades.RANGE.get(), 16)
+                .with(ModUpgrades.MUFFLER.get(), 4));
         db.addApplicableUpgrades(ModBlockEntityTypes.FLUX_COMPRESSOR.get(), new Builder()
                 .with(ModUpgrades.SECURITY.get(), 1)
                 .with(ModUpgrades.VOLUME.get(), MAX_VOLUME)

@@ -304,7 +304,7 @@ public abstract class Minigun {
             // spin up
             setMinigunTriggerTimeOut(getMinigunTriggerTimeOut() - 1);
             if (getMinigunSpeed() == 0) {
-                playSound(ModSounds.HUD_INIT.get(), 3, 0.9F);
+                playSound(ModSounds.HUD_INIT.get(), ModUpgrades.getMuffledVolume(1f, getUpgrades(ModUpgrades.MUFFLER.get())), 0.9F);
             }
             float speedBonus = getUpgrades(ModUpgrades.SPEED.get()) * 0.0033F;
             float lastSpeed = getMinigunSpeed();

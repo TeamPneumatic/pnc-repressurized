@@ -396,6 +396,10 @@ public abstract class AbstractPneumaticCraftBlockEntity extends BlockEntity
         return actualUsageMult;
     }
 
+    public float getMuffledVolume(float baseVolume) {
+        return ModUpgrades.getMuffledVolume(baseVolume, getUpgrades(ModUpgrades.MUFFLER.get()));
+    }
+
     @Override
     public void handleGUIButtonPress(String tag, boolean shiftHeld, ServerPlayer player) {
     }

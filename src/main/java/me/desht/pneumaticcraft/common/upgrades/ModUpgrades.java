@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.common.upgrades;
 
 import me.desht.pneumaticcraft.api.upgrade.PNCUpgrade;
+import net.minecraft.util.Mth;
 
 import java.util.EnumMap;
 import java.util.Map;
@@ -8,6 +9,8 @@ import java.util.function.Supplier;
 
 public class ModUpgrades {
     private static final Map<BuiltinUpgrade, PNCUpgrade> BUILTIN_MAP = new EnumMap<>(BuiltinUpgrade.class);
+
+    private static final float[] MUFFLER_MULT = { 1f, 0.7f, 0.49f, 0.343f, 0.2401f };
 
     public static final Supplier<PNCUpgrade> VOLUME = () -> BUILTIN_MAP.get(BuiltinUpgrade.VOLUME);
     public static final Supplier<PNCUpgrade> DISPENSER = () -> BUILTIN_MAP.get(BuiltinUpgrade.DISPENSER);
@@ -39,9 +42,14 @@ public class ModUpgrades {
     public static final Supplier<PNCUpgrade> STOMP = () -> BUILTIN_MAP.get(BuiltinUpgrade.STOMP);
     public static final Supplier<PNCUpgrade> ELYTRA = () -> BUILTIN_MAP.get(BuiltinUpgrade.ELYTRA);
     public static final Supplier<PNCUpgrade> CHUNKLOADER = () -> BUILTIN_MAP.get(BuiltinUpgrade.CHUNKLOADER);
+    public static final Supplier<PNCUpgrade> MUFFLER = () -> BUILTIN_MAP.get(BuiltinUpgrade.MUFFLER);
 
     public static PNCUpgrade registerBuiltin(BuiltinUpgrade bu, PNCUpgrade pncUpgrade) {
         BUILTIN_MAP.put(bu, pncUpgrade);
         return pncUpgrade;
+    }
+
+    public static float getMuffledVolume(float baseVol, int nMufflers) {
+        return baseVol * MUFFLER_MULT[Mth.clamp(nMufflers, 0, 4)];
     }
 }
