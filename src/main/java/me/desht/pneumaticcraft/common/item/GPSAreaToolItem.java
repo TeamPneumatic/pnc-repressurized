@@ -67,8 +67,11 @@ public class GPSAreaToolItem extends Item implements IPositionProvider, IGPSTool
     @Override
     public InteractionResult useOn(UseOnContext ctx) {
         if (ctx.getPlayer() != null) {
-            setGPSPosAndNotify(ctx.getPlayer(), ctx.getHand(), ctx.getClickedPos(), 0);
-            ctx.getPlayer().playSound(ModSounds.CHIRP.get(), 1.0f, 1.5f);
+            Optional<BlockPos> optPos = getGPSLocation(ctx.getPlayer(), ctx.getItemInHand(), 0);
+            if (!ctx.getClickedPos().equals(optPos.orElse(null))) {
+                setGPSPosAndNotify(ctx.getPlayer(), ctx.getHand(), ctx.getClickedPos(), 0);
+                ctx.getPlayer().playSound(ModSounds.CHIRP.get(), 1.0f, 1.5f);
+            }
         }
         return InteractionResult.SUCCESS; // we don't want to use the item.
     }
