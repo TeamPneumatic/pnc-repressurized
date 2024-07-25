@@ -19,8 +19,8 @@ package me.desht.pneumaticcraft.common.item;
 
 import me.desht.pneumaticcraft.api.item.IProgrammable;
 import me.desht.pneumaticcraft.client.ColorHandlers;
-import me.desht.pneumaticcraft.common.block.entity.drone.ProgrammerBlockEntity;
 import me.desht.pneumaticcraft.common.block.entity.utility.ChargingStationBlockEntity;
+import me.desht.pneumaticcraft.common.drone.ProgWidgetUtils;
 import me.desht.pneumaticcraft.common.entity.drone.DroneEntity;
 import me.desht.pneumaticcraft.common.registry.ModCriterionTriggers;
 import me.desht.pneumaticcraft.common.registry.ModDataComponents;
@@ -123,7 +123,7 @@ public class DroneItem extends PressurizableItem
         drone.setDeployPos(placePos);
 
         if (drone.addProgram(clickPos, facing, placePos, iStack, drone.progWidgets)) {
-            ProgrammerBlockEntity.updatePuzzleConnections(drone.progWidgets);
+            ProgWidgetUtils.updatePuzzleConnections(drone.progWidgets);
         }
 
         if (level instanceof ServerLevelAccessor) {

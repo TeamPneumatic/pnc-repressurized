@@ -20,9 +20,10 @@ package me.desht.pneumaticcraft.common.drone.ai;
 import me.desht.pneumaticcraft.api.drone.IDrone;
 import me.desht.pneumaticcraft.api.drone.IProgWidget;
 import me.desht.pneumaticcraft.api.item.IProgrammable;
-import me.desht.pneumaticcraft.common.block.entity.drone.ProgrammerBlockEntity;
 import me.desht.pneumaticcraft.common.drone.IDroneBase;
+import me.desht.pneumaticcraft.common.drone.ProgWidgetUtils;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetExternalProgram;
+import me.desht.pneumaticcraft.common.drone.progwidgets.SavedDroneProgram;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSyncDroneProgWidgets;
 import me.desht.pneumaticcraft.common.util.IOHelper;
@@ -104,8 +105,8 @@ public class DroneAIExternalProgram extends DroneAIBlockInteraction<ProgWidgetEx
                 ItemStack stack = inv.getStackInSlot(curSlot);
                 if (stack.getItem() instanceof IProgrammable programmable) {
                     if (programmable.canProgram(stack) && programmable.usesPieces(stack)) {
-                        List<IProgWidget> widgets = ProgrammerBlockEntity.getProgWidgets(stack);
-                        ProgrammerBlockEntity.updatePuzzleConnections(widgets);
+                        List<IProgWidget> widgets = SavedDroneProgram.loadProgWidgets(stack);
+                        ProgWidgetUtils.updatePuzzleConnections(widgets);
                         boolean areWidgetsValid = widgets.stream().allMatch(widget -> drone.isProgramApplicable(widget.getType()));
                         if (areWidgetsValid) {
                             if (progWidget.shareVariables) mainAI.connectVariables(subAI);

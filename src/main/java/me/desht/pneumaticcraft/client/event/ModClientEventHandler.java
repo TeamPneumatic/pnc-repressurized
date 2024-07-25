@@ -18,21 +18,30 @@
 package me.desht.pneumaticcraft.client.event;
 
 import me.desht.pneumaticcraft.api.lib.Names;
+import me.desht.pneumaticcraft.client.ClientSetup;
 import me.desht.pneumaticcraft.client.model.CamoModel;
 import me.desht.pneumaticcraft.client.model.custom.CamouflageModel;
 import me.desht.pneumaticcraft.client.model.custom.FluidItemModel;
 import me.desht.pneumaticcraft.client.model.custom.RenderedItemModel;
+import me.desht.pneumaticcraft.client.render.MinigunItemRenderer;
 import me.desht.pneumaticcraft.common.block.AbstractCamouflageBlock;
+import me.desht.pneumaticcraft.common.block.AbstractPneumaticCraftBlock;
+import me.desht.pneumaticcraft.common.fluid.*;
 import me.desht.pneumaticcraft.common.registry.ModBlocks;
+import me.desht.pneumaticcraft.common.registry.ModFluids;
+import me.desht.pneumaticcraft.common.registry.ModItems;
 import net.minecraft.client.renderer.block.BlockModelShaper;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.ModelResourceLocation;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ModelEvent;
 import net.neoforged.neoforge.client.event.ModelEvent.RegisterGeometryLoaders;
+import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
+import net.neoforged.neoforge.registries.DeferredHolder;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
@@ -59,5 +68,30 @@ public class ModClientEventHandler {
         event.register(RL("camouflaged"), CamouflageModel.Loader.INSTANCE);
         event.register(RL("fluid_container_item"), FluidItemModel.Loader.INSTANCE);
         event.register(RL("rendered_item"), RenderedItemModel.Loader.INSTANCE);
+    }
+
+    @SubscribeEvent
+    public static void registerClientExtensions(RegisterClientExtensionsEvent event) {
+        Block[] toAdd = ModBlocks.BLOCKS.getEntries().stream()
+                .filter(h -> h.get() instanceof AbstractPneumaticCraftBlock)
+                .map(DeferredHolder::get)
+                .toArray(Block[]::new);
+        event.registerBlock(ClientSetup.PARTICLE_HANDLER, toAdd);
+
+        event.registerItem(new MinigunItemRenderer.RenderProperties(), ModItems.MINIGUN.get());
+
+        event.registerFluidType(FluidOil.RENDER_PROPS, ModFluids.OIL_FLUID_TYPE.get());
+        event.registerFluidType(FluidBiodiesel.RENDER_PROPS, ModFluids.BIODIESEL_FLUID_TYPE.get());
+        event.registerFluidType(FluidDiesel.RENDER_PROPS, ModFluids.DIESEL_FLUID_TYPE.get());
+        event.registerFluidType(FluidEtchingAcid.RENDER_PROPS, ModFluids.ETCHING_ACID_FLUID_TYPE.get());
+        event.registerFluidType(FluidEthanol.RENDER_PROPS, ModFluids.ETHANOL_FLUID_TYPE.get());
+        event.registerFluidType(FluidGasoline.RENDER_PROPS, ModFluids.GASOLINE_FLUID_TYPE.get());
+        event.registerFluidType(FluidKerosene.RENDER_PROPS, ModFluids.KEROSENE_FLUID_TYPE.get());
+        event.registerFluidType(FluidLPG.RENDER_PROPS, ModFluids.LPG_FLUID_TYPE.get());
+        event.registerFluidType(FluidLubricant.RENDER_PROPS, ModFluids.LUBRICANT_FLUID_TYPE.get());
+        event.registerFluidType(FluidMemoryEssence.RENDER_PROPS, ModFluids.MEMORY_ESSENCE_FLUID_TYPE.get());
+        event.registerFluidType(FluidPlastic.RENDER_PROPS, ModFluids.PLASTIC_FLUID_TYPE.get());
+        event.registerFluidType(FluidVegetableOil.RENDER_PROPS, ModFluids.VEGETABLE_OIL_FLUID_TYPE.get());
+        event.registerFluidType(FluidYeastCulture.RENDER_PROPS, ModFluids.YEAST_CULTURE_FLUID_TYPE.get());
     }
 }

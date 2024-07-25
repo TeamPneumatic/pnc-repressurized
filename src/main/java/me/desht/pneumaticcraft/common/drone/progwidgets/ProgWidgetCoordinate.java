@@ -37,10 +37,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
@@ -213,5 +210,18 @@ public class ProgWidgetCoordinate extends ProgWidget implements IVariableWidget 
     @Override
     public void addVariables(Set<String> variables) {
         variables.add(variable);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ProgWidgetCoordinate that = (ProgWidgetCoordinate) o;
+        return baseEquals(that) && useVariable == that.useVariable && Objects.equals(coord, that.coord) && Objects.equals(variable, that.variable);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(baseHashCode(), coord, variable, useVariable);
     }
 }

@@ -42,6 +42,7 @@ import org.apache.commons.lang3.math.NumberUtils;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
@@ -177,6 +178,19 @@ public class ProgWidgetEmitRedstone extends ProgWidget implements IRedstoneEmiss
     @Override
     public Goal getWidgetAI(IDrone drone, IProgWidget widget) {
         return new DroneAIEmitRedstone(drone, widget);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ProgWidgetEmitRedstone that = (ProgWidgetEmitRedstone) o;
+        return baseEquals(that) && Objects.deepEquals(accessingSides, that.accessingSides);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(baseHashCode(), Arrays.hashCode(accessingSides));
     }
 
     private static class DroneAIEmitRedstone extends Goal {

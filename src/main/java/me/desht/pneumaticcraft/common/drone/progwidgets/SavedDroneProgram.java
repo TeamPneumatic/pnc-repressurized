@@ -1,63 +1,81 @@
 package me.desht.pneumaticcraft.common.drone.progwidgets;
 
-import com.google.common.collect.ImmutableList;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import me.desht.pneumaticcraft.api.drone.IProgWidget;
+import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
+import me.desht.pneumaticcraft.common.drone.IDroneBase;
 import me.desht.pneumaticcraft.common.registry.ModDataComponents;
-import net.minecraft.Util;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtOps;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
+/**
+ * An immutable collection of progwidgets, suitable for storing as an item data component.
+ */
 public class SavedDroneProgram {
     public static final Codec<SavedDroneProgram> CODEC = RecordCodecBuilder.create(builder -> builder.group(
-            CompoundTag.CODEC.listOf().fieldOf("widget_nbt").forGetter(prog -> prog.widgetNBT)
+            ProgWidget.CODEC.listOf().fieldOf("widget_nbt").forGetter(prog -> prog.widgets)
     ).apply(builder, SavedDroneProgram::new));
 
-    public static final StreamCodec<FriendlyByteBuf, SavedDroneProgram> STREAM_CODEC = StreamCodec.composite(
-            ByteBufCodecs.COMPOUND_TAG.apply(ByteBufCodecs.list()), prog -> prog.widgetNBT,
+    public static final StreamCodec<RegistryFriendlyByteBuf, SavedDroneProgram> STREAM_CODEC = StreamCodec.composite(
+            ProgWidget.STREAM_CODEC.apply(ByteBufCodecs.list()), prog -> prog.widgets,
             SavedDroneProgram::new
     );
 
     public static final SavedDroneProgram EMPTY = new SavedDroneProgram(List.of());
 
-    // TODO: would be much better to store actual progwidgets here, but that requires a working copy() for
-    //       every progwidget type, as well as equals()/hashCode() correctly overridden for every type
-    private final List<CompoundTag> widgetNBT;
+    private final List<IProgWidget> widgets;
     private final int hashCode;
 
-    public static SavedDroneProgram create(IProgWidget widget) {
-        return create(List.of(widget));
+    private SavedDroneProgram(List<IProgWidget> widgets) {
+        this.widgets = widgets;
+
+        hashCode = Objects.hash(widgets);
     }
 
-    public static SavedDroneProgram create(List<IProgWidget> widgets) {
-        ImmutableList.Builder<CompoundTag> builder = ImmutableList.builder();
-        widgets.forEach(w -> ProgWidget.CODEC.encodeStart(NbtOps.INSTANCE, w).ifSuccess(tag -> {
-            if (tag instanceof CompoundTag c) builder.add(c);
-        }));
-        return new SavedDroneProgram(builder.build());
+    public static SavedDroneProgram fromWidgets(List<IProgWidget> widgets) {
+        return new SavedDroneProgram(deepCopy(widgets));
     }
 
-    private SavedDroneProgram(List<CompoundTag> widgetNBT) {
-        this.widgetNBT = widgetNBT;
-
-        hashCode = Objects.hash(widgetNBT);
+    public static SavedDroneProgram fromItemStack(ItemStack stack) {
+        return stack.getOrDefault(ModDataComponents.SAVED_DRONE_PROGRAM, EMPTY);
     }
 
-    public List<IProgWidget> buildProgram() {
-        return Util.make(new ArrayList<>(), list -> widgetNBT.forEach(tag -> ProgWidget.CODEC.parse(NbtOps.INSTANCE, tag).ifSuccess(list::add)));
+    public static void writeToItem(ItemStack stack, List<IProgWidget> widgets) {
+        stack.set(ModDataComponents.SAVED_DRONE_PROGRAM, fromWidgets(widgets));
     }
 
-    public static List<IProgWidget> forItemStack(ItemStack stack) {
-        return stack.getOrDefault(ModDataComponents.SAVED_DRONE_PROGRAM, EMPTY).buildProgram();
+    public static List<IProgWidget> loadProgWidgets(ItemStack stack) {
+        return deepCopy(fromItemStack(stack).widgets);
+    }
+
+    public Map<ProgWidgetType<?>,Integer> summarize() {
+        Map<ProgWidgetType<?>,Integer> res = new HashMap<>();
+        widgets.forEach(w -> res.put(w.getType(), res.getOrDefault(w.getType(), 0) + 1));
+        return res;
+    }
+
+    public int getRequiredPuzzlePieces() {
+        return (int) widgets.stream().filter(w -> !w.freeToUse()).count();
+    }
+
+    public boolean isValidForDrone(IDroneBase drone) {
+        return widgets.stream().allMatch(widget -> drone.isProgramApplicable(widget.getType()));
+    }
+
+    public boolean isEmpty() {
+        return widgets.isEmpty();
+    }
+
+    private static List<IProgWidget> deepCopy(List<IProgWidget> list) {
+        return list.stream().map(IProgWidget::copyWidget).toList();
     }
 
     @Override
@@ -65,7 +83,7 @@ public class SavedDroneProgram {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         SavedDroneProgram that = (SavedDroneProgram) o;
-        return Objects.equals(widgetNBT, that.widgetNBT);
+        return Objects.equals(widgets, that.widgets);
     }
 
     @Override

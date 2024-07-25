@@ -39,6 +39,7 @@ import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
 
 import java.util.List;
+import java.util.Objects;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
@@ -132,4 +133,17 @@ public class ProgWidgetLiquidImport extends ProgWidgetInventoryBase implements I
         }
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        ProgWidgetLiquidImport that = (ProgWidgetLiquidImport) o;
+        return baseEquals(that) && voidExcess == that.voidExcess && order == that.order;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(baseHashCode(), order, voidExcess);
+    }
 }

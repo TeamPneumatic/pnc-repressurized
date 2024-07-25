@@ -56,7 +56,7 @@ public class ProgrammerMenu extends AbstractPneumaticCraftMenu<ProgrammerBlockEn
         });
 
         // Add the player's inventory slots to the container
-        addPlayerSlots(playerInventory, geometry.x + 93, geometry.y + geometry.height + 6);
+        addPlayerSlots(playerInventory, geometry.x + geometry.width / 2 - 81, geometry.y + geometry.height + 6);
     }
 
     public ProgrammerMenu(int windowId, Inventory playerInventory, FriendlyByteBuf buffer) {

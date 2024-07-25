@@ -43,10 +43,7 @@ import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
@@ -168,22 +165,18 @@ public class ProgWidgetCrafting extends ProgWidget implements ICraftingWidget, I
         return CraftingInput.of(3, 3, stacks);
     }
 
-    public ItemStack getRecipeResult(Level world) {
+    public ItemStack getRecipeResult(Level level) {
         CraftingInput grid = getCraftingGrid();
-        return getRecipe(world, grid).map(r -> r.assemble(grid, world.registryAccess())).orElse(ItemStack.EMPTY);
+        return getRecipe(level, grid).map(r -> r.assemble(grid, level.registryAccess())).orElse(ItemStack.EMPTY);
     }
 
     @Override
-    public Optional<CraftingRecipe> getRecipe(Level world, CraftingInput grid) {
+    public Optional<CraftingRecipe> getRecipe(Level level, CraftingInput grid) {
         // no caching if using variables, because the item can change at any item
         return usingVariables ?
-                world.getRecipeManager().getRecipeFor(RecipeType.CRAFTING, grid, world).flatMap(holder -> Optional.of(holder.value())) :
-                VanillaRecipeCache.CRAFTING.getCachedRecipe(world, grid);
+                level.getRecipeManager().getRecipeFor(RecipeType.CRAFTING, grid, level).flatMap(holder -> Optional.of(holder.value())) :
+                VanillaRecipeCache.CRAFTING.getCachedRecipe(level, grid);
     }
-
-//    public static Recipe<CraftingInput> getRecipe(Level world, ICraftingWidget widget) {
-//        return widget.getRecipe(world, widget.getCraftingGrid()).orElse(null);
-//    }
 
     @Override
     public Goal getWidgetAI(IDrone drone, IProgWidget widget) {
@@ -219,4 +212,16 @@ public class ProgWidgetCrafting extends ProgWidget implements ICraftingWidget, I
         this.count = count;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ProgWidgetCrafting that = (ProgWidgetCrafting) o;
+        return baseEquals(that) && useCount == that.useCount && count == that.count && usingVariables == that.usingVariables;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(baseHashCode(), useCount, count, usingVariables);
+    }
 }

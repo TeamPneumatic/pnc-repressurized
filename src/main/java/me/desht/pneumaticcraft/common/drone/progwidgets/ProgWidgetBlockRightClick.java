@@ -36,6 +36,7 @@ import net.minecraft.world.entity.ai.goal.Goal;
 import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
 
 import java.util.List;
+import java.util.Objects;
 
 public class ProgWidgetBlockRightClick extends ProgWidgetPlace implements IBlockRightClicker, ISidedWidget {
 
@@ -132,5 +133,18 @@ public class ProgWidgetBlockRightClick extends ProgWidgetPlace implements IBlock
     @Override
     public boolean[] getSides() {
         return ISidedWidget.getSidesFromDir(clickSide);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ProgWidgetBlockRightClick that = (ProgWidgetBlockRightClick) o;
+        return baseEquals(that) && sneaking == that.sneaking && clickSide == that.clickSide && clickType == that.clickType;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(baseHashCode(), clickSide, sneaking, clickType);
     }
 }

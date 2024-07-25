@@ -124,8 +124,8 @@ public class InventorySearcherScreen extends AbstractContainerScreen<InventorySe
      */
     public BlockPos getBlockPos() {
         ItemStack stack = inventory.getStackInSlot(0);
-        if (stack.getItem() instanceof IPositionProvider) {
-            List<BlockPos> posList = ((IPositionProvider) stack.getItem()).getRawStoredPositions(ClientUtils.getClientPlayer(), stack);
+        if (stack.getItem() instanceof IPositionProvider pp) {
+            List<BlockPos> posList = pp.getRawStoredPositions(ClientUtils.getClientPlayer(), stack);
             int posIdx = getPosIdx(stack);
             if (!posList.isEmpty()) {
                 return posList.get(Math.min(posIdx, posList.size() - 1));

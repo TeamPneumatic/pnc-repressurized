@@ -36,6 +36,7 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.List;
+import java.util.Objects;
 
 public class ProgWidgetBlockCondition extends ProgWidgetCondition {
     public static final MapCodec<ProgWidgetBlockCondition> CODEC = RecordCodecBuilder.mapCodec(builder ->
@@ -105,4 +106,16 @@ public class ProgWidgetBlockCondition extends ProgWidgetCondition {
         return ModProgWidgetTypes.CONDITION_BLOCK.get();
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ProgWidgetBlockCondition that = (ProgWidgetBlockCondition) o;
+        return baseEquals(that) && checkingForAir == that.checkingForAir && checkingForLiquids == that.checkingForLiquids;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(baseHashCode(), checkingForAir, checkingForLiquids);
+    }
 }

@@ -39,6 +39,7 @@ import me.desht.pneumaticcraft.api.drone.IProgWidget;
 import me.desht.pneumaticcraft.client.gui.ProgrammerScreen;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.block.entity.drone.ProgrammerBlockEntity;
+import me.desht.pneumaticcraft.common.drone.ProgWidgetUtils;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetCrafting;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetItemFilter;
 import me.desht.pneumaticcraft.common.inventory.ProgrammerMenu;
@@ -104,7 +105,7 @@ public class ProgrammerTransferHandler implements IRecipeTransferHandler<Program
                 ProgrammerBlockEntity programmer = programmerScreen.te;
                 programmer.progWidgets.addAll(params);
                 NetworkHandler.sendToServer(PacketProgrammerSync.forBlockEntity(programmer));
-                ProgrammerBlockEntity.updatePuzzleConnections(programmer.progWidgets);
+                ProgWidgetUtils.updatePuzzleConnections(programmer.progWidgets);
             }
             return null;
         }

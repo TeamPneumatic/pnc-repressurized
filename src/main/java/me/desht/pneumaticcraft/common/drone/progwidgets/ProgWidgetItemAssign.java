@@ -36,6 +36,7 @@ import net.minecraft.world.item.DyeColor;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
@@ -153,5 +154,19 @@ public class ProgWidgetItemAssign extends ProgWidget implements IVariableSetWidg
     @Override
     public void addVariables(Set<String> variables) {
         variables.add(variable);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        ProgWidgetItemAssign that = (ProgWidgetItemAssign) o;
+        return baseEquals(that) && Objects.equals(variable, that.variable);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(baseHashCode(), variable);
     }
 }

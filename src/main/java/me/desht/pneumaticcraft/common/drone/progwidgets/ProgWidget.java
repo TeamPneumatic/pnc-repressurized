@@ -46,15 +46,15 @@ public abstract class ProgWidget implements IProgWidget {
     public static final Codec<IProgWidget> CODEC = PNCRegistries.PROG_WIDGETS_REGISTRY.byNameCodec()
             .dispatch(IProgWidget::getType, ProgWidgetType::codec);
     public static final Codec<List<IProgWidget>> LIST_CODEC = CODEC.listOf();
-    public static final Codec<Versioned> VERSIONED_SAVE_CODEC = RecordCodecBuilder.create(builder -> builder.group(
-            Codec.INT.fieldOf("version").forGetter(Versioned::version),
-            LIST_CODEC.fieldOf("widgets").forGetter(Versioned::widgets)
-    ).apply(builder, Versioned::new));
 
     public static final StreamCodec<RegistryFriendlyByteBuf, IProgWidget> STREAM_CODEC
             = ByteBufCodecs.registry(PNCRegistries.PROG_WIDGETS_KEY).dispatch(IProgWidget::getType, ProgWidgetType::streamCodec);
 
+    // the current version when exporting to clipboard/pastebin
     public static final int JSON_VERSION = 3;
+
+    public static final int PROGWIDGET_WIDTH = 30;
+    public static final int PROGWIDGET_HEIGHT = 22;  // per parameter
 
     protected static <P extends ProgWidget> Products.P1<RecordCodecBuilder.Mu<P>, PositionFields> baseParts(RecordCodecBuilder.Instance<P> pInstance) {
         return pInstance.group(
@@ -65,7 +65,7 @@ public abstract class ProgWidget implements IProgWidget {
     static final MutableComponent ALL_TEXT = xlate("pneumaticcraft.gui.misc.all");
     static final MutableComponent NONE_TEXT = xlate("pneumaticcraft.gui.misc.none");
 
-    private PositionFields positionFields;
+    protected PositionFields positionFields;
     private IProgWidget[] connectedParameters;
     private IProgWidget outputStepConnection;
     private IProgWidget parent;
@@ -73,8 +73,10 @@ public abstract class ProgWidget implements IProgWidget {
 
     protected ProgWidget(PositionFields pos) {
         this.positionFields = pos;
-        if (!getParameters().isEmpty())
-            connectedParameters = new IProgWidget[getParameters().size() * 2]; //times two because black- and whitelist.
+        if (!getParameters().isEmpty()) {
+            // twice the parameter size: one for the whitelist (right) and one for the blacklist (left)
+            connectedParameters = new IProgWidget[getParameters().size() * 2];
+        }
     }
 
     protected static byte encodeSides(boolean[] sides) {
@@ -97,7 +99,7 @@ public abstract class ProgWidget implements IProgWidget {
     public abstract ProgWidgetType<?> getType();
 
     @Override
-    public ResourceLocation getTypeID() {
+    final public ResourceLocation getTypeID() {
         return PNCRegistries.PROG_WIDGETS_REGISTRY.getKey(getType());
     }
 
@@ -152,47 +154,47 @@ public abstract class ProgWidget implements IProgWidget {
     }
 
     @Override
-    public int getX() {
+    final public int getX() {
         return positionFields.x;
     }
 
     @Override
-    public int getY() {
+    final public int getY() {
         return positionFields.y;
     }
 
     @Override
-    public void setX(int x) {
+    final public void setX(int x) {
         this.positionFields = new PositionFields(x, positionFields.y);
     }
 
     @Override
-    public void setY(int y) {
+    final public void setY(int y) {
         this.positionFields = new PositionFields(positionFields.x, y);
     }
 
     @Override
     public int getWidth() {
-        return 30;
+        return PROGWIDGET_WIDTH;
     }
 
     @Override
     public int getHeight() {
-        return !getParameters().isEmpty() ? getParameters().size() * 22 : 22;
+        return PROGWIDGET_HEIGHT * Math.max(1, getParameters().size());
     }
 
     @Override
-    public void setParent(IProgWidget widget) {
+    final public void setParent(IProgWidget widget) {
         parent = widget;
     }
 
     @Override
-    public IProgWidget getParent() {
+    final public IProgWidget getParent() {
         return parent;
     }
 
     @Override
-    public Pair<Float,Float> getMaxUV() {
+    final public Pair<Float,Float> getMaxUV() {
         if (maxUV == null) {
             int width = getWidth() + (getParameters().isEmpty() ? 0 : 10);
             int height = getHeight() + (hasStepOutput() ? 10 : 0);
@@ -224,10 +226,10 @@ public abstract class ProgWidget implements IProgWidget {
     }
 
     @Override
-    public void setParameter(int index, IProgWidget parm) {
+    final public void setParameter(int index, IProgWidget paramWidget) {
         int index2 = index >= getParameters().size() ? index - getParameters().size() : index;
-        if (connectedParameters != null && (parm == null || parm.getType() == getParameters().get(index2)))
-            connectedParameters[index] = parm;
+        if (connectedParameters != null && (paramWidget == null || paramWidget.getType() == getParameters().get(index2)))
+            connectedParameters[index] = paramWidget;
     }
 
     @Override
@@ -296,6 +298,27 @@ public abstract class ProgWidget implements IProgWidget {
         return var.isEmpty() ? Component.empty() : Component.literal("\"" + var + "\"");
     }
 
+    protected boolean baseEquals(ProgWidget other) {
+        return positionFields.equals(other.positionFields);
+    }
+
+    protected int baseHashCode() {
+        return positionFields.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ProgWidget that = (ProgWidget) o;
+        return baseEquals(that);
+    }
+
+    @Override
+    public int hashCode() {
+        return baseHashCode();
+    }
+
     public record PositionFields(int x, int y) {
         public static final PositionFields DEFAULT = new PositionFields(0, 0);
 
@@ -309,8 +332,36 @@ public abstract class ProgWidget implements IProgWidget {
                 ByteBufCodecs.INT, PositionFields::y,
                 PositionFields::new
         );
+
+        public static PositionFields rightParam(IProgWidget widget, int paramIdx) {
+            return new ProgWidget.PositionFields(
+                    widget.getX() + widget.getWidth() / 2,
+                    widget.getY() + paramIdx * ProgWidget.PROGWIDGET_HEIGHT / 2
+            );
+        }
+
+        public static PositionFields leftParam(IProgWidget widget, int paramIdx) {
+            int width = widget.getParameters().get(paramIdx).create().getWidth();
+            return new ProgWidget.PositionFields(
+                    widget.getX() - width / 2,
+                    widget.getY() + paramIdx * 11
+            );
+        }
+
+        public static PositionFields below(IProgWidget widget) {
+            return new ProgWidget.PositionFields(widget.getX(), widget.getY() + widget.getHeight() / 2);
+        }
     }
 
+    /**
+     * Used for JSON & clipboard import/export
+     * @param version numeric version; always {@code ProgWidget.JSON_VERSION} when exporting
+     * @param widgets the exported widgets
+     */
     public record Versioned(int version, List<IProgWidget> widgets) {
+        public static final Codec<Versioned> CODEC = RecordCodecBuilder.create(builder -> builder.group(
+                Codec.INT.fieldOf("version").forGetter(Versioned::version),
+                LIST_CODEC.fieldOf("widgets").forGetter(Versioned::widgets)
+        ).apply(builder, Versioned::new));
     }
 }

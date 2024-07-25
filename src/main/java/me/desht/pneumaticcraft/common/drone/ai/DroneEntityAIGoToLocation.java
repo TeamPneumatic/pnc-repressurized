@@ -37,8 +37,7 @@ public class DroneEntityAIGoToLocation extends Goal {
         this.drone = drone;
         setFlags(EnumSet.allOf(Flag.class)); // so it won't run along with other AI tasks.
         this.gotoWidget = gotoWidget;
-        Set<BlockPos> set = new HashSet<>();
-        ((IAreaProvider) gotoWidget).getArea(set);
+        Set<BlockPos> set = ((IAreaProvider) gotoWidget).getArea(new HashSet<>());
         validArea = new ArrayList<>(set);
         positionSorter = new ChunkPositionSorter(drone);
     }

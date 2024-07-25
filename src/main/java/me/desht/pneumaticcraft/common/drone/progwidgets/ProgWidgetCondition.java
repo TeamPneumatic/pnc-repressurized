@@ -206,6 +206,29 @@ public abstract class ProgWidgetCondition extends ProgWidgetInventoryBase implem
         return cond;
     }
 
+    @Override
+    protected boolean baseEquals(ProgWidget other) {
+        return super.baseEquals(other) && other instanceof ProgWidgetCondition c && cond.equals(c.cond);
+    }
+
+    @Override
+    protected int baseHashCode() {
+        return Objects.hash(positionFields, invBaseFields, cond);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ProgWidgetCondition that = (ProgWidgetCondition) o;
+        return baseEquals(that);
+    }
+
+    @Override
+    public int hashCode() {
+        return baseHashCode();
+    }
+
     public record ConditionFields(boolean isAndFunc, Operator op, String measureVar) {
         public static final ConditionFields DEFAULT = new ConditionFields(false, Operator.GE, "");
 

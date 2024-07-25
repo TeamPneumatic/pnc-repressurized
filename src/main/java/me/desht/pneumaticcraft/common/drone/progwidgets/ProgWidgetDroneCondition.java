@@ -35,6 +35,7 @@ import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
@@ -83,6 +84,16 @@ public abstract class ProgWidgetDroneCondition extends ProgWidgetConditionBase i
                 }
             };
         }
+    }
+
+    @Override
+    protected boolean baseEquals(ProgWidget other) {
+        return super.baseEquals(other) && other instanceof ProgWidgetDroneCondition c && cond.equals(c.cond);
+    }
+
+    @Override
+    protected int baseHashCode() {
+        return Objects.hash(positionFields, cond);
     }
 
     @Override
@@ -155,6 +166,19 @@ public abstract class ProgWidgetDroneCondition extends ProgWidgetConditionBase i
 
     public DroneConditionFields droneConditionFields() {
         return cond;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ProgWidgetDroneCondition that = (ProgWidgetDroneCondition) o;
+        return baseEquals(that) && Objects.equals(cond, that.cond);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(positionFields, cond);
     }
 
     public record DroneConditionFields(boolean isAndFunc, Operator op, int requiredCount, String measureVar) {

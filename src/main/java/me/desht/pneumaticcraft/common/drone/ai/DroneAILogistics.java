@@ -197,8 +197,9 @@ public class DroneAILogistics extends Goal {
         }
 
         @Override
-        public void getArea(Set<BlockPos> area) {
+        public Set<BlockPos> getArea(Set<BlockPos> area) {
             area.addAll(this.area);
+            return area;
         }
 
         @Override

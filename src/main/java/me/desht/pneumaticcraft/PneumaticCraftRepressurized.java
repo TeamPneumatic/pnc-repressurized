@@ -53,6 +53,7 @@ import me.desht.pneumaticcraft.common.villages.VillageStructures;
 import me.desht.pneumaticcraft.lib.Log;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.ModList;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.loading.FMLEnvironment;
@@ -77,7 +78,6 @@ public class PneumaticCraftRepressurized {
             ClientSetup.onModConstruction(modBus);
         }
 
-        ThirdPartyManager.instance().preInit(modBus);
         Reflections.init();
 
         modBus.addListener(this::commonSetup);
@@ -102,12 +102,25 @@ public class PneumaticCraftRepressurized {
     }
 
     private void newRegistries(NewRegistryEvent event) {
+        // bit kludgy, but this event is fired right after we know for sure which mods are present,
+        //   and right before registry init happens
+        thirdPartyPreInit();
+
         event.register(PNCRegistries.HOE_HANDLER_REGISTRY);
         event.register(PNCRegistries.HARVEST_HANDLER_REGISTRY);
         event.register(PNCRegistries.PROG_WIDGETS_REGISTRY);
         event.register(PNCRegistries.PLAYER_MATCHER_REGISTRY);
         event.register(PNCRegistries.AREA_TYPE_SERIALIZER_REGISTRY);
         event.register(PNCRegistries.REMOTE_WIDGETS_REGISTRY);
+    }
+
+    private void thirdPartyPreInit() {
+        ModList.get().getModContainerById(Names.MOD_ID).ifPresent(pncMod -> {
+            ThirdPartyManager.instance().preInit(pncMod.getEventBus());
+            if (FMLEnvironment.dist.isClient()) {
+                ThirdPartyManager.instance().clientPreInit(pncMod.getEventBus());
+            }
+        });
     }
 
     private void registerAllDeferredRegistryObjects(IEventBus modBus) {

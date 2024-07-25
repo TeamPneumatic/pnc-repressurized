@@ -17,7 +17,6 @@
 
 package me.desht.pneumaticcraft.api.harvesting;
 
-import com.google.common.collect.Sets;
 import me.desht.pneumaticcraft.api.drone.IDrone;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -103,7 +102,7 @@ public abstract class HarvestHandler {
         private final Set<Block> blocks;
 
         public SimpleHarvestHandler(Block... blocks) {
-            this.blocks = Sets.newHashSet(blocks);
+            this.blocks = Set.of(blocks);
         }
 
         @Override

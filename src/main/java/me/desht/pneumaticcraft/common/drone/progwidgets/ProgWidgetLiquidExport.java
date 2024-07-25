@@ -36,6 +36,7 @@ import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.material.Fluid;
 
 import java.util.List;
+import java.util.Objects;
 
 public class ProgWidgetLiquidExport extends ProgWidgetInventoryBase implements ILiquidFiltered, ILiquidExport {
     public static final MapCodec<ProgWidgetLiquidExport> CODEC = RecordCodecBuilder.mapCodec(builder ->
@@ -103,5 +104,19 @@ public class ProgWidgetLiquidExport extends ProgWidgetInventoryBase implements I
     @Override
     public ProgWidgetType<?> getType() {
         return ModProgWidgetTypes.LIQUID_EXPORT.get();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        ProgWidgetLiquidExport that = (ProgWidgetLiquidExport) o;
+        return baseEquals(that) && placeFluidBlocks == that.placeFluidBlocks;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(baseHashCode(), placeFluidBlocks);
     }
 }

@@ -8,7 +8,6 @@ import me.desht.pneumaticcraft.common.block.entity.RedstoneController;
 import me.desht.pneumaticcraft.common.block.entity.SideConfigurator;
 import me.desht.pneumaticcraft.common.block.entity.utility.AphorismTileBlockEntity;
 import me.desht.pneumaticcraft.common.block.entity.utility.SmartChestBlockEntity;
-import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetArea;
 import me.desht.pneumaticcraft.common.drone.progwidgets.SavedDroneProgram;
 import me.desht.pneumaticcraft.common.item.ClassifyFilterItem;
 import me.desht.pneumaticcraft.common.item.JackHammerItem.DigMode;
@@ -84,10 +83,6 @@ public class ModDataComponents {
     public static final Supplier<DataComponentType<ImmutableBasket>> AMADRON_SHOPPING_BASKET
             = register("amadron_basket", ImmutableBasket.CODEC, ImmutableBasket.STREAM_CODEC);
 
-    // GPS Area Tool
-    public static final Supplier<DataComponentType<ProgWidgetArea.Immutable>> AREA_WIDGET
-            = register("area_widget", ProgWidgetArea.Immutable.CODEC, ProgWidgetArea.Immutable.STREAM_CODEC);
-
     // Tag Filter
     public static final Supplier<DataComponentType<List<ResourceLocation>>> TAG_FILTER_KEYS
             = register("tag_filter_keys", ResourceLocation.CODEC.listOf(), ResourceLocation.STREAM_CODEC.apply(ByteBufCodecs.list()));
@@ -161,7 +156,7 @@ public class ModDataComponents {
     public static final Supplier<DataComponentType<Boolean>> ABSORB_ORBS
             = register("absorb_orbs", Codec.BOOL, ByteBufCodecs.BOOL);
 
-    // Drone saved progwidgets
+    // Drone saved progwidgets: saved to drones, network API & gps area tools
     public static final Supplier<DataComponentType<SavedDroneProgram>> SAVED_DRONE_PROGRAM
             = register("saved_drone_program", SavedDroneProgram.CODEC, SavedDroneProgram.STREAM_CODEC);
     // Drone color

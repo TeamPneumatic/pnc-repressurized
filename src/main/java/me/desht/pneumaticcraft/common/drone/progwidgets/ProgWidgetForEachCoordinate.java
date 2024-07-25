@@ -37,10 +37,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.item.DyeColor;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class ProgWidgetForEachCoordinate extends ProgWidgetAreaItemBase implements IJumpBackWidget, IJump,
         IVariableSetWidget {
@@ -160,5 +157,19 @@ public class ProgWidgetForEachCoordinate extends ProgWidgetAreaItemBase implemen
     @Override
     public boolean canSetParameter(int index) {
         return index != 2;//Don't use the blacklist side of the jump parameter.
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        ProgWidgetForEachCoordinate that = (ProgWidgetForEachCoordinate) o;
+        return baseEquals(that) && Objects.equals(elementVariable, that.elementVariable);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(baseHashCode(), elementVariable);
     }
 }

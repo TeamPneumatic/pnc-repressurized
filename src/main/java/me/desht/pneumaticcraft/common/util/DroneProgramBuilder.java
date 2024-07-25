@@ -19,7 +19,8 @@ package me.desht.pneumaticcraft.common.util;
 
 import me.desht.pneumaticcraft.api.drone.IProgWidget;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
-import me.desht.pneumaticcraft.common.block.entity.drone.ProgrammerBlockEntity;
+import me.desht.pneumaticcraft.common.drone.ProgWidgetUtils;
+import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidget;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -41,8 +42,7 @@ public class DroneProgramBuilder {
         List<IProgWidget> allWidgets = new ArrayList<>();
         int curY = 0;
         for (DroneInstruction instruction : instructions) {
-            instruction.mainInstruction.setX(0);
-            instruction.mainInstruction.setY(curY);
+            instruction.mainInstruction.setPosition(0, curY);
 
             // Add whitelist pieces
             if (!instruction.whitelist.isEmpty()) {
@@ -52,8 +52,7 @@ public class DroneProgramBuilder {
                             .filter(w -> type == w.getType()).toList();
                     int curX = instruction.mainInstruction.getWidth() / 2;
                     for (IProgWidget whitelistItem : whitelist) {
-                        whitelistItem.setX(curX);
-                        whitelistItem.setY(curY + paramIdx * 11);
+                        whitelistItem.setPosition(curX, curY + paramIdx * ProgWidget.PROGWIDGET_HEIGHT / 2);
                         curX += whitelistItem.getWidth() / 2;
                     }
                 }
@@ -62,7 +61,7 @@ public class DroneProgramBuilder {
             curY += instruction.mainInstruction.getHeight() / 2;
             instruction.addToWidgets(allWidgets);
         }
-        ProgrammerBlockEntity.updatePuzzleConnections(allWidgets);
+        ProgWidgetUtils.updatePuzzleConnections(allWidgets);
         return allWidgets;
     }
 

@@ -35,6 +35,7 @@ import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.item.DyeColor;
 
 import java.util.List;
+import java.util.Objects;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
@@ -107,4 +108,17 @@ public class ProgWidgetHarvest extends ProgWidgetDigAndPlace implements IToolUse
         }
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        ProgWidgetHarvest that = (ProgWidgetHarvest) o;
+        return baseEquals(that) && requireHoe == that.requireHoe;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(baseHashCode(), requireHoe);
+    }
 }

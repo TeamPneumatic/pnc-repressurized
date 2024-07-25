@@ -35,6 +35,7 @@ import net.neoforged.neoforge.fluids.FluidStack;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
@@ -177,4 +178,17 @@ public class ProgWidgetLiquidFilter extends ProgWidget {
         return DyeColor.RED;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        ProgWidgetLiquidFilter that = (ProgWidgetLiquidFilter) o;
+        return baseEquals(that) && Objects.equals(fluidStack, that.fluidStack);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(baseHashCode(), fluidStack);
+    }
 }

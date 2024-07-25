@@ -62,8 +62,8 @@ public enum ItemRegistry implements IItemRegistry {
     }
 
     @Override
-    public boolean doesItemMatchFilter(@Nonnull ItemStack filterStack, @Nonnull ItemStack stack, boolean checkDurability, boolean checkNBT, boolean checkModSimilarity) {
-        return PneumaticCraftUtils.doesItemMatchFilter(filterStack, stack, checkDurability, checkNBT, checkModSimilarity);
+    public boolean doesItemMatchFilter(@Nonnull ItemStack filterStack, @Nonnull ItemStack stack, boolean checkDurability, boolean checkComponents, boolean checkModSimilarity) {
+        return PneumaticCraftUtils.doesItemMatchFilter(filterStack, stack, checkDurability, checkComponents, checkModSimilarity);
     }
 
     @Override

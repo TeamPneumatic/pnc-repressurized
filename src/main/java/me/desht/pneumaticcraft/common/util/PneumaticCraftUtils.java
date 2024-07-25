@@ -31,8 +31,6 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.core.*;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
@@ -358,9 +356,9 @@ public class PneumaticCraftUtils {
         if (filterStack.getItem() != stack.getItem()) return false;
 
         boolean durabilityOK = !checkDurability || (filterStack.getMaxDamage() > 0 && filterStack.getDamageValue() == stack.getDamageValue());
-        boolean nbtOK = !checkComponents || Objects.equals(filterStack.getComponents(), stack.getComponents());
+        boolean compOK = !checkComponents || Objects.equals(filterStack.getComponents(), stack.getComponents());
 
-        return durabilityOK && nbtOK;
+        return durabilityOK && compOK;
     }
 
     public static boolean isBlockLiquid(Block block) {
@@ -463,25 +461,11 @@ public class PneumaticCraftUtils {
     }
 
     /**
-     * Add all of the non-empty items in the given item handler to the given list.
-     * @param handler the item handler
-     * @param items the list
-     */
-    public static void collectNonEmptyItems(IItemHandler handler, NonNullList<ItemStack> items) {
-        if (handler != null) {
-            for (int i = 0; i < handler.getSlots(); i++) {
-                if (!handler.getStackInSlot(i).isEmpty()) {
-                    items.add(handler.getStackInSlot(i));
-                }
-            }
-        }
-    }
-
-    /**
-     * Convenience method, ported from 1.8.  Try to consume one item from the player's inventory.
+     * Convenience method, ported from 1.8.  Try to consume a specific amount of one item from the player's inventory.
+     * Data components are ignored here.
      *
      * @param inv player's inventory
-     * @param stack item to consume
+     * @param stack item to consume; the count is important here
      * @return true if an item was consumed
      */
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
@@ -514,13 +498,29 @@ public class PneumaticCraftUtils {
     }
 
     /**
-     * Get a translation string for the given key.  This has support for The One Probe which runs server-side.
+     * Add all the non-empty items in the given item handler to the given list.
+     * @param handler the item handler
+     * @param items the list
+     */
+    public static void collectNonEmptyItems(IItemHandler handler, NonNullList<ItemStack> items) {
+        if (handler != null) {
+            for (int i = 0; i < handler.getSlots(); i++) {
+                if (!handler.getStackInSlot(i).isEmpty()) {
+                    items.add(handler.getStackInSlot(i));
+                }
+            }
+        }
+    }
+
+    /**
+     * Convenience method to get a translatable component for the given key and possible arguments.
      *
-     * @param s the translation key
+     * @param key the translation key
+     * @param args zero or more arguments for the translation
      * @return the translated string (if called server-side, a string which The One Probe will handle client-side)
      */
-    public static MutableComponent xlate(String s, Object... args) {
-        return Component.translatable(s, args);
+    public static MutableComponent xlate(String key, Object... args) {
+        return Component.translatable(key, args);
     }
 
     public static MutableComponent dyeColorDesc(int c) {
@@ -528,16 +528,32 @@ public class PneumaticCraftUtils {
                 .withStyle(ChatFormatting.BOLD);
     }
 
-    public static void copyItemHandler(IItemHandler source, ItemStackHandler dest, int maxSlots) {
+    /**
+     * Copy the entire contents of one item handler to another (mutable) handler. This is a complete overwrite,
+     * adjusting the destination's size if needed.
+     *
+     * @param source the source handler
+     * @param dest the dest handler
+     * @param maxSlots the number of slots to copy
+     */
+    public static ItemStackHandler copyItemHandler(IItemHandler source, ItemStackHandler dest, int maxSlots) {
         int nSlots = Math.min(maxSlots, source.getSlots());
         dest.setSize(nSlots);
         for (int i = 0; i < nSlots; i++) {
             dest.setStackInSlot(i, source.getStackInSlot(i).copy());
         }
+        return dest;
     }
 
-    public static void copyItemHandler(IItemHandler source, ItemStackHandler dest) {
-        copyItemHandler(source, dest, source.getSlots());
+    /**
+     * Copy the entire contents of one item handler to another (mutable) handler. This is a complete overwrite,
+     * adjusting the destination's size if needed.
+     *
+     * @param source the source handler
+     * @param dest the dest handler
+     */
+    public static ItemStackHandler copyItemHandler(IItemHandler source, ItemStackHandler dest) {
+        return copyItemHandler(source, dest, source.getSlots());
     }
 
     public static String posToString(@Nullable BlockPos pos) {
@@ -657,20 +673,6 @@ public class PneumaticCraftUtils {
      */
     public static Component getBlockNameAt(Level level, BlockPos pos) {
         return level.isLoaded(pos) ? xlate(level.getBlockState(pos).getBlock().getDescriptionId()) : Component.empty().plainCopy();
-    }
-
-    public static CompoundTag copyNBTWithout(@Nonnull CompoundTag nbt, @Nonnull String skip) {
-        CompoundTag newNBT = new CompoundTag();
-
-        for (String key : nbt.getAllKeys()) {
-            if (!skip.equals(key)) {
-                Tag subTag = nbt.get(key);
-                if (subTag != null) {
-                    newNBT.put(key, subTag.copy());
-                }
-            }
-        }
-        return newNBT.isEmpty() ? new CompoundTag() : newNBT;
     }
 
     public static Set<TagKey<Item>> itemTags(Item item) {

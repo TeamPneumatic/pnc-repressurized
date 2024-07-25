@@ -22,19 +22,25 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.item.DyeColor;
 import org.apache.commons.lang3.tuple.Pair;
+import org.jetbrains.annotations.ApiStatus;
 
 import javax.annotation.Nonnull;
 import java.util.List;
 
 public interface IProgWidget {
+    @ApiStatus.NonExtendable
     int getX();
 
+    @ApiStatus.NonExtendable
     int getY();
 
+    @ApiStatus.NonExtendable
     void setX(int x);
 
+    @ApiStatus.NonExtendable
     void setY(int y);
 
+    @ApiStatus.NonExtendable
     default void setPosition(int x, int y) {
         setX(x);
         setY(y);
@@ -46,6 +52,7 @@ public interface IProgWidget {
 
     ResourceLocation getTexture();
 
+    @ApiStatus.NonExtendable
     Pair<Float,Float> getMaxUV();
 
     void getTooltip(List<Component> curTooltip);
@@ -66,6 +73,9 @@ public interface IProgWidget {
      */
     boolean hasStepOutput();
 
+    /**
+     * {@return true if this widget does not require any Programming Puzzle items to program a drone or Network API}
+     */
     default boolean freeToUse() { return false; }
 
     ProgWidgetType<?> getType();
@@ -128,18 +138,24 @@ public interface IProgWidget {
     @Nonnull
     List<ProgWidgetType<?>> getParameters();
 
-    void setParameter(int index, IProgWidget parm);
+    @ApiStatus.NonExtendable
+    void setParameter(int index, IProgWidget paramWidget);
 
     boolean canSetParameter(int index);
 
+    @ApiStatus.NonExtendable
     IProgWidget[] getConnectedParameters();
 
+    @ApiStatus.NonExtendable
     void setParent(IProgWidget widget);
 
+    @ApiStatus.NonExtendable
     IProgWidget getParent();
 
+    @ApiStatus.NonExtendable
     ResourceLocation getTypeID();
 
+    @ApiStatus.NonExtendable
     default String getTranslationKey() {
         String s = getTypeID().toString().replace(':', '.');
         return "programmingPuzzle." + s + ".name";
@@ -154,30 +170,55 @@ public interface IProgWidget {
      */
     boolean isAvailable();
 
+    /**
+     * Make a deep copy of this widget. It is essential that <strong>all</strong> mutable non-primitive fields of the
+     * widget are properly deep-copied. Immutable fields may be shallow-copied. Only serialized fields need to be
+     * copied; any fields which are dynamically calculated during a drone's runtime can be ignored.
+     *
+     * @return a copy of this progwidget
+     */
     IProgWidget copyWidget();
 
+    /**
+     * Can this widget be run by a drone which is under the control of a Drone Interface (ComputerCraft) ?
+     * @param drone the drone
+     * @param widget the widget to check, which is not necessarily this widget!
+     * @return true if the widget can be run, false otherwise
+     */
     boolean canBeRunByComputers(IDrone drone, IProgWidget widget);
 
+    /**
+     * Check if this widget's difficulty level is OK for the Programmer's current difficulty level. Used by the
+     * Programmer GUI to determine if this widget should be displayed in the widget tray.
+     *
+     * @param difficulty the Programmer's difficulty level
+     * @return true if the widget should be displayed, false otherwise
+     */
+    @ApiStatus.NonExtendable
     default boolean isDifficultyOK(WidgetDifficulty difficulty) {
         return getDifficulty().isNotMoreDifficult(difficulty);
     }
 
+    /**
+     * Get the difficulty level of this widget, which determines when it will be displayed in the Programmer GUI
+     * widget tray.
+     *
+     * @return the widget's difficulty
+     */
     WidgetDifficulty getDifficulty();
 
     @Nonnull
     List<Component> getExtraStringInfo();
 
     /**
-     * Cast from the API interface to our internal interface.  Should always succeed!
+     * Create a default instance of the given widget type (as if the widget were just created from the
+     * Programmer GUI's widget tray).
      *
      * @param type type of the progwidget
-     * @return the internal non-API progwidget type
+     * @return the a new progwidget with default settings
      */
     static IProgWidget create(ProgWidgetType<?> type) {
         return type.create();
-//        IProgWidgetBase base = type.create();
-//        Validate.isTrue(base instanceof IProgWidget);
-//        return (IProgWidgetBase) base;
     }
 
     enum WidgetDifficulty {

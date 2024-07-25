@@ -35,6 +35,7 @@ import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.item.DyeColor;
 
 import java.util.List;
+import java.util.Objects;
 
 public class ProgWidgetExternalProgram extends ProgWidgetAreaItemBase {
     public static final MapCodec<ProgWidgetExternalProgram> CODEC = RecordCodecBuilder.mapCodec(builder ->
@@ -96,5 +97,19 @@ public class ProgWidgetExternalProgram extends ProgWidgetAreaItemBase {
     @Override
     public boolean canBeRunByComputers(IDrone drone, IProgWidget widget) {
         return false;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        ProgWidgetExternalProgram that = (ProgWidgetExternalProgram) o;
+        return baseEquals(that) && shareVariables == that.shareVariables;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(baseHashCode(), shareVariables);
     }
 }

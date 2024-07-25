@@ -46,14 +46,14 @@ jobs:
           echo mod_version=$(grep ^mod_version= ./gradle.properties | cut -d= -f2) >> $GITHUB_OUTPUT
           echo mc_version=$(grep ^mc_version= ./gradle.properties | cut -d= -f2) >> $GITHUB_OUTPUT
       - name: Publish to Modmaven
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/actions/setup-gradle@v3
         env:
           MODMAVEN_USER: ${{ secrets.MODMAVEN_USER }}
           MODMAVEN_PASSWORD: ${{ secrets.MODMAVEN_PASSWORD }}
         with:
           arguments: publishMavenPublicationToModmavenRepository --no-daemon
       - name: Publish to Curseforge/Modrinth
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/actions/setup-gradle@v3
         env:
           CHANGELOG: ${{ github.event.release.body }}
           MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}

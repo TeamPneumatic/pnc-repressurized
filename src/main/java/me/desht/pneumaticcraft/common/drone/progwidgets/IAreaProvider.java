@@ -22,5 +22,5 @@ import net.minecraft.core.BlockPos;
 import java.util.Set;
 
 public interface IAreaProvider {
-    void getArea(Set<BlockPos> area);
+    Set<BlockPos> getArea(Set<BlockPos> area);
 }

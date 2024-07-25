@@ -36,10 +36,7 @@ import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
 
 import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class ProgWidgetForEachItem extends ProgWidget implements IJumpBackWidget, IJump, IVariableSetWidget {
     public static final MapCodec<ProgWidgetForEachItem> CODEC = RecordCodecBuilder.mapCodec(builder ->
@@ -164,5 +161,19 @@ public class ProgWidgetForEachItem extends ProgWidget implements IJumpBackWidget
     @Override
     protected boolean hasBlacklist() {
         return false;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        ProgWidgetForEachItem that = (ProgWidgetForEachItem) o;
+        return baseEquals(that) && Objects.equals(elementVariable, that.elementVariable);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(baseHashCode(), elementVariable);
     }
 }

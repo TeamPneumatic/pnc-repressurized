@@ -18,17 +18,19 @@
 package me.desht.pneumaticcraft.common.block.entity.drone;
 
 import me.desht.pneumaticcraft.api.drone.IProgWidget;
-import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.api.item.IProgrammable;
 import me.desht.pneumaticcraft.client.render.area.AreaRenderManager;
 import me.desht.pneumaticcraft.common.block.entity.AbstractTickingBlockEntity;
 import me.desht.pneumaticcraft.common.block.entity.IGUITextFieldSensitive;
-import me.desht.pneumaticcraft.common.drone.ProgWidgetSerializer;
+import me.desht.pneumaticcraft.common.drone.ProgWidgetUtils;
 import me.desht.pneumaticcraft.common.drone.progwidgets.*;
 import me.desht.pneumaticcraft.common.inventory.ProgrammerMenu;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.network.*;
-import me.desht.pneumaticcraft.common.registry.*;
+import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
+import me.desht.pneumaticcraft.common.registry.ModCriterionTriggers;
+import me.desht.pneumaticcraft.common.registry.ModItems;
+import me.desht.pneumaticcraft.common.registry.ModSounds;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -116,32 +118,31 @@ public class ProgrammerBlockEntity extends AbstractTickingBlockEntity implements
         tag.put("Items", inventory.serializeNBT(provider));
         tag.put("history", Util.make(new ListTag(), l -> l.addAll(history)));
         tag.putBoolean("ProgramOnInsert", programOnInsert);
-        tag.put(IProgrammable.NBT_WIDGETS, ProgWidgetSerializer.putWidgetsToNBT(provider, progWidgets));
+        tag.put(IProgrammable.NBT_WIDGETS, ProgWidgetUtils.putWidgetsToNBT(provider, progWidgets));
     }
 
-    public List<IProgWidget> mergeWidgetsFromNBT(List<IProgWidget> mergedWidgets) {
+    public List<IProgWidget> mergeWidgetsFromNBT(List<IProgWidget> toMerge) {
         List<IProgWidget> result = new ArrayList<>(progWidgets);
 
-        if (!progWidgets.isEmpty() && !mergedWidgets.isEmpty()) {
+        if (!progWidgets.isEmpty() && !toMerge.isEmpty()) {
             // move merged widgets so that they definitely don't overlap any existing widgets
             PuzzleExtents extents1 = getPuzzleExtents(progWidgets);
-            PuzzleExtents extents2 = getPuzzleExtents(mergedWidgets);
-            for (IProgWidget w : mergedWidgets) {
-                w.setX(w.getX() - extents2.x() + extents1.x() + extents1.width() + 10);
-                w.setY(w.getY() - extents2.y() + extents1.y());
+            PuzzleExtents extents2 = getPuzzleExtents(toMerge);
+            for (IProgWidget w : toMerge) {
+                w.setPosition(
+                        w.getX() - extents2.x() + extents1.x() + extents1.width() + 10,
+                        w.getY() - extents2.y() + extents1.y());
             }
         }
 
-        mergedWidgets.forEach(w -> {
+        toMerge.forEach(w -> {
             if (w instanceof ProgWidgetStart) {
                 // any start widget in the merged import is replaced with a label/text widget pair
-                ProgWidgetLabel lab = new ProgWidgetLabel();
-                lab.setX(w.getX());
-                lab.setY(w.getY());
-                result.add(lab);
+                ProgWidgetLabel label = new ProgWidgetLabel();
+                label.setPosition(w.getX(), w.getY());
+                result.add(label);
                 ProgWidgetText text = ProgWidgetText.withText("Merge #" + nonNullLevel().getGameTime());
-                text.setX(lab.getX() + lab.getWidth() / 2);
-                text.setY(lab.getY());
+                text.setPosition(label.getX() + label.getWidth() / 2, label.getY());
                 result.add(text);
             } else {
                 result.add(w);
@@ -174,75 +175,8 @@ public class ProgrammerBlockEntity extends AbstractTickingBlockEntity implements
 
     public void readProgWidgetsFromNBT(Tag tag, HolderLookup.Provider provider) {
         progWidgets.clear();
-        progWidgets.addAll(ProgWidgetSerializer.getWidgetsFromNBT(provider, tag));
-        updatePuzzleConnections(progWidgets);
-    }
-
-    public static void updatePuzzleConnections(List<IProgWidget> progWidgets) {
-        for (IProgWidget widget : progWidgets) {
-            widget.setParent(null);
-            List<ProgWidgetType<?>> parameters = widget.getParameters();
-            for (int i = 0; i < parameters.size() * 2; i++) {
-                widget.setParameter(i, null);
-            }
-            if (widget.hasStepOutput()) widget.setOutputWidget(null);
-        }
-
-        for (IProgWidget checkedWidget : progWidgets) {
-            // check for connection to the right of the checked widget.
-            List<ProgWidgetType<?>> parameters = checkedWidget.getParameters();
-            if (!parameters.isEmpty()) {
-                for (IProgWidget widget : progWidgets) {
-                    if (widget != checkedWidget && checkedWidget.getX() + checkedWidget.getWidth() / 2 == widget.getX()) {
-                        for (int i = 0; i < parameters.size(); i++) {
-                            if (checkedWidget.canSetParameter(i)
-                                    && parameters.get(i) == widget.returnType()
-                                    && checkedWidget.getY() + i * 11 == widget.getY())
-                            {
-                                checkedWidget.setParameter(i, widget);
-                                widget.setParent(checkedWidget);
-                            }
-                        }
-                    }
-                }
-            }
-
-            // check for connection to the bottom of the checked widget.
-            if (checkedWidget.hasStepOutput()) {
-                for (IProgWidget widget : progWidgets) {
-                    if (widget.hasStepInput()
-                            && widget.getX() == checkedWidget.getX()
-                            && widget.getY() == checkedWidget.getY() + checkedWidget.getHeight() / 2)
-                    {
-                        checkedWidget.setOutputWidget(widget);
-                    }
-                }
-            }
-        }
-
-        // go again for the blacklist (as those are mirrored)
-        for (IProgWidget checkedWidget : progWidgets) {
-            if (checkedWidget.returnType() == null) {
-                // this is a program widget rather than a parameter widget (area, item filter).
-                List<ProgWidgetType<?>> parameters = checkedWidget.getParameters();
-                for (int i = 0; i < parameters.size(); i++) {
-                    if (checkedWidget.canSetParameter(i)) {
-                        for (IProgWidget widget : progWidgets) {
-                            if (parameters.get(i) == widget.returnType()
-                                    && widget != checkedWidget
-                                    && widget.getX() + widget.getWidth() / 2 == checkedWidget.getX()
-                                    && widget.getY() == checkedWidget.getY() + i * 11) {
-                                IProgWidget root = widget;
-                                while (root.getParent() != null) {
-                                    root = root.getParent();
-                                }
-                                checkedWidget.setParameter(i + parameters.size(), root);
-                            }
-                        }
-                    }
-                }
-            }
-        }
+        progWidgets.addAll(ProgWidgetUtils.getWidgetsFromNBT(provider, tag));
+        ProgWidgetUtils.updatePuzzleConnections(progWidgets);
     }
 
     @Override
@@ -285,18 +219,18 @@ public class ProgrammerBlockEntity extends AbstractTickingBlockEntity implements
     }
 
     private void tryImport(boolean merge) {
-        ItemStack stack = inventory.getStackInSlot(PROGRAM_SLOT);
-        SavedDroneProgram program = stack.get(ModDataComponents.SAVED_DRONE_PROGRAM);
-//        CompoundTag nbt = stack.isEmpty() ? null : stack.getTag();
-        if (program != null) {
-            List<IProgWidget> widgets = merge ? mergeWidgetsFromNBT(program.buildProgram()) : program.buildProgram();
+        List<IProgWidget> saved = SavedDroneProgram.loadProgWidgets(inventory.getStackInSlot(PROGRAM_SLOT));
+        List<IProgWidget> newWidgets = merge ? mergeWidgetsFromNBT(saved) : saved;
+
+        if (!newWidgets.isEmpty()) {
+            List<IProgWidget> widgets = merge ? mergeWidgetsFromNBT(newWidgets) : newWidgets;
             setProgWidgets(widgets, null);
         } else if (!merge) {
-            setProgWidgets(Collections.emptyList(), null);
+            setProgWidgets(List.of(), null);
         }
     }
 
-    public void tryProgramDrone(Player player) {
+    private void tryProgramDrone(Player player) {
         if (inventory.getStackInSlot(PROGRAM_SLOT).getItem() instanceof IProgrammable) {
             if (player == null || !player.isCreative()) {
                 int required = getRequiredPuzzleCount();
@@ -312,8 +246,10 @@ public class ProgrammerBlockEntity extends AbstractTickingBlockEntity implements
                     returnPuzzlePieces(player, -required);
                 }
             }
+
             ItemStack stack = inventory.getStackInSlot(PROGRAM_SLOT);
-            stack.set(ModDataComponents.SAVED_DRONE_PROGRAM, SavedDroneProgram.create(progWidgets));
+            SavedDroneProgram.writeToItem(stack, progWidgets);
+
             if (player instanceof ServerPlayer sp) {
                 NetworkHandler.sendToPlayer(new PacketPlaySound(ModSounds.HUD_INIT_COMPLETE.get(), SoundSource.BLOCKS, getBlockPos(), 1.0f, 1.0f, false), sp);
                 ModCriterionTriggers.PROGRAM_DRONE.get().trigger(sp);
@@ -367,18 +303,13 @@ public class ProgrammerBlockEntity extends AbstractTickingBlockEntity implements
      */
     public int getRequiredPuzzleCount() {
         ItemStack stackInSlot = inventory.getStackInSlot(PROGRAM_SLOT);
-        if (!stackInSlot.isEmpty() && ((IProgrammable) stackInSlot.getItem()).usesPieces(stackInSlot)) {
-            List<IProgWidget> inDrone = getProgWidgets(stackInSlot);
-            int dronePieces = (int) inDrone.stream().filter(p -> !p.freeToUse()).count();
+        if (stackInSlot.getItem() instanceof IProgrammable programmable && programmable.usesPieces(stackInSlot)) {
+            int dronePieces = SavedDroneProgram.fromItemStack(stackInSlot).getRequiredPuzzlePieces();
             int required = (int) progWidgets.stream().filter(p -> !p.freeToUse()).count();
             return (required - dronePieces) * stackInSlot.getCount();
         } else {
             return 0;
         }
-    }
-
-    public static List<IProgWidget> getProgWidgets(ItemStack iStack) {
-        return iStack.getOrDefault(ModDataComponents.SAVED_DRONE_PROGRAM, SavedDroneProgram.EMPTY).buildProgram();
     }
 
     /**
@@ -460,15 +391,15 @@ public class ProgrammerBlockEntity extends AbstractTickingBlockEntity implements
     public void previewArea(IProgWidget progWidget) {
         if (progWidget == null) {
             AreaRenderManager.getInstance().removeHandlers(this);
-        } else if (progWidget instanceof IAreaProvider) {
+        } else if (progWidget instanceof IAreaProvider areaProvider) {
             Set<BlockPos> area = new HashSet<>();
-            ((IAreaProvider) progWidget).getArea(area);
+            areaProvider.getArea(area);
             AreaRenderManager.getInstance().showArea(area, 0x9000FF00, this);
         }
     }
 
     private void saveToHistory(HolderLookup.Provider provider) {
-        Tag tag = ProgWidgetSerializer.putWidgetsToNBT(provider, progWidgets);
+        Tag tag = ProgWidgetUtils.putWidgetsToNBT(provider, progWidgets);
         if (history.isEmpty() || !history.get(historyIndex).equals(tag)) {
             while (history.size() > historyIndex + 1) {
                 history.remove(historyIndex + 1);
@@ -513,7 +444,8 @@ public class ProgrammerBlockEntity extends AbstractTickingBlockEntity implements
     }
 
     /**
-     * Replace the prog widget list when an update packet is received or an import is done.
+     * Replace the prog widget list when an update packet is received or an import is done. Can be called on
+     * client or server.
      *
      * @param widgets the new widget list
      * @param player player who just made this change, may be null (used for syncing - ignored clientside)
@@ -521,7 +453,7 @@ public class ProgrammerBlockEntity extends AbstractTickingBlockEntity implements
     public void setProgWidgets(List<IProgWidget> widgets, Player player) {
         progWidgets.clear();
         progWidgets.addAll(widgets);
-        updatePuzzleConnections(progWidgets);
+        ProgWidgetUtils.updatePuzzleConnections(progWidgets);
         if (!nonNullLevel().isClientSide) {
             setChanged();
             saveToHistory(nonNullLevel().registryAccess());

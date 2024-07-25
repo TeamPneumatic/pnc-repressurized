@@ -22,8 +22,10 @@ import me.desht.pneumaticcraft.api.pressure.IPressurizableItem;
 import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.upgrades.UpgradableItemUtils;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 
 public class PressurizableItem extends Item implements IPressurizableItem  {
     private final int volume;
@@ -51,6 +53,11 @@ public class PressurizableItem extends Item implements IPressurizableItem  {
         return PNCCapabilities.getAirHandler(stack)
                 .map(h -> Math.round(h.getPressure() / h.maxPressure() * 13F))
                 .orElse(0);
+    }
+
+    @Override
+    public void inventoryTick(ItemStack pStack, Level pLevel, Entity pEntity, int pSlotId, boolean pIsSelected) {
+        super.inventoryTick(pStack, pLevel, pEntity, pSlotId, pIsSelected);
     }
 
     @Override

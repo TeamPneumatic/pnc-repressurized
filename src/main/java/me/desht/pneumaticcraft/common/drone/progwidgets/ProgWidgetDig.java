@@ -35,6 +35,7 @@ import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.item.DyeColor;
 
 import java.util.List;
+import java.util.Objects;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
@@ -107,4 +108,16 @@ public class ProgWidgetDig extends ProgWidgetDigAndPlace implements IToolUser {
         }
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ProgWidgetDig that = (ProgWidgetDig) o;
+        return baseEquals(that) && requireDiggingTool == that.requireDiggingTool;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(baseHashCode(), requireDiggingTool);
+    }
 }

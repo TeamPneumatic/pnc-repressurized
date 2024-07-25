@@ -191,24 +191,28 @@ public abstract class ProgWidgetAreaItemBase extends ProgWidget
     }
 
     @Override
-    public void getArea(Set<BlockPos> area) {
+    public Set<BlockPos> getArea(Set<BlockPos> area) {
         getArea(area, (ProgWidgetArea) getConnectedParameters()[0], (ProgWidgetArea) getConnectedParameters()[getParameters().size()]);
+        return area;
     }
 
-    public static void getArea(Set<BlockPos> area, ProgWidgetArea whitelistWidget, ProgWidgetArea blacklistWidget) {
-        if (whitelistWidget == null) return;
-        ProgWidgetArea widget = whitelistWidget;
-        while (widget != null) {
-            widget.getArea(area);
-            widget = (ProgWidgetArea) widget.getConnectedParameters()[0];
+    public static Set<BlockPos> getArea(Set<BlockPos> area, ProgWidgetArea whitelistWidget, ProgWidgetArea blacklistWidget) {
+        if (whitelistWidget != null) {
+            ProgWidgetArea widget = whitelistWidget;
+            while (widget != null) {
+                widget.getArea(area);
+                widget = (ProgWidgetArea) widget.getConnectedParameters()[0];
+            }
+            widget = blacklistWidget;
+            Set<BlockPos> blacklistedArea = new HashSet<>();
+            while (widget != null) {
+                widget.getArea(blacklistedArea);
+                widget = (ProgWidgetArea) widget.getConnectedParameters()[0];
+            }
+            area.removeAll(blacklistedArea);
         }
-        widget = blacklistWidget;
-        Set<BlockPos> blacklistedArea = new HashSet<>();
-        while (widget != null) {
-            widget.getArea(blacklistedArea);
-            widget = (ProgWidgetArea) widget.getConnectedParameters()[0];
-        }
-        area.removeAll(blacklistedArea);
+
+        return area;
     }
 
     @Override

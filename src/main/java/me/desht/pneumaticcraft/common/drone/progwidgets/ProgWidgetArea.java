@@ -266,8 +266,9 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
     }
 
     @Override
-    public void getArea(Set<BlockPos> area) {
+    public Set<BlockPos> getArea(Set<BlockPos> area) {
         getArea(area, areaType);
+        return area;
     }
 
     public void getArea(Set<BlockPos> area, AreaType areaType) {
@@ -370,7 +371,7 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
     }
 
     public Optional<BlockPos> getPos(int index) {
-        return Optional.ofNullable(pos[index]);
+        return pos[index] == null ? Optional.empty() : Optional.of(pos[index].immutable());
     }
 
     public String getVarName(int index) {
@@ -417,38 +418,5 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
     @Override
     public int hashCode() {
         return Objects.hash(getPosition(), Arrays.hashCode(pos), Arrays.hashCode(varNames), areaType);
-    }
-
-    public Immutable toImmutable() {
-        return new Immutable(getPos(0), getPos(1), areaType.copy(), getVarName(0), getVarName(1));
-    }
-
-    public record Immutable(Optional<BlockPos> pos1, Optional<BlockPos> pos2, AreaType areaType, String var1, String var2) {
-        private static final AreaTypeBox BOX_FILLED = new AreaTypeBox(AreaTypeBox.BoxType.FILLED);
-        public static final Codec<Immutable> CODEC = RecordCodecBuilder.create(builder -> builder.group(
-                BlockPos.CODEC.optionalFieldOf("pos1").forGetter(Immutable::pos1),
-                BlockPos.CODEC.optionalFieldOf("pos2").forGetter(Immutable::pos2),
-                AreaType.CODEC.optionalFieldOf("area_type", BOX_FILLED).forGetter(Immutable::areaType),
-                Codec.STRING.optionalFieldOf("var1", "").forGetter(Immutable::var1),
-                Codec.STRING.optionalFieldOf("var2", "").forGetter(Immutable::var2)
-        ).apply(builder, Immutable::new));
-        public static final StreamCodec<RegistryFriendlyByteBuf, Immutable> STREAM_CODEC = StreamCodec.composite(
-                ByteBufCodecs.optional(BlockPos.STREAM_CODEC), Immutable::pos1,
-                ByteBufCodecs.optional(BlockPos.STREAM_CODEC), Immutable::pos2,
-                AreaType.STREAM_CODEC, Immutable::areaType,
-                ByteBufCodecs.STRING_UTF8, Immutable::var1,
-                ByteBufCodecs.STRING_UTF8, Immutable::var2,
-                Immutable::new
-        );
-        public static final Immutable DEFAULT = new Immutable(Optional.empty(), Optional.empty(),
-                BOX_FILLED, "", "");
-
-        public AreaType areaType() {
-            return areaType.copy();
-        }
-
-        public ProgWidgetArea toMutable() {
-            return new ProgWidgetArea(PositionFields.DEFAULT, pos1, pos2, areaType(), var1, var2);
-        }
     }
 }

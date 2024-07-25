@@ -34,6 +34,7 @@ import net.minecraft.world.item.DyeColor;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 public class ProgWidgetText extends ProgWidget {
     public static final MapCodec<ProgWidgetText> CODEC = RecordCodecBuilder.mapCodec(builder ->
@@ -127,5 +128,18 @@ public class ProgWidgetText extends ProgWidget {
     @Override
     public DyeColor getColor() {
         return DyeColor.LIGHT_BLUE;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ProgWidgetText that = (ProgWidgetText) o;
+        return baseEquals(that) && Objects.equals(string, that.string);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(baseHashCode(), string);
     }
 }

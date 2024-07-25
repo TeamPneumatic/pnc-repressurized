@@ -26,6 +26,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.codec.StreamCodec;
 
 import java.util.BitSet;
+import java.util.Objects;
 
 public class AxisOptions {
     public static final Codec<AxisOptions> CODEC = RecordCodecBuilder.create(builder -> builder.group(
@@ -73,5 +74,18 @@ public class AxisOptions {
 
     public AxisOptions copy() {
         return new AxisOptions(BitSet.valueOf(options.toByteArray()));
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        AxisOptions that = (AxisOptions) o;
+        return Objects.equals(options, that.options);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(options);
     }
 }

@@ -30,6 +30,7 @@ import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
@@ -91,6 +92,30 @@ public abstract class ProgWidgetDigAndPlace extends ProgWidgetAreaItemBase imple
 
     DroneAIBlockInteraction<?> setupMaxActions(DroneAIBlockInteraction<?> ai, IMaxActions widget) {
         return widget.useMaxActions() ? ai.setMaxActions(widget.getMaxActions()) : ai;
+    }
+
+    @Override
+    protected boolean baseEquals(ProgWidget other) {
+        return super.baseEquals(other) && other instanceof ProgWidgetDigAndPlace d && digPlaceFields.equals(d.digPlaceFields);
+    }
+
+    @Override
+    protected int baseHashCode() {
+        return Objects.hash(positionFields, digPlaceFields);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        ProgWidgetDigAndPlace that = (ProgWidgetDigAndPlace) o;
+        return baseEquals(that);
+    }
+
+    @Override
+    public int hashCode() {
+        return baseHashCode();
     }
 
     public record DigPlaceFields(Ordering order, int maxActions, boolean useMaxActions) {

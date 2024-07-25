@@ -109,8 +109,8 @@ public class ProgWidgetEntityImport extends ProgWidget implements IAreaProvider,
     }
 
     @Override
-    public void getArea(Set<BlockPos> area) {
-        ProgWidgetAreaItemBase.getArea(area, (ProgWidgetArea) getConnectedParameters()[0], (ProgWidgetArea) getConnectedParameters()[2]);
+    public Set<BlockPos> getArea(Set<BlockPos> area) {
+        return ProgWidgetAreaItemBase.getArea(area, (ProgWidgetArea) getConnectedParameters()[0], (ProgWidgetArea) getConnectedParameters()[2]);
     }
 
     @Override

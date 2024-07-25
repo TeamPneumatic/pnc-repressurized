@@ -38,7 +38,7 @@ import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.block.entity.drone.ProgrammerBlockEntity;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
-import me.desht.pneumaticcraft.common.drone.ProgWidgetSerializer;
+import me.desht.pneumaticcraft.common.drone.ProgWidgetUtils;
 import me.desht.pneumaticcraft.common.drone.progwidgets.*;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetCoordinateOperator.EnumOperator;
 import me.desht.pneumaticcraft.common.inventory.ProgrammerMenu;
@@ -100,7 +100,6 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
     private double dragMouseStartX, dragMouseStartY;
     private double dragWidgetStartX, dragWidgetStartY;
     private boolean draggingBG;
-    private static final int FAULT_MARGIN = 4;
     private int widgetPage;
     private int maxPage;
 
@@ -139,7 +138,7 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
         super.init();
 
         if (pastebinGui != null && pastebinGui.getOutput() != null) {
-            List<IProgWidget> progWidgets = ProgWidgetSerializer.getWidgetsFromJson(registryAccess(), pastebinGui.getOutput());
+            List<IProgWidget> progWidgets = ProgWidgetUtils.getWidgetsFromJson(registryAccess(), pastebinGui.getOutput());
             if (pastebinGui.shouldMerge) {
                 List<IProgWidget> newWidgets = te.mergeWidgetsFromNBT(progWidgets);
                 te.setProgWidgets(newWidgets, ClientUtils.getClientPlayer());
@@ -308,8 +307,7 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
         for (ProgWidgetType<?> type : PNCRegistries.PROG_WIDGETS_REGISTRY) {
             IProgWidget widget = IProgWidget.create(type);
             if (widget.isAvailable() && widget.isDifficultyOK(programmerDifficulty)) {
-                widget.setY(y);
-                widget.setX(showAllWidgets ? x : getWidgetTrayRight());
+                widget.setPosition(showAllWidgets ? x : getWidgetTrayRight(), y);
                 int widgetHeight = widget.getHeight() / 2 + (widget.hasStepOutput() ? 5 : 0) + 1;
                 y += widgetHeight;
 
@@ -405,7 +403,7 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
     }
 
     private void pastebin() {
-        JsonElement json = ProgWidgetSerializer.putWidgetsToJson(registryAccess(), te.progWidgets);
+        JsonElement json = ProgWidgetUtils.putWidgetsToJson(registryAccess(), te.progWidgets);
         minecraft.setScreen(pastebinGui = new PastebinScreen(this, json, ConversionType.PROG_WIDGET));
     }
 
@@ -564,7 +562,7 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
         while (iter.hasNext()) {
             RemovingWidget rw = iter.next();
             IProgWidget w = rw.widget;
-            if (w.getY() + rw.ty > h / scale) {
+            if (w.getY() + rw.ty > h) {
                 iter.remove();
             } else {
                 poseStack.pushPose();
@@ -578,17 +576,6 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
         }
         RenderSystem.disableBlend();
         poseStack.popPose();
-    }
-
-    @Override
-    public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
-//        if (nameField.isFocused()) {
-//            return nameField.keyReleased(keyCode, scanCode, modifiers);
-//        } else if (filterField.isFocused() && keyCode != GLFW.GLFW_KEY_TAB) {
-//            return filterField.keyReleased(keyCode, scanCode, modifiers);
-//        } else {
-        return super.keyReleased(keyCode, scanCode, modifiers);
-//        }
     }
 
     @Override
@@ -697,108 +684,6 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
     }
 
     /**
-     * Here's where we "snap together" nearby widgets which can connect.  Called when a widget is placed (on mouse release).
-     */
-    private void handlePuzzleMargins() {
-        // Check for connection to the left of the dragged widget.
-        ProgWidgetType<?> returnValue = draggingWidget.returnType();
-        if (returnValue != null) {
-            for (IProgWidget widget : te.progWidgets) {
-                if (widget != draggingWidget && Math.abs(widget.getX() + widget.getWidth() / 2 - draggingWidget.getX()) <= FAULT_MARGIN) {
-                    List<ProgWidgetType<?>> parameters = widget.getParameters();
-                    for (int i = 0; i < parameters.size(); i++) {
-                        if (widget.canSetParameter(i) && parameters.get(i) == returnValue
-                                && Math.abs(widget.getY() + i * 11 - draggingWidget.getY()) <= FAULT_MARGIN) {
-                            setConnectingWidgetsToXY(draggingWidget, widget.getX() + widget.getWidth() / 2, widget.getY() + i * 11);
-                            return;
-                        }
-                    }
-                }
-            }
-        }
-
-        // check for connection to the right of the dragged widget.
-        List<ProgWidgetType<?>> parameters = draggingWidget.getParameters();
-        if (!parameters.isEmpty()) {
-            for (IProgWidget widget : te.progWidgets) {
-                IProgWidget outerPiece = draggingWidget;
-                if (outerPiece.returnType() != null) {//When the piece is a parameter pice (area, item filter, text).
-                    while (outerPiece.getConnectedParameters()[0] != null) {
-                        outerPiece = outerPiece.getConnectedParameters()[0];
-                    }
-                }
-                if (widget != draggingWidget && Math.abs(outerPiece.getX() + outerPiece.getWidth() / 2 - widget.getX()) <= FAULT_MARGIN) {
-                    if (widget.returnType() != null) {
-                        for (int i = 0; i < parameters.size(); i++) {
-                            if (draggingWidget.canSetParameter(i) && parameters.get(i) == widget.returnType() && Math.abs(draggingWidget.getY() + i * 11 - widget.getY()) <= FAULT_MARGIN) {
-                                setConnectingWidgetsToXY(draggingWidget, widget.getX() - draggingWidget.getWidth() / 2 - (outerPiece.getX() - draggingWidget.getX()), widget.getY() - i * 11);
-                            }
-                        }
-                    } else {
-                        List<ProgWidgetType<?>> checkingPieceParms = widget.getParameters();
-                        for (int i = 0; i < checkingPieceParms.size(); i++) {
-                            if (widget.canSetParameter(i + parameters.size()) && checkingPieceParms.get(i) == parameters.getFirst() && Math.abs(widget.getY() + i * 11 - draggingWidget.getY()) <= FAULT_MARGIN) {
-                                setConnectingWidgetsToXY(draggingWidget, widget.getX() - draggingWidget.getWidth() / 2 - (outerPiece.getX() - draggingWidget.getX()), widget.getY() + i * 11);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        // check for connection to the top of the dragged widget.
-        if (draggingWidget.hasStepInput()) {
-            for (IProgWidget widget : te.progWidgets) {
-                if (widget.hasStepOutput() && Math.abs(widget.getX() - draggingWidget.getX()) <= FAULT_MARGIN && Math.abs(widget.getY() + widget.getHeight() / 2 - draggingWidget.getY()) <= FAULT_MARGIN) {
-                    setConnectingWidgetsToXY(draggingWidget, widget.getX(), widget.getY() + widget.getHeight() / 2);
-                }
-            }
-        }
-
-        // check for connection to the bottom of the dragged widget.
-        if (draggingWidget.hasStepOutput()) {
-            for (IProgWidget widget : te.progWidgets) {
-                if (widget.hasStepInput() && Math.abs(widget.getX() - draggingWidget.getX()) <= FAULT_MARGIN && Math.abs(widget.getY() - draggingWidget.getY() - draggingWidget.getHeight() / 2) <= FAULT_MARGIN) {
-                    setConnectingWidgetsToXY(draggingWidget, widget.getX(), widget.getY() - draggingWidget.getHeight() / 2);
-                }
-            }
-        }
-    }
-
-    /**
-     * Set the position of the given widget and (recursively) all widgets which connect to it on the side or below
-     * (but not above).
-     *
-     * @param widget the widget
-     * @param x new X pos
-     * @param y new Y pos
-     */
-    private void setConnectingWidgetsToXY(IProgWidget widget, int x, int y) {
-        widget.setX(x);
-        widget.setY(y);
-        IProgWidget[] connectingWidgets = widget.getConnectedParameters();
-        if (connectingWidgets != null) {
-            for (int i = 0; i < connectingWidgets.length; i++) {
-                if (connectingWidgets[i] != null) {
-                    if (i < connectingWidgets.length / 2) {
-                        setConnectingWidgetsToXY(connectingWidgets[i], x + widget.getWidth() / 2, y + i * 11);
-                    } else {
-                        int totalWidth = 0;
-                        IProgWidget branch = connectingWidgets[i];
-                        while (branch != null) {
-                            totalWidth += branch.getWidth() / 2;
-                            branch = branch.getConnectedParameters()[0];
-                        }
-                        setConnectingWidgetsToXY(connectingWidgets[i], x - totalWidth, y + (i - connectingWidgets.length / 2) * 11);
-                    }
-                }
-            }
-        }
-        IProgWidget outputWidget = widget.getOutputWidget();
-        if (outputWidget != null) setConnectingWidgetsToXY(outputWidget, x, y + widget.getHeight() / 2);
-    }
-
-    /**
      * Called when shift + middle-clicking: copy this widget and all connecting widgets to the side and/or below
      * (but not above).
      * @param original original widget being copied
@@ -890,9 +775,6 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
 
         if (!programmedItem.isEmpty()) {
             nameField.setEditable(true);
-//            if (!nameField.getValue().equals(programmedItem.getHoverName().getString())) {
-//                nameField.setValue(programmedItem.getHoverName().getString());
-//            }
         } else {
             nameField.setEditable(false);
             nameField.setValue("");
@@ -1052,34 +934,31 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
                 operator.setVariable(entry.getValue());
 
                 int y = prevOperator.getY() + prevOperator.getHeight() / 2;
-                operator.setX(x);
-                operator.setY(y);
+                operator.setPosition(x, y);
                 if (!isValidPlaced(operator)) return false;
 
-                ProgWidgetCoordinate coordinatePiece1 = new ProgWidgetCoordinate();
-                coordinatePiece1.setX(x + prevOperator.getWidth() / 2);
-                coordinatePiece1.setY(y);
-                coordinatePiece1.setVariable(baseWidget.getVariable());
-                coordinatePiece1.setUsingVariable(true);
-                if (!isValidPlaced(coordinatePiece1)) return false;
+                ProgWidgetCoordinate coord1 = new ProgWidgetCoordinate();
+                coord1.setPosition(x + prevOperator.getWidth() / 2, y);
+                coord1.setVariable(baseWidget.getVariable());
+                coord1.setUsingVariable(true);
+                if (!isValidPlaced(coord1)) return false;
 
-                ProgWidgetCoordinate coordinatePiece2 = new ProgWidgetCoordinate();
-                coordinatePiece2.setX(x + prevOperator.getWidth() / 2 + coordinatePiece1.getWidth() / 2);
-                coordinatePiece2.setY(y);
-                coordinatePiece2.setCoordinate(entry.getKey());
-                if (!isValidPlaced(coordinatePiece2)) return false;
+                ProgWidgetCoordinate coord2 = new ProgWidgetCoordinate();
+                coord2.setPosition(x + prevOperator.getWidth() / 2 + coord1.getWidth() / 2, y);
+                coord2.setCoordinate(entry.getKey());
+                if (!isValidPlaced(coord2)) return false;
 
                 if (!simulate) {
                     te.progWidgets.add(operator);
-                    te.progWidgets.add(coordinatePiece1);
-                    te.progWidgets.add(coordinatePiece2);
+                    te.progWidgets.add(coord1);
+                    te.progWidgets.add(coord2);
                 }
                 if (firstOperator == null) firstOperator = operator;
                 prevOperator = operator;
             }
             if (!simulate) {
                 NetworkHandler.sendToServer(PacketProgrammerSync.forBlockEntity(te));
-                ProgrammerBlockEntity.updatePuzzleConnections(te.progWidgets);
+                ProgWidgetUtils.updatePuzzleConnections(te.progWidgets);
             }
         }
         return true;
@@ -1219,8 +1098,7 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
             int n = te.progWidgets.size();
             for (int i = 0; i < toCreate.size(); i++) {
                 IProgWidget p = toCreate.get(i);
-                p.setX((int) (mouseX - leftPos - p.getWidth() / 3d));
-                p.setY((int) (mouseY - topPos - p.getHeight() / 4d) + i * p.getHeight());
+                p.setPosition((int) (mouseX - leftPos - p.getWidth() / 3d), (int) (mouseY - topPos - p.getHeight() / 4d) + i * p.getHeight());
                 if (!programmerUnit.isOutsideProgrammingArea(p) && isValidPlaced(p)) {
                     te.progWidgets.add(p);
                 }
@@ -1237,8 +1115,7 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
         if (hovered == null) {
             ProgWidgetItemFilter p = new ProgWidgetItemFilter();
             p.setFilter(heldItem.copy());
-            p.setX((int) (mouseX - leftPos - p.getWidth() / 3d));
-            p.setY((int) (mouseY - topPos - p.getHeight() / 4d));
+            p.setPosition((int) (mouseX - leftPos - p.getWidth() / 3d), (int) (mouseY - topPos - p.getHeight() / 4d));
             if (!programmerUnit.isOutsideProgrammingArea(p)) {
                 te.progWidgets.add(p);
             }
@@ -1293,15 +1170,15 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
             if (programmerUnit.isOutsideProgrammingArea(draggingWidget)) {
                 deleteConnectingWidgets(draggingWidget);
             } else {
-                handlePuzzleMargins();
+                ProgWidgetUtils.snapWidgetIntoProgram(draggingWidget, te.progWidgets);
                 if (!isValidPlaced(draggingWidget)) {
-                    setConnectingWidgetsToXY(draggingWidget, (int)dragWidgetStartX, (int)dragWidgetStartY);
+                    ProgWidgetUtils.positionConnectedWidgets(draggingWidget, (int)dragWidgetStartX, (int)dragWidgetStartY);
                     if (programmerUnit.isOutsideProgrammingArea(draggingWidget) || !isValidPlaced(draggingWidget))
                         deleteConnectingWidgets(draggingWidget);
                 }
             }
             NetworkHandler.sendToServer(PacketProgrammerSync.forBlockEntity(te));
-            ProgrammerBlockEntity.updatePuzzleConnections(te.progWidgets);
+            ProgWidgetUtils.updatePuzzleConnections(te.progWidgets);
             draggingWidget = null;
         }
         return super.mouseReleased(mouseX, mouseY, button);
@@ -1317,7 +1194,7 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
         if (draggingWidget != null) {
             mouseX = (mouseX - programmerUnit.getTranslatedX()) / programmerUnit.getScale();
             mouseY = (mouseY - programmerUnit.getTranslatedY()) / programmerUnit.getScale();
-            setConnectingWidgetsToXY(draggingWidget,
+            ProgWidgetUtils.positionConnectedWidgets(draggingWidget,
                     (int)(mouseX - dragMouseStartX + dragWidgetStartX - leftPos),
                     (int)(mouseY - dragMouseStartY + dragWidgetStartY - topPos));
             return true;
@@ -1392,15 +1269,15 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
         }
 
         public void tick() {
-            ty += velY;
             tx += velX;
+            ty += velY;
             velY += 0.35;
         }
     }
 
     private static IntIntPair calculateScreenSize() {
         Window window = Minecraft.getInstance().getWindow();
-        int guiWidth = window.getGuiScaledWidth() * 82 / 100;  // leave a little space on the side for JEI etc.
+        int guiWidth = window.getGuiScaledWidth() * 75 / 100;  // leave a little space on the side for JEI etc.
         int guiHeight = window.getGuiScaledHeight() * 39 / 40;
         //noinspection SuspiciousNameCombination
         return IntIntPair.of(guiWidth, guiHeight);

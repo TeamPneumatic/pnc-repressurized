@@ -37,6 +37,7 @@ import net.minecraft.world.item.DyeColor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class ProgWidgetEditSign extends ProgWidgetAreaItemBase implements ISignEditWidget {
     public static final MapCodec<ProgWidgetEditSign> CODEC = RecordCodecBuilder.mapCodec(builder ->
@@ -117,4 +118,16 @@ public class ProgWidgetEditSign extends ProgWidgetAreaItemBase implements ISignE
         this.backSide = backSide;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ProgWidgetEditSign that = (ProgWidgetEditSign) o;
+        return baseEquals(that) && backSide == that.backSide;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(baseHashCode(), backSide);
+    }
 }

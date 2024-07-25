@@ -32,7 +32,6 @@ import me.desht.pneumaticcraft.api.upgrade.PNCUpgrade;
 import me.desht.pneumaticcraft.client.util.ProgressingLine;
 import me.desht.pneumaticcraft.common.block.entity.PneumaticEnergyStorage;
 import me.desht.pneumaticcraft.common.block.entity.drone.DroneRedstoneEmitterBlockEntity;
-import me.desht.pneumaticcraft.common.block.entity.drone.ProgrammerBlockEntity;
 import me.desht.pneumaticcraft.common.capabilities.BasicAirHandler;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.debug.DroneDebugger;
@@ -293,8 +292,8 @@ public class DroneEntity extends AbstractDroneEntity implements
         stackEnchants = enchantments.toImmutable();
 
         if (droneItem.canProgram(droneStack)) {
-            progWidgets = SavedDroneProgram.forItemStack(droneStack);
-            ProgrammerBlockEntity.updatePuzzleConnections(progWidgets);
+            progWidgets = SavedDroneProgram.loadProgWidgets(droneStack);
+            ProgWidgetUtils.updatePuzzleConnections(progWidgets);
         }
 
         setDroneColor(droneItem.getDroneColor(droneStack).getId());
@@ -319,7 +318,7 @@ public class DroneEntity extends AbstractDroneEntity implements
     private void writeToItemStack(ItemStack droneStack) {
         if (droneStack.getItem() instanceof DroneItem droneItem) {
             if (droneItem.canProgram(droneStack)) {
-                droneStack.set(ModDataComponents.SAVED_DRONE_PROGRAM, SavedDroneProgram.create(progWidgets));
+                SavedDroneProgram.writeToItem(droneStack, progWidgets);
             }
 
             droneStack.set(ModDataComponents.DRONE_COLOR, getDroneColor());
@@ -1077,7 +1076,7 @@ public class DroneEntity extends AbstractDroneEntity implements
     public void addAdditionalSaveData(CompoundTag tag) {
         super.addAdditionalSaveData(tag);
 
-        tag.put(IProgrammable.NBT_WIDGETS, ProgWidgetSerializer.putWidgetsToNBT(registryAccess(), progWidgets));
+        tag.put(IProgrammable.NBT_WIDGETS, ProgWidgetUtils.putWidgetsToNBT(registryAccess(), progWidgets));
         tag.put("airHandler", getAirHandler().serializeNBT());
         tag.putFloat("propSpeed", propSpeed);
         if (disabledByHacking) tag.putBoolean("disabledByHacking", true);
@@ -1089,8 +1088,7 @@ public class DroneEntity extends AbstractDroneEntity implements
         tag.put("variables", aiManager.writeToNBT(new CompoundTag()));
         if (deployPos != null) tag.put("deployPos", NbtUtils.writeBlockPos(deployPos));
 
-        ItemStackHandler tmpHandler = new ItemStackHandler(droneItemHandler.getSlots());
-        PneumaticCraftUtils.copyItemHandler(droneItemHandler, tmpHandler, droneItemHandler.getSlots());
+        ItemStackHandler tmpHandler = PneumaticCraftUtils.copyItemHandler(droneItemHandler, new ItemStackHandler(droneItemHandler.getSlots()));
         tag.put("Inventory", tmpHandler.serializeNBT(registryAccess()));
         tag.put("upgrades", upgradeInventory.serializeNBT(registryAccess()));
 
@@ -1116,8 +1114,8 @@ public class DroneEntity extends AbstractDroneEntity implements
     public void readAdditionalSaveData(CompoundTag tag) {
         super.readAdditionalSaveData(tag);
 
-        progWidgets = ProgWidgetSerializer.getWidgetsFromNBT(registryAccess(), tag.getList(IProgrammable.NBT_WIDGETS, Tag.TAG_COMPOUND));
-        ProgrammerBlockEntity.updatePuzzleConnections(progWidgets);
+        progWidgets = ProgWidgetUtils.getWidgetsFromNBT(registryAccess(), tag.getList(IProgrammable.NBT_WIDGETS, Tag.TAG_COMPOUND));
+        ProgWidgetUtils.updatePuzzleConnections(progWidgets);
         propSpeed = tag.getFloat("propSpeed");
         disabledByHacking = tag.getBoolean("disabledByHacking");
         setGoingToOwner(tag.getBoolean("hackedByOwner"));

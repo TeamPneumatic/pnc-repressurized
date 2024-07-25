@@ -93,8 +93,6 @@ public class ClientSetup {
         NeoForge.EVENT_BUS.register(HUDHandler.getInstance());
         NeoForge.EVENT_BUS.register(AreaRenderManager.getInstance());
         NeoForge.EVENT_BUS.register(KeyHandler.getInstance());
-
-        ThirdPartyManager.instance().clientPreInit(modBus);
     }
 
     static void onClientSetup(FMLClientSetupEvent event) {
@@ -117,6 +115,7 @@ public class ClientSetup {
     public static void registerGuiOverlays(RegisterGuiLayersEvent event) {
         event.registerAbove(VanillaGuiLayers.CROSSHAIR, RL("jackhammer"), new JackhammerOverlay());
         event.registerAbove(VanillaGuiLayers.CROSSHAIR, RL("minigun"), new MinigunOverlay());
+        event.registerAbove(VanillaGuiLayers.CROSSHAIR, RL("ender_visor"), new EnderVisorClientHandler.PumpkinLayer());
         event.registerAboveAll(RL("pneumatic_armor"), new PneumaticArmorHUDOverlay());
     }
 

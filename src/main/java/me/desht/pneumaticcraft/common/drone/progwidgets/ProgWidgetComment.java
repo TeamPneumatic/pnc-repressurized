@@ -20,6 +20,7 @@ package me.desht.pneumaticcraft.common.drone.progwidgets;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import me.desht.pneumaticcraft.api.drone.IProgWidget;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.registry.ModProgWidgetTypes;
 import me.desht.pneumaticcraft.lib.Textures;
@@ -31,6 +32,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.DyeColor;
 
 import java.util.List;
+import java.util.Objects;
 
 public class ProgWidgetComment extends ProgWidgetText {
     public static final MapCodec<ProgWidgetComment> CODEC = RecordCodecBuilder.mapCodec(builder ->
@@ -98,5 +100,23 @@ public class ProgWidgetComment extends ProgWidgetText {
     @Override
     public boolean freeToUse() {
         return true;
+    }
+
+    @Override
+    public IProgWidget copyWidget() {
+        return new ProgWidgetComment(positionFields, string);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ProgWidgetComment that = (ProgWidgetComment) o;
+        return baseEquals(that) && Objects.equals(string, that.string);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(baseHashCode(), string);
     }
 }

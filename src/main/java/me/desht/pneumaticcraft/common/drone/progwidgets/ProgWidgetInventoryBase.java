@@ -36,6 +36,7 @@ import net.minecraft.network.codec.StreamCodec;
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.List;
+import java.util.Objects;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
@@ -129,6 +130,29 @@ public abstract class ProgWidgetInventoryBase extends ProgWidgetAreaItemBase imp
                     .toList();
             return List.of(Component.literal(Strings.join(l, ", ")));
         }
+    }
+
+    @Override
+    protected boolean baseEquals(ProgWidget other) {
+        return super.baseEquals(other) && other instanceof ProgWidgetInventoryBase b && invBaseFields.equals(b.invBaseFields);
+    }
+
+    @Override
+    protected int baseHashCode() {
+        return Objects.hash(positionFields, invBaseFields);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ProgWidgetInventoryBase that = (ProgWidgetInventoryBase) o;
+        return baseEquals(that);
+    }
+
+    @Override
+    public int hashCode() {
+        return baseHashCode();
     }
 
     public record InvBaseFields(BitSet accessingSides, boolean useCount, int count) {

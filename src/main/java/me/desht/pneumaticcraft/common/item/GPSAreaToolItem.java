@@ -19,10 +19,12 @@ package me.desht.pneumaticcraft.common.item;
 
 import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
+import me.desht.pneumaticcraft.api.drone.IProgWidget;
 import me.desht.pneumaticcraft.api.item.IPositionProvider;
 import me.desht.pneumaticcraft.client.gui.GPSAreaToolScreen;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetArea;
+import me.desht.pneumaticcraft.common.drone.progwidgets.SavedDroneProgram;
 import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.registry.ModSounds;
@@ -48,14 +50,17 @@ import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import org.apache.commons.lang3.Validate;
 
 import javax.annotation.Nonnull;
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class GPSAreaToolItem extends Item implements IPositionProvider, IGPSToolSync {
     public GPSAreaToolItem() {
         super(ModItems.defaultProps()
-                .component(ModDataComponents.AREA_WIDGET, ProgWidgetArea.Immutable.DEFAULT)
+                .component(ModDataComponents.SAVED_DRONE_PROGRAM, SavedDroneProgram.EMPTY)
         );
     }
 
@@ -140,9 +145,12 @@ public class GPSAreaToolItem extends Item implements IPositionProvider, IGPSTool
     public static ProgWidgetArea getArea(UUID playerId, ItemStack stack) {
         Validate.isTrue(stack.getItem() instanceof GPSAreaToolItem);
 
-        ProgWidgetArea area = stack.getOrDefault(ModDataComponents.AREA_WIDGET, ProgWidgetArea.Immutable.DEFAULT).toMutable();
-        area.setVariableProvider(GlobalVariableHelper.getInstance().getVariableProvider(), playerId);  // allows client to read vars for rendering purposes
-        return area;
+        List<IProgWidget> widgets = SavedDroneProgram.loadProgWidgets(stack);
+        if (!widgets.isEmpty() && widgets.getFirst() instanceof ProgWidgetArea area) {
+            area.setVariableProvider(GlobalVariableHelper.getInstance().getVariableProvider(), playerId);  // allows client to read vars for rendering purposes
+            return area;
+        }
+        return new ProgWidgetArea();
     }
 
     public static ProgWidgetArea getArea(Player player, ItemStack stack) {
@@ -188,7 +196,7 @@ public class GPSAreaToolItem extends Item implements IPositionProvider, IGPSTool
     }
 
     public static void setArea(ItemStack gpsTool, ProgWidgetArea area) {
-        gpsTool.set(ModDataComponents.AREA_WIDGET, area.toImmutable());
+        SavedDroneProgram.writeToItem(gpsTool, List.of(area));
     }
 
     public static String getVariable(Player player, ItemStack gpsTool, int index) {
@@ -206,9 +214,8 @@ public class GPSAreaToolItem extends Item implements IPositionProvider, IGPSTool
 
     @Override
     public List<BlockPos> getStoredPositions(UUID playerId, @Nonnull ItemStack stack) {
-        Set<BlockPos> posSet = new HashSet<>();
-        getArea(playerId, stack).getArea(posSet);
-        return new ArrayList<>(posSet);
+        ProgWidgetArea widgetArea = getArea(playerId, stack);
+        return List.copyOf(widgetArea.getArea(new HashSet<>()));
     }
 
     @Override

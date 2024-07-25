@@ -43,7 +43,7 @@ public class AirCannonMenu extends AbstractPneumaticCraftMenu<AirCannonBlockEnti
         addSlot(new ItemFilteredSlot(blockEntity.getItemHandler(), itemStack -> {
             if (!(itemStack.getItem() instanceof IPositionProvider pp)) return false;
             List<BlockPos> l = pp.getStoredPositions(playerInventory.player.getUUID(), itemStack);
-            return !l.isEmpty() && l.get(0) != null;
+            return !l.isEmpty() && l.getFirst() != null;
         }, 1, 51, 29));
 
         // add the cannoned slot.

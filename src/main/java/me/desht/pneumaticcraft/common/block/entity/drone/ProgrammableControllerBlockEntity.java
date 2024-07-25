@@ -25,7 +25,6 @@ import me.desht.pneumaticcraft.api.drone.DroneConstructingEvent;
 import me.desht.pneumaticcraft.api.drone.IPathNavigator;
 import me.desht.pneumaticcraft.api.drone.IProgWidget;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
-import me.desht.pneumaticcraft.api.item.IProgrammable;
 import me.desht.pneumaticcraft.api.pressure.PressureTier;
 import me.desht.pneumaticcraft.api.registry.PNCRegistries;
 import me.desht.pneumaticcraft.api.semiblock.SemiblockEvent;
@@ -35,7 +34,9 @@ import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.debug.DroneDebugger;
 import me.desht.pneumaticcraft.common.drone.IDroneBase;
 import me.desht.pneumaticcraft.common.drone.LogisticsManager;
+import me.desht.pneumaticcraft.common.drone.ProgWidgetUtils;
 import me.desht.pneumaticcraft.common.drone.ai.DroneAIManager;
+import me.desht.pneumaticcraft.common.drone.progwidgets.SavedDroneProgram;
 import me.desht.pneumaticcraft.common.entity.drone.ProgrammableControllerEntity;
 import me.desht.pneumaticcraft.common.entity.semiblock.AbstractLogisticsFrameEntity;
 import me.desht.pneumaticcraft.common.inventory.ProgrammableControllerMenu;
@@ -542,11 +543,7 @@ public class ProgrammableControllerBlockEntity extends AbstractAirHandlingBlockE
     }
 
     private static boolean isProgrammableAndValidForDrone(IDroneBase drone, ItemStack programmable) {
-        if (programmable.getItem() instanceof IProgrammable p && p.canProgram(programmable) && p.usesPieces(programmable)) {
-            List<IProgWidget> widgets = ProgrammerBlockEntity.getProgWidgets(programmable);
-            return widgets.stream().allMatch(widget -> drone.isProgramApplicable(widget.getType()));
-        }
-        return false;
+        return SavedDroneProgram.fromItemStack(programmable).isValidForDrone(drone);
     }
 
     @Override
@@ -872,8 +869,8 @@ public class ProgrammableControllerBlockEntity extends AbstractAirHandlingBlockE
             ItemStack stack = getStackInSlot(slot);
             progWidgets.clear();
             if (!stack.isEmpty() && isProgrammableAndValidForDrone(ProgrammableControllerBlockEntity.this, stack)) {
-                progWidgets.addAll(ProgrammerBlockEntity.getProgWidgets(stack));
-                ProgrammerBlockEntity.updatePuzzleConnections(progWidgets);
+                progWidgets.addAll(SavedDroneProgram.loadProgWidgets(stack));
+                ProgWidgetUtils.updatePuzzleConnections(progWidgets);
                 isIdle = false;
             } else {
                 setDugBlock(null);

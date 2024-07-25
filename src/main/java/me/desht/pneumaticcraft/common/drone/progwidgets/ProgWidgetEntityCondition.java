@@ -43,11 +43,12 @@ public class ProgWidgetEntityCondition extends ProgWidgetCondition {
             ProgWidgetEntityCondition::new
     );
 
-    public ProgWidgetEntityCondition() {
-    }
-
     public ProgWidgetEntityCondition(PositionFields pos, InvBaseFields inv, ConditionFields cond) {
         super(pos, inv, cond);
+    }
+
+    public ProgWidgetEntityCondition() {
+        this(PositionFields.DEFAULT, InvBaseFields.DEFAULT, ConditionFields.DEFAULT);
     }
 
     @Override

@@ -36,6 +36,7 @@ import net.minecraft.world.item.DyeColor;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
@@ -122,6 +123,20 @@ public class ProgWidgetStandby extends ProgWidget implements IStandbyWidget {
     @Override
     public void setAllowStandbyPickup(boolean allowStandbyPickup) {
         this.allowStandbyPickup = allowStandbyPickup;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        ProgWidgetStandby that = (ProgWidgetStandby) o;
+        return baseEquals(that) && allowStandbyPickup == that.allowStandbyPickup;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(baseHashCode(), allowStandbyPickup);
     }
 
     public static class DroneAIStandby extends Goal {

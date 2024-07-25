@@ -46,6 +46,7 @@ import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
 import javax.annotation.Nonnull;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
@@ -209,8 +210,10 @@ public class ProgWidgetItemFilter extends ProgWidget implements IVariableWidget 
             curTooltip.add(xlate("pneumaticcraft.gui.progWidget.itemFilter.matchBlock")
                     .withStyle(ChatFormatting.DARK_AQUA));
         } else {
-            curTooltip.add(xlate("pneumaticcraft.gui.progWidget.itemFilter." + (checkDurability ? "useDurability" : "ignoreDurability"))
-                    .withStyle(ChatFormatting.DARK_AQUA));
+            if (getRawFilter().getMaxDamage() > 0) {
+                curTooltip.add(xlate("pneumaticcraft.gui.progWidget.itemFilter." + (checkDurability ? "useDurability" : "ignoreDurability"))
+                        .withStyle(ChatFormatting.DARK_AQUA));
+            }
             curTooltip.add(xlate("pneumaticcraft.gui.progWidget.itemFilter." + (matchComponents ? "useComponents" : "ignoreComponents"))
                     .withStyle(ChatFormatting.DARK_AQUA));
         }
@@ -291,5 +294,19 @@ public class ProgWidgetItemFilter extends ProgWidget implements IVariableWidget 
     @Override
     public void addVariables(Set<String> variables) {
         variables.add(variable);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        ProgWidgetItemFilter that = (ProgWidgetItemFilter) o;
+        return baseEquals(that) && checkDurability == that.checkDurability && matchComponents == that.matchComponents && matchMod == that.matchMod && matchBlock == that.matchBlock && Objects.equals(filter, that.filter) && Objects.equals(variable, that.variable);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(baseHashCode(), filter, checkDurability, matchComponents, matchMod, matchBlock, variable);
     }
 }

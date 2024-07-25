@@ -192,8 +192,9 @@ public class ProgWidgetCC extends ProgWidgetInventoryBase implements IBlockOrder
     }
 
     @Override
-    public synchronized void getArea(Set<BlockPos> area) {
+    public synchronized Set<BlockPos> getArea(Set<BlockPos> area) {
         area.addAll(this.area);
+        return area;
     }
 
     private Set<BlockPos> getArea(int x1, int y1, int z1, int x2, int y2, int z2, String areaType) throws IllegalArgumentException {

@@ -17,7 +17,6 @@
 
 package me.desht.pneumaticcraft.client.gui.pneumatic_armor.options;
 
-import com.google.common.collect.Sets;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IGuiScreen;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
 import me.desht.pneumaticcraft.api.drone.IProgWidget;
@@ -29,8 +28,8 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetCheckBox;
 import me.desht.pneumaticcraft.client.pneumatic_armor.upgrade_handler.DroneDebugClientHandler;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
-import me.desht.pneumaticcraft.common.block.entity.drone.ProgrammerBlockEntity;
 import me.desht.pneumaticcraft.common.drone.IDroneBase;
+import me.desht.pneumaticcraft.common.drone.ProgWidgetUtils;
 import me.desht.pneumaticcraft.common.drone.progwidgets.IAreaProvider;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetStart;
 import me.desht.pneumaticcraft.common.item.PneumaticArmorItem;
@@ -45,10 +44,7 @@ import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
@@ -191,8 +187,7 @@ public class DroneDebuggerOptions extends IOptionPage.SimpleOptionPage<DroneDebu
                 getClientUpgradeHandler().getShownArea().clear();
                 int widgetId = selectedDrone.getProgWidgets().indexOf(widget);
                 if (areaShowWidgetId != widgetId) {
-                    Set<BlockPos> area = Sets.newHashSet();
-                    areaProvider.getArea(area);
+                    Set<BlockPos> area = areaProvider.getArea(new HashSet<>());
                     getClientUpgradeHandler().getShownArea().addAll(area);
                     areaShowWidgetId = widgetId;
                 } else {
@@ -219,7 +214,7 @@ public class DroneDebuggerOptions extends IOptionPage.SimpleOptionPage<DroneDebu
                                 int guiLeft, int guiTop, Rect2i bounds,
                                 int translatedX, int translatedY, int lastZoom) {
             super(progWidgets, guiLeft, guiTop, bounds, translatedX, translatedY, lastZoom);
-            ProgrammerBlockEntity.updatePuzzleConnections(progWidgets);
+            ProgWidgetUtils.updatePuzzleConnections(progWidgets);
         }
 
         @Override

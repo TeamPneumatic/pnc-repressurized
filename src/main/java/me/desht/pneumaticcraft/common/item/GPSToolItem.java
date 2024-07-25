@@ -43,7 +43,6 @@ import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 
 import javax.annotation.Nonnull;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -159,7 +158,9 @@ public class GPSToolItem extends Item implements IPositionProvider, IGPSToolSync
 
     @Override
     public List<BlockPos> getStoredPositions(UUID playerId, @Nonnull ItemStack stack) {
-        return getGPSLocation(playerId, stack).map(Collections::singletonList).orElse(Collections.emptyList());
+        return getGPSLocation(playerId, stack)
+                .map(List::of)
+                .orElse(List.of());
     }
 
     @Override
@@ -170,7 +171,9 @@ public class GPSToolItem extends Item implements IPositionProvider, IGPSToolSync
     @Override
     public void syncVariables(ServerPlayer player, ItemStack stack) {
         String varName = getVariable(stack);
-        if (GlobalVariableHelper.getInstance().hasPrefix(varName)) PneumaticRegistry.getInstance().getMiscHelpers().syncGlobalVariable(player, varName);
+        if (GlobalVariableHelper.getInstance().hasPrefix(varName)) {
+            PneumaticRegistry.getInstance().getMiscHelpers().syncGlobalVariable(player, varName);
+        }
     }
 
     @Override

@@ -19,16 +19,13 @@ package me.desht.pneumaticcraft.client.event;
 
 import com.mojang.datafixers.util.Either;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
-import me.desht.pneumaticcraft.api.drone.IProgWidget;
-import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.api.item.IInventoryItem;
 import me.desht.pneumaticcraft.api.item.IProgrammable;
 import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.api.misc.Symbols;
-import me.desht.pneumaticcraft.api.registry.PNCRegistries;
 import me.desht.pneumaticcraft.client.gui.IGuiDrone;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
-import me.desht.pneumaticcraft.common.block.entity.drone.ProgrammerBlockEntity;
+import me.desht.pneumaticcraft.common.drone.progwidgets.SavedDroneProgram;
 import me.desht.pneumaticcraft.common.item.ICustomTooltipName;
 import me.desht.pneumaticcraft.common.item.MicromissilesItem;
 import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
@@ -39,7 +36,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -49,8 +45,11 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.RenderTooltipEvent;
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 import net.neoforged.neoforge.fluids.FluidUtil;
+import org.apache.commons.lang3.mutable.MutableBoolean;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
@@ -67,8 +66,8 @@ public class TooltipEventHandler {
         } else if (PneumaticCraftUtils.getRegistryName(stack.getItem()).orElseThrow().getNamespace().equals(Names.MOD_ID)) {
             addStandardTooltip(stack, event.getToolTip(), event.getFlags());
         }
-        if (stack.getItem() instanceof IProgrammable) {
-            handleProgrammableTooltip(event);
+        if (stack.getItem() instanceof IProgrammable programmable) {
+            handleProgrammableTooltip(event, programmable);
         }
     }
 
@@ -115,36 +114,38 @@ public class TooltipEventHandler {
         });
     }
 
-    private static void handleProgrammableTooltip(ItemTooltipEvent event) {
-        IProgrammable programmable = (IProgrammable) event.getItemStack().getItem();
+    private static void handleProgrammableTooltip(ItemTooltipEvent event, IProgrammable programmable) {
         if (programmable.canProgram(event.getItemStack()) && programmable.showProgramTooltip()) {
-            boolean hasInvalidPrograms = false;
+            MutableBoolean hasInvalidPrograms = new MutableBoolean(false);
             List<Component> addedEntries = new ArrayList<>();
-            List<IProgWidget> widgets = ProgrammerBlockEntity.getProgWidgets(event.getItemStack());
-            Map<ResourceLocation, Integer> widgetMap = getPuzzleSummary(widgets);
-            for (Map.Entry<ResourceLocation, Integer> entry : widgetMap.entrySet()) {
+
+            SavedDroneProgram program = SavedDroneProgram.fromItemStack(event.getItemStack());
+            program.summarize().forEach((widgetType, count) -> {
                 ChatFormatting[] prefix = new ChatFormatting[0];
-                ProgWidgetType<?> widgetType = PNCRegistries.PROG_WIDGETS_REGISTRY.get(entry.getKey());
                 if (widgetType != null) {
                     Screen curScreen = Minecraft.getInstance().screen;
-                    if (curScreen instanceof IGuiDrone) {
-                        if (!((IGuiDrone) curScreen).getDrone().isProgramApplicable(widgetType)) {
+                    if (curScreen instanceof IGuiDrone guiDrone) {
+                        if (!guiDrone.getDrone().isProgramApplicable(widgetType)) {
                             prefix = new ChatFormatting[]{ChatFormatting.RED, ChatFormatting.ITALIC};
-                            hasInvalidPrograms = true;
+                            hasInvalidPrograms.setTrue();
                         }
                     }
-                    addedEntries.add(Component.literal(Symbols.BULLET + " " + entry.getValue() + " x ")
+                    addedEntries.add(Component.literal(Symbols.BULLET + " " + count + " x ")
                             .append(xlate(widgetType.getTranslationKey()))
                             .withStyle(prefix));
                 }
-            }
-            if (hasInvalidPrograms) {
+            });
+
+            if (hasInvalidPrograms.booleanValue()) {
                 event.getToolTip().add(xlate("pneumaticcraft.gui.tooltip.programmable.invalidPieces").withStyle(ChatFormatting.RED));
             }
+
             addedEntries.sort(Comparator.comparing(Component::getString));
             event.getToolTip().addAll(addedEntries);
-            if (ClientUtils.hasShiftDown() && !widgets.isEmpty()) {
-                event.getToolTip().add(xlate("pneumaticcraft.gui.tooltip.programmable.requiredPieces", widgets.size()).withStyle(ChatFormatting.GREEN));
+            if (ClientUtils.hasShiftDown() && !program.isEmpty()) {
+                event.getToolTip().add(
+                        xlate("pneumaticcraft.gui.tooltip.programmable.requiredPieces", program.getRequiredPuzzlePieces())
+                                .withStyle(ChatFormatting.GREEN));
             }
         }
     }
@@ -170,14 +171,6 @@ public class TooltipEventHandler {
                 }
             }
         });
-    }
-
-    private static Map<ResourceLocation, Integer> getPuzzleSummary(List<IProgWidget> widgets) {
-        Map<ResourceLocation, Integer> map = new HashMap<>();
-        for (IProgWidget widget : widgets) {
-            map.put(widget.getTypeID(), map.getOrDefault(widget.getTypeID(), 0) + 1);
-        }
-        return map;
     }
 
     @SubscribeEvent

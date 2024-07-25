@@ -547,7 +547,7 @@ public class UniversalSensorBlockEntity extends AbstractAirHandlingBlockEntity i
         public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
             if (stack.getItem() instanceof IPositionProvider p) {
                 List<BlockPos> l = p.getStoredPositions(playerId, stack);
-                return !l.isEmpty() && l.get(0) != null;
+                return !l.isEmpty() && l.getFirst() != null;
             }
             return false;
         }

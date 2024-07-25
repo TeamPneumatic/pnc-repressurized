@@ -24,13 +24,11 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.level.material.FlowingFluid;
 import net.minecraft.world.level.material.Fluid;
-import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.neoforged.neoforge.common.SoundActions;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class ModFluids {
@@ -38,31 +36,31 @@ public class ModFluids {
     public static final DeferredRegister<FluidType> FLUID_TYPES = DeferredRegister.create(NeoForgeRegistries.FLUID_TYPES, Names.MOD_ID);
 
     public static final Supplier<FluidType> OIL_FLUID_TYPE = registerFluidType("oil",
-            standardProps(800, 20000), FluidOil.RENDER_PROPS);
+            standardProps(800, 20000));
     public static final Supplier<FluidType> BIODIESEL_FLUID_TYPE = registerFluidType("biodiesel",
-            standardProps(880, 4000), FluidBiodiesel.RENDER_PROPS);
+            standardProps(880, 4000));
     public static final Supplier<FluidType> DIESEL_FLUID_TYPE = registerFluidType("diesel",
-            standardProps(880, 4000), FluidDiesel.RENDER_PROPS);
+            standardProps(880, 4000));
     public static final Supplier<FluidType> ETCHING_ACID_FLUID_TYPE = registerFluidType("etching_acid",
-            standardProps(1500, 2000), FluidEtchingAcid.RENDER_PROPS);
+            standardProps(1500, 2000));
     public static final Supplier<FluidType> ETHANOL_FLUID_TYPE = registerFluidType("ethanol",
-            standardProps(789, 1200), FluidEthanol.RENDER_PROPS);
+            standardProps(789, 1200));
     public static final Supplier<FluidType> GASOLINE_FLUID_TYPE = registerFluidType("gasoline",
-            standardProps(750, 500), FluidGasoline.RENDER_PROPS);
+            standardProps(750, 500));
     public static final Supplier<FluidType> KEROSENE_FLUID_TYPE = registerFluidType("kerosene",
-            standardProps(790, 2700), FluidKerosene.RENDER_PROPS);
+            standardProps(790, 2700));
     public static final Supplier<FluidType> LPG_FLUID_TYPE = registerFluidType("lpg",
-            standardProps(550, 200), FluidLPG.RENDER_PROPS);
+            standardProps(550, 200));
     public static final Supplier<FluidType> LUBRICANT_FLUID_TYPE = registerFluidType("lubricant",
-            standardProps(800, 900), FluidLubricant.RENDER_PROPS);
+            standardProps(800, 900));
     public static final Supplier<FluidType> MEMORY_ESSENCE_FLUID_TYPE = registerFluidType("memory_essence",
-            standardProps(250, 250), FluidMemoryEssence.RENDER_PROPS);
+            standardProps(250, 250));
     public static final Supplier<FluidType> PLASTIC_FLUID_TYPE = registerFluidType("plastic",
-            standardProps(2000, 500).temperature(PneumaticValues.MOLTEN_PLASTIC_TEMPERATURE), FluidPlastic.RENDER_PROPS);
+            standardProps(2000, 500).temperature(PneumaticValues.MOLTEN_PLASTIC_TEMPERATURE));
     public static final Supplier<FluidType> VEGETABLE_OIL_FLUID_TYPE = registerFluidType("vegetable_oil",
-            standardProps(900, 1500), FluidVegetableOil.RENDER_PROPS);
+            standardProps(900, 1500));
     public static final Supplier<FluidType> YEAST_CULTURE_FLUID_TYPE = registerFluidType("yeast_culture",
-            standardProps(800, 5000), FluidYeastCulture.RENDER_PROPS);
+            standardProps(800, 5000));
 
     public static final Supplier<FlowingFluid> OIL = register("oil", FluidOil.Source::new);
     public static final Supplier<FlowingFluid> OIL_FLOWING = register("oil_flowing", FluidOil.Flowing::new);
@@ -107,13 +105,8 @@ public class ModFluids {
         return FLUIDS.register(name, sup);
     }
 
-    private static Supplier<FluidType> registerFluidType(String name, FluidType.Properties props, IClientFluidTypeExtensions renderProps) {
-        return FLUID_TYPES.register(name, () -> new FluidType(props) {
-            @Override
-            public void initializeClient(Consumer<IClientFluidTypeExtensions> consumer) {
-                consumer.accept(renderProps);
-            }
-        });
+    private static Supplier<FluidType> registerFluidType(String name, FluidType.Properties props) {
+        return FLUID_TYPES.register(name, () -> new FluidType(props));
     }
 
     private static FluidType.Properties standardProps(int density, int viscosity) {

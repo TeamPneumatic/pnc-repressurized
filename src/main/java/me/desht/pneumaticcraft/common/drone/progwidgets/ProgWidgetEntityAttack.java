@@ -43,6 +43,7 @@ import net.minecraft.world.level.Level;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
@@ -144,24 +145,26 @@ public class ProgWidgetEntityAttack extends ProgWidget
     }
 
     @Override
-    public void getArea(Set<BlockPos> area) {
-        getArea(area, (ProgWidgetArea) getConnectedParameters()[0], (ProgWidgetArea) getConnectedParameters()[2]);
+    public Set<BlockPos> getArea(Set<BlockPos> area) {
+        return getArea(area, (ProgWidgetArea) getConnectedParameters()[0], (ProgWidgetArea) getConnectedParameters()[2]);
     }
 
-    public static void getArea(Set<BlockPos> area, ProgWidgetArea whitelistWidget, ProgWidgetArea blacklistWidget) {
-        if (whitelistWidget == null) return;
-        ProgWidgetArea widget = whitelistWidget;
-        while (widget != null) {
-            widget.getArea(area, new AreaTypeBox());
-            widget = (ProgWidgetArea) widget.getConnectedParameters()[0];
+    public static Set<BlockPos> getArea(Set<BlockPos> area, ProgWidgetArea whitelistWidget, ProgWidgetArea blacklistWidget) {
+        if (whitelistWidget != null) {
+            ProgWidgetArea widget = whitelistWidget;
+            while (widget != null) {
+                widget.getArea(area, new AreaTypeBox());
+                widget = (ProgWidgetArea) widget.getConnectedParameters()[0];
+            }
+            widget = blacklistWidget;
+            while (widget != null) {
+                Set<BlockPos> blacklistedArea = new HashSet<>();
+                widget.getArea(blacklistedArea, new AreaTypeBox());
+                area.removeAll(blacklistedArea);
+                widget = (ProgWidgetArea) widget.getConnectedParameters()[0];
+            }
         }
-        widget = blacklistWidget;
-        while (widget != null) {
-            Set<BlockPos> blacklistedArea = new HashSet<>();
-            widget.getArea(blacklistedArea, new AreaTypeBox());
-            area.removeAll(blacklistedArea);
-            widget = (ProgWidgetArea) widget.getConnectedParameters()[0];
-        }
+        return area;
     }
 
     @Override
@@ -209,4 +212,16 @@ public class ProgWidgetEntityAttack extends ProgWidget
         return checkSight;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ProgWidgetEntityAttack that = (ProgWidgetEntityAttack) o;
+        return baseEquals(that) && maxActions == that.maxActions && useMaxActions == that.useMaxActions && checkSight == that.checkSight;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(baseHashCode(), maxActions, useMaxActions, checkSight);
+    }
 }

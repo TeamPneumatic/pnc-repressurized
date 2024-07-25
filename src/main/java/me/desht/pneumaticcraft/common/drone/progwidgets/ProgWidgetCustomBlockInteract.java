@@ -98,4 +98,16 @@ public class ProgWidgetCustomBlockInteract extends ProgWidgetInventoryBase {
         return interactor.getColor();
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ProgWidgetCustomBlockInteract that = (ProgWidgetCustomBlockInteract) o;
+        return baseEquals(that) && Objects.equals(customType, that.customType);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(baseHashCode(), customType);
+    }
 }

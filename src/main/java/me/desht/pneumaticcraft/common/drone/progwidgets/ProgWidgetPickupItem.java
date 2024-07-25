@@ -33,6 +33,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.item.DyeColor;
 
+import java.util.Objects;
+
 public class ProgWidgetPickupItem extends ProgWidgetAreaItemBase implements IItemPickupWidget {
     public static final MapCodec<ProgWidgetPickupItem> CODEC = RecordCodecBuilder.mapCodec(builder ->
             baseParts(builder).and(Codec.BOOL.optionalFieldOf("can_steal", false).forGetter(ProgWidgetPickupItem::canSteal)
@@ -90,4 +92,17 @@ public class ProgWidgetPickupItem extends ProgWidgetAreaItemBase implements IIte
         this.canSteal = canSteal;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        ProgWidgetPickupItem that = (ProgWidgetPickupItem) o;
+        return baseEquals(that) && canSteal == that.canSteal;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(baseHashCode(), canSteal);
+    }
 }

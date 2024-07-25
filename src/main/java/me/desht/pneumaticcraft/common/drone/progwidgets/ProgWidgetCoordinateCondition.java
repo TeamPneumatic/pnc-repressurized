@@ -39,6 +39,7 @@ import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
@@ -148,5 +149,18 @@ public class ProgWidgetCoordinateCondition extends ProgWidgetConditionBase {
                 .filter(axisOptions::shouldCheck)
                 .map(axis -> String.format("%1$s1 %2$s %1$s2", axis.getName(), operator.toString()))
                 .collect(Collectors.joining(" and "));
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ProgWidgetCoordinateCondition that = (ProgWidgetCoordinateCondition) o;
+        return baseEquals(that) && Objects.equals(axisOptions, that.axisOptions) && operator == that.operator;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(baseHashCode(), axisOptions, operator);
     }
 }

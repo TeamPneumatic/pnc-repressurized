@@ -37,6 +37,7 @@ import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.item.DyeColor;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
@@ -118,8 +119,8 @@ public class ProgWidgetGoToLocation extends ProgWidget implements IGotoWidget, I
     }
 
     @Override
-    public void getArea(Set<BlockPos> area) {
-        ProgWidgetAreaItemBase.getArea(area, (ProgWidgetArea) getConnectedParameters()[0], (ProgWidgetArea) getConnectedParameters()[getParameters().size()]);
+    public Set<BlockPos> getArea(Set<BlockPos> area) {
+        return ProgWidgetAreaItemBase.getArea(area, (ProgWidgetArea) getConnectedParameters()[0], (ProgWidgetArea) getConnectedParameters()[getParameters().size()]);
     }
 
     @Override
@@ -135,5 +136,19 @@ public class ProgWidgetGoToLocation extends ProgWidget implements IGotoWidget, I
     @Override
     public IProgWidget copyWidget() {
         return new ProgWidgetGoToLocation(getPosition(), doneWhenDeparting);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        ProgWidgetGoToLocation that = (ProgWidgetGoToLocation) o;
+        return baseEquals(that) && doneWhenDeparting == that.doneWhenDeparting;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(baseHashCode(), doneWhenDeparting);
     }
 }

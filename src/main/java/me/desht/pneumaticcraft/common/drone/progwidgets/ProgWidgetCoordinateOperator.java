@@ -39,10 +39,7 @@ import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.item.DyeColor;
 import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
@@ -254,6 +251,19 @@ public class ProgWidgetCoordinateOperator extends ProgWidget implements IVariabl
     @Override
     public void addVariables(Set<String> variables) {
         variables.add(variable);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ProgWidgetCoordinateOperator that = (ProgWidgetCoordinateOperator) o;
+        return baseEquals(that) && operator == that.operator && Objects.equals(variable, that.variable) && Objects.equals(axisOptions, that.axisOptions);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(baseHashCode(), operator, variable, axisOptions);
     }
 
     public enum EnumOperator implements ITranslatableEnum, StringRepresentable {

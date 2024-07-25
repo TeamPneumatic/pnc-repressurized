@@ -34,8 +34,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.item.DyeColor;
 
-import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
@@ -132,6 +132,19 @@ public class ProgWidgetDropItem extends ProgWidgetInventoryBase implements IItem
 
     @Override
     public List<Component> getExtraStringInfo() {
-        return Collections.singletonList(xlate("pneumaticcraft.gui.progWidget.drop.dropMethod." + (dropStraight() ? "straight" : "random")));
+        return List.of(xlate("pneumaticcraft.gui.progWidget.drop.dropMethod." + (dropStraight() ? "straight" : "random")));
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ProgWidgetDropItem that = (ProgWidgetDropItem) o;
+        return baseEquals(that) && dropStraight == that.dropStraight && pickupDelay == that.pickupDelay;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(baseHashCode(), dropStraight, pickupDelay);
     }
 }
