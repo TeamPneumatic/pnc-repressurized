@@ -19,6 +19,7 @@ package me.desht.pneumaticcraft.common.block.entity.utility;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import me.desht.pneumaticcraft.api.data.PneumaticCraftTags;
 import me.desht.pneumaticcraft.api.misc.ITranslatableEnum;
 import me.desht.pneumaticcraft.client.render.area.AreaRenderManager;
 import me.desht.pneumaticcraft.common.block.entity.*;
@@ -31,7 +32,6 @@ import me.desht.pneumaticcraft.common.network.PacketSpawnParticle;
 import me.desht.pneumaticcraft.common.network.PacketSyncSmartChest;
 import me.desht.pneumaticcraft.common.particle.AirParticleData;
 import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
-import me.desht.pneumaticcraft.common.registry.ModBlocks;
 import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.util.IOHelper;
@@ -478,8 +478,7 @@ public class SmartChestBlockEntity extends AbstractTickingBlockEntity
         public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
             return slot < lastSlot
                     && (filter[slot].isEmpty() || filter[slot].getItem() == stack.getItem())
-                    && stack.getItem() != ModBlocks.REINFORCED_CHEST.get().asItem()
-                    && stack.getItem() != ModBlocks.SMART_CHEST.get().asItem()
+                    && !stack.is(PneumaticCraftTags.Items.REINFORCED_CHEST_DISALLOWED)
                     && super.isItemValid(slot, stack);
         }
 

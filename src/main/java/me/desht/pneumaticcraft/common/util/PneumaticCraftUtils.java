@@ -501,7 +501,7 @@ public class PneumaticCraftUtils {
      * @param handler the item handler
      * @param items the list
      */
-    public static void collectNonEmptyItems(IItemHandler handler, NonNullList<ItemStack> items) {
+    public static NonNullList<ItemStack> collectNonEmptyItems(IItemHandler handler, NonNullList<ItemStack> items) {
         if (handler != null) {
             for (int i = 0; i < handler.getSlots(); i++) {
                 if (!handler.getStackInSlot(i).isEmpty()) {
@@ -509,6 +509,12 @@ public class PneumaticCraftUtils {
                 }
             }
         }
+        return items;
+    }
+
+    public static void forceDropContents(Level level, BlockPos pos, IItemHandler handler) {
+        collectNonEmptyItems(handler, NonNullList.create())
+                .forEach(stack -> dropItemOnGround(stack, level, pos));
     }
 
     /**

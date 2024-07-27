@@ -19,6 +19,7 @@ package me.desht.pneumaticcraft.datagen;
 
 import me.desht.pneumaticcraft.api.data.PneumaticCraftTags;
 import me.desht.pneumaticcraft.api.lib.Names;
+import me.desht.pneumaticcraft.common.registry.ModBlocks;
 import me.desht.pneumaticcraft.common.registry.ModItems;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.DataGenerator;
@@ -75,6 +76,8 @@ public class ModItemTagsProvider extends ItemTagsProvider {
         addItemsToTag(ItemTags.DYEABLE,
                 ModItems.PNEUMATIC_HELMET, ModItems.PNEUMATIC_CHESTPLATE, ModItems.PNEUMATIC_LEGGINGS, ModItems.PNEUMATIC_BOOTS
         );
+        addItemsToTag(PneumaticCraftTags.Items.REINFORCED_CHEST_DISALLOWED, ModBlocks.REINFORCED_CHEST, ModBlocks.SMART_CHEST);
+        appendToTag(PneumaticCraftTags.Items.REINFORCED_CHEST_DISALLOWED, Tags.Items.SHULKER_BOXES);
 
         addItemsToTag(ItemTags.HEAD_ARMOR, ModItems.COMPRESSED_IRON_HELMET, ModItems.PNEUMATIC_HELMET);
         addItemsToTag(ItemTags.CHEST_ARMOR, ModItems.COMPRESSED_IRON_CHESTPLATE, ModItems.PNEUMATIC_CHESTPLATE);

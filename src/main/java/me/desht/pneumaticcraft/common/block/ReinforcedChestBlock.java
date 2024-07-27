@@ -22,15 +22,19 @@ import me.desht.pneumaticcraft.common.block.entity.utility.ReinforcedChestBlockE
 import me.desht.pneumaticcraft.common.registry.ModBlocks;
 import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.registry.ModItems;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponentType;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemContainerContents;
 import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
@@ -76,6 +80,16 @@ public class ReinforcedChestBlock extends AbstractPneumaticCraftBlock implements
         list.add(ModDataComponents.BLOCK_ENTITY_SAVED_INV.get());
     }
 
+    @Override
+    public boolean onDestroyedByPlayer(BlockState state, Level level, BlockPos pos, Player player, boolean willHarvest, FluidState fluid) {
+        if (!willHarvest && level.getBlockEntity(pos) instanceof ReinforcedChestBlockEntity be) {
+            // broken with wrong tool; ensure any contents get dropped even if the block itself doesn't
+            PneumaticCraftUtils.forceDropContents(level, pos, be.getItemHandler());
+        }
+
+        return super.onDestroyedByPlayer(state, level, pos, player, willHarvest, fluid);
+    }
+
     public static class ItemBlockReinforcedChest extends BlockItem implements IInventoryItem {
         public ItemBlockReinforcedChest(ReinforcedChestBlock block) {
             super(block, ModItems.defaultProps());
@@ -91,5 +105,9 @@ public class ReinforcedChestBlock extends AbstractPneumaticCraftBlock implements
             return ChatFormatting.GREEN.toString();
         }
 
+        @Override
+        public boolean canFitInsideContainerItems() {
+            return false;
+        }
     }
 }

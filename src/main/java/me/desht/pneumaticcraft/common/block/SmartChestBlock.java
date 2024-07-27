@@ -22,17 +22,21 @@ import me.desht.pneumaticcraft.common.block.entity.utility.SmartChestBlockEntity
 import me.desht.pneumaticcraft.common.registry.ModBlocks;
 import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.registry.ModItems;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
@@ -78,6 +82,16 @@ public class SmartChestBlock extends AbstractPneumaticCraftBlock implements Pneu
         list.add(ModDataComponents.SMART_CHEST_SAVED.get());
     }
 
+    @Override
+    public boolean onDestroyedByPlayer(BlockState state, Level level, BlockPos pos, Player player, boolean willHarvest, FluidState fluid) {
+        if (!willHarvest && level.getBlockEntity(pos) instanceof SmartChestBlockEntity be) {
+            // broken with wrong tool; ensure any contents get dropped even if the block itself doesn't
+            PneumaticCraftUtils.forceDropContents(level, pos, be.getItemHandler());
+        }
+
+        return super.onDestroyedByPlayer(state, level, pos, player, willHarvest, fluid);
+    }
+
     public static class ItemBlockBlockSmartChest extends BlockItem implements IInventoryItem {
         public ItemBlockBlockSmartChest(Block block) {
             super(block, ModItems.defaultProps());
@@ -109,6 +123,11 @@ public class SmartChestBlock extends AbstractPneumaticCraftBlock implements Pneu
                     tooltip.add(xlate("pneumaticcraft.gui.tooltip.smartChest.slotsClosed", SmartChestBlockEntity.CHEST_SIZE - lastSlot));
                 }
             }
+        }
+
+        @Override
+        public boolean canFitInsideContainerItems() {
+            return false;
         }
     }
 }

@@ -17,12 +17,12 @@
 
 package me.desht.pneumaticcraft.common.block.entity.utility;
 
+import me.desht.pneumaticcraft.api.data.PneumaticCraftTags;
 import me.desht.pneumaticcraft.common.block.entity.AbstractPneumaticCraftBlockEntity;
 import me.desht.pneumaticcraft.common.block.entity.IComparatorSupport;
 import me.desht.pneumaticcraft.common.inventory.ReinforcedChestMenu;
 import me.desht.pneumaticcraft.common.inventory.handler.ComparatorItemStackHandler;
 import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
-import me.desht.pneumaticcraft.common.registry.ModBlocks;
 import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.util.ContainerWrappedItemHandler;
 import net.minecraft.core.BlockPos;
@@ -66,7 +66,7 @@ public class ReinforcedChestBlockEntity extends AbstractPneumaticCraftBlockEntit
     private final ComparatorItemStackHandler inventory = new ComparatorItemStackHandler(this, CHEST_SIZE) {
         @Override
         public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
-            return stack.getItem() != ModBlocks.REINFORCED_CHEST.get().asItem() && super.isItemValid(slot, stack);
+            return !stack.is(PneumaticCraftTags.Items.REINFORCED_CHEST_DISALLOWED) && super.isItemValid(slot, stack);
         }
     };
 
