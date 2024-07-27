@@ -22,9 +22,6 @@ import com.google.gson.JsonObject;
 import com.mojang.serialization.JsonOps;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.GlobalPos;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtOps;
-import net.minecraft.nbt.Tag;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
@@ -32,14 +29,6 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
 
 public class GlobalPosHelper {
-    public static Tag toNBT(GlobalPos globalPos) {
-        return GlobalPos.CODEC.encodeStart(NbtOps.INSTANCE, globalPos).result().orElseThrow();
-    }
-
-    public static GlobalPos fromNBT(CompoundTag tag) {
-        return GlobalPos.CODEC.parse(NbtOps.INSTANCE, tag).result().orElseThrow();
-    }
-
     public static JsonElement toJson(GlobalPos pos) {
         return GlobalPos.CODEC.encodeStart(JsonOps.INSTANCE, pos).result().orElseThrow();
     }

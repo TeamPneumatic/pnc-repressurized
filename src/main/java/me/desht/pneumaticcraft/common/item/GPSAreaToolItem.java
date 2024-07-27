@@ -88,7 +88,7 @@ public class GPSAreaToolItem extends Item implements IPositionProvider, IGPSTool
     public static void setGPSPosAndNotify(Player player, ItemStack stack, BlockPos pos, int index) {
         setGPSLocation(player, stack, pos, null, index, true);
         if (player instanceof ServerPlayer) {
-            player.displayClientMessage(Component.literal(ChatFormatting.AQUA + String.format("[%s] ", stack.getDisplayName().getString()))
+            player.displayClientMessage(Component.literal(ChatFormatting.AQUA + String.format("[%s] ", stack.getHoverName().getString()))
                     .append(getMessageText(player.level(), pos, index)), false);
         }
     }

@@ -51,7 +51,6 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -697,20 +696,6 @@ public class PneumaticCraftUtils {
 
     public static <T> Optional<ResourceLocation> getRegistryName(Registry<T> registry, T object) {
         return Optional.ofNullable(registry.getKey(object));
-    }
-
-    public static boolean isChunkLoaded(LevelAccessor level, BlockPos pos) {
-        return level.hasChunk(pos.getX() >> 4, pos.getZ() >> 4);
-    }
-
-    public static double average(long[] pValues) {
-        long i = 0L;
-
-        for(long j : pValues) {
-            i += j;
-        }
-
-        return (double)i / (double)pValues.length;
     }
 
     public static Component combineComponents(List<Component> components) {

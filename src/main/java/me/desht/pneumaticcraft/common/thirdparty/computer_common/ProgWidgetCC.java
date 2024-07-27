@@ -29,8 +29,8 @@ import me.desht.pneumaticcraft.common.entity.drone.DroneEntity;
 import me.desht.pneumaticcraft.common.recipes.VanillaRecipeCache;
 import me.desht.pneumaticcraft.common.registry.ModProgWidgetTypes;
 import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
-import me.desht.pneumaticcraft.common.util.LegacyAreaWidgetConverter;
 import me.desht.pneumaticcraft.common.util.StringFilterEntitySelector;
+import me.desht.pneumaticcraft.common.util.legacyconv.ProgWidgetLegacyConv;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -205,7 +205,7 @@ public class ProgWidgetCC extends ProgWidgetInventoryBase implements IBlockOrder
         ProgWidgetArea helperWidget = new ProgWidgetArea();
         helperWidget.setPos(0, new BlockPos(x1, y1, z1));
         helperWidget.setPos(1, new BlockPos(x2, y2, z2));
-        helperWidget.setAreaType(LegacyAreaWidgetConverter.convertFromLegacyFormat(type, 0));
+        helperWidget.setAreaType(ProgWidgetLegacyConv.LegacyAreaWidgetConverter.convertFromLegacyFormat(type, 0));
         Set<BlockPos> a = new HashSet<>();
         helperWidget.getArea(a);
         return a;

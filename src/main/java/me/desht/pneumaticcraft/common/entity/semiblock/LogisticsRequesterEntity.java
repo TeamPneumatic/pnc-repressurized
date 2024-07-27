@@ -139,7 +139,7 @@ public class LogisticsRequesterEntity extends AbstractLogisticsFrameEntity imple
     }
 
     @Override
-    public void notify(TileEntityAndFace teAndFace) {
+    public void notify(BlockEntityAndFace teAndFace) {
 //        if (AE2Integration.isAvailable()) {
 //            getAE2integration().maybeAddTE(teAndFace);
 //        }

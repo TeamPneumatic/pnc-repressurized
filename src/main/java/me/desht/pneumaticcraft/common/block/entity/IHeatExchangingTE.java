@@ -55,7 +55,7 @@ public interface IHeatExchangingTE {
 
     /**
      * Should this (heat-using) machine lose heat to the surrounding air blocks? Most blocks do.
-     * @return true if heat will be lost to the air on exposed faces, false otherwise
+     * @return a bi-predicate mapping a level and blockpos to a boolean; true if heat would be lost here, false otherwise
      */
     default BiPredicate<LevelAccessor, BlockPos> heatExchangerBlockFilter() {
         return IHeatExchangerLogic.ALL_BLOCKS;

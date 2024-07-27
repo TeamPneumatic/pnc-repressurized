@@ -62,12 +62,16 @@ repositories {
 		}
 	}
 	maven {
-		name 'Curios'
-		url "https://maven.theillusivec4.top/"
-		content {
-			includeGroup "top.theillusivec4.curios"
-		}
+		name = "OctoStudios"
+		url = uri("https://maven.octo-studios.com/releases")
 	}
+//	maven {
+//		name 'Curios'
+//		url "https://maven.theillusivec4.top/"
+//		content {
+//			includeGroup "top.theillusivec4.curios"
+//		}
+//	}
 	maven {
 		name "K-4u Mod maven"
 		url "https://modmaven.dev/"
@@ -161,7 +165,7 @@ dependencies {
 	runtimeOnly("mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}")
 
 	compileOnly("top.theillusivec4.curios:curios-neoforge:${curios_version}:api")
-//	runtimeOnly("top.theillusivec4.curios:curios-neoforge:${curios_version}")
+	runtimeOnly("top.theillusivec4.curios:curios-neoforge:${curios_version}")
 
 	compileOnly("vazkii.botania:Botania:${botania_version}:api")
 	//runtimeOnly("vazkii.botania:Botania:${botania_version}")

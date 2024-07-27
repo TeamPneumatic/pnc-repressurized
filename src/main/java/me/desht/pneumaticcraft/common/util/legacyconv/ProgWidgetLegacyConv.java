@@ -9,22 +9,27 @@ import me.desht.pneumaticcraft.api.drone.area.AreaType;
 import me.desht.pneumaticcraft.api.drone.area.AreaType.AreaAxis;
 import me.desht.pneumaticcraft.api.drone.area.EnumOldAreaType;
 import me.desht.pneumaticcraft.api.lib.Names;
+import me.desht.pneumaticcraft.api.registry.PNCRegistries;
 import me.desht.pneumaticcraft.common.drone.progwidgets.IBlockOrdered;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ICondition;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidget;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetCoordinateOperator;
+import me.desht.pneumaticcraft.common.drone.progwidgets.area.*;
 import me.desht.pneumaticcraft.common.drone.progwidgets.area.AreaTypeBox.BoxType;
 import me.desht.pneumaticcraft.common.drone.progwidgets.area.AreaTypeCylinder.CylinderType;
 import me.desht.pneumaticcraft.common.drone.progwidgets.area.AreaTypePyramid.PyramidType;
 import me.desht.pneumaticcraft.common.drone.progwidgets.area.AreaTypeSphere.SphereType;
 import me.desht.pneumaticcraft.common.drone.progwidgets.area.AreaTypeTorus.TorusType;
-import me.desht.pneumaticcraft.common.util.LegacyAreaWidgetConverter;
+import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.Util;
 import net.minecraft.core.Direction;
 import org.apache.commons.lang3.mutable.MutableByte;
 
+import java.util.EnumMap;
 import java.util.Locale;
+import java.util.Map;
 
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 import static me.desht.pneumaticcraft.common.util.legacyconv.ConversionUtil.*;
 
 public class ProgWidgetLegacyConv {
@@ -292,5 +297,42 @@ public class ProgWidgetLegacyConv {
         getInt(obj, "EAST").ifPresent(val -> res.setValue(res.byteValue() | val << 5));
 
         return res.byteValue();
+    }
+
+    /**
+     * Exists to support saved drone programs from 1.12 and older versions of PneumaticCraft, and also to support
+     * the Computer Control progwidget's "addArea" and "removeArea" methods.
+     */
+    public static class LegacyAreaWidgetConverter {
+        private static final Map<EnumOldAreaType, String> oldFormatToAreaTypes = new EnumMap<>(EnumOldAreaType.class);
+        static {
+            register(AreaTypeBox.ID, EnumOldAreaType.FILL, EnumOldAreaType.WALL, EnumOldAreaType.FRAME);
+            register(AreaTypeSphere.ID, EnumOldAreaType.SPHERE);
+            register(AreaTypeLine.ID, EnumOldAreaType.LINE);
+            register(AreaTypeWall.ID, EnumOldAreaType.X_WALL, EnumOldAreaType.Y_WALL, EnumOldAreaType.Z_WALL);
+            register(AreaTypeCylinder.ID, EnumOldAreaType.X_CYLINDER, EnumOldAreaType.Y_CYLINDER, EnumOldAreaType.Z_CYLINDER);
+            register(AreaTypePyramid.ID, EnumOldAreaType.X_PYRAMID, EnumOldAreaType.Y_PYRAMID, EnumOldAreaType.Z_PYRAMID);
+            register(AreaTypeGrid.ID, EnumOldAreaType.GRID);
+            register(AreaTypeRandom.ID, EnumOldAreaType.RANDOM);
+            if (oldFormatToAreaTypes.size() != EnumOldAreaType.values().length)
+                throw new IllegalStateException("Not all old formats are handled!");
+        }
+
+        private static void register(String id, EnumOldAreaType... oldTypes) {
+            for (EnumOldAreaType oldType : oldTypes) {
+                oldFormatToAreaTypes.put(oldType, id);
+            }
+        }
+
+        public static AreaType convertFromLegacyFormat(EnumOldAreaType oldType, int subTypeInfo) {
+            String newTypeId = oldFormatToAreaTypes.get(oldType);
+            if (newTypeId == null) {
+                Log.error("Legacy import: no area converter found for {}! Substituting 'box'.", oldType);
+                return new AreaTypeBox();
+            } else {
+                var s = PNCRegistries.AREA_TYPE_SERIALIZER_REGISTRY.get(RL(newTypeId));
+                return s != null ? Util.make(s.createDefaultInstance(), t -> t.convertFromLegacy(oldType, subTypeInfo)) : new AreaTypeBox();
+            }
+        }
     }
 }

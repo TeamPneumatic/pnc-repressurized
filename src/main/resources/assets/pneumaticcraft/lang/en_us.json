@@ -1882,7 +1882,7 @@
    "pneumaticcraft.message.date.ironman" : "Today an Iron Man movie went in premiere!",
    "pneumaticcraft.message.dispenser.clickToSet" : "§e§oRight-click any block to set eject direction",
    "pneumaticcraft.message.dispenser.direction" : "§eEject to: %s",
-   "pneumaticcraft.message.gps_tool.targetSet" : "[GPS Tool] Set Coordinates to %d,%d,%d",
+   "pneumaticcraft.message.gps_tool.targetSet" : "Set Coordinates to [%d,%d,%d]",
    "pneumaticcraft.message.gps_tool.culledRenderArea" : "Huge render (%d blocks) culled to save your FPS!",
    "pneumaticcraft.message.jackhammer.mode" : "Dig Mode: ",
    "pneumaticcraft.message.jackhammer.mode.1x1" : "1 x 1",

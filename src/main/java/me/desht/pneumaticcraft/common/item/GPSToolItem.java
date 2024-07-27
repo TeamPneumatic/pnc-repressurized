@@ -59,8 +59,12 @@ public class GPSToolItem extends Item implements IPositionProvider, IGPSToolSync
         BlockPos pos = ctx.getClickedPos();
         if (ctx.getPlayer() == null) return InteractionResult.PASS;
         setGPSLocation(ctx.getPlayer().getUUID(), ctx.getPlayer().getItemInHand(ctx.getHand()), pos);
-        if (!ctx.getLevel().isClientSide)
-            ctx.getPlayer().displayClientMessage(Component.translatable("pneumaticcraft.message.gps_tool.targetSet" ,pos.getX(), pos.getY(), pos.getZ()).withStyle(ChatFormatting.GREEN), false);
+        if (!ctx.getLevel().isClientSide) {
+            ctx.getPlayer().displayClientMessage(ctx.getItemInHand().getDisplayName().copy().withStyle(ChatFormatting.AQUA)
+                            .append(" ")
+                            .append(Component.translatable("pneumaticcraft.message.gps_tool.targetSet",
+                                    pos.getX(), pos.getY(), pos.getZ()).withStyle(ChatFormatting.GREEN)), false);
+        }
         ctx.getPlayer().playSound(ModSounds.CHIRP.get(), 1.0f, 1.5f);
         return InteractionResult.SUCCESS; // we don't want to use the item.
     }

@@ -19,7 +19,7 @@ package me.desht.pneumaticcraft.common.drone;
 
 import me.desht.pneumaticcraft.common.entity.semiblock.AbstractLogisticsFrameEntity;
 import me.desht.pneumaticcraft.common.semiblock.IProvidingInventoryListener;
-import me.desht.pneumaticcraft.common.semiblock.IProvidingInventoryListener.TileEntityAndFace;
+import me.desht.pneumaticcraft.common.semiblock.IProvidingInventoryListener.BlockEntityAndFace;
 import me.desht.pneumaticcraft.common.semiblock.ISpecificProvider;
 import me.desht.pneumaticcraft.common.semiblock.ISpecificRequester;
 import me.desht.pneumaticcraft.common.util.IOHelper;
@@ -116,7 +116,7 @@ public class LogisticsManager {
         if (tryItems) {
             IOHelper.getInventoryForBlock(provider.getCachedTileEntity(), provider.getSide()).ifPresent(itemHandler -> {
                 if (requester instanceof IProvidingInventoryListener)
-                    ((IProvidingInventoryListener) requester).notify(new TileEntityAndFace(provider.getCachedTileEntity(), provider.getSide()));
+                    ((IProvidingInventoryListener) requester).notify(new BlockEntityAndFace(provider.getCachedTileEntity(), provider.getSide()));
                 for (int i = 0; i < itemHandler.getSlots(); i++) {
                     ItemStack providingStack = itemHandler.extractItem(i, 64, true);
                     if (!providingStack.isEmpty() && (!(provider instanceof ISpecificProvider) || ((ISpecificProvider) provider).canProvide(providingStack))) {

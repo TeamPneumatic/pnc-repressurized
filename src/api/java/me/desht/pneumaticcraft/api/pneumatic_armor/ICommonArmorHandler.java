@@ -27,7 +27,7 @@ import net.minecraft.world.entity.player.Player;
  * and can also be directly retrieved via {@link ICommonArmorRegistry#getCommonArmorHandler(Player)}.
  * <p>
  * You should avoid hanging on to instances of this across ticks, since it will become invalid if a player logs off or
- * changes dimension.
+ * changes dimension (see also {@link #isValid()}.
  */
 public interface ICommonArmorHandler {
     /**
@@ -139,4 +139,13 @@ public interface ICommonArmorHandler {
      * @return true if the equipped item is on cooldown, false otherwise
      */
     boolean isOnCooldown(EquipmentSlot slot);
+
+    /**
+     * Check if this armor handler is still valid for the player. If you do hang on to instances of the handler
+     * across ticks, you should call this before doing anything with the handler (and release any references to it if
+     * this return false).
+     *
+     * @return true if the handler is still valid for the player, false otherwise
+     */
+    boolean isValid();
 }

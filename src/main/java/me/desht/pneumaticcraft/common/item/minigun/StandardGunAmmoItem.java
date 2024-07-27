@@ -53,9 +53,7 @@ public class StandardGunAmmoItem extends AbstractGunAmmoItem {
 
     @Nonnull
     public static ItemStack getPotionStack(ItemStack ammo) {
-        return ammo.has(ModDataComponents.POTION_AMMO) ?
-                ammo.get(ModDataComponents.POTION_AMMO).copyOne() :
-                ItemStack.EMPTY;
+        return ammo.getOrDefault(ModDataComponents.POTION_AMMO, ItemContainerContents.EMPTY).copyOne();
     }
 
     public static void setPotion(ItemStack ammo, ItemStack potion) {

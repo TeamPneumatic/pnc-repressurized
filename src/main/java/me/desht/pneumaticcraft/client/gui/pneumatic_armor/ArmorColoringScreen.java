@@ -268,13 +268,6 @@ public class ArmorColoringScreen extends AbstractPneumaticCraftScreen {
             gui.updateClientSideArmor(selectedSlot);
             super.applyValue();
         }
-
-//        @Override
-//        protected void renderBg(PoseStack pPoseStack, Minecraft pMinecraft, int pMouseX, int pMouseY) {
-//            int xPos = this.getX() + (int)(this.value * (double)(this.width - 8));
-//            int vOff = (this.isHoveredOrFocused() ? 2 : 1) * 20;
-//            ScreenUtils.blitWithBorder(pPoseStack, WIDGETS_LOCATION, xPos, this.getY(), 0, 46 + vOff, 8, this.height, 200, 20, 2, 3, 2, 2, 0);
-//        }
     }
 
     private enum ColorComponent {

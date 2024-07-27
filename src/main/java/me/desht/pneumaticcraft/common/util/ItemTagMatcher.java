@@ -30,7 +30,6 @@ public class ItemTagMatcher {
 
     private ItemTagMatcher(ItemStack stack) {
         tags = PneumaticCraftUtils.itemTags(stack.getItem());
-//        Registry.ITEM.getHolderOrThrow(Registry.ITEM.getResourceKey(stack.getItem()).orElseThrow()).tags().forEach(tags::add);
     }
 
     public boolean match(ItemStack stack) {

@@ -61,7 +61,7 @@ public class CommonArmorHandler implements ICommonArmorHandler {
     public static final float CRITICAL_PRESSURE = 0.1F;
     public static final float LOW_PRESSURE = 0.5F;
 
-    private final HashMap<UUID, CommonArmorHandler> playerHandlers = new HashMap<>();
+    private final Map<UUID, CommonArmorHandler> playerHandlers = new HashMap<>();
     private Player player;
     private final boolean[][] upgradeRenderersInserted = new boolean[4][];
     private final boolean[][] upgradeRenderersEnabled = new boolean[4][];
@@ -369,7 +369,7 @@ public class CommonArmorHandler implements ICommonArmorHandler {
         return isUpgradeEnabled(EquipmentSlot.HEAD, CommonUpgradeHandlers.coreComponentsHandler.getIndex());
     }
 
-    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
+    @Override
     public boolean isValid() {
         return isValid;
     }

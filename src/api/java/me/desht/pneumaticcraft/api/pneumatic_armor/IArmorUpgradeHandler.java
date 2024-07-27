@@ -187,6 +187,6 @@ public interface IArmorUpgradeHandler<T extends IArmorExtensionData> {
      */
     static String getStringKey(ResourceLocation id) {
         return UPGRADE_PREFIX +
-                (id.getNamespace().equals(PneumaticRegistry.MOD_ID) ? id.getPath() : id.toString().replace(':', '.'));
+                (id.getNamespace().equals(PneumaticRegistry.MOD_ID) ? id.getPath() : id.toLanguageKey());
     }
 }

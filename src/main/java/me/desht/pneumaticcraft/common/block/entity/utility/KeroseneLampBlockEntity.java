@@ -18,6 +18,7 @@
 package me.desht.pneumaticcraft.common.block.entity.utility;
 
 import com.google.common.collect.ImmutableList;
+import com.mojang.serialization.Codec;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.data.PneumaticCraftTags;
 import me.desht.pneumaticcraft.common.block.entity.*;
@@ -31,7 +32,6 @@ import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
 import me.desht.pneumaticcraft.common.registry.ModBlocks;
 import me.desht.pneumaticcraft.common.registry.ModDataComponents;
-import me.desht.pneumaticcraft.common.util.NBTUtils;
 import me.desht.pneumaticcraft.common.util.PNCFluidTank;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.core.BlockPos;
@@ -40,8 +40,7 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.NbtUtils;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
@@ -68,7 +67,6 @@ import net.neoforged.neoforge.items.ItemStackHandler;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static net.minecraft.world.level.block.state.properties.BlockStateProperties.LIT;
 
@@ -320,7 +318,8 @@ public class KeroseneLampBlockEntity extends AbstractTickingBlockEntity implemen
     @Override
     public void saveAdditional(CompoundTag tag, HolderLookup.Provider provider) {
         super.saveAdditional(tag, provider);
-        tag.put("lights", managingLights.stream().map(NbtUtils::writeBlockPos).collect(Collectors.toCollection(ListTag::new)));
+        BLOCKPOS_LIST_CODEC.encodeStart(provider.createSerializationContext(NbtOps.INSTANCE), List.copyOf(managingLights)).result()
+                .ifPresent(t -> tag.put("lights", t));
         tag.putByte("targetRange", (byte) targetRange);
         tag.putByte("range", (byte) range);
         tag.put("Items", inventory.serializeNBT(provider));
@@ -331,10 +330,8 @@ public class KeroseneLampBlockEntity extends AbstractTickingBlockEntity implemen
         super.loadAdditional(tag, provider);
 
         managingLights.clear();
-        ListTag lights = tag.getList("lights", CompoundTag.TAG_INT_ARRAY);
-        for (int i = 0; i < lights.size(); i++) {
-            NBTUtils.getPos(lights.getIntArray(i)).ifPresent(managingLights::add);
-        }
+        BLOCKPOS_LIST_CODEC.parse(provider.createSerializationContext(NbtOps.INSTANCE), tag.get("lights")).result()
+                .ifPresent(managingLights::addAll);
         fuelQuality = calculateFuelQuality(tank.getFluid().getFluid());
         targetRange = tag.getByte("targetRange");
         range = tag.getByte("range");
@@ -399,4 +396,6 @@ public class KeroseneLampBlockEntity extends AbstractTickingBlockEntity implemen
     public AbstractContainerMenu createMenu(int i, Inventory playerInventory, Player playerEntity) {
         return new KeroseneLampMenu(i, playerInventory, getBlockPos());
     }
+
+    private static final Codec<List<BlockPos>> BLOCKPOS_LIST_CODEC = BlockPos.CODEC.listOf();
 }
