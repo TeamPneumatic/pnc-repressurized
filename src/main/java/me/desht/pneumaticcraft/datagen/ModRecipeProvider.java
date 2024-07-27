@@ -72,6 +72,11 @@ public class ModRecipeProvider extends RecipeProvider {
                 'R', Tags.Items.DUSTS_REDSTONE
         ).save(consumer);
 
+        shapedPressure(ModItems.AIR_CANISTER_ARRAY.get(), ModItems.AIR_CANISTER.get(),
+            "CC/CC",
+        'C', ModItems.AIR_CANISTER.get()
+        ).save(consumer);
+
         shapedCompressorUpgrade(ModBlocks.ADVANCED_AIR_COMPRESSOR.get(), ModBlocks.ADVANCED_PRESSURE_TUBE.get(),
                 "III/I T/ICI",
                 'I', PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON,
@@ -745,6 +750,11 @@ public class ModRecipeProvider extends RecipeProvider {
                 'T', ModBlocks.ADVANCED_PRESSURE_TUBE.get(),
                 'C', ModItems.AIR_CANISTER.get(),
                 'I', PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON
+        ).save(consumer);
+
+        shapedPressure(ModItems.REINFORCED_AIR_CANISTER_ARRAY.get(), ModItems.REINFORCED_AIR_CANISTER.get(),
+                "CC/CC",
+                'C', ModItems.REINFORCED_AIR_CANISTER.get()
         ).save(consumer);
 
         shaped(ModBlocks.REINFORCED_CHEST.get(), ModItems.COMPRESSED_IRON_INGOT.get(),

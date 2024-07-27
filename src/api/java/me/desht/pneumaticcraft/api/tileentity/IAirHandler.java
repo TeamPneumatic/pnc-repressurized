@@ -18,8 +18,6 @@
 package me.desht.pneumaticcraft.api.tileentity;
 
 import me.desht.pneumaticcraft.api.item.ItemVolumeModifier;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 
 /**
  * Base functionality for all air handlers.  This is also used by entities which can be pressurized, e.g. drones.
@@ -79,5 +77,4 @@ public interface IAirHandler {
      * @return the maximum pressure for this handler
      */
     float maxPressure();
-
 }

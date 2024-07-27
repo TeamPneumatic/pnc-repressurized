@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_air_canister": {
+      "conditions": {
+        "items": [
+          {
+            "items": "pneumaticcraft:air_canister"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "pneumaticcraft:air_canister_array"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_air_canister"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "pneumaticcraft:air_canister_array"
+    ]
+  }
+}

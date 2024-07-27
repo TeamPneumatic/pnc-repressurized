@@ -1,0 +1,17 @@
+{
+  "type": "pneumaticcraft:crafting_shaped_pressurizable",
+  "category": "misc",
+  "key": {
+    "C": {
+      "item": "pneumaticcraft:reinforced_air_canister"
+    }
+  },
+  "pattern": [
+    "CC",
+    "CC"
+  ],
+  "result": {
+    "count": 1,
+    "id": "pneumaticcraft:reinforced_air_canister_array"
+  }
+}

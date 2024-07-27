@@ -9,6 +9,7 @@ import me.desht.pneumaticcraft.common.block.entity.SideConfigurator;
 import me.desht.pneumaticcraft.common.block.entity.utility.AphorismTileBlockEntity;
 import me.desht.pneumaticcraft.common.block.entity.utility.SmartChestBlockEntity;
 import me.desht.pneumaticcraft.common.drone.progwidgets.SavedDroneProgram;
+import me.desht.pneumaticcraft.common.item.AirCanisterItem.ChargeMode;
 import me.desht.pneumaticcraft.common.item.ClassifyFilterItem;
 import me.desht.pneumaticcraft.common.item.JackHammerItem.DigMode;
 import me.desht.pneumaticcraft.common.item.MicromissilesItem;
@@ -74,6 +75,9 @@ public class ModDataComponents {
     public static final Supplier<DataComponentType<SmartChestBlockEntity.SavedData>> SMART_CHEST_SAVED
             = register("smartchest_saved_inv", SmartChestBlockEntity.SavedData.CODEC, SmartChestBlockEntity.SavedData.STREAM_CODEC);
 
+    // Air Canister charging status
+    public static final Supplier<DataComponentType<ChargeMode>> AIR_CANISTER_CHARGING
+            = register("air_canister_charging", StringRepresentable.fromEnum(ChargeMode::values), NeoForgeStreamCodecs.enumCodec(ChargeMode.class));
 
     // Amadron
     public static final Supplier<DataComponentType<GlobalPos>> AMADRON_ITEM_POS

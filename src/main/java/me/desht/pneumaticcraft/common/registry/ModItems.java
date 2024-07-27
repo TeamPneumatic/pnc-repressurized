@@ -90,10 +90,14 @@ public class ModItems {
     public static final DeferredItem<BandageItem> BANDAGE = register("bandage", BandageItem::new);
     public static final DeferredItem<SpawnerCoreItem> SPAWNER_CORE = register("spawner_core", SpawnerCoreItem::new);
 
-    public static final DeferredItem<PressurizableItem> AIR_CANISTER = register("air_canister",
-            AbstractAirCanisterItem.Basic::new);
-    public static final DeferredItem<PressurizableItem> REINFORCED_AIR_CANISTER = register("reinforced_air_canister",
-            AbstractAirCanisterItem.Reinforced::new);
+    public static final DeferredItem<AirCanisterItem> AIR_CANISTER = register("air_canister",
+            () -> new AirCanisterItem(AirCanisterItem.CanisterType.BASIC));
+    public static final DeferredItem<AirCanisterItem> AIR_CANISTER_ARRAY = register("air_canister_array",
+            () -> new AirCanisterItem(AirCanisterItem.CanisterType.BASIC_ARRAY));
+    public static final DeferredItem<AirCanisterItem> REINFORCED_AIR_CANISTER = register("reinforced_air_canister",
+            () -> new AirCanisterItem(AirCanisterItem.CanisterType.REINFORCED));
+    public static final DeferredItem<AirCanisterItem> REINFORCED_AIR_CANISTER_ARRAY = register("reinforced_air_canister_array",
+            () -> new AirCanisterItem(AirCanisterItem.CanisterType.REINFORCED_ARRAY));
     public static final DeferredItem<VortexCannonItem> VORTEX_CANNON = register("vortex_cannon",
             VortexCannonItem::new);
     public static final DeferredItem<PneumaticWrenchItem> PNEUMATIC_WRENCH = register("pneumatic_wrench",
