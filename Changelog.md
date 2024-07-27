@@ -4,6 +4,29 @@ This is an overview of significant new features and fixes by release.  See https
 
 Changes are in reverse chronological order; newest changes at the top.
 
+# Minecraft 1.21
+
+## [8.0.0]
+
+### Changed
+* Initial port to Minecraft 1.21, using NeoForge
+* Programmer GUI size is now dynamic, based on screen resolution
+  * 75% of the screen width (allowing space for JEI etc.) and 95% of the screen height
+* Exported drone programs and remote layout JSONs are now formatted much more cleanly
+  * This reflects a significant internal overhaul of how these objects are handled; specifically, using codecs to facilitate storage as data components
+  * Old programs/layouts are still supported via a legacy conversion system, but programs/layouts written from 1.21+ will _not_ load into older version of the mod
+
+### Added
+* Air Canister improvements
+  * Doubled capacity of Reinforced Air Canisters
+  * Added basic and reinforced Air Canister Arrays, with 4 times the storage of the item (crafted with 4 of the item)
+  * Air canisters (and arrays) can now charge other items in your inventory via switchable charging modes
+* Minigun improvements
+  * Doubled the ammo capacity of all ammo types
+* Added a Muffler Upgrade
+  * One or more of these in noisy items and blocks (Miniguns, Sentry Turrents, Jackhammers) quietens down the racket
+  * Can also be installed in Pneumatic Boots to reduce the Jet Boots volume
+
 # Minecraft 1.20.4
 
 This release (and all future releases) is built for [Neoforge](https://neoforged.net/), and will _not_ work on [MinecraftForge](https://files.minecraftforge.net/)!
