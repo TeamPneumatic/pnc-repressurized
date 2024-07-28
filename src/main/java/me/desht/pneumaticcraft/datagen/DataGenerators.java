@@ -40,7 +40,6 @@ public class DataGenerators {
         generator.addProvider(event.includeServer(), new ModGLMProvider(generator, lookupProvider));
         generator.addProvider(event.includeServer(), new ModPoiTypeTagsProvider(generator, lookupProvider, existingFileHelper));
         generator.addProvider(event.includeServer(), new ModStructureTagsProvider(generator, lookupProvider, event.getExistingFileHelper()));
-//        generator.addProvider(event.includeServer(), new ModDamageTypeTagsProvider(generator.getPackOutput(), lookupProvider, event.getExistingFileHelper()));
 
         makeProviders(generator.getPackOutput(), lookupProvider, existingFileHelper)
                 .forEach(p -> generator.addProvider(event.includeServer(), p));

@@ -187,10 +187,10 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
 
         addDifficultyButtons(lb.getY() + lb.getHeight() + 3);
 
-        addRenderableWidget(new WidgetButtonExtended(leftPos + 5, topPos + yBottom + 4, 87, 20,
+        addRenderableWidget(new WidgetButtonExtended(leftPos + 5, topPos + yBottom + 4, 55, 20,
                 xlate("pneumaticcraft.gui.programmer.button.showStart"), b -> gotoStart())
                 .setTooltipText(xlate("pneumaticcraft.gui.programmer.button.showStart.tooltip")));
-        addRenderableWidget(new WidgetButtonExtended(leftPos + 5, topPos + yBottom + 26, 87, 20,
+        addRenderableWidget(new WidgetButtonExtended(leftPos + 5, topPos + yBottom + 26, 55, 20,
                 xlate("pneumaticcraft.gui.programmer.button.showLatest"), b -> gotoLatest())
                 .setTooltipText(xlate("pneumaticcraft.gui.programmer.button.showLatest.tooltip")));
         addRenderableWidget(showInfo = new WidgetCheckBox(leftPos + 5, topPos + yBottom + 49, 0xFF404040,

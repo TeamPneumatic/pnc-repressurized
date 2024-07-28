@@ -66,14 +66,17 @@ public class PNCShapedRecipeBuilder extends ShapedRecipeBuilder {
         return new PNCShapedRecipeBuilder(category, result);
     }
 
+    @Override
     public PNCShapedRecipeBuilder define(Character character, TagKey<Item> tag) {
         return this.define(character, Ingredient.of(tag));
     }
 
+    @Override
     public PNCShapedRecipeBuilder define(Character character, ItemLike itemLike) {
         return this.define(character, Ingredient.of(itemLike));
     }
 
+    @Override
     public PNCShapedRecipeBuilder define(Character character, Ingredient ingredient) {
         if (this.key.containsKey(character)) {
             throw new IllegalArgumentException("Symbol '" + character + "' is already defined!");
@@ -85,6 +88,7 @@ public class PNCShapedRecipeBuilder extends ShapedRecipeBuilder {
         }
     }
 
+    @Override
     public PNCShapedRecipeBuilder pattern(String pat) {
         if (!this.rows.isEmpty() && pat.length() != this.rows.get(0).length()) {
             throw new IllegalArgumentException("Pattern must be the same width on every line!");
@@ -94,16 +98,19 @@ public class PNCShapedRecipeBuilder extends ShapedRecipeBuilder {
         }
     }
 
+    @Override
     public PNCShapedRecipeBuilder unlockedBy(String name, Criterion<?> criterion) {
         this.criteria.put(name, criterion);
         return this;
     }
 
+    @Override
     public PNCShapedRecipeBuilder group(@Nullable String group) {
         this.group = group;
         return this;
     }
 
+    @Override
     public PNCShapedRecipeBuilder showNotification(boolean showNotification) {
         this.showNotification = showNotification;
         return this;

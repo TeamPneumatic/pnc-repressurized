@@ -20,66 +20,23 @@ package me.desht.pneumaticcraft.lib;
 public class PneumaticValues {
 
     // danger pressures (bar)
-    public static final float DANGER_PRESSURE_TIER_ONE = 5;
-    public static final float DANGER_PRESSURE_PRESSURE_TUBE = DANGER_PRESSURE_TIER_ONE;
-    public static final float DANGER_PRESSURE_AIR_COMPRESSOR = DANGER_PRESSURE_TIER_ONE;
-    public static final float DANGER_PRESSURE_MANUAL_COMPRESSOR = DANGER_PRESSURE_TIER_ONE;
-    public static final float DANGER_PRESSURE_AIR_CANNON = DANGER_PRESSURE_TIER_ONE;
+    public static final float DANGER_PRESSURE_TIER_ONE = 5F;
     public static final float DANGER_PRESSURE_PRESSURE_CHAMBER = DANGER_PRESSURE_TIER_ONE;
-    public static final float DANGER_PRESSURE_ELEVATOR = DANGER_PRESSURE_TIER_ONE;
     public static final float DANGER_PRESSURE_VACUUM_PUMP = DANGER_PRESSURE_TIER_ONE;
-    public static final float DANGER_PRESSURE_PNEUMATIC_DOOR = DANGER_PRESSURE_TIER_ONE;
-    public static final float DANGER_PRESSURE_ASSEMBLY_CONTROLLER = DANGER_PRESSURE_TIER_ONE;
-    public static final float DANGER_PRESSURE_UV_LIGHTBOX = DANGER_PRESSURE_TIER_ONE;
-    public static final float DANGER_PRESSURE_UNIVERSAL_SENSOR = DANGER_PRESSURE_TIER_ONE;
-    public static final float DANGER_PRESSURE_THERMAL_COMPRESSOR = DANGER_PRESSURE_TIER_ONE;
 
-    public static final float DANGER_PRESSURE_TIER_TWO = 20;
+    public static final float DANGER_PRESSURE_TIER_TWO = 20F;
     public static final float DANGER_PRESSURE_ADVANCED_PRESSURE_TUBE = DANGER_PRESSURE_TIER_TWO;
-    public static final float DANGER_PRESSURE_CHARGING_STATION = DANGER_PRESSURE_TIER_TWO;
-//    public static final float DANGER_PRESSURE_PNEUMATIC_GENERATOR = DANGER_PRESSURE_TIER_TWO;
-//    public static final float DANGER_PRESSURE_ELECTRIC_COMPRESSOR = DANGER_PRESSURE_TIER_TWO;
-//    public static final float DANGER_PRESSURE_PNEUMATIC_ENGINE = DANGER_PRESSURE_TIER_TWO;
-//    public static final float DANGER_PRESSURE_KINETIC_COMPRESSOR = DANGER_PRESSURE_TIER_TWO;
-    public static final float DANGER_PRESSURE_PNEUMATIC_DYNAMO = DANGER_PRESSURE_TIER_TWO;
-    public static final float DANGER_PRESSURE_FLUX_COMPRESSOR = DANGER_PRESSURE_TIER_TWO;
-    public static final float DANGER_PRESSURE_SOLAR_COMPRESSOR = DANGER_PRESSURE_TIER_TWO;
-    public static final float DANGER_PRESSURE_AERIAL_INTERFACE = DANGER_PRESSURE_TIER_TWO;
-    public static final float DANGER_PRESSURE_ELECTROSTATIC_COMPRESSOR = DANGER_PRESSURE_TIER_TWO;
-//    public static final float DANGER_PRESSURE_PNEUMATIC_PUMP = DANGER_PRESSURE_TIER_TWO;
 
     // critical pressures (bar)
     public static final float MAX_PRESSURE_TIER_ONE = 7F;
-    public static final float MAX_PRESSURE_PRESSURE_TUBE = MAX_PRESSURE_TIER_ONE;
-    public static final float MAX_PRESSURE_AIR_COMPRESSOR = MAX_PRESSURE_TIER_ONE;
-    public static final float MAX_PRESSURE_MANUAL_COMPRESSOR = MAX_PRESSURE_TIER_ONE;
-    public static final float MAX_PRESSURE_AIR_CANNON = MAX_PRESSURE_TIER_ONE;
     public static final float MAX_PRESSURE_PRESSURE_CHAMBER = MAX_PRESSURE_TIER_ONE;
-    public static final float MAX_PRESSURE_ELEVATOR = MAX_PRESSURE_TIER_ONE;
     public static final float MAX_PRESSURE_VACUUM_PUMP = MAX_PRESSURE_TIER_ONE;
-    public static final float MAX_PRESSURE_PNEUMATIC_DOOR = MAX_PRESSURE_TIER_ONE;
-    public static final float MAX_PRESSURE_ASSEMBLY_CONTROLLER = MAX_PRESSURE_TIER_ONE;
-    public static final float MAX_PRESSURE_UV_LIGHTBOX = MAX_PRESSURE_TIER_ONE;
-    public static final float MAX_PRESSURE_UNIVERSAL_SENSOR = MAX_PRESSURE_TIER_ONE;
-    public static final float MAX_PRESSURE_THERMAL_COMPRESSOR = MAX_PRESSURE_TIER_ONE;
 
     public static final float MAX_PRESSURE_TIER_TWO = 25F;
-    public static final float MAX_PRESSURE_ADVANCED_PRESSURE_TUBE = MAX_PRESSURE_TIER_TWO;
-    public static final float MAX_PRESSURE_CHARGING_STATION = MAX_PRESSURE_TIER_TWO;
-//    public static final float MAX_PRESSURE_PNEUMATIC_GENERATOR = MAX_PRESSURE_TIER_TWO;
-//    public static final float MAX_PRESSURE_ELECTRIC_COMPRESSOR = MAX_PRESSURE_TIER_TWO;
-//    public static final float MAX_PRESSURE_PNEUMATIC_ENGINE = MAX_PRESSURE_TIER_TWO;
-//    public static final float MAX_PRESSURE_KINETIC_COMPRESSOR = MAX_PRESSURE_TIER_TWO;
-    public static final float MAX_PRESSURE_PNEUMATIC_DYNAMO = MAX_PRESSURE_TIER_TWO;
-    public static final float MAX_PRESSURE_FLUX_COMPRESSOR = MAX_PRESSURE_TIER_TWO;
-    public static final float MAX_PRESSURE_SOLAR_COMPRESSOR = MAX_PRESSURE_TIER_TWO;
-    public static final float MAX_PRESSURE_AERIAL_INTERFACE = MAX_PRESSURE_TIER_TWO;
-    public static final float MAX_PRESSURE_ELECTROSTATIC_COMPRESSOR = MAX_PRESSURE_TIER_TWO;
-//    public static final float MAX_PRESSURE_PNEUMATIC_PUMP = MAX_PRESSURE_TIER_TWO;
 
-    public static final float MAX_PRESSURE_LIVING_ENTITY = 1.0F;
+    public static final float MAX_PRESSURE_LIVING_ENTITY = 1F;
 
-    public static final int AIR_LEAK_FACTOR = 40;//mL/bar/tick determines how much air being released.
+    public static final int AIR_LEAK_FACTOR = 40; //mL/bar/tick determines how much air being released.
 
     public static final int CHARGING_STATION_CHARGE_RATE = 10;// mL per tick
     public static final int USAGE_AIR_GRATE = 2; // mL per entity affected this tick
@@ -131,16 +88,11 @@ public class PneumaticValues {
     public static final int VOLUME_UV_LIGHTBOX = 2000;
     public static final int VOLUME_UNIVERSAL_SENSOR = 5000;
     public static final int VOLUME_ADVANCED_PRESSURE_TUBE = 4000;
-//    public static final int VOLUME_PNEUMATIC_GENERATOR = 10000;
-//    public static final int VOLUME_ELECTRIC_COMPRESSOR = 10000;
-//    public static final int VOLUME_PNEUMATIC_ENGINE = 10000;
-//    public static final int VOLUME_KINETIC_COMPRESSOR = 10000;
     public static final int VOLUME_PNEUMATIC_DYNAMO = 10000;
     public static final int VOLUME_FLUX_COMPRESSOR = 10000;
     public static final int VOLUME_SOLAR_COMPRESSOR = 10000;
     public static final int VOLUME_AERIAL_INTERFACE = 4000;
     public static final int VOLUME_ELECTROSTATIC_COMPRESSOR = 50000;
-//    public static final int VOLUME_PNEUMATIC_PUMP = 10000;
     public static final int VOLUME_THERMAL_COMPRESSOR = 5000;
     public static final int VOLUME_FLUID_MIXER = 3000;
     public static final int VOLUME_JACKHAMMER = 12000;
@@ -158,10 +110,7 @@ public class PneumaticValues {
     public static final float MIN_PRESSURE_ASSEMBLY_CONTROLLER = 3.5F;
     public static final float MIN_PRESSURE_UV_LIGHTBOX = 1.0F;
     public static final float MIN_PRESSURE_UNIVERSAL_SENSOR = 0.5F;
-//    public static final float MIN_PRESSURE_PNEUMATIC_GENERATOR = 15F;
-//    public static final float MIN_PRESSURE_PNEUMATIC_ENGINE = 5F;
     public static final float MIN_PRESSURE_PNEUMATIC_DYNAMO = 15F;
-//    public static final float MIN_PRESSURE_PNEUMATIC_PUMP = 5F;
     public static final float MIN_PRESSURE_AERIAL_INTERFACE = 10F;
 
     public static final int MAX_REDIRECTION_PER_IRON_BAR = 10000; //mL/lightning bolt/bar

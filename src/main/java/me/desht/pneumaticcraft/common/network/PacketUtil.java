@@ -21,45 +21,13 @@ import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.inventory.AbstractPneumaticCraftMenu;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.GlobalPos;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtUtils;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.state.BlockState;
-import org.joml.Vector3f;
 
 import javax.annotation.Nonnull;
-import java.util.Objects;
 import java.util.Optional;
 
 public class PacketUtil {
-    public static void writeGlobalPos(FriendlyByteBuf buf, GlobalPos gPos) {
-        buf.writeResourceLocation(gPos.dimension().location());
-        buf.writeBlockPos(gPos.pos());
-    }
-
-    public static GlobalPos readGlobalPos(FriendlyByteBuf buf) {
-        ResourceKey<Level> worldKey = ResourceKey.create(Registries.DIMENSION, buf.readResourceLocation());
-        BlockPos pos = buf.readBlockPos();
-        return GlobalPos.of(worldKey, pos);
-    }
-
-    public static void writeVec3f(Vector3f vec, FriendlyByteBuf buf) {
-        buf.writeFloat(vec.x);
-        buf.writeFloat(vec.y);
-        buf.writeFloat(vec.z);
-    }
-
-    public static Vector3f readVec3f(FriendlyByteBuf buf) {
-        return new Vector3f(buf.readFloat(), buf.readFloat(), buf.readFloat());
-    }
-
     /**
      * Get the relevant target block entity for packet purposes.  When the packet is
      * being received on the server, the player's open container is used to determine
@@ -104,26 +72,5 @@ public class PacketUtil {
     public static <T extends BlockEntity> Optional<T> getBlockEntity(Player player, Class<T> cls) {
         if (player.level().isClientSide) throw new RuntimeException("don't call this method client side!");
         return getBlockEntity(player, null, cls);
-    }
-
-    /**
-     * Write an optional blockstate to the network
-     * @param buf the packet buffer
-     * @param state the state to write
-     */
-    public static void writeOptionalBlockState(FriendlyByteBuf buf, @SuppressWarnings("OptionalUsedAsFieldOrParameterType") Optional<BlockState> state) {
-        buf.writeOptional(state, (b, state1) -> b.writeNbt(NbtUtils.writeBlockState(state1)));
-    }
-
-    /**
-     * Read an optional blockstate from the network
-     * @param buf the packet buffer
-     * @return the blockstate, may be null
-     */
-    public static Optional<BlockState> readOptionalBlockState(FriendlyByteBuf buf) {
-        return buf.readOptional(b -> {
-            CompoundTag tag = b.readNbt();
-            return NbtUtils.readBlockState(BuiltInRegistries.BLOCK.asLookup(), Objects.requireNonNull(tag));
-        });
     }
 }

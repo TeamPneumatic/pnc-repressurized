@@ -31,6 +31,7 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.neoforged.neoforge.network.connection.ConnectionType;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import java.util.ArrayList;
@@ -162,7 +163,7 @@ public record PacketDescription(BlockPos pos, boolean fullSync, List<IndexedFiel
             CompoundTag element = list.getCompound(i);
             byte type = element.getByte("Type");
             byte[] b = element.getByteArray("Value");
-            fields.add(new IndexedField(i, type, SyncedField.fromBytes(new RegistryFriendlyByteBuf(Unpooled.wrappedBuffer(b), registryAccess), type)));
+            fields.add(new IndexedField(i, type, SyncedField.fromBytes(new RegistryFriendlyByteBuf(Unpooled.wrappedBuffer(b), registryAccess, ConnectionType.OTHER), type)));
         }
         CompoundTag extraData = subTag.getCompound("Extra");
 
