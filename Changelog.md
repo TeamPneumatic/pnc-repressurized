@@ -20,12 +20,13 @@ Changes are in reverse chronological order; newest changes at the top.
 * Air Canister improvements
   * Doubled capacity of Reinforced Air Canisters
   * Added basic and reinforced Air Canister Arrays, with 4 times the storage of the item (crafted with 4 of the item)
-  * Air canisters (and arrays) can now charge other items in your inventory via switchable charging modes
+  * Air Canisters (and arrays) can now charge other items in your inventory via switchable charging modes (none/held only/all inventory)
+  * Note: Air Canisters don't charge pneumatic armor; use the chestplate with charging upgrades for that 
 * Minigun improvements
-  * Doubled the ammo capacity of all ammo types
+  * Doubled the ammo capacity in config of all ammo types
+  * Increased base damage in config from 4 to 6 (half-hearts per hit)
 * Added a Muffler Upgrade
-  * One or more of these in noisy items and blocks (Miniguns, Sentry Turrents, Jackhammers) quietens down the racket
-  * Can also be installed in Pneumatic Boots to reduce the Jet Boots volume
+  * One or more of these in noisy items and blocks (Miniguns, Sentry Turrents, Jackhammers, Jet Boots) quietens down the racket
 
 # Minecraft 1.20.4
 
