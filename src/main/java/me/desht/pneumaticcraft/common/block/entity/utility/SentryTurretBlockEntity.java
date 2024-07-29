@@ -18,6 +18,7 @@
 package me.desht.pneumaticcraft.common.block.entity.utility;
 
 import com.mojang.authlib.GameProfile;
+import me.desht.pneumaticcraft.api.upgrade.PNCUpgrade;
 import me.desht.pneumaticcraft.common.block.entity.AbstractTickingBlockEntity;
 import me.desht.pneumaticcraft.common.block.entity.IGUITextFieldSensitive;
 import me.desht.pneumaticcraft.common.block.entity.IRedstoneControl;
@@ -70,11 +71,15 @@ import java.util.List;
 public class SentryTurretBlockEntity extends AbstractTickingBlockEntity implements
         IRedstoneControl<SentryTurretBlockEntity>, IGUITextFieldSensitive, MenuProvider {
     private static final int INVENTORY_SIZE = 4;
-    public static final String NBT_ENTITY_FILTER = "entityFilter";
+    private static final String NBT_ENTITY_FILTER = "entityFilter";
     private static final String FAKE_NAME = "Sentry Turret";
     private static final GameProfile FAKE_PROFILE = UUIDUtil.createOfflineProfile(FAKE_NAME);
 
     private final ItemStackHandler inventory = new TurretItemStackHandler(this);
+
+    private Minigun minigun;
+    private final SentryTurretEntitySelector entitySelector = new SentryTurretEntitySelector();
+    private Vec3 tileVec;
 
     @GuiSynced
     private String entityFilter = "@mob";
@@ -82,20 +87,19 @@ public class SentryTurretBlockEntity extends AbstractTickingBlockEntity implemen
     private final RedstoneController<SentryTurretBlockEntity> rsController = new RedstoneController<>(this);
     @DescSynced
     private double range;
+    private double rangeSq;
     @DescSynced
     private boolean activated;
     @DescSynced
     private ItemStack minigunColorStack = ItemStack.EMPTY;
-    private Minigun minigun;
     @DescSynced
     private int targetEntityId = -1;
     @DescSynced
     private boolean sweeping;
-    private final SentryTurretEntitySelector entitySelector = new SentryTurretEntitySelector();
-    private double rangeSq;
-    private Vec3 tileVec;
     @DescSynced
     private float idleYaw;
+    @DescSynced
+    private int nMufflers;
 
     public SentryTurretBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntityTypes.SENTRY_TURRET.get(), pos, state, 4);
@@ -111,8 +115,8 @@ public class SentryTurretBlockEntity extends AbstractTickingBlockEntity implemen
                 List<LivingEntity> entities = nonNullLevel().getEntitiesOfClass(LivingEntity.class, getTargetingBoundingBox(), entitySelector);
                 if (!entities.isEmpty()) {
                     entities.sort(new EntityDistanceComparator(getBlockPos()));
-                    getMinigun().setAttackTarget(entities.get(0));
-                    targetEntityId = entities.get(0).getId();
+                    getMinigun().setAttackTarget(entities.getFirst());
+                    targetEntityId = getMinigun().getAttackTarget().getId();
                 } else if (targetEntityId > 0) {
                     getMinigun().setReturning(true);
                     targetEntityId = -1;
@@ -179,16 +183,19 @@ public class SentryTurretBlockEntity extends AbstractTickingBlockEntity implemen
     }
 
     private AABB getTargetingBoundingBox() {
-        return new AABB(getBlockPos()).inflate(range);
+        return new AABB(getBlockPos()).inflate(getRange());
     }
 
     @Override
     public void onLoad() {
         super.onLoad();
 
-        tileVec = new Vec3(getBlockPos().getX() + 0.5, getBlockPos().getY() + 0.5, getBlockPos().getZ() + 0.5);
-        updateAmmo();
-        onFilterChanged(entityFilter);
+        if (!level.isClientSide) {
+            tileVec = Vec3.atCenterOf(getBlockPos());
+            nMufflers = getUpgrades(ModUpgrades.MUFFLER.get());
+            updateAmmo();
+            onFilterChanged(entityFilter);
+        }
     }
 
     @Override
@@ -258,6 +265,84 @@ public class SentryTurretBlockEntity extends AbstractTickingBlockEntity implemen
         this.idleYaw = Minigun.clampYaw(idleYaw);
     }
 
+    private void updateAmmo() {
+        ItemStack ammo = ItemStack.EMPTY;
+        for (int i = 0; i < inventory.getSlots(); i++) {
+            ammo = inventory.getStackInSlot(i);
+            if (!ammo.isEmpty()) {
+                break;
+            }
+        }
+        getMinigun().setAmmoStack(ammo);
+        needRangeRecalc();
+    }
+
+    @Override
+    public void onUpgradesChanged() {
+        super.onUpgradesChanged();
+
+        if (getLevel() != null) {
+            needRangeRecalc();
+
+            if (!getLevel().isClientSide) {
+                nMufflers = getUpgrades(ModUpgrades.MUFFLER.get());
+            }
+        }
+        getMinigun().setInfiniteAmmo(getUpgrades(ModUpgrades.CREATIVE.get()) > 0);
+
+    }
+
+    private double getRange() {
+        if (range < 0) {
+            recalcRange();
+        }
+        return range;
+    }
+
+    private double getRangeSquared() {
+        if (rangeSq < 0) {
+            recalcRange();
+        }
+        return rangeSq;
+    }
+
+    private void recalcRange() {
+        range = 16 + Math.min(16, getUpgrades(ModUpgrades.RANGE.get()));
+        ItemStack ammoStack = getMinigun().getAmmoStack();
+        if (ammoStack.getItem() instanceof AbstractGunAmmoItem ammo) {
+            range *= ammo.getRangeMultiplier(ammoStack);
+        }
+        rangeSq = range * range;
+    }
+
+    private void needRangeRecalc() {
+        range = rangeSq = -1d;
+    }
+
+    @Override
+    public float getMuffledVolume(float baseVolume) {
+        return ModUpgrades.getMuffledVolume(baseVolume, nMufflers);
+    }
+
+    @Override
+    public void setText(int textFieldID, String text) {
+        entityFilter = text;
+        if (level != null && !level.isClientSide) {
+            onFilterChanged(text);
+            if (minigun != null) minigun.setAttackTarget(null);
+        }
+    }
+
+    private void onFilterChanged(String text) {
+        entitySelector.setFilter(text);
+        setChanged();
+    }
+
+    @Override
+    public String getText(int textFieldID) {
+        return entityFilter;
+    }
+
     private class TurretItemStackHandler extends BaseItemStackHandler {
         TurretItemStackHandler(BlockEntity te) {
             super(te, INVENTORY_SIZE);
@@ -275,40 +360,7 @@ public class SentryTurretBlockEntity extends AbstractTickingBlockEntity implemen
         }
     }
 
-    private void updateAmmo() {
-        ItemStack ammo = ItemStack.EMPTY;
-        for (int i = 0; i < inventory.getSlots(); i++) {
-            ammo = inventory.getStackInSlot(i);
-            if (!ammo.isEmpty()) {
-                break;
-            }
-        }
-        getMinigun().setAmmoStack(ammo);
-        recalculateRange();
-    }
-
-    @Override
-    public void onUpgradesChanged() {
-        super.onUpgradesChanged();
-        if (getLevel() != null) {
-            // this can get called when reading nbt on load when world = null
-            // in that case, range is recalculated in onFirstServerTick()
-            recalculateRange();
-        }
-        getMinigun().setInfiniteAmmo(getUpgrades(ModUpgrades.CREATIVE.get()) > 0);
-    }
-
-    private void recalculateRange() {
-        range = 16 + Math.min(16, getUpgrades(ModUpgrades.RANGE.get()));
-        ItemStack ammoStack = getMinigun().getAmmoStack();
-        if (ammoStack.getItem() instanceof AbstractGunAmmoItem ammo) {
-            range *= ammo.getRangeMultiplier(ammoStack);
-        }
-        rangeSq = range * range;
-    }
-
     private class MinigunSentryTurret extends Minigun {
-
         MinigunSentryTurret(Player fakePlayer) {
             super(fakePlayer,true);
         }
@@ -386,6 +438,11 @@ public class SentryTurretBlockEntity extends AbstractTickingBlockEntity implemen
         public boolean isValid() {
             return !SentryTurretBlockEntity.this.isRemoved();
         }
+
+        @Override
+        public int getUpgrades(PNCUpgrade upgrade) {
+            return SentryTurretBlockEntity.this.getUpgrades(upgrade);
+        }
     }
 
     private class SentryTurretEntitySelector extends StringFilterEntitySelector {
@@ -398,7 +455,7 @@ public class SentryTurretBlockEntity extends AbstractTickingBlockEntity implemen
         }
 
         private boolean inRange(Entity entity) {
-            return PneumaticCraftUtils.distBetweenSq(new BlockPos(getBlockPos().getX(), getBlockPos().getY(), getBlockPos().getZ()), entity.getX(), entity.getY(), entity.getZ()) <= rangeSq;
+            return PneumaticCraftUtils.distBetweenSq(new BlockPos(getBlockPos().getX(), getBlockPos().getY(), getBlockPos().getZ()), entity.getX(), entity.getY(), entity.getZ()) <= getRangeSquared();
         }
 
         private boolean isExcludedBySecurityStations(Player player) {
@@ -414,24 +471,5 @@ public class SentryTurretBlockEntity extends AbstractTickingBlockEntity implemen
                 return false;
             }
         }
-    }
-
-    @Override
-    public void setText(int textFieldID, String text) {
-        entityFilter = text;
-        if (level != null && !level.isClientSide) {
-            onFilterChanged(text);
-            if (minigun != null) minigun.setAttackTarget(null);
-        }
-    }
-
-    private void onFilterChanged(String text) {
-        entitySelector.setFilter(text);
-        setChanged();
-    }
-
-    @Override
-    public String getText(int textFieldID) {
-        return entityFilter;
     }
 }

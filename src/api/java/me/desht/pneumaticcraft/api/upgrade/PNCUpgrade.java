@@ -26,7 +26,7 @@ public interface PNCUpgrade {
      * @return a numeric ID, for internal use
      */
     @ApiStatus.Internal
-    public int getCacheId();
+    int getCacheId();
 
     /**
      * Get the max upgrade tier allowable for this upgrade.

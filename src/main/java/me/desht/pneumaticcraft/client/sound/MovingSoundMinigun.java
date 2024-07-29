@@ -19,7 +19,6 @@ package me.desht.pneumaticcraft.client.sound;
 
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
-import me.desht.pneumaticcraft.common.block.entity.AbstractPneumaticCraftBlockEntity;
 import me.desht.pneumaticcraft.common.block.entity.utility.SentryTurretBlockEntity;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.entity.drone.DroneEntity;
@@ -76,7 +75,7 @@ public class MovingSoundMinigun extends AbstractTickableSoundInstance {
         y = blockEntity.getBlockPos().getY();
         z = blockEntity.getBlockPos().getZ();
         float baseVol = ConfigHelper.client().sound.minigunVolumeSentryTurret.get().floatValue();
-        float actualVol = te instanceof AbstractPneumaticCraftBlockEntity be ? be.getMuffledVolume(baseVol) : baseVol;
+        float actualVol = te instanceof SentryTurretBlockEntity be ? be.getMuffledVolume(baseVol) : baseVol;
         init(actualVol);
     }
 
