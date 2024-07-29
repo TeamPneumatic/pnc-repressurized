@@ -466,7 +466,7 @@ public class CommonConfig {
         minigun.baseDamage = builder
                 .comment("Base bullet damage of the Sentry Gun, Handheld Minigun, and Drone Minigun, before ammo bonuses are considered")
                 .translation("pneumaticcraft.config.common.minigun_properties.base_damage")
-                .defineInRange("base_damage", 4, 0, Double.MAX_VALUE);
+                .defineInRange("base_damage", 6, 0, Double.MAX_VALUE);
         minigun.baseRange = builder
                 .comment("Base range of Minigun, before Range Upgrades are considered")
                 .translation("pneumaticcraft.config.common.minigun_properties.base_range")
