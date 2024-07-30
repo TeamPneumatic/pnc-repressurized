@@ -41,7 +41,6 @@ import me.desht.pneumaticcraft.common.registry.ModMenuTypes;
 import me.desht.pneumaticcraft.common.upgrades.ApplicableUpgradesDB;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.upgrades.UpgradableItemUtils;
-import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.component.DataComponents;
@@ -314,16 +313,8 @@ public class MinigunItem extends PressurizableItem implements
     }
 
     public static int getLockedSlot(ItemStack stack) {
-        if (stack.has(ModDataComponents.MINIGUN_LOCKED_SLOT)) {
-            int slot = stack.getOrDefault(ModDataComponents.MINIGUN_LOCKED_SLOT, NOT_LOCKED);
-            if (slot >= 0 && slot < MAGAZINE_SIZE) {
-                return slot;
-            } else {
-                Log.warning("removed out of range saved ammo slot: " + slot);
-                stack.remove(ModDataComponents.MINIGUN_LOCKED_SLOT);
-            }
-        }
-        return NOT_LOCKED;
+        int slot = stack.getOrDefault(ModDataComponents.MINIGUN_LOCKED_SLOT, NOT_LOCKED);
+        return slot >= 0 && slot < MAGAZINE_SIZE ? slot : NOT_LOCKED;
     }
 
     @EventBusSubscriber(modid = Names.MOD_ID)
