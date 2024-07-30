@@ -44,16 +44,6 @@ public class CustomTrigger extends SimpleCriterionTrigger<CustomTrigger.Instance
         this.trigger(parPlayer, Instance::test);
     }
 
-//    @Override
-//    public ResourceLocation getId() {
-//        return triggerID;
-//    }
-//
-//    @Override
-//    protected Instance createInstance(JsonObject jsonIn, ContextAwarePredicate predicate, DeserializationContext context) {
-//        return new CustomTrigger.Instance(this.getId());
-//    }
-
     public Instance getInstance() {
         return new CustomTrigger.Instance(triggerID);
     }

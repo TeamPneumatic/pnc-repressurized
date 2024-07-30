@@ -222,7 +222,7 @@ public class ClientUtils {
         BakedModel model = Minecraft.getInstance().getBlockRenderer().getBlockModel(state);
         List<BakedQuad> quads = model.getQuads(state, face, getClientLevel().random, ModelData.EMPTY, null);
         if (!quads.isEmpty()) {
-            TextureAtlasSprite sprite = quads.get(0).getSprite();
+            TextureAtlasSprite sprite = quads.getFirst().getSprite();
             return new float[] { sprite.getU0(), sprite.getV0(), sprite.getU1(), sprite.getV1() };
         } else {
             return null;

@@ -60,23 +60,10 @@ public abstract class AbstractPneumaticCraftScreen extends Screen {
         super.render(graphics, x, y, partialTicks);
 
         drawForeground(graphics, x, y, partialTicks);
-
-//        List<Component> tooltip = new ArrayList<>();
-//        boolean shift = Screen.hasShiftDown();
-//        renderables.stream()
-//                .filter(widget -> widget instanceof ITooltipProvider provider && provider.shouldProvide())
-//                .forEach(widget -> ((ITooltipProvider) widget).addTooltip(x, y, tooltip, shift));
-//
-//        if (!tooltip.isEmpty()) {
-//            int max = Math.min(xSize * 4 / 3, width / 3);
-//            renderTooltip(graphics, GuiUtils.wrapTextComponentList(tooltip, max, font), x, y);
-//        }
     }
 
     @Override
     public void renderBackground(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-//        super.renderBackground(graphics, mouseX, mouseY, partialTick);
-
         renderTransparentBackground(graphics);
         if (getTexture() != null) {
             graphics.blit(getTexture(), guiLeft, guiTop, 0, 0, xSize, ySize);

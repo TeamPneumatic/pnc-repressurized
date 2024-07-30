@@ -395,9 +395,5 @@ public enum AmadronOfferManager {
         public static void onRecipesAvailable(RecipesUpdatedEvent event) {
             NetworkHandler.sendToServer(PacketSyncAmadronOffers.createRequest());
         }
-//        @SubscribeEvent
-//        public static void serverLogin(PlayerEvent.PlayerLoggedInEvent evt) {
-//            NetworkHandler.sendNonLocal((ServerPlayer) evt.getEntity(), PacketSyncAmadronOffers.create(false));
-//        }
     }
 }

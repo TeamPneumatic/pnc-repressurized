@@ -20,7 +20,6 @@ package me.desht.pneumaticcraft.common.block.entity.processing;
 import me.desht.pneumaticcraft.api.pressure.PressureTier;
 import me.desht.pneumaticcraft.common.block.entity.AbstractAirHandlingBlockEntity;
 import me.desht.pneumaticcraft.common.block.entity.IMinWorkingPressure;
-import me.desht.pneumaticcraft.common.block.entity.IResettable;
 import me.desht.pneumaticcraft.common.inventory.AssemblyControllerMenu;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.item.AssemblyProgramItem;

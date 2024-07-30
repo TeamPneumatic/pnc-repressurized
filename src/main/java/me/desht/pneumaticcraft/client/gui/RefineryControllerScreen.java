@@ -114,7 +114,7 @@ public class RefineryControllerScreen extends AbstractPneumaticCraftContainerScr
             if (outputs.size() < 2) {
                 graphics.fill(leftPos + 115, topPos + 25, leftPos + 131, topPos + 89, 0x40FF0000);
             }
-            if (outputs.size() < 1) {
+            if (outputs.isEmpty()) {
                 graphics.fill(leftPos + 95, topPos + 29, leftPos + 111, topPos + 93, 0x40FF0000);
             }
             RenderSystem.disableBlend();

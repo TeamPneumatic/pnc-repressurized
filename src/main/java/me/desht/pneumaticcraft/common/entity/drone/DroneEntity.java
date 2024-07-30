@@ -1357,11 +1357,6 @@ public class DroneEntity extends AbstractDroneEntity implements
         }
     }
 
-    @Override
-    public boolean afterHackTick(DroneEntity entity) {
-        return false;
-    }
-
     private void setGoingToOwner(boolean state) {
         if (!level().isClientSide) {
             if (state && gotoOwnerAI == null) {

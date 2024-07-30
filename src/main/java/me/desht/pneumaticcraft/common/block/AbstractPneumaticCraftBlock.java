@@ -381,8 +381,6 @@ public abstract class AbstractPneumaticCraftBlock extends Block
             }
             if (be instanceof AbstractAirHandlingBlockEntity /*pncBe && pncBe.shouldPreserveStateOnBreak()*/) {
                 list.add(ModDataComponents.AIR.get());
-//                PNCCapabilities.getAirHandler(be)
-//                        .ifPresent(h -> list.add(ModDataComponents.AIR.get()));
             }
             if (be instanceof IUpgradeHolder) {
                 list.add(ModDataComponents.ITEM_UPGRADES.get());

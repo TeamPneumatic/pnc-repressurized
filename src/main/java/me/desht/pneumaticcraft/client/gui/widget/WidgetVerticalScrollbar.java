@@ -66,7 +66,7 @@ public class WidgetVerticalScrollbar extends AbstractWidget implements ICanRende
     }
 
     @Override
-    public void onClick(double x, double y) {
+    public void onClick(double x, double y, int button) {
         currentScroll = (float) (y - 7 - this.getY()) / (height - 17);
         currentScroll = Mth.clamp(currentScroll, 0, 1);
         dragging = true;

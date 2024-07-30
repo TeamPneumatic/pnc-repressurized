@@ -265,8 +265,7 @@ public class SensorHandler implements ISensorRegistry {
         @Override
         public int getRedstoneValue(Level level, BlockPos pos, int sensorRange, String textBoxText) {
             BlockEntity te = level.getBlockEntity(pos);
-            if (te instanceof UniversalSensorBlockEntity) {
-                UniversalSensorBlockEntity teUs = (UniversalSensorBlockEntity) te;
+            if (te instanceof UniversalSensorBlockEntity teUs) {
                 Set<BlockPos> positions = teUs.getGPSPositions();
                 return positions.isEmpty() ? 0 : coordinateSensor.getRedstoneValue(level, pos, sensorRange, textBoxText, positions);
             }

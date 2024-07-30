@@ -93,7 +93,7 @@ public class ClassifyFilterItem extends Item implements IFilteringItem {
                 StringRepresentable.fromEnum(FilterCondition::values).listOf().fieldOf("conditions").forGetter(FilterSettings::filterConditions)
         ).apply(builder, FilterSettings::new));
 
-        public static StreamCodec<FriendlyByteBuf, FilterSettings> STREAM_CODEC = StreamCodec.composite(
+        public static final StreamCodec<FriendlyByteBuf, FilterSettings> STREAM_CODEC = StreamCodec.composite(
                 ByteBufCodecs.BOOL, FilterSettings::matchAll,
                 NeoForgeStreamCodecs.enumCodec(FilterCondition.class).apply(ByteBufCodecs.list()), FilterSettings::filterConditions,
                 FilterSettings::new

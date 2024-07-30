@@ -43,7 +43,7 @@ public class WidgetRadioButton extends PNCWidget<WidgetRadioButton> {
     public final int color;
     private final Consumer<WidgetRadioButton> pressable;
     private final Font fontRenderer = Minecraft.getInstance().font;
-    private List<Component> tooltip = new ArrayList<>();
+    private final List<Component> tooltip = new ArrayList<>();
     private List<? extends WidgetRadioButton> otherChoices = null;
 
     public WidgetRadioButton(int x, int y, int color, Component text, Consumer<WidgetRadioButton> pressable) {
@@ -99,7 +99,7 @@ public class WidgetRadioButton extends PNCWidget<WidgetRadioButton> {
     }
 
     @Override
-    public void onClick(double mouseX, double mouseY) {
+    public void onClick(double mouseX, double mouseY, int button) {
         if (active && !checked) {
             for (WidgetRadioButton radioButton : otherChoices) {
                 radioButton.checked = false;

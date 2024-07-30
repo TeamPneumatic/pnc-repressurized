@@ -15,12 +15,13 @@
  *     along with pnc-repressurized.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.desht.pneumaticcraft.common.block.entity;
+package me.desht.pneumaticcraft.common.block.entity.compressor;
 
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.block.PNCBlockStateProperties;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.api.pressure.PressureTier;
+import me.desht.pneumaticcraft.common.block.entity.*;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.common.inventory.PneumaticDynamoMenu;
@@ -41,7 +42,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.energy.IEnergyStorage;
-import net.neoforged.neoforge.items.IItemHandler;
 
 import javax.annotation.Nullable;
 
@@ -120,11 +120,6 @@ public class PneumaticDynamoBlockEntity extends AbstractAirHandlingBlockEntity i
     @Override
     public void handleGUIButtonPress(String tag, boolean shiftHeld, ServerPlayer player){
         rsController.parseRedstoneMode(tag);
-    }
-
-    @Override
-    public IItemHandler getItemHandler(@Nullable Direction dir) {
-        return null;
     }
 
     @Override

@@ -114,9 +114,4 @@ public class ProgWidgetComment extends ProgWidgetText {
         ProgWidgetComment that = (ProgWidgetComment) o;
         return baseEquals(that) && Objects.equals(string, that.string);
     }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(baseHashCode(), string);
-    }
 }

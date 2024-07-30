@@ -373,7 +373,7 @@ public class ProgrammableControllerBlockEntity extends AbstractAirHandlingBlockE
         if (ownerID == null) {
             ownerID = UUID.randomUUID();
             ownerName = Component.literal("[Programmable Controller]");
-            Log.warning(String.format("Programmable controller with owner '{}' has no UUID! Substituting a random UUID ({}).", ownerName, ownerID));
+            Log.warning("Programmable controller with owner '{}' has no UUID! Substituting a random UUID ({}).", ownerName, ownerID);
         }
         return ownerID;
     }

@@ -30,10 +30,10 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.fluids.FluidStack;
-import org.apache.commons.lang3.Validate;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 public enum DroneRegistry implements IDroneRegistry {
@@ -47,8 +47,7 @@ public enum DroneRegistry implements IDroneRegistry {
 
     @Override
     public void addPathfindableBlock(Block block, IPathfindHandler handler) {
-        Validate.notNull(block);
-        pathfindableBlocks.put(block, handler);
+        pathfindableBlocks.put(Objects.requireNonNull(block), handler);
     }
 
     @Override

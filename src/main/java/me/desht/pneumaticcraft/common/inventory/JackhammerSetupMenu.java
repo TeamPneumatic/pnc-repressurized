@@ -77,7 +77,7 @@ public class JackhammerSetupMenu extends AbstractPneumaticCraftMenu<AbstractPneu
         ItemStack hammerStack = player.getItemInHand(hand);
         if (tag.startsWith("digmode:") && hammerStack.getItem() instanceof JackHammerItem) {
             try {
-                DrillBitItem.DrillBitType ourBit = ((JackHammerItem) hammerStack.getItem()).getDrillBit(hammerStack);
+                DrillBitItem.DrillBitType ourBit = JackHammerItem.getDrillBit(hammerStack);
                 DigMode newDigMode = DigMode.valueOf(tag.substring(8));
                 if (ourBit.getBitQuality() >= newDigMode.getBitType().getBitQuality() || newDigMode == DigMode.MODE_1X1) {
                     JackHammerItem.setDigMode(hammerStack, newDigMode);

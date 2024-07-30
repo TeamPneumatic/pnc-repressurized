@@ -228,7 +228,7 @@ public class SecurityStationInventoryScreen extends AbstractPneumaticCraftContai
         boolean first = true;
         List<String> names = te.sharedUsers.stream().map(GameProfile::getName).sorted().toList();
         for (String name : names) {
-            String str = first ? name + " \u2654" : name;
+            String str = first ? name + " ♔" : name;
             textList.add(Symbols.bullet().append(str).withStyle(first ? ChatFormatting.YELLOW : ChatFormatting.WHITE));
             first = false;
         }

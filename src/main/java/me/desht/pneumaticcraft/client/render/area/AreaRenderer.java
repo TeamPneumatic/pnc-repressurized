@@ -54,10 +54,6 @@ public class AreaRenderer {
         this.drawFaces = drawFaces;
     }
 
-//    AreaRenderer(Set<BlockPos> area, int color, boolean disableDepthTest) {
-//        this(area, color, 0.5f, disableDepthTest, false, disableDepthTest);
-//    }
-
     public void render(PoseStack matrixStack, MultiBufferSource buffer) {
         if (drawFaces) {
             RenderType type = ModRenderTypes.getBlockHilightFace(disableDepthTest, disableWriteMask);

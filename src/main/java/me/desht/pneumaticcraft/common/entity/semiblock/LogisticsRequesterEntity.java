@@ -45,7 +45,7 @@ public class LogisticsRequesterEntity extends AbstractLogisticsFrameEntity imple
     private int minItems = 1;
     private int minFluid = 1;
 
-    private AE2RequesterIntegration ae2requester = null;
+    private final AE2RequesterIntegration ae2requester = null;
 
     public LogisticsRequesterEntity(EntityType<?> entityTypeIn, Level worldIn) {
         super(entityTypeIn, worldIn);

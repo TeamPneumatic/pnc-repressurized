@@ -310,15 +310,12 @@ public class EntityFilter implements Predicate<Entity> {
         }
 
         private static boolean hasColor(Entity entity, String val) {
-            if (entity instanceof Sheep s) {
-                return s.getColor().getName().equalsIgnoreCase(val);
-            } else if (entity instanceof Wolf w) {
-                return w.getCollarColor().getName().equalsIgnoreCase(val);
-            } else if (entity instanceof Cat c) {
-                return c.getCollarColor().getName().equalsIgnoreCase(val);
-            } else {
-                return false;
-            }
+            return switch (entity) {
+                case Sheep s -> s.getColor().getName().equalsIgnoreCase(val);
+                case Wolf w -> w.getCollarColor().getName().equalsIgnoreCase(val);
+                case Cat c -> c.getCollarColor().getName().equalsIgnoreCase(val);
+                case null, default -> false;
+            };
         }
 
         private static boolean isHeldItem(Entity entity, String name, boolean mainHand) {

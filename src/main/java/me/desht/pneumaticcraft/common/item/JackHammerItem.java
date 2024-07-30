@@ -205,9 +205,6 @@ public class JackHammerItem extends PressurizableItem
                                 } else {
                                     block.playerDestroy(level, serverPlayer, pos1, state1, null, stack);
                                 }
-//                                    if (exp > 0 && level instanceof ServerLevel) {
-//                                        block.popExperience((ServerLevel) level, magnet ? pos : pos1, exp);
-//                                    }
                                 air -= usage;
                                 serverPlayer.awardStat(Stats.ITEM_USED.get(stack.getItem()));
                             }
@@ -227,12 +224,8 @@ public class JackHammerItem extends PressurizableItem
         player.awardStat(Stats.BLOCK_MINED.get(block));
         player.causeFoodExhaustion(0.005F);
         Block.dropResources(state, level, pos0, null, player, stack);
-//        if (level instanceof ServerLevel serverLevel) {
-//            Block.getDrops(state, serverLevel, pos, null, player, stack)
-//                    .forEach((stackToSpawn) -> Block.popResource(level, pos0, stackToSpawn));
-//            state.spawnAfterBreak(serverLevel, pos, stack, true);
-//        }
     }
+
     @Override
     public float getDestroySpeed(ItemStack stack, BlockState state) {
         DrillBitType bitType = getDrillBit(stack);
@@ -392,7 +385,7 @@ public class JackHammerItem extends PressurizableItem
 
     public static DigMode cycleDigMode(ItemStack stack, boolean forward) {
         if (stack.getItem() instanceof JackHammerItem jackHammer) {
-            DrillBitType ourBit = jackHammer.getDrillBit(stack);
+            DrillBitType ourBit = getDrillBit(stack);
             DigMode currentMode = getDigMode(stack);
             DigMode newMode = currentMode;
             if (forward) {

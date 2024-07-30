@@ -190,7 +190,7 @@ public class AphorismTileScreen extends Screen {
                 updateTE = true;
             }
             case GLFW.GLFW_KEY_BACKSPACE -> {
-                if (curLine.length() > 0 && cursorX > 0) {
+                if (!curLine.isEmpty() && cursorX > 0) {
                     // delete behind cursor, move cursor back
                     textLines[cursorY] = curLine.substring(0, cursorX - 1) + curLine.substring(Math.min(curLine.length(), cursorX));
                     cursorX--;
@@ -225,7 +225,7 @@ public class AphorismTileScreen extends Screen {
                         cursorX = 0;
                     }
                 } else {
-                    if (curLine.length() > 0 && cursorX < curLine.length()) {
+                    if (!curLine.isEmpty() && cursorX < curLine.length()) {
                         // delete ahead of cursor
                         int n = curLine.charAt(cursorX) == '§' && cursorX < curLine.length() - 1 ? 2 : 1;
                         textLines[cursorY] = curLine.substring(0, cursorX) + curLine.substring(cursorX + n);

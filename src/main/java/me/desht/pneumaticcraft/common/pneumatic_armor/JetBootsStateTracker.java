@@ -94,7 +94,7 @@ public class JetBootsStateTracker {
         private boolean active;   // actively firing (player holding thrust key)
         private boolean builderMode; // player in builder mode (prevents model rotation)
 
-        public static StreamCodec<FriendlyByteBuf, JetBootsState> STREAM_CODEC = StreamCodec.composite(
+        public static final StreamCodec<FriendlyByteBuf, JetBootsState> STREAM_CODEC = StreamCodec.composite(
                 ByteBufCodecs.BOOL, JetBootsState::isEnabled,
                 ByteBufCodecs.BOOL, JetBootsState::isActive,
                 ByteBufCodecs.BOOL, JetBootsState::isBuilderMode,

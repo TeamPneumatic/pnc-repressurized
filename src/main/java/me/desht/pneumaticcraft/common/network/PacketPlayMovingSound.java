@@ -55,7 +55,7 @@ public record PacketPlayMovingSound(MovingSounds.Sound sound, MovingSoundFocus s
     }
 
     public record MovingSoundFocus(Either<Integer,BlockPos> entityOrPos) {
-        public static StreamCodec<FriendlyByteBuf, MovingSoundFocus> STREAM_CODEC = StreamCodec.composite(
+        public static final StreamCodec<FriendlyByteBuf, MovingSoundFocus> STREAM_CODEC = StreamCodec.composite(
                 ByteBufCodecs.either(ByteBufCodecs.INT, BlockPos.STREAM_CODEC), MovingSoundFocus::entityOrPos,
                 MovingSoundFocus::new
         );

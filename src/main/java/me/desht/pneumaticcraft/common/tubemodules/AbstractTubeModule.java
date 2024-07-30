@@ -259,8 +259,7 @@ public abstract class AbstractTubeModule {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof AbstractTubeModule)) return false;
-        AbstractTubeModule that = (AbstractTubeModule) o;
+        if (!(o instanceof AbstractTubeModule that)) return false;
         return Objects.equals(pressureTube.getBlockPos(), that.pressureTube.getBlockPos()) && dir == that.dir;
     }
 

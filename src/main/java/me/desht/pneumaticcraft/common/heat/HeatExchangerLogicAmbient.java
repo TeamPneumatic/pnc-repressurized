@@ -46,11 +46,8 @@ public class HeatExchangerLogicAmbient extends HeatExchangerLogicConstant {
             h = seaLevel - pos.getY();
         }
 
-        // In 1.16.2+, vanilla handles temperature reduction as height increases (but not temperature increase underground)
-//        int y1 = (int)(world.getSeaLevel() * 0.75f);
-//        int h = pos.getY() < y1 ? y1 - pos.getY() : 0;
-
-        int temp = (int) (BASE_AMBIENT_TEMP + ConfigHelper.common().heat.ambientTemperatureBiomeModifier.get() * t + ConfigHelper.common().heat.ambientTemperatureHeightModifier.get() * h);
+        int temp = (int) (BASE_AMBIENT_TEMP + ConfigHelper.common().heat.ambientTemperatureBiomeModifier.get() * t
+                + ConfigHelper.common().heat.ambientTemperatureHeightModifier.get() * h);
         return exchangers.computeIfAbsent(temp, HeatExchangerLogicAmbient::new);
     }
 

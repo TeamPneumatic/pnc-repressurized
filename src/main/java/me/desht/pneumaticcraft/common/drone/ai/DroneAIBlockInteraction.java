@@ -291,7 +291,7 @@ public abstract class DroneAIBlockInteraction<W extends ProgWidgetAreaItemBase> 
     private void indicateToListeningPlayers(List<BlockPos> pos) {
         if (!pos.isEmpty()) {
             for (ServerPlayer player : drone.getDebugger().getDebuggingPlayers()) {
-                if (player.distanceToSqr(pos.get(0).getX(), pos.get(0).getY(), pos.get(0).getZ()) < DRONE_DEBUG_PARTICLE_RANGE_SQ) {
+                if (player.distanceToSqr(pos.getFirst().getX(), pos.getFirst().getY(), pos.getFirst().getZ()) < DRONE_DEBUG_PARTICLE_RANGE_SQ) {
                     CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
                     if (handler.upgradeUsable(CommonUpgradeHandlers.entityTrackerHandler, true)
                             && handler.getUpgradeCount(EquipmentSlot.HEAD, ModUpgrades.DISPENSER.get()) > 0) {

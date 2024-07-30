@@ -120,6 +120,6 @@ public abstract class AbstractCreativeAdjusterScreen<C extends AbstractPneumatic
         return formatAdjustment(hasShiftDown() ? f * getShiftMultiplier() : f);
     }
 
-    record Adjustments(float small, float big) {
+    protected record Adjustments(float small, float big) {
     }
 }

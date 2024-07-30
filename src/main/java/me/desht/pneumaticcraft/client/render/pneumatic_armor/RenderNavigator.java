@@ -66,12 +66,7 @@ public class RenderNavigator {
         Matrix4f posMat = matrixStack.last().pose();
         if (wirePath) {
             // Draws just wires
-            // TODO line stippling
-//            if (!hasDestinationPath) {
-//                GL11.glEnable(GL11.GL_LINE_STIPPLE);
-//                GL11.glLineStipple(2, (short) 0x00FF);
-//            }
-//            VertexConsumer builder = buffer.getBuffer(ModRenderTypes.getNavPath(xRayEnabled, false));
+            // TODO line stippling would be nice here
             VertexConsumer builder = buffer.getBuffer(ModRenderTypes.getLineLoops(5.0));
             for (int i = 1; i < path.getNodeCount(); i++) {
                 float red = 1;

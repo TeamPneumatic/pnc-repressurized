@@ -203,12 +203,6 @@ public class PneumaticArmorItem extends ArmorItem implements
         return modifiers;
     }
 
-//    @Nullable
-//    @Override
-//    public CompoundTag getShareTag(ItemStack stack) {
-//        return ConfigHelper.common().advanced.nbtToClientModification.get() ? PressurizableItem.roundedPressure(stack) : super.getShareTag(stack);
-//    }
-
     /* ----------- Pneumatic Helmet helpers ---------- */
 
     public static int getIntData(ItemStack stack, DataComponentType<Integer> componentType, int def) {
@@ -395,29 +389,5 @@ public class PneumaticArmorItem extends ArmorItem implements
     public void setEyepieceColor(ItemStack stack, int color) {
         stack.set(ModDataComponents.ARMOR_EYEPIECE_COLOR, new DyedItemColor(color, false));
     }
-
-    /*------- Thaumcraft -------- */
-
-//    private boolean hasThaumcraftUpgradeAndPressure(ItemStack stack) {
-//        return getPressure(stack) > 0F && UpgradableItemUtils.getUpgrades(ModUpgrades.THAUMCRAFT.get(), stack) > 0;
-//    }
-//
-//    @Override
-//    @Optional.Method(modid = ModIds.THAUMCRAFT)
-//    public int getVisDiscount(ItemStack stack, PlayerEntity player) {
-//        return hasThaumcraftUpgradeAndPressure(stack) ? VIS_DISCOUNTS[armorType.getIndex()] : 0;
-//    }
-//
-//    @Override
-//    @Optional.Method(modid = ModIds.THAUMCRAFT)
-//    public boolean showIngamePopups(ItemStack itemstack, LivingEntity player) {
-//        return armorType == EquipmentSlotType.HEAD && hasThaumcraftUpgradeAndPressure(itemstack);
-//    }
-//
-//    @Override
-//    @Optional.Method(modid = ModIds.THAUMCRAFT)
-//    public boolean showNodes(ItemStack itemstack, LivingEntity player) {
-//        return armorType == EquipmentSlotType.HEAD && hasThaumcraftUpgradeAndPressure(itemstack);
-//    }
 
 }

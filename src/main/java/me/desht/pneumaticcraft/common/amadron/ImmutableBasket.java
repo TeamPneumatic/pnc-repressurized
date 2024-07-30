@@ -17,7 +17,7 @@ public class ImmutableBasket extends ShoppingBasket {
     public static final Codec<ImmutableBasket> CODEC = RecordCodecBuilder.create(builder -> builder.group(
             BASKET_CODEC.fieldOf("basket").forGetter(b -> b.basket)
     ).apply(builder, ImmutableBasket::new));
-    public static StreamCodec<FriendlyByteBuf, ImmutableBasket> STREAM_CODEC = StreamCodec.composite(
+    public static final StreamCodec<FriendlyByteBuf, ImmutableBasket> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.map(HashMap::new, ResourceLocation.STREAM_CODEC, ByteBufCodecs.VAR_INT), b -> b.basket,
             ImmutableBasket::new
     );

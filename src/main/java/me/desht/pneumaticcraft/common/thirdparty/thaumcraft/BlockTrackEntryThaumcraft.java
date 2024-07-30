@@ -52,18 +52,7 @@ public class BlockTrackEntryThaumcraft implements IBlockTrackEntry {
 
     @Override
     public void addInformation(Level world, BlockPos pos, BlockEntity te, Direction face, List<Component> infoList) {
-//        if (te instanceof IAspectContainer) {
-//            IAspectContainer container = (IAspectContainer)te;
-//            AspectList aspects = container.getAspects();
-//            if (aspects != null && aspects.size() > 0) {
-//                infoList.add("pneumaticcraft.blockTracker.info.thaumcraft");
-//                for(Map.Entry<Aspect, Integer> entry : aspects.aspects.entrySet()) {
-//                    infoList.add("\u2022 " + entry.getValue() + " x " + entry.getKey().getName());
-//                }
-//            } else {
-//                infoList.add(I18n.format("pneumaticcraft.blockTracker.info.thaumcraft.none"));
-//            }
-//        }
+        // nothing! maybe TC will return one day, who knows?
     }
 
     @Override

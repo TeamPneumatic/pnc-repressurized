@@ -54,11 +54,6 @@ public class RefineryMenu extends AbstractPneumaticCraftMenu<RefineryControllerB
         }
     }
 
-    @Override
-    public boolean stillValid(Player player) {
-        return blockEntity.isGuiUseableByPlayer(player);
-    }
-
     @Nonnull
     @Override
     public ItemStack quickMoveStack(Player par1EntityPlayer, int slotIndex) {

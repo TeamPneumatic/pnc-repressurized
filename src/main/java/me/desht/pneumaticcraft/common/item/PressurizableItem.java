@@ -79,32 +79,6 @@ public class PressurizableItem extends Item implements IPressurizableItem  {
                 .orElse(false);
     }
 
-//    @Override
-//    public void fillItemCategory(CreativeModeTab group, NonNullList<ItemStack> items) {
-//        // too early to use a capability here :(
-//        if (this.allowedIn(group)) {
-//            items.add(new ItemStack(this));
-//
-//            ItemStack stack = new ItemStack(this);
-//            new AirHandlerItemStack(stack, maxPressure).addAir((int) (volume * maxPressure));
-//            items.add(stack);
-//        }
-//    }
-
-//    @Nullable
-//    @Override
-//    public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundTag nbt) {
-//        return stack.getItem() instanceof PressurizableItem ?
-//                new AirHandlerItemStack(stack) :
-//                super.initCapabilities(stack, nbt);
-//    }
-
-//    @Nullable
-//    @Override
-//    public CompoundTag getShareTag(ItemStack stack) {
-//        return ConfigHelper.common().advanced.nbtToClientModification.get() ? roundedPressure(stack) : super.getShareTag(stack);
-//    }
-
     @Override
     public int getBaseVolume() {
         return volume;
@@ -134,28 +108,4 @@ public class PressurizableItem extends Item implements IPressurizableItem  {
     public int getEnchantmentValue() {
         return 9;  // same as iron or compressed iron
     }
-
-//    /**
-//     * Get an ItemStack's NBT, rounding its air level for sync to client.
-//     * Default precision of volume/10 is enough precision to display 1 decimal place of pressure,
-//     * and will greatly reduce server->client chatter
-//     * @param stack the itemstack being sync'd
-//     * @return the item's NBT, but with the air level rounded
-//     */
-//    public static CompoundTag roundedPressure(ItemStack stack) {
-//        if (stack.getItem() instanceof IPressurizableItem p && stack.getTag() != null && stack.getTag().contains(AirHandlerItemStack.AIR_NBT_KEY)) {
-//            ItemStack stackCopy = stack.copy();
-//            CompoundTag tag = Objects.requireNonNull(stackCopy.getTag());
-//            // Using a capability here *should* work but it seems to fail under some odd circumstances which I haven't been
-//            // able to reproduce. Hence the direct-access code above via the internal-use IPressurizableItem interface.
-//            // https://github.com/TeamPneumatic/pnc-repressurized/issues/650
-//            int air = tag.getInt(AirHandlerItemStack.AIR_NBT_KEY);
-//            int volume = p.getEffectiveVolume(stackCopy);
-//            // ok to modify tag directly here because we're working on a copy of the itemstack
-//            tag.putInt(AirHandlerItemStack.AIR_NBT_KEY, air - air % (volume / ConfigHelper.common().advanced.pressureSyncPrecision.get()));
-//            return tag;
-//        } else {
-//            return stack.getTag();
-//        }
-//    }
 }

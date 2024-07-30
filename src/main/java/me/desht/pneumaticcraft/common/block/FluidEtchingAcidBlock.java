@@ -25,12 +25,11 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.FlowingFluid;
 
 public class FluidEtchingAcidBlock extends LiquidBlock {
 
     public FluidEtchingAcidBlock(Properties props) {
-        super((FlowingFluid) ModFluids.ETCHING_ACID.get(), props);
+        super(ModFluids.ETCHING_ACID.get(), props);
     }
 
     @Override

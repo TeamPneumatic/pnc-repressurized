@@ -193,7 +193,7 @@ public class MicromissilesItem extends Item {
                 Settings::new
         );
 
-        public static Settings DEFAULT = new Settings(1/3f, 1/3f, 1/3f, new PointXY(46, 54), "", FireMode.SMART);
+        public static final Settings DEFAULT = new Settings(1/3f, 1/3f, 1/3f, new PointXY(46, 54), "", FireMode.SMART);
 
         public Settings withEntityFilter(String filterString) {
             return new Settings(topSpeed, turnSpeed, damage, point, filterString, fireMode);

@@ -523,7 +523,7 @@ public class SmartChestBlockEntity extends AbstractTickingBlockEntity
     }
 
     public record FilterSlot(int slot, ItemStack stack) {
-        public static StreamCodec<RegistryFriendlyByteBuf, FilterSlot> STREAM_CODEC = StreamCodec.composite(
+        public static final StreamCodec<RegistryFriendlyByteBuf, FilterSlot> STREAM_CODEC = StreamCodec.composite(
                 ByteBufCodecs.VAR_INT, FilterSlot::slot,
                 ItemStack.OPTIONAL_STREAM_CODEC, FilterSlot::stack,
                 FilterSlot::new

@@ -246,11 +246,6 @@ public class MinigunItem extends PressurizableItem implements
     }
 
     @Override
-    public boolean shouldCauseReequipAnimation(ItemStack oldStack, ItemStack newStack, boolean slotChanged) {
-        return false;
-    }
-
-    @Override
     public float getFOVModifier(ItemStack stack, Player player, EquipmentSlot slot) {
         Minigun minigun = getMinigun(stack, player);
         int trackers = minigun.getUpgrades(ModUpgrades.ENTITY_TRACKER.get());
@@ -325,11 +320,9 @@ public class MinigunItem extends PressurizableItem implements
                     && event.getSource().getEntity() != null && event.getSource().is(DamageTypes.THORNS)) {
                 // don't take thorns damage when attacking with minigun (it applies direct damage, but it's effectively ranged...)
                 ItemStack stack = player.getMainHandItem();
-                if (stack.getItem() instanceof MinigunItem) {
-                    Minigun minigun = ((MinigunItem) stack.getItem()).getMinigun(stack, player);
-                    if (minigun != null && minigun.getMinigunSpeed() >= Minigun.MAX_GUN_SPEED) {
-                        event.setCanceled(true);
-                    }
+                if (stack.getItem() instanceof MinigunItem minigunItem
+                        && minigunItem.getMinigun(stack, player).getMinigunSpeed() >= Minigun.MAX_GUN_SPEED) {
+                    event.setCanceled(true);
                 }
             }
         }

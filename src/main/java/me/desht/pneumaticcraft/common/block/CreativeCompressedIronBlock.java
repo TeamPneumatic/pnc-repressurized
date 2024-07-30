@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.client.ColorHandlers;
-import me.desht.pneumaticcraft.common.block.entity.heat.CreativeCompressedIronBlockBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.heat.CreativeCompressedIronBlockEntity;
 import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
 import me.desht.pneumaticcraft.common.registry.ModBlocks;
 import me.desht.pneumaticcraft.common.registry.ModItems;
@@ -50,7 +50,7 @@ public class CreativeCompressedIronBlock extends AbstractPneumaticCraftBlock
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
-        return new CreativeCompressedIronBlockBlockEntity(pPos, pState);
+        return new CreativeCompressedIronBlockEntity(pPos, pState);
     }
 
     public static class ItemBlockCreativeCompressedIron extends BlockItem {

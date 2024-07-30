@@ -207,7 +207,7 @@ public class DroneAIRightClickBlock extends DroneAIBlockInteraction<ProgWidgetAr
     private BlockHitResult doTrace(Level world, BlockPos pos, FakePlayer fakePlayer) {
         BlockState state = world.getBlockState(pos);
         List<AABB> l = state.getShape(world, pos).toAabbs();
-        Vec3 targetVec = l.isEmpty() ? Vec3.atCenterOf(pos) : l.get(0).getCenter().add(Vec3.atLowerCornerOf(pos));
+        Vec3 targetVec = l.isEmpty() ? Vec3.atCenterOf(pos) : l.getFirst().getCenter().add(Vec3.atLowerCornerOf(pos));
         Direction side = ISidedWidget.getDirForSides(((ISidedWidget) progWidget).getSides());
         Vec3 saved = new Vec3(fakePlayer.getX(), fakePlayer.getY(), fakePlayer.getZ());
         Vec3 posVec = targetVec.add(side.getStepX(), side.getStepY(), side.getStepZ());

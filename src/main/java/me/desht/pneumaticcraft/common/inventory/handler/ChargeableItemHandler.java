@@ -31,10 +31,6 @@ public class ChargeableItemHandler extends BaseItemStackHandler {
     public ChargeableItemHandler(ChargingStationBlockEntity te) {
         super(te, UpgradableItemUtils.UPGRADE_INV_SIZE);
 
-//        if (!getChargingStack().has(ModDataComponents.ITEM_UPGRADES)) {
-//            writeToChargingStack();
-//        }
-
         readFromChargingStack();
 
         inInit = false;

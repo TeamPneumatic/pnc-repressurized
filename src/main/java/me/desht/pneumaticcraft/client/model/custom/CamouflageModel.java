@@ -128,7 +128,7 @@ public class CamouflageModel implements IDynamicBakedModel {
         }
     }
 
-    private record Geometry(BlockModel baseModel) implements IUnbakedGeometry<Geometry> {
+    public record Geometry(BlockModel baseModel) implements IUnbakedGeometry<Geometry> {
         @Override
         public BakedModel bake(IGeometryBakingContext context, ModelBaker baker, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelState, ItemOverrides overrides) {
             return new CamouflageModel(baseModel.bake(baker, baseModel, spriteGetter, modelState, true));

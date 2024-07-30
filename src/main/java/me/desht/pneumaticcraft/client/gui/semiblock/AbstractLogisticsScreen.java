@@ -107,19 +107,19 @@ public class AbstractLogisticsScreen<L extends AbstractLogisticsFrameEntity> ext
             logistics.setFluidWhiteList(!logistics.isFluidWhiteList());
             updateLabels();
             syncToServer();
-        }).setVisible(false).setInvisibleHoverColor(0x80808080)).setTooltipKey("pneumaticcraft.gui.logistics_frame.fluidWhitelist.tooltip");;
+        }).setVisible(false).setInvisibleHoverColor(0x80808080)).setTooltipKey("pneumaticcraft.gui.logistics_frame.fluidWhitelist.tooltip");
         fluidWhitelist.visible = logistics.supportsBlacklisting();
         int xOff = logistics.supportsBlacklisting() ? 13 : 0;
         addRenderableWidget(itemLabel = new WidgetLabel(leftPos + 5 + xOff, topPos + 18, Component.empty()) {
             @Override
-            public void onClick(double mouseX, double mouseY) {
-                if (itemWhitelist.visible) itemWhitelist.onClick(mouseX, mouseY);
+            public void onClick(double mouseX, double mouseY, int button) {
+                if (itemWhitelist.visible) itemWhitelist.onClick(mouseX, mouseY, button);
             }
         });
         addRenderableWidget(fluidLabel = new WidgetLabel(leftPos + 5 + xOff, topPos + 90, Component.empty()) {
             @Override
-            public void onClick(double mouseX, double mouseY) {
-                if (fluidWhitelist.visible) fluidWhitelist.onClick(mouseX, mouseY);
+            public void onClick(double mouseX, double mouseY, int button) {
+                if (fluidWhitelist.visible) fluidWhitelist.onClick(mouseX, mouseY, button);
             }
         });
         updateLabels();

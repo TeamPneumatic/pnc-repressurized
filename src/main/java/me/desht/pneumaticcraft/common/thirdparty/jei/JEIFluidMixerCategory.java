@@ -63,7 +63,7 @@ public class JEIFluidMixerCategory extends AbstractPNCCategory<FluidMixerRecipe>
     @Override
     public void setRecipe(IRecipeLayoutBuilder builder, FluidMixerRecipe recipe, IFocusGroup focuses) {
         FluidStack in1 = recipe.getInput1().getFluids()[0];
-        FluidStack in2 = recipe.getInput2().getFluids()[0];;
+        FluidStack in2 = recipe.getInput2().getFluids()[0];
         FluidStack outF = recipe.getOutputFluid();
         int[] amounts = new int[] { in1.getAmount(), in2.getAmount(), outF.getAmount() };
         int max = Arrays.stream(amounts).max().getAsInt();

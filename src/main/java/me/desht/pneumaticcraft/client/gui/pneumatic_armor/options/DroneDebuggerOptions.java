@@ -266,10 +266,4 @@ public class DroneDebuggerOptions extends IOptionPage.SimpleOptionPage<DroneDebu
     public boolean isToggleable() {
         return false;
     }
-
-    @Override
-    public boolean displaySettingsHeader() {
-        return false;
-    }
-
 }

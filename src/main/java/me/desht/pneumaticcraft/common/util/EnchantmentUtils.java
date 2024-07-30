@@ -110,11 +110,6 @@ public class EnchantmentUtils {
         return world.getBlockState(pos).getEnchantPowerBonus(world, pos);
     }
 
-//    public static void addAllBooks(Enchantment enchantment, List<ItemStack> items) {
-//        for (int i = enchantment.getMinLevel(); i <= enchantment.getMaxLevel(); i++)
-//            items.add(EnchantedBookItem.createForEnchantment(new EnchantmentInstance(enchantment, i)));
-//    }
-
     public static Holder<Enchantment> getEnchantment(HolderLookup.Provider provider, ResourceKey<Enchantment> key) {
         return provider.lookup(Registries.ENCHANTMENT).orElseThrow().getOrThrow(key);
     }

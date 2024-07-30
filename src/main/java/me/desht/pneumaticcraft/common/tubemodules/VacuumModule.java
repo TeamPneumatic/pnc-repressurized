@@ -85,11 +85,6 @@ public class VacuumModule extends AbstractRedstoneReceivingModule implements IIn
     }
 
     @Override
-    public boolean canUpgrade() {
-        return true;
-    }
-
-    @Override
     public boolean isInline() {
         return true;
     }

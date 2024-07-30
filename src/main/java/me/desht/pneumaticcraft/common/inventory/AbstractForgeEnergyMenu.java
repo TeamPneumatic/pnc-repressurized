@@ -19,6 +19,7 @@ package me.desht.pneumaticcraft.common.inventory;
 
 import me.desht.pneumaticcraft.common.block.entity.AbstractPneumaticCraftBlockEntity;
 import me.desht.pneumaticcraft.common.network.SyncedField;
+import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
@@ -41,7 +42,7 @@ public abstract class AbstractForgeEnergyMenu<T extends AbstractPneumaticCraftBl
             try {
                 addSyncedField(new SyncedField.SyncedInt(storage, EnergyStorage.class.getDeclaredField("energy")));
             } catch (NoSuchFieldException e) {
-                e.printStackTrace();
+                Log.error("EnergyStorage class is missing 'energy' field!?");
             }
         } else {
             throw new IllegalStateException("block entity must support Capabilities.EnergyStorage.BLOCK on face null!");

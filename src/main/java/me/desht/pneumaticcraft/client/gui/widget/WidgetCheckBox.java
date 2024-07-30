@@ -34,7 +34,7 @@ import java.util.function.Consumer;
 public class WidgetCheckBox extends PNCWidget<WidgetCheckBox> implements ICheckboxWidget, ITaggedWidget {
     public boolean checked;
     private final int color;
-    private List<Component> tooltip = new ArrayList<>();
+    private final List<Component> tooltip = new ArrayList<>();
     private final Consumer<? super WidgetCheckBox> pressable;
 
     private static final int CHECKBOX_WIDTH = 10;
@@ -74,7 +74,7 @@ public class WidgetCheckBox extends PNCWidget<WidgetCheckBox> implements ICheckb
     }
 
     @Override
-    public void onClick(double mouseX, double mouseY) {
+    public void onClick(double mouseX, double mouseY, int button) {
         if (active) {
             checked = !checked;
             if (pressable != null) pressable.accept(this);

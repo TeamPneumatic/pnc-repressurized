@@ -66,11 +66,6 @@ public class InventorySearcherScreen extends AbstractContainerScreen<InventorySe
     }
 
     @Override
-    public boolean shouldCloseOnEsc() {
-        return true;
-    }
-
-    @Override
     public void onClose() {
         if (parentScreen != null) {
             ClientUtils.closeContainerGui(parentScreen);

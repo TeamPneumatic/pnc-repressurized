@@ -19,6 +19,7 @@ import me.desht.pneumaticcraft.common.recipes.special.OneProbeCrafting;
 import me.desht.pneumaticcraft.common.registry.ModBlocks;
 import me.desht.pneumaticcraft.common.registry.ModFluids;
 import me.desht.pneumaticcraft.common.registry.ModItems;
+import me.desht.pneumaticcraft.common.thirdparty.patchouli.PatchouliBookCrafting;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.playerfilter.PlayerFilter;
@@ -1295,8 +1296,10 @@ public class ModRecipeProvider extends RecipeProvider {
         }
 
         // specials
-//        shapeless(PatchouliBookCrafting.makeGuideBook(), ModItems.COMPRESSED_IRON_INGOT.get(), Items.BOOK)
-//                .save(consumer.withConditions(new ModLoadedCondition(ModIds.PATCHOULI)));
+        if (ModList.get().isLoaded(ModIds.PATCHOULI)) {
+            shapeless(PatchouliBookCrafting.makeGuideBook(), ModItems.COMPRESSED_IRON_INGOT.get(), Items.BOOK)
+                    .save(consumer.withConditions(new ModLoadedCondition(ModIds.PATCHOULI)));
+        }
         SpecialRecipeBuilder.special(DroneColorCrafting::new)
                 .save(consumer, getId("drone_color"));
         SpecialRecipeBuilder.special(DroneUpgradeCrafting::new)
@@ -1743,7 +1746,7 @@ public class ModRecipeProvider extends RecipeProvider {
 
     private <T extends ItemLike> CompressorUpgradeRecipeBuilder shapedCompressorUpgrade(T result, T required, String pattern, Object... keys) {
         return genericShaped(CompressorUpgradeRecipeBuilder.shapedRecipe(result), result, required, pattern, keys);
-    };
+    }
 
     private <T extends ItemLike> ShapedPressurizableRecipeBuilder shapedPressure(T result, T required, String pattern, Object... keys) {
         return genericShaped(ShapedPressurizableRecipeBuilder.shapedRecipe(result), result, required, pattern, keys);

@@ -16,7 +16,7 @@ import java.util.ArrayList;
 public class PneumaticcraftIMC {
 
     // List of all IMC messages to be sent at the InterModEnqueueEvent stage
-    public static ArrayList<InterModComms.IMCMessage> iMCMessageCache = new ArrayList<>();
+    public static final ArrayList<InterModComms.IMCMessage> iMCMessageCache = new ArrayList<>();
 
     /**
      * Adds the passed IMC message to the IMC message cache

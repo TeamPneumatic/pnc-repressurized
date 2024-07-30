@@ -229,8 +229,7 @@ public class ThermostatModuleScreen extends AbstractTubeModuleScreen<ThermostatM
         int sliderLeft = guiLeft + 11;
         float temperatureRange = ThermostatModule.MAX_VALUE - ThermostatModule.MIN_VALUE;
         float xNormalized = Math.max(0f, Math.min(1f, ((float)mouseX - sliderLeft) / sliderWidth));
-        int temperature = (int)(xNormalized * temperatureRange) + ThermostatModule.MIN_VALUE;
-        return temperature;
+        return (int)(xNormalized * temperatureRange) + ThermostatModule.MIN_VALUE;
     }
 
     private int temperatureToX(int temperature) {
@@ -239,8 +238,7 @@ public class ThermostatModuleScreen extends AbstractTubeModuleScreen<ThermostatM
         float temperatureRange = ThermostatModule.MAX_VALUE - ThermostatModule.MIN_VALUE;
         float tempNormalized = Math.max(ThermostatModule.MIN_VALUE,
             Math.min(ThermostatModule.MAX_VALUE, ((float)temperature - ThermostatModule.MIN_VALUE) / temperatureRange));
-        int x = (int)(tempNormalized * sliderWidth) + sliderLeft;
-        return x;
+        return (int)(tempNormalized * sliderWidth) + sliderLeft;
     }
 
     @Override

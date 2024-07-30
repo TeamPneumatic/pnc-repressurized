@@ -33,11 +33,11 @@ import net.minecraft.world.level.block.state.BlockState;
 
 import javax.annotation.Nullable;
 
-public class CreativeCompressedIronBlockBlockEntity extends CompressedIronBlockBlockEntity implements MenuProvider {
+public class CreativeCompressedIronBlockEntity extends CompressedIronBlockEntity implements MenuProvider {
     @GuiSynced
     public int targetTemperature = -1;  // -1 = uninited
 
-    public CreativeCompressedIronBlockBlockEntity(BlockPos pos, BlockState state) {
+    public CreativeCompressedIronBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntityTypes.CREATIVE_COMPRESSED_IRON_BLOCK.get(), pos, state);
 
         heatExchanger.setThermalCapacity(1_000_000);

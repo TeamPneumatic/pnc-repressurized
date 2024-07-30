@@ -122,47 +122,41 @@ public class CamoModel implements IDynamicBakedModel {
         return originalModel.getOverrides();
     }
 
-    private static class FakeBlockAccess implements BlockGetter {
-        private final BlockGetter compose;
-
-        private FakeBlockAccess(BlockGetter compose) {
-            this.compose = compose;
-        }
-
+    private record FakeBlockAccess(BlockGetter getter) implements BlockGetter {
         @Nullable
-        @Override
-        public BlockEntity getBlockEntity(BlockPos pos) {
-            return compose.getBlockEntity(pos);
-        }
-
-        @Nonnull
-        @Override
-        public BlockState getBlockState(@Nonnull BlockPos pos) {
-            BlockState state = compose.getBlockState(pos);
-            if (state.getBlock() instanceof AbstractCamouflageBlock) {
-                BlockEntity te = compose.getBlockEntity(pos);
-                if (te instanceof CamouflageableBlockEntity) {
-                    state = ((CamouflageableBlockEntity) te).getCamouflage();
-                }
+            @Override
+            public BlockEntity getBlockEntity(BlockPos pos) {
+                return getter.getBlockEntity(pos);
             }
-            return state == null ? Blocks.AIR.defaultBlockState() : state;
-        }
 
-        @Nonnull
-        @Override
-        public FluidState getFluidState(@Nonnull BlockPos blockPos) {
-            // todo test for 1.13
-            return compose.getFluidState(blockPos);
-        }
+            @Nonnull
+            @Override
+            public BlockState getBlockState(@Nonnull BlockPos pos) {
+                BlockState state = getter.getBlockState(pos);
+                if (state.getBlock() instanceof AbstractCamouflageBlock) {
+                    BlockEntity te = getter.getBlockEntity(pos);
+                    if (te instanceof CamouflageableBlockEntity) {
+                        state = ((CamouflageableBlockEntity) te).getCamouflage();
+                    }
+                }
+                return state == null ? Blocks.AIR.defaultBlockState() : state;
+            }
 
-        @Override
-        public int getHeight() {
-            return compose.getHeight();
-        }
+            @Nonnull
+            @Override
+            public FluidState getFluidState(@Nonnull BlockPos blockPos) {
+                // todo test for 1.13
+                return getter.getFluidState(blockPos);
+            }
 
-        @Override
-        public int getMinBuildHeight() {
-            return compose.getMinBuildHeight();
+            @Override
+            public int getHeight() {
+                return getter.getHeight();
+            }
+
+            @Override
+            public int getMinBuildHeight() {
+                return getter.getMinBuildHeight();
+            }
         }
-    }
 }

@@ -110,7 +110,7 @@ public class PneumaticCraftUtils {
                 // the Splitter here ensures any very long words with no whitespace get split up
                 // also important for some localizations, e.g. Chinese text does not use whitespace
                 for (String word : Splitter.fixedLength(maxCharPerLine).split(token)) {
-                    int idx = word.lastIndexOf("\u00a7");
+                    int idx = word.lastIndexOf("§");
                     if (idx >= 0 && idx < word.length() - 1) {
                         // note any formatting sequence, so it can also be applied to start of next line
                         format = word.substring(idx, idx + 2);
@@ -428,13 +428,7 @@ public class PneumaticCraftUtils {
      * @return a dummy player-sized living entity
      */
     public static Mob createDummyEntity(Player player) {
-        Zombie dummy = new Zombie(player.level()) {
-//            @Override
-//            protected void registerAttributes() {
-//                super.registerAttributes();
-//                this.getAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(CoordTrackUpgradeHandler.SEARCH_RANGE);
-//            }
-        };
+        Zombie dummy = new Zombie(player.level());
         dummy.setPos(player.getX(), player.getY(), player.getZ());
         return dummy;
     }

@@ -15,7 +15,7 @@
  *     along with pnc-repressurized.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.desht.pneumaticcraft.common.block.entity;
+package me.desht.pneumaticcraft.common.block.entity.processing;
 
 public interface IResettable {
     /**

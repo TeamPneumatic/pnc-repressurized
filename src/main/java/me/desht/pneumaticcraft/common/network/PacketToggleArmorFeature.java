@@ -67,7 +67,7 @@ public record PacketToggleArmorFeature(FeatureSetting setting) implements Custom
     }
 
     public record FeatureSetting(EquipmentSlot slot, byte featureIndex, boolean state) {
-        public static StreamCodec<FriendlyByteBuf, FeatureSetting> STREAM_CODEC = StreamCodec.composite(
+        public static final StreamCodec<FriendlyByteBuf, FeatureSetting> STREAM_CODEC = StreamCodec.composite(
                 NeoForgeStreamCodecs.enumCodec(EquipmentSlot.class), FeatureSetting::slot,
                 ByteBufCodecs.BYTE, FeatureSetting::featureIndex,
                 ByteBufCodecs.BOOL, FeatureSetting::state,

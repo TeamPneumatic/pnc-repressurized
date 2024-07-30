@@ -82,11 +82,6 @@ public class ItemSearcherScreen extends AbstractContainerScreen<ItemSearcherMenu
         container.init(this);
     }
 
-    @Override
-    public boolean shouldCloseOnEsc() {
-        return true;
-    }
-
     @Nonnull
     public ItemStack getSearchStack() {
         return inventory.getStackInSlot(SEARCH_SLOT);
@@ -166,12 +161,6 @@ public class ItemSearcherScreen extends AbstractContainerScreen<ItemSearcherMenu
         return !searchField.keyPressed(keyCode, scanCode, modifiers)
                 && searchField.canConsumeInput() || super.keyPressed(keyCode, scanCode, modifiers);
     }
-
-//    private void getAllEnchantedBooks(Enchantment enchantment, NonNullList<ItemStack> list) {
-//        for (int i = enchantment.getMinLevel(); i <= enchantment.getMaxLevel(); ++i) {
-//            list.add(EnchantedBookItem.createForEnchantment(new EnchantmentInstance(enchantment, i)));
-//        }
-//    }
 
     private Stream<SearchEntry> getSearchEntries() {
         if (cachedSearchEntries == null) {

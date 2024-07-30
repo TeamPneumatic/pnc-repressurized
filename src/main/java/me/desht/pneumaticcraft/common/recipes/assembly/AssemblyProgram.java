@@ -18,10 +18,10 @@
 package me.desht.pneumaticcraft.common.recipes.assembly;
 
 import me.desht.pneumaticcraft.api.crafting.recipe.AssemblyRecipe;
+import me.desht.pneumaticcraft.api.misc.ITranslatableEnum;
 import me.desht.pneumaticcraft.common.block.entity.processing.AssemblyControllerBlockEntity;
 import me.desht.pneumaticcraft.common.item.AssemblyProgramItem;
 import me.desht.pneumaticcraft.common.registry.ModBlocks;
-import me.desht.pneumaticcraft.api.misc.ITranslatableEnum;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -36,7 +36,7 @@ import java.util.List;
 public abstract class AssemblyProgram {
 
     public enum EnumAssemblyProblem {
-        NO_PROBLEM, NO_INPUT, NO_OUTPUT;
+        NO_PROBLEM, NO_INPUT, NO_OUTPUT
     }
 
     public enum EnumMachine implements ITranslatableEnum {
@@ -64,7 +64,7 @@ public abstract class AssemblyProgram {
         }
     }
 
-    public EnumAssemblyProblem curProblem = EnumAssemblyProblem.NO_PROBLEM;
+    public final EnumAssemblyProblem curProblem = EnumAssemblyProblem.NO_PROBLEM;
 
     public AssemblyRecipe.AssemblyProgramType getType() {
         return getItem().getProgramType();

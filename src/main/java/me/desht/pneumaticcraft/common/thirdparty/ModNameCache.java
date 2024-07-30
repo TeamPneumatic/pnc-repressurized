@@ -43,10 +43,6 @@ public class ModNameCache {
         id2name.put("minecraft", "Minecraft");
     }
 
-//    public static String getModName(IForgeRegistryEntry<?> entry) {
-//        return getModName(entry.getRegistryName().getNamespace());
-//    }
-
     public static String getModName(Fluid fluid) {
         return getModName(PneumaticCraftUtils.getRegistryName(fluid).orElseThrow().getNamespace());
     }

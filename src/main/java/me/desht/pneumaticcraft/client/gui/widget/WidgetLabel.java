@@ -89,7 +89,7 @@ public class WidgetLabel extends PNCWidget<WidgetLabel> {
             Font fr = Minecraft.getInstance().font;
             drawX = switch (alignment) {
                 case LEFT -> getX();
-                case CENTRE -> getX() - (int) (width / 2 * scale);
+                case CENTRE -> getX() - (int) (width / 2f * scale);
                 case RIGHT -> getX() - (int) (width * scale);
             };
             GuiUtils.drawScaledText(graphics, fr, getMessage(), drawX, getY(), color, scale,  dropShadow);

@@ -165,11 +165,6 @@ public class AmadronAddTradeScreen extends AbstractPneumaticCraftContainerScreen
     }
 
     @Override
-    public boolean shouldCloseOnEsc() {
-        return true;
-    }
-
-    @Override
     public void removed() {
         if (!openingSubGUI) {
             NetworkHandler.sendToServer(new PacketGuiButton("showAmadron"));

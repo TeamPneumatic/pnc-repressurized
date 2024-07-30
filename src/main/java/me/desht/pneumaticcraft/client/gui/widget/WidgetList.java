@@ -168,7 +168,7 @@ public class WidgetList<T> extends AbstractWidget {
     }
 
     @Override
-    public void onClick(double mouseX, double mouseY) {
+    public void onClick(double mouseX, double mouseY, int button) {
         if (active) {
             long now = System.currentTimeMillis();
             int h = Minecraft.getInstance().font.lineHeight;

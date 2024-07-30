@@ -35,7 +35,6 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class SimpleThermostatModuleScreen extends AbstractTubeModuleScreen<ThermostatModule> {
     private int color;
-    private int threshold;
     private WidgetTextFieldNumber thresholdField;
 
     public SimpleThermostatModuleScreen(ThermostatModule module) {
@@ -49,7 +48,7 @@ public class SimpleThermostatModuleScreen extends AbstractTubeModuleScreen<Therm
         super.init();
 
         color = module.getColorChannel();
-        threshold = module.getThreshold();
+        int threshold = module.getThreshold();
 
         addLabel(getTitle(), guiLeft + xSize / 2, guiTop + 5, WidgetLabel.Alignment.CENTRE);
 

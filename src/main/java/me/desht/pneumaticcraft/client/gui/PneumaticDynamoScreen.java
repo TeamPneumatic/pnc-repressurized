@@ -23,7 +23,7 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetEnergy;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTemperature;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
-import me.desht.pneumaticcraft.common.block.entity.PneumaticDynamoBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.compressor.PneumaticDynamoBlockEntity;
 import me.desht.pneumaticcraft.common.inventory.PneumaticDynamoMenu;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.lib.Textures;

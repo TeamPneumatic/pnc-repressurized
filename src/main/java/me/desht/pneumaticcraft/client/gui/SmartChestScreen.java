@@ -176,11 +176,6 @@ public class SmartChestScreen extends AbstractPneumaticCraftContainerScreen<Smar
     }
 
     @Override
-    protected boolean shouldAddProblemTab() {
-        return true;
-    }
-
-    @Override
     protected PointXY getInvTextOffset() {
         return null;
     }

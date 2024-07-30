@@ -340,18 +340,18 @@ public abstract class SyncedField<T> {
     /*************** Utility Methods ***************************/
 
     public static byte getType(SyncedField<?> syncedField) {
-        if (syncedField instanceof SyncedInt) return 0;
-        else if (syncedField instanceof SyncedFloat) return 1;
-        else if (syncedField instanceof SyncedDouble) return 2;
-        else if (syncedField instanceof SyncedBoolean) return 3;
-        else if (syncedField instanceof SyncedString) return 4;
-        else if (syncedField instanceof SyncedEnum) return 5;
-        else if (syncedField instanceof SyncedItemStack) return 6;
-        else if (syncedField instanceof SyncedFluidStack) return 7;
-        else if (syncedField instanceof SyncedField.SyncedItemHandler) return 8;
-        else {
-            throw new IllegalArgumentException("Invalid sync type! " + syncedField);
-        }
+        return switch (syncedField) {
+            case SyncedInt syncedInt -> 0;
+            case SyncedFloat syncedFloat -> 1;
+            case SyncedDouble syncedDouble -> 2;
+            case SyncedBoolean syncedBoolean -> 3;
+            case SyncedString syncedString -> 4;
+            case SyncedEnum syncedEnum -> 5;
+            case SyncedItemStack syncedItemStack -> 6;
+            case SyncedFluidStack syncedFluidStack -> 7;
+            case SyncedField.SyncedItemHandler syncedItemHandler -> 8;
+            case null, default -> throw new IllegalArgumentException("Invalid sync type! " + syncedField);
+        };
     }
 
     static Object fromBytes(RegistryFriendlyByteBuf buf, int type) {

@@ -38,13 +38,13 @@ public abstract class HeatBehaviourTransition extends HeatBehaviourLiquid {
     private static final Vector3f VEC3F_101 = new Vector3f(1, 0, 1);
     private double maxExchangedHeat;
     private double blockTemp = -1;  // -1 = not yet init'd (init on first tick)
-    private Optional<IHeatExchangerLogic> logic;
+    private IHeatExchangerLogic logic;
     private HeatExtractionTracker tracker;
 
     @Override
     public boolean isApplicable() {
-        logic = HeatExchangerManager.getInstance().getLogic(getWorld(), getPos(), null);
-        return logic.isPresent();
+        logic = HeatExchangerManager.getInstance().getLogic(getWorld(), getPos(), null).orElse(null);
+        return logic != null;
     }
 
     @Override
@@ -65,10 +65,10 @@ public abstract class HeatBehaviourTransition extends HeatBehaviourLiquid {
     @Override
     public void tick() {
         if (blockTemp == -1) {
-            logic.ifPresent(exchanger -> {
-                blockTemp = exchanger.getTemperature();
-                maxExchangedHeat = getMaxExchangedHeat() * (exchanger.getThermalResistance() + getHeatExchanger().getThermalResistance());
-            });
+            if (logic != null) {
+                blockTemp = logic.getTemperature();
+                maxExchangedHeat = getMaxExchangedHeat() * (logic.getThermalResistance() + getHeatExchanger().getThermalResistance());
+            }
         }
 
         double extractedHeat = tracker.getHeatExtracted(getPos());

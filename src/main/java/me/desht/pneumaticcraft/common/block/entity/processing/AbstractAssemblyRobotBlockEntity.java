@@ -18,7 +18,6 @@
 package me.desht.pneumaticcraft.common.block.entity.processing;
 
 import me.desht.pneumaticcraft.common.block.entity.AbstractTickingBlockEntity;
-import me.desht.pneumaticcraft.common.block.entity.IResettable;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.LazySynced;
 import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;

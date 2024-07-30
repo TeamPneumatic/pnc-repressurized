@@ -24,7 +24,6 @@ import me.desht.pneumaticcraft.common.registry.ModMenuTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.entity.player.Player;
 
 public class KeroseneLampMenu extends AbstractPneumaticCraftMenu<KeroseneLampBlockEntity> {
 
@@ -39,10 +38,5 @@ public class KeroseneLampMenu extends AbstractPneumaticCraftMenu<KeroseneLampBlo
         addSlot(new OutputOnlySlot(blockEntity.getItemHandler(), 1, 132, 55));
 
         addPlayerSlots(playerInventory, 84);
-    }
-
-    @Override
-    public boolean stillValid(Player player) {
-        return blockEntity.isGuiUseableByPlayer(player);
     }
 }

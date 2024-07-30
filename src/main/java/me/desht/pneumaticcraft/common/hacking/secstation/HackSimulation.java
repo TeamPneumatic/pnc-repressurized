@@ -416,7 +416,7 @@ public class HackSimulation {
     }
 
     public record ConnectionEntry(int from, int to, float progress) {
-        public static StreamCodec<FriendlyByteBuf, ConnectionEntry> STREAM_CODEC = StreamCodec.composite(
+        public static final StreamCodec<FriendlyByteBuf, ConnectionEntry> STREAM_CODEC = StreamCodec.composite(
                 ByteBufCodecs.VAR_INT, ConnectionEntry::from,
                 ByteBufCodecs.VAR_INT, ConnectionEntry::to,
                 ByteBufCodecs.FLOAT, ConnectionEntry::progress,

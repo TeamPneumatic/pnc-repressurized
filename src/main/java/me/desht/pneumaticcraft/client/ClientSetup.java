@@ -219,7 +219,7 @@ public class ClientSetup {
 
     private static void registerItemModelProperties() {
         ItemProperties.register(ModItems.JACKHAMMER.get(), RL("drill_bit"), (stack, world, entity, seed) -> {
-            DrillBitItem.DrillBitType type = ((JackHammerItem) stack.getItem()).getDrillBit(stack);
+            DrillBitItem.DrillBitType type = JackHammerItem.getDrillBit(stack);
             if (type == DrillBitItem.DrillBitType.NONE) return 0f;
             if (world == null || !(entity instanceof Player)) return 0.99f;
             long l = MovingSoundJackhammer.lastJackHammerTime((Player) entity);

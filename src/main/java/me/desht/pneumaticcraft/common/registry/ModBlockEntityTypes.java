@@ -19,7 +19,6 @@ package me.desht.pneumaticcraft.common.registry;
 
 import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.common.block.entity.AbstractFluidTankBlockEntity;
-import me.desht.pneumaticcraft.common.block.entity.PneumaticDynamoBlockEntity;
 import me.desht.pneumaticcraft.common.block.entity.compressor.*;
 import me.desht.pneumaticcraft.common.block.entity.drone.DroneRedstoneEmitterBlockEntity;
 import me.desht.pneumaticcraft.common.block.entity.drone.ProgrammableControllerBlockEntity;
@@ -33,7 +32,6 @@ import me.desht.pneumaticcraft.common.block.entity.hopper.OmnidirectionalHopperB
 import me.desht.pneumaticcraft.common.block.entity.processing.*;
 import me.desht.pneumaticcraft.common.block.entity.spawning.PressurizedSpawnerBlockEntity;
 import me.desht.pneumaticcraft.common.block.entity.spawning.SpawnerExtractorBlockEntity;
-import me.desht.pneumaticcraft.common.block.entity.utility.VacuumPumpBlockEntity;
 import me.desht.pneumaticcraft.common.block.entity.spawning.VacuumTrapBlockEntity;
 import me.desht.pneumaticcraft.common.block.entity.tube.AdvancedPressureTubeBlockEntity;
 import me.desht.pneumaticcraft.common.block.entity.tube.PressureTubeBlockEntity;
@@ -127,8 +125,8 @@ public class ModBlockEntityTypes {
             = register("advanced_liquid_compressor", AdvancedLiquidCompressorBlockEntity::new, ModBlocks.ADVANCED_LIQUID_COMPRESSOR);
     public static final Supplier<BlockEntityType<DroneRedstoneEmitterBlockEntity>> DRONE_REDSTONE_EMITTER
             = register("drone_redstone_emitter", DroneRedstoneEmitterBlockEntity::new, ModBlocks.DRONE_REDSTONE_EMITTER);
-    public static final Supplier<BlockEntityType<CompressedIronBlockBlockEntity>> COMPRESSED_IRON_BLOCK
-            = register("compressed_iron_block", CompressedIronBlockBlockEntity::new, ModBlocks.COMPRESSED_IRON_BLOCK);
+    public static final Supplier<BlockEntityType<CompressedIronBlockEntity>> COMPRESSED_IRON_BLOCK
+            = register("compressed_iron_block", CompressedIronBlockEntity::new, ModBlocks.COMPRESSED_IRON_BLOCK);
     public static final Supplier<BlockEntityType<HeatSinkBlockEntity>> HEAT_SINK
             = register("heat_sink", HeatSinkBlockEntity::new, ModBlocks.HEAT_SINK);
     public static final Supplier<BlockEntityType<VortexTubeBlockEntity>> VORTEX_TUBE
@@ -183,8 +181,8 @@ public class ModBlockEntityTypes {
             = register("spawner_extractor", SpawnerExtractorBlockEntity::new, ModBlocks.SPAWNER_EXTRACTOR);
     public static final Supplier<BlockEntityType<PressurizedSpawnerBlockEntity>> PRESSURIZED_SPAWNER
             = register("pressurized_spawner", PressurizedSpawnerBlockEntity::new, ModBlocks.PRESSURIZED_SPAWNER);
-    public static final Supplier<BlockEntityType<CreativeCompressedIronBlockBlockEntity>> CREATIVE_COMPRESSED_IRON_BLOCK
-            = register("creative_compressed_iron_block", CreativeCompressedIronBlockBlockEntity::new, ModBlocks.CREATIVE_COMPRESSED_IRON_BLOCK);
+    public static final Supplier<BlockEntityType<CreativeCompressedIronBlockEntity>> CREATIVE_COMPRESSED_IRON_BLOCK
+            = register("creative_compressed_iron_block", CreativeCompressedIronBlockEntity::new, ModBlocks.CREATIVE_COMPRESSED_IRON_BLOCK);
     public static final Supplier<BlockEntityType<ReinforcedPressureTubeBlockEntity>> REINFORCED_PRESSURE_TUBE
             = register("reinforced_pressure_tube", ReinforcedPressureTubeBlockEntity::new, ModBlocks.REINFORCED_PRESSURE_TUBE);
     public static final Supplier<BlockEntityType<TubeJunctionBlockEntity>> TUBE_JUNCTION

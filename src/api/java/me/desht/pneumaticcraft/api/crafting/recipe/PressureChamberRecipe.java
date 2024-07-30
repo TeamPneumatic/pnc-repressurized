@@ -134,7 +134,7 @@ public abstract class PressureChamberRecipe extends PneumaticCraftRecipe {
                 .findAny()
                 // Create a mapping from slot to cycle, using the focused slot's cycle
                 .map(set -> set.stream()
-                        .collect(ImmutableMap.toImmutableMap(slot -> slot, slot -> (IntList) focusedSlotCycle.cycle()))
+                        .collect(ImmutableMap.toImmutableMap(slot -> slot, slot -> focusedSlotCycle.cycle()))
                 )
                 .orElseGet(ImmutableMap::of);
     }

@@ -111,7 +111,7 @@ public class PressureChamberValveBlock extends AbstractPneumaticCraftBlock imple
             PneumaticCraftUtils.getBlockEntityAt(world, pos, PressureChamberValveBlockEntity.class).ifPresent(teValve -> {
                 if (teValve.multiBlockSize > 0) {
                     teValve.onMultiBlockBreak();
-                } else if (teValve.accessoryValves.size() > 0) {
+                } else if (!teValve.accessoryValves.isEmpty()) {
                     teValve.accessoryValves.stream()
                             .filter(valve -> valve.multiBlockSize > 0)
                             .findFirst()

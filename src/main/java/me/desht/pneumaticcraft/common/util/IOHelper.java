@@ -190,13 +190,6 @@ public class IOHelper {
         return getInventoryForBlock(tile, side).map(handler -> ItemHandlerHelper.insertItem(handler, itemStack, simulate)).orElse(itemStack);
     }
 
-//    @Nonnull
-//    public static ItemStack insert(ICapabilityProvider provider, ItemStack itemStack, Direction side, boolean simulate) {
-//        return provider.getCapability(Capabilities.ITEM_HANDLER, side)
-//                .map(handler -> ItemHandlerHelper.insertItem(handler, itemStack, simulate))
-//                .orElse(itemStack);
-//    }
-
     /**
      * Try to transfer a single item between two item handlers
      *

@@ -200,13 +200,6 @@ public abstract class AbstractSemiblockEntity extends Entity implements ISemiBlo
         }
     }
 
-//    @Override
-//    public float getBrightness() {
-//        // cheat a bit here - semiblocks on solid blocks will render unlit otherwise
-//        // instead we use the brightness at the top of the world (hoping there isn't a block there...)
-//        return level.isClientSide ? ClientUtils.getBrightnessAtWorldHeight() : super.getBrightness();
-//    }
-
     /**
      * Get the blockstate at the semiblock's position
      * @return the blockstate
@@ -298,11 +291,6 @@ public abstract class AbstractSemiblockEntity extends Entity implements ISemiBlo
         return PneumaticCraftUtils.getRegistryName(BuiltInRegistries.ENTITY_TYPE, getType()).orElseThrow();
     }
 
-//    @Override
-//    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-//        return NetworkHooks.getEntitySpawningPacket(this);
-//    }
-
     @Override
     public CompoundTag serializeNBT(CompoundTag tag, HolderLookup.Provider provider) {
         return tag;
@@ -366,6 +354,7 @@ public abstract class AbstractSemiblockEntity extends Entity implements ISemiBlo
      * @param removingSemiblock true if this semiblock is actually being removed from world, false if removing to chunk unloading
      */
     protected void doExtraCleanupTasks(boolean removingSemiblock) {
+        // nothing
     }
 
     @Override

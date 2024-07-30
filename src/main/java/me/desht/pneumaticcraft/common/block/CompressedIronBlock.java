@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.client.ColorHandlers;
-import me.desht.pneumaticcraft.common.block.entity.heat.CompressedIronBlockBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.heat.CompressedIronBlockEntity;
 import me.desht.pneumaticcraft.common.registry.ModBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -35,6 +35,6 @@ public class CompressedIronBlock extends AbstractPneumaticCraftBlock
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
-        return new CompressedIronBlockBlockEntity(pPos, pState);
+        return new CompressedIronBlockEntity(pPos, pState);
     }
 }

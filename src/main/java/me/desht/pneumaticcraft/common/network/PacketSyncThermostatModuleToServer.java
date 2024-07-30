@@ -22,7 +22,6 @@ import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
@@ -32,9 +31,9 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
  * Sent by client to update server-side settings when redstone module GUI is closed
  */
 public record PacketSyncThermostatModuleToServer(ModuleLocator locator, byte channel, int threshold) implements TubeModulePacket<ThermostatModule> {
-    public static Type<PacketSyncThermostatModuleToServer> TYPE = new Type<>(RL("sync_thermostat_module_to_server"));
+    public static final Type<PacketSyncThermostatModuleToServer> TYPE = new Type<>(RL("sync_thermostat_module_to_server"));
 
-    public static StreamCodec<FriendlyByteBuf, PacketSyncThermostatModuleToServer> STREAM_CODEC = StreamCodec.composite(
+    public static final StreamCodec<FriendlyByteBuf, PacketSyncThermostatModuleToServer> STREAM_CODEC = StreamCodec.composite(
             ModuleLocator.STREAM_CODEC, PacketSyncThermostatModuleToServer::locator,
             ByteBufCodecs.BYTE, PacketSyncThermostatModuleToServer::channel,
             ByteBufCodecs.VAR_INT, PacketSyncThermostatModuleToServer::threshold,

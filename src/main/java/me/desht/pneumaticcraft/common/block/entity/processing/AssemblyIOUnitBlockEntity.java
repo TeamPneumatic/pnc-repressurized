@@ -305,8 +305,7 @@ public class AssemblyIOUnitBlockEntity extends AbstractAssemblyRobotBlockEntity 
                 });
             }
         } else {
-            if (tile instanceof AssemblyPlatformBlockEntity) {
-                AssemblyPlatformBlockEntity plat = (AssemblyPlatformBlockEntity) tile;
+            if (tile instanceof AssemblyPlatformBlockEntity plat) {
 
                 if (plat.openClaw()) {
                     itemHandler.setStackInSlot(0, plat.getHeldStack());
@@ -325,8 +324,7 @@ public class AssemblyIOUnitBlockEntity extends AbstractAssemblyRobotBlockEntity 
     private boolean putItemToCurrentDirection() {
         if (isImportUnit()) {
             BlockEntity tile = getTileEntityForCurrentDirection();
-            if (tile instanceof AssemblyPlatformBlockEntity) {
-                AssemblyPlatformBlockEntity plat = (AssemblyPlatformBlockEntity) tile;
+            if (tile instanceof AssemblyPlatformBlockEntity plat) {
 
                 if (itemHandler.getStackInSlot(0).isEmpty()) {
                     return plat.closeClaw();

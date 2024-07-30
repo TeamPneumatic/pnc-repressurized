@@ -106,10 +106,7 @@ public class ProgWidgetAreaScreen extends ProgWidgetAreaShowScreen<ProgWidgetAre
                 progWidget.setAreaType(areaType);
                 switchToWidgets(areaType);
             });
-//            if (progWidget.type.getClass() == areaType.getClass()) {
-//                allAreaTypes.set(i, progWidget.type);
-//            }
-            builder.addRadioButton(radioButton, progWidget.getAreaType().getName() == areaType.getName());
+            builder.addRadioButton(radioButton, progWidget.getAreaType().getName().equals(areaType.getName()));
         }
         builder.build(this::addRenderableWidget);
         switchToWidgets(progWidget.getAreaType());

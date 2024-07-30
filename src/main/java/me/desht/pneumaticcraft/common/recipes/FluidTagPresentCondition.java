@@ -26,7 +26,7 @@ import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.common.conditions.ICondition;
 
 public class FluidTagPresentCondition implements ICondition {
-    public static MapCodec<FluidTagPresentCondition> CODEC = RecordCodecBuilder.mapCodec(builder -> builder.group(
+    public static final MapCodec<FluidTagPresentCondition> CODEC = RecordCodecBuilder.mapCodec(builder -> builder.group(
                     ResourceLocation.CODEC.fieldOf("tag").forGetter(FluidTagPresentCondition::location)
             ).apply(builder, FluidTagPresentCondition::new)
     );

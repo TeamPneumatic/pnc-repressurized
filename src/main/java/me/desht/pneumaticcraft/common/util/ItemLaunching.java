@@ -82,9 +82,6 @@ public class ItemLaunching {
         if (launchedEntity instanceof AbstractHurtingProjectile hurtingProjectile) {
             // fireball velocity is handled a little differently...
             hurtingProjectile.accelerationPower = 0.1;  // TODO needs testing
-//            fireball.xPower = velocity.x * 0.05;
-//            fireball.yPower = velocity.y * 0.05;
-//            fireball.zPower = velocity.z * 0.05;
         }
 
         launchedEntity.setDeltaMovement(velocity);

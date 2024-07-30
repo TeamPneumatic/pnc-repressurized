@@ -35,17 +35,17 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.items.IItemHandler;
 import org.jetbrains.annotations.Nullable;
 
-public class CompressedIronBlockBlockEntity extends AbstractTickingBlockEntity implements IComparatorSupport, IHeatTinted, IHeatExchangingTE {
+public class CompressedIronBlockEntity extends AbstractTickingBlockEntity implements IComparatorSupport, IHeatTinted, IHeatExchangingTE {
     protected final IHeatExchangerLogic heatExchanger = PneumaticRegistry.getInstance().getHeatRegistry().makeHeatExchangerLogic();
     private int comparatorOutput = 0;
     @DescSynced
     protected final SyncedTemperature syncedTemperature = new SyncedTemperature(heatExchanger);
 
-    public CompressedIronBlockBlockEntity(BlockPos pos, BlockState state) {
+    public CompressedIronBlockEntity(BlockPos pos, BlockState state) {
         this(ModBlockEntityTypes.COMPRESSED_IRON_BLOCK.get(), pos, state);
     }
 
-    CompressedIronBlockBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
+    CompressedIronBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
 
         heatExchanger.setThermalCapacity(10);

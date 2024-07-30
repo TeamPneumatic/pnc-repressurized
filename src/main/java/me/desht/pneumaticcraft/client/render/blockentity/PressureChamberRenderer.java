@@ -42,7 +42,7 @@ public class PressureChamberRenderer implements BlockEntityRenderer<PressureCham
 
     @Override
     public void render(PressureChamberValveBlockEntity te, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
-       if (te.multiBlockSize == 0 || !te.hasGlass) return;
+        if (te.multiBlockSize == 0 || !te.hasGlass) return;
 
         List<ItemStack> stacks = te.renderedItems;
         if (!stacks.isEmpty()){

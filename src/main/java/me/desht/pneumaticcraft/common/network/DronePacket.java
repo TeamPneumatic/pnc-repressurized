@@ -55,7 +55,7 @@ public interface DronePacket extends CustomPacketPayload {
             Codec.either(Codec.INT, BlockPos.CODEC).fieldOf("id_or_pos").forGetter(DroneTarget::idOrPos)
         ).apply(builder, DroneTarget::new));
 
-        public static StreamCodec<FriendlyByteBuf, DroneTarget> STREAM_CODEC = StreamCodec.composite(
+        public static final StreamCodec<FriendlyByteBuf, DroneTarget> STREAM_CODEC = StreamCodec.composite(
                 ByteBufCodecs.either(ByteBufCodecs.INT, BlockPos.STREAM_CODEC), DroneTarget::idOrPos,
                 DroneTarget::new
         );

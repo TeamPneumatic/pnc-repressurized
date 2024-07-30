@@ -336,7 +336,7 @@ public class FluidMixerBlockEntity extends AbstractAirHandlingBlockEntity implem
     }
 
     public float getCraftingPercentage() {
-        return maxProgress > 0 ? (float)craftingProgress / maxProgress : 0;
+        return maxProgress > 0 ? craftingProgress / maxProgress : 0;
     }
 
     public int genIngredientHash() {

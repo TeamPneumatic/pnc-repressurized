@@ -32,7 +32,7 @@ public interface TubeModulePacket<T extends AbstractTubeModule> extends CustomPa
     void onModuleUpdate(T module, Player player);
 
     record ModuleLocator(BlockPos pos, Direction side) {
-        public static StreamCodec<FriendlyByteBuf, ModuleLocator> STREAM_CODEC = StreamCodec.composite(
+        public static final StreamCodec<FriendlyByteBuf, ModuleLocator> STREAM_CODEC = StreamCodec.composite(
                 BlockPos.STREAM_CODEC, ModuleLocator::pos,
                 Direction.STREAM_CODEC, ModuleLocator::side,
                 ModuleLocator::new

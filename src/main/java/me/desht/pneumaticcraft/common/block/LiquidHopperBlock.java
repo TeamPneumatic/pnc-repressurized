@@ -51,7 +51,6 @@ public class LiquidHopperBlock extends OmnidirectionalHopperBlock implements Pne
     }
 
     public static class ItemBlockLiquidHopper extends BlockItem implements ColorHandlers.ITintableItem, IFluidRendered, IFluidCapProvider {
-        public static final String TANK_NAME = "Tank";
         RenderLiquidHopper.ItemRenderInfoProvider renderInfoProvider = null;
 
         public ItemBlockLiquidHopper(Block block) {

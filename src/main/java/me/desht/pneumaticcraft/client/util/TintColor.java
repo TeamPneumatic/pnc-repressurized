@@ -151,7 +151,7 @@ public class TintColor {
                 }
             }
         }
-        return 0xff000000 | (r << 16) | (g << 8) | (b << 0);
+        return 0xff000000 | (r << 16) | (g << 8) | b;
     }
 
     private static final double FACTOR = 0.7;

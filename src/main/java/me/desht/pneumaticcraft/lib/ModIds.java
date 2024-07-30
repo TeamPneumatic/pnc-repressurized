@@ -44,16 +44,4 @@ public class ModIds {
     public static final String TOUGH_AS_NAILS = "toughasnails";
     public static final String THE_ONE_PROBE = "theoneprobe";
     public static final String FFS = "ftbfiltersystem";
-
-    // the mods we have integrated with in the past but not in 1.16
-    //    public static final String BUILDCRAFT = "buildcraftcore";
-    //    public static final String INDUSTRIALCRAFT = "ic2";
-    //    public static final String INDUSTRIALFOREGOING = "industrialforegoing";
-    //    public static final String IGWMOD = "igwmod";
-//    public static final String FORESTRY = "forestry";
-//    public static final String OPEN_BLOCKS = "openblocks";
-//    public static final String OPEN_COMPUTERS = "opencomputers";
-//    public static final String EIO = "enderio";
-//    public static final String IMMERSIVE_PETROLEUM = "immersivepetroleum";
-//    public static final String BAUBLES = "baubles";
 }

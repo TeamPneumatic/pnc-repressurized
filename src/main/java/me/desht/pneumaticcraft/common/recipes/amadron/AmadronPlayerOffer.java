@@ -52,7 +52,7 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
  * Extended Amadron offer used for player-player trading.
  */
 public class AmadronPlayerOffer extends AmadronOffer {
-    public static StreamCodec<RegistryFriendlyByteBuf, AmadronPlayerOffer> STREAM_CODEC = StreamCodec.of(
+    public static final StreamCodec<RegistryFriendlyByteBuf, AmadronPlayerOffer> STREAM_CODEC = StreamCodec.of(
             (buf, playerOffer) -> playerOffer.write(buf),
             AmadronPlayerOffer::playerOfferFromBuf
     );

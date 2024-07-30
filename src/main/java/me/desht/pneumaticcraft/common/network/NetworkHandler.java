@@ -277,38 +277,4 @@ public class NetworkHandler {
 			sendToPlayer(packet, player);
 		}
 	}
-
-//
-//	/**
-//	 * Send a packet to the player, unless the player is local (i.e. player owner of the integrated server)
-//	 * @param player the player
-//	 * @param packet the packet to send
-//	 */
-//	public static void sendNonLocal(ServerPlayer player, CustomPacketPayload packet) {
-//		if (!player.server.isSingleplayerOwner(player.getGameProfile())) {
-//			sendToPlayer(packet, player);
-//		}
-//	}
-//
-//	private static void sendMessage(CustomPacketPayload message, Consumer<CustomPacketPayload> consumer) {
-//		if (message instanceof ILargePayload large) {
-//			// see PacketMultiHeader#receivePayload for message reassembly
-//			RegistryFriendlyByteBuf buf = large.dumpToBuffer();
-//			if (buf.writerIndex() < ILargePayload.MAX_PAYLOAD_SIZE) {
-//				consumer.accept(message);
-//			} else {
-//				List<CustomPacketPayload> messageParts = new ArrayList<>();
-//				messageParts.add(new PacketMultiHeader(buf.writerIndex(), message.getClass().getName()));
-//				int offset = 0;
-//				byte[] bytes = buf.array();
-//				while (offset < buf.writerIndex()) {
-//					messageParts.add(new PacketMultiPart(Arrays.copyOfRange(bytes, offset, Math.min(offset + ILargePayload.MAX_PAYLOAD_SIZE, buf.writerIndex()))));
-//					offset += ILargePayload.MAX_PAYLOAD_SIZE;
-//				}
-//				messageParts.forEach(consumer);
-//			}
-//		} else {
-//			consumer.accept(message);
-//		}
-//	}
 }

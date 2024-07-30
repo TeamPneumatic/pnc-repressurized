@@ -38,7 +38,7 @@ public record PlayerFilter(Op op, List<IPlayerMatcher> matchers) implements IPla
             IPlayerMatcher.CODEC.listOf().fieldOf("matchers").forGetter(PlayerFilter::matchers)
     ).apply(inst, PlayerFilter::new));
 
-    public static StreamCodec<RegistryFriendlyByteBuf, PlayerFilter> STREAM_CODEC = StreamCodec.composite(
+    public static final StreamCodec<RegistryFriendlyByteBuf, PlayerFilter> STREAM_CODEC = StreamCodec.composite(
             NeoForgeStreamCodecs.enumCodec(Op.class), PlayerFilter::op,
             IPlayerMatcher.STREAM_CODEC.apply(ByteBufCodecs.list()), PlayerFilter::matchers,
             PlayerFilter::new

@@ -211,8 +211,6 @@ public class CoordTrackClientHandler extends IArmorUpgradeClientHandler.Abstract
                     handler.reset();
                     GlobalPos gPos = GlobalPosHelper.makeGlobalPos(event.getLevel(), event.getPos().relative(event.getFace()));
                     PneumaticArmorItem.setCoordTrackerPos(helmetStack, gPos);
-//                    CompoundTag tag = new CompoundTag();
-//                    tag.put(PneumaticArmorItem.NBT_COORD_TRACKER, GlobalPosHelper.toNBT(gPos));
 
                     PacketUpdateArmorExtraData.sendToServer(CommonUpgradeHandlers.coordTrackerHandler, ModDataComponents.COORD_TRACKER.get(), gPos);
 

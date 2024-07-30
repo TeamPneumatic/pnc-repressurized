@@ -85,7 +85,7 @@ public record PacketSpawnIndicatorParticles(BlockPos pos0, DyeColor dyeColor, Li
     }
 
     private record ByteOffset(byte x, byte y, byte z) {
-        public static StreamCodec<FriendlyByteBuf, ByteOffset> STREAM_CODEC = StreamCodec.composite(
+        public static final StreamCodec<FriendlyByteBuf, ByteOffset> STREAM_CODEC = StreamCodec.composite(
                 ByteBufCodecs.BYTE, ByteOffset::x,
                 ByteBufCodecs.BYTE, ByteOffset::y,
                 ByteBufCodecs.BYTE, ByteOffset::z,

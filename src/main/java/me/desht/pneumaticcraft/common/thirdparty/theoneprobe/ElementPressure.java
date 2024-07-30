@@ -55,8 +55,8 @@ public class ElementPressure implements IElement {
     public void render(GuiGraphics matrixStack, int x, int y) {
         matrixStack.pose().pushPose();
         matrixStack.pose().scale(SCALE, SCALE, SCALE);
-        int x1 = (int)((x + getWidth() / 2) / SCALE);
-        int y1 = (int)((y + getHeight() / 2) / SCALE);
+        int x1 = (int)((x + getWidth() / 2f) / SCALE);
+        int y1 = (int)((y + getHeight() / 2f) / SCALE);
         PressureGaugeRenderer2D.drawPressureGauge(matrixStack, Minecraft.getInstance().font, -1, crit, danger, min, pressure, x1, y1,0xFFC0C0C0);
         matrixStack.pose().popPose();
     }

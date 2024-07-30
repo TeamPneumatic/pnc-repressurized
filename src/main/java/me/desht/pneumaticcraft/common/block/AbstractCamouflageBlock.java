@@ -127,16 +127,4 @@ public abstract class AbstractCamouflageBlock extends AbstractPneumaticCraftBloc
     protected VoxelShape getUncamouflagedRaytraceShape(BlockState state, BlockGetter reader, BlockPos pos) {
         return Shapes.empty();
     }
-
-//
-//    @Nonnull
-//    @Override
-//    @Optional.Method(modid = "ctm-api")
-//    public BlockState getFacade(@Nonnull IBlockAccess world, @Nonnull BlockPos pos, @Nullable Direction side) {
-//        TileEntity te = world.getTileEntity(pos);
-//        if (te instanceof ICamouflageableTE && ((ICamouflageableTE) te).getCamouflage() != null) {
-//            return ((ICamouflageableTE) te).getCamouflage();
-//        }
-//        return world.getBlockState(pos);
-//    }
 }

@@ -167,11 +167,7 @@ public class ModLootTablesProvider extends LootTableProvider {
         }
 
         private LootPoolSingletonContainer.Builder<?> createEntry(ItemStack item, int weight) {
-            LootPoolSingletonContainer.Builder<?> ret = LootItem.lootTableItem(item.getItem()).setWeight(weight);
-
-//            if (item.hasTag())
-//                ret.apply(SetNbtFunction.setTag(item.getOrCreateTag()));
-            return ret;
+            return LootItem.lootTableItem(item.getItem()).setWeight(weight);
         }
     }
 
@@ -234,10 +230,7 @@ public class ModLootTablesProvider extends LootTableProvider {
         }
 
         private LootPoolSingletonContainer.Builder<?> createEntry(ItemStack item, int weight) {
-            LootPoolSingletonContainer.Builder<?> ret = LootItem.lootTableItem(item.getItem()).setWeight(weight);
-//            if (item.hasTag())
-//                ret.apply(SetNbtFunction.setTag(item.getOrCreateTag()));
-            return ret;
+            return LootItem.lootTableItem(item.getItem()).setWeight(weight);
         }
     }
 }

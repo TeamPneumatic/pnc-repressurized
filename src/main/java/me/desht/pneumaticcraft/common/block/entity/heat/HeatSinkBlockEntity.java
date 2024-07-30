@@ -28,7 +28,7 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.state.BlockState;
 
-public class HeatSinkBlockEntity extends CompressedIronBlockBlockEntity {
+public class HeatSinkBlockEntity extends CompressedIronBlockEntity {
     private final IHeatExchangerLogic airExchanger = PneumaticRegistry.getInstance().getHeatRegistry().makeHeatExchangerLogic();
 
     private double ambientTemp;
