@@ -27,14 +27,22 @@ import net.minecraft.client.model.Model;
 import net.minecraft.client.model.geom.EntityModelSet;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.Sheets;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.client.renderer.texture.TextureAtlas;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.resources.model.ModelManager;
+import net.minecraft.core.Holder;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ArmorMaterial;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.armortrim.ArmorTrim;
 import net.neoforged.neoforge.client.ClientHooks;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
@@ -43,11 +51,14 @@ import static net.minecraft.client.renderer.LightTexture.FULL_BRIGHT;
 public class PneumaticArmorLayer<E extends LivingEntity, M extends HumanoidModel<E>> extends RenderLayer<E, M> {
     private final HumanoidModel<E> modelLeggings;
     private final HumanoidModel<E> modelArmor;
+    private final TextureAtlas armorTrimAtlas;
 
-    public PneumaticArmorLayer(RenderLayerParent<E, M> entityRendererIn, EntityModelSet models) {
+    public PneumaticArmorLayer(RenderLayerParent<E, M> entityRendererIn, EntityModelSet models, ModelManager modelManager) {
         super(entityRendererIn);
+
         this.modelLeggings = new HumanoidModel<>(models.bakeLayer(PNCModelLayers.PNEUMATIC_LEGS));
         this.modelArmor = new HumanoidModel<>(models.bakeLayer(PNCModelLayers.PNEUMATIC_ARMOR));
+        this.armorTrimAtlas = modelManager.getAtlas(Sheets.ARMOR_TRIMS_SHEET);
     }
 
     @Override
@@ -84,6 +95,11 @@ public class PneumaticArmorLayer<E extends LivingEntity, M extends HumanoidModel
                 this.doRender(poseStack, buffer, FULL_BRIGHT, model1, armor.getEyepieceColor(stack), slot, ExtraLayer.EYEPIECE);
             }
 
+            ArmorTrim armortrim = stack.get(DataComponents.TRIM);
+            if (armortrim != null) {
+                this.renderTrim(armor.getMaterial(), poseStack, buffer, light, armortrim, model, slot == EquipmentSlot.LEGS);
+            }
+
             if (stack.hasFoil()) {
                 this.renderGlint(poseStack, buffer, light, model);
             }
@@ -94,6 +110,12 @@ public class PneumaticArmorLayer<E extends LivingEntity, M extends HumanoidModel
         ResourceLocation armorResource = extraLayer.getArmorResource(slot);
         VertexConsumer vertexConsumer = ItemRenderer.getArmorFoilBuffer(buffer, extraLayer.getRenderType(armorResource), false);
         model.renderToBuffer(matrixStack, vertexConsumer, light, OverlayTexture.NO_OVERLAY, color);
+    }
+
+    private void renderTrim(Holder<ArmorMaterial> material, PoseStack poseStack, MultiBufferSource bufferSource, int light, ArmorTrim trim, HumanoidModel<E> model, boolean innerModel) {
+        TextureAtlasSprite sprite = armorTrimAtlas.getSprite(innerModel ? trim.innerTexture(material) : trim.outerTexture(material));
+        VertexConsumer vertexconsumer = sprite.wrap(bufferSource.getBuffer(Sheets.armorTrimsSheet(trim.pattern().value().decal())));
+        model.renderToBuffer(poseStack, vertexconsumer, light, OverlayTexture.NO_OVERLAY);
     }
 
     private void renderGlint(PoseStack poseStack, MultiBufferSource buffer, int light, net.minecraft.client.model.Model model) {

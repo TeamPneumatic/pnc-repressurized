@@ -56,10 +56,7 @@ import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.ParticleEngine;
 import net.minecraft.client.particle.TerrainParticle;
-import net.minecraft.client.renderer.entity.ArmorStandRenderer;
-import net.minecraft.client.renderer.entity.EntityRenderer;
-import net.minecraft.client.renderer.entity.HumanoidMobRenderer;
-import net.minecraft.client.renderer.entity.LivingEntityRenderer;
+import net.minecraft.client.renderer.entity.*;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.client.resources.PlayerSkin;
@@ -147,16 +144,16 @@ public class ClientSetup {
         event.getEntityTypes().forEach(type -> {
             var entityRenderer = event.getRenderer(type);
             if (entityRenderer instanceof HumanoidMobRenderer<?, ?> hmr) {
-                addPneumaticArmorRenderLayer(hmr, event.getEntityModels());
+                addPneumaticArmorRenderLayer(hmr, event.getEntityModels(), event.getContext());
             } else if (entityRenderer instanceof ArmorStandRenderer asr) {
-                addPneumaticArmorRenderLayer(asr, event.getEntityModels());
+                addPneumaticArmorRenderLayer(asr, event.getEntityModels(), event.getContext());
             }
         });
 
         for (PlayerSkin.Model skin : event.getSkins()) {
             EntityRenderer<?> render = event.getSkin(skin);
             if (render instanceof PlayerRenderer pr) {
-                addPneumaticArmorRenderLayer(pr, event.getEntityModels());
+                addPneumaticArmorRenderLayer(pr, event.getEntityModels(), event.getContext());
                 addElytraRenderLayer(pr, event.getEntityModels());
             }
         }
@@ -166,8 +163,8 @@ public class ClientSetup {
         render.addLayer(new PneumaticElytraLayer<>(render, models));
     }
 
-    private static <T extends LivingEntity, M extends HumanoidModel<T>> void addPneumaticArmorRenderLayer(LivingEntityRenderer<T, M> render, EntityModelSet models) {
-        render.addLayer(new PneumaticArmorLayer<>(render, models));
+    private static <T extends LivingEntity, M extends HumanoidModel<T>> void addPneumaticArmorRenderLayer(LivingEntityRenderer<T, M> render, EntityModelSet models, EntityRendererProvider.Context context) {
+        render.addLayer(new PneumaticArmorLayer<>(render, models, context.getModelManager()));
     }
 
     public static void registerLayerDefinitions(EntityRenderersEvent.RegisterLayerDefinitions event) {
