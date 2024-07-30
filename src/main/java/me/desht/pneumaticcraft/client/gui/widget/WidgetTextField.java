@@ -30,6 +30,10 @@ public class WidgetTextField extends EditBox {
         super(fontRenderer, x, y, width, height, Component.empty());
     }
 
+    public WidgetTextField(Font fontRenderer, int x, int y, int width) {
+        super(fontRenderer, x, y, width, fontRenderer.lineHeight + 3, Component.empty());
+    }
+
     public WidgetTextField setAsPasswordBox() {
         passwordBox = true;
         return this;

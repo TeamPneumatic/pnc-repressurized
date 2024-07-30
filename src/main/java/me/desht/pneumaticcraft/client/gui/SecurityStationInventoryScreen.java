@@ -89,7 +89,7 @@ public class SecurityStationInventoryScreen extends AbstractPneumaticCraftContai
             }
         });
 
-        sharedUserTextField = new WidgetTextField(font, 20, 15, 80, 10);
+        sharedUserTextField = new WidgetTextField(font, 20, 15, 80);
 
         accessStat.addSubWidget(sharedUserTextField);
         accessStat.addSubWidget(addUserButton);

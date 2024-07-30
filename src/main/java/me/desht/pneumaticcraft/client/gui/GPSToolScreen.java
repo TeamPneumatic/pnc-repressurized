@@ -104,7 +104,7 @@ public class GPSToolScreen extends AbstractPneumaticCraftScreen {
         }
 
         if (variableField != null) oldVarName = variableField.getValue();
-        variableField = new WidgetTextField(font, xMiddle - 50, yMiddle + 59, 100, font.lineHeight + 3);
+        variableField = new WidgetTextField(font, xMiddle - 50, yMiddle + 59, 100);
         playerGlobal = !oldVarName.startsWith("%");
         oldVarName = GlobalVariableHelper.getInstance().stripVarPrefix(oldVarName);
         variableField.setFilter(s -> VAR_PATTERN.matcher(s).matches());

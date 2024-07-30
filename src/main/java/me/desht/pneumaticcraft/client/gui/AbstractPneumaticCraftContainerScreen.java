@@ -325,7 +325,9 @@ public abstract class AbstractPneumaticCraftContainerScreen<C extends AbstractPn
                 float[] c = RenderUtils.decomposeColorF(tint);
                 graphics.setColor(c[1], c[2], c[3], c[0]);
             });
-            graphics.blit(getGuiTexture(), xStart, yStart, 0, 0, imageWidth, imageHeight);
+            if (getGuiTexture() != null) {
+                graphics.blit(getGuiTexture(), xStart, yStart, 0, 0, imageWidth, imageHeight);
+            }
             getBackgroundTint().ifPresent(tint -> graphics.setColor(1f, 1f, 1f, 1f));
         }
     }

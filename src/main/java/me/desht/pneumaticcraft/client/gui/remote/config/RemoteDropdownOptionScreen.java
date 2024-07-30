@@ -50,18 +50,16 @@ public class RemoteDropdownOptionScreen extends AbstractRemoteVariableConfigScre
     public void init() {
         super.init();
 
-        int textFieldHeight = font.lineHeight + 3;
-
         addLabel(xlate("pneumaticcraft.gui.remote.button.width"), guiLeft + 10, guiTop + 100);
         addLabel(xlate("pneumaticcraft.gui.remote.dropdown.dropDownElements"), guiLeft + 10, guiTop + 40);
 
-        dropDownElementsField = new WidgetTextField(font, guiLeft + 10, guiTop + 49, 160, textFieldHeight);
+        dropDownElementsField = new WidgetTextField(font, guiLeft + 10, guiTop + 49, 160);
         dropDownElementsField.setMaxLength(1024);
         dropDownElementsField.setValue(String.join(",", remoteWidget.elements()));
         dropDownElementsField.setTooltip(Tooltip.create(xlate("pneumaticcraft.gui.remote.dropdown.dropDownElements.tooltip")));
         addRenderableWidget(dropDownElementsField);
 
-        widthField = new WidgetTextFieldNumber(font, guiLeft + 49, guiTop + 99, 30, textFieldHeight).setRange(10, Integer.MAX_VALUE);
+        widthField = new WidgetTextFieldNumber(font, guiLeft + 49, guiTop + 99, 30).setRange(10, Integer.MAX_VALUE);
         widthField.setValue(remoteWidget.widgetSettings().width());
         widthField.minValue = 10;
         addRenderableWidget(widthField);

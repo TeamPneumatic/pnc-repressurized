@@ -76,8 +76,6 @@ public abstract class AbstractRemoteConfigScreen<R extends IRemoteWidget> extend
     public void init() {
         super.init();
 
-        int textFieldHeight = font.lineHeight + 3;
-
         GlobalVariableHelper variableHelper = GlobalVariableHelper.getInstance();
 
         BaseSettings baseSettings = remoteWidget.baseSettings();
@@ -99,7 +97,7 @@ public abstract class AbstractRemoteConfigScreen<R extends IRemoteWidget> extend
         addLabel(Component.literal("Y:"), guiLeft + 67, guiTop + 186);
         addLabel(Component.literal("Z:"), guiLeft + 124, guiTop + 186);
 
-        enableField = new WidgetComboBox(font, guiLeft + 23, guiTop + 159, 147, textFieldHeight);
+        enableField = new WidgetComboBox(font, guiLeft + 23, guiTop + 159, 147);
         enableField.setElements(extractVarnames(playerGlobalEnableVar));
         enableField.setValue(variableHelper.stripVarPrefix(baseSettings.enableVariable()));
         enableField.setTooltip(Tooltip.create(xlate("pneumaticcraft.gui.remote.enable.tooltip")));
@@ -107,29 +105,29 @@ public abstract class AbstractRemoteConfigScreen<R extends IRemoteWidget> extend
 
         Component valueTooltip = xlate("pneumaticcraft.gui.remote.enableValue.tooltip");
 
-        xValueField = new WidgetTextFieldNumber(font, guiLeft + 20, guiTop + 184, 38, textFieldHeight);
+        xValueField = new WidgetTextFieldNumber(font, guiLeft + 20, guiTop + 184, 38);
         xValueField.setValue(baseSettings.enablingValue().getX());
         xValueField.setTooltip(Tooltip.create(valueTooltip));
         addRenderableWidget(xValueField);
 
-        yValueField = new WidgetTextFieldNumber(font, guiLeft + 78, guiTop + 184, 38, textFieldHeight);
+        yValueField = new WidgetTextFieldNumber(font, guiLeft + 78, guiTop + 184, 38);
         yValueField.setValue(baseSettings.enablingValue().getY());
         yValueField.setTooltip(Tooltip.create(valueTooltip));
         addRenderableWidget(yValueField);
 
-        zValueField = new WidgetTextFieldNumber(font, guiLeft + 136, guiTop + 184, 38, textFieldHeight);
+        zValueField = new WidgetTextFieldNumber(font, guiLeft + 136, guiTop + 184, 38);
         zValueField.setValue(baseSettings.enablingValue().getZ());
         zValueField.setTooltip(Tooltip.create(valueTooltip));
         addRenderableWidget(zValueField);
 
         if (remoteWidget.hasConfigurableText()) {
-            labelField = new WidgetTextField(font, guiLeft + 10, guiTop + 29, 160, textFieldHeight);
+            labelField = new WidgetTextField(font, guiLeft + 10, guiTop + 29, 160);
             labelField.setMaxLength(2048);
             labelField.setValue(toJsonString(remoteWidget.widgetSettings().title()));
             labelField.setTooltip(Tooltip.create(xlate("pneumaticcraft.gui.remote.label.tooltip")));
             addRenderableWidget(labelField);
 
-            tooltipField = new WidgetTextField(font, guiLeft + 10, guiTop + 55, 160, textFieldHeight);
+            tooltipField = new WidgetTextField(font, guiLeft + 10, guiTop + 55, 160);
             tooltipField.setMaxLength(2048);
             tooltipField.setValue(toJsonString(remoteWidget.widgetSettings().tooltip()));
             addRenderableWidget(tooltipField);

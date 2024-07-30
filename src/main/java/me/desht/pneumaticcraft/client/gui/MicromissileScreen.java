@@ -100,7 +100,7 @@ public class MicromissileScreen extends AbstractPneumaticCraftScreen {
         addRenderableWidget(filterLabel);
         int textBoxX = filterLabel.getX() + font.width(labelStr) + 2;
         int textBoxWidth = xSize - (textBoxX - guiLeft) - 12;
-        textField = new WidgetTextField(font, textBoxX, guiTop + 128, textBoxWidth, font.lineHeight + 3);
+        textField = new WidgetTextField(font, textBoxX, guiTop + 128, textBoxWidth);
         textField.setValue(entityFilter);
         setFocused(textField);
         textField.setResponder(s -> {

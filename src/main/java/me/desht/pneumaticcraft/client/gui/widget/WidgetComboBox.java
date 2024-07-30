@@ -46,6 +46,14 @@ public class WidgetComboBox extends WidgetTextField implements IDrawAfterRender 
         this(fontRenderer, x, y, width, height, b -> {});
     }
 
+    public WidgetComboBox(Font fontRenderer, int x, int y, int width) {
+        this(fontRenderer, x, y, width, fontRenderer.lineHeight + 3, b -> {});
+    }
+
+    public WidgetComboBox(Font fontRenderer, int x, int y, int width, Consumer<WidgetComboBox> pressable) {
+        this(fontRenderer, x, y, width, fontRenderer.lineHeight + 3, pressable);
+    }
+
     public WidgetComboBox(Font fontRenderer, int x, int y, int width, int height, Consumer<WidgetComboBox> pressable) {
         super(fontRenderer, x, y, width, height);
         this.fontRenderer = fontRenderer;

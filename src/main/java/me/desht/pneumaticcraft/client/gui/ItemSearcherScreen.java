@@ -109,7 +109,7 @@ public class ItemSearcherScreen extends AbstractContainerScreen<ItemSearcherMenu
     public void init() {
         super.init();
 
-        searchField = new WidgetTextField(font, leftPos + 8, topPos + 35, 89, font.lineHeight + 3);
+        searchField = new WidgetTextField(font, leftPos + 8, topPos + 35, 89);
         searchField.setMaxLength(15);
         searchField.setBordered(true);
         searchField.setVisible(true);

@@ -55,7 +55,7 @@ public class EntityTrackOptions extends IOptionPage.SimpleOptionPage<EntityTrack
     public void populateGui(IGuiScreen gui) {
         gui.addWidget(ClientArmorRegistry.getInstance().makeStatMoveButton(30, 128, getClientUpgradeHandler()));
 
-        textField = new EditBox(gui.getFontRenderer(), 35, 75, 140, 10, Component.empty());
+        textField = new EditBox(gui.getFontRenderer(), 35, 75, 140, gui.getFontRenderer().lineHeight + 3, Component.empty());
         if (Minecraft.getInstance().player != null) {
             textField.setValue(PneumaticArmorItem.getEntityFilter(Minecraft.getInstance().player.getItemBySlot(EquipmentSlot.HEAD)));
         }

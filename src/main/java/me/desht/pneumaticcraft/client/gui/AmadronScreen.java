@@ -88,7 +88,7 @@ public class AmadronScreen extends AbstractPneumaticCraftContainerScreen<Amadron
                 .setText(xlate("pneumaticcraft.gui.tab.amadron.disclaimer"));
         customTradesTab = addAnimatedStat(xlate("pneumaticcraft.gui.tab.amadron.customTrades"), new ItemStack(Items.DIAMOND), 0xFFD07000, false);
         customTradesTab.setMinimumExpandedDimensions(80, 50);
-        searchBar = new WidgetTextField(font, leftPos + 79, topPos + 39, 73, font.lineHeight + 3);
+        searchBar = new WidgetTextField(font, leftPos + 79, topPos + 39, 73);
         searchBar.setResponder(s -> sendDelayed(8));
         addRenderableWidget(searchBar);
         setFocused(searchBar);

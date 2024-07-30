@@ -43,6 +43,10 @@ public class WidgetTextFieldNumber extends WidgetTextField {
         );
     }
 
+    public WidgetTextFieldNumber(Font fontRenderer, int x, int y, int width) {
+        this(fontRenderer, x, y, width, fontRenderer.lineHeight + 3);
+    }
+
     public WidgetTextFieldNumber setRange(int min, int max) {
         minValue = min;
         maxValue = max;

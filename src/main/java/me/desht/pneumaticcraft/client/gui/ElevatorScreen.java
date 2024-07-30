@@ -60,20 +60,21 @@ public class ElevatorScreen extends AbstractPneumaticCraftContainerScreen<Elevat
 
         statusStat = addAnimatedStat(xlate("pneumaticcraft.gui.tab.status"), new ItemStack(ModBlocks.ELEVATOR_BASE.get()), 0xFFFFAA00, false);
 
+        int statHeight = te.floorHeights.length == 0 ? 76 : 56;
         WidgetAnimatedStat floorNameStat = addAnimatedStat(xlate("pneumaticcraft.gui.tab.info.elevator.floorNames"),
                 new ItemStack(ModBlocks.ELEVATOR_CALLER.get()), 0xFF005500, false);
-        floorNameStat.setMinimumExpandedDimensions(120, 85);
+        floorNameStat.setMinimumExpandedDimensions(120, statHeight);
 
-        floorNameField = new WidgetTextField(font,6, 60, 120, 20);
+        floorNameField = new WidgetTextField(font,6, statHeight - 16, 120);
         floorNameField.setValue(te.getFloorName(currentEditedFloor));
-        floorNameField.setResponder(this::updateFloor);  // gui responder
+        floorNameField.setResponder(this::updateFloor);
 
         floorNameStat.addSubWidget(floorNameField);
-        floorNameStat.addSubWidget(noFloorsLabel = new WidgetLabel(5, 20, xlate("pneumaticcraft.gui.tab.info.elevator.noCallers")).setColor(0xFFFFFFFF));
-        floorNameStat.addSubWidget(floorNumberLabel = new WidgetLabel(65, 40, Component.empty())
+        floorNameStat.addSubWidget(noFloorsLabel = new WidgetLabel(5, statHeight - 56, xlate("pneumaticcraft.gui.tab.info.elevator.noCallers")).setColor(0xFFFFFFFF));
+        floorNameStat.addSubWidget(floorNumberLabel = new WidgetLabel(65, statHeight - 33, Component.empty())
                 .setAlignment(WidgetLabel.Alignment.CENTRE).setColor(0xFFFFFFFF));
-        floorNameStat.addSubWidget(cycleDown = new WidgetButtonExtended(5, 35, 20, 20, ARROW_LEFT, button -> cycleFloor(-1)));
-        floorNameStat.addSubWidget(cycleUp = new WidgetButtonExtended(105, 35, 20, 20, ARROW_RIGHT, button -> cycleFloor(1)));
+        floorNameStat.addSubWidget(cycleDown = new WidgetButtonExtended(5, statHeight - 39, 20, 20, ARROW_LEFT, button -> cycleFloor(-1)));
+        floorNameStat.addSubWidget(cycleUp = new WidgetButtonExtended(105, statHeight - 39, 20, 20, ARROW_RIGHT, button -> cycleFloor(1)));
     }
 
     private void cycleFloor(int dir) {

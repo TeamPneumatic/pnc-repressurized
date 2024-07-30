@@ -72,10 +72,10 @@ public class PastebinScreen extends AbstractPneumaticCraftScreen {
         super.init();
 
         if (!PastebinHandler.isLoggedIn()) {
-            usernameBox = new WidgetTextField(font, guiLeft + 10, guiTop + 30, 80, 10);
+            usernameBox = new WidgetTextField(font, guiLeft + 10, guiTop + 30, 80);
             addRenderableWidget(usernameBox);
 
-            passwordBox = new WidgetTextField(font, guiLeft + 10, guiTop + 56, 80, 10).setAsPasswordBox();
+            passwordBox = new WidgetTextField(font, guiLeft + 10, guiTop + 56, 80).setAsPasswordBox();
             addRenderableWidget(passwordBox);
 
             WidgetButtonExtended loginButton = new WidgetButtonExtended(guiLeft + 100, guiTop + 30, 60, 20, xlate("pneumaticcraft.gui.pastebin.button.login"), b -> login());
@@ -89,7 +89,7 @@ public class PastebinScreen extends AbstractPneumaticCraftScreen {
             addRenderableWidget(logoutButton);
         }
 
-        pastebinBox = new WidgetTextField(font, guiLeft + 10, guiTop + 130, 160, 10) {
+        pastebinBox = new WidgetTextField(font, guiLeft + 10, guiTop + 130, 160) {
             @Override
             public void setFocused(boolean focused) {
                 final boolean previousFocus = isFocused();

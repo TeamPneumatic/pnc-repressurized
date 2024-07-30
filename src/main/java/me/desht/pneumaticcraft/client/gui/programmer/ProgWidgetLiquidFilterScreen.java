@@ -76,7 +76,7 @@ public class ProgWidgetLiquidFilterScreen extends AbstractProgWidgetScreen<ProgW
             }
         }
 
-        searchField = new WidgetTextField(font, guiLeft + 8, guiTop + 34, 90, font.lineHeight + 3);
+        searchField = new WidgetTextField(font, guiLeft + 8, guiTop + 34, 90);
         addRenderableWidget(searchField);
         setFocused(searchField);
         searchField.setResponder(s -> textTimer = 5);

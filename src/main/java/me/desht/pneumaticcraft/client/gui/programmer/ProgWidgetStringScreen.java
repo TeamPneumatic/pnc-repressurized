@@ -34,7 +34,7 @@ public class ProgWidgetStringScreen<T extends ProgWidgetText> extends AbstractPr
     public void init() {
         super.init();
 
-        textfield = new WidgetTextField(font, guiLeft + 10, guiTop + 20, 160, font.lineHeight + 3);
+        textfield = new WidgetTextField(font, guiLeft + 10, guiTop + 20, 160);
         textfield.setMaxLength(1000);
         textfield.setValue(progWidget.getString());
         setInitialFocus(textfield);

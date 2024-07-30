@@ -228,12 +228,12 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
 
         addLabel(title, leftPos + 7, topPos + 6, 0xFF404040);
 
-        nameField = new WidgetTextField(font, leftPos + xRight - 99, topPos + 4, 98, font.lineHeight + 3);
+        nameField = new WidgetTextField(font, leftPos + xRight - 99, topPos + 4, 98);
         nameField.setValue(te.displayedStack.getHoverName().getString());
         nameField.setResponder(s -> updateDroneName());
         addRenderableWidget(nameField);
 
-        filterField = new FilterTextField(font, leftPos + 78, topPos + 24, 100, font.lineHeight + 3);
+        filterField = new FilterTextField(font, leftPos + 78, topPos + 24, 100);
         filterField.setResponder(s -> filterSpawnWidgets());
 
         addRenderableWidget(filterField);
@@ -291,7 +291,7 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
 
     @Override
     protected ResourceLocation getGuiTexture() {
-        return Textures.GUI_BLANK_256; // dummy, not actually used
+        return null;
     }
 
     private void updateWidgetTrayLayout() {
@@ -1233,8 +1233,8 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
     }
 
     private static class FilterTextField extends WidgetTextField {
-        FilterTextField(Font font, int x, int y, int width, int height) {
-            super(font, x, y, width, height);
+        FilterTextField(Font font, int x, int y, int width) {
+            super(font, x, y, width, font.lineHeight + 3);
         }
 
         @Override
