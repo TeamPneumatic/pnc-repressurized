@@ -21,13 +21,14 @@ import me.desht.pneumaticcraft.api.misc.ITranslatableEnum;
 import me.desht.pneumaticcraft.api.misc.Symbols;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.resources.language.I18n;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class WidgetComboBox extends WidgetTextField implements IDrawAfterRender {
     private final ArrayList<String> elements = new ArrayList<>();
@@ -190,13 +191,9 @@ public class WidgetComboBox extends WidgetTextField implements IDrawAfterRender 
      * @return the combo box
      */
     public final <T extends Enum<T>> WidgetComboBox initFromEnum(T initialValue, Function<T, String> xlate) {
-        @SuppressWarnings("unchecked")
-        List<String> labels = Arrays.stream(initialValue.getClass().getEnumConstants())
-                .filter(val -> initialValue.getClass().isAssignableFrom(val.getClass()))
-                .map(val -> (T) val)
+        List<String> labels = Arrays.stream(initialValue.getDeclaringClass().getEnumConstants())
                 .map(xlate)
-                .collect(Collectors.toList());
-
+                .toList();
         setShouldSort(false);
         setElements(labels);
         setFixedOptions(true);
@@ -205,8 +202,8 @@ public class WidgetComboBox extends WidgetTextField implements IDrawAfterRender 
     }
 
     public final <T extends Enum<T>> WidgetComboBox initFromEnum(T initialValue) {
-        if (initialValue instanceof ITranslatableEnum tr) {
-            return initFromEnum(initialValue, e -> I18n.get(tr.getTranslationKey()));
+        if (initialValue instanceof ITranslatableEnum) {
+            return initFromEnum(initialValue, t -> t instanceof ITranslatableEnum e ? xlate(e.getTranslationKey()).getString() : "???");
         } else {
             throw new IllegalArgumentException(initialValue + " must implement ITranslatableEnum!");
         }
