@@ -296,7 +296,6 @@ publishMods {
         announcementTitle = "Download from Modrinth"
         optional {
             id = "nU0bVIaL"
-            slug = "patchouli"
         }
     }
 
