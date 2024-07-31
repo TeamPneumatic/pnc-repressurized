@@ -6,7 +6,7 @@
   "pages": [
     {
       "type": "text",
-      "text": "The $(item)GPS Tool/$ is an item that when $(thing)right-clicked/$ against a block saves the block's coordinate. This data is used in several places in $(pncr); see overleaf.$(p)$(thing)Right-clicking/$ the $(item)GPS Tool/$ in the air opens a GUI allowing coordinates to be adjusted directly.$(p)A held $(item)GPS Tool/$ highlights its selected block."
+      "text": "The $(item)GPS Tool/$ is an item that when $(thing)right-clicked/$ on a block, saves the block's coordinate. This data is used in several places in $(pncr); see overleaf.$(p)$(thing)Right-clicking/$ the $(item)GPS Tool/$ in the air opens a GUI allowing coordinates to be adjusted directly.$(p)Sneaking and scrolling the mouse wheel allows quick adjustment of the coordinate along the player's facing axis."
     },
     {
       "type": "text",

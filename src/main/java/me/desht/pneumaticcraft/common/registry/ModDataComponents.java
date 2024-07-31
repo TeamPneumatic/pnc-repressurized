@@ -221,6 +221,10 @@ public class ModDataComponents {
     public static final Supplier<DataComponentType<String>> GPS_TOOL_VAR
             = register("gps_tool_var", Codec.STRING, ByteBufCodecs.STRING_UTF8);
 
+    // GPS Area Tool active index (for sneak-scrolling)
+    public static final Supplier<DataComponentType<Integer>> GPS_AREA_TOOL_INDEX
+            = register("gps_area_tool_index", Codec.INT, ByteBufCodecs.VAR_INT);
+
     // Spawner Core stats
     public static final Supplier<DataComponentType<ISpawnerCoreStats>> SPAWNER_CORE_STATS
             = register("spawner_core_stats", SpawnerCoreItem.SpawnerCoreStats.CODEC, SpawnerCoreItem.SpawnerCoreStats.STREAM_CODEC);

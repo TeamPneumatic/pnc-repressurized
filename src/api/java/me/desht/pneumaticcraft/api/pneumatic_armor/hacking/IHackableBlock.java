@@ -22,7 +22,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -130,7 +129,7 @@ public interface IHackableBlock {
 
     /**
      * Convenience method to fake up a ray trace result for a targeted block. This is intended to be passed into
-     * {@link BlockState#use(Level, Player, InteractionHand, BlockHitResult)} (often called by
+     * {@link BlockState#useWithoutItem(Level, Player, BlockHitResult)} (often called by
      * {@link #onHackComplete(Level, BlockPos, Player)}), which needs a non-null ray trace result to know exactly
      * where the player is looking.
      *

@@ -191,7 +191,9 @@ public enum AreaRenderManager {
                 lastItemHashCode = thisHash;
                 List<BlockPos> posList = positionProvider.getStoredPositions(player.getUUID(), curItem);
                 if (posList.size() > MAX_DISPLAYED_POS) {
-                    posList.sort(Comparator.comparingDouble(blockPos -> blockPos.distSqr(player.blockPosition())));
+                    posList = posList.stream()
+                            .sorted(Comparator.comparingDouble(blockPos -> blockPos.distSqr(player.blockPosition())))
+                            .toList();
                     player.displayClientMessage(xlate("pneumaticcraft.message.gps_tool.culledRenderArea", posList.size()).withStyle(ChatFormatting.GOLD), false);
                 }
                 Int2ObjectMap<Set<BlockPos>> colorsToPositions = new Int2ObjectOpenHashMap<>();

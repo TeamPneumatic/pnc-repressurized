@@ -73,9 +73,10 @@ public class GPSAreaToolScreen extends GPSToolScreen {
 
         int x = xMiddle - CHANGE_AREA_BUTTON_WIDTH / 2;
         int y = yMiddle + 100;
+
+        ItemStack stack = ClientUtils.getClientPlayer().getItemInHand(hand);
+        ProgWidgetArea area = GPSAreaToolItem.getArea(ClientUtils.getClientPlayer(), stack);
         addRenderableWidget(new WidgetButtonExtended(x, y, CHANGE_AREA_BUTTON_WIDTH, 20, xlate("pneumaticcraft.gui.gps_area_tool.changeAreaType"), b -> {
-            ItemStack stack = ClientUtils.getClientPlayer().getItemInHand(hand);
-            ProgWidgetArea area = GPSAreaToolItem.getArea(ClientUtils.getClientPlayer(), stack);
             minecraft.setScreen(new ProgWidgetAreaToolScreen(area, hand, () -> minecraft.setScreen(new GPSAreaToolScreen(stack, hand, index))));
         }));
 
@@ -95,7 +96,7 @@ public class GPSAreaToolScreen extends GPSToolScreen {
         for (int i = 0; i <= 1; i++) {
             if (changed(i)) {
                 String varName = GlobalVariableHelper.getInstance().getPrefixedVar(vars[i], playerGlobals[i]);
-                NetworkHandler.sendToServer(new PacketChangeGPSToolCoordinate(p1p2Pos[i], hand, varName, i));
+                NetworkHandler.sendToServer(new PacketChangeGPSToolCoordinate(p1p2Pos[i], hand, varName, i, i == index));
             }
         }
     }

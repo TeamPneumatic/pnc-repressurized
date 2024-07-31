@@ -6,11 +6,15 @@
   "pages": [
     {
       "type": "text",
-      "text": "The $(item)GPS Area Tool/$ is an advanced version of the $(l:tools/gps_tool)GPS Tool/$, which can store $(italic)two/$ coordinates in the world. $(thing)Left-click/$ a block (or air) to change the first coordinate, and $(thing)right-click/$ for the second coordinate. By $(thing)right/$ or $(thing)left-clicking/$ in the air, you can configure the positions in a GUI. Additionally, you can change the $(thing)Area type/$, allowing you to preview the area in different configurations. "
+      "text": "The $(item)GPS Area Tool/$ is an advanced version of the $(l:tools/gps_tool)GPS Tool/$, which can store $(italic)two/$ coordinates in the world. $(thing)Right-click/$ a block to change the first coordinate ($(#f00)P1/$), and $(thing)left-click/$ for the second coordinate ($(#0f0)P2/$).$(p)You can quickly adjust coordinates by scrolling the mouse wheel while sneaking; the coordinate changed will be the last one you clicked."
     },
     {
       "type": "text",
-      "text": "The $(item)GPS Area Tool/$ supports $(l:programming/variables#global)Global Variables/$ like the basic $(l:tools/gps_tool#variables)GPS Tool/$ does.$(p)In a $(l:programming/programmer)Programmer/$, $(thing)left-click/$ the programming area background with the $(item)GPS Area Tool/$ to create a new $(l:programming/area)Area/$ puzzle piece, or $(thing)left-click/$ on an existing $(l:programming/area)Area/$ puzzle piece to overwrite it."
+      "text": "Sneaking and right- or left-clicking air will note the 'active' coordinate without storing it; this is the coordinate adjusted by scrolling the mouse wheel.$(p)By $(thing)right/$ or $(thing)left-clicking/$ in the air, you can open a GUI to enter precise block coordinates; click the $(#f00)P1/$ or $(#0f0)P2/$ button as appropriate.$(p)In the GUI, you can also change the $(thing)Area type/$ for the tool, allowing you to preview the area in different configurations."
+    },
+    {
+      "type": "text",
+      "text": "The $(item)GPS Area Tool/$ supports $(l:programming/variables#global)Global Variables/$ like the basic $(l:tools/gps_tool#variables)GPS Tool/$ does, but of course, $(italic)two/$ variables may be used.$(p)In a $(l:programming/programmer)Programmer/$, $(thing)left-click/$ the programming area background with the $(item)GPS Area Tool/$ to create a new $(l:programming/area)Area/$ puzzle piece, or $(thing)left-click/$ on an existing $(l:programming/area)Area/$ puzzle piece to update it with this tool's settings."
     },
     {
       "type": "crafting",

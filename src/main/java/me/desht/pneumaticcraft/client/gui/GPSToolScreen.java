@@ -163,7 +163,7 @@ public class GPSToolScreen extends AbstractPneumaticCraftScreen {
 
     protected void syncToServer() {
         String varName = GlobalVariableHelper.getInstance().getPrefixedVar(GlobalVariableHelper.getInstance().stripVarPrefix(variableField.getValue()), playerGlobal);
-        NetworkHandler.sendToServer(new PacketChangeGPSToolCoordinate(getBlockPos(), hand, varName, getIndex()));
+        NetworkHandler.sendToServer(new PacketChangeGPSToolCoordinate(getBlockPos(), hand, varName, getIndex(), playerGlobal));
     }
 
     protected int getIndex() {

@@ -35,9 +35,9 @@ public interface IPositionProvider {
      * Get block position data from the given ItemStack.  It is up to the implementor to decide how the block positions
      * should be stored on the itemstack and in what order they should be returned.
      *
-     * @param playerId the player, for player-global variable context (may be null)
+     * @param playerId the player, for player-global variable context (which may be null)
      * @param stack the itemstack
-     * @return a list of block positions that has been retrieved from the itemstack
+     * @return an immutable list of block positions that has been retrieved from the itemstack
      */
     @Nonnull
     List<BlockPos> getStoredPositions(UUID playerId, @Nonnull ItemStack stack);

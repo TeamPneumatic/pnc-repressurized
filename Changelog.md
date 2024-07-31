@@ -27,6 +27,10 @@ Changes are in reverse chronological order; newest changes at the top.
   * Increased base damage in config from 4 to 6 (half-hearts per hit)
 * Added a Muffler Upgrade
   * One or more of these in noisy items and blocks (Miniguns, Sentry Turrents, Jackhammers, Jet Boots) quietens down the racket
+  * Note that adjusting the volume of these items/blocks is still possible via client config
+* GPS Tool and Area GPS Tool now have quick coordinate adjusting without needing to open the GUI
+  * Sneak and scroll the mouse-wheel while holding a tool to adjust the coordinate along the player's facing axis
+  * For GPS Area Tool, sneak and right- or left-click in the air to set the coordinate which will be adjusted
 
 # Minecraft 1.20.4
 

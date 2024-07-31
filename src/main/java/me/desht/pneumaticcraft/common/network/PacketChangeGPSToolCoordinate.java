@@ -34,7 +34,8 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
  * Received on: SERVER
  * Send when the GPS Tool GUI is closed, to update the held GPS tool settings
  */
-public record PacketChangeGPSToolCoordinate(BlockPos pos, InteractionHand hand, String variable, int index) implements CustomPacketPayload {
+public record PacketChangeGPSToolCoordinate(BlockPos pos, InteractionHand hand, String variable, int index, boolean activeIndex)
+        implements CustomPacketPayload {
     public static final Type<PacketChangeGPSToolCoordinate> TYPE = new Type<>(RL("change_gps_tool_coord"));
 
     public static final StreamCodec<FriendlyByteBuf, PacketChangeGPSToolCoordinate> STREAM_CODEC = StreamCodec.composite(
@@ -42,6 +43,7 @@ public record PacketChangeGPSToolCoordinate(BlockPos pos, InteractionHand hand, 
             NeoForgeStreamCodecs.enumCodec(InteractionHand.class), PacketChangeGPSToolCoordinate::hand,
             ByteBufCodecs.STRING_UTF8, PacketChangeGPSToolCoordinate::variable,
             ByteBufCodecs.VAR_INT, PacketChangeGPSToolCoordinate::index,
+            ByteBufCodecs.BOOL, PacketChangeGPSToolCoordinate::activeIndex,
             PacketChangeGPSToolCoordinate::new
     );
 
@@ -53,7 +55,7 @@ public record PacketChangeGPSToolCoordinate(BlockPos pos, InteractionHand hand, 
     public static void handle(PacketChangeGPSToolCoordinate message, IPayloadContext ctx) {
         ItemStack stack = ctx.player().getItemInHand(message.hand);
         if (stack.getItem() instanceof IGPSToolSync sync) {
-            sync.syncFromClient(ctx.player(), stack, message.index, message.pos, message.variable);
+            sync.syncFromClient(ctx.player(), stack, message.index, message.pos, message.variable, message.activeIndex);
         }
     }
 }

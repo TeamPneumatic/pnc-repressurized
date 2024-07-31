@@ -25,6 +25,8 @@ import me.desht.pneumaticcraft.client.gui.GPSAreaToolScreen;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetArea;
 import me.desht.pneumaticcraft.common.drone.progwidgets.SavedDroneProgram;
+import me.desht.pneumaticcraft.common.network.NetworkHandler;
+import me.desht.pneumaticcraft.common.network.PacketLeftClickEmpty;
 import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.registry.ModSounds;
@@ -32,6 +34,7 @@ import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableHelper;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerPlayer;
@@ -57,10 +60,11 @@ import java.util.UUID;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class GPSAreaToolItem extends Item implements IPositionProvider, IGPSToolSync {
+public class GPSAreaToolItem extends Item implements IPositionProvider, IGPSToolSync, ILeftClickableItem, IShiftScrollable {
     public GPSAreaToolItem() {
         super(ModItems.defaultProps()
                 .component(ModDataComponents.SAVED_DRONE_PROGRAM, SavedDroneProgram.EMPTY)
+                .component(ModDataComponents.GPS_AREA_TOOL_INDEX, 0)
         );
     }
 
@@ -71,6 +75,7 @@ public class GPSAreaToolItem extends Item implements IPositionProvider, IGPSTool
             if (!ctx.getClickedPos().equals(optPos.orElse(null))) {
                 setGPSPosAndNotify(ctx.getPlayer(), ctx.getHand(), ctx.getClickedPos(), 0);
                 ctx.getPlayer().playSound(ModSounds.CHIRP.get(), 1.0f, 1.5f);
+                setActiveIndex(ctx.getPlayer(), ctx.getItemInHand(), 0);
             }
         }
         return InteractionResult.SUCCESS; // we don't want to use the item.
@@ -79,22 +84,42 @@ public class GPSAreaToolItem extends Item implements IPositionProvider, IGPSTool
     @Override
     public InteractionResultHolder<ItemStack> use(Level worldIn, Player playerIn, InteractionHand handIn) {
         ItemStack stack = playerIn.getItemInHand(handIn);
-        if (worldIn.isClientSide) {
+        if (worldIn.isClientSide && !playerIn.isCrouching()) {
             GPSAreaToolScreen.showGUI(stack, handIn, 0);
+        } else if (playerIn.isCrouching()) {
+            setActiveIndex(playerIn, stack, 0);
         }
         return InteractionResultHolder.success(stack);
+    }
+
+    public static void setActiveIndex(Player player, ItemStack stack, int index) {
+        Validate.isTrue(index == 0 || index == 1);
+        stack.set(ModDataComponents.GPS_AREA_TOOL_INDEX, index);
+        String str = index == 0 ? ChatFormatting.RED + "P1" : ChatFormatting.GREEN + "P2";
+        player.displayClientMessage(stack.getDisplayName().copy().withStyle(ChatFormatting.AQUA)
+                        .append(" ")
+                        .append(Component.translatable("pneumaticcraft.message.gps_tool.activeIndex", str).withStyle(ChatFormatting.YELLOW)),
+                true);
+    }
+
+    public static int getActiveIndex(ItemStack stack) {
+        return stack.getOrDefault(ModDataComponents.GPS_AREA_TOOL_INDEX, 0);
     }
 
     public static void setGPSPosAndNotify(Player player, ItemStack stack, BlockPos pos, int index) {
         setGPSLocation(player, stack, pos, null, index, true);
         if (player instanceof ServerPlayer) {
-            player.displayClientMessage(Component.literal(ChatFormatting.AQUA + String.format("[%s] ", stack.getHoverName().getString()))
-                    .append(getMessageText(player.level(), pos, index)), false);
+            notifyPlayer(player, stack, pos, index, false);
         }
     }
 
     public static void setGPSPosAndNotify(Player player, InteractionHand hand, BlockPos pos, int index) {
         setGPSPosAndNotify(player, player.getItemInHand(hand), pos, index);
+    }
+
+    private static void notifyPlayer(Player player, ItemStack stack, BlockPos pos, int index, boolean actionBar) {
+        player.displayClientMessage(Component.literal(ChatFormatting.AQUA + String.format("[%s] ", stack.getHoverName().getString()))
+                .append(getMessageText(player.level(), pos, index)), actionBar);
     }
 
     private static Component getMessageText(Level worldIn, BlockPos pos, int index) {
@@ -120,7 +145,7 @@ public class GPSAreaToolItem extends Item implements IPositionProvider, IGPSTool
                         .ifPresent(pos -> infoList.add(getMessageText(level, pos, i)));
                 String varName = area.getVarName(index);
                 if (!varName.isEmpty()) {
-                    infoList.add(xlate("pneumaticcraft.gui.tooltip.gpsTool.variable", varName));
+                    infoList.add(Component.literal(" ").append(xlate("pneumaticcraft.gui.tooltip.gpsTool.variable", varName)));
                 }
             }
             if (infoList.size() - n >= 2) area.addAreaTypeTooltip(infoList);
@@ -238,11 +263,36 @@ public class GPSAreaToolItem extends Item implements IPositionProvider, IGPSTool
     }
 
     @Override
-    public void syncFromClient(Player player, ItemStack stack, int index, BlockPos pos, String varName) {
-        GPSAreaToolItem.setVariable(player, stack, varName, index);
-        GPSAreaToolItem.setGPSPosAndNotify(player, stack, pos, index);
+    public void syncFromClient(Player player, ItemStack stack, int index, BlockPos pos, String varName, boolean activeIndex) {
+        setVariable(player, stack, varName, index);
+        setGPSPosAndNotify(player, stack, pos, index);
+        if (activeIndex) {
+            setActiveIndex(player, stack, index);
+        }
         if (!varName.isEmpty()) {
             GlobalVariableHelper.getInstance().setPos(player.getUUID(), varName, pos);
+        }
+
+    }
+
+    @Override
+    public void onLeftClickEmpty(ServerPlayer sender) {
+        if (sender.getMainHandItem().getItem() instanceof GPSAreaToolItem) {
+            setActiveIndex(sender, sender.getMainHandItem(), 1);
+        }
+    }
+
+    @Override
+    public void onShiftScrolled(Player player, boolean forward, InteractionHand hand) {
+        ItemStack stack = player.getItemInHand(hand);
+        if (stack.getItem() instanceof GPSAreaToolItem) {
+            int index = getActiveIndex(stack);
+            getGPSLocation(player, stack, index).ifPresent(loc -> {
+                Direction facing = Direction.orderedByNearest(player)[0];
+                BlockPos newPos = loc.relative(forward ? facing : facing.getOpposite());
+                setGPSLocation(player, stack, newPos, null, index, true);
+                notifyPlayer(player, stack, newPos, index, true);
+            });
         }
     }
 
@@ -255,15 +305,19 @@ public class GPSAreaToolItem extends Item implements IPositionProvider, IGPSTool
                     event.getEntity().playSound(ModSounds.CHIRP.get(), 1.0f, 1.5f);
                     setGPSPosAndNotify(event.getEntity(), event.getHand(), event.getPos(), 1);
                 }
+                setActiveIndex(event.getEntity(), event.getItemStack(), 1);
                 event.setCanceled(true);
             }
         }
 
         @SubscribeEvent
         public static void onLeftClickAir(PlayerInteractEvent.LeftClickEmpty event) {
-            if (event.getItemStack().getItem() == ModItems.GPS_AREA_TOOL.get()) {
-                GPSAreaToolScreen.showGUI(event.getItemStack(), event.getHand(), 1);
-            }
+            if (event.getItemStack().getItem() == ModItems.GPS_AREA_TOOL.get())
+                if (!event.getEntity().isCrouching()) {
+                    GPSAreaToolScreen.showGUI(event.getItemStack(), event.getHand(), 1);
+                } else {
+                    NetworkHandler.sendToServer(PacketLeftClickEmpty.INSTANCE);
+                }
         }
     }
 }

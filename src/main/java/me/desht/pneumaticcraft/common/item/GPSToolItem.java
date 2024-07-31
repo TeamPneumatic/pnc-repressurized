@@ -28,6 +28,7 @@ import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableHelper;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerPlayer;
@@ -49,7 +50,7 @@ import java.util.UUID;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class GPSToolItem extends Item implements IPositionProvider, IGPSToolSync {
+public class GPSToolItem extends Item implements IPositionProvider, IGPSToolSync, IShiftScrollable {
     public GPSToolItem() {
         super(ModItems.defaultProps());
     }
@@ -60,13 +61,17 @@ public class GPSToolItem extends Item implements IPositionProvider, IGPSToolSync
         if (ctx.getPlayer() == null) return InteractionResult.PASS;
         setGPSLocation(ctx.getPlayer().getUUID(), ctx.getPlayer().getItemInHand(ctx.getHand()), pos);
         if (!ctx.getLevel().isClientSide) {
-            ctx.getPlayer().displayClientMessage(ctx.getItemInHand().getDisplayName().copy().withStyle(ChatFormatting.AQUA)
-                            .append(" ")
-                            .append(Component.translatable("pneumaticcraft.message.gps_tool.targetSet",
-                                    pos.getX(), pos.getY(), pos.getZ()).withStyle(ChatFormatting.GREEN)), false);
+            displayPosition(ctx.getPlayer(), ctx.getItemInHand(), pos, false);
         }
         ctx.getPlayer().playSound(ModSounds.CHIRP.get(), 1.0f, 1.5f);
         return InteractionResult.SUCCESS; // we don't want to use the item.
+    }
+
+    private static void displayPosition(Player player, ItemStack itemInHand, BlockPos pos, boolean actionBar) {
+        player.displayClientMessage(itemInHand.getDisplayName().copy().withStyle(ChatFormatting.AQUA)
+                        .append(" ")
+                        .append(Component.translatable("pneumaticcraft.message.gps_tool.targetSet",
+                                pos.getX(), pos.getY(), pos.getZ()).withStyle(ChatFormatting.GREEN)), actionBar);
     }
 
     @Override
@@ -181,11 +186,24 @@ public class GPSToolItem extends Item implements IPositionProvider, IGPSToolSync
     }
 
     @Override
-    public void syncFromClient(Player player, ItemStack stack, int index, BlockPos pos, String varName) {
+    public void syncFromClient(Player player, ItemStack stack, int index, BlockPos pos, String varName, boolean activeIndex) {
         GPSToolItem.setVariable(stack, varName);
         GPSToolItem.setGPSLocation(player.getUUID(), stack, pos);
         if (!varName.isEmpty()) {
             GlobalVariableHelper.getInstance().setPos(player.getUUID(), varName, pos);
+        }
+    }
+
+    @Override
+    public void onShiftScrolled(Player player, boolean forward, InteractionHand hand) {
+        if (!player.level().isClientSide) {
+            ItemStack stack = player.getItemInHand(hand);
+            getGPSLocation(stack).ifPresent(loc -> {
+                Direction facing = Direction.orderedByNearest(player)[0];
+                BlockPos newPos = loc.relative(forward ? facing : facing.getOpposite());
+                setGPSLocation(player.getUUID(), stack, newPos);
+                displayPosition(player, stack, newPos, true);
+            });
         }
     }
 }
