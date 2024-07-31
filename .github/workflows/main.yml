@@ -27,7 +27,7 @@ jobs:
         with:
           cache-read-only: false
       - name: Generate assets & data
-        run: ./gradlew runData --no-Daemon
+        run: ./gradlew runData --no-daemon
       - name: Validate assets
         run: test -d ./src/generated -a -d ./src/generated/resources/.cache
       - name: Set up mod metadata

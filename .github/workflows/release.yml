@@ -31,7 +31,7 @@ jobs:
       - name: Remove any generated assets/data
         run: rm -rf ./src/generated
       - name: Generate assets & data
-        run: ./gradlew runData --no-Daemon
+        run: ./gradlew runData --no-daemon
       - name: Validate assets
         run: test -d ./src/generated -a -d ./src/generated/resources/.cache
       - name: Build JAR
