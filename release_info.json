@@ -1,22 +1,10 @@
 {
   "homepage": "https://minecraft.curseforge.com/projects/pneumaticcraft-repressurized",
   "promos": {
-    "1.20.1-recommended": "1.20.1-6.0.12",
-    "1.20.1-latest": "1.20.1-6.0.12"
+    "1.21-recommended": "1.21-8.0.0",
+    "1.21-latest": "1.21-8.0.0"
   },
-  "1.20.1": {
-    "1.20.1-6.0.0": "https://github.com/TeamPneumatic/pnc-repressurized/blob/1.20.1/Changelog.md#600",
-    "1.20.1-6.0.1": "https://github.com/TeamPneumatic/pnc-repressurized/blob/1.20.1/Changelog.md#601",
-    "1.20.1-6.0.2": "https://github.com/TeamPneumatic/pnc-repressurized/blob/1.20.1/Changelog.md#602",
-    "1.20.1-6.0.3": "https://github.com/TeamPneumatic/pnc-repressurized/blob/1.20.1/Changelog.md#603",
-    "1.20.1-6.0.4": "https://github.com/TeamPneumatic/pnc-repressurized/blob/1.20.1/Changelog.md#604",
-    "1.20.1-6.0.5": "https://github.com/TeamPneumatic/pnc-repressurized/blob/1.20.1/Changelog.md#605",
-    "1.20.1-6.0.6": "https://github.com/TeamPneumatic/pnc-repressurized/blob/1.20.1/Changelog.md#606",
-    "1.20.1-6.0.7": "https://github.com/TeamPneumatic/pnc-repressurized/blob/1.20.1/Changelog.md#607",
-    "1.20.1-6.0.8": "https://github.com/TeamPneumatic/pnc-repressurized/blob/1.20.1/Changelog.md#608",
-    "1.20.1-6.0.9": "https://github.com/TeamPneumatic/pnc-repressurized/blob/1.20.1/Changelog.md#609",
-    "1.20.1-6.0.10": "https://github.com/TeamPneumatic/pnc-repressurized/blob/1.20.1/Changelog.md#610",
-    "1.20.1-6.0.11": "https://github.com/TeamPneumatic/pnc-repressurized/blob/1.20.1/Changelog.md#611",
-    "1.20.1-6.0.12": "https://github.com/TeamPneumatic/pnc-repressurized/blob/1.20.1/Changelog.md#612"
+  "1.21": {
+    "1.21-8.0.0": "https://github.com/TeamPneumatic/pnc-repressurized/blob/1.21/Changelog.md#800"
   }
 }
