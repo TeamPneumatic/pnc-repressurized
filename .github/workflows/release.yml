@@ -24,20 +24,18 @@ jobs:
           java-version: '21'
       - name: Validate Gradle Wrapper
         uses: gradle/wrapper-validation-action@v1
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+        with:
+          cache-read-only: false
       - name: Remove any generated assets/data
         run: rm -rf ./src/generated
       - name: Generate assets & data
-        uses: gradle/actions/setup-gradle@v3
-        with:
-          cache-read-only: false
-          arguments: runData --no-daemon
+        run: ./gradlew runData --no-Daemon
       - name: Validate assets
         run: test -d ./src/generated -a -d ./src/generated/resources/.cache
       - name: Build JAR
-        uses: gradle/actions/setup-gradle@v3
-        with:
-          cache-read-only: false
-          arguments: build --no-daemon
+        run: ./gradlew build --no-daemon
         env:
           BUILD_NUMBER: ${{ github.run_number }}
       - name: Set up mod metadata
@@ -45,20 +43,16 @@ jobs:
         run: |
           echo mod_version=$(grep ^mod_version= ./gradle.properties | cut -d= -f2) >> $GITHUB_OUTPUT
           echo mc_version=$(grep ^mc_version= ./gradle.properties | cut -d= -f2) >> $GITHUB_OUTPUT
-      - name: Publish to Modmaven
-        uses: gradle/actions/setup-gradle@v3
+      - name: Build JAR and Publish to Modmaven
+        run: ./gradlew build publishMavenPublicationToModmavenRepository --no-daemon
         env:
           MODMAVEN_USER: ${{ secrets.MODMAVEN_USER }}
           MODMAVEN_PASSWORD: ${{ secrets.MODMAVEN_PASSWORD }}
-        with:
-          arguments: publishMavenPublicationToModmavenRepository --no-daemon
       - name: Publish to Curseforge/Modrinth
-        uses: gradle/actions/setup-gradle@v3
+        run: ./gradlew publishMods --no-daemon
         env:
           CHANGELOG: ${{ github.event.release.body }}
           MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
           CURSEFORGE_TOKEN: ${{ secrets.CURSEFORGE_TOKEN }}
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_RELEASE_WEBHOOK }}
           BUILD_NUMBER: ${{ github.run_number }}
-        with:
-          arguments: publishMods --no-daemon
