@@ -21,13 +21,18 @@ import me.desht.pneumaticcraft.api.item.IInventoryItem;
 import me.desht.pneumaticcraft.common.block.entity.ReinforcedChestBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.NonNullList;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
@@ -65,6 +70,19 @@ public class ReinforcedChestBlock extends AbstractPneumaticCraftBlock implements
     @Override
     public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
         return new ReinforcedChestBlockEntity(pPos, pState);
+    }
+
+    @Override
+    public boolean onDestroyedByPlayer(BlockState state, Level level, BlockPos pos, Player player, boolean willHarvest, FluidState fluid) {
+        if (!willHarvest) {
+            if (level.getBlockEntity(pos) instanceof ReinforcedChestBlockEntity be) {
+                NonNullList<ItemStack> toDrop = NonNullList.create();
+                PneumaticCraftUtils.collectNonEmptyItems(be.getPrimaryInventory(), toDrop);
+                toDrop.forEach(stack -> PneumaticCraftUtils.dropItemOnGround(stack, level, pos));
+            }
+        }
+
+        return super.onDestroyedByPlayer(state, level, pos, player, willHarvest, fluid);
     }
 
     public static class ItemBlockReinforcedChest extends BlockItem implements IInventoryItem {
