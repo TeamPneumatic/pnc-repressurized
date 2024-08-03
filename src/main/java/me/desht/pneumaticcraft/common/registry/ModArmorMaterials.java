@@ -52,6 +52,8 @@ public class ModArmorMaterials {
             () -> Ingredient.of(ModItems.COMPRESSED_IRON_INGOT.get()),
             List.of(
                     new ArmorMaterial.Layer(RL("pneumatic"), "", true)
+                    // TODO would be nice to the HumanoidArmorLayer and use layers here, but it doesn't support
+                    //      separate colours for each layer at this time
 //                    new ArmorMaterial.Layer(RL("pneumatic"), "_overlay", true),
 //                    new ArmorMaterial.Layer(RL("pneumatic"), "_eyepiece", true),
 //                    new ArmorMaterial.Layer(RL("pneumatic"), "_translucent", false)

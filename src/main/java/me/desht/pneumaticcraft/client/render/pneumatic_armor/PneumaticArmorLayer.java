@@ -156,8 +156,8 @@ public class PneumaticArmorLayer<E extends LivingEntity, M extends HumanoidModel
 
         ExtraLayer(String name, boolean translucent) {
             this.translucent = translucent;
-            this.rl1 = RL("textures/armor/pneumatic_1_" + name + ".png");
-            this.rl2 = RL("textures/armor/pneumatic_2_" + name + ".png");
+            this.rl1 = RL("textures/models/armor/pneumatic_1_" + name + ".png");
+            this.rl2 = RL("textures/models/armor/pneumatic_2_" + name + ".png");
         }
 
         RenderType getRenderType(ResourceLocation rl) {
