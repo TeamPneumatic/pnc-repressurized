@@ -20,6 +20,7 @@ package me.desht.pneumaticcraft.api.drone;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
+import net.neoforged.neoforge.common.util.Lazy;
 
 import java.util.function.Supplier;
 
@@ -30,7 +31,7 @@ public class ProgWidgetType<P extends IProgWidget> {
     private final Supplier<P> defaultSupplier;
     private final MapCodec<P> codec;
     private final StreamCodec<RegistryFriendlyByteBuf,P> streamCodec;
-    private String descriptionId;
+    private final Lazy<String> descriptionId = Lazy.of(() -> create().getTranslationKey());
 
     private ProgWidgetType(Supplier<P> defaultSupplier, MapCodec<P> codec, StreamCodec<RegistryFriendlyByteBuf,P> streamCodec) {
         this.defaultSupplier = defaultSupplier;
@@ -47,10 +48,7 @@ public class ProgWidgetType<P extends IProgWidget> {
     }
 
     public String getTranslationKey() {
-        if (this.descriptionId == null) {
-            this.descriptionId = create().getTranslationKey();
-        }
-        return this.descriptionId;
+        return descriptionId.get();
     }
 
     public P cast(IProgWidget widget) {
