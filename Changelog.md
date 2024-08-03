@@ -6,6 +6,11 @@ Changes are in reverse chronological order; newest changes at the top.
 
 # Minecraft 1.21
 
+## [8.0.1]
+
+### Fixed
+* Fixed broken texturing for Compressed Armor items
+
 ## [8.0.0]
 
 ### Changed
