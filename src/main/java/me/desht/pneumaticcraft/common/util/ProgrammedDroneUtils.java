@@ -54,7 +54,7 @@ public class ProgrammedDroneUtils {
         builder.add(new ProgWidgetDropItem(), makeDropArea(deliveryPos, drone));
         builder.add(new ProgWidgetGoToLocation(), ProgWidgetArea.fromPosition(drone.blockPosition()));
         builder.add(new ProgWidgetSuicide());
-        drone.progWidgets.addAll(builder.build());
+        drone.progWidgets = builder.build();
 
         for (int i = 0; i < deliveredStacks.length; i++) {
             drone.getInv().setStackInSlot(i, deliveredStacks[i].copy());
@@ -110,7 +110,7 @@ public class ProgrammedDroneUtils {
         builder.add(liquidExport, ProgWidgetArea.fromPosition(pos));
         builder.add(new ProgWidgetGoToLocation(), ProgWidgetArea.fromPosition(drone.blockPosition()));
         builder.add(new ProgWidgetSuicide());
-        drone.progWidgets.addAll(builder.build());
+        drone.progWidgets = builder.build();
 
         drone.getFluidTank().fill(deliveredFluid, IFluidHandler.FluidAction.EXECUTE);
         world.addFreshEntity(drone);
@@ -140,7 +140,7 @@ public class ProgrammedDroneUtils {
         }
         builder.add(new ProgWidgetGoToLocation(), ProgWidgetArea.fromPosition(drone.blockPosition()));
         builder.add(new ProgWidgetSuicide());
-        drone.progWidgets.addAll(builder.build());
+        drone.progWidgets = builder.build();
 
         world.addFreshEntity(drone);
         return drone;
@@ -166,7 +166,7 @@ public class ProgrammedDroneUtils {
         builder.add(liquidImport, ProgWidgetArea.fromPosition(pos), ProgWidgetLiquidFilter.withFilter(queriedFluid.getFluid()));
         builder.add(new ProgWidgetGoToLocation(), ProgWidgetArea.fromPosition(drone.blockPosition()));
         builder.add(new ProgWidgetSuicide());
-        drone.progWidgets.addAll(builder.build());
+        drone.progWidgets = builder.build();
 
         world.addFreshEntity(drone);
         return drone;
