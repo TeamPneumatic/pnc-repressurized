@@ -26,6 +26,7 @@ ext {
 def extraModsDir = "extra-mods-${minecraft_version}"
 
 repositories {
+	mavenLocal()
 	mavenCentral()
 	flatDir {
 		name "extra-mods"

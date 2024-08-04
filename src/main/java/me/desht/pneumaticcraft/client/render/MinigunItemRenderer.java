@@ -78,7 +78,9 @@ public class MinigunItemRenderer extends BlockEntityWithoutLevelRenderer {
         }
     }
 
-    public static class RenderProperties implements IClientItemExtensions {
+    public enum RenderProperties implements IClientItemExtensions {
+        INSTANCE;
+
         static final Lazy<BlockEntityWithoutLevelRenderer> renderer = Lazy.of(() ->
                 new MinigunItemRenderer(
                         Minecraft.getInstance().getBlockEntityRenderDispatcher(),

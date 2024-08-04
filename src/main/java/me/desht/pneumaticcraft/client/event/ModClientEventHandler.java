@@ -19,12 +19,14 @@ package me.desht.pneumaticcraft.client.event;
 
 import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.client.ClientSetup;
+import me.desht.pneumaticcraft.client.gui.pneumatic_armor.ArmorMainScreen;
 import me.desht.pneumaticcraft.client.model.CamoModel;
 import me.desht.pneumaticcraft.client.model.custom.CamouflageModel;
 import me.desht.pneumaticcraft.client.model.custom.FluidItemModel;
 import me.desht.pneumaticcraft.client.model.custom.RenderedItemModel;
 import me.desht.pneumaticcraft.client.model.custom.pressure_tube.PressureTubeModelLoader;
 import me.desht.pneumaticcraft.client.render.MinigunItemRenderer;
+import me.desht.pneumaticcraft.client.render.pneumatic_armor.PneumaticArmorLayerColors;
 import me.desht.pneumaticcraft.common.block.AbstractCamouflageBlock;
 import me.desht.pneumaticcraft.common.block.AbstractPneumaticCraftBlock;
 import me.desht.pneumaticcraft.common.fluid.*;
@@ -34,6 +36,7 @@ import me.desht.pneumaticcraft.common.registry.ModItems;
 import net.minecraft.client.renderer.block.BlockModelShaper;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.ModelResourceLocation;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.api.distmarker.Dist;
@@ -80,7 +83,11 @@ public class ModClientEventHandler {
                 .toArray(Block[]::new);
         event.registerBlock(ClientSetup.PARTICLE_HANDLER, toAdd);
 
-        event.registerItem(new MinigunItemRenderer.RenderProperties(), ModItems.MINIGUN.get());
+        event.registerItem(MinigunItemRenderer.RenderProperties.INSTANCE, ModItems.MINIGUN.get());
+
+        for (ItemStack stack :  ArmorMainScreen.ARMOR_STACKS) {
+            event.registerItem(PneumaticArmorLayerColors.INSTANCE, stack.getItem());
+        }
 
         event.registerFluidType(FluidOil.RENDER_PROPS, ModFluids.OIL_FLUID_TYPE.get());
         event.registerFluidType(FluidBiodiesel.RENDER_PROPS, ModFluids.BIODIESEL_FLUID_TYPE.get());
