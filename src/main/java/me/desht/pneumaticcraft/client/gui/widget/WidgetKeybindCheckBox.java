@@ -167,7 +167,7 @@ public class WidgetKeybindCheckBox extends WidgetCheckBox {
             }
 
             // left click - usual toggle action
-            super.onClick(mouseX, mouseY);
+            super.onClick(mouseX, mouseY, button);
 
             ArmorFeatureStatus.INSTANCE.setUpgradeEnabled(upgradeID, checked);
             ArmorFeatureStatus.INSTANCE.saveIfChanged();
