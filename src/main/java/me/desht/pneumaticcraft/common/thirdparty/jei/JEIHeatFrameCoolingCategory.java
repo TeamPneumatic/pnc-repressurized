@@ -27,7 +27,6 @@ import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.drawable.IDrawableAnimated;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
-import mezz.jei.api.neoforge.NeoForgeTypes;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import net.minecraft.ChatFormatting;
@@ -37,7 +36,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
@@ -65,8 +63,8 @@ public class JEIHeatFrameCoolingCategory extends AbstractPNCCategory<HeatFrameCo
         recipe.getInput()
                 .ifLeft(ingredient -> builder.addSlot(RecipeIngredientRole.INPUT, 1, 1)
                         .addIngredients(ingredient))
-                .ifRight(sizedFluidIngredient -> builder.addSlot(RecipeIngredientRole.INPUT, 1, 1)
-                        .addIngredients(NeoForgeTypes.FLUID_STACK, Arrays.asList(sizedFluidIngredient.getFluids())));
+                .ifRight(fluidContainerIngredient -> builder.addSlot(RecipeIngredientRole.INPUT, 1, 1)
+                        .addIngredients(VanillaTypes.ITEM_STACK, fluidContainerIngredient.getItems().toList()));
 
         builder.addSlot(RecipeIngredientRole.OUTPUT, 65, 1).addItemStack(recipe.getOutput());
     }

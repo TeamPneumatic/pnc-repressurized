@@ -18,11 +18,10 @@
 package me.desht.pneumaticcraft.api.crafting.recipe;
 
 import com.mojang.datafixers.util.Either;
+import me.desht.pneumaticcraft.api.crafting.ingredient.FluidContainerIngredient;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
-import net.neoforged.neoforge.fluids.crafting.FluidIngredient;
-import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
 
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -33,7 +32,7 @@ public abstract class HeatFrameCoolingRecipe extends PneumaticCraftRecipe {
      *
      * @return the input ingredient
      */
-    public abstract Either<Ingredient, SizedFluidIngredient> getInput();
+    public abstract Either<Ingredient, FluidContainerIngredient> getInput();
 
     /**
      * Get the output item. This does not take into account any bonus multiplier.

@@ -40,9 +40,16 @@ import java.util.stream.StreamSupport;
  * @param either the fluidstack OR fluid-tag/amount which must be contained in matching items
  */
 public record FluidContainerIngredient(Either<FluidStack,TagWithAmount> either) implements ICustomIngredient {
-    public static final MapCodec<FluidContainerIngredient> CODEC = RecordCodecBuilder.mapCodec(builder -> builder.group(
+    public static final MapCodec<FluidContainerIngredient> MAP_CODEC = RecordCodecBuilder.mapCodec(builder -> builder.group(
             Codec.either(FluidStack.CODEC, TagWithAmount.CODEC).fieldOf("fluid").forGetter(FluidContainerIngredient::either)
     ).apply(builder, FluidContainerIngredient::new));
+    public static final Codec<FluidContainerIngredient> CODEC = RecordCodecBuilder.create(builder -> builder.group(
+            Codec.either(FluidStack.CODEC, TagWithAmount.CODEC).fieldOf("fluid").forGetter(FluidContainerIngredient::either)
+    ).apply(builder, FluidContainerIngredient::new));
+    public static final StreamCodec<RegistryFriendlyByteBuf, FluidContainerIngredient> STREAM_CODEC = StreamCodec.composite(
+            ByteBufCodecs.either(FluidStack.STREAM_CODEC, TagWithAmount.STREAM_CODEC), FluidContainerIngredient::either,
+            FluidContainerIngredient::new
+    );
 
     private static final Supplier<List<Block>> TANK_BLOCKS = Suppliers.memoize(() ->
             Stream.of(
@@ -103,6 +110,10 @@ public record FluidContainerIngredient(Either<FluidStack,TagWithAmount> either) 
     @Override
     public IngredientType<?> getType() {
         return PneumaticRegistry.getInstance().getCustomIngredientTypes().fluidContainerType().get();
+    }
+
+    public int amount() {
+        return either.map(FluidStack::getAmount, TagWithAmount::amount);
     }
 
     public record TagWithAmount(TagKey<Fluid> tag, int amount) {

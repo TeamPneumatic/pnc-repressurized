@@ -3,8 +3,10 @@
   "bonusLimit": 0.5,
   "bonusMultiplier": 0.025,
   "input": {
-    "amount": 1000,
-    "tag": "minecraft:lava"
+    "fluid": {
+      "amount": 1000,
+      "tag": "minecraft:lava"
+    }
   },
   "output": {
     "count": 1,

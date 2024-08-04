@@ -21,6 +21,7 @@ import com.blamejared.crafttweaker.api.fluid.CTFluidIngredient;
 import com.blamejared.crafttweaker.api.fluid.MCFluidStack;
 import com.blamejared.crafttweaker.api.ingredient.IIngredientWithAmount;
 import com.blamejared.crafttweaker.api.item.IItemStack;
+import me.desht.pneumaticcraft.api.crafting.ingredient.FluidContainerIngredient;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.common.crafting.SizedIngredient;
@@ -70,6 +71,14 @@ public class CTUtils {
                 .map(FluidStack::getFluid)
                 .distinct()
                 .toArray(Fluid[]::new)
+        );
+    }
+
+    public static FluidContainerIngredient toFluidContainerIngredient(CTFluidIngredient ingredient) {
+        return ingredient.mapTo(
+                fluidStack -> FluidContainerIngredient.of(fluidStack.getFluid(), (int) fluidStack.getAmount()),
+                FluidContainerIngredient::of,
+                stream -> stream.findFirst().orElseThrow()
         );
     }
 }

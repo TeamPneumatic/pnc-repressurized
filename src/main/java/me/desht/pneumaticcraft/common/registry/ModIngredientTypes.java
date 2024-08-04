@@ -14,7 +14,8 @@ public class ModIngredientTypes {
             = DeferredRegister.create(NeoForgeRegistries.INGREDIENT_TYPES, Names.MOD_ID);
 
     public static final Supplier<IngredientType<FluidContainerIngredient>> FLUID_CONTAINER
-            = INGREDIENT_TYPES.register("fluid_container", () -> new IngredientType<>(FluidContainerIngredient.CODEC));
+            = INGREDIENT_TYPES.register("fluid_container",
+            () -> new IngredientType<>(FluidContainerIngredient.MAP_CODEC, FluidContainerIngredient.STREAM_CODEC));
 
 
     public enum Getter implements CustomIngredientTypes {

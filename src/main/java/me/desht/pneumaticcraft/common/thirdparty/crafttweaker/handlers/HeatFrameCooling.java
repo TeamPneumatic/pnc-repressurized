@@ -57,7 +57,7 @@ public class HeatFrameCooling implements IRecipeManager<HeatFrameCoolingRecipe> 
         CraftTweakerAPI.apply(new ActionAddRecipe<>(this,
                 new RecipeHolder<>(ResourceLocation.fromNamespaceAndPath("crafttweaker", fixRecipeName(name)),
                         new HeatFrameCoolingRecipeImpl(
-                                Either.right(CTUtils.toSizedFluidIngredient(inputFluid)),
+                                Either.right(CTUtils.toFluidContainerIngredient(inputFluid)),
                                 temperature,
                                 output.getInternal(),
                                 bonusMult, bonusLimit)

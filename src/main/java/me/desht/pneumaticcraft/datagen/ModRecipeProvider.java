@@ -1407,13 +1407,13 @@ public class ModRecipeProvider extends RecipeProvider {
                 .save(consumer, RL("explosion_crafting/wheat_flour"));
 
         // heat frame cooling
-        heatFrameCooling(SizedFluidIngredient.of(FluidTags.WATER, 1000), 273,
+        heatFrameCooling(FluidContainerIngredient.of(FluidTags.WATER, 1000), 273,
                 new ItemStack(Blocks.ICE))
                 .save(consumer, RL("heat_frame_cooling/ice"));
-        heatFrameCooling(SizedFluidIngredient.of(FluidTags.LAVA, 1000), 273,
+        heatFrameCooling(FluidContainerIngredient.of(FluidTags.LAVA, 1000), 273,
                 new ItemStack(Blocks.OBSIDIAN), 0.025f, 0.5f)
                 .save(consumer, RL("heat_frame_cooling/obsidian"));
-        heatFrameCooling(SizedFluidIngredient.of(PneumaticCraftTags.Fluids.PLASTIC, 1000), 273,
+        heatFrameCooling(FluidContainerIngredient.of(PneumaticCraftTags.Fluids.PLASTIC, 1000), 273,
                 new ItemStack(ModItems.PLASTIC.get()), 0.01f, 0.75f)
                 .save(consumer, RL("heat_frame_cooling/plastic"));
 
@@ -1819,7 +1819,7 @@ public class ModRecipeProvider extends RecipeProvider {
         return heatFrameCooling(ingredient, maxTemp, result, 0f, 0f);
     }
 
-    private RecipeBuilder heatFrameCooling(SizedFluidIngredient ingredient, int maxTemp, ItemStack result) {
+    private RecipeBuilder heatFrameCooling(FluidContainerIngredient ingredient, int maxTemp, ItemStack result) {
         return heatFrameCooling(ingredient, maxTemp, result, 0f, 0f);
     }
 
@@ -1827,7 +1827,7 @@ public class ModRecipeProvider extends RecipeProvider {
         return new HeatFrameCoolingRecipeBuilder(Either.left(ingredient), maxTemp, result, bonusMult, bonusLimit)
                 .unlockedBy(getHasName(ModItems.HEAT_FRAME.get()), has(ModItems.HEAT_FRAME.get()));
     }
-    private RecipeBuilder heatFrameCooling(SizedFluidIngredient ingredient, int maxTemp, ItemStack result, float bonusMult, float bonusLimit) {
+    private RecipeBuilder heatFrameCooling(FluidContainerIngredient ingredient, int maxTemp, ItemStack result, float bonusMult, float bonusLimit) {
         return new HeatFrameCoolingRecipeBuilder(Either.right(ingredient), maxTemp, result, bonusMult, bonusLimit)
                 .unlockedBy(getHasName(ModItems.HEAT_FRAME.get()), has(ModItems.HEAT_FRAME.get()));
     }

@@ -18,25 +18,25 @@
 package me.desht.pneumaticcraft.datagen.recipe;
 
 import com.mojang.datafixers.util.Either;
+import me.desht.pneumaticcraft.api.crafting.ingredient.FluidContainerIngredient;
 import me.desht.pneumaticcraft.common.recipes.machine.HeatFrameCoolingRecipeImpl;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
 
 public class HeatFrameCoolingRecipeBuilder extends AbstractPNCRecipeBuilder {
-    private final Either<Ingredient, SizedFluidIngredient> input;
+    private final Either<Ingredient, FluidContainerIngredient> input;
     private final int temperature;
     private final ItemStack outputItem;
     private final float bonusMultiplier;
     private final float bonusLimit;
 
-    protected HeatFrameCoolingRecipeBuilder(Either<Ingredient, SizedFluidIngredient> input, int temperature, ItemStack output) {
+    protected HeatFrameCoolingRecipeBuilder(Either<Ingredient, FluidContainerIngredient> input, int temperature, ItemStack output) {
         this(input, temperature, output, 0f, 0f);
     }
 
-    public HeatFrameCoolingRecipeBuilder(Either<Ingredient, SizedFluidIngredient> input, int temperature, ItemStack output, float bonusMultiplier, float bonusLimit) {
+    public HeatFrameCoolingRecipeBuilder(Either<Ingredient, FluidContainerIngredient> input, int temperature, ItemStack output, float bonusMultiplier, float bonusLimit) {
         this.input = input;
         this.temperature = temperature;
         this.outputItem = output;

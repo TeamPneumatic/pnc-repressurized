@@ -21,10 +21,10 @@ import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import me.desht.pneumaticcraft.api.crafting.ingredient.FluidContainerIngredient;
 import me.desht.pneumaticcraft.api.crafting.recipe.HeatFrameCoolingRecipe;
 import me.desht.pneumaticcraft.common.registry.ModRecipeSerializers;
 import me.desht.pneumaticcraft.common.registry.ModRecipeTypes;
-import me.desht.pneumaticcraft.common.util.IOHelper;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -32,8 +32,6 @@ import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.*;
 import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler;
-import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
 
 import java.util.Collection;
 
@@ -41,17 +39,17 @@ public class HeatFrameCoolingRecipeImpl extends HeatFrameCoolingRecipe {
     // cache the highest threshold temperature of all recipes, to reduce the recipe searching heat frames need to do
     private static int maxThresholdTemp = Integer.MIN_VALUE;
 
-    public final Either<Ingredient,SizedFluidIngredient> input;
+    public final Either<Ingredient,FluidContainerIngredient> input;
     private final int temperature;
     public final ItemStack output;
     private final float bonusMultiplier;
     private final float bonusLimit;
 
-    public HeatFrameCoolingRecipeImpl(Either<Ingredient, SizedFluidIngredient> input, int temperature, ItemStack output) {
+    public HeatFrameCoolingRecipeImpl(Either<Ingredient, FluidContainerIngredient> input, int temperature, ItemStack output) {
         this(input, temperature, output, 0f, 0f);
     }
 
-    public HeatFrameCoolingRecipeImpl(Either<Ingredient,SizedFluidIngredient> input, int temperature, ItemStack output, float bonusMultiplier, float bonusLimit) {
+    public HeatFrameCoolingRecipeImpl(Either<Ingredient,FluidContainerIngredient> input, int temperature, ItemStack output, float bonusMultiplier, float bonusLimit) {
         this.input = input;
         this.temperature = temperature;
         this.output = output;
@@ -60,7 +58,7 @@ public class HeatFrameCoolingRecipeImpl extends HeatFrameCoolingRecipe {
     }
 
     @Override
-    public Either<Ingredient,SizedFluidIngredient> getInput() {
+    public Either<Ingredient, FluidContainerIngredient> getInput() {
         return input;
     }
 
@@ -88,14 +86,8 @@ public class HeatFrameCoolingRecipeImpl extends HeatFrameCoolingRecipe {
     public boolean matches(ItemStack stack) {
         return input.map(
                 ingredient -> ingredient.test(stack),
-                fluidIngredient -> testForContainedFluid(fluidIngredient, stack)
+                fluidIngredient -> fluidIngredient.test(stack)
         );
-    }
-
-    private boolean testForContainedFluid(SizedFluidIngredient fluidIngredient, ItemStack stack) {
-        return IOHelper.getFluidHandlerForItem(stack)
-                .map(handler -> fluidIngredient.test(handler.drain(fluidIngredient.amount(), IFluidHandler.FluidAction.SIMULATE)))
-                .orElse(false);
     }
 
     @Override
@@ -127,7 +119,7 @@ public class HeatFrameCoolingRecipeImpl extends HeatFrameCoolingRecipe {
     }
 
     public interface IFactory<T extends HeatFrameCoolingRecipe> {
-        T create(Either<Ingredient,SizedFluidIngredient> input, int temperature, ItemStack out, float bonusMultiplier, float bonusLimit);
+        T create(Either<Ingredient,FluidContainerIngredient> input, int temperature, ItemStack out, float bonusMultiplier, float bonusLimit);
     }
 
     public static class Serializer<T extends HeatFrameCoolingRecipe> implements RecipeSerializer<T> {
@@ -136,7 +128,7 @@ public class HeatFrameCoolingRecipeImpl extends HeatFrameCoolingRecipe {
 
         public Serializer(IFactory<T> factory) {
             codec = RecordCodecBuilder.mapCodec(inst -> inst.group(
-                    Codec.either(Ingredient.CODEC_NONEMPTY, SizedFluidIngredient.FLAT_CODEC).fieldOf("input")
+                    Codec.either(Ingredient.CODEC_NONEMPTY, FluidContainerIngredient.CODEC).fieldOf("input")
                             .forGetter(HeatFrameCoolingRecipe::getInput),
                     ExtraCodecs.NON_NEGATIVE_INT.fieldOf("temperature")
                             .forGetter(HeatFrameCoolingRecipe::getThresholdTemperature),
@@ -148,7 +140,7 @@ public class HeatFrameCoolingRecipeImpl extends HeatFrameCoolingRecipe {
                             .forGetter(HeatFrameCoolingRecipe::getBonusLimit)
             ).apply(inst, factory::create));
             streamCodec = StreamCodec.composite(
-                    ByteBufCodecs.either(Ingredient.CONTENTS_STREAM_CODEC, SizedFluidIngredient.STREAM_CODEC), HeatFrameCoolingRecipe::getInput,
+                    ByteBufCodecs.either(Ingredient.CONTENTS_STREAM_CODEC, FluidContainerIngredient.STREAM_CODEC), HeatFrameCoolingRecipe::getInput,
                     ByteBufCodecs.INT, HeatFrameCoolingRecipe::getThresholdTemperature,
                     ItemStack.STREAM_CODEC, HeatFrameCoolingRecipe::getOutput,
                     ByteBufCodecs.FLOAT, HeatFrameCoolingRecipe::getBonusMultiplier,
