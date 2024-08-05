@@ -19,14 +19,21 @@ package me.desht.pneumaticcraft.common.util;
 
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.common.ModConfigSpec;
+import net.neoforged.neoforge.common.util.Lazy;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 import java.util.function.Predicate;
 
 public class WildcardedRLMatcher implements Predicate<ResourceLocation> {
     private final Set<String> namespaces = new ObjectOpenHashSet<>();
     private final Set<ResourceLocation> reslocs = new ObjectOpenHashSet<>();
+
+    public static Lazy<WildcardedRLMatcher> lazyFromConfig(ModConfigSpec.ConfigValue<List<String>> configValue) {
+        return Lazy.of(() -> new WildcardedRLMatcher(configValue.get()));
+    }
 
     public WildcardedRLMatcher(Collection<String> toMatch) {
         for (String s : toMatch) {

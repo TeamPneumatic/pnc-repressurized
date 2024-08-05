@@ -70,6 +70,7 @@ import net.minecraft.world.level.material.Fluids;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.common.util.Lazy;
 import net.neoforged.neoforge.energy.IEnergyStorage;
 import net.neoforged.neoforge.event.EventHooks;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
@@ -102,6 +103,9 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
                     te -> te.isConnectedToPlayer)
     );
     private static final String NO_AERIAL_INTERFACE = "pneumaticcraft:no_aerial_interface";
+
+    private static final Lazy<WildcardedRLMatcher> dimensionBlacklist
+            = WildcardedRLMatcher.lazyFromConfig(ConfigHelper.common().machines.aerialInterfaceDimensionBlacklist);
 
     @DescSynced
     private String playerName = "";
@@ -137,7 +141,6 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
 
     private final List<PlayerInvHandler> invHandlers = new ArrayList<>();
     public GameProfile gameProfileClient;  // for rendering
-    private static WildcardedRLMatcher dimensionBlacklist;
     private boolean validatePlayerNow;
 
     public AerialInterfaceBlockEntity(BlockPos pos, BlockState state) {
@@ -292,19 +295,12 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
     }
 
     private static boolean isDimensionBlacklisted(ServerLevel beLevel, ServerPlayer player) {
-        return getDimensionBlacklist().test(beLevel.dimension().location())
-                || player != null && getDimensionBlacklist().test(player.level().dimension().location());
-    }
-
-    private static WildcardedRLMatcher getDimensionBlacklist() {
-        if (dimensionBlacklist == null) {
-            dimensionBlacklist = new WildcardedRLMatcher(ConfigHelper.common().machines.aerialInterfaceDimensionBlacklist.get());
-        }
-        return dimensionBlacklist;
+        return dimensionBlacklist.get().test(beLevel.dimension().location())
+                || player != null && dimensionBlacklist.get().test(player.level().dimension().location());
     }
 
     public static void clearDimensionBlacklist() {
-        dimensionBlacklist = null;
+        dimensionBlacklist.invalidate();
     }
 
     @Override

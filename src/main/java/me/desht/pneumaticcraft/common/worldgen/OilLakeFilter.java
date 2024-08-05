@@ -21,6 +21,7 @@ import net.minecraft.world.level.levelgen.placement.PlacementFilter;
 import net.minecraft.world.level.levelgen.placement.PlacementModifierType;
 import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.levelgen.structure.StructureStart;
+import net.neoforged.neoforge.common.util.Lazy;
 
 public class OilLakeFilter extends PlacementFilter {
     private static final OilLakeFilter INSTANCE = new OilLakeFilter();
@@ -62,32 +63,20 @@ public class OilLakeFilter extends PlacementFilter {
     }
 
     public static class DimensionFilter {
-        private static WildcardedRLMatcher dimensionMatcherB = null;
-        private static WildcardedRLMatcher dimensionMatcherW = null;
+        private static final Lazy<WildcardedRLMatcher> dimensionMatcherW
+                = WildcardedRLMatcher.lazyFromConfig(ConfigHelper.common().worldgen.oilWorldGenDimensionWhitelist);
+        private static final Lazy<WildcardedRLMatcher> dimensionMatcherB
+                = WildcardedRLMatcher.lazyFromConfig(ConfigHelper.common().worldgen.oilWorldGenDimensionBlacklist);
 
         private static boolean isDimensionOK(WorldGenLevel level) {
             // non-empty whitelist match OR no blacklist match
             ResourceLocation name = level.getLevel().dimension().location();
-            return getDimensionWhitelist().isEmpty() ? !getDimensionBlacklist().test(name) : getDimensionWhitelist().test(name);
-        }
-
-        private static WildcardedRLMatcher getDimensionWhitelist() {
-            if (dimensionMatcherW == null) {
-                dimensionMatcherW = new WildcardedRLMatcher(ConfigHelper.common().worldgen.oilWorldGenDimensionWhitelist.get());
-            }
-            return dimensionMatcherW;
-        }
-
-        private static WildcardedRLMatcher getDimensionBlacklist() {
-            if (dimensionMatcherB == null) {
-                dimensionMatcherB = new WildcardedRLMatcher(ConfigHelper.common().worldgen.oilWorldGenDimensionBlacklist.get());
-            }
-            return dimensionMatcherB;
+            return dimensionMatcherW.get().isEmpty() ? !dimensionMatcherB.get().test(name) : dimensionMatcherW.get().test(name);
         }
 
         public static void clearMatcherCaches() {
-            dimensionMatcherB = null;
-            dimensionMatcherW = null;
+            dimensionMatcherW.invalidate();
+            dimensionMatcherB.invalidate();
         }
     }
 }
