@@ -103,6 +103,9 @@ public class PneumaticCraftTags {
 
         public static final TagKey<Item> WRENCHES = forgeTag("tools/wrench");
 
+        public static final TagKey<Item> COMPRESSED_IRON_ARMOR = modTag("armors/compressed_iron");
+        public static final TagKey<Item> PNEUMATIC_ARMOR = modTag("armors/pneumatic");
+
         static TagKey<Item> tag(String modid, String name) {
             return Objects.requireNonNull(ForgeRegistries.ITEMS.tags()).createTagKey(new ResourceLocation(modid, name));
         }
