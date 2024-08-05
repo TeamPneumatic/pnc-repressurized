@@ -10,6 +10,9 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ### Fixed
 * Fixed broken texturing for Compressed Armor items
+* Fixed Amadron ordering button not functioning
+* Fixed broken Heat Frame cooling recipes
+* Fixed Pneumatic Armor feature toggles not functioning
 
 ## [8.0.0]
 
