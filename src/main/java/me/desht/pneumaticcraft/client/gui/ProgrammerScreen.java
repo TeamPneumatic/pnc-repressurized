@@ -1278,7 +1278,7 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
     private static IntIntPair calculateScreenSize() {
         Window window = Minecraft.getInstance().getWindow();
         int guiWidth = window.getGuiScaledWidth() * 75 / 100;  // leave a little space on the side for JEI etc.
-        int guiHeight = window.getGuiScaledHeight() * 39 / 40;
+        int guiHeight = window.getGuiScaledHeight() * 19 / 20;
         //noinspection SuspiciousNameCombination
         return IntIntPair.of(guiWidth, guiHeight);
     }
