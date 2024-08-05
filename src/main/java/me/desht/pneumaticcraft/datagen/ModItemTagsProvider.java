@@ -111,12 +111,14 @@ public class ModItemTagsProvider extends ItemTagsProvider {
         addItemsToTag(PneumaticCraftTags.Items.GEARS, ModItems.COMPRESSED_IRON_GEAR);
         addItemsToTag(PneumaticCraftTags.Items.GEARS_COMPRESSED_IRON, ModItems.COMPRESSED_IRON_GEAR);
 
-        addItemsToTag(ItemTags.FREEZE_IMMUNE_WEARABLES,
-                ModItems.COMPRESSED_IRON_HELMET, ModItems.COMPRESSED_IRON_CHESTPLATE,
-                ModItems.COMPRESSED_IRON_LEGGINGS, ModItems.COMPRESSED_IRON_BOOTS,
-                ModItems.PNEUMATIC_HELMET, ModItems.PNEUMATIC_CHESTPLATE,
-                ModItems.PNEUMATIC_LEGGINGS, ModItems.PNEUMATIC_BOOTS
-        );
+        addItemsToTag(PneumaticCraftTags.Items.COMPRESSED_IRON_ARMOR,
+                ModItems.COMPRESSED_IRON_BOOTS, ModItems.COMPRESSED_IRON_LEGGINGS,
+                ModItems.COMPRESSED_IRON_CHESTPLATE, ModItems.COMPRESSED_IRON_HELMET);
+        addItemsToTag(PneumaticCraftTags.Items.PNEUMATIC_ARMOR,
+                ModItems.PNEUMATIC_BOOTS, ModItems.PNEUMATIC_LEGGINGS,
+                ModItems.PNEUMATIC_CHESTPLATE, ModItems.PNEUMATIC_HELMET);
+
+        appendToTag(ItemTags.FREEZE_IMMUNE_WEARABLES, PneumaticCraftTags.Items.COMPRESSED_IRON_ARMOR, PneumaticCraftTags.Items.PNEUMATIC_ARMOR);
     }
 
     @SafeVarargs

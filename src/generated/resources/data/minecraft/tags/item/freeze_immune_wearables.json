@@ -1,12 +1,6 @@
 {
   "values": [
-    "pneumaticcraft:compressed_iron_helmet",
-    "pneumaticcraft:compressed_iron_chestplate",
-    "pneumaticcraft:compressed_iron_leggings",
-    "pneumaticcraft:compressed_iron_boots",
-    "pneumaticcraft:pneumatic_helmet",
-    "pneumaticcraft:pneumatic_chestplate",
-    "pneumaticcraft:pneumatic_leggings",
-    "pneumaticcraft:pneumatic_boots"
+    "#pneumaticcraft:armors/compressed_iron",
+    "#pneumaticcraft:armors/pneumatic"
   ]
 }
