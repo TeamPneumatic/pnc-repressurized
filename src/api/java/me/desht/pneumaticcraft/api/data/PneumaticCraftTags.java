@@ -83,6 +83,7 @@ public class PneumaticCraftTags {
         public static final TagKey<Item> REINFORCED_STONE_BRICKS = modTag("reinforced_stone_bricks");
         public static final TagKey<Item> COMPRESSED_STONE = modTag("compressed_stone");
         public static final TagKey<Item> COMPRESSED_STONE_BRICKS = modTag("compressed_stone_bricks");
+        public static final TagKey<Item> REINFORCED_CHEST_DISALLOWED = modTag("reinforced_chest_disallowed");
 
         public static final TagKey<Item> WIRING = modTag("wiring");
         public static final TagKey<Item> UPGRADE_COMPONENTS = modTag("upgrade_components");

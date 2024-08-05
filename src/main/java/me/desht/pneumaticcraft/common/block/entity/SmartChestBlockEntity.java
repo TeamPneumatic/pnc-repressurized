@@ -17,6 +17,7 @@
 
 package me.desht.pneumaticcraft.common.block.entity;
 
+import me.desht.pneumaticcraft.api.data.PneumaticCraftTags;
 import me.desht.pneumaticcraft.api.lib.NBTKeys;
 import me.desht.pneumaticcraft.client.render.area.AreaRenderManager;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
@@ -474,8 +475,7 @@ public class SmartChestBlockEntity extends AbstractTickingBlockEntity
         public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
             return slot < lastSlot
                     && (filter[slot].isEmpty() || filter[slot].getItem() == stack.getItem())
-                    && stack.getItem() != ModBlocks.REINFORCED_CHEST.get().asItem()
-                    && stack.getItem() != ModBlocks.SMART_CHEST.get().asItem()
+                    && !stack.is(PneumaticCraftTags.Items.REINFORCED_CHEST_DISALLOWED)
                     && super.isItemValid(slot, stack);
         }
 

@@ -17,6 +17,7 @@
 
 package me.desht.pneumaticcraft.common.block.entity;
 
+import me.desht.pneumaticcraft.api.data.PneumaticCraftTags;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.inventory.ReinforcedChestMenu;
@@ -59,7 +60,7 @@ public class ReinforcedChestBlockEntity extends AbstractPneumaticCraftBlockEntit
     private final ComparatorItemStackHandler inventory = new ComparatorItemStackHandler(this, CHEST_SIZE) {
         @Override
         public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
-            return stack.getItem() != ModBlocks.REINFORCED_CHEST.get().asItem() && super.isItemValid(slot, stack);
+            return !stack.is(PneumaticCraftTags.Items.REINFORCED_CHEST_DISALLOWED) && super.isItemValid(slot, stack);
         }
     };
     private final LazyOptional<IItemHandler> inventoryCap = LazyOptional.of(() -> inventory);
@@ -145,16 +146,6 @@ public class ReinforcedChestBlockEntity extends AbstractPneumaticCraftBlockEntit
             }
             RecipeWrapper invWrapper = new RecipeWrapper(inventory);
             table.fill(invWrapper, builder.create(LootContextParamSets.CHEST), lootTableSeed);
-
-//            LootContext.Builder contextBuilder = new LootContext.Builder((ServerLevel)this.level).withOptionalRandomSeed(this.lootTableSeed);
-//            contextBuilder.withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(this.worldPosition));
-//            if (player != null) {
-//                contextBuilder.withLuck(player.getLuck());
-//            }
-//
-//            RecipeWrapper invWrapper = new RecipeWrapper(inventory);  // handy forge-provided IInventory->IItemHandlerModifiable adapter
-//            LootContext context = contextBuilder.create(LootContextParamSets.CHEST);
-//            table.fill(invWrapper, context);
 
             setChanged();
         }

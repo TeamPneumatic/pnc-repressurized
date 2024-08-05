@@ -19,6 +19,7 @@ package me.desht.pneumaticcraft.datagen;
 
 import me.desht.pneumaticcraft.api.data.PneumaticCraftTags;
 import me.desht.pneumaticcraft.api.lib.Names;
+import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.DataGenerator;
@@ -74,6 +75,15 @@ public class ModItemTagsProvider extends ItemTagsProvider {
         addItemsToTag(PneumaticCraftTags.Items.FLOUR, ModItems.WHEAT_FLOUR);
         addItemsToTag(Tags.Items.NUGGETS, ModItems.COPPER_NUGGET);
         addItemsToTag(PneumaticCraftTags.Items.NUGGETS_COPPER, ModItems.COPPER_NUGGET);
+
+        addItemsToTag(PneumaticCraftTags.Items.REINFORCED_CHEST_DISALLOWED, ModBlocks.REINFORCED_CHEST, ModBlocks.SMART_CHEST);
+        tag(PneumaticCraftTags.Items.REINFORCED_CHEST_DISALLOWED).add(
+                Items.SHULKER_BOX,
+                Items.WHITE_SHULKER_BOX, Items.LIGHT_GRAY_SHULKER_BOX, Items.GRAY_SHULKER_BOX, Items.BLACK_SHULKER_BOX,
+                Items.BROWN_SHULKER_BOX, Items.RED_SHULKER_BOX, Items.ORANGE_SHULKER_BOX, Items.YELLOW_SHULKER_BOX,
+                Items.LIME_SHULKER_BOX, Items.GREEN_SHULKER_BOX, Items.CYAN_SHULKER_BOX, Items.LIGHT_BLUE_SHULKER_BOX,
+                Items.BLUE_SHULKER_BOX, Items.PURPLE_SHULKER_BOX, Items.MAGENTA_SHULKER_BOX, Items.PINK_SHULKER_BOX
+        );
 
         appendToTag(PneumaticCraftTags.Items.WIRING, Tags.Items.NUGGETS_GOLD);
         appendToTag(PneumaticCraftTags.Items.WIRING, PneumaticCraftTags.Items.NUGGETS_COPPER);

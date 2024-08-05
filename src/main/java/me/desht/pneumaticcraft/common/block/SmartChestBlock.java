@@ -126,5 +126,10 @@ public class SmartChestBlock extends AbstractPneumaticCraftBlock implements Pneu
                 }
             }
         }
+
+        @Override
+        public boolean canFitInsideContainerItems() {
+            return false;
+        }
     }
 }

@@ -100,5 +100,9 @@ public class ReinforcedChestBlock extends AbstractPneumaticCraftBlock implements
             return ChatFormatting.GREEN.toString();
         }
 
+        @Override
+        public boolean canFitInsideContainerItems() {
+            return false;
+        }
     }
 }
