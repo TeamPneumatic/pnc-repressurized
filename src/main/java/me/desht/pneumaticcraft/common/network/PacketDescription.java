@@ -57,7 +57,7 @@ public record PacketDescription(BlockPos pos, boolean fullSync, List<IndexedFiel
         List<SyncedField<?>> descFields = te.getDescriptionFields();
         for (int i = 0; i < descFields.size(); i++) {
             if (fullSync || te.shouldSyncField(i)) {
-                fields.add(new IndexedField(i, SyncedField.getType(descFields.get(i)), descFields.get(i).getValue()));
+                fields.add(new IndexedField(i, descFields.get(i).getFieldType(), descFields.get(i).getValue()));
             }
         }
 
@@ -72,7 +72,7 @@ public record PacketDescription(BlockPos pos, boolean fullSync, List<IndexedFiel
         buf.writeVarInt(packet.fields.size());
         for (IndexedField indexedField : packet.fields) {
             if (!packet.fullSync) buf.writeVarInt(indexedField.idx);
-            buf.writeByte(indexedField.type);
+            buf.writeEnum(indexedField.type);
             SyncedField.toBytes(buf, indexedField.value, indexedField.type);
         }
         buf.writeNbt(packet.extraData);
@@ -85,7 +85,7 @@ public record PacketDescription(BlockPos pos, boolean fullSync, List<IndexedFiel
         List<IndexedField> fields = new ArrayList<>();
         for (int i = 0; i < fieldCount; i++) {
             int idx = fullSync ? i : buf.readVarInt();
-            byte type = buf.readByte();
+            SyncedField.FieldType type = buf.readEnum(SyncedField.FieldType.class);
             fields.add(new IndexedField(idx, type, SyncedField.fromBytes(buf, type)));
         }
         CompoundTag extraData = buf.readNbt();
@@ -134,11 +134,11 @@ public record PacketDescription(BlockPos pos, boolean fullSync, List<IndexedFiel
         CompoundTag subTag = new CompoundTag();
 
         subTag.putInt("Length", fields.size());
-        RegistryFriendlyByteBuf buf = new RegistryFriendlyByteBuf(Unpooled.buffer(), registryAccess);
+        RegistryFriendlyByteBuf buf = new RegistryFriendlyByteBuf(Unpooled.buffer(), registryAccess, ConnectionType.NEOFORGE);
         ListTag list = new ListTag();
         for (IndexedField field : fields) {
             CompoundTag element = new CompoundTag();
-            element.putByte("Type", field.type);
+            element.putByte("Type", (byte) field.type.ordinal());
             buf.clear();
             SyncedField.toBytes(buf, field.value, field.type);
             element.putByteArray("Value", Arrays.copyOf(buf.array(), buf.writerIndex()));
@@ -161,9 +161,10 @@ public record PacketDescription(BlockPos pos, boolean fullSync, List<IndexedFiel
         ListTag list = subTag.getList("Data", Tag.TAG_COMPOUND);
         for (int i = 0; i < fieldCount; i++) {
             CompoundTag element = list.getCompound(i);
-            byte type = element.getByte("Type");
+            SyncedField.FieldType type = SyncedField.FieldType.values()[element.getByte("Type")];
             byte[] b = element.getByteArray("Value");
-            fields.add(new IndexedField(i, type, SyncedField.fromBytes(new RegistryFriendlyByteBuf(Unpooled.wrappedBuffer(b), registryAccess, ConnectionType.OTHER), type)));
+            RegistryFriendlyByteBuf buf = new RegistryFriendlyByteBuf(Unpooled.wrappedBuffer(b), registryAccess, ConnectionType.NEOFORGE);
+            fields.add(new IndexedField(i, type, SyncedField.fromBytes(buf, type)));
         }
         CompoundTag extraData = subTag.getCompound("Extra");
 
@@ -174,6 +175,6 @@ public record PacketDescription(BlockPos pos, boolean fullSync, List<IndexedFiel
         return !fields.isEmpty() || !extraData.isEmpty();
     }
 
-    private record IndexedField(int idx, byte type, Object value) {
+    private record IndexedField(int idx, SyncedField.FieldType type, Object value) {
     }
 }

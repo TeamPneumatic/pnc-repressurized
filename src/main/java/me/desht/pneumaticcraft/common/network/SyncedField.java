@@ -29,15 +29,17 @@ import java.lang.reflect.Field;
 
 public abstract class SyncedField<T> {
     private final Field field;
-    private final Object te;
+    private final Object syncableObject;
+    private final FieldType fieldType;
     private T lastValue;
     private int arrayIndex = -1;
     private boolean isLazy;
 
-    SyncedField(Object te, Field field) {
+    SyncedField(Object syncableObject, Field field, FieldType fieldType) {
+        this.syncableObject = syncableObject;
         this.field = field;
         field.setAccessible(true);
-        this.te = te;
+        this.fieldType = fieldType;
     }
 
     SyncedField<T> setArrayIndex(int arrayIndex) {
@@ -50,11 +52,15 @@ public abstract class SyncedField<T> {
         return this;
     }
 
+    public FieldType getFieldType() {
+        return fieldType;
+    }
+
     @Override
     public String toString() {
         return arrayIndex == -1 ?
-                "[" + te + "/" + field.getName() + "=" + getValue() + "]" :
-                "[" + te + "/" + field.getName() + "[" + arrayIndex + "]=" + getValue() + "]";
+                "[" + syncableObject + "/" + field.getName() + "=" + getValue() + "]" :
+                "[" + syncableObject + "/" + field.getName() + "[" + arrayIndex + "]=" + getValue() + "]";
     }
 
     /**
@@ -65,14 +71,14 @@ public abstract class SyncedField<T> {
      */
     public boolean update() {
         try {
-            T value = arrayIndex >= 0 ? getValueForArray(field.get(te), arrayIndex) : retrieveValue(field, te);
+            T value = arrayIndex >= 0 ? getValueForArray(field.get(syncableObject), arrayIndex) : retrieveValue(field, syncableObject);
             if (lastValue == null && value != null || lastValue != null && !equals(lastValue, value)) {
                 lastValue = value == null ? null : copyWhenNecessary(value);
                 return !isLazy;
             }
         } catch (Throwable e) {
             Log.error("A problem occurred when trying to sync the field of {}. Field: {}, error: {}",
-                    te.toString(), field.toString(), e.getMessage());
+                    syncableObject.toString(), field.toString(), e.getMessage());
         }
         return false;
     }
@@ -105,13 +111,13 @@ public abstract class SyncedField<T> {
     private void setValueInternal(T value) {
         try {
             if (arrayIndex >= 0) {
-                setValueForArray(field.get(te), arrayIndex, value);
+                setValueForArray(field.get(syncableObject), arrayIndex, value);
             } else {
-                injectValue(field, te, value);
+                injectValue(field, syncableObject, value);
             }
         } catch (Exception e) {
             Log.error("A problem occurred when trying to sync the field of {}. Field: {}, error: {}",
-                    te.toString(), field.toString(), e.getMessage());
+                    syncableObject.toString(), field.toString(), e.getMessage());
         }
     }
 
@@ -123,7 +129,7 @@ public abstract class SyncedField<T> {
     public static class SyncedInt extends SyncedField<Integer> {
 
         public SyncedInt(Object te, Field field) {
-            super(te, field);
+            super(te, field, FieldType.SYNCED_INT);
         }
 
         @Override
@@ -141,7 +147,7 @@ public abstract class SyncedField<T> {
     public static class SyncedFloat extends SyncedField<Float> {
 
         SyncedFloat(Object te, Field field) {
-            super(te, field);
+            super(te, field, FieldType.SYNCED_FLOAT);
         }
 
         @Override
@@ -159,7 +165,7 @@ public abstract class SyncedField<T> {
     public static class SyncedDouble extends SyncedField<Double> {
 
         SyncedDouble(Object te, Field field) {
-            super(te, field);
+            super(te, field, FieldType.SYNCED_DOUBLE);
         }
 
         @Override
@@ -177,7 +183,7 @@ public abstract class SyncedField<T> {
     public static class SyncedBoolean extends SyncedField<Boolean> {
 
         SyncedBoolean(Object te, Field field) {
-            super(te, field);
+            super(te, field, FieldType.SYNCED_BOOL);
         }
 
         @Override
@@ -195,7 +201,7 @@ public abstract class SyncedField<T> {
     public static class SyncedString extends SyncedField<String> {
 
         SyncedString(Object te, Field field) {
-            super(te, field);
+            super(te, field, FieldType.SYNCED_STRING);
         }
 
         @Override
@@ -216,7 +222,7 @@ public abstract class SyncedField<T> {
     public static class SyncedEnum extends SyncedField<Byte> {
 
         SyncedEnum(Object te, Field field) {
-            super(te, field);
+            super(te, field, FieldType.SYNCED_ENUM);
         }
 
         @Override
@@ -245,13 +251,11 @@ public abstract class SyncedField<T> {
                 field.set(te, enumType);
             }
         }
-
     }
 
     public static class SyncedItemStack extends SyncedField<ItemStack> {
-
         SyncedItemStack(Object te, Field field) {
-            super(te, field);
+            super(te, field, FieldType.SYNCED_ITEMSTACK);
         }
 
         @Override
@@ -263,11 +267,16 @@ public abstract class SyncedField<T> {
         protected void setValueForArray(Object array, int index, ItemStack value) {
             ((ItemStack[]) array)[index] = value;
         }
+
+        @Override
+        protected ItemStack copyWhenNecessary(ItemStack oldValue) {
+            return oldValue.copy();
+        }
     }
 
     public static class SyncedFluidStack extends SyncedField<FluidStack> {
         SyncedFluidStack(Object te, Field field) {
-            super(te, field);
+            super(te, field, FieldType.SYNCED_FLUIDSTACK);
         }
 
         @Override
@@ -285,11 +294,16 @@ public abstract class SyncedField<T> {
             // Note: FluidStack#equals() implementation only checks the fluid, not the amount
             return FluidStack.matches(oldValue, newValue);
         }
+
+        @Override
+        protected FluidStack copyWhenNecessary(FluidStack oldValue) {
+            return oldValue.copy();
+        }
     }
 
     public static class SyncedItemHandler extends SyncedField<IItemHandlerModifiable> {
         SyncedItemHandler(Object te, Field field) {
-            super(te, field);
+            super(te, field, FieldType.SYNCED_ITEM_HANDLER);
         }
 
         @Override
@@ -339,61 +353,38 @@ public abstract class SyncedField<T> {
 
     /*************** Utility Methods ***************************/
 
-    public static byte getType(SyncedField<?> syncedField) {
-        return switch (syncedField) {
-            case SyncedInt syncedInt -> 0;
-            case SyncedFloat syncedFloat -> 1;
-            case SyncedDouble syncedDouble -> 2;
-            case SyncedBoolean syncedBoolean -> 3;
-            case SyncedString syncedString -> 4;
-            case SyncedEnum syncedEnum -> 5;
-            case SyncedItemStack syncedItemStack -> 6;
-            case SyncedFluidStack syncedFluidStack -> 7;
-            case SyncedField.SyncedItemHandler syncedItemHandler -> 8;
-            case null, default -> throw new IllegalArgumentException("Invalid sync type! " + syncedField);
-        };
-    }
-
-    static Object fromBytes(RegistryFriendlyByteBuf buf, int type) {
-        switch (type) {
-            case 0:
-                return buf.readInt();
-            case 1:
-                return buf.readFloat();
-            case 2:
-                return buf.readDouble();
-            case 3:
-                return buf.readBoolean();
-            case 4:
-                return buf.readUtf();
-            case 5:
-                return buf.readByte();
-            case 6:
-                return ItemStack.OPTIONAL_STREAM_CODEC.decode(buf);
-            case 7:
-                return FluidStack.OPTIONAL_STREAM_CODEC.decode(buf);
-            case 8:
+    static Object fromBytes(RegistryFriendlyByteBuf buf, FieldType type) {
+        return switch (type) {
+            case SYNCED_INT -> buf.readInt();
+            case SYNCED_FLOAT -> buf.readFloat();
+            case SYNCED_DOUBLE -> buf.readDouble();
+            case SYNCED_BOOL -> buf.readBoolean();
+            case SYNCED_STRING -> buf.readUtf();
+            case SYNCED_ENUM -> buf.readByte();
+            case SYNCED_ITEMSTACK -> ItemStack.OPTIONAL_STREAM_CODEC.decode(buf);
+            case SYNCED_FLUIDSTACK -> FluidStack.OPTIONAL_STREAM_CODEC.decode(buf);
+            case SYNCED_ITEM_HANDLER -> {
                 int len = buf.readVarInt();
                 ItemStackHandler handler = new ItemStackHandler(len);
                 for (int i = 0; i < len; i++) {
                     handler.setStackInSlot(buf.readVarInt(), ItemStack.OPTIONAL_STREAM_CODEC.decode(buf));
                 }
-                return handler;
-        }
-        throw new IllegalArgumentException("Invalid sync type! " + type);
+                yield handler;
+            }
+        };
     }
 
-    static void toBytes(RegistryFriendlyByteBuf buf, Object value, int type) {
+    static void toBytes(RegistryFriendlyByteBuf buf, Object value, FieldType type) {
         switch (type) {
-            case 0 -> buf.writeInt((Integer) value);
-            case 1 -> buf.writeFloat((Float) value);
-            case 2 -> buf.writeDouble((Double) value);
-            case 3 -> buf.writeBoolean((Boolean) value);
-            case 4 -> buf.writeUtf((String) value);
-            case 5 -> buf.writeByte((Byte) value);
-            case 6 -> ItemStack.OPTIONAL_STREAM_CODEC.encode(buf, value == null ? ItemStack.EMPTY : (ItemStack) value);
-            case 7 -> FluidStack.OPTIONAL_STREAM_CODEC.encode(buf, ((FluidStack) value));
-            case 8 -> {
+            case SYNCED_INT -> buf.writeInt((Integer) value);
+            case SYNCED_FLOAT -> buf.writeFloat((Float) value);
+            case SYNCED_DOUBLE -> buf.writeDouble((Double) value);
+            case SYNCED_BOOL -> buf.writeBoolean((Boolean) value);
+            case SYNCED_STRING -> buf.writeUtf((String) value);
+            case SYNCED_ENUM -> buf.writeByte((Byte) value);
+            case SYNCED_ITEMSTACK -> ItemStack.OPTIONAL_STREAM_CODEC.encode(buf, value == null ? ItemStack.EMPTY : (ItemStack) value);
+            case SYNCED_FLUIDSTACK -> FluidStack.OPTIONAL_STREAM_CODEC.encode(buf, ((FluidStack) value));
+            case SYNCED_ITEM_HANDLER -> {
                 ItemStackHandler h = (ItemStackHandler) value;
                 buf.writeVarInt(h.getSlots());
                 for (int i = 0; i < h.getSlots(); i++) {
@@ -402,5 +393,18 @@ public abstract class SyncedField<T> {
                 }
             }
         }
+    }
+
+
+    public enum FieldType {
+        SYNCED_INT,
+        SYNCED_FLOAT,
+        SYNCED_DOUBLE,
+        SYNCED_BOOL,
+        SYNCED_STRING,
+        SYNCED_ENUM,
+        SYNCED_ITEMSTACK,
+        SYNCED_FLUIDSTACK,
+        SYNCED_ITEM_HANDLER;
     }
 }

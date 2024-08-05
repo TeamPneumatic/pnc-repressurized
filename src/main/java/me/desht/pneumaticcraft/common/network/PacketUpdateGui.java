@@ -31,7 +31,7 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
  * The primary mechanism for sync'ing BE fields to an open GUI.  BE fields annotated with @GuiSynced will be synced
  * in this packet, via {@link AbstractPneumaticCraftMenu#broadcastChanges()}.
  */
-public record PacketUpdateGui(int syncId, Object fieldValue, byte fieldType) implements CustomPacketPayload {
+public record PacketUpdateGui(int syncId, Object fieldValue, SyncedField.FieldType fieldType) implements CustomPacketPayload {
     public static final Type<PacketUpdateGui> TYPE = new Type<>(RL("update_gui"));
 
     public static final StreamCodec<RegistryFriendlyByteBuf, PacketUpdateGui> STREAM_CODEC = StreamCodec.of(
@@ -39,12 +39,12 @@ public record PacketUpdateGui(int syncId, Object fieldValue, byte fieldType) imp
     );
 
     public static PacketUpdateGui create(int syncId, SyncedField<?> syncField) {
-        return new PacketUpdateGui(syncId, syncField.getValue(), SyncedField.getType(syncField));
+        return new PacketUpdateGui(syncId, syncField.getValue(), syncField.getFieldType());
     }
 
     private static PacketUpdateGui read(RegistryFriendlyByteBuf buf) {
         int syncId = buf.readVarInt();
-        byte type = buf.readByte();
+        SyncedField.FieldType type = buf.readEnum(SyncedField.FieldType.class);
         Object value = SyncedField.fromBytes(buf, type);
 
         return new PacketUpdateGui(syncId, value, type);
@@ -52,7 +52,7 @@ public record PacketUpdateGui(int syncId, Object fieldValue, byte fieldType) imp
 
     private static void write(RegistryFriendlyByteBuf buf, PacketUpdateGui packet) {
         buf.writeVarInt(packet.syncId);
-        buf.writeByte(packet.fieldType);
+        buf.writeEnum(packet.fieldType);
         SyncedField.toBytes(buf, packet.fieldValue, packet.fieldType);
     }
 
