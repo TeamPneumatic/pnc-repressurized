@@ -13,6 +13,9 @@ Changes are in reverse chronological order; newest changes at the top.
 * Fixed Amadron ordering button not functioning
 * Fixed broken Heat Frame cooling recipes
 * Fixed Pneumatic Armor feature toggles not functioning
+* Fixed some drone pathfinding issues, in particular with Guard Drones unable to attack mobs on partial blocks like slabs or modded pipes
+  * Made pathfinding a bit more lenient in general (drone has a looser idea of "close enough") - needs monitoring for potential side effects
+* Reduced height of Programmer GUI a little, avoid overlap with mods like JEI/EMI with a search textfield at bottom of screen
 
 ## [8.0.0]
 
