@@ -35,8 +35,6 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.navigation.FlyingPathNavigation;
-import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.entity.vehicle.AbstractMinecart;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.pathfinder.Node;
 import net.minecraft.world.level.pathfinder.Path;
@@ -65,41 +63,22 @@ public class EntityPathNavigateDrone extends FlyingPathNavigation implements IPa
         return super.moveTo(pEntity, pSpeed) || isGoingToTeleport();
     }
 
-    /**
-     * Returns the path to the given EntityLiving
-     */
-    @Override
-    public Path createPath(Entity entity, int p2) {
-        BlockPos pos = BlockPos.containing(entity.getX(), entity.getBoundingBox().minY, entity.getZ());
-
-        if ((entity instanceof ItemEntity && !droneEntity.isBlockValidPathfindBlock(pos)) || entity instanceof AbstractMinecart) {
-            // items can end up with a blockpos of the ground they're sitting on,
-            // which will prevent the drone pathfinding to them
-            // minecarts apparently prevent the drone moving to the same blockpos
-            if (droneEntity.isBlockValidPathfindBlock(pos.above())) {
-                pos = pos.above();
-            }
-        }
-
-        // p2 parameter shortens the path length. It appears vanilla uses it for villagers when they navigate to their work site.
-        // Drones generally don't use it and just pass 0 to the super call, apart from a kludge related to "tall" blocks like walls; see below
-        return createPath(pos, p2);
-    }
-
     public void setForceTeleport(boolean forceTeleport) {
         this.forceTeleport = forceTeleport;
     }
 
     @Nullable
     @Override
-    public Path createPath(BlockPos pos, int p2) {
-        // When the destination is not a valid block, we can stop right away
-        if (!droneEntity.isBlockValidPathfindBlock(pos))
-            return null;
+    public Path createPath(BlockPos pos, int pAccuracy) {
+        // When the destination is not pathfindable, let's try to get close to it, at least
+        // This is typically when the pos has a block which isn't a full cube but is also motion-blocking, e.g.
+        //   slabs, or modded pipe blocks
+        if (pAccuracy == 0 && !droneEntity.isBlockValidPathfindBlock(pos))
+            return createPath(pos, 1);
 
         // 0.75 is the squared dist from a block corner to its center (0.5^2 + 0.5^2 + 0.5^2)
         if (droneEntity.distanceToSqr(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5) < 0.75) {
-            // TODO 1.14 what does this boolean do?  true or false here?  appears to be villager-related...
+            // already close enough!
             return new Path(Lists.newArrayList(new Node(pos.getX(), pos.getY(), pos.getZ())), pos, true);
         }
 
@@ -131,7 +110,7 @@ public class EntityPathNavigateDrone extends FlyingPathNavigation implements IPa
         // (but if we had to stop short due to a "tall" block, account for that)
         if (path != null) {
             Node lastPoint = path.getEndNode();
-            if (lastPoint != null && pos.distManhattan(lastPoint.asBlockPos()) > (tallBlockKludge ? 1 : 0)) {
+            if (lastPoint != null && pos.distManhattan(lastPoint.asBlockPos()) > pAccuracy + (tallBlockKludge ? 1 : 0)) {
                 path = null;
             }
         }
