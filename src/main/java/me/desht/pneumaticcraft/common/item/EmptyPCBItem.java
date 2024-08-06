@@ -20,6 +20,7 @@ package me.desht.pneumaticcraft.common.item;
 import me.desht.pneumaticcraft.api.data.PneumaticCraftTags;
 import me.desht.pneumaticcraft.api.item.ICustomDurabilityBar;
 import me.desht.pneumaticcraft.common.block.entity.UVLightBoxBlockEntity;
+import me.desht.pneumaticcraft.common.core.ModFluids;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.lib.BlockEntityConstants;
 import net.minecraft.ChatFormatting;
@@ -31,6 +32,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.material.MapColor;
+import net.minecraftforge.fluids.FluidStack;
 import org.apache.commons.lang3.Validate;
 
 import java.util.List;
@@ -182,5 +184,9 @@ public class EmptyPCBItem extends NonDespawningItem implements ICustomDurability
      */
     public ItemStack getFailedItem() {
         return new ItemStack(ModItems.FAILED_PCB.get());
+    }
+
+    public static FluidStack getEtchingFluid() {
+        return new FluidStack(ModFluids.ETCHING_ACID.get(), 1000);
     }
 }
