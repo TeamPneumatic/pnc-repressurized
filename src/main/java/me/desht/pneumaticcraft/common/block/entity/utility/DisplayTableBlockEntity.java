@@ -49,20 +49,6 @@ public class DisplayTableBlockEntity extends AbstractPneumaticCraftBlockEntity i
     }
 
     @Override
-    public void saveAdditional(CompoundTag tag, HolderLookup.Provider provider) {
-        super.saveAdditional(tag, provider);
-        tag.put("Items", inventory.serializeNBT(provider));
-    }
-
-    @Override
-    public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
-        super.loadAdditional(tag, provider);
-
-        inventory.deserializeNBT(provider, tag.getCompound("Items"));
-        displayedStack = inventory.getStackInSlot(0);
-    }
-
-    @Override
     public void writeToPacket(CompoundTag tag, HolderLookup.Provider provider) {
         super.writeToPacket(tag, provider);
 
@@ -74,6 +60,7 @@ public class DisplayTableBlockEntity extends AbstractPneumaticCraftBlockEntity i
         super.readFromPacket(tag, provider);
 
         displayedStack = ItemStack.parseOptional(provider, tag.getCompound("Item"));
+        inventory.initStack(displayedStack);
     }
 
     @Override
@@ -99,6 +86,11 @@ public class DisplayTableBlockEntity extends AbstractPneumaticCraftBlockEntity i
         @Override
         public int getSlotLimit(int slot) {
             return 1;
+        }
+
+        private void initStack(ItemStack stack) {
+            // no contents-changed callback, this is only used when loading or syncing
+            stacks.set(0, stack);
         }
     }
 }

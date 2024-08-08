@@ -51,6 +51,7 @@ public record PacketDescription(BlockPos pos, boolean fullSync, List<IndexedFiel
             PacketDescription::toNetwork,
             PacketDescription::fromNetwork
     );
+    public static final String NBT_EXTRA = "Extra";
 
     public static PacketDescription create(IDescSynced te, boolean fullSync, HolderLookup.Provider provider) {
         List<IndexedField> fields = new ArrayList<>();
@@ -133,20 +134,22 @@ public record PacketDescription(BlockPos pos, boolean fullSync, List<IndexedFiel
     public CompoundTag writeNBT(CompoundTag compound, RegistryAccess registryAccess) {
         CompoundTag subTag = new CompoundTag();
 
-        subTag.putInt("Length", fields.size());
-        RegistryFriendlyByteBuf buf = new RegistryFriendlyByteBuf(Unpooled.buffer(), registryAccess, ConnectionType.NEOFORGE);
-        ListTag list = new ListTag();
-        for (IndexedField field : fields) {
-            CompoundTag element = new CompoundTag();
-            element.putByte("Type", (byte) field.type.ordinal());
-            buf.clear();
-            SyncedField.toBytes(buf, field.value, field.type);
-            element.putByteArray("Value", Arrays.copyOf(buf.array(), buf.writerIndex()));
-            list.add(list.size(), element);
+        if (!fields.isEmpty()) {
+            subTag.putInt("Length", fields.size());
+            RegistryFriendlyByteBuf buf = new RegistryFriendlyByteBuf(Unpooled.buffer(), registryAccess, ConnectionType.NEOFORGE);
+            ListTag list = new ListTag();
+            for (IndexedField field : fields) {
+                CompoundTag element = new CompoundTag();
+                element.putByte("Type", (byte) field.type.ordinal());
+                buf.clear();
+                SyncedField.toBytes(buf, field.value, field.type);
+                element.putByteArray("Value", Arrays.copyOf(buf.array(), buf.writerIndex()));
+                list.add(list.size(), element);
+            }
+            buf.release();
+            subTag.put("Data", list);
         }
-        buf.release();
-        subTag.put("Data", list);
-        subTag.put("Extra", extraData);
+        subTag.put(NBT_EXTRA, extraData);
         compound.put(Names.MOD_ID, subTag);
 
         return compound;
@@ -158,16 +161,17 @@ public record PacketDescription(BlockPos pos, boolean fullSync, List<IndexedFiel
         CompoundTag subTag = compound.getCompound(Names.MOD_ID);
         int fieldCount = subTag.getInt("Length");
         List<IndexedField> fields = new ArrayList<>();
-        ListTag list = subTag.getList("Data", Tag.TAG_COMPOUND);
-        for (int i = 0; i < fieldCount; i++) {
-            CompoundTag element = list.getCompound(i);
-            SyncedField.FieldType type = SyncedField.FieldType.values()[element.getByte("Type")];
-            byte[] b = element.getByteArray("Value");
-            RegistryFriendlyByteBuf buf = new RegistryFriendlyByteBuf(Unpooled.wrappedBuffer(b), registryAccess, ConnectionType.NEOFORGE);
-            fields.add(new IndexedField(i, type, SyncedField.fromBytes(buf, type)));
+        if (fieldCount > 0) {
+            ListTag list = subTag.getList("Data", Tag.TAG_COMPOUND);
+            for (int i = 0; i < fieldCount; i++) {
+                CompoundTag element = list.getCompound(i);
+                SyncedField.FieldType type = SyncedField.FieldType.values()[element.getByte("Type")];
+                byte[] b = element.getByteArray("Value");
+                RegistryFriendlyByteBuf buf = new RegistryFriendlyByteBuf(Unpooled.wrappedBuffer(b), registryAccess, ConnectionType.NEOFORGE);
+                fields.add(new IndexedField(i, type, SyncedField.fromBytes(buf, type)));
+            }
         }
-        CompoundTag extraData = subTag.getCompound("Extra");
-
+        CompoundTag extraData = subTag.getCompound(NBT_EXTRA);
         return new PacketDescription(pos, fullSync, fields, extraData);
     }
 

@@ -19,7 +19,6 @@ package me.desht.pneumaticcraft.common.block.entity.utility;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import me.desht.pneumaticcraft.api.lib.NBTKeys;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.block.AphorismTileBlock;
 import me.desht.pneumaticcraft.common.block.entity.AbstractPneumaticCraftBlockEntity;
@@ -113,15 +112,15 @@ public class AphorismTileBlockEntity extends AbstractPneumaticCraftBlockEntity {
         super.writeToPacket(tag, provider);
 
         SavedData.CODEC.encodeStart(NbtOps.INSTANCE, SavedData.forTile(this))
-                .ifSuccess(subTag -> tag.put(NBTKeys.NBT_EXTRA, subTag));
+                .ifSuccess(subTag -> tag.put("AphorismData", subTag));
     }
 
     @Override
     public void readFromPacket(CompoundTag tag, HolderLookup.Provider provider) {
         super.readFromPacket(tag, provider);
 
-        if (tag.contains(NBTKeys.NBT_EXTRA)) {
-            SavedData.CODEC.parse(NbtOps.INSTANCE, tag.getCompound(NBTKeys.NBT_EXTRA)).ifSuccess(savedData -> {
+        if (tag.contains("AphorismData")) {
+            SavedData.CODEC.parse(NbtOps.INSTANCE, tag.get("AphorismData")).ifSuccess(savedData -> {
                 loadSavedData(savedData);
                 updateLineMetadata();
                 if (level != null) {
@@ -159,6 +158,7 @@ public class AphorismTileBlockEntity extends AbstractPneumaticCraftBlockEntity {
                 if (notifyClient) sendDescriptionPacket();
             }
         }
+        setChanged();
     }
 
     private void updateLineMetadata() {
@@ -201,6 +201,7 @@ public class AphorismTileBlockEntity extends AbstractPneumaticCraftBlockEntity {
     public void setBackgroundColor(int color) {
         this.backgroundColor = color;
         if (!nonNullLevel().isClientSide) sendDescriptionPacket();
+        setChanged();
     }
 
     public byte getMarginSize() {
@@ -210,6 +211,7 @@ public class AphorismTileBlockEntity extends AbstractPneumaticCraftBlockEntity {
     public void setMarginSize(int marginSize) {
         this.marginSize = (byte) Mth.clamp(marginSize, 0, 9);
         needMaxLineWidthRecalc();
+        setChanged();
     }
 
     public boolean isInvisible() {
@@ -224,6 +226,7 @@ public class AphorismTileBlockEntity extends AbstractPneumaticCraftBlockEntity {
                 level.setBlockAndUpdate(worldPosition, getBlockState().setValue(AphorismTileBlock.INVISIBLE, invisible));
             }
         }
+        setChanged();
     }
 
     public int getMaxLineWidth(boolean editing) {

@@ -21,6 +21,7 @@ import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.api.lib.NBTKeys;
+import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
 import me.desht.pneumaticcraft.api.upgrade.PNCUpgrade;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
@@ -46,7 +47,11 @@ import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.network.Connection;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Nameable;
@@ -136,19 +141,34 @@ public abstract class AbstractPneumaticCraftBlockEntity extends BlockEntity
     @Override
     public CompoundTag getUpdateTag(HolderLookup.Provider provider) {
         CompoundTag compound = super.getUpdateTag(provider);
-        return PacketDescription.create(this, true, provider).writeNBT(compound, getLevel().registryAccess());
+        return PacketDescription.create(this, true, provider)
+                .writeNBT(compound, getLevel().registryAccess());
     }
 
     // client side, chunk sending
     @Override
     public void handleUpdateTag(CompoundTag tag, HolderLookup.Provider provider) {
-        PacketDescription.fromNBT(tag, getLevel().registryAccess()).processPacket(this, getLevel().registryAccess());
+        PacketDescription.fromNBT(tag, getLevel().registryAccess())
+                .processPacket(this, getLevel().registryAccess());
     }
 
-    /***********
-     We don't override getUpdatePacket() or onDataPacket() because BE sync'ing is all handled
-     by our custom PacketDescription and the @DescSynced system
-     ***********/
+    @Override
+    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt, HolderLookup.Provider lookupProvider) {
+        super.onDataPacket(net, pkt, lookupProvider);
+
+        // handle any extra data serialized by PacketDescription
+        if (pkt.getTag().contains(Names.MOD_ID, Tag.TAG_COMPOUND)) {
+            CompoundTag tag = pkt.getTag().getCompound(Names.MOD_ID).getCompound(PacketDescription.NBT_EXTRA);
+            if (!tag.isEmpty()) {
+                readFromPacket(tag, lookupProvider);
+            }
+        }
+    }
+
+    @Override
+    public Packet<ClientGamePacketListener> getUpdatePacket() {
+        return this instanceof AbstractTickingBlockEntity ? null : ClientboundBlockEntityDataPacket.create(this);
+    }
 
     @Override
     public BlockPos getPosition() {
