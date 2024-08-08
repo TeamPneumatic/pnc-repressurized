@@ -12,6 +12,13 @@ Changes are in reverse chronological order; newest changes at the top.
 * Some internal changes to Empty PCB items to make it possible for addon mods to add custom empty PCB's
   * UV Lightbox and Etching Tank now accept any item which extends `EmptyPCBItem`
   * Added `EmptyPCBItem#getSuccessItem()` and `EmptyPCBItem#getFailedItem()` which are used by the Etching Tank to determine the successful/failed etching outcomes
+* Added some new item tags related to Compressed/Pneumatic armors
+  * `pneumaticcraft:armors/compressed_iron` and `pneumaticcraft:armors/pneumatic`
+  * Added all PneumaticCraft armor items to `forge:armors/boots`, `forge:armors/leggings`, etc.
+
+### Fixed
+* Fixed Shulker Boxes, Reinforced & Smart Chests from being able to be placed inside one another
+* Fixed Reinforced & Smart Chests not dropping their contents if broken with an unsuitable tool
 
 ## [6.0.15]
 
