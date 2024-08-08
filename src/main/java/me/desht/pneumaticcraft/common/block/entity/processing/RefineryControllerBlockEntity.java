@@ -232,21 +232,23 @@ public class RefineryControllerBlockEntity extends AbstractTickingBlockEntity
      * When this is called, there will be a valid recipe and at least two outputs present.
      */
     private void redistributeFluids() {
-        FluidTank[] tempTanks = new FluidTank[outputCount];
-        for (int i = 0; i < outputCount; i++) {
+        int nTanks = Math.min(outputCount, currentRecipe.getOutputs().size());
+
+        FluidTank[] tempTanks = new FluidTank[nTanks];
+        for (int i = 0; i < nTanks; i++) {
             tempTanks[i] = new FluidTank(PneumaticValues.NORMAL_TANK_CAPACITY);
         }
 
         // now scan all refineries and ensure each one has the correct output, according to the current recipe
-        for (int i = 0; i < outputCount && i < currentRecipe.getOutputs().size(); i++) {
+        for (int i = 0; i < nTanks; i++) {
             final FluidStack wantedFluid = currentRecipe.getOutputs().get(i);
             getOutputHandler(i).ifPresent(outputHandler -> {
                 FluidStack fluid = outputHandler.getFluidInTank(0);
                 if (!fluid.isFluidEqual(wantedFluid)) {
                     // this fluid shouldn't be here; find the appropriate output tank to move it to,
                     // using an intermediate temporary tank to allow for possible swapping of fluids
-                    for (int j = 0; j < currentRecipe.getOutputs().size(); j++) {
-                        if (currentRecipe.getOutputs().get(j).isFluidEqual(fluid)) {
+                    for (int j = 0; j < nTanks; j++) {
+                        if (currentRecipe.getOutputs().get(j).isFluidEqual(fluid) && FluidStack.areFluidStackTagsEqual(currentRecipe.getOutputs().get(j), fluid)) {
                             tryMoveFluid(outputHandler, tempTanks[j]);
                             break;
                         }
