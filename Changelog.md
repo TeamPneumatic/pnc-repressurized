@@ -6,6 +6,18 @@ Changes are in reverse chronological order; newest changes at the top.
 
 # Minecraft 1.21
 
+## [8.0.2]
+
+### Added
+* Forward-ported from 1.20.1 internal changes to Empty PCB items to make it possible for addon mods to add custom empty PCB's
+  * UV Lightbox and Etching Tank now accept any item which extends `EmptyPCBItem`
+  * Added `EmptyPCBItem#getSuccessItem()` and `EmptyPCBItem#getFailedItem()` which are used by the Etching Tank to determine the successful/failed etching outcomes
+
+### Fixed
+* Fixed some villager house worldgen issues
+  * Fixed the Aphorism Tile being blank and the Display Table lacking a Pneumatic Wrench
+  * Fixed (non-fatal) server error regarding an invalid resource location when the Reinforced Chest in a villager house is reloaded
+
 ## [8.0.1]
 
 ### Fixed
