@@ -83,7 +83,7 @@ public class ReinforcedChestBlockEntity extends AbstractPneumaticCraftBlockEntit
     public void saveAdditional(CompoundTag tag, HolderLookup.Provider provider) {
         super.saveAdditional(tag, provider);
         if (lootTable != null) {
-            tag.putString(NBT_LOOT_TABLE, lootTable.toString());
+            tag.putString(NBT_LOOT_TABLE, lootTable.location().toString());
             if (lootTableSeed != 0L) {
                 tag.putLong(NBT_LOOT_TABLE_SEED, lootTableSeed);
             }
