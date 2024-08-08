@@ -17,6 +17,7 @@ Changes are in reverse chronological order; newest changes at the top.
 * Fixed some villager house worldgen issues
   * Fixed the Aphorism Tile being blank and the Display Table lacking a Pneumatic Wrench
   * Fixed (non-fatal) server error regarding an invalid resource location when the Reinforced Chest in a villager house is reloaded
+* Fixed Refinery crash under some circumstances (could not reproduce this myself; added some defensive code changes to hopefully make this impossible)
 
 ## [8.0.1]
 
