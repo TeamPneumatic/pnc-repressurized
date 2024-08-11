@@ -6,6 +6,13 @@ Changes are in reverse chronological order; newest changes at the top.
 
 # Minecraft 1.21
 
+## [8.0.3]
+
+### Fixed
+* Fixed Compressed Iron and Pneumatic armor pieces not having durability or enchantability (oops)
+* Disabled registration of Air Conditioning upgrade handler, since there's no current mod integration for it
+  * No need for pointless armor init messages about it
+
 ## [8.0.2]
 
 ### Added
