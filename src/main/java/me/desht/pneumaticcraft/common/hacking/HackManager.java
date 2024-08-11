@@ -36,6 +36,7 @@ import me.desht.pneumaticcraft.common.registry.ModAttachmentTypes;
 import me.desht.pneumaticcraft.common.registry.ModBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.GlobalPos;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Mob;
@@ -156,6 +157,7 @@ public class HackManager {
         BlockState state = blockGetter.getBlockState(pos);
         Block block = state.getBlock();
         HackManager manager = getInstance(player.level());
+        MinecraftServer server = blockGetter.getServer();
 
         if (player.level().getGameTime() - 60 > manager.lastBlockPrune) {
             // clean up the tracked blocks map
@@ -163,7 +165,10 @@ public class HackManager {
                     entry -> {
                         Block trackedBlock = entry.getValue().getLeft();
                         IHackableBlock hackableBlock = entry.getValue().getRight();
-                        Level level = blockGetter.getServer().getLevel(entry.getKey().dimension());
+                        if (server == null && !blockGetter.dimension().equals(entry.getKey().dimension())) {
+                            return false;  // on the client: we can only try to clean up entries for this dimension
+                        }
+                        Level level = server == null ? blockGetter : server.getLevel(entry.getKey().dimension());
                         return block != trackedBlock || level == null ||
                                 !hackableBlock.canHack(level, entry.getKey().pos(), state, player)
                                         && !isInDisplayCooldown(hackableBlock, level, entry.getKey().pos(), player);
