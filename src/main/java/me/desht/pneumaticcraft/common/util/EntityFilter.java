@@ -60,7 +60,7 @@ public class EntityFilter implements Predicate<Entity> {
             .put("mob", e -> e instanceof Enemy && !(e instanceof TamableAnimal t && t.isTame()))
             .put("animal", e -> e instanceof Animal)
             .put("living", e -> e instanceof LivingEntity)
-            .put("player", e -> e instanceof Player)
+            .put("player", e -> e instanceof Player p && !p.isSpectator())
             .put("item", e -> e instanceof ItemEntity)
             .put("drone", e -> e instanceof DroneEntity)
             .put("boat", e -> e instanceof Boat)

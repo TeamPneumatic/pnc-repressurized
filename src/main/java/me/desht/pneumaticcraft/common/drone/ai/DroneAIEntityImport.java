@@ -24,6 +24,7 @@ import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.vehicle.AbstractMinecart;
 import net.minecraft.world.entity.vehicle.Boat;
 import net.minecraft.world.item.ItemStack;
@@ -39,7 +40,9 @@ public class DroneAIEntityImport extends DroneEntityBase<IEntityProvider, Entity
 
     @Override
     protected boolean isEntityValid(Entity entity) {
-        if (entity instanceof LivingEntity || entity instanceof AbstractMinecart || entity instanceof Boat) {
+        if (entity instanceof Player p && p.isSpectator()) {
+            return false;
+        } else if (entity instanceof LivingEntity || entity instanceof AbstractMinecart || entity instanceof Boat) {
             return drone.getCarryingEntities().isEmpty();
         } else if (ConfigHelper.common().drones.dronesCanImportXPOrbs.get() && entity instanceof ExperienceOrb) {
             return PneumaticCraftUtils.fillTankWithOrb(drone.getFluidTank(), (ExperienceOrb) entity, FluidAction.SIMULATE);
