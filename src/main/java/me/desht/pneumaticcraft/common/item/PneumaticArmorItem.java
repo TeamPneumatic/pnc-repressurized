@@ -102,8 +102,9 @@ public class PneumaticArmorItem extends ArmorItem implements
     public static final DyedItemColor DEFAULT_SECONDARY_COLOR = new DyedItemColor(0xFFC0C0C0, false);
     public static final DyedItemColor DEFAULT_EYEPIECE_COLOR = new DyedItemColor(0xFF00AA00, false);
 
-    public PneumaticArmorItem(ArmorItem.Type equipmentSlotIn) {
-        super(ModArmorMaterials.PNEUMATIC.getDelegate(), equipmentSlotIn, ModItems.pressurizableToolProps());
+    public PneumaticArmorItem(ArmorItem.Type type) {
+        super(ModArmorMaterials.PNEUMATIC.getDelegate(), type,
+                ModItems.pressurizableToolProps().durability(type.getDurability(24)));
     }
 
     /**

@@ -23,6 +23,7 @@ import net.minecraft.world.item.ArmorItem;
 
 public class CompressedIronArmorItem extends ArmorItem {
     public CompressedIronArmorItem(ArmorItem.Type type) {
-        super(ModArmorMaterials.COMPRESSED_IRON.getDelegate(), type, ModItems.defaultProps());
+        super(ModArmorMaterials.COMPRESSED_IRON.getDelegate(), type,
+                ModItems.defaultProps().durability(type.getDurability(24)));
     }
 }
