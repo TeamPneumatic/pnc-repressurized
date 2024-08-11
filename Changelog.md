@@ -8,11 +8,17 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## [8.0.3]
 
+### Added
+* Added `pneumaticcraft:logistics_frames` item tag, including the five types of Logistics Frame
+
 ### Fixed
 * Fixed Compressed Iron and Pneumatic armor pieces not having durability or enchantability (oops)
 * Disabled registration of Air Conditioning upgrade handler, since there's no current mod integration for it
   * No need for pointless armor init messages about it
 * Fixed Etching Tank not accepting etching acid (introduced in 8.0.2)
+* Fixed client crash with Pneumatic Helmet block tracker and hacking
+* Fixed drone Entity Import being able to pick up players in spectator mode
+  * Additionally, the `@player` entity filter no longer matches players in spectator mode
 
 ## [8.0.2]
 
