@@ -44,7 +44,7 @@ public class CommonUpgradeHandlers {
         magnetHandler = r.registerUpgradeHandler(new MagnetHandler());
         chargingHandler = r.registerUpgradeHandler(new ChargingHandler());
         chestplateLauncherHandler = r.registerUpgradeHandler(new ChestplateLauncherHandler());
-        airConHandler = r.registerUpgradeHandler(new AirConHandler());
+//        airConHandler = r.registerUpgradeHandler(new AirConHandler());
         reachDistanceHandler = r.registerUpgradeHandler(new ReachDistanceHandler());
         elytraHandler = r.registerUpgradeHandler(new ElytraHandler());
 
