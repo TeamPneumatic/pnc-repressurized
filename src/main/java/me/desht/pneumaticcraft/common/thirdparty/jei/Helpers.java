@@ -36,37 +36,37 @@ class Helpers {
 
     private record GuiProps(AbstractPneumaticCraftScreen gui) implements IGuiProperties {
         @Override
-        public Class<? extends Screen> getScreenClass() {
+        public Class<? extends Screen> screenClass() {
             return gui.getClass();
         }
 
         @Override
-        public int getGuiLeft() {
+        public int guiLeft() {
             return gui.guiLeft;
         }
 
         @Override
-        public int getGuiTop() {
+        public int guiTop() {
             return gui.guiTop;
         }
 
         @Override
-        public int getGuiXSize() {
+        public int guiXSize() {
             return gui.xSize;
         }
 
         @Override
-        public int getGuiYSize() {
+        public int guiYSize() {
             return gui.ySize;
         }
 
         @Override
-        public int getScreenWidth() {
+        public int screenWidth() {
             return gui.width;
         }
 
         @Override
-        public int getScreenHeight() {
+        public int screenHeight() {
             return gui.height;
         }
     }

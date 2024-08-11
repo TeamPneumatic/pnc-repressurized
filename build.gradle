@@ -159,10 +159,10 @@ dependencies {
 		exclude group: "net.minecraftforge", module: "forge"
 	}
 
-	compileOnly("mezz.jei:jei-${minecraft_version}-common-api:${jei_version}")
-	compileOnly("mezz.jei:jei-${minecraft_version}-neoforge-api:${jei_version}")
-	runtimeOnly("mezz.jei:jei-${minecraft_version}-common:${jei_version}")
-	runtimeOnly("mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}")
+	compileOnly("mezz.jei:jei-1.21-common-api:${jei_version}")
+	compileOnly("mezz.jei:jei-1.21-neoforge-api:${jei_version}")
+	runtimeOnly("mezz.jei:jei-1.21-common:${jei_version}")
+	runtimeOnly("mezz.jei:jei-1.21-neoforge:${jei_version}")
 
 	compileOnly("top.theillusivec4.curios:curios-neoforge:${curios_version}:api")
 	runtimeOnly("top.theillusivec4.curios:curios-neoforge:${curios_version}")

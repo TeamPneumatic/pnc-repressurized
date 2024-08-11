@@ -27,6 +27,7 @@ import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
+import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.gui.ingredient.IRecipeSlotTooltipCallback;
 import mezz.jei.api.gui.ingredient.IRecipeSlotView;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
@@ -79,8 +80,13 @@ public class JEIMemoryEssenceCategory extends AbstractPNCCategory<JEIMemoryEssen
     }
 
     private record Tooltip(MemoryEssenceRecipe recipe, int slot) implements IRecipeSlotTooltipCallback {
+        @SuppressWarnings("removal")
         @Override
         public void onTooltip(IRecipeSlotView recipeSlotView, List<Component> tooltip) {
+        }
+
+        @Override
+        public void onRichTooltip(IRecipeSlotView recipeSlotView, ITooltipBuilder tooltip) {
             String tooltipKey = recipe.getTooltipKey(slot);
             if (!tooltipKey.isEmpty()) {
                 tooltip.addAll(PneumaticCraftUtils.splitStringComponent(ChatFormatting.GREEN + I18n.get(tooltipKey)));

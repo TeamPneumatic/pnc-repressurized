@@ -26,6 +26,7 @@ import me.desht.pneumaticcraft.lib.Textures;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.ITickTimer;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
+import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.gui.drawable.IDrawableAnimated;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
@@ -35,10 +36,11 @@ import mezz.jei.api.recipe.RecipeIngredientRole;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.IdentityHashMap;
+import java.util.Map;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
@@ -112,15 +114,13 @@ public class JEIThermopneumaticProcessingPlantCategory extends AbstractPNCCatego
     }
 
     @Override
-    public List<Component> getTooltipStrings(ThermoPlantRecipe recipe, IRecipeSlotsView recipeSlotsView, double mouseX, double mouseY) {
-        List<Component> res = new ArrayList<>();
+    public void getTooltip(ITooltipBuilder tooltip, ThermoPlantRecipe recipe, IRecipeSlotsView recipeSlotsView, double mouseX, double mouseY) {
         if (recipe.getRequiredPressure() > 0 && mouseX >= 116 && mouseY >= 22 && mouseX <= 156 && mouseY <= 62) {
-            res.add(xlate("pneumaticcraft.gui.tooltip.pressure", recipe.getRequiredPressure()));
+            tooltip.add(xlate("pneumaticcraft.gui.tooltip.pressure", recipe.getRequiredPressure()));
             if (recipe.getAirUseMultiplier() != 1f) {
-                res.add(xlate("pneumaticcraft.gui.tab.info.pneumatic_armor.usage").append(" x")
+                tooltip.add(xlate("pneumaticcraft.gui.tab.info.pneumatic_armor.usage").append(" x")
                         .append(String.format("%.1f", recipe.getAirUseMultiplier())).withStyle(ChatFormatting.GRAY));
             }
         }
-        return res;
     }
 }

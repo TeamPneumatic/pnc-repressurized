@@ -24,11 +24,11 @@ import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.lib.Textures;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
+import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.neoforge.NeoForgeTypes;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
-import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.neoforged.neoforge.fluids.crafting.FluidIngredient;
@@ -60,8 +60,8 @@ public class JEIPlasticSolidifyingCategory extends AbstractPNCCategory<JEIPlasti
     }
 
     @Override
-    public List<Component> getTooltipStrings(PlasticSolidifyingRecipe recipe, IRecipeSlotsView recipeSlotsView, double mouseX, double mouseY) {
-        return positionalTooltip(mouseX, mouseY, (x, y) -> x >= 23 && x <= 60, "pneumaticcraft.gui.jei.tooltip.plasticSolidifying");
+    public void getTooltip(ITooltipBuilder tooltip, PlasticSolidifyingRecipe recipe, IRecipeSlotsView recipeSlotsView, double mouseX, double mouseY) {
+        tooltip.addAll(positionalTooltip(mouseX, mouseY, (x, y) -> x >= 23 && x <= 60, "pneumaticcraft.gui.jei.tooltip.plasticSolidifying"));
     }
 
     public static List<PlasticSolidifyingRecipe> getAllRecipes() {

@@ -20,6 +20,7 @@ package me.desht.pneumaticcraft.common.thirdparty.jei;
 import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.api.misc.Symbols;
 import me.desht.pneumaticcraft.client.gui.AbstractPneumaticCraftContainerScreen;
+import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.gui.handlers.IGuiClickableArea;
 import mezz.jei.api.gui.handlers.IGuiContainerHandler;
 import mezz.jei.api.recipe.IFocusFactory;
@@ -66,31 +67,29 @@ public class CustomRecipeClickArea {
             }
 
             @Override
-            public List<Component> getTooltipStrings() {
+            public void getTooltip(ITooltipBuilder tooltip) {
                 Collection<ItemStack> items = gui.getTargetItems();
                 Collection<FluidStack> fluids = gui.getTargetFluids();
-                ImmutableList.Builder<Component> builder = ImmutableList.builder();
                 if (!items.isEmpty() || !fluids.isEmpty()) {
-                    builder.add(Component.literal("Current Recipe:").withStyle(ChatFormatting.GRAY));
+                    tooltip.add(Component.literal("Current Recipe:").withStyle(ChatFormatting.GRAY));
                     for (ItemStack stack : items) {
                         if (!stack.isEmpty()) {
-                            builder.add(Component.literal(Symbols.ARROW_RIGHT + " ").append(stack.getHoverName())
+                            tooltip.add(Component.literal(Symbols.ARROW_RIGHT + " ").append(stack.getHoverName())
                                     .withStyle(ChatFormatting.YELLOW));
                         }
                     }
                     for (FluidStack stack : fluids) {
                         if (!stack.isEmpty()) {
-                            builder.add(Component.literal(Symbols.ARROW_RIGHT + " ").append(stack.getHoverName())
+                            tooltip.add(Component.literal(Symbols.ARROW_RIGHT + " ").append(stack.getHoverName())
                                     .withStyle(ChatFormatting.AQUA));
                         }
                     }
                     if (Minecraft.getInstance().options.advancedItemTooltips) {
-                        builder.add(Component.literal(gui.te.getCurrentRecipeIdSynced()).withStyle(ChatFormatting.DARK_GRAY));
+                        tooltip.add(Component.literal(gui.te.getCurrentRecipeIdSynced()).withStyle(ChatFormatting.DARK_GRAY));
                     }
-                    builder.add(Component.empty());
+                    tooltip.add(Component.empty());
                 }
-                builder.add(Component.translatable("jei.tooltip.show.recipes"));
-                return builder.build();
+                tooltip.add(Component.translatable("jei.tooltip.show.recipes"));
             }
         };
     }

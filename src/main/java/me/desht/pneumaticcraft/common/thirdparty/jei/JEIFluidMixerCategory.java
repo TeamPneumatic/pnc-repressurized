@@ -25,6 +25,7 @@ import me.desht.pneumaticcraft.lib.Textures;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.ITickTimer;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
+import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.gui.drawable.IDrawableAnimated;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
@@ -38,10 +39,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.fluids.FluidStack;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
@@ -102,14 +101,12 @@ public class JEIFluidMixerCategory extends AbstractPNCCategory<FluidMixerRecipe>
     }
 
     @Override
-    public List<Component> getTooltipStrings(FluidMixerRecipe recipe, IRecipeSlotsView recipeSlotsView, double mouseX, double mouseY) {
-        List<Component> res = new ArrayList<>();
+    public void getTooltip(ITooltipBuilder tooltip, FluidMixerRecipe recipe, IRecipeSlotsView recipeSlotsView, double mouseX, double mouseY) {
         if (recipe.getRequiredPressure() > 0 && mouseX >= 117 && mouseY >= 15 && mouseX <= 157 && mouseY <= 55) {
-            res.add(xlate("pneumaticcraft.gui.tooltip.pressure", recipe.getRequiredPressure()));
+            tooltip.add(xlate("pneumaticcraft.gui.tooltip.pressure", recipe.getRequiredPressure()));
         } else if (mouseX >= 45 && mouseY >= 20 && mouseX <= 89 && mouseY <= 50) {
-            res.add(Component.literal((recipe.getProcessingTime()) / 20f + "s"));
-            res.add(xlate("pneumaticcraft.gui.jei.tooltip.processingTime").withStyle(ChatFormatting.GRAY, ChatFormatting.ITALIC));
+            tooltip.add(Component.literal((recipe.getProcessingTime()) / 20f + "s"));
+            tooltip.add(xlate("pneumaticcraft.gui.jei.tooltip.processingTime").withStyle(ChatFormatting.GRAY, ChatFormatting.ITALIC));
         }
-        return res;
     }
 }

@@ -25,6 +25,7 @@ import me.desht.pneumaticcraft.lib.Textures;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
+import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.neoforge.NeoForgeTypes;
@@ -33,12 +34,8 @@ import mezz.jei.api.recipe.RecipeIngredientRole;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.fluids.FluidStack;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
@@ -85,12 +82,10 @@ public class JEIAmadronTradeCategory extends AbstractPNCCategory<AmadronRecipe> 
     }
 
     @Override
-    public List<Component> getTooltipStrings(AmadronRecipe recipe, IRecipeSlotsView recipeSlotsView, double mouseX, double mouseY) {
-        List<Component> res = new ArrayList<>();
+    public void getTooltip(ITooltipBuilder tooltip, AmadronRecipe recipe, IRecipeSlotsView recipeSlotsView, double mouseX, double mouseY) {
         if (recipe instanceof AmadronOffer offer && mouseX >= 22 && mouseX <= 51) {
-            res.addAll(WidgetAmadronOffer.makeTooltip(offer, -1));
+            tooltip.addAll(WidgetAmadronOffer.makeTooltip(offer, -1));
         }
-        return res;
     }
 
     private static class FluidTextOverlay implements IDrawable {

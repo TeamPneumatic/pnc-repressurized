@@ -46,14 +46,12 @@ import me.desht.pneumaticcraft.common.inventory.ProgrammerMenu;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketProgrammerSync;
 import me.desht.pneumaticcraft.common.registry.ModMenuTypes;
-import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.recipe.RecipeIngredientRole;
-import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.transfer.IRecipeTransferError;
-import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
 import mezz.jei.api.recipe.transfer.IRecipeTransferHandlerHelper;
+import mezz.jei.api.recipe.transfer.IUniversalRecipeTransferHandler;
 import mezz.jei.api.runtime.IRecipesGui;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Rect2i;
@@ -61,8 +59,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.CraftingRecipe;
-import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.client.event.ScreenEvent;
@@ -70,7 +66,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
-public class ProgrammerTransferHandler implements IRecipeTransferHandler<ProgrammerMenu, RecipeHolder<CraftingRecipe>> {
+public class ProgrammerTransferHandler implements IUniversalRecipeTransferHandler<ProgrammerMenu>/*IRecipeTransferHandler<ProgrammerMenu, RecipeHolder<CraftingRecipe>>*/ {
     private static ProgrammerScreen programmerScreen = null;
 
     private final IRecipeTransferHandlerHelper transferHelper;
@@ -90,12 +86,7 @@ public class ProgrammerTransferHandler implements IRecipeTransferHandler<Program
     }
 
     @Override
-    public RecipeType<RecipeHolder<CraftingRecipe>> getRecipeType() {
-        return RecipeTypes.CRAFTING;
-    }
-
-    @Override
-    public @Nullable IRecipeTransferError transferRecipe(ProgrammerMenu container, RecipeHolder<CraftingRecipe> recipe, IRecipeSlotsView recipeSlots, Player player, boolean maxTransfer, boolean doTransfer) {
+    public @Nullable IRecipeTransferError transferRecipe(ProgrammerMenu container, Object recipe, IRecipeSlotsView recipeSlots, Player player, boolean maxTransfer, boolean doTransfer) {
         if (programmerScreen != null) {
             IProgWidget craftingWidget = findSuitableCraftingWidget(programmerScreen);
 

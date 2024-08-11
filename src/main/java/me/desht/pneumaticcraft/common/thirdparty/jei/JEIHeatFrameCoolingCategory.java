@@ -23,6 +23,7 @@ import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
+import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.drawable.IDrawableAnimated;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
@@ -32,11 +33,7 @@ import mezz.jei.api.recipe.RecipeIngredientRole;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.resources.language.I18n;
-import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
@@ -78,10 +75,9 @@ public class JEIHeatFrameCoolingCategory extends AbstractPNCCategory<HeatFrameCo
     }
 
     @Override
-    public List<Component> getTooltipStrings(HeatFrameCoolingRecipe recipe, IRecipeSlotsView recipeSlotsView, double mouseX, double mouseY) {
-        List<Component> res = new ArrayList<>();
+    public void getTooltip(ITooltipBuilder tooltip, HeatFrameCoolingRecipe recipe, IRecipeSlotsView recipeSlotsView, double mouseX, double mouseY) {
         if (mouseX >= 23 && mouseX <= 60) {
-            res.addAll(PneumaticCraftUtils.splitStringComponent(I18n.get("pneumaticcraft.gui.nei.recipe.heatFrameCooling",
+            tooltip.addAll(PneumaticCraftUtils.splitStringComponent(I18n.get("pneumaticcraft.gui.nei.recipe.heatFrameCooling",
                     recipe.getThresholdTemperature() - 273
             )));
             if (recipe.getBonusMultiplier() > 0f) {
@@ -91,9 +87,9 @@ public class JEIHeatFrameCoolingCategory extends AbstractPNCCategory<HeatFrameCo
                         recipe.getThresholdTemperature() - 273,
                         recipe.getBonusLimit() + 1
                 );
-                res.addAll(PneumaticCraftUtils.splitStringComponent(bonus));
+                tooltip.addAll(PneumaticCraftUtils.splitStringComponent(bonus));
             }
         }
-        return res;
+        super.getTooltip(tooltip, recipe, recipeSlotsView, mouseX, mouseY);
     }
 }
