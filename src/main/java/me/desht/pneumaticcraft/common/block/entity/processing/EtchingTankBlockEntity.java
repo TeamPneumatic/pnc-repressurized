@@ -321,7 +321,7 @@ public class EtchingTankBlockEntity extends AbstractTickingBlockEntity
 
         @Override
         public boolean isFluidValid(FluidStack stack) {
-            return FluidStack.isSameFluidSameComponents(EmptyPCBItem.getEtchingFluid(), fluidStack);
+            return stack.getFluid().isSame(EmptyPCBItem.getEtchingFluid().getFluid());
         }
     }
 }
