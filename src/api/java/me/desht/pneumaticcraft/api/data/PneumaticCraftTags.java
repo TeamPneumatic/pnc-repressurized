@@ -92,6 +92,7 @@ public class PneumaticCraftTags {
         public static final TagKey<Item> BASIC_DRONES = modTag("basic_drones");
         public static final TagKey<Item> PLASTIC_SHEETS = modTag("plastic_sheets");
         public static final TagKey<Item> FLOUR = commonTag("dusts/flour");
+        public static final TagKey<Item> LOGISTIC_FRAMES = modTag("logistics_frames");
 
         public static final TagKey<Item> INGOTS_COMPRESSED_IRON = commonTag("ingots/compressed_iron");
         public static final TagKey<Item> STORAGE_BLOCKS_COMPRESSED_IRON = commonTag("storage_blocks/compressed_iron");

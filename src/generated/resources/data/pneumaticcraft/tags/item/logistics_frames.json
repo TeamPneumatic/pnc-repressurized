@@ -1,0 +1,9 @@
+{
+  "values": [
+    "pneumaticcraft:logistics_frame_storage",
+    "pneumaticcraft:logistics_frame_default_storage",
+    "pneumaticcraft:logistics_frame_active_provider",
+    "pneumaticcraft:logistics_frame_passive_provider",
+    "pneumaticcraft:logistics_frame_requester"
+  ]
+}

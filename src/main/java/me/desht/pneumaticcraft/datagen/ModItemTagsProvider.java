@@ -78,6 +78,11 @@ public class ModItemTagsProvider extends ItemTagsProvider {
         );
         addItemsToTag(PneumaticCraftTags.Items.REINFORCED_CHEST_DISALLOWED, ModBlocks.REINFORCED_CHEST, ModBlocks.SMART_CHEST);
         appendToTag(PneumaticCraftTags.Items.REINFORCED_CHEST_DISALLOWED, Tags.Items.SHULKER_BOXES);
+        addItemsToTag(PneumaticCraftTags.Items.LOGISTIC_FRAMES,
+                ModItems.LOGISTICS_FRAME_STORAGE, ModItems.LOGISTICS_FRAME_DEFAULT_STORAGE,
+                ModItems.LOGISTICS_FRAME_ACTIVE_PROVIDER, ModItems.LOGISTICS_FRAME_PASSIVE_PROVIDER,
+                ModItems.LOGISTICS_FRAME_REQUESTER
+        );
 
         addItemsToTag(ItemTags.HEAD_ARMOR, ModItems.COMPRESSED_IRON_HELMET, ModItems.PNEUMATIC_HELMET);
         addItemsToTag(ItemTags.CHEST_ARMOR, ModItems.COMPRESSED_IRON_CHESTPLATE, ModItems.PNEUMATIC_CHESTPLATE);
