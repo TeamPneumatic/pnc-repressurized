@@ -184,6 +184,11 @@ public class PneumaticArmorItem extends ArmorItem implements
     }
 
     @Override
+    public EquipmentSlot getEquipmentSlot(ItemStack stack) {
+        return type.getSlot();
+    }
+
+    @Override
     public ItemAttributeModifiers getDefaultAttributeModifiers(ItemStack stack) {
         ItemAttributeModifiers modifiers = super.getDefaultAttributeModifiers(stack);
 
