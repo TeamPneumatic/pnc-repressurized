@@ -71,7 +71,7 @@ public enum AreaRenderManager {
     private Level level;
     private DroneDebugClientHandler droneDebugger;
 
-    private List<AreaRenderer> cachedPositionProviderShowers;
+    private List<AreaRenderer> cachedPositionProviderShowers = new ArrayList<>();
     private AreaRenderer camoPositionShower;
     private AreaRenderer jackhammerPositionShower;
     private LastJackhammerDetails lastJackhammerDetails = new LastJackhammerDetails(BlockPos.ZERO, null, null, false);
@@ -122,6 +122,10 @@ public enum AreaRenderManager {
             } else {
                 showHandlers.keySet().removeIf(pos -> PneumaticCraftUtils.distBetweenSq(pos, player.blockPosition()) < 1024 && level.isEmptyBlock(pos));
             }
+        } else if (level != null) {
+            level = null;
+            showHandlers.clear();
+            cachedPositionProviderShowers.clear();
         }
     }
 
