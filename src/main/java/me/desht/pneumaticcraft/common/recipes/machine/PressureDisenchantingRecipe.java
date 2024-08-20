@@ -51,7 +51,7 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 public class PressureDisenchantingRecipe extends PressureChamberRecipeImpl {
     public static final ResourceLocation ID = RL("pressure_chamber_disenchanting");
 
-    public PressureDisenchantingRecipe(CraftingBookCategory category) {
+    public PressureDisenchantingRecipe(CraftingBookCategory ignoredCategory) {
         super(Collections.emptyList(), -0.75f, List.of());
     }
 

@@ -47,7 +47,7 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 public class PressureEnchantingRecipe extends PressureChamberRecipeImpl {
     public static final ResourceLocation ID = RL("pressure_chamber_enchanting");
 
-    public PressureEnchantingRecipe(CraftingBookCategory category) {
+    public PressureEnchantingRecipe(CraftingBookCategory ignoredCategory) {
         super(Collections.emptyList(), 2F, List.of());
     }
 
@@ -97,8 +97,7 @@ public class PressureEnchantingRecipe extends PressureChamberRecipeImpl {
         Set<Holder<Enchantment>> toTransfer = new HashSet<>();
 
         bookEnchantments.keySet().forEach(entry -> {
-            Enchantment enchantment = entry.value();
-            if (enchantment.canEnchant(enchantable) && itemEnchantments.stream().allMatch(e -> Enchantment.areCompatible(e, entry))) {
+            if (enchantable.supportsEnchantment(entry) && itemEnchantments.stream().allMatch(e -> Enchantment.areCompatible(e, entry))) {
                 enchantable.enchant(entry, bookEnchantments.getLevel(entry));
                 toTransfer.add(entry);
             }
