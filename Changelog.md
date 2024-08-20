@@ -6,6 +6,15 @@ Changes are in reverse chronological order; newest changes at the top.
 
 # Minecraft 1.21
 
+## [8.0.4]
+
+### Added
+* Added `pneumaticcraft:upgrades` item tag containing all PNC upgrade items
+
+### Fixed
+* Fixed Armor Upgrades not having any effect in Pneumatic Armor items
+* Fixed a couple of client-side memory leaks where world & player objects were not released on client logout
+
 ## [8.0.3]
 
 ### Added
