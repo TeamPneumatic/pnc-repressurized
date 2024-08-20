@@ -53,7 +53,7 @@ public record PacketUpdateSearchItem(Item item) implements CustomPacketPayload {
     public static void handle(PacketUpdateSearchItem message, IPayloadContext ctx) {
         if (message.item() != null && message.item() != Items.AIR) {
             CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(ctx.player());
-            if (handler.upgradeUsable(CommonUpgradeHandlers.searchHandler, true)) {
+            if (handler.upgradeUsable(CommonUpgradeHandlers.searchHandler, false)) {
                 ItemStack helmetStack = handler.getPlayer().getItemBySlot(EquipmentSlot.HEAD);
                 if (helmetStack.getItem() instanceof PneumaticArmorItem) {  // should be, but let's be paranoid...
                     PneumaticArmorItem.setSearchedItem(helmetStack, message.item());

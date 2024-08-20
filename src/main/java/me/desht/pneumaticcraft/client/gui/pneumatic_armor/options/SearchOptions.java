@@ -60,6 +60,7 @@ public class SearchOptions extends IOptionPage.SimpleOptionPage<SearchClientHand
                 PneumaticArmorItem.setSearchedItem(helmetStack, newSearchedItem);
                 NetworkHandler.sendToServer(new PacketUpdateSearchItem(newSearchedItem));
             }
+            searchGui = null;
         }
     }
 
