@@ -19,6 +19,7 @@ package me.desht.pneumaticcraft.datagen;
 
 import me.desht.pneumaticcraft.api.data.PneumaticCraftTags;
 import me.desht.pneumaticcraft.api.lib.Names;
+import me.desht.pneumaticcraft.common.item.UpgradeItem;
 import me.desht.pneumaticcraft.common.registry.ModBlocks;
 import me.desht.pneumaticcraft.common.registry.ModItems;
 import net.minecraft.core.HolderLookup;
@@ -124,6 +125,12 @@ public class ModItemTagsProvider extends ItemTagsProvider {
                 ModItems.PNEUMATIC_CHESTPLATE, ModItems.PNEUMATIC_HELMET);
 
         appendToTag(ItemTags.FREEZE_IMMUNE_WEARABLES, PneumaticCraftTags.Items.COMPRESSED_IRON_ARMOR, PneumaticCraftTags.Items.PNEUMATIC_ARMOR);
+
+        ModItems.ITEMS.getEntries().forEach(h -> {
+            if (h.get() instanceof UpgradeItem u) {
+                addItemsToTag(PneumaticCraftTags.Items.UPGRADES, () -> u);
+            }
+        });
     }
 
     @SafeVarargs
