@@ -21,13 +21,13 @@ import com.google.common.base.Suppliers;
 import me.desht.pneumaticcraft.common.recipes.ModCraftingHelper;
 import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.registry.ModRecipeSerializers;
+import me.desht.pneumaticcraft.common.thirdparty.theoneprobe.ProbeHelmet;
+import me.desht.pneumaticcraft.common.thirdparty.theoneprobe.TheOneProbe;
 import me.desht.pneumaticcraft.lib.ModIds;
-import net.minecraft.Util;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.*;
@@ -48,20 +48,22 @@ public class OneProbeCrafting extends ShapelessRecipe {
 
     public OneProbeCrafting(CraftingBookCategory category) {
         super("", category,
-                Util.make(new ItemStack(ModItems.PNEUMATIC_HELMET.get()), OneProbeCrafting::setOneProbeEnabled),
+                TheOneProbe.oneProbeEnabled ? ProbeHelmet.PNEUMATIC_HELMET_PROBE.toStack() : ModItems.PNEUMATIC_HELMET.toStack(),
                 NonNullList.of(Ingredient.EMPTY, Ingredient.of(ModItems.PNEUMATIC_HELMET.get()), Ingredient.of(oneProbeItem.get()))
         );
     }
 
     @Override
     public boolean matches(CraftingInput inv, Level worldIn) {
-        return ModCraftingHelper.allPresent(inv, ITEM_PREDICATE);
+        return TheOneProbe.oneProbeEnabled && ModCraftingHelper.allPresent(inv, ITEM_PREDICATE);
     }
 
     @Override
     public ItemStack assemble(CraftingInput inv, HolderLookup.Provider registryAccess) {
         List<ItemStack> stacks = ModCraftingHelper.findItems(inv, ITEM_PREDICATE);
-        return setOneProbeEnabled(stacks.getFirst().copy());
+        return TheOneProbe.oneProbeEnabled && stacks.size() == 2 ?
+                new ItemStack(ProbeHelmet.PNEUMATIC_HELMET_PROBE, 1, stacks.getFirst().getComponentsPatch()) :
+                ItemStack.EMPTY;
     }
 
     @Override
@@ -75,12 +77,6 @@ public class OneProbeCrafting extends ShapelessRecipe {
     }
 
     public static boolean isOneProbeEnabled(ItemStack helmetStack) {
-//        return helmetStack.hasTag() && helmetStack.getTag().getInt(ONE_PROBE_TAG) > 0;
-        return false;
-    }
-
-    private static ItemStack setOneProbeEnabled(ItemStack helmetStack) {
-//        helmetStack.getOrCreateTag().putInt(ONE_PROBE_TAG, 1);
-        return helmetStack;
+        return TheOneProbe.oneProbeEnabled && helmetStack.getItem() == ProbeHelmet.PNEUMATIC_HELMET_PROBE.get();
     }
 }

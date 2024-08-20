@@ -1,22 +1,5 @@
 {
-  "multipart": [
-    { "when": { "down": "open" }, "apply": { "model": "pneumaticcraft:block/advanced_pressure_tube_disconnected", "x": 180 } },
-    { "when": { "down": "connected" }, "apply": { "model": "pneumaticcraft:block/advanced_pressure_tube_connected", "x": 180 } },
-    { "when": { "down": "closed" }, "apply": { "model": "pneumaticcraft:block/advanced_pressure_tube_closed", "x": 180 } },
-    { "when": { "up": "open" }, "apply": { "model": "pneumaticcraft:block/advanced_pressure_tube_disconnected" } },
-    { "when": { "up": "connected" }, "apply": { "model": "pneumaticcraft:block/advanced_pressure_tube_connected" } },
-    { "when": { "up": "closed" }, "apply": { "model": "pneumaticcraft:block/advanced_pressure_tube_closed" } },
-    { "when": { "north": "open" }, "apply": { "model": "pneumaticcraft:block/advanced_pressure_tube_disconnected", "x": 90 } },
-    { "when": { "north": "connected" }, "apply": { "model": "pneumaticcraft:block/advanced_pressure_tube_connected", "x": 90 } },
-    { "when": { "north": "closed" }, "apply": { "model": "pneumaticcraft:block/advanced_pressure_tube_closed", "x": 90 } },
-    { "when": { "south": "open" }, "apply": { "model": "pneumaticcraft:block/advanced_pressure_tube_disconnected", "x": 90, "y": 180 } },
-    { "when": { "south": "connected" }, "apply": { "model": "pneumaticcraft:block/advanced_pressure_tube_connected", "x": 90, "y": 180 } },
-    { "when": { "south": "closed" }, "apply": { "model": "pneumaticcraft:block/advanced_pressure_tube_closed", "x": 90, "y": 180 } },
-    { "when": { "west": "open" }, "apply": { "model": "pneumaticcraft:block/advanced_pressure_tube_disconnected", "x": 90, "y": 270 } },
-    { "when": { "west": "connected" }, "apply": { "model": "pneumaticcraft:block/advanced_pressure_tube_connected", "x": 90, "y": 270 } },
-    { "when": { "west": "closed" }, "apply": { "model": "pneumaticcraft:block/advanced_pressure_tube_closed", "x": 90, "y": 270 } },
-    { "when": { "east": "open" }, "apply": { "model": "pneumaticcraft:block/advanced_pressure_tube_disconnected", "x": 90, "y": 90 } },
-    { "when": { "east": "connected" }, "apply": { "model": "pneumaticcraft:block/advanced_pressure_tube_connected", "x": 90, "y": 90 } },
-    { "when": { "east": "closed" }, "apply": { "model": "pneumaticcraft:block/advanced_pressure_tube_closed", "x": 90, "y": 90 } }
-  ]
+  "variants": {
+    "": { "model": "pneumaticcraft:block/advanced_pressure_tube" }
+  }
 }

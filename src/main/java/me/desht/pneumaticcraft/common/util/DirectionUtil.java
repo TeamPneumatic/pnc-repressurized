@@ -62,4 +62,14 @@ public class DirectionUtil {
             case NORTH, SOUTH -> throw new IllegalStateException("Unable to get Z-rotated facing of " + dir);
         };
     }
+
+    public static boolean getDirectionBit(int val, Direction dir) {
+        return (val & (1 << dir.get3DDataValue())) != 0;
+    }
+
+    public static byte setDirectionBit(int val, Direction dir, boolean set) {
+        return set ?
+                (byte) (val | (1 << dir.get3DDataValue())) :
+                (byte) (val & ~(1 << dir.get3DDataValue()));
+    }
 }

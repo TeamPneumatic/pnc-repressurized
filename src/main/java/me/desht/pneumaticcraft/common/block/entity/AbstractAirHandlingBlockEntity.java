@@ -124,6 +124,8 @@ public abstract class AbstractAirHandlingBlockEntity extends AbstractTickingBloc
         initializeHullAirHandlers();
 
         airHandlerMap.keySet().forEach(h -> h.setSideLeaking(null));
+
+        level.updateNeighborsAt(getBlockPos(), getBlockState().getBlock());
     }
 
     @Override

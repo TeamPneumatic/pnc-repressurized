@@ -19,7 +19,6 @@ package me.desht.pneumaticcraft.common.capabilities;
 
 import it.unimi.dsi.fastutil.floats.FloatPredicate;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
-import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.pressure.PressureHelper;
 import me.desht.pneumaticcraft.api.pressure.PressureTier;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
@@ -194,8 +193,6 @@ public class MachineAirHandler extends BasicAirHandler implements IAirHandlerMac
             if (rnd < delta / 125f || p > getCriticalPressure()) {
                 world.explode(null, pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D, 1.0F, Level.ExplosionInteraction.BLOCK);
                 world.destroyBlock(pos, false);
-                // notify client too so block shapes can be properly updated
-                PneumaticRegistry.getInstance().getMiscHelpers().forceClientShapeRecalculation(world, pos);
             } else if (rnd < delta / 25f) {
                 world.playSound(null, ownerTE.getBlockPos(), ModSounds.CREAK.get(), SoundSource.BLOCKS, 0.7f, 0.6f + world.random.nextFloat() * 0.8f);
             }

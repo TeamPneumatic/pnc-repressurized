@@ -35,11 +35,11 @@ import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
 import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.ElytraHandler;
-import me.desht.pneumaticcraft.common.recipes.special.OneProbeCrafting;
 import me.desht.pneumaticcraft.common.registry.ModArmorMaterials;
 import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.registry.ModMenuTypes;
+import me.desht.pneumaticcraft.common.thirdparty.theoneprobe.TheOneProbe;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.upgrades.UpgradableItemUtils;
 import me.desht.pneumaticcraft.common.util.GlobalPosHelper;
@@ -159,7 +159,7 @@ public class PneumaticArmorItem extends ArmorItem implements
     }
 
     private void addHelmetInformation(ItemStack stack, Level level, List<Component> tooltip) {
-        if (OneProbeCrafting.isOneProbeEnabled(stack)) {
+        if (TheOneProbe.isProbeEnabled(stack)) {
             tooltip.add(xlate("gui.tooltip.item.pneumaticcraft.pneumatic_helmet.one_probe").withStyle(ChatFormatting.BLUE));
         }
 

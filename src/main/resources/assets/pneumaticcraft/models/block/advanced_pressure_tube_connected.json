@@ -1,7 +1,58 @@
 {
-  "parent": "pneumaticcraft:block/pressure_tube_connected",
+  "credit": "Made with Blockbench",
   "textures": {
-    "pipe": "pneumaticcraft:pnc_model/advanced_pressure_tube",
-    "particle": "pneumaticcraft:pnc_model/advanced_pressure_tube"
-  }
+    "particle": "pneumaticcraft:pnc_model/advanced_pressure_tube",
+    "pipe": "pneumaticcraft:pnc_model/advanced_pressure_tube"
+  },
+  "render_type": "solid",
+  "elements": [
+    {
+      "from": [6, 10, 7],
+      "to": [7, 16, 9],
+      "faces": {
+        "north": {"uv": [9.003, 0, 9.997, 6.003], "texture": "#pipe"},
+        "east": {"uv": [8, 7, 9, 8], "texture": "#pipe"},
+        "south": {"uv": [6.003, 0, 6.997, 6.003], "texture": "#pipe"},
+        "west": {"uv": [0, 7, 6, 9], "rotation": 90, "texture": "#pipe"},
+        "up": {"uv": [6.003, 7.003, 6.997, 8.997], "texture": "#pipe"},
+        "down": {"uv": [6.003, 7.003, 6.997, 8.997], "texture": "#pipe"}
+      }
+    },
+    {
+      "from": [9, 10, 7],
+      "to": [10, 16, 9],
+      "faces": {
+        "north": {"uv": [6.003, 0, 6.997, 6.003], "texture": "#pipe"},
+        "east": {"uv": [10, 7, 16, 9], "rotation": 270, "texture": "#pipe"},
+        "south": {"uv": [9.003, 0, 9.997, 6.003], "texture": "#pipe"},
+        "west": {"uv": [8, 7, 9, 8], "texture": "#pipe"},
+        "up": {"uv": [9.003, 7.003, 9.997, 8.997], "texture": "#pipe"},
+        "down": {"uv": [9.003, 7.003, 9.997, 8.997], "texture": "#pipe"}
+      }
+    },
+    {
+      "from": [6, 10, 6],
+      "to": [10, 16, 7],
+      "faces": {
+        "north": {"uv": [10, 6, 6, 0], "rotation": 180, "texture": "#pipe"},
+        "east": {"uv": [6, 0, 7, 6], "texture": "#pipe"},
+        "south": {"uv": [8, 7, 9, 8], "texture": "#pipe"},
+        "west": {"uv": [9, 0, 10, 6], "texture": "#pipe"},
+        "up": {"uv": [6, 6, 10, 7], "texture": "#pipe"},
+        "down": {"uv": [7.003, 9.003, 8.997, 9.997], "texture": "#pipe"}
+      }
+    },
+    {
+      "from": [6, 10, 9],
+      "to": [10, 16, 10],
+      "faces": {
+        "north": {"uv": [8, 7, 9, 8], "texture": "#pipe"},
+        "east": {"uv": [7, 10, 6, 16], "rotation": 180, "texture": "#pipe"},
+        "south": {"uv": [6, 10, 10, 16], "rotation": 180, "texture": "#pipe"},
+        "west": {"uv": [9, 10, 10, 16], "rotation": 180, "texture": "#pipe"},
+        "up": {"uv": [6, 9, 10, 10], "texture": "#pipe"},
+        "down": {"uv": [7.003, 6.003, 8.997, 6.997], "texture": "#pipe"}
+      }
+    }
+  ]
 }

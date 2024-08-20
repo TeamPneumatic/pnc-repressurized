@@ -77,7 +77,9 @@ public interface IMiscHelpers {
      *
      * @param world the world
      * @param pos the position of the block that has been changed or removed
+     * @deprecated this kludge is no longer necessary as of v8.0.4
      */
+    @Deprecated(since = "8.0.4", forRemoval = true)
     void forceClientShapeRecalculation(Level world, BlockPos pos);
 
     /**

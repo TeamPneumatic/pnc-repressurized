@@ -1,8 +1,45 @@
 {
-  "parent": "pneumaticcraft:block/pressure_tube_closed",
+  "credit": "Made with Blockbench",
   "textures": {
-    "pipe": "pneumaticcraft:pnc_model/advanced_pressure_tube",
-    "pipeplug": "pneumaticcraft:pnc_model/tube_closed",
-    "particle": "pneumaticcraft:pnc_model/advanced_pressure_tube"
-  }
+    "pipeplug": "pneumaticcraft:pnc_model/tube_closed"
+  },
+  "render_type": "solid",
+  "elements": [
+    {
+      "from": [7, 9.997, 7],
+      "to": [9, 13, 9],
+      "faces": {
+        "north": {"uv": [4, 0, 6, 3], "texture": "#pipeplug"},
+        "east": {"uv": [0, 0, 2, 3], "texture": "#pipeplug"},
+        "south": {"uv": [2, 0, 4, 3], "texture": "#pipeplug"},
+        "west": {"uv": [8, 0, 6, 3], "texture": "#pipeplug"},
+        "up": {"uv": [3, 3, 5, 5], "texture": "#pipeplug"},
+        "down": {"uv": [4, 0, 6, 2], "texture": "#pipeplug", "cullface": "down"}
+      }
+    },
+    {
+      "from": [6.5, 12, 6.5],
+      "to": [9.5, 12.5, 9.5],
+      "faces": {
+        "north": {"uv": [0, 3, 3, 4], "rotation": 180, "texture": "#pipeplug"},
+        "east": {"uv": [2, 3, 3, 6], "rotation": 90, "texture": "#pipeplug"},
+        "south": {"uv": [0, 5, 3, 6], "texture": "#pipeplug"},
+        "west": {"uv": [0, 3, 1, 6], "rotation": 270, "texture": "#pipeplug"},
+        "up": {"uv": [0, 3, 3, 6], "texture": "#pipeplug"},
+        "down": {"uv": [0, 6, 3, 9], "texture": "#pipeplug"}
+      }
+    },
+    {
+      "from": [6, 10, 6],
+      "to": [10, 10.5, 10],
+      "faces": {
+        "north": {"uv": [0, 9, 4, 10], "rotation": 180, "texture": "#pipeplug"},
+        "east": {"uv": [3, 9, 4, 13], "rotation": 90, "texture": "#pipeplug"},
+        "south": {"uv": [0, 12, 4, 13], "texture": "#pipeplug"},
+        "west": {"uv": [0, 9, 1, 13], "rotation": 270, "texture": "#pipeplug"},
+        "up": {"uv": [0, 9, 4, 13], "texture": "#pipeplug"},
+        "down": {"uv": [4, 9, 8, 13], "texture": "#pipeplug"}
+      }
+    }
+  ]
 }

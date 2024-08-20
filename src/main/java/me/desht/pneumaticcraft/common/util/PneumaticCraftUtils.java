@@ -710,5 +710,4 @@ public class PneumaticCraftUtils {
     public static <T> Optional<T> getOptionalComponent(ItemStack stack, DataComponentType<T> type) {
         return Optional.ofNullable(stack.get(type));
     }
-
 }

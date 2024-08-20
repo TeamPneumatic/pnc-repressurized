@@ -22,7 +22,6 @@ import me.desht.pneumaticcraft.api.pressure.PressureTier;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
 import me.desht.pneumaticcraft.api.tileentity.IAirListener;
 import me.desht.pneumaticcraft.api.tileentity.IManoMeasurable;
-import me.desht.pneumaticcraft.common.block.PressureTubeBlock;
 import me.desht.pneumaticcraft.common.block.entity.AbstractAirHandlingBlockEntity;
 import me.desht.pneumaticcraft.common.block.entity.CamouflageableBlockEntity;
 import me.desht.pneumaticcraft.common.item.TubeModuleItem;
@@ -46,32 +45,35 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
-import net.minecraft.world.phys.shapes.Shapes;
-import net.minecraft.world.phys.shapes.VoxelShape;
-import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.client.model.data.ModelData;
+import net.neoforged.neoforge.client.model.data.ModelProperty;
 
 import javax.annotation.Nullable;
 import java.util.*;
 import java.util.stream.Stream;
 
+
 public class PressureTubeBlockEntity extends AbstractAirHandlingBlockEntity implements IAirListener, IManoMeasurable, CamouflageableBlockEntity {
+    public static final ModelProperty<Short> CONNECTION_PROPERTY = new ModelProperty<>();
+
     @DescSynced
-    private final boolean[] sidesClosed = new boolean[6];
+    private int sidesClosed;
+    @DescSynced
+    private int sidesVisuallyConnected;  // tubes with only one real connection also show the opposite side visually connected
+    @DescSynced
+    private Direction inLineModuleDir = null;  // only one inline module allowed
+
+    private int sidesActuallyConnected;  // sides actually connected for air-handling purposes
     private final EnumMap<Direction, AbstractTubeModule> modules = new EnumMap<>(Direction.class);
     private BlockState camoState;
     private AABB renderBoundingBox = null;
-    private Direction inLineModuleDir = null;  // only one inline module allowed
-    private final List<Direction> neighbourDirections = new ArrayList<>();
-    private VoxelShape cachedTubeShape = null; // important for performance
-    private int pendingCacheShapeClear = 0;
-    private boolean needDiscover = false;
+    private Integer shapeCacheKey = null;  // key into PressureTubeBlock#SHAPE_CACHE; very important for performance
 
     public PressureTubeBlockEntity(BlockPos pos, BlockState state) {
         this(ModBlockEntityTypes.PRESSURE_TUBE.get(), pos, state, PressureTier.TIER_ONE, PneumaticValues.VOLUME_PRESSURE_TUBE);
@@ -85,22 +87,15 @@ public class PressureTubeBlockEntity extends AbstractAirHandlingBlockEntity impl
     public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
         super.loadAdditional(tag, provider);
 
-        byte closed = tag.getByte("sidesClosed");
-        for (int i = 0; i < 6; i++) {
-            sidesClosed[i] = ((closed & 1 << i) != 0);
-        }
+        sidesClosed = tag.getInt("sidesClosed");
     }
 
     @Override
     public void saveAdditional(CompoundTag tag, HolderLookup.Provider provider) {
         super.saveAdditional(tag, provider);
 
-        byte closed = 0;
-        for (int i = 0; i < 6; i++) {
-            if (sidesClosed[i]) closed |= 1 << i;
-        }
-        if (closed != 0) {
-            tag.putByte("sidesClosed", closed);
+        if (sidesClosed != 0) {
+            tag.putInt("sidesClosed", sidesClosed);
         }
     }
 
@@ -131,8 +126,6 @@ public class PressureTubeBlockEntity extends AbstractAirHandlingBlockEntity impl
     @Override
     public void readFromPacket(CompoundTag tag, HolderLookup.Provider provider) {
         super.readFromPacket(tag, provider);
-
-        clearCachedShape();
 
         EnumSet<Direction> dirs = EnumSet.allOf(Direction.class);
         ListTag moduleList = tag.getList("modules", Tag.TAG_COMPOUND);
@@ -169,22 +162,21 @@ public class PressureTubeBlockEntity extends AbstractAirHandlingBlockEntity impl
         camoState = CamouflageableBlockEntity.readCamo(tag);
     }
 
-    public void updateRenderBoundingBox() {
+    @Override
+    public void onDescUpdate() {
+        super.onDescUpdate();
+
+        requestModelDataUpdate();
+        purgeShapeCacheKey();
+    }
+
+    private void updateRenderBoundingBox() {
         renderBoundingBox = new AABB(getBlockPos());
 
         for (Direction dir : DirectionUtil.VALUES) {
             if (modules.containsKey(dir) && modules.get(dir).getRenderBoundingBox() != null) {
                 renderBoundingBox = renderBoundingBox.minmax(modules.get(dir).getRenderBoundingBox());
             }
-        }
-    }
-
-    @Override
-    public void tickCommonPre() {
-        super.tickCommonPre();
-
-        if (pendingCacheShapeClear > 0 && --pendingCacheShapeClear == 0) {
-            cachedTubeShape = null;
         }
     }
 
@@ -201,11 +193,6 @@ public class PressureTubeBlockEntity extends AbstractAirHandlingBlockEntity impl
     public void tickServer() {
         super.tickServer();
 
-        if (needDiscover) {
-            discoverConnectedNeighbors();
-            needDiscover = false;
-        }
-
         boolean couldLeak = true;
 
         for (Direction dir : DirectionUtil.VALUES) {
@@ -220,12 +207,20 @@ public class PressureTubeBlockEntity extends AbstractAirHandlingBlockEntity impl
         }
 
         // check for possibility of air leak due to unconnected tube
-        if (couldLeak && neighbourDirections.size() == 1) {
-            Direction d = neighbourDirections.get(0).getOpposite();
-            airHandler.setSideLeaking(canConnectPneumatic(d) ? d : null);
-        } else {
-            airHandler.setSideLeaking(null);
-        }
+        Direction leakDir = couldLeak ? getLeakDir() : null;
+        airHandler.setSideLeaking(canConnectPneumatic(leakDir) ? leakDir : null);
+    }
+
+    private Direction getLeakDir() {
+        return switch (sidesActuallyConnected) {
+            case 1 -> Direction.UP;
+            case 2 -> Direction.DOWN;
+            case 4 -> Direction.SOUTH;
+            case 8 -> Direction.NORTH;
+            case 16 -> Direction.EAST;
+            case 32 -> Direction.WEST;
+            default -> null;
+        };
     }
 
     @Override
@@ -237,6 +232,7 @@ public class PressureTubeBlockEntity extends AbstractAirHandlingBlockEntity impl
         }
 
         tubeModules().forEach(AbstractTubeModule::onPlaced);
+        purgeShapeCacheKey();
     }
 
     @Override
@@ -257,16 +253,29 @@ public class PressureTubeBlockEntity extends AbstractAirHandlingBlockEntity impl
         return modules.get(side);
     }
 
-    public boolean isSideClosed(Direction side) {
-        return sidesClosed[side.get3DDataValue()];
+    public boolean isSideClosed(Direction dir) {
+        return DirectionUtil.getDirectionBit(sidesClosed, dir);
     }
 
-    public void setSideClosed(Direction side, boolean closed) {
-        if (sidesClosed[side.get3DDataValue()] != closed) {
-            sidesClosed[side.get3DDataValue()] = closed;
+    public void setSideClosed(Direction dir, boolean closed) {
+        byte b = DirectionUtil.setDirectionBit(sidesClosed, dir, closed);
+        if (b != sidesClosed) {
+            sidesClosed = b;
             initializeHullAirHandlers();
             discoverConnectedNeighbors();
+            setChanged();
+            level.blockUpdated(getBlockPos(), getBlockState().getBlock());
+            purgeShapeCacheKey();
         }
+    }
+
+    public boolean isSideConnected(Direction dir) {
+        return DirectionUtil.getDirectionBit(sidesVisuallyConnected, dir);
+    }
+
+    public void setSideConnected(Direction dir, boolean connected) {
+        sidesActuallyConnected = DirectionUtil.setDirectionBit(sidesActuallyConnected, dir, connected);
+        sidesVisuallyConnected = calculateVisuallyConnected();
     }
 
     public Stream<AbstractTubeModule> tubeModules() {
@@ -294,16 +303,16 @@ public class PressureTubeBlockEntity extends AbstractAirHandlingBlockEntity impl
                 modules.get(side).onRemoved();
             }
         }
-        clearCachedShape();
         if (module != null) {
             modules.put(side, module);
         } else {
             modules.remove(side);
         }
         if (getLevel() != null && !getLevel().isClientSide) {
-            getLevel().setBlock(getBlockPos(), PressureTubeBlock.recalculateState(level, worldPosition, getBlockState()), Block.UPDATE_ALL);
+            discoverConnectedNeighbors();
             sendDescriptionPacket();
             setChanged();
+            purgeShapeCacheKey();
         }
     }
 
@@ -332,17 +341,39 @@ public class PressureTubeBlockEntity extends AbstractAirHandlingBlockEntity impl
         // connected neighbour discovery needs to be deferred,
         //   since although the neighbouring block has updated,
         //   the block entity's air handler data may not yet have updated
-        needDiscover = true;
+//        needDiscover = true;
+        discoverConnectedNeighbors();
     }
 
     private void discoverConnectedNeighbors() {
-        neighbourDirections.clear();
+        int prevSidesConnected = sidesActuallyConnected;
+
+        List<Direction> neighbourDirections = new ArrayList<>();
         airHandler.getConnectedAirHandlers(this).forEach(connection -> neighbourDirections.add(connection.getDirection()));
+        sidesActuallyConnected = sidesVisuallyConnected = 0;
+        neighbourDirections.forEach(d -> setSideConnected(d, true));
+        sidesVisuallyConnected = calculateVisuallyConnected();
+
+        if (sidesActuallyConnected != prevSidesConnected) {
+            purgeShapeCacheKey();
+        }
     }
 
-    @Override
-    public IItemHandler getItemHandler(@org.jetbrains.annotations.Nullable Direction dir) {
-        return null;
+    /**
+     * If only connected in one direction (and no side closed or has a module),
+     *   add a visual connection in the opposite direction, so the tube looks open
+     */
+    private int calculateVisuallyConnected() {
+        if (sidesClosed != 0 || !modules.isEmpty()) {
+            return sidesActuallyConnected;
+        }
+
+        return switch (sidesActuallyConnected) {
+            case 1, 2 -> 1 | 2;      // D/U
+            case 4, 8 -> 4 | 8;      // N/S
+            case 16, 32 -> 16 | 32;  // E/W
+            default -> sidesActuallyConnected;
+        };
     }
 
     public BlockEntity getConnectedNeighbor(Direction dir) {
@@ -365,7 +396,9 @@ public class PressureTubeBlockEntity extends AbstractAirHandlingBlockEntity impl
         HitResult hitResult = RayTraceUtils.getEntityLookedObject(player, PneumaticCraftUtils.getPlayerReachDistance(player));
         if (hitResult instanceof BlockHitResult blockHitResult) {
             AbstractTubeModule tm = getModule(blockHitResult.getDirection());
-            if (tm != null) tm.addInfo(text);
+            if (tm != null) {
+                tm.addInfo(text);
+            }
         }
     }
 
@@ -380,17 +413,30 @@ public class PressureTubeBlockEntity extends AbstractAirHandlingBlockEntity impl
         CamouflageableBlockEntity.syncToClient(this);
     }
 
-    public VoxelShape getCachedTubeShape(VoxelShape blockShape) {
-        if (cachedTubeShape == null) {
-            cachedTubeShape = blockShape;
-            tubeModules().forEach(module -> cachedTubeShape = Shapes.or(cachedTubeShape, module.getShape()));
-        }
-        return cachedTubeShape;
+    @Override
+    protected ModelData.Builder modelDataBuilder() {
+        return super.modelDataBuilder()
+                .with(PressureTubeBlockEntity.CONNECTION_PROPERTY, (short) (sidesClosed | (sidesVisuallyConnected << 8)));
     }
 
-    public void clearCachedShape() {
-        // needs to be deferred by a couple of ticks, it seems
-        // otherwise the old shape (now wrong) can get recached on the client
-        pendingCacheShapeClear = 2;
+    /**
+     * Shape cache keys depends on connected/closed state of each face, along with whatever modules are attached.
+     */
+    public int getShapeCacheKey() {
+        if (shapeCacheKey == null) {
+            int[] vals = new int[8];
+            vals[0] = sidesVisuallyConnected;
+            vals[1] = sidesClosed;
+            for (Direction d : DirectionUtil.VALUES) {
+                AbstractTubeModule m = getModule(d);
+                vals[d.get3DDataValue() + 2] = m == null ? 0 : m.getInternalId();
+            }
+            shapeCacheKey = Arrays.hashCode(vals);
+        }
+        return shapeCacheKey;
+    }
+
+    private void purgeShapeCacheKey() {
+        shapeCacheKey = null;
     }
 }

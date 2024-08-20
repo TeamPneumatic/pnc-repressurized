@@ -1,0 +1,5 @@
+{
+  "loader": "pneumaticcraft:pressure_tube",
+  "prefix": "reinforced",
+  "render_type": "solid"
+}

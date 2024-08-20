@@ -450,8 +450,6 @@ public abstract class AbstractPneumaticCraftBlock extends Block
     static void removeBlockSneakWrenched(Level world, BlockPos pos) {
         if (!world.isClientSide()) {
             world.removeBlock(pos, false);
-            // this only gets called server-side, but the client needs to be informed too, to update neighbour states
-            PneumaticRegistry.getInstance().getMiscHelpers().forceClientShapeRecalculation(world, pos);
         }
     }
 

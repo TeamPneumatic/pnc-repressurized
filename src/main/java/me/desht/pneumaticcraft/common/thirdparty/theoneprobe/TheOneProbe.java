@@ -19,9 +19,24 @@ package me.desht.pneumaticcraft.common.thirdparty.theoneprobe;
 
 import me.desht.pneumaticcraft.common.thirdparty.IThirdParty;
 import me.desht.pneumaticcraft.lib.ModIds;
+import net.minecraft.world.item.ItemStack;
+import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.InterModComms;
 
 public class TheOneProbe implements IThirdParty {
+    public static boolean oneProbeEnabled = false;
+
+    public static boolean isProbeEnabled(ItemStack stack) {
+        return oneProbeEnabled && stack.getItem() == ProbeHelmet.PNEUMATIC_HELMET_PROBE.get();
+    }
+
+    @Override
+    public void preInit(IEventBus modBus) {
+        oneProbeEnabled = true;
+
+        ProbeHelmet.init();
+    }
+
     @Override
     public void init() {
         InterModComms.sendTo(ModIds.TOP, "getTheOneProbe", TOPInit::new);

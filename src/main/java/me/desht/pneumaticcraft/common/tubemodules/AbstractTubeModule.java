@@ -26,6 +26,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -75,6 +76,15 @@ public abstract class AbstractTubeModule {
                 Block.box(CORE_MIN - h, 8 - w, 8 - w, CORE_MIN, 8 + w, 8 + w),
                 Block.box(CORE_MAX, 8 - w, 8 - w, CORE_MAX + h, 8 + w, 8 + w),
         };
+    }
+
+    /**
+     * Used for generating cache keys.
+     *
+     * @return a unique integer ID for this tube type
+     */
+    public int getInternalId() {
+        return BuiltInRegistries.ITEM.getId(getItem());
     }
 
     public void markFake() {

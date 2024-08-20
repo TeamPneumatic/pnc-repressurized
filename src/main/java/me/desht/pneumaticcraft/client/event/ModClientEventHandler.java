@@ -23,6 +23,7 @@ import me.desht.pneumaticcraft.client.model.CamoModel;
 import me.desht.pneumaticcraft.client.model.custom.CamouflageModel;
 import me.desht.pneumaticcraft.client.model.custom.FluidItemModel;
 import me.desht.pneumaticcraft.client.model.custom.RenderedItemModel;
+import me.desht.pneumaticcraft.client.model.custom.pressure_tube.PressureTubeModelLoader;
 import me.desht.pneumaticcraft.client.render.MinigunItemRenderer;
 import me.desht.pneumaticcraft.common.block.AbstractCamouflageBlock;
 import me.desht.pneumaticcraft.common.block.AbstractPneumaticCraftBlock;
@@ -68,6 +69,7 @@ public class ModClientEventHandler {
         event.register(RL("camouflaged"), CamouflageModel.Loader.INSTANCE);
         event.register(RL("fluid_container_item"), FluidItemModel.Loader.INSTANCE);
         event.register(RL("rendered_item"), RenderedItemModel.Loader.INSTANCE);
+        event.register(RL("pressure_tube"), PressureTubeModelLoader.INSTANCE);
     }
 
     @SubscribeEvent

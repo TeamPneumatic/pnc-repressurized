@@ -276,7 +276,7 @@ public class ModItems {
         return defaultProps().stacksTo(1).craftRemainder(Items.BUCKET);
     }
 
-    private static <T extends Item> DeferredItem<T> register(final String name, final Supplier<T> sup) {
+    public static <T extends Item> DeferredItem<T> register(final String name, final Supplier<T> sup) {
         return ITEMS.register(name, sup);
     }
 

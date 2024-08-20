@@ -35,4 +35,15 @@ public enum PressureTubeConnection implements StringRepresentable {
     public int getIndex() {
         return index;
     }
+
+    public static short packConnections(PressureTubeConnection[] connections) {
+        assert connections.length == 6;
+
+        short res = 0;
+        for (int i = 0; i < connections.length; i++) {
+            res |= (short) ((connections[i] == CONNECTED ? 1 : 0) << i * 2);
+            res |= (short) ((connections[i] == CLOSED ? 1 : 0) << i * 2 + 1);
+        }
+        return res;
+    }
 }

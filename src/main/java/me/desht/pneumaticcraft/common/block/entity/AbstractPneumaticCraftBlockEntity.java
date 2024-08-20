@@ -18,7 +18,6 @@
 package me.desht.pneumaticcraft.common.block.entity;
 
 import me.desht.pneumaticcraft.api.PNCCapabilities;
-import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.api.lib.NBTKeys;
 import me.desht.pneumaticcraft.api.lib.Names;
@@ -274,9 +273,6 @@ public abstract class AbstractPneumaticCraftBlockEntity extends BlockEntity
                 sc.setupFacingMatrix();
             }
         }
-        if (!nonNullLevel().isClientSide) {
-            PneumaticRegistry.getInstance().getMiscHelpers().forceClientShapeRecalculation(level, worldPosition);
-        }
 
         invalidateCapabilities();
     }
@@ -382,14 +378,17 @@ public abstract class AbstractPneumaticCraftBlockEntity extends BlockEntity
     @Nonnull
     @Override
     public ModelData getModelData() {
+        return modelDataBuilder().build();
+    }
+
+    protected ModelData.Builder modelDataBuilder() {
         if (this instanceof CamouflageableBlockEntity c) {
             return ModelData.builder()
                     .with(AbstractCamouflageBlock.BLOCK_ACCESS, level)
                     .with(AbstractCamouflageBlock.BLOCK_POS, worldPosition)
-                    .with(AbstractCamouflageBlock.CAMO_STATE, c.getCamouflage())
-                    .build();
+                    .with(AbstractCamouflageBlock.CAMO_STATE, c.getCamouflage());
         } else {
-            return super.getModelData();
+            return ModelData.builder();
         }
     }
 
