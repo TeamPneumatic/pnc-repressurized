@@ -96,7 +96,8 @@ public class ModBlockTagsProvider extends BlockTagsProvider {
                 .addTag(Tags.Blocks.ORES)
                 .addTag(BlockTags.LOGS);
         tag(PneumaticCraftTags.Blocks.ELECTROSTATIC_GRID)
-                .add(Blocks.IRON_BARS);
+                .add(Blocks.IRON_BARS)
+                .add(Blocks.LIGHTNING_ROD);
         tag(PneumaticCraftTags.Blocks.CROP_SUPPORT_GROWABLE)
                 .addTag(BlockTags.CROPS)
                 .addTag(BlockTags.SAPLINGS)

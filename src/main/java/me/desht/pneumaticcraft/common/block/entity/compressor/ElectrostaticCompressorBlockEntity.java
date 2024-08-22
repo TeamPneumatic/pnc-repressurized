@@ -120,11 +120,11 @@ public class ElectrostaticCompressorBlockEntity extends AbstractAirHandlingBlock
     }
 
     public int getStrikeChance() {
-        int strikeChance = ConfigHelper.common().machines.electrostaticLightningChance.get();
-        if (nonNullLevel().isRaining()) strikeChance *= 0.5;  // slightly more likely if raining
-        if (nonNullLevel().isThundering()) strikeChance *= 0.2; // much more likely if thundering
+        float strikeChance = ConfigHelper.common().machines.electrostaticLightningChance.get();
+        if (nonNullLevel().isRaining()) strikeChance *= 0.5f;  // slightly more likely if raining
+        if (nonNullLevel().isThundering()) strikeChance *= 0.2f; // much more likely if thundering
         strikeChance *= (1f - (0.02f * ironBarsAbove));
-        return strikeChance;
+        return (int) strikeChance;
     }
 
     private void maybeLightningStrike() {
@@ -176,7 +176,7 @@ public class ElectrostaticCompressorBlockEntity extends AbstractAirHandlingBlock
         if (excessPressure > 0f) {
             int maxRedirection = PneumaticValues.MAX_REDIRECTION_PER_IRON_BAR * compressor.ironBarsBeneath;
             int excessAir = (int) (excessPressure * compressor.airHandler.getVolume());
-            compressor.addAir(-Math.min(maxRedirection, excessAir));
+            compressor.addAir(-Math.min(maxRedirection, excessAir + 10));
         }
     }
 

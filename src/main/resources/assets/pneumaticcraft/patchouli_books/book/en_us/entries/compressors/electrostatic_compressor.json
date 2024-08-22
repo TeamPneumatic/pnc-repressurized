@@ -10,7 +10,7 @@
     },
     {
       "type": "text",
-      "text": "To increase the chance of this happening, you can connect $(item)Iron Bars/$ to this machine which act as a conductor for the lightning bolt.$(p)Advice would be to create a large $(thing)grid/$ of Iron Bars: they can be up 5 blocks away horizontally (circular radius), and up to 5 blocks above or below, but they must all be connected to the $(item)Electrostatic Compressor/$ via each other."
+      "text": "To increase the chance of this happening, you can connect your compressors to a $(ttcolor)$(t:Grid blocks can be customized via the 'pneumaticraft:electrostatic_grid' block tag)grid/$ of $(item)Iron Bars/$ or $(item)Lightning Rods/$ to this machine, which act as a conductor for the lightning bolt.$(p)Larger grids are better: grid blocks can be up 5 space away horizontally (circular radius), and up to 5 blocks above or below, but they must all be connected to the $(item)Electrostatic Compressor/$ via each other."
     },
     {
       "type": "image",
@@ -28,15 +28,15 @@
     },
     {
       "type": "text",
-      "text": "This dissipation only happens when the danger pressure of the compressor has been reached, not sooner. Each $(item)Iron Bar/$ $(italic)directly/$ below the compressor (on the same Y axis) will dissipate 10,000mL of excess air. $(p)Thus, with 10 compressors on a shared $(thing)grid/$, $(ttcolor)$(t:200000 / 10 = 20000 air produced per compressor; 10000 x 2 = 20000 air dissipated)only 2 Iron Bars/$ are needed below each compressor. (You could also add $(l:base_concepts/upgrades#security)Security Upgrades/$ to the compressor, but that's more expensive and less effective)"
+      "text": "This dissipation only happens when the danger pressure of the compressor has been reached, not sooner. Each $(item)Iron Bar/$ $(italic)directly/$ below the compressor (on the same Y axis) will dissipate up to 10,000mL of excess air. $(p)Thus, with 10 compressors on a shared $(thing)grid/$, $(ttcolor)$(t:200000 / 10 = 20000 air produced per compressor; 10000 x 2 = 20000 air dissipated)only 2 grid blocks/$ are needed below each compressor. (You could also add $(l:base_concepts/upgrades#security)Security Upgrades/$ to the compressor, but that's more expensive and less effective)"
     },
     {
       "type": "text",
-      "text": "To improve the chance of a strike, you can also place up to 10 $(item)Iron Bars/$ directly $(italic)above/$ the compressor to form a $(thing)lightning rod/$. Each bar will slightly improve the strike chance."
+      "text": "To improve the chance of a strike, you can also place up to 10 grid blocks directly $(italic)above/$ the compressor to form a $(thing)lightning rod/$. Each block will slightly improve the strike chance."
     },
     {
       "type": "text",
-      "text": "$(bold)Note:/$ unlike in previous versions of $(pncr), natural lightning bolts do $(italic)not/$ add air to the compressor (this was highly abusable using other mods to create lightning). Instead the compressor has a small chance to create a \"fake\" bolt. This chance is $(italic)very/$ small in clear weather, but improves when $(thing)raining/$, and improves greatly in a $(thing)thunderstorm/$."
+      "text": "$(bold)Note:/$ unlike in earlier versions of $(pncr), natural lightning bolts do $(italic)not/$ add air to the compressor (this was highly abusable using other mods to create lightning). Instead the compressor has a small chance to create a \"fake\" bolt. This chance is $(italic)very/$ small in clear weather, but improves when $(thing)raining/$, and improves dramatically in a $(thing)thunderstorm/$."
     },
     {
       "type": "crafting",
