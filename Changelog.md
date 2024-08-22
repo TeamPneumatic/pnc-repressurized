@@ -8,11 +8,20 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## [8.0.4]
 
+### Changed
+* Sentry Turrets now note the deploying player ID, and won't attack that player if their filter is empty (no more tragic accidents)
+  * Existing Turrets in your world need to be picked up and deployed again for this to function
+* Miniguns (hand-held/turret/drone) now have a reduced i-frame count; 10 ticks instead of 20
+  * This increases their damage output (and effectively reduces ammo usage)
+  * Can be configured in config; `invulnerability_ticks` in the Minigun section
+
 ### Added
 * Added `pneumaticcraft:upgrades` item tag containing all PNC upgrade items
+* Added vanilla Lightning Rods to the `pneumaticcraft:electrostatic_grid` block tag, meaning they can be used as well as Iron Bars with the Electrostatic Compressor
 
 ### Fixed
 * Fixed Armor Upgrades not having any effect in Pneumatic Armor items
+* Fixed Sentry Turrets not doing the "sweep" animation when ammo is loaded (cosmetic only)
 * Fixed a couple of client-side memory leaks where world & player objects were not released on client logout
 
 ## [8.0.3]
