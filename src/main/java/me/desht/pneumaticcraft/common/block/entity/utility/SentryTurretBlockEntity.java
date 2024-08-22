@@ -67,6 +67,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Iterator;
 import java.util.List;
+import java.util.UUID;
 
 public class SentryTurretBlockEntity extends AbstractTickingBlockEntity implements
         IRedstoneControl<SentryTurretBlockEntity>, IGUITextFieldSensitive, MenuProvider {
@@ -80,6 +81,7 @@ public class SentryTurretBlockEntity extends AbstractTickingBlockEntity implemen
     private Minigun minigun;
     private final SentryTurretEntitySelector entitySelector = new SentryTurretEntitySelector();
     private Vec3 tileVec;
+    private UUID ownerId;
 
     @GuiSynced
     private String entityFilter = "@mob";
@@ -205,10 +207,15 @@ public class SentryTurretBlockEntity extends AbstractTickingBlockEntity implemen
         Entity entity = nonNullLevel().getEntity(targetEntityId);
         if (entity instanceof LivingEntity) {
             getMinigun().setAttackTarget((LivingEntity) entity);
-        } else {
+        } else if (getMinigun().getAttackTarget() != null) {
             getMinigun().setAttackTarget(null);
             getMinigun().setReturning(true);
         }
+    }
+
+    public void setOwner(ServerPlayer player) {
+        ownerId = player.getUUID();
+        setChanged();
     }
 
     public Minigun getMinigun() {
@@ -229,6 +236,9 @@ public class SentryTurretBlockEntity extends AbstractTickingBlockEntity implemen
         tag.put("Items", inventory.serializeNBT(provider));
         tag.putString(NBT_ENTITY_FILTER, entityFilter);
         tag.putFloat("idleYaw", idleYaw);
+        if (ownerId != null) {
+            tag.putUUID("ownerId", ownerId);
+        }
     }
 
     @Override
@@ -238,6 +248,9 @@ public class SentryTurretBlockEntity extends AbstractTickingBlockEntity implemen
         inventory.deserializeNBT(provider, tag.getCompound("Items"));
         idleYaw = tag.getFloat("idleYaw");
         setText(0, tag.getString(NBT_ENTITY_FILTER));
+        if (tag.contains("ownerId")) {
+            ownerId = tag.getUUID("ownerId");
+        }
     }
 
     @Override
@@ -449,13 +462,21 @@ public class SentryTurretBlockEntity extends AbstractTickingBlockEntity implemen
         @Override
         public boolean test(Entity entity) {
             if (entity instanceof Player player) {
-                if (player.isCreative() || player.isSpectator() || isExcludedBySecurityStations(player)) return false;
+                if (player.isCreative() || player.isSpectator() || isExcludedBySecurityStations(player) || isProtectedOwner(player)) {
+                    return false;
+                }
             }
             return super.test(entity) && inRange(entity) && canTurretSeeEntity(entity);
         }
 
         private boolean inRange(Entity entity) {
             return PneumaticCraftUtils.distBetweenSq(new BlockPos(getBlockPos().getX(), getBlockPos().getY(), getBlockPos().getZ()), entity.getX(), entity.getY(), entity.getZ()) <= getRangeSquared();
+        }
+
+        private boolean isProtectedOwner(Player player) {
+            // owning player is safe if the filter's empty (sentry turret won't attack owner by default, but still can
+            //   if there's a specific entity filter in place)
+            return player.getUUID().equals(ownerId) && entityFilter.isEmpty();
         }
 
         private boolean isExcludedBySecurityStations(Player player) {

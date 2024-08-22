@@ -11,7 +11,7 @@
     {
       "type": "spotlight",
       "item": "pneumaticcraft:sentry_turret",
-      "text": "Potential targets for the $(thing)Sentry Turret/$ can be filtered by entering an $(l:base_concepts/entity_filter)Entity Filter/$ in the Turret's GUI; you can press & hold $(thing)F1/$ for a popup filter help page.$(p)Newly-placed turrets have a default filter of $(thing)@mob/$ to avoid pain and suffering."
+      "text": "Potential targets for the $(thing)Sentry Turret/$ can be filtered by entering an $(l:base_concepts/entity_filter)Entity Filter/$ in the Turret's GUI; you can press & hold $(thing)F1/$ for a popup filter help page.$(p)Newly-placed turrets have a default filter of $(thing)@mob/$, but a turret with no filter will not attack the player who placed it."
     },
     {
       "type": "spotlight",

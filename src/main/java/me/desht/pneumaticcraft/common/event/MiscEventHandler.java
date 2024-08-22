@@ -72,6 +72,7 @@ import net.neoforged.neoforge.event.entity.EntityEvent;
 import net.neoforged.neoforge.event.entity.EntityMountEvent;
 import net.neoforged.neoforge.event.entity.living.FinalizeSpawnEvent;
 import net.neoforged.neoforge.event.entity.living.LivingEquipmentChangeEvent;
+import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.furnace.FurnaceFuelBurnTimeEvent;
 import net.neoforged.neoforge.event.level.ExplosionEvent;
@@ -307,6 +308,13 @@ public class MiscEventHandler {
                     }
                 });
             }
+        }
+    }
+
+    @SubscribeEvent
+    public void onIncomingDamage(LivingIncomingDamageEvent event) {
+        if (PneumaticRegistry.getInstance().getDamageSources().isMinigunDamage(event.getSource())) {
+            event.setInvulnerabilityTicks(ConfigHelper.common().minigun.invulnerabilityTicks.get());
         }
     }
 }

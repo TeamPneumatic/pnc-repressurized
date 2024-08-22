@@ -57,7 +57,7 @@ public class SentryTurretScreen extends AbstractPneumaticCraftContainerScreen<Se
 
         addRenderableWidget(entityFilter = new WidgetTextField(font, leftPos + 80, topPos + 62, 70));
         entityFilter.setMaxLength(256);
-        setFocused(entityFilter);
+//        setFocused(entityFilter);
 
         addRenderableWidget(errorButton = new WidgetButtonExtended(leftPos + 155, topPos + 52, 16, 16, Component.empty()));
         errorButton.setRenderedIcon(Textures.GUI_PROBLEMS_TEXTURE).setVisible(false);
@@ -120,6 +120,14 @@ public class SentryTurretScreen extends AbstractPneumaticCraftContainerScreen<Se
         return entityFilter.keyPressed(keyCode, scanCode, modifiers)
                 || entityFilter.canConsumeInput()
                 || super.keyPressed(keyCode, scanCode, modifiers);
+    }
+
+    @Override
+    public boolean mouseClicked(double pMouseX, double pMouseY, int pButton) {
+        if (!entityFilter.isHovered()) {
+            setFocused(null);
+        }
+        return super.mouseClicked(pMouseX, pMouseY, pButton);
     }
 
     @Override

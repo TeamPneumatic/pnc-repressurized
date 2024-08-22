@@ -25,6 +25,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -90,8 +91,12 @@ public class SentryTurretBlock extends AbstractPneumaticCraftBlock implements Pn
     public void setPlacedBy(Level world, BlockPos pos, BlockState state, LivingEntity entity, ItemStack stack) {
         super.setPlacedBy(world, pos, state, entity, stack);
 
-        world.getBlockEntity(pos, ModBlockEntityTypes.SENTRY_TURRET.get())
-                .ifPresent(te -> te.setIdleYaw(entity.getViewYRot(0f)));
+        world.getBlockEntity(pos, ModBlockEntityTypes.SENTRY_TURRET.get()).ifPresent(te -> {
+            if (entity instanceof ServerPlayer player) {
+                te.setOwner(player);
+            }
+            te.setIdleYaw(entity.getViewYRot(0f));
+        });
     }
 
     @Nullable
@@ -105,4 +110,5 @@ public class SentryTurretBlock extends AbstractPneumaticCraftBlock implements Pn
         super.addSerializableComponents(list);
         list.add(ModDataComponents.ENTITY_FILTER.get());
     }
+
 }

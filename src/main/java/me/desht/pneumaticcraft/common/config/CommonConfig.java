@@ -128,6 +128,7 @@ public class CommonConfig {
         public ModConfigSpec.DoubleValue weightedAmmoDamageMultiplier;
         public ModConfigSpec.DoubleValue weightedAmmoRangeMultiplier;
         public ModConfigSpec.BooleanValue blockHitParticles;
+        public ModConfigSpec.IntValue invulnerabilityTicks;
     }
     public static class Recipes {
         public ModConfigSpec.BooleanValue inWorldPlasticSolidification;
@@ -551,6 +552,10 @@ public class CommonConfig {
                 .comment("Show particles when a block is hit by minigun fire? Looks good, but consumes some network bandwidth.")
                 .translation("pneumaticcraft.config.common.minigun_properties.block_hit_particles")
                 .define("block_hit_particles", true);
+        minigun.invulnerabilityTicks = builder
+                .comment("Entity invulnerability ticks after being hit by a Minigun bullet. (Vanilla default is 20 ticks)")
+                .translation("pneumaticcraft.config.common.integration.ie_external_heater_fe_per_tick")
+                .defineInRange("invulnerability_ticks", 10, 0, Integer.MAX_VALUE);
         builder.pop();
 
         builder.push("Integration");
