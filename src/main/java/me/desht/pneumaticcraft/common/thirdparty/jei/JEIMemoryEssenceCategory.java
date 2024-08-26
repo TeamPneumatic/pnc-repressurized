@@ -28,7 +28,7 @@ import me.desht.pneumaticcraft.lib.Textures;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.builder.ITooltipBuilder;
-import mezz.jei.api.gui.ingredient.IRecipeSlotTooltipCallback;
+import mezz.jei.api.gui.ingredient.IRecipeSlotRichTooltipCallback;
 import mezz.jei.api.gui.ingredient.IRecipeSlotView;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.neoforge.NeoForgeTypes;
@@ -39,7 +39,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.resources.language.I18n;
-import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ItemLike;
 import net.neoforged.neoforge.fluids.FluidStack;
@@ -60,11 +59,11 @@ public class JEIMemoryEssenceCategory extends AbstractPNCCategory<JEIMemoryEssen
     public void setRecipe(IRecipeLayoutBuilder builder, MemoryEssenceRecipe recipe, IFocusGroup focuses) {
         builder.addSlot(RecipeIngredientRole.INPUT, 54, 29)
                 .addItemStack(recipe.input1)
-                .addTooltipCallback(new Tooltip(recipe, 0));
+                .addRichTooltipCallback(new Tooltip(recipe, 0));
         if (!recipe.input2.isEmpty()) {
             builder.addSlot(RecipeIngredientRole.INPUT, 76, 29)
                     .addItemStack(recipe.input2)
-                    .addTooltipCallback(new Tooltip(recipe, 1));
+                    .addRichTooltipCallback(new Tooltip(recipe, 1));
         }
         builder.addSlot(RecipeIngredientRole.OUTPUT, 112, 29)
                 .addIngredients(NeoForgeTypes.FLUID_STACK, Collections.singletonList(new FluidStack(ModFluids.MEMORY_ESSENCE.get(), 1000)));
@@ -79,12 +78,7 @@ public class JEIMemoryEssenceCategory extends AbstractPNCCategory<JEIMemoryEssen
         graphics.drawString(fr, s, (getBackground().getWidth() - w) / 2, 0, 0x404040, false);
     }
 
-    private record Tooltip(MemoryEssenceRecipe recipe, int slot) implements IRecipeSlotTooltipCallback {
-        @SuppressWarnings("removal")
-        @Override
-        public void onTooltip(IRecipeSlotView recipeSlotView, List<Component> tooltip) {
-        }
-
+    private record Tooltip(MemoryEssenceRecipe recipe, int slot) implements IRecipeSlotRichTooltipCallback {
         @Override
         public void onRichTooltip(IRecipeSlotView recipeSlotView, ITooltipBuilder tooltip) {
             String tooltipKey = recipe.getTooltipKey(slot);

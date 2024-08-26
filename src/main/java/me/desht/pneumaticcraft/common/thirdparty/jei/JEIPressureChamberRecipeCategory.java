@@ -35,7 +35,7 @@ import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.ITickTimer;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.builder.ITooltipBuilder;
-import mezz.jei.api.gui.ingredient.IRecipeSlotTooltipCallback;
+import mezz.jei.api.gui.ingredient.IRecipeSlotRichTooltipCallback;
 import mezz.jei.api.gui.ingredient.IRecipeSlotView;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.recipe.IFocus;
@@ -44,7 +44,6 @@ import mezz.jei.api.recipe.RecipeIngredientRole;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.resources.language.I18n;
-import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.*;
@@ -137,7 +136,7 @@ public class JEIPressureChamberRecipeCategory extends AbstractPNCCategory<Pressu
             builder.addSlot(RecipeIngredientRole.INPUT, posX, posY)
                     .setSlotName("in" + i)
                     .addIngredients(VanillaTypes.ITEM_STACK, inputs.get(i))
-                    .addTooltipCallback(new Tooltip(recipe));
+                    .addRichTooltipCallback(new Tooltip(recipe));
         }
 
         List<List<ItemStack>> outputs = applyOverrides(false, recipe.getResultsForDisplay(ClientUtils.getClientLevel().registryAccess()), overrides);
@@ -145,16 +144,11 @@ public class JEIPressureChamberRecipeCategory extends AbstractPNCCategory<Pressu
             builder.addSlot(RecipeIngredientRole.OUTPUT, 101 + i % 3 * 18, 59 + i / 3 * 18)
                     .setSlotName("out" + i)
                     .addItemStacks(outputs.get(i))
-                    .addTooltipCallback(new Tooltip(recipe));
+                    .addRichTooltipCallback(new Tooltip(recipe));
         }
     }
 
-    private record Tooltip(PressureChamberRecipe recipe) implements IRecipeSlotTooltipCallback {
-        @SuppressWarnings("removal")
-        @Override
-        public void onTooltip(IRecipeSlotView recipeSlotView, List<Component> tooltip) {
-        }
-
+    private record Tooltip(PressureChamberRecipe recipe) implements IRecipeSlotRichTooltipCallback {
         @Override
         public void onRichTooltip(IRecipeSlotView recipeSlotView, ITooltipBuilder tooltip) {
             String tooltipKey = recipe.getTooltipKey(

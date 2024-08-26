@@ -20,6 +20,7 @@ package me.desht.pneumaticcraft.common.thirdparty.jei;
 import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.crafting.recipe.PneumaticCraftRecipe;
+import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.client.gui.*;
 import me.desht.pneumaticcraft.client.gui.programmer.ProgWidgetItemFilterScreen;
 import me.desht.pneumaticcraft.client.gui.semiblock.AbstractLogisticsScreen;
@@ -41,7 +42,8 @@ import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.handlers.IGuiContainerHandler;
 import mezz.jei.api.helpers.IJeiHelpers;
-import mezz.jei.api.ingredients.subtypes.IIngredientSubtypeInterpreter;
+import mezz.jei.api.ingredients.subtypes.ISubtypeInterpreter;
+import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.registration.*;
@@ -56,6 +58,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
 import net.neoforged.neoforge.common.NeoForge;
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -71,15 +74,10 @@ public class JEIPlugin implements IModPlugin {
     public void registerItemSubtypes(ISubtypeRegistration registration) {
         for (var item: ModItems.ITEMS.getEntries()) {
             if (item.get() instanceof PressurizableItem) {
-                registration.registerSubtypeInterpreter(VanillaTypes.ITEM_STACK, item.get(),
-                        (stack, ctx) -> PNCCapabilities.getAirHandler(stack)
-                                .map(airHandler -> String.valueOf(airHandler.getPressure()))
-                                .orElse(IIngredientSubtypeInterpreter.NONE)
-                );
+                registration.registerSubtypeInterpreter(VanillaTypes.ITEM_STACK, item.get(), PressureSubtypeInterpreter.INSTANCE);
             }
         }
-        registration.registerSubtypeInterpreter(VanillaTypes.ITEM_STACK, ModItems.EMPTY_PCB.get(),
-                (s, ctx) -> String.valueOf(UVLightBoxBlockEntity.getExposureProgress(s)));
+        registration.registerSubtypeInterpreter(VanillaTypes.ITEM_STACK, ModItems.EMPTY_PCB.get(), ExposureSubtypeInterpeter.INSTANCE);
     }
 
     @Override
@@ -216,6 +214,34 @@ public class JEIPlugin implements IModPlugin {
         @Override
         public List<Rect2i> getGuiExtraAreas(AbstractPneumaticCraftContainerScreen<?,?> containerScreen) {
             return containerScreen.getTabRectangles();
+        }
+    }
+
+    private enum PressureSubtypeInterpreter implements ISubtypeInterpreter<ItemStack> {
+        INSTANCE;
+
+        @Override
+        public @Nullable Object getSubtypeData(ItemStack ingredient, UidContext context) {
+            return PNCCapabilities.getAirHandler(ingredient).map(IAirHandler::getPressure).orElse(null);
+        }
+
+        @Override
+        public String getLegacyStringSubtypeInfo(ItemStack ingredient, UidContext context) {
+            return "";
+        }
+    }
+
+    private enum ExposureSubtypeInterpeter implements ISubtypeInterpreter<ItemStack> {
+        INSTANCE;
+
+        @Override
+        public @Nullable Object getSubtypeData(ItemStack stack, UidContext context) {
+            return UVLightBoxBlockEntity.getExposureProgress(stack);
+        }
+
+        @Override
+        public String getLegacyStringSubtypeInfo(ItemStack ingredient, UidContext context) {
+            return "";
         }
     }
 }
