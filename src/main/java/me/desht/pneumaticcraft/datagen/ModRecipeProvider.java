@@ -1142,13 +1142,13 @@ public class ModRecipeProvider extends RecipeProvider {
                 'C', ModItems.PNEUMATIC_CYLINDER.get()
         ).save(consumer);
 
-//        Item mekRadShield = BuiltInRegistries.ITEM.get(ResourceLocation.parse("mekanism:module_radiation_shielding_unit"));
-//        shaped(ModUpgrades.RADIATION_SHIELDING.get().getItem(), ModItems.PRINTED_CIRCUIT_BOARD.get(),
-//                "LIL/IRI/LIL",
-//                'I', PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON,
-//                'L', PneumaticCraftTags.Items.UPGRADE_COMPONENTS,
-//                'R', mekRadShield
-//        ).save(consumer.withConditions(new ModLoadedCondition(ModIds.MEKANISM)));
+        Item mekRadShield = BuiltInRegistries.ITEM.get(ResourceLocation.parse("mekanism:module_radiation_shielding_unit"));
+        shaped(ModUpgrades.RADIATION_SHIELDING.get().getItem(), ModItems.PRINTED_CIRCUIT_BOARD.get(),
+                "LIL/IRI/LIL",
+                'I', PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON,
+                'L', PneumaticCraftTags.Items.UPGRADE_COMPONENTS,
+                'R', mekRadShield
+        ).save(consumer.withConditions(new ModLoadedCondition(ModIds.MEKANISM)));
 
         // bricks etc.
         shaped(ModBlocks.REINFORCED_STONE.get(), 8, ModItems.COMPRESSED_IRON_INGOT.get(),
