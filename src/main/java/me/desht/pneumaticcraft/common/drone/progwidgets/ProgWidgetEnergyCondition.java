@@ -78,9 +78,9 @@ public class ProgWidgetEnergyCondition extends ProgWidgetCondition {
                 BlockEntity te = drone.getDroneLevel().getBlockEntity(pos);
                 if (te == null) return false;
                 int energy = 0;
-                for (Direction face : DirectionUtil.VALUES) {
-                    if (getSides()[face.get3DDataValue()]) {
-                        energy = Math.max(energy, getEnergy(te, face));
+                for (Direction dir : DirectionUtil.VALUES) {
+                    if (isSideSelected(dir)) {
+                        energy = Math.max(energy, getEnergy(te, dir));
                     }
                 }
                 maybeRecordMeasuredVal(drone, energy);

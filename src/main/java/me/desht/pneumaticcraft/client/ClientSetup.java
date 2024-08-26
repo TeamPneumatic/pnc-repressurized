@@ -373,6 +373,8 @@ public class ClientSetup {
         ProgWidgetGuiManager.registerProgWidgetGui(ProgWidgetDroneConditionEnergy.class, ProgWidgetDroneConditionScreen.Energy::new);
         ProgWidgetGuiManager.registerProgWidgetGui(ProgWidgetDropItem.class, ProgWidgetDropItemScreen::new);
         ProgWidgetGuiManager.registerProgWidgetGui(ProgWidgetEmitRedstone.class, ProgWidgetEmitRedstoneScreen::new);
+        ProgWidgetGuiManager.registerProgWidgetGui(ProgWidgetEnergyExport.class, ProgWidgetImportExportScreen::new);
+        ProgWidgetGuiManager.registerProgWidgetGui(ProgWidgetEnergyImport.class, ProgWidgetImportExportScreen::new);
         ProgWidgetGuiManager.registerProgWidgetGui(ProgWidgetEntityAttack.class, ProgWidgetEntityAttackScreen::new);
         ProgWidgetGuiManager.registerProgWidgetGui(ProgWidgetEntityCondition.class, ProgWidgetConditionScreen.Entity::new);
         ProgWidgetGuiManager.registerProgWidgetGui(ProgWidgetEntityImport.class, ProgWidgetAreaShowScreen::new);

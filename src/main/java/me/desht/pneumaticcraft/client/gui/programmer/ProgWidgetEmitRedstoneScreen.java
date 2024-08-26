@@ -41,8 +41,8 @@ public class ProgWidgetEmitRedstoneScreen extends AbstractProgWidgetScreen<ProgW
         for (Direction dir : DirectionUtil.VALUES) {
             Component sideName = ClientUtils.translateDirectionComponent(dir);
             WidgetCheckBox checkBox = new WidgetCheckBox(guiLeft + 8, guiTop + 30 + dir.get3DDataValue() * 12, 0xFF404040, sideName,
-                    b -> progWidget.getSides()[dir.get3DDataValue()] = b.checked);
-            checkBox.checked = progWidget.getSides()[dir.get3DDataValue()];
+                    b -> progWidget.setSideSelected(dir, b.checked));
+            checkBox.checked = progWidget.isSideSelected(dir);
             addRenderableWidget(checkBox);
         }
     }

@@ -40,12 +40,12 @@ public abstract class ProgWidgetDroneConditionScreen<T extends ProgWidgetDroneCo
     public void init() {
         super.init();
 
-        if (isSidedWidget()) {
+        if (progWidget instanceof ISidedWidget sided) {
             for (Direction dir : DirectionUtil.VALUES) {
                 Component sideName = ClientUtils.translateDirectionComponent(dir);
                 WidgetCheckBox checkBox = new WidgetCheckBox(guiLeft + 8, guiTop + 30 + dir.get3DDataValue() * 12, 0xFF404040, sideName,
-                        b -> ((ISidedWidget) progWidget).getSides()[dir.get3DDataValue()] = b.checked);
-                checkBox.checked = ((ISidedWidget) progWidget).getSides()[dir.get3DDataValue()];
+                        b -> sided.setSideSelected(dir, b.checked));
+                checkBox.checked = sided.isSideSelected(dir);
                 addRenderableWidget(checkBox);
             }
         }

@@ -31,6 +31,12 @@ public interface ISidedWidget {
         return getSides()[side.get3DDataValue()];
     }
 
+    default void setSideSelected(Direction side, boolean set) {
+        boolean[] sides = getSides();
+        sides[side.get3DDataValue()] = set;
+        setSides(sides);
+    }
+
     static Direction getDirForSides(boolean[] sides) {
         for (int i = 0; i < sides.length; i++) {
             if (sides[i]) {

@@ -204,10 +204,11 @@ public class ProgWidgetEmitRedstone extends ProgWidget implements IRedstoneEmiss
 
         @Override
         public boolean canUse() {
-            boolean[] sides = ((ISidedWidget) widget).getSides();
-            for (int i = 0; i < 6; i++) {
-                if (sides[i]) {
-                    drone.setEmittingRedstone(Direction.from3DDataValue(i), ((IRedstoneEmissionWidget) widget).getEmittingRedstone());
+            if (widget instanceof ISidedWidget sided && widget instanceof IRedstoneEmissionWidget rs) {
+                for (Direction dir : DirectionUtil.VALUES) {
+                    if (sided.isSideSelected(dir)) {
+                        drone.setEmittingRedstone(dir, rs.getEmittingRedstone());
+                    }
                 }
             }
             return false;

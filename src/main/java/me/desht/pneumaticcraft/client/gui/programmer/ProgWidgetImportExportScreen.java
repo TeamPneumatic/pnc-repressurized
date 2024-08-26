@@ -46,8 +46,8 @@ public class ProgWidgetImportExportScreen<P extends ISidedWidget & ICountWidget 
             for (Direction dir : DirectionUtil.VALUES) {
                 Component sideName = ClientUtils.translateDirectionComponent(dir);
                 WidgetCheckBox checkBox = new WidgetCheckBox(guiLeft + 8, guiTop + 32 + dir.get3DDataValue() * 12, 0xFF404040,
-                        sideName, b -> progWidget.getSides()[dir.get3DDataValue()] = b.checked);
-                checkBox.checked = progWidget.getSides()[dir.get3DDataValue()];
+                        sideName, b -> progWidget.setSideSelected(dir, b.checked));
+                checkBox.checked = progWidget.isSideSelected(dir);
                 addRenderableWidget(checkBox);
 
                 addLabel(xlate("pneumaticcraft.gui.progWidget.inventory.accessingSides"), guiLeft + 6, guiTop + 20);

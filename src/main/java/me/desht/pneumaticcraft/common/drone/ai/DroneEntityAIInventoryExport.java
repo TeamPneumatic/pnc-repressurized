@@ -19,6 +19,7 @@ package me.desht.pneumaticcraft.common.drone.ai;
 
 import me.desht.pneumaticcraft.api.drone.IDrone;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetInventoryBase;
+import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.BlockPos;
@@ -49,14 +50,14 @@ public class DroneEntityAIInventoryExport extends DroneAIImportExportBase<ProgWi
                 ItemStack droneStack = drone.getInv().getStackInSlot(i);
                 if (!droneStack.isEmpty()) {
                     if (progWidget.isItemValidForFilters(droneStack)) {
-                        for (int side = 0; side < 6; side++) {
-                            if (progWidget.getSides()[side]) {
+                        for (Direction dir : DirectionUtil.VALUES) {
+                            if (progWidget.isSideSelected(dir)) {
                                 droneStack = droneStack.copy();
                                 int oldCount = droneStack.getCount();
                                 if (progWidget.useCount()) {
                                     droneStack.setCount(Math.min(droneStack.getCount(), getRemainingCount()));
                                 }
-                                ItemStack remainder = IOHelper.insert(te, droneStack.copy(), Direction.from3DDataValue(side), simulate);
+                                ItemStack remainder = IOHelper.insert(te, droneStack.copy(), dir, simulate);
                                 int stackSize = drone.getInv().getStackInSlot(i).getCount() - (remainder.isEmpty() ? droneStack.getCount() : droneStack.getCount() - remainder.getCount());
                                 droneStack.setCount(stackSize);
                                 int exportedItems = oldCount - stackSize;

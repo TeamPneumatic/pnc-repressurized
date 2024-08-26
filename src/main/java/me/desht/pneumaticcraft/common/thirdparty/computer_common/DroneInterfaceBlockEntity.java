@@ -383,8 +383,7 @@ public class DroneInterfaceBlockEntity extends AbstractTickingBlockEntity
             public Object[] call(Object[] args) {
                 requireArgs(args, 2, "down/up/north/south/west/east, <boolean> valid");
                 Direction dir = getDirForString((String) args[0]);
-                boolean[] sides = getWidget().getSides();
-                sides[dir.ordinal()] = (Boolean) args[1]; // We don't need to set them afterwards, got a reference.
+                getWidget().setSideSelected(dir, (Boolean) args[1]);
                 messageToDrone(0xFFFFFFFF);
                 return null;
             }

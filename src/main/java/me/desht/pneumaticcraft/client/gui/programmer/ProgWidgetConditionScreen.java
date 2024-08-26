@@ -45,14 +45,12 @@ public class ProgWidgetConditionScreen<T extends ProgWidgetCondition> extends Pr
     public void init() {
         super.init();
 
-        if (isSidedWidget()) {
-            for (Direction dir : DirectionUtil.VALUES) {
-                Component sideName = ClientUtils.translateDirectionComponent(dir);
-                WidgetCheckBox checkBox = new WidgetCheckBox(guiLeft + 8, guiTop + 30 + dir.get3DDataValue() * 12, 0xFF404040, sideName,
-                        b -> ((ISidedWidget) progWidget).getSides()[dir.get3DDataValue()] = b.checked);
-                checkBox.checked = ((ISidedWidget) progWidget).getSides()[dir.get3DDataValue()];
-                addRenderableWidget(checkBox);
-            }
+        for (Direction dir : DirectionUtil.VALUES) {
+            Component sideName = ClientUtils.translateDirectionComponent(dir);
+            WidgetCheckBox checkBox = new WidgetCheckBox(guiLeft + 8, guiTop + 30 + dir.get3DDataValue() * 12, 0xFF404040, sideName,
+                    b -> progWidget.setSideSelected(dir, b.checked));
+            checkBox.checked = progWidget.isSideSelected(dir);
+            addRenderableWidget(checkBox);
         }
 
         int baseX = isSidedWidget() ? 90 : 8;

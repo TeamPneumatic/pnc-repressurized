@@ -71,9 +71,7 @@ public class CollectorDroneEntity extends AbstractBasicDroneEntity {
         builder.add(new ProgWidgetPickupItem(), params.toArray(new IProgWidget[0]));
 
         ProgWidgetInventoryExport export = new ProgWidgetInventoryExport();
-        boolean[] sides = new boolean[6];
-        sides[facing.get3DDataValue()] = true;
-        export.setSides(sides);
+        export.setSides(ISidedWidget.ALL_SIDES);
         builder.add(export, ProgWidgetArea.fromPosition(invPos));
 
         maybeAddStandbyInstruction(builder, droneStack);

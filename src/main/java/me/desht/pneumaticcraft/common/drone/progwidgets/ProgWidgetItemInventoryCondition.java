@@ -25,6 +25,7 @@ import me.desht.pneumaticcraft.api.drone.IProgWidget;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.drone.ai.DroneAIBlockCondition;
 import me.desht.pneumaticcraft.common.registry.ModProgWidgetTypes;
+import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.core.BlockPos;
@@ -75,14 +76,12 @@ public class ProgWidgetItemInventoryCondition extends ProgWidgetCondition {
             protected boolean evaluate(BlockPos pos) {
                 BlockEntity te = drone.getDroneLevel().getBlockEntity(pos);
 
-                boolean[] sides = ((ISidedWidget) progWidget).getSides();
-
                 // item handlers won't typically override hashCode/equals, but this should be OK: we just
                 // want a set of distinct item handler objects, which Object#hashCode() should give us
                 Set<IItemHandler> handlers = new HashSet<>();
-                for (int sideIdx = 0; sideIdx < sides.length; sideIdx++) {
-                    if (sides[sideIdx]) {
-                        IOHelper.getInventoryForBlock(te, Direction.from3DDataValue(sideIdx)).ifPresent(handlers::add);
+                for (Direction dir : DirectionUtil.VALUES) {
+                    if (((ISidedWidget) progWidget).isSideSelected(dir)) {
+                        IOHelper.getInventoryForBlock(te, dir).ifPresent(handlers::add);
                     }
                 }
 

@@ -75,7 +75,7 @@ public class ProgWidgetPressureCondition extends ProgWidgetCondition {
                 if (te != null) {
                     float pressure = Float.MIN_VALUE;
                     for (Direction dir : DirectionUtil.VALUES) {
-                        if (getSides()[dir.get3DDataValue()]) {
+                        if (isSideSelected(dir)) {
                             float p = PNCCapabilities.getAirHandler(te, dir)
                                     .map(IAirHandlerMachine::getPressure)
                                     .orElse(0f);
