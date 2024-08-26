@@ -27,14 +27,12 @@ public class TheOneProbe implements IThirdParty {
     public static boolean oneProbeEnabled = false;
 
     public static boolean isProbeEnabled(ItemStack stack) {
-        return oneProbeEnabled && stack.getItem() == ProbeHelmet.PNEUMATIC_HELMET_PROBE.get();
+        return false;
     }
 
     @Override
     public void preInit(IEventBus modBus) {
         oneProbeEnabled = true;
-
-        ProbeHelmet.init();
     }
 
     @Override

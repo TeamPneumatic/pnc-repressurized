@@ -15,7 +15,6 @@ import me.desht.pneumaticcraft.common.recipes.machine.PressureEnchantingRecipe;
 import me.desht.pneumaticcraft.common.recipes.special.DroneColorCrafting;
 import me.desht.pneumaticcraft.common.recipes.special.DroneUpgradeCrafting;
 import me.desht.pneumaticcraft.common.recipes.special.GunAmmoPotionCrafting;
-import me.desht.pneumaticcraft.common.recipes.special.OneProbeCrafting;
 import me.desht.pneumaticcraft.common.registry.ModBlocks;
 import me.desht.pneumaticcraft.common.registry.ModFluids;
 import me.desht.pneumaticcraft.common.registry.ModItems;
@@ -1306,8 +1305,6 @@ public class ModRecipeProvider extends RecipeProvider {
                 .save(consumer, getId("drone_upgrade"));
         SpecialRecipeBuilder.special(GunAmmoPotionCrafting::new)
                 .save(consumer, getId("gun_ammo_potion_crafting"));
-        SpecialRecipeBuilder.special(OneProbeCrafting::new)
-                .save(consumer.withConditions(new ModLoadedCondition(ModIds.THE_ONE_PROBE)), getId("one_probe_crafting"));
 
         SpecialRecipeBuilder.special(PressureEnchantingRecipe::new)
                 .save(consumer, getId("pressure_chamber/pressure_chamber_enchanting"));

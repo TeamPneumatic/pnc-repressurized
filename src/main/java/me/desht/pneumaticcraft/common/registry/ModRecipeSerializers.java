@@ -86,8 +86,6 @@ public class ModRecipeSerializers {
             = RECIPE_SERIALIZERS.register(PneumaticCraftRecipeTypes.HEAT_PROPERTIES,
             () -> new HeatPropertiesRecipeImpl.Serializer<>(HeatPropertiesRecipeImpl::new));
 
-    public static final Supplier<SimpleCraftingRecipeSerializer<OneProbeCrafting>> ONE_PROBE_HELMET_CRAFTING
-            = RECIPE_SERIALIZERS.register("one_probe_helmet_crafting", () -> new SimpleCraftingRecipeSerializer<>(OneProbeCrafting::new));
     public static final Supplier<SimpleCraftingRecipeSerializer<GunAmmoPotionCrafting>> GUN_AMMO_POTION_CRAFTING
             = RECIPE_SERIALIZERS.register("gun_ammo_potion_crafting", () -> new SimpleCraftingRecipeSerializer<>(GunAmmoPotionCrafting::new));
     public static final Supplier<SimpleCraftingRecipeSerializer<DroneUpgradeCrafting>> DRONE_UPGRADE_CRAFTING
