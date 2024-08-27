@@ -174,7 +174,7 @@ dependencies {
 	compileOnly("vazkii.patchouli:Patchouli:${patchouli_version}:api")
 	runtimeOnly("vazkii.patchouli:Patchouli:${patchouli_version}")
 
-	compileOnly("curse.maven:cc-tweaked-282001:${cc_tweaked_curse_id}")
+	implementation("curse.maven:cc-tweaked-282001:${cc_tweaked_curse_id}")
 //	compileOnly("cc.tweaked:cc-tweaked-1.21-forge-api:${cc_tweaked_version}")
 //	runtimeOnly("cc.tweaked:cc-tweaked-1.21-forge:${cc_tweaked_version}")
 
