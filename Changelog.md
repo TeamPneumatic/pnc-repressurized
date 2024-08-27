@@ -6,6 +6,11 @@ Changes are in reverse chronological order; newest changes at the top.
 
 # Minecraft 1.20.1
 
+## [6.0.17]
+
+### Fixed
+* Fixed RF Import/Export progwidgets missing a config screen in the Programmer GUI
+
 ## [6.0.16]
 
 ### Added
