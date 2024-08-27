@@ -432,7 +432,7 @@ public class RefineryControllerBlockEntity extends AbstractTickingBlockEntity
     }
 
     private int genIngredientHash() {
-        return FluidStack.hashFluidAndComponents(getInputTank().getFluid());
+        return Objects.hash(FluidStack.hashFluidAndComponents(getInputTank().getFluid()), outputCount);
     }
 
     private class RefineryInputTank extends SmartSyncTank {
