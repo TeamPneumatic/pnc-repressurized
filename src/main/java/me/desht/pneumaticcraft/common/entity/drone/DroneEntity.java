@@ -41,6 +41,7 @@ import me.desht.pneumaticcraft.common.drone.ai.DroneAIManager.WrappedGoal;
 import me.desht.pneumaticcraft.common.drone.ai.DroneGoToChargingStation;
 import me.desht.pneumaticcraft.common.drone.ai.DroneGoToOwner;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetGoToLocation;
+import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetLogistics;
 import me.desht.pneumaticcraft.common.drone.progwidgets.SavedDroneProgram;
 import me.desht.pneumaticcraft.common.entity.semiblock.AbstractLogisticsFrameEntity;
 import me.desht.pneumaticcraft.common.item.DroneItem;
@@ -145,6 +146,7 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
+import java.util.function.Consumer;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
@@ -235,6 +237,8 @@ public class DroneEntity extends AbstractDroneEntity implements
     private ChunkPos prevChunkPos = null;
     private final Set<ChunkPos> loadedChunks = new HashSet<>();
 
+    protected Consumer<SemiblockEvent> semiblockEventConsumer = null;
+
     public DroneEntity(EntityType<? extends DroneEntity> type, Level world) {
         super(type, world);
         moveControl = new DroneMovementController(this);
@@ -256,12 +260,39 @@ public class DroneEntity extends AbstractDroneEntity implements
         this(ModEntityTypes.DRONE.get(), world, player);
     }
 
+    protected void registerSemiblockEventListener() {
+        if (semiblockEventConsumer == null) {
+            // only drones with a logistics widget actually care about semiblock events
+            if (progWidgets.stream().anyMatch(w -> w instanceof ProgWidgetLogistics)) {
+                semiblockEventConsumer = this::onSemiblockEvent;
+                NeoForge.EVENT_BUS.addListener(semiblockEventConsumer);
+            }
+        } else {
+            throw new IllegalStateException("already registered a semiblock event listener!");
+        }
+    }
+
+    protected void unregisterSemiblockEventListener() {
+        if (semiblockEventConsumer != null) {
+            NeoForge.EVENT_BUS.unregister(semiblockEventConsumer);
+        }
+    }
+
     public void onSemiblockEvent(SemiblockEvent event) {
         if (!event.getWorld().isClientSide && event.getWorld() == getCommandSenderWorld()
                 && event.getSemiblock() instanceof AbstractLogisticsFrameEntity) {
             // semiblock has been added or removed; clear the cached logistics manager
             // next DroneAILogistics operation will search the area again
             logisticsManager = null;
+        }
+    }
+
+    @Override
+    public void onRemovedFromLevel() {
+        super.onRemovedFromLevel();
+
+        if (!level().isClientSide) {
+            unregisterSemiblockEventListener();
         }
     }
 
@@ -570,7 +601,7 @@ public class DroneEntity extends AbstractDroneEntity implements
 
     private void onFirstTick() {
         if (!level().isClientSide) {
-            NeoForge.EVENT_BUS.addListener(this::onSemiblockEvent);
+            registerSemiblockEventListener();
 
             double newDroneSpeed = 0.15f + Math.min(10, getUpgrades(ModUpgrades.SPEED.get())) * 0.015f;
             if (getUpgrades(ModUpgrades.ARMOR.get()) > 6) {
@@ -980,8 +1011,6 @@ public class DroneEntity extends AbstractDroneEntity implements
         }
 
         setCustomName(Component.empty());  // keep other mods (like CoFH Core) quiet about death message broadcasts
-
-        NeoForge.EVENT_BUS.unregister(this);
     }
 
     private void reportDroneDeath(Player owner, DamageSource damageSource) {

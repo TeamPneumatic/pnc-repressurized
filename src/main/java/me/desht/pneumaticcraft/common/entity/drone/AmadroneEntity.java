@@ -37,7 +37,6 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.levelgen.Heightmap;
-import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.items.ItemStackHandler;
 import org.joml.Vector3f;
 
@@ -199,7 +198,6 @@ public class AmadroneEntity extends DroneEntity {
                 10,
                 Optional.of(VECTOR3F_ONE)),
                 this);
-        NeoForge.EVENT_BUS.unregister(this);
         discard();
     }
 }
