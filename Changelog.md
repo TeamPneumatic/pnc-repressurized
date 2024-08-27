@@ -6,6 +6,13 @@ Changes are in reverse chronological order; newest changes at the top.
 
 # Minecraft 1.21.1
 
+## [8.1.1]
+
+### Fixes
+* Fixed server-side memory leak with drones not correctly unregistering an event handler on removal
+* Fixed Refinery sometimes caching invalid recipes (in particular if oil is added before there are enough outputs)
+* The Drone Interface is now craftable again (re-enabled the recipe datagen)
+
 ## [8.1.0]
 
 ### Changed
