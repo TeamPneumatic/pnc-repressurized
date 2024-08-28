@@ -78,7 +78,7 @@ public class NetworkHandler {
 
     public static void init() {
 		registerMessage(PacketAphorismTileUpdate.class,
-				PacketAphorismTileUpdate::toBytes, PacketAphorismTileUpdate::new, PacketAphorismTileUpdate::handle, PLAY_TO_SERVER);
+				PacketAphorismTileUpdate::toBytes, PacketAphorismTileUpdate::new, PacketAphorismTileUpdate::handle);
 		registerMessage(PacketChangeGPSToolCoordinate.class,
 				PacketChangeGPSToolCoordinate::toBytes, PacketChangeGPSToolCoordinate::new, PacketChangeGPSToolCoordinate::handle, PLAY_TO_SERVER);
 		registerMessage(PacketUpdateGPSAreaTool.class,
