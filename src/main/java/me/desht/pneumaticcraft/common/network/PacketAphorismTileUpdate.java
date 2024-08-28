@@ -33,10 +33,11 @@ import java.util.List;
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 /**
- * Received on: SERVER
+ * Received on: BOTH
  * Sent by the client after editing an Aphorism Tile
+ * Sent by the server to all tracking clients to update them
  */
-public record PacketAphorismTileUpdate(BlockPos pos, List<String> text, int textRotation, byte margin, boolean invis) implements CustomPacketPayload {
+public record PacketAphorismTileUpdate(BlockPos pos, List<String> text, int textRotation, byte margin, boolean invis, int playerId) implements CustomPacketPayload {
     private static final int MAX_LENGTH = 1024;
 
     public static final Type<PacketAphorismTileUpdate> TYPE = new Type<>(RL("aphorism_tile_update"));
@@ -47,12 +48,18 @@ public record PacketAphorismTileUpdate(BlockPos pos, List<String> text, int text
             ByteBufCodecs.VAR_INT, PacketAphorismTileUpdate::textRotation,
             ByteBufCodecs.BYTE, PacketAphorismTileUpdate::margin,
             ByteBufCodecs.BOOL, PacketAphorismTileUpdate::invis,
+            ByteBufCodecs.INT, PacketAphorismTileUpdate::playerId,
             PacketAphorismTileUpdate::new
     );
 
     public static PacketAphorismTileUpdate forBlockEntity(AphorismTileBlockEntity blockEntity) {
         return new PacketAphorismTileUpdate(blockEntity.getBlockPos(), List.of(blockEntity.getTextLines()), blockEntity.getTextRotation(),
-                blockEntity.getMarginSize(), blockEntity.getBlockState().getValue(AphorismTileBlock.INVISIBLE));
+                blockEntity.getMarginSize(), blockEntity.getBlockState().getValue(AphorismTileBlock.INVISIBLE), 0);
+    }
+
+    public static PacketAphorismTileUpdate forBlockEntityAndPlayer(AphorismTileBlockEntity blockEntity, Player player) {
+        return new PacketAphorismTileUpdate(blockEntity.getBlockPos(), List.of(blockEntity.getTextLines()), blockEntity.getTextRotation(),
+                blockEntity.getMarginSize(), blockEntity.getBlockState().getValue(AphorismTileBlock.INVISIBLE), player.getId());
     }
 
     @Override
@@ -61,14 +68,28 @@ public record PacketAphorismTileUpdate(BlockPos pos, List<String> text, int text
     }
 
     public static void handle(PacketAphorismTileUpdate message, IPayloadContext ctx) {
-            Player player = ctx.player();
-            if (PneumaticCraftUtils.canPlayerReach(player, message.pos())) {
-                PneumaticCraftUtils.getBlockEntityAt(player.level(), message.pos(), AphorismTileBlockEntity.class).ifPresent(te -> {
-                    te.setTextLines(message.text().toArray(new String[0]), false);
-                    te.setTextRotation(message.textRotation());
-                    te.setMarginSize(message.margin());
-                    te.setInvisible(message.invis());
-                });
+        Player player = ctx.player();
+        if (ctx.flow().isClientbound()) {
+            // client-side; just update the tile (as long as the packet isn't from us)
+            if (message.playerId != player.getId()) {
+                updateAphorismTile(message, player);
             }
+        } else if (PneumaticCraftUtils.canPlayerReach(player, message.pos())) {
+            // server-side; also send response packet to all players tracking the tile
+            AphorismTileBlockEntity tile = updateAphorismTile(message, player);
+            if (tile != null) {
+                NetworkHandler.sendToAllTracking(PacketAphorismTileUpdate.forBlockEntityAndPlayer(tile, player), player.level(), message.pos);
+            }
+        }
+    }
+
+    private static AphorismTileBlockEntity updateAphorismTile(PacketAphorismTileUpdate message, Player player) {
+        return PneumaticCraftUtils.getBlockEntityAt(player.level(), message.pos(), AphorismTileBlockEntity.class).map(tile -> {
+            tile.setTextLines(message.text().toArray(new String[0]), false);
+            tile.setTextRotation(message.textRotation());
+            tile.setMarginSize(message.margin());
+            tile.setInvisible(message.invis());
+            return tile;
+        }).orElse(null);
     }
 }

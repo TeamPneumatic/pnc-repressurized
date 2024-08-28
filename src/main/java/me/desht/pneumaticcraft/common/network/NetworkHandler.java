@@ -61,8 +61,6 @@ public class NetworkHandler {
 				.versioned(PROTOCOL_VERSION);
 
 		// misc serverbound
-		registrar.playToServer(PacketAphorismTileUpdate.TYPE, PacketAphorismTileUpdate.STREAM_CODEC,
-				PacketAphorismTileUpdate::handle);
 		registrar.playToServer(PacketChangeGPSToolCoordinate.TYPE, PacketChangeGPSToolCoordinate.STREAM_CODEC,
 				PacketChangeGPSToolCoordinate::handle);
 		registrar.playToServer(PacketUpdateGPSAreaTool.TYPE, PacketUpdateGPSAreaTool.STREAM_CODEC,
@@ -127,6 +125,8 @@ public class NetworkHandler {
 				PacketClearRecipeCache::handle);
 		
 		// misc bi-directional
+		registrar.playBidirectional(PacketAphorismTileUpdate.TYPE, PacketAphorismTileUpdate.STREAM_CODEC,
+				PacketAphorismTileUpdate::handle);
 		registrar.playBidirectional(PacketSetGlobalVariable.TYPE, PacketSetGlobalVariable.STREAM_CODEC,
 				PacketSetGlobalVariable::handle);
 		registrar.playBidirectional(PacketSyncSemiblock.TYPE, PacketSyncSemiblock.STREAM_CODEC,
