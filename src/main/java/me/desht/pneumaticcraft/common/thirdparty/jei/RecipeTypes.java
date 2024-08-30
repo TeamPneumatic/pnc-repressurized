@@ -17,6 +17,8 @@ public class RecipeTypes {
     public static final RecipeType<ThermoPlantRecipe> THERMO_PLANT = register("thermo_plant", ThermoPlantRecipe.class);
 
     // pseudo-recipes
+    public static final RecipeType<JEIElectroStaticGridCategory.ElectrostaticGridRecipe> ELECTRO_GRID
+            = registerPseudo("electro_grid", JEIElectroStaticGridCategory.ElectrostaticGridRecipe.class);
     public static final RecipeType<JEIEtchingTankCategory.EtchingTankRecipe> ETCHING_TANK
             = registerPseudo("etching_tank", JEIEtchingTankCategory.EtchingTankRecipe.class);
     public static final RecipeType<JEIMemoryEssenceCategory.MemoryEssenceRecipe> MEMORY_ESSENCE

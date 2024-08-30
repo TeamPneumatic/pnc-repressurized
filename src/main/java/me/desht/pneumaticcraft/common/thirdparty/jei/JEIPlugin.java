@@ -96,7 +96,8 @@ public class JEIPlugin implements IModPlugin {
                 new JEISpawnerExtractionCategory(),
                 new JEIBlockHeatPropertiesCategory(),
                 new JEIMemoryEssenceCategory(),
-                new JEIExplosionCraftingCategory()
+                new JEIExplosionCraftingCategory(),
+                new JEIElectroStaticGridCategory()
         );
         if (ConfigHelper.common().recipes.inWorldPlasticSolidification.get()) {
             registry.addRecipeCategories(new JEIPlasticSolidifyingCategory());
@@ -125,6 +126,7 @@ public class JEIPlugin implements IModPlugin {
         registration.addRecipes(RecipeTypes.ETCHING_TANK, JEIEtchingTankCategory.getAllRecipes());
         registration.addRecipes(RecipeTypes.SPAWNER_EXTRACTION, JEISpawnerExtractionCategory.getAllRecipes());
         registration.addRecipes(RecipeTypes.MEMORY_ESSENCE, JEIMemoryEssenceCategory.getAllRecipes());
+        registration.addRecipes(RecipeTypes.ELECTRO_GRID, JEIElectroStaticGridCategory.getAllRecipes());
         if (ConfigHelper.common().recipes.inWorldPlasticSolidification.get()) {
             registration.addRecipes(RecipeTypes.PLASTIC_SOLIDIFYING, JEIPlasticSolidifyingCategory.getAllRecipes());
         }
@@ -173,6 +175,7 @@ public class JEIPlugin implements IModPlugin {
         registration.addRecipeCatalyst(new ItemStack(ModBlocks.HEAT_PIPE.get()), RecipeTypes.HEAT_PROPERTIES);
         registration.addRecipeCatalyst(new ItemStack(ModItems.MEMORY_ESSENCE_BUCKET.get()), RecipeTypes.MEMORY_ESSENCE);
         registration.addRecipeCatalyst(new ItemStack(Blocks.TNT), RecipeTypes.EXPLOSION_CRAFTING);
+        registration.addRecipeCatalyst(new ItemStack(ModBlocks.ELECTROSTATIC_COMPRESSOR), RecipeTypes.ELECTRO_GRID);
     }
 
     @Override

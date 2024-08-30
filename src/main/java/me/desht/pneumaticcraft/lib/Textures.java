@@ -194,6 +194,7 @@ public class Textures {
     public static final ResourceLocation GUI_JEI_FLUID_MIXER = guiTexture("jei/gui_jei_fluid_mixer.png");
     public static final ResourceLocation GUI_JEI_THERMOPNEUMATIC_PROCESSING_PLANT = guiTexture("jei/gui_jei_thermopneumatic_processing_plant.png");
     public static final ResourceLocation GUI_JEI_YEAST_CRAFTING = guiTexture("jei/gui_jei_yeast_crafting.png");
+    public static final ResourceLocation GUI_JEI_ELECTROGRID = guiTexture("jei/gui_jei_electrogrid.png");
     public static final ResourceLocation GUI_JEI_BONUS = guiTexture("jei/gui_jei_bonus.png");
     public static final ResourceLocation GUI_JEI_SPAWNER_EXTRACTION = guiTexture("jei/gui_jei_spawner_extraction.png");
     public static final ResourceLocation GUI_JEI_HEAT_PROPERTIES = guiTexture("jei/gui_jei_heat_properties.png");
