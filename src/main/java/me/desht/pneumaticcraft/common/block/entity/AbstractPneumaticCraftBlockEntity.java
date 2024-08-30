@@ -683,7 +683,11 @@ public abstract class AbstractPneumaticCraftBlockEntity extends BlockEntity
         super.collectImplicitComponents(builder);
 
         if (this instanceof ISerializableTanks st) {
-            st.getSerializableTanks().forEach((comp, tank) -> builder.set(comp, tank.getContent()));
+            st.getSerializableTanks().forEach((comp, tank) -> {
+                if (!tank.isEmpty()) {
+                    builder.set(comp, tank.getContent());
+                }
+            });
         }
         if (this instanceof IRedstoneControl<?> rc) {
             builder.set(ModDataComponents.SAVED_REDSTONE_CONTROLLER, rc.getRedstoneController().save());
@@ -697,7 +701,10 @@ public abstract class AbstractPneumaticCraftBlockEntity extends BlockEntity
                 builder.set(ModDataComponents.AIR, handler.getAir());
             }
 
-            builder.set(ModDataComponents.ITEM_UPGRADES, SavedUpgrades.fromItemHandler(getUpgradeHandler()));
+            SavedUpgrades upgrades = SavedUpgrades.fromItemHandler(getUpgradeHandler());
+            if (!upgrades.getUpgradeMap().isEmpty()) {
+                builder.set(ModDataComponents.ITEM_UPGRADES, upgrades);
+            }
         }
     }
 
