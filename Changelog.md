@@ -8,10 +8,20 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## [8.1.1]
 
+### Added
+* There is now a JEI category showing which blocks can be used as grid blocks for the Electrostatic Compressor
+  * Iron Bars and Lightning Rods by default, but modpacks may add more blocks via the `pneumaticcraft:electrostatic_grid` block tag
+  * The category shows up when you view the uses of any grid block or the Electrostatic Compressor in JEI (right click / 'U' key)
+
 ### Fixes
 * Fixed server-side memory leak with drones not correctly unregistering an event handler on removal
 * Fixed Refinery sometimes caching invalid recipes (in particular if oil is added before there are enough outputs)
 * The Drone Interface is now craftable again (re-enabled the recipe datagen)
+* Fixed changes to Aphorism Tiles not sync'ing to nearby players (only sync'd on player login)
+* Fixed crash in importing legacy Drone Programs
+  * This only occurs when using vanilla launcher (which is also used by CurseForge launcher) since it installs an older version of the Gson library
+  * Worked around the issue for now
+* Machines with empty tags and/or upgrades should now stack better with fresh blocks of the same type when broken and/or sneak-wrenched
 
 ## [8.1.0]
 
@@ -19,7 +29,7 @@ Changes are in reverse chronological order; newest changes at the top.
 * Pressure Tube model and shape calculation have been heavily reworked and refactored internally
   * Tube models are now fully dynamic baked models, and pressure tube blocks no longer use blockstates for sided connections
   * This reduces the number of blockstates needed for all three tube types from 4374 to 6, a big performance win especially on big instances with many mods
-  * Shape recalculation has also been further optimised, improving performance and reducing the memory needed to cache states
+  * Shape recalculation has also been further optimised, improving performance and reducing the memory needed to cache block shapes
   * No player-visible changes (hopefully!)
 * Pneumatic Armor model rendering has been refactored, no longer requiring a custom model renderer (NeoForge 21.1.18+ required)
 * Sentry Turrets now note the deploying player ID, and won't attack that player if their filter is empty (no more tragic accidents)
