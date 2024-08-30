@@ -44,7 +44,7 @@ import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
-import net.neoforged.neoforge.client.model.IDynamicBakedModel;
+import net.neoforged.neoforge.client.model.BakedModelWrapper;
 import net.neoforged.neoforge.client.model.data.ModelData;
 import net.neoforged.neoforge.client.model.geometry.IGeometryBakingContext;
 import net.neoforged.neoforge.client.model.geometry.IGeometryLoader;
@@ -60,19 +60,23 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
 
-public class FluidItemModel implements IDynamicBakedModel {
-    private final BakedModel bakedBaseModel;
+public class FluidItemModel extends BakedModelWrapper<BakedModel> {
     private final ItemOverrides overrideList = new FluidOverridesList(this);
     private List<TankRenderInfo> tanksToRender = Collections.emptyList();
 
     private FluidItemModel(BakedModel bakedBaseModel) {
-        this.bakedBaseModel = bakedBaseModel;
+        super(bakedBaseModel);
+    }
+
+    @Override
+    public List<BakedQuad> getQuads(@org.jetbrains.annotations.Nullable BlockState state, @org.jetbrains.annotations.Nullable Direction side, RandomSource rand) {
+        return getQuads(state, side, rand, ModelData.EMPTY, null);
     }
 
     @Nonnull
     @Override
     public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, @Nonnull RandomSource rand, @Nonnull ModelData extraData, RenderType renderType) {
-        List<BakedQuad> res = new ArrayList<>(bakedBaseModel.getQuads(state, side, rand, extraData, renderType));
+        List<BakedQuad> res = new ArrayList<>(super.getQuads(state, side, rand, extraData, renderType));
 
         for (TankRenderInfo info : tanksToRender) {
             IFluidTank tank = info.getTank();
@@ -154,49 +158,19 @@ public class FluidItemModel implements IDynamicBakedModel {
     }
 
     @Override
-    public boolean useAmbientOcclusion() {
-        return bakedBaseModel.useAmbientOcclusion();
-    }
-
-    @Override
-    public boolean isGui3d() {
-        return bakedBaseModel.isGui3d();
-    }
-
-    @Override
-    public boolean usesBlockLight() {
-        return false;
-    }
-
-    @Override
-    public boolean isCustomRenderer() {
-        return bakedBaseModel.isCustomRenderer();
-    }
-
-    @Override
-    public TextureAtlasSprite getParticleIcon(@Nonnull ModelData data) {
-        return bakedBaseModel.getParticleIcon(data);
-    }
-
-    @Override
-    public TextureAtlasSprite getParticleIcon() {
-        return bakedBaseModel.getParticleIcon();
-    }
-
-    @Override
     public ItemOverrides getOverrides() {
         return overrideList;
     }
 
     @Override
-    public List<BakedModel> getRenderPasses(ItemStack itemStack, boolean fabulous) {
-        return IDynamicBakedModel.super.getRenderPasses(itemStack, fabulous);
+    public BakedModel applyTransform(ItemDisplayContext cameraTransformType, PoseStack poseStack, boolean applyLeftHandTransform) {
+        super.applyTransform(cameraTransformType, poseStack, applyLeftHandTransform);
+        return this;
     }
 
     @Override
-    public BakedModel applyTransform(ItemDisplayContext displayContext, PoseStack poseStack, boolean applyLeftHandTransform) {
-        bakedBaseModel.getTransforms().getTransform(displayContext).apply(applyLeftHandTransform, poseStack);
-        return this;
+    public List<BakedModel> getRenderPasses(ItemStack itemStack, boolean fabulous) {
+        return List.of(this);
     }
 
     public record Geometry(BlockModel baseModel) implements IUnbakedGeometry<Geometry> {
