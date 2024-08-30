@@ -262,10 +262,11 @@ public class ProgWidgetLegacyConv {
 
             // add all the sub-objects
             newEntry.add("pos", pos);
-            if (!digPlace.isEmpty()) newEntry.add("dig_place", digPlace);
-            if (!inv.isEmpty()) newEntry.add("inv", inv);
-            if (!cond.isEmpty()) newEntry.add("cond", cond);
-            if (!droneCond.isEmpty()) newEntry.add("drone_cond", cond);
+            // TODO: .isEmpty() can't be used right now: https://github.com/neoforged/NeoForge/issues/1380
+            if (digPlace.size() > 0) newEntry.add("dig_place", digPlace);
+            if (inv.size() > 0) newEntry.add("inv", inv);
+            if (cond.size() > 0) newEntry.add("cond", cond);
+            if (droneCond.size() > 0) newEntry.add("drone_cond", cond);
 
             // phew, done
             newDoc.add(newEntry);
