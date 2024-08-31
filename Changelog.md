@@ -10,6 +10,7 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ### Fixed
 * Fixed RF Import/Export progwidgets missing a config screen in the Programmer GUI
+* Fixed changes to Aphorism Tiles not sync'ing to nearby players (only sync'd on player login)
 
 ## [6.0.16]
 
