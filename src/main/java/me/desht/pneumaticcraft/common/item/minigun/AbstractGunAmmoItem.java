@@ -46,6 +46,11 @@ public abstract class AbstractGunAmmoItem extends Item {
         super(ModItems.defaultProps().setNoRepair().durability(2000));
     }
 
+    @Override
+    public int getEnchantmentValue(ItemStack stack) {
+        return 9;
+    }
+
     /**
      * Get this ammo's range modifier.
      *

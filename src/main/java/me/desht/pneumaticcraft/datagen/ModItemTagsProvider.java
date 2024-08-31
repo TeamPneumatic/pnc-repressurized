@@ -90,10 +90,11 @@ public class ModItemTagsProvider extends ItemTagsProvider {
         addItemsToTag(ItemTags.LEG_ARMOR, ModItems.COMPRESSED_IRON_LEGGINGS, ModItems.PNEUMATIC_LEGGINGS);
         addItemsToTag(ItemTags.FOOT_ARMOR, ModItems.COMPRESSED_IRON_BOOTS, ModItems.PNEUMATIC_BOOTS);
 
-        addItemsToTag(ItemTags.DURABILITY_ENCHANTABLE,
+        addItemsToTag(PneumaticCraftTags.Items.MINIGUN_AMMO,
                 ModItems.GUN_AMMO, ModItems.GUN_AMMO_AP, ModItems.GUN_AMMO_EXPLOSIVE,
                 ModItems.GUN_AMMO_FREEZING, ModItems.GUN_AMMO_INCENDIARY, ModItems.GUN_AMMO_WEIGHTED
         );
+        appendToTag(ItemTags.DURABILITY_ENCHANTABLE, PneumaticCraftTags.Items.MINIGUN_AMMO);
 
         appendToTag(PneumaticCraftTags.Items.WIRING, Tags.Items.NUGGETS_GOLD);
         appendToTag(PneumaticCraftTags.Items.WIRING, PneumaticCraftTags.Items.NUGGETS_COPPER);

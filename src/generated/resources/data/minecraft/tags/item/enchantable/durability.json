@@ -1,10 +1,5 @@
 {
   "values": [
-    "pneumaticcraft:gun_ammo",
-    "pneumaticcraft:gun_ammo_ap",
-    "pneumaticcraft:gun_ammo_explosive",
-    "pneumaticcraft:gun_ammo_freezing",
-    "pneumaticcraft:gun_ammo_incendiary",
-    "pneumaticcraft:gun_ammo_weighted"
+    "#pneumaticcraft:minigun_ammo"
   ]
 }
