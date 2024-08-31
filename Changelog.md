@@ -12,16 +12,18 @@ Changes are in reverse chronological order; newest changes at the top.
 * There is now a JEI category showing which blocks can be used as grid blocks for the Electrostatic Compressor
   * Iron Bars and Lightning Rods by default, but modpacks may add more blocks via the `pneumaticcraft:electrostatic_grid` block tag
   * The category shows up when you view the uses of any grid block or the Electrostatic Compressor in JEI (right click / 'U' key)
+* Added a `pneumaticcraft:minigun_ammo` item tag containing the six ammo items
 
 ### Fixes
 * Fixed server-side memory leak with drones not correctly unregistering an event handler on removal
 * Fixed Refinery sometimes caching invalid recipes (in particular if oil is added before there are enough outputs)
 * The Drone Interface is now craftable again (re-enabled the recipe datagen)
-* Fixed changes to Aphorism Tiles not sync'ing to nearby players (only sync'd on player login)
+* Fixed changes to Aphorism Tiles not sync'ing to nearby players (were only getting sync'd on player login)
 * Fixed crash in importing legacy Drone Programs
   * This only occurs when using vanilla launcher (which is also used by CurseForge launcher) since it installs an older version of the Gson library
   * Worked around the issue for now
 * Machines with empty tags and/or upgrades should now stack better with fresh blocks of the same type when broken and/or sneak-wrenched
+* Fixed Minigun Ammo not being enchantable in an Enchanting Table
 
 ## [8.1.0]
 
