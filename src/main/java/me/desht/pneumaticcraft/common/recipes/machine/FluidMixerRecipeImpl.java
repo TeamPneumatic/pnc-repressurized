@@ -30,6 +30,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.crafting.FluidIngredient;
 import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
 
 public class FluidMixerRecipeImpl extends FluidMixerRecipe {
@@ -51,8 +52,11 @@ public class FluidMixerRecipeImpl extends FluidMixerRecipe {
 
     @Override
     public boolean matches(FluidStack fluid1, FluidStack fluid2) {
-        return input1.test(fluid1) && input2.test(fluid2)
-                || input2.test(fluid1) && input1.test(fluid2);
+        // for matching, we're not concerned about quantities; just that these are the right fluids
+        FluidIngredient ingr1 = input1.ingredient();
+        FluidIngredient ingr2 = input2.ingredient();
+        return ingr1.test(fluid1) && ingr2.test(fluid2)
+                || ingr2.test(fluid1) && ingr1.test(fluid2);
     }
 
     @Override

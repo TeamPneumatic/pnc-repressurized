@@ -55,6 +55,7 @@ import net.neoforged.neoforge.fluids.FluidUtil;
 import net.neoforged.neoforge.fluids.IFluidTank;
 import net.neoforged.neoforge.fluids.SimpleFluidContent;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.ItemStackHandler;
 
@@ -147,23 +148,28 @@ public class FluidMixerBlockEntity extends AbstractAirHandlingBlockEntity implem
             });
             searchRecipes = false;
         }
-        if (rsController.shouldRun() && currentRecipe != null && getPressure() >= requiredPressure && hasOutputSpace()) {
-            craftingProgress += 100 * (1 + Math.min(getPressure() - requiredPressure, 1.5f));
-            didWork = true;
-            airUsed += 2.5f * getPressure();
-            if (airUsed > 1f) {
-                int a = (int) airUsed;
-                airHandler.addAir(-a);
-                airUsed -= a;
-            }
-            if (craftingProgress >= maxProgress && takeInputIngredients()) {
-                if (!currentRecipe.getOutputFluid().isEmpty()) {
-                    outputTank.fill(currentRecipe.getOutputFluid().copy(), IFluidHandler.FluidAction.EXECUTE);
+        if (rsController.shouldRun() && currentRecipe != null) {
+            if (craftingProgress < maxProgress) {
+                if (getPressure() >= requiredPressure && takeInputIngredients(FluidAction.SIMULATE)) {
+                    craftingProgress += 100 * (1 + Math.min(getPressure() - requiredPressure, 1.5f));
+                    didWork = true;
+                    airUsed += 2.5f * getPressure();
+                    if (airUsed > 1f) {
+                        int a = (int) airUsed;
+                        airHandler.addAir(-a);
+                        airUsed -= a;
+                    }
                 }
-                if (!currentRecipe.getOutputItem().isEmpty()) {
-                    outputInv.insertItem(0, currentRecipe.getOutputItem().copy(), false);
+            } else {
+                if (hasOutputSpace() && takeInputIngredients(FluidAction.EXECUTE)) {
+                    if (!currentRecipe.getOutputFluid().isEmpty()) {
+                        outputTank.fill(currentRecipe.getOutputFluid().copy(), FluidAction.EXECUTE);
+                    }
+                    if (!currentRecipe.getOutputItem().isEmpty()) {
+                        outputInv.insertItem(0, currentRecipe.getOutputItem().copy(), false);
+                    }
+                    craftingProgress -= maxProgress;
                 }
-                craftingProgress -= maxProgress;
             }
         }
     }
@@ -187,15 +193,15 @@ public class FluidMixerBlockEntity extends AbstractAirHandlingBlockEntity implem
         return currentRecipeIdSynced;
     }
 
-    private boolean takeInputIngredients() {
+    private boolean takeInputIngredients(FluidAction action) {
         if (currentRecipe.getInput1().test(inputTank1.getFluid()) && currentRecipe.getInput2().test(inputTank2.getFluid())) {
-            inputTank1.drain(currentRecipe.getInput1().amount(), IFluidHandler.FluidAction.EXECUTE);
-            inputTank2.drain(currentRecipe.getInput2().amount(), IFluidHandler.FluidAction.EXECUTE);
-            return true;
+            FluidStack f1 = inputTank1.drain(currentRecipe.getInput1().amount(), action);
+            FluidStack f2 = inputTank2.drain(currentRecipe.getInput2().amount(), action);
+            return f1.getAmount() == currentRecipe.getInput1().amount() && f2.getAmount() == currentRecipe.getInput2().amount();
         } else if (currentRecipe.getInput2().test(inputTank1.getFluid()) && currentRecipe.getInput1().test(inputTank2.getFluid())) {
-            inputTank1.drain(currentRecipe.getInput2().amount(), IFluidHandler.FluidAction.EXECUTE);
-            inputTank2.drain(currentRecipe.getInput1().amount(), IFluidHandler.FluidAction.EXECUTE);
-            return true;
+            FluidStack f1 = inputTank1.drain(currentRecipe.getInput2().amount(), action);
+            FluidStack f2 = inputTank2.drain(currentRecipe.getInput1().amount(), action);
+            return f1.getAmount() == currentRecipe.getInput2().amount() && f2.getAmount() == currentRecipe.getInput1().amount();
         }
         return false;
     }
@@ -205,7 +211,7 @@ public class FluidMixerBlockEntity extends AbstractAirHandlingBlockEntity implem
             return false;
         }
         return currentRecipe.getOutputFluid().isEmpty()
-                || outputTank.fill(currentRecipe.getOutputFluid(), IFluidHandler.FluidAction.SIMULATE) >= currentRecipe.getOutputFluid().getAmount();
+                || outputTank.fill(currentRecipe.getOutputFluid(), FluidAction.SIMULATE) >= currentRecipe.getOutputFluid().getAmount();
     }
 
     private Optional<RecipeHolder<FluidMixerRecipe>> findApplicableRecipe() {
@@ -299,7 +305,7 @@ public class FluidMixerBlockEntity extends AbstractAirHandlingBlockEntity implem
         FluidStack moved;
         SmartSyncTank inputTank = tank == 1 ? inputTank1 : inputTank2;
         if (shiftHeld) {
-            moved = inputTank.drain(inputTank.getCapacity(), IFluidHandler.FluidAction.EXECUTE);
+            moved = inputTank.drain(inputTank.getCapacity(), FluidAction.EXECUTE);
         } else {
             moved = FluidUtil.tryFluidTransfer(outputTank, inputTank, inputTank.getFluidAmount(), true);
         }
@@ -418,7 +424,9 @@ public class FluidMixerBlockEntity extends AbstractAirHandlingBlockEntity implem
         @Override
         protected void onContentsChanged(Fluid prevFluid, int prevAmount) {
             super.onContentsChanged(prevFluid, prevAmount);
-            searchRecipes = true;
+            if (!getLevel().isClientSide && prevFluid != getFluid().getFluid()) {
+                searchRecipes = true;
+            }
         }
     }
 }
