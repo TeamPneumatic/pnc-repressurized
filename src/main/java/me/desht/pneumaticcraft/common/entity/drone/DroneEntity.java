@@ -19,7 +19,6 @@ package me.desht.pneumaticcraft.common.entity.drone;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.serialization.Codec;
-import me.desht.pneumaticcraft.ForcedChunks;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.block.IPneumaticWrenchable;
 import me.desht.pneumaticcraft.api.drone.*;
@@ -63,6 +62,8 @@ import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.common.util.DroneProgramBuilder;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.common.util.chunkloading.DynamicChunkLoader;
+import me.desht.pneumaticcraft.common.util.chunkloading.PlayerLogoutTracker;
 import me.desht.pneumaticcraft.common.util.fakeplayer.DroneFakePlayer;
 import me.desht.pneumaticcraft.common.util.fakeplayer.DroneItemHandler;
 import me.desht.pneumaticcraft.lib.Log;
@@ -129,7 +130,6 @@ import net.minecraft.world.level.portal.DimensionTransition;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.util.FakePlayer;
-import net.neoforged.neoforge.common.world.chunk.TicketController;
 import net.neoforged.neoforge.energy.IEnergyStorage;
 import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
 import net.neoforged.neoforge.fluids.FluidStack;
@@ -235,7 +235,7 @@ public class DroneEntity extends AbstractDroneEntity implements
     private boolean carriedEntityAIdisabled;  // true if the drone's carried entity AI was already disabled
 
     private ChunkPos prevChunkPos = null;
-    private final Set<ChunkPos> loadedChunks = new HashSet<>();
+    private DynamicChunkLoader chunkLoader;
 
     protected Consumer<SemiblockEvent> semiblockEventConsumer = null;
 
@@ -462,6 +462,10 @@ public class DroneEntity extends AbstractDroneEntity implements
             }
             isSuffocating = false;
 
+            if (chunkLoader != null && PlayerLogoutTracker.INSTANCE.isPlayerLoggedOutTooLong(level.getServer(), getOwnerUUID())) {
+                chunkLoader.unloadAll((ServerLevel) level);
+            }
+
             Path path = getNavigation().getPath();
             if (path != null) {
                 Node target = path.getEndNode();
@@ -491,7 +495,7 @@ public class DroneEntity extends AbstractDroneEntity implements
                 handleFluidDisplacement();
             }
 
-            airHandler.addAir(-PneumaticValues.DRONE_USAGE_CHUNKLOAD*getUpgrades(ModUpgrades.CHUNKLOADER.get()));
+            airHandler.addAir(-PneumaticValues.DRONE_USAGE_CHUNKLOAD * getUpgrades(ModUpgrades.CHUNKLOADER.get()));
 
             handleDebugTick();
         } else {
@@ -620,7 +624,8 @@ public class DroneEntity extends AbstractDroneEntity implements
 
             if (getUpgrades(ModUpgrades.CHUNKLOADER.get()) > 0) {
                 prevChunkPos = chunkPosition();
-                handleDynamicChunkloading(prevChunkPos);
+                chunkLoader = DynamicChunkLoader.forDrone(this);
+                chunkLoader.updateLoadedChunks((ServerLevel) level(), prevChunkPos);
             }
 
             droneItemHandler.setFakePlayerReady();
@@ -661,37 +666,15 @@ public class DroneEntity extends AbstractDroneEntity implements
     @Override
     public void setPos(double x, double y, double z) {
         super.setPos(x, y, z);
-        if (!level().isClientSide && prevChunkPos != null && !chunkPosition().equals(prevChunkPos)) {
+
+        if (chunkLoader != null && level() instanceof ServerLevel serverLevel && prevChunkPos != null && !chunkPosition().equals(prevChunkPos)) {
             prevChunkPos = chunkPosition();
-            handleDynamicChunkloading(prevChunkPos);
+            chunkLoader.updateLoadedChunks(serverLevel, prevChunkPos);
         }
     }
 
-    private void handleDynamicChunkloading(ChunkPos newPos) {
-        for (int cx = newPos.x - 1; cx <= newPos.x + 1; cx++) {
-            for (int cz = newPos.z - 1; cz <= newPos.z + 1; cz++) {
-                ChunkPos cp = new ChunkPos(cx, cz);
-                if (shouldLoadChunk(cp)) loadedChunks.add(cp);
-            }
-        }
-
-        Iterator<ChunkPos> iter = loadedChunks.iterator();
-        while (iter.hasNext()) {
-            ChunkPos cp = iter.next();
-            boolean load = shouldLoadChunk(cp);
-            ticketController().forceChunk((ServerLevel) level(), this, cp.x, cp.z, load, true);
-            if (!load) {
-                iter.remove();
-            }
-        }
-    }
-
-    private TicketController ticketController() {
-        return ForcedChunks.INSTANCE.getDroneController();
-    }
-
-    private boolean shouldLoadChunk(ChunkPos cp) {
-        return Math.abs(cp.x - chunkPosition().x)+Math.abs(cp.z - chunkPosition().z) < getUpgrades(ModUpgrades.CHUNKLOADER.get());
+    public boolean shouldLoadChunk(ChunkPos cp) {
+        return Math.abs(cp.x - chunkPosition().x) + Math.abs(cp.z - chunkPosition().z) < getUpgrades(ModUpgrades.CHUNKLOADER.get());
     }
 
     @Override
@@ -987,13 +970,22 @@ public class DroneEntity extends AbstractDroneEntity implements
         super.die(damageSource);
 
         for (Entity e : getPassengers()) {
-            if (e instanceof Mob mob) mob.setNoAi(carriedEntityAIdisabled);
+            if (e instanceof Mob mob) {
+                mob.setNoAi(carriedEntityAIdisabled);
+            }
         }
 
         restoreFluidBlocks(false);
 
-        if (!level().isClientSide) {
-            loadedChunks.forEach(cp -> ticketController().forceChunk((ServerLevel) level(), this, cp.x, cp.z, false, true));
+        if (level() instanceof ServerLevel serverLevel) {
+            if (chunkLoader != null) {
+                chunkLoader.unloadAll(serverLevel);
+            }
+
+            if (getDugBlock() != null) {
+                // stop any in-progress digging - 3rd & 4th parameters are unimportant here
+                getFakePlayer().gameMode.handleBlockBreakAction(getDugBlock(), ServerboundPlayerActionPacket.Action.ABORT_DESTROY_BLOCK, Direction.UP, 0, 0);
+            }
         }
 
         if (shouldDropAsItem()) {
@@ -1003,11 +995,6 @@ public class DroneEntity extends AbstractDroneEntity implements
             if (!level().isClientSide) {
                 reportDroneDeath(getOwner(), damageSource);
             }
-        }
-
-        if (!level().isClientSide && getDugBlock() != null) {
-            // stop any in-progress digging - 3rd & 4th parameters are unimportant here
-            getFakePlayer().gameMode.handleBlockBreakAction(getDugBlock(), ServerboundPlayerActionPacket.Action.ABORT_DESTROY_BLOCK, Direction.UP, 0, 0);
         }
 
         setCustomName(Component.empty());  // keep other mods (like CoFH Core) quiet about death message broadcasts

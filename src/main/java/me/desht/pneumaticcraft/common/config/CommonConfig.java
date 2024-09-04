@@ -180,6 +180,7 @@ public class CommonConfig {
         public ModConfigSpec.BooleanValue enableDroneSuffocation;
         public ModConfigSpec.BooleanValue allowAnyPlayerVarQuery;
         public ModConfigSpec.BooleanValue allowTeleportToProtectedArea;
+        public ModConfigSpec.IntValue chunkloadOfflineTime;
     }
 
     public final General general = new General();
@@ -635,31 +636,31 @@ public class CommonConfig {
         heat.blockThermalResistance = builder
                 .comment("Default thermal resistance for solid blocks")
                 .translation("pneumaticcraft.config.common.blockHeatDefaults.blockThermalResistance")
-                .defineInRange("blockThermalResistance", 500.0, Double.MIN_VALUE, Double.MAX_VALUE);
+                .defineInRange("block_thermal_resistance", 500.0, Double.MIN_VALUE, Double.MAX_VALUE);
         heat.fluidThermalResistance = builder
                 .comment("Default thermal resistance for fluid blocks")
                 .translation("pneumaticcraft.config.common.blockHeatDefaults.fluidThermalResistance")
-                .defineInRange("fluidThermalResistance", 100.0, Double.MIN_VALUE, Double.MAX_VALUE);
+                .defineInRange("fluid_thermal_resistance", 100.0, Double.MIN_VALUE, Double.MAX_VALUE);
         heat.airThermalResistance = builder
                 .comment("Thermal resistance of air; controls how fast blocks lose heat to air when exposed")
                 .translation("pneumaticcraft.config.common.blockHeatDefaults.airThermalResistance")
-                .defineInRange("airThermalResistance", 100.0, 1.0, Double.MAX_VALUE);
+                .defineInRange("air_thermal_resistance", 100.0, 1.0, Double.MAX_VALUE);
         heat.defaultFluidHeatCapacity = builder
                 .comment("Default heat capacity for fluid blocks")
                 .translation("pneumaticcraft.config.common.blockHeatDefaults.defaultFluidHeatCapacity")
-                .defineInRange("defaultFluidHeatCapacity", 10000, 0, Integer.MAX_VALUE);
+                .defineInRange("default_fluid_heat_capacity", 10000, 0, Integer.MAX_VALUE);
         heat.ambientTemperatureBiomeModifier = builder
                 .comment("Ambient temperature modifier by biome (default 25 gives the Nether a heat boost of 30C)")
                 .translation("pneumaticcraft.config.common.blockHeatDefaults.ambientTemperatureBiomeModifier")
-                .defineInRange("ambientTemperatureBiomeModifier", 25.0, 0.0, 1000.0);
+                .defineInRange("ambient_temperature_biome_modifier", 25.0, 0.0, 1000.0);
         heat.ambientTemperatureHeightModifier = builder
                 .comment("Ambient temperature increase by altitude, in degrees per block below 48 (or 75% of sea level). Note that temperature decrease per block above 64 is handled by vanilla.")
                 .translation("pneumaticcraft.config.common.blockHeatDefaults.ambientTemperatureHeightModifier")
-                .defineInRange("ambientTemperatureHeightModifier", 0.1, 0.0, 10.0);
+                .defineInRange("ambient_temperature_height_modifier", 0.1, 0.0, 10.0);
         heat.addDefaultFluidEntries = builder
                 .comment("Automatically register heat properties for all detected modded fluids based on their self-defined temperature? (note: vanilla lava and water are always added)")
                 .translation("pneumaticcraft.config.common.blockHeatDefaults.addDefaultFluidEntries")
-                .define("addDefaultFluidEntries", true);
+                .define("add_default_fluid_entries", true);
         builder.pop();
 
         builder.push("Logistics");
@@ -693,12 +694,12 @@ public class CommonConfig {
                 .comment("Frequency of PneumaticCraft village house generation? Default value of 8 tends to give 0-2 houses per village with no other mods present. Set to 0 to disable house generation entirely. May need to raise this value if there are many other mods also adding village houses. Note: changing this value won't affect any already-generated houses, only new generation.")
                 .translation("pneumaticcraft.config.common.villagers.mechanic_house_weight")
                 .worldRestart()
-                .defineInRange("addMechanicHouse", 8, 0, Integer.MAX_VALUE);
+                .defineInRange("add_mechanic_house", 8, 0, Integer.MAX_VALUE);
         villagers.whichTrades = builder
                 .comment("Which trades should the Pressure Mechanic offer? ALL will offer all trades. PCB_BLUEPRINT will offer *only* the PCB Blueprint, an item required for normal progression through the mod. NONE will offer nothing (but the PCB Blueprint is also available via Amadron by default). Note that changing this won't affect any already-spawned Pressure Mechanics.")
                 .translation("pneumaticcraft.config.common.villagers.mechanic_trades")
                 .worldRestart()
-                .defineEnum("mechanicTrades", VillagerTradesRegistration.WhichTrades.ALL);
+                .defineEnum("mechanic_trades", VillagerTradesRegistration.WhichTrades.ALL);
         builder.pop();
 
         builder.push("Drones");
@@ -744,12 +745,16 @@ public class CommonConfig {
                 .defineInRange("stuck_drone_teleport_ticks", 20, 0, Integer.MAX_VALUE);
         drones.allowAnyPlayerVarQuery = builder
                 .comment("When true, drones can query the location of any player on the server with the '$player=<name>' variable syntax. Set this to false if you don't want to allow this, e.g. on a PvP server, where this can turn drones into lethal assassins.")
-                .translation("pneumaticcraft.config.common.general.allowAnyPlayerVarQuery")
-                .define("allowAnyPlayerVarQuery", true);
+                .translation("pneumaticcraft.config.common.drones.allowAnyPlayerVarQuery")
+                .define("allow_any_player_var_query", true);
         drones.allowTeleportToProtectedArea = builder
                 .comment("When true, drones can teleport into areas protected by Security Stations of other player. You may wish to set this to false on PvP servers.")
-                .translation("pneumaticcraft.config.common.general.allowTeleportToProtectedArea")
-                .define("allowTeleportToProtectedArea", true);
+                .translation("pneumaticcraft.config.common.drones.allowTeleportToProtectedArea")
+                .define("allow_teleport_to_protected_area", true);
+        drones.chunkloadOfflineTime = builder
+                .comment("Time in seconds after a player logs out that drones and Programmable Controllers belonging to that player can no long chunk-load. Set to 0 to allow indefinite offline chunkloading.")
+                .translation("pneumaticcraft.config.common.drones.chunkloadOfflineTime")
+                .defineInRange("chunkload_offline_time", 0, 0, Integer.MAX_VALUE);
         builder.pop();
     }
 }

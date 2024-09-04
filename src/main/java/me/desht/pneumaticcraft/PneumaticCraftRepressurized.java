@@ -49,6 +49,8 @@ import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
 import me.desht.pneumaticcraft.common.upgrades.UpgradesDBSetup;
 import me.desht.pneumaticcraft.common.util.ItemLaunching;
 import me.desht.pneumaticcraft.common.util.Reflections;
+import me.desht.pneumaticcraft.common.util.chunkloading.ForcedChunks;
+import me.desht.pneumaticcraft.common.util.chunkloading.PlayerLogoutTracker;
 import me.desht.pneumaticcraft.common.villages.VillageStructures;
 import me.desht.pneumaticcraft.lib.Log;
 import net.neoforged.bus.api.IEventBus;
@@ -99,6 +101,7 @@ public class PneumaticCraftRepressurized {
         forgeBus.register(GPSAreaToolItem.EventHandler.class);
         forgeBus.register(HackEventListener.getInstance());
         forgeBus.addListener(VillageStructures::addMechanicHouse);
+        forgeBus.register(PlayerLogoutTracker.INSTANCE);
     }
 
     private void newRegistries(NewRegistryEvent event) {

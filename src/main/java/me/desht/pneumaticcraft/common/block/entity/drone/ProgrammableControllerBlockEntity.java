@@ -19,7 +19,6 @@ package me.desht.pneumaticcraft.common.block.entity.drone;
 
 import com.google.common.collect.ImmutableSet;
 import com.mojang.authlib.GameProfile;
-import me.desht.pneumaticcraft.ForcedChunks;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.drone.DroneConstructingEvent;
 import me.desht.pneumaticcraft.api.drone.IPathNavigator;
@@ -47,6 +46,8 @@ import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.common.util.chunkloading.DynamicChunkLoader;
+import me.desht.pneumaticcraft.common.util.chunkloading.PlayerLogoutTracker;
 import me.desht.pneumaticcraft.common.util.fakeplayer.DroneFakePlayer;
 import me.desht.pneumaticcraft.common.util.fakeplayer.DroneItemHandler;
 import me.desht.pneumaticcraft.lib.Log;
@@ -83,7 +84,6 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.common.world.chunk.TicketController;
 import net.neoforged.neoforge.energy.IEnergyStorage;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
@@ -162,7 +162,7 @@ public class ProgrammableControllerBlockEntity extends AbstractAirHandlingBlockE
     @GuiSynced
     private boolean chunkloadWorkingChunk3x3 = false;
     private ChunkPos prevChunkPos = null;
-    private final Set<ChunkPos> loadedChunks = new HashSet<>();
+    private DynamicChunkLoader chunkLoader;
 
     private UUID ownerID;
     private Component ownerName;
@@ -189,10 +189,6 @@ public class ProgrammableControllerBlockEntity extends AbstractAirHandlingBlockE
                 Capabilities.ItemHandler.BLOCK, () -> inventory,
                 SideConfigurator.RelativeFace.BOTTOM);
         itemHandlerSideConfigurator.setNullFaceHandler("programmableInv");
-    }
-
-    private TicketController ticketController() {
-        return ForcedChunks.INSTANCE.getPcController();
     }
 
     @Override
@@ -272,8 +268,12 @@ public class ProgrammableControllerBlockEntity extends AbstractAirHandlingBlockE
         }
         fp.setPos(curX, curY, curZ);
         ChunkPos newChunkPos = new ChunkPos((int)curX >> 4, (int)curZ >> 4);
-        if (prevChunkPos == null || !prevChunkPos.equals(newChunkPos)) {
-            handleDynamicChunkloading(newChunkPos);
+        if (chunkLoader != null) {
+            if (PlayerLogoutTracker.INSTANCE.isPlayerLoggedOutTooLong(level.getServer(), ownerID)) {
+                chunkLoader.unloadAll((ServerLevel) level);
+            } else if (prevChunkPos == null || !prevChunkPos.equals(newChunkPos)) {
+                chunkLoader.updateLoadedChunks((ServerLevel) level, newChunkPos);
+            }
         }
         prevChunkPos = newChunkPos;
         fp.tick();
@@ -283,10 +283,15 @@ public class ProgrammableControllerBlockEntity extends AbstractAirHandlingBlockE
         if (getPressure() >= getMinWorkingPressure()) {
             if (!isIdle) {
                 addAir(-PneumaticValues.USAGE_PROGRAMMABLE_CONTROLLER);
-                if (chunkloadWorkingChunk3x3) addAir(-PneumaticValues.USAGE_PROGRAMMABLE_CONTROLLER_CHUNKLOAD_WORK3);
-                else if (chunkloadWorkingChunk) addAir(-PneumaticValues.USAGE_PROGRAMMABLE_CONTROLLER_CHUNKLOAD_WORK);
+                if (chunkloadWorkingChunk3x3) {
+                    addAir(-PneumaticValues.USAGE_PROGRAMMABLE_CONTROLLER_CHUNKLOAD_WORK3);
+                } else if (chunkloadWorkingChunk) {
+                    addAir(-PneumaticValues.USAGE_PROGRAMMABLE_CONTROLLER_CHUNKLOAD_WORK);
+                }
             }
-            if (chunkloadSelf) addAir(-PneumaticValues.USAGE_PROGRAMMABLE_CONTROLLER_CHUNKLOAD_SELF);
+            if (chunkloadSelf) {
+                addAir(-PneumaticValues.USAGE_PROGRAMMABLE_CONTROLLER_CHUNKLOAD_SELF);
+            }
             DroneAIManager prevActive = getActiveAIManager();
             aiManager.onUpdateTasks();
             if (getActiveAIManager() != prevActive) {
@@ -301,28 +306,11 @@ public class ProgrammableControllerBlockEntity extends AbstractAirHandlingBlockE
         }
     }
 
-    private void handleDynamicChunkloading(ChunkPos newPos) {
-//        Log.info("drone moved into chunk " + newPos);
-        for (int cx = newPos.x - 1; cx <= newPos.x + 1; cx++) {
-            for (int cz = newPos.z - 1; cz <= newPos.z + 1; cz++) {
-                ChunkPos cp = new ChunkPos(cx, cz);
-                if (shouldLoadChunk(cp)) loadedChunks.add(cp);
-            }
+    public boolean shouldLoadChunk(ChunkPos cp) {
+        if (getPressure() < getMinWorkingPressure()) {
+            return false;
         }
 
-        Iterator<ChunkPos> iter = loadedChunks.iterator();
-        while (iter.hasNext()) {
-            ChunkPos cp = iter.next();
-            boolean load = shouldLoadChunk(cp);
-//            Log.info("chunkload " + cp + "? " + load);
-            ticketController().forceChunk((ServerLevel) nonNullLevel(), worldPosition, cp.x, cp.z, load, false);
-            if (!load) {
-                iter.remove();
-            }
-        }
-    }
-
-    private boolean shouldLoadChunk(ChunkPos cp) {
         int cx = (int)curX >> 4;
         int cz = (int)curZ >> 4;
         return chunkloadSelf && cp.x == worldPosition.getX() >> 4 && cp.z == worldPosition.getZ() >> 4
@@ -362,8 +350,10 @@ public class ProgrammableControllerBlockEntity extends AbstractAirHandlingBlockE
     public void setRemoved() {
         super.setRemoved();
 
-        if (level instanceof ServerLevel) {
-            loadedChunks.forEach(cp -> ticketController().forceChunk((ServerLevel) level, worldPosition, cp.x, cp.z, false, false));
+        if (level instanceof ServerLevel serverLevel) {
+            if (chunkLoader != null) {
+                chunkLoader.unloadAll(serverLevel);
+            }
         }
         NeoForge.EVENT_BUS.unregister(this);
     }
@@ -385,16 +375,23 @@ public class ProgrammableControllerBlockEntity extends AbstractAirHandlingBlockE
 
     @Override
     public void handleGUIButtonPress(String tag, boolean shiftHeld, ServerPlayer player) {
+        boolean doChunkloadCheck = false;
         if (tag.equals("charging")) {
             shouldChargeHeldItem = !shouldChargeHeldItem;
         } else if (tag.equals("chunkload_self")) {
             chunkloadSelf = !chunkloadSelf;
+            doChunkloadCheck = true;
         } else if (tag.equals("chunkload_work")) {
             chunkloadWorkingChunk = !chunkloadWorkingChunk;
+            doChunkloadCheck = true;
         } else if (tag.equals("chunkload_work_3x3")) {
             chunkloadWorkingChunk3x3 = !chunkloadWorkingChunk3x3;
+            doChunkloadCheck = true;
         } else if (itemHandlerSideConfigurator.handleButtonPress(tag, shiftHeld)) {
             shouldUpdateNeighbours = true;
+        }
+        if (doChunkloadCheck && chunkLoader != null) {
+            chunkLoader.updateLoadedChunks((ServerLevel) level, new ChunkPos(worldPosition));
         }
         setChanged();
     }
@@ -535,10 +532,10 @@ public class ProgrammableControllerBlockEntity extends AbstractAirHandlingBlockE
         curY = targetY = getBlockPos().getY() + 1.0;
         curZ = targetZ = getBlockPos().getZ() + 0.5;
 
+        chunkLoader = DynamicChunkLoader.forProgrammableController(this);
+
         if (chunkloadSelf) {
-            ChunkPos cp = new ChunkPos(worldPosition);
-            ticketController().forceChunk((ServerLevel) nonNullLevel(), worldPosition, cp.x, cp.z, true, false);
-            loadedChunks.add(cp);
+            chunkLoader.updateLoadedChunks((ServerLevel) nonNullLevel(), new ChunkPos(worldPosition));
         }
     }
 

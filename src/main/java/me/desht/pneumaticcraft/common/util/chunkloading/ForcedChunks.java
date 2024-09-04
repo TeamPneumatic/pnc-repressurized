@@ -1,4 +1,4 @@
-package me.desht.pneumaticcraft;
+package me.desht.pneumaticcraft.common.util.chunkloading;
 
 import net.neoforged.neoforge.common.world.chunk.RegisterTicketControllersEvent;
 import net.neoforged.neoforge.common.world.chunk.TicketController;
