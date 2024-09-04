@@ -422,9 +422,9 @@ public class FluidMixerBlockEntity extends AbstractAirHandlingBlockEntity implem
         }
 
         @Override
-        protected void onContentsChanged(Fluid prevFluid, int prevAmount) {
-            super.onContentsChanged(prevFluid, prevAmount);
-            if (!getLevel().isClientSide && prevFluid != getFluid().getFluid()) {
+        protected void onContentsChanged(FluidStack prevStack) {
+            super.onContentsChanged(prevStack);
+            if (getLevel() != null && !getLevel().isClientSide && !FluidStack.isSameFluidSameComponents(prevStack, getFluid())) {
                 searchRecipes = true;
             }
         }

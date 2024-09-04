@@ -58,6 +58,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.util.FakePlayerFactory;
+import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidUtil;
 import net.neoforged.neoforge.fluids.SimpleFluidContent;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
@@ -110,9 +111,9 @@ public class KeroseneLampBlockEntity extends AbstractTickingBlockEntity implemen
     @GuiSynced
     private final SmartSyncTank tank = new SmartSyncTank(this, 2000) {
         @Override
-        protected void onContentsChanged(Fluid prevFluid, int prevAmount) {
-            super.onContentsChanged(prevFluid, prevAmount);
-            if (prevFluid != fluidStack.getFluid()) {
+        protected void onContentsChanged(FluidStack prevStack) {
+            super.onContentsChanged(prevStack);
+            if (prevStack.getFluid() != fluidStack.getFluid()) {
                 fuelQuality = calculateFuelQuality(fluidStack.getFluid());
             }
         }

@@ -394,12 +394,12 @@ public class ThermoPlantBlockEntity extends AbstractAirHandlingBlockEntity imple
         }
 
         @Override
-        protected void onContentsChanged(Fluid prevFluid, int prevAmount) {
-            super.onContentsChanged(prevFluid, prevAmount);
-            FluidStack newFluid = getFluid();
-            if (prevFluid != newFluid.getFluid()
-                    || currentRecipe == null && getFluidAmount() > prevAmount
-                    || currentRecipe != null && getFluidAmount() < prevAmount) {
+        protected void onContentsChanged(FluidStack prevStack) {
+            super.onContentsChanged(prevStack);
+
+            if (!FluidStack.isSameFluidSameComponents(prevStack, getFluid())
+                    || currentRecipe == null && getFluidAmount() > prevStack.getAmount()
+                    || currentRecipe != null && getFluidAmount() < prevStack.getAmount()) {
                 searchForRecipe = true;
             }
         }

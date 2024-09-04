@@ -20,7 +20,6 @@ package me.desht.pneumaticcraft.common.util;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.IFluidTank;
 import net.neoforged.neoforge.fluids.SimpleFluidContent;
@@ -125,11 +124,10 @@ public class PNCFluidTank implements IFluidHandler, IFluidTank {
             }
             return Math.min(capacity - fluidStack.getAmount(), resource.getAmount());
         }
-        Fluid prevFluid = fluidStack.getFluid();
-        int prevAmount = fluidStack.getAmount();
+        FluidStack prevStack = fluidStack.copy();
         if (fluidStack.isEmpty()) {
             fluidStack = new FluidStack(resource.getFluid(), Math.min(capacity, resource.getAmount()));
-            onContentsChanged(prevFluid, prevAmount);
+            onContentsChanged(prevStack);
             return fluidStack.getAmount();
         }
         if (!FluidStack.isSameFluidSameComponents(fluidStack, resource)) {
@@ -144,7 +142,7 @@ public class PNCFluidTank implements IFluidHandler, IFluidTank {
             fluidStack.setAmount(capacity);
         }
         if (filled > 0) {
-            onContentsChanged(prevFluid, prevAmount);
+            onContentsChanged(prevStack);
         }
         return filled;
     }
@@ -167,23 +165,21 @@ public class PNCFluidTank implements IFluidHandler, IFluidTank {
         }
         FluidStack stack = new FluidStack(fluidStack.getFluid(), drained);
         if (action.execute() && drained > 0) {
-            Fluid prevFluid = fluidStack.getFluid();
-            int prevAmount = fluidStack.getAmount();
+            FluidStack prevStack = fluidStack.copy();
             fluidStack.shrink(drained);
-            onContentsChanged(prevFluid, prevAmount);
+            onContentsChanged(prevStack);
         }
         return stack;
     }
 
-    protected void onContentsChanged(Fluid prevFluid, int prevAmount) {
+    protected void onContentsChanged(FluidStack prevStack) {
         // do nothing - override in subclasses
     }
 
     public void setFluid(FluidStack stack) {
-        Fluid prevFluid = fluidStack.getFluid();
-        int prevAmount = fluidStack.getAmount();
+        FluidStack prevStack = fluidStack.copy();
         this.fluidStack = stack;
-        onContentsChanged(prevFluid, prevAmount);
+        onContentsChanged(prevStack);
     }
 
     public boolean isEmpty() {

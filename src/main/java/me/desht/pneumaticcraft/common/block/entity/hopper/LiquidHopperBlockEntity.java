@@ -44,7 +44,6 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.phys.AABB;
 import net.neoforged.neoforge.capabilities.BlockCapabilityCache;
 import net.neoforged.neoforge.fluids.*;
@@ -274,9 +273,9 @@ public class LiquidHopperBlockEntity extends AbstractHopperBlockEntity<LiquidHop
         }
 
         @Override
-        protected void onContentsChanged(Fluid prevFluid, int prevAmount) {
+        protected void onContentsChanged(FluidStack prevStack) {
             comparatorValue = -1;
-            super.onContentsChanged(prevFluid, prevAmount);
+            super.onContentsChanged(prevStack);
         }
 
         @Override

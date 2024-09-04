@@ -446,13 +446,12 @@ public class RefineryControllerBlockEntity extends AbstractTickingBlockEntity
         }
 
         @Override
-        protected void onContentsChanged(Fluid prevFluid, int prevAmount) {
-            super.onContentsChanged(prevFluid, prevAmount);
+        protected void onContentsChanged(FluidStack prevStack) {
+            super.onContentsChanged(prevStack);
 
-            Fluid newFluid = getFluid().getFluid();
-            if (prevFluid != newFluid
-                    || currentRecipe == null && getFluidAmount() > prevAmount
-                    || currentRecipe != null && getFluidAmount() < prevAmount) {
+            if (!FluidStack.isSameFluidSameComponents(prevStack, getFluid())
+                    || currentRecipe == null && getFluidAmount() > prevStack.getAmount()
+                    || currentRecipe != null && getFluidAmount() < prevStack.getAmount()) {
                 searchForRecipe = true;
             }
         }
@@ -464,7 +463,7 @@ public class RefineryControllerBlockEntity extends AbstractTickingBlockEntity
         }
 
         @Override
-        protected void onContentsChanged(Fluid prevFluid, int prevAmount) {
+        protected void onContentsChanged(FluidStack prevStack) {
             // do nothing, this tank is for client sync only
         }
     }
