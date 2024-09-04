@@ -6,6 +6,11 @@ Changes are in reverse chronological order; newest changes at the top.
 
 # Minecraft 1.21.1
 
+## [8.1.2]
+
+### Fixed
+* Fixed Fluid Mixer sometimes caching in an invalid recipe
+
 ## [8.1.1]
 
 ### Added
