@@ -8,8 +8,23 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## [8.1.2]
 
+### Added
+* Added support for limiting offline chunkloading for Drones and Programmable Controllers
+  * `chunkload_offline_time` in common config controls the number of seconds after which a player has logged out that Chunkloader upgrades in their drones stop working
+  * Default of 0 means offline chunkloading works indefinitely, as before
+  * Caveat: drones which are no-longer chunk loading won't magically forceload their chunks again on player login; the player needs to visit the drone's chunk to restart chunkloading
+* Added tooltip to Pressure Chamber Glass block reminding players that CTM (ConnectedTextureMod) is useful (if it's not already installed)
+
+### Changed
+* Configuration is now available again in-game (Mods -> PneumaticCraft: Repressurized -> Configuration)
+  * Config has been overhauled somewhat to support this, and modified values may have been reset to defaults
+  * Check your configs (client and server) if you've changed anything previously
+
 ### Fixed
-* Fixed Fluid Mixer sometimes caching in an invalid recipe
+* Fixed Fluid Mixer sometimes caching an invalid recipe
+  * Insufficient quantities of the right fluid could lead to a valid recipe being negatively cached
+* Fixed Thermopneumatic Processing Plant sometimes caching an invalid recipe
+  * Basically the same issue as the Fluid Mixer
 
 ## [8.1.1]
 
