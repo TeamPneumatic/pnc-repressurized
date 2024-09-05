@@ -18,14 +18,25 @@
 package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.api.block.PNCBlockStateProperties;
+import me.desht.pneumaticcraft.lib.ModIds;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.material.FluidState;
+import net.neoforged.fml.ModList;
+
+import java.util.List;
+
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class PressureChamberGlassBlock extends AbstractPressureWallBlock {
     public PressureChamberGlassBlock() {
@@ -57,5 +68,14 @@ public class PressureChamberGlassBlock extends AbstractPressureWallBlock {
     @Override
     public boolean propagatesSkylightDown(BlockState p_200123_1_, BlockGetter p_200123_2_, BlockPos p_200123_3_) {
         return true;
+    }
+
+    @Override
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> curInfo, TooltipFlag flag) {
+        super.appendHoverText(stack, context, curInfo, flag);
+
+        if (!ModList.get().isLoaded(ModIds.CTM)) {
+            curInfo.add(xlate("gui.tooltip.block.pneumaticcraft.pressure_chamber_glass.ctm").withStyle(ChatFormatting.GRAY));
+        }
     }
 }

@@ -66,13 +66,6 @@ repositories {
 		name = "OctoStudios"
 		url = uri("https://maven.octo-studios.com/releases")
 	}
-//	maven {
-//		name 'Curios'
-//		url "https://maven.theillusivec4.top/"
-//		content {
-//			includeGroup "top.theillusivec4.curios"
-//		}
-//	}
 	maven {
 		name "K-4u Mod maven"
 		url "https://modmaven.dev/"
@@ -287,6 +280,7 @@ publishMods {
         announcementTitle = "Download from Curseforge"
         optional {
             slug = "patchouli"
+            slug = "ctm"
         }
     }
 
