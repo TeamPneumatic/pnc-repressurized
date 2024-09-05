@@ -66,8 +66,9 @@ public class ThermoPlantRecipeImpl extends ThermoPlantRecipe {
 
     @Override
     public boolean matches(FluidStack fluidStack, @Nonnull ItemStack itemStack) {
+        // note: input fluid is a SizedFluidIngredient but we're not interested in amount at this point
         boolean itemOK = inputs.inputItem().map(ingr -> ingr.test(itemStack)).orElse(itemStack.isEmpty());
-        boolean fluidOK = inputs.inputFluid().map(ingr -> ingr.test(fluidStack)).orElse(fluidStack.isEmpty());
+        boolean fluidOK = inputs.inputFluid().map(ingr -> ingr.ingredient().test(fluidStack)).orElse(fluidStack.isEmpty());
 
         return itemOK && fluidOK;
     }
