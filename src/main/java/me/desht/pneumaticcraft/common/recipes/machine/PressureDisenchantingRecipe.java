@@ -25,6 +25,7 @@ import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.registry.ModRecipeSerializers;
 import me.desht.pneumaticcraft.common.util.EnchantmentUtils;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.common.util.WildcardedRLMatcher;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
@@ -37,6 +38,7 @@ import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
+import net.neoforged.neoforge.common.util.Lazy;
 import net.neoforged.neoforge.items.IItemHandler;
 
 import javax.annotation.Nonnull;
@@ -50,6 +52,9 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 public class PressureDisenchantingRecipe extends PressureChamberRecipeImpl {
     public static final ResourceLocation ID = RL("pressure_chamber_disenchanting");
+
+    private static final Lazy<WildcardedRLMatcher> BLACKLIST
+            = WildcardedRLMatcher.lazyFromConfig(ConfigHelper.common().machines.disenchantingBlacklist);
 
     public PressureDisenchantingRecipe(CraftingBookCategory ignoredCategory) {
         super(Collections.emptyList(), -0.75f, List.of());
@@ -161,10 +166,12 @@ public class PressureDisenchantingRecipe extends PressureChamberRecipeImpl {
     }
 
     private boolean blacklisted(ItemStack stack) {
-        List<String> blackList = ConfigHelper.common().machines.disenchantingBlacklist.get();
         return PneumaticCraftUtils.getRegistryName(stack.getItem())
-                .map(name -> blackList.stream().anyMatch(element -> element.startsWith(name.toString())))
+                .map(name -> BLACKLIST.get().test(name))
                 .orElse(false);
     }
 
+    public static void clearCachedBlacklist() {
+        BLACKLIST.invalidate();
+    }
 }

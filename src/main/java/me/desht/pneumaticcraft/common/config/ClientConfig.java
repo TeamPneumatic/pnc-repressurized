@@ -29,7 +29,6 @@ public class ClientConfig {
         public ModConfigSpec.BooleanValue aphorismDrama;
         public ModConfigSpec.EnumValue<IProgWidget.WidgetDifficulty> programmerDifficulty;
         public ModConfigSpec.BooleanValue logisticsGuiTint;
-        public ModConfigSpec.BooleanValue semiBlockLighting;
         public ModConfigSpec.BooleanValue guiBevel;
         public ModConfigSpec.BooleanValue alwaysShowPressureDurabilityBar;
         public ModConfigSpec.BooleanValue tubeModuleRedstoneParticles;
@@ -43,7 +42,6 @@ public class ClientConfig {
     public static class Armor {
         public ModConfigSpec.IntValue blockTrackerMaxTimePerTick;
         public ModConfigSpec.DoubleValue leggingsFOVFactor;
-        public ModConfigSpec.BooleanValue fancyArmorModels;
         public ModConfigSpec.BooleanValue pathEnabled;
         public ModConfigSpec.BooleanValue wirePath;
         public ModConfigSpec.BooleanValue xRayEnabled;
@@ -78,7 +76,7 @@ public class ClientConfig {
                 .define("aphorism_drama", true);
         general.programmerDifficulty = builder
                 .comment("Defines which widgets are shown in the Programmer GUI: easy, medium, or advanced")
-                .translation("pneumaticcraft.config.client.general.fancy_armor_models")
+                .translation("pneumaticcraft.config.client.general.programmer_difficulty")
                 .defineEnum("programmer_difficulty", IProgWidget.WidgetDifficulty.EASY);
         general.logisticsGuiTint = builder
                 .comment("Tint Logistics configuration GUI backgrounds according to the colour of the logistics frame you are configuring.")
@@ -141,7 +139,7 @@ public class ClientConfig {
                 .define("xray_enabled", false);
         armor.pathUpdateSetting = builder
                 .comment("How frequently should the Pneumatic Helmet Coordinate Tracker pathfinder path be recalculated?")
-                .translation("pneumaticcraft.config.client.armor.xray_enabled")
+                .translation("pneumaticcraft.config.client.armor.path_update_setting")
                 .defineEnum("path_update_setting", PathUpdateSetting.NORMAL);
         armor.showPressureNumerically = builder
                 .comment("True: show pressure as numbers.  False: show pressure as horizontal bar.")

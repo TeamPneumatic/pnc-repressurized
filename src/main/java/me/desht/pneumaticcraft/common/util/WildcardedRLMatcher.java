@@ -18,6 +18,8 @@
 package me.desht.pneumaticcraft.common.util;
 
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
+import me.desht.pneumaticcraft.lib.Log;
+import net.minecraft.ResourceLocationException;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.common.ModConfigSpec;
 import net.neoforged.neoforge.common.util.Lazy;
@@ -31,16 +33,21 @@ public class WildcardedRLMatcher implements Predicate<ResourceLocation> {
     private final Set<String> namespaces = new ObjectOpenHashSet<>();
     private final Set<ResourceLocation> reslocs = new ObjectOpenHashSet<>();
 
-    public static Lazy<WildcardedRLMatcher> lazyFromConfig(ModConfigSpec.ConfigValue<List<String>> configValue) {
+    public static Lazy<WildcardedRLMatcher> lazyFromConfig(ModConfigSpec.ConfigValue<List<? extends String>> configValue) {
         return Lazy.of(() -> new WildcardedRLMatcher(configValue.get()));
     }
 
-    public WildcardedRLMatcher(Collection<String> toMatch) {
-        for (String s : toMatch) {
-            if (s.endsWith(":*")) {
-                namespaces.add(s.split(":")[0]);
+    public WildcardedRLMatcher(Collection<? extends String> toMatch) {
+        for (String str : toMatch) {
+            String[] parts = str.split(":");
+            if (parts[1].isEmpty() || parts[1].equals("*")) {
+                namespaces.add(parts[0]);
             } else {
-                reslocs.add(ResourceLocation.parse(s));
+                try {
+                    reslocs.add(ResourceLocation.parse(str));
+                } catch (ResourceLocationException e) {
+                    Log.error("WildcardedRLMatcher: invalid resource location '{}'", str);
+                }
             }
         }
     }
@@ -52,5 +59,16 @@ public class WildcardedRLMatcher implements Predicate<ResourceLocation> {
     @Override
     public boolean test(ResourceLocation resourceLocation) {
         return reslocs.contains(resourceLocation) || namespaces.contains(resourceLocation.getNamespace());
+    }
+
+    public static boolean isValidRL(Object input) {
+        if (!(input instanceof String str)) {
+            return false;
+        }
+        if (ResourceLocation.tryParse(str) != null) {
+            return true;
+        }
+        String[] parts = str.split(":");
+        return parts.length == 2 && ResourceLocation.isValidNamespace(parts[0]) && (parts[0].isEmpty() || parts[1].equals("*"));
     }
 }

@@ -36,19 +36,12 @@ public class HeatExchangerLogicAmbient extends HeatExchangerLogicConstant {
         // biome temp of 0.8 is plains: let's call that the baseline - 300K
         // max (vanilla) is 2.0 for desert / nether, min is -0.5 for snowy taiga mountains
         float t = world.getBiome(pos).value().getBaseTemperature() - 0.8f;
+        int h = world.getSeaLevel() - pos.getY();
 
-        // TODO 1.18 validate these numbers
-        int h = 0;
-        int seaLevel = world.getSeaLevel();
-        if (pos.getY() > seaLevel) {
-            h = seaLevel - pos.getY();
-        } else if (pos.getY() < seaLevel) {
-            h = seaLevel - pos.getY();
-        }
-
-        int temp = (int) (BASE_AMBIENT_TEMP + ConfigHelper.common().heat.ambientTemperatureBiomeModifier.get() * t
-                + ConfigHelper.common().heat.ambientTemperatureHeightModifier.get() * h);
-        return exchangers.computeIfAbsent(temp, HeatExchangerLogicAmbient::new);
+        double temp = BASE_AMBIENT_TEMP
+                + ConfigHelper.common().heat.ambientTemperatureBiomeModifier.get() * t
+                + ConfigHelper.common().heat.ambientTemperatureHeightModifier.get() * h;
+        return exchangers.computeIfAbsent((int) temp, HeatExchangerLogicAmbient::new);
     }
 
     public static double getAmbientTemperature(LevelAccessor world, BlockPos pos) {

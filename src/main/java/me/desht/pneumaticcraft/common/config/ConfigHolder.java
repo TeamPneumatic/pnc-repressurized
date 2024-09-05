@@ -19,6 +19,7 @@ package me.desht.pneumaticcraft.common.config;
 
 import me.desht.pneumaticcraft.client.pneumatic_armor.ClientArmorRegistry;
 import me.desht.pneumaticcraft.common.block.entity.utility.AerialInterfaceBlockEntity;
+import me.desht.pneumaticcraft.common.recipes.machine.PressureDisenchantingRecipe;
 import me.desht.pneumaticcraft.common.worldgen.OilLakeFilter;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
@@ -65,5 +66,6 @@ public class ConfigHolder {
     static void refreshCommon() {
         OilLakeFilter.DimensionFilter.clearMatcherCaches();
         AerialInterfaceBlockEntity.clearDimensionBlacklist();
+        PressureDisenchantingRecipe.clearCachedBlacklist();
     }
 }

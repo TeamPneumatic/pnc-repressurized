@@ -67,16 +67,19 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.*;
 import net.neoforged.neoforge.client.extensions.common.IClientBlockExtensions;
+import net.neoforged.neoforge.client.gui.ConfigurationScreen;
+import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 import net.neoforged.neoforge.common.NeoForge;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 public class ClientSetup {
-    public static void onModConstruction(IEventBus modBus) {
+    public static void onModConstruction(ModContainer modContainer, IEventBus modBus) {
         modBus.addListener(ClientSetup::onClientSetup);
         modBus.addListener(ClientSetup::registerGuiOverlays);
         modBus.addListener(ClientSetup::registerTooltipComponentFactories);
@@ -86,6 +89,8 @@ public class ClientSetup {
         modBus.addListener(ClientSetup::registerLayerDefinitions);
         modBus.addListener(ClientSetup::registerKeyMappings);
         modBus.addListener(ClientSetup::registerScreens);
+
+        modContainer.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
 
         NeoForge.EVENT_BUS.register(HUDHandler.getInstance());
         NeoForge.EVENT_BUS.register(AreaRenderManager.getInstance());

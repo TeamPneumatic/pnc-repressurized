@@ -77,7 +77,7 @@ public class PneumaticCraftRepressurized {
         AuxConfigHandler.preInit();
 
         if (FMLEnvironment.dist.isClient()) {
-            ClientSetup.onModConstruction(modBus);
+            ClientSetup.onModConstruction(container, modBus);
         }
 
         Reflections.init();

@@ -18,10 +18,12 @@
 package me.desht.pneumaticcraft.common.config;
 
 import com.google.common.collect.Lists;
+import me.desht.pneumaticcraft.common.util.WildcardedRLMatcher;
 import me.desht.pneumaticcraft.common.villages.VillagerTradesRegistration;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.neoforged.neoforge.common.ModConfigSpec;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class CommonConfig {
@@ -38,8 +40,8 @@ public class CommonConfig {
         public ModConfigSpec.BooleanValue topShowsFluids;
     }
     public static class Worldgen {
-        public ModConfigSpec.ConfigValue<List<String>> oilWorldGenDimensionWhitelist;
-        public ModConfigSpec.ConfigValue<List<String>> oilWorldGenDimensionBlacklist;
+        public ModConfigSpec.ConfigValue<List<? extends String>> oilWorldGenDimensionWhitelist;
+        public ModConfigSpec.ConfigValue<List<? extends String>> oilWorldGenDimensionBlacklist;
     }
     public static class Machines {
         public ModConfigSpec.BooleanValue aerialInterfaceArmorCompat;
@@ -65,8 +67,8 @@ public class CommonConfig {
         public ModConfigSpec.IntValue pneumaticPumpEfficiency;
         public ModConfigSpec.DoubleValue speedUpgradeSpeedMultiplier;
         public ModConfigSpec.DoubleValue speedUpgradeUsageMultiplier;
-        public ModConfigSpec.ConfigValue<List<String>> disenchantingBlacklist;
-        public ModConfigSpec.ConfigValue<List<String>> aerialInterfaceDimensionBlacklist;
+        public ModConfigSpec.ConfigValue<List<? extends String>> disenchantingBlacklist;
+        public ModConfigSpec.ConfigValue<List<? extends String>> aerialInterfaceDimensionBlacklist;
         public ModConfigSpec.IntValue vortexCannonPlayerBoostRate;
         public ModConfigSpec.DoubleValue pressurizedSpawnerMinPressure;
     }
@@ -89,9 +91,7 @@ public class CommonConfig {
     public static class Advanced {
         public ModConfigSpec.BooleanValue disableKeroseneLampFakeAirBlock;
         public ModConfigSpec.IntValue fluidTankUpdateRate;
-        public ModConfigSpec.IntValue pressureSyncPrecision;
         public ModConfigSpec.BooleanValue dontUpdateInfiniteWaterSources;
-        public ModConfigSpec.BooleanValue nbtToClientModification;
     }
     public static class Micromissiles {
         public ModConfigSpec.DoubleValue baseExplosionDamage;
@@ -116,7 +116,6 @@ public class CommonConfig {
         public ModConfigSpec.IntValue freezingAmmoBlockIceChance;
         public ModConfigSpec.IntValue freezingAmmoCartridgeSize;
         public ModConfigSpec.IntValue freezingAmmoEntityIceChance;
-        public ModConfigSpec.DoubleValue freezingAmmoFakeIceDamage;
         public ModConfigSpec.IntValue incendiaryAmmoBlockIgniteChance;
         public ModConfigSpec.IntValue incendiaryAmmoCartridgeSize;
         public ModConfigSpec.IntValue incendiaryAmmoEntityIgniteChance;
@@ -200,7 +199,7 @@ public class CommonConfig {
     public final Drones drones = new Drones();
 
     CommonConfig(final ModConfigSpec.Builder builder) {
-        builder.push("General");
+        builder.push("general");
         general.enableDungeonLoot = builder
                 .comment("Enable mod dungeon loot generation")
                 .translation("pneumaticcraft.config.common.general.enable_dungeon_loot")
@@ -240,24 +239,24 @@ public class CommonConfig {
                 .defineInRange("plastic_brick_damage", 3.0, 0.0, Double.MAX_VALUE);
         general.topShowsFluids = builder
                 .comment("Show tank fluids with the The One Probe when sneaking? Note that TOP has its own support for showing tanks, which by default requires a Probe to be held, or a Probe-enabled helmet to be worn.")
-                .translation("pneumaticcraft.config.client.general.top_shows_fluids")
+                .translation("pneumaticcraft.config.common.general.top_shows_fluids")
                 .define("top_shows_fluids", false);
         builder.pop();
 
-        builder.push("Worldgen");
+        builder.push("worldgen");
         worldgen.oilWorldGenDimensionWhitelist = builder
                 .worldRestart()
                 .comment("Oil worldgen whitelist by dimension ID: add dimension ID's to this list if you want oil lake worldgen to happen ONLY in those dimensions. You can wildcard the path; e.g 'modid:*' whitelists ALL dimensions of namespace 'modid'. If this is empty, it is ignored, and 'oil_world_gen_dimension_blacklist' will be checked instead.")
                 .translation("pneumaticcraft.config.common.general.oil_world_gen_dimension_whitelist")
-                .define("oil_world_gen_dimension_whitelist", Lists.newArrayList());
+                .defineList("oil_world_gen_dimension_whitelist", Lists::newArrayList, () -> "", WildcardedRLMatcher::isValidRL);
         worldgen.oilWorldGenDimensionBlacklist = builder
                 .worldRestart()
                 .comment("Oil worldgen blacklist by dimension ID: add dimension ID's to this list if you don't want oil lake worldgen to happen there. You can wildcard this; e.g 'modid:*' blacklists ALL dimensions of namespace 'modid'.")
                 .translation("pneumaticcraft.config.common.general.oil_world_gen_dimension_blacklist")
-                .define("oil_world_gen_dimension_blacklist", Lists.newArrayList());
+                .defineList("oil_world_gen_dimension_blacklist", Lists.newArrayList(), () -> "", WildcardedRLMatcher::isValidRL);
         builder.pop();
 
-        builder.push("Machine Properties");
+        builder.push("machines");
         machines.aerialInterfaceArmorCompat = builder
                 .comment("Aerial Interface backwards compat: allow pre-0.8.0 behaviour of getting player's armor inventory from top face, even with Dispenser Upgrade installed")
                 .translation("pneumaticcraft.config.common.machine_properties.aerial_interface_armor_compat")
@@ -355,20 +354,20 @@ public class CommonConfig {
                 .translation("pneumaticcraft.config.common.machine_properties.speed_upgrade_usage_multiplier")
                 .defineInRange("speed_upgrade_usage_multiplier", PneumaticValues.DEF_SPEED_UPGRADE_USAGE_MULTIPLIER, 1.0, 2.0);
         machines.disenchantingBlacklist = builder
-                .comment("Blacklist items from being allowed in the Pressure Chamber disenchanting system. This is a starts-with string match, so you can match by mod, or individual item names as you need. Blacklisted by default are Quark Ancient Tomes, and all Tetra items; both can lead to enchantment duping as they have special enchantment mechanics.")
+                .comment("Blacklist items from being allowed in the Pressure Chamber disenchanting system. You can use wildcarded matches here, e.g. 'tetra:*' matches all items from the Tetra mod. Blacklisted by default are Quark Ancient Tomes, and all Tetra items; both can lead to enchantment duping as they have special enchantment mechanics.")
                 .translation("pneumaticcraft.config.common.machines.disenchanting_blacklist")
-                .define("disenchanting_blacklist", Lists.newArrayList("quark:ancient_tome", "tetra:"));
+                .defineList("disenchanting_blacklist", Lists.newArrayList("quark:ancient_tome", "tetra:*"), () -> "", WildcardedRLMatcher::isValidRL);
         machines.aerialInterfaceDimensionBlacklist = builder
                 .comment("ID's of dimensions in which the Aerial Interface is not allowed to operate. You can use wildcarded dimensions here, e.g. 'somemod:*'.")
                 .translation("pneumaticcraft.config.common.machines.aerial_interface_dimension_blacklist")
-                .define("aerial_interface_dimension_blacklist", Lists.newArrayList());
+                .defineList("aerial_interface_dimension_blacklist", ArrayList::new, () -> "", WildcardedRLMatcher::isValidRL);
         machines.vortexCannonPlayerBoostRate = builder
                 .comment("Minimum interval in ticks which the player can use the Vortex Cannon to boost their own speed")
                 .translation("pneumaticcraft.config.common.machines.vortex_cannon.player_boost_rate")
                 .defineInRange("vortex_cannon_player_boost_rate", 10, 1, Integer.MAX_VALUE);
         builder.pop();
 
-        builder.push("Pneumatic Armor");
+        builder.push("pneumatic_armor");
         armor.jetBootsAirUsage = builder
                 .comment("Jetboots air usage in mL/tick (per Jet Boots Upgrade)")
                 .translation("pneumaticcraft.config.common.armor.jet_boots_air_usage")
@@ -399,7 +398,7 @@ public class CommonConfig {
                 .defineInRange("scuba_multiplier", PneumaticValues.PNEUMATIC_HELMET_SCUBA_MULTIPLIER, 1, Integer.MAX_VALUE);
         builder.pop();
 
-        builder.push("Advanced");
+        builder.push("advanced");
         advanced.disableKeroseneLampFakeAirBlock = builder
                 .comment("When set to true, the Kerosene Lamp's fake air blocks won't be registered and therefore removed from the world. Useful if this causes trouble (it shouldn't though)")
                 .translation("pneumaticcraft.config.common.advanced.disable_kerosene_lamp_fake_air_block")
@@ -408,20 +407,13 @@ public class CommonConfig {
                 .comment("The minimum interval in ticks between which fluid tank contents should be synced to clients. Smaller values mean smoother visual tank updates, but more of a performance cost in terms of network syncing. Note that fluid tank sync packets are also only sent when a fluid tank changes by more than 1% of its capacity, or 1000mB, whichever is smaller.")
                 .translation("pneumaticcraft.config.common.advanced.fluid_tank_update_rate")
                 .defineInRange("fluid_tank_update_rate", 10, 1, 100);
-        advanced.pressureSyncPrecision = builder
-                .comment("Precision to which pressurizable item air levels are synced to client. Default of 10 is precise enough to show pressure to 1 decimal place, which is what is display in client tooltips & pneumatic armor HUD. Lower values will sync less precisely, reducing server->client network traffic. Values higher than 10 are not recommended (will cause extra network traffic for no benefit).")
-                .translation("pneumaticcraft.config.common.advanced.pressurizable_sync_precision")
-                .defineInRange("pressurizable_sync_precision", 10, 1, 100);
         advanced.dontUpdateInfiniteWaterSources = builder
                 .comment("Don't remove a water source block when picking up (drones, liquid hoppers, gas lift) if it has at least two water source neighbours. This can reduce lag due to frequent block updates, and can also potentially make water import much faster. Set this to false if you want no-infinite-water rules in a world, or want to limit the speed of water importing to vanilla block update rates.")
                 .translation("pneumaticcraft.config.common.advanced.dont_update_infinite_water_sources")
                 .define("dont_update_infinite_water_sources", true);
-        advanced.nbtToClientModification = builder
-                .comment("When set to true, server will strip NBT data from pressurizable items (pneumatic armor, drones...) which the client doesn't care about. Good for saving on network chatter, but can cause players to be kicked under some circumstances. If this occurs, set this config value to false.")
-                .define("nbt_to_client_modification", true);
         builder.pop();
 
-        builder.push("Micromissile Properties");
+        builder.push("micromissiles");
         micromissiles.baseExplosionDamage = builder
                 .comment("Base explosion damage (modified by missile setup)")
                 .translation("pneumaticcraft.config.common.micromissile_properties.base_explosion_damage")
@@ -452,7 +444,7 @@ public class CommonConfig {
                 .defineInRange("missile_pod_size", 100, 0, Integer.MAX_VALUE);
         builder.pop();
 
-        builder.push("Minigun Properties");
+        builder.push("minigun");
         minigun.apAmmoDamageMultiplier = builder
                 .comment("Armor Piercing Ammo damage multiplier (relative to standard ammo)")
                 .translation("pneumaticcraft.config.common.minigun_properties.ap_ammo_damage_multiplier")
@@ -502,13 +494,9 @@ public class CommonConfig {
                 .translation("pneumaticcraft.config.common.minigun_properties.freezing_ammo_cartridge_size")
                 .defineInRange("freezing_ammo_cartridge_size", 1000, 0, Integer.MAX_VALUE);
         minigun.freezingAmmoEntityIceChance = builder
-                .comment("Freezing Ammo base percentage chance to form ice on entities which have been hit")
+                .comment("Freezing Ammo base percentage chance to form a freezing cloud (causing slow and minor wither damage) on entities which have been hit")
                 .translation("pneumaticcraft.config.common.minigun_properties.freezing_ammo_entity_ice_chance")
                 .defineInRange("freezing_ammo_entity_ice_chance", 20, 0, 100);
-        minigun.freezingAmmoFakeIceDamage = builder
-                .comment("Damage done to entities within the fake 'ice' blocks cause by freezing ammo")
-                .translation("pneumaticcraft.config.common.minigun_properties.freezing_ammo_fake_ice_damage")
-                .defineInRange("freezing_ammo_fake_ice_damage", 1, 0, Double.MAX_VALUE);
         minigun.incendiaryAmmoBlockIgniteChance = builder
                 .comment("Incendiary ammo base percentage chance to ignite blocks")
                 .translation("pneumaticcraft.config.common.minigun_properties.incendiary_ammo_block_ignite_chance")
@@ -555,11 +543,11 @@ public class CommonConfig {
                 .define("block_hit_particles", true);
         minigun.invulnerabilityTicks = builder
                 .comment("Entity invulnerability ticks after being hit by a Minigun bullet. (Vanilla default is 20 ticks)")
-                .translation("pneumaticcraft.config.common.integration.ie_external_heater_fe_per_tick")
+                .translation("pneumaticcraft.config.common.minigun_properties.invulnerability_ticks")
                 .defineInRange("invulnerability_ticks", 10, 0, Integer.MAX_VALUE);
         builder.pop();
 
-        builder.push("Integration");
+        builder.push("integration");
         integration.ieExternalHeaterHeatPerFE = builder
                 .comment("Immersive Engineering: External Heater heat/FE.  The amount of PneumaticCraft heat added by using 1 FE in the heater.")
                 .translation("pneumaticcraft.config.common.integration.ie_external_heater_heat_per_fe")
@@ -576,13 +564,13 @@ public class CommonConfig {
                 .comment("Mekanism <-> PneumaticCraft heat conversion efficiency. Set to 0 to disable Mekanism heat integration entirely. Note that Mekanism and PNC use a similar heat system, but scale things quite differently (Mekanism heaters produces a LOT of heat by PneumaticCraft standards), so conversion efficiency tuning is important for inter-mod balance.")
                 .translation("pneumaticcraft.config.common.integration.mek_thermal_efficiency_factor")
                 .defineInRange("mek_thermal_conversion_efficiency", 0.01, 0.0, 2.0);
-        integration.cofhHoldingMultiplier = builder
-                .comment("Volume boost multiplier for pressurizable items with the CoFH Holding enchantment; air volume is multiplied by (1 + level_of_holding_enchantment) x this value. Set to 0 to disallow pressurizable items being enchanted with the Holding enchantment at all.")
-                .translation("pneumaticcraft.config.common.integration.cofh_holding_multiplier")
-                .defineInRange("cofh_holding_multiplier", 1.0, 0.0, Double.MAX_VALUE);
+//        integration.cofhHoldingMultiplier = builder
+//                .comment("Volume boost multiplier for pressurizable items with the CoFH Holding enchantment; air volume is multiplied by (1 + level_of_holding_enchantment) x this value. Set to 0 to disallow pressurizable items being enchanted with the Holding enchantment at all.")
+//                .translation("pneumaticcraft.config.common.integration.cofh_holding_multiplier")
+//                .defineInRange("cofh_holding_multiplier", 1.0, 0.0, Double.MAX_VALUE);
         builder.pop();
 
-        builder.push("Recipes");
+        builder.push("recipes");
         recipes.inWorldPlasticSolidification = builder
                 .comment("Does Molten Plastic solidify to Plastic Sheets when poured into the world? If set to false, then Heat Frame cooling is the only other way to make Plastic Sheets (by default).")
                 .translation("pneumaticcraft.config.common.recipes.in_world_plastic_solidification")
@@ -593,7 +581,7 @@ public class CommonConfig {
                 .define("in_world_yeast_crafting", true);
         builder.pop();
 
-        builder.push("Amadron");
+        builder.push("amadron");
         amadron.numPeriodicOffers = builder
                 .comment("Number of periodic offers randomly selected for the 'live' offer list. Note: this a maximum, and the actual number chosen each time may be less. Periodic offers are those offers which have a static: false field in their recipe JSON.")
                 .translation("pneumaticcraft.config.common.amadron.num_periodic_offers")
@@ -632,7 +620,7 @@ public class CommonConfig {
                 .define("amadrone_spawn_location_relative_to_ground_level", true);
         builder.pop();
 
-        builder.push("Heat");
+        builder.push("heat");
         heat.blockThermalResistance = builder
                 .comment("Default thermal resistance for solid blocks")
                 .translation("pneumaticcraft.config.common.blockHeatDefaults.blockThermalResistance")
@@ -654,7 +642,7 @@ public class CommonConfig {
                 .translation("pneumaticcraft.config.common.blockHeatDefaults.ambientTemperatureBiomeModifier")
                 .defineInRange("ambient_temperature_biome_modifier", 25.0, 0.0, 1000.0);
         heat.ambientTemperatureHeightModifier = builder
-                .comment("Ambient temperature increase by altitude, in degrees per block below 48 (or 75% of sea level). Note that temperature decrease per block above 64 is handled by vanilla.")
+                .comment("Ambient temperature increase by altitude, in degrees per block above/below the dimension's sea level (64 for default overworld generation). Temperature rises as height decreases.")
                 .translation("pneumaticcraft.config.common.blockHeatDefaults.ambientTemperatureHeightModifier")
                 .defineInRange("ambient_temperature_height_modifier", 0.1, 0.0, 10.0);
         heat.addDefaultFluidEntries = builder
@@ -663,7 +651,7 @@ public class CommonConfig {
                 .define("add_default_fluid_entries", true);
         builder.pop();
 
-        builder.push("Logistics");
+        builder.push("logistics");
         logistics.itemTransportCost = builder
                 .comment("Logistics Module air usage per item per block distance")
                 .translation("pneumaticcraft.config.common.logistics.itemTransportCost")
@@ -678,7 +666,7 @@ public class CommonConfig {
                 .defineInRange("min_pressure", 3.0, 0.0, 20.0);
         builder.pop();
 
-        builder.push("Jackhammer");
+        builder.push("jackhammer");
         jackhammer.maxVeinMinerRange = builder
                 .comment("Max veinmining range (distance from mined block) for Vein Miner Plus mode")
                 .translation("pneumaticcraft.config.common.jackhammer.maxVeinMinerRange")
@@ -689,7 +677,7 @@ public class CommonConfig {
                 .defineInRange("base_air_usage", PneumaticValues.USAGE_JACKHAMMER, 0, Integer.MAX_VALUE);
         builder.pop();
 
-        builder.push("Villagers");
+        builder.push("villagers");
         villagers.mechanicHouseWeight = builder
                 .comment("Frequency of PneumaticCraft village house generation? Default value of 8 tends to give 0-2 houses per village with no other mods present. Set to 0 to disable house generation entirely. May need to raise this value if there are many other mods also adding village houses. Note: changing this value won't affect any already-generated houses, only new generation.")
                 .translation("pneumaticcraft.config.common.villagers.mechanic_house_weight")
@@ -702,7 +690,7 @@ public class CommonConfig {
                 .defineEnum("mechanic_trades", VillagerTradesRegistration.WhichTrades.ALL);
         builder.pop();
 
-        builder.push("Drones");
+        builder.push("drones");
         drones.enableDroneSuffocation = builder
                 .comment("Enable Drone Suffocation Damage")
                 .translation("pneumaticcraft.config.common.drones.enable_drone_suffocation")
