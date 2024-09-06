@@ -13,7 +13,7 @@ plugins {
     id 'idea'
     id 'maven-publish'
     id 'net.neoforged.gradle.userdev' version '7.0.145'
-    id "me.modmuss50.mod-publish-plugin" version "0.5.1"
+    id "me.modmuss50.mod-publish-plugin" version "0.7.2"
 }
 
 ext {
@@ -146,8 +146,8 @@ dependencies {
 	implementation "net.neoforged:neoforge:${neo_version}"
 	apiImplementation "net.neoforged:neoforge:${neo_version}"
 
-	testImplementation "org.junit.jupiter:junit-jupiter-api:5.7.2"
-	testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.7.2"
+	testImplementation 'org.junit.jupiter:junit-jupiter-api:5.11.0-M2'
+	testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.11.0-M2'
 
 	implementation("mcjty.theoneprobe:theoneprobe:${top_version}") {
 		exclude group: "net.minecraftforge", module: "forge"
@@ -168,8 +168,6 @@ dependencies {
 	runtimeOnly("vazkii.patchouli:Patchouli:${patchouli_version}")
 
 	implementation("curse.maven:cc-tweaked-282001:${cc_tweaked_curse_id}")
-//	compileOnly("cc.tweaked:cc-tweaked-1.21-forge-api:${cc_tweaked_version}")
-//	runtimeOnly("cc.tweaked:cc-tweaked-1.21-forge:${cc_tweaked_version}")
 
 	compileOnly("dev.ftb.mods:ftb-filter-system-neoforge:${ffs_version}") { transitive = false }
 
@@ -278,10 +276,7 @@ publishMods {
         minecraftVersions.add(minecraft_version)
         projectSlug = "pneumaticcraft-repressurized"
         announcementTitle = "Download from Curseforge"
-        optional {
-            slug = "patchouli"
-            slug = "ctm"
-        }
+        optional("patchouli", "ctm")
     }
 
     modrinth {
@@ -289,15 +284,12 @@ publishMods {
         accessToken = providers.environmentVariable("MODRINTH_TOKEN")
         minecraftVersions.add(minecraft_version)
         announcementTitle = "Download from Modrinth"
-        optional {
-            id = "nU0bVIaL"
-        }
+        optional("patchouli")
     }
 
     discord {
         webhookUrl = providers.environmentVariable("DISCORD_WEBHOOK").orElse("dryrun")
 		content = changelog.map { "# ${mod_name} v${mod_version} for MC ${minecraft_version} has been released! \n" + it}
-//        setPlatforms(platforms.curseforge, platforms.modrinth)
     }
 }
 
