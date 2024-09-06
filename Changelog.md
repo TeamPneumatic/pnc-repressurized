@@ -25,6 +25,8 @@ Changes are in reverse chronological order; newest changes at the top.
   * Insufficient quantities of the right fluid could lead to a valid recipe being negatively cached
 * Fixed Thermopneumatic Processing Plant sometimes caching an invalid recipe
   * Basically the same issue as the Fluid Mixer
+* Fixed Pressure Chamber and Memory Essence recipes not viewable when EMI is installed in addition to JEI
+  * Moved back to using older (deprecated) JEI API for these categories for now, since newer JEI API doesn't yet work with EMI integration 
 
 ## [8.1.1]
 
