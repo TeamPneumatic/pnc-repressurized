@@ -31,7 +31,12 @@
     {
       "type": "text",
       "title": "Debugging",
-      "text": "Hmm, why does that $(item)Drone/$ act like it does? Why doesn't it do anything at all? You can debug your program by using a $(l:armor/pneumatic_helmet)Pneumatic Helmet/$, with $(l:base_concepts/upgrades#dispenser)Dispenser/$ and $(l:base_concepts/upgrades#entity_tracker)Entity Tracker/$ Upgrades installed. With the $(item)Drone/$ targeted and the $(thing)Entity Tracker/$ active, press the $(thing)$(k:pneumaticcraft.helmet.debugging.drone)/$ key."
+      "text": "Hmm, why does that $(item)Drone/$ act like it does? Why doesn't it do anything at all? You can debug your program by using a $(l:armor/pneumatic_helmet)Pneumatic Helmet/$, with $(l:base_concepts/upgrades#dispenser)Dispenser/$ and $(l:base_concepts/upgrades#entity_tracker)Entity Tracker/$ Upgrades installed. With the $(item)Drone/$ targeted and the $(thing)Entity Tracker/$ active, press the $(thing)$(k:pneumaticcraft.helmet.debugging.drone)/$ key. Then, opening the $(thing)Drone Debugger/$ page in the Pneumatic Armor GUI will show that drone's program, including the current widget and any errors."
+    },
+    {
+      "type": "text",
+      "title": "Debugging (cont.)",
+      "text": "There are a couple of other little tricks to be aware of:$(li)Right-clicking a Drone with a $(l:tools/gps_tool)GPS Tool/$ makes it go to the GPS Tool's stored blockpos; may be useful to test Drone pathing.$(li)Hacking a Drone (using the $(l:base_concepts/upgrades#security)Security Upgrade/$ in the Pneumatic Helmet) makes it suspend its program and come to you; useful if its program has left it in a hard-to-reach spot. Hacking it again will resume the program."
     },
     {
       "type": "crafting",
