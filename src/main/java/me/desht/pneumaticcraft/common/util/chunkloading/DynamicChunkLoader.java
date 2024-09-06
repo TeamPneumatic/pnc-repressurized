@@ -58,11 +58,11 @@ public class DynamicChunkLoader {
                 iter.remove();
             }
         }
-        Log.info("updated chunks for {} - {} loaded", playerIdGetter.get(), loadedChunks.size());
+        Log.debug("updated chunks for {} - {} loaded", playerIdGetter.get(), loadedChunks.size());
     }
 
     public void unloadAll(ServerLevel level) {
-        Log.info("unloading chunks for {}", playerIdGetter.get());
+        Log.debug("unloading chunks for {}", playerIdGetter.get());
         loadedChunks.forEach(cp -> setChunkLoaded(level, cp, false));
         loadedChunks.clear();
     }
