@@ -251,6 +251,11 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
         programmerUnit.gotoPiece(findWidget(te.progWidgets, ProgWidgetStart.class));
     }
 
+    @Override
+    public List<Rect2i> getTabRectangles() {
+        return List.of(new Rect2i(leftPos - 22, topPos + 2, 20, 120));
+    }
+
     private void addDifficultyButtons(int y0) {
         int widestRB = Math.max(font.width(xlate("pneumaticcraft.gui.programmer.difficulty")),
                 Arrays.stream(WidgetDifficulty.values())
