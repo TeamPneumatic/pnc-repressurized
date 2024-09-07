@@ -6,6 +6,11 @@ Changes are in reverse chronological order; newest changes at the top.
 
 # Minecraft 1.21.1
 
+## [8.1.3]
+
+### Fixed
+* Stopped the Pneumatic Armor Magnet upgrade working in spectator mode
+
 ## [8.1.2]
 
 ### Added
