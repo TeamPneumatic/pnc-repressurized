@@ -69,7 +69,7 @@ public class MagnetHandler extends BaseArmorUpgradeHandler<IArmorExtensionData> 
     public void tick(ICommonArmorHandler commonArmorHandler, boolean enabled) {
         Player player = commonArmorHandler.getPlayer();
 
-        if (player.level().isClientSide || !enabled
+        if (player.level().isClientSide || player.isSpectator() || !enabled
                 || (player.level().getGameTime() & 0x3) != 0
                 || !commonArmorHandler.hasMinPressure(EquipmentSlot.CHEST))
             return;
