@@ -338,10 +338,6 @@ public class PressureTubeBlockEntity extends AbstractAirHandlingBlockEntity impl
 
         tubeModules().forEach(AbstractTubeModule::onNeighborBlockUpdate);
 
-        // connected neighbour discovery needs to be deferred,
-        //   since although the neighbouring block has updated,
-        //   the block entity's air handler data may not yet have updated
-//        needDiscover = true;
         discoverConnectedNeighbors();
     }
 

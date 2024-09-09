@@ -24,6 +24,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
+import org.jetbrains.annotations.ApiStatus;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -81,6 +82,7 @@ public interface IHeatExchangingTE {
      * @param world the BE's world
      * @param pos the BE's block pos
      */
+    @ApiStatus.NonExtendable
     default void initializeHullHeatExchangers(Level world, BlockPos pos) {
         Map<IHeatExchangerLogic, List<Direction>> map = new IdentityHashMap<>();
         for (Direction side : DirectionUtil.VALUES) {
