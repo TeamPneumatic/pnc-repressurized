@@ -60,9 +60,14 @@ public class NightVisionHandler extends BaseArmorUpgradeHandler<IArmorExtensionD
             MobEffectInstance nvInstance = player.getEffect(MobEffects.NIGHT_VISION);
             if (enabled && hasPressure && (nvInstance == null || nvInstance.getDuration() <= 220)) {
                 player.addEffect(new MobEffectInstance(MobEffects.NIGHT_VISION, 500, 0, false, false));
-            } else if ((!enabled || !hasPressure) && nvInstance != null) {
-                player.removeEffect(MobEffects.NIGHT_VISION);
             }
+        }
+    }
+
+    @Override
+    public void onToggle(ICommonArmorHandler commonArmorHandler, boolean newState) {
+        if (!newState) {
+            commonArmorHandler.getPlayer().removeEffect(MobEffects.NIGHT_VISION);
         }
     }
 
