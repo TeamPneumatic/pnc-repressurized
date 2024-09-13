@@ -8,19 +8,13 @@
             "count": {
               "min": 1
             },
-            "items": "pneumaticcraft:refinery",
-            "predicates": {
-              "minecraft:damage": {}
-            }
+            "items": "pneumaticcraft:refinery"
           },
           {
             "count": {
               "min": 2
             },
-            "items": "pneumaticcraft:refinery_output",
-            "predicates": {
-              "minecraft:damage": {}
-            }
+            "items": "pneumaticcraft:refinery_output"
           }
         ]
       },

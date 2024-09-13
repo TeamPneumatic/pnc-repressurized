@@ -67,8 +67,8 @@ public class ModAdvancementProvider extends AdvancementProvider {
                     .save(saver, id("oil_bucket"));
             AdvancementHolder refinery = itemAdvancement("refinery", AdvancementType.GOAL, ModBlocks.REFINERY.get(),
                     new ItemPredicate[] {
-                            itemPredicate(ModBlocks.REFINERY.get(), 1),
-                            itemPredicate(ModBlocks.REFINERY_OUTPUT.get(), 2),
+                            itemPredicateNoDurability(ModBlocks.REFINERY.get(), 1),
+                            itemPredicateNoDurability(ModBlocks.REFINERY_OUTPUT.get(), 2),
                     })
                     .parent(oilBucket)
                     .rewards(experience(20))
@@ -283,6 +283,13 @@ public class ModAdvancementProvider extends AdvancementProvider {
                             xlate("pneumaticcraft.advancement." + name + ".desc"),
                             BACKGROUND_TEXTURE, type, true, true, false)
                     .addCriterion("0", InventoryChangeTrigger.TriggerInstance.hasItems(predicates));
+        }
+
+        private ItemPredicate itemPredicateNoDurability(ItemLike item, int minCount) {
+            return ItemPredicate.Builder.item()
+                    .of(item.asItem())
+                    .withCount(MinMaxBounds.Ints.atLeast(minCount))
+                    .build();
         }
 
         private ItemPredicate itemPredicate(ItemLike item, int minCount) {
