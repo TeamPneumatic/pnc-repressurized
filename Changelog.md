@@ -8,8 +8,13 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## [8.1.3]
 
+### Changed
+* Double-clicking items/fluids in the item/fluid selection screens now works for quick selection
+
 ### Fixed
+* Fixed potential crash in Pressure Chamber recipe handling (introduced in 8.1.2)
 * Stopped the Pneumatic Armor Magnet upgrade working in spectator mode
+* Fixed Pneumatic Armor Night Vision upgrade suppressing other source of night vision when it was installed but switched off
 
 ## [8.1.2]
 
