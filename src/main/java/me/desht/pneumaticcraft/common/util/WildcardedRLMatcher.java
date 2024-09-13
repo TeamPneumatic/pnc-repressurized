@@ -39,8 +39,8 @@ public class WildcardedRLMatcher implements Predicate<ResourceLocation> {
 
     public WildcardedRLMatcher(Collection<? extends String> toMatch) {
         for (String str : toMatch) {
-            String[] parts = str.split(":");
-            if (parts[1].isEmpty() || parts[1].equals("*")) {
+            String[] parts = str.split(":", 2);
+            if (parts.length == 1 || parts[1].isEmpty() || parts[1].equals("*")) {
                 namespaces.add(parts[0]);
             } else {
                 try {
