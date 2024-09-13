@@ -157,7 +157,6 @@ public class Textures {
     public static final ResourceLocation GUI_LIQUID_HOPPER = guiTexture( "gui_liquid_hopper.png");
     public static final ResourceLocation GUI_ELEVATOR = guiTexture("gui_elevator.png");
     public static final ResourceLocation GUI_REMOTE_EDITOR = guiTexture("gui_remote_editor.png");
-    public static final ResourceLocation GUI_WIDGET_OPTIONS = guiTexture("gui_widget_options.png");
     public static final ResourceLocation GUI_PROGRAMMABLE_CONTROLLER = guiTexture("gui_programmable_controller.png");
     public static final ResourceLocation GUI_GAS_LIFT = guiTexture("gui_gas_lift.png");
     public static final ResourceLocation GUI_REFINERY = guiTexture("gui_refinery.png");
@@ -168,11 +167,9 @@ public class Textures {
     public static final ResourceLocation GUI_SENTRY_TURRET = guiTexture("gui_sentry_turret.png");
     public static final ResourceLocation GUI_MINIGUN_MAGAZINE = guiTexture("gui_minigun_magazine.png");
     public static final ResourceLocation GUI_THERMAL_COMPRESSOR = guiTexture("gui_thermal_compressor.png");
-    public static final ResourceLocation GUI_WIDGET_AREA = guiTexture("gui_widget_area.png");
     public static final ResourceLocation GUI_PASTEBIN = guiTexture("gui_pastebin.png");
     public static final ResourceLocation GUI_INVENTORY_SEARCHER = guiTexture("gui_inventory_searcher.png");
     public static final ResourceLocation GUI_TUBE_MODULE = guiTexture("gui_tube_module.png");
-    public static final ResourceLocation GUI_MODULE_SIMPLE = guiTexture("gui_tube_module_simple.png");
     public static final ResourceLocation GUI_MICROMISSILE = guiTexture("gui_micromissile.png");
     public static final ResourceLocation GUI_AMADRON_ADD_TRADE = guiTexture("gui_amadron_add_trade.png");
     public static final ResourceLocation GUI_ETCHING_TANK = guiTexture("gui_etching_tank.png");

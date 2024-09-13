@@ -165,11 +165,6 @@ public class RemoteEditorScreen extends AbstractRemoteScreen {
     }
 
     @Override
-    protected boolean shouldDrawBackground() {
-        return false;
-    }
-
-    @Override
     protected void renderBg(GuiGraphics graphics, float partialTicks, int x, int y) {
         graphics.blit(getGuiTexture(), leftPos, topPos, 0, 0, imageWidth, imageHeight, 320, 256);
     }

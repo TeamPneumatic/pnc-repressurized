@@ -132,7 +132,7 @@ public class ThermostatModuleScreen extends AbstractTubeModuleScreen<ThermostatM
     }
 
     @Override
-    protected ResourceLocation getTexture() {
+    protected ResourceLocation getGuiTexture() {
         return Textures.GUI_TUBE_MODULE;
     }
 
@@ -141,8 +141,8 @@ public class ThermostatModuleScreen extends AbstractTubeModuleScreen<ThermostatM
         int scrollbarLowerBoundX = temperatureToX((int)module.lowerBound);
         int scrollbarHigherBoundX = temperatureToX((int)module.higherBound);
 
-        graphics.blit(getTexture(), scrollbarLowerBoundX, guiTop + 73, 183, 0, 15, 12);
-        graphics.blit(getTexture(), scrollbarHigherBoundX, guiTop + 59, 183, 0, 15, 12);
+        graphics.blit(getGuiTexture(), scrollbarLowerBoundX, guiTop + 73, 183, 0, 15, 12);
+        graphics.blit(getGuiTexture(), scrollbarHigherBoundX, guiTop + 59, 183, 0, 15, 12);
 
         renderGraph(graphics);
 

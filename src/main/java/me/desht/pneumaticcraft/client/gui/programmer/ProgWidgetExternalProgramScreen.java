@@ -29,6 +29,8 @@ public class ProgWidgetExternalProgramScreen extends ProgWidgetAreaShowScreen<Pr
 
     public ProgWidgetExternalProgramScreen(ProgWidgetExternalProgram widget, ProgrammerScreen guiProgrammer) {
         super(widget, guiProgrammer);
+
+        ySize = 65;
     }
 
     @Override

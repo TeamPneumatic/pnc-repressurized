@@ -51,7 +51,7 @@ public class ItemSearcherMenu extends AbstractContainerMenu {
             }
         }
 
-        addSlot(new UnstackablePhantomSlot(gui.getInventory(), 48, 148, 12));
+        addSlot(new UnstackablePhantomSlot(gui.getInventory(), 48, 148, 25));
         scrollTo(0.0F);
     }
 

@@ -22,7 +22,9 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetTextField;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.inventory.ItemSearcherMenu;
 import me.desht.pneumaticcraft.common.registry.ModItems;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
+import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.EditBox;
@@ -30,8 +32,10 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.Rect2i;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Inventory;
@@ -57,7 +61,6 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class ItemSearcherScreen extends AbstractContainerScreen<ItemSearcherMenu> {
     private static final ResourceLocation GUI_TEXTURE = Textures.GUI_ITEM_SEARCHER;
-    private static final ResourceLocation SCROLL_TEXTURE = ResourceLocation.parse("textures/gui/container/creative_inventory/tabs.png");
     private static final int SEARCH_SLOT = 48;
 
     private static List<SearchEntry> cachedSearchEntries;
@@ -73,6 +76,7 @@ public class ItemSearcherScreen extends AbstractContainerScreen<ItemSearcherMenu
     private Rect2i scrollArea;
     private String lastSearch = "";
     private int updateCounter = 0;
+    private long lastClickTime = 0L;
 
     public ItemSearcherScreen(ItemSearcherMenu container, Inventory playerInventory, Component displayString) {
         super(container, playerInventory, displayString);
@@ -97,7 +101,13 @@ public class ItemSearcherScreen extends AbstractContainerScreen<ItemSearcherMenu
             if (slot.index == SEARCH_SLOT) {
                 slot.set(ItemStack.EMPTY);
             } else {
-                inventory.setStackInSlot(SEARCH_SLOT, slot.getItem());
+                long now = Util.getMillis();
+                if (now - lastClickTime < 250 && ItemStack.isSameItemSameComponents(getSearchStack(), slot.getItem())) {
+                    onClose();
+                } else {
+                    inventory.setStackInSlot(SEARCH_SLOT, slot.getItem());
+                }
+                lastClickTime = now;
             }
         }
     }
@@ -118,7 +128,7 @@ public class ItemSearcherScreen extends AbstractContainerScreen<ItemSearcherMenu
         addRenderableWidget(searchField);
         setFocused(searchField);
 
-        scrollArea = new Rect2i(leftPos + 156, topPos + 48, 14, 112);
+        scrollArea = new Rect2i(leftPos + 156, topPos + 52, 14, 108);
 
         updateCreativeSearch();
     }
@@ -290,8 +300,16 @@ public class ItemSearcherScreen extends AbstractContainerScreen<ItemSearcherMenu
         }
         
         @Override
-        public boolean test(String searchString){
-            return tooltip.contains(searchString);
+        public boolean test(String searchString) {
+            if (searchString.startsWith("@")) {
+                ResourceLocation id = PneumaticCraftUtils.getRegistryName(stack.getItem()).orElse(ResourceLocation.withDefaultNamespace("none"));
+                return id.getNamespace().startsWith(searchString.substring(1));
+            } else if (searchString.startsWith("#")) {
+                ResourceLocation id = ResourceLocation.tryParse(searchString.substring(1));
+                return id != null && stack.is(TagKey.create(Registries.ITEM, id));
+            } else {
+                return tooltip.contains(searchString);
+            }
         }
     }
 }

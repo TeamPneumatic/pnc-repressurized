@@ -29,16 +29,18 @@ public class ProgWidgetEntityAttackScreen extends ProgWidgetAreaShowScreen<ProgW
 
     public ProgWidgetEntityAttackScreen(ProgWidgetEntityAttack progWidget, ProgrammerScreen guiProgrammer) {
         super(progWidget, guiProgrammer);
+
+        ySize = 95;
     }
 
     @Override
     public void init() {
         super.init();
 
-        WidgetCheckBox useMaxActions = new WidgetCheckBox(guiLeft + 8, guiTop + 25, 0xFF404040,
+        WidgetCheckBox useMaxActions = new WidgetCheckBox(guiLeft + 8, guiTop + 20, 0xFF404040,
                 xlate("pneumaticcraft.gui.progWidget.digAndPlace.useMaxActions"), b -> {
             progWidget.setUseMaxActions(b.checked);
-            textField.setVisible(progWidget.useMaxActions());
+            textField.setEditable(b.checked);
         })
                 .setTooltipKey("pneumaticcraft.gui.progWidget.digAndPlace.useMaxActions.tooltip")
                 .setChecked(progWidget.useMaxActions());
@@ -48,10 +50,10 @@ public class ProgWidgetEntityAttackScreen extends ProgWidgetAreaShowScreen<ProgW
                 .setRange(1, Integer.MAX_VALUE)
                 .setAdjustments(1, 10);
         textField.setValue(progWidget.getMaxActions());
-        textField.setVisible(useMaxActions.checked);
+        textField.setEditable(useMaxActions.isChecked());
         addRenderableWidget(textField);
 
-        WidgetCheckBox checkSight = new WidgetCheckBox(guiLeft + 8, textField.getY() + textField.getHeight() + 12, 0xFF404040,
+        WidgetCheckBox checkSight = new WidgetCheckBox(guiLeft + 8, textField.getY() + textField.getHeight() + 5, 0xFF404040,
                 xlate("pneumaticcraft.gui.progWidget.entityAttack.checkSight"), b -> progWidget.setCheckSight(b.checked))
                 .setTooltipKey("pneumaticcraft.gui.progWidget.entityAttack.checkSight.tooltip")
                 .setChecked(progWidget.isCheckSight());

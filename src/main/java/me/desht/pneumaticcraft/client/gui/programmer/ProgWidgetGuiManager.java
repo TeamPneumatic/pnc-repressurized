@@ -18,29 +18,31 @@
 package me.desht.pneumaticcraft.client.gui.programmer;
 
 import me.desht.pneumaticcraft.api.drone.IProgWidget;
+import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.client.gui.ProgrammerScreen;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Supplier;
 
 public class ProgWidgetGuiManager {
-    private static final Map<Class<? extends IProgWidget>, ProgWidgetGuiFactory<? extends IProgWidget>> widgetToGuiMap = new HashMap<>();
+    private static final Map<ProgWidgetType<? extends IProgWidget>, ProgWidgetGuiFactory<? extends IProgWidget>> widgetToGuiMap = new HashMap<>();
 
-    public static <T extends IProgWidget> void registerProgWidgetGui(Class<T> widgetClass, ProgWidgetGuiFactory<T> factory) {
-        widgetToGuiMap.put(widgetClass, factory);
+    public static <P extends IProgWidget> void registerProgWidgetGui(Supplier<ProgWidgetType<P>> typeSupplier, ProgWidgetGuiFactory<P> factory) {
+        widgetToGuiMap.put(typeSupplier.get(), factory);
     }
 
-    public static <T extends IProgWidget> boolean hasGui(T widget) {
-        return widgetToGuiMap.containsKey(widget.getClass());
+    public static <P extends IProgWidget> boolean hasGui(P widget) {
+        return widgetToGuiMap.containsKey(widget.getType());
     }
 
-    public static <T extends IProgWidget> AbstractProgWidgetScreen<T> getGui(T widget, ProgrammerScreen programmer) {
-        @SuppressWarnings("unchecked") ProgWidgetGuiFactory<T> factory = (ProgWidgetGuiFactory<T>) widgetToGuiMap.get(widget.getClass());
+    public static <P extends IProgWidget> AbstractProgWidgetScreen<P> getGui(P widget, ProgrammerScreen programmer) {
+        @SuppressWarnings("unchecked") ProgWidgetGuiFactory<P> factory = (ProgWidgetGuiFactory<P>) widgetToGuiMap.get(widget.getType());
         return factory == null ? null : factory.createGui(widget, programmer);
     }
 
     @FunctionalInterface
-    public interface ProgWidgetGuiFactory<T extends IProgWidget> {
-        AbstractProgWidgetScreen<T> createGui(T progWidget, ProgrammerScreen programmer);
+    public interface ProgWidgetGuiFactory<P extends IProgWidget> {
+        AbstractProgWidgetScreen<P> createGui(P progWidget, ProgrammerScreen programmer);
     }
 }

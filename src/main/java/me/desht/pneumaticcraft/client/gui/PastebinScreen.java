@@ -262,7 +262,7 @@ public class PastebinScreen extends AbstractPneumaticCraftScreen {
     }
 
     @Override
-    protected ResourceLocation getTexture() {
+    protected ResourceLocation getGuiTexture() {
         return Textures.GUI_PASTEBIN;
     }
 

@@ -23,6 +23,7 @@ import me.desht.pneumaticcraft.client.gui.ItemSearcherScreen;
 import me.desht.pneumaticcraft.client.gui.ProgrammerScreen;
 import me.desht.pneumaticcraft.client.gui.widget.*;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
+import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetItemFilter;
 import me.desht.pneumaticcraft.common.registry.ModMenuTypes;
@@ -54,6 +55,8 @@ public class ProgWidgetItemFilterScreen extends AbstractProgWidgetScreen<ProgWid
 
     public ProgWidgetItemFilterScreen(ProgWidgetItemFilter widget, ProgrammerScreen guiProgrammer) {
         super(widget, guiProgrammer);
+
+        ySize = 152;
     }
 
     @Override
@@ -173,7 +176,7 @@ public class ProgWidgetItemFilterScreen extends AbstractProgWidgetScreen<ProgWid
         super.render(graphics, mouseX, mouseY, partialTicks);
 
         if (itemRad.isChecked()) {
-            graphics.blit(getTexture(), guiLeft + itemX, guiTop + 51, 186, 0, 18, 18);
+            GuiUtils.drawInsetPanel(graphics, guiLeft + itemX, guiTop + 51, 18, 18);
             if (!progWidget.getRawFilter().isEmpty()) {
                 graphics.renderItem(progWidget.getRawFilter(), guiLeft + itemX + 1, guiTop + 52);
                 if (mouseX >= guiLeft + itemX && mouseX <= guiLeft + itemX + 16 && mouseY >= guiTop + 51 && mouseY <= guiTop + 67) {

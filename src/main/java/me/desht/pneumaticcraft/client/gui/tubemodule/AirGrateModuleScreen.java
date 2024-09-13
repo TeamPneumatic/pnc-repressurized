@@ -33,7 +33,6 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import org.lwjgl.glfw.GLFW;
 
@@ -137,10 +136,4 @@ public class AirGrateModuleScreen extends AbstractTubeModuleScreen<AirGrateModul
             }
         }
     }
-
-    @Override
-    protected ResourceLocation getTexture() {
-        return Textures.GUI_MODULE_SIMPLE;
-    }
-
 }

@@ -51,7 +51,7 @@ public abstract class ProgWidgetDigAndPlaceScreen<P extends ProgWidgetDigAndPlac
             WidgetCheckBox useMaxActions = new WidgetCheckBox(guiLeft + 8, guiTop + 115, 0xFF404040,
                     xlate("pneumaticcraft.gui.progWidget.digAndPlace.useMaxActions"), b -> {
                 progWidget.setUseMaxActions(b.checked);
-                textField.setVisible(progWidget.useMaxActions());
+                textField.setEditable(progWidget.useMaxActions());
             }).setChecked(progWidget.useMaxActions())
                     .setTooltipKey("pneumaticcraft.gui.progWidget.digAndPlace.useMaxActions.tooltip");
             addRenderableWidget(useMaxActions);
@@ -60,7 +60,7 @@ public abstract class ProgWidgetDigAndPlaceScreen<P extends ProgWidgetDigAndPlac
                     .setRange(1, Integer.MAX_VALUE)
                     .setAdjustments(1, 10);
             textField.setValue(progWidget.getMaxActions());
-            textField.setVisible(useMaxActions.checked);
+            textField.setEditable(useMaxActions.checked);
             addRenderableWidget(textField);
         }
     }

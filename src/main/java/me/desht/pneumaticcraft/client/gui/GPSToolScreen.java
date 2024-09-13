@@ -171,7 +171,7 @@ public class GPSToolScreen extends AbstractPneumaticCraftScreen {
     }
 
     @Override
-    protected ResourceLocation getTexture() {
+    protected ResourceLocation getGuiTexture() {
         return null;
     }
 }

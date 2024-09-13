@@ -665,11 +665,6 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
         return w == null ? null : w.getTypeID().getPath();
     }
 
-    @Override
-    protected boolean shouldDrawBackground() {
-        return false;
-    }
-
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     private boolean isValidPlaced(IProgWidget widget1) {
         Rect2i draggingRect = new Rect2i(widget1.getX(), widget1.getY(), widget1.getWidth() / 2, widget1.getHeight() / 2);

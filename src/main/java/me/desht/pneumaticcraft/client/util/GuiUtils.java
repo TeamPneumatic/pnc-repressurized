@@ -342,4 +342,11 @@ public class GuiUtils {
         wr.addVertex(posMat, x + w, y + h, 0).setUv(u2, v2);
         wr.addVertex(posMat, x + w, y, 0).setUv(u2, v1);
     }
+
+    public static void drawScreenWithTitleArea(GuiGraphics graphics, int x, int y, int w, int h, int titleColor) {
+        GuiUtils.drawNineSliced(graphics, Textures.GUI_BLANK_256, x, y, 0, w, h, 256, 256, 4);
+        graphics.hLine(x + 3, x + w - 4, y + 15, 0xFF555555);
+        graphics.hLine(x + 3, x + w - 4, y + 16, 0xFFFFFFFF);
+        graphics.fill(x + 3, y + 3, x + w - 3, y + 15, 0xFFDDD7BA);
+    }
 }

@@ -120,6 +120,11 @@ public class ProgWidgetCC extends ProgWidgetInventoryBase implements IBlockOrder
     }
 
     @Override
+    protected boolean isUsingSides() {
+        return false;
+    }
+
+    @Override
     public ProgWidgetType<?> getType() {
         return ModProgWidgetTypes.COMPUTER_CONTROL.get();
     }

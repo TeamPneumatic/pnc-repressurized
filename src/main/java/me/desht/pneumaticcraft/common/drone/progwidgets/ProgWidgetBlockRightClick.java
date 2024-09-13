@@ -22,8 +22,10 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import me.desht.pneumaticcraft.api.drone.IDrone;
 import me.desht.pneumaticcraft.api.drone.IProgWidget;
+import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.drone.ai.DroneAIRightClickBlock;
+import me.desht.pneumaticcraft.common.registry.ModProgWidgetTypes;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.core.Direction;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -73,6 +75,11 @@ public class ProgWidgetBlockRightClick extends ProgWidgetPlace implements IBlock
     @Override
     public ResourceLocation getTexture() {
         return Textures.PROG_WIDGET_BLOCK_RIGHT_CLICK;
+    }
+
+    @Override
+    public ProgWidgetType<?> getType() {
+        return ModProgWidgetTypes.BLOCK_RIGHT_CLICK.get();
     }
 
     @Override
@@ -133,6 +140,11 @@ public class ProgWidgetBlockRightClick extends ProgWidgetPlace implements IBlock
     @Override
     public boolean[] getSides() {
         return ISidedWidget.getSidesFromDir(clickSide);
+    }
+
+    @Override
+    public IProgWidget copyWidget() {
+        return new ProgWidgetBlockRightClick(getPosition(), digPlaceFields, clickSide, sneaking, clickType);
     }
 
     @Override

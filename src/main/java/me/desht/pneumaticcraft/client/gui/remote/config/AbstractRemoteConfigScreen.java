@@ -25,8 +25,8 @@ import me.desht.pneumaticcraft.api.remote.WidgetSettings;
 import me.desht.pneumaticcraft.client.gui.AbstractPneumaticCraftScreen;
 import me.desht.pneumaticcraft.client.gui.remote.RemoteEditorScreen;
 import me.desht.pneumaticcraft.client.gui.widget.*;
+import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableHelper;
-import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.core.BlockPos;
@@ -57,14 +57,15 @@ public abstract class AbstractRemoteConfigScreen<R extends IRemoteWidget> extend
     }
 
     @Override
-    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-        renderBackground(graphics, mouseX, mouseY, partialTicks);
-        super.render(graphics, mouseX, mouseY, partialTicks);
+    public void renderBackground(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        super.renderBackground(graphics, mouseX, mouseY, partialTick);
+
+        GuiUtils.drawScreenWithTitleArea(graphics, guiLeft, guiTop, xSize, ySize, 0xFFDDD7BA);
     }
 
     @Override
-    protected ResourceLocation getTexture() {
-        return Textures.GUI_WIDGET_OPTIONS;
+    protected ResourceLocation getGuiTexture() {
+        return null;
     }
 
     @Override

@@ -27,6 +27,8 @@ public class ProgWidgetGoToLocationScreen<T extends ProgWidgetGoToLocation> exte
 
     public ProgWidgetGoToLocationScreen(T progWidget, ProgrammerScreen guiProgrammer) {
         super(progWidget, guiProgrammer);
+
+        ySize = 75;
     }
 
     @Override
@@ -34,12 +36,12 @@ public class ProgWidgetGoToLocationScreen<T extends ProgWidgetGoToLocation> exte
         super.init();
 
         WidgetRadioButton.Builder.create()
-                .addRadioButton(new WidgetRadioButton(guiLeft + 8, guiTop + 24, 0xFF404040,
+                .addRadioButton(new WidgetRadioButton(guiLeft + 8, guiTop + 20, 0xFF404040,
                                 xlate("pneumaticcraft.gui.progWidget.goto.doneWhenArrived"),
                                 b -> progWidget.setDoneWhenDeparting(false))
                                 .setTooltipKey("pneumaticcraft.gui.progWidget.goto.doneWhenArrived.tooltip"),
                         !progWidget.doneWhenDeparting())
-                .addRadioButton(new WidgetRadioButton(guiLeft + 8, guiTop + 38, 0xFF404040,
+                .addRadioButton(new WidgetRadioButton(guiLeft + 8, guiTop + 34, 0xFF404040,
                                 xlate("pneumaticcraft.gui.progWidget.goto.doneWhenDeparting"),
                                 b -> progWidget.setDoneWhenDeparting(true))
                                 .setTooltipKey("pneumaticcraft.gui.progWidget.goto.doneWhenDeparting.tooltip"),

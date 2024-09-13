@@ -32,6 +32,8 @@ public class ProgWidgetEmitRedstoneScreen extends AbstractProgWidgetScreen<ProgW
 
     public ProgWidgetEmitRedstoneScreen(ProgWidgetEmitRedstone widget, ProgrammerScreen guiProgrammer) {
         super(widget, guiProgrammer);
+
+        ySize = 110;
     }
 
     @Override

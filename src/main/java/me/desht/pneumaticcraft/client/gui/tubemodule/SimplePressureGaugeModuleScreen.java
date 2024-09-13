@@ -24,9 +24,7 @@ import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdatePressureModule;
 import me.desht.pneumaticcraft.common.tubemodules.AbstractRedstoneReceivingModule;
 import me.desht.pneumaticcraft.common.tubemodules.AbstractTubeModule;
-import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import org.lwjgl.glfw.GLFW;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
@@ -99,11 +97,6 @@ public class SimplePressureGaugeModuleScreen extends AbstractTubeModuleScreen<Ab
             module.lowerBound = (float) thresholdField.getDoubleValue();
             minecraft.setScreen(new PressureGaugeModuleScreen(module));
         }
-    }
-
-    @Override
-    protected ResourceLocation getTexture() {
-        return Textures.GUI_MODULE_SIMPLE;
     }
     
     private void updateThreshold(){

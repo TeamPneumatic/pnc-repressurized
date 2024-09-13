@@ -171,7 +171,7 @@ public class ArmorMainScreen extends AbstractPneumaticCraftScreen implements IGu
     }
 
     @Override
-    protected ResourceLocation getTexture() {
+    protected ResourceLocation getGuiTexture() {
         return null;
     }
 

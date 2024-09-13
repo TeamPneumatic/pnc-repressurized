@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.client.gui;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetCheckBox;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
+import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.item.ClassifyFilterItem;
 import me.desht.pneumaticcraft.common.item.ClassifyFilterItem.FilterCondition;
 import me.desht.pneumaticcraft.common.item.ClassifyFilterItem.FilterSettings;
@@ -89,10 +90,10 @@ public class ClassifyFilterScreen extends AbstractPneumaticCraftScreen {
     }
 
     @Override
-    public void render(GuiGraphics graphics, int x, int y, float partialTicks) {
-        renderBackground(graphics, x, y, partialTicks);
+    public void renderBackground(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        super.renderBackground(graphics, mouseX, mouseY, partialTick);
 
-        super.render(graphics, x, y, partialTicks);
+        GuiUtils.drawNineSliced(graphics, Textures.GUI_BLANK_256, guiLeft, guiTop, 0, xSize, ySize, 256, 256, 4);
     }
 
     @Override
@@ -103,7 +104,7 @@ public class ClassifyFilterScreen extends AbstractPneumaticCraftScreen {
     }
 
     @Override
-    protected ResourceLocation getTexture() {
-        return Textures.GUI_WIDGET_AREA;
+    protected ResourceLocation getGuiTexture() {
+        return null;
     }
 }

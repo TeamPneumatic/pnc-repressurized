@@ -23,6 +23,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.Nullable;
 
 public abstract class AbstractPneumaticCraftScreen extends Screen {
     public int guiLeft, guiTop, xSize, ySize;
@@ -38,7 +39,8 @@ public abstract class AbstractPneumaticCraftScreen extends Screen {
         guiTop = height / 2 - ySize / 2;
     }
 
-    protected abstract ResourceLocation getTexture();
+    @Nullable
+    protected abstract ResourceLocation getGuiTexture();
 
     protected WidgetLabel addLabel(Component text, int x, int y) {
         return addLabel(text, x, y, WidgetLabel.Alignment.LEFT);
@@ -65,8 +67,8 @@ public abstract class AbstractPneumaticCraftScreen extends Screen {
     @Override
     public void renderBackground(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
         renderTransparentBackground(graphics);
-        if (getTexture() != null) {
-            graphics.blit(getTexture(), guiLeft, guiTop, 0, 0, xSize, ySize);
+        if (getGuiTexture() != null) {
+            graphics.blit(getGuiTexture(), guiLeft, guiTop, 0, 0, xSize, ySize);
         }
     }
 

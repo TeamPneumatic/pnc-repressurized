@@ -22,9 +22,13 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetFluidStack;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTextField;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetVerticalScrollbar;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetLiquidFilter;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
+import net.minecraft.Util;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.fluids.FluidStack;
@@ -42,6 +46,7 @@ public class ProgWidgetLiquidFilterScreen extends AbstractProgWidgetScreen<ProgW
     private int lastScroll;
     private final List<WidgetFluidStack> visibleFluidWidgets = new ArrayList<>();
     private int textTimer = 0;
+    private long lastClickTime = 0L;
 
     public ProgWidgetLiquidFilterScreen(ProgWidgetLiquidFilter widget, ProgrammerScreen guiProgrammer) {
         super(widget, guiProgrammer);
@@ -51,7 +56,7 @@ public class ProgWidgetLiquidFilterScreen extends AbstractProgWidgetScreen<ProgW
     }
 
     @Override
-    protected ResourceLocation getTexture() {
+    protected ResourceLocation getGuiTexture() {
         return Textures.GUI_ITEM_SEARCHER;
     }
 
@@ -59,7 +64,7 @@ public class ProgWidgetLiquidFilterScreen extends AbstractProgWidgetScreen<ProgW
     public void init() {
         super.init();
 
-        mainFilter = new WidgetFluidStack(guiLeft + 148, guiTop + 12, progWidget.getFluidStack().getFluid(), b -> {
+        mainFilter = new WidgetFluidStack(guiLeft + 148, guiTop + 25, progWidget.getFluidStack().getFluid(), b -> {
             b.setFluid(Fluids.EMPTY);
             progWidget.setFluidStack(FluidStack.EMPTY);
         });
@@ -67,10 +72,7 @@ public class ProgWidgetLiquidFilterScreen extends AbstractProgWidgetScreen<ProgW
 
         for (int y = 0; y < GRID_HEIGHT; y++) {
             for (int x = 0; x < GRID_WIDTH; x++) {
-                WidgetFluidStack f = new WidgetFluidStack(guiLeft + 8 + x * 18, guiTop + 52 + y * 18, Fluids.EMPTY, b -> {
-                    mainFilter.setFluid(b.getFluid());
-                    progWidget.setFluidStack(b.getFluidStack().copy());
-                });
+                WidgetFluidStack f = new WidgetFluidStack(guiLeft + 8 + x * 18, guiTop + 52 + y * 18, Fluids.EMPTY, this::fluidClicked);
                 addRenderableWidget(f);
                 visibleFluidWidgets.add(f);
             }
@@ -81,7 +83,7 @@ public class ProgWidgetLiquidFilterScreen extends AbstractProgWidgetScreen<ProgW
         setFocused(searchField);
         searchField.setResponder(s -> textTimer = 5);
 
-        scrollbar = new WidgetVerticalScrollbar(guiLeft + 155, guiTop + 47, 112);
+        scrollbar = new WidgetVerticalScrollbar(guiLeft + 155, guiTop + 51, 108);
         scrollbar.setListening(true);
         addRenderableWidget(scrollbar);
 
@@ -106,10 +108,34 @@ public class ProgWidgetLiquidFilterScreen extends AbstractProgWidgetScreen<ProgW
         }
     }
 
+    private void fluidClicked(WidgetFluidStack widget) {
+        long now = Util.getMillis();
+        if (now - lastClickTime < 250L && FluidStack.isSameFluidSameComponents(progWidget.getFluidStack(), widget.getFluidStack())) {
+            onClose();
+        } else {
+            mainFilter.setFluid(widget.getFluid());
+            progWidget.setFluidStack(widget.getFluidStack().copy());
+        }
+        lastClickTime = now;
+    }
+
     private boolean matchSearch(String srch, Fluid fluid) {
-        if (fluid == Fluids.EMPTY || !fluid.isSource(fluid.defaultFluidState())) return false;
+        if (fluid == Fluids.EMPTY || !fluid.isSource(fluid.defaultFluidState())) {
+            return false;
+        }
+        if (srch.isEmpty()) {
+            return true;
+        }
         String srchL = srch.toLowerCase();
-        return srch.isEmpty() || new FluidStack(fluid, 1).getHoverName().getString().toLowerCase().contains(srchL);
+        if (srchL.startsWith("@")) {
+            ResourceLocation id = PneumaticCraftUtils.getRegistryName(fluid).orElse(ResourceLocation.withDefaultNamespace("none"));
+            return id.getNamespace().startsWith(srchL.substring(1));
+        } else if (srchL.startsWith("#")) {
+            ResourceLocation id = ResourceLocation.tryParse(srchL.substring(1));
+            return id != null && fluid.builtInRegistryHolder().is(TagKey.create(Registries.FLUID, id));
+        } else {
+            return new FluidStack(fluid, 1).getHoverName().getString().toLowerCase().contains(srchL);
+        }
     }
 
     @Override

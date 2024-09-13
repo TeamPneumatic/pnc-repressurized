@@ -21,7 +21,6 @@ import me.desht.pneumaticcraft.client.gui.ProgrammerScreen;
 import me.desht.pneumaticcraft.client.gui.widget.*;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ICondition;
-import me.desht.pneumaticcraft.common.drone.progwidgets.ISidedWidget;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetCondition;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetEntityCondition;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
@@ -45,15 +44,17 @@ public class ProgWidgetConditionScreen<T extends ProgWidgetCondition> extends Pr
     public void init() {
         super.init();
 
-        for (Direction dir : DirectionUtil.VALUES) {
-            Component sideName = ClientUtils.translateDirectionComponent(dir);
-            WidgetCheckBox checkBox = new WidgetCheckBox(guiLeft + 8, guiTop + 30 + dir.get3DDataValue() * 12, 0xFF404040, sideName,
-                    b -> progWidget.setSideSelected(dir, b.checked));
-            checkBox.checked = progWidget.isSideSelected(dir);
-            addRenderableWidget(checkBox);
+        if (isUsingSides()) {
+            for (Direction dir : DirectionUtil.VALUES) {
+                Component sideName = ClientUtils.translateDirectionComponent(dir);
+                WidgetCheckBox checkBox = new WidgetCheckBox(guiLeft + 8, guiTop + 30 + dir.get3DDataValue() * 12, 0xFF404040, sideName,
+                        b -> progWidget.setSideSelected(dir, b.checked));
+                checkBox.checked = progWidget.isSideSelected(dir);
+                addRenderableWidget(checkBox);
+            }
         }
 
-        int baseX = isSidedWidget() ? 90 : 8;
+        int baseX = isUsingSides() ? 90 : 8;
         int baseY = isUsingAndOr() ? 60 : 30;
 
         WidgetRadioButton radioButton;
@@ -96,8 +97,8 @@ public class ProgWidgetConditionScreen<T extends ProgWidgetCondition> extends Pr
         addRenderableWidget(measureTextField);
     }
 
-    protected boolean isSidedWidget() {
-        return progWidget instanceof ISidedWidget;
+    protected boolean isUsingSides() {
+        return true;
     }
 
     protected boolean isUsingAndOr() {
@@ -112,11 +113,11 @@ public class ProgWidgetConditionScreen<T extends ProgWidgetCondition> extends Pr
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
         super.render(graphics, mouseX, mouseY, partialTicks);
 
-        if (isSidedWidget()) {
+        if (isUsingSides()) {
             graphics.drawString(font, xlate("pneumaticcraft.gui.progWidget.inventory.accessingSides"), guiLeft + 4, guiTop + 20, 0xFF404060, false);
+            Component s = progWidget.getExtraStringInfo().getFirst();
+            graphics.drawString(font, s, guiLeft + xSize / 2 - font.width(s) / 2, guiTop + 120, 0xFF404060, false);
         }
-        Component s = progWidget.getExtraStringInfo().get(0);
-        graphics.drawString(font, s, guiLeft + xSize / 2 - font.width(s) / 2, guiTop + 120, 0xFF404060, false);
     }
 
     public static class Entity extends ProgWidgetConditionScreen<ProgWidgetEntityCondition> {
@@ -125,7 +126,7 @@ public class ProgWidgetConditionScreen<T extends ProgWidgetCondition> extends Pr
         }
 
         @Override
-        protected boolean isSidedWidget() {
+        protected boolean isUsingSides() {
             return false;
         }
 

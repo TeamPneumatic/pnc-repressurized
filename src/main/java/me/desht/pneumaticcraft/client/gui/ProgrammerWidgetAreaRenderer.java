@@ -22,6 +22,7 @@ import com.mojang.blaze3d.vertex.*;
 import me.desht.pneumaticcraft.api.drone.IProgWidget;
 import me.desht.pneumaticcraft.api.misc.Symbols;
 import me.desht.pneumaticcraft.api.registry.PNCRegistries;
+import me.desht.pneumaticcraft.client.gui.pneumatic_armor.ArmorMainScreen;
 import me.desht.pneumaticcraft.client.gui.programmer.ProgWidgetGuiManager;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetVerticalScrollbar;
 import me.desht.pneumaticcraft.client.render.ProgWidgetRenderer;
@@ -35,6 +36,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
@@ -103,20 +105,28 @@ public class ProgrammerWidgetAreaRenderer {
         }
     }
 
+    private boolean shouldRenderExtraInfo() {
+        // since progwidget rendering can be called from other screens...
+        Screen screen = Minecraft.getInstance().screen;
+        return screen instanceof ProgrammerScreen || screen instanceof ArmorMainScreen;
+    }
+
     public void renderForeground(GuiGraphics graphics, int x, int y, IProgWidget tooltipExcludingWidget, Font font) {
-        int idx = getHoveredWidgetIndex(x, y);
-        if (idx >= 0) {
-            IProgWidget progWidget = progWidgets.get(idx);
-            if (progWidget != null && progWidget != tooltipExcludingWidget) {
-                List<Component> tooltip = new ArrayList<>();
-                progWidget.getTooltip(tooltip);
-                if (widgetErrors.size() == progWidgets.size())
-                    addMessages(tooltip, widgetErrors.get(idx), "pneumaticcraft.gui.programmer.errors", ChatFormatting.RED);
-                if (widgetWarnings.size() == progWidgets.size())
-                    addMessages(tooltip, widgetWarnings.get(idx), "pneumaticcraft.gui.programmer.warnings", ChatFormatting.YELLOW);
-                addAdditionalInfoToTooltip(progWidget, tooltip);
-                if (!tooltip.isEmpty()) {
-                    graphics.renderTooltip(font, GuiUtils.wrapTextComponentList(tooltip, areaWidth * 2 / 3, font), x - guiLeft, y - guiTop);
+        if (shouldRenderExtraInfo()) {
+            int idx = getHoveredWidgetIndex(x, y);
+            if (idx >= 0) {
+                IProgWidget progWidget = progWidgets.get(idx);
+                if (progWidget != null && progWidget != tooltipExcludingWidget) {
+                    List<Component> tooltip = new ArrayList<>();
+                    progWidget.getTooltip(tooltip);
+                    if (widgetErrors.size() == progWidgets.size())
+                        addMessages(tooltip, widgetErrors.get(idx), "pneumaticcraft.gui.programmer.errors", ChatFormatting.RED);
+                    if (widgetWarnings.size() == progWidgets.size())
+                        addMessages(tooltip, widgetWarnings.get(idx), "pneumaticcraft.gui.programmer.warnings", ChatFormatting.YELLOW);
+                    addAdditionalInfoToTooltip(progWidget, tooltip);
+                    if (!tooltip.isEmpty()) {
+                        graphics.renderTooltip(font, GuiUtils.wrapTextComponentList(tooltip, areaWidth * 2 / 3, font), x - guiLeft, y - guiTop);
+                    }
                 }
             }
         }
@@ -214,9 +224,7 @@ public class ProgrammerWidgetAreaRenderer {
 
         renderAdditionally(graphics);
 
-//        RenderSystem.disableBlend();
-
-        if (showInfo) {
+        if (showInfo && shouldRenderExtraInfo()) {
             for (IProgWidget widget : progWidgets) {
                 poseStack.pushPose();
                 poseStack.translate(widget.getX() + guiLeft, widget.getY() + guiTop, 0);

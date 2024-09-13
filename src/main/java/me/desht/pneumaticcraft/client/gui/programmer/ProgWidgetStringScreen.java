@@ -27,14 +27,14 @@ public class ProgWidgetStringScreen<T extends ProgWidgetText> extends AbstractPr
 
     public ProgWidgetStringScreen(T widget, ProgrammerScreen guiProgrammer) {
         super(widget, guiProgrammer);
-        ySize = 50;
+        ySize = 45;
     }
 
     @Override
     public void init() {
         super.init();
 
-        textfield = new WidgetTextField(font, guiLeft + 10, guiTop + 20, 160);
+        textfield = new WidgetTextField(font, guiLeft + 8, guiTop + 22, 166);
         textfield.setMaxLength(1000);
         textfield.setValue(progWidget.getString());
         setInitialFocus(textfield);

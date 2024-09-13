@@ -130,7 +130,7 @@ public class ArmorStatMoveScreen extends AbstractPneumaticCraftScreen {
     }
 
     @Override
-    protected ResourceLocation getTexture() {
+    protected ResourceLocation getGuiTexture() {
         return null;
     }
 

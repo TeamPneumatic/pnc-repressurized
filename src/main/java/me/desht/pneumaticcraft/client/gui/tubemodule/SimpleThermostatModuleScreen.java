@@ -25,10 +25,8 @@ import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSyncThermostatModuleToServer;
 import me.desht.pneumaticcraft.common.network.PacketUpdatePressureModule;
 import me.desht.pneumaticcraft.common.tubemodules.ThermostatModule;
-import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.DyeColor;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
@@ -94,11 +92,6 @@ public class SimpleThermostatModuleScreen extends AbstractTubeModuleScreen<Therm
         if (module.advancedConfig) {
             minecraft.setScreen(new ThermostatModuleScreen(module));
         }
-    }
-
-    @Override
-    protected ResourceLocation getTexture() {
-        return Textures.GUI_MODULE_SIMPLE;
     }
 
     @Override

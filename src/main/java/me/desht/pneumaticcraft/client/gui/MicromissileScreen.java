@@ -227,7 +227,7 @@ public class MicromissileScreen extends AbstractPneumaticCraftScreen {
     }
 
     @Override
-    protected ResourceLocation getTexture() {
+    protected ResourceLocation getGuiTexture() {
         return Textures.GUI_MICROMISSILE;
     }
 

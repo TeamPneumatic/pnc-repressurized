@@ -68,6 +68,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.neoforged.fml.ModList;
 import net.neoforged.neoforge.fluids.FluidStack;
+import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnull;
 import java.util.*;
@@ -312,22 +313,14 @@ public abstract class AbstractPneumaticCraftContainerScreen<C extends AbstractPn
 
     protected OptionalInt getBackgroundTint() { return OptionalInt.empty(); }
 
-    protected boolean shouldDrawBackground() {
-        return true;
-    }
-
     @Override
     protected void renderBg(GuiGraphics graphics, float partialTicks, int i, int j) {
-        if (shouldDrawBackground()) {
-            int xStart = (width - imageWidth) / 2;
-            int yStart = (height - imageHeight) / 2;
+        if (getGuiTexture() != null) {
             getBackgroundTint().ifPresent(tint -> {
                 float[] c = RenderUtils.decomposeColorF(tint);
                 graphics.setColor(c[1], c[2], c[3], c[0]);
             });
-            if (getGuiTexture() != null) {
-                graphics.blit(getGuiTexture(), xStart, yStart, 0, 0, imageWidth, imageHeight);
-            }
+            graphics.blit(getGuiTexture(), getGuiLeft(), getGuiTop(), 0, 0, getXSize(), getYSize());
             getBackgroundTint().ifPresent(tint -> graphics.setColor(1f, 1f, 1f, 1f));
         }
     }
@@ -352,6 +345,7 @@ public abstract class AbstractPneumaticCraftContainerScreen<C extends AbstractPn
         }
     }
 
+    @Nullable
     protected abstract ResourceLocation getGuiTexture();
 
     @Override

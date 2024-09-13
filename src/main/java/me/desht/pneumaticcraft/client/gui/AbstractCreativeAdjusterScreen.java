@@ -94,11 +94,6 @@ public abstract class AbstractCreativeAdjusterScreen<C extends AbstractPneumatic
     }
 
     @Override
-    protected boolean shouldDrawBackground() {
-        return false;
-    }
-
-    @Override
     protected int getTitleColor() {
         return 0xff00ff;
     }

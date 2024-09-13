@@ -198,7 +198,7 @@ public class ArmorColoringScreen extends AbstractPneumaticCraftScreen {
     }
 
     @Override
-    protected ResourceLocation getTexture() {
+    protected ResourceLocation getGuiTexture() {
         return null;
     }
 

@@ -19,9 +19,11 @@ package me.desht.pneumaticcraft.client.gui.tubemodule;
 
 import me.desht.pneumaticcraft.client.TubeModuleClientRegistry;
 import me.desht.pneumaticcraft.client.gui.AbstractPneumaticCraftScreen;
+import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.tubemodules.AbstractTubeModule;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 
 public abstract class AbstractTubeModuleScreen<M extends AbstractTubeModule> extends AbstractPneumaticCraftScreen {
@@ -39,6 +41,20 @@ public abstract class AbstractTubeModuleScreen<M extends AbstractTubeModule> ext
         renderBackground(graphics, mouseX, mouseY, partialTicks);
 
         super.render(graphics, mouseX, mouseY, partialTicks);
+    }
+
+    @Override
+    public void renderBackground(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        super.renderBackground(graphics, mouseX, mouseY, partialTick);
+
+        if (getGuiTexture() == null) {
+            GuiUtils.drawScreenWithTitleArea(graphics, guiLeft, guiTop, xSize, ySize, 0xFFDDD7BA);
+        }
+    }
+
+    @Override
+    protected ResourceLocation getGuiTexture() {
+        return null;
     }
 
     @Override

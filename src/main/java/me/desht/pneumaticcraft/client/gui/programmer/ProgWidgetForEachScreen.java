@@ -31,20 +31,22 @@ public class ProgWidgetForEachScreen<W extends IVariableSetWidget & IProgWidget>
 
     public ProgWidgetForEachScreen(W progWidget, ProgrammerScreen guiProgrammer) {
         super(progWidget, guiProgrammer);
+
+        ySize = 75;
     }
 
     @Override
     public void init() {
         super.init();
 
-        variableField = new WidgetComboBox(font, guiLeft + 10, guiTop + 42, 160, font.lineHeight + 3);
+        addLabel(xlate("pneumaticcraft.gui.progWidget.coordinate.variableName"), guiLeft + 12, guiTop + 20);
+
+        variableField = new WidgetComboBox(font, guiLeft + 10, guiTop + 12 + font.lineHeight + 8, 160, font.lineHeight + 3);
         variableField.setElements(guiProgrammer.te.getAllVariables());
         variableField.setMaxLength(GlobalVariableManager.MAX_VARIABLE_LEN);
         addRenderableWidget(variableField);
         variableField.setValue(progWidget.getVariable());
         setInitialFocus(variableField);
-
-        addLabel(xlate("pneumaticcraft.gui.progWidget.coordinate.variableName"), guiLeft + 10, guiTop + 30);
     }
 
     @Override

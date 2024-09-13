@@ -27,11 +27,9 @@ import me.desht.pneumaticcraft.common.registry.ModSounds;
 import me.desht.pneumaticcraft.common.tubemodules.RedstoneModule;
 import me.desht.pneumaticcraft.common.tubemodules.RedstoneModule.EnumRedstoneDirection;
 import me.desht.pneumaticcraft.common.tubemodules.RedstoneModule.Operation;
-import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.item.DyeColor;
 
@@ -59,11 +57,6 @@ public class RedstoneModuleScreen extends AbstractTubeModuleScreen<RedstoneModul
         super(module);
 
         ySize = module.getRedstoneDirection() == EnumRedstoneDirection.OUTPUT ? 202 : 57;
-    }
-
-    @Override
-    protected ResourceLocation getTexture() {
-        return output ? Textures.GUI_WIDGET_OPTIONS : Textures.GUI_MODULE_SIMPLE;
     }
 
     @Override

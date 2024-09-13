@@ -26,13 +26,15 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 public class ProgWidgetPickupItemScreen extends ProgWidgetAreaShowScreen<ProgWidgetPickupItem> {
     public ProgWidgetPickupItemScreen(ProgWidgetPickupItem progWidget, ProgrammerScreen guiProgrammer) {
         super(progWidget, guiProgrammer);
+
+        ySize = 65;
     }
 
     @Override
     public void init() {
         super.init();
 
-        addRenderableWidget(new WidgetCheckBox(guiLeft + 8, guiTop + 25, 0xFF404040,
+        addRenderableWidget(new WidgetCheckBox(guiLeft + 8, guiTop + 20, 0xFF404040,
                 xlate("pneumaticcraft.gui.progWidget.pickup.canSteal"), b -> progWidget.setCanSteal(b.checked))
                 .setTooltipKey("pneumaticcraft.gui.progWidget.pickup.canSteal.tooltip")
                 .setChecked(progWidget.canSteal())

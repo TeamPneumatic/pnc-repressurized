@@ -20,10 +20,10 @@ package me.desht.pneumaticcraft.client.gui.programmer;
 import me.desht.pneumaticcraft.api.drone.IProgWidget;
 import me.desht.pneumaticcraft.client.gui.AbstractPneumaticCraftScreen;
 import me.desht.pneumaticcraft.client.gui.ProgrammerScreen;
+import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketProgrammerSync;
-import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -75,8 +75,17 @@ public abstract class AbstractProgWidgetScreen<P extends IProgWidget> extends Ab
     }
 
     @Override
-    protected ResourceLocation getTexture() {
-        return Textures.GUI_WIDGET_OPTIONS;
+    public void renderBackground(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        super.renderBackground(graphics, mouseX, mouseY, partialTick);
+
+        if (getGuiTexture() == null) {
+            GuiUtils.drawScreenWithTitleArea(graphics, guiLeft, guiTop, xSize, ySize, 0xFFDDD7BA);
+        }
+    }
+
+    @Override
+    protected ResourceLocation getGuiTexture() {
+        return null;
     }
 
     @Override

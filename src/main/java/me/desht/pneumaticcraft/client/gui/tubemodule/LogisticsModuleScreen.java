@@ -22,8 +22,6 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetLabel;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketTubeModuleColor;
 import me.desht.pneumaticcraft.common.tubemodules.LogisticsModule;
-import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.DyeColor;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
@@ -50,11 +48,6 @@ public class LogisticsModuleScreen extends AbstractTubeModuleScreen<LogisticsMod
 
         addRenderableWidget(new WidgetColorSelector(guiLeft + 10 + ourColorLabel.getWidth() + 5, guiTop + 22, w -> ourColor = w.getColor().getId())
                 .withInitialColor(DyeColor.byId(ourColor)));
-    }
-
-    @Override
-    protected ResourceLocation getTexture() {
-        return Textures.GUI_MODULE_SIMPLE;
     }
 
     @Override

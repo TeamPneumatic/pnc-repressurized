@@ -34,12 +34,10 @@ import me.desht.pneumaticcraft.common.item.GPSToolItem;
 import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.registry.ModMenuTypes;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
@@ -220,11 +218,6 @@ public class ProgWidgetAreaScreen extends ProgWidgetAreaShowScreen<ProgWidgetAre
         super.previewArea(button);
 
         saveWidgets();
-    }
-
-    @Override
-    protected ResourceLocation getTexture() {
-        return Textures.GUI_WIDGET_AREA;
     }
 
     @Override

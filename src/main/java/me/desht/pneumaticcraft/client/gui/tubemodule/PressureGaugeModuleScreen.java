@@ -108,7 +108,7 @@ public class PressureGaugeModuleScreen extends AbstractTubeModuleScreen<Abstract
     }
 
     @Override
-    protected ResourceLocation getTexture() {
+    protected ResourceLocation getGuiTexture() {
         return Textures.GUI_TUBE_MODULE;
     }
 
@@ -117,8 +117,8 @@ public class PressureGaugeModuleScreen extends AbstractTubeModuleScreen<Abstract
         int scrollbarLowerBoundX = (int) (guiLeft + 16 + (157 - 11) * (module.lowerBound / (AbstractTubeModule.MAX_VALUE + 1)));
         int scrollbarHigherBoundX = (int) (guiLeft + 16 + (157 - 11) * (module.higherBound / (AbstractTubeModule.MAX_VALUE + 1)));
 
-        graphics.blit(getTexture(), scrollbarLowerBoundX, guiTop + 73, 183, 0, 15, 12);
-        graphics.blit(getTexture(), scrollbarHigherBoundX, guiTop + 59, 183, 0, 15, 12);
+        graphics.blit(getGuiTexture(), scrollbarLowerBoundX, guiTop + 73, 183, 0, 15, 12);
+        graphics.blit(getGuiTexture(), scrollbarHigherBoundX, guiTop + 59, 183, 0, 15, 12);
 
         renderGraph(graphics);
 

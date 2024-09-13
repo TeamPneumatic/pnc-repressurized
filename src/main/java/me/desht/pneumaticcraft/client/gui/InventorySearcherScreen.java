@@ -25,6 +25,7 @@ import me.desht.pneumaticcraft.common.inventory.InventorySearcherMenu;
 import me.desht.pneumaticcraft.common.item.GPSAreaToolItem;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
+import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
@@ -42,11 +43,14 @@ import java.util.List;
 import java.util.function.Predicate;
 
 public class InventorySearcherScreen extends AbstractContainerScreen<InventorySearcherMenu> {
+    private static final int SEARCH_SLOT = 36;
+
     private final ItemStackHandler inventory = new ItemStackHandler(1);
     private final Screen parentScreen;
     private Predicate<ItemStack> stackPredicate = itemStack -> true;
     private WidgetLabel label;
     private int clickedMouseButton;
+    private long lastClickTime = 0L;
 
     public InventorySearcherScreen(InventorySearcherMenu container, Inventory inv, Component title) {
         super(container, inv, title);
@@ -92,12 +96,18 @@ public class InventorySearcherScreen extends AbstractContainerScreen<InventorySe
     @Override
     protected void slotClicked(Slot slot, int slotId, int mouseButton, ClickType clickType) {
         if (slot != null) {
-            if (slot.index == 36) {
+            if (slot.index == SEARCH_SLOT) {
                 clickedMouseButton = 0;
                 slot.set(ItemStack.EMPTY);
             } else {
-                clickedMouseButton = mouseButton;
-                setSearchStack(slot.getItem());
+                long now = Util.getMillis();
+                if (now - lastClickTime < 250 && ItemStack.isSameItemSameComponents(getSearchStack(), slot.getItem())) {
+                    onClose();
+                } else {
+                    clickedMouseButton = mouseButton;
+                    setSearchStack(slot.getItem());
+                }
+                lastClickTime = now;
             }
         }
     }

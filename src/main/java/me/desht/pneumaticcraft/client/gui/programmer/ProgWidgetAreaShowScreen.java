@@ -30,6 +30,12 @@ public class ProgWidgetAreaShowScreen<P extends IProgWidget> extends AbstractPro
         super(progWidget, guiProgrammer);
     }
 
+    public static <W extends IProgWidget> ProgWidgetAreaShowScreen<W> minimal(W progWidget, ProgrammerScreen programmerScreen) {
+        var screen = new ProgWidgetAreaShowScreen<>(progWidget, programmerScreen);
+        screen.ySize = 40;
+        return screen;
+    }
+
     @Override
     public void init() {
         super.init();

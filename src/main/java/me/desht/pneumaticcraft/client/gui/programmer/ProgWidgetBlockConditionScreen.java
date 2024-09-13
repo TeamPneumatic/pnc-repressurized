@@ -53,7 +53,7 @@ public class ProgWidgetBlockConditionScreen extends ProgWidgetConditionScreen<Pr
     }
 
     @Override
-    protected boolean isSidedWidget() {
+    protected boolean isUsingSides() {
         return false;
     }
 }

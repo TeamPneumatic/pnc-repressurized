@@ -108,9 +108,13 @@ public abstract class ProgWidgetInventoryBase extends ProgWidgetAreaItemBase imp
     @Override
     public void getTooltip(List<Component> curTooltip) {
         super.getTooltip(curTooltip);
-        if (isUsingSides()) curTooltip.add(xlate("pneumaticcraft.gui.progWidget.inventory.accessingSides"));
-        curTooltip.add(Component.literal(Symbols.TRIANGLE_RIGHT + " ").append(getExtraStringInfo().getFirst()));
-        if (useCount()) curTooltip.add(xlate("pneumaticcraft.gui.progWidget.inventory.usingCount", getCount()));
+        if (isUsingSides()) {
+            curTooltip.add(xlate("pneumaticcraft.gui.progWidget.inventory.accessingSides"));
+            curTooltip.add(Component.literal(Symbols.TRIANGLE_RIGHT + " ").append(getExtraStringInfo().getFirst()));
+        }
+        if (useCount()) {
+            curTooltip.add(xlate("pneumaticcraft.gui.progWidget.inventory.usingCount", getCount()));
+        }
     }
 
     protected boolean isUsingSides() {
