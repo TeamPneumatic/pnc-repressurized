@@ -5,15 +5,15 @@ issueTrackerURL="https://github.com/TeamPneumatic/pnc-repressurized/issues"
 displayURL="https://minecraft.curseforge.com/projects/pneumaticcraft-repressurized"
 logoFile="pncr_logo.png"
 credits=""
-authors="desht, MineMaarten"
 
 [[mods]]
     modId="pneumaticcraft"
+    authors="desht, MineMaarten"
     version="${mod_version}"
     displayName="PneumaticCraft: Repressurized"
+    displayURL="https://www.curseforge.com/minecraft/mc-mods/pneumaticcraft-repressurized"
     updateJSONURL="https://raw.githubusercontent.com/TeamPneumatic/pnc-repressurized/${minecraft_version}/release_info.json" #optional
-    description='''
-PneumaticCraft: Repressurized: doing cool stuff with compressed air.'''
+    description="Doing cool stuff with compressed air."
 
 [[dependencies.pneumaticcraft]]
     modId="neoforge" #mandatory
@@ -37,6 +37,12 @@ PneumaticCraft: Repressurized: doing cool stuff with compressed air.'''
     modId="jei"
     type="optional"
     versionRange="[19.9.0,)"
+    ordering="NONE"
+    side="BOTH"
+[[dependencies.pneumaticcraft]]
+    modId="emi"
+    type="optional"
+    versionRange="[1.1.13,)"
     ordering="NONE"
     side="BOTH"
 
