@@ -12,7 +12,7 @@ plugins {
     id 'eclipse'
     id 'idea'
     id 'maven-publish'
-    id 'net.neoforged.gradle.userdev' version '7.0.145'
+	id 'net.neoforged.moddev' version '1.0.11'
     id "me.modmuss50.mod-publish-plugin" version "0.7.2"
 }
 
@@ -109,43 +109,41 @@ sourceSets {
 	}
 }
 
-runs {
-    // applies to all the run configs below
-    configureEach {
-        systemProperty 'forge.logging.markers', 'REGISTRIES'
-        systemProperty 'forge.logging.console.level', 'debug'
+neoForge {
+	version = "${neo_version}"
 
-        modSource project.sourceSets.api
-        modSource project.sourceSets.main
-    }
+	addModdingDependenciesTo(sourceSets.api)
 
-    client {
-        systemProperty 'forge.enabledGameTestNamespaces', project.mod_id
-		jvmArguments.addAll('-Xmx4G')
-    }
+	validateAccessTransformers = true
 
-    server {
-        systemProperty 'forge.enabledGameTestNamespaces', project.mod_id
-        programArgument '--nogui'
-    }
+	runs {
+		client {
+			client()
+			jvmArgument("-Xmx4G")
+			gameDirectory = project.file('runs/client')
+		}
+		data {
+			data()
+			jvmArgument("-Xmx4G")
+			gameDirectory = project.file('runs/data')
+		}
+		server {
+			server()
+			programArgument("-nogui")
+			jvmArgument("-Xmx4G")
+			gameDirectory = project.file('runs/server')
+		}
+	}
 
-    // This run config launches GameTestServer and runs all registered gametests, then exits.
-    // By default, the server will crash when no gametests are provided.
-    // The gametest system is also enabled by default for other run configs under the /test command.
-    gameTestServer {
-        systemProperty 'forge.enabledGameTestNamespaces', project.mod_id
-    }
-
-    data {
-        // Specify the modid for data generation, where to output the resulting resource, and where to look for existing resources.
-        programArguments.addAll '--mod', project.mod_id, '--all', '--output', file('src/generated/resources/').getAbsolutePath(), '--existing', file('src/main/resources/').getAbsolutePath()
-    }
+	mods {
+		pneumaticcraft {
+			sourceSet sourceSets.main
+			sourceSet sourceSets.api
+		}
+	}
 }
 
 dependencies {
-	implementation "net.neoforged:neoforge:${neo_version}"
-	apiImplementation "net.neoforged:neoforge:${neo_version}"
-
 	testImplementation 'org.junit.jupiter:junit-jupiter-api:5.11.0-M2'
 	testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.11.0-M2'
 
@@ -171,7 +169,7 @@ dependencies {
 
 	compileOnly("dev.ftb.mods:ftb-filter-system-neoforge:${ffs_version}") { transitive = false }
 
-	compileOnly("blusunrize.immersiveengineering:ImmersiveEngineering:${immersive_engineering_version}")
+	implementation("blusunrize.immersiveengineering:ImmersiveEngineering:${immersive_engineering_version}")
 
 	compileOnly("mekanism:Mekanism:${mekanism_version}:api")
 	runtimeOnly("mekanism:Mekanism:${mekanism_version}")
