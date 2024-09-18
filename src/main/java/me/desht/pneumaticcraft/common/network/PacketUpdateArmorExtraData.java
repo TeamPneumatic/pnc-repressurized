@@ -22,6 +22,7 @@ import me.desht.pneumaticcraft.common.item.PneumaticArmorItem;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.registry.ModDataComponents;
+import net.minecraft.Util;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.PatchedDataComponentMap;
@@ -34,7 +35,10 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-import java.util.*;
+import java.util.EnumMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
@@ -58,24 +62,20 @@ public record PacketUpdateArmorExtraData(EquipmentSlot slot, ResourceLocation up
         NetworkHandler.sendToServer(new PacketUpdateArmorExtraData(handler.getEquipmentSlot(), handler.getID(), patch));
     }
 
-    private static final List<Set<DataComponentType<?>>> VALID_KEYS = new ArrayList<>();
+    private static final Map<EquipmentSlot, Set<DataComponentType<?>>> VALID_KEYS = Util.make(new EnumMap<>(EquipmentSlot.class), map -> {
+        addKey(map, EquipmentSlot.HEAD, ModDataComponents.ENTITY_FILTER.get());
+        addKey(map, EquipmentSlot.HEAD, ModDataComponents.COORD_TRACKER.get());
+        addKey(map, EquipmentSlot.LEGS, ModDataComponents.SPEED_BOOST_PCT.get());
+        addKey(map, EquipmentSlot.LEGS, ModDataComponents.JUMP_BOOST_PCT.get());
+        addKey(map, EquipmentSlot.FEET, ModDataComponents.JET_BOOTS_PCT.get());
+        addKey(map, EquipmentSlot.FEET, ModDataComponents.JET_BOOTS_STABILIZERS.get());
+        addKey(map, EquipmentSlot.FEET, ModDataComponents.JET_BOOTS_BUILDER_MODE.get());
+        addKey(map, EquipmentSlot.FEET, ModDataComponents.JET_BOOTS_HOVER.get());
+        addKey(map, EquipmentSlot.FEET, ModDataComponents.JET_BOOTS_SMART_HOVER.get());
+    });
 
-    private static void addKey(EquipmentSlot slot, DataComponentType<?> type) {
-        VALID_KEYS.get(slot.getIndex()).add(type);
-    }
-
-    static {
-        for (EquipmentSlot ignored : ArmorUpgradeRegistry.ARMOR_SLOTS) {
-            VALID_KEYS.add(new HashSet<>());
-        }
-        addKey(EquipmentSlot.HEAD, ModDataComponents.ENTITY_FILTER.get());
-        addKey(EquipmentSlot.HEAD, ModDataComponents.COORD_TRACKER.get());
-        addKey(EquipmentSlot.LEGS, ModDataComponents.SPEED_BOOST_PCT.get());
-        addKey(EquipmentSlot.LEGS, ModDataComponents.JET_BOOTS_PCT.get());
-        addKey(EquipmentSlot.FEET, ModDataComponents.JET_BOOTS_STABILIZERS.get());
-        addKey(EquipmentSlot.FEET, ModDataComponents.JET_BOOTS_BUILDER_MODE.get());
-        addKey(EquipmentSlot.FEET, ModDataComponents.JET_BOOTS_HOVER.get());
-        addKey(EquipmentSlot.FEET, ModDataComponents.JET_BOOTS_SMART_HOVER.get());
+    private static void addKey(Map<EquipmentSlot, Set<DataComponentType<?>>> map, EquipmentSlot slot, DataComponentType<?> type) {
+        map.computeIfAbsent(slot, k -> new HashSet<>()).add(type);
     }
 
     @Override
@@ -85,24 +85,22 @@ public record PacketUpdateArmorExtraData(EquipmentSlot slot, ResourceLocation up
 
     public static void handle(PacketUpdateArmorExtraData message, IPayloadContext ctx) {
         ItemStack stack = ctx.player().getItemBySlot(message.slot());
-        if (stack.getItem() instanceof PneumaticArmorItem) {
+        if (stack.getItem() instanceof PneumaticArmorItem && stack.getComponents() instanceof PatchedDataComponentMap pdcm) {
             CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(ctx.player());
-
-            if (stack.getComponents() instanceof PatchedDataComponentMap pdcm) {
-                message.patch.entrySet().forEach(entry -> {
-                    if (isTypeOKForSlot(message.slot, entry.getKey())) {
-                        pdcm.applyPatch(message.patch);
-                        IArmorUpgradeHandler<?> upgradeHandler = ArmorUpgradeRegistry.getInstance().getUpgradeEntry(message.upgradeID());
-                        if (upgradeHandler != null) {
-                            entry.getValue().ifPresent(val -> upgradeHandler.onDataFieldUpdated(handler, entry.getKey(), val));
-                        }
+            message.patch.entrySet().forEach(entry -> {
+                if (isTypeOKForSlot(message.slot, entry.getKey())) {
+                    pdcm.applyPatch(message.patch);
+                    IArmorUpgradeHandler<?> upgradeHandler = ArmorUpgradeRegistry.getInstance().getUpgradeEntry(message.upgradeID());
+                    if (upgradeHandler != null) {
+                        upgradeHandler.onDataFieldUpdated(handler, entry.getKey(), entry.getValue().orElse(null));
+//                        entry.getValue().ifPresent(val -> upgradeHandler.onDataFieldUpdated(handler, entry.getKey(), val));
                     }
-                });
-            }
+                }
+            });
         }
     }
 
     private static boolean isTypeOKForSlot(EquipmentSlot slot, DataComponentType<?> type) {
-        return VALID_KEYS.get(slot.getIndex()).contains(type);
+        return VALID_KEYS.get(slot).contains(type);
     }
 }

@@ -24,6 +24,7 @@ import net.minecraft.core.component.DataComponentType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnull;
 import java.util.function.Supplier;
@@ -149,14 +150,14 @@ public interface IArmorUpgradeHandler<T extends IArmorExtensionData> {
     }
 
     /**
-     * Called on both client and server when some item component data is changed in this upgrade's armor itemstack. Can
-     * be used to cache heavily-accessed NBT data for performance reasons.
+     * Called on both client and server when some item component data has been changed in this upgrade's armor itemstack
+     * due to a player action in the armor GUI.
      *
      * @param commonArmorHandler the armor handler object
-     * @param componentType
-     * @param val
+     * @param componentType the data component type for the value being stored
+     * @param val the new value
      */
-    default void onDataFieldUpdated(ICommonArmorHandler commonArmorHandler, DataComponentType<?> componentType, Object val) {
+    default void onDataFieldUpdated(ICommonArmorHandler commonArmorHandler, DataComponentType<?> componentType, @Nullable Object val) {
     }
 
     /**
