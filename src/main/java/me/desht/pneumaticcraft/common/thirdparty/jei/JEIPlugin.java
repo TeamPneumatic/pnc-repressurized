@@ -77,7 +77,7 @@ public class JEIPlugin implements IModPlugin {
                 registration.registerSubtypeInterpreter(VanillaTypes.ITEM_STACK, item.get(), PressureSubtypeInterpreter.INSTANCE);
             }
         }
-        registration.registerSubtypeInterpreter(VanillaTypes.ITEM_STACK, ModItems.EMPTY_PCB.get(), ExposureSubtypeInterpeter.INSTANCE);
+        registration.registerSubtypeInterpreter(VanillaTypes.ITEM_STACK, ModItems.EMPTY_PCB.get(), exposureSubtypeInterpreter.INSTANCE);
     }
 
     @Override
@@ -234,7 +234,7 @@ public class JEIPlugin implements IModPlugin {
         }
     }
 
-    private enum ExposureSubtypeInterpeter implements ISubtypeInterpreter<ItemStack> {
+    private enum exposureSubtypeInterpreter implements ISubtypeInterpreter<ItemStack> {
         INSTANCE;
 
         @Override
