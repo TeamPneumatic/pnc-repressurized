@@ -6,19 +6,17 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
+import net.neoforged.neoforge.common.util.Lazy;
 
 public class HempHarvestHandler extends HarvestHandlerCactusLike {
     private static final ResourceLocation HEMP_ID = ResourceLocation.fromNamespaceAndPath(ModIds.IMMERSIVE_ENGINEERING, "hemp");
-    private static Block HEMP = null;
+    private static final Lazy<Block> HEMP = Lazy.of(() -> BuiltInRegistries.BLOCK.get(HEMP_ID));
 
     public HempHarvestHandler() {
         super(HempHarvestHandler::isIEHemp);
     }
 
     private static boolean isIEHemp(BlockState state) {
-        if (HEMP == null) {
-            HEMP = BuiltInRegistries.BLOCK.get(HEMP_ID);
-        }
-        return !state.isAir() && state.getBlock() == HEMP;
+        return !state.isAir() && state.getBlock() == HEMP.get();
     }
 }
