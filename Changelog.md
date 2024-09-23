@@ -6,6 +6,16 @@ Changes are in reverse chronological order; newest changes at the top.
 
 # Minecraft 1.21.1
 
+## [8.1.4]
+
+### Changed
+* Moved back to using latest JEI API again; EMI 1.1.13+ is now required if you're using EMI
+
+### Fixed
+* Fixed JEI showing incorrect input ingredient amounts for Assembly recipes
+  * For example, showing 1 Pressure Valve -> 8 Advanced Tube, when the recipe is in fact 20 Pressure Valve -> 8 Advanced Tube
+* Fixed updating boost amount not working in the Pneumatic Armor Jump Boost GUI
+
 ## [8.1.3]
 
 ### Changed
