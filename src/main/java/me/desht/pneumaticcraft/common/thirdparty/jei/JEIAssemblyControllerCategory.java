@@ -34,6 +34,8 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.world.item.ItemStack;
 
+import java.util.Arrays;
+
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class JEIAssemblyControllerCategory extends AbstractPNCCategory<AssemblyRecipe> {
@@ -52,7 +54,7 @@ public class JEIAssemblyControllerCategory extends AbstractPNCCategory<AssemblyR
     @Override
     public void setRecipe(IRecipeLayoutBuilder builder, AssemblyRecipe recipe, IFocusGroup focuses) {
         builder.addSlot(RecipeIngredientRole.INPUT, 29, 56)
-                .addIngredients(recipe.getInput().ingredient());
+                .addItemStacks(Arrays.asList(recipe.getInput().getItems()));
         builder.addSlot(RecipeIngredientRole.CATALYST, 133, 22)
                 .addItemStack(new ItemStack(AssemblyProgramItem.fromProgramType(recipe.getProgramType())));
         builder.addSlot(RecipeIngredientRole.OUTPUT, 96, 56)
