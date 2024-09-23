@@ -60,9 +60,10 @@ public class FluidYeastCulture {
                         FluidState fluidState = worldIn.getFluidState(pos1);
                         if (fluidState.isSource() && fluidState.is(FluidTags.WATER) && worldIn.getBlockState(pos1).getBlock() == Blocks.WATER) {
                             worldIn.setBlock(pos1, ModFluids.YEAST_CULTURE.get().defaultFluidState().createLegacyBlock(), Block.UPDATE_ALL);
-                            entities.get(0).getItem().shrink(1);
-                            if (entities.get(0).getItem().isEmpty()) {
-                                entities.get(0).discard();
+                            ItemEntity sugarItemEntity = entities.getFirst();
+                            sugarItemEntity.getItem().shrink(1);
+                            if (sugarItemEntity.getItem().isEmpty()) {
+                                sugarItemEntity.discard();
                             }
                             break;
                         }

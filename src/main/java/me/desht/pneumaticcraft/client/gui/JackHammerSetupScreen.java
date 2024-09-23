@@ -121,7 +121,7 @@ public class JackHammerSetupScreen extends AbstractPneumaticCraftContainerScreen
     protected void addProblems(List<Component> curInfo) {
         super.addProblems(curInfo);
 
-        if (!menu.slots.get(0).hasItem()) {
+        if (!menu.slots.getFirst().hasItem()) {
             curInfo.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.jackhammer.noBit"));
         }
     }

@@ -79,7 +79,7 @@ public enum PacketPneumaticKick implements CustomPacketPayload {
         if (entities.isEmpty()) return;
         entities.sort(Comparator.comparingDouble(o -> o.distanceToSqr(player)));
 
-        Entity target = entities.get(0);
+        Entity target = entities.getFirst();
         if (!target.skipAttackInteraction(player)) {
             if (target instanceof LivingEntity living) {
                 target.hurt(target.damageSources().playerAttack(player), 3.0f + upgrades * 0.5f);

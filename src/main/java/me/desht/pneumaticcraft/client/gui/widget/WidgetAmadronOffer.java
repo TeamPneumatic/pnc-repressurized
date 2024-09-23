@@ -91,7 +91,7 @@ public class WidgetAmadronOffer extends AbstractWidget {
         if (renderBackground) {
             graphics.blit(Textures.WIDGET_AMADRON_OFFER, getX(), getY(), 0, 0, width, height, 256, 256);
         }
-        FormattedCharSequence r = fr.split(offer.getVendorName(), 73).get(0);
+        FormattedCharSequence r = fr.split(offer.getVendorName(), 73).getFirst();
         graphics.drawString(fr, r, getX() + 2, getY() + 2, 0xFF000000, false);
         if (shoppingAmount > 0) {
             String str = Integer.toString(shoppingAmount);

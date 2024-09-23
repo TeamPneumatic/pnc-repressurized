@@ -27,6 +27,7 @@ import me.desht.pneumaticcraft.common.registry.ModEntityTypes;
 import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.upgrades.UpgradableItemUtils;
+import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
@@ -92,7 +93,7 @@ public class AmadroneEntity extends DroneEntity {
             upgradeInv.setStackInSlot(2, ModUpgrades.ITEM_LIFE.get().getItemStack(10));
             upgradeInv.setStackInSlot(3, ModUpgrades.SECURITY.get().getItemStack());
             UpgradableItemUtils.setUpgrades(amadroneStack, upgradeInv);
-            amadroneStack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM).addAir(100000);
+            IOHelper.getCap(amadroneStack, PNCCapabilities.AIR_HANDLER_ITEM).orElseThrow().addAir(100000);
         }
         return amadroneStack;
     }

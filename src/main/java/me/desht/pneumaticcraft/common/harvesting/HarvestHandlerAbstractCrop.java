@@ -48,7 +48,7 @@ public abstract class HarvestHandlerAbstractCrop extends HarvestHandler {
         harvest(world, chunkCache, pos, state, drone);
         List<ItemEntity> seedItems = world.getEntitiesOfClass(ItemEntity.class, new AABB(pos), entityItem -> isSeed(world, pos, state, entityItem.getItem()));
         if (!seedItems.isEmpty()) {
-            seedItems.get(0).getItem().shrink(1);//Use a seed
+            seedItems.getFirst().getItem().shrink(1);//Use a seed
             world.setBlockAndUpdate(pos, withMinAge(state)); //And plant it.
             return true;
         } else {

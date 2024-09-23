@@ -52,7 +52,7 @@ public class HarvestHandlerTree extends HarvestHandler {
             if (saplingState.canSurvive(world, pos)) {
                 List<ItemEntity> saplingItems = world.getEntitiesOfClass(ItemEntity.class, new AABB(pos).inflate(SAPLING_PICK_RANGE), entityItem -> entityItem.getItem().getItem() == saplingBlock.asItem());
                 if (!saplingItems.isEmpty()) {
-                    saplingItems.get(0).getItem().shrink(1); // Use a sapling
+                    saplingItems.getFirst().getItem().shrink(1); // Use a sapling
                     world.setBlockAndUpdate(pos, saplingState);  // And plant it.
                     return true;
                 }

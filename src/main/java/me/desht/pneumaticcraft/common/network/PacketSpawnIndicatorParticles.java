@@ -51,7 +51,7 @@ public record PacketSpawnIndicatorParticles(BlockPos pos0, DyeColor dyeColor, Li
     );
 
     public static PacketSpawnIndicatorParticles create(List<BlockPos> posList, DyeColor dyeColor) {
-        BlockPos pos0 = posList.get(0);
+        BlockPos pos0 = posList.getFirst();
         List<ByteOffset> offsets = new ArrayList<>();
         for (int i = 1; i < posList.size(); i++) {
             BlockPos off = posList.get(i).subtract(pos0);

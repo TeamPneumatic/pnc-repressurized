@@ -337,7 +337,7 @@ public class EntityFilter implements Predicate<Entity> {
         private EntityMatcher(String element) {
             List<String> splits = Arrays.stream(ELEMENT_SUBDIVIDER.split(element)).map(String::trim).toList();
 
-            String arg0 = splits.get(0);
+            String arg0 = splits.getFirst();
             if (arg0.startsWith("@")) {
                 // match by entity predicate
                 String sub = arg0.substring(1);

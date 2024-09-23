@@ -99,7 +99,7 @@ public class StandardGunAmmoItem extends AbstractGunAmmoItem {
             } else if (potion.getItem() instanceof LingeringPotionItem) {
                 extra = " " + I18n.get("pneumaticcraft.gui.tooltip.gunAmmo.lingering");
             }
-            infoList.add(xlate("pneumaticcraft.gui.tooltip.gunAmmo").append(" ").append(potionInfo.get(0)).append(extra));
+            infoList.add(xlate("pneumaticcraft.gui.tooltip.gunAmmo").append(" ").append(potionInfo.getFirst()).append(extra));
         } else {
             infoList.add(xlate("pneumaticcraft.gui.tooltip.gunAmmo.combineWithPotion"));
         }

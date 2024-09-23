@@ -314,7 +314,7 @@ public class UniversalSensorScreen extends AbstractPneumaticCraftContainerScreen
         if (sensor != null) {
             String[] folders = te.getSensorSetting().split("/");
             text.add(Component.literal(folders[folders.length - 1]).withStyle(ChatFormatting.WHITE));
-            text.addAll(GuiUtils.xlateAndSplit(sensor.getDescription().get(0)));
+            text.addAll(GuiUtils.xlateAndSplit(sensor.getDescription().getFirst()));
         } else {
             text.add(xlate("pneumaticcraft.gui.misc.none").withStyle(ChatFormatting.BLACK));
         }

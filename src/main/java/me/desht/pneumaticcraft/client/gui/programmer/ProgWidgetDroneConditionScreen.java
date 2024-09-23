@@ -111,7 +111,7 @@ public abstract class ProgWidgetDroneConditionScreen<T extends ProgWidgetDroneCo
         if (isSidedWidget()) {
             graphics.drawString(font, xlate("pneumaticcraft.gui.progWidget.inventory.accessingSides"), guiLeft + 4, guiTop + 20, 0xFF404060, false);
         }
-        Component s = progWidget.getExtraStringInfo().get(0);
+        Component s = progWidget.getExtraStringInfo().getFirst();
         graphics.drawString(font, s, guiLeft + xSize / 2 - font.width(s) / 2, guiTop + 120, 0xFF404060, false);
     }
 

@@ -153,7 +153,7 @@ public class SensorHandler implements ISensorRegistry {
 
     public Set<PNCUpgrade> getRequiredStacksFromText(String path) {
         List<ISensorSetting> sensors = getSensorsFromPath(path);
-        return sensors.isEmpty() ? Collections.emptySet() : sensors.get(0).getRequiredUpgrades();
+        return sensors.isEmpty() ? Set.of() : sensors.getFirst().getRequiredUpgrades();
     }
 
     @Override

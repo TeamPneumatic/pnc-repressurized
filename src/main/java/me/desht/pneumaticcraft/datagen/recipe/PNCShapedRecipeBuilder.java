@@ -90,7 +90,7 @@ public class PNCShapedRecipeBuilder extends ShapedRecipeBuilder {
 
     @Override
     public PNCShapedRecipeBuilder pattern(String pat) {
-        if (!this.rows.isEmpty() && pat.length() != this.rows.get(0).length()) {
+        if (!this.rows.isEmpty() && pat.length() != this.rows.getFirst().length()) {
             throw new IllegalArgumentException("Pattern must be the same width on every line!");
         } else {
             this.rows.add(pat);
