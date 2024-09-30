@@ -1874,6 +1874,7 @@
    "pneumaticcraft.gui.tab.upgrades.security_station.range" : "Increases the (cubic) range of the Security Station by one block for each upgrade (up to 16 blocks).",
    "pneumaticcraft.gui.tab.upgrades.security_station.security" : "Increases the Security Station's rating by one for each upgrade. Players need more Security Upgrades in their Pneumatic Helmet than the Security Station has to be able to even begin a hack attempt.",
    "pneumaticcraft.gui.tab.upgrades.sentry_turret.creative" : "A Creative Supply Upgrade gives the Sentry Turret infinite ammunition of the type of ammo currently installed.",
+   "pneumaticcraft.gui.tab.upgrades.sentry_turret.muffler" : "Each Muffler Upgrade installed makes the Sentry Turret operate a little more quietly.",
    "pneumaticcraft.gui.tab.upgrades.sentry_turret.range" : "Increases the range of the Sentry Turret by one block for each upgrade.",
    "pneumaticcraft.gui.tab.upgrades.smart_chest.dispenser" : "With a Dispenser Upgrade installed, sides configured to push items will eject them into the world if there's no inventory present on that side.",
    "pneumaticcraft.gui.tab.upgrades.smart_chest.magnet" : "With a Magnet Upgrade installed, sides configured to pull items will absorb nearby items in the world if there's no inventory present on that side. The default range is a 3x3x3 cube centered 2 blocks from the side in question, but can be increased with Range Upgrades.",
