@@ -1663,6 +1663,9 @@ public class ModRecipeProvider extends RecipeProvider {
 
     private <T extends ItemLike> ShapelessRecipeBuilder shapeless(T result, int count, T required, Object... ingredients) {
         ShapelessRecipeBuilder b = ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, result, count);
+        if (ingredients.length == 0) {
+            ingredients = new Object[] { required };
+        }
         for (Object v : ingredients) {
             switch (v) {
                 case TagKey<?> ignored ->
@@ -1679,6 +1682,9 @@ public class ModRecipeProvider extends RecipeProvider {
 
     private <T extends ItemLike> ShapelessRecipeBuilder shapelessStack(ItemStack result, T required, Object... ingredients) {
         ShapelessRecipeBuilder b = ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, result).requires(required);
+        if (ingredients.length == 0) {
+            ingredients = new Object[] { required };
+        }
         for (Object v : ingredients) {
             switch (v) {
                 case TagKey<?> ignored ->
