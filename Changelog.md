@@ -15,6 +15,8 @@ Changes are in reverse chronological order; newest changes at the top.
 * Fixed JEI showing incorrect input ingredient amounts for Assembly recipes
   * For example, showing 1 Pressure Valve -> 8 Advanced Tube, when the recipe is in fact 20 Pressure Valve -> 8 Advanced Tube
 * Fixed updating boost amount not working in the Pneumatic Armor Jump Boost GUI
+* Added in a missing translation key for Muffler Upgrades in the Sentry Turret GUI
+* Fixed Pneumatic Wrench and Logistics advancements not triggering properly
 
 ## [8.1.3]
 
