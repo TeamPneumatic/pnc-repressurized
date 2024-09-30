@@ -45,7 +45,7 @@ import java.util.function.Supplier;
 
 public class ModDataComponents {
     public static final DeferredRegister.DataComponents COMPONENTS
-            = DeferredRegister.createDataComponents(Names.MOD_ID);
+            = DeferredRegister.createDataComponents(Registries.DATA_COMPONENT_TYPE, Names.MOD_ID);
 
     private static <T> Supplier<DataComponentType<T>> register(String name, Codec<T> codec, StreamCodec<? super RegistryFriendlyByteBuf, T> streamCodec) {
         return COMPONENTS.registerComponentType(name, builder -> builder
