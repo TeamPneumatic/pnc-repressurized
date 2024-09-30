@@ -126,6 +126,7 @@ neoForge {
 			data()
 			jvmArgument("-Xmx4G")
 			gameDirectory = project.file('runs/data')
+			programArguments = [ '--mod', project.mod_id, '--all', '--output', file('src/generated/resources/').getAbsolutePath(), '--existing', file('src/main/resources/').getAbsolutePath() ]
 		}
 		server {
 			server()
