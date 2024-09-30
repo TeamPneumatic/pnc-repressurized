@@ -8,10 +8,7 @@
             "count": {
               "min": 1
             },
-            "items": "pneumaticcraft:pneumatic_wrench",
-            "predicates": {
-              "minecraft:damage": {}
-            }
+            "items": "pneumaticcraft:pneumatic_wrench"
           }
         ]
       },

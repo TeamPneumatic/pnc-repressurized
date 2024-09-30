@@ -8,19 +8,13 @@
             "count": {
               "min": 1
             },
-            "items": "pneumaticcraft:logistics_frame_passive_provider",
-            "predicates": {
-              "minecraft:damage": {}
-            }
+            "items": "pneumaticcraft:logistics_frame_passive_provider"
           },
           {
             "count": {
               "min": 1
             },
-            "items": "pneumaticcraft:logistics_frame_requester",
-            "predicates": {
-              "minecraft:damage": {}
-            }
+            "items": "pneumaticcraft:logistics_frame_requester"
           }
         ]
       },

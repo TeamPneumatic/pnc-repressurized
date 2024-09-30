@@ -67,8 +67,8 @@ public class ModAdvancementProvider extends AdvancementProvider {
                     .save(saver, id("oil_bucket"));
             AdvancementHolder refinery = itemAdvancement("refinery", AdvancementType.GOAL, ModBlocks.REFINERY.get(),
                     new ItemPredicate[] {
-                            itemPredicateNoDurability(ModBlocks.REFINERY.get(), 1),
-                            itemPredicateNoDurability(ModBlocks.REFINERY_OUTPUT.get(), 2),
+                            itemPredicate(ModBlocks.REFINERY.get(), 1),
+                            itemPredicate(ModBlocks.REFINERY_OUTPUT.get(), 2),
                     })
                     .parent(oilBucket)
                     .rewards(experience(20))
@@ -144,7 +144,7 @@ public class ModAdvancementProvider extends AdvancementProvider {
                     .save(saver, id("minigun"));
             AdvancementHolder wrench = itemAdvancement("pneumatic_wrench", AdvancementType.TASK, ModItems.PNEUMATIC_WRENCH.get(),
                     new ItemPredicate[] {
-                            itemPredicateNoNBT(ModItems.PNEUMATIC_WRENCH.get(), 1)
+                            itemPredicate(ModItems.PNEUMATIC_WRENCH.get(), 1)
                     })
                     .parent(pressureTube)
                     .rewards(experience(10))
@@ -285,14 +285,14 @@ public class ModAdvancementProvider extends AdvancementProvider {
                     .addCriterion("0", InventoryChangeTrigger.TriggerInstance.hasItems(predicates));
         }
 
-        private ItemPredicate itemPredicateNoDurability(ItemLike item, int minCount) {
+        private ItemPredicate itemPredicate(ItemLike item, int minCount) {
             return ItemPredicate.Builder.item()
                     .of(item.asItem())
                     .withCount(MinMaxBounds.Ints.atLeast(minCount))
                     .build();
         }
 
-        private ItemPredicate itemPredicate(ItemLike item, int minCount) {
+        private ItemPredicate itemPredicateWithDurability(ItemLike item, int minCount) {
             return ItemPredicate.Builder.item()
                     .of(item.asItem())
                     .withCount(MinMaxBounds.Ints.atLeast(minCount))
