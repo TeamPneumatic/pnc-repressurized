@@ -17,6 +17,7 @@ Changes are in reverse chronological order; newest changes at the top.
 * Fixed updating boost amount not working in the Pneumatic Armor Jump Boost GUI
 * Added in a missing translation key for Muffler Upgrades in the Sentry Turret GUI
 * Fixed Pneumatic Wrench and Logistics advancements not triggering properly
+* Fixed global variable values not being properly interpolated into widget text (via the ${#varname} syntax) in the Remote GUI
 
 ## [8.1.3]
 
