@@ -254,7 +254,7 @@ public class JackHammerItem extends PressurizableItem
     }
 
     @Override
-    public boolean onEntitySwing(ItemStack stack, LivingEntity entity) {
+    public boolean onEntitySwing(ItemStack stack, LivingEntity entity, InteractionHand hand) {
         return getDrillBit(stack) != DrillBitType.NONE && getAir(stack) > 0f;
     }
 

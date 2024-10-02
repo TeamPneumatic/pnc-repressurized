@@ -3,7 +3,6 @@ package me.desht.pneumaticcraft.common;
 import me.desht.pneumaticcraft.api.data.PneumaticCraftTags;
 import me.desht.pneumaticcraft.api.misc.DamageSources;
 import me.desht.pneumaticcraft.api.misc.DamageTypes;
-import me.desht.pneumaticcraft.mixin.accessors.DamageSourcesAccess;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageType;
@@ -40,7 +39,7 @@ public class PNCDamageSource {
     }
 
     private static DamageSource source(Level level, ResourceKey<DamageType>type, Entity cause, Entity direct) {
-        return ((DamageSourcesAccess) level.damageSources()).invokeSource(type, cause, direct);
+        return level.damageSources().source(type, cause, direct);
     }
 
     public enum DamageSourcesImpl implements DamageSources {

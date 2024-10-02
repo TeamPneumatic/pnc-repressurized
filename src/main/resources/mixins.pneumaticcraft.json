@@ -9,7 +9,6 @@
     "accessors.BaseSpawnerAccess",
     "accessors.BlockEntityTypeAccess",
     "accessors.BoatItemAccess",
-    "accessors.DamageSourcesAccess",
     "accessors.EntityAccess",
     "accessors.ItemEntityAccess",
     "accessors.MinecartItemAccess",
