@@ -18,9 +18,11 @@
 package me.desht.pneumaticcraft.client.gui.remote;
 
 import me.desht.pneumaticcraft.api.remote.IRemoteVariableWidget;
+import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.inventory.RemoteMenu;
 import me.desht.pneumaticcraft.common.remote.SavedRemoteLayout;
+import me.desht.pneumaticcraft.common.variables.TextVariableParser;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
@@ -60,8 +62,9 @@ public class RemoteScreen extends AbstractRemoteScreen {
     public void onGlobalVariableChanged(String varName) {
         widgetMap.forEach((mcWidget, remoteWidget) -> {
             if (remoteWidget instanceof IRemoteVariableWidget rv && varName.equals(rv.varName())) {
-                RemoteClientRegistry.INSTANCE.handleGlobalVariableChange(rv, mcWidget, varName);
+                    RemoteClientRegistry.INSTANCE.handleGlobalVariableChange(rv, mcWidget, varName);
             }
+            mcWidget.setMessage(TextVariableParser.parseComponent(remoteWidget.widgetSettings().title(), ClientUtils.getClientPlayer().getUUID()));
             mcWidget.visible = remoteWidget.isEnabled(Minecraft.getInstance().player);
         });
     }

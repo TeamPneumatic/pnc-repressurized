@@ -21,6 +21,10 @@ import me.desht.pneumaticcraft.api.misc.IVariableProvider;
 import me.desht.pneumaticcraft.common.drone.ai.DroneAIManager;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.contents.PlainTextContents;
 import net.minecraft.world.item.ItemStack;
 import org.apache.commons.lang3.StringUtils;
 
@@ -52,6 +56,25 @@ public class TextVariableParser {
         this.orig = str;
         this.variableProvider = droneAIManager;
         this.playerID = droneAIManager.getDrone().getOwnerUUID();
+    }
+
+    public static String parseString(String input, UUID playerID) {
+        return new TextVariableParser(input, playerID).parse();
+    }
+
+    public static Component parseComponent(Component input, UUID playerID) {
+        if (input.getSiblings().isEmpty() && input.getContents() instanceof PlainTextContents contents) {
+            // simple case, just a single literal string
+            return Component.literal(parseString(contents.text(), playerID)).withStyle(input.getStyle());
+        }
+
+        MutableComponent parsed = Component.empty();
+        input.visit((style, str) -> {
+            TextVariableParser parser = new TextVariableParser(str, playerID);
+            parsed.append(Component.literal(parser.parse()).withStyle(style));
+            return Optional.empty();
+        }, Style.EMPTY);
+        return parsed;
     }
 
     public String parse() {
