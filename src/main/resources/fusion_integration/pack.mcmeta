@@ -1,0 +1,7 @@
+{
+    "pack": {
+        "pack_format": 14,
+        "supported_formats": [14,50],
+        "description": "Integration with Fusion connected textures"
+    }    
+}
