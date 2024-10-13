@@ -6,6 +6,14 @@ Changes are in reverse chronological order; newest changes at the top.
 
 # Minecraft 1.21.1
 
+## [8.1.5]
+
+### Fixed
+* Drones no longer drop items with Vanishing Curse when they die
+  * Exception: such items will still be dropped if the drone is wrenched by the owning player (and only the owning player)
+* Added a programmer error when condition progwidgets have branches on both right and left (true & false), and also a widget connected below
+  * The below path will never be followed in this case, so this indicates a flaw in the program logic
+
 ## [8.1.4]
 
 ### Changed
