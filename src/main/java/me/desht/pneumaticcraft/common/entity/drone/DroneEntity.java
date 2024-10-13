@@ -114,6 +114,7 @@ import net.minecraft.world.entity.vehicle.Boat;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.EnchantmentEffectComponents;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.ChunkPos;
@@ -233,6 +234,7 @@ public class DroneEntity extends AbstractDroneEntity implements
     private LogisticsManager logisticsManager;
     private ItemEnchantments stackEnchants = ItemEnchantments.EMPTY;
     private boolean carriedEntityAIdisabled;  // true if the drone's carried entity AI was already disabled
+    private UUID wrenchedBy = null;
 
     private ChunkPos prevChunkPos = null;
     private DynamicChunkLoader chunkLoader;
@@ -919,6 +921,7 @@ public class DroneEntity extends AbstractDroneEntity implements
     @Override
     public boolean onWrenched(Level world, Player player, BlockPos pos, Direction side, InteractionHand hand) {
         if (shouldDropAsItem()) {
+            wrenchedBy = player.getUUID();
             overload("wrenched");
             return true;
         } else {
@@ -957,9 +960,13 @@ public class DroneEntity extends AbstractDroneEntity implements
 
     @Override
     protected void dropEquipment() {
+        boolean wrenchedByOwner = wrenchedBy != null && wrenchedBy.equals(ownerUUID);
         for (int i = 0; i < droneItemHandler.getSlots(); i++) {
-            if (!droneItemHandler.getStackInSlot(i).isEmpty()) {
-                spawnAtLocation(droneItemHandler.getStackInSlot(i), 0);
+            ItemStack stack = droneItemHandler.getStackInSlot(i);
+            if (!stack.isEmpty()) {
+                if (wrenchedByOwner || !EnchantmentHelper.has(stack, EnchantmentEffectComponents.PREVENT_EQUIPMENT_DROP)) {
+                    spawnAtLocation(stack, 0);
+                }
                 droneItemHandler.setStackInSlot(i, ItemStack.EMPTY);
             }
         }
