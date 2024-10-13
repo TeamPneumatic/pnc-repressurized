@@ -95,8 +95,13 @@ public abstract class ProgWidgetCondition extends ProgWidgetInventoryBase implem
     @Override
     public void addErrors(List<Component> curInfo, List<IProgWidget> widgets) {
         super.addErrors(curInfo, widgets);
+
+        IProgWidget textTrue = getConnectedParameters()[getParameters().size() - 1];
+        IProgWidget textFalse = getConnectedParameters()[getParameters().size() * 2 - 1];
         if (getMeasureVar().isEmpty() && getConnectedParameters()[getParameters().size() - 1] == null && getConnectedParameters()[getParameters().size() * 2 - 1] == null) {
             curInfo.add(xlate("pneumaticcraft.gui.progWidget.condition.error.noFlowControl"));
+        } else if (getOutputWidget() != null && textTrue != null && textFalse != null) {
+            curInfo.add(xlate("pneumaticcraft.gui.progWidget.condition.error.badFlowControl"));
         }
     }
 

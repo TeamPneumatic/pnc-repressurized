@@ -55,13 +55,15 @@ public abstract class ProgWidgetConditionBase extends ProgWidget implements IJum
     @Override
     public void addErrors(List<Component> curInfo, List<IProgWidget> widgets) {
         super.addErrors(curInfo, widgets);
-        IProgWidget widget = getConnectedParameters()[getParameters().size() - 1];
-        IProgWidget widget2 = getConnectedParameters()[getParameters().size() * 2 - 1];
+        IProgWidget textTrue = getConnectedParameters()[getParameters().size() - 1];
+        IProgWidget textFalse = getConnectedParameters()[getParameters().size() * 2 - 1];
         boolean hasMeasureVar = this instanceof ICondition cond && !cond.getMeasureVar().isEmpty();
-        if (widget == null && widget2 == null && !hasMeasureVar) {
+        if (textTrue == null && textFalse == null && !hasMeasureVar) {
             curInfo.add(xlate("pneumaticcraft.gui.progWidget.condition.error.noFlowControl"));
-        } else if (widget != null && !(widget instanceof ProgWidgetText) || widget2 != null && !(widget2 instanceof ProgWidgetText)) {
+        } else if (textTrue != null && !(textTrue instanceof ProgWidgetText) || textFalse != null && !(textFalse instanceof ProgWidgetText)) {
             curInfo.add(xlate("pneumaticcraft.gui.progWidget.condition.error.shouldConnectTextPieces"));
+        } else if (getOutputWidget() != null && textTrue != null && textFalse != null) {
+            curInfo.add(xlate("pneumaticcraft.gui.progWidget.condition.error.badFlowControl"));
         }
     }
 

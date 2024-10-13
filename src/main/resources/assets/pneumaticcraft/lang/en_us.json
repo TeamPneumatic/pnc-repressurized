@@ -1303,6 +1303,7 @@
    "pneumaticcraft.gui.progWidget.conditionBlock.checkForLiquids" : "Check for Liquids",
    "pneumaticcraft.gui.progWidget.conditionBlock.checkForLiquids.tooltip" : "Special condition. When checked, a block passes the filter when it's a liquid.",
    "pneumaticcraft.gui.progWidget.conditionCoordinate.error.noAxisSelected" : "No checking axis selected. You need to check at least one condition for its value for the condition to work.",
+   "pneumaticcraft.gui.progWidget.condition.error.badFlowControl" : "With branch labels on both right (true) and left (false), the widget below is never used!",
    "pneumaticcraft.gui.progWidget.condition.error.noFlowControl" : "No output label selected. The flow will continue downwards, regardless of the outcome of the condition.",
    "pneumaticcraft.gui.progWidget.condition.error.shouldConnectTextPieces" : "You should only connect Text puzzle pieces that reference a Label puzzle piece with a text piece.",
    "pneumaticcraft.gui.progWidget.condition.anyBlock" : "Any Block",
