@@ -37,7 +37,6 @@ import net.neoforged.neoforge.fluids.FluidType;
 
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Function;
 
 /**
  * Recipes which define the heat properties of a block; its temperature, thermal resistance, heat capacity, and the
@@ -181,10 +180,10 @@ public abstract class HeatPropertiesRecipe extends PneumaticCraftRecipe {
                 BLOCKSTATE_STRING_CODEC.optionalFieldOf("cold_flowing").forGetter(Transforms::coldFlowing)
         ).apply(builder, Transforms::new));
         public static final StreamCodec<RegistryFriendlyByteBuf, Transforms> STREAM_CODEC = StreamCodec.composite(
-                ByteBufCodecs.optional(ByteBufCodecs.fromCodec(BlockState.CODEC)), Transforms::hot,
-                ByteBufCodecs.optional(ByteBufCodecs.fromCodec(BlockState.CODEC)), Transforms::cold,
-                ByteBufCodecs.optional(ByteBufCodecs.fromCodec(BlockState.CODEC)), Transforms::hotFlowing,
-                ByteBufCodecs.optional(ByteBufCodecs.fromCodec(BlockState.CODEC)), Transforms::coldFlowing,
+                ByteBufCodecs.optional(ByteBufCodecs.idMapper(Block.BLOCK_STATE_REGISTRY)), Transforms::hot,
+                ByteBufCodecs.optional(ByteBufCodecs.idMapper(Block.BLOCK_STATE_REGISTRY)), Transforms::cold,
+                ByteBufCodecs.optional(ByteBufCodecs.idMapper(Block.BLOCK_STATE_REGISTRY)), Transforms::hotFlowing,
+                ByteBufCodecs.optional(ByteBufCodecs.idMapper(Block.BLOCK_STATE_REGISTRY)), Transforms::coldFlowing,
                 Transforms::new
         );
 
