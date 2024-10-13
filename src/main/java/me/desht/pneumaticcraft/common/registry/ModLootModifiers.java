@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.common.registry;
 
-import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.common.loot.PNCDungeonLootModifier;

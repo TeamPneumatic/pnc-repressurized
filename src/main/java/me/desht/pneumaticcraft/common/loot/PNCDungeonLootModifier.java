@@ -5,6 +5,7 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
+import net.minecraft.Util;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.ItemStack;
@@ -15,6 +16,7 @@ import net.minecraft.world.level.storage.loot.entries.NestedLootTable;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.neoforged.neoforge.common.loot.IGlobalLootModifier;
 import net.neoforged.neoforge.common.loot.LootModifier;
+import net.neoforged.neoforge.common.util.Lazy;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -46,21 +48,16 @@ public class PNCDungeonLootModifier extends LootModifier {
     }
 
     private static class CustomPools {
-        private static LootPool commonPool = null;
-        private static LootPool uncommonPool = null;
-        private static LootPool rarePool = null;
+        private static final Lazy<LootPool> commonPool = Lazy.of(() -> buildLootPool("common"));
+        private static final Lazy<LootPool> uncommonPool = Lazy.of(() -> buildLootPool("uncommon"));
+        private static final Lazy<LootPool> rarePool = Lazy.of(() -> buildLootPool("rare"));
 
         private static List<ItemStack> roll(LootContext ctx) {
-            if (commonPool == null) {
-                commonPool = buildLootPool("common");
-                uncommonPool = buildLootPool("uncommon");
-                rarePool = buildLootPool("rare");
-            }
-            List<ItemStack> res = new ArrayList<>();
-            commonPool.addRandomItems(res::add, ctx);
-            uncommonPool.addRandomItems(res::add, ctx);
-            rarePool.addRandomItems(res::add, ctx);
-            return res;
+            return Util.make(new ArrayList<>(), l -> {
+                commonPool.get().addRandomItems(l::add, ctx);
+                uncommonPool.get().addRandomItems(l::add, ctx);
+                rarePool.get().addRandomItems(l::add, ctx);
+            });
         }
 
         private static LootPool buildLootPool(String name) {
