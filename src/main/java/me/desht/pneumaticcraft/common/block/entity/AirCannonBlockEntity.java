@@ -76,6 +76,7 @@ import net.minecraftforge.items.ItemHandlerHelper;
 import javax.annotation.Nullable;
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
@@ -134,6 +135,8 @@ public class AirCannonBlockEntity extends AbstractAirHandlingBlockEntity
     public boolean insertingInventoryHasSpace = true;
     private boolean gpsSlotChanged = true;
     private FakePlayer fakePlayer = null;
+    private final AtomicBoolean firePending = new AtomicBoolean(false);
+    private final AtomicBoolean lastFireOK = new AtomicBoolean(false);
 
     private static final int INVENTORY_SIZE = 2;
     private static final int CANNON_SLOT = 0;
@@ -174,6 +177,10 @@ public class AirCannonBlockEntity extends AbstractAirHandlingBlockEntity
     @Override
     public void tickServer() {
         super.tickServer();
+
+        if (firePending.get()) {
+            lastFireOK.set(fire());
+        }
 
         updateTrackedItems();
         updateTrackedTNT();
@@ -570,7 +577,7 @@ public class AirCannonBlockEntity extends AbstractAirHandlingBlockEntity
         super.onNeighborBlockUpdate(fromPos);
         boolean isPowered = rsController.getCurrentRedstonePower() > 0;
         if (isPowered && !wasPowered && rsController.shouldRun()) {
-            fire();
+            lastFireOK.set(fire());
         }
     }
 
@@ -593,8 +600,14 @@ public class AirCannonBlockEntity extends AbstractAirHandlingBlockEntity
         });
     }
 
-    private synchronized boolean fire() {
+    private synchronized boolean requestFire() {
+        firePending.set(true);
+        return true;
+    }
+
+    private boolean fire() {
         Entity launchedEntity = getCloseEntityIfUpgraded();
+        firePending.set(false);
         if (getPressure() >= PneumaticValues.MIN_PRESSURE_AIR_CANNON && (launchedEntity != null || !itemHandler.getStackInSlot(CANNON_SLOT).isEmpty())) {
             float force = getForce();
             //noinspection SuspiciousNameCombination
@@ -694,7 +707,16 @@ public class AirCannonBlockEntity extends AbstractAirHandlingBlockEntity
             public Object[] call(Object[] args) {
                 requireNoArgs(args);
                 // returns true if the fire succeeded.
-                return new Object[]{fire()};
+                return new Object[]{ requestFire() };
+            }
+        });
+
+        registry.registerLuaMethod(new LuaMethod("firedOK") {
+            @Override
+            public Object[] call(Object[] args) {
+                requireNoArgs(args);
+                // returns true if the fire succeeded.
+                return new Object[]{ lastFireOK.get() };
             }
         });
 
