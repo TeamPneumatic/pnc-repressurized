@@ -17,6 +17,9 @@ import net.neoforged.neoforge.fluids.crafting.FluidIngredient;
 import net.neoforged.neoforge.items.IItemHandler;
 
 import java.util.Optional;
+import java.util.Set;
+import java.util.function.BiPredicate;
+import java.util.function.Predicate;
 
 /**
  * A collection of miscellaneous helper methods which don't fit elsewhere. Get an instance of this with
@@ -116,4 +119,23 @@ public interface IMiscHelpers {
      * @return the global variable helper
      */
     IGlobalVariableHelper getGlobalVariableHelper();
+
+    /**
+     * Register a custom modifier for entity filtering.
+     *
+     * @param name the modifier name
+     * @param options a set of valid options for the modifier values
+     * @param predicate a predicate to test if the modifier applies to the given entity
+     */
+    void registerEntityFilterModifier(String name, Set<String> options, BiPredicate<Entity,String> predicate);
+
+    /**
+     * Register a custom modifier for entity filtering.
+     *
+     * @param name the modifier name
+     * @param validator a predicate to test if the given string is a valid possible value for this modifier
+     * @param desc a freeform description of what the valid values for this modifier are (keep it brief)
+     * @param predicate a predicate to test if the modifier applies to the given entity
+     */
+    void registerEntityFilterModifier(String name, Predicate<String> validator, String desc, BiPredicate<Entity,String> predicate);
 }

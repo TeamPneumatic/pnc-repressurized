@@ -14,6 +14,7 @@ import me.desht.pneumaticcraft.common.network.PacketSpawnParticle;
 import me.desht.pneumaticcraft.common.particle.AirParticleData;
 import me.desht.pneumaticcraft.common.registry.ModSounds;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.common.util.entityfilter.FilterModifiers;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
@@ -32,6 +33,9 @@ import org.joml.Vector3f;
 
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
+import java.util.function.BiPredicate;
+import java.util.function.Predicate;
 
 public enum MiscAPIHandler implements IMiscHelpers {
     INSTANCE;
@@ -103,5 +107,15 @@ public enum MiscAPIHandler implements IMiscHelpers {
     @Override
     public IGlobalVariableHelper getGlobalVariableHelper() {
         return GlobalVariableHelper.getInstance();
+    }
+
+    @Override
+    public void registerEntityFilterModifier(String name, Set<String> options, BiPredicate<Entity, String> predicate) {
+        FilterModifiers.INSTANCE.registerModifier(name, options, predicate);
+    }
+
+    @Override
+    public void registerEntityFilterModifier(String name, Predicate<String> validator, String desc, BiPredicate<Entity, String> predicate) {
+        FilterModifiers.INSTANCE.registerModifier(name, validator, desc, predicate);
     }
 }

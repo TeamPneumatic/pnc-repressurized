@@ -18,6 +18,7 @@
 package me.desht.pneumaticcraft.common.util;
 
 import com.google.common.base.Predicate;
+import me.desht.pneumaticcraft.common.util.entityfilter.EntityFilter;
 import net.minecraft.world.entity.Entity;
 
 import java.util.ArrayList;

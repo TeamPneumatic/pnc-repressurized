@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.common.drone.progwidgets;
 
 import me.desht.pneumaticcraft.api.drone.IProgWidget;
-import me.desht.pneumaticcraft.common.util.EntityFilter;
+import me.desht.pneumaticcraft.common.util.entityfilter.EntityFilter;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;

@@ -15,25 +15,21 @@
  *     along with pnc-repressurized.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.desht.pneumaticcraft.common.util;
+package me.desht.pneumaticcraft.common.util.entityfilter;
 
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
 import joptsimple.internal.Strings;
 import me.desht.pneumaticcraft.api.drone.IProgWidget;
 import me.desht.pneumaticcraft.common.drone.progwidgets.IEntityProvider;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetText;
 import me.desht.pneumaticcraft.common.entity.drone.DroneEntity;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.EntityTypeTags;
-import net.minecraft.tags.TagKey;
-import net.minecraft.world.entity.*;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import net.minecraft.Util;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.ExperienceOrb;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.TamableAnimal;
 import net.minecraft.world.entity.animal.Animal;
-import net.minecraft.world.entity.animal.Cat;
-import net.minecraft.world.entity.animal.Sheep;
-import net.minecraft.world.entity.animal.Wolf;
 import net.minecraft.world.entity.decoration.Painting;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.monster.Enemy;
@@ -41,15 +37,10 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.vehicle.AbstractMinecart;
 import net.minecraft.world.entity.vehicle.Boat;
 import net.minecraft.world.item.DyeColor;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.scores.PlayerTeam;
-import net.neoforged.neoforge.common.IShearable;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 
 import java.util.*;
-import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
@@ -69,6 +60,16 @@ public class EntityFilter implements Predicate<Entity> {
             .put("orb", e -> e instanceof ExperienceOrb)
             .put("nothing", e -> false)
             .build();
+
+    static final Set<String> DYE_COLORS = Util.make(new HashSet<>(), set -> {
+        for (DyeColor d : DyeColor.values()) {
+            set.add(d.getName());
+        }
+    });
+
+    static {
+        FilterModifiers.INSTANCE.registerDefaults();
+    }
 
     private final List<EntityMatcher> matchers = new ArrayList<>();
     private final boolean sense;
@@ -180,154 +181,8 @@ public class EntityFilter implements Predicate<Entity> {
         return !sense;
     }
 
-    private static final Set<String> DYE_COLORS = new HashSet<>();
-    static {
-        for (DyeColor d : DyeColor.values()) {
-            DYE_COLORS.add(d.getName());
-        }
-    }
-
     public boolean isNone() {
         return this == deny() || rawFilter.equals("@nothing");
-    }
-
-    private enum Modifier implements BiPredicate<Entity,String> {
-        AGE(ImmutableSet.of("adult", "baby"),
-                Modifier::testAge
-        ),
-        // the next four are for backwards compat, since MobType is no longer a thing
-        AQUATIC(ImmutableSet.of("yes", "no"),
-                (entity, val) -> testEntityTypeTag(entity, val, EntityTypeTags.AQUATIC)
-        ),
-        UNDEAD(ImmutableSet.of("yes", "no"),
-                (entity, val) -> testEntityTypeTag(entity, val, EntityTypeTags.UNDEAD)
-        ),
-        ILLAGER(ImmutableSet.of("yes", "no"),
-                (entity, val) -> testEntityTypeTag(entity, val, EntityTypeTags.ILLAGER)
-        ),
-        ARTHROPOD(ImmutableSet.of("yes", "no"),
-                (entity, val) -> testEntityTypeTag(entity, val, EntityTypeTags.ARTHROPOD)
-        ),
-        BREEDABLE(ImmutableSet.of("yes", "no"),
-                Modifier::testBreedable
-        ),
-        SHEARABLE(ImmutableSet.of("yes", "no"),
-                Modifier::testShearable
-        ),
-        COLOR(DYE_COLORS,
-                Modifier::hasColor
-        ),
-        HOLDING((item) -> BuiltInRegistries.ITEM.containsKey(ResourceLocation.parse(item)),
-                "any valid item ID, e.g. 'minecraft:cobblestone'",
-                (entity, val) -> isHeldItem(entity, val, true)
-        ),
-        HOLDING_OFFHAND((item) -> BuiltInRegistries.ITEM.containsKey(ResourceLocation.parse(item)),
-                "any valid item ID, e.g. 'minecraft:cobblestone'",
-                (entity, val) -> isHeldItem(entity, val, false)
-        ),
-        MOD((str) -> true,
-                "any mod name, e.g. 'minecraft' or 'pneumaticcraft'",
-                Modifier::testMod),
-        ENTITY_TAG((str) -> true,
-                "any string tag (added to entities with the /tag command)",
-                Modifier::testEntityTag),
-        TYPE_TAG(rl -> ResourceLocation.tryParse(rl) != null,
-                "any known entity type tag, e.g 'minecraft:skeletons'",
-                Modifier::testTypeTag),
-        TEAM((str) -> true,
-                "any valid Minecraft team name",
-                Modifier::testTeamName);
-
-        private final Set<String> validationSet;
-        private final Predicate<String> validationPredicate;
-        private final String valText;
-        private final BiPredicate<Entity,String> testPredicate;
-
-        Modifier(Predicate<String> validationPredicate, String valText, BiPredicate<Entity, String> testPredicate) {
-            this.validationPredicate = validationPredicate;
-            this.valText = valText;
-            this.testPredicate = testPredicate;
-            this.validationSet = Collections.emptySet();
-        }
-
-        Modifier(Set<String> validationSet, BiPredicate<Entity, String> testPredicate) {
-            this.validationPredicate = null;
-            this.valText = "";
-            this.testPredicate = testPredicate;
-            this.validationSet = validationSet;
-        }
-
-        private static boolean testShearable(Entity entity, String val) {
-            return entity instanceof IShearable s
-                    && s.isShearable(null, new ItemStack(Items.SHEARS), entity.getCommandSenderWorld(), entity.blockPosition()) ?
-                    val.equalsIgnoreCase("yes") : val.equalsIgnoreCase("no");
-        }
-
-        private static boolean testBreedable(Entity entity, String val) {
-            return entity instanceof Animal a && val.equalsIgnoreCase(a.getAge() == 0 ? "yes" : "no");
-        }
-
-        private static boolean testEntityTypeTag(Entity entity, String val, TagKey<EntityType<?>> key) {
-            return val.equalsIgnoreCase(entity.getType().is(key) ? "yes" : "no");
-        }
-
-        private static boolean testAge(Entity entity, String val) {
-            return val.equalsIgnoreCase(entity instanceof AgeableMob a && a.getAge() >= 0 ? "adult" : "baby");
-        }
-
-        private static boolean testMod(Entity entity, String modName) {
-            ResourceLocation rl = PneumaticCraftUtils.getRegistryName(entity).orElseThrow();
-            return rl.getNamespace().toLowerCase(Locale.ROOT).equals(modName.toLowerCase(Locale.ROOT));
-        }
-
-        private static boolean testEntityTag(Entity entity, String val) {
-            return entity.getTags().contains(val);
-        }
-
-        private static boolean testTypeTag(Entity entity, String val) {
-            return ResourceLocation.read(val).result()
-                    .map(rl -> entity.getType().is(TagKey.create(Registries.ENTITY_TYPE, rl)))
-                    .orElse(false);
-        }
-
-        private static boolean testTeamName(Entity entity, String val) {
-            PlayerTeam team = entity.getTeam();
-            return team != null
-                    && (team.getName().equalsIgnoreCase(val) || team.getDisplayName().getString().equalsIgnoreCase(val));
-        }
-
-        boolean isValid(String s) {
-            return validationPredicate == null ? validationSet.contains(s) : validationPredicate.test(s);
-        }
-
-        @Override
-        public boolean test(Entity entity, String val) {
-            return testPredicate.test(entity, val);
-        }
-
-        public String displayValidOptions() {
-            return validationSet.isEmpty() ? valText : Strings.join(validationSet, ",");
-        }
-
-        private static boolean hasColor(Entity entity, String val) {
-            return switch (entity) {
-                case Sheep s -> s.getColor().getName().equalsIgnoreCase(val);
-                case Wolf w -> w.getCollarColor().getName().equalsIgnoreCase(val);
-                case Cat c -> c.getCollarColor().getName().equalsIgnoreCase(val);
-                case null, default -> false;
-            };
-        }
-
-        private static boolean isHeldItem(Entity entity, String name, boolean mainHand) {
-            if (entity instanceof LivingEntity l) {
-                if (!name.contains(":")) {
-                    name = "minecraft:" + name;
-                }
-                ItemStack stack = mainHand ? l.getMainHandItem() : l.getOffhandItem();
-                return PneumaticCraftUtils.getRegistryName(stack.getItem()).orElseThrow().toString().equals(name);
-            }
-            return false;
-        }
     }
 
     private static class EntityMatcher implements Predicate<Entity> {
@@ -365,8 +220,10 @@ public class EntityFilter implements Predicate<Entity> {
                     key = key.substring(0, key.length() - 1);
                     sense = false;
                 }
+
                 try {
-                    Modifier modifier = Modifier.valueOf(key.toUpperCase(Locale.ROOT));
+                    FilterModifier modifier = FilterModifiers.INSTANCE.getModifier(key)
+                            .orElseThrow(IllegalArgumentException::new);
                     if (!modifier.isValid(arg)) {
                         throw new IllegalArgumentException(String.format("Invalid value '%s' for modifier '%s'. Valid values: %s",
                                 arg, key, modifier.displayValidOptions()));
@@ -391,7 +248,7 @@ public class EntityFilter implements Predicate<Entity> {
         }
     }
 
-    private record ModifierEntry(Modifier modifier, String value, boolean sense) implements Predicate<Entity> {
+    private record ModifierEntry(FilterModifier modifier, String value, boolean sense) implements Predicate<Entity> {
         @Override
         public boolean test(Entity e) {
             return modifier.test(e, value) == sense;

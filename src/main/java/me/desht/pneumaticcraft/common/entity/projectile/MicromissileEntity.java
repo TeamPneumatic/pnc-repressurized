@@ -24,7 +24,7 @@ import me.desht.pneumaticcraft.common.item.MicromissilesItem.FireMode;
 import me.desht.pneumaticcraft.common.particle.AirParticleData;
 import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.registry.ModEntityTypes;
-import me.desht.pneumaticcraft.common.util.EntityFilter;
+import me.desht.pneumaticcraft.common.util.entityfilter.EntityFilter;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;

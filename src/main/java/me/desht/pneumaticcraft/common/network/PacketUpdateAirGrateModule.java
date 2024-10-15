@@ -19,7 +19,7 @@ package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.common.tubemodules.AbstractTubeModule;
 import me.desht.pneumaticcraft.common.tubemodules.AirGrateModule;
-import me.desht.pneumaticcraft.common.util.EntityFilter;
+import me.desht.pneumaticcraft.common.util.entityfilter.EntityFilter;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;

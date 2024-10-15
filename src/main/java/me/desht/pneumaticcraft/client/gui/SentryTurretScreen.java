@@ -25,7 +25,7 @@ import me.desht.pneumaticcraft.common.block.entity.utility.SentryTurretBlockEnti
 import me.desht.pneumaticcraft.common.inventory.SentryTurretMenu;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdateTextfield;
-import me.desht.pneumaticcraft.common.util.EntityFilter;
+import me.desht.pneumaticcraft.common.util.entityfilter.EntityFilter;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;

@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.common.sensor.pollSensors.entity;
 
-import me.desht.pneumaticcraft.common.util.EntityFilter;
+import me.desht.pneumaticcraft.common.util.entityfilter.EntityFilter;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
 
