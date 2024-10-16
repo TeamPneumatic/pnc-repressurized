@@ -80,6 +80,8 @@ public class CommonConfig {
         public ModConfigSpec.IntValue repairAirUsage;
         public ModConfigSpec.IntValue magnetAirUsage;
         public ModConfigSpec.IntValue scubaMultiplier;
+        public ModConfigSpec.IntValue scubaMinAirUsageIncreaseDepth;
+        public ModConfigSpec.DoubleValue scubaAirUsagePerBlockDepth;
     }
     public static class Integration {
         public ModConfigSpec.DoubleValue mekThermalEfficiencyFactor;
@@ -396,6 +398,14 @@ public class CommonConfig {
                 .comment("Air used per point of 'player air' restored by the Scuba Upgrade")
                 .translation("pneumaticcraft.config.common.armor.scuba_multiplier")
                 .defineInRange("scuba_multiplier", PneumaticValues.PNEUMATIC_HELMET_SCUBA_MULTIPLIER, 1, Integer.MAX_VALUE);
+        armor.scubaMinAirUsageIncreaseDepth = builder
+                .comment("Minimum depth below sea level at which air usage starts to increase (if 'scuba_air_usage_per_block_depth' is > 0)")
+                .translation("pneumaticcraft.config.common.armor.scuba_min_air_usage_increase_depth")
+                .defineInRange("scuba_min_air_usage_increase_depth", 0, 0, Integer.MAX_VALUE);
+        armor.scubaAirUsagePerBlockDepth = builder
+                .comment("Extra air usage (on top of 'scuba_multiplier') per block below the threshold depth (see 'scuba_min_air_usage_increase_depth')")
+                .translation("pneumaticcraft.config.common.armor.scuba_air_usage_per_block_depth")
+                .defineInRange("scuba_air_usage_per_block_depth", 0.0, 0.0, Double.MAX_VALUE);
         builder.pop();
 
         builder.push("advanced");

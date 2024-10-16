@@ -952,6 +952,8 @@
    "pneumaticcraft.config.common.armor.magnet_air_usage" : "Magnet air usage",
    "pneumaticcraft.config.common.armor.repair_air_usage" : "Armor repair air usage",
    "pneumaticcraft.config.common.armor.scuba_multiplier" : "Scuba Upgrade air cost",
+   "pneumaticcraft.config.common.armor.scuba_min_air_usage_increase_depth" : "Scuba air usage increase depth threshold",
+   "pneumaticcraft.config.common.armor.scuba_air_usage_per_block_depth" : "Scuba air usage increase per block depth",
    "pneumaticcraft.config.common.blockHeatDefaults.addDefaultFluidEntries" : "Add default fluid entries?",
    "pneumaticcraft.config.common.blockHeatDefaults.airThermalResistance" : "Air thermal resistance",
    "pneumaticcraft.config.common.blockHeatDefaults.ambientTemperatureBiomeModifier" : "Biome ambient temperature modifier",

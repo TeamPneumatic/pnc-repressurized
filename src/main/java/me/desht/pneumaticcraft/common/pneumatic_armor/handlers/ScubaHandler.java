@@ -21,10 +21,9 @@ import me.desht.pneumaticcraft.api.pneumatic_armor.BaseArmorUpgradeHandler;
 import me.desht.pneumaticcraft.api.pneumatic_armor.BuiltinArmorUpgrades;
 import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorExtensionData;
 import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorHandler;
-import me.desht.pneumaticcraft.api.pressure.PressureHelper;
 import me.desht.pneumaticcraft.api.upgrade.PNCUpgrade;
+import me.desht.pneumaticcraft.common.config.CommonConfig;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
-import me.desht.pneumaticcraft.common.item.PneumaticArmorItem;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketPlaySound;
 import me.desht.pneumaticcraft.common.network.PacketSpawnParticle;
@@ -36,7 +35,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Vector3f;
 
@@ -72,18 +70,23 @@ public class ScubaHandler extends BaseArmorUpgradeHandler<IArmorExtensionData> {
         Player player = commonArmorHandler.getPlayer();
         if (!player.level().isClientSide && enabled
                 && commonArmorHandler.hasMinPressure(EquipmentSlot.HEAD)
-                && player.getAirSupply() < 150) {
+                && player.getAirSupply() < player.getMaxAirSupply() / 2) {
 
-            ItemStack helmetStack = player.getItemBySlot(EquipmentSlot.HEAD);
+            CommonConfig.Armor armorConf = ConfigHelper.common().armor;
 
-            int baseVol = ((PneumaticArmorItem) helmetStack.getItem()).getBaseVolume();
-            int vol = PressureHelper.getUpgradedVolume(baseVol, commonArmorHandler.getUpgradeCount(EquipmentSlot.HEAD, ModUpgrades.VOLUME.get()));
-            float airInHelmet = commonArmorHandler.getArmorPressure(EquipmentSlot.HEAD) * vol;
-            int playerAir = (int) Math.min(300 - player.getAirSupply(), airInHelmet / ConfigHelper.common().armor.scubaMultiplier.get());
-            player.setAirSupply(player.getAirSupply() + playerAir);
+            int airMult = armorConf.scubaMultiplier.get();
+            if (armorConf.scubaAirUsagePerBlockDepth.get() > 0.0) {
+                int thresholdDepth = player.level().getSeaLevel() - armorConf.scubaMinAirUsageIncreaseDepth.get();
+                if (player.position().y < thresholdDepth) {
+                    airMult += (int) Math.round(armorConf.scubaAirUsagePerBlockDepth.get() * (thresholdDepth - player.position().y));
+                }
+            }
 
-            int airUsed = playerAir * ConfigHelper.common().armor.scubaMultiplier.get();
-            commonArmorHandler.addAir(EquipmentSlot.HEAD, -airUsed);
+            float airInHelmet = commonArmorHandler.getAir(EquipmentSlot.HEAD);
+            int playerAirAdded = (int) Math.min(player.getMaxAirSupply() - player.getAirSupply(), airInHelmet / airMult);
+            player.setAirSupply(player.getAirSupply() + playerAirAdded);
+
+            commonArmorHandler.addAir(EquipmentSlot.HEAD, -(playerAirAdded * airMult));
 
             NetworkHandler.sendToPlayer(new PacketPlaySound(ModSounds.SCUBA.get(), SoundSource.PLAYERS, player.blockPosition(), 1f, 1.0f, false), (ServerPlayer) player);
             Vec3 eyes = player.getEyePosition(1.0f).add(player.getLookAngle().scale(0.5));

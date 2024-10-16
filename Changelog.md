@@ -8,7 +8,14 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## [8.1.5]
 
+### Added
+* Added two new config settings to allow increasing Pneumatic Armor Scuba upgrade air usage as depth below sea level increases
+  * `scuba_min_air_usage_increase_depth`: minimum depth below sea level before air usage starts to increase
+  * `scuba_air_usage_per_block_depth`: extra air usage over the default (see existing `scuba_multiplier` setting) per block below the threshold depth 
+  * Default is no air usage increase, as before
+
 ### Fixed
+* Fixed a race condition when using Computercraft to control Air Cannons
 * Drones no longer drop items with Vanishing Curse when they die
   * Exception: such items will still be dropped if the drone is wrenched by the owning player (and only the owning player)
 * Added a programmer error when condition progwidgets have branches on both right and left (true & false), and also a widget connected below
