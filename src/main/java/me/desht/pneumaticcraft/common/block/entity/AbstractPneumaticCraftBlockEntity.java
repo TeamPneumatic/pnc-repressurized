@@ -578,13 +578,13 @@ public abstract class AbstractPneumaticCraftBlockEntity extends BlockEntity
         return upgradeHandler;
     }
 
-    public BlockCapabilityCache<IItemHandler,Direction> createItemHandlerCache(Direction dir) {
+    protected BlockCapabilityCache<IItemHandler,Direction> createItemHandlerCache(Direction dir) {
         return getLevel() instanceof ServerLevel serverLevel ?
                 BlockCapabilityCache.create(Capabilities.ItemHandler.BLOCK, serverLevel, getBlockPos().relative(dir), dir.getOpposite(), () -> !isRemoved(), () -> {}) :
                 null;
     }
 
-    public BlockCapabilityCache<IFluidHandler,Direction> createFluidHandlerCache(Direction dir) {
+    protected BlockCapabilityCache<IFluidHandler,Direction> createFluidHandlerCache(Direction dir) {
         return getLevel() instanceof ServerLevel serverLevel ?
                 BlockCapabilityCache.create(Capabilities.FluidHandler.BLOCK, serverLevel, getBlockPos().relative(dir), dir.getOpposite(), () -> !isRemoved(), () -> {}) :
                 null;

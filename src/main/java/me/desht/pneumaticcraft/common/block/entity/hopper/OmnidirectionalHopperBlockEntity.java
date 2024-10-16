@@ -47,6 +47,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.neoforged.neoforge.capabilities.BlockCapabilityCache;
+import net.neoforged.neoforge.common.util.Lazy;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
 
@@ -62,8 +63,8 @@ public class OmnidirectionalHopperBlockEntity extends AbstractHopperBlockEntity<
     private int rrSlot;
     @GuiSynced
     private final RedstoneController<OmnidirectionalHopperBlockEntity> rsController = new RedstoneController<>(this);
-
-    private BlockCapabilityCache<IItemHandler,Direction> inputCache, outputCache;
+    private final Lazy<BlockCapabilityCache<IItemHandler,Direction>> inputCache = Lazy.of(() -> createItemHandlerCache(inputDir));
+    private final Lazy<BlockCapabilityCache<IItemHandler,Direction>> outputCache = Lazy.of(() -> createItemHandlerCache(getRotation()));
 
     public OmnidirectionalHopperBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntityTypes.OMNIDIRECTIONAL_HOPPER.get(), pos, state);
@@ -74,23 +75,11 @@ public class OmnidirectionalHopperBlockEntity extends AbstractHopperBlockEntity<
     }
 
     private BlockCapabilityCache<IItemHandler,Direction> getInputCache() {
-        if (inputCache == null) {
-            inputCache = createItemHandlerCache(inputDir);
-        }
-        return inputCache;
+        return inputCache.get();
     }
 
     private BlockCapabilityCache<IItemHandler,Direction> getOutputCache() {
-        if (outputCache == null) {
-            outputCache = createItemHandlerCache(getRotation());
-        }
-        return outputCache;
-    }
-
-    @Override
-    public void onBlockRotated() {
-        super.onBlockRotated();
-        inputCache = outputCache = null;
+        return outputCache.get();
     }
 
     protected int getComparatorValueInternal() {
@@ -251,6 +240,9 @@ public class OmnidirectionalHopperBlockEntity extends AbstractHopperBlockEntity<
         inputAABB = bowl.minmax(new AABB(worldPosition.relative(inputDir)));
         // output zone is a bit simpler
         outputAABB = new AABB(getBlockPos().relative(getRotation()));
+
+        inputCache.invalidate();
+        outputCache.invalidate();
 
         cachedInputEntities.clear();
         cachedOutputEntities.clear();

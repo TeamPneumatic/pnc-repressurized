@@ -46,6 +46,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.neoforged.neoforge.capabilities.BlockCapabilityCache;
+import net.neoforged.neoforge.common.util.Lazy;
 import net.neoforged.neoforge.fluids.*;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction;
@@ -66,24 +67,19 @@ public class LiquidHopperBlockEntity extends AbstractHopperBlockEntity<LiquidHop
     @GuiSynced
     private final RedstoneController<LiquidHopperBlockEntity> rsController = new RedstoneController<>(this);
 
-    private BlockCapabilityCache<IFluidHandler,Direction> inputCache, outputCache;
+    private final Lazy<BlockCapabilityCache<IFluidHandler,Direction>> inputCache = Lazy.of(() -> createFluidHandlerCache(inputDir));
+    private final Lazy<BlockCapabilityCache<IFluidHandler,Direction>> outputCache = Lazy.of(() -> createFluidHandlerCache(getRotation()));
 
     public LiquidHopperBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntityTypes.LIQUID_HOPPER.get(), pos, state);
     }
 
     private BlockCapabilityCache<IFluidHandler,Direction> getInputCache() {
-        if (inputCache == null) {
-            inputCache = createFluidHandlerCache(inputDir);
-        }
-        return inputCache;
+        return inputCache.get();
     }
 
     private BlockCapabilityCache<IFluidHandler,Direction> getOutputCache() {
-        if (outputCache == null) {
-            outputCache = createFluidHandlerCache(getRotation());
-        }
-        return outputCache;
+        return outputCache.get();
     }
 
     @Override
@@ -222,6 +218,9 @@ public class LiquidHopperBlockEntity extends AbstractHopperBlockEntity<LiquidHop
     protected void setupInputOutputRegions() {
         inputAABB = new AABB(worldPosition.relative(inputDir));
         outputAABB = new AABB(getBlockPos().relative(getRotation()));
+
+        inputCache.invalidate();
+        outputCache.invalidate();
 
         cachedInputEntities.clear();
         cachedOutputEntities.clear();
