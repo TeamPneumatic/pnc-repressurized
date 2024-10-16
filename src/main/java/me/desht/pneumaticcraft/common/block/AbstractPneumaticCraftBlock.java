@@ -71,7 +71,6 @@ import net.neoforged.neoforge.fluids.SimpleFluidContent;
 
 import javax.annotation.Nullable;
 import java.util.List;
-import java.util.function.Supplier;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 import static net.minecraft.world.level.block.state.properties.BlockStateProperties.*;
@@ -370,8 +369,8 @@ public abstract class AbstractPneumaticCraftBlock extends Block
     public void addSerializableComponents(List<DataComponentType<?>> list) {
         if (this instanceof EntityBlock eb) {
             BlockEntity be = eb.newBlockEntity(BlockPos.ZERO, defaultBlockState());
-            if (be instanceof ISerializableTanks) {
-                list.addAll(ModDataComponents.TANK_COMPONENTS.stream().map(Supplier::get).toList());
+            if (be instanceof ISerializableTanks st) {
+                list.addAll(st.getSerializableTanks().keySet());
             }
             if (be instanceof IRedstoneControl<?>) {
                 list.add(ModDataComponents.SAVED_REDSTONE_CONTROLLER.get());
