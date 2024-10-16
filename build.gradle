@@ -112,6 +112,11 @@ sourceSets {
 neoForge {
 	version = "${neo_version}"
 
+	parchment {
+		mappingsVersion = project.parchment_mappings_version
+		minecraftVersion = project.parchment_minecraft_version
+	}
+
 	addModdingDependenciesTo(sourceSets.api)
 
 	validateAccessTransformers = true
