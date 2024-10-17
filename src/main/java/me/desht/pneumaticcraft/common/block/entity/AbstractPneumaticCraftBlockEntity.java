@@ -259,6 +259,7 @@ public abstract class AbstractPneumaticCraftBlockEntity extends BlockEntity
         if (this instanceof IHeatExchangingTE he) {
             he.initializeHullHeatExchangers(level, worldPosition);
         }
+        upgradeCache.validateCache();
     }
 
     protected void updateNeighbours() {

@@ -423,27 +423,23 @@ public class ProgrammableControllerBlockEntity extends AbstractAirHandlingBlockE
         return new ProgrammableControllerMenu(i, playerInventory, getBlockPos());
     }
 
-
     @Override
     public void onUpgradesChanged() {
         super.onUpgradesChanged();
+
         if (getLevel() != null && !getLevel().isClientSide) {
-            calculateUpgrades();
-        }
-    }
-
-    private void calculateUpgrades() {
-        int oldInvUpgrades = droneItemHandler.getSlots() - 1;
-        int newInvUpgrades = Math.min(35, getUpgrades(ModUpgrades.INVENTORY.get()));
-        if (oldInvUpgrades != newInvUpgrades) {
-            resizeDroneInventory(oldInvUpgrades + 1, newInvUpgrades + 1);
-            tank.setCapacity((newInvUpgrades + 1) * 16000);
-            if (tank.getFluidAmount() > tank.getCapacity()) {
-                tank.getFluid().setAmount(tank.getCapacity());
+            int oldInvUpgrades = droneItemHandler.getSlots() - 1;
+            int newInvUpgrades = Math.min(35, getUpgrades(ModUpgrades.INVENTORY.get()));
+            if (oldInvUpgrades != newInvUpgrades) {
+                resizeDroneInventory(oldInvUpgrades + 1, newInvUpgrades + 1);
+                tank.setCapacity((newInvUpgrades + 1) * 16000);
+                if (tank.getFluidAmount() > tank.getCapacity()) {
+                    tank.getFluid().setAmount(tank.getCapacity());
+                }
             }
-        }
 
-        speedUpgrades = getUpgrades(ModUpgrades.SPEED.get());
+            speedUpgrades = getUpgrades(ModUpgrades.SPEED.get());
+        }
     }
 
     private void resizeDroneInventory(int oldSize, int newSize) {
@@ -463,14 +459,12 @@ public class ProgrammableControllerBlockEntity extends AbstractAirHandlingBlockE
         super.loadAdditional(tag, provider);
 
         inventory.deserializeNBT(provider, tag.getCompound("Items"));
-        tank.setCapacity((getUpgrades(ModUpgrades.INVENTORY.get()) + 1) * 16000);
         tank.readFromNBT(provider, tag.getCompound("tank"));
 
         ownerID = tag.contains("ownerID") ? UUID.fromString(tag.getString("ownerID")) : FALLBACK_UUID;
         ownerName = Component.literal(tag.contains("ownerName") ? tag.getString("ownerName") : FALLBACK_NAME);
         ownerNameClient = ownerName.getString();
 
-        droneItemHandler.setUseableSlots(getUpgrades(ModUpgrades.INVENTORY.get()) + 1);
         ItemStackHandler tmpInv = new ItemStackHandler();
         tmpInv.deserializeNBT(provider, tag.getCompound("droneItems"));
         for (int i = 0; i < Math.min(tmpInv.getSlots(), droneItemHandler.getSlots()); i++) {
@@ -526,7 +520,6 @@ public class ProgrammableControllerBlockEntity extends AbstractAirHandlingBlockE
 
         droneItemHandler.setFakePlayerReady();
 
-        calculateUpgrades();
         inventory.onContentsChanged(0);  // force initial read of any installed drone/network api
         curX = targetX = getBlockPos().getX() + 0.5;
         curY = targetY = getBlockPos().getY() + 1.0;

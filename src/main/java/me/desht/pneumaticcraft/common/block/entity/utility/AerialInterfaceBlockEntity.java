@@ -369,7 +369,6 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
         energyStorage.readFromNBT(tag);
 
         curXPFluidIndex = curXpFluid == Fluids.EMPTY ? -1 : XPFluidManager.getInstance().getAvailableLiquidXPs().indexOf(curXpFluid);
-        dispenserUpgradeInserted = getUpgrades(ModUpgrades.DISPENSER.get()) > 0;
     }
 
     @Override

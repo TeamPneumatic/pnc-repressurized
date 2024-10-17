@@ -86,9 +86,10 @@ public abstract class AbstractAirHandlingBlockEntity extends AbstractTickingBloc
 
     @Override
     public void onLoad() {
-        super.onLoad();
-
+        // call this before super so handlers are init'd and things like volume/security upgrades apply properly
         initializeHullAirHandlers();
+
+        super.onLoad();
     }
 
     @Override
@@ -110,10 +111,12 @@ public abstract class AbstractAirHandlingBlockEntity extends AbstractTickingBloc
     }
 
     private void handleSecurityUpgrade(IAirHandlerMachine handler) {
-        if (getUpgrades(ModUpgrades.SECURITY.get()) > 0) {
-            handler.enableSafetyVenting(p -> p > getDangerPressure(), Direction.UP);
-        } else {
-            handler.disableSafetyVenting();
+        if (!level.isClientSide) {
+            if (getUpgrades(ModUpgrades.SECURITY.get()) > 0) {
+                handler.enableSafetyVenting(p -> p > getDangerPressure(), Direction.UP);
+            } else {
+                handler.disableSafetyVenting();
+            }
         }
     }
 
@@ -139,11 +142,6 @@ public abstract class AbstractAirHandlingBlockEntity extends AbstractTickingBloc
         super.loadAdditional(tag, provider);
 
         airHandler.deserializeNBT(tag.getCompound(NBTKeys.NBT_AIR_HANDLER));
-        airHandler.setVolumeUpgrades(getUpgrades(ModUpgrades.VOLUME.get()));
-        if (tag.contains(NBTKeys.NBT_AIR_AMOUNT)) {
-            // when restoring from item NBT
-            airHandler.addAir(tag.getInt(NBTKeys.NBT_AIR_AMOUNT));
-        }
     }
 
     public void initializeHullAirHandlers() {
