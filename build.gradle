@@ -294,7 +294,7 @@ publishMods {
 
     discord {
         webhookUrl = providers.environmentVariable("DISCORD_WEBHOOK").orElse("dryrun")
-		content = changelog.map { "# ${mod_name} v${mod_version} for MC ${minecraft_version} has been released! \n" + it}
+		content = changelog.map { "# ${mod_name} v${mod_version} for MC ${minecraft_version} has been released! \n" + it}.get().substring(0, 1999)
     }
 }
 

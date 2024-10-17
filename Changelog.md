@@ -20,6 +20,12 @@ Changes are in reverse chronological order; newest changes at the top.
   * `pneumaticcraft:jackhammer_upgrade_blacklist`
   * `pneumaticcraft:minigun_upgrade_blacklist`
   * A full list of upgrade item ID's can be found at https://github.com/TeamPneumatic/pnc-repressurized/blob/1.21/src/generated/resources/data/pneumaticcraft/tags/item/upgrades.json
+* Added FTB Teams support for entity filtering (e.g. in Sentry Turrets, Drones etc.)
+  * `@player(ftbteam=<uuid>)` and `@player(ftbteam=short-name)` match players in the FTB Teams team of the given UUID or short name
+  * Other modifiers are `ftbteam_officer`, `ftbteam_owner`, `ftbteam_ally` which match players of at least that rank, and `ftbteam_enemy` which matches players marked as enemies of that team
+
+### Changed
+* Rearranged Sentry Turret GUI a little to provide more horizontal space for the entity filter
 
 ### Fixed
 * Fixed a race condition when using Computercraft to control Air Cannons
@@ -28,6 +34,7 @@ Changes are in reverse chronological order; newest changes at the top.
 * Added a programmer error when condition progwidgets have branches on both right and left (true & false), and also a widget connected below
   * The below path will never be followed in this case, so this indicates a flaw in the program logic
 * Fixed a capability caching bug when rotating the Liquid Hopper's input or output
+* Fixed Security Upgrades in machines not being taken account of on world reload
 
 ## [8.1.4]
 
