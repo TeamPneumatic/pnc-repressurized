@@ -285,7 +285,7 @@ public class CommonArmorHandler implements ICommonArmorHandler {
         ItemStack armorStack = player.getItemBySlot(slot);
 
         // record which upgrades / render-handlers are inserted
-        Map<PNCUpgrade,Integer> upgrades = UpgradableItemUtils.getUpgrades(armorStack);
+        Map<PNCUpgrade,Integer> upgrades = new HashMap<>(UpgradableItemUtils.getUpgrades(armorStack));
         upgrades.keySet().removeIf(u -> ChargeableItemHandler.isItemBlacklisted(armorStack.getItem(), u.getItemStack()));
 
         Arrays.fill(upgradeRenderersInserted[slot.getIndex()], false);
