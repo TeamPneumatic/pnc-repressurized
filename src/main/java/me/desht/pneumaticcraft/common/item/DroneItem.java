@@ -17,6 +17,7 @@
 
 package me.desht.pneumaticcraft.common.item;
 
+import me.desht.pneumaticcraft.api.data.PneumaticCraftTags;
 import me.desht.pneumaticcraft.api.item.IProgrammable;
 import me.desht.pneumaticcraft.client.ColorHandlers;
 import me.desht.pneumaticcraft.common.block.entity.utility.ChargingStationBlockEntity;
@@ -32,6 +33,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.MobSpawnType;
@@ -39,6 +41,7 @@ import net.minecraft.world.entity.SpawnGroupData;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
@@ -50,6 +53,7 @@ import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.SimpleFluidContent;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.function.BiFunction;
 
 public class DroneItem extends PressurizableItem
@@ -159,5 +163,10 @@ public class DroneItem extends PressurizableItem
 
     public static boolean isBasicDrone(ItemStack stack) {
         return stack.getItem() instanceof DroneItem d && !d.canProgram(stack);
+    }
+
+    @Override
+    public Optional<TagKey<Item>> getUpgradeBlacklistTag() {
+        return Optional.of(PneumaticCraftTags.Items.DRONE_UPGRADE_BLACKLIST);
     }
 }

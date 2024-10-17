@@ -132,6 +132,12 @@ public class ModItemTagsProvider extends ItemTagsProvider {
                 addItemsToTag(PneumaticCraftTags.Items.UPGRADES, () -> u);
             }
         });
+
+        tag(PneumaticCraftTags.Items.AMADRON_TABLET_UPGRADE_BLACKLIST);
+        tag(PneumaticCraftTags.Items.ARMOR_UPGRADE_BLACKLIST);
+        tag(PneumaticCraftTags.Items.DRONE_UPGRADE_BLACKLIST);
+        tag(PneumaticCraftTags.Items.JACKHAMMER_UPGRADE_BLACKLIST);
+        tag(PneumaticCraftTags.Items.MINIGUN_UPGRADE_BLACKLIST);
     }
 
     @SafeVarargs

@@ -32,6 +32,7 @@ import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.block.entity.utility.ChargingStationBlockEntity;
 import me.desht.pneumaticcraft.common.inventory.ChargingStationUpgradeManagerMenu;
+import me.desht.pneumaticcraft.common.inventory.handler.ChargeableItemHandler;
 import me.desht.pneumaticcraft.common.item.ItemRegistry;
 import me.desht.pneumaticcraft.common.upgrades.ApplicableUpgradesDB;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
@@ -170,7 +171,7 @@ public abstract class AbstractUpgradeManagerScreen extends AbstractPneumaticCraf
         boolean leftSided = true;
 
         for (PNCUpgrade upgrade: PneumaticRegistry.getInstance().getUpgradeRegistry().getKnownUpgrades()) {
-            if (upgrade.isDependencyLoaded()) {
+            if (!ChargeableItemHandler.isItemBlacklisted(item, upgrade.getItemStack()) && upgrade.isDependencyLoaded()) {
                 int max = ApplicableUpgradesDB.getInstance().getMaxUpgrades(item, upgrade);
                 if (max > 0) {
                     ItemStack upgradeStack = upgrade.getItemStack();

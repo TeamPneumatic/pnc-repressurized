@@ -17,6 +17,7 @@
 
 package me.desht.pneumaticcraft.common.item;
 
+import me.desht.pneumaticcraft.api.data.PneumaticCraftTags;
 import me.desht.pneumaticcraft.api.item.IPositionProvider;
 import me.desht.pneumaticcraft.common.amadron.ImmutableBasket;
 import me.desht.pneumaticcraft.common.amadron.ShoppingBasket;
@@ -36,6 +37,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.GlobalPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
@@ -43,6 +45,7 @@ import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
@@ -193,6 +196,11 @@ public class AmadronTabletItem extends PressurizableItem
             case 1 -> 0x9000C0C0;  // liquid
             default -> -1;
         };
+    }
+
+    @Override
+    public Optional<TagKey<Item>> getUpgradeBlacklistTag() {
+        return Optional.of(PneumaticCraftTags.Items.AMADRON_TABLET_UPGRADE_BLACKLIST);
     }
 
     public static void openGui(ServerPlayer playerIn, InteractionHand handIn) {

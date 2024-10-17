@@ -20,25 +20,42 @@ package me.desht.pneumaticcraft.common.item;
 import me.desht.pneumaticcraft.common.block.entity.utility.ChargingStationBlockEntity;
 import me.desht.pneumaticcraft.common.inventory.ChargingStationUpgradeManagerMenu;
 import net.minecraft.network.chat.Component;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.item.Item;
 
 import javax.annotation.Nullable;
+import java.util.Optional;
 
 /**
- * Represents an item with an upgrade GUI openable via the "Upgrade" button in the Charging Station GUI.
+ * To be implemented on items with an upgrade GUI opened via the "Upgrade" button in the Charging Station GUI.
  */
 public interface IChargeableContainerProvider {
     /**
-     * Get a container provider for this item
+     * Get a container provider for this item when it's being upgraded
      * @param te the charging station that the item is in
      * @return the container provider
      */
     MenuProvider getContainerProvider(ChargingStationBlockEntity te);
 
+    /**
+     * Returns a possible item tag, which contains a list of upgrade items which may not be inserted in the upgrade GUI
+     * (even if they're otherwise applicable to the item being upgraded). Intended for pack developers to limit what
+     * upgrades may be used.
+     *
+     * @return a possible item tag
+     */
+    default Optional<TagKey<Item>> getUpgradeBlacklistTag() {
+        return Optional.empty();
+    }
+
+    /**
+     * Convenience class to create a menu provider useful for charging station upgrade screens
+     */
     class Provider implements MenuProvider {
         private final ChargingStationBlockEntity te;
         private final MenuType<? extends ChargingStationUpgradeManagerMenu> type;

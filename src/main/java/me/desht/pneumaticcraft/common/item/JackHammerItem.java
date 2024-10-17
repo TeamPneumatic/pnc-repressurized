@@ -53,6 +53,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.stats.Stats;
+import net.minecraft.tags.TagKey;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
@@ -61,6 +62,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.ItemContainerContents;
@@ -426,6 +428,11 @@ public class JackHammerItem extends PressurizableItem
         } else {
             lastModeSwitchTime = player.level().getGameTime();
         }
+    }
+
+    @Override
+    public Optional<TagKey<Item>> getUpgradeBlacklistTag() {
+        return Optional.of(PneumaticCraftTags.Items.JACKHAMMER_UPGRADE_BLACKLIST);
     }
 
     public enum DigMode implements ITranslatableEnum, StringRepresentable {

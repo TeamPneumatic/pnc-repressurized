@@ -109,6 +109,12 @@ public class PneumaticCraftTags {
         public static final TagKey<Item> COMPRESSED_IRON_ARMOR = modTag("armors/compressed_iron");
         public static final TagKey<Item> PNEUMATIC_ARMOR = modTag("armors/pneumatic");
 
+        public static final TagKey<Item> ARMOR_UPGRADE_BLACKLIST = modTag("armor_upgrade_blacklist");
+        public static final TagKey<Item> DRONE_UPGRADE_BLACKLIST = modTag("drone_upgrade_blacklist");
+        public static final TagKey<Item> MINIGUN_UPGRADE_BLACKLIST = modTag("minigun_upgrade_blacklist");
+        public static final TagKey<Item> JACKHAMMER_UPGRADE_BLACKLIST = modTag("jackhammer_upgrade_blacklist");
+        public static final TagKey<Item> AMADRON_TABLET_UPGRADE_BLACKLIST = modTag("amadron_tablet_upgrade_blacklist");
+
         static TagKey<Item> tag(String modid, String name) {
             return TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(modid, name));
         }

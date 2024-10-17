@@ -19,10 +19,12 @@ package me.desht.pneumaticcraft.common.inventory.handler;
 
 import me.desht.pneumaticcraft.api.upgrade.PNCUpgrade;
 import me.desht.pneumaticcraft.common.block.entity.utility.ChargingStationBlockEntity;
+import me.desht.pneumaticcraft.common.item.IChargeableContainerProvider;
 import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.upgrades.ApplicableUpgradesDB;
 import me.desht.pneumaticcraft.common.upgrades.SavedUpgrades;
 import me.desht.pneumaticcraft.common.upgrades.UpgradableItemUtils;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
 public class ChargeableItemHandler extends BaseItemStackHandler {
@@ -54,7 +56,7 @@ public class ChargeableItemHandler extends BaseItemStackHandler {
 
     private void readFromChargingStack() {
         getChargingStack().getOrDefault(ModDataComponents.ITEM_UPGRADES, SavedUpgrades.EMPTY)
-                        .fillItemHandler(this);
+                .fillItemHandler(this);
     }
 
     @Override
@@ -70,6 +72,14 @@ public class ChargeableItemHandler extends BaseItemStackHandler {
     }
 
     private boolean isApplicable(ItemStack stack) {
-        return ApplicableUpgradesDB.getInstance().getMaxUpgrades(getChargingStack().getItem(), PNCUpgrade.from(stack)) > 0;
+        Item chargeableItem = getChargingStack().getItem();
+        return !isItemBlacklisted(chargeableItem, stack)
+                && ApplicableUpgradesDB.getInstance().getMaxUpgrades(chargeableItem, PNCUpgrade.from(stack)) > 0;
+    }
+
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
+    public static boolean isItemBlacklisted(Item item, ItemStack stack) {
+        return item instanceof IChargeableContainerProvider p
+                && p.getUpgradeBlacklistTag().map(stack::is).orElse(false);
     }
 }
