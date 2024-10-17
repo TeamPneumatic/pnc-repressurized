@@ -24,6 +24,7 @@ import me.desht.pneumaticcraft.common.thirdparty.computercraft.ComputerCraft;
 import me.desht.pneumaticcraft.common.thirdparty.create.Create;
 import me.desht.pneumaticcraft.common.thirdparty.curios.Curios;
 import me.desht.pneumaticcraft.common.thirdparty.ffs.FTBFilterSystem;
+import me.desht.pneumaticcraft.common.thirdparty.ftbteams.FTBTeams;
 import me.desht.pneumaticcraft.common.thirdparty.gamestages.Gamestages;
 import me.desht.pneumaticcraft.common.thirdparty.immersiveengineering.ImmersiveEngineering;
 import me.desht.pneumaticcraft.common.thirdparty.mekanism.Mekanism;
@@ -75,6 +76,7 @@ public enum ThirdPartyManager {
             thirdPartyClasses.put(ModIds.GAMESTAGES, Gamestages::new);
             thirdPartyClasses.put(ModIds.CREATE, Create::new);
             thirdPartyClasses.put(ModIds.FFS, FTBFilterSystem::new);
+            thirdPartyClasses.put(ModIds.FTB_TEAMS, FTBTeams::new);
 
             // these were supported in 1.12.2 and may or may not come back...
 

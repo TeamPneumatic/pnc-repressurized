@@ -44,5 +44,6 @@ public class ModIds {
     public static final String TOUGH_AS_NAILS = "toughasnails";
     public static final String THE_ONE_PROBE = "theoneprobe";
     public static final String FFS = "ftbfiltersystem";
+    public static final String FTB_TEAMS = "ftbteams";
     public static final String CTM = "ctm";
 }
