@@ -13,6 +13,13 @@ Changes are in reverse chronological order; newest changes at the top.
   * `scuba_min_air_usage_increase_depth`: minimum depth below sea level before air usage starts to increase
   * `scuba_air_usage_per_block_depth`: extra air usage over the default (see existing `scuba_multiplier` setting) per block below the threshold depth 
   * Default is no air usage increase, as before
+* Added item tags to allow pack makers to blacklist specific upgrades from upgradeable items:
+  * `pneumaticcraft:armor_upgrade_blacklist`
+  * `pneumaticcraft:drone_upgrade_blacklist`
+  * `pneumaticcraft:amadron_tablet_upgrade_blacklist`
+  * `pneumaticcraft:jackhammer_upgrade_blacklist`
+  * `pneumaticcraft:minigun_upgrade_blacklist`
+  * A full list of upgrade item ID's can be found at https://github.com/TeamPneumatic/pnc-repressurized/blob/1.21/src/generated/resources/data/pneumaticcraft/tags/item/upgrades.json
 
 ### Fixed
 * Fixed a race condition when using Computercraft to control Air Cannons
@@ -20,6 +27,7 @@ Changes are in reverse chronological order; newest changes at the top.
   * Exception: such items will still be dropped if the drone is wrenched by the owning player (and only the owning player)
 * Added a programmer error when condition progwidgets have branches on both right and left (true & false), and also a widget connected below
   * The below path will never be followed in this case, so this indicates a flaw in the program logic
+* Fixed a capability caching bug when rotating the Liquid Hopper's input or output
 
 ## [8.1.4]
 
