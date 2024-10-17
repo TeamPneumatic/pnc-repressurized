@@ -18,6 +18,7 @@
 package me.desht.pneumaticcraft.client.gui;
 
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetLabel;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTextField;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
@@ -44,6 +45,8 @@ public class SentryTurretScreen extends AbstractPneumaticCraftContainerScreen<Se
 
     public SentryTurretScreen(SentryTurretMenu container, Inventory inv, Component displayString) {
         super(container, inv, displayString);
+
+        imageHeight = 184;
     }
 
     @Override
@@ -55,11 +58,12 @@ public class SentryTurretScreen extends AbstractPneumaticCraftContainerScreen<Se
     public void init() {
         super.init();
 
-        addRenderableWidget(entityFilter = new WidgetTextField(font, leftPos + 80, topPos + 62, 70));
-        entityFilter.setMaxLength(256);
-//        setFocused(entityFilter);
+        WidgetLabel label = addRenderableWidget(new WidgetLabel(leftPos + 8, topPos + 75, Component.translatable("pneumaticcraft.gui.progWidget.itemFilter.filterLabel")));
 
-        addRenderableWidget(errorButton = new WidgetButtonExtended(leftPos + 155, topPos + 52, 16, 16, Component.empty()));
+        entityFilter = addRenderableWidget(new WidgetTextField(font, label.getX() + label.getWidth() + 2, label.getY() - 2, imageWidth - label.getWidth() - 18));
+        entityFilter.setMaxLength(256);
+
+        errorButton = addRenderableWidget(new WidgetButtonExtended(leftPos + 155, topPos + 52, 16, 16, Component.empty()));
         errorButton.setRenderedIcon(Textures.GUI_PROBLEMS_TEXTURE).setVisible(false);
         errorButton.visible = false;
     }
@@ -73,8 +77,6 @@ public class SentryTurretScreen extends AbstractPneumaticCraftContainerScreen<Se
         }
 
         super.containerTick();
-
-//        errorButton.visible = errorButton.hasTooltip();
     }
 
     private void onEntityFilterChanged(String newText) {
@@ -99,12 +101,11 @@ public class SentryTurretScreen extends AbstractPneumaticCraftContainerScreen<Se
     protected void renderLabels(GuiGraphics graphics, int x, int y) {
         super.renderLabels(graphics, x, y);
 
-        graphics.drawString(font, xlate("pneumaticcraft.gui.sentryTurret.ammo"), 80, 19, 0x404040, false);
-        graphics.drawString(font, xlate("pneumaticcraft.gui.sentryTurret.targetFilter"), 80, 53, 0x404040, false);
+        graphics.drawString(font, xlate("pneumaticcraft.gui.sentryTurret.ammo"), 80, 28, 0x404040, false);
         if (ClientUtils.isKeyDown(GLFW.GLFW_KEY_F1)) {
             GuiUtils.showPopupHelpScreen(graphics, this, font,
                     GuiUtils.xlateAndSplit("pneumaticcraft.gui.entityFilter.helpText"));
-        } else if (x >= leftPos + 76 && y >= topPos + 51 && x <= leftPos + 153 && y <= topPos + 74) {
+        } else if (y >= topPos + 72 && y <= topPos + 84) {
             // cursor inside the entity filter area
             Component str = xlate("pneumaticcraft.gui.entityFilter.holdF1");
             graphics.drawString(font, str, (imageWidth - font.width(str)) / 2, imageHeight + 5, 0x808080, false);

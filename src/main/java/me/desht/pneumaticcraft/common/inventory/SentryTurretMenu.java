@@ -35,10 +35,10 @@ public class SentryTurretMenu extends AbstractPneumaticCraftMenu<SentryTurretBlo
 
         // Add the hopper slots.
         for (int i = 0; i < 4; i++)
-            addSlot(new SlotItemHandler(blockEntity.getItemHandler(), i, 80 + i * 18, 29));
+            addSlot(new SlotItemHandler(blockEntity.getItemHandler(), i, 80 + i * 18, 38));
 
         addUpgradeSlots(23, 29);
 
-        addPlayerSlots(playerInventory, 84);
+        addPlayerSlots(playerInventory, 102);
     }
 }
