@@ -106,7 +106,7 @@ public class OmnidirectionalHopperBlockEntity extends AbstractHopperBlockEntity<
     private int tryEntityExport(int maxItems, Direction dir) {
         for (Entity e : cachedOutputEntities) {
             if (!e.isAlive()) continue;
-            int notExported = IOHelper.getInventoryForEntity(e, dir).map(h -> exportToInventory(h, maxItems)).orElse(maxItems);
+            int notExported = IOHelper.getSidedInventoryForEntity(e, dir).map(h -> exportToInventory(h, maxItems)).orElse(maxItems);
             if (notExported < maxItems) return notExported;
         }
         return maxItems;
@@ -192,7 +192,7 @@ public class OmnidirectionalHopperBlockEntity extends AbstractHopperBlockEntity<
             if (e.isAlive() && !e.getType().is(PneumaticCraftTags.EntityTypes.OMNIHOPPER_BLACKLISTED)) {
                 final int r = remaining;
                 boolean playerArmor = e instanceof Player && dir.getAxis().isHorizontal();
-                int imported = IOHelper.getInventoryForEntity(e, dir)
+                int imported = IOHelper.getSidedInventoryForEntity(e, dir)
                         .map(h -> importFromInventory(h, r, playerArmor))
                         .orElse(0);
                 remaining -= imported;

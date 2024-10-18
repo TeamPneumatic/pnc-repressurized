@@ -19,6 +19,7 @@ package me.desht.pneumaticcraft.common.util;
 
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
+import me.desht.pneumaticcraft.api.PNCCapabilities;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -87,8 +88,19 @@ public class IOHelper {
         return getInventoryForBlock(te, null);
     }
 
-    public static Optional<IItemHandler> getInventoryForEntity(Entity entity, Direction dir) {
-        return Optional.ofNullable(entity.getCapability(Capabilities.ItemHandler.ENTITY_AUTOMATION, dir));
+    public static Optional<IItemHandler> getSidedInventoryForEntity(Entity entity, Direction dir) {
+        IItemHandler handler = entity.getCapability(PNCCapabilities.ENTITY_AUTOMATION, dir);
+        if (handler == null) {
+            handler = entity.getCapability(Capabilities.ItemHandler.ENTITY_AUTOMATION, dir);
+            if (handler == null) {
+                handler = entity.getCapability(Capabilities.ItemHandler.ENTITY);
+            }
+        }
+        return Optional.ofNullable(handler);
+    }
+
+    public static Optional<IItemHandler> getInventoryForEntity(Entity entity) {
+        return Optional.ofNullable(entity.getCapability(Capabilities.ItemHandler.ENTITY));
     }
 
     public static Optional<IFluidHandler> getFluidHandlerForBlock(BlockEntity te, Direction facing) {

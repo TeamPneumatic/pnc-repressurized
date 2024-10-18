@@ -10,8 +10,12 @@ import me.desht.pneumaticcraft.common.item.IFluidCapProvider;
 import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
 import me.desht.pneumaticcraft.common.registry.ModEntityTypes;
 import me.desht.pneumaticcraft.common.registry.ModItems;
+import net.minecraft.world.entity.EntityType;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
+import net.neoforged.neoforge.items.wrapper.PlayerArmorInvWrapper;
+import net.neoforged.neoforge.items.wrapper.PlayerInvWrapper;
+import net.neoforged.neoforge.items.wrapper.PlayerMainInvWrapper;
 
 import java.util.List;
 
@@ -32,6 +36,18 @@ public class CapabilitySetup {
         });
 
         event.registerEntity(PNCCapabilities.HEAT_EXCHANGER_ENTITY, ModEntityTypes.HEAT_FRAME.get(), (frame, ctx) -> frame.getHeatExchangerLogic());
+
+        event.registerEntity(PNCCapabilities.ENTITY_AUTOMATION, EntityType.PLAYER, (player, dir) -> {
+            if (dir == null) {
+                return new PlayerInvWrapper(player.getInventory());
+            } else if (dir.getAxis().isVertical()) {
+                return new PlayerMainInvWrapper(player.getInventory());
+            } else if (dir.getAxis().isHorizontal()) {
+                return new PlayerArmorInvWrapper(player.getInventory());
+            } else {
+                return null;
+            }
+        });
 
         // block entities
         ModBlockEntityTypes.streamBlockEntities().forEach(blockEntity -> {

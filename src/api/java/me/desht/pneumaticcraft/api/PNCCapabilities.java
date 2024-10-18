@@ -29,6 +29,8 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.capabilities.BlockCapability;
 import net.neoforged.neoforge.capabilities.EntityCapability;
 import net.neoforged.neoforge.capabilities.ItemCapability;
+import net.neoforged.neoforge.items.IItemHandler;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 
@@ -72,6 +74,13 @@ public class PNCCapabilities {
      */
     public static final ItemCapability<IFilteringItem,Void> ITEM_FILTERING
             = ItemCapability.createVoid(RL("item_filtering"), IFilteringItem.class);
+
+    /**
+     * Custom entity automation capability for the Omnihopper + entity tracker combo when used on players. Not using the
+     * Neoforged-provided capability here, since registering that to players could affect other mods in unexpected ways.
+     */
+    public static final EntityCapability<IItemHandler, @Nullable Direction> ENTITY_AUTOMATION
+            = EntityCapability.createSided(RL("item_handler_automation"), IItemHandler.class);
 
     /* ------------------------------------------------------------------------------------------------------- */
 
