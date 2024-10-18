@@ -6,7 +6,7 @@ Changes are in reverse chronological order; newest changes at the top.
 
 # Minecraft 1.21.1
 
-## [8.1.5]
+## [8.2.0]
 
 ### Added
 * Added two new config settings to allow increasing Pneumatic Armor Scuba upgrade air usage as depth below sea level increases
@@ -35,6 +35,7 @@ Changes are in reverse chronological order; newest changes at the top.
   * The below path will never be followed in this case, so this indicates a flaw in the program logic
 * Fixed a capability caching bug when rotating the Liquid Hopper's input or output
 * Fixed Security Upgrades in machines not being taken account of on world reload
+* Fixed Entity Tracker upgrades not working in Ominidirectional Hopper to interface with entity inventories
 
 ## [8.1.4]
 
