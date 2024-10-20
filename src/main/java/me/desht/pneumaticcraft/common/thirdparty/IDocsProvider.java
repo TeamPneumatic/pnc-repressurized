@@ -24,7 +24,11 @@ import java.util.List;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public interface IDocsProvider {
-    void showWidgetDocs(String path);
+    default void showWidgetDocs(String path) {
+        showDocsPage("programming/" + path);
+    }
+
+    void showDocsPage(String path);
 
     default void addTooltip(List<Component> tooltip, boolean showingAll) {
         tooltip.add(xlate(showingAll ? "pneumaticcraft.gui.programmer.pressIForInfoTrayOpen" : "pneumaticcraft.gui.programmer.pressIForInfo"));
@@ -37,7 +41,7 @@ public interface IDocsProvider {
 
     class NoDocsProvider implements IDocsProvider {
         @Override
-        public void showWidgetDocs(String path) {
+        public void showDocsPage(String path) {
         }
 
         @Override

@@ -14,12 +14,12 @@
     {
       "type": "text",
       "title": "Examples",
-      "text": "$(li)$(#800)@player/$ matches all players$(li)$(#800)@mob/$ matches all aggressive creatures$(li)$(#800)@animal/$ matches all passive creatures (animals)$(li)$(#800)@animal(age = adult)/$ matches all adult animals$(li)$(#800)@animal(age = baby)/$ matches all baby animals$(li)$(#800)@animal(breedable = yes)/$ matches all animals that can breed right now$(li)$(#800)sheep(shearable = yes)/$ matches all sheep which can be sheared"
+      "text": "$(li)$(#800)@player/$ matches all players$(li)$(#800)@mob/$ matches all aggressive creatures$(li)$(#800)@animal/$ matches all passive creatures (animals)$(li)$(#800)@animal(age=adult)/$ matches all adult animals$(li)$(#800)@animal(age=baby)/$ matches all baby animals$(li)$(#800)@animal(breedable=yes)/$ matches all animals that can breed right now$(li)$(#800)sheep(shearable=yes)/$ matches all sheep which can be sheared"
     },
     {
       "type": "text",
       "title": "Examples (cont.)",
-      "text": "$(li)$(#800)sheep(shearable = yes,color = black)/$ matches all black sheep which can be sheared$(li)$(#800)wolf(color = blue)/$ matches all wolves/dogs with a blue collar. $(li)$(#800)cat(color = white)/$ matches all cats with a white collar.$(li)$(#800)@minecart/$ matches Minecarts$(li)$(#800)@boat/$ matches Boats$(li)$(#800)@living/$ matches all living entities$(li)$(#800)@item/$ matches item entities$(li)$(#800)@orb/$ matches experience orbs"
+      "text": "$(li)$(#800)sheep(shearable=yes,color=black)/$ matches all black sheep which can be sheared$(li)$(#800)wolf(color=blue)/$ matches all wolves/dogs with a blue collar. $(li)$(#800)cat(color=white)/$ matches all cats with a white collar.$(li)$(#800)@minecart/$ matches Minecarts$(li)$(#800)@boat/$ matches Boats$(li)$(#800)@living/$ matches all living entities$(li)$(#800)@item/$ matches item entities$(li)$(#800)@orb/$ matches experience orbs"
     },
     {
       "type": "text",
@@ -28,7 +28,7 @@
     },
     {
       "type": "text",
-      "text": "$(li)$(#800)@player(team=team1)/$ matches players on vanilla scoreboard team \"team1\""
+      "text": "$(li)$(#800)@player(team=team1)/$ matches players on vanilla scoreboard team \"team1\"$(li)$(#800)@player(holding=stick)/$ matches players who are holding a stick right now$(li)$(#800)@player(holding=#minecraft:planks)/$ matches players holding any item in the $(thing)minecraft:planks/$ item tag"
     },
     {
       "type": "text",

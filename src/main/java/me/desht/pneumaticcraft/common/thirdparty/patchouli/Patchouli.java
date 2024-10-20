@@ -52,9 +52,9 @@ public class Patchouli implements IThirdParty, IDocsProvider {
     }
 
     @Override
-    public void showWidgetDocs(String path) {
+    public void showDocsPage(String path) {
         Screen prev = Minecraft.getInstance().screen;  // should be the programmer GUI
-        if (PatchouliAccess.openBookEntry(RL("programming/" + path))) {
+        if (PatchouliAccess.openBookEntry(RL(path))) {
             bookGui = Minecraft.getInstance().screen;
             prevGui = prev;
         }

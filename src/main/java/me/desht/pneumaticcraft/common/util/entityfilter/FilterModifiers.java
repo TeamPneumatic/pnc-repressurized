@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.common.util.entityfilter;
 
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import net.minecraft.ResourceLocationException;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
@@ -14,6 +15,7 @@ import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.animal.Cat;
 import net.minecraft.world.entity.animal.Sheep;
 import net.minecraft.world.entity.animal.Wolf;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.scores.PlayerTeam;
@@ -138,11 +140,20 @@ public enum FilterModifiers {
 
     private static boolean isHeldItem(Entity entity, String name, boolean mainHand) {
         if (entity instanceof LivingEntity l) {
-            if (!name.contains(":")) {
-                name = "minecraft:" + name;
+            if (name.startsWith("#")) {
+                try {
+                    TagKey<Item> tag = TagKey.create(Registries.ITEM, ResourceLocation.parse(name.substring(1)));
+                    return mainHand ? l.getMainHandItem().is(tag) : l.getOffhandItem().is(tag);
+                } catch (ResourceLocationException ignored) {
+                    return false;
+                }
+            } else {
+                if (!name.contains(":")) {
+                    name = "minecraft:" + name;
+                }
+                ItemStack stack = mainHand ? l.getMainHandItem() : l.getOffhandItem();
+                return PneumaticCraftUtils.getRegistryName(stack.getItem()).orElseThrow().toString().equals(name);
             }
-            ItemStack stack = mainHand ? l.getMainHandItem() : l.getOffhandItem();
-            return PneumaticCraftUtils.getRegistryName(stack.getItem()).orElseThrow().toString().equals(name);
         }
         return false;
     }
