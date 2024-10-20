@@ -31,11 +31,13 @@ Changes are in reverse chronological order; newest changes at the top.
 * Fixed a race condition when using Computercraft to control Air Cannons
 * Drones no longer drop items with Vanishing Curse when they die
   * Exception: such items will still be dropped if the drone is wrenched by the owning player (and only the owning player)
-* Added a programmer error when condition progwidgets have branches on both right and left (true & false), and also a widget connected below
-  * The below path will never be followed in this case, so this indicates a flaw in the program logic
+* Show a Programmer error when condition progwidgets have branches on both right and left (true & false), and also a widget connected below
+  * The below path will never be followed in this case, so this indicates a mistake in the program
 * Fixed a capability caching bug when rotating the Liquid Hopper's input or output
 * Fixed Security Upgrades in machines not being taken account of on world reload
 * Fixed Entity Tracker upgrades not working in Ominidirectional Hopper to interface with entity inventories
+* Fixed Drone crafting widgets causing crashes for some recipes sizes
+* Fixed a timing issue with machine upgrade checking on world reload leading to security upgrades getting ignored 
 
 ## [8.1.4]
 
