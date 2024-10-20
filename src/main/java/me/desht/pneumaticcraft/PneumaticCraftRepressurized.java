@@ -53,6 +53,11 @@ import me.desht.pneumaticcraft.common.util.chunkloading.ForcedChunks;
 import me.desht.pneumaticcraft.common.util.chunkloading.PlayerLogoutTracker;
 import me.desht.pneumaticcraft.common.villages.VillageStructures;
 import me.desht.pneumaticcraft.lib.Log;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.PackType;
+import net.minecraft.server.packs.repository.PackSource;
+import net.minecraft.server.packs.repository.Pack.Position;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModList;
@@ -60,6 +65,7 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.AddPackFindersEvent;
 import net.neoforged.neoforge.event.AddReloadListenerEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
@@ -86,6 +92,7 @@ public class PneumaticCraftRepressurized {
         modBus.addListener(this::newRegistries);
         modBus.addListener(ForcedChunks.INSTANCE::registerTicketController);
         modBus.addListener(CapabilitySetup::registerCaps);
+        modBus.addListener(this::addPackFinders);
 
         registerAllDeferredRegistryObjects(modBus);
 
@@ -102,6 +109,11 @@ public class PneumaticCraftRepressurized {
         forgeBus.register(HackEventListener.getInstance());
         forgeBus.addListener(VillageStructures::addMechanicHouse);
         forgeBus.register(PlayerLogoutTracker.INSTANCE);
+    }
+    
+    private void addPackFinders(AddPackFindersEvent event) {
+        if (ModList.get().isLoaded("fusion"))
+            event.addPackFinders(ResourceLocation.fromNamespaceAndPath("pneumaticcraft", "fusion_integration"), PackType.CLIENT_RESOURCES, Component.literal("Fusion for PneumaticCraft"), PackSource.BUILT_IN, false, Position.TOP);
     }
 
     private void newRegistries(NewRegistryEvent event) {
