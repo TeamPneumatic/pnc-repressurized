@@ -167,7 +167,7 @@ public class SentryTurretBlockEntity extends AbstractTickingBlockEntity implemen
     protected void applyImplicitComponents(DataComponentInput componentInput) {
         super.applyImplicitComponents(componentInput);
 
-        entityFilter = componentInput.getOrDefault(ModDataComponents.ENTITY_FILTER, "");
+        entityFilter = componentInput.getOrDefault(ModDataComponents.ENTITY_FILTER, "@mob");
     }
 
     @Override
