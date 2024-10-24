@@ -149,6 +149,10 @@ neoForge {
 	}
 }
 
+configurations {
+	runtimeClasspath.extendsFrom localRuntime
+}
+
 dependencies {
 	testImplementation 'org.junit.jupiter:junit-jupiter-api:5.11.0-M2'
 	testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.11.0-M2'
@@ -159,17 +163,17 @@ dependencies {
 
 	compileOnly("mezz.jei:jei-1.21.1-common-api:${jei_version}")
 	compileOnly("mezz.jei:jei-1.21.1-neoforge-api:${jei_version}")
-	runtimeOnly("mezz.jei:jei-1.21.1-common:${jei_version}")
-	runtimeOnly("mezz.jei:jei-1.21.1-neoforge:${jei_version}")
+	localRuntime("mezz.jei:jei-1.21.1-common:${jei_version}")
+	localRuntime("mezz.jei:jei-1.21.1-neoforge:${jei_version}")
 
 	compileOnly("top.theillusivec4.curios:curios-neoforge:${curios_version}:api")
-	runtimeOnly("top.theillusivec4.curios:curios-neoforge:${curios_version}")
+	localRuntime("top.theillusivec4.curios:curios-neoforge:${curios_version}")
 
 	compileOnly("vazkii.botania:Botania:${botania_version}:api")
 	//runtimeOnly("vazkii.botania:Botania:${botania_version}")
 
 	compileOnly("vazkii.patchouli:Patchouli:${patchouli_version}:api")
-	runtimeOnly("vazkii.patchouli:Patchouli:${patchouli_version}")
+	localRuntime("vazkii.patchouli:Patchouli:${patchouli_version}")
 
 	implementation("curse.maven:cc-tweaked-282001:${cc_tweaked_curse_id}")
 
@@ -179,7 +183,7 @@ dependencies {
 	implementation("blusunrize.immersiveengineering:ImmersiveEngineering:${immersive_engineering_version}")
 
 	compileOnly("mekanism:Mekanism:${mekanism_version}:api")
-	runtimeOnly("mekanism:Mekanism:${mekanism_version}")
+	localRuntime("mekanism:Mekanism:${mekanism_version}")
 
 	compileOnly("com.simibubi.create:create-1.20.1:${create_version}:slim") { transitive = false }
 
@@ -203,7 +207,7 @@ dependencies {
 		assert versionSep != -1
 		def artifactId = basename.substring(0, versionSep)
 		def version = basename.substring(versionSep + 1)
-		runtimeOnly("extra-mods:$artifactId:$version")
+		localRuntime("extra-mods:$artifactId:$version")
 	}
 }
 
