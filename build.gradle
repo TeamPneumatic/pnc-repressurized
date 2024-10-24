@@ -230,6 +230,22 @@ jar {
 	from sourceSets.api.output
 }
 
+task apiJar(type: Jar, dependsOn: apiClasses) {
+	archiveClassifier = 'api'
+	from sourceSets.api.output
+}
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+	archiveClassifier = 'sources'
+	from sourceSets.main.allSource
+	from sourceSets.api.allSource
+}
+
+artifacts {
+	archives sourcesJar
+	archives apiJar
+}
+
 javadoc {
 	source = [sourceSets.main.allJava, sourceSets.api.allJava]
 	// prevent java 8's strict doclint for javadocs from failing builds
@@ -244,8 +260,10 @@ publishing {
         register('mavenJava', MavenPublication) {
 			artifactId = archive_base_name
 			groupId = mod_group_id
-			version = "${mod_version}+mc${minecraft_version}${snapExt}"
+			version = "${mod_version}${snapExt}+mc${minecraft_version}"
             from components.java
+			artifact sourcesJar
+			artifact apiJar
         }
     }
     repositories {
