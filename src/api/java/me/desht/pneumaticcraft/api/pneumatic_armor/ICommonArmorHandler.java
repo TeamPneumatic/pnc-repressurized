@@ -18,8 +18,11 @@
 package me.desht.pneumaticcraft.api.pneumatic_armor;
 
 import me.desht.pneumaticcraft.api.upgrade.PNCUpgrade;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
+
+import java.util.List;
 
 /**
  * Provides access to the current state of the Pneumatic Armor worn by a player. This object is passed as a parameter
@@ -148,4 +151,16 @@ public interface ICommonArmorHandler {
      * @return true if the handler is still valid for the player, false otherwise
      */
     boolean isValid();
+
+    /**
+     * Post a message to be displayed on the Pneumatic Armor HUD, similar to how armor initialisation and warning
+     * messages are displayed. This is equivalent to
+     * {@link me.desht.pneumaticcraft.api.client.pneumatic_helmet.IClientArmorRegistry#addHUDMessage(Component, List, int, int)}
+     * if called on the client; if called on the server, a network packet is sent to the client.
+     *
+     * @param message the message to display
+     * @param duration the message duration, in ticks
+     * @param bgColor the message background color
+     */
+    void addArmorMessage(Component message, int duration, int bgColor);
 }
