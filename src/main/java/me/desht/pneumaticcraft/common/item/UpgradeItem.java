@@ -40,6 +40,7 @@ import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import org.apache.commons.lang3.Validate;
 
 import java.util.List;
 import java.util.stream.Stream;
@@ -56,6 +57,8 @@ public class UpgradeItem extends Item implements IUpgradeItem, CreativeTabStackP
 
     public UpgradeItem(PNCUpgrade upgrade, int tier, Properties properties) {
         super(properties);
+
+        Validate.isTrue(tier >= 1 && tier <= upgrade.getMaxTier(), "upgrade tier must be in range 1 .. " + upgrade.getMaxTier());
         this.upgrade = upgrade;
         this.tier = tier;
     }
