@@ -6,6 +6,13 @@ Changes are in reverse chronological order; newest changes at the top.
 
 # Minecraft 1.21.1
 
+## [8.2.1]
+
+### Fixed
+* Fixed some log spam for `SemiblockTracker: not overwriting existing semiblock` messages
+  * Note: excessive logging is fixed but root cause has not been determined (I've never been able to reproduce the problem)
+  * Messages are now only logged once per blockpos per server run
+
 ## [8.2.0]
 
 ### Added
