@@ -18,6 +18,7 @@
 package me.desht.pneumaticcraft.api.semiblock;
 
 import net.minecraft.core.Direction;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Represents a semiblock which sits on the side of an actual block, rather than occupying the same space.
@@ -27,4 +28,9 @@ public interface IDirectionalSemiblock {
     Direction getSide();
 
     void setSide(Direction direction);
+
+    @Nullable
+    static Direction getDirection(ISemiBlock semiBlock) {
+        return semiBlock instanceof IDirectionalSemiblock d ? d.getSide() : null;
+    }
 }

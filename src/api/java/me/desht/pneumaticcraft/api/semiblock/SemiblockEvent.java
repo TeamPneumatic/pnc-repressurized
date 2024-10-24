@@ -46,7 +46,7 @@ public class SemiblockEvent extends Event {
     }
 
     public Direction getSide() {
-        return semiblock instanceof IDirectionalSemiblock ? ((IDirectionalSemiblock) semiblock).getSide() : null;
+        return IDirectionalSemiblock.getDirection(semiblock);
     }
 
     /**

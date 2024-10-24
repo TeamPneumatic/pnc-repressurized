@@ -39,6 +39,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -69,11 +70,15 @@ import net.neoforged.neoforge.capabilities.EntityCapability;
 import net.neoforged.neoforge.common.NeoForge;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 
 public abstract class AbstractSemiblockEntity extends Entity implements ISemiBlock, IGUIButtonSensitive {
     private static final EntityDataAccessor<Integer> TIME_SINCE_HIT = SynchedEntityData.defineId(AbstractSemiblockEntity.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Float> DAMAGE_TAKEN = SynchedEntityData.defineId(AbstractSemiblockEntity.class, EntityDataSerializers.FLOAT);
+
+    private static final Set<LogKey> LOGGED_ERROR = new HashSet<>();
 
     private static final float MAX_HEALTH = 40.0F;
 
@@ -316,12 +321,21 @@ public abstract class AbstractSemiblockEntity extends Entity implements ISemiBlo
 
         Level level = level();
         if (!level.isClientSide) {
-            if (SemiblockTracker.getInstance().putSemiblock(level, blockPos, this)) {
+            SemiblockTracker tracker = SemiblockTracker.getInstance();
+            Direction dir = IDirectionalSemiblock.getDirection(this);
+            if (tracker.getSemiblock(level, blockPos, dir) != null) {
+                // shouldn't happen, but seems to occasionally... overwrite a stale entry in the tracker
+                if (!LOGGED_ERROR.add(new LogKey(level.dimension(), blockPos, dir))) {
+                    Log.error("SemiblockTracker: overwriting stale semiblock at {}, pos={}, dir={}!", level, blockPos, dir);
+                }
+                tracker.clearSemiblock(level, blockPos, dir);
+            }
+            if (tracker.putSemiblock(level, blockPos, this)) {
                 NeoForge.EVENT_BUS.post(new SemiblockEvent.PlaceEvent(level, blockPos, this));
                 level.markAndNotifyBlock(blockPos, level.getChunkAt(blockPos), getBlockState(), getBlockState(), Block.UPDATE_ALL, 512);
             } else {
-                Direction dir = this instanceof IDirectionalSemiblock d ? d.getSide() : null;
-                Log.error("SemiblockTracker: not overwriting existing semiblock at {}, pos={}, dir={}!", level, blockPos, dir);
+                // REALLY shouldn't happen!
+                Log.error("SemiblockTracker: failed to add tracking for semiblock at {}, pos={}, dir={}!", level, blockPos, dir);
             }
         }
     }
@@ -330,7 +344,7 @@ public abstract class AbstractSemiblockEntity extends Entity implements ISemiBlo
     public void onRemovedFromLevel() {
         Level level = level();
         if (!level.isClientSide) {
-            Direction dir = this instanceof IDirectionalSemiblock d ? d.getSide() : null;
+            Direction dir = IDirectionalSemiblock.getDirection(this);
             SemiblockTracker.getInstance().clearSemiblock(level, blockPos, dir);
 
             NeoForge.EVENT_BUS.post(new SemiblockEvent.BreakEvent(level, blockPos, this));
@@ -448,5 +462,8 @@ public abstract class AbstractSemiblockEntity extends Entity implements ISemiBlo
     @Override
     public <T> Optional<T> getSemiblockCapability(EntityCapability<T, Void> capability) {
         return Optional.ofNullable(getCapability(capability));
+    }
+
+    private record LogKey(ResourceKey<Level> dimension, BlockPos pos, Direction dir) {
     }
 }

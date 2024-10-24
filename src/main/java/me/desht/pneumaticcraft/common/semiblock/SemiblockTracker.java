@@ -184,7 +184,7 @@ public enum SemiblockTracker {
         }
 
         boolean set(ISemiBlock semiBlock) {
-            Direction dir = semiBlock instanceof IDirectionalSemiblock ? ((IDirectionalSemiblock) semiBlock).getSide() : null;
+            Direction dir = IDirectionalSemiblock.getDirection(semiBlock);
             if (dir == null) {
                 if (center.get() != null) return false;
                 center = new WeakReference<>(semiBlock);
