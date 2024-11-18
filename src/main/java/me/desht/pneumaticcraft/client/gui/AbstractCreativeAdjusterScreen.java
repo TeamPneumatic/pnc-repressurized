@@ -10,6 +10,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 
+import java.util.Locale;
+
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public abstract class AbstractCreativeAdjusterScreen<C extends AbstractPneumaticCraftMenu<T>,T extends AbstractPneumaticCraftBlockEntity> extends AbstractPneumaticCraftContainerScreen<C,T> {
@@ -120,7 +122,8 @@ public abstract class AbstractCreativeAdjusterScreen<C extends AbstractPneumatic
     }
 
     protected String formatAdjustment(float adj) {
-        return String.format("%+.1f", adj);
+        // force a US locale here - "." decimal separator since we use Float.parseFloat server-side
+        return String.format(Locale.US, "%+.1f", adj);
     }
 
     private String makeTag(float f) {
