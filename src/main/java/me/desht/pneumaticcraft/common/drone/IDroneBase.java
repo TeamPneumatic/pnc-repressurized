@@ -22,6 +22,7 @@ import me.desht.pneumaticcraft.common.drone.ai.DroneAIManager;
 import me.desht.pneumaticcraft.common.entity.drone.DroneEntity;
 import me.desht.pneumaticcraft.common.network.DronePacket;
 import me.desht.pneumaticcraft.common.util.fakeplayer.DroneItemHandler;
+import net.minecraft.world.phys.Vec3;
 
 /**
  * Non-API extension to public IDrone interface
@@ -60,4 +61,9 @@ public interface IDroneBase extends IDrone {
 
     DronePacket.DroneTarget getPacketTarget();
 
+    /**
+     * Where is the fake player positioned at? Normally where the drone is, but when digging blocks, it can get
+     * positioned at a specific side of the block.
+     */
+    Vec3 getFakePlayerPos();
 }

@@ -1352,6 +1352,7 @@
    "pneumaticcraft.gui.progWidget.digAndPlace.useMaxActions.tooltip" : "If checked, at most the specified number of block or entity interactions will be done before moving on to the next widget in the program.",
    "pneumaticcraft.gui.progWidget.dig.debug.cantDigBlock" : "Not allowed to dig block or cannot break the block.",
    "pneumaticcraft.gui.progWidget.dig.debug.missingDiggingTool" : "No damageable digging tool found.",
+   "pneumaticcraft.gui.progWidget.dig.digSide.tooltip" : "Drone will attempt to dig the block on this side. If the side is obstructed, the drone will just dig from any accessible side of the block.\nThe dig side is usually unimportant, but if the drone is using a multi-break tool (e.g. Jackhammer in 3x3 mode), the side can be significant.",
    "pneumaticcraft.gui.progWidget.dig.requiresDiggingTool" : "Requires digging tool",
    "pneumaticcraft.gui.progWidget.dig.requiresDiggingTool.tooltip" : "Drones equipped with a digging tool (Pickaxe/Shovel/...) break blocks faster and inherit the properties of the tool, like Silk Touch. When checked,the Drone will only dig as long as it's equipped with a tool suitable for the given block.",
    "pneumaticcraft.gui.progWidget.drop.dropMethod" : "Drop Method",

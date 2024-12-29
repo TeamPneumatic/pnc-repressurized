@@ -71,11 +71,11 @@ public class DroneFakePlayer extends FakePlayer {
 
     @Override
     public Vec3 position() {
-        return drone.getDronePos();
+        return drone.getFakePlayerPos();
     }
 
     @Override
     public BlockPos blockPosition() {
-        return BlockPos.containing(drone.getDronePos());
+        return BlockPos.containing(position());
     }
 }

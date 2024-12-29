@@ -52,6 +52,7 @@ import me.desht.pneumaticcraft.common.util.fakeplayer.DroneFakePlayer;
 import me.desht.pneumaticcraft.common.util.fakeplayer.DroneItemHandler;
 import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
+import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
@@ -91,6 +92,7 @@ import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.IItemHandlerModifiable;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
 import net.neoforged.neoforge.items.ItemStackHandler;
+import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 
 import javax.annotation.Nullable;
@@ -173,6 +175,7 @@ public class ProgrammableControllerBlockEntity extends AbstractAirHandlingBlockE
     private final DroneDebugger debugger = new DroneDebugger(this);
     @DescSynced
     private int activeWidgetIndex;
+    private BlockPos digSourcePos;
 
     public ProgrammableControllerBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntityTypes.PROGRAMMABLE_CONTROLLER.get(), pos, state, PressureTier.TIER_TWO, 10000, 4);
@@ -263,10 +266,8 @@ public class ProgrammableControllerBlockEntity extends AbstractAirHandlingBlockE
         }
 
         DroneFakePlayer fp = getFakePlayer();
-        for (int i = 0; i < 4; i++) {
-            fp.gameMode.tick();
-        }
-        fp.setPos(curX, curY, curZ);
+        tickFakePlayer(fp);
+
         ChunkPos newChunkPos = new ChunkPos((int)curX >> 4, (int)curZ >> 4);
         if (chunkLoader != null) {
             if (PlayerLogoutTracker.INSTANCE.isPlayerLoggedOutTooLong(level.getServer(), ownerID)) {
@@ -276,7 +277,6 @@ public class ProgrammableControllerBlockEntity extends AbstractAirHandlingBlockE
             }
         }
         prevChunkPos = newChunkPos;
-        fp.tick();
 
         heldItem = ConfigHelper.common().drones.dronesRenderHeldItem.get() ? fp.getMainHandItem() : ItemStack.EMPTY;
 
@@ -303,6 +303,18 @@ public class ProgrammableControllerBlockEntity extends AbstractAirHandlingBlockE
 
         if (nonNullLevel().getGameTime() % 20 == 0) {
             debugger.updateDebuggingPlayers();
+        }
+    }
+
+    private void tickFakePlayer(DroneFakePlayer fp) {
+        fp.setPos(curX, curY, curZ);
+        fp.tick();
+        BlockPos dugPosition = getDugPosition();
+        if (dugPosition != null) {
+            fp.lookAt(EntityAnchorArgument.Anchor.EYES, Vec3.atCenterOf(dugPosition));
+        }
+        for (int i = 0; i < 4; i++) {
+            fp.gameMode.tick();
         }
     }
 
@@ -629,12 +641,27 @@ public class ProgrammableControllerBlockEntity extends AbstractAirHandlingBlockE
             diggingY = pos.getY();
             diggingZ = pos.getZ();
         } else {
-            diggingX = diggingY = diggingZ = 0;
+            diggingX = diggingY = diggingZ = Integer.MIN_VALUE;
+            digSourcePos = null;
         }
     }
 
+    @Override
+    public void setDugBlock(@NotNull BlockPos pos, Direction side) {
+        setDugBlock(pos);
+        digSourcePos = pos.relative(side);
+    }
+
+    @Override
+    public Vec3 getFakePlayerPos() {
+        if (getDugPosition() != null && digSourcePos != null) {
+            return Vec3.atCenterOf(digSourcePos);
+        }
+        return getDronePos();
+    }
+
     public BlockPos getDugPosition() {
-        return diggingX != 0 || diggingY != 0 || diggingZ != 0 ? new BlockPos(diggingX, diggingY, diggingZ) : null;
+        return level != null && diggingY >= level.getMinBuildHeight() ? new BlockPos(diggingX, diggingY, diggingZ) : null;
     }
 
     @Override

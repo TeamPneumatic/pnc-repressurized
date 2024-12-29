@@ -39,6 +39,8 @@ import net.neoforged.neoforge.energy.IEnergyStorage;
 import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
 import net.neoforged.neoforge.items.IItemHandlerModifiable;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -148,9 +150,16 @@ public interface IDrone {
     /**
      * Mark the given block as being dug.
      *
-     * @param pos a block position
+     * @param pos a block position, null to clear the dug pos
      */
-    void setDugBlock(BlockPos pos);
+    void setDugBlock(@Nullable BlockPos pos);
+
+    /**
+     * Mark the given blockpos as being dug on the given side.
+     * @param pos a block position
+     * @param side the direction the block is being dug from; drone will try to dig from this side, but if the side is obstructed will dig from its current position
+     */
+    void setDugBlock(@NotNull BlockPos pos, Direction side);
 
     /**
      * Get the drone's current collection of tasks.
