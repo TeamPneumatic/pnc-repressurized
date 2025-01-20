@@ -17,24 +17,18 @@
 
 package me.desht.pneumaticcraft.common.pneumatic_armor.handlers;
 
-import me.desht.pneumaticcraft.api.pneumatic_armor.BaseArmorUpgradeHandler;
+import me.desht.pneumaticcraft.api.pneumatic_armor.AttributeModifyingArmorUpgradeHandler;
 import me.desht.pneumaticcraft.api.pneumatic_armor.BuiltinArmorUpgrades;
 import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorExtensionData;
 import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorHandler;
 import me.desht.pneumaticcraft.api.upgrade.PNCUpgrade;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.ai.attributes.AttributeInstance;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.player.Player;
 
-import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
-
-public class StepAssistHandler extends BaseArmorUpgradeHandler<IArmorExtensionData> {
-    private static final ResourceLocation STEP_ASSIST_MODIFIER_ID = RL("step_assist");
-
+public class StepAssistHandler extends AttributeModifyingArmorUpgradeHandler<IArmorExtensionData> {
     @Override
     public ResourceLocation getID() {
         return BuiltinArmorUpgrades.STEP_ASSIST;
@@ -56,37 +50,17 @@ public class StepAssistHandler extends BaseArmorUpgradeHandler<IArmorExtensionDa
     }
 
     @Override
-    public void tick(ICommonArmorHandler commonArmorHandler, boolean enabled) {
-        Player player = commonArmorHandler.getPlayer();
-        AttributeInstance attributeInstance = player.getAttribute(Attributes.STEP_HEIGHT);
-        if (attributeInstance != null) {
-            AttributeModifier currentModifier = attributeInstance.getModifier(STEP_ASSIST_MODIFIER_ID);
-            double stepBoost = enabled && commonArmorHandler.hasMinPressure(EquipmentSlot.FEET) && !player.isShiftKeyDown() ? 0.6 : 0f;
-            if (currentModifier != null) {
-                if (PneumaticCraftUtils.epsilonEquals(currentModifier.amount(), stepBoost)) {
-                    return;  // already good
-                }
-                attributeInstance.removeModifier(currentModifier.id());
-            }
-            if (stepBoost > 0) {
-                attributeInstance.addTransientModifier(new AttributeModifier(STEP_ASSIST_MODIFIER_ID, stepBoost, AttributeModifier.Operation.ADD_VALUE));
-            }
-        }
+    protected Holder<Attribute> getModifiedAttribute() {
+        return Attributes.STEP_HEIGHT;
     }
 
     @Override
-    public void onToggle(ICommonArmorHandler commonArmorHandler, boolean newState) {
-        if (!newState) {
-            onShutdown(commonArmorHandler);
-        }
+    protected double getModifiedAttributeValue(ICommonArmorHandler handler) {
+        return 0.6;
     }
 
     @Override
-    public void onShutdown(ICommonArmorHandler commonArmorHandler) {
-        AttributeInstance attributeInstance = commonArmorHandler.getPlayer().getAttribute(Attributes.STEP_HEIGHT);
-        if (attributeInstance != null) {
-            AttributeModifier currentModifier = attributeInstance.getModifier(STEP_ASSIST_MODIFIER_ID);
-            if (currentModifier != null) attributeInstance.removeModifier(currentModifier.id());
-        }
+    protected boolean isAttributeModifierApplicable(ICommonArmorHandler handler) {
+        return !handler.getPlayer().isShiftKeyDown();
     }
 }
