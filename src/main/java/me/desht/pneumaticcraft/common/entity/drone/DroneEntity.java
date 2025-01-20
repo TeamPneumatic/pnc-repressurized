@@ -1154,8 +1154,8 @@ public class DroneEntity extends AbstractDroneEntity implements
 
         ItemStackHandler tmpInv = new ItemStackHandler();
         tmpInv.deserializeNBT(registryAccess(), tag.getCompound("Inventory"));
-        PneumaticCraftUtils.copyItemHandler(tmpInv, droneItemHandler);
         droneItemHandler.setUseableSlots(1 + getUpgrades(ModUpgrades.INVENTORY.get()));
+        PneumaticCraftUtils.copyItemHandler(tmpInv, droneItemHandler);
 
         fluidTank.setCapacity(PneumaticValues.DRONE_TANK_SIZE * (1 + getUpgrades(ModUpgrades.INVENTORY.get())));
         fluidTank.readFromNBT(registryAccess(), tag);

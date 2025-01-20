@@ -116,7 +116,6 @@ public class SideConfigurator<T> {
         int idx = idxMap.get(id);
         ConnectionEntry<T> e = entries.get(idx);
         entries.set(idx, new ConnectionEntry<>(e.id, e.texture, e.cap, handler));
-        setNullFaceHandler(id);
     }
 
     public boolean handleButtonPress(String tag, boolean hasShiftDown) {

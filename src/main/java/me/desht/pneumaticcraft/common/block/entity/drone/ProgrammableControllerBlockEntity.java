@@ -467,9 +467,8 @@ public class ProgrammableControllerBlockEntity extends AbstractAirHandlingBlockE
 
         ItemStackHandler tmpInv = new ItemStackHandler();
         tmpInv.deserializeNBT(provider, tag.getCompound("droneItems"));
-        for (int i = 0; i < Math.min(tmpInv.getSlots(), droneItemHandler.getSlots()); i++) {
-            droneItemHandler.setStackInSlot(i, tmpInv.getStackInSlot(i).copy());
-        }
+        droneItemHandler.setUseableSlots(tmpInv.getSlots());
+        PneumaticCraftUtils.copyItemHandler(tmpInv, droneItemHandler);
 
         energy.readFromNBT(tag);
 
