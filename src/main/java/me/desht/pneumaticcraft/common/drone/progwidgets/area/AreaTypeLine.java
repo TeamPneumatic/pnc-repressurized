@@ -30,12 +30,12 @@ import net.minecraft.world.phys.Vec3;
 import java.util.function.Consumer;
 
 public class AreaTypeLine extends AreaType {
+    private static final AreaTypeLine INSTANCE = new AreaTypeLine();
+
     public static final MapCodec<AreaTypeLine> CODEC = MapCodec.unit(AreaTypeLine.INSTANCE);
     public static final StreamCodec<FriendlyByteBuf, AreaTypeLine> STREAM_CODEC = StreamCodec.unit(AreaTypeLine.INSTANCE);
 
     public static final String ID = "line";
-
-    private static final AreaTypeLine INSTANCE = new AreaTypeLine();
 
     public static AreaTypeLine instance() {
         return INSTANCE;
@@ -47,7 +47,7 @@ public class AreaTypeLine extends AreaType {
 
     @Override
     public AreaType copy() {
-        return new AreaTypeLine();
+        return INSTANCE;
     }
 
     @Override
