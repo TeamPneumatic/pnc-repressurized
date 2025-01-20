@@ -56,10 +56,12 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.vehicle.AbstractMinecart;
 import net.minecraft.world.entity.vehicle.Boat;
+import net.minecraft.world.entity.vehicle.MinecartSpawner;
 import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.LiquidBlock;
+import net.minecraft.world.level.block.entity.SpawnerBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.bus.api.EventPriority;
@@ -296,7 +298,9 @@ public class MiscEventHandler {
             // tag any mob spawned by a vanilla Spawner (rather than naturally) as a "defender"
             // such defenders are immune to being absorbed by a Vacuum Trap
             // note: mobs spawned by a Pressurized Spawner are not considered to be defenders
-            event.getEntity().addTag(VacuumTrapBlockEntity.DEFENDER_TAG);
+            if (event.getSpawner().map(be -> be instanceof SpawnerBlockEntity, e -> e instanceof MinecartSpawner)) {
+                event.getEntity().addTag(VacuumTrapBlockEntity.DEFENDER_TAG);
+            }
 
             // any mob spawned due to a spawner with Agitator attached should be persistent
             // i.e. not despawn if no players nearby
