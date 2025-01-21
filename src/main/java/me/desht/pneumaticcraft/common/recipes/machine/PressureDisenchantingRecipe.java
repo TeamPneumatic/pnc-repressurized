@@ -84,6 +84,12 @@ public class PressureDisenchantingRecipe extends PressureChamberRecipeImpl {
 
     @Override
     public NonNullList<ItemStack> craftRecipe(@Nonnull IItemHandler chamberHandler, IntList ingredientSlots, boolean simulate) {
+        // note: we need 2 empty slots in the chamber to be able to do this successfully,
+        //   and we can't assume that extracting the input items will free up those slots
+        if (!PneumaticCraftUtils.ensureSlotsEmpty(chamberHandler, 2)) {
+            return NonNullList.create();
+        }
+
         ItemStack book = chamberHandler.extractItem(ingredientSlots.getInt(0), 1, simulate);
         ItemStack enchantedStack = chamberHandler.extractItem(ingredientSlots.getInt(1), 1, simulate);
 

@@ -710,4 +710,14 @@ public class PneumaticCraftUtils {
     public static <T> Optional<T> getOptionalComponent(ItemStack stack, DataComponentType<T> type) {
         return Optional.ofNullable(stack.get(type));
     }
+
+    public static boolean ensureSlotsEmpty(IItemHandler handler, int required) {
+        int nFree = 0;
+        for (int i = 0; i < handler.getSlots(); i++) {
+            if (handler.getStackInSlot(i).isEmpty() && ++nFree >= required) {
+                return true;
+            }
+        }
+        return false;
+    }
 }
