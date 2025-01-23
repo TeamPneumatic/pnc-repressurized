@@ -6,6 +6,11 @@ Changes are in reverse chronological order; newest changes at the top.
 
 # Minecraft 1.20.1
 
+## [6.0.19]
+
+### Fixed
+* Fixed the Creative Compressor adjuster GUI not functioning correctly in some locales
+
 ## [6.0.18]
 
 ### Added
