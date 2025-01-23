@@ -59,7 +59,7 @@ public class DroneColorCrafting extends ShapelessRecipe {
             ItemStack stack = inv.getItem(i);
             if (stack.getItem() instanceof DroneItem) {
                 if (!drone.isEmpty()) return null;
-                drone = stack.copy();
+                drone = stack.copyWithCount(1);
             } else if (dye == null) {
                 DyeColor color = DyeColor.getColor(stack);
                 if (color != null) {
