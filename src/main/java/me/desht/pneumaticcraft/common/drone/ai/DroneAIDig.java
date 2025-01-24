@@ -20,6 +20,7 @@ package me.desht.pneumaticcraft.common.drone.ai;
 import me.desht.pneumaticcraft.api.drone.IDrone;
 import me.desht.pneumaticcraft.common.drone.progwidgets.IToolUser;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetAreaItemBase;
+import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetDig;
 import me.desht.pneumaticcraft.common.entity.drone.DroneEntity;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.mixin.accessors.ServerPlayerGameModeAccess;
@@ -122,12 +123,13 @@ public class DroneAIDig<W extends ProgWidgetAreaItemBase & IToolUser> extends Dr
                     drone.setDugBlock(null);
                     return false;
                 }
-                PlayerInteractEvent.LeftClickBlock event = CommonHooks.onLeftClickBlock(drone.getFakePlayer(), pos, Direction.UP, ServerboundPlayerActionPacket.Action.START_DESTROY_BLOCK);
+                Direction face = progWidget instanceof ProgWidgetDig dig ? dig.getDigSide() : Direction.UP;
+                PlayerInteractEvent.LeftClickBlock event = CommonHooks.onLeftClickBlock(drone.getFakePlayer(), pos, face, ServerboundPlayerActionPacket.Action.START_DESTROY_BLOCK);
                 if (!event.isCanceled()) {
                     int limit = drone.getDroneLevel().getMaxBuildHeight();
-                    manager.handleBlockBreakAction(pos, ServerboundPlayerActionPacket.Action.START_DESTROY_BLOCK, Direction.DOWN, limit, 0);
-                    manager.handleBlockBreakAction(pos, ServerboundPlayerActionPacket.Action.STOP_DESTROY_BLOCK, Direction.DOWN, limit, 1);
-                    drone.setDugBlock(pos);
+                    manager.handleBlockBreakAction(pos, ServerboundPlayerActionPacket.Action.START_DESTROY_BLOCK, face, limit, 0);
+                    manager.handleBlockBreakAction(pos, ServerboundPlayerActionPacket.Action.STOP_DESTROY_BLOCK, face, limit, 1);
+                    drone.setDugBlock(pos, face);
                     return true;
                 }
             }

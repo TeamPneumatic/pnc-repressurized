@@ -70,6 +70,7 @@ import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.mixin.accessors.EntityAccess;
 import net.minecraft.ChatFormatting;
+import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.component.DataComponents;
@@ -223,6 +224,7 @@ public class DroneEntity extends AbstractDroneEntity implements
     private Minigun minigun;
     private int attackCount; // tracks number of times drone has starting attacking something
     private BlockPos deployPos; // where the drone was deployed, accessible to programs as '$deploy_pos'
+    private BlockPos digSourcePos;  // where the drone fake player is digging from, not always same as drone pos
 
     private final DroneDebugger debugger = new DroneDebugger(this);
 
@@ -484,14 +486,7 @@ public class DroneEntity extends AbstractDroneEntity implements
                 debugger.updateDebuggingPlayers();
             }
 
-            FakePlayer fp = getFakePlayer();
-            fp.setPos(getX(), getY(), getZ());
-            fp.tick();
-            if (isAlive()) {
-                for (int i = 0; i < 4; i++) {
-                    fp.gameMode.tick();
-                }
-            }
+            tickFakePlayer();
 
             if (securityUpgradeCount > 1 && getHealth() > 0F) {
                 handleFluidDisplacement();
@@ -555,6 +550,28 @@ public class DroneEntity extends AbstractDroneEntity implements
                 }
             }
             handleRedstoneEmission();
+        }
+    }
+
+    @Override
+    public Vec3 getFakePlayerPos() {
+        if (getDugBlock() != null && digSourcePos != null) {
+            return Vec3.atCenterOf(digSourcePos);
+        }
+        return getDronePos();
+    }
+
+    private void tickFakePlayer() {
+        FakePlayer fp = getFakePlayer();
+        fp.setPos(position());
+        fp.tick();
+        if (getDugBlock() != null) {
+            fp.lookAt(EntityAnchorArgument.Anchor.EYES, Vec3.atCenterOf(getDugBlock()));
+        }
+        if (isAlive()) {
+            for (int i = 0; i < 4; i++) {
+                fp.gameMode.tick();
+            }
         }
     }
 
@@ -720,6 +737,15 @@ public class DroneEntity extends AbstractDroneEntity implements
     @Override
     public void setDugBlock(BlockPos pos) {
         entityData.set(DUG_POS, pos == null ? BlockPos.ZERO : pos);
+        if (pos == null) {
+            digSourcePos = null;
+        }
+    }
+
+    @Override
+    public void setDugBlock(@NotNull BlockPos pos, Direction side) {
+        setDugBlock(pos);
+        digSourcePos = pos.relative(side);
     }
 
     // drone interface (computercraft)

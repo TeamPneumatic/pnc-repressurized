@@ -19,11 +19,15 @@ package me.desht.pneumaticcraft.client.gui.programmer;
 
 import me.desht.pneumaticcraft.client.gui.ProgrammerScreen;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetCheckBox;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetComboBox;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetLabel;
+import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetDig;
+import net.minecraft.core.Direction;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class ProgWidgetDigScreen extends ProgWidgetDigAndPlaceScreen<ProgWidgetDig>{
+public class ProgWidgetDigScreen extends ProgWidgetDigAndPlaceScreen<ProgWidgetDig> {
 
     public ProgWidgetDigScreen(ProgWidgetDig progWidget, ProgrammerScreen guiProgrammer){
         super(progWidget, guiProgrammer);
@@ -33,10 +37,21 @@ public class ProgWidgetDigScreen extends ProgWidgetDigAndPlaceScreen<ProgWidgetD
     public void init() {
         super.init();
 
-        WidgetCheckBox requiresDiggingTool = new WidgetCheckBox(guiLeft + 8, guiTop + 85, 0xFF404040,
-                xlate("pneumaticcraft.gui.progWidget.dig.requiresDiggingTool"), b -> progWidget.setRequiresTool(b.checked));
-        requiresDiggingTool.setTooltipKey("pneumaticcraft.gui.progWidget.dig.requiresDiggingTool.tooltip");
-        requiresDiggingTool.checked = progWidget.requiresTool();
-        addRenderableWidget(requiresDiggingTool);
+        WidgetLabel sideLabel;
+        addRenderableWidget(sideLabel = new WidgetLabel(guiLeft + 8, guiTop + 45, xlate("pneumaticcraft.gui.progWidget.blockRightClick.clickSide"))
+                .setTooltipKey("pneumaticcraft.gui.progWidget.dig.digSide.tooltip"));
+
+        addRenderableWidget(
+                new WidgetComboBox(font, guiLeft + 8 + sideLabel.getWidth() + 5, guiTop + 43, 50, 12,
+                        comboBox -> progWidget.setDigSide(Direction.from3DDataValue(comboBox.getSelectedElementIndex()))
+                ).initFromEnum(progWidget.getDigSide(), ClientUtils::translateDirection)
+        );
+
+        addRenderableWidget(
+                new WidgetCheckBox(guiLeft + 8, guiTop + 85, 0xFF404040,
+                        xlate("pneumaticcraft.gui.progWidget.dig.requiresDiggingTool"), b -> progWidget.setRequiresTool(b.checked))
+                        .setTooltipKey("pneumaticcraft.gui.progWidget.dig.requiresDiggingTool.tooltip")
+                        .setChecked(progWidget.requiresTool())
+        );
     }
 }
