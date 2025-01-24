@@ -10,6 +10,7 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ### Fixed
 * Fixed the Creative Compressor adjuster GUI not functioning correctly in some locales
+* Fixed crafting-related item dupe issue
 
 ## [6.0.18]
 
