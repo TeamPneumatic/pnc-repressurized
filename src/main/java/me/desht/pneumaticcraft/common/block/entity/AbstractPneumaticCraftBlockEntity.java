@@ -482,16 +482,17 @@ public abstract class AbstractPneumaticCraftBlockEntity extends BlockEntity
                         if (inputStack.getCount() != 1) {
                             return;
                         }
-                        FluidStack transferred = FluidUtil.tryFluidTransfer(fluidHandler, fluidHandlerItem, itemContents.getAmount(), true);
-                        if (transferred.getAmount() == itemContents.getAmount()) {
-                            // all transferred; move empty container to output if possible
+                        FluidStack toTransfer = FluidUtil.tryFluidTransfer(fluidHandler, fluidHandlerItem, itemContents.getAmount(), false);
+                        if (toTransfer.getAmount() == itemContents.getAmount()) {
+                            // all can be transferred; move empty container to output if possible and if so actually transfer fluid
                             ItemStack emptyContainerStack = fluidHandlerItem.getContainer();
                             ItemStack excess = itemHandler.insertItem(outputSlot, emptyContainerStack, true);
                             if (excess.isEmpty()) {
                                 itemHandler.extractItem(inputSlot, 1, false);
                                 itemHandler.insertItem(outputSlot, emptyContainerStack, false);
+                                fluidHandler.fill(toTransfer, IFluidHandler.FluidAction.EXECUTE);
                             }
-                        } else if (!transferred.isEmpty()) {
+                        } else if (!toTransfer.isEmpty()) {
                             // partial transfer; update the item in the input slot
                             itemHandler.extractItem(inputSlot, 1, false);
                             itemHandler.insertItem(inputSlot, fluidHandlerItem.getContainer().copy(), false);
