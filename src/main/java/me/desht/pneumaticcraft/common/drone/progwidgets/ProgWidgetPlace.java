@@ -17,6 +17,7 @@
 
 package me.desht.pneumaticcraft.common.drone.progwidgets;
 
+import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import me.desht.pneumaticcraft.api.drone.IDrone;
@@ -26,6 +27,7 @@ import me.desht.pneumaticcraft.common.drone.ai.DroneAIPlace;
 import me.desht.pneumaticcraft.common.registry.ModProgWidgetTypes;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.goal.Goal;
@@ -33,16 +35,22 @@ import net.minecraft.world.item.DyeColor;
 
 public class ProgWidgetPlace extends ProgWidgetDigAndPlace {
     public static final MapCodec<ProgWidgetPlace> CODEC = RecordCodecBuilder.mapCodec(builder ->
-            digPlaceParts(builder).apply(builder, ProgWidgetPlace::new)
+            digPlaceParts(builder).and(
+                    Codec.BOOL.optionalFieldOf("randomize", false).forGetter(ProgWidgetPlace::isRandomize)
+            ).apply(builder, ProgWidgetPlace::new)
     );
     public static final StreamCodec<RegistryFriendlyByteBuf, ProgWidgetPlace> STREAM_CODEC = StreamCodec.composite(
             PositionFields.STREAM_CODEC, ProgWidget::getPosition,
             DigPlaceFields.STREAM_CODEC, p -> p.digPlaceFields,
+            ByteBufCodecs.BOOL, ProgWidgetPlace::isRandomize,
             ProgWidgetPlace::new
     );
 
-    public ProgWidgetPlace(PositionFields pos, DigPlaceFields digPlaceFields) {
+    private boolean randomize;
+
+    public ProgWidgetPlace(PositionFields pos, DigPlaceFields digPlaceFields, boolean randomize) {
         super(pos, digPlaceFields);
+        this.randomize = randomize;
     }
 
     public ProgWidgetPlace() {
@@ -51,7 +59,7 @@ public class ProgWidgetPlace extends ProgWidgetDigAndPlace {
 
     @Override
     public IProgWidget copyWidget() {
-        return new ProgWidgetPlace(getPosition(), digPlaceFields);
+        return new ProgWidgetPlace(getPosition(), digPlaceFields, randomize);
     }
 
     @Override
@@ -72,5 +80,13 @@ public class ProgWidgetPlace extends ProgWidgetDigAndPlace {
     @Override
     public DyeColor getColor() {
         return DyeColor.YELLOW;
+    }
+
+    public boolean isRandomize() {
+        return randomize;
+    }
+
+    public void setRandomize(boolean randomize) {
+        this.randomize = randomize;
     }
 }

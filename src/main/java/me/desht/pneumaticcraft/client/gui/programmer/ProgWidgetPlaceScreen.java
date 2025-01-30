@@ -18,10 +18,25 @@
 package me.desht.pneumaticcraft.client.gui.programmer;
 
 import me.desht.pneumaticcraft.client.gui.ProgrammerScreen;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetCheckBox;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetPlace;
+
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class ProgWidgetPlaceScreen<P extends ProgWidgetPlace> extends ProgWidgetDigAndPlaceScreen<P> {
     public ProgWidgetPlaceScreen(P progWidget, ProgrammerScreen guiProgrammer) {
         super(progWidget, guiProgrammer);
+    }
+
+    @Override
+    public void init() {
+        super.init();
+
+        WidgetCheckBox randomize = new WidgetCheckBox(guiLeft + 8, guiTop + 45, 0xFF404040,
+                xlate("pneumaticcraft.gui.progWidget.place.randomize"), b -> {
+            progWidget.setRandomize(b.checked);
+        }).setChecked(progWidget.isRandomize())
+                .setTooltipKey("pneumaticcraft.gui.progWidget.place.randomize.tooltip");
+        addRenderableWidget(randomize);
     }
 }

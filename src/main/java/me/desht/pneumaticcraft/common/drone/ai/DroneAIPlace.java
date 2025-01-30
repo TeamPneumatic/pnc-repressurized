@@ -19,6 +19,7 @@ package me.desht.pneumaticcraft.common.drone.ai;
 
 import me.desht.pneumaticcraft.api.drone.IDrone;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetAreaItemBase;
+import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetPlace;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.BlockPos;
@@ -36,6 +37,10 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.items.IItemHandlerModifiable;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class DroneAIPlace<W extends ProgWidgetAreaItemBase /*& IBlockOrdered & ISidedWidget*/> extends DroneAIBlockInteraction<W> {
     /**
@@ -58,35 +63,32 @@ public class DroneAIPlace<W extends ProgWidgetAreaItemBase /*& IBlockOrdered & I
                 // too close - placement could be blocked by the drone
                 return false;
             }
-            boolean failedOnPlacement = false;
-            for (int i = 0; i < drone.getInv().getSlots(); i++) {
-                ItemStack droneStack = drone.getInv().getStackInSlot(i);
-                if (droneStack.getItem() instanceof BlockItem && progWidget.isItemValidForFilters(droneStack)) {
-                    BlockPos placerPos = findClearSide(pos);
-                    if (placerPos == null) {
-                        drone.getDebugger().addEntry("pneumaticcraft.gui.progWidget.place.debug.noClearSides", pos);
-                        failedOnPlacement = true;
-                        break;
-                    }
-                    Block placingBlock = ((BlockItem) droneStack.getItem()).getBlock();
-                    BlockState state = placingBlock.getStateForPlacement(getPlacementContext(placerPos, pos, droneStack));
-                    if (state == null) {
-                        drone.getDebugger().addEntry("pneumaticcraft.gui.progWidget.place.debug.cantPlaceBlock", pos);
-                        failedOnPlacement = true;
-                    } else if (worldCache.isUnobstructed(null, state.getShape(drone.getDroneLevel(), pos))) {
-                        if (state.canSurvive(drone.getDroneLevel(), pos)) {
-                            return true;
-                        } else {
-                            drone.getDebugger().addEntry("pneumaticcraft.gui.progWidget.place.debug.cantPlaceBlock", pos);
-                            failedOnPlacement = true;
-                        }
+
+            int slot = pickPlaceableSlot();
+            if (slot < 0) {
+                abort();
+                return false;
+            }
+
+            ItemStack placeableStack = drone.getInv().getStackInSlot(slot);
+            BlockPos placerPos = findClearSide(pos);
+            if (placerPos == null) {
+                drone.getDebugger().addEntry("pneumaticcraft.gui.progWidget.place.debug.noClearSides", pos);
+            } else {
+                Block placingBlock = ((BlockItem) placeableStack.getItem()).getBlock();
+                BlockState state = placingBlock.getStateForPlacement(getPlacementContext(placerPos, pos, placeableStack));
+                if (state == null) {
+                    drone.getDebugger().addEntry("pneumaticcraft.gui.progWidget.place.debug.cantPlaceBlock", pos);
+                } else if (worldCache.isUnobstructed(null, state.getShape(drone.getDroneLevel(), pos))) {
+                    if (state.canSurvive(drone.getDroneLevel(), pos)) {
+                        return true;
                     } else {
-                        drone.getDebugger().addEntry("pneumaticcraft.gui.progWidget.place.debug.entityInWay", pos);
-                        failedOnPlacement = true;
+                        drone.getDebugger().addEntry("pneumaticcraft.gui.progWidget.place.debug.cantPlaceBlock", pos);
                     }
+                } else {
+                    drone.getDebugger().addEntry("pneumaticcraft.gui.progWidget.place.debug.entityInWay", pos);
                 }
             }
-            if (!failedOnPlacement) abort();
         }
         return false;
     }
@@ -94,12 +96,11 @@ public class DroneAIPlace<W extends ProgWidgetAreaItemBase /*& IBlockOrdered & I
     @Override
     protected boolean doBlockInteraction(BlockPos pos, double squareDistToBlock) {
         if (squareDistToBlock < 2 * 2) {
-            for (int slot = 0; slot < drone.getInv().getSlots(); slot++) {
+            int slot = pickPlaceableSlot();
+            if (slot >= 0) {   // should always be the case, we checked in isValidPosition()
                 ItemStack droneStack = drone.getInv().getStackInSlot(slot);
-                if (droneStack.getItem() instanceof BlockItem blockItem
-                        && progWidget.isItemValidForFilters(droneStack)
-                        && worldCache.getBlockState(pos).canBeReplaced())
-                {
+                BlockItem blockItem = (BlockItem) droneStack.getItem();  // already verified this is the case
+                if (worldCache.getBlockState(pos).canBeReplaced()) {
                     BlockPlaceContext ctx = getPlacementContext(pos, pos, droneStack);
                     if (progWidget.getCachedAreaSet().contains(ctx.getClickedPos())) {
                         InteractionResult res = blockItem.place(ctx);
@@ -118,6 +119,32 @@ public class DroneAIPlace<W extends ProgWidgetAreaItemBase /*& IBlockOrdered & I
         } else {
             return true;
         }
+    }
+
+    private int pickPlaceableSlot() {
+        IItemHandlerModifiable inv = drone.getInv();
+
+        if (inv.getSlots() > 1 && progWidget instanceof ProgWidgetPlace p && p.isRandomize()) {
+            List<Integer> l = new ArrayList<>();
+            for (int i = 0; i < inv.getSlots(); i++) {
+                ItemStack droneStack = inv.getStackInSlot(i);
+                if (droneStack.getItem() instanceof BlockItem && progWidget.isItemValidForFilters(droneStack)) {
+                    l.add(i);
+                }
+            }
+            if (!l.isEmpty()) {
+                return l.get(drone.getDroneLevel().random.nextInt(l.size()));
+            }
+        } else {
+            for (int i = 0; i < inv.getSlots(); i++) {
+                ItemStack droneStack = inv.getStackInSlot(i);
+                if (droneStack.getItem() instanceof BlockItem && progWidget.isItemValidForFilters(droneStack)) {
+                    return i;
+                }
+            }
+        }
+
+        return -1;
     }
 
     private BlockPos findClearSide(BlockPos pos) {
@@ -144,5 +171,8 @@ public class DroneAIPlace<W extends ProgWidgetAreaItemBase /*& IBlockOrdered & I
         protected DroneBlockItemUseContext(Player droneFakePlayer, ItemStack heldItem, BlockHitResult rayTraceResultIn) {
             super(droneFakePlayer.level(), droneFakePlayer, InteractionHand.MAIN_HAND, heldItem, rayTraceResultIn);
         }
+    }
+
+    private record SlotAndStack(int slot, ItemStack stack) {
     }
 }
