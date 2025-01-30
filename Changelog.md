@@ -6,6 +6,24 @@ Changes are in reverse chronological order; newest changes at the top.
 
 # Minecraft 1.21.1
 
+## [8.2.7]
+
+### Added
+* Amadron Tablet now allows the same block to be used for both item and fluid purposes
+  * The block must provide both item and fluid capabilities, of course
+* Added a "Clicked Side" option to the Dig progwidget
+  * This is not important normally, but if using a multi-dig tool (e.g. Jackhammer in 3x3 mode), the side can be important
+* Added a "Place Random Blocks" option to the Place progwidget
+  * When true, the drone will pick placeable block items at random from its inventory instead of just placing the first available block item
+
+### Fixed
+* Fixed a fluid dupe bug
+* Fixed items being voided if doing pressure enchanting/disenchanting with a full Pressure Chamber (the chamber has an 18-item capacity)
+* Fixed mobs spawned by the Pressurized Spawner getting the "defender" tag, making them impossible to absorb with the Vacuum Trap
+* Fixed a sync error for GPS Area tool using the Line area type (thanks @shBLOCK)
+* Fixed Drone & Programmable Controller inventories not reloading properly with Inventory Upgrades installed (thanks @shBLOCK)
+* Fixed Spawner Agitator tooltip when Apothic Spawners (formerly part of Apotheosis) is installed
+
 ## [8.2.6]
 
 ### Fixed
