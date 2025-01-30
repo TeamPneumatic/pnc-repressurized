@@ -10,6 +10,11 @@
     },
     {
       "type": "text",
+      "title": "Placing Random Blocks",
+      "text": "Normally, the $(item)Drone/$ will place blocks from its inventory in order, starting from the first slot (bear in mind that drone inventories only have a single slot by default, but $(l:base_concepts/upgrades#inventory)Inventory Upgrades/$ can be used to increase that).$(p)By checking the $(thing)Place Random Blocks/$ option, the $(item)Drone/$ will select blocks at random from its inventory to place."
+    },
+    {
+      "type": "text",
       "title": "Limiting the Place Count",
       "text": "The number of place actions can be limited to a specified amount by $(thing)right-clicking/$ the widget. If set to 1 for example, the $(item)Drone/$ will only place one block, and the widget is considered done after placing that one block.$(p)If no limit is set, the widget is only considered done when unable to place any more blocks."
     },
