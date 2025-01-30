@@ -82,28 +82,39 @@ public class AmadronTabletItem extends PressurizableItem
     public InteractionResult useOn(UseOnContext ctx) {
         Direction facing = ctx.getClickedFace();
         Player player = ctx.getPlayer();
-        Level worldIn = ctx.getLevel();
+        Level level = ctx.getLevel();
         BlockPos pos = ctx.getClickedPos();
 
-        BlockEntity te = worldIn.getBlockEntity(pos);
+        BlockEntity te = level.getBlockEntity(pos);
         if (te == null || player == null) return InteractionResult.PASS;
 
+        ItemStack tabletStack = player.getItemInHand(ctx.getHand());
+        GlobalPos globalPos = GlobalPosHelper.makeGlobalPos(level, pos);
+
         if (IOHelper.getFluidHandlerForBlock(te, facing).isPresent()) {
-            if (!worldIn.isClientSide) {
-                setFluidProvidingLocation(player.getItemInHand(ctx.getHand()), GlobalPosHelper.makeGlobalPos(worldIn, pos));
-            } else {
-                player.playSound(ModSounds.CHIRP.get(), 1.0f, 1.5f);
+            GlobalPos current = getFluidProvidingLocation(tabletStack);
+            if (current == null || !current.equals(globalPos)) {
+                if (!level.isClientSide) {
+                    setFluidProvidingLocation(tabletStack, globalPos);
+                } else {
+                    player.playSound(ModSounds.CHIRP.get(), 1.0f, 1.5f);
+                }
+                // By checking if fluid pos was actually changed, we can fall through to checking for
+                //   an item pos, allowing blocks which offer both item and fluid caps to be used
+                return InteractionResult.sidedSuccess(level.isClientSide);
             }
-        } else if (IOHelper.getInventoryForBlock(te, facing).isPresent()) {
-            if (!worldIn.isClientSide) {
-                setItemProvidingLocation(player.getItemInHand(ctx.getHand()), GlobalPosHelper.makeGlobalPos(worldIn, pos));
-            } else {
-                player.playSound(ModSounds.CHIRP.get(), 1.0f, 1.5f);
-            }
-        } else {
-            return InteractionResult.PASS;
         }
-        return InteractionResult.SUCCESS;
+
+        if (IOHelper.getInventoryForBlock(te, facing).isPresent()) {
+            if (!level.isClientSide) {
+                setItemProvidingLocation(tabletStack, globalPos);
+            } else {
+                player.playSound(ModSounds.CHIRP.get(), 1.0f, 1.5f);
+            }
+            return InteractionResult.sidedSuccess(level.isClientSide);
+        }
+
+        return InteractionResult.PASS;
     }
 
     @Override
