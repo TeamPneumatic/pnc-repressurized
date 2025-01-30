@@ -19,6 +19,7 @@ package me.desht.pneumaticcraft.common.drone.ai;
 
 import me.desht.pneumaticcraft.api.drone.IDrone;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetAreaItemBase;
+import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetPlace;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.BlockPos;
@@ -36,6 +37,12 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 public class DroneAIPlace<W extends ProgWidgetAreaItemBase /*& IBlockOrdered & ISidedWidget*/> extends DroneAIBlockInteraction<W> {
     /**
@@ -59,15 +66,18 @@ public class DroneAIPlace<W extends ProgWidgetAreaItemBase /*& IBlockOrdered & I
                 return false;
             }
             boolean failedOnPlacement = false;
-            for (int i = 0; i < drone.getInv().getSlots(); i++) {
-                ItemStack droneStack = drone.getInv().getStackInSlot(i);
-                if (droneStack.getItem() instanceof BlockItem && progWidget.isItemValidForFilters(droneStack)) {
-                    BlockPos placerPos = findClearSide(pos);
-                    if (placerPos == null) {
-                        drone.getDebugger().addEntry("pneumaticcraft.gui.progWidget.place.debug.noClearSides", pos);
-                        failedOnPlacement = true;
-                        break;
-                    }
+            int slot = pickPlaceableBlockSlot();
+            if (slot < 0) {
+                return false;
+            }
+//            for (int i = 0; i < drone.getInv().getSlots(); i++) {
+            ItemStack droneStack = drone.getInv().getStackInSlot(slot);
+            if (droneStack.getItem() instanceof BlockItem && progWidget.isItemValidForFilters(droneStack)) {
+                BlockPos placerPos = findClearSide(pos);
+                if (placerPos == null) {
+                    drone.getDebugger().addEntry("pneumaticcraft.gui.progWidget.place.debug.noClea%rSides", pos);
+                    failedOnPlacement = true;
+                } else {
                     Block placingBlock = ((BlockItem) droneStack.getItem()).getBlock();
                     BlockState state = placingBlock.getStateForPlacement(getPlacementContext(placerPos, pos, droneStack));
                     if (state == null) {
@@ -86,9 +96,47 @@ public class DroneAIPlace<W extends ProgWidgetAreaItemBase /*& IBlockOrdered & I
                     }
                 }
             }
+//            }
             if (!failedOnPlacement) abort();
         }
         return false;
+    }
+
+    private static final Collector<?, ?, ?> SHUFFLER = Collectors.collectingAndThen(
+            Collectors.toCollection(ArrayList::new),
+            list -> {
+                Collections.shuffle(list);
+                return list;
+            }
+    );
+
+    @SuppressWarnings("unchecked")
+    public static <T> Collector<T, ?, List<T>> toShuffledList() {
+        return (Collector<T, ?, List<T>>) SHUFFLER;
+    }
+
+    private int pickPlaceableBlockSlot() {
+        if (progWidget instanceof ProgWidgetPlace p && p.isRandomize()) {
+            List<Integer> l = new ArrayList<>();
+            for (int i = 0; i < drone.getInv().getSlots(); i++) {
+                l.add(i);
+            }
+            Collections.shuffle(l);
+            for (int i = 0; i < l.size(); i++) {
+                ItemStack droneStack = drone.getInv().getStackInSlot(i);
+                if (droneStack.getItem() instanceof BlockItem && progWidget.isItemValidForFilters(droneStack)) {
+                    return i;
+                }
+            }
+        } else {
+            for (int i = 0; i < drone.getInv().getSlots(); i++) {
+                ItemStack droneStack = drone.getInv().getStackInSlot(i);
+                if (droneStack.getItem() instanceof BlockItem && progWidget.isItemValidForFilters(droneStack)) {
+                    return i;
+                }
+            }
+        }
+        return -1;
     }
 
     @Override

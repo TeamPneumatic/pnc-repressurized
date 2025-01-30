@@ -63,7 +63,7 @@ public class ProgWidgetBlockRightClick extends ProgWidgetPlace implements IBlock
     private RightClickType clickType = RightClickType.CLICK_ITEM;
 
     public ProgWidgetBlockRightClick(PositionFields pos, DigPlaceFields digPlaceFields, Direction clickSide, boolean sneaking, RightClickType clickType) {
-        super(pos, digPlaceFields);
+        super(pos, digPlaceFields, false);
         this.clickSide = clickSide;
         this.sneaking = sneaking;
         this.clickType = clickType;
