@@ -485,6 +485,7 @@ public abstract class AbstractPneumaticCraftBlockEntity extends BlockEntity
                         FluidStack toTransfer = FluidUtil.tryFluidTransfer(fluidHandler, fluidHandlerItem, itemContents.getAmount(), false);
                         if (toTransfer.getAmount() == itemContents.getAmount()) {
                             // all can be transferred; move empty container to output if possible and if so actually transfer fluid
+                            fluidHandlerItem.drain(toTransfer.getAmount(), IFluidHandler.FluidAction.EXECUTE);
                             ItemStack emptyContainerStack = fluidHandlerItem.getContainer();
                             ItemStack excess = itemHandler.insertItem(outputSlot, emptyContainerStack, true);
                             if (excess.isEmpty()) {
