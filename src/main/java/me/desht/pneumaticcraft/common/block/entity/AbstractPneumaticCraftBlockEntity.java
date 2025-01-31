@@ -452,16 +452,22 @@ public abstract class AbstractPneumaticCraftBlockEntity extends BlockEntity
                 getCapability(ForgeCapabilities.FLUID_HANDLER).ifPresent(fluidHandler -> {
                     if (!itemContents.isEmpty() && (outputStack.isEmpty() || ItemHandlerHelper.canItemStacksStack(inputStack.getItem().getCraftingRemainingItem(inputStack), outputStack))) {
                         // input item contains fluid: drain from input item into tank, move to output if empty
-                        FluidStack transferred = FluidUtil.tryFluidTransfer(fluidHandler, fluidHandlerItem, itemContents.getAmount(), true);
-                        if (transferred.getAmount() == itemContents.getAmount()) {
-                            // all transferred; move empty container to output if possible
+                        // there must be only a single filled container in the input slot!
+                        if (inputStack.getCount() != 1) {
+                            return;
+                        }
+                        FluidStack toTransfer = FluidUtil.tryFluidTransfer(fluidHandler, fluidHandlerItem, itemContents.getAmount(), false);
+                        if (toTransfer.getAmount() == itemContents.getAmount()) {
+                            // all can be transferred; move empty container to output if possible and if so actually transfer fluid
+                            fluidHandlerItem.drain(toTransfer.getAmount(), IFluidHandler.FluidAction.EXECUTE);
                             ItemStack emptyContainerStack = fluidHandlerItem.getContainer();
                             ItemStack excess = itemHandler.insertItem(outputSlot, emptyContainerStack, true);
                             if (excess.isEmpty()) {
                                 itemHandler.extractItem(inputSlot, 1, false);
                                 itemHandler.insertItem(outputSlot, emptyContainerStack, false);
+                                fluidHandler.fill(toTransfer, IFluidHandler.FluidAction.EXECUTE);
                             }
-                        } else if (!transferred.isEmpty()) {
+                        } else if (!toTransfer.isEmpty()) {
                             // partial transfer; update the item in the input slot
                             itemHandler.extractItem(inputSlot, 1, false);
                             itemHandler.insertItem(inputSlot, fluidHandlerItem.getContainer().copy(), false);
