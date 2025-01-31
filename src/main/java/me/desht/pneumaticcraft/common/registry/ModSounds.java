@@ -43,6 +43,7 @@ public class ModSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> SCI_FI = register("sci_fi");
     public static final DeferredHolder<SoundEvent, SoundEvent> PNEUMATIC_WRENCH = register("pneumatic_wrench");
     public static final DeferredHolder<SoundEvent, SoundEvent> MINIGUN = register("minigun");
+    public static final DeferredHolder<SoundEvent, SoundEvent> MINIGUN_SPINUP = register("minigun_spinup");
     public static final DeferredHolder<SoundEvent, SoundEvent> MINIGUN_STOP = register("minigun_stop");
     public static final DeferredHolder<SoundEvent, SoundEvent> DRONE_HURT = register("drone_hurt");
     public static final DeferredHolder<SoundEvent, SoundEvent> DRONE_DEATH = register("drone_death");
@@ -54,6 +55,7 @@ public class ModSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> LEAKING_GAS_LOW = register("leaking_gas_low");
     public static final DeferredHolder<SoundEvent, SoundEvent> JACKHAMMER_LOOP = register("jackhammer_loop");
     public static final DeferredHolder<SoundEvent, SoundEvent> JACKHAMMER_STOP = register("jackhammer_stop");
+    public static final DeferredHolder<SoundEvent, SoundEvent> TELEPORT_WARMUP = register("teleport_warmup");
 
     private static DeferredHolder<SoundEvent,SoundEvent> register(String name) {
         return SOUNDS.register(name, () -> SoundEvent.createVariableRangeEvent(RL(name)));

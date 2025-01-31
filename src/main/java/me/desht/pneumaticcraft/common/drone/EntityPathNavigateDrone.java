@@ -153,7 +153,7 @@ public class EntityPathNavigateDrone extends FlyingPathNavigation implements IPa
         ++tick;
         if (isGoingToTeleport()) {
             if (teleportCounter == 0 || teleportCounter == 60) {
-                droneEntity.level().playSound(null, droneEntity.blockPosition(), ModSounds.HUD_INIT.get(), SoundSource.NEUTRAL, 0.3f, teleportCounter == 0 ? 0.7F : 1F);
+                droneEntity.level().playSound(null, droneEntity.blockPosition(), ModSounds.TELEPORT_WARMUP.get(), SoundSource.NEUTRAL, 0.3f, teleportCounter == 0 ? 0.7F : 1F);
             }
 
             if (teleportCounter < TELEPORT_TICKS - 40) {

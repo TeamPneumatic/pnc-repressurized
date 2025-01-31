@@ -118,6 +118,12 @@
       "pneumaticcraft:minigun"
     ]
   },
+  "minigun_spinup":{
+    "category":"player",
+    "sounds":[
+      "pneumaticcraft:hud_init"
+    ]
+  },
   "minigun_stop":{
     "category":"player",
     "sounds":[
@@ -170,6 +176,12 @@
     "category":"block",
     "sounds":[
       "pneumaticcraft:leaking_gas_low"
+    ]
+  },
+  "teleport_warmup": {
+    "category":"block",
+    "sounds":[
+      "pneumaticcraft:hud_init"
     ]
   }
 }
