@@ -6,6 +6,12 @@ Changes are in reverse chronological order; newest changes at the top.
 
 # Minecraft 1.21.1
 
+## [8.2.8]
+
+### Changed
+* Separated out the `pneumaticcraft:hud_init` sound into `pneumaticcraft:hud_init`, `pneumaticcraft:minigun_warmup` and `pneumaticcraft:teleport_warmup`
+  * The three sounds still use `hud_init.ogg` by default as the sound file, but this allows better resource pack (`sounds.json`) configurability
+
 ## [8.2.7]
 
 ### Added
