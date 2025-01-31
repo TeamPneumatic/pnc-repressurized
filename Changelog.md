@@ -6,6 +6,11 @@ Changes are in reverse chronological order; newest changes at the top.
 
 # Minecraft 1.20.1
 
+## [6.0.20]
+
+### Fixed
+* Fixed a fluid dupe issue
+
 ## [6.0.19]
 
 ### Fixed
