@@ -128,7 +128,9 @@ public class DramaConstants {
                 "JZTech101",
                 "SanAndreasP",
                 "AEnterprise",
-                "desht"
+                "desht",
+                "jellysquid",
+                "embeddedt"
         });
 
         PARTS.put("sites", new String[] {
@@ -147,7 +149,8 @@ public class DramaConstants {
                 "GregTech thread",
                 "Google+",
                 "Twitch",
-                "Discord"
+                "Discord",
+                "Bluesky"
         });
 
         PARTS.put("things", new String[] {
@@ -274,7 +277,12 @@ public class DramaConstants {
                 "Armourer's Workshop",
                 "Botania",
                 "GregTech Unofficial",
-                "PneumaticCraft"
+                "PneumaticCraft",
+                "Embeddium",
+                "Monocle",
+                "Sodium",
+                "Iris",
+                "Create"
         });
 
         PARTS.put("packs", new String[] {
@@ -293,7 +301,10 @@ public class DramaConstants {
                 "Mindcrack",
                 "Magic Maiden",
                 "ForgeCraft",
-                "Technic"
+                "Technic",
+                "Enigmatica",
+                "All The Mods",
+                "FTB Stoneblock"
         });
 
         PARTS.put("functions", new String[]{
@@ -334,7 +345,9 @@ public class DramaConstants {
                 "achievements",
                 "quests",
                 "more annoying worldgen",
-                "exploding pressure tubes"
+                "exploding pressure tubes",
+                "new shaders",
+                "rendering optimization"
         });
 
         PARTS.put("drama", new String[] {
@@ -403,7 +416,7 @@ public class DramaConstants {
                 "spawn bees"
         });
 
-        PARTS.put("bans", new String[] {
+        PARTS.put("ban", new String[] {
                 "ban",
                 "kick",
                 "put a pumpkin of shame on",
@@ -426,7 +439,10 @@ public class DramaConstants {
                 "a few files",
                 "a ZIP file",
                 "Gradle buildscripts",
-                "a GitHub repository"
+                "a GitHub repository",
+                "a functional interface",
+                "unnecessary lambdas",
+                "weird mapcodecs"
         });
 
         PARTS.put("adverbs", new String[]{
@@ -477,7 +493,7 @@ public class DramaConstants {
         });
 
         PARTS.put("sizes", new String[] {
-                "little",
+                "small",
                 "tiny",
                 "big",
                 "large",
@@ -490,23 +506,23 @@ public class DramaConstants {
     static final String[] SENTENCES = new String[] {
             "%{people} launched a DoS attack on the website of %{things}",
             "%{sites} urges everyone to stop using %{things}",
-            "After a %{enormous} amount of requests, %{packs} removes %{things}",
-            "After a %{enormous} amount of requests, %{packs} adds %{things}",
-            "After a %{enormous} amount of requests, %{packs} adds %{function} to %{things}",
+            "After a %{sizes} amount of requests, %{packs} removes %{things}",
+            "After a %{sizes} amount of requests, %{packs} adds %{things}",
+            "After a %{sizes} amount of requests, %{packs} adds %{functions} to %{things}",
             "%{people} plays %{things} on Twitch",
-            "%{people} fixes %{function} in %{things} to be unlike %{things}",
-            "%{things} makes %{things} %{crash}, %{sites} users complain",
+            "%{people} fixes %{functions} in %{things} to be unlike %{things}",
+            "%{things} makes %{things} %{crashes}, %{sites} users complain",
             "%{people} complained about being in %{things} on %{sites}",
             "%{people} releases %{code} of %{things} for %{price}",
             "%{sites} considers %{things} worse than %{things}",
             "%{people} made %{things} depend on %{things}",
             "%{people} bans %{people} from using %{things} in %{packs}",
             "%{people} complains that %{things} discussion doesn't belong on %{sites}",
-            "%{people} has a Patreon goal to add %{function} to %{things} for %{price} a month",
+            "%{people} has a Patreon goal to add %{functions} to %{things} for %{price} a month",
             "%{people} has a Patreon goal to add %{things} compatibility to %{things} for %{price} a month",
             "%{people} complains that %{people} replaced %{things} by %{things}",
             "%{people} complains that %{people} replaced %{things} by %{things} in %{packs}",
-            "%{people} complains that %{people} removed %{function} in %{packs}",
+            "%{people} complains that %{people} removed %{functions} in %{packs}",
             "%{people} decided that %{things} is too %{adj} and replaced it with %{things}",
             "%{people} %{says} %{things} is %{adj}.",
             "%{people} %{says} %{things} is literally %{adj}.",
@@ -515,10 +531,10 @@ public class DramaConstants {
             "%{people} adds %{things} to %{packs}.",
             "%{people} quits modding. Fans of %{things} rage.",
             "%{people} is found to secretly like %{things}",
-            "%{people} openly hates %{function} in %{things}",
+            "%{people} openly hates %{functions} in %{things}",
             "%{people} threatens to %{badverbs} %{people} until they remove %{things} from %{packs}",
-            "%{people} threatens to %{badverbs} %{people} until they remove %{function} from %{things}",
-            "%{people} threatens to %{badverbs} %{people} until they add %{function} to %{things}",
+            "%{people} threatens to %{badverbs} %{people} until they remove %{functions} from %{things}",
+            "%{people} threatens to %{badverbs} %{people} until they add %{functions} to %{things}",
             "%{people} came out in support of %{things}",
             "%{people} came out in support of %{drama}",
             "%{people} and %{people} came out in support of %{drama}",
@@ -528,12 +544,12 @@ public class DramaConstants {
             "%{people} %{says} to replace %{things} with %{things}",
             "%{people} %{says} %{people} causes drama",
             "%{things} fans claim that %{things} should be more like %{things}",
-            "%{things} fans claim that %{things} should have better %{function}",
+            "%{things} fans claim that %{things} should have better %{functions}",
             "%{people} %{says} that %{things} should be more like %{things}",
             "%{people} %{says} that %{things} should be less like %{things}",
             "%{people} rebalances %{things} for %{packs}",
-            "%{people} adds %{function} to %{things} by request of %{people}",
-            "%{people} removes %{function} from %{things} by request of %{people}",
+            "%{people} adds %{functions} to %{things} by request of %{people}",
+            "%{people} removes %{functions} from %{things} by request of %{people}",
             "%{people} removes compatibility between %{things} and %{things} by request of %{people}",
             "%{people} %{says} %{people}'s attitude is %{adj}",
             "%{people} %{says} %{sites}'s attitude is %{adj}",
@@ -551,9 +567,9 @@ public class DramaConstants {
             "%{people} %{says} %{things} causes %{drama} when used with %{things}",
             "%{people} %{says} using %{things} and %{things} together is %{adj}",
             "%{people} rants about %{things} on %{sites}",
-            "%{people} rants about %{function} in mods on %{sites}",
+            "%{people} rants about %{functions} in mods on %{sites}",
             "%{people} steals code from %{things}",
-            "%{things} breaks %{function}",
+            "%{things} breaks %{functions}",
             "%{people} sues %{things} developers",
             "%{people} reminds you that %{things} is %{adj}",
             "%{people} and %{people} get into a drama fight on %{sites}",
@@ -561,9 +577,9 @@ public class DramaConstants {
             "%{people} and %{people} argue about %{things}",
             "%{people} puts %{badsoft} in %{things}",
             "%{people} complains about %{things} breaking %{things}",
-            "%{people} complains about %{things} breaking %{function}",
-            "%{people} complains about %{things} including %{function}",
-            "%{things} breaks %{function} in %{things}",
+            "%{people} complains about %{things} breaking %{functions}",
+            "%{people} complains about %{things} including %{functions}",
+            "%{things} breaks %{functions} in %{things}",
             "%{things} breaks %{things} support in %{things}",
             "%{things} adds code to %{ban} %{people} automatically",
             "%{things} adds code to %{ban} people using %{things}",
@@ -573,8 +589,8 @@ public class DramaConstants {
             "%{people} finds %{badsoft} in %{things}",
             "%{people} drew a nasty graffiti about %{people}",
             "%{people} drew a nasty graffiti about %{things}",
-            "%{things} makes %{things} %{crash} when used with %{things}",
-            "%{things} makes %{things} %{crash} when used by %{people}",
+            "%{things} makes %{things} %{crashes} when used with %{things}",
+            "%{things} makes %{things} %{crashes} when used by %{people}",
             "%{things} makes %{things} crash %{things} when used by %{people}",
             "%{things} adds %{badsoft} that only %{activates} in %{packs}",
             "%{things} adds %{badsoft} that only %{activates} alongside %{things}",

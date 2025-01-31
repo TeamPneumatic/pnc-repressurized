@@ -884,7 +884,7 @@
    "pneumaticcraft.gui.aphorismTileEditor" : "Aphorism Tile Editor",
    "pneumaticcraft.gui.aphorismTile.insert" : "Insert:",
    "pneumaticcraft.gui.aphorismTile.insertItem" : "Item...",
-   "pneumaticcraft.gui.aphorismTile.helpText" : "§a§nAphorism Tile Editor\n\n§e← → ↑ ↓:§r move cursor\n§eHome:§r start of line\n§eEnd:§r end of line\n§eReturn:§r insert line break\n§eBackspace:§r delete before cursor\n§eDelete:§r delete after cursor\n§eAlt-Delete:§r delete line\n§eShift-Delete:§r clear all\n§eEscape:§r finish editing\n§eAlt + §ochr§r: insert control code\n §7- codes: 0-9, a-f, l, m, n, o, r",
+   "pneumaticcraft.gui.aphorismTile.helpText" : "§a§nAphorism Tile Editor\n\n§e← → ↑ ↓:§r move cursor\n§eHome:§r start of line\n§eEnd:§r end of line\n§eReturn:§r insert line break\n§eBackspace:§r delete before cursor\n§eDelete:§r delete after cursor\n§eAlt-Delete:§r delete line\n§eShift-Delete:§r clear all\n§eEscape:§r finish editing\n§eAlt + §ochr§r: insert control code\n §7- codes: 0-9, a-f, l, m, n, o, r\n§eCtrl-D:§r get some drama!",
    "pneumaticcraft.gui.button.showRange" : "Show Range",
    "pneumaticcraft.gui.config.category.advanced" : "Advanced",
    "pneumaticcraft.gui.config.category.client" : "Clientside Options",

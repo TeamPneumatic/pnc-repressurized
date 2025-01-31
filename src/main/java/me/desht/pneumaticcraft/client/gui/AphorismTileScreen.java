@@ -64,15 +64,19 @@ public class AphorismTileScreen extends Screen {
         textLines = blockEntity.getTextLines();
         blockEntity.needMaxLineWidthRecalc();
         if (ConfigHelper.client().general.aphorismDrama.get() && placing && textLines.length == 1 && textLines[0].isEmpty()) {
-            List<String> l = PneumaticCraftUtils.splitString(DramaGenerator.generateDrama(), 20);
-            blockEntity.setTextLines(l.toArray(new String[0]));
-            textLines = blockEntity.getTextLines();
-            NetworkHandler.sendToServer(PacketAphorismTileUpdate.forBlockEntity(blockEntity));
+            generateDrama();
+//            NetworkHandler.sendToServer(PacketAphorismTileUpdate.forBlockEntity(blockEntity));
         }
 
         Pair<Integer,Integer> cursor = blockEntity.getCursorPos();
         cursorX = cursor.getLeft();
         cursorY = cursor.getRight();
+    }
+
+    private void generateDrama() {
+        List<String> lines = PneumaticCraftUtils.splitString(DramaGenerator.generateDrama(), 20);
+        blockEntity.setTextLines(lines.toArray(new String[0]));
+        textLines = blockEntity.getTextLines();
     }
 
     @Override
@@ -237,6 +241,13 @@ public class AphorismTileScreen extends Screen {
                 }
                 if (cursorX > textLines[cursorY].length()) cursorX = (int) (textLines[cursorY].length() * p);
                 updateTE = true;
+            }
+            case GLFW.GLFW_KEY_D -> {
+                if (Screen.hasControlDown()) {
+                    generateDrama();
+                    cursorY = textLines.length - 1;
+                    cursorX = textLines[cursorY].length();
+                }
             }
         }
         blockEntity.setCursorPos(cursorX, cursorY);
