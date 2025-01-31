@@ -8,9 +8,16 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## [8.2.8]
 
+### Added
+* Aphorism Tile editor screen: pressing Ctrl-D now generates new drama, just for fun
+
 ### Changed
 * Separated out the `pneumaticcraft:hud_init` sound into `pneumaticcraft:hud_init`, `pneumaticcraft:minigun_warmup` and `pneumaticcraft:teleport_warmup`
   * The three sounds still use `hud_init.ogg` by default as the sound file, but this allows better resource pack (`sounds.json`) configurability
+
+### Fixed
+* Fixed a bad fix to the fluid dupe bug supposedly fixed in 8.2.7
+* Fixed some Aphorism Tile drama sentence generation
 
 ## [8.2.7]
 
