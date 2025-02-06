@@ -88,6 +88,7 @@ public class AmadronAddTradeScreen extends AbstractPneumaticCraftContainerScreen
             setStack(settingSlot, invSearchGui.getSearchStack());
         } else if (fluidGui != null) {
             setFluid(settingSlot, fluidGui.getFilter());
+            amountFields[settingSlot].setRange(1, Integer.MAX_VALUE).setValue(1000);
         } else if (gpsSearchGui != null) {
             GPSToolItem.getGPSLocation(gpsSearchGui.getSearchStack()).ifPresent(pos -> positions[settingSlot] = pos);
         }
@@ -142,7 +143,7 @@ public class AmadronAddTradeScreen extends AbstractPneumaticCraftContainerScreen
         int coarse = fluidFilters[slot].getFluid() == Fluids.EMPTY ? 10 : 1000;
         int max = fluidFilters[slot].getFluid() == Fluids.EMPTY ? 64 : Integer.MAX_VALUE;
         amountFields[slot] = new WidgetTextFieldNumber(font, leftPos + 22 + xOffset, topPos + 144, 40, font.lineHeight + 3)
-                .setValue(amountFields[slot] != null ? amountFields[slot].getIntValue() : 1).setRange(1, max).setAdjustments(1, coarse);
+                .setRange(1, max).setValue(amountFields[slot] != null ? amountFields[slot].getIntValue() : 1).setAdjustments(1, coarse);
         addRenderableWidget(amountFields[slot]);
 
         addRenderableWidget(new WidgetLabel(leftPos + 65 + xOffset, topPos + 145,
