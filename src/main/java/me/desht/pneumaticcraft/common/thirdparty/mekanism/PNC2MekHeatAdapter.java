@@ -6,12 +6,19 @@ import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import mekanism.api.heat.ISidedHeatHandler;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 
-public record PNC2MekHeatAdapter(IHeatExchangerLogic heatExchanger, Direction direction) implements ISidedHeatHandler {
+public record PNC2MekHeatAdapter(@NotNull IHeatExchangerLogic heatExchanger, Direction direction) implements ISidedHeatHandler {
     public static ISidedHeatHandler maybe(BlockEntity blockEntity, Direction direction) {
-        return blockEntity instanceof IHeatExchangingTE heat ? new PNC2MekHeatAdapter(heat.getHeatExchanger(), direction) : null;
+        if (blockEntity instanceof IHeatExchangingTE heat) {
+            var exchanger = heat.getHeatExchanger();
+            if (exchanger != null) {
+                return new PNC2MekHeatAdapter(exchanger, direction);
+            }
+        }
+        return null;
     }
 
     @Nullable
