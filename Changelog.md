@@ -6,6 +6,12 @@ Changes are in reverse chronological order; newest changes at the top.
 
 # Minecraft 1.21.1
 
+## [8.2.9]
+
+### Fixed
+* Added missing translations for from-player versions of the PNC damage source death messages
+* When adding player trades in the Amadron tablet, the default amount for fluid trades is now 1000mB instead of 1mB
+
 ## [8.2.8]
 
 ### Added
