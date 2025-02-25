@@ -125,6 +125,8 @@ public class ModItemTagsProvider extends ItemTagsProvider {
         addItemsToTag(PneumaticCraftTags.Items.PNEUMATIC_ARMOR,
                 ModItems.PNEUMATIC_BOOTS, ModItems.PNEUMATIC_LEGGINGS,
                 ModItems.PNEUMATIC_CHESTPLATE, ModItems.PNEUMATIC_HELMET);
+
+        tag(PneumaticCraftTags.Items.PNC_TOOLTIP);
     }
 
     @SafeVarargs
