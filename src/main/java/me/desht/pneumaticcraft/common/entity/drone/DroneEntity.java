@@ -254,7 +254,7 @@ public class DroneEntity extends AbstractDroneEntity implements
         goalSelector.addGoal(1, chargeAI = new DroneGoToChargingStation(this));
     }
 
-    DroneEntity(EntityType<? extends DroneEntity> type, Level world, Player player) {
+    protected DroneEntity(EntityType<? extends DroneEntity> type, Level world, Player player) {
         this(type, world);
         if (player != null) {
             ownerUUID = player.getGameProfile().getId();
