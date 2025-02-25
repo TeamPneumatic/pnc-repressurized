@@ -29,7 +29,6 @@ import me.desht.pneumaticcraft.client.pneumatic_armor.ClientArmorRegistry;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
-import me.desht.pneumaticcraft.common.inventory.handler.ChargeableItemHandler;
 import me.desht.pneumaticcraft.common.item.PneumaticArmorItem;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSendArmorHUDMessage;
@@ -290,7 +289,7 @@ public class CommonArmorHandler implements ICommonArmorHandler {
 
         // record which upgrades / render-handlers are inserted
         Map<PNCUpgrade,Integer> upgrades = new HashMap<>(UpgradableItemUtils.getUpgrades(armorStack));
-        upgrades.keySet().removeIf(u -> ChargeableItemHandler.isItemBlacklisted(armorStack.getItem(), u.getItemStack()));
+        upgrades.keySet().removeIf(u -> UpgradableItemUtils.isUpgradeBlacklisted(armorStack.getItem(), u.getItemStack()));
 
         Arrays.fill(upgradeRenderersInserted[slot.getIndex()], false);
         for (int i = 0; i < upgradeRenderersInserted[slot.getIndex()].length; i++) {

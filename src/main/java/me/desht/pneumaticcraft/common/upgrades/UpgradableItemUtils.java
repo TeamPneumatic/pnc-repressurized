@@ -23,10 +23,12 @@ import it.unimi.dsi.fastutil.ints.IntLists;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.misc.Symbols;
 import me.desht.pneumaticcraft.api.upgrade.PNCUpgrade;
+import me.desht.pneumaticcraft.common.item.IChargeableContainerProvider;
 import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.neoforged.neoforge.items.IItemHandler;
@@ -59,7 +61,12 @@ public class UpgradableItemUtils {
         } else {
             textList.add(xlate("pneumaticcraft.gui.tooltip.upgrades.not_empty").withStyle(ChatFormatting.GREEN));
             List<ItemStack> stacks = new ArrayList<>();
-            upgrades.forEach((upgrade, count) -> stacks.add(upgrade.getItemStack(count)));
+            upgrades.forEach((upgrade, count) -> {
+                ItemStack upgradeStack = upgrade.getItemStack(count);
+                if (!isUpgradeBlacklisted(iStack.getItem(), upgradeStack)) {
+                    stacks.add(upgradeStack);
+                }
+            });
             PneumaticCraftUtils.summariseItemStacks(textList, stacks, Component.literal(Symbols.BULLET + " ").withStyle(ChatFormatting.DARK_GREEN));
         }
     }
@@ -112,18 +119,24 @@ public class UpgradableItemUtils {
      *
      * @param stack the itemstack to check
      * @param upgradeList the upgrades to check for
-     * @return a list of the upgrades installed with their count, in the same order as the upgrades which were passed to the method
+     * @return a list of upgrade counts, in the same order as the upgrades which were passed to the method
      */
     public static IntList getUpgradeList(ItemStack stack, PNCUpgrade... upgradeList) {
         IntList res = new IntArrayList();
         var map = getUpgrades(stack);
         for (PNCUpgrade upgrade : upgradeList) {
-            res.add((int) map.getOrDefault(upgrade, 0));
+            res.add(map.getOrDefault(upgrade, 0).intValue());
         }
         return IntLists.unmodifiable(res);
     }
 
     public static boolean hasCreativeUpgrade(ItemStack stack) {
         return getUpgradeCount(stack, ModUpgrades.CREATIVE.get()) > 0;
+    }
+
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
+    public static boolean isUpgradeBlacklisted(Item containerItem, ItemStack upgradeStack) {
+        return containerItem instanceof IChargeableContainerProvider p
+                && p.getUpgradeBlacklistTag().map(upgradeStack::is).orElse(false);
     }
 }

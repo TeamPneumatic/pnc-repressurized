@@ -42,6 +42,8 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
+
 public enum ApplicableUpgradesDB implements IUpgradeRegistry {
     INSTANCE;
 
@@ -100,7 +102,12 @@ public enum ApplicableUpgradesDB implements IUpgradeRegistry {
         if (!acceptors.isEmpty()) {
             List<Component> tempList = new ArrayList<>(acceptors.size());
             for (Item acceptor : acceptors) {
-                tempList.add(Symbols.bullet().append(acceptor.getDescription().copy().withStyle(ChatFormatting.DARK_AQUA)));
+                if (!UpgradableItemUtils.isUpgradeBlacklisted(acceptor, upgrade.getItemStack())) {
+                    tempList.add(Symbols.bullet().append(acceptor.getDescription().copy().withStyle(ChatFormatting.DARK_AQUA)));
+                }
+            }
+            if (tempList.isEmpty()) {
+                tooltip.add(xlate("pneumaticcraft.gui.misc.none").withStyle(ChatFormatting.GOLD));
             }
             tempList.sort(Comparator.comparing(Component::getString));
             if (tempList.size() > MAX_UPGRADES_IN_TOOLTIP) {
@@ -177,7 +184,7 @@ public enum ApplicableUpgradesDB implements IUpgradeRegistry {
             if (entry instanceof Item item) {
                 addAccepted(upgrade, item);
             } else if (entry instanceof BlockEntityType<?> beType) {
-                ((BlockEntityTypeAccess) beType).getValidBlocks().stream() // access transform
+                ((BlockEntityTypeAccess) beType).getValidBlocks().stream()
                         .map(Block::asItem)
                         .filter(item -> item != Items.AIR)
                         .forEach(item -> addAccepted(upgrade, item));
