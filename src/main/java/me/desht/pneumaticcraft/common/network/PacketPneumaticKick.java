@@ -17,11 +17,14 @@
 
 package me.desht.pneumaticcraft.common.network;
 
+import it.unimi.dsi.fastutil.objects.Object2LongLinkedOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2LongMap;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
 import me.desht.pneumaticcraft.common.registry.ModSounds;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
+import net.minecraft.Util;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
@@ -38,6 +41,7 @@ import org.joml.Vector3f;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.UUID;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
@@ -49,10 +53,21 @@ public enum PacketPneumaticKick implements CustomPacketPayload {
     INSTANCE;
 
     public static final Type<PacketPneumaticKick> TYPE = new Type<>(RL("pneumatic_kick"));
-
     public static final StreamCodec<FriendlyByteBuf, PacketPneumaticKick> STREAM_CODEC = StreamCodec.unit(INSTANCE);
 
     private static final Vector3f PARTICLE_SPEED = new Vector3f(1.0f, 0.0f, 0.0f);
+    public static final long MIN_KICK_INTERVAL = 500L;
+
+    private long lastClientSend = 0L;
+    private final Object2LongMap<UUID> lastServerRecv = new Object2LongLinkedOpenHashMap<>();
+
+    public void sendToServer() {
+        long now = Util.getMillis();
+        if (now - lastClientSend > MIN_KICK_INTERVAL) {
+            NetworkHandler.sendToServer(this);
+            lastClientSend = now;
+        }
+    }
 
     @Override
     public Type<PacketPneumaticKick> type() {
@@ -70,6 +85,13 @@ public enum PacketPneumaticKick implements CustomPacketPayload {
     }
 
     private void handleKick(Player player, int upgrades) {
+        long now = Util.getMillis();
+        long prev = lastServerRecv.getOrDefault(player.getUUID(), 0L);
+        if (now - prev < MIN_KICK_INTERVAL) {
+            return;
+        }
+        lastServerRecv.put(player.getUUID(), now);
+
         Vec3 lookVec = new Vec3(player.getLookAngle().x, Math.max(0, player.getLookAngle().y), player.getLookAngle().z).normalize();
 
         double playerFootY = player.getY() - player.getBbHeight() / 2;
@@ -89,10 +111,10 @@ public enum PacketPneumaticKick implements CustomPacketPayload {
             target.horizontalCollision = false;
             target.verticalCollision = false;
             target.setDeltaMovement(target.getDeltaMovement().add(lookVec.scale(1.0 + upgrades * 0.5)).add(0, upgrades * 0.1, 0));
+            player.level().playSound(null, target.getX(), target.getY(), target.getZ(), ModSounds.PUNCH.get(), SoundSource.PLAYERS, 1f, 1f);
+            NetworkHandler.sendToAllTracking(PacketSetEntityMotion.create(target, target.getDeltaMovement()), target);
+            NetworkHandler.sendToAllTracking(PacketSpawnParticle.oneParticle(ParticleTypes.EXPLOSION, target.position().toVector3f(), PARTICLE_SPEED), target);
+            CommonArmorHandler.getHandlerForPlayer(player).addAir(EquipmentSlot.FEET, -PneumaticValues.PNEUMATIC_KICK_AIR_USAGE * upgrades);
         }
-        player.level().playSound(null, target.getX(), target.getY(), target.getZ(), ModSounds.PUNCH.get(), SoundSource.PLAYERS, 1f, 1f);
-        NetworkHandler.sendToAllTracking(PacketSetEntityMotion.create(target, target.getDeltaMovement()), target);
-        NetworkHandler.sendToAllTracking(PacketSpawnParticle.oneParticle(ParticleTypes.EXPLOSION, target.position().toVector3f(), PARTICLE_SPEED), target);
-        CommonArmorHandler.getHandlerForPlayer(player).addAir(EquipmentSlot.FEET, -PneumaticValues.PNEUMATIC_KICK_AIR_USAGE * upgrades);
     }
 }

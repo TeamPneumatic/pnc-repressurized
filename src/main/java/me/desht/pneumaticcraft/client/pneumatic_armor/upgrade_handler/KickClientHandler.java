@@ -23,7 +23,6 @@ import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
 import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorHandler;
 import me.desht.pneumaticcraft.client.KeyHandler;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.options.KickOptions;
-import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketPneumaticKick;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
 import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.KickHandler;
@@ -44,7 +43,7 @@ public class KickClientHandler extends IArmorUpgradeClientHandler.SimpleToggleab
     @Override
     public void onTriggered(ICommonArmorHandler armorHandler) {
         if (armorHandler.upgradeUsable(CommonUpgradeHandlers.kickHandler, false)) {
-            NetworkHandler.sendToServer(PacketPneumaticKick.INSTANCE);
+            PacketPneumaticKick.INSTANCE.sendToServer();
         }
     }
 
