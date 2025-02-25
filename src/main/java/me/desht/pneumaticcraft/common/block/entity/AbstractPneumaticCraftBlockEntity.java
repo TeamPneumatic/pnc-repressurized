@@ -704,7 +704,7 @@ public abstract class AbstractPneumaticCraftBlockEntity extends BlockEntity
                 builder.set(ModDataComponents.AIR, handler.getAir());
             }
 
-            SavedUpgrades upgrades = SavedUpgrades.fromItemHandler(getUpgradeHandler());
+            SavedUpgrades upgrades = SavedUpgrades.fromItemHandler(getUpgradeHandler(), t -> ApplicableUpgradesDB.getInstance().getMaxUpgrades(this, t));
             if (!upgrades.getUpgradeMap().isEmpty()) {
                 builder.set(ModDataComponents.ITEM_UPGRADES, upgrades);
             }

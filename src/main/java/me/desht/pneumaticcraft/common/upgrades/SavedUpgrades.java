@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.common.upgrades;
 
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -18,6 +17,7 @@ import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.ItemStackHandler;
 
 import java.util.*;
+import java.util.function.ToIntFunction;
 
 public class SavedUpgrades {
     private static final Codec<PNCUpgrade> UPGRADE_CODEC
@@ -45,17 +45,20 @@ public class SavedUpgrades {
         this.map = map;
     }
 
-    public static SavedUpgrades fromItemHandler(IItemHandler upgradeHandler) {
-        ImmutableMap.Builder<PNCUpgrade,Integer> builder = ImmutableMap.builder();
+    public static SavedUpgrades fromItemHandler(IItemHandler upgradeHandler, ToIntFunction<PNCUpgrade> maxCalculator) {
+        Map<PNCUpgrade,Integer> map = new HashMap<>();
+
         List<ItemStack> items = new ArrayList<>(upgradeHandler.getSlots());
         for (int i = 0; i < upgradeHandler.getSlots(); i++) {
             ItemStack stack = upgradeHandler.getStackInSlot(i);
             items.add(stack);
             if (stack.getItem() instanceof UpgradeItem upgradeItem) {
-                builder.put(upgradeItem.getUpgradeType(), stack.getCount() * upgradeItem.getUpgradeTier());
+                PNCUpgrade type = upgradeItem.getUpgradeType();
+                int maxAllowed = maxCalculator.applyAsInt(type);
+                map.put(type, Math.min(maxAllowed, map.getOrDefault(type, 0) + stack.getCount() * upgradeItem.getUpgradeTier()));
             }
         }
-        return new SavedUpgrades(ItemContainerContents.fromItems(items), builder.build());
+        return new SavedUpgrades(ItemContainerContents.fromItems(items), Collections.unmodifiableMap(map));
     }
 
     public int getUpgradeCount(PNCUpgrade upgrade) {

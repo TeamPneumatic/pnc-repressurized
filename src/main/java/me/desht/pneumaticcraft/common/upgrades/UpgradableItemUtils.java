@@ -72,7 +72,7 @@ public class UpgradableItemUtils {
      * @param handler an ItemStackHandler holding upgrade items
      */
     public static void setUpgrades(ItemStack stack, IItemHandler handler) {
-        stack.set(ModDataComponents.ITEM_UPGRADES, SavedUpgrades.fromItemHandler(handler));
+        stack.set(ModDataComponents.ITEM_UPGRADES, SavedUpgrades.fromItemHandler(handler, t -> ApplicableUpgradesDB.getInstance().getMaxUpgrades(stack.getItem(), t)));
 
         // in case volume upgrade count has changed...
         PNCCapabilities.getAirHandler(stack).ifPresent(h -> {
