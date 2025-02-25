@@ -280,7 +280,7 @@
    "gui.tooltip.block.pneumaticcraft.vortex_tube" : "Splits incoming air into hot and cold components. One side gets hot, the other gets cold. Air usage is dependent on the pressure. Mind that there is a weak thermal connection between the hot and cold sides, so for best efficiency you should vent the cold side with a Heat Sink when you want to utilize the heat, and vice versa if you want the cold.",
    "gui.tooltip.block.pneumaticcraft.wall_lamp" : "A simple wall-attachable lamp which lights with a redstone signal present.",
    "gui.tooltip.block.pneumaticcraft.wall_lamp_inverted" : "A simple wall-attachable lamp which lights with *no* redstone signal present.",
-   "gui.tooltip.block.pneumaticcraft.solar_compressor" : "An advanced compressor that uses sunlight to pressurize air. Increases efficiency the hotter it gets, but too much accumulated heat causes the compressor to shutdown, requiring manual repair.",
+   "gui.tooltip.block.pneumaticcraft.solar_compressor" : "An advanced compressor that uses sunlight to pressurize air. Increases efficiency the hotter it gets, but too much accumulated heat causes the compressor to shutdown, requiring manual repair with a new Solar Cell.",
    "gui.tooltip.item.pneumaticcraft.module_expansion_card" : "Upgrade Tube Modules to unlock extra module configuration options.  Right-click this item on a Tube Module to install it.",
    "gui.tooltip.item.pneumaticcraft.air_canister" : "Can be (dis)charged with a Charging Station. Used in the crafting of most pneumatically chargeable items.\nCan also be used to charge other items.",
    "gui.tooltip.item.pneumaticcraft.air_canister_array" : "4x the storage and transfer rate of an Air Canister!",
