@@ -6,6 +6,22 @@ Changes are in reverse chronological order; newest changes at the top.
 
 # Minecraft 1.21.1
 
+## [8.2.10]
+
+### Added
+* Added `pneumaticcraft:standard_tooltip` item tag; third party items can be added to this tag to get standard PNC tooltips
+  * Standard tooltips include pressure display, installed upgrade listing and usage information via the `gui.tooltip.<modname>.<itemname>` translation key
+
+### Changed
+* Pneumatic Boots kick upgrade now has a 500ms cooldown
+* Developers: made an `AbstractBasicDroneEntity` constructor protected rather than package-protected to ease creation of custom pre-programmed drones
+
+### Fixed
+* Hopefully fixed reported crash with shift-clicking many upgrades into the armor upgrade GUI (maybe in conjunction with Inventory Essentials mod?)
+  * Could not reproduce this myself but added some extra defensive code
+* Fixed a couple of minor typos in the manual
+* Fixed blacklisted upgrade item tooltips still showing items they can no longer be installed in
+
 ## [8.2.9]
 
 ### Fixed
