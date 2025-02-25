@@ -14,7 +14,7 @@ plugins {
 	id 'idea'
 	id 'maven-publish'
 	id "me.modmuss50.mod-publish-plugin" version "0.5.1"
-	id('net.neoforged.gradle') version '[6.0.13, 6.2)'
+	id 'net.minecraftforge.gradle' version '[6.0,6.2)'
 }
 apply plugin: 'org.parchmentmc.librarian.forgegradle'
 apply plugin: "com.jfrog.artifactory"
@@ -116,7 +116,7 @@ repositories {
 }
 
 dependencies {
-	minecraft "net.neoforged:forge:${mc_version}-${forge_version}"
+	minecraft "net.minecraftforge:forge:${mc_version}-${forge_version}"
 
 	annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 
