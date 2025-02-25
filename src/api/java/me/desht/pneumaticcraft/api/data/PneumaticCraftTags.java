@@ -108,6 +108,7 @@ public class PneumaticCraftTags {
 
         public static final TagKey<Item> COMPRESSED_IRON_ARMOR = modTag("armors/compressed_iron");
         public static final TagKey<Item> PNEUMATIC_ARMOR = modTag("armors/pneumatic");
+        public static final TagKey<Item> PNC_TOOLTIP = modTag("standard_tooltip");
 
         public static final TagKey<Item> ARMOR_UPGRADE_BLACKLIST = modTag("armor_upgrade_blacklist");
         public static final TagKey<Item> DRONE_UPGRADE_BLACKLIST = modTag("drone_upgrade_blacklist");

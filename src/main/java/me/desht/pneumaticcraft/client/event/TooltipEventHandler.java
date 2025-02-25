@@ -19,6 +19,7 @@ package me.desht.pneumaticcraft.client.event;
 
 import com.mojang.datafixers.util.Either;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
+import me.desht.pneumaticcraft.api.data.PneumaticCraftTags;
 import me.desht.pneumaticcraft.api.item.IInventoryItem;
 import me.desht.pneumaticcraft.api.item.IProgrammable;
 import me.desht.pneumaticcraft.api.lib.Names;
@@ -63,7 +64,7 @@ public class TooltipEventHandler {
 
         if (stack.getItem() instanceof BucketItem) {
             handleFluidContainerTooltip(event);
-        } else if (PneumaticCraftUtils.getRegistryName(stack.getItem()).orElseThrow().getNamespace().equals(Names.MOD_ID)) {
+        } else if (PneumaticCraftUtils.getRegistryName(stack.getItem()).orElseThrow().getNamespace().equals(Names.MOD_ID) || stack.is(PneumaticCraftTags.Items.PNC_TOOLTIP)) {
             addStandardTooltip(stack, event.getToolTip(), event.getFlags());
         }
         if (stack.getItem() instanceof IProgrammable programmable) {

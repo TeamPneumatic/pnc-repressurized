@@ -138,6 +138,7 @@ public class ModItemTagsProvider extends ItemTagsProvider {
         tag(PneumaticCraftTags.Items.DRONE_UPGRADE_BLACKLIST);
         tag(PneumaticCraftTags.Items.JACKHAMMER_UPGRADE_BLACKLIST);
         tag(PneumaticCraftTags.Items.MINIGUN_UPGRADE_BLACKLIST);
+        tag(PneumaticCraftTags.Items.PNC_TOOLTIP);
     }
 
     @SafeVarargs
