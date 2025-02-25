@@ -249,7 +249,7 @@ public class DroneEntity extends AbstractDroneEntity implements
         goalSelector.addGoal(1, chargeAI = new DroneGoToChargingStation(this));
     }
 
-    DroneEntity(EntityType<? extends DroneEntity> type, Level world, Player player) {
+    protected DroneEntity(EntityType<? extends DroneEntity> type, Level world, Player player) {
         this(type, world);
         if (player != null) {
             ownerUUID = player.getGameProfile().getId();
@@ -458,7 +458,7 @@ public class DroneEntity extends AbstractDroneEntity implements
 
             if (healingInterval != 0 && getHealth() < getMaxHealth() && tickCount % healingInterval == 0) {
                 heal(1);
-                airHandler.addAir(-healingInterval);
+                getAirHandler().addAir(-healingInterval);
             }
 
             if (!isSuffocating) {
@@ -492,7 +492,7 @@ public class DroneEntity extends AbstractDroneEntity implements
                 handleFluidDisplacement();
             }
 
-            airHandler.addAir(-PneumaticValues.DRONE_USAGE_CHUNKLOAD * getUpgrades(ModUpgrades.CHUNKLOADER.get()));
+            getAirHandler().addAir(-PneumaticValues.DRONE_USAGE_CHUNKLOAD * getUpgrades(ModUpgrades.CHUNKLOADER.get()));
 
             handleDebugTick();
         } else {
@@ -1073,7 +1073,7 @@ public class DroneEntity extends AbstractDroneEntity implements
                 }
             } else if (PRESSURE.equals(key)) {
                 int newAir = (int) (entityData.get(PRESSURE) * getAirHandler().getVolume());
-                getAirHandler().addAir(newAir - airHandler.getAir());
+                getAirHandler().addAir(newAir - getAirHandler().getAir());
             }
         }
         super.onSyncedDataUpdated(key);
@@ -1597,7 +1597,7 @@ public class DroneEntity extends AbstractDroneEntity implements
 
     @Override
     public void addAirToDrone(int air) {
-        airHandler.addAir(air);
+        getAirHandler().addAir(air);
     }
 
     @Override

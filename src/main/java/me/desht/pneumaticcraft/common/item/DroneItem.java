@@ -37,7 +37,6 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.MobSpawnType;
-import net.minecraft.world.entity.SpawnGroupData;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.DyeColor;
@@ -118,22 +117,28 @@ public class DroneItem extends PressurizableItem
         return DyeColor.byId(color);
     }
 
-    public void spawnDrone(Player player, Level level, BlockPos clickPos, Direction facing, BlockPos placePos, ItemStack iStack) {
+    public boolean spawnDrone(Player player, Level level, BlockPos clickPos, Direction facing, BlockPos placePos, ItemStack iStack) {
         DroneEntity drone = droneCreator.apply(level, player);
 
         drone.setPos(placePos.getX() + 0.5, placePos.getY() + 0.5, placePos.getZ() + 0.5);
         drone.readFromItemStack(iStack);
         level.addFreshEntity(drone);
-        drone.setDeployPos(placePos);
+        if (drone.isAddedToLevel()) {
+            drone.setDeployPos(placePos);
 
-        if (drone.addProgram(clickPos, facing, placePos, iStack, drone.progWidgets)) {
-            ProgWidgetUtils.updatePuzzleConnections(drone.progWidgets);
+            if (drone.addProgram(clickPos, facing, placePos, iStack, drone.progWidgets)) {
+                ProgWidgetUtils.updatePuzzleConnections(drone.progWidgets);
+            }
+
+            if (level instanceof ServerLevelAccessor serverLevel) {
+                EventHooks.finalizeMobSpawn(drone, serverLevel, serverLevel.getCurrentDifficultyAt(placePos),
+                        MobSpawnType.TRIGGERED, null);
+            }
+
+            return true;
         }
 
-        if (level instanceof ServerLevelAccessor) {
-            EventHooks.finalizeMobSpawn(drone, (ServerLevelAccessor) level, level.getCurrentDifficultyAt(placePos),
-                    MobSpawnType.TRIGGERED, new SpawnGroupData() {});
-        }
+        return false;
     }
 
     @Override
