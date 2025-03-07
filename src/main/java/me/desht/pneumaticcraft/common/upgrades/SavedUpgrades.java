@@ -55,7 +55,7 @@ public class SavedUpgrades {
             if (stack.getItem() instanceof UpgradeItem upgradeItem) {
                 PNCUpgrade type = upgradeItem.getUpgradeType();
                 int maxAllowed = maxCalculator.applyAsInt(type);
-                map.put(type, Math.min(maxAllowed, map.getOrDefault(type, 0) + stack.getCount() * upgradeItem.getUpgradeTier()));
+                map.put(type, Math.min(maxAllowed, map.getOrDefault(type, 0) + stack.getCount()) * upgradeItem.getUpgradeTier());
             }
         }
         return new SavedUpgrades(ItemContainerContents.fromItems(items), Collections.unmodifiableMap(map));
