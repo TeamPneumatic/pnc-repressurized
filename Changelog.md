@@ -6,6 +6,11 @@ Changes are in reverse chronological order; newest changes at the top.
 
 # Minecraft 1.21.1
 
+## [8.2.11]
+
+### Fixed
+* Fixed a bug introduced in last release causing tiered upgrades (e.g. Jet Boots Upgrade) to be misidentified as always tier 1
+
 ## [8.2.10]
 
 ### Added
