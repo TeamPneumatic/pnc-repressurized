@@ -3,8 +3,8 @@
   "promos": {
     "1.21-recommended": "1.21-8.0.3",
     "1.21-latest": "1.21-8.0.3",
-    "1.21.1-recommended": "1.21.1-8.2.11",
-    "1.21.1-latest": "1.21.1-8.2.11"
+    "1.21.1-recommended": "1.21.1-8.2.12",
+    "1.21.1-latest": "1.21.1-8.2.12"
   },
   "1.21": {
     "1.21-8.0.3": "https://github.com/TeamPneumatic/pnc-repressurized/blob/1.21/Changelog.md#803",
@@ -13,6 +13,7 @@
     "1.21-8.0.0": "https://github.com/TeamPneumatic/pnc-repressurized/blob/1.21/Changelog.md#800"
   },
   "1.21.1": {
+    "1.21.1-8.2.12": "https://github.com/TeamPneumatic/pnc-repressurized/blob/1.21/Changelog.md#8212",
     "1.21.1-8.2.11": "https://github.com/TeamPneumatic/pnc-repressurized/blob/1.21/Changelog.md#8211",
     "1.21.1-8.2.10": "https://github.com/TeamPneumatic/pnc-repressurized/blob/1.21/Changelog.md#8210",
     "1.21.1-8.2.9": "https://github.com/TeamPneumatic/pnc-repressurized/blob/1.21/Changelog.md#829",

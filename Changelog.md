@@ -6,6 +6,11 @@ Changes are in reverse chronological order; newest changes at the top.
 
 # Minecraft 1.21.1
 
+## [8.2.12]
+
+### Fixed
+* Fixed crash when generating tooltips for upgrades (specifically when the upgrade list needs to scroll and one or more upgrades are blacklisted)
+
 ## [8.2.11]
 
 ### Fixed
