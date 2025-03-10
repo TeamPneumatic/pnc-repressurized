@@ -114,7 +114,7 @@ public enum ApplicableUpgradesDB implements IUpgradeRegistry {
                 int n = (int) ((ClientUtils.getClientLevel().getGameTime() / 8) % acceptors.size());
                 List<Component> tempList2 = new ArrayList<>(MAX_UPGRADES_IN_TOOLTIP);
                 for (int i = 0; i < MAX_UPGRADES_IN_TOOLTIP; i++) {
-                    tempList2.add(tempList.get((n + i) % acceptors.size()));
+                    tempList2.add(tempList.get((n + i) % tempList.size()));
                 }
                 tooltip.addAll(tempList2);
             } else {
