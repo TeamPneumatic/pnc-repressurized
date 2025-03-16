@@ -82,6 +82,9 @@ public abstract class ProgWidgetInventoryBase extends ProgWidgetAreaItemBase imp
 
     @Override
     public boolean[] getSides() {
+        if (getAccessingSides().isEmpty()) {
+            return new boolean[6];
+        }
         return decodeSides(getAccessingSides().toByteArray()[0]);
     }
 
