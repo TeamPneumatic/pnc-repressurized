@@ -12,6 +12,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.material.FlowingFluid;
 import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.material.PushReaction;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
@@ -62,13 +63,15 @@ public class ModBlocks {
                 .sound(SoundType.STONE);
     }
 
-    private static Block.Properties fluidProps() {
+    private static Block.Properties fluidProps(MapColor color) {
         return Block.Properties.of()
-                .mapColor(MapColor.WATER)
+                .mapColor(color)
                 .noCollission()
                 .strength(100f)
                 .noLootTable()
-                .replaceable();
+                .replaceable()
+                .liquid()
+                .pushReaction(PushReaction.DESTROY);
     }
 
     public static final RegistryObject<PressureTubeBlock> PRESSURE_TUBE = register("pressure_tube",
@@ -272,31 +275,31 @@ public class ModBlocks {
             () -> new WallBlock(reinforcedStoneProps()));
 
     public static final RegistryObject<FluidEtchingAcidBlock> ETCHING_ACID = registerNoItem("etching_acid",
-            () -> new FluidEtchingAcidBlock(fluidProps()));
+            () -> new FluidEtchingAcidBlock(fluidProps(MapColor.EMERALD)));
     public static final RegistryObject<LiquidBlock> PLASTIC = registerNoItem("plastic",
-            () -> new LiquidBlock(() -> (FlowingFluid) ModFluids.PLASTIC.get(), fluidProps()));
+            () -> new LiquidBlock(() -> (FlowingFluid) ModFluids.PLASTIC.get(), fluidProps(MapColor.COLOR_GRAY)));
     public static final RegistryObject<LiquidBlock> LUBRICANT = registerNoItem("lubricant",
-            () -> new LiquidBlock(() -> (FlowingFluid) ModFluids.LUBRICANT.get(), fluidProps()));
+            () -> new LiquidBlock(() -> (FlowingFluid) ModFluids.LUBRICANT.get(), fluidProps(MapColor.COLOR_ORANGE)));
     public static final RegistryObject<LiquidBlock> OIL = registerNoItem("oil",
-            () -> new LiquidBlock(() -> (FlowingFluid) ModFluids.OIL.get(),  fluidProps().mapColor(DyeColor.BLACK)));
+            () -> new LiquidBlock(() -> (FlowingFluid) ModFluids.OIL.get(),  fluidProps(MapColor.COLOR_BLACK)));
     public static final RegistryObject<LiquidBlock> DIESEL = registerNoItem("diesel",
-            () -> new LiquidBlock(() -> (FlowingFluid) ModFluids.DIESEL.get(), fluidProps()));
+            () -> new LiquidBlock(() -> (FlowingFluid) ModFluids.DIESEL.get(), fluidProps(MapColor.COLOR_BROWN)));
     public static final RegistryObject<LiquidBlock> KEROSENE = registerNoItem("kerosene",
-            () -> new LiquidBlock(() -> (FlowingFluid) ModFluids.KEROSENE.get(), fluidProps()));
+            () -> new LiquidBlock(() -> (FlowingFluid) ModFluids.KEROSENE.get(), fluidProps(MapColor.COLOR_CYAN)));
     public static final RegistryObject<LiquidBlock> GASOLINE = registerNoItem("gasoline",
-            () -> new LiquidBlock(() -> (FlowingFluid) ModFluids.GASOLINE.get(), fluidProps()));
+            () -> new LiquidBlock(() -> (FlowingFluid) ModFluids.GASOLINE.get(), fluidProps(MapColor.COLOR_YELLOW)));
     public static final RegistryObject<LiquidBlock> LPG = registerNoItem("lpg",
-            () -> new LiquidBlock(() -> (FlowingFluid) ModFluids.LPG.get(), fluidProps()));
+            () -> new LiquidBlock(() -> (FlowingFluid) ModFluids.LPG.get(), fluidProps(MapColor.TERRACOTTA_YELLOW)));
     public static final RegistryObject<LiquidBlock> MEMORY_ESSENCE = registerNoItem("memory_essence",
-            () -> new LiquidBlock(() -> (FlowingFluid) ModFluids.MEMORY_ESSENCE.get(), fluidProps()));
+            () -> new LiquidBlock(() -> (FlowingFluid) ModFluids.MEMORY_ESSENCE.get(), fluidProps(MapColor.COLOR_GREEN)));
     public static final RegistryObject<LiquidBlock> YEAST_CULTURE = registerNoItem("yeast_culture",
-            () -> new LiquidBlock(() -> (FlowingFluid) ModFluids.YEAST_CULTURE.get(), fluidProps()));
+            () -> new LiquidBlock(() -> (FlowingFluid) ModFluids.YEAST_CULTURE.get(), fluidProps(MapColor.SAND)));
     public static final RegistryObject<LiquidBlock> ETHANOL = registerNoItem("ethanol",
-            () -> new LiquidBlock(() -> (FlowingFluid) ModFluids.ETHANOL.get(), fluidProps()));
+            () -> new LiquidBlock(() -> (FlowingFluid) ModFluids.ETHANOL.get(), fluidProps(MapColor.COLOR_LIGHT_GRAY)));
     public static final RegistryObject<LiquidBlock> VEGETABLE_OIL = registerNoItem("vegetable_oil",
-            () -> new LiquidBlock(() -> (FlowingFluid) ModFluids.VEGETABLE_OIL.get(), fluidProps()));
+            () -> new LiquidBlock(() -> (FlowingFluid) ModFluids.VEGETABLE_OIL.get(), fluidProps(MapColor.COLOR_YELLOW)));
     public static final RegistryObject<LiquidBlock> BIODIESEL = registerNoItem("biodiesel",
-            () -> new LiquidBlock(() -> (FlowingFluid) ModFluids.BIODIESEL.get(), fluidProps()));
+            () -> new LiquidBlock(() -> (FlowingFluid) ModFluids.BIODIESEL.get(), fluidProps(MapColor.TERRACOTTA_GREEN)));
 
     public static RegistryObject<PlasticBrickBlock> plasticBrick(DyeColor color) {
         return PLASTIC_BRICKS.get(color.getId());
