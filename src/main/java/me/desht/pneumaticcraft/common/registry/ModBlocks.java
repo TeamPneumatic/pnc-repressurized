@@ -12,6 +12,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.material.PushReaction;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
@@ -67,13 +68,15 @@ public class ModBlocks {
                 .sound(SoundType.STONE);
     }
 
-    private static Block.Properties fluidProps() {
+    private static Block.Properties fluidProps(MapColor color) {
         return Block.Properties.of()
-                .mapColor(MapColor.WATER)
+                .mapColor(color)
+                .replaceable()
                 .noCollission()
                 .strength(100f)
                 .noLootTable()
-                .replaceable();
+                .liquid()
+                .pushReaction(PushReaction.DESTROY);
     }
 
     public static final DeferredBlock<PressureTubeBlock> PRESSURE_TUBE = register("pressure_tube",
@@ -312,31 +315,31 @@ public class ModBlocks {
             WallBlock::new, reinforcedStoneProps());
 
     public static final DeferredBlock<FluidEtchingAcidBlock> ETCHING_ACID = registerNoItem("etching_acid",
-            FluidEtchingAcidBlock::new, fluidProps());
+            FluidEtchingAcidBlock::new, fluidProps(MapColor.EMERALD));
     public static final DeferredBlock<LiquidBlock> PLASTIC = registerNoItem("plastic",
-            props -> new LiquidBlock(ModFluids.PLASTIC.get(), props), fluidProps());
+            props -> new LiquidBlock(ModFluids.PLASTIC.get(), props), fluidProps(MapColor.COLOR_GRAY));
     public static final DeferredBlock<LiquidBlock> LUBRICANT = registerNoItem("lubricant",
-            props -> new LiquidBlock(ModFluids.LUBRICANT.get(), props), fluidProps());
+            props -> new LiquidBlock(ModFluids.LUBRICANT.get(), props), fluidProps(MapColor.COLOR_ORANGE));
     public static final DeferredBlock<LiquidBlock> OIL = registerNoItem("oil",
-            props -> new LiquidBlock(ModFluids.OIL.get(),  props.mapColor(DyeColor.BLACK)), fluidProps());
+            props -> new LiquidBlock(ModFluids.OIL.get(),  props.mapColor(DyeColor.BLACK)), fluidProps(MapColor.COLOR_BLACK));
     public static final DeferredBlock<LiquidBlock> DIESEL = registerNoItem("diesel",
-            props -> new LiquidBlock(ModFluids.DIESEL.get(), props), fluidProps());
+            props -> new LiquidBlock(ModFluids.DIESEL.get(), props), fluidProps(MapColor.COLOR_BROWN));
     public static final DeferredBlock<LiquidBlock> KEROSENE = registerNoItem("kerosene",
-            props -> new LiquidBlock(ModFluids.KEROSENE.get(), props), fluidProps());
+            props -> new LiquidBlock(ModFluids.KEROSENE.get(), props), fluidProps(MapColor.COLOR_CYAN));
     public static final DeferredBlock<LiquidBlock> GASOLINE = registerNoItem("gasoline",
-            props -> new LiquidBlock(ModFluids.GASOLINE.get(), props), fluidProps());
+            props -> new LiquidBlock(ModFluids.GASOLINE.get(), props), fluidProps(MapColor.COLOR_YELLOW));
     public static final DeferredBlock<LiquidBlock> LPG = registerNoItem("lpg",
-            props -> new LiquidBlock(ModFluids.LPG.get(), props), fluidProps());
+            props -> new LiquidBlock(ModFluids.LPG.get(), props), fluidProps(MapColor.TERRACOTTA_YELLOW));
     public static final DeferredBlock<LiquidBlock> MEMORY_ESSENCE = registerNoItem("memory_essence",
-            props -> new LiquidBlock(ModFluids.MEMORY_ESSENCE.get(), props), fluidProps());
+            props -> new LiquidBlock(ModFluids.MEMORY_ESSENCE.get(), props), fluidProps(MapColor.COLOR_GREEN));
     public static final DeferredBlock<LiquidBlock> YEAST_CULTURE = registerNoItem("yeast_culture",
-            props -> new LiquidBlock(ModFluids.YEAST_CULTURE.get(), props), fluidProps());
+            props -> new LiquidBlock(ModFluids.YEAST_CULTURE.get(), props), fluidProps(MapColor.SAND));
     public static final DeferredBlock<LiquidBlock> ETHANOL = registerNoItem("ethanol",
-            props -> new LiquidBlock(ModFluids.ETHANOL.get(), props), fluidProps());
+            props -> new LiquidBlock(ModFluids.ETHANOL.get(), props), fluidProps(MapColor.COLOR_LIGHT_GRAY));
     public static final DeferredBlock<LiquidBlock> VEGETABLE_OIL = registerNoItem("vegetable_oil",
-            props -> new LiquidBlock(ModFluids.VEGETABLE_OIL.get(), props), fluidProps());
+            props -> new LiquidBlock(ModFluids.VEGETABLE_OIL.get(), props), fluidProps(MapColor.COLOR_YELLOW));
     public static final DeferredBlock<LiquidBlock> BIODIESEL = registerNoItem("biodiesel",
-            props -> new LiquidBlock(ModFluids.BIODIESEL.get(), props), fluidProps());
+            props -> new LiquidBlock(ModFluids.BIODIESEL.get(), props), fluidProps(MapColor.TERRACOTTA_GREEN));
 
     public static DeferredBlock<PlasticBrickBlock> plasticBrick(DyeColor color) {
         return PLASTIC_BRICKS.get(color.getId());
