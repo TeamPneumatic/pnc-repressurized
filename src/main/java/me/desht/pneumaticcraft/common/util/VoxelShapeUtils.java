@@ -57,7 +57,7 @@ public class VoxelShapeUtils {
 
             switch (rotation) {
                 case 90 -> rotatedShapes.add(boxSafe(x1 * 16, 8 - z1, 8 + y1, x2 * 16, 8 - z2, 8 + y2));
-                case 180 -> rotatedShapes.add(boxSafe(x1 * 16, 8 - z1, 8 - y1, x2 * 16, 8 - z2, 8 - y2));
+                case 180 -> rotatedShapes.add(boxSafe(x1 * 16, 8 - y1, 8 - z1, x2 * 16, 8 - y2, 8 - z2));
                 case 270 -> rotatedShapes.add(boxSafe(x1 * 16, 8 + z1, 8 - y1, x2 * 16, 8 + z2, 8 - y2));
                 default -> throw new IllegalArgumentException("invalid rotation " + rotation + " (must be 90,180 or 270)");
             }
