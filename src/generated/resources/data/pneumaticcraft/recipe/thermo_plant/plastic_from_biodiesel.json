@@ -3,7 +3,7 @@
   "inputs": {
     "fluid": {
       "amount": 100,
-      "tag": "c:fuels/biodiesel"
+      "tag": "c:biodiesel"
     },
     "item": {
       "item": "minecraft:charcoal"

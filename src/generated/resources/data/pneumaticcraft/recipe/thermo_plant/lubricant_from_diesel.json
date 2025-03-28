@@ -3,7 +3,7 @@
   "inputs": {
     "fluid": {
       "amount": 1000,
-      "tag": "c:fuels/diesel"
+      "tag": "c:diesel"
     },
     "item": {
       "tag": "c:dusts/redstone"

@@ -10,7 +10,7 @@
   },
   "input2": {
     "amount": 25,
-    "tag": "c:fuels/ethanol"
+    "tag": "c:ethanol"
   },
   "item_output": {
     "count": 1,

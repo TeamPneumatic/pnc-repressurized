@@ -2,6 +2,6 @@
   "type": "pneumaticcraft:fuel_quality",
   "air_per_bucket": 400000,
   "fluid": {
-    "tag": "c:fuels/ethanol"
+    "tag": "c:ethanol"
   }
 }

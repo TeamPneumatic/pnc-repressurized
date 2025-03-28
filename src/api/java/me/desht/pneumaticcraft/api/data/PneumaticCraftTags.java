@@ -134,13 +134,13 @@ public class PneumaticCraftTags {
     }
 
     public static class Fluids extends PneumaticCraftTags {
-        public static final TagKey<Fluid> CRUDE_OIL = commonTag("fuels/crude_oil");
-        public static final TagKey<Fluid> ETHANOL = commonTag("fuels/ethanol");
-        public static final TagKey<Fluid> DIESEL = commonTag("fuels/diesel");
-        public static final TagKey<Fluid> KEROSENE = commonTag("fuels/kerosene");
-        public static final TagKey<Fluid> GASOLINE = commonTag("fuels/gasoline");
-        public static final TagKey<Fluid> LPG = commonTag("fuels/lpg");
-        public static final TagKey<Fluid> BIODIESEL = commonTag("fuels/biodiesel");
+        public static final TagKey<Fluid> CRUDE_OIL = commonTag("crude_oil");
+        public static final TagKey<Fluid> ETHANOL = commonTag("ethanol");
+        public static final TagKey<Fluid> DIESEL = commonTag("diesel");
+        public static final TagKey<Fluid> KEROSENE = commonTag("kerosene");
+        public static final TagKey<Fluid> GASOLINE = commonTag("gasoline");
+        public static final TagKey<Fluid> LPG = commonTag("lpg");
+        public static final TagKey<Fluid> BIODIESEL = commonTag("biodiesel");
 
         public static final TagKey<Fluid> LUBRICANT = commonTag("lubricant");
         public static final TagKey<Fluid> PLANT_OIL = commonTag("plantoil");
