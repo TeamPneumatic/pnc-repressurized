@@ -48,10 +48,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.Validate;
 import org.lwjgl.glfw.GLFW;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -187,6 +184,10 @@ public enum ClientArmorRegistry implements IClientArmorRegistry {
 
     public IArmorUpgradeClientHandler<?> getClientHandler(ResourceLocation id) {
         return id2HandlerMap.get(id);
+    }
+
+    public Collection<IArmorUpgradeClientHandler<?>> allClientHandlers() {
+        return Collections.unmodifiableCollection(id2HandlerMap.values());
     }
 
     public Optional<IArmorUpgradeClientHandler<?>> getTriggeredHandler(KeyMapping keyBinding) {

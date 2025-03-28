@@ -42,6 +42,7 @@ import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.options.controls.KeyBindsScreen;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -51,6 +52,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.InputEvent;
+import net.neoforged.neoforge.client.event.ScreenEvent;
 import net.neoforged.neoforge.client.settings.KeyModifier;
 import org.lwjgl.glfw.GLFW;
 
@@ -307,6 +309,22 @@ public class WidgetKeybindCheckBox extends WidgetCheckBox {
         public static void onMouseClick(InputEvent.MouseButton.Post event) {
             if (Minecraft.getInstance().screen == null && event.getAction() == GLFW.GLFW_PRESS) {
                 handleInput(InputConstants.Type.MOUSE.getOrCreate(event.getButton()));
+            }
+        }
+
+        @SubscribeEvent
+        public static void onScreenClosed(ScreenEvent.Closing event) {
+            if (event.getScreen() instanceof KeyBindsScreen) {
+                // if key binds are changed the vanilla way, ensure all locally cached mappings are updated for consistency
+                in2checkbox.clear();
+                ClientArmorRegistry.getInstance().allClientHandlers().forEach(handler -> {
+                    KeyMapping mapping = ClientArmorRegistry.getInstance().getKeybindingForUpgrade(handler.getID());
+                    WidgetKeybindCheckBox cb = id2checkBox.get(handler.getID());
+                    if (mapping != null && cb != null) {
+                        updateBinding(mapping, cb);
+                        cb.buildTooltip();
+                    }
+                });
             }
         }
 
