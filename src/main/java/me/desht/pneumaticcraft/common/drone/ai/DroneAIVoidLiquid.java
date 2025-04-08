@@ -34,7 +34,7 @@ public class DroneAIVoidLiquid extends Goal {
 
     @Override
     public boolean canUse() {
-        return widget.isFluidValid(drone.getFluidTank().getFluid().getFluid());
+        return drone.getFluidTank().getFluidAmount() > 0 && widget.isFluidValid(drone.getFluidTank().getFluid().getFluid());
     }
 
     @Override
