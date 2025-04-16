@@ -98,7 +98,7 @@ public class PneumaticDoorRenderer extends AbstractBlockEntityModelRenderer<Pneu
             matrixStackIn.mulPose(Axis.YP.rotationDegrees(180));
             matrixStackIn.translate(0, 0, 6.5/16F);
         }
-        door.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn, 0xFF000000 | te.color.getTextureDiffuseColor());
+        door.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn, 0xFF000000 | te.getColor().getTextureDiffuseColor());
     }
 
     @Override

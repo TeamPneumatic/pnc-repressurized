@@ -181,7 +181,7 @@ public class PneumaticDoorBlock extends AbstractPneumaticCraftBlock implements P
             BlockEntity topHalf = world.getBlockEntity(top);
             if (topHalf instanceof PneumaticDoorBlockEntity door) {
                 door.rightGoing = teDoor.rightGoing;
-                door.color = teDoor.color;
+                door.setColorRaw(teDoor.getColor());
             }
         });
     }

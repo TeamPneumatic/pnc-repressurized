@@ -36,6 +36,8 @@ import net.minecraft.world.phys.AABB;
 import net.neoforged.neoforge.items.IItemHandler;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Objects;
+
 public class PneumaticDoorBlockEntity extends AbstractTickingBlockEntity {
     @DescSynced
     @LazySynced
@@ -44,7 +46,7 @@ public class PneumaticDoorBlockEntity extends AbstractTickingBlockEntity {
     @DescSynced
     public boolean rightGoing;  // true = door rotates clockwise when door base arm extends
     @DescSynced
-    public DyeColor color;
+    private DyeColor color;
 
     public PneumaticDoorBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntityTypes.PNEUMATIC_DOOR.get(), pos, state);
@@ -53,6 +55,10 @@ public class PneumaticDoorBlockEntity extends AbstractTickingBlockEntity {
     @Override
     public boolean hasItemCapability() {
         return false;
+    }
+
+    public DyeColor getColor() {
+        return Objects.requireNonNullElse(color, DyeColor.WHITE);
     }
 
     public void setRotationAngle(float rotationAngle) {
@@ -92,6 +98,10 @@ public class PneumaticDoorBlockEntity extends AbstractTickingBlockEntity {
             return true;
         }
         return false;
+    }
+
+    public void setColorRaw(DyeColor color) {
+        this.color = color;
     }
 
     private boolean isTopDoor() {
