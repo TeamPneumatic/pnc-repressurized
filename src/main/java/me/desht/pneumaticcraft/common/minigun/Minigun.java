@@ -48,6 +48,7 @@ import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import org.apache.commons.lang3.mutable.MutableBoolean;
+import org.apache.commons.lang3.mutable.MutableInt;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -237,13 +238,16 @@ public abstract class Minigun {
         return  this;
     }
 
-    public boolean tryFireMinigun(Entity target) {
+    public FiringResult tryFireMinigun(Entity target) {
+        final MutableInt ammoCost = new MutableInt(0);
         final MutableBoolean lastShotOfAmmo = new MutableBoolean(false);
-        if (!ammoStack.isEmpty() && ammoStack.getDamageValue() < ammoStack.getMaxDamage() && (airCapability == null || airCapability.getPressure() > 0)) {
+        if (ammoStack.getItem() instanceof AbstractGunAmmoItem ammoItem
+                && ammoStack.getDamageValue() < ammoStack.getMaxDamage()
+                && (airCapability == null || airCapability.getPressure() > 0))
+        {
             setMinigunTriggerTimeOut(10);
             if (!world.isClientSide && getMinigunSpeed() == MAX_GUN_SPEED && (!requiresTarget || gunAimedAtTarget)) {
                 HitResult rtr = null;
-                AbstractGunAmmoItem ammoItem = (AbstractGunAmmoItem) ammoStack.getItem();
                 if (!requiresTarget) {
                     rtr = RayTraceUtils.getMouseOverServer(player, getRange());
                     target = rtr instanceof EntityHitResult e ? e.getEntity() : null;
@@ -267,16 +271,16 @@ public abstract class Minigun {
                     BlockHitResult brtr = (BlockHitResult) rtr;
                     roundsUsed = ammoItem.onBlockHit(this, ammoStack, brtr);
                 }
-                int ammoCost = roundsUsed * ammoItem.getAmmoCost(ammoStack);
+                ammoCost.setValue(roundsUsed * ammoItem.getAmmoCost(ammoStack));
                 if (!isInfiniteAmmo() && player instanceof ServerPlayer serverPlayer) {
                     boolean hasUnbreaking = player.registryAccess().registryOrThrow(Registries.ENCHANTMENT).getHolder(Enchantments.UNBREAKING)
                             .map(ench -> ammoStack.getEnchantmentLevel(ench) > 0).orElse(false);
-                    ammoStack.hurtAndBreak(ammoCost, serverPlayer.serverLevel(), serverPlayer,
+                    ammoStack.hurtAndBreak(ammoCost.intValue(), serverPlayer.serverLevel(), serverPlayer,
                             item -> lastShotOfAmmo.setValue(hasUnbreaking));
                 }
             }
         }
-        return lastShotOfAmmo.booleanValue();
+        return new FiringResult(ammoCost.intValue(), lastShotOfAmmo.booleanValue());
     }
 
     private boolean securityProtectedTarget(Entity target) {
@@ -385,5 +389,9 @@ public abstract class Minigun {
         while (yaw > 180D) yaw -= 360D;
         while (yaw < -180D) yaw += 360D;
         return yaw;
+    }
+
+    public record FiringResult(int ammoUsed, boolean ammoUsedUp) {
+        public static final FiringResult NONE = new FiringResult(0, false);
     }
 }

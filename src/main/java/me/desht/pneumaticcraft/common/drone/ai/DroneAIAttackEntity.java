@@ -17,6 +17,7 @@
 
 package me.desht.pneumaticcraft.common.drone.ai;
 
+import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetEntityAttack;
 import me.desht.pneumaticcraft.common.entity.drone.DroneEntity;
 import me.desht.pneumaticcraft.common.item.MicromissilesItem;
 import me.desht.pneumaticcraft.common.item.minigun.AbstractGunAmmoItem;
@@ -36,12 +37,14 @@ import net.neoforged.neoforge.common.util.FakePlayer;
 public class DroneAIAttackEntity extends MeleeAttackGoal {
     private final DroneEntity attacker;
     private final AttackType attackType;
+    private final ProgWidgetEntityAttack widget;
     private final double rangedAttackRange;
 
-    public DroneAIAttackEntity(DroneEntity attacker, double speed, boolean useLongMemory, String filterString) {
+    public DroneAIAttackEntity(DroneEntity attacker, double speed, boolean useLongMemory, String filterString, ProgWidgetEntityAttack widget) {
         super(attacker, speed, useLongMemory);
         this.attacker = attacker;
         this.attackType = AttackType.forDrone(attacker);
+        this.widget = widget;
         float rangeMult = 1.0f;
         switch (attackType) {
             case MINIGUN -> {
@@ -98,6 +101,9 @@ public class DroneAIAttackEntity extends MeleeAttackGoal {
     @Override
     public boolean canContinueToUse() {
         if (attackType != AttackType.MELEE) {
+            if (widget.useMaxActions() && attacker.getAttackCount() >= widget.getMaxActions()) {
+                return false;
+            }
             LivingEntity target = attacker.getTarget();
             if (target == null || !target.isAlive()
                     || attackType == AttackType.MINIGUN && attacker.getSlotForAmmo() < 0
@@ -119,7 +125,9 @@ public class DroneAIAttackEntity extends MeleeAttackGoal {
                 double dist = attacker.distanceToSqr(target.getX(), target.getBoundingBox().minY, target.getZ());
                 if (dist < Math.pow(rangedAttackRange, 2) && attacker.getSensing().hasLineOfSight(target)) {
                     attacker.getFakePlayer().setPos(attacker.getX(), attacker.getY(), attacker.getZ());
-                    attackType.doAttack(attacker, target);
+                    if (attackType.doAttack(attacker, target)) {
+                        attacker.incAttackCount();
+                    }
                     if (dist < Math.pow(rangedAttackRange * 0.75, 2)) {
                         attacker.getNavigation().stop();
                     }
@@ -174,18 +182,23 @@ public class DroneAIAttackEntity extends MeleeAttackGoal {
             return MELEE;
         }
 
-        public void doAttack(DroneEntity attacker, LivingEntity target) {
-            switch (this) {
-                case MINIGUN -> attacker.tryFireMinigun(target);
-                case MISSILE -> {
-                    FakePlayer fakePlayer = attacker.getFakePlayer();
-                    fakePlayer.lookAt(EntityAnchorArgument.Anchor.EYES, target.position());
-                    ItemStack stack = attacker.getInv().getStackInSlot(0);
-                    if (stack.getItem() instanceof MicromissilesItem) {
-                        fakePlayer.gameMode.useItem(fakePlayer, attacker.level(), stack, InteractionHand.MAIN_HAND);
-                    }
-                }
+        public boolean doAttack(DroneEntity attacker, LivingEntity target) {
+            return switch (this) {
+                case MINIGUN -> attacker.tryFireMinigun(target).ammoUsed() > 0;
+                case MISSILE -> tryFireMicromissile(attacker, target);
+                default -> true;  // doesn't really matter, this is only called for ranged attacks
+            };
+        }
+
+        private static boolean tryFireMicromissile(DroneEntity attacker, LivingEntity target) {
+            FakePlayer fakePlayer = attacker.getFakePlayer();
+            fakePlayer.lookAt(EntityAnchorArgument.Anchor.EYES, target.position());
+            ItemStack stack = attacker.getInv().getStackInSlot(0);
+            if (stack.getItem() instanceof MicromissilesItem) {
+                fakePlayer.gameMode.useItem(fakePlayer, attacker.level(), stack, InteractionHand.MAIN_HAND);
+                return true;
             }
+            return false;
         }
     }
 }

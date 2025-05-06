@@ -133,8 +133,7 @@ public class SentryTurretBlockEntity extends AbstractTickingBlockEntity implemen
                 if ((nonNullLevel().getGameTime() & 0x7) == 0) {
                     // Make sure any knockback has the right direction.
                     getFakePlayer().setPos(getBlockPos().getX() + 0.5, getBlockPos().getY() + 0.5, getBlockPos().getZ() + 0.5);
-                    boolean usedUpAmmo = getMinigun().tryFireMinigun(target);
-                    if (usedUpAmmo) {
+                    if (getMinigun().tryFireMinigun(target).ammoUsedUp()) {
                         clearEmptyAmmo();
                     }
                 }

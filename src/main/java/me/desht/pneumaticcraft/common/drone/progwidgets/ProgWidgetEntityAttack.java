@@ -104,7 +104,7 @@ public class ProgWidgetEntityAttack extends ProgWidget
 
     @Override
     public Goal getWidgetAI(IDrone drone, IProgWidget widget) {
-        return new DroneAIAttackEntity(IDroneBase.asDrone(drone), 1.0D, false, getEntityFilters().getFilterString());
+        return new DroneAIAttackEntity(IDroneBase.asDrone(drone), 1.0D, false, getEntityFilters().getFilterString(), this);
     }
 
     @Override

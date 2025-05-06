@@ -1540,14 +1540,17 @@ public class DroneEntity extends AbstractDroneEntity implements
         return (IPathNavigator) getNavigation();
     }
 
-    public void tryFireMinigun(LivingEntity target) {
+    public Minigun.FiringResult tryFireMinigun(LivingEntity target) {
         int slot = getSlotForAmmo();
         if (slot >= 0) {
             ItemStack ammo = droneItemHandler.getStackInSlot(slot);
-            if (getMinigun().setAmmoStack(ammo).tryFireMinigun(target)) {
+            Minigun.FiringResult res = getMinigun().setAmmoStack(ammo).tryFireMinigun(target);
+            if (res.ammoUsedUp()) {
                 droneItemHandler.setStackInSlot(slot, ItemStack.EMPTY);
             }
+            return res;
         }
+        return Minigun.FiringResult.NONE;
     }
 
     /**

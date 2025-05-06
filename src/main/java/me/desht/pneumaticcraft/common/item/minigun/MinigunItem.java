@@ -230,7 +230,7 @@ public class MinigunItem extends PressurizableItem implements
             int prevDamage = ammo.getDamageValue();
             Minigun minigun = getMinigun(stack, player, ammo);
             // an item life upgrade will prevent the stack from being destroyed
-            boolean usedUpAmmo = minigun.tryFireMinigun(null) && minigun.getUpgrades(ModUpgrades.ITEM_LIFE.get()) == 0;
+            boolean usedUpAmmo = minigun.tryFireMinigun(null).ammoUsedUp() && minigun.getUpgrades(ModUpgrades.ITEM_LIFE.get()) == 0;
             if (usedUpAmmo) ammo.setCount(0);
             if (usedUpAmmo || ammo.getDamageValue() != prevDamage) {
                 magazineHandler.save();
