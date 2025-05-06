@@ -190,7 +190,9 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
 
         GlobalBlockEntityCacheManager.getInstance(getLevel()).getAerialInterfaces().add(this);
 
-        NeoForge.EVENT_BUS.register(this);
+        if (!nonNullLevel().isClientSide()) {
+            NeoForge.EVENT_BUS.register(this);
+        }
     }
 
     @Override

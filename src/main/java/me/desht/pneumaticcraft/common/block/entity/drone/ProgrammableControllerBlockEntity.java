@@ -182,8 +182,6 @@ public class ProgrammableControllerBlockEntity extends AbstractAirHandlingBlockE
 
         NeoForge.EVENT_BUS.post(new DroneConstructingEvent(this));
 
-        NeoForge.EVENT_BUS.register(this);
-
         itemHandlerSideConfigurator = new SideConfigurator<>("items", this);
         itemHandlerSideConfigurator.registerHandler("droneInv", new ItemStack(ModItems.DRONE.get()),
                 Capabilities.ItemHandler.BLOCK, () -> droneItemHandler,
@@ -528,6 +526,10 @@ public class ProgrammableControllerBlockEntity extends AbstractAirHandlingBlockE
     @Override
     public void onLoad() {
         super.onLoad();
+
+        if (!nonNullLevel().isClientSide()) {
+            NeoForge.EVENT_BUS.register(this);
+        }
 
         droneItemHandler.setFakePlayerReady();
 
