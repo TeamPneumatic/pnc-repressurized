@@ -166,7 +166,7 @@ public class JetBootsHandler extends BaseArmorUpgradeHandler<JetBootsHandler.Jet
             }
             commonArmorHandler.addAir(EquipmentSlot.FEET, -jetbootsAirUsage);
 
-            if (player.position().y > player.level().getMaxBuildHeight() + 64) {
+            if (player.position().y > player.level().getMaxBuildHeight() + ConfigHelper.common().armor.jetBootsHeightLimit.get()) {
                 player.getCooldowns().addCooldown(ModItems.PNEUMATIC_BOOTS.get(), 20);
             }
         }

@@ -30,7 +30,7 @@ import java.util.List;
  * and can also be directly retrieved via {@link ICommonArmorRegistry#getCommonArmorHandler(Player)}.
  * <p>
  * You should avoid hanging on to instances of this across ticks, since it will become invalid if a player logs off or
- * changes dimension (see also {@link #isValid()}.
+ * changes dimension (but see also {@link #isValid()}).
  */
 public interface ICommonArmorHandler {
     /**
@@ -51,6 +51,7 @@ public interface ICommonArmorHandler {
 
     /**
      * Convenience method to get the speed boost for the given armor piece, which is 1 + {number_of_speed_upgrades}
+     *
      * @param slot the equipment slot
      * @return the speed boost
      */
@@ -74,6 +75,7 @@ public interface ICommonArmorHandler {
 
     /**
      * Check that the armor in the given is above the minimum pressure limit to operate
+     *
      * @param slot the slot
      * @return true if the armor piece can function, false if not
      */

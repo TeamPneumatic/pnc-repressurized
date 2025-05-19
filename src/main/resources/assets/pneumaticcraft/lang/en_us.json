@@ -956,6 +956,7 @@
    "pneumaticcraft.config.common.armor.flippers_speed_boost_floating" : "Flippers floating speed boast",
    "pneumaticcraft.config.common.armor.flippers_speed_boost_ground" : "Flipper ground speed boost",
    "pneumaticcraft.config.common.armor.jet_boots_air_usage" : "Jet Boots air usage",
+   "pneumaticcraft.config.common.armor.jet_boots_height_limit" : "Jet Boots height limit (relative to max build height)",
    "pneumaticcraft.config.common.armor.magnet_air_usage" : "Magnet air usage",
    "pneumaticcraft.config.common.armor.repair_air_usage" : "Armor repair air usage",
    "pneumaticcraft.config.common.armor.scuba_multiplier" : "Scuba Upgrade air cost",
