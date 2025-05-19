@@ -70,6 +70,7 @@ public class CommonConfig {
     }
     public static class Armor {
         public ForgeConfigSpec.IntValue jetBootsAirUsage;
+        public ForgeConfigSpec.IntValue jetBootsHeightLimit;
         public ForgeConfigSpec.IntValue armorStartupTime;
         public ForgeConfigSpec.DoubleValue flippersSpeedBoostGround;
         public ForgeConfigSpec.DoubleValue flippersSpeedBoostFloating;
@@ -361,6 +362,10 @@ public class CommonConfig {
                 .comment("Jetboots air usage in mL/tick (per Jet Boots Upgrade)")
                 .translation("pneumaticcraft.config.common.armor.jet_boots_air_usage")
                 .defineInRange("jet_boots_air_usage", PneumaticValues.PNEUMATIC_JET_BOOTS_USAGE, 0, Integer.MAX_VALUE);
+        armor.jetBootsHeightLimit = builder
+                .comment("Jetboots height limit before cutting out, relative to world max build height")
+                .translation("pneumaticcraft.config.common.armor.jet_boots_height_limit")
+                .defineInRange("jet_boots_height_limit", 64, Integer.MIN_VALUE, Integer.MAX_VALUE);
         armor.armorStartupTime = builder
                 .comment("Base Pneumatic Armor startup time in ticks (before Speed Upgrades)")
                 .translation("pneumaticcraft.config.common.armor.armor_startup_time")

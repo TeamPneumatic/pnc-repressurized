@@ -48,6 +48,7 @@ public interface ICommonArmorHandler {
 
     /**
      * Convenience method to get the speed boost for the given armor piece, which is 1 + {number_of_speed_upgrades}
+     *
      * @param slot the equipment slot
      * @return the speed boost
      */
@@ -71,6 +72,7 @@ public interface ICommonArmorHandler {
 
     /**
      * Check that the armor in the given is above the minimum pressure limit to operate
+     *
      * @param slot the slot
      * @return true if the armor piece can function, false if not
      */
