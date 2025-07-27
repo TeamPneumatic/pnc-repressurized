@@ -17,6 +17,7 @@
 
 package me.desht.pneumaticcraft.common.config.subconfig;
 
+import com.google.gson.JsonSyntaxException;
 import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.world.level.storage.LevelResource;
@@ -47,12 +48,12 @@ public class AuxConfigHandler {
                 File subFile = new File(defaultConfigDir, subConfig.getConfigFilename() + ".cfg");
                 try {
                     subConfig.preInit(subFile);
-                } catch(IOException e) {
-                    Log.error("Config file " + subConfig.getConfigFilename() + " failed to create! Unexpected things can happen!");
-                    e.printStackTrace();
-                } catch (ClassCastException e) {
-                    Log.error("Config file " + subConfig.getConfigFilename() + " appears to be invalid JSON! Unexpected things can happen!");
-                    e.printStackTrace();
+                } catch (IOException e) {
+                    Log.error("Config file {} failed to create! Unexpected things can happen!", subConfig.getConfigFilename());
+                    Log.error("Error detail: " + e.getMessage());
+                } catch (ClassCastException | JsonSyntaxException e) {
+                    Log.error("Config file {} appears to be invalid JSON! Unexpected things can happen!", subConfig.getConfigFilename());
+                    Log.error("Error detail: " + e.getMessage());
                 }
             }
         }
@@ -73,11 +74,11 @@ public class AuxConfigHandler {
                 try {
                     subConfig.postInit(subFile);
                 } catch (IOException e) {
-                    Log.error("Config file " + subConfig.getConfigFilename() + " failed to create! Unexpected things can happen!");
-                    e.printStackTrace();
-                } catch (ClassCastException e) {
-                    Log.error("Config file " + subConfig.getConfigFilename() + " appears to be invalid JSON! Unexpected things can happen!");
-                    e.printStackTrace();
+                    Log.error("Config file {} failed to create! Unexpected things can happen!", subConfig.getConfigFilename());
+                    Log.error("Error detail: " + e.getMessage());
+                } catch (ClassCastException | JsonSyntaxException e) {
+                    Log.error("Config file {} appears to be invalid JSON! Unexpected things can happen!", subConfig.getConfigFilename());
+                    Log.error("Error detail: " + e.getMessage());
                 }
             }
         }
