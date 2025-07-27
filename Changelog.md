@@ -6,6 +6,29 @@ Changes are in reverse chronological order; newest changes at the top.
 
 # Minecraft 1.21.1
 
+## [8.2.13]
+
+### Added
+* Jet Boots max height before cutout is now configurable instead of world build height + 64
+  * See `jet_boots_height_limit` in common config
+
+### Changed
+* All Pneumaticraft fuel fluids are now just in the `c:<fluid>` fluid tag, no longer under `c:fuels/<fluid>`
+  * This is more in line with other mods
+
+### Fixed
+* Elevator caller screens now have a better button layout algorithm (in particular when there are many floors)
+* The "Limit Interaction" setting for the Drone Entity Attack widget should now work correctly when the drone is using a Minigun or Micromissiles
+* Pneumatic Chestplate now honours the Apotheosis Elytra affix (Elytra flying allowed with the affix even without Elytra upgrade installed)
+* Fixed Pressure Chamber Valves wrongly reporting a 0x0x0 chamber size under some circumstances
+* Fixed some client-side memory leak issues
+* Fixed crash with Pneumatic Door renderer under some circumstances
+* Fixed Void Liquid widget causing drones to "hang" when no filter is in use and the drone has an empty tank
+* Fixed Omnihopper and Liquid Hopper block shapes being incorrect with certain hopper rotations
+* Fixed Pneumatic Armor hotkeys not updating correctly if changed via vanilla keybinding screen
+* Fixed piston reaction behaviour for PneumaticCraft fluids (was pushing fluids, now overwrites the fluid)
+* Fixed a crash caused by unselecting all sides of a sided programming widget
+
 ## [8.2.12]
 
 ### Fixed
