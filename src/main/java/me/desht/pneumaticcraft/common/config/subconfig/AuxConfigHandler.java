@@ -17,6 +17,7 @@
 
 package me.desht.pneumaticcraft.common.config.subconfig;
 
+import com.google.gson.JsonSyntaxException;
 import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.world.level.storage.LevelResource;
@@ -46,10 +47,10 @@ public class AuxConfigHandler {
                 File subFile = new File(defaultConfigDir, subConfig.getConfigFilename() + ".cfg");
                 try {
                     subConfig.preInit(subFile);
-                } catch(IOException e) {
+                } catch (IOException e) {
                     Log.error("Config file {} failed to create! Unexpected things can happen!", subConfig.getConfigFilename());
                     Log.error("Error detail: " + e.getMessage());
-                } catch (ClassCastException e) {
+                } catch (ClassCastException | JsonSyntaxException e) {
                     Log.error("Config file {} appears to be invalid JSON! Unexpected things can happen!", subConfig.getConfigFilename());
                     Log.error("Error detail: " + e.getMessage());
                 }
@@ -71,7 +72,7 @@ public class AuxConfigHandler {
                 } catch (IOException e) {
                     Log.error("Config file {} failed to create! Unexpected things can happen!", subConfig.getConfigFilename());
                     Log.error("Error detail: " + e.getMessage());
-                } catch (ClassCastException e) {
+                } catch (ClassCastException | JsonSyntaxException e) {
                     Log.error("Config file {} appears to be invalid JSON! Unexpected things can happen!", subConfig.getConfigFilename());
                     Log.error("Error detail: " + e.getMessage());
                 }
