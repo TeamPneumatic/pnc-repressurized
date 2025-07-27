@@ -60,10 +60,10 @@ public class ElevatorCallerBlock extends AbstractCamouflageBlock implements Pneu
     private int getFloorForHit(ElevatorCallerBlockEntity teEC, Direction side, double hitX, double hitY, double hitZ) {
         double x;
         switch (side) {
-            case NORTH: x = Math.abs(hitX % 1); break;
-            case SOUTH: x = 1 - Math.abs(hitX % 1); break;
-            case EAST: x = Math.abs(hitZ % 1); break;
-            case WEST: x = 1 - Math.abs(hitZ % 1); break;
+            case NORTH: x = 1 - Math.abs(hitX % 1); break;
+            case SOUTH: x = Math.abs(hitX % 1); break;
+            case EAST: x = 1 - Math.abs(hitZ % 1); break;
+            case WEST: x = Math.abs(hitZ % 1); break;
             default: return -1;
         }
         // yep, Y val seems to need inverting if Y < 0.  go figure?
