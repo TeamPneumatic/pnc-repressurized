@@ -28,6 +28,7 @@ import me.desht.pneumaticcraft.client.sound.MovingSounds;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.block.ElevatorBaseBlock;
 import me.desht.pneumaticcraft.common.block.entity.*;
+import me.desht.pneumaticcraft.common.block.entity.elevator.ElevatorCallerBlockEntity.ElevatorButton;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.event.MiscEventHandler;
 import me.desht.pneumaticcraft.common.inventory.ElevatorMenu;
@@ -81,8 +82,11 @@ public class ElevatorBaseBlockEntity extends AbstractAirHandlingBlockEntity impl
             new RedstoneController.ReceivingRedstoneMode<>("elevator.caller", new ItemStack(ModBlocks.ELEVATOR_CALLER.get()), te -> true)
     );
 
+    private static final float BUTTON_MARGIN = 0.2F;
     private static final float BUTTON_HEIGHT = 0.06F;
     private static final float BUTTON_SPACING = 0.02F;
+    private static final int MAX_BUTTONS_PER_ROW = 9;
+
     private static final byte RS_REDSTONE_MODE = 0;
     private static final byte RS_CALLER_MODE = 1;
 
@@ -479,20 +483,7 @@ public class ElevatorBaseBlockEntity extends AbstractAirHandlingBlockEntity impl
             lastFloorUpdate = level.getGameTime();
         }
 
-        ElevatorCallerBlockEntity.ElevatorButton[] elevatorButtons = new ElevatorCallerBlockEntity.ElevatorButton[floorHeights.length];
-        int columns = (elevatorButtons.length - 1) / 12 + 1;
-        for (int j = 0; j < columns; j++) {
-            for (int i = j * 12; i < floorHeights.length && i < j * 12 + 12; i++) {
-                elevatorButtons[i] = new ElevatorCallerBlockEntity.ElevatorButton(0.2F + 0.6F / columns * j, 0.5F + (Math.min(floorHeights.length, 12) - 2) * (BUTTON_SPACING + BUTTON_HEIGHT) / 2 - i % 12 * (BUTTON_HEIGHT + BUTTON_SPACING), 0.58F / columns, BUTTON_HEIGHT, i, floorHeights[i]);
-                elevatorButtons[i].setColor(floorHeights[i] == targetExtension ? 0 : 1, 1, floorHeights[i] == targetExtension ? 0 : 1);
-                String floorName = floorNames.get(floorHeights[i]);
-                if (floorName != null) {
-                    elevatorButtons[i].buttonText = floorName;
-                } else {
-                    floorNames.put(floorHeights[i], elevatorButtons[i].buttonText);
-                }
-            }
-        }
+        ElevatorButton[] elevatorButtons = layoutElevatorButtons();
 
         if (multiElevators != null) {
             for (ElevatorBaseBlockEntity base : multiElevators) {
@@ -505,7 +496,7 @@ public class ElevatorBaseBlockEntity extends AbstractAirHandlingBlockEntity impl
             if (te instanceof ElevatorCallerBlockEntity caller) {
                 int callerFloorHeight = p.getY() - getBlockPos().getY() - 2;
                 int callerFloor = -1;
-                for (ElevatorCallerBlockEntity.ElevatorButton floor : elevatorButtons) {
+                for (ElevatorButton floor : elevatorButtons) {
                     if (floor.floorHeight == callerFloorHeight) {
                         callerFloor = floor.floorNumber;
                         break;
@@ -521,6 +512,38 @@ public class ElevatorBaseBlockEntity extends AbstractAirHandlingBlockEntity impl
         }
 
         if (notifyClient && !level.isClientSide) sendDescPacketFromAllElevators();
+    }
+
+    private ElevatorButton[] layoutElevatorButtons() {
+        ElevatorButton[] elevatorButtons = new ElevatorButton[floorHeights.length];
+        int columns = (elevatorButtons.length - 1) / MAX_BUTTONS_PER_ROW + 1;
+        int buttonsPerCol = Math.ceilDiv(floorHeights.length, columns);
+        float buttonWidth = (1f - BUTTON_MARGIN * 2 - BUTTON_SPACING * (columns - 1)) / columns;
+
+        float posX = BUTTON_MARGIN;
+        float bh = buttonsPerCol * BUTTON_HEIGHT + (buttonsPerCol - 1) * BUTTON_SPACING;
+        float startPosY = 1f - (1f - bh) / 2 - BUTTON_HEIGHT;
+        float posY = startPosY;
+        int row = 0;
+        for (int idx = 0; idx < elevatorButtons.length; idx++) {
+            int fh = floorHeights[idx];
+            elevatorButtons[idx] = new ElevatorButton(posX, posY, buttonWidth, BUTTON_HEIGHT, idx, fh);
+            elevatorButtons[idx].setColor(fh == targetExtension ? 0 : 1, 1, fh == targetExtension ? 0 : 1);
+            String floorName = floorNames.get(fh);
+            if (floorName != null) {
+                elevatorButtons[idx].buttonText = floorName;
+            } else {
+                floorNames.put(fh, elevatorButtons[idx].buttonText);
+            }
+            if (++row >= buttonsPerCol) {
+                row = 0;
+                posY = startPosY;
+                posX += BUTTON_SPACING + buttonWidth;
+            } else {
+                posY -= BUTTON_HEIGHT + BUTTON_SPACING;
+            }
+        }
+        return elevatorButtons;
     }
 
     public void goToFloor(int floor) {

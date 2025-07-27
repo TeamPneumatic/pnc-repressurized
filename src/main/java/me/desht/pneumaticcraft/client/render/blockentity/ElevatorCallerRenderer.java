@@ -70,7 +70,7 @@ public class ElevatorCallerRenderer implements BlockEntityRenderer<ElevatorCalle
             matrixStackIn.translate(button.width / 2, button.height / 2, 0);
             float textScale = Math.min(button.width / 10F, button.height / 10F);
             matrixStackIn.scale(textScale, textScale, textScale);
-            font.drawInBatch(button.buttonText, -font.width(button.buttonText) / 2f, -font.lineHeight / 2f, 0xFFFFFFFF, false, matrixStackIn.last().pose(), bufferIn, Font.DisplayMode.NORMAL, 50, combinedLightIn);
+            font.drawInBatch(button.buttonText, -font.width(button.buttonText) / 2f, -font.lineHeight / 2f + 1, 0xFFFFFFFF, false, matrixStackIn.last().pose(), bufferIn, Font.DisplayMode.NORMAL, 50, 0x00F000A0);
             matrixStackIn.popPose();
         }
 
