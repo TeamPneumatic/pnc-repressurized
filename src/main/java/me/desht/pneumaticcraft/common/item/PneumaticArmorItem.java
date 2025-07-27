@@ -422,13 +422,16 @@ public class PneumaticArmorItem extends ArmorItem implements
 
     @Override
     public boolean canElytraFly(ItemStack stack, LivingEntity entity) {
-        return entity instanceof Player player
-                && CommonArmorHandler.getHandlerForPlayer(player).upgradeUsable(CommonUpgradeHandlers.elytraHandler, true);
+        if (entity instanceof Player player
+                && CommonArmorHandler.getHandlerForPlayer(player).upgradeUsable(CommonUpgradeHandlers.elytraHandler, true)) {
+            return true;
+        }
+        return super.canElytraFly(stack, entity);
     }
 
     @Override
     public boolean elytraFlightTick(ItemStack stack, LivingEntity entity, int flightTicks) {
-        return ElytraHandler.handleFlightTick(entity, flightTicks);
+        return ElytraHandler.handleFlightTick(entity, flightTicks) || super.elytraFlightTick(stack, entity, flightTicks);
     }
 
     /**
