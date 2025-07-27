@@ -15,6 +15,8 @@ Changes are in reverse chronological order; newest changes at the top.
 ### Changed
 * All Pneumaticraft fuel fluids are now just in the `c:<fluid>` fluid tag, no longer under `c:fuels/<fluid>`
   * This is more in line with other mods
+* Json syntax errors in aux config files (files in `config/pneumaticcraft/*.cfg`) no longer prevent game startup
+  * Instead, an error is logged and startup continues with default settings for that subsystem
 
 ### Fixed
 * Elevator caller screens now have a better button layout algorithm (in particular when there are many floors)
