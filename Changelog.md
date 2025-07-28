@@ -6,6 +6,24 @@ Changes are in reverse chronological order; newest changes at the top.
 
 # Minecraft 1.20.1
 
+## [6.0.21]
+
+### Added
+* Added `pneumaticcraft:standard_tooltip` item tag; third party items can be added to this tag to get standard PNC tooltips
+  * Standard tooltips include pressure display, installed upgrade listing and usage information via the `gui.tooltip.<modname>.<itemname>` translation key
+* Jet Boots max height before cutout is now configurable instead of world build height + 64
+  * See `jet_boots_height_limit` in common config
+
+### Changed
+* Json syntax errors in aux config files (files in `config/pneumaticcraft/*.cfg`) no longer prevent game startup
+  * Instead, an error is logged and startup continues with default settings for that subsystem
+* Developers: made an `AbstractBasicDroneEntity` constructor protected rather than package-protected to ease creation of custom pre-programmed drones
+
+### Fixed
+* Fixed Void Liquid widget causing drones to "hang" when no filter is in use and the drone has an empty tank
+* Pneumatic Chestplate now honours the Apotheosis Elytra affix (Elytra flying allowed with the affix even without Elytra upgrade installed)
+* Fixed piston reaction behaviour for PneumaticCraft fluids (was pushing fluids, now overwrites the fluid)
+
 ## [6.0.20]
 
 ### Fixed
