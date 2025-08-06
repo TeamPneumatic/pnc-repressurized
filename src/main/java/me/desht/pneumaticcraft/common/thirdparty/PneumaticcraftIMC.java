@@ -12,7 +12,7 @@ import java.util.ArrayList;
 /**
  * Class containing manager for sending all IMC messages to other mods
  */
-@EventBusSubscriber(modid = Names.MOD_ID, bus = EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = Names.MOD_ID)
 public class PneumaticcraftIMC {
 
     // List of all IMC messages to be sent at the InterModEnqueueEvent stage

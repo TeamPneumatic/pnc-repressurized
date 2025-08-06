@@ -57,7 +57,7 @@ import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
 import java.util.List;
 
-@EventBusSubscriber(modid = Names.MOD_ID, value = Dist.CLIENT, bus = EventBusSubscriber.Bus.GAME)
+@EventBusSubscriber(modid = Names.MOD_ID, value = Dist.CLIENT)
 public class ClientEventHandler {
     private static float currentScreenRoll = 0F;
 

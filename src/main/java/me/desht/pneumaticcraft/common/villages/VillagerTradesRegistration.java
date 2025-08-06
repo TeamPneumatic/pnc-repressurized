@@ -32,7 +32,7 @@ import net.neoforged.neoforge.event.village.VillagerTradesEvent;
 
 import java.util.List;
 
-@EventBusSubscriber(modid = Names.MOD_ID, bus = EventBusSubscriber.Bus.GAME)
+@EventBusSubscriber(modid = Names.MOD_ID)
 public class VillagerTradesRegistration {
     public enum WhichTrades {
         NONE,

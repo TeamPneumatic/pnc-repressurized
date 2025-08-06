@@ -49,7 +49,7 @@ import net.neoforged.neoforge.registries.DeferredHolder;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
-@EventBusSubscriber(modid = Names.MOD_ID, value = Dist.CLIENT, bus = EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = Names.MOD_ID, value = Dist.CLIENT)
 public class ModClientEventHandler {
     @SubscribeEvent
     public static void onModelBaking(ModelEvent.ModifyBakingResult event) {

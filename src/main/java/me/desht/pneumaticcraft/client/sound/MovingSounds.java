@@ -107,7 +107,7 @@ public class MovingSounds {
         }
     }
 
-    @EventBusSubscriber(modid = Names.MOD_ID, bus = EventBusSubscriber.Bus.GAME, value = Dist.CLIENT)
+    @EventBusSubscriber(modid = Names.MOD_ID, value = Dist.CLIENT)
     private static class Listener {
         @SubscribeEvent
         public static void onPlayerJoinWorld(EntityJoinLevelEvent event) {

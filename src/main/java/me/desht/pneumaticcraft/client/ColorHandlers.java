@@ -40,7 +40,7 @@ import net.neoforged.neoforge.client.model.DynamicFluidContainerModel;
 
 import javax.annotation.Nullable;
 
-@EventBusSubscriber(modid = Names.MOD_ID, bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
+@EventBusSubscriber(modid = Names.MOD_ID, value = Dist.CLIENT)
 public class ColorHandlers {
     @SubscribeEvent
     public static void registerItemColorHandlers(RegisterColorHandlersEvent.Item event) {

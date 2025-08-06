@@ -118,7 +118,7 @@ public class CommonArmorHandler implements ICommonArmorHandler {
         }
     }
 
-    @EventBusSubscriber(modid = Names.MOD_ID, bus = EventBusSubscriber.Bus.GAME)
+    @EventBusSubscriber(modid = Names.MOD_ID)
     public static class Listeners {
         @SubscribeEvent
         public static void onPlayerTick(PlayerTickEvent.Post event) {
@@ -145,7 +145,7 @@ public class CommonArmorHandler implements ICommonArmorHandler {
         }
     }
 
-    @EventBusSubscriber(modid = Names.MOD_ID, bus = EventBusSubscriber.Bus.GAME, value = Dist.CLIENT)
+    @EventBusSubscriber(modid = Names.MOD_ID, value = Dist.CLIENT)
     public static class ClientListeners {
         @SubscribeEvent
         public static void onClientDisconnect(ClientPlayerNetworkEvent.LoggingOut event) {

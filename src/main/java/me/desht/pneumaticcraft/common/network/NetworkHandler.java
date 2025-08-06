@@ -51,7 +51,7 @@ import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
 
-@EventBusSubscriber(modid = PneumaticRegistry.MOD_ID, bus = EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = PneumaticRegistry.MOD_ID)
 public class NetworkHandler {
     private static final String PROTOCOL_VERSION = "1";
 
