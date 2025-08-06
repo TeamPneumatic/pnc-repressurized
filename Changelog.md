@@ -6,6 +6,11 @@ Changes are in reverse chronological order; newest changes at the top.
 
 # Minecraft 1.21.1
 
+## [8.2.14]
+
+### Fixed
+* Fixed encoding error with The One Probe and Transfer Gadgets
+
 ## [8.2.13]
 
 ### Added
