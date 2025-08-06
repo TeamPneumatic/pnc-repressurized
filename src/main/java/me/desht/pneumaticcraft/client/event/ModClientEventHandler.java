@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.client.event;
 
 import me.desht.pneumaticcraft.api.lib.Names;
-import me.desht.pneumaticcraft.client.ClientSetup;
+import me.desht.pneumaticcraft.client.PneumaticCraftRepressurizedClient;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.ArmorMainScreen;
 import me.desht.pneumaticcraft.client.model.CamoModel;
 import me.desht.pneumaticcraft.client.model.custom.CamouflageModel;
@@ -81,7 +81,7 @@ public class ModClientEventHandler {
                 .filter(h -> h.get() instanceof AbstractPneumaticCraftBlock)
                 .map(DeferredHolder::get)
                 .toArray(Block[]::new);
-        event.registerBlock(ClientSetup.PARTICLE_HANDLER, toAdd);
+        event.registerBlock(PneumaticCraftRepressurizedClient.PARTICLE_HANDLER, toAdd);
 
         event.registerItem(MinigunItemRenderer.RenderProperties.INSTANCE, ModItems.MINIGUN.get());
 

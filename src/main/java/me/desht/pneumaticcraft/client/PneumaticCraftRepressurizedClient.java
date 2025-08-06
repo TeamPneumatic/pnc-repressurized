@@ -48,25 +48,23 @@ import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
 import me.desht.pneumaticcraft.common.registry.*;
 import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
 import net.minecraft.client.model.HumanoidModel;
-import net.minecraft.client.model.geom.EntityModelSet;
 import net.minecraft.client.model.geom.LayerDefinitions;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.ParticleEngine;
 import net.minecraft.client.particle.TerrainParticle;
-import net.minecraft.client.renderer.entity.EntityRenderer;
-import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.client.resources.PlayerSkin;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.*;
 import net.neoforged.neoforge.client.extensions.common.IClientBlockExtensions;
@@ -77,17 +75,18 @@ import net.neoforged.neoforge.common.NeoForge;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
-public class ClientSetup {
-    public static void onModConstruction(ModContainer modContainer, IEventBus modBus) {
-        modBus.addListener(ClientSetup::onClientSetup);
-        modBus.addListener(ClientSetup::registerGuiOverlays);
-        modBus.addListener(ClientSetup::registerTooltipComponentFactories);
-        modBus.addListener(ClientSetup::registerParticleFactories);
-        modBus.addListener(ClientSetup::registerRenderers);
-        modBus.addListener(ClientSetup::registerRenderLayers);
-        modBus.addListener(ClientSetup::registerLayerDefinitions);
-        modBus.addListener(ClientSetup::registerKeyMappings);
-        modBus.addListener(ClientSetup::registerScreens);
+@Mod(value = Names.MOD_ID, dist = Dist.CLIENT)
+public class PneumaticCraftRepressurizedClient {
+    public PneumaticCraftRepressurizedClient(ModContainer modContainer, IEventBus modBus) {
+        modBus.addListener(this::onClientSetup);
+        modBus.addListener(this::registerGuiOverlays);
+        modBus.addListener(this::registerTooltipComponentFactories);
+        modBus.addListener(this::registerParticleFactories);
+        modBus.addListener(this::registerRenderers);
+        modBus.addListener(this::registerRenderLayers);
+        modBus.addListener(this::registerLayerDefinitions);
+        modBus.addListener(this::registerKeyMappings);
+        modBus.addListener(this::registerScreens);
 
         modContainer.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
 
@@ -96,7 +95,7 @@ public class ClientSetup {
         NeoForge.EVENT_BUS.register(KeyHandler.getInstance());
     }
 
-    static void onClientSetup(FMLClientSetupEvent event) {
+    private void onClientSetup(FMLClientSetupEvent event) {
         EntityTrackHandler.getInstance().registerDefaultEntries();
         BlockTrackHandler.getInstance().registerDefaultEntries();
         ThirdPartyManager.instance().clientInit();
@@ -106,31 +105,31 @@ public class ClientSetup {
         registerArmorClientUpgradeHandlers();
         RemoteClientRegistry.INSTANCE.registerClientFactories();
 
-        event.enqueueWork(ClientSetup::initLate);
+        event.enqueueWork(this::initLate);
     }
 
-    public static void registerTooltipComponentFactories(RegisterClientTooltipComponentFactoriesEvent event) {
+    private void registerTooltipComponentFactories(RegisterClientTooltipComponentFactoriesEvent event) {
         event.register(MicromissilesItem.Tooltip.class, MicromissileClientTooltip::new);
     }
 
-    public static void registerGuiOverlays(RegisterGuiLayersEvent event) {
+    private void registerGuiOverlays(RegisterGuiLayersEvent event) {
         event.registerAbove(VanillaGuiLayers.CROSSHAIR, RL("jackhammer"), new JackhammerOverlay());
         event.registerAbove(VanillaGuiLayers.CROSSHAIR, RL("minigun"), new MinigunOverlay());
         event.registerAbove(VanillaGuiLayers.CROSSHAIR, RL("ender_visor"), new EnderVisorClientHandler.PumpkinLayer());
         event.registerAboveAll(RL("pneumatic_armor"), new PneumaticArmorHUDOverlay());
     }
 
-    public static void registerParticleFactories(RegisterParticleProvidersEvent event) {
+    private void registerParticleFactories(RegisterParticleProvidersEvent event) {
         event.registerSpriteSet(ModParticleTypes.AIR_PARTICLE.get(), AirParticle.Factory::new);
         event.registerSpriteSet(ModParticleTypes.AIR_PARTICLE_2.get(), AirParticle.Factory::new);
         event.registerSpriteSet(ModParticleTypes.BULLET_PARTICLE.get(), BulletParticle.Factory::new);
     }
 
-    public static void registerKeyMappings(RegisterKeyMappingsEvent event) {
+    private void registerKeyMappings(RegisterKeyMappingsEvent event) {
         KeyHandler.getInstance().registerKeyMappings(event);
     }
 
-    public static void initLate() {
+    private void initLate() {
         // stuff to do on the main thread
         registerItemModelProperties();
 
@@ -144,20 +143,15 @@ public class ClientSetup {
         registerProgWidgetExtraRenderers();
     }
 
-    public static void registerRenderLayers(EntityRenderersEvent.AddLayers event) {
+    private void registerRenderLayers(EntityRenderersEvent.AddLayers event) {
         for (PlayerSkin.Model skin : event.getSkins()) {
-            EntityRenderer<?> render = event.getSkin(skin);
-            if (render instanceof PlayerRenderer pr) {
-                addElytraRenderLayer(pr, event.getEntityModels());
+            if (event.getSkin(skin) instanceof PlayerRenderer pr) {
+                pr.addLayer(new PneumaticElytraLayer<>(pr, event.getEntityModels()));
             }
         }
     }
 
-    private static <T extends LivingEntity, M extends HumanoidModel<T>> void addElytraRenderLayer(LivingEntityRenderer<T, M> render, EntityModelSet models) {
-        render.addLayer(new PneumaticElytraLayer<>(render, models));
-    }
-
-    public static void registerLayerDefinitions(EntityRenderersEvent.RegisterLayerDefinitions event) {
+    private void registerLayerDefinitions(EntityRenderersEvent.RegisterLayerDefinitions event) {
         // armor
         event.registerLayerDefinition(PNCModelLayers.PNEUMATIC_LEGS, () -> LayerDefinition.create(HumanoidModel.createMesh(LayerDefinitions.INNER_ARMOR_DEFORMATION, 0f), 64, 32));
         event.registerLayerDefinition(PNCModelLayers.PNEUMATIC_ARMOR, () -> LayerDefinition.create(HumanoidModel.createMesh(LayerDefinitions.OUTER_ARMOR_DEFORMATION, 0f), 64, 32));
@@ -207,7 +201,7 @@ public class ClientSetup {
         event.registerLayerDefinition(PNCModelLayers.THERMOSTAT_MODULE, ThermostatRenderer::createBodyLayer);
     }
 
-    private static void registerItemModelProperties() {
+    private void registerItemModelProperties() {
         ItemProperties.register(ModItems.JACKHAMMER.get(), RL("drill_bit"), (stack, world, entity, seed) -> {
             DrillBitItem.DrillBitType type = JackHammerItem.getDrillBit(stack);
             if (type == DrillBitItem.DrillBitType.NONE) return 0f;
@@ -218,17 +212,17 @@ public class ClientSetup {
         });
     }
 
-    private static void registerProgWidgetExtraRenderers() {
+    private void registerProgWidgetExtraRenderers() {
         ProgWidgetRenderer.registerItemRenderer(ModProgWidgetTypes.CRAFTING.get(), ProgWidgetRenderer::renderCraftingItem);
         ProgWidgetRenderer.registerItemRenderer(ModProgWidgetTypes.ITEM_FILTER.get(), ProgWidgetRenderer::renderItemFilterItem);
     }
 
-    public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
+    private void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
         registerEntityRenderers(event);
         registerBlockEntityRenderers(event);
     }
 
-    private static void registerEntityRenderers(EntityRenderersEvent.RegisterRenderers event) {
+    private void registerEntityRenderers(EntityRenderersEvent.RegisterRenderers event) {
         // drones
         event.registerEntityRenderer(ModEntityTypes.DRONE.get(), RenderDrone::standard);
         event.registerEntityRenderer(ModEntityTypes.AMADRONE.get(), RenderDrone::amadrone);
@@ -256,7 +250,7 @@ public class ClientSetup {
         event.registerEntityRenderer(ModEntityTypes.TUMBLING_BLOCK.get(), RenderTumblingBlock::new);
     }
 
-    private static void registerBlockEntityRenderers(EntityRenderersEvent.RegisterRenderers event) {
+    private void registerBlockEntityRenderers(EntityRenderersEvent.RegisterRenderers event) {
         event.registerBlockEntityRenderer(ModBlockEntityTypes.ADVANCED_LIQUID_COMPRESSOR.get(), RenderAdvancedLiquidCompressor::new);
         event.registerBlockEntityRenderer(ModBlockEntityTypes.ADVANCED_PRESSURE_TUBE.get(), PressureTubeModuleRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntityTypes.AERIAL_INTERFACE.get(), AerialInterfaceRenderer::new);
@@ -300,7 +294,7 @@ public class ClientSetup {
         event.registerBlockEntityRenderer(ModBlockEntityTypes.SOLAR_COMPRESSOR.get(), SolarCompressorRenderer::new);
     }
 
-    private static void registerScreens(RegisterMenuScreensEvent event) {
+    private void registerScreens(RegisterMenuScreensEvent event) {
         event.register(ModMenuTypes.ADVANCED_AIR_COMPRESSOR.get(), AdvancedAirCompressorScreen::new);
         event.register(ModMenuTypes.ADVANCED_LIQUID_COMPRESSOR.get(), AdvancedLiquidCompressorScreen::new);
         event.register(ModMenuTypes.AERIAL_INTERFACE.get(), AerialInterfaceScreen::new);
@@ -361,7 +355,7 @@ public class ClientSetup {
         event.register(ModMenuTypes.VACUUM_TRAP.get(), VacuumTrapScreen::new);
     }
 
-    private static void registerProgWidgetScreenFactories() {
+    private void registerProgWidgetScreenFactories() {
         ProgWidgetGuiManager.registerProgWidgetGui(ModProgWidgetTypes.AREA, ProgWidgetAreaScreen::new);
         ProgWidgetGuiManager.registerProgWidgetGui(ModProgWidgetTypes.CONDITION_BLOCK, ProgWidgetBlockConditionScreen::new);
         ProgWidgetGuiManager.registerProgWidgetGui(ModProgWidgetTypes.BLOCK_RIGHT_CLICK, ProgWidgetBlockRightClickScreen::new);
@@ -410,7 +404,7 @@ public class ClientSetup {
         ProgWidgetGuiManager.registerProgWidgetGui(ModProgWidgetTypes.TELEPORT, ProgWidgetGoToLocationScreen::new);
     }
 
-    private static void registerTubeModuleFactories() {
+    private void registerTubeModuleFactories() {
         TubeModuleClientRegistry.registerTubeModuleGUI(Names.MODULE_AIR_GRATE, AirGrateModuleScreen::new);
         TubeModuleClientRegistry.registerTubeModuleGUI(Names.MODULE_GAUGE, PressureGaugeModuleScreen::createGUI);
         TubeModuleClientRegistry.registerTubeModuleGUI(Names.MODULE_REGULATOR, PressureGaugeModuleScreen::createGUI);
@@ -431,7 +425,7 @@ public class ClientSetup {
         TubeModuleClientRegistry.registerTubeModuleRenderer(Names.MODULE_THERMOSTAT, ThermostatRenderer::new);
     }
 
-    private static void registerArmorClientUpgradeHandlers() {
+    private void registerArmorClientUpgradeHandlers() {
         IClientArmorRegistry cr = PneumaticRegistry.getInstance().getClientArmorRegistry();
 
         cr.registerUpgradeHandler(CommonUpgradeHandlers.coreComponentsHandler, new CoreComponentsClientHandler());
