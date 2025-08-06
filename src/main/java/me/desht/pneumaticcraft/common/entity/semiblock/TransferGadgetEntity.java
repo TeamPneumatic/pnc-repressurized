@@ -164,7 +164,7 @@ public class TransferGadgetEntity extends AbstractSemiblockEntity implements IDi
 
     @Override
     public void addTooltip(Consumer<Component> curInfo, Player player, CompoundTag tag, boolean extended) {
-        curInfo.accept(xlate("pneumaticcraft.gui.logistics_frame.facing", getSide()));
+        curInfo.accept(xlate("pneumaticcraft.gui.logistics_frame.facing", getSide().getName()));
         curInfo.accept(xlate(getIOMode().getTranslationKey()));
     }
 
