@@ -85,7 +85,7 @@ public class BlockTrackerClientHandler extends IArmorUpgradeClientHandler.Abstra
     public void tickClient(ICommonArmorHandler armorHandler, boolean isEnabled) {
         if (!isEnabled) return;
 
-        int blockTrackRange = BLOCK_TRACKING_RANGE + Math.min(armorHandler.getUpgradeCount(EquipmentSlot.HEAD, ModUpgrades.RANGE.get()), 5) * PneumaticValues.RANGE_UPGRADE_HELMET_RANGE_INCREASE;
+        int blockTrackRange = BLOCK_TRACKING_RANGE + Math.min(armorHandler.getUpgradeCount(EquipmentSlot.HEAD, ModUpgrades.RANGE.get()), 5) * PneumaticValues.RANGE_UPGRADE_HELMET_RANGE_INCREASE_BLOCK;
         int blockTrackRangeSq = blockTrackRange * blockTrackRange;
 
         long now = System.nanoTime();

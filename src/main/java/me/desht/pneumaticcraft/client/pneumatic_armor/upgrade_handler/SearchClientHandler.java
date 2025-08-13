@@ -130,7 +130,7 @@ public class SearchClientHandler extends IArmorUpgradeClientHandler.AbstractHand
     private int trackInventoryCounts(int rangeUpgrades) {
         int blockSearchCount = 0;
         int blockTrackRange = BlockTrackerHandler.BLOCK_TRACKING_RANGE
-                + Math.min(rangeUpgrades, 5) * PneumaticValues.RANGE_UPGRADE_HELMET_RANGE_INCREASE;
+                + Math.min(rangeUpgrades, 5) * PneumaticValues.RANGE_UPGRADE_HELMET_RANGE_INCREASE_BLOCK;
         int blockTrackRangeSq = blockTrackRange * blockTrackRange;
 
         Player player = ClientUtils.getClientPlayer();

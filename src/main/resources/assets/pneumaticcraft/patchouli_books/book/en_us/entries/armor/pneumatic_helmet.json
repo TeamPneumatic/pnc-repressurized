@@ -53,7 +53,7 @@
     {
       "type": "spotlight",
       "item": "pneumaticcraft:range_upgrade",
-      "text": "The $(l:base_concepts/upgrades#range)Range Upgrade/$ increases the range of the $(l:base_concepts/upgrades#entity_tracker)Entity Tracker/$ and $(l:base_concepts/upgrades#block_tracker)Block Tracker/$ by 5 blocks per upgrade. For the Entity Tracker there's no limit, but for the Block Tracker up to 5 upgrades are accepted.$(p)Note that this upgrade increases the helmet's air usage."
+      "text": "The $(l:base_concepts/upgrades#range)Range Upgrade/$ increases the range of the $(l:base_concepts/upgrades#entity_tracker)Entity Tracker/$ by 16 blocks per upgrade and the $(l:base_concepts/upgrades#block_tracker)Block Tracker/$ by 5 blocks per upgrade. Up to 5 upgrades are accepted.$(p)Note that this upgrade increases the helmet's air usage."
     },
     {
       "type": "spotlight",

@@ -44,7 +44,7 @@ public class BlockTrackerHandler extends BaseArmorUpgradeHandler<IArmorExtension
     public float getIdleAirUsage(ICommonArmorHandler armorHandler) {
         int upgrades = armorHandler.getUpgradeCount(EquipmentSlot.HEAD, ModUpgrades.BLOCK_TRACKER.get());
         return PneumaticValues.USAGE_BLOCK_TRACKER
-                * (1 + (float) Math.min(5, upgrades) * PneumaticValues.RANGE_UPGRADE_HELMET_RANGE_INCREASE / BLOCK_TRACKING_RANGE);
+                * (1 + (float) Math.min(5, upgrades) * PneumaticValues.RANGE_UPGRADE_HELMET_RANGE_INCREASE_BLOCK / BLOCK_TRACKING_RANGE);
     }
 
     @Override

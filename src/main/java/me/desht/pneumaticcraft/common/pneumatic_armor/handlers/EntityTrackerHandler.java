@@ -43,8 +43,8 @@ public class EntityTrackerHandler extends BaseArmorUpgradeHandler<IArmorExtensio
     @Override
     public float getIdleAirUsage(ICommonArmorHandler armorHandler) {
         int upgrades = armorHandler.getUpgradeCount(EquipmentSlot.HEAD, ModUpgrades.ENTITY_TRACKER.get());
-        return PneumaticValues.USAGE_ENTITY_TRACKER * (1 + (float) Math.min(10, upgrades)
-                * PneumaticValues.RANGE_UPGRADE_HELMET_RANGE_INCREASE / ENTITY_TRACKING_RANGE);
+        return PneumaticValues.USAGE_ENTITY_TRACKER * (1 + (float) Math.min(5, upgrades)
+                * PneumaticValues.RANGE_UPGRADE_HELMET_RANGE_INCREASE_ENTITY / ENTITY_TRACKING_RANGE);
     }
 
     @Override
