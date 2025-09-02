@@ -31,6 +31,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.client.settings.KeyConflictContext;
 import net.neoforged.neoforge.client.settings.KeyModifier;
+import org.jetbrains.annotations.ApiStatus;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.Collection;
@@ -175,6 +176,7 @@ public interface IArmorUpgradeClientHandler<T extends IArmorUpgradeHandler<?>> {
      *
      * @return the default key binding for this upgrade
      */
+    @ApiStatus.NonExtendable
     default Optional<KeyMapping> getInitialKeyBinding() {
         return isToggleable() ?
                 Optional.of(new KeyMapping(IArmorUpgradeHandler.getStringKey(getID()),
