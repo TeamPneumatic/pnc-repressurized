@@ -18,14 +18,14 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '17'
-      - name: Validate Gradle Wrapper
-        uses: gradle/wrapper-validation-action@v1
+      - name: Setup Gradle and Validate Wrapper
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          cache-read-only: false
       - name: Remove any generated assets/data
         run: rm -rf ./src/generated
       - name: Generate assets & data
-        uses: gradle/gradle-build-action@v2
-        with:
-          arguments: runData --no-daemon
+        run: ./gradlew runData --no-daemon
       - name: Validate assets
         run: test -d ./src/generated -a -d ./src/generated/resources/.cache
       - name: Set up mod metadata
@@ -33,12 +33,10 @@ jobs:
         run: |
           echo mc_version=$(grep ^mc_version= ./gradle.properties | cut -d= -f2) >> $GITHUB_OUTPUT
       - name: Build JAR and Publish to Modmaven
-        uses: gradle/gradle-build-action@v2
+        run: ./gradlew build publishMavenPublicationToModmavenRepository --no-daemon
         env:
           MODMAVEN_USER: ${{ secrets.MODMAVEN_USER }}
           MODMAVEN_PASSWORD: ${{ secrets.MODMAVEN_PASSWORD }}
-        with:
-          arguments: build publishMavenPublicationToModmavenRepository --no-daemon
       - name: Discord notification
         uses: Ilshidur/action-discord@master
         env:
