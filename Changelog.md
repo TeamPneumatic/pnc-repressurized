@@ -23,6 +23,7 @@ Changes are in reverse chronological order; newest changes at the top.
 * Fixed Void Liquid widget causing drones to "hang" when no filter is in use and the drone has an empty tank
 * Pneumatic Chestplate now honours the Apotheosis Elytra affix (Elytra flying allowed with the affix even without Elytra upgrade installed)
 * Fixed piston reaction behaviour for PneumaticCraft fluids (was pushing fluids, now overwrites the fluid)
+* Fixed an NPE in the Waila data provider for semiblocks
 
 ## [6.0.20]
 
