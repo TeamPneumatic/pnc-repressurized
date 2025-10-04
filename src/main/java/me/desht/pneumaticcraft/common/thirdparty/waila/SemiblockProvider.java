@@ -43,7 +43,7 @@ public class SemiblockProvider {
         @Override
         public void appendServerData(CompoundTag compoundTag, BlockAccessor blockAccessor) {
             CompoundTag tag = new CompoundTag();
-            SemiblockTracker.getInstance().getAllSemiblocks(blockAccessor.getLevel(), blockAccessor.getBlockEntity().getBlockPos())
+            SemiblockTracker.getInstance().getAllSemiblocks(blockAccessor.getLevel(), blockAccessor.getPosition())
                     .forEach((semiBlock) -> {
                         NonNullList<ItemStack> drops = semiBlock.getDrops();
                         if (!drops.isEmpty()) {
