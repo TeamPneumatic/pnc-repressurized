@@ -33,7 +33,7 @@ import net.minecraft.world.level.Level;
  * @author MineMaarten
  *
  */
-abstract class AbstractBasicDroneEntity extends DroneEntity {
+public abstract class AbstractBasicDroneEntity extends DroneEntity {
 
     protected AbstractBasicDroneEntity(EntityType<? extends DroneEntity> type, Level world, Player player) {
         super(type, world, player);
