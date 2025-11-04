@@ -17,9 +17,9 @@
 
 package me.desht.pneumaticcraft.common.fluid;
 
+import me.desht.pneumaticcraft.api.data.PneumaticCraftTags;
 import me.desht.pneumaticcraft.common.PneumaticCraftAPIHandler;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
-import me.desht.pneumaticcraft.common.registry.ModFluids;
 import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -40,7 +40,8 @@ public class FluidSetup {
         for (Fluid fluid : BuiltInRegistries.FLUID) {
             try {
                 int temperature = fluid.getFluidType().getTemperature();
-                if (temperature >= ConfigHelper.common().general.minFluidFuelTemperature.get() && fluid.isSource(fluid.defaultFluidState())) {
+                int minTemp = ConfigHelper.common().general.minFluidFuelTemperature.get();
+                if (minTemp >= 0 && temperature >= minTemp && fluid.isSource(fluid.defaultFluidState())) {
                     // non-API usage... register an explicit fluid rather than a tag
                     FuelRegistry.getInstance().registerHotFluid(fluid, (temperature - 300) * 40, 0.25f);
                 }
@@ -54,7 +55,7 @@ public class FluidSetup {
         // no magnet'ing PCB's out of etching acid pools
         api.getItemRegistry().registerMagnetSuppressor(
                 e -> e instanceof ItemEntity ie && ie.getItem().getItem() == ModItems.EMPTY_PCB.get()
-                        && e.getCommandSenderWorld().getFluidState(e.blockPosition()).getType() == ModFluids.ETCHING_ACID.get()
+                        && e.level().getFluidState(e.blockPosition()).is(PneumaticCraftTags.Fluids.ETCHING_ACID)
         );
 
         // note: default "forge:experience" now added in EventHandlerPneumaticCraft#onTagsUpdated
