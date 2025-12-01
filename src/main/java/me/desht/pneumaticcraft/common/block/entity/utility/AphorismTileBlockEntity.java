@@ -126,6 +126,7 @@ public class AphorismTileBlockEntity extends AbstractPneumaticCraftBlockEntity {
                 if (level != null) {
                     forceBlockEntityRerender();
                 }
+                maxLineWidth = -1;
             });
         }
     }
