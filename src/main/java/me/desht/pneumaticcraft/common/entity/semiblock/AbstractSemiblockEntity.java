@@ -59,6 +59,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.chunk.LevelChunk;
+import net.minecraft.world.level.chunk.status.ChunkStatus;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
@@ -340,8 +342,8 @@ public abstract class AbstractSemiblockEntity extends Entity implements ISemiBlo
                 getDrops().forEach(this::dropItem);
             }
 
-            if (level.isLoaded(blockPos)) {
-                level.markAndNotifyBlock(blockPos, level.getChunkAt(blockPos), getBlockState(), getBlockState(), Block.UPDATE_ALL, 512);
+            if (level.getChunk(blockPos.getX() >> 4, blockPos.getZ() >> 4, ChunkStatus.FULL, false) instanceof LevelChunk lc) {
+                level.markAndNotifyBlock(blockPos, lc, getBlockState(), getBlockState(), Block.UPDATE_ALL, 512);
             }
         }
 
