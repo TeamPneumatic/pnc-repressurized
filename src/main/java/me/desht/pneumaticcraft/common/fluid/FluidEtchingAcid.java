@@ -24,8 +24,7 @@ import net.minecraft.world.level.material.MapColor;
 import net.neoforged.neoforge.fluids.BaseFlowingFluid;
 
 public abstract class FluidEtchingAcid {
-    public static final PNCFluidRenderProps RENDER_PROPS = new PNCFluidRenderProps
-            ("minecraft:block/water_still", "minecraft:block/water_flow", MapColor.EMERALD.col | 0xFF000000);
+    public static final PNCFluidRenderProps RENDER_PROPS = PNCFluidRenderProps.waterLike(MapColor.EMERALD.col | 0xFF000000);
 
     private static BaseFlowingFluid.Properties props() {
         return new BaseFlowingFluid.Properties(

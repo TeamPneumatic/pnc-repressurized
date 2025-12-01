@@ -37,7 +37,7 @@ import net.neoforged.neoforge.fluids.BaseFlowingFluid;
 import java.util.List;
 
 public class FluidYeastCulture {
-    public static final PNCFluidRenderProps RENDER_PROPS = PNCFluidRenderProps.genericFuel(0xFFE2D2B8);
+    public static final PNCFluidRenderProps RENDER_PROPS = PNCFluidRenderProps.thickFluid(0xFFE2D2B8);
 
     private static BaseFlowingFluid.Properties props() {
         return new BaseFlowingFluid.Properties(
