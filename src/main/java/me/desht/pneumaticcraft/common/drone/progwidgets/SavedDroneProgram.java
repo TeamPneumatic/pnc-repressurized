@@ -67,7 +67,7 @@ public class SavedDroneProgram {
     }
 
     public boolean isValidForDrone(IDroneBase drone) {
-        return widgets.stream().allMatch(widget -> drone.isProgramApplicable(widget.getType()));
+        return !widgets.isEmpty() && widgets.stream().allMatch(widget -> drone.isProgramApplicable(widget.getType()));
     }
 
     public boolean isEmpty() {
