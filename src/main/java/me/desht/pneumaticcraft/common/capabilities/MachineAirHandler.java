@@ -25,6 +25,7 @@ import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
 import me.desht.pneumaticcraft.api.tileentity.IAirListener;
 import me.desht.pneumaticcraft.api.tileentity.IManoMeasurable;
 import me.desht.pneumaticcraft.client.sound.MovingSounds;
+import me.desht.pneumaticcraft.common.block.entity.AbstractAirHandlingBlockEntity;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdatePressureBlock;
 import me.desht.pneumaticcraft.common.particle.AirParticleData;
@@ -206,15 +207,20 @@ public class MachineAirHandler extends BasicAirHandler implements IAirHandlerMac
         float pressure = getPressure();
 
         if (!world.isClientSide) {
+            if ((world.getGameTime() & 0xf) == 0 && checkForCrossChunkLeak(ownerTE, pos, actualLeakDir)) {
+                setSideLeaking(null);
+                return;
+            }
+
             if (getAir() > 0) {
                 int leakedAmount = (int) (pressure * PneumaticValues.AIR_LEAK_FACTOR) + 20;
                 if (leakedAmount > getAir()) leakedAmount = getAir();
-                onAirDispersion(ownerTE, leakDir, -leakedAmount);
+                onAirDispersion(ownerTE, actualLeakDir, -leakedAmount);
                 addAir(-leakedAmount);
             } else if (getAir() < 0) {
                 int leakedAmount = -(int) (pressure * PneumaticValues.AIR_LEAK_FACTOR) + 20;
                 if (getAir() > leakedAmount) leakedAmount = -getAir();
-                onAirDispersion(ownerTE, leakDir, leakedAmount);
+                onAirDispersion(ownerTE, actualLeakDir, leakedAmount);
                 addAir(leakedAmount);
             }
         } else {
@@ -232,6 +238,26 @@ public class MachineAirHandler extends BasicAirHandler implements IAirHandlerMac
             }
             MovingSounds.playMovingSound(MovingSounds.Sound.AIR_LEAK, ownerTE.getBlockPos(), anyConnectableFace());
         }
+    }
+
+    private boolean checkForCrossChunkLeak(BlockEntity ownerTE, BlockPos pos, Direction actualLeakDir) {
+        BlockPos pos2 = pos.relative(actualLeakDir);
+        if (pos.getX() >> 4 != pos2.getX() >> 4 || pos.getZ() >> 4 != pos2.getZ() >> 4) {
+            // cross-chunk leak... let's be sure there really is no air handler there
+            if (ownerTE.getLevel() != null && ownerTE.getLevel().hasChunk(pos2.getX() >> 4, pos2.getZ() >> 4)) {
+                BlockEntity neighbourBE = ownerTE.getLevel().getBlockEntity(pos2);
+                if (neighbourBE != null && ownerTE instanceof AbstractAirHandlingBlockEntity airBE) {
+                    IAirHandlerMachine cap = ownerTE.getLevel().getCapability(PNCCapabilities.AIR_HANDLER_MACHINE, pos2,
+                            neighbourBE.getBlockState(), neighbourBE, actualLeakDir.getOpposite());
+                    if (cap != null) {
+                        // looks like a false leak?
+                        airBE.onNeighborBlockUpdate(pos2);
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     @Override
