@@ -166,17 +166,15 @@ public class DroneAIManager implements IVariableProvider {
         ListTag tagList = tag.getList("coords", Tag.TAG_COMPOUND);
         for (int i = 0; i < tagList.size(); i++) {
             CompoundTag t = tagList.getCompound(i);
-            BlockPos.CODEC.parse(NbtOps.INSTANCE, t.getCompound("pos")).ifSuccess(pos -> {
-                coordinateVariables.put(t.getString("key"), pos);
-            });
+            BlockPos.CODEC.parse(NbtOps.INSTANCE, t.get("pos"))
+                    .ifSuccess(pos -> coordinateVariables.put(t.getString("key"), pos));
         }
 
         ListTag tagList2 = tag.getList("items", Tag.TAG_COMPOUND);
         for (int i = 0; i < tagList2.size(); i++) {
             CompoundTag t = tagList2.getCompound(i);
-            ItemStack.OPTIONAL_CODEC.parse(NbtOps.INSTANCE, t.getCompound("item")).ifSuccess(stack -> {
-                itemVariables.put(t.getString("key"), stack);
-            });
+            ItemStack.OPTIONAL_CODEC.parse(NbtOps.INSTANCE, t.getCompound("item"))
+                    .ifSuccess(stack -> itemVariables.put(t.getString("key"), stack));
         }
     }
 
