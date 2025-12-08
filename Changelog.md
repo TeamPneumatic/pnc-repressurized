@@ -10,6 +10,8 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ### Fixed
 * Fixed a Waila semiblock related crash
+* Fixed potential server crash when removing semiblock entities from the world
+  * Maybe related to other mods causing off-thread chunk unloading, cause is not entirely clear, but this change adds extra defensive checking
 
 ## [6.0.21]
 
