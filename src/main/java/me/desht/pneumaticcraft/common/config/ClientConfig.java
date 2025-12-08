@@ -200,7 +200,7 @@ public class ClientConfig {
         sound.armorInitVolume = builder
                 .comment("Volume level of the Pneumatic Armor startup sounds")
                 .translation("pneumaticcraft.config.client.sound.armor_init")
-                .defineInRange("jackhammer_volume", 0.2d, 0d, 2d);
+                .defineInRange("armor_init_volume", 0.2d, 0d, 2d);
     }
 
     /**
