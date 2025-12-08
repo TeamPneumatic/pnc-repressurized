@@ -21,13 +21,17 @@ import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.upgrade.IUpgradeItem;
 import me.desht.pneumaticcraft.api.upgrade.PNCUpgrade;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
+import me.desht.pneumaticcraft.common.network.PacketPlaySound;
 import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.registry.ModItems;
+import me.desht.pneumaticcraft.common.upgrades.IUpgradeHolder;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
@@ -40,6 +44,8 @@ import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.items.ItemHandlerHelper;
+import net.neoforged.neoforge.network.PacketDistributor;
 import org.apache.commons.lang3.Validate;
 
 import java.util.List;
@@ -96,6 +102,15 @@ public class UpgradeItem extends Item implements IUpgradeItem, CreativeTabStackP
 
     @Override
     public InteractionResult useOn(UseOnContext context) {
+        if (context.getPlayer() instanceof ServerPlayer sp && context.getLevel().getBlockEntity(context.getClickedPos()) instanceof IUpgradeHolder holder) {
+            ItemStack excess = ItemHandlerHelper.insertItem(holder.getUpgradeHandler(), context.getItemInHand().copyWithCount(1), false);
+            if (excess.isEmpty()) {
+                context.getItemInHand().shrink(1);
+                holder.onUpgradesChanged();
+                PacketDistributor.sendToPlayer(sp, new PacketPlaySound(SoundEvents.METAL_PRESSURE_PLATE_CLICK_ON, SoundSource.PLAYERS, context.getClickedPos(), 0.5f, 1.7f, false));
+                return InteractionResult.SUCCESS;
+            }
+        }
         if (getUpgradeType() == ModUpgrades.DISPENSER.get()) {
             if (context.getPlayer() instanceof ServerPlayer sp) {
                 setDirection(sp, context.getHand(), context.getClickedFace());
