@@ -6,6 +6,11 @@ Changes are in reverse chronological order; newest changes at the top.
 
 # Minecraft 1.20.1
 
+## [6.0.22]
+
+### Fixed
+* Fixed a Waila semiblock related crash
+
 ## [6.0.21]
 
 ### Added
