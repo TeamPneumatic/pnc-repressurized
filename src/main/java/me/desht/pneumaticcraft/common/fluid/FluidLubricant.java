@@ -23,7 +23,7 @@ import me.desht.pneumaticcraft.common.registry.ModItems;
 import net.neoforged.neoforge.fluids.BaseFlowingFluid;
 
 public abstract class FluidLubricant {
-    public static final PNCFluidRenderProps RENDER_PROPS = new PNCFluidRenderProps("lubricant_still", "lubricant_flow");
+    public static final PNCFluidRenderProps RENDER_PROPS = PNCFluidRenderProps.thickFluid(0xFFE69302);
 
     private static BaseFlowingFluid.Properties props() {
         return new BaseFlowingFluid.Properties(

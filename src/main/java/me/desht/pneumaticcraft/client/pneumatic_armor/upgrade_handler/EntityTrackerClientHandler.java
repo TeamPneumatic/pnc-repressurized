@@ -101,7 +101,7 @@ public class EntityTrackerClientHandler extends IArmorUpgradeClientHandler.Abstr
         }
 
         // find applicable entities and create/update render targets for them as needed
-        double entityTrackRange = ENTITY_TRACKING_RANGE + rangeUpgrades * PneumaticValues.RANGE_UPGRADE_HELMET_RANGE_INCREASE;
+        double entityTrackRange = ENTITY_TRACKING_RANGE + rangeUpgrades * PneumaticValues.RANGE_UPGRADE_HELMET_RANGE_INCREASE_ENTITY;
         AABB bbBox = getAABBFromRange(player, rangeUpgrades);
         List<Entity> entities = armorHandler.getPlayer().level().getEntitiesOfClass(Entity.class, bbBox,
                 new EntityTrackerSelector(player, entityFilter, entityTrackRange));
@@ -151,7 +151,7 @@ public class EntityTrackerClientHandler extends IArmorUpgradeClientHandler.Abstr
     }
 
     static AABB getAABBFromRange(Player player, int rangeUpgrades) {
-        double entityTrackRange = ENTITY_TRACKING_RANGE + Math.min(10, rangeUpgrades) * PneumaticValues.RANGE_UPGRADE_HELMET_RANGE_INCREASE;
+        double entityTrackRange = ENTITY_TRACKING_RANGE + Math.min(5, rangeUpgrades) * PneumaticValues.RANGE_UPGRADE_HELMET_RANGE_INCREASE_ENTITY;
 
         return new AABB(player.blockPosition()).inflate(entityTrackRange);
     }

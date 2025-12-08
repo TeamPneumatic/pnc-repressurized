@@ -19,7 +19,6 @@ package me.desht.pneumaticcraft.client.render.blockentity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
-import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.block.DisplayTableBlock;
 import me.desht.pneumaticcraft.common.block.entity.utility.DisplayTableBlockEntity;
 import net.minecraft.client.Minecraft;
@@ -54,7 +53,8 @@ public class DisplayTableRenderer implements BlockEntityRenderer<DisplayTableBlo
         if (!stack.isEmpty()) {
             matrixStackIn.pushPose();
             matrixStackIn.translate(0, -yOffset, 0);
-            RenderUtils.rotateMatrixForDirection(matrixStackIn, rot);
+            // kludge for Y-axis rotation: just using rot.getYRot() here seems to give reversed orientation on east/west axis?
+            matrixStackIn.mulPose(Axis.YP.rotationDegrees(rot.getAxis() == Direction.Axis.X ? rot.getOpposite().toYRot() : rot.toYRot()));
             if (stack.getItem() instanceof BlockItem) {
                 matrixStackIn.translate(xOffset, scale / 4d, zOffset);
             } else {

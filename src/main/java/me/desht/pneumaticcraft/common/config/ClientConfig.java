@@ -62,6 +62,7 @@ public class ClientConfig {
         public ModConfigSpec.DoubleValue jetbootsVolume;
         public ModConfigSpec.DoubleValue jetbootsVolumeBuilderMode;
         public ModConfigSpec.DoubleValue jackhammerVolume;
+        public ModConfigSpec.DoubleValue armorInitVolume;
     }
 
     public final ClientConfig.General general = new General();
@@ -196,6 +197,10 @@ public class ClientConfig {
                 .comment("Volume level of the Jackhammer")
                 .translation("pneumaticcraft.config.client.sound.jackhammer_volume")
                 .defineInRange("jackhammer_volume", 0.7d, 0d, 2d);
+        sound.armorInitVolume = builder
+                .comment("Volume level of the Pneumatic Armor startup sounds")
+                .translation("pneumaticcraft.config.client.sound.armor_init")
+                .defineInRange("armor_init_volume", 0.2d, 0d, 2d);
     }
 
     /**

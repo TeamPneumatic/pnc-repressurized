@@ -37,8 +37,20 @@ public class PNCFluidRenderProps implements IClientFluidTypeExtensions {
         this.colorTint = colorTint;
     }
 
-    public static PNCFluidRenderProps genericFuel(int colorTint) {
-        return new PNCFluidRenderProps("generic_fuel_still", "generic_fuel_flow", colorTint);
+    public static PNCFluidRenderProps thickFluid(int colorTint) {
+        return new PNCFluidRenderProps("thick_fluid_still", "thick_fluid_flow", colorTint);
+    }
+
+    public static PNCFluidRenderProps waterLike(int colorTint) {
+        return new PNCFluidRenderProps("minecraft:block/water_still", "minecraft:block/water_flow", colorTint);
+    }
+
+    public static PNCFluidRenderProps texture(String textureBase) {
+        return texture(textureBase, 0xFFFFFFFF);
+    }
+
+    public static PNCFluidRenderProps texture(String textureBase, int colorTint) {
+        return new PNCFluidRenderProps(textureBase + "_still", textureBase + "_flowing", colorTint);
     }
 
     @Override

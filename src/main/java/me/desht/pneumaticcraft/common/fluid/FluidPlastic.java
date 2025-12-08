@@ -33,7 +33,7 @@ import net.minecraft.world.level.material.FluidState;
 import net.neoforged.neoforge.fluids.BaseFlowingFluid;
 
 public abstract class FluidPlastic {
-    public static final PNCFluidRenderProps RENDER_PROPS = new PNCFluidRenderProps("plastic_still", "plastic_flow");
+    public static final PNCFluidRenderProps RENDER_PROPS = PNCFluidRenderProps.texture("plastic", 0xFFFFD8D8);
 
     private static BaseFlowingFluid.Properties props() {
         return new BaseFlowingFluid.Properties(

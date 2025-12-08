@@ -240,7 +240,7 @@ public enum HUDHandler implements IKeyListener {
         // avoid playing sounds too often... if many upgrades are installed it could get really noisy
         long when = player.level().getGameTime();
         if (when - lastArmorInitSound >= 30) {
-            player.playNotifySound(ModSounds.HUD_INIT.get(), SoundSource.PLAYERS, 0.2F, pitch);
+            player.playNotifySound(ModSounds.HUD_INIT.get(), SoundSource.PLAYERS, ConfigHelper.client().sound.armorInitVolume.get().floatValue(), pitch);
         }
         lastArmorInitSound = when;
     }
@@ -248,7 +248,7 @@ public enum HUDHandler implements IKeyListener {
     private void playArmorInitCompleteSound(Player player) {
         long when = player.level().getGameTime();
         if (when - lastArmorInitCompleteSound >= 30) {
-            player.playNotifySound(ModSounds.HUD_INIT_COMPLETE.get(), SoundSource.PLAYERS, 0.2F, (float) 1.0);
+            player.playNotifySound(ModSounds.HUD_INIT_COMPLETE.get(), SoundSource.PLAYERS, ConfigHelper.client().sound.armorInitVolume.get().floatValue(), 1f);
         }
         lastArmorInitCompleteSound = when;
     }

@@ -24,6 +24,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -65,8 +66,8 @@ public class SolarCompressorBlock extends AbstractPNCBlockWithBoundingBlocks {
     @Override
     public @NotNull VoxelShape getShape(BlockState state, @NotNull BlockGetter world, @NotNull BlockPos pos, @NotNull CollisionContext context) {
         // Empty bounding blocks
-        if(state.getValue(BOUNDING)) {
-            return Block.box(0,0,0,0,0,0);
+        if (state.getValue(BOUNDING)) {
+            return Shapes.empty();
         }
 
         // Rotating main block

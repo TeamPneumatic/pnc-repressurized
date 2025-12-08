@@ -27,7 +27,7 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.fluids.BaseFlowingFluid;
 
 public abstract class FluidOil {
-    public static final PNCFluidRenderProps RENDER_PROPS = new PNCFluidRenderProps("oil_still", "oil_flow");
+    public static final PNCFluidRenderProps RENDER_PROPS = PNCFluidRenderProps.texture("oil");
 
     private static BaseFlowingFluid.Properties props() {
         return new BaseFlowingFluid.Properties(

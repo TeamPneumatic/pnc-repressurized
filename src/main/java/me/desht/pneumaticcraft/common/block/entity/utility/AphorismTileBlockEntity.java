@@ -122,10 +122,10 @@ public class AphorismTileBlockEntity extends AbstractPneumaticCraftBlockEntity {
         if (tag.contains("AphorismData")) {
             SavedData.CODEC.parse(NbtOps.INSTANCE, tag.get("AphorismData")).ifSuccess(savedData -> {
                 loadSavedData(savedData);
-                updateLineMetadata();
                 if (level != null) {
                     forceBlockEntityRerender();
                 }
+                maxLineWidth = -1;
             });
         }
     }

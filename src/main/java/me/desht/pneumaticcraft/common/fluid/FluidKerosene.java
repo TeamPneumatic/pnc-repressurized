@@ -23,7 +23,7 @@ import me.desht.pneumaticcraft.common.registry.ModItems;
 import net.neoforged.neoforge.fluids.BaseFlowingFluid;
 
 public abstract class FluidKerosene {
-    public static final PNCFluidRenderProps RENDER_PROPS = PNCFluidRenderProps.genericFuel(0xD03BC2EE);
+    public static final PNCFluidRenderProps RENDER_PROPS = PNCFluidRenderProps.waterLike(0xD03BC2EE);
 
     private static BaseFlowingFluid.Properties props() {
         return new BaseFlowingFluid.Properties(

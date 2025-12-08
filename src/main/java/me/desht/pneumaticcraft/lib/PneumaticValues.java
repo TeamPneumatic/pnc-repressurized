@@ -144,7 +144,8 @@ public class PneumaticValues {
     public static final float DEF_SPEED_UPGRADE_MULTIPLIER = 1.5F;
     public static final float DEF_SPEED_UPGRADE_USAGE_MULTIPLIER = 1.65F;
 
-    public static final int RANGE_UPGRADE_HELMET_RANGE_INCREASE = 5;
+    public static final int RANGE_UPGRADE_HELMET_RANGE_INCREASE_BLOCK = 5;
+    public static final int RANGE_UPGRADE_HELMET_RANGE_INCREASE_ENTITY = 16;
     public static final int NORMAL_TANK_CAPACITY = 16000;
     public static final int MOLTEN_PLASTIC_TEMPERATURE = 150 + 273;//150 C
     public static final int DRONE_TANK_SIZE = 16000;

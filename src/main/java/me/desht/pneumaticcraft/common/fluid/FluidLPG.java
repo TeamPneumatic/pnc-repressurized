@@ -23,7 +23,7 @@ import me.desht.pneumaticcraft.common.registry.ModItems;
 import net.neoforged.neoforge.fluids.BaseFlowingFluid;
 
 public abstract class FluidLPG {
-    public static final PNCFluidRenderProps RENDER_PROPS = PNCFluidRenderProps.genericFuel(0xD0ECD71C);
+    public static final PNCFluidRenderProps RENDER_PROPS = PNCFluidRenderProps.waterLike(0xD0ECD71C);
 
     private static BaseFlowingFluid.Properties props() {
         return new BaseFlowingFluid.Properties(

@@ -166,6 +166,6 @@ public class PastebinHandler extends Thread {
 
     public String getInternal(String key) throws IOException {
         if (key.contains("pastebin")) key = key.substring(key.lastIndexOf('/') + 1);
-        return PneumaticCraftUtils.getPage("https://pastebin.com/raw.php?i=" + key);
+        return PneumaticCraftUtils.getPage("https://pastebin.com/raw/" + key);
     }
 }

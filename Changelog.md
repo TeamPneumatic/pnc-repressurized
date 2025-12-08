@@ -8,8 +8,28 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## [8.2.14]
 
+### Added
+* Upgrades can now be sneak-clicked into machines without needing to open the machine's GUI
+* Armor init sound volume is now configurable: see `armor_init_volume` setting in client config
+
+### Changed
+* Pressure Chamber enchantment handler is a bit more accepting of items now
+  * Now any enchantable item is accepted, even if they can't be enchanted directly in an enchanting table
+* Fluid textures have been reworked a little, and fuel textures in particular are not quite as opaque now
+  * Molten plastic has a slight pink tint, and the molten plastic bucket is better distinguishes from an empty bucket
+* Allow -1 as a valid value for `min_fluid_fuel_temperature` config setting
+  * This means to completely disable using hot fluids as fuels
+
 ### Fixed
 * Fixed encoding error with The One Probe and Transfer Gadgets
+* Fixed a serialization bug with drones, causing variable values to be forgotten
+* Fixed Aphorism tile text scaling not updating when edited on server (e.g. by drone)
+* Fixed outdated URL for pastebin handler
+* Fixed Programmable Controller GUI allowing invalid items to be inserted in the drone slot
+* Hopefully fix issues with pressure tubes sometimes leaking air across chunk borders after a world/chunk reload
+  * I could never reproduce this myself, but added some extra validation checks
+* Fixed visual rotation bug with display tables (east/west rotations were visually reversed)
+* Fixed a recursion related crash when removing solar compressors
 
 ## [8.2.13]
 

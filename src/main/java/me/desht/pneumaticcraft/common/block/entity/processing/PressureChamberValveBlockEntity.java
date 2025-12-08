@@ -316,7 +316,7 @@ public class PressureChamberValveBlockEntity extends AbstractAirHandlingBlockEnt
                     break;
             }
         }
-        airHandler.setSideLeaking(disconnected.isEmpty() ? null : getRotation());
+        airHandler.setSideLeaking(disconnected.isEmpty() ? null : getRotation().getOpposite());
     }
 
     @NotNull

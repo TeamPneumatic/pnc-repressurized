@@ -83,7 +83,7 @@ public class PressureEnchantingRecipe extends PressureChamberRecipeImpl {
         // if the enchantment is applicable, AND the item doesn't have an existing enchantment of the
         // same type which is equal to or stronger than the book's enchantment level...
         return bookMap.entrySet().stream()
-                .anyMatch(entry -> enchantable.isPrimaryItemFor(entry.getKey())
+                .anyMatch(entry -> enchantable.supportsEnchantment(entry.getKey())
                         && enchantable.getEnchantmentLevel(entry.getKey()) < entry.getIntValue());
     }
 

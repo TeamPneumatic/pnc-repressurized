@@ -217,9 +217,9 @@ public class CommonConfig {
                 .defineInRange("max_programming_area", 250000, 1, Integer.MAX_VALUE);
         general.minFluidFuelTemperature = builder
                 .worldRestart()
-                .comment("Fluids at least as hot as this temperature (Kelvin) will be auto-registered as Liquid Compressor fuels, the quality being dependent on fluid temperature.")
+                .comment("Fluids at least as hot as this temperature (Kelvin) will be auto-registered as Liquid Compressor fuels, the quality being dependent on fluid temperature. Setting this to -1 completely disables hot fluids from being usable as fuels.")
                 .translation("pneumaticcraft.config.common.general.min_fluid_fuel_temperature")
-                .defineInRange("min_fluid_fuel_temperature", 373, 0, Integer.MAX_VALUE);
+                .defineInRange("min_fluid_fuel_temperature", 373, -1, Integer.MAX_VALUE);
         general.useUpDyesWhenColoring = builder
                 .comment("Should dyes be used up when coloring things (Drones, Logistics Modules, Redstone Modules)?")
                 .translation("pneumaticcraft.config.common.general.use_up_dyes_when_coloring")

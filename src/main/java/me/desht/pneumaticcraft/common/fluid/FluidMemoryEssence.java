@@ -23,8 +23,7 @@ import me.desht.pneumaticcraft.common.registry.ModItems;
 import net.neoforged.neoforge.fluids.BaseFlowingFluid;
 
 public abstract class FluidMemoryEssence {
-    public static final PNCFluidRenderProps RENDER_PROPS = new PNCFluidRenderProps(
-            "memory_essence_still", "memory_essence_flow", 0xFFD0FF00);
+    public static final PNCFluidRenderProps RENDER_PROPS = PNCFluidRenderProps.texture("memory_essence", 0xFFD0FF00);
 
     private static BaseFlowingFluid.Properties props() {
         return new BaseFlowingFluid.Properties(
