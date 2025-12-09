@@ -1,0 +1,16 @@
+{
+  "name": "Matriz de Melhoria",
+  "icon": "pneumaticcraft:upgrade_matrix",
+  "category": "pneumaticcraft:components",
+  "advancement": "pneumaticcraft:tp_plant",
+  "pages": [
+    {
+      "type": "text",
+      "text": "A $(item)Matriz de Melhoria/$ pode ser usada no lugar de $(item)Lápis-Lazúli/$ para a criação de quaisquer $(l:base_concepts/upgrades)melhorias/$. A vantagem de usar Matrizes de Melhoria é o uso muito reduzido de Lápis, o que pode ser uma bênção se você tiver Lápis limitado e muitas melhorias para criar."
+    },
+    {
+      "type": "pneumaticcraft:thermo_plant",
+      "recipe": "pneumaticcraft:thermo_plant/upgrade_matrix"
+    }
+  ]
+}

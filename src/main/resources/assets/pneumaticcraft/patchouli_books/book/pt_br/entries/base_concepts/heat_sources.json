@@ -1,0 +1,56 @@
+{
+  "name": "Fontes de Calor",
+  "icon": "pneumaticcraft:vortex_tube",
+  "category": "pneumaticcraft:base_concepts",
+  "pages": [
+    {
+      "type": "text",
+      "text": "$(thing)Fontes de calor estáticas/$ são blocos e fluidos que adicionam ou removem calor de/para máquinas quando adjacentes a elas. Quando muito calor é adicionado ou removido, eles podem se transformar em outros blocos ou fluidos. Note que a extração/adição de calor é rastreada externamente ao bloco em questão, portanto, quebrar/substituir blocos para redefinir o calor extraído não é uma estratégia viável."
+    },
+    {
+      "type": "text",
+      "title": "Fontes de Calor Vanilla",
+      "text": "Os seguintes blocos e fluidos vanilla atuam como fontes de calor estáticas: $(li)Ar$(li)Gelo/Gelo Compactado/Gelo Azul$(li)Neve$(li)Tocha$(li)Fogo (se apagará)$(li)Magma (esfria para Netherrack)$(li)Água (pode congelar ou evaporar)$(li)Lava (esfria para Obsidiana)$(li)Fogueira (se apagará)"
+    },
+    {
+      "type": "text",
+      "title": "Fontes de Calor Modificadas",
+      "text": "Vários blocos de mods também funcionarão como fontes de calor estáticas com propriedades diferentes, incluindo:$(li)Vapor e Vapor Superaquecido do IC2$(li)Refrigerante e Refrigerante Quente do IC2$(li)Blocos de Urânio do IC2 e Immersive Engineering$(li)Lanternas de Blaze do Quark$(li)Enxofre e Permafrost do Quark$(li)Areia de Calor do Natura$(li)Todos os fluidos de mods têm propriedades de calor (a temperatura é definida pelo mod)"
+    },
+    {
+      "type": "text",
+      "title": "Adicionando Fontes Personalizadas",
+      "text": "(Para criadores de modpack) Todas as propriedades de calor dos blocos são definidas em datapacks. Você pode adicionar suas próprias definições ou substituir/remover definições padrão adicionando arquivos JSON em $(thing)data/<mod-id>/pneumaticcraft/block_heat_properties/$."
+    },
+    {
+      "type": "spotlight",
+      "item": "pneumaticcraft:vortex_tube",
+      "text": "Um $(l:machines/vortex_tube)Tubo de Vórtice/$ é uma $(thing)fonte de calor dinâmica/$ que converte $(l:base_concepts/pressure)pressão/$ diretamente em calor e frio. É altamente recomendável colocar um $(l:machines/heat_sink)Dissipador de Calor/$ no lado não utilizado de um Tubo de Vórtice, para eficiência."
+    },
+    {
+      "type": "spotlight",
+      "item": "pneumaticcraft:heat_frame",
+      "text": "Uma $(l:semiblocks/heat_frame)Estrutura de Calor/$ é um dispositivo que pode ser usado para aquecer (ou congelar!) itens em qualquer inventário. Note que Estruturas de Calor não absorverão calor diretamente de uma $(thing)fonte de calor estática/$, mas você pode colocar um $(l:machines/heat_pipe)Tubo de Calor/$ ao lado dela para transmitir o calor."
+    },
+    {
+      "type": "spotlight",
+      "item": "pneumaticcraft:heat_sink",
+      "text": "Um $(l:machines/heat_sink)Dissipador de Calor/$ é um bloco que pode ser usado para dispersar calor (ou frio!) eficientemente do bloco ao qual está anexado, para a atmosfera."
+    },
+    {
+      "type": "spotlight",
+      "item": "pneumaticcraft:heat_pipe",
+      "text": "Um $(l:machines/heat_pipe)Tubo de Calor/$ é um núcleo isolado de ferro comprimido que pode transmitir calor entre blocos, sem qualquer conexão térmica com blocos de ar ou fluidos adjacentes. É uma alternativa mais compacta (e barata) ao uso de $(item)Blocos de Ferro Comprimido/$ para transmitir calor. Você também pode anexar $(item)Dissipadores de Calor/$ diretamente a um Tubo de Calor."
+    },
+    {
+      "type": "spotlight",
+      "item": "minecraft:furnace",
+      "text": "Ao conectar uma $(item)Fornalha/$ vanilla a qualquer fonte de calor dinâmica (como um $(l:machines/vortex_tube)Tubo de Vórtice/$, mas também blocos como o $(l:compressors/advanced_air_compressor)Compressor de Ar Avançado/$ que produz calor), o calor será consumido pela Fornalha para \"abastecê-la\", possibilitando operar Fornalhas puramente com calor, sem exigir combustível sólido. Isso é conveniente e mais eficiente."
+    },
+    {
+      "type": "text",
+      "title": "Fornalha (cont)",
+      "text": "Este \"abastecimento\" da fornalha começará a funcionar a 100°C, e será mais rápido com temperaturas mais altas. Colocar múltiplas fontes de calor ao redor da Fornalha aumentará o efeito de aquecimento.$(p)Este efeito de aquecimento também funciona para o $(item)Alto-forno/$ e $(item)Defumador/$ vanilla."
+    }
+  ]
+}

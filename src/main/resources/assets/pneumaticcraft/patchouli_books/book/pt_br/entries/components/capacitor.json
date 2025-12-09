@@ -1,0 +1,16 @@
+{
+  "name": "Capacitor",
+  "icon": "pneumaticcraft:capacitor",
+  "category": "pneumaticcraft:components",
+  "advancement": "pneumaticcraft:plastic",
+  "pages": [
+    {
+      "type": "text",
+      "text": "Este é um componente de fabricação para outros dispositivos. Ele não tem uso por si só."
+    },
+    {
+      "type": "pneumaticcraft:pressure_chamber",
+      "recipe": "pneumaticcraft:pressure_chamber/capacitor"
+    }
+  ]
+}

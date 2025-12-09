@@ -1,0 +1,17 @@
+{
+  "name": "Base de Pedra",
+  "icon": "pneumaticcraft:stone_base",
+  "category": "pneumaticcraft:components",
+  "advancement": "pneumaticcraft:pressure_tube",
+  "pages": [
+    {
+      "type": "text",
+      "text": "Este é um componente de criação para outros dispositivos. Ele não tem uso por si só."
+    },
+    {
+      "type": "crafting",
+      "text": "Criando uma Base de Pedra",
+      "recipe": "pneumaticcraft:stone_base"
+    }
+  ]
+}

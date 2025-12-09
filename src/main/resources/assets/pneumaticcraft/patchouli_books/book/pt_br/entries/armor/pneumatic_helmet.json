@@ -1,0 +1,74 @@
+{
+  "name": "Capacete Pneumático",
+  "icon": "pneumaticcraft:pneumatic_helmet",
+  "category": "pneumaticcraft:armor",
+  "advancement": "pneumaticcraft:printed_circuit_board",
+  "pages": [
+
+    {
+      "type": "text",
+      "text": "O $(item)Capacete Pneumático/$ é uma das quatro peças da $(thing)Armadura Pneumática/$.$(p)Por muito tempo, foi a única peça disponível."
+    },
+    {
+      "type": "crafting",
+      "recipe": "pneumaticcraft:pneumatic_helmet",
+      "text": "Criando um Capacete Pneumático"
+    },
+    {
+      "type": "spotlight",
+      "anchor": "entity_tracker",
+      "item": "pneumaticcraft:entity_tracker_upgrade",
+      "text": "Com uma melhoria $(l:base_concepts/upgrades#entity_tracker)Rastreador de Entidade/$ instalada, criaturas vivas dentro de um alcance de 16 blocos serão rastreadas automaticamente, mesmo através de paredes. Quando a entidade for um mob agressivo, você receberá um aviso se ele mirar em você. Isso permite que você se prepare para a batalha (ou fuga!). Você pode filtrar na GUI quais entidades devem ser rastreadas com um $(l:base_concepts/entity_filter)Filtro de Entidade/$."
+    },
+    {
+      "type": "spotlight",
+      "item": "pneumaticcraft:block_tracker_upgrade",
+      "text": "Com uma melhoria $(l:base_concepts/upgrades#block_tracker)Rastreador de Bloco/$ instalada, blocos especiais dentro de 30 blocos serão rastreados, mesmo através de paredes. Os seguintes blocos são rastreados:$(li)Quaisquer inventários (conteúdo será mostrado)$(li)Geradores de Mobs (tempo de geração será mostrado)$(li)Blocos de Traça$(li)Estruturas do Portal do End$(li)TNT$(li)Ganchos de Armadilha"
+    },
+    {
+      "type": "text",
+      "title": "Rastreador de Bloco (cont.)",
+      "text": "Como alguns desses blocos são bastante comuns (inventários na casa de um jogador, Blocos de Traça em uma Fortaleza), o HUD parará automaticamente de exibir o rótulo se um certo número de blocos de um determinado tipo for atingido. Você ainda pode obter informações sobre um bloco rastreado, no entanto, passando sua mira sobre ele. Você também pode especificar quais blocos deseja rastrear desmarcando-os na GUI de configuração."
+    },
+    {
+      "type": "spotlight",
+      "item": "pneumaticcraft:coordinate_tracker_upgrade",
+      "text": "A melhoria $(l:base_concepts/upgrades#coordinate_tracker)Rastreador de Coordenadas/$ calculará o caminho mais curto para um local selecionado, usando o próprio pathfinding do Minecraft para realizar isso.$(p)Isso é muito útil quando você está perdido em uma caverna e quer sair: abra o menu de opções (pressione $(thing)$(k:pneumaticcraft.armor.options)/$) e selecione $(bold)Navegar para a superfície/$."
+    },
+    {
+      "type": "spotlight",
+      "item": "pneumaticcraft:search_upgrade",
+      "text": "Você conhece o problema de tentar encontrar um determinado item em sua base, que tem muitos e muitos baús? Se sim, então a $(l:base_concepts/upgrades#item_searcher)Melhoria de Busca/$ é para você. Você pode procurar por um item na GUI: navegue até o item que você está procurando com a barra de rolagem, ou digite o nome do item na caixa de pesquisa. Quando encontrar o item, coloque-o no slot Alvo."
+    },
+    {
+      "type": "text",
+      "title": "Buscador de Itens (cont.)",
+      "text": "Agora, qualquer item selecionado que esteja no chão ou em qualquer inventário em um alcance de 16 blocos terá um $(thing)brilho verde/$. O tamanho do brilho depende da proporção do item no local em relação ao total de itens encontrados.$(p)Note que você também requer melhorias $(l:base_concepts/upgrades#entity_tracker)Rastreador de Entidade/$ (para itens no chão) e/ou $(l:base_concepts/upgrades#block_tracker)Rastreador de Bloco/$ (para itens em inventários) em seu capacete."
+    },
+    {
+      "type": "spotlight",
+      "item": "pneumaticcraft:dispenser_upgrade",
+      "text": "Uma $(l:base_concepts/upgrades#dispenser)Melhoria de Ejetor/$, quando instalada junto com a $(l:base_concepts/upgrades#entity_tracker)Melhoria Rastreador de Entidade/$, permite que você monitore/depure $(l:tools/drone)Drones/$. Simplesmente pressione $(thing)$(k:pneumaticcraft.helmet.debugging.drone)/$ enquanto olha para um $(item)Drone/$. A animação de rastreamento agora terá uma borda vermelha. Agora abra a janela de opções do capacete pressionando $(thing)$(k:pneumaticcraft.armor.options)/$ e navegue até o painel $(bold)Depuração de Drone/$."
+    },
+    {
+      "type": "spotlight",
+      "item": "pneumaticcraft:range_upgrade",
+      "text": "A $(l:base_concepts/upgrades#range)Melhoria de Alcance/$ aumenta o alcance do $(l:base_concepts/upgrades#entity_tracker)Rastreador de Entidade/$ em 16 blocos por melhoria e do $(l:base_concepts/upgrades#block_tracker)Rastreador de Bloco/$ em 5 blocos por melhoria. Até 5 melhorias são aceitas.$(p)Note que esta melhoria aumenta o uso de ar do capacete."
+    },
+    {
+      "type": "spotlight",
+      "item": "pneumaticcraft:night_vision_upgrade",
+      "text": "A $(l:base_concepts/upgrades#night_vision)Melhoria de Visão Noturna/$ faz o que diz: permite que você veja no escuro, por um $(l:base_concepts/pressure)custo de ar/$ muito pequeno."
+    },
+    {
+      "type": "spotlight",
+      "item": "pneumaticcraft:scuba_upgrade",
+      "text": "A $(l:base_concepts/upgrades#scuba)Melhoria de Mergulho/$ permite que você respire debaixo d'água, usando ar da reserva do capacete para lhe fornecer ar. Como bônus adicional, fornece uma máscara facial que permite uma visão subaquática muito mais clara; as vistas podem ser bastante espetaculares em conjunto com uma $(l:base_concepts/upgrades#night_vision)Melhoria de Visão Noturna/$."
+    },
+    {
+      "type": "spotlight",
+      "item": "pneumaticcraft:ender_visor_upgrade",
+      "text": "A $(l:base_concepts/upgrades#ender_visor)Melhoria de Visor do Ender/$ é baseada em pesquisa avançada de $(thing)abóbora/$, e fornece um meio alternável de evitar a agressividade de $(thing)Enderman/$, enquanto mitiga as dificuldades visuais normalmente associadas a enfiar sua cabeça em uma abóbora real."
+    }
+  ]
+}

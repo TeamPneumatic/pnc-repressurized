@@ -1,0 +1,17 @@
+{
+  "name": "Rotor de Turbina",
+  "icon": "pneumaticcraft:turbine_rotor",
+  "category": "pneumaticcraft:components",
+  "advancement": "pneumaticcraft:pressure_chamber",
+  "pages": [
+    {
+      "type": "text",
+      "text": "Este é um componente de criação para outros dispositivos. Ele não tem uso por si só."
+    },
+    {
+      "type": "crafting",
+      "text": "Criando um Rotor de Turbina",
+      "recipe": "pneumaticcraft:turbine_rotor"
+    }
+  ]
+}

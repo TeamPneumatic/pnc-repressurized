@@ -1,0 +1,27 @@
+{
+  "name": "Pressão",
+  "icon": "pneumaticcraft:pressure_tube",
+  "category": "pneumaticcraft:base_concepts",
+  "pages": [
+    {
+      "type": "text",
+      "text": "Ar comprimido é o $(thing)sistema de energia/$ do $(pncr), baseado em mecânicas de pressão do mundo real.$(li)Ar comprimido é $(italic)produzido/$ por uma classe de máquinas chamadas $(thing)Compressores/$, das quais existem vários tipos.$(li)Todas as máquinas e ferramentas pressurizáveis têm um $(thing)volume/$ (medido em mL), que é a quantidade de ar que podem armazenar à pressão atmosférica padrão, ou $(ttcolor)$(t:Este mod usa 0 bar para representar a pressão atmosférica padrão, também conhecida como Pressão Manométrica)0 bar/$."
+    },
+    {
+      "type": "text",
+      "text": "$(li)A $(thing)pressão P/$ de uma máquina ou ferramenta pode ser calculada como:$(p)  $(formula)P = (A / V) - 1/$$(p)onde $(formula)V/$ é o $(thing)volume/$ e $(formula)A/$ é o $(thing)ar/$ atualmente na máquina. Ex: uma máquina com 5000mL de $(thing)volume/$ armazenando 20000mL de $(thing)ar/$ tem uma pressão de $(thing)3 bar/$.$(li)O volume da maioria das máquinas pode ser aumentado com $(l:base_concepts/upgrades#volume)Melhorias de Volume/$, o que significa quedas de pressão menores quando o ar é usado."
+    },
+    {
+      "type": "text",
+      "text": "$(li)O ar se move de blocos de pressão mais alta para blocos de pressão mais baixa. Deixar $(l:tubes/pressure_tubes)tubos/$ ou máquinas desconectados causará um $(thing)vazamento de ar/$ gigante, o que significa perda de pressão! Vazamentos de ar são audíveis como um som de chiado, e visíveis como um fluxo de partículas saindo do bloco.$(li)A pressão tenta se equilibrar. Conectar uma máquina pequena a uma grande capacidade de ar (como uma $(l:manufacturing/pressure_chamber)Câmara de Pressão/$) resultará em um acúmulo de pressão na máquina."
+    },
+    {
+      "type": "text",
+      "text": "$(li)A pressão aplica força nas paredes internas de uma máquina ou $(l:tubes/pressure_tubes)tubo de pressão/$. Aplicar muita pressão resulta em um $(thing)Evento de Liberação Rápida de Ar Não Controlada/$, também conhecido como uma $(thing)explosão/$. A pressão na qual as máquinas podem explodir é mostrada como a área vermelha no manômetro na GUI de qualquer máquina, mas o ponto exato em que uma máquina explodirá não é previsível."
+    },
+    {
+      "type": "text",
+      "text": "$(li)É importante entender que, embora muitas máquinas exijam uma $(thing)pressão mínima/$ para operar, as operações que uma máquina realiza consomem $(thing)ar/$, não $(thing)pressão/$; a pressão é apenas uma função do ar armazenado e do volume."
+    }
+  ]
+}

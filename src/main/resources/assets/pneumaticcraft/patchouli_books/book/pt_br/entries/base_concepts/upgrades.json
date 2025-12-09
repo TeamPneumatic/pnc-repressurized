@@ -1,0 +1,230 @@
+{
+    "name": "Melhorias",
+    "icon": "pneumaticcraft:volume_upgrade",
+    "category": "pneumaticcraft:base_concepts",
+    "pages": [
+        {
+            "type": "text",
+            "text": "$(thing)Melhorias/$ são itens fabricáveis que podem ser inseridos em máquinas e algumas ferramentas para aprimorar sua funcionalidade de alguma forma. Para adicionar melhorias às ferramentas, você precisará de uma $(l:machines/charging_station)Estação de Carregamento/$.$(p)O efeito preciso de cada melhoria varia por dispositivo; isso está documentado na GUI da máquina ou (para itens) na GUI de melhoria da Estação de Carregamento."
+        },
+        {
+            "type": "crafting",
+            "anchor": "volume",
+            "recipe": "pneumaticcraft:volume_upgrade",
+            "text": "Criando uma Melhoria de Volume"
+        },
+        {
+            "type": "crafting",
+            "anchor": "dispenser",
+            "recipe": "pneumaticcraft:dispenser_upgrade",
+            "text": "Criando uma Melhoria de Ejetor"
+        },
+        {
+            "type": "crafting",
+            "anchor": "inventory",
+            "recipe": "pneumaticcraft:inventory_upgrade",
+            "text": "Criando uma Melhoria de Inventário"
+        },
+        {
+            "type": "crafting",
+            "anchor": "item_life",
+            "recipe": "pneumaticcraft:item_life_upgrade",
+            "text": "Criando uma Melhoria de Vida do Item"
+        },
+        {
+            "type": "crafting",
+            "anchor": "entity_tracker",
+            "recipe": "pneumaticcraft:entity_tracker_upgrade",
+            "text": "Criando uma Melhoria de Rastreador de Entidade"
+        },
+        {
+            "type": "crafting",
+            "anchor": "block_tracker",
+            "recipe": "pneumaticcraft:block_tracker_upgrade",
+            "text": "Criando uma Melhoria de Rastreador de Bloco"
+        },
+        {
+            "type": "crafting",
+            "anchor": "speed",
+            "recipe": "pneumaticcraft:speed_upgrade",
+            "text": "Criando uma Melhoria de Velocidade$(p)$(bold)Dica:/$ você também pode usar um $(l:machines/liquid_hopper)Funil de Líquidos/$ (ou outro tanque de mod) de $(l:components/lubricant)Lubrificante/$ para criar múltiplas melhorias de uma vez!"
+        },
+        {
+            "type": "crafting",
+            "anchor": "speed2",
+            "recipe": "pneumaticcraft:speed_upgrade_from_glycerol",
+            "text": "Criando Melhorias de Velocidade a partir de $(l:renewables/glycerol)Glicerol/$"
+        },
+        {
+            "type": "crafting",
+            "anchor": "search",
+            "recipe": "pneumaticcraft:search_upgrade",
+            "text": "Criando uma Melhoria de Busca"
+        },
+        {
+            "type": "crafting",
+            "anchor": "coordinate_tracker",
+            "recipe": "pneumaticcraft:coordinate_tracker_upgrade",
+            "text": "Criando uma Melhoria de Rastreador de Coordenadas"
+        },
+        {
+            "type": "crafting",
+            "anchor": "range",
+            "recipe": "pneumaticcraft:range_upgrade",
+            "text": "Criando uma Melhoria de Alcance"
+        },
+        {
+            "type": "crafting",
+            "anchor": "security",
+            "recipe": "pneumaticcraft:security_upgrade",
+            "text": "Criando uma Melhoria de Segurança"
+        },
+        {
+            "type": "crafting",
+            "anchor": "magnet",
+            "recipe": "pneumaticcraft:magnet_upgrade",
+            "text": "Criando uma Melhoria de Ímã"
+        },
+        {
+            "type": "crafting",
+            "anchor": "thaumcraft",
+            "flag": "mod:thaumcraft",
+            "recipe": "pneumaticcraft:thaumcraft_upgrade",
+            "text": "Criando uma Melhoria de Thaumcraft"
+        },
+        {
+            "type": "crafting",
+            "anchor": "charging",
+            "recipe": "pneumaticcraft:charging_upgrade",
+            "text": "Criando uma Melhoria de Carregamento"
+        },
+        {
+            "type": "crafting",
+            "anchor": "armor",
+            "recipe": "pneumaticcraft:armor_upgrade",
+            "text": "Criando uma Melhoria de Armadura"
+        },
+        {
+            "type": "crafting",
+            "anchor": "jet_boots_1",
+            "recipe": "pneumaticcraft:jet_boots_upgrade_1",
+            "text": "Criando uma Melhoria de Botas a Jato: Nível I"
+        },
+        {
+            "type": "crafting",
+            "anchor": "jet_boots_2",
+            "recipe": "pneumaticcraft:jet_boots_upgrade_2",
+            "text": "Criando uma Melhoria de Botas a Jato: Nível II"
+        },
+        {
+            "type": "crafting",
+            "anchor": "jet_boots_3",
+            "recipe": "pneumaticcraft:jet_boots_upgrade_3",
+            "text": "Criando uma Melhoria de Botas a Jato: Nível III"
+        },
+        {
+            "type": "crafting",
+            "anchor": "jet_boots_4",
+            "recipe": "pneumaticcraft:jet_boots_upgrade_4",
+            "text": "Criando uma Melhoria de Botas a Jato: Nível IV"
+        },
+        {
+            "type": "crafting",
+            "anchor": "jet_boots_5",
+            "recipe": "pneumaticcraft:jet_boots_upgrade_5",
+            "text": "Criando uma Melhoria de Botas a Jato: Nível V"
+        },
+        {
+            "type": "crafting",
+            "anchor": "jumping_1",
+            "recipe": "pneumaticcraft:jumping_upgrade_1",
+            "text": "Criando uma Melhoria de Salto: Nível I"
+        },
+        {
+            "type": "crafting",
+            "anchor": "jumping_2",
+            "recipe": "pneumaticcraft:jumping_upgrade_2",
+            "text": "Criando uma Melhoria de Salto: Nível II"
+        },
+        {
+            "type": "crafting",
+            "anchor": "jumping_3",
+            "recipe": "pneumaticcraft:jumping_upgrade_3",
+            "text": "Criando uma Melhoria de Salto: Nível III"
+        },
+        {
+            "type": "crafting",
+            "anchor": "jumping_4",
+            "recipe": "pneumaticcraft:jumping_upgrade_4",
+            "text": "Criando uma Melhoria de Salto: Nível IV"
+        },
+        {
+            "type": "crafting",
+            "anchor": "night_vision",
+            "recipe": "pneumaticcraft:night_vision_upgrade",
+            "text": "Criando uma Melhoria de Visão Noturna"
+        },
+        {
+            "type": "crafting",
+            "anchor": "scuba",
+            "recipe": "pneumaticcraft:scuba_upgrade",
+            "text": "Criando uma Melhoria de Mergulho"
+        },
+        {
+            "type": "crafting",
+            "anchor": "flippers",
+            "recipe": "pneumaticcraft:flippers_upgrade",
+            "text": "Criando uma Melhoria de Nadadeiras"
+        },
+        {
+            "type": "crafting",
+            "anchor": "standby",
+            "recipe": "pneumaticcraft:standby_upgrade",
+            "text": "Criando uma Melhoria de Espera"
+        },
+        {
+            "type": "crafting",
+            "anchor": "minigun",
+            "recipe": "pneumaticcraft:minigun_upgrade",
+            "text": "Criando uma Melhoria de Minigun"
+        },
+        {
+            "type": "crafting",
+            "flag": "mod:toughasnails",
+            "anchor": "air_conditioning",
+            "recipe": "pneumaticcraft:air_conditioning_upgrade",
+            "text": "Criando uma Melhoria de Ar Condicionado"
+        },
+        {
+            "type": "crafting",
+            "flag": "mod:mekanism",
+            "anchor": "radiation_shielding",
+            "recipe": "pneumaticcraft:radiation_shielding_upgrade",
+            "text": "Criando uma Melhoria de Proteção contra Radiação"
+        },
+        {
+            "type": "crafting",
+            "anchor": "gilded",
+            "recipe": "pneumaticcraft:gilded_upgrade",
+            "text": "Criando uma Melhoria Dourada"
+        },
+        {
+            "type": "crafting",
+            "anchor": "ender_visor",
+            "recipe": "pneumaticcraft:ender_visor_upgrade",
+            "text": "Criando uma Melhoria de Visor do Ender"
+        },
+        {
+            "type": "crafting",
+            "anchor": "stomp",
+            "recipe": "pneumaticcraft:stomp_upgrade",
+            "text": "Criando uma Melhoria de Pisão"
+        },
+        {
+            "type": "crafting",
+            "anchor": "chunkloader",
+            "recipe": "pneumaticcraft:chunkloader_upgrade",
+            "text": "Criando uma Melhoria de Carregador de Chunk"
+        }
+    ]
+}

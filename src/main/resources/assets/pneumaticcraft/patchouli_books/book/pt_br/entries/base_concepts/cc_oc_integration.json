@@ -1,0 +1,103 @@
+{
+  "name": "Integração Computacional",
+  "icon": "pneumaticcraft:textures/patchouli/computer.png",
+  "category": "pneumaticcraft:base_concepts",
+  "flag": "|mod:computercraft,mod:opencomputers",
+  "pages": [
+    {
+      "type": "text",
+      "text": "Quando $(thing)ComputerCraft/$ ou $(thing)Open Computers/$ estiver instalado, você poderá interagir com quase todas as máquinas do $(pncr), e $(l:machines/drone_interface)Drones/$.$(p)Qualquer uma das máquinas listadas aqui pode ser usada como periférico CC/OC."
+    },
+    {
+      "type": "text",
+      "title": "ComputerCraft",
+      "text": "Em Lua, você pode rodar $(thing)m = peripheral.wrap(<side>)/$, onde $(thing)<side>/$ é o lado do computador onde o periférico está conectado (top, bottom, left, right, back, front). Então você pode usar qualquer uma das seguintes funções com $(thing)m.<functionName>/$.$(p)Em qualquer lugar nas funções a seguir onde um '<side>' aparece como um dos argumentos, 'up', 'down', 'north', 'south', 'east', 'west' são válidos.",
+      "flag": "mod:computercraft"
+    },
+    {
+      "type": "text",
+      "title": "Open Computers",
+      "text": "Você precisará usar um $(item)Adaptador/$ para conectar seu computador às máquinas do $(pnc); elas então aparecerão como componentes OC, que aparecem se você rodar $(thing)=components.list()/$ em um ambiente Lua do OC. Então qualquer uma das seguintes funções pode ser usada, ex: $(thing)p = components.air_compressor.getPressure()/$ recuperará a pressão atual de um $(item)Compressor de Ar/$ conectado.",
+      "flag": "mod:opencomputers"
+    },
+    {
+      "type": "text",
+      "title": "Métodos Comuns",
+      "text": "Os seguintes métodos são comuns a $(italic)todas/$ as máquinas do $(pncr):$(li)$(#800)getPressure(), getPressure(<side>)/$: obtém a pressão da máquina. <side> é opcional, útil apenas para a $(l:machines/vacuum_pump)Bomba de Vácuo/$, que tem pressões específicas por lado.$(li)$(#800)getDangerPressure()/$: obtém a pressão na qual a máquina está em risco de explosão$(li)$(#800)getCriticalPressure()/$: obtém a pressão máxima rígida na qual a máquina certamente explodirá"
+    },
+    {
+      "type": "text",
+      "title": "Métodos de Calor",
+      "text": "Os seguintes métodos são comuns a $(italic)todas/$ as máquinas do $(pncr) que suportam o conceito de $(l:base_concepts/heat)Calor/$:$(li)$(#800)getTemperature(), getTemperature(<side>)/$: obtém a temperatura da máquina. <side> é opcional, útil apenas para o $(l:machines/vortex_tube)Tubo de Vórtice/$, que tem temperaturas diferentes dependendo do lado."
+    },
+    {
+      "type": "spotlight",
+      "anchor": "air_cannon",
+      "item": "pneumaticcraft:air_cannon",
+      "text": "$(li)$(#800)setExternalControl(<true/false>)/$: Quando verdadeiro, isso impedirá que o canhão seja girado com métodos normais (inserção de Ferramenta GPS, mudança em Melhorias de Alcance..)$(li)$(#800)setTargetLocation(<x>,<y>,<z>)/$: Aponta o canhão para o local alvo fornecido em vez daquele armazenado em uma Ferramenta GPS."
+    },
+    {
+      "type": "text",
+      "title": "Canhão de Ar (cont.)",
+      "text": "$(li)$(#800)setRotationAngle(<angle>)/$: Gira a rotação horizontal do canhão para o ângulo especificado.$(li)$(#800)setHeightAngle(<angle>)/$: Gira a inclinação vertical do canhão para o ângulo especificado.$(li)$(#800)isDoneRotating()/$: Retorna verdadeiro quando o canhão terminar de girar.$(li)$(#800)getMinWorkingPressure()/$: Retorna a pressão mínima necessária para disparar o canhão (o limiar de amarelo para verde na GUI)."
+    },
+    {
+      "type": "text",
+      "title": "Canhão de Ar (cont.)",
+      "text": "$(li)$(#800)fire()/$: Dispara o canhão, desde que haja pressão suficiente, e quando houver itens inseridos. Retorna verdadeiro se for bem-sucedido."
+    },
+    {
+      "type": "spotlight",
+      "anchor": "elevator",
+      "item": "pneumaticcraft:elevator_base",
+      "title": "Elevador",
+      "text": "$(li)$(#800)setExternalControl(<true/false>)/$: Quando verdadeiro, define o $(#f00)modo de redstone/$ do Elevador para o modo 'Chamador do Elevador', que também é aplicável para controle por computador. Você não precisa definir isso antes de chamar $(#800)setTargetHeight()/$; esse método mudará o Elevador para controle externo automaticamente."
+    },
+    {
+      "type": "text",
+      "title": "Elevador (cont.)",
+      "text": "$(li)$(#800)getMinWorkingPressure()/$: Obtém a pressão mínima necessária para estender o Elevador. Fazer o Elevador descer é gratuito.$(li)$(#800)setTargetHeight(<height>)/$: Define a altura alvo do Elevador para a altura analisada (em metros/blocos, ponto flutuante).$(li)$(#800)getTargetHeight()/$: Obtém a altura alvo do Elevador (em metros/blocos, ponto flutuante).$(li)$(#800)getCurrentHeight()/$: Obtém a altura atual do Elevador (em metros/blocos, ponto flutuante)."
+    },
+    {
+      "type": "text",
+      "title": "Elevador (cont.)",
+      "text": "$(li)$(#800)getVelocity()/$: Obtém a velocidade atual do elevador, em blocos por tick (onde existem 20 ticks em um segundo). Valores negativos indicam que o elevador está descendo."
+    },
+    {
+      "type": "spotlight",
+      "anchor": "universal_sensor",
+      "item": "pneumaticcraft:universal_sensor",
+      "text": "$(li)$(#800)getSensorNames()/$: Retorna uma tabela com todos os nomes de sensores conhecidos.$(li)$(#800)getSensor()/$: Retorna o nome do sensor atualmente selecionado."
+    },
+    {
+      "type": "text",
+      "title": "Sensor Universal (cont.)",
+      "text": "$(li)$(#800)setSensor(<sensorName>), setSensor(<index>), setSensor()/$: Define o sensor atualmente selecionado. <sensorName> é um dos nomes retornados por $(#800)getSensorNames()/$. <index> é um índice na tabela retornada de $(#800)getSensorNames()/$. Ao usar $(#800)setSensor()/$ sem argumentos, nenhum sensor será selecionado (a máquina fica ociosa e não usa ar). Retorna verdadeiro se o sensor for possível com as melhorias atualmente inseridas. "
+    },
+    {
+      "type": "text",
+      "title": "Sensor Universal (cont.)",
+      "text": "$(li)$(#800)setTextField(<text>)/$: Alguns sensores usam um campo de texto para especificar opções adicionais (ex: o sensor 'Entidades no alcance' aceita uma $(l:base_concepts/entity_filter)string de filtro de entidade/$). Você pode especificar o texto desejado aqui.$(li)$(#800)getTextField()/$: Retorna o texto atualmente armazenado no $(thing)Sensor Universal/$."
+    },
+    {
+      "type": "text",
+      "title": "Sensor Universal (cont.)",
+      "text": "$(li)$(#800)isSensorEventBased()/$: Existem duas categorias de sensores: baseados em eventos e sensores de consulta. Sensores baseados em eventos esperam que algo aconteça (ataques de jogadores, coleta de itens). Sensores de consulta verificam o estado do sensor periodicamente (entidades no alcance, horário do mundo, sensor de chuva). Esta função retorna verdadeiro se o sensor atualmente selecionado for baseado em eventos."
+    },
+    {
+      "type": "text",
+      "title": "Sensor Universal (cont.)",
+      "text": "$(li)$(#800)getSensorValue()/$: Se o sensor atual for um sensor de consulta, retorna o sinal de redstone (não invertido) que ele emitiria. Note que definir o sensor e obter a saída imediatamente não é confiável, pois muitos sensores de consulta verificam com pouca frequência por razões de desempenho. Assim, este método faz com que um evento de extração seja acionado; obtenha a saída em resposta a isso. Se nenhum sensor de consulta estiver selecionado, uma exceção será lançada."
+    },
+    {
+      "type": "text",
+      "title": "Sensor Universal (cont.)",
+      "text": "$(li)$(#800)getMinWorkingPressure()/$: Retorna a pressão mínima necessária para fazer o Sensor Universal funcionar (o limiar de amarelo para verde na GUI).$(li)$(#800)setGPSToolCoordinate(<slotIndex>,<x>,<y>,<z>)/$: Define o local armazenado na Ferramenta GPS localizada no slot fornecido (começando com 1) para o local fornecido. Isso é útil para sensores que usam um local."
+    },
+    {
+      "type": "text",
+      "title": "Sensor Universal (cont.)",
+      "text": "Para sensores baseados em eventos (ex: o sensor de clique com o botão direito do jogador), a obtenção do valor do sensor é baseada em eventos. Você obtém o evento fazendo um $(#800)<arguments> = os.pullEvent(\"universalSensor\")/$. Geralmente os argumentos consistem em <eventName, redstoneStrength>. O sensor de clique com o botão direito do jogador é uma exceção, pois <eventName, redstoneStrength, interactedX, interactedY, interactedZ> é retornado. Isso permite alguns usos interessantes..."
+    }
+  ]
+}

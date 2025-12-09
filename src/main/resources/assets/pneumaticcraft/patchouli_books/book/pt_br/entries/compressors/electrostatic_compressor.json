@@ -1,0 +1,47 @@
+{
+  "name": "Compressor Eletrostático",
+  "icon": "pneumaticcraft:electrostatic_compressor",
+  "category": "pneumaticcraft:compressors",
+  "advancement": "pneumaticcraft:advanced_pressure_tube",
+  "pages": [
+    {
+      "type": "text",
+      "text": "O $(item)Compressor Eletrostático/$ é um $(l:base_concepts/pressure)compressor/$ de ar de $(l:base_concepts/pressure_tiers)nível 2/$, que usa $(thing)raios/$ como energia para produzir ar comprimido.$(p)Quando for atingido por um raio, ele produzirá instantaneamente 200.000mL de ar. Parece muito, mas com que frequência você vê um Creeper Carregado esgueirando-se por aí? Você precisa fazer com que ele seja atingido."
+    },
+    {
+      "type": "text",
+      "text": "Para aumentar a chance de isso acontecer, você pode conectar seus compressores a uma $(ttcolor)$(t:Blocos de grade podem ser personalizados via a tag de bloco 'pneumaticraft:electrostatic_grid')grade/$ de $(item)Barras de Ferro/$ ou $(item)Pára-raios/$ a esta máquina, que agem como condutores para o raio.$(p)Grades maiores são melhores: blocos de grade podem estar a até 5 espaços de distância horizontalmente (raio circular), e até 5 blocos acima ou abaixo, mas todos devem estar conectados ao $(item)Compressor Eletrostático/$ através uns dos outros."
+    },
+    {
+      "type": "image",
+      "images": [
+        "pneumaticcraft:textures/patchouli/electrostatic_compressor.png"
+      ]
+    },
+    {
+      "type": "text",
+      "text": "Note que na imagem à esquerda, apenas o compressor central tem uma grade suficientemente grande ao redor dele para máxima eficiência; os outros compressores terão uma chance menor de desencadear um raio (embora isso ainda seja mais eficaz do que ter apenas um único compressor no meio da grade)."
+    },
+    {
+      "type": "text",
+      "text": "Com múltiplos $(item)Compressores Eletrostáticos/$ em uma $(thing)grade/$, o ar de um raio é compartilhado igualmente entre eles.$(p)Para evitar que um compressor exploda quando a pressão ficar muito alta após um raio, você pode conectar $(item)Barras de Ferro/$ na parte inferior do compressor. Dessa forma, a energia pode ser dissipada para o solo em vez de ir para a máquina."
+    },
+    {
+      "type": "text",
+      "text": "Esta dissipação só acontece quando a pressão de perigo do compressor for atingida, não antes. Cada $(item)Barra de Ferro/$ $(italic)diretamente/$ abaixo do compressor (no mesmo eixo Y) dissipará até 10.000mL de ar em excesso. $(p)Assim, com 10 compressores em uma $(thing)grade/$ compartilhada, $(ttcolor)$(t:200000 / 10 = 20000 de ar produzido por compressor; 10000 x 2 = 20000 de ar dissipado)apenas 2 blocos de grade/$ são necessários abaixo de cada compressor. (Você também poderia adicionar $(l:base_concepts/upgrades#security)Melhorias de Segurança/$ ao compressor, mas isso é mais caro e menos eficaz)"
+    },
+    {
+      "type": "text",
+      "text": "Para melhorar a chance de um raio, você também pode colocar até 10 blocos de grade diretamente $(italic)acima/$ do compressor para formar um $(thing)pára-raios/$. Cada bloco melhorará levemente a chance de queda de raio."
+    },
+    {
+      "type": "text",
+      "text": "$(bold)Nota:/$ diferente de versões anteriores do $(pncr), raios naturais $(italic)não/$ adicionam ar ao compressor (isso era altamente abusável usando outros mods para criar raios). Em vez disso, o compressor tem uma pequena chance de criar um raio \"falso\". Esta chance é $(italic)muito/$ pequena em tempo limpo, mas melhora quando está $(thing)chovendo/$, e melhora drasticamente em uma $(thing)tempestade/$."
+    },
+    {
+      "type": "crafting",
+      "text": "Fabricando um $(item)Compressor Eletrostático/$",
+      "recipe": "pneumaticcraft:electrostatic_compressor"
+    }
+  ]
+}

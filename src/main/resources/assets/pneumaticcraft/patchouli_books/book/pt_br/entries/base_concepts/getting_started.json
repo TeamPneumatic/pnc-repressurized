@@ -1,0 +1,16 @@
+{
+  "name": "Começando",
+  "icon": "pneumaticcraft:textures/gui/icon/gui_no_problem.png",
+  "category": "pneumaticcraft:base_concepts",
+  "priority": "true",
+  "pages": [
+    {
+      "type": "text",
+      "text": "Bem-vindo ao PneumaticCraft!$(li)Pegue algum $(thing)Ferro/$ e alguma $(thing)Pedra/$. Você vai querer cerca de um pack de cada (talvez um pouco menos de ferro) para começar.$(li)Jogue seu ferro no chão e exploda-o. Sim, sério.$(li)Colete o $(thing)Ferro Comprimido/$ resultante (um pouco será perdido na explosão).$(li)Faça alguns $(l:tubes/pressure_tubes)Tubos de Pressão/$.$(li)Faça alguma $(l:base_concepts/building_materials)Pedra Reforçada/$.$(li)Construa uma $(l:manufacturing/pressure_chamber)Câmara de Pressão/$. "
+    },
+    {
+      "type": "text",
+      "text": "A partir daqui, mais seções deste manual serão desbloqueadas, com base nos $(thing)Progressos/$ que você receber por progredir através do $(pncr). Verifique a página de Progressos do mod para orientação sobre o que você deve fazer a seguir (você também receberá um pouco de $(thing)Experiência/$ por desbloquear alguns Progressos, então isso é bom)."
+    }
+  ]
+}

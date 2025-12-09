@@ -1,0 +1,17 @@
+{
+  "name": "Compressor de Ar",
+  "icon": "pneumaticcraft:air_compressor",
+  "category": "pneumaticcraft:compressors",
+  "advancement": "pneumaticcraft:pressure_tube",
+  "pages": [
+    {
+      "type": "text",
+      "text": "O $(item)Compressor de Ar/$ é um gerador simples que pode produzir $(l:base_concepts/pressure)ar comprimido/$. Ele queimará qualquer combustível sólido que uma $(item)Fornalha/$ vanilla aceite, para produzir uma $(ttcolor)$(t:Isto pode ser aumentado instalando Melhorias de Velocidade)base/$ de 10mL de ar/tick.$(p)Ele $(italic)não/$ aceitará $(item)Baldes de Lava/$ ou qualquer balde contendo combustíveis líquidos; use um $(l:compressors/liquid_compressor)Compressor Líquido/$ para isso."
+    },
+    {
+      "type": "crafting",
+      "text": "Fabricando um $(item)Compressor de Ar/$",
+      "recipe": "pneumaticcraft:air_compressor"
+    }
+  ]
+}

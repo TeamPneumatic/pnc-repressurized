@@ -1,0 +1,38 @@
+{
+    "name": "Materiais Básicos",
+    "icon": "pneumaticcraft:ingot_iron_compressed",
+    "category": "pneumaticcraft:base_concepts",
+    "pages": [
+        {
+            "type": "text",
+            "text": "$(pncr) não gera minérios extras no solo. Para começar, você só precisa de $(item)Barras de Ferro/$ e algumas $(item)Pedras/$. Você vai querer cerca de um pack de cada (talvez um pouco menos de ferro) para começar.$(p)Jogue seu $(item)Ferro/$ no chão e exploda-o. Sim, sério.$(p)Colete o $(thing)Ferro Comprimido/$ resultante (um pouco será perdido na explosão).$(p)Faça alguns $(l:tubes/pressure_tubes)Tubos de Pressão/$.$(p)Faça alguma $(l:base_concepts/building_materials)Pedra Reforçada/$.$(p)Construa uma $(l:manufacturing/pressure_chamber)Câmara de Pressão/$.$(p)Para fazer isso, jogue suas $(item)Barras de Ferro/$ no chão e cause uma explosão próxima. $(item)TNT/$ servirá, mas qualquer outra explosão também funciona."
+        },
+        {
+            "type": "image",
+            "images": [
+                "pneumaticcraft:textures/patchouli/compressed_iron.png"
+            ],
+            "text": "$(italic)      Afaste-se/$"
+        },
+        {
+            "type": "spotlight",
+            "anchor": "compressed_iron_ingot",
+            "item": "pneumaticcraft:ingot_iron_compressed",
+            "text": "Aviso: como efeito colateral da explosão, você perderá cerca de 20% das suas barras. Para evitar isso, você também pode criar $(item)Barras de Ferro Comprimido/$ em uma $(l:manufacturing/pressure_chamber)Câmara de Pressão/$. No entanto, para ser capaz de criar a própria $(thing)Câmara de Pressão/$, você precisará de algumas $(item)Barras de Ferro Comprimido/$, então uma pequena perda inicial é inevitável."
+        },
+        {
+            "type": "pneumaticcraft:pressure_chamber",
+            "recipe": "pneumaticcraft:pressure_chamber/compressed_iron_ingot"
+        },
+        {
+            "type": "crafting",
+            "anchor": "compressed_iron_block",
+            "recipe": "pneumaticcraft:compressed_iron_block_from_ingot",
+            "text": "O $(item)Bloco de Ferro Comprimido/$ é um excelente $(l:base_concepts/heat)Condutor de Calor/$ e pode ser usado para fornecer mais faces para anexar $(l:machines/heat_sink)Dissipadores de Calor/$ a máquinas produtoras de calor. No entanto, veja também $(l:machines/heat_pipe)Tubos de Calor/$. "
+        },
+        {
+            "type": "pneumaticcraft:pressure_chamber",
+            "recipe": "pneumaticcraft:pressure_chamber/compressed_iron_block"
+        }
+    ]
+}

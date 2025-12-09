@@ -1,0 +1,47 @@
+{
+  "name": "Placas de Circuito Impresso",
+  "icon": "pneumaticcraft:printed_circuit_board",
+  "category": "pneumaticcraft:components",
+  "advancement": "pneumaticcraft:plastic",
+  "pages": [
+    {
+      "type": "text",
+      "text": "$(item)Placas de Circuito Impresso/$ (PCI) são componentes importantes usados em muitas máquinas e ferramentas de nível superior. Fazer uma $(item)PCI/$ requer alguns passos.$(p)Primeiro de tudo, faça uma $(item)PCI Vazia/$ na $(l:manufacturing/pressure_chamber)Câmara de Pressão/$ conforme mostrado ao lado. Existem então dois métodos para prosseguir (veja no verso)."
+    },
+    {
+      "type": "pneumaticcraft:pressure_chamber",
+      "recipe": "pneumaticcraft:pressure_chamber/empty_pcb"
+    },
+    {
+      "type": "text",
+      "title": "Método #1",
+      "text": "Este método é o único disponível inicialmente, e é um pouco lento sem automação extra e infraestrutura de aquecimento: você pode desenvolver uma $(item)PCI/$ quimicamente colocando-a em uma $(l:manufacturing/uv_light_box)Caixa de Luz UV/$ e depois colocando a $(item)PCI Vazia/$ exposta em um $(l:manufacturing/etching_tank)Tanque de Corrosão/$ para transformá-la em uma $(item)PCI Desmontada/$."
+    },
+    {
+      "type": "blasting",
+      "title": "Reciclando PCI Falhas",
+      "recipe": "pneumaticcraft:empty_pcb_from_failed_pcb",
+      "text": "O processo de corrosão tem uma chance de falha se a $(item)PCI Vazia/$ não foi 100% exposta na $(l:manufacturing/uv_light_box)Caixa de Luz UV/$; você pode reciclar $(item)PCI Falhas/$ em um $(item)Alto-forno/$."
+    },
+    {
+      "type": "spotlight",
+      "title": "Método #2",
+      "item": "pneumaticcraft:assembly_controller",
+      "text": "Uma vez que você possa fazer um $(l:manufacturing/assembly_system)Sistema de Montagem/$, você pode usá-lo para transformar $(item)PCI Vazias/$ diretamente em $(item)PCI Desmontadas/$ com um $(item)Programa de Montagem: Laser/$. Não há necessidade de expô-la em uma $(item)Caixa de Luz UV/$ ou usar um $(item)Tanque de Corrosão/$ neste caso."
+    },
+    {
+      "type": "text",
+      "title": "Método #2 (cont)",
+      "text": "$(p)O Sistema de Montagem é uma opção muito conveniente e razoavelmente rápida para produzir $(item)PCI Desmontadas/$; no entanto, com automação e infraestrutura de aquecimento suficientes, o combo $(thing)Caixa de Luz UV/Tanque de Corrosão/$ pode ser muito mais rápido, especialmente se você precisar produzir PCI em massa."
+    },
+    {
+      "type": "pneumaticcraft:assembly_system",
+      "recipe": "pneumaticcraft:assembly/unassembled_pcb"
+    },
+    {
+      "type": "crafting",
+      "recipe": "pneumaticcraft:printed_circuit_board",
+      "text": "O passo final para qualquer método é montar os vários componentes eletrônicos na $(item)PCI Desmontada/$ para produzir a $(item)Placa de Circuito Impresso/$ finalizada."
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "name": "Níveis de Pressão",
+  "icon": "pneumaticcraft:advanced_pressure_tube",
+  "category": "pneumaticcraft:base_concepts",
+  "pages": [
+    {
+      "type": "text",
+      "text": "O $(pncr) atualmente tem três $(thing)níveis/$ para máquinas pneumáticas:$(li)Máquinas de $(thing)Nível um/$ são capazes de resistir nominalmente a 5 bar de pressão.$(li)Máquinas de $(thing)Nível um e meio/$ podem resistir a até 10 bar.$(li)Máquinas de $(thing)Nível dois/$ podem resistir a até 20 bar."
+    },
+    {
+      "type": "text",
+      "text": "O Nível 1.5 é um novo \"nível\" adicionado na versão MC 1.18 do $(pncr). É um nível opcional, destinado principalmente a acessar algumas funcionalidades que eram anteriormente apenas do nível 2:$(li)Carregar ferramentas até 10 bar$(li)Obter uma $(item)Broca de Diamante/$ (que permite quebra de blocos 3x3; isso costumava exigir uma $(item)Broca de Netherita/$)"
+    },
+    {
+      "type": "text",
+      "title": "Pressão Manométrica",
+      "text": "Observe que $(thing)bar/$ conforme usado pelo $(pncr) representa a pressão $(bold)acima/$ da pressão atmosférica normal, então 0 bar é ar não pressurizado, e -1 bar é um vácuo. Isso também é conhecido como $(thing)Pressão Manométrica/$."
+    }
+  ]
+}
