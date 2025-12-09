@@ -1,0 +1,27 @@
+{
+  "name": "Widget Operador de Coordenada",
+  "icon": "pneumaticcraft:textures/progwidgets/coordinate_operation_plus_minus.png",
+  "category": "pneumaticcraft:widget_other",
+  "advancement": "pneumaticcraft:programmer",
+  "pages": [
+    {
+      "type": "text",
+      "text": "O widget $(thing)Operador de Coordenada/$ é usado para definir e/ou manipular $(l:programming/variables)variáveis/$, para permitir alguma funcionalidade avançada do drone. Este widget precisa de um ou mais widgets $(l:programming/coordinate)Coordenada/$ conectados para definir os valores a serem usados, e realiza uma dada operação aritmética (definida na GUI do widget) nessas peças conectadas."
+    },
+    {
+      "type": "text",
+      "text": "As operações disponíveis são:$(li)$(bold)Adicionar/Subtrair/$: Adiciona os widgets da direita e subtrai os widgets da esquerda.$(li)$(bold)Multiplicar/Dividir/$: multiplica os widgets da direita e divide o resultado pelos widgets da esquerda.$(li)$(bold)Mín/Máx/$: pega o máximo X/Y/Z dos widgets da direita, depois pega o mínimo dos widgets da esquerda e o máximo que foi determinado anteriormente."
+    },
+    {
+      "type": "text",
+      "text": "O resultado final é armazenado em uma $(l:programming/variables)variável/$, definida pelo nome inserido na GUI do Operador de Coordenada. Usando esta $(thing)variável/$, você pode recuperar a coordenada mais tarde:$(li)No widget $(l:programming/area)Área/$ você pode, em vez de usar uma coordenada GPS, usar um nome de $(thing)variável/$$ (Keep GPS) $(li)Você pode usar o $(l:programming/condition_coordinate)Condição: Coordenada/$ para realizar testes na $(thing)variável/$."
+    },
+    {
+      "type": "image",
+      "images": [
+        "pneumaticcraft:textures/progwidgets/coordinate_operation_plus_minus.png"
+      ],
+      "text": "$(italic)Widget Operador de Coordenada/$"
+    }
+  ]
+}

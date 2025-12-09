@@ -1,0 +1,29 @@
+{
+  "name": "Widget de Criação",
+  "icon": "pneumaticcraft:textures/progwidgets/craft_piece.png",
+  "category": "pneumaticcraft:widget_interact",
+  "advancement": "pneumaticcraft:programmer",
+  "pages": [
+    {
+      "type": "text",
+      "text": "O $(l:tools/drone)Drone/$ criará itens usando itens que ele tem em seu inventário. Para especificar uma receita de criação, coloque $(l:programming/item_filter)Filtros de Item/$ no lado direito do widget de Criação, no padrão da receita de criação.$(p)Você não precisa usar exatamente 9 $(thing)Filtros de Item/$: contanto que você possa criar o padrão da receita, funcionará."
+    },
+    {
+      "type": "text",
+      "text": "Por padrão, o widget de Criação tentará criar o máximo de itens possível; você pode limitar isso na GUI do widget com a configuração $(thing)Contagem de Uso/$.$(p)Você provavelmente vai querer instalar algumas $(l:base_concepts/upgrades#dispenser)Melhorias de Inventário/$ no $(item)Drone/$ para dar a ele um inventário maior."
+    },
+    {
+      "type": "text",
+      "flag": "mod:jei",
+      "title": "Integração com JEI",
+      "text": "É possível configurar Filtros de Item para o widget de Criação de forma rápida e fácil usando o JEI; veja $(l:programming/programmer#jei)esta página/$ para mais informações."
+    },
+    {
+      "type": "image",
+      "images": [
+        "pneumaticcraft:textures/progwidgets/craft_piece.png"
+      ],
+      "text": "$(italic)Widget de Criação/$"
+    }
+  ]
+}

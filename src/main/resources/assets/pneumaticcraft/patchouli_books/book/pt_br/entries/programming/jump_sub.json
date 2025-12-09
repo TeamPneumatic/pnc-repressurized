@@ -1,0 +1,19 @@
+{
+  "name": "Widget de Sub-rotina de Salto",
+  "icon": "pneumaticcraft:textures/progwidgets/jump_sub_piece.png",
+  "category": "pneumaticcraft:widget_flow",
+  "advancement": "pneumaticcraft:programmer",
+  "pages": [
+    {
+      "type": "text",
+      "text": "Este widget se comporta como $(thing)Salto/$ exceto que, quando a sub-rotina é concluída, a execução continuará no widget conectado à parte inferior do $(thing)Widget de Sub-rotina de Salto/$. Um $(thing)Widget de Sub-rotina de Salto/$ é útil para reutilizar código comum e chamar sub-rotinas com argumentos arbitrários, atribuindo variáveis antes de pular para a sub-rotina."
+    },
+    {
+      "type": "image",
+      "images": [
+        "pneumaticcraft:textures/progwidgets/jump_sub_piece.png"
+      ],
+      "text": "$(italic)Widget de Sub-rotina de Salto/$\""
+    }
+  ]
+}

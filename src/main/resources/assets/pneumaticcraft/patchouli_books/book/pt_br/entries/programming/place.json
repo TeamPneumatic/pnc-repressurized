@@ -1,0 +1,34 @@
+{
+  "name": "Widget de Colocação",
+  "icon": "pneumaticcraft:textures/progwidgets/place_piece.png",
+  "category": "pneumaticcraft:widget_interact",
+  "advancement": "pneumaticcraft:programmer",
+  "pages": [
+    {
+      "type": "text",
+      "text": "O $(l:tools/drone)Drone/$ irá colocar blocos do seu inventário no mundo. Ele colocará blocos na $(l:programming/area)área/$ especificada, começando com os locais mais próximos a ele.$(p)Você pode controlar a ordem em que os blocos são colocados: $(thing)Clique com o botão direito/$ no widget para especificar se o $(item)Drone/$ deve colocar blocos camada por camada, e se sim, de cima para baixo ou vice-versa."
+    },
+    {
+      "type": "text",
+      "title": "Colocando Blocos Aleatórios",
+      "text": "Normalmente, o $(item)Drone/$ colocará blocos do seu inventário em ordem, começando pelo primeiro slot (lembre-se de que os inventários de drone têm apenas um único slot por padrão, mas $(l:base_concepts/upgrades#inventory)Melhorias de Inventário/$ podem ser usadas para aumentar isso).$(p)Ao marcar a opção $(thing)Colocar Blocos Aleatórios/$, o $(item)Drone/$ selecionará blocos aleatoriamente do seu inventário para colocar."
+    },
+    {
+      "type": "text",
+      "title": "Limitando a Contagem de Colocações",
+      "text": "O número de ações de colocação pode ser limitado a uma quantidade especificada ao $(thing)clicar com o botão direito/$ no widget. Se definido para 1, por exemplo, o $(item)Drone/$ colocará apenas um bloco, e o widget é considerado concluído após colocar esse bloco.$(p)Se nenhum limite for definido, o widget só é considerado concluído quando não for mais capaz de colocar blocos."
+    },
+    {
+      "type": "text",
+      "title": "Filtragem",
+      "text": "Finalmente, você pode especificar quais blocos do inventário do $(item)Drone/$ podem ser colocados conectando um widget $(l:programming/item_filter)Filtro de Item/$. Conecte na $(italic)direita/$ para permitir itens, e na $(italic)esquerda/$ para proibir itens."
+    },
+    {
+      "type": "image",
+      "images": [
+        "pneumaticcraft:textures/progwidgets/place_piece.png"
+      ],
+      "text": "$(italic)Widget de Colocação/$"
+    }
+  ]
+}

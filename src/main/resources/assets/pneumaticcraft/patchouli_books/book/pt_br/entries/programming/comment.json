@@ -1,0 +1,19 @@
+{
+  "name": "Widget de Comentário",
+  "icon": "pneumaticcraft:textures/progwidgets/comment_piece.png",
+  "category": "pneumaticcraft:widget_other",
+  "advancement": "pneumaticcraft:programmer",
+  "pages": [
+    {
+      "type": "text",
+      "text": "Este widget permite a adição de $(thing)comentários/$ ao seu programa e não tem efeito funcional. Ele não custa nenhuma $(l:programming/puzzle_pieces)Peça de Quebra-Cabeça/$ para usar."
+    },
+    {
+      "type": "image",
+      "images": [
+        "pneumaticcraft:textures/progwidgets/comment_piece.png"
+      ],
+      "text": "$(italic)Widget de Comentário/$"
+    }
+  ]
+}

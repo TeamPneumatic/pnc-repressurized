@@ -1,0 +1,57 @@
+{
+  "name": "Tutorial Básico de Drone #1",
+  "icon": "minecraft:knowledge_book",
+  "category": "pneumaticcraft:programming",
+  "priority": "true",
+  "advancement": "pneumaticcraft:programmer",
+  "pages": [
+    {
+      "type": "text",
+      "text": "Neste tutorial, vamos configurar um programa simples para fazer um $(l:tools/drone)Drone/$ escavar uma área. Antes de começar, você precisará de:"
+    },
+    {
+      "type": "text",
+      "text": "$(li)Um $(l:programming/programmer)Programador/$ (obviamente)$(li)(Se você não estiver no Modo Criativo) Um $(item)Baú/$ adjacente ao Programador contendo pelo menos seis $(l:programming/puzzle_pieces)Peças de Quebra-cabeça/$ $(li)Um $(item)Baú/$ ou qualquer outro inventário, contendo uma $(item)Pá/$ de qualquer tipo$(li)Uma $(l:tools/gps_tool)Ferramenta GPS/$ básica $(li)$(l:tools/gps_area_tool)Ferramenta de Área GPS/$"
+    },
+    {
+      "type": "text",
+      "text": "Abra a GUI do $(l:programming/programmer)Programador/$. À direita, você verá uma $(thing)bandeja/$ de $(ttcolor)$(t:As representações virtuais das Peças de Quebra-cabeça na GUI são chamadas de Widgets de Programação)Widgets de Programação/$. Há várias páginas delas; você pode alternar entre elas com os botões de seta abaixo da bandeja, ou expandir a bandeja pressionando $(thing)Espaço/$ ou $(thing)Tab/$.$(p)Quando expandido, um campo de texto aparece acima da bandeja, onde você pode inserir um $(thing)filtro/$ para procurar widgets. Digite 'start' lá agora: você verá apenas um widget que não está $(7)acinzentado/$."
+    },
+    {
+      "type": "text",
+      "text": "Agora arraste o widget $(l:programming/start)Início/$ para a área principal de programação. Ele aparecerá com uma $(4)borda vermelha/$, indicando um problema: passe o mouse por cima para ver qual é.$(p)Certo, não há nenhum widget conectado abaixo - vamos remediar isso agora criando nosso programa.$(p)Encontre um widget $(l:programming/inventory_import)Importar do Inventário/$ e arraste-o para logo abaixo do widget $(thing)Início/$."
+    },
+    {
+      "type": "text",
+      "text": "Se você o colocar perto o suficiente, ele irá 'encaixar' na parte inferior do widget $(thing)Início/$. Observe como os conectores se encaixam, como um quebra-cabeça; daí o nome $(thing)Peça de Quebra-cabeça/$.$(p)Em seguida, arraste um widget $(l:programming/area)Área/$ e conecte-o à direita ($(ttcolor)$(t:Widgets à direita de outros widgets atuam como uma lista branca (whitelist); widgets à esquerda atuam como uma lista negra (blacklist))não à esquerda/$) do widget $(thing)Importar/$, e um widget $(l:programming/item_filter)Filtro de Item/$, também à direita do widget $(thing)Importar/$. Novamente, certifique-se de que eles 'encaixem' juntos."
+    },
+    {
+      "type": "text",
+      "text": "Você notará que o widget $(thing)Área/$ também começa com uma $(4)borda vermelha/$, porque ainda não tem uma área definida. Pegue sua $(item)Ferramenta GPS/$, e $(thing)agache+clique-direito/$ no $(item)baú/$ contendo a $(item)pá/$ que você colocou antes. Você verá que ele realça a localização.$(p)Agora, na GUI do Programador, $(thing)clique-esquerdo/$ no widget $(thing)Área/$ com a $(item)Ferramenta GPS/$ no seu cursor: você verá a localização copiada para o widget $(thing)Área/$!"
+    },
+    {
+      "type": "text",
+      "text": "Agora para o $(thing)Filtro de Item/$: $(thing)clique-direito/$ nele para abrir uma GUI de opções. Clique no botão $(bold)Buscar Item.../$, e digite 'pá' na janela de busca de resultados. Escolha o tipo de pá que você colocou no baú anteriormente, e pressione $(thing)Escape/$ para fechar a caixa de busca.$(p)De volta à janela do $(thing)Filtro de Item/$, certifique-se de que 'Durabilidade do Item' esteja $(italic)desmarcada/$, para que ele também corresponda a pás parcialmente usadas. Pressione $(thing)Escape/$ novamente: volte para a GUI principal."
+    },
+    {
+      "type": "text",
+      "text": "Neste ponto, dissemos ao Drone para pegar uma pá do baú; agora para fazê-lo cavar!$(p)Arraste um widget $(l:programming/dig)Cavar/$ e encaixe-o na parte inferior do widget $(thing)Importar/$.$(p)Arraste outro widget $(thing)Área/$ e encaixe-o à direita do widget $(thing)Cavar/$."
+    },
+    {
+      "type": "text",
+      "text": "Vamos definir a área a ser escavada: pegue sua $(thing)Ferramenta de Área GPS/$ e $(thing)clique-direito/$ em um bloco para formar um canto da área. $(thing)Clique-esquerdo/$ em um bloco no canto oposto. Já que o drone estará usando uma pá, tente se ater a terra/areia.$(p)Certifique-se de que a área realçada seja uma $(thing)caixa sólida/$ - deve ser por padrão, mas você pode $(thing)clicar-esquerdo/direito/$ na ferramenta no ar para abrir uma GUI de configuração onde a forma pode ser definida."
+    },
+    {
+      "type": "text",
+      "text": "De volta à GUI do Programador, pegue a $(thing)Ferramenta de Área GPS/$ e $(thing)clique-esquerdo/$ nela no widget $(thing)Área/$ anexado ao widget $(thing)Cavar/$. Assim como antes, você verá suas configurações copiadas para o widget Área.$(p)Neste ponto, não deve haver destaques vermelhos indicando quaisquer erros: parabéns, você tem um programa válido!"
+    },
+    {
+      "type": "text",
+      "text": "Finalmente, pegue um $(l:tools/drone)Drone/$, e certifique-se de que ele foi pressurizado em uma $(l:machines/charging_station)Estação de Carregamento/$. Coloque o item Drone no espaço no canto superior direito da GUI do Programador e clique no botão $(thing)⟶ (exportar)/$ (você pode nomear o Drone se quiser, no campo de texto à esquerda).$(p)Você terá algum feedback audível, e seu Drone estará programado!"
+    },
+    {
+      "type": "text",
+      "text": "Tudo o que resta agora é implantar seu Drone: $(thing)clique-direito/$ no mundo em algum lugar perto do seu baú, e observe-o começar a trabalhar!"
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "name": "Widget de Espera",
+  "icon": "pneumaticcraft:textures/progwidgets/wait_piece.png",
+  "category": "pneumaticcraft:widget_flow",
+  "advancement": "pneumaticcraft:programmer",
+  "pages": [
+    {
+      "type": "text",
+      "text": "O $(l:tools/drone)Drone/$ esperará a quantidade de tempo especificada, sem fazer nada. O tempo é especificado anexando um widget $(l:programming/text)Texto/$, e inserindo uma duração.$(p)Os seguintes formatos de duração são aceitos:$(li)$(thing)20/$: espera 1 segundo (20 ticks)$(li)$(thing)10s/$: espera 10 segundos$(li)$(thing)5m/$: espera 5 minutos"
+    },
+    {
+      "type": "image",
+      "images": [
+        "pneumaticcraft:textures/progwidgets/wait_piece.png"
+      ],
+      "text": "$(italic)Godot/$"
+    }
+  ]
+}

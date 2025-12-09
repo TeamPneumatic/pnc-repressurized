@@ -1,0 +1,44 @@
+{
+  "name": "Widget de Texto",
+  "icon": "pneumaticcraft:textures/progwidgets/text_piece.png",
+  "category": "pneumaticcraft:widget_other",
+  "advancement": "pneumaticcraft:programmer",
+  "pages": [
+    {
+      "type": "text",
+      "text": "O widget $(thing)Texto/$ é usado apenas como um parâmetro para outros widgets. Ele é usado para fornecer dados textuais para os widgets que precisam deles.$(p)As páginas seguintes listam os widgets que o utilizam."
+    },
+    {
+      "type": "relations",
+      "anchor": "entity_filter",
+      "title": "Como Filtros de Entidade",
+      "entries": [
+        "pneumaticcraft:programming/entity_attack",
+        "pneumaticcraft:programming/entity_right_click",
+        "pneumaticcraft:programming/entity_import",
+        "pneumaticcraft:programming/entity_export",
+        "pneumaticcraft:programming/drone_condition_entity"
+      ],
+      "text": "Você pode colocar o widget $(thing)Texto/$ na $(italic)esquerda/$ desses widgets para criar um filtro de lista negra (blacklist)."
+    },
+    {
+      "type": "relations",
+      "title": "Para Outros Widgets",
+      "entries": [
+        "pneumaticcraft:programming/edit_sign",
+        "pneumaticcraft:programming/rename",
+        "pneumaticcraft:programming/jump",
+        "pneumaticcraft:programming/label",
+        "pneumaticcraft:programming/wait",
+        "pneumaticcraft:programming/conditions"
+      ]
+    },
+    {
+      "type": "image",
+      "images": [
+        "pneumaticcraft:textures/progwidgets/text_piece.png"
+      ],
+      "text": "$(italic)Widget de Texto/$"
+    }
+  ]
+}

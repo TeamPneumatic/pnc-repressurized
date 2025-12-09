@@ -1,0 +1,19 @@
+{
+  "name": "Widget de Suicídio",
+  "icon": "pneumaticcraft:textures/progwidgets/suicide_piece.png",
+  "category": "pneumaticcraft:widget_flow",
+  "advancement": "pneumaticcraft:programmer",
+  "pages": [
+    {
+      "type": "text",
+      "text": "O $(l:tools/drone)Drone/$ se transformará imediatamente na sua forma de item, caindo como uma entidade de item no chão. A execução do programa é, é claro, instantaneamente terminada."
+    },
+    {
+      "type": "image",
+      "images": [
+        "pneumaticcraft:textures/progwidgets/suicide_piece.png"
+      ],
+      "text": "$(italic)É tudo, pessoal/$"
+    }
+  ]
+}

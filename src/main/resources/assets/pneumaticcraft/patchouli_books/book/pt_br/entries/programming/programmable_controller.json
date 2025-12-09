@@ -1,0 +1,40 @@
+{
+  "name": "Controlador Programável",
+  "icon": "pneumaticcraft:programmable_controller",
+  "category": "pneumaticcraft:programming",
+  "advancement": "pneumaticcraft:programmer",
+  "pages": [
+    {
+      "type": "text",
+      "text": "Um Controlador Programável pode fazer coisas muito semelhantes ao que os $(l:tools/drone)Drones/$ podem fazer. Um programa pode ser escrito em um $(l:programming/programmer)Programador/$, e salvo em um $(item)Drone/$ ou $(l:components/network_components#network_api)API de Rede/$. Qualquer um desses itens pode então ser colocado no $(item)Controlador Programável/$. Desde que haja $(l:base_concepts/pressure)pressão/$ suficiente, o $(item)Controlador Programável/$ executará o programa exatamente como faria se programado em um $(item)Drone/$. "
+    },
+    {
+      "type": "text",
+      "text": "Existem, no entanto, algumas diferenças:$(li)Um $(item)Controlador Programável/$ usa uma versão em miniatura de um $(item)Drone/$ - um $(thing)minidrone/$. Não é uma entidade real, então nenhuma busca de caminho (pathfinding) está envolvida, e o $(thing)minidrone/$ pode se mover através de paredes. Isso tem o benefício de ser mais amigável ao servidor e mais confiável em geral.$(li)Ao executar um programa, o $(item)Controlador Programável/$ usará ar a uma taxa de 10mL/tick (enquanto Drones usam apenas 1mL/tick)."
+    },
+    {
+      "type": "text",
+      "text": "$(li)O $(item)Controlador Programável/$ não pode executar os seguintes widgets: Computer Piece, Entity Attack, Drone Condition: Entity, Entity Export, Entity Import, Teleport, Standby, Suicide.$(p)O $(item)Controlador Programável/$ é geralmente mais adequado para aplicações maiores, como escavar grandes áreas ou construir grandes estruturas."
+    },
+    {
+      "type": "text",
+      "title": "Interfaceando Itens/Fluidos",
+      "text": "Quaisquer itens ou fluidos que o $(thing)minidrone/$ coleta podem ser interfaceados através dos lados do bloco $(item)Controlador Programável/$.$(p)Por padrão, o 'drone' tem um único slot de inventário e um tanque de 16000mB. O tamanho do inventário pode ser aumentado adicionando $(l:base_concepts/upgrades#inventory)Melhorias de Inventário/$ (máx. 35), o que também aumenta o tamanho do tanque em 1000mB por melhoria."
+    },
+    {
+      "type": "text",
+      "title": "Interfaceando (cont.)",
+      "text": "Por padrão, as faces superior e lateral do $(item)Controlador Programável/$ podem ser usadas para interfacear com itens, e a face inferior pode ser usada para inserir ou remover itens programáveis, mas isso pode ser ajustado se desejado através da aba de GUI $(bold)Configuração Lateral/$.$(p)Todas as faces do $(item)Controlador Programável/$ podem sempre ser usadas para interfacear fluidos."
+    },
+    {
+      "type": "text",
+      "title": "Carregando Itens",
+      "text": "O Controlador Programável é capaz de $(thing)carregar/$ o item segurado pelo minidrone, ou seja, o item no slot 0 do inventário do drone. Isso inclui tanto itens pressurizáveis, como a $(l:tools/jackhammer)Britadeira/$, quanto itens que usam $(thing)Forge Energy/$. Ar e/ou FE dos próprios buffers do Controlador Programável são usados para fazer isso. O carregamento é desativado por padrão; ative-o através da GUI do controlador (aba lateral $(thing)Carregamento de Item Segurado/$)."
+    },
+    {
+      "type": "crafting",
+      "text": "Criando um Controlador Programável",
+      "recipe": "pneumaticcraft:programmable_controller"
+    }
+  ]
+}

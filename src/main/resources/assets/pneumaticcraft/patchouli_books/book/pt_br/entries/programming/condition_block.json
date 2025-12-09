@@ -1,0 +1,23 @@
+{
+  "name": "Condição: Widget de Bloco",
+  "icon": "pneumaticcraft:textures/progwidgets/condition_block_piece.png",
+  "category": "pneumaticcraft:widget_cond",
+  "advancement": "pneumaticcraft:programmer",
+  "pages": [
+    {
+      "type": "text",
+      "text": "Este é um widget de $(l:programming/conditions)Condição/$.$(p)O widget $(thing)Condição: Bloco/$ permite que você verifique uma $(l:programming/area)área/$ por certos blocos. Com isso, você pode verificar se uma área contém uma plantação totalmente crescida, por exemplo. Você pode filtrar quais blocos são válidos anexando um $(l:programming/item_filter)Filtro de Item/$."
+    },
+    {
+      "type": "text",
+      "text": "O drone verificará o bloco se ele puder ser colhido com toque suave (silk touched), se sim, ele verificará se o filtro de item corresponde ao bloco colhido com toque suave. Se não puder ser colhido com toque suave, os drops do bloco serão usados para filtrar.$(p)Por exemplo, você pode definir o filtro para Trigo (Wheat), e ele corresponderá ao filtro assim que a plantação dropar trigo (= totalmente crescida)."
+    },
+    {
+      "type": "image",
+      "images": [
+        "pneumaticcraft:textures/progwidgets/condition_block_piece.png"
+      ],
+      "text": "$(italic)Condição: Widget de Bloco/$"
+    }
+  ]
+}

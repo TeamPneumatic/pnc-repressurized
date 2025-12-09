@@ -1,0 +1,19 @@
+{
+  "name": "Widget ir para localização",
+  "icon": "pneumaticcraft:textures/progwidgets/goto_piece.png",
+  "category": "pneumaticcraft:widget_interact",
+  "advancement": "pneumaticcraft:programmer",
+  "pages": [
+    {
+      "type": "text",
+      "text": "$(thing)Ir Para Localização/$ é bem direto: o $(l:tools/drone)Drone/$ irá para o local mais próximo e alcançável dentro da $(l:programming/area)Área/$ especificada.$(p)Este widget está pronto $(ttcolor)$(t:Você pode configurar o widget para estar 'pronto' imediatamente; clique com o botão direito para a GUI de configuração)quando o Drone tiver alcançado a área/$, ou quando esta área não for alcançável."
+    },
+    {
+      "type": "image",
+      "images": [
+        "pneumaticcraft:textures/progwidgets/goto_piece.png"
+      ],
+      "text": "$(italic)Widget Ir Para Localização/$\n"
+    }
+  ]
+}

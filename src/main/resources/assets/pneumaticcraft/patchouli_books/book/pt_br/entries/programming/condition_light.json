@@ -1,0 +1,19 @@
+{
+  "name": "Condição: Widget de Luz",
+  "icon": "pneumaticcraft:textures/progwidgets/condition_light_piece.png",
+  "category": "pneumaticcraft:widget_cond",
+  "advancement": "pneumaticcraft:programmer",
+  "pages": [
+    {
+      "type": "text",
+      "text": "Este é um widget de $(l:programming/conditions)Condição/$.$(p)O widget $(thing)Condição: Luz/$ permite que você verifique (remotamente) se o nível de luz do(s) bloco(s) no widget $(l:programming/area)Área/$ conectado corresponde ao limiar de luz configurado."
+    },
+    {
+      "type": "image",
+      "images": [
+        "pneumaticcraft:textures/progwidgets/condition_light_piece.png"
+      ],
+      "text": "$(italic)Condição: Widget de Luz/$"
+    }
+  ]
+}

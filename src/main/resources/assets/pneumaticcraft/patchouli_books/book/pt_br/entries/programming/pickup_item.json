@@ -1,0 +1,23 @@
+{
+  "name": "Widget de Pegar Itens",
+  "icon": "pneumaticcraft:textures/progwidgets/item_pick_piece.png",
+  "category": "pneumaticcraft:widget_interact",
+  "advancement": "pneumaticcraft:programmer",
+  "pages": [
+    {
+      "type": "text",
+      "text": "O $(l:tools/drone)Drone/$ pegará entidades de itens no mundo e as colocará em seu inventário. Tenha em mente que quaisquer $(l:programming/area)Widgets de Área/$ conectados a este widget devem ter um tipo de área $(thing)Caixa/$; esta é a única forma suportada. É possível, no entanto, criar formas mais complexas, usando lista de permissões/lista de bloqueios de múltiplas áreas."
+    },
+    {
+      "type": "text",
+      "text": "Você pode adicionar um $(l:programming/item_filter)Widget de Filtro de Item/$ para limitar quais itens podem ser pegos (lembre-se, um filtro de lista de bloqueios é colocado à $(thing)esquerda/$).$(p)Este widget termina a execução quando nenhum item caído no chão (que passe pelo filtro de item) cabe no inventário do Drone ou quando não há mais itens para pegar."
+    },
+    {
+      "type": "image",
+      "images": [
+        "pneumaticcraft:textures/progwidgets/item_pick_piece.png"
+      ],
+      "text": "$(italic)Minerar. Minerar. Minerar./$\""
+    }
+  ]
+}

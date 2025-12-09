@@ -1,0 +1,27 @@
+{
+  "name": "Widget de Clique Direito",
+  "icon": "pneumaticcraft:textures/progwidgets/block_right_click_piece.png",
+  "category": "pneumaticcraft:widget_interact",
+  "advancement": "pneumaticcraft:programmer",
+  "pages": [
+    {
+      "type": "text",
+      "text": "O Drone irá $(thing)clicar com o botão direito/$ com o item em seu primeiro slot de inventário, para cada posição de bloco no seu widget $(l:programming/area)Área/$ conectado. Isso poderia ser usado para capinar o chão, plantar sementes, aplicar farinha de osso, jogar uma poção, implantar um drone, girar blocos com uma chave... as possibilidades são infinitas."
+    },
+    {
+      "type": "text",
+      "text": "Este widget opera em um de dois modos, selecionáveis através da GUI do widget no Programador:$(li)Modo Item - usa a lógica de clique direito $(thing)do item segurado/$, ex: usar uma $(item)Pederneira e Aço/$ em algum bloco$(li)Modo Bloco - ativa a lógica de clique direito $(thing)do bloco/$, ex: virar uma $(item)Alavanca/$$(p)No $(thing)Modo Item/$, quaisquer filtros anexados se aplicam ao $(italic)item/$ que está sendo usado; no $(thing)Modo Bloco/$, os filtros se aplicam ao $(italic)bloco/$ que está sendo ativado."
+    },
+    {
+      "type": "text",
+      "text": "Você poderia usar este widget para colocar blocos comuns. No entanto, isso $(italic)não/$ é recomendado, porque quando um Drone clica com o botão direito em uma posição onde um bloco já existe, ele clicará com o botão direito no bloco, resultando em colocar um bloco $(italic)ao lado/$ deste bloco em vez do bloco em si.$(p)Por essas razões, o uso do widget $(l:programming/place)Colocar/$ é preferido. Existem algumas situações, no entanto (ex: tentar plantar $(item)Sementes/$), onde o widget $(thing)Clique Direito em Bloco/$ é necessário."
+    },
+    {
+      "type": "image",
+      "images": [
+        "pneumaticcraft:textures/progwidgets/block_right_click_piece.png"
+      ],
+      "text": "$(italic)Widget de Clique Direito/$"
+    }
+  ]
+}

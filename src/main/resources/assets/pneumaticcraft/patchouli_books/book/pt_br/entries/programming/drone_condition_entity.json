@@ -1,0 +1,19 @@
+{
+  "name": "Condição de Drone: Widget de Entidade",
+  "icon": "pneumaticcraft:textures/progwidgets/condition_drone_entity_piece.png",
+  "category": "pneumaticcraft:widget_cond",
+  "advancement": "pneumaticcraft:programmer",
+  "pages": [
+    {
+      "type": "text",
+      "text": "Este é um widget de $(l:programming/conditions)Condição/$.$(p)O $(thing)Condição de Drone: Entidade/$ permite que você verifique a entidade que este $(l:tools/drone)Drone/$ está carregando atualmente. Você pode adicionar um widget $(l:programming/text)Texto/$ opcional com um $(l:base_concepts/entity_filter)Filtro de Entidade/$, para filtrar a entidade a ser verificada. Sem um widget $(thing)Texto/$, a condição será verdadeira se $(italic)qualquer/$ entidade estiver sendo carregada."
+    },
+    {
+      "type": "image",
+      "images": [
+        "pneumaticcraft:textures/progwidgets/condition_drone_entity_piece.png"
+      ],
+      "text": "$(italic)Condição de Drone: Widget de Entidade/$"
+    }
+  ]
+}

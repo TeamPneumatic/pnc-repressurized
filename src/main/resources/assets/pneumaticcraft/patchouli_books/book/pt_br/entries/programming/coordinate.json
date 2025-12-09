@@ -1,0 +1,23 @@
+{
+  "name": "Widget de Coordenada",
+  "icon": "pneumaticcraft:textures/progwidgets/coordinate_piece.png",
+  "category": "pneumaticcraft:widget_other",
+  "advancement": "pneumaticcraft:programmer",
+  "pages": [
+    {
+      "type": "text",
+      "text": "O $(thing)Coordenada/$ é um widget usado unicamente como parâmetro para os widgets $(l:programming/coordinate_operator)Operador de Coordenada/$ e $(l:programming/condition_coordinate)Condição: Coordenada/$.$(p)Este widget pode ser comparado ao widget $(l:programming/area)Área/$: com o widget $(thing)Área/$ você está fornecendo $(italic)duas/$ coordenadas para formar uma área, enquanto com este widget você está fornecendo apenas $(italic)uma/$. Existem duas maneiras de fornecer uma coordenada:"
+    },
+    {
+      "type": "text",
+      "text": "$(bold)Constante/$$(br)Uma coordenada constante é, bem... constante. Você pode selecionar uma escolhendo uma $(l:tools/gps_tool)Ferramenta GPS/$, ou apenas digitar os valores X/Y/Z diretamente nos campos de texto.$(p)$(bold)Variável/$$(br)Ao selecionar Variável, você pode retornar o valor armazenado na $(l:programming/variables)variável/$ como a coordenada. Tenha em mente que com isso você só pode fornecer uma coordenada, não modificar a variável!"
+    },
+    {
+      "type": "image",
+      "images": [
+        "pneumaticcraft:textures/progwidgets/coordinate_piece.png"
+      ],
+      "text": "$(italic)Widget de Coordenada/$"
+    }
+  ]
+}

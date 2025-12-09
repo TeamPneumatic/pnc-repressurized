@@ -1,0 +1,24 @@
+{
+  "name": "Widget de Editar Placa",
+  "icon": "pneumaticcraft:textures/progwidgets/edit_sign_piece.png",
+  "category": "pneumaticcraft:widget_interact",
+  "advancement": "pneumaticcraft:programmer",
+  "pages": [
+    {
+      "type": "text",
+      "text": "Isto editará todas as $(item)Placas/$ e/ou $(l:machines/aphorism_tile)Ladrilhos de Aforismo/$ na $(l:programming/area)Área/$ conectada para o texto especificado pelo(s) widget(s) $(l:programming/text)Texto/$ conectado(s).$(p)Cada widget $(thing)Texto/$ conectado representa uma linha; ao conectar vários widgets $(thing)Texto/$, você pode definir uma mensagem de múltiplas linhas."
+    },
+    {
+      "type": "text",
+      "title": "Variáveis",
+      "text": "Você também pode inserir o valor de uma $(l:programming/variables)variável/$, incluindo $(thing)${<var_name>}/$ in the text, e.g.$(p)  $(formula)Contador: ${counter}/$$(p)seria expandido para $(thing)Contador: 1, 2, 3/$ se a variável $(thing)counter/$ estivesse definida como $(thing)x=1,y=2,z=3/$. $(l:programming/variables#special)Variáveis Especiais/$ e $(l:programming/variables#global)Globais/$ também podem ser usadas aqui."
+    },
+    {
+      "type": "image",
+      "images": [
+        "pneumaticcraft:textures/progwidgets/edit_sign_piece.png"
+      ],
+      "text": "$(italic)Widget de Editar Placa/$"
+    }
+  ]
+}

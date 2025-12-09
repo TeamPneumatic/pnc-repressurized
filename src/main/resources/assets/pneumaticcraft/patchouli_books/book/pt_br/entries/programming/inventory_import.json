@@ -1,0 +1,23 @@
+{
+  "name": "Widget Importar Inventário",
+  "icon": "pneumaticcraft:textures/progwidgets/inventory_import_piece.png",
+  "category": "pneumaticcraft:widget_interact",
+  "advancement": "pneumaticcraft:programmer",
+  "pages": [
+    {
+      "type": "text",
+      "text": "Isso fará com que o $(l:tools/drone)Drone/$ se mova para o inventário mais próximo dentro da $(l:programming/area)área/$ especificada, extraia itens desse inventário e os insira no inventário do $(item)Drone/$.$(p)$(thing)Clique com o botão direito/$ no widget para uma GUI de configuração onde você pode especificar o lado do qual o $(item)Drone/$ deve extrair os itens. Você também pode especificar o número máximo de itens a importar."
+    },
+    {
+      "type": "text",
+      "text": "Você também pode conectar qualquer número (incluindo zero) de widgets $(l:programming/item_filter)Filtro de Item/$ para limitar os itens que podem ser importados. Lembre-se, filtros na $(italic)direita/$ atuam como uma lista branca, e filtros na $(italic)esquerda/$ atuam como uma lista negra.$(p)Este widget termina a execução quando o inventário do $(item)Drone/$ está cheio, ou quando não há mais itens (aplicáveis) que podem ser encontrados no inventário (ou inventários) relevante."
+    },
+    {
+      "type": "image",
+      "images": [
+        "pneumaticcraft:textures/progwidgets/inventory_import_piece.png"
+      ],
+      "text": "$(italic)Vou querer isso, obrigado/$\n"
+    }
+  ]
+}

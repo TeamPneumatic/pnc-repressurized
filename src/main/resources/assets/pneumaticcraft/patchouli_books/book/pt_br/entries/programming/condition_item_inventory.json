@@ -1,0 +1,19 @@
+{
+  "name": "Condição: Widget de Itens",
+  "icon": "pneumaticcraft:textures/progwidgets/condition_item_inventory_piece.png",
+  "category": "pneumaticcraft:widget_cond",
+  "advancement": "pneumaticcraft:programmer",
+  "pages": [
+    {
+      "type": "text",
+      "text": "Este é um widget de $(l:programming/conditions)Condição/$.$(p)O widget $(thing)Condição: Itens/$ verifica um inventário para uma certa quantidade de itens. Ele contará todos os itens correspondentes (especificados por um $(l:programming/item_filter)Filtro de Item/$ conectado; omita o filtro para contar todos os itens)."
+    },
+    {
+      "type": "image",
+      "images": [
+        "pneumaticcraft:textures/progwidgets/condition_item_inventory_piece.png"
+      ],
+      "text": "$(italic)Condição: Widget de Itens/$"
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "name": "Condição: Widget de RF",
+  "icon": "pneumaticcraft:textures/progwidgets/condition_rf_piece.png",
+  "category": "pneumaticcraft:widget_cond",
+  "advancement": "pneumaticcraft:programmer",
+  "pages": [
+    {
+      "type": "text",
+      "text": "Este é um widget de $(l:programming/conditions)Condição/$.$(p)O $(thing)Condição: RF/$ permite que você verifique (remotamente) se o nível de $(thing)Forge Energy (FE)/$ do(s) bloco(s) no widget $(l:programming/area)Área/$ conectado corresponde ao limiar de FE configurado.$(p)$(italic)Apesar do nome, este widget verifica FE, não RF (Redstone Flux). O nome é histórico./$"
+    },
+    {
+      "type": "image",
+      "images": [
+        "pneumaticcraft:textures/progwidgets/condition_rf_piece.png"
+      ],
+      "text": "$(italic)Condição: Widget de RF/$"
+    }
+  ]
+}
