@@ -1,0 +1,22 @@
+{
+  "name": "Canhão de Ar",
+  "icon": "pneumaticcraft:air_cannon",
+  "category": "pneumaticcraft:machines",
+  "advancement": "pneumaticcraft:pressure_tube",
+  "pages": [
+    {
+      "type": "text",
+      "text": "O $(item)Canhão de Ar/$ é um dispositivo que você pode usar para transportar itens por uma grande distância, através do ar. Ele usa $(l:base_concepts/pressure)ar comprimido/$ como propelente.$(p)Você também precisará de uma $(l:tools/gps_tool)Ferramenta GPS/$ para mirar o $(item)Canhão de Ar/$ (embora a Ferramenta GPS possa ser removida e reutilizada assim que o Canhão estiver mirado).$(p)Um $(#f00)pulso de redstone/$ acionará o Canhão para disparar."
+    },
+    {
+      "type": "text",
+      "title": "Aprimoramentos",
+      "text": "Com um $(l:base_concepts/upgrades#dispenser)Aprimoramento de Dispensador/$ instalado, o $(item)Canhão de Ar/$ se comporta como um $(item)Dispensador/$ comum para certos itens, como TNT ou Cargas de Fogo.$(p)Com um $(l:base_concepts/upgrades#entity_tracker)Aprimoramento de Rastreador de Entidades/$, o $(item)Canhão de Ar/$ não lançará itens do seu inventário, mas sim lançará a entidade mais próxima (inclusive você!) quando acionado."
+    },
+    {
+      "type": "crafting",
+      "text": "Fabricando um Canhão de Ar",
+      "recipe": "pneumaticcraft:air_cannon"
+    }
+  ]
+}

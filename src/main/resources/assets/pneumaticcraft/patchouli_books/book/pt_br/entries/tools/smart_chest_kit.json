@@ -1,0 +1,21 @@
+{
+  "name": "Kit de Melhoria de Baú Inteligente",
+  "icon": "pneumaticcraft:smart_chest_kit",
+  "category": "pneumaticcraft:tools",
+  "advancement": "pneumaticcraft:printed_circuit_board",
+  "pages": [
+    {
+      "type": "text",
+      "text": "O $(item)Kit de Melhoria de Baú Inteligente/$ é uma conveniência que permite atualizar qualquer baú de madeira ou $(l:machines/reinforced_chest)Baú Reforçado/$ para um $(l:machines/smart_chest)Baú Inteligente/$ no local, mantendo os itens do baú. Apenas $(thing)Agache + clique com o botão direito/$ com o kit de melhoria contra qualquer baú válido para atualizá-lo."
+    },
+    {
+      "type": "text",
+      "text": "$(p)Nota: Se usado em um $(item)Baú Reforçado/$, você receberá de volta um Baú Reforçado como um item dropado. Se usado em um $(item)baú de madeira/$, você receberá esse baú de volta como um item dropado."
+    },
+    {
+      "type": "crafting",
+      "text": "Fabricando um Kit de Melhoria de Baú Inteligente.$(p)Note que o Baú Inteligente deve estar completamente vazio e não configurado.",
+      "recipe": "pneumaticcraft:smart_chest_kit"
+    }
+  ]
+}

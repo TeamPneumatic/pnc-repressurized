@@ -1,0 +1,30 @@
+{
+  "name": "Módulo Regulador",
+  "icon": "pneumaticcraft:regulator_tube_module",
+  "category": "pneumaticcraft:tubes",
+  "advancement": "pneumaticcraft:pressure_tube",
+  "pages": [
+    {
+      "type": "text",
+      "text": "O Módulo de Tubo Regulador é um módulo $(l:tubes/tube_modules#inline)em linha/$ usado para limitar a $(l:base_concepts/pressure)pressão/$ permitida através do tubo. Por padrão, o módulo regulará a pressão para 4.9 bar (para tubos básicos e avançados) sem sinal de redstone, reduzindo para 0 à medida que o sinal sobe para 15. Isso significa que uma alavanca bem ao lado de um regulador o fecha, prevenindo qualquer fluxo de ar através dele."
+    },
+    {
+      "type": "text",
+      "text": "Quando o lado estreito do regulador atinge essa pressão, não será permitido mais ar através do tubo. Este princípio pode ser usado como um $(thing)transformador/$: no lado de entrada (largo) há ar de alta pressão, mas o Tubo Regulador limita a pressão na saída para a pressão limite.$(p)Isso permite que uma rede de tubos de nível inferior seja abastecida com segurança por uma rede de nível superior."
+    },
+    {
+      "type": "text",
+      "text": "Curiosamente, o $(thing)Módulo Regulador/$ permite fluxo irrestrito de ar na direção oposta (do lado estreito para o lado largo) independentemente do sinal de redstone; isso significa que um regulador com sinal máximo de redstone pode ser usado como uma válvula de via única.$(p)Note que o $(thing)Regulador/$ $(italic)não/$ reduz ativamente a pressão no seu lado estreito; ele apenas previne o fluxo de ar se a pressão subir acima do limite."
+    },
+    {
+      "type": "spotlight",
+      "item": "pneumaticcraft:module_expansion_card",
+      "text": "Aplicar uma $(l:tubes/module_expansion_card)Placa de Expansão de Módulo/$ ao Módulo Regulador desbloqueia uma GUI fornecendo muito mais controle sobre o nível limite. Você pode definir um limite preciso na GUI, ou (com a caixa de seleção $(bold)Config Avançada/$) configurar níveis de limite interpolados baseados no sinal de redstone. Isso funciona exatamente como o $(l:tubes/safety_module)Módulo de Segurança/$."
+    },
+    {
+      "type": "crafting",
+      "text": "Fabricando um Módulo Regulador",
+      "recipe": "pneumaticcraft:regulator_tube_module"
+    }
+  ]
+}

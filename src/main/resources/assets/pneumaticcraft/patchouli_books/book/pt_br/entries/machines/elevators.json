@@ -1,0 +1,58 @@
+{
+  "name": "Elevadores",
+  "icon": "pneumaticcraft:elevator_base",
+  "category": "pneumaticcraft:machines",
+  "advancement": "pneumaticcraft:plastic",
+  "pages": [
+    {
+      "type": "text",
+      "text": "O $(thing)Elevador/$ é uma máquina que pode ser usada para transportar verticalmente qualquer entidade, seja um item, mob, animal ou jogador.$(p)Você precisa colocar uma $(item)Base de Elevador/$ na parte inferior. Você pode empilhar várias bases uma em cima da outra.$(p)Acima disso, coloque $(item)Frames de Elevador/$, que atuam como suporte para o elevador."
+    },
+    {
+      "type": "text",
+      "text": "Tanto o número de $(item)Bases de Elevador/$ quanto o número de $(item)Frames de Elevador/$ determinam o quão alto o $(thing)Elevador/$ pode se estender. A altura máxima de um $(thing)Elevador/$ é o menor dos valores:$(li)1 x o número de $(item)Frames de Elevador/$ empilhados verticalmente, ou$(li)$(ttcolor)$(t:Você pode mudar esse multiplicador na configuração do mod - veja 'I:elevatorBaseBlocksPerBase')6 x/$ o número de $(item)Bases de Elevador/$ empilhadas verticalmente."
+    },
+    {
+      "type": "text",
+      "text": "O $(thing)Elevador/$ pode operar em um de dois modos:$(li)$(bold)Redstone/$: um $(#f00)sinal de redstone/$ aplicado a qualquer $(item)Base de Elevador/$ controla a altura do elevador, proporcional à intensidade do sinal (sem sinal = 0% de extensão, sinal total = 100% de extensão).$(li)$(bold)Chamador de Elevador/$: O $(l:machines/elevators#caller)Chamador de Elevador/$ pode fornecer um controle mais sofisticado sobre o elevador."
+    },
+    {
+      "type": "text",
+      "title": "Elevadores Multiblock",
+      "text": "Você pode criar elevadores maiores colocando mais $(item)Bases de Elevador/$ ao lado umas das outras horizontalmente. Quando a $(item)Base de Elevador/$ superior de cada $(thing)Elevador/$ conectado estiver na mesma altura, os $(thing)Elevadores/$ compartilharão os andares (definidos pelos $(l:machines/elevators#caller)Chamadores de Elevador/$), entrada de redstone e, portanto, funcionarão como um único multibloco."
+    },
+    {
+      "type": "text",
+      "title": "Economizando Ar",
+      "text": "A $(item)Base de Elevador/$ pode aceitar até quatro $(l:base_concepts/upgrades#charging)Aprimoramentos de Carregamento/$, que permitem que ela recupere o ar usado quando o elevador descer (normalmente a descida não consome ar, mas também não regenera).$(p)Isso tem um custo de descida mais lenta; com 4 aprimoramentos instalados, o ar é recuperado a 60% do custo para subir essa distância, mas a descida será 40% mais lenta."
+    },
+    {
+      "type": "text",
+      "anchor": "caller",
+      "title": "Chamador de Elevador",
+      "text": "$(item)Chamadores de Elevador/$ colocados ao lado de $(item)Frames de Elevador/$ são usados para controlar a altura do $(thing)Elevador/$. Quando você coloca um $(item)Frame de Elevador/$, ele calculará quantos $(thing)andares/$ existem, definidos por outros $(item)Chamadores de Elevador/$.$(p)$(thing)Andaress/$ podem ser nomeados na interface da $(item)Base de Elevador/$; os nomes dos andares serão exibidos como botões em cada $(item)Chamador de Elevador/$. Eles podem ser clicados para chamar o $(thing)Elevador/$ para esse andar."
+    },
+    {
+      "type": "text",
+      "title": "Chamador de Elevador (cont.)",
+      "text": "Além disso, um $(item)Chamador de Elevador/$ emitirá um $(#f00)sinal de redstone/$ quando o $(thing)Elevador/$ estiver no seu andar, e fornecer um pulso de redstone para o Chamador chamará o $(thing)Elevador/$ para esse andar.$(p)Finalmente, o $(item)Chamador de Elevador/$ pode ser camuflado para se parecer com outros blocos usando a ferramenta $(l:tools/camo_applicator)Aplicador de Camuflagem/$."
+    },
+    {
+      "type": "image",
+      "images": [
+        "pneumaticcraft:textures/patchouli/elevator.png"
+      ],
+      "border": "true",
+      "text": "$(italic)Um Elevador 3x3 com dois Chamadores de Elevador visíveis/$"
+    },
+    {
+      "type": "crafting",
+      "recipe": "pneumaticcraft:elevator_base_1",
+      "recipe2": "pneumaticcraft:elevator_frame"
+    },
+    {
+      "type": "crafting",
+      "recipe": "pneumaticcraft:elevator_caller"
+    }
+  ]
+}

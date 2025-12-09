@@ -1,0 +1,22 @@
+{
+  "name": "Revestimento Térmico",
+  "icon": "pneumaticcraft:thermal_lagging",
+  "category": "pneumaticcraft:machines",
+  "advancement": "pneumaticcraft:root",
+  "pages": [
+    {
+      "type": "text",
+      "text": "Como você provavelmente está ciente, máquinas $(pncr)$ que usam $(l:base_concepts/heat)Calor/$ perderão calor para o ar, se deixadas expostas. Embora você possa cobrir essas máquinas com praticamente qualquer bloco que não seja ar e não conduza calor, o $(thing)Revestimento Térmico/$ é particularmente adequado para isolar máquinas."
+    },
+    {
+      "type": "spotlight",
+      "item": "pneumaticcraft:thermal_lagging",
+      "text": "O $(thing)Revestimento Térmico/$ tem a propriedade útil de permitir que você $(italic)clique através/$ dele no bloco atrás, como se o isolamento nem estivesse presente.$(p)Isso se aplica, a menos que você esteja segurando qualquer tipo de $(item)Picareta/$, $(item)chave/$ (wrench), ou esteja $(thing)esgueirando-se/$, o que permite que você alveje o isolamento em si para remoção ou outra interação."
+    },
+    {
+      "type": "crafting",
+      "text": "Criando Revestimento Térmico",
+      "recipe": "pneumaticcraft:thermal_lagging"
+    }
+  ]
+}

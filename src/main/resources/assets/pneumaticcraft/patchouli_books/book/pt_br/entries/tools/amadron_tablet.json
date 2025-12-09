@@ -1,0 +1,42 @@
+{
+  "name": "Tablet Amadron",
+  "icon": "pneumaticcraft:amadron_tablet[pneumaticcraft:air=30000]",
+  "category": "pneumaticcraft:tools",
+  "advancement": "pneumaticcraft:plastic",
+  "pages": [
+    {
+      "type": "text",
+      "text": "O $(item)Tablet Amadron/$ é um item que pode ser usado para $(thing)encomendar/$ itens e fluidos para entrega por $(l:tools/drone)Drones/$.$(p)Para fazer isso, um inventário e/ou tanque de fluido precisa ser selecionado $(thing)clicando com o botão direito/$ com o tablet para vinculá-lo. Este inventário/tanque é então usado para retirar os itens como pagamento e receber os itens que você encomendou."
+    },
+    {
+      "type": "text",
+      "text": "A interface do tablet é inteligente o suficiente para descobrir o que você pode comprar verificando o inventário e/ou tanque vinculado. Quando você encomenda $(ttcolor)$(t:Recursos podem ser itens ou fluidos)recursos/$, um $(thing)Drone/$ aparecerá para coletar os recursos com os quais você está pagando. Assim que a coleta for concluída, um segundo $(thing)Drone/$ chegará para entregar os itens comprados.$(p)Esta é uma maneira de obter itens que você não consegue de outra forma, como o $(l:components/pcb_blueprint)Diagrama de PCI/$ e $(l:manufacturing/assembly_programs)Programas de Montagem/$. Ele também adiciona algumas $(thing)Trocas de Aldeão/$ aleatórias; essas trocas são reembaralhadas diariamente."
+    },
+    {
+      "type": "text",
+      "title": "Trocas Entre Jogadores",
+      "text": "Ao clicar no botão $(bold)Troca Personalizada de Jogador/$ (na aba lateral $(bold)Trocas Personalizadas/$), você pode oferecer seus próprios recursos para serem trocados por recursos de outros jogadores. Na interface de troca, você pode selecionar um recurso para vender no lado esquerdo e um recurso que deseja comprar no lado direito. Você pode definir as quantidades de troca nos campos de texto."
+    },
+    {
+      "type": "text",
+      "text": "Você também pode especificar na interface de onde deseja fornecer os recursos e onde deseja receber o pagamento de outros jogadores. Você precisará de uma $(l:tools/gps_tool)Ferramenta GPS/$ (definida para o local correto) para isso.$(p)Se você não especificar locais personalizados aqui, os locais padrão armazenados no tablet (para trocas normais) serão usados."
+    },
+    {
+      "type": "text",
+      "text": "Quando tudo estiver definido, o botão $(bold)Adicionar Troca/$ ficará clicável. Esta troca ficará visível para outros jogadores em seus $(item)Tablets Amadron/$ exatamente como qualquer oferta normal.$(p)Uma diferença importante é que não há estoque ilimitado: você deve adicionar seus recursos ao inventário/tanque de venda. Um $(thing)Drone/$ chegará para recolher esses recursos; quando o recolhimento for concluído, o estoque será aumentado. Os níveis de estoque para ofertas personalizadas são mostrados na interface do $(item)Tablet Amadron/$."
+    },
+    {
+      "type": "text",
+      "text": "Outros jogadores agora podem aceitar a oferta até a quantidade que estiver em estoque. Quando um jogador aceita uma oferta, você será notificado (desde que esteja online), e um $(thing)Drone/$ chegará para entregar a você os recursos com os quais o outro jogador pagou. Uma troca foi concluída!"
+    },
+    {
+      "type": "text",
+      "text": "Ao $(thing)clicar com Shift/$ no botão $(#F00)x/$ em uma de suas próprias trocas na interface do Amadron, a troca será removida e o Amadron tentará devolver seus recursos ao inventário/tanque que os forneceu. $(p)$(bold)Aviso:/$ O Amadron não se responsabiliza por recursos perdidos no caso de um problema ao devolvê-los!"
+    },
+    {
+      "type": "crafting",
+      "text": "Fabricando um Tablet Amadron",
+      "recipe": "pneumaticcraft:amadron_tablet"
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "name": "Dispositivo de Transferência",
+  "icon": "pneumaticcraft:transfer_gadget",
+  "category": "pneumaticcraft:semiblocks",
+  "advancement": "pneumaticcraft:root",
+  "pages": [
+    {
+      "type": "text",
+      "text": "O $(item)Dispositivo de Transferência/$ é um item de transferência de item/fluido bastante básico. Ele pode ser colocado $(italic)entre/$ dois inventários ou tanques para transferir entre eles. A melhor maneira de colocá-lo é primeiro colocar um inventário, depois clicar com o botão direito na lateral desse bloco com um $(item)Dispositivo de Transferência/$, e então colocar o segundo inventário."
+    },
+    {
+      "type": "text",
+      "text": "O Dispositivo de Transferência terá uma de duas cores:$(li)$(6)Laranja/$ - modo de saída$(li)$(9)Azul/$ - modo de entrada.$(p)Um gadget em $(6)modo de saída/$ extrai do inventário/tanque em que está colocado, inserindo no bloco vizinho, e um gadget em $(9)modo de entrada/$ faz o oposto. Recursos são transferidos a uma taxa de 1 item ou 100mB de fluido a cada 2 segundos."
+    },
+    {
+      "type": "text",
+      "text": "$(thing)Clique com o botão direito/$ no $(item)Dispositivo de Transferência/$ com a mão vazia ou com um $(l:tools/logistics_configurator)Configurador Logístico/$ para alternar o modo de entrada/saída. $(thing)Clique com Shift+botão direito/$ (ou clique esquerdo - bater) para remover o $(item)Dispositivo de Transferência/$.$(p)Devido à sua baixa velocidade e receita barata, isso é ideal para transferência de itens/fluidos no início do jogo, onde o espaço pode ser limitado."
+    },
+    {
+      "type": "crafting",
+      "text": "Fabricando um Dispositivo de Transferência",
+      "recipe": "pneumaticcraft:transfer_gadget"
+    }
+  ]
+}

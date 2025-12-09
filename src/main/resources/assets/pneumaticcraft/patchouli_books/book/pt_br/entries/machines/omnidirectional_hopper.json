@@ -1,0 +1,33 @@
+{
+  "name": "Funil Omnidirecional",
+  "icon": "pneumaticcraft:omnidirectional_hopper",
+  "category": "pneumaticcraft:machines",
+  "advancement": "pneumaticcraft:root",
+  "pages": [
+    {
+      "type": "text",
+      "text": "O $(item)Funil Omnidirecional/$ se comporta de forma bastante semelhante ao $(item)Funil/$ vanilla. No entanto, este Funil pode ser orientado em $(italic)qualquer/$ direção, não apenas para cima. Além disso, ele aceita $(l:base_concepts/upgrades)Aprimoramentos/$, que podem ser usados para acelerar consideravelmente o Funil. Ele não usa $(l:base_concepts/pressure)ar/$, o que o torna um dispositivo muito útil no início do jogo."
+    },
+    {
+      "type": "spotlight",
+      "item": "pneumaticcraft:omnidirectional_hopper",
+      "text": "Quando você coloca o Funil, sua $(9)entrada/$ ficará voltada para você, e sua $(6)saída/$ ficará voltada para o bloco contra o qual foi colocado.$(p)$(thing)Clique com o botão direito/$ no Funil com uma $(l:tools/pneumatic_wrench)Chave Pneumática/$ (outras chaves também podem funcionar) para reorientar sua entrada. $(thing)Agache+clique com o botão direito/$ no Funil para reorientar sua saída."
+    },
+    {
+      "type": "text",
+      "title": "Aprimoramento de Dispensador",
+      "flag": "pneumaticcraft:omniHopperDispenser",
+      "text": "Se um $(l:base_concepts/upgrades#dispenser)Aprimoramento de Dispensador/$ for instalado, o funil ejetará automaticamente itens no mundo no lado de $(6)saída/$ (se não houver inventário lá).$(p)Isso pode ser usado como um $(item)Dispensador/$ muito aprimorado: mais rápido, mais preciso e melhor $(#f00)controle de redstone/$."
+    },
+    {
+      "type": "text",
+      "title": "Aprimoramento de Rastreador de Entidade",
+      "text": "Se um $(l:base_concepts/upgrades#entity_tracker)Aprimoramento de Rastreador de Entidade/$ for instalado, o funil será capaz de extrair itens de entidades na frente do seu lado de $(9)entrada/$. As entidades podem ser incluídas na lista negra para tal extração, adicionando-as à tag de tipo de entidade $(thing)pneumaticcraft:omnihopper_blacklisted/$; os Aldeões são incluídos na lista negra por padrão, pois podem se tornar uma fonte infinita de itens."
+    },
+    {
+      "type": "crafting",
+      "text": "Criando um Funil Omnidirecional",
+      "recipe": "pneumaticcraft:omnidirectional_hopper"
+    }
+  ]
+}

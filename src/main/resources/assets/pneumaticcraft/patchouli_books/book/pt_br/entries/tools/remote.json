@@ -1,0 +1,63 @@
+{
+  "name": "Controle Remoto",
+  "icon": "pneumaticcraft:remote",
+  "category": "pneumaticcraft:tools",
+  "advancement": "pneumaticcraft:plastic",
+  "pages": [
+    {
+      "type": "text",
+      "text": "Com um Controle Remoto você pode criar sua própria GUI para controlar remotamente $(l:tools/drone)Drones/$ ou $(l:machines/universal_sensor)Sensores Universais/$ através da manipulação de $(l:programming/variables#global)variáveis globais/$.$(p)Observe que com $(item)Sensores Universais/$, você pode usar o $(item)Controle Remoto/$ para criar redstone sem fio!$(p)Para começar a criar sua própria GUI, $(thing)Shift+clique com o botão direito/$ no $(item)Controle Remoto/$ para abrir a janela de edição."
+    },
+    {
+      "type": "text",
+      "text": "Preencher a janela funciona de forma semelhante ao modo de programação em um $(l:programming/programmer)Programador/$; basta clicar e arranjar os widgets do painel da direita no painel principal à esquerda.$(p)Para copiar um widget, $(thing)clique do meio/$ e arraste um widget existente. Para editar as propriedades de um widget, $(thing)clique com o botão direito/$ no widget. Por exemplo, para um botão, isso abrirá a seguinte janela:"
+    },
+    {
+      "type": "image",
+      "images": [
+        "pneumaticcraft:textures/patchouli/remote_button.png"
+      ],
+      "text": "Nesta janela, você pode configurar como o botão deve parecer e se comportar."
+    },
+    {
+      "type": "text",
+      "text": "As seguintes propriedades são comuns a $(italic)todos/$ widgets:$(li)$(thing)Texto/$ - o texto exibido no widget$(li)$(thing)Tooltip/$ - dica que aparece ao passar o mouse sobre o widget$(li)$(thing)Variável de Habilitação/$ - você pode controlar se o widget é exibido ou não vinculando-o a uma $(l:programming/coordinate_operator)variável/$. Atribuindo valores aos campos X/Y/Z, você pode garantir que o widget só seja exibido se a variável vinculada for igual aos valores que você especificar."
+    },
+    {
+      "type": "text",
+      "title": "Widget de Rótulo",
+      "anchor": "label",
+      "text": "Este widget simplesmente exibe um texto, com uma dica opcional, para fins informativos. Embora o rótulo não possa $(italic)mudar/$ variáveis, ele pode $(italic)exibir/$ uma variável, usando a sintaxe $(thing)${#globalvarname}/$, o que pode ser útil para fins de depuração.$(p)O Widget de Rótulo não tem outros campos além dos campos padrão."
+    },
+    {
+      "type": "text",
+      "title": "Widget de Botão",
+      "text": "O widget de Botão define o valor da variável vinculada quando pressionado.$(li)$(thing)Nome da Variável/$ - a variável global vinculada.$(li)$(thing)Valor de Configuração/$ - os valores X/Y/Z a serem atribuídos à variável vinculada quando o botão for pressionado.$(li)$(thing)Largura/Altura/$ - dimensões do botão."
+    },
+    {
+      "type": "text",
+      "title": "Widget de Caixa de Seleção",
+      "text": "O widget de Caixa de Seleção define o valor X da variável vinculada para 1 quando marcado e para 0 caso contrário.$(li)$(thing)Nome da Variável/$ - a variável global vinculada."
+    },
+    {
+      "type": "text",
+      "title": "Widget de Lista Suspensa",
+      "text": "O widget de Lista Suspensa define o valor X da variável vinculada para o índice do elemento selecionado.$(li)$(thing)Elementos da Lista Suspensa/$ - uma lista separada por vírgulas de rótulos de texto.$(li)$(thing)Nome da Variável/$ - a variável global vinculada.$(li)$(thing)Ordenado/$ - se marcado, os elementos da lista serão ordenados alfabeticamente. Caso contrário, os elementos aparecerão na ordem fornecida."
+    },
+    {
+      "type": "text",
+      "title": "Exemplo",
+      "text": "Usando o botão $(thing)Pastebin/$ à esquerda da GUI do Editor, importe $(l:https://pastebin.com/4yxKG5Jc)this layout/$.$(p)Isso adiciona três caixas de seleção, definindo as variáveis globais $(thing)signal1, signal2 & signal3/$.$(p)Agora coloque três $(l:machines/universal_sensor)Sensores Universais/$, e dê-lhes algo de pressão. Coloque um $(l:base_concepts/upgrades#dispenser)Upgrade de Ejetor/$ em cada $(item)Sensor/$. Passe algum redstone de cada $(item)Sensor/$ (coloque-os a um bloco de distância para manter o redstone separado)."
+    },
+    {
+      "type": "text",
+      "title": "Exemplo (cont.)",
+      "text": "Em cada $(item)Sensor/$ GUI:$(li)Selecione o botão $(thing)Dispenser/$$(li)Selecione $(thing)Mundo/$$(li)Selecione $(thing)Variável Global/$$(li)No campo $(thing)Nome da Variável/$, insira 'signal1', 'signal2' & 'signal3' respectivamente.$(p)Agora, $(thing)clique com o botão direito/$ no seu $(item)Controle Remoto/$, e tente selecionar/desmarcar cada caixa de seleção. O $(item)Sensor/$ correspondente emitirá um sinal de redstone conforme apropriado: redstone sem fio!"
+    },
+    {
+      "type": "crafting",
+      "text": "Fazendo um Controle Remoto",
+      "recipe": "pneumaticcraft:remote"
+    }
+  ]
+}

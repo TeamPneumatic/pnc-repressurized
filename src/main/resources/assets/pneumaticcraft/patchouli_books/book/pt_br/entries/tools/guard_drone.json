@@ -1,0 +1,45 @@
+{
+  "name": "Drone Guarda",
+  "icon": "pneumaticcraft:guard_drone[pneumaticcraft:air=120000]",
+  "category": "pneumaticcraft:tools",
+  "advancement": "pneumaticcraft:pressure_chamber",
+  "pages": [
+    {
+      "type": "text",
+      "text": "Um $(item)Drone Guarda/$ é um tipo especializado não programável de $(l:tools/drone)Drone/$ que deve ser implantado contra qualquer bloco de inventário. Ele importará um item para usar como arma e atacará quaisquer mobs ao alcance com ele."
+    },
+    {
+      "type": "spotlight",
+      "title": "Carregamento Automático",
+      "item": "pneumaticcraft:charging_station",
+      "text": "Assim como todos os tipos de Drone, esses drones requerem $(l:base_concepts/pressure)pressão/$ para operar e buscarão automaticamente $(l:tools/drone#charging)uma Estação de Carregamento com uma Melhoria de Ejetor/$ se estiverem com pouco ar."
+    },
+    {
+      "type": "text",
+      "title": "Alcance",
+      "text": "O $(thing)Drone Guarda/$ mirará em quaisquer mobs hostis dentro de 16 blocos horizontalmente de sua posição de implantação, 8 blocos para cima e 5 blocos para baixo.$(p)A razão para o alcance vertical menor é minimizar a detecção de mobs em cavernas profundas abaixo e o teletransporte para eles, o que desperdiça ar e deixa você se perguntando o que aconteceu com seu Drone."
+    },
+    {
+      "type": "spotlight",
+      "title": "Arma",
+      "item": "minecraft:netherite_sword",
+      "text": "O $(thing)Drone Guarda/$ não se importa com o que está no inventário, então tome cuidado para colocar uma arma corpo a corpo útil lá. Se & quando a arma quebrar e não houver substituições no inventário, o drone continuará a lutar desarmado, o que é muito ineficaz."
+    },
+    {
+      "type": "spotlight",
+      "title": "Combate à Distância",
+      "item": "pneumaticcraft:minigun_upgrade",
+      "text": "O drone pode, alternativamente, ser equipado com uma $(l:base_concepts/upgrades#minigun)Melhoria de Minigun/$, caso em que você deve adicionar $(l:tools/minigun_ammo)Munição de Minigun/$ ao inventário."
+    },
+    {
+      "type": "entity",
+      "entity": "pneumaticcraft:guard_drone",
+      "offset": -0.3
+    },
+    {
+      "type": "crafting",
+      "text": "Fabricando um Drone Guarda",
+      "recipe": "pneumaticcraft:guard_drone"
+    }
+  ]
+}

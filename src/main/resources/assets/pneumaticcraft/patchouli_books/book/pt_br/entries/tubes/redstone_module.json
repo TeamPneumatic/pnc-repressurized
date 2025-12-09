@@ -1,0 +1,29 @@
+{
+  "name": "Módulo de Redstone",
+  "icon": "pneumaticcraft:redstone_module",
+  "category": "pneumaticcraft:tubes",
+  "advancement": "pneumaticcraft:pressure_tube",
+  "pages": [
+    {
+      "type": "text",
+      "text": "Este módulo troca $(#f00)sinais de redstone/$ com outros Módulos de Redstone em tubos conectados, efetivamente usando o tubo como um conduíte de redstone.$(p)Até 16 canais independentes podem ser selecionados via GUI do módulo, ou clicando com o botão direito no módulo com qualquer $(item)Corante/$.$(p)Clique com o botão direito no módulo com uma $(item)chave/$ para alterná-lo entre modo de entrada e saída."
+    },
+    {
+      "type": "image",
+      "images": [
+        "pneumaticcraft:textures/patchouli/redstone_module.png"
+      ],
+      "border": "true"
+    },
+    {
+      "type": "spotlight",
+      "item": "pneumaticcraft:module_expansion_card",
+      "text": "Quando você aplica uma $(l:tubes/module_expansion_card)Placa de Expansão de Módulo/$ ao módulo, processamento extra de sinal estará disponível. Quando o módulo estiver no $(thing)modo de saída/$, você pode clicar com o botão direito no módulo para abrir uma GUI e escolher um modo para aplicar ao sinal de saída, ex: inverter o sinal, aplicar E/OU/XOU (AND/OR/XOR) com outro canal...$(p)O efeito de cada modo é descrito em detalhes na GUI do módulo."
+    },
+    {
+      "type": "crafting",
+      "text": "Fabricando um Módulo de Redstone",
+      "recipe": "pneumaticcraft:redstone_module"
+    }
+  ]
+}

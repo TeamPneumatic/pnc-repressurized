@@ -1,0 +1,32 @@
+{
+  "name": "Drone Logístico",
+  "icon": "pneumaticcraft:logistics_drone",
+  "category": "pneumaticcraft:logistics",
+  "advancement": "pneumaticcraft:root",
+  "pages": [
+    {
+      "type": "text",
+      "text": "$(item)Drones Logísticos/$ são um tipo especial de $(l:tools/drone)drone/$. Eles são um $(thing)Drone/$ de nível inferior, já que não são programáveis, mas limitados a realizar $(italic)apenas/$ tarefas de logística."
+    },
+    {
+      "type": "spotlight",
+      "title": "Carregamento Automático",
+      "item": "pneumaticcraft:charging_station",
+      "text": "Assim como todos os tipos de Drone, estes drones requerem $(l:base_concepts/pressure)pressão/$ para operar, e buscarão automaticamente $(l:tools/drone#charging)uma Estação de Carregamento com uma Melhoria de Ejetor/$ se estiverem com pouco ar."
+    },
+    {
+      "type": "entity",
+      "entity": "pneumaticcraft:logistics_drone",
+      "offset": -0.3
+    },
+    {
+      "type": "text",
+      "text": "Uma vez implantado, um $(item)Drone Logístico/$ operará em qualquer inventário/tanque com uma $(l:logistics/frames)Moldura Logística/$ em um cubo de 33x33x33 centrado no bloco onde o drone foi implantado.$(p)Como esses Drones frequentemente precisam mover itens, melhorias de $(l:base_concepts/upgrades#speed)Velocidade/$ e $(l:base_concepts/upgrades#inventory)Inventário/$ são recomendadas para velocidade de movimento e capacidade de carga."
+    },
+    {
+      "type": "crafting",
+      "recipe": "pneumaticcraft:logistics_drone",
+      "text": "Criando um Drone Logístico"
+    }
+  ]
+}

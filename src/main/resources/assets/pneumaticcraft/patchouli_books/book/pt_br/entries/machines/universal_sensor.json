@@ -1,0 +1,32 @@
+{
+  "name": "Sensor Universal",
+  "icon": "pneumaticcraft:universal_sensor",
+  "category": "pneumaticcraft:machines",
+  "advancement": "pneumaticcraft:plastic",
+  "pages": [
+    {
+      "type": "text",
+      "text": "O $(thing)Sensor Universal/$ é, como o nome sugere, um sensor que pode ser usado em muitas aplicações; ele mede condições no mundo e emite um $(#f00)sinal de redstone/$ baseado nessas condições.$(p)Ser universal não é de graça: o sensor requer $(l:base_concepts/pressure)ar/$ para funcionar (1 mL/tick) em $(ttcolor)$(t:O Emissor Constante de Redstone é gratuito para usar)quase todos/$ os casos, e os Sensores precisam de certos $(l:base_concepts/upgrades)Aprimoramentos/$ para funcionar."
+    },
+    {
+      "type": "spotlight",
+      "item": "pneumaticcraft:universal_sensor",
+      "text": "Atualmente, existem mais de 15 condições diferentes que o Sensor pode medir, desde ser capaz de verificar se há um bloco em uma determinada coordenada até se há um Twitcher transmitindo. Abra a GUI do $(thing)Sensor Universal/$ para ver o que está disponível, mais as descrições."
+    },
+    {
+      "type": "text",
+      "title": "Aprimoramentos",
+      "text": "Você precisará inserir um $(l:base_concepts/upgrades#entity_tracker)Rastreador de Entidade/$, $(l:base_concepts/upgrades#dispenser)Dispensador/$, ou $(l:base_concepts/upgrades#block_tracker)Rastreador de Bloco/$ mais $(l:tools/gps_tool)Ferramenta GPS/$ para permitir a seleção da categoria correspondente de sensores. Ex: contar o número de entidades dentro do alcance requer que um $(item)Aprimoramento de Rastreador de Entidade/$ seja instalado."
+    },
+    {
+      "type": "text",
+      "title": "Exemplo: Contagem de Entidades",
+      "text": "Digamos que você tenha um curral cheio de animais e queira matar alguns, mas apenas se houver o suficiente.$(p)Adicione um $(l:base_concepts/upgrades#entity_tracker)Aprimoramento de Rastreador de Entidade/$ e $(l:base_concepts/upgrades#range)Aprimoramentos de Alcance/$ suficientes para cobrir o tamanho do curral.$(p)Agora, na GUI, selecione o botão $(thing)Entidade/$, seguido por $(thing)Dentro do Alcance/$, e finalmente insira um $(l:base_concepts/entity_filter)filtro de entidade/$ que corresponda ao seu tipo de animal (ex: 'vaca')."
+    },
+    {
+      "type": "crafting",
+      "text": "Criando um Sensor Universal",
+      "recipe": "pneumaticcraft:universal_sensor"
+    }
+  ]
+}

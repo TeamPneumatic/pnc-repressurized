@@ -1,0 +1,23 @@
+{
+  "name": "Manômetro",
+  "icon": "pneumaticcraft:manometer[pneumaticcraft:air=30000]",
+  "category": "pneumaticcraft:tools",
+  "advancement": "pneumaticcraft:pressure_tube",
+  "pages": [
+    {
+      "type": "text",
+      "text": "Com um Manômetro você pode medir a $(l:base_concepts/pressure)pressão/$ em uma rede pneumática. Além disso, algumas máquinas/tubos Pneumáticos têm algumas informações especiais sobre eles. Por exemplo, o $(l:tubes/safety_module)Módulo de Válvula de Segurança/$ exibe seu limite de segurança. Então, se você não se sente confortável com a matemática de redstone, esta ferramenta pode ser útil para você."
+    },
+    {
+      "type": "crafting",
+      "text": "Fabricando um Manômetro",
+      "recipe": "pneumaticcraft:manometer"
+    },
+    {
+      "type": "text",
+      "title": "Outros Mods",
+      "flag": "|mod:theoneprobe,mod:hwyla",
+      "text": "Com mods como $(thing)The One Probe/$ ou $(thing)WAILA/HWYLA/$ instalados, o $(item)Manômetro/$ pode ter utilidade limitada."
+    }
+  ]
+}

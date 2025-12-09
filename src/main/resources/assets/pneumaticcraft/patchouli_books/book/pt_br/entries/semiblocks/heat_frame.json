@@ -1,0 +1,25 @@
+{
+  "name": "Estrutura de Calor",
+  "icon": "pneumaticcraft:heat_frame",
+  "category": "pneumaticcraft:semiblocks",
+  "advancement": "pneumaticcraft:root",
+  "pages": [
+    {
+      "type": "text",
+      "text": "Este item pode ser colocado em qualquer $(thing)inventário/$. Quando aquecido por uma $(l:base_concepts/heat)Fonte de calor/$ adjacente, ele tentará fundir qualquer item no inventário (ou congelá-lo quando resfriado). Só terá sucesso se houver espaço no inventário para o item resultante. Quanto mais calor for aplicado, mais rápido será o processo de fundição, até um máximo de 1 item por segundo. Da mesma forma, quanto mais for resfriado, mais rápido congelará objetos."
+    },
+    {
+      "type": "link",
+      "flag": "mod:crafttweaker",
+      "title": "CraftTweaker",
+      "text": "A $(thing)Estrutura de Calor/$ tem suporte ao $(l:https://minecraft.curseforge.com/projects/crafttweaker)CraftTweaker/$ para resfriamento (a fundição usa apenas receitas normais de $(item)Fornalha/$): receitas podem ser adicionadas e removidas. Siga o link abaixo para mais informações.",
+      "url": "https://crafttweaker.readthedocs.io/en/latest/#Mods/PneumaticCraft_Repressurized/Heat_Frame_Cooling/",
+      "link_text": "Docs do CraftTweaker"
+    },
+    {
+      "type": "crafting",
+      "text": "Fabricando uma Estrutura de Calor",
+      "recipe": "pneumaticcraft:heat_frame"
+    }
+  ]
+}

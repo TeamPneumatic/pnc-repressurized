@@ -1,0 +1,17 @@
+{
+  "name": "Baú Reforçado",
+  "icon": "pneumaticcraft:reinforced_chest",
+  "category": "pneumaticcraft:machines",
+  "advancement": "pneumaticcraft:root",
+  "pages": [
+    {
+      "type": "text",
+      "text": "O $(item)Baú Reforçado/$ é um baú de 36 slots que tem resistência à explosão de nível obsidiana e mantém seu inventário quando quebrado."
+    },
+    {
+      "type": "crafting",
+      "text": "Criando um Baú Reforçado",
+      "recipe": "pneumaticcraft:reinforced_chest"
+    }
+  ]
+}

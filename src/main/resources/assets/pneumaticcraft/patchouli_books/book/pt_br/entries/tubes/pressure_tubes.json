@@ -1,0 +1,44 @@
+{
+  "name": "Tubos de Pressão",
+  "icon": "pneumaticcraft:pressure_tube",
+  "category": "pneumaticcraft:tubes",
+  "advancement": "pneumaticcraft:root",
+  "priority": "true",
+  "pages": [
+    {
+      "type": "text",
+      "text": "Tubos de Pressão são o dispositivo primário no $(pncr) para transportar ar comprimido entre compressores e máquinas.$(p)Tubos desconectados vazarão ar! No entanto, os lados de um tubo podem ser abertos ou fechados clicando com o botão direito com uma $(l:tools/pneumatic_wrench)Chave Pneumática/$. Chaves de outros mods também podem funcionar."
+    },
+    {
+      "type": "image",
+      "title": "Tubos!",
+      "text": "$(italic)Dois Tubos de Pressão com um $(l:tubes/pressure_gauge_module)Manômetro/$ $(italic)conectando um $(l:compressors/air_compressor)Compressor de Ar/$ $(italic)e um $(l:machines/air_cannon)Canhão de Ar/$",
+      "images": [
+        "pneumaticcraft:textures/patchouli/pressure_tubes.png"
+      ],
+      "border": "true"
+    },
+    {
+      "type": "text",
+      "text": "Tubos de Pressão podem ser equipados com $(l:tubes/tube_modules)Módulos de Tubo/$, componentes anexáveis que adicionam vários tipos de funcionalidade ao tubo. Veja as páginas individuais de cada módulo para mais informações.$(p)Tubos de Pressão podem ser ocultados com um $(l:tools/camo_applicator)Aplicador de Camuflagem/$."
+    },
+    {
+      "type": "text",
+      "text": "Existem três $(l:base_concepts/pressure_tiers)níveis/$ de tubo:$(br)$(li)Tubos de Nível 1 podem conter até 5 bar de pressão, e têm uma capacidade de 1000mL de ar.$(li)Tubos de Nível 1.5 (Reforçados) podem lidar com até 10 bar de pressão e também têm capacidade de 1000mL.$(li)Tubos de Nível 2 (Avançados) podem lidar com até 20 bar de pressão e têm capacidade de 4000mL de ar."
+    },
+    {
+      "type": "crafting",
+      "text": "Fabricando um Tubo de Pressão",
+      "recipe": "pneumaticcraft:pressure_tube"
+    },
+    {
+      "type": "pneumaticcraft:thermo_plant",
+      "recipe": "pneumaticcraft:thermo_plant/reinforced_pressure_tube"
+    },
+    {
+      "anchor": "advanced",
+      "type": "pneumaticcraft:assembly_system",
+      "recipe": "pneumaticcraft:assembly/advanced_pressure_tube"
+    }
+  ]
+}

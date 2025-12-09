@@ -1,0 +1,17 @@
+{
+  "name": "Prateleira de Exibição",
+  "icon": "pneumaticcraft:display_shelf",
+  "category": "pneumaticcraft:machines",
+  "advancement": "pneumaticcraft:root",
+  "pages": [
+    {
+      "type": "text",
+      "text": "A $(item)Prateleira de Exibição/$ funciona exatamente como o seu irmão maior, a $(l:machines/display_table)Mesa Expositora/$, mas tem metade da altura. Além disso, ela não exibirá suas pernas se o bloco abaixo dela não tiver uma face superior sólida."
+    },
+    {
+      "type": "crafting",
+      "text": "Fabricando uma Prateleira de Exibição",
+      "recipe": "pneumaticcraft:display_shelf"
+    }
+  ]
+}

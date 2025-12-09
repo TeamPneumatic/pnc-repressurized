@@ -1,0 +1,17 @@
+{
+  "name": "Biodiesel",
+  "icon": "pneumaticcraft:biodiesel_bucket",
+  "category": "pneumaticcraft:renewables",
+  "advancement": "pneumaticcraft:ethanol",
+  "pages": [
+    {
+      "type": "text",
+      "text": "$(thing)Biodiesel/$ pode ser produzido em um $(l:manufacturing/fluid_mixer)Misturador de Fluidos/$ com $(l:renewables/ethanol)Etanol/$ e $(l:renewables/vegetable_oil)Óleo Vegetal/$. É um combustível tão bom quanto o $(thing)Diesel/$ comum, mas tem a vantagem de ser produzido de forma renovável.$(p)Biodiesel também pode ser usado para fazer $(l:components/plastic)Plástico/$ e $(l:components/lubricant)Lubrificante/$ em uma $(thing)Usina Termopneumática/$. "
+    },
+    {
+      "type": "spotlight",
+      "item": "pneumaticcraft:biodiesel_bucket",
+      "text": "Combustível a partir de comida? O que há para não gostar?"
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "name": "Módulo Detector de Fluxo",
+  "icon": "pneumaticcraft:flow_detector_module",
+  "category": "pneumaticcraft:tubes",
+  "advancement": "pneumaticcraft:pressure_tube",
+  "pages": [
+    {
+      "type": "text",
+      "text": "O Módulo Detector de Fluxo é um módulo $(l:tubes/tube_modules#inline)em linha/$ que mede o $(thing)fluxo de ar/$ através de um tubo. Ele emite um $(#f00)sinal de redstone/$ como resultado disso, usando a seguinte fórmula:$(p)  $(formula)0.2 * fluxo (mL/tick)/$$(p)Ex: com 20mL/tick de ar fluindo, o nível do sinal será 20*0.2=4."
+    },
+    {
+      "type": "text",
+      "text": "Note que $(thing)fluxo/$ é uma grandeza física diferente de $(l:base_concepts/pressure)pressão/$. Fluxo é a quantidade de ar viajando através de um tubo por tick. Então se você tiver (digamos) um $(l:machines/elevators)Elevador/$ que não está rodando, o fluxo será 0, mas quando ele rodar ele estará consumindo ar, então o fluxo será diferente de zero. Assim, este módulo pode ser usado para detectar se uma máquina está usando ar.$(p)O Módulo Detector de Fluxo não aceita uma $(l:tubes/module_expansion_card)Placa de Expansão de Módulo/$."
+    },
+    {
+      "type": "crafting",
+      "text": "Fabricando um Módulo Detector de Fluxo",
+      "recipe": "pneumaticcraft:flow_detector_module"
+    }
+  ]
+}

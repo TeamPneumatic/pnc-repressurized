@@ -1,0 +1,40 @@
+{
+  "name": "Etanol",
+  "icon": "pneumaticcraft:ethanol_bucket",
+  "category": "pneumaticcraft:renewables",
+  "advancement": "pneumaticcraft:yeast_culture",
+  "pages": [
+    {
+      "type": "text",
+      "text": "$(thing)Etanol/$ pode ser produzido em uma $(l:manufacturing/thermopneumatic_processing_plant)Usina Termopneumática/$ com $(l:renewables/yeast_culture)Cultura de Levedura/$ e $(thing)Açúcar/$. É um dos constituintes do $(l:renewables/biodiesel)Biodiesel/$. "
+    },
+    {
+      "type": "text",
+      "text": "Este processo é sensível à temperatura: você precisará manter a temperatura da Usina Termopneumática entre 30°C e 60°C.$(p)Isso é muito fácil em biomas mais quentes, mas pode exigir um pouco de esforço em áreas mais frias - uma coisa a notar é que a temperatura ambiente tende a subir à medida que você escava mais fundo, então biomas temperados podem ser adequados se você fizer seu processamento em um nível Y mais baixo."
+    },
+    {
+      "type": "pneumaticcraft:thermo_plant",
+      "recipe": "pneumaticcraft:thermo_plant/ethanol_from_sugar"
+    },
+    {
+      "type": "pneumaticcraft:thermo_plant",
+      "recipe": "pneumaticcraft:thermo_plant/ethanol_from_melon"
+    },
+    {
+      "type": "pneumaticcraft:thermo_plant",
+      "recipe": "pneumaticcraft:thermo_plant/ethanol_from_potato"
+    },
+    {
+      "type": "pneumaticcraft:thermo_plant",
+      "recipe": "pneumaticcraft:thermo_plant/ethanol_from_poisonous_potato"
+    },
+    {
+      "type": "pneumaticcraft:thermo_plant",
+      "recipe": "pneumaticcraft:thermo_plant/ethanol_from_apple"
+    },
+    {
+      "type": "pneumaticcraft:thermo_plant",
+      "recipe": "pneumaticcraft:thermo_plant/ethanol_from_sweet_berries"
+    }
+  ]
+}

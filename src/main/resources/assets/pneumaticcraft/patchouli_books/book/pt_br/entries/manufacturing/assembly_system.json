@@ -1,0 +1,75 @@
+{
+  "name": "Sistema de Montagem",
+  "icon": "pneumaticcraft:assembly_controller",
+  "category": "pneumaticcraft:manufacturing",
+  "advancement": "pneumaticcraft:printed_circuit_board",
+  "pages": [
+    {
+      "type": "text",
+      "text": "Para criar materiais de nível superior, você precisará de um $(thing)Sistema de Montagem/$; uma coleção de $(thing)Máquinas de Montagem/$. Essas máquinas se comunicam entre si quando estão horizontalmente adjacentes. Apenas uma máquina de cada tipo pode existir (com exceção da $(item)Unidade E/S de Montagem/$, veja abaixo). A linha de montagem funciona com $(l:base_concepts/pressure)ar comprimido/$, mas você só precisa fornecer ar ao Controlador de Montagem para alimentar todo o sistema."
+    },
+    {
+      "type": "spotlight",
+      "item": "pneumaticcraft:assembly_controller",
+      "text": "O cérebro do $(thing)Sistema de Montagem/$. Ele aceita $(l:manufacturing/assembly_programs)programas/$ que dizem ao $(item)Controlador/$ como controlar as outras $(thing)Máquinas de Montagem/$.$(p)O display do Controlador mostra informações de diagnóstico sobre seu status. Abra a GUI para ver o que está acontecendo."
+    },
+    {
+      "type": "spotlight",
+      "item": "pneumaticcraft:assembly_io_unit_import",
+      "text": "A $(item)Unidade E/S/$ é a conexão entre inventários e a $(item)Plataforma de Montagem/$. Este braço robótico pode alcançar na diagonal.$(p)A Unidade E/S pode exportar itens finalizados ou importar itens para serem usados na fabricação. Qualquer inventário pode ser usado: $(item)baús/$ vanilla ou blocos de inventário de mods."
+    },
+    {
+      "type": "text",
+      "title": "Unidade E/S de Montagem (cont.)",
+      "text": "Um $(thing)Sistema de Montagem/$ deve incluir $(italic)duas/$ $(item)Unidades E/S/$; uma unidade de importação e uma unidade de exportação: $(6)laranja/$ significa que é uma unidade de exportação, $(9)azul/$ significa que é uma unidade de importação. Para uma $(item)Unidade E/S/$ funcionar, ela precisa alcançar uma $(item)Plataforma de Montagem/$, bem como um inventário para extrair ou armazenar itens (dependendo do seu modo)."
+    },
+    {
+      "type": "spotlight",
+      "item": "pneumaticcraft:assembly_platform",
+      "text": "A $(item)Plataforma de Montagem/$ é uma bancada de trabalho para as outras $(thing)Máquinas de Montagem/$. É usada para segurar itens no lugar durante a perfuração/corte a laser.$(p)A $(item)Plataforma de Montagem/$ é melhor posicionada centralmente, pois todas as outras máquinas precisam acessá-la."
+    },
+    {
+      "type": "spotlight",
+      "item": "pneumaticcraft:assembly_drill",
+      "text": "A $(item)Broca de Montagem/$ é uma das $(thing)Máquinas de Montagem/$ que fazem o trabalho real. Sua ponta de diamante é capaz de perfurar os materiais mais resistentes.$(p)A $(item)Broca de Montagem/$ $(italic)não/$ pode alcançar na diagonal, então deve estar localizada diretamente adjacente a uma $(thing)Plataforma de Montagem/$."
+    },
+    {
+      "type": "spotlight",
+      "item": "pneumaticcraft:assembly_laser",
+      "text": "O $(item)Laser de Montagem/$ é capaz de cortar materiais, usado para fatiar um item ou aparar bordas.$(p)Como a $(item)Broca de Montagem/$, esta máquina $(italic)não/$ pode alcançar na diagonal."
+    },
+    {
+      "type": "text",
+      "title": "Usando",
+      "text": "Para fabricar itens com o $(thing)Sistema de Montagem/$, coloque um $(l:manufacturing/assembly_programs)Programa de Montagem/$ no $(item)Controlador de Montagem/$ e coloque os itens necessários no inventário de entrada.$(p)Quaisquer itens que correspondam a uma receita conhecida pelo controlador e pelo programa inserido serão processados automaticamente."
+    },
+    {
+      "type": "link",
+      "flag": "mod:crafttweaker",
+      "title": "CraftTweaker",
+      "text": "O $(thing)Sistema de Montagem/$ possui suporte ao $(l:https://minecraft.curseforge.com/projects/crafttweaker)CraftTweaker/$: receitas podem ser adicionadas e removidas. Siga o link abaixo para mais informações.",
+      "url": "https://docs.blamejared.com/1.16/en/mods/PneumaticCraft-Repressurized/AssemblySystem",
+      "link_text": "Docs do CraftTweaker"
+    },
+    {
+      "type": "crafting",
+      "recipe": "pneumaticcraft:assembly_controller",
+      "recipe2": "pneumaticcraft:assembly_platform"
+    },
+    {
+      "type": "crafting",
+      "recipe": "pneumaticcraft:assembly_io_unit_import",
+      "recipe2": "pneumaticcraft:assembly_io_unit_export"
+    },
+    {
+      "type": "crafting",
+      "recipe": "pneumaticcraft:assembly_io_unit_import_from_export",
+      "recipe2": "pneumaticcraft:assembly_io_unit_export_from_import"
+    },
+    {
+      "type": "crafting",
+      "recipe": "pneumaticcraft:assembly_drill",
+      "recipe2": "pneumaticcraft:assembly_laser"
+    }
+  ]
+}

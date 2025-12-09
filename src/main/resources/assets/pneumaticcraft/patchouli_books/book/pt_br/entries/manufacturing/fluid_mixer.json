@@ -1,0 +1,17 @@
+{
+  "name": "Misturador de Fluidos",
+  "icon": "pneumaticcraft:fluid_mixer",
+  "category": "pneumaticcraft:manufacturing",
+  "advancement": "pneumaticcraft:pressure_tube",
+  "pages": [
+    {
+      "type": "text",
+      "text": "Um $(thing)Misturador de Fluidos/$ usa $(l:base_concepts/pressure)pressão/$ para combinar dois fluidos em um fluido e/ou item resultante. Seu uso principal é na produção de $(l:renewables/biodiesel)Biodiesel/$.$(p)O Misturador de Fluidos funcionará mais rápido se mais pressão for fornecida (mas também usará ar mais rápido)."
+    },
+    {
+      "type": "crafting",
+      "text": "Fabricando um Misturador de Fluidos",
+      "recipe": "pneumaticcraft:fluid_mixer"
+    }
+  ]
+}

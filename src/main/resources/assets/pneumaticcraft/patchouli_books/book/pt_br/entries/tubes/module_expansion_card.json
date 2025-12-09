@@ -1,0 +1,17 @@
+{
+  "name": "Cartão de Expansão de Módulo",
+  "icon": "pneumaticcraft:module_expansion_card",
+  "category": "pneumaticcraft:tubes",
+  "advancement": "pneumaticcraft:printed_circuit_board",
+  "pages": [
+    {
+      "type": "text",
+      "text": "A $(item)Cartão de Expansão de Módulo/$ é uma cartão de circuito conectável que você pode anexar a $(l:tubes/tube_modules)Módulos de Tubo/$ para melhorar sua funcionalidade de várias maneiras. $(thing)Clique com o botão direito/$ com o Cartão em um Módulo de Tubo para aplicá-la.$(p)Veja as páginas dos módulos de tubo individuais para mais informações sobre como o módulo é melhorado."
+    },
+    {
+      "type": "crafting",
+      "text": "Fabricando uma Cartão de Expansão de Módulo",
+      "recipe": "pneumaticcraft:module_expansion_card"
+    }
+  ]
+}

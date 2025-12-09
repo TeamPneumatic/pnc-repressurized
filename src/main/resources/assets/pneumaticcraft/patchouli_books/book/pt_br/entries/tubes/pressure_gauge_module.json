@@ -1,0 +1,30 @@
+{
+  "name": "Módulo de Manômetro para Tubo",
+  "icon": "pneumaticcraft:pressure_gauge_module",
+  "category": "pneumaticcraft:tubes",
+  "advancement": "pneumaticcraft:pressure_tube",
+  "pages": [
+    {
+      "type": "text",
+      "text": "Este módulo de tubo mostra a $(l:base_concepts/pressure)pressão/$ atualmente no tubo ao qual está anexado. Ele também emite um $(#f00)sinal de redstone/$ (direcional) cuja força é igual a:$(p)$(formula)  força = 2 x pressão/$$(p)Ex: uma pressão de 3.5 bar resulta em um nível de sinal de redstone de 7."
+    },
+    {
+      "type": "spotlight",
+      "item": "pneumaticcraft:module_expansion_card",
+      "text": "Aplicar uma $(l:tubes/module_expansion_card)Placa de Expansão de Módulo/$ ao Módulo de Manômetro para Tubo desbloqueia uma GUI (clique direito) para fornecer muito mais controle sobre a emissão de $(#f00)sinal de redstone/$. Por padrão, você pode fornecer um nível limite: o sinal estará desligado abaixo desse nível e totalmente ligado acima dele (ou vice-versa). Se você selecionar a opção $(bold)Config Avançada/$ na GUI, você ganha ainda mais controle (veja a seguir)."
+    },
+    {
+      "type": "image",
+      "images": [
+          "pneumaticcraft:textures/patchouli/pressure_gauge_gui.png"
+      ],
+      "text": "$(italic)<10 bar = 0 redstone, >20 bar = 15 redstone, 10-20 bar = interpolar (ex: 12 bar = 3 redstone)/$",
+      "anchor": "img"
+    },
+    {
+      "type": "crafting",
+      "text": "Fabricando um Módulo de Manômetro para Tubo",
+      "recipe": "pneumaticcraft:pressure_gauge_module"
+    }
+  ]
+}

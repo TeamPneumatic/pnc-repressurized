@@ -1,0 +1,37 @@
+{
+  "name": "Drone Coletor",
+  "icon": "pneumaticcraft:collector_drone[pneumaticcraft:air=120000]",
+  "category": "pneumaticcraft:tools",
+  "advancement": "pneumaticcraft:pressure_chamber",
+  "pages": [
+    {
+      "type": "text",
+      "text": "Um $(item)Drone Coletor/$ é um tipo especializado não programável de $(l:tools/drone)Drone/$ que deve ser implantado contra, ou próximo a, qualquer bloco de inventário (baú, etc.). Ele coletará itens próximos e os colocará nesse inventário."
+    },
+    {
+      "type": "spotlight",
+      "title": "Carregamento Automático",
+      "item": "pneumaticcraft:charging_station",
+      "text": "Assim como todos os tipos de Drone, esses drones requerem $(l:base_concepts/pressure)pressão/$ para operar e buscarão automaticamente $(l:tools/drone#charging)uma Estação de Carregamento com uma Melhoria de Ejetor/$ se estiverem com pouco ar."
+    },
+    {
+      "type": "text",
+      "title": "Filtragem de Itens",
+      "text": "O $(thing)Drone Coletor/$ possui uma funcionalidade básica de filtragem de itens. Se implantado $(italic)contra/$ um bloco de inventário, ele filtrará quaisquer itens já presentes nesse inventário. Se implantado no chão $(italic)próximo a/$ um inventário (ou em um bloco de inventário vazio), ele $(italic)não/$ filtrará itens.$(p)Se você quiser alterar o filtro do drone, precisará usar a chave inglesa nele e reimplantá-lo."
+    },
+    {
+      "type": "text",
+      "text": "O $(thing)Drone Coletor/$ tem um alcance padrão de um cubo 17x17x17, centralizado no bloco onde foi colocado. Este alcance pode ser aumentado adicionando até 16 $(l:base_concepts/upgrades#range)Melhorias de Alcance/$."
+    },
+    {
+      "type": "entity",
+      "entity": "pneumaticcraft:collector_drone",
+      "offset": -0.3
+    },
+    {
+      "type": "crafting",
+      "text": "Fabricando um Drone Coletor",
+      "recipe": "pneumaticcraft:collector_drone"
+    }
+  ]
+}

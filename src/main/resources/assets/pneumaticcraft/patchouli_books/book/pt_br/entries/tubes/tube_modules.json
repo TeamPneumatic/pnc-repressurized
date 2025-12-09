@@ -1,0 +1,34 @@
+{
+  "name": "Módulos de Tubo",
+  "icon": "minecraft:book",
+  "category": "pneumaticcraft:tubes",
+  "advancement": "pneumaticcraft:pressure_tube",
+  "priority": "true",
+  "pages": [
+    {
+      "type": "text",
+      "text": "$(thing)Módulos de Tubo/$ são componentes que podem ser anexados a $(l:tubes/pressure_tubes)Tubos de Pressão/$, seja na lateral do tubo, ou $(thing)em linha/$ com o tubo.$(p)Módulos anexados podem ser removidos $(thing)agachando + clicando com o botão direito/$ com uma $(l:tools/pneumatic_wrench)Chave Pneumática/$. "
+    },
+    {
+      "anchor": "inline",
+      "type": "text",
+      "title": "Módulos Em Linha",
+      "text": "$(thing)Módulos em linha/$ são um pouco especiais, no sentido de que:$(li)Um Tubo de Pressão pode ter apenas um módulo em linha.$(li)Um Tubo de Pressão com um módulo em linha não pode ter nenhum outro módulo.$(li)Um Tubo de Pressão com um módulo em linha só pode ser conectado em dois lados: as duas extremidades do módulo em linha.$(li)Módulos em linha podem $(italic)apenas/$ ser colocados na extremidade aberta de um Tubo de Pressão."
+    },
+    {
+      "type": "relations",
+      "entries": [
+        "pneumaticcraft:tubes/safety_module",
+        "pneumaticcraft:tubes/pressure_gauge_module",
+        "pneumaticcraft:tubes/flow_detector_module",
+        "pneumaticcraft:tubes/air_grate_module",
+        "pneumaticcraft:tubes/regulator_module",
+        "pneumaticcraft:tubes/charging_module",
+        "pneumaticcraft:tubes/logistics_module",
+        "pneumaticcraft:tubes/redstone_module",
+        "pneumaticcraft:tubes/vacuum_module",
+        "pneumaticcraft:tubes/thermostat_module"
+      ]
+    }
+  ]
+}

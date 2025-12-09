@@ -1,0 +1,84 @@
+{
+  "name": "Estação de Segurança",
+  "icon": "pneumaticcraft:security_station",
+  "category": "pneumaticcraft:machines",
+  "advancement": "pneumaticcraft:plastic",
+  "pages": [
+    {
+      "type": "text",
+      "text": "Se você deseja proteger uma área de jogadores hostis, você pode usar a $(thing)Estação de Segurança/$.$(p)Este dispositivo impede toda interação de jogadores não confiáveis em quaisquer blocos dentro do seu alcance. Isso significa que nenhum inventário ou GUI pode ser aberto, e nenhum bloco pode ser colocado ou quebrado."
+    },
+    {
+      "type": "spotlight",
+      "item": "pneumaticcraft:security_station",
+      "text": "Isso parece ótimo, mas para configurar uma $(thing)Estação de Segurança/$ você precisa fazer algumas coisas para garantir sua segurança. Porque o fato é que as $(thing)Estações de Segurança/$ podem ser $(l:machines/security_station#hacking)hackeadas/$. O sistema de hacking da Estação de Segurança é fortemente inspirado no sistema de hacking do $(l:https://www.youtube.com/watch?v=nQ0rPLlU8v4)Deus Ex: Revolution/$."
+    },
+    {
+      "type": "text",
+      "title": "Configuração",
+      "text": "Para configurar uma $(thing)Estação de Segurança/$, você deve colocar $(l:components/network_components)Componentes de Rede/$ na grade de rede para formar uma $(thing)rede/$. Em toda rede deve haver uma $(l:components/network_components#diagnostic)Sub-rotina de Diagnóstico/$, uma $(l:components/network_components#io_port)Porta IO de Rede/$, e um $(l:components/network_components#registry)Registro de Rede/$.$(p)Estes três nós especiais devem estar todos conectados entre si, o que é feito com $(l:components/network_components#node)Nós de Rede/$."
+    },
+    {
+      "type": "text",
+      "title": "Hacking Desativado",
+      "flag": "!pneumaticcraft:securityStationHacking",
+      "text": "O hacking da Estação de Segurança foi desativado pela config neste servidor. Embora isso signifique que nenhum jogador pode hackear sua Estação de Segurança depois de configurada, ainda é necessário configurá-la com os componentes corretos, conforme descrito na página anterior. No entanto, a maioria das páginas seguintes (além de $(thing)Permitindo Amigos/$) não se aplica aqui."
+    },
+    {
+      "type": "text",
+      "title": "Regras",
+      "text": "O $(l:machines/security_station#hacking)hacker/$ começa na $(thing)Porta IO de Rede/$ e tem como objetivo capturar ou a $(thing)Sub-rotina de Diagnóstico/$ ou o $(thing)Registro de Rede/$.$(p)A $(thing)Sub-rotina de Diagnóstico/$ tem o objetivo de rastrear de volta ao ponto de entrada do hacker na $(thing)Porta IO de Rede/$."
+    },
+    {
+      "type": "text",
+      "text": "Colocar componentes $(thing)Nó de Rede/$ em pilhas maiores aumenta a $(italic)classificação do nó/$, o que significa que leva mais tempo tanto para o $(thing)hacker/$ quanto para o $(thing)Diagnóstico/$ capturá-los. Mas observe que, como o $(thing)Diagnóstico/$ pode rastrear mais rápido do que o $(thing)hacker/$ pode, isso é mais uma desvantagem para o hacker do que para o Diagnóstico."
+    },
+    {
+      "type": "text",
+      "title": "Ferramentas do Hacker",
+      "text": "Há alguns itens úteis que os hackers devem tentar obter; nenhum é criável e devem ser encontrados no mundo (trocas de aldeões ou loot de masmorras):$(li)O $(l:components/nuke_virus)Vírus Nuke/$, que pode ser usado para capturar instantaneamente um nó$(li)O $(l:components/stop_worm)Worm STOP!/$, que pode congelar temporariamente o progresso de rastreamento de um Diagnóstico."
+    },
+    {
+      "type": "text",
+      "title": "Aprimoramentos",
+      "text": "A $(thing)Estação de Segurança/$ aceita alguns aprimoramentos:$(li)$(l:base_concepts/upgrades#entity_tracker)Rastreadores de Entidade/$ aumentam a chance de o $(l:machines/security_station#hacking)hacker/$ ser detectado; há retornos decrescentes, e a proteção máxima é de 99% por tentativa de hack de nó.$(li)$(l:base_concepts/upgrades#range)Aprimoramentos de Alcance/$ aumentam o alcance protegido da estação em 1 por aprimoramento, até um máximo de 16 blocos em todas as direções (para uma área protegida máxima de 33x33x33 blocos)."
+    },
+    {
+      "type": "text",
+      "title": "Aprimoramentos (cont.)",
+      "text": "$(li)$(l:base_concepts/upgrades#security)Aprimoramentos de Segurança/$ aumentam o número de $(thing)Aprimoramentos de Segurança/$ que os hackers precisam em seu $(l:armor/pneumatic_helmet)Capacete Pneumático/$ para começar a hackear. Observe que os hackers não serão informados de quantos Aprimoramentos de Segurança eles precisam, e a Estação de Segurança causará uma pequena quantidade de dano não resistível a qualquer jogador que tente hackear, mas não consiga devido à falta de Aprimoramentos de Segurança."
+    },
+    {
+      "type": "text",
+      "title": "Permitindo Amigos",
+      "text": "Você pode adicionar jogadores amigáveis à sua $(thing)Estação de Segurança/$ para permitir que eles interajam dentro da área protegida; use a aba lateral $(bold)Usuários Compartilhados/$ para inserir nomes de jogadores.$(p)Você também pode remover jogadores em quem não confia mais aqui; basta clicar no nome do jogador para removê-lo."
+    },
+    {
+      "type": "text",
+      "title": "Sendo Hackeado",
+      "text": "Quando alguém hackeia sua $(thing)Estação de Segurança/$, você pode ver isso nas abas $(bold)Problemas/$ e $(bold)Status/$, onde também mostra $(italic)quem/$ hackeou seu sistema. Estes jogadores (e apenas estes jogadores) agora podem interagir com blocos dentro da área. Para restaurar a segurança, você terá que $(italic)reiniciar/$ a $(thing)Estação de Segurança/$ através do botão $(bold)Reiniciar/$ na GUI. O processo de reinicialização leva 60 segundos, durante os quais a área não está segura de forma alguma."
+    },
+    {
+      "type": "text",
+      "title": "Hacking",
+      "anchor": "hacking",
+      "text": "Para hackear uma $(thing)Estação de Segurança/$ que não é sua, você precisa de um $(l:armor/pneumatic_helmet)Capacete Pneumático/$ com pelo menos um (e provavelmente muitos) $(l:base_concepts/upgrades#security)Aprimoramentos de Segurança/$ instalados. Quando você faz isso, uma GUI semelhante à oposta aparece. Assista $(l:https://www.youtube.com/watch?v=Lgmpslbrrwo)a este vídeo (muito antigo, mas ainda relevante)/$ para um guia sobre como hackear.$(p)Para capturar um nó, $(thing)clique esquerdo/$ nele. Para fortificar um nó capturado, $(thing)clique direito/$ nele; nós fortificados levam um pouco mais de tempo para o Diagnóstico capturar."
+    },
+    {
+      "type": "image",
+      "images": [
+        "pneumaticcraft:textures/patchouli/hacking.png"
+      ]
+    },
+    {
+      "type": "text",
+      "title": "Dicas",
+      "text": "$(li)Mantenha sua $(thing)Estação de Segurança/$ bem oculta e bem protegida.$(li)Você pode proteger uma área com múltiplas $(thing)Estações de Segurança/$; todas elas devem ser hackeadas.$(li)Considere defesas ativas, como $(l:tools/drone)Drones/$ com programas de combate, ou $(l:machines/sentry_turret)Torretas de Sentinela/$$(li)Uma $(thing)Estação de Segurança/$ hackeada pode ser feita para emitir um $(#f00)sinal de redstone/$, o que poderia desencadear medidas adicionais (TNT debaixo da estação, talvez?)"
+    },
+    {
+      "type": "crafting",
+      "text": "Criando uma Estação de Segurança",
+      "recipe": "pneumaticcraft:security_station"
+    }
+  ]
+}

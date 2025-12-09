@@ -1,0 +1,27 @@
+{
+  "name": "Tanque de Corrosão",
+  "icon": "pneumaticcraft:etching_tank",
+  "category": "pneumaticcraft:manufacturing",
+  "advancement": "pneumaticcraft:etchacid_bucket",
+  "pages": [
+    {
+    "type": "text",
+    "text": "O $(thing)Tanque de Corrosão/$ deve primeiro ser preenchido com $(l:manufacturing/etching_acid)Ácido Corrosivo/$. Em seguida, insira até 25 $(thing)PCBs Vazios/$ que já tenham sido parcial ou totalmente expostos em uma $(l:manufacturing/uv_light_box)Caixa de Luz UV/$.$(p)Embora seja possível simplesmente despejar Ácido Corrosivo no mundo e jogar PCBs na poça, usar o Tanque de Corrosão é uma maneira muito mais segura e rápida de fazer isso."
+    },
+    {
+      "type": "text",
+      "title": "Automação",
+      "text": "Você pode encanar $(thing)PCBs Vazios/$ por qualquer lado. $(thing)PCBs Não Montados/$ corroídos com sucesso são movidos para o slot de saída superior direito, enquanto $(thing)PCBs Falhos/$ vão para o slot inferior direito. Para extração automatizada, extraia PCBs Não Montados pela lateral da máquina e PCBs Falhos pelo topo ou fundo. Você pode automatizar isso encanando PCBs Falhos para um $(thing)Alto-forno/$ para recuperar PCBs Vazios não expostos e reiniciar o processo."
+    },
+    {
+      "type": "text",
+      "title": "Aquecimento",
+      "text": "Sem $(l:base_concepts/heat)Calor/$, o Tanque de Corrosão leva 150 segundos para corroer totalmente uma PCB (embora, claro, possa corroer até 25 em paralelo). Se você aplicar calor ao tanque, pode reduzir ainda mais o tempo de processamento, até um mínimo de 30 segundos; quanto mais quente o tanque ficar, mais rápido será o tempo de processamento. No entanto, esteja avisado que, quando aquecido, uma pequena quantidade de Ácido Corrosivo será consumida enquanto as PCBs estiverem sendo corroídas."
+    },
+    {
+      "type": "crafting",
+      "text": "Fabricando um Tanque de Corrosão",
+      "recipe": "pneumaticcraft:etching_tank"
+    }
+  ]
+}

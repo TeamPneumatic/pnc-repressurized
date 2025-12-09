@@ -1,0 +1,17 @@
+{
+  "name": "Módulo Logístico",
+  "icon": "pneumaticcraft:logistics_module",
+  "category": "pneumaticcraft:logistics",
+  "advancement": "pneumaticcraft:pressure_tube",
+  "pages": [
+    {
+      "type": "text",
+      "text": "Veja $(l:tubes/logistics_module)a entrada do Módulo Logístico/$ na seção de $(thing)Tubos de Pressão/$ do manual para detalhes completos."
+    },
+    {
+      "type": "crafting",
+      "recipe": "pneumaticcraft:logistics_module",
+      "text": "Criando um Módulo Logístico"
+    }
+  ]
+}

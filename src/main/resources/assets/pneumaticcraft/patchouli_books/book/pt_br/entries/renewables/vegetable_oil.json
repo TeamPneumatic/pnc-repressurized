@@ -1,0 +1,20 @@
+{
+  "name": "Óleo Vegetal",
+  "icon": "pneumaticcraft:vegetable_oil_bucket",
+  "category": "pneumaticcraft:renewables",
+  "advancement": "pneumaticcraft:tp_plant",
+  "pages": [
+    {
+      "type": "text",
+      "text": "$(thing)Óleo Vegetal/$ pode ser produzido em uma $(l:manufacturing/thermopneumatic_processing_plant)Usina Termopneumática/$ a partir de várias $(thing)sementes/$ e $(thing)plantações/$. Sementes tendem a ser uma fonte melhor de óleo do que plantações cultivadas. Óleo Vegetal é necessário na produção de $(l:renewables/biodiesel)Biodiesel/$. "
+    },
+    {
+      "type": "pneumaticcraft:thermo_plant",
+      "recipe": "pneumaticcraft:thermo_plant/vegetable_oil_from_seeds"
+    },
+    {
+      "type": "pneumaticcraft:thermo_plant",
+      "recipe": "pneumaticcraft:thermo_plant/vegetable_oil_from_crops"
+    }
+  ]
+}

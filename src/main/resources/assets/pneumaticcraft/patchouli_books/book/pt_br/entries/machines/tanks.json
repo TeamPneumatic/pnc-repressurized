@@ -1,0 +1,39 @@
+{
+  "name": "Tanques",
+  "icon": "pneumaticcraft:small_tank",
+  "category": "pneumaticcraft:machines",
+  "advancement": "pneumaticcraft:root",
+  "pages": [
+    {
+      "type": "text",
+      "text": "Existem quatro tanques de armazenamento de fluido, imaginativamente intitulados $(item)Tanque Pequeno/$, $(item)Tanque Médio/$, $(item)Tanque Grande/$ e $(item)Tanque Enorme/$. Embora $(l:machines/liquid_hopper)Funis de Líquido/$ também sejam adequados para armazenamento de fluido, esses tanques fornecem armazenamento mais denso e alguma funcionalidade útil de empilhamento, e não transferem fluidos automaticamente (embora possam empurrar fluidos se um $(l:base_concepts/upgrades#dispenser)Aprimoramento de Dispensador/$) for adicionado)."
+    },
+    {
+      "type": "text",
+      "title": "Empilhamento",
+      "text": "Todos os quatro tipos de tanque podem ser $(thing)empilhados/$ verticalmente uns com os outros e formados em uma espécie de multi-bloco. Para fazer isso, clique com o botão direito no tanque com uma $(l:tools/pneumatic_wrench)Chave/$ (wrench); usar a chave na metade superior tentará juntar o tanque ao tanque acima, e vice-versa para o tanque abaixo.$(p)Uma vez que os tanques são empilhados, qualquer fluido em $(ttcolor)$(t:Se o fluido tiver uma densidade < 0, ele se moverá para cima em vez de para baixo)tanques mais altos/$ fluirá automaticamente para tanques mais baixos, assumindo que haja espaço."
+    },
+    {
+      "type": "image",
+      "images": [
+        "pneumaticcraft:textures/patchouli/small_tanks.png"
+      ],
+      "border": "true",
+      "text": "Três Tanques Pequenos empilhados"
+    },
+    {
+      "type": "text",
+      "text": "Existem algumas restrições a isso:$(li)Para combinar dois tanques, ambos devem conter o mesmo fluido (ou nenhum fluido), ou um dos tanques deve estar vazio$(li)O fluido $(italic)não/$ subirá; portanto, o fluido deve ser bombeado para o tanque superior de uma pilha e bombeado para fora do tanque inferior para obter melhores resultados$(li)A GUI do tanque mostrará apenas a quantidade de fluido do tanque que foi clicado com o botão direito."
+    },
+    {
+      "type": "crafting",
+      "recipe": "pneumaticcraft:small_tank",
+      "recipe2": "pneumaticcraft:medium_tank"
+    },
+    {
+      "type": "crafting",
+      "recipe": "pneumaticcraft:large_tank",
+      "recipe2": "pneumaticcraft:huge_tank"
+    }
+  ]
+}

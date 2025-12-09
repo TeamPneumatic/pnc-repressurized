@@ -1,0 +1,30 @@
+{
+  "name": "Elevador de Gás",
+  "icon": "pneumaticcraft:gas_lift",
+  "category": "pneumaticcraft:machines",
+  "advancement": "pneumaticcraft:pressure_tube",
+  "pages": [
+    {
+      "type": "text",
+      "text": "Um $(item)Elevador de Gás/$ é basicamente uma bomba. Ele usa $(l:base_concepts/pressure)pressão/$ para diminuir a densidade de um fluido e forçá-lo para cima.$(p)Quando pressurizado, ele extrai $(l:components/drill_pipe)Tubos de Perfuração/$ (que você deve fornecer) para baixo até atingir qualquer bloco de fluido, momento em que ele irá bombeá-lo. Isso o torna perfeito para $(l:base_concepts/oil)extração de Óleo/$, pois o Óleo pode estar profundamente abaixo da terra."
+    },
+    {
+      "type": "text",
+      "text": "Qualquer bloco sólido no caminho será quebrado, sem rendimento. Quebrar blocos consome ar; isso é uma quantidade muito pequena para blocos macios como terra ou areia, mas muito maior para blocos duros como obsidian.$(p)A pressão mínima necessária para bombear fluidos escala linearmente com a profundidade que está sendo bombeada, ou seja, o número de $(item)Tubos de Perfuração/$ atualmente extrudidos, até um máximo de 4.9 bar."
+    },
+    {
+      "type": "text",
+      "title": "Aba de Modos",
+      "text": "O Elevador de Gás pode ser alternado para um dos 3 modos:$(li)$(#00f)Bombear e permitir tanque vazio/$ extrui Tubos de Perfuração, bombeando fluidos quando os encontra.$(li)$(#00f)Bombear e deixar fluido no filtro/$ faz o mesmo acima, mas sempre manterá 1000mB de fluido no tanque. Isso é útil ao bombear por um fluido específico, para garantir que nenhum outro fluido será bombeado."
+    },
+    {
+      "type": "text",
+      "text": "$(li)$(#00f)Retratar Tubos de Perfuração/$ fará com que o $(thing)Elevador de Gás/$ pare de bombear e retraia qualquer Tubo de Perfuração que tenha extrudido de volta para seu inventário."
+    },
+    {
+      "type": "crafting",
+      "text": "Fabricando um Elevador de Gás",
+      "recipe": "pneumaticcraft:gas_lift"
+    }
+  ]
+}

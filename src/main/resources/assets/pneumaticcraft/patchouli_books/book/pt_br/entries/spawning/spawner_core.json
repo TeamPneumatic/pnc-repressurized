@@ -1,0 +1,30 @@
+{
+  "name": "Núcleo de Gerador",
+  "icon": "pneumaticcraft:spawner_core",
+  "category": "pneumaticcraft:spawning",
+  "advancement": "pneumaticcraft:pressure_tube",
+  "pages": [
+    {
+      "type": "text",
+      "text": "$(item)Núcleos de Gerador/$ são o coração pulsante dos $(item)Geradores/$ Vanilla, que contêm a essência do criatura a ser gerado.$(p)Eles podem ser extraídos à força de um Gerador com um $(l:spawning/spawner_extractor)Extrator de Gerador/$, mas também é possível fabricá-los, e usá-los no mais poderoso $(l:spawning/pressurized_spawner)Gerador Pressurizado/$."
+    },
+    {
+      "type": "spotlight",
+      "item": "pneumaticcraft:spawner_core",
+      "text": "Existem duas maneiras de obter um Núcleo de Gerador:$(li)Extrair um à força de um Gerador com um $(l:spawning/spawner_extractor)Extrator de Gerador/$ (prepare-se para uma luta!). Tais núcleos são 100% preenchidos com a essência do criatura daquele Gerador.$(li)Fabricar seu próprio Núcleo de Gerador e usar uma $(l:spawning/vacuum_trap)Armadilha a Vácuo/$ para capturar essência de criatura para preenchê-lo."
+    },
+    {
+      "type": "text",
+      "text": "Note que é possível que um Núcleo de Gerador preenchido por uma $(item)Armadilha a Vácuo/$ contenha a essência de várias criaturas diferentes, o que pode ou não ser desejável.$(p)Você pode liberar uma criatura aleatória do núcleo $(thing)clicando com o botão direito/$ nele, mas isso pode ser um pouco incerto. Produzir um núcleo com 100% de pureza via $(thing)Armadilha a Vácuo/$ não é trivial, e requer algum cuidado."
+    },
+    {
+      "type": "crafting",
+      "text": "Fabricando um Invólucro de Núcleo de Gerador. Usado na fabricação de um $(item)Núcleo de Gerador/$ real.",
+      "recipe": "pneumaticcraft:spawner_core_shell"
+    },
+    {
+      "type": "pneumaticcraft:thermo_plant",
+      "recipe": "pneumaticcraft:thermo_plant/spawner_core"
+    }
+  ]
+}

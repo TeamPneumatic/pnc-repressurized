@@ -1,0 +1,33 @@
+{
+  "name": "Ladrilho de Aforismo",
+  "icon": "pneumaticcraft:aphorism_tile",
+  "category": "pneumaticcraft:machines",
+  "advancement": "pneumaticcraft:assembly_controller",
+  "pages": [
+    {
+      "type": "text",
+      "text": "Os $(thing)Ladrilho de Aforismo/$ são como $(item)Placas/$, mas podem exibir quantidades arbitrárias de texto. Qualquer texto é automaticamente redimensionado para que o texto completo caiba no azulejo.$(p)Quando você coloca um Azulejo de Aforizma, ele $(ttcolor)$(t:Isto pode ser desabilitado na configuração do cliente - veja 'B:dramaSplash')exibe/$ por padrão um texto aleatório do $(l:http://mc-drama.herokuapp.com/)Gerador de Drama/$."
+    },
+    {
+      "type": "text",
+      "text": "$(li)$(item)Ladrilho de Aforismo/$ podem ser editados no local clicando com o botão direito com a mão vazia.$(li)Você pode adicionar marcação usando $(thing)Alt + 0-9/a-f/l/m/n/o/r/$ ($(l:https://minecraft.gamepedia.com/Formatting_codes)códigos padrão do Minecraft/$).$(li)Segure $(thing)F1/$ para exibir ajuda pop-up para as teclas de atalho do editor.$(li)$(item)Ladrilho de Aforismo/$ podem ser recoloridos clicando com o botão direito com qualquer item de corante. A borda e o fundo do azulejo podem ser coloridos de forma independente ao clicar nas áreas correspondentes do azulejo."
+    },
+    {
+      "type": "text",
+      "anchor": "items",
+      "text": "$(li)$(item)Ladrilho de Aforismo/$ também podem exibir $(thing)itens/$, em vez ou junto com o texto. Você pode especificar um item para exibir colocando (em uma linha própria) o texto no formato $(thing){item:<modid>:<itemid>}/$, por exemplo $(thing){item:minecraft:diamond}/$.$(li)Alternativamente, clique no botão $(thing)Inserir Item.../$ no painel da GUI à esquerda e escolha um item na janela pop-up de busca. Isso substituirá todo o texto na linha atual. Você pode exibir múltiplos itens em um único azulejo."
+    },
+    {
+      "type": "text",
+      "text": "$(li)Dica: os itens exibidos são redimensionados para se ajustar à altura das linhas de texto. Se você estiver misturando texto e itens, mantenha as linhas de texto curtas para evitar itens muito pequenos.$(li)Você também pode usar o controle deslizante no painel da GUI à esquerda para definir uma $(thing)margem/$ para o texto do azulejo, se quiser que ele ocupe menos espaço no azulejo.$(li)Finalmente, você pode usar a caixa de seleção no painel da GUI à esquerda para tornar o azulejo $(thing)invisível/$, de modo que $(italic)somente/$ o texto (e/ou itens) seja mostrado."
+    },
+    {
+      "type": "text",
+      "text": "$(li)Ladrilho de Aforismo invisíveis não têm forma de bloco, a menos que você se agache, então eles têm usos potenciais como rótulos para baús, especialmente quando exibindo item(s). Como não têm forma, quaisquer interações são passadas para o bloco por trás - clicando com o botão direito em um baú, por exemplo.$(li)Azulejos invisíveis podem ser editados se agachando e clicando com o botão direito (com qualquer mão vazia, como normalmente)."
+    },
+    {
+      "type": "pneumaticcraft:assembly_system",
+      "recipe": "pneumaticcraft:assembly/aphorism_tile"
+    }
+  ]
+}

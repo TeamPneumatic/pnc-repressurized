@@ -1,0 +1,43 @@
+{
+  "name": "Cultura de Levedura",
+  "icon": "pneumaticcraft:yeast_culture_bucket",
+  "category": "pneumaticcraft:renewables",
+  "advancement": "pneumaticcraft:tp_plant",
+  "pages": [
+    {
+      "type": "text",
+      "text": "$(thing)Cultura de Levedura/$ é necessária para a produção de $(l:renewables/ethanol)Etanol/$ bem como $(l:renewables/sourdough)Massa Lêveda/$ e pode ser produzida de algumas maneiras:"
+    },
+    {
+      "type": "spotlight",
+      "item": "minecraft:red_mushroom",
+      "title": "Método 1",
+      "text": "Este será o único método disponível para você inicialmente. Encha uma $(l:manufacturing/thermopneumatic_processing_plant)Usina Termopneumática/$ com $(thing)Água/$, e adicione alguns cogumelos. Este método é um pouco lento (e exigirá um bom suprimento de cogumelos), mas produzirá facilmente um estoque inicial de Cultura de Levedura."
+    },
+    {
+      "type": "text",
+      "title": "Método 1 (cont.)",
+      "text": "Este processo é sensível à temperatura: você precisará manter a temperatura da Usina Termopneumática entre 30°C e 60°C. Isso é muito fácil em biomas mais quentes, mas pode exigir um pouco de esforço em áreas mais frias - uma coisa a notar é que a temperatura ambiente tende a subir à medida que você escava mais fundo, então biomas temperados podem ser adequados se você fizer seu processamento em um nível Y mais baixo."
+    },
+    {
+      "type": "pneumaticcraft:thermo_plant",
+      "recipe": "pneumaticcraft:thermo_plant/yeast_culture"
+    },
+    {
+      "type": "text",
+      "flag": "!pneumaticcraft:inWorldYeastCrafting",
+      "title": "Nota Importante",
+      "text": "$(italic)A fabricação de Levedura no mundo conforme descrito nas páginas seguintes foi desabilitada na configuração desta instância./$"
+    },
+    {
+      "type": "text",
+      "title": "Método 2",
+      "text": "$(thing)Cultura de Levedura/$, sendo um organismo vivo, é capaz de se replicar. Para fazer isso, despeje um balde da cultura em uma poça no mundo, e jogue um pouco de $(thing)Açúcar/$ na poça.$(p)Agora, despeje um balde de $(thing)Água/$ em um espaço de bloco adjacente à cultura; você verá a água ser convertida em mais cultura após um ou dois segundos."
+    },
+    {
+      "type": "text",
+      "title": "Método 2 (cont.)",
+      "text": "É importante notar que a cultura se espalhará quando a água for colocada, não quando o açúcar for adicionado.$(p)Este método pode ser automatizado com um pouco de pensamento e design, mesmo no início do jogo (dica: Funis $(l:machines/omnidirectional_hopper)Omnidirecionais/$ e $(l:machines/liquid_hopper)Líquidos/$ com $(l:base_concepts/upgrades#dispenser)Melhorias de Ejetor/$)."
+    }
+  ]
+}
