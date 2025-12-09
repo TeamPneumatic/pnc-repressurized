@@ -11,11 +11,11 @@
     {
       "type": "text",
       "title": "Uso",
-      "text": "Clique com o botão direito na bancada para abrir sua GUI.$(li)Insira qualquer item no slot mais à esquerda; se ele tiver alguma marcação de item, elas serão exibidas na lista da esquerda, logo abaixo do item.$(li)Selecione uma ou mais marcações clicando duas vezes nelas (ou clicando no botão '>'), e elas serão adicionadas à lista da direita.$(li)Adicione um pouco de papel no slot do meio."
+      "text": "Clique com o botão direito na bancada para abrir sua Interface.$(li)Insira qualquer item no slot mais à esquerda; se ele tiver alguma marcação de item, elas serão exibidas na lista da esquerda, logo abaixo do item.$(li)Selecione uma ou mais marcações clicando duas vezes nelas (ou clicando no botão '>'), e elas serão adicionadas à lista da direita.$(li)Adicione um pouco de papel no slot do meio."
     },
     {
       "type": "text",
-      "text": "$(li)Clique no botão Livro & Pena para escrever as marcações selecionadas. Uma folha de papel será usada e um $(item)Filtro de Marcação/$ será produzido no slot da direita.$(p)O slot de papel também aceitará um Filtro de Marcação escrito anteriormente; isso pode ser útil se você quiser editar as marcações em um Filtro de Marcação existente."
+      "text": "$(li)Clique no botão que está com um Livro e Pena para escrever as marcações selecionadas. Uma folha de papel será usada e um $(item)Filtro de Marcação/$ será produzido no slot da direita.$(p)O slot de papel também aceitará um Filtro de Marcação escrito anteriormente; isso pode ser útil se você quiser editar as marcações em um Filtro de Marcação existente."
     },
     {
       "type": "crafting",
