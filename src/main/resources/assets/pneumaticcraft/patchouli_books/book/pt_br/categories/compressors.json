@@ -1,0 +1,6 @@
+{
+  "name": "Compressores",
+  "description": "Compressores são máquinas que comprimem ar para gerar $(l:base_concepts/pressure)pressão/$. Estes são os geradores de energia para o $(pncr).",
+  "icon": "pneumaticcraft:air_compressor",
+  "sortnum": 1
+}

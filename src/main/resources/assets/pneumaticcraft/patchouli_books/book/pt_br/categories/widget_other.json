@@ -1,0 +1,7 @@
+{
+  "name": "Outros Widgets",
+  "description": "Quaisquer widgets que não se encaixam em nenhuma das outras categorias.",
+  "icon": "pneumaticcraft:textures/progwidgets/comment_piece.png",
+  "parent": "pneumaticcraft:programming",
+  "sortnum": 4
+}

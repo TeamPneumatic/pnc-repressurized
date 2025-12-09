@@ -1,0 +1,7 @@
+{
+  "name": "Widgets de Condição",
+  "description": "Widgets que avaliam condições.",
+  "icon": "pneumaticcraft:textures/progwidgets/condition_block_piece.png",
+  "parent": "pneumaticcraft:programming",
+  "sortnum": 3
+}

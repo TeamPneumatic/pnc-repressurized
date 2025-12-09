@@ -1,0 +1,45 @@
+{
+  "processor": "me.desht.pneumaticcraft.common.thirdparty.patchouli.ProcessorAmadronTrade",
+  "components": [
+    {
+      "type": "patchouli:header",
+      "text": "#name",
+      "x": -1,
+      "y": -6
+    },
+    {
+      "type": "patchouli:item",
+      "item": "#input",
+      "x": 13,
+      "y": 8
+    },
+    {
+      "type": "patchouli:item",
+      "item": "pneumaticcraft:amadron_tablet",
+      "x": 48,
+      "y": 8
+    },
+    {
+      "type": "patchouli:item",
+      "item": "#output",
+      "x": 83,
+      "y": 8
+    },
+    {
+      "type": "patchouli:image",
+      "image": "pneumaticcraft:textures/patchouli/elements.png",
+      "x": 10,
+      "y": 5,
+      "u": 0,
+      "v": 82,
+      "width": 92,
+      "height": 22
+    },
+    {
+      "type": "patchouli:text",
+      "text": "#text",
+      "x": 5,
+      "y": 30
+    }
+  ]
+}

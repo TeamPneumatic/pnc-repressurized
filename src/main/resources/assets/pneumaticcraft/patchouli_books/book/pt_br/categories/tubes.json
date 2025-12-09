@@ -1,0 +1,6 @@
+{
+  "name": "Tubos e Módulos",
+  "description": "Tubos de Pressão são como você move ar comprimido no $(pncr).",
+  "icon": "pneumaticcraft:pressure_tube",
+  "sortnum": 2
+}

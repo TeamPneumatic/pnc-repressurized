@@ -1,0 +1,6 @@
+{
+  "name": "Manufatura",
+  "description": "As máquinas e sistemas usados para produzir componentes para construir outras máquinas e ferramentas do $(pncr).",
+  "icon": "pneumaticcraft:assembly_controller",
+  "sortnum": 3
+}

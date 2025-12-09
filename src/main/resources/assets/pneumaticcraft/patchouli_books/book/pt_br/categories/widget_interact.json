@@ -1,0 +1,7 @@
+{
+  "name": "Widgets de Interação com o Mundo",
+  "description": "Widgets que interagem com o mundo de alguma forma.",
+  "icon": "pneumaticcraft:textures/progwidgets/dig_piece.png",
+  "parent": "pneumaticcraft:programming",
+  "sortnum": 2
+}
