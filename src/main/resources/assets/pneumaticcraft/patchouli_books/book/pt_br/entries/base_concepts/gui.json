@@ -1,11 +1,11 @@
 {
-  "name": "Conceitos de GUI",
+  "name": "Conceitos da Interface",
   "icon": "pneumaticcraft:textures/gui/icon/gui_mouse.png",
   "category": "pneumaticcraft:base_concepts",
   "pages": [
     {
       "type": "text",
-      "text": "A maioria das máquinas no $(pncr) tem uma GUI com várias $(thing)abas laterais/$. Algumas abas são comuns à maioria ou a todas as máquinas, enquanto algumas são exclusivas de certas máquinas. Aqui está uma lista de algumas abas comuns:"
+      "text": "A maioria das máquinas no $(pncr) tem uma Interface com várias $(thing)abas laterais/$. Algumas abas são comuns à maioria ou a todas as máquinas, enquanto algumas são exclusivas de certas máquinas. Aqui está uma lista de algumas abas comuns:"
     },
     {
       "type": "text",
@@ -17,7 +17,7 @@
     },
     {
       "type": "image",
-      "text": "Uma GUI mostrando 3 abas laterais: Status da Pressão, Problemas (nenhum aqui) e um Status do Controlador de Montagem específico da máquina",
+      "text": "Uma Interface mostrando 3 abas laterais: Status da Pressão, Problemas (nenhum aqui) e um Status do Controlador de Montagem específico da máquina",
       "images": [
         "pneumaticcraft:textures/patchouli/gui_tabs.png"
       ],
