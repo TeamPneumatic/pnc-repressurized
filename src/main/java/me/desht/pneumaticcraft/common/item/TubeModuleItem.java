@@ -58,7 +58,8 @@ public class TubeModuleItem extends Item {
         super.appendHoverText(stack, context, tooltip, flag);
 
         AbstractTubeModule module = createModule(Direction.UP,null);
-        tooltip.add(Component.literal("In line: " + (module.isInline() ? "Yes" : "No")).withStyle(ChatFormatting.DARK_AQUA));
+        Component yesNo = Component.translatable(module.isInline() ? "gui.yes" : "gui.no");
+        tooltip.add(Component.translatable("pneumaticcraft.gui.tubeModule.inline", yesNo).withStyle(ChatFormatting.DARK_AQUA));
     }
 
     @Override

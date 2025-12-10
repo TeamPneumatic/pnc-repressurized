@@ -216,7 +216,9 @@ public abstract class AbstractTubeModule {
     public void addInfo(List<Component> curInfo) {
         if (upgraded) {
             ItemStack stack = new ItemStack(ModItems.MODULE_EXPANSION_CARD.get());
-            curInfo.add(stack.getHoverName().copy().append(" installed").withStyle(ChatFormatting.GREEN));
+            curInfo.add(stack.getHoverName().copy().append(" ")
+                    .append(Component.translatable("pneumaticcraft.gui.tubeModule.installed"))
+                    .withStyle(ChatFormatting.GREEN));
         }
         if (this instanceof INetworkedModule) {
             int colorChannel = ((INetworkedModule) this).getColorChannel();
